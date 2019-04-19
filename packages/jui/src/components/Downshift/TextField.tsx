@@ -18,7 +18,6 @@ type SelectedItem = {
 
 type JuiDownshiftTextFieldStates = {
   showPlaceholder: boolean;
-  shrink: boolean;
 };
 
 type JuiDownshiftTextFieldProps = {
@@ -62,12 +61,10 @@ class JuiDownshiftTextField extends React.PureComponent<
 > {
   state: JuiDownshiftTextFieldStates = {
     showPlaceholder: true,
-    shrink: false,
   };
   handleFocus = () => {
     this.setState({
       showPlaceholder: false,
-      shrink: true,
     });
   }
   handleBlur = () => {
@@ -75,7 +72,6 @@ class JuiDownshiftTextField extends React.PureComponent<
     if (!inputValue.length && !selectedItems.length) {
       this.setState({
         showPlaceholder: true,
-        shrink: false,
       });
     }
   }
@@ -127,10 +123,9 @@ class JuiDownshiftTextField extends React.PureComponent<
     let { selectedItems } = this.props;
     selectedItems = [...selectedItems];
     selectedItems.splice(selectedItems.indexOf(item), 1);
-    const shrink = selectedItems.length !== 0 || inputValue.length !== 0;
+    // const shrink = selectedItems.length !== 0 || inputValue.length !== 0;
     const showPlaceholder = !inputValue.length && !selectedItems.length;
     this.setState({
-      shrink,
       showPlaceholder,
     });
     onSelectChange(selectedItems);
@@ -148,13 +143,14 @@ class JuiDownshiftTextField extends React.PureComponent<
       getInputProps,
       selectedItems,
       maxLength,
+      multiple,
     } = this.props;
-    const { showPlaceholder, shrink } = this.state;
+    const { showPlaceholder } = this.state;
     const placeholderText =
       selectedItems.length === 0 && showPlaceholder ? placeholder : '';
     return (
       <StyledTextField
-        label={showPlaceholder ? placeholder : label}
+        label={label}
         fullWidth={true}
         error={nameError}
         helperText={nameError ? helperText : ''}
@@ -182,13 +178,11 @@ class JuiDownshiftTextField extends React.PureComponent<
               input: 'input',
             },
             placeholder: placeholderText,
+            readOnly: !multiple && selectedItems.length > 0,
           } as any),
         }}
         inputProps={{
           maxLength,
-        }}
-        InputLabelProps={{
-          shrink,
         }}
       />
     );

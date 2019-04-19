@@ -329,7 +329,7 @@
     },
     "team": {
       "Members": "Members",
-      "SearchContactPlaceholder": "Members (enter names or email addresses)",
+      "SearchContactPlaceholder": "Enter names or email addresses",
       "CreateTeam": "Create Team",
       "Create": "Create",
       "SetAsPublicTeam": "Public Team (visible to any co-worker)",
@@ -337,6 +337,7 @@
       "MembersMayAddOtherMembers": "Allow members to add other members",
       "MembersMayPinPosts": "Allow members to pin posts",
       "teamName": "Team name",
+      "teamNamePlaceholder": "Enter team name",
       "teamDescription": "Team description",
       "allowTeamMembersTo": "Allow team members to",
       "addTeamMembers": "Add team members",
