@@ -20,7 +20,7 @@ test.meta(<ITestMeta>{
   priority: ['P0'],
   caseIds: ['JPT-1536'],
   maintainers: ['Potar.He'],
-  keywords: ['EndCall', 'UI']
+  keywords: ['EndCall']
 })('Show prompt pop-up after user logged out the app', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4]
@@ -101,10 +101,10 @@ test.meta(<ITestMeta>{
 
 test.meta(<ITestMeta>{
   priority: ['P0'],
-  caseIds: ['JPT-1537'],
+  caseIds: ['JPT-1537', 'JPT-1584'],
   maintainers: ['Potar.He'],
-  keywords: ['EndCall', 'UI']
-})('The call should be ended after the user logged out', async (t) => {
+  keywords: ['EndCall']
+})('The call should be ended after the user logged out & Should navigate to the login main interface', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4]
   const anotherUser = users[5];
@@ -168,7 +168,78 @@ test.meta(<ITestMeta>{
     await logoutDialog.clickLogoutButton();
   });
 
+  await h(t).withLog('Then web page navigate to the login main interface', async () => {
+    await t.expect(h(t).href).contains('unified-login');
+  });
+
   await h(t).withLog('Then the call for the current platform is ended', async () => {
     await session.waitForStatus('terminated');
-  })
+    await session.close();
+  });
+});
+
+test.meta(<ITestMeta>{
+  priority: ['P0'],
+  caseIds: ['JPT-1538'],
+  maintainers: ['Potar.He'],
+  keywords: ['EndCall']
+})('The call should be ended after the user logged out', async (t) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4]
+  const anotherUser = users[5];
+  const app = new AppRoot(t);
+  await h(t).glip(loginUser).init();
+  await h(t).scenarioHelper.resetProfile(loginUser);
+
+
+  let session: WebphoneSession;
+  await h(t).withLog('Given another user login webphone', async () => {
+    session = await h(t).webphone(anotherUser);
+  });
+
+  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const telephonyDialog = app.homePage.telephonyDialog;
+  await h(t).withLog('When anotherUser make call to this loginUser', async () => {
+    await session.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
+  });
+
+  await h(t).withLog('Then loginUser answer the call', async () => {
+    await telephonyDialog.ensureLoaded();
+    await telephonyDialog.clickAnswerButton();
+  });
+
+  await h(t).withLog(`And webphone session status should be 'accepted'`, async () => {
+    await session.waitForStatus('accepted');
+  });
+
+  await h(t).withLog('When I click the “sign out ”button in the upper right corner', async () => {
+    await app.homePage.openSettingMenu();
+    await app.homePage.settingMenu.clickLogout();
+  });
+
+  const logoutDialog = app.homePage.logoutDialog;
+  await h(t).withLog('Then Show the prompt pop-up', async () => {
+    await logoutDialog.ensureLoaded();
+  });
+
+  await h(t).withLog('When I click the "Cancel" button', async () => {
+    await logoutDialog.clickCancelButton();
+  });
+
+  await h(t).withLog('Then logout prompt dismiss', async () => {
+    await logoutDialog.ensureDismiss();
+  });
+
+  await h(t).withLog('And telephony dialog should be keep', async () => {
+    await telephonyDialog.ensureLoaded();
+  });
+
+  await h(t).withLog('And webphone session status is keeping "accepted"', async () => {
+    await session.waitForStatus('accepted');
+    await session.close();
+  });
 });

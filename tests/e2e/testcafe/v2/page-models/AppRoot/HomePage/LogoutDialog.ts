@@ -28,7 +28,7 @@ export class LogoutDialog extends BaseWebComponent {
     return this.buttonOfText('Cancel');
   }
 
-  async cancel() {
+  async clickCancelButton() {
     await this.t.click(this.cancelButton);
   }
 
