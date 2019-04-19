@@ -8,6 +8,7 @@ import React, { ComponentType } from 'react';
 import { StyledAppBar } from './StyledAppBar';
 import { StyledToolbar } from './StyledToolbar';
 import { StyledMenuWithLogo } from './StyledMenuWithLogo';
+import { StyledSearchIconButton } from './StyledSearchIconButton';
 import { StyledLeft } from './StyledLeft';
 import { StyledRight } from './StyledRight';
 import { StyledJuiSearchBar } from './StyledSearchBar';
@@ -72,6 +73,14 @@ class JuiTopBar extends React.PureComponent<Props, States> {
               // isShowSearchBar={isShowSearchBar}
               // closeSearchBar={this.showSearchBar}
             />
+            <StyledSearchIconButton
+              onClick={openGlobalSearch}
+              tooltipTitle="Search"
+              size="medium"
+              color="common.white"
+            >
+              search
+            </StyledSearchIconButton>
           </StyledLeft>
           <StyledRight>
             <NewActions />
