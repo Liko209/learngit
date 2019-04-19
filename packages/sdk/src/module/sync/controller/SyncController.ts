@@ -10,7 +10,7 @@ import { indexData, initialData, remainingData } from '../../../api';
 import { accountHandleData } from '../../../module/account/service';
 
 import { SERVICE, CONFIG } from '../../../service/eventKey';
-import { progressBar } from '../../../utils/progress';
+import { progressManager, ProgressBar } from '../../../utils/progress';
 import { mainLogger, ERROR_CODES_NETWORK } from 'foundation';
 import notificationCenter from '../../../service/notificationCenter';
 import { ErrorParserHolder } from '../../../error/ErrorParserHolder';
@@ -52,8 +52,10 @@ class SyncController {
   private _isFetchingRemaining: boolean;
   private _syncListener: SyncListener;
   private _processorHandler: SequenceProcessorHandler;
+  private _progressBar: ProgressBar;
 
   constructor() {
+    this._progressBar = progressManager.newProgressBar();
     this._processorHandler = new SequenceProcessorHandler(
       'Index_SyncController',
       undefined,
@@ -79,10 +81,10 @@ class SyncController {
     } else if (state === 'refresh') {
       this.syncData();
     } else if (state === 'connecting') {
-      progressBar.start();
+      this._progressBar.start();
     } else if (state === 'disconnected') {
       this._onSocketDisconnected();
-      progressBar.stop();
+      this._progressBar.stop();
     }
   }
 
@@ -126,7 +128,7 @@ class SyncController {
   }
 
   private async _firstLogin() {
-    progressBar.start();
+    this._progressBar.start();
     const currentTime = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
       PERFORMANCE_KEYS.FIRST_LOGIN,
@@ -143,7 +145,7 @@ class SyncController {
     }
     this._checkFetchedRemaining(currentTime);
     PerformanceTracerHolder.getPerformanceTracer().end(currentTime);
-    progressBar.stop();
+    this._progressBar.stop();
   }
 
   private async _fetchInitial(time: number) {
@@ -205,7 +207,7 @@ class SyncController {
     const executeFunc = async () => {
       const timeStamp = this.getIndexTimestamp();
       mainLogger.log(LOG_TAG, `start fetching index:${timeStamp}`);
-      progressBar.start();
+      this._progressBar.start();
       const { onIndexLoaded, onIndexHandled } = this._syncListener;
       const syncConfig = new SyncUserConfig();
       // 5 minutes ago to ensure data is correct
@@ -222,7 +224,7 @@ class SyncController {
         syncConfig.updateIndexSucceed(false);
         await this._handleSyncIndexError(error);
       }
-      progressBar.stop();
+      this._progressBar.stop();
     };
     const processor = new IndexRequestProcessor(executeFunc);
     this._processorHandler.addProcessor(processor);

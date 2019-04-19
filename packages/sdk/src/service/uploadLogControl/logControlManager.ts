@@ -71,6 +71,10 @@ export class LogControlManager implements IAccessor {
 
     if (typeof window !== 'undefined') {
       window.addEventListener('error', this.windowError.bind(this));
+      window.addEventListener(
+        'unhandledrejection',
+        this.windowError.bind(this),
+      );
       window.addEventListener('beforeunload', (event: any) => {
         this.flush();
       });
@@ -128,10 +132,15 @@ export class LogControlManager implements IAccessor {
     return this.memoryLogCollector.getAll();
   }
 
-  windowError(msg: string, url: string, line: number) {
-    const message = `Error in ('${url ||
-      window.location}) on line ${line} with message (${msg})`;
-    mainLogger.fatal(message);
+  windowError(event: ErrorEvent | PromiseRejectionEvent) {
+    if (event instanceof ErrorEvent) {
+      const { error, message } = event;
+      mainLogger.fatal(message, error);
+    } else {
+      const { reason, promise } = event;
+      mainLogger.fatal(reason, promise);
+    }
     this.flush();
   }
+
 }

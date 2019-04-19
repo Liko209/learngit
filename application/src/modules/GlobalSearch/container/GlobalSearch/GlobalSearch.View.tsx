@@ -11,6 +11,7 @@ import {
   JuiGlobalSearch,
   JuiGlobalSearchInput,
 } from 'jui/pattern/GlobalSearch';
+import { HotKeys } from 'jui/hoc/HotKeys';
 
 import { GlobalSearchViewProps, SEARCH_VIEW } from './types';
 import { FullSearch } from '../FullSearch';
@@ -41,25 +42,31 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps> {
     const CurrentView = this.currentView;
 
     return (
-      <JuiGlobalSearch open={open} onClose={onClose}>
-        <JuiGlobalSearchInput
-          value={searchKey}
-          showClear={showClear}
-          onClear={onClear}
-          onClose={onClose}
-          onChange={this.onChange}
-          IconRightProps={{
-            'data-test-automation-id': 'global-search-close',
-          }}
-          InputProps={{
-            autoFocus: true,
-            inputProps: {
-              'data-test-automation-id': 'global-search-input',
-            },
-          }}
-        />
-        <CurrentView />
-      </JuiGlobalSearch>
+      <HotKeys
+        keyMap={{
+          esc: onClose,
+        }}
+      >
+        <JuiGlobalSearch open={open} onClose={onClose}>
+          <JuiGlobalSearchInput
+            value={searchKey}
+            showClear={showClear}
+            onClear={onClear}
+            onClose={onClose}
+            onChange={this.onChange}
+            IconRightProps={{
+              'data-test-automation-id': 'global-search-close',
+            }}
+            InputProps={{
+              autoFocus: true,
+              inputProps: {
+                'data-test-automation-id': 'global-search-input',
+              },
+            }}
+          />
+          <CurrentView />
+        </JuiGlobalSearch>
+      </HotKeys>
     );
   }
 }

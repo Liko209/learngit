@@ -21,7 +21,7 @@ export class SentryErrorReporter implements IErrorReporter {
       environment: JUPITER_ENV,
       // release format: {project-name}@{version}
       // https://docs.sentry.io/workflow/releases/?platform=browsernpm
-      release: `Web@${deployedVersion || pkg.version}`,
+      release: `web@${deployedVersion || pkg.version}`,
     });
   }
 

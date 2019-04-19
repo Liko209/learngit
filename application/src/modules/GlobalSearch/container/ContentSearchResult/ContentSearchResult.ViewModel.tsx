@@ -171,16 +171,19 @@ class ContentSearchResultViewModel
     this._setSearchState({ postIds });
   }
 
+  @action
   private _onPostsInit = async () => {
-    const contentsCount = await this._postService.getSearchContentsCount(
-      _.omit(this._searchParams, 'type'),
-    );
+    const { type, ...rest } = this._searchParams;
+    const asyncPosts = this._postService.searchPosts({ ...rest, type });
+    const asyncContent = this._postService.getSearchContentsCount(rest);
+    const [contentsCount, result] = await Promise.all([
+      asyncContent,
+      asyncPosts,
+    ]);
 
     contentsCount[TYPE_ALL] = _.sum(
       Object.values(_.pick(contentsCount, ...TYPE_MAP.map(({ id }) => id))),
     );
-
-    const result = await this._postService.searchPosts(this._searchParams);
 
     this._setSearchState({ contentsCount, requestId: result.requestId });
 
@@ -226,12 +229,12 @@ class ContentSearchResultViewModel
 
     isResponseError
       ? Notification.flashToast({
-        message,
-        type: ToastType.ERROR,
-        messageAlign: ToastMessageAlign.LEFT,
-        fullWidth: false,
-        dismissible: false,
-      })
+          message,
+          type: ToastType.ERROR,
+          messageAlign: ToastMessageAlign.LEFT,
+          fullWidth: false,
+          dismissible: false,
+        })
       : generalErrorHandler(error);
   }
 

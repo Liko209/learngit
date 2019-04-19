@@ -16,4 +16,4 @@ const UploadRecentLogsContainer = buildContainer<UploadRecentLogsViewProps>({
 });
 
 const UploadRecentLogs = portalManager.wrapper(UploadRecentLogsContainer);
-export { UploadRecentLogs, UploadRecentLogsViewProps };
+export { UploadRecentLogs };

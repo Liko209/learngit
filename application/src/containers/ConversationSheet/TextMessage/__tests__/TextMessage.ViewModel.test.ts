@@ -6,6 +6,7 @@
 import { getEntity } from '../../../../store/utils';
 import { ENTITY_NAME } from '@/store';
 import { TextMessageViewModel } from '../TextMessage.ViewModel';
+import { FormatToHtml } from '../FormatToHtml';
 
 jest.mock('../../../../store/utils');
 
@@ -145,17 +146,23 @@ describe('TextMessageViewModel', () => {
 
   describe('highlight', () => {
     it('should return html with highlighted matched text if provided highlight terms', () => {
-      vm.props.terms = ['a'];
       const text = 'abcdefgsda';
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = [];
+
+      vm.props.terms = [];
+      expect(vm.html).toBe(text);
+
+      FormatToHtml.formatToHtml.clear();
+      vm.props.terms = ['a'];
       expect(vm.html).toBe(
-        '<span><span class="highlight-term">a</span>bcdefgsd<span class="highlight-term">a</span></span>',
+        '<span class="highlight-term">a</span>bcdefgsd<span class="highlight-term">a</span>',
       );
 
+      FormatToHtml.formatToHtml.clear();
       vm.props.terms = ['a', 'b'];
       expect(vm.html).toBe(
-        '<span><span class="highlight-term">a</span><span class="highlight-term">b</span>cdefgsd<span class="highlight-term">a</span></span>',
+        '<span class="highlight-term">a</span><span class="highlight-term">b</span>cdefgsd<span class="highlight-term">a</span>',
       );
     });
   });

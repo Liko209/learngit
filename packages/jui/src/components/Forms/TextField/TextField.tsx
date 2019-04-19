@@ -11,7 +11,7 @@ import isOutlinedTextFieldProps from '../isOutlinedTextFieldProps';
 
 const TextField = styled(MuiTextField)`
   && {
-    margin: 0 0 ${spacing(2)} 0;
+    margin: 0 0 ${spacing(4)} 0;
   }
   && {
     .form-label-focused:not(.form-label-error) {
@@ -64,15 +64,16 @@ class JuiTextField extends React.PureComponent<Props> {
             focused: 'form-label-focused',
             ...formLabelClasses,
           },
+          shrink: true,
           ...inputLabelRest,
         }}
         InputProps={{
           classes: isOutlinedTextFieldProps(this.props)
             ? inputPropsClasses
             : {
-              underline: 'underline',
-              ...inputPropsClasses,
-            },
+                underline: 'underline',
+                ...inputPropsClasses,
+              },
           ...inputPropsRest,
         }}
       />

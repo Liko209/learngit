@@ -11,6 +11,7 @@ import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
+import { COUNT_TO_SHOW_SEARCH } from './Content/Members/constants';
 
 class ProfileDialogGroupViewModel
   extends AbstractViewModel<ProfileDialogGroupProps>
@@ -23,6 +24,11 @@ class ProfileDialogGroupViewModel
   @computed
   get group() {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
+  }
+
+  @computed
+  get hasSearch() {
+    return this.group.members.length > COUNT_TO_SHOW_SEARCH;
   }
 }
 
