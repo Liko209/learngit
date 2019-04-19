@@ -133,6 +133,7 @@ export async function finishRun() {
 // inject external service into test case
 export function setupCase(accountType: string) {
   return async (t: TestController) => {
+    t.ctx.runnerOpts = RUNNER_OPTS;
 
     h(t).allureHelper.initReporter();
     await h(t).dataHelper.setup(
