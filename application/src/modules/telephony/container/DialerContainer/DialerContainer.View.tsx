@@ -18,8 +18,8 @@ import { Record } from '../Record';
 import { CallActions } from '../CallActions';
 import { End } from '../End';
 
-const KeypadActions = [Mute, Keypad, Hold, Add, Record, CallActions];
-const Key2IconMap = {
+const KEYPAD_ACTIONS = [Mute, Keypad, Hold, Add, Record, CallActions];
+const KEY_2_ICON_MAP = {
   one: '1',
   two: '2',
   three: '3',
@@ -33,7 +33,7 @@ const Key2IconMap = {
   zero: '0',
   hash: '#',
 };
-const AcceptableKeys = Object.values(Key2IconMap);
+const ACCEPTABLE_KEYS = Object.values(KEY_2_ICON_MAP);
 
 const throttledHandler = (f: any) =>
   _.throttle(f, 30, {
@@ -51,7 +51,7 @@ class DialerContainerView extends React.Component<DialerContainerViewProps> {
 
     this._onKeyup = throttledHandler(({ key }: KeyboardEvent) => {
       const { keypadEntered, dtmf } = this.props;
-      if (AcceptableKeys.includes(key) && keypadEntered) {
+      if (ACCEPTABLE_KEYS.includes(key) && keypadEntered) {
         dtmf(key);
       }
     });
@@ -74,7 +74,7 @@ class DialerContainerView extends React.Component<DialerContainerViewProps> {
       const res = () => (
         <JuiIconButton
           disableToolTip={true}
-          onClick={throttledHandler(() => props.dtmf(Key2IconMap[str]))}
+          onClick={throttledHandler(() => props.dtmf(KEY_2_ICON_MAP[str]))}
           size="xxlarge"
           key={str}
           color="grey.900"
@@ -101,7 +101,7 @@ class DialerContainerView extends React.Component<DialerContainerViewProps> {
       <JuiContainer
         End={End}
         KeypadActions={
-          this.props.keypadEntered ? this._keypadKeys : KeypadActions
+          this.props.keypadEntered ? this._keypadKeys : KEYPAD_ACTIONS
         }
       />
     );
