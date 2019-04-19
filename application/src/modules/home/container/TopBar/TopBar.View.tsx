@@ -12,7 +12,6 @@ import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
 import { AvatarActions } from './AvatarActions';
 import { NewActions } from './NewActions';
 import { BackNForward } from './BackNForward';
-import { SearchBar } from './SearchBar';
 
 type TopBarProps = WithTranslation & {
   updateLeftNavState: (event: React.MouseEvent<HTMLElement>) => void;
@@ -61,7 +60,6 @@ class TopBar extends React.Component<TopBarProps> {
           MainMenu={this._MainMenu}
           AvatarActions={AvatarActions}
           NewActions={NewActions}
-          SearchBar={SearchBar}
           Logo={this._Logo}
           BackNForward={BackNForward}
           openGlobalSearch={openGlobalSearch}
