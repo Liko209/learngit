@@ -27,6 +27,7 @@ type FormatToHtmlParams = {
   currentUserId: number;
   staticHttpServer: string;
   customEmojiMap: CustomEmojiMap;
+  highlightTerms?: string[];
 };
 
 export {

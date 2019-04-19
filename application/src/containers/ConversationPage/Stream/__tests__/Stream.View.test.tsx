@@ -6,11 +6,15 @@ import { AutoSizerProps } from 'jui/components/AutoSizer';
 import { LoadingMorePlugin } from '@/plugins';
 import GroupStateModel from '@/store/models/GroupState';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
+import {
+  JuiInfiniteList,
+} from 'jui/components/VirtualizedList';
+import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
 import { theme } from '@/__tests__/utils';
 import { ConversationPost } from '../../../ConversationPost';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
 import { StreamViewComponent as StreamView } from '../Stream.View';
-import { StreamItemType, StreamViewProps } from '../types';
+import { StreamItemType, StreamViewProps, STATUS } from '../types';
 
 import { PostService } from 'sdk/module/post';
 PostService.getInstance = jest.fn();
@@ -151,7 +155,6 @@ describe('StreamView', () => {
         ],
       };
       const { wrapper, rootWrapper } = mountStream(props);
-      console.log('rootWrapper: ', rootWrapper.html());
       expect(wrapper.find(ConversationPost)).toHaveLength(2);
       expect(wrapper.find(TimeNodeDivider)).toHaveLength(1);
       rootWrapper.unmount();
@@ -233,6 +236,31 @@ describe('StreamView', () => {
         });
         expect(hasJumpToFirstUnreadButton).toBeTruthy();
         rootWrapper.unmount();
+      });
+    });
+
+    describe('display JuiInfiniteList or JuiStreamLoading', () => {
+      it('success', () => {
+        const { wrapper } = mountStream(baseProps);
+        expect(wrapper.find(JuiInfiniteList)).toHaveLength(1);
+      });
+
+      it('pending', () => {
+        const props = {
+          ...baseProps,
+          loadingStatus: STATUS.PENDING,
+        };
+        const { wrapper } = mountStream(props);
+        expect(wrapper.find(JuiInfiniteList)).toHaveLength(1);
+      });
+
+      it('failed', () => {
+        const props = {
+          ...baseProps,
+          loadingStatus: STATUS.FAILED,
+        };
+        const { wrapper } = mountStream(props);
+        expect(wrapper.find(JuiStreamLoading)).toHaveLength(1);
       });
     });
 

@@ -26,11 +26,17 @@ describe('MemberView', () => {
 
   it('should profile be open when member icon clicked [JPT-1368]', () => {
     jest.spyOn(OpenProfile, 'show');
+
     const wrapper = mountWithTheme(
       <MemberView {...vPropsFactory(true, 100)} />,
     );
 
-    wrapper.find(StyledConversationPageMember).simulate('click');
+    wrapper
+      .find(StyledConversationPageMember)
+      .simulate('mouseenter')
+      .find('button > button')
+      .simulate('click');
+
     expect(OpenProfile.show).toHaveBeenCalled();
   });
 });

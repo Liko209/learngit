@@ -13,7 +13,7 @@ import { EntityCacheController } from '../../../../framework/controller/impl/Ent
 import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
-import { AccountUserConfig } from '../../../../module/account/config';
+import { AccountUserConfig } from '../../../account/config';
 import { CompanyService } from '../../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../../service/constants';
 import { ProfileService } from '../../../profile';
@@ -199,6 +199,7 @@ describe('GroupFetchDataController', () => {
       entityCacheController.put(group);
     }
   }
+
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.clearAllMocks();
@@ -240,7 +241,6 @@ describe('GroupFetchDataController', () => {
       entityCacheController,
     );
     groupService = new GroupService();
-    GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 
     groupFetchDataController = new GroupFetchDataController(
       groupService,
@@ -250,56 +250,78 @@ describe('GroupFetchDataController', () => {
       new GroupHandleDataController(groupService),
     );
   });
+  describe('getGroupsByType()', () => {
+    it('getGroupsByType()', async () => {
+      const mock = [{ id: 1 }, { id: 2 }];
+      daoManager.getDao.mockReturnValue(groupDao);
 
-  it('getGroupsByType()', async () => {
-    const mock = [{ id: 1 }, { id: 2 }];
-    daoManager.getDao.mockReturnValue(groupDao);
+      // GROUP_QUERY_TYPE.ALL
+      groupDao.queryAllGroups.mockResolvedValue(mock);
+      const result1 = await groupFetchDataController.getGroupsByType();
+      expect(result1).toEqual(mock);
 
-    // GROUP_QUERY_TYPE.ALL
-    groupDao.queryAllGroups.mockResolvedValue(mock);
-    const result1 = await groupFetchDataController.getGroupsByType();
-    expect(result1).toEqual(mock);
+      // GROUP_QUERY_TYPE.FAVORITE
+      // profileService.getProfile.mockResolvedValueOnce({ favorite_group_ids: [1] });
+      // groupDao.queryGroupsByIds.mockResolvedValue(mock);
+      // const result2 = await groupService.getGroupsByType(GROUP_QUERY_TYPE.FAVORITE, 0, 20);
+      // expect(result2).toEqual(mock);
+      // TO be fixed
 
-    // GROUP_QUERY_TYPE.FAVORITE
-    // profileService.getProfile.mockResolvedValueOnce({ favorite_group_ids: [1] });
-    // groupDao.queryGroupsByIds.mockResolvedValue(mock);
-    // const result2 = await groupService.getGroupsByType(GROUP_QUERY_TYPE.FAVORITE, 0, 20);
-    // expect(result2).toEqual(mock);
-    // TO be fixed
+      profileService.getProfile.mockResolvedValueOnce({
+        favorite_group_ids: [],
+      });
+      const result22 = await groupFetchDataController.getGroupsByType(
+        GROUP_QUERY_TYPE.FAVORITE,
+        0,
+        20,
+      );
+      expect(result22).toEqual([]);
+      jest.spyOn(
+        groupFetchDataController.groupHandleDataController,
+        'filterGroups',
+      );
+      groupFetchDataController.groupHandleDataController.filterGroups.mockResolvedValueOnce(
+        mock,
+      );
+      // GROUP_QUERY_TYPE.GROUP && GROUP_QUERY_TYPE.TEAM
+      groupDao.queryGroups.mockResolvedValue(mock);
+      const result3 = await groupFetchDataController.getGroupsByType(
+        GROUP_QUERY_TYPE.GROUP,
+        0,
+        20,
+      );
+      expect(result3).toEqual(mock);
+    });
 
-    profileService.getProfile.mockResolvedValueOnce({ favorite_group_ids: [] });
-    const result22 = await groupFetchDataController.getGroupsByType(
-      GROUP_QUERY_TYPE.FAVORITE,
-      0,
-      20,
-    );
-    expect(result22).toEqual([]);
-    jest.spyOn(
-      groupFetchDataController.groupHandleDataController,
-      'filterGroups',
-    );
-    groupFetchDataController.groupHandleDataController.filterGroups.mockResolvedValueOnce(
-      mock,
-    );
-    // GROUP_QUERY_TYPE.GROUP && GROUP_QUERY_TYPE.TEAM
-    groupDao.queryGroups.mockResolvedValue(mock);
-    const result3 = await groupFetchDataController.getGroupsByType(
-      GROUP_QUERY_TYPE.GROUP,
-      0,
-      20,
-    );
-    expect(result3).toEqual(mock);
-  });
+    it('getGroupsByIds()', async () => {
+      const mock = [{ id: 1 }];
+      testEntitySourceController.batchGet.mockResolvedValue(mock);
 
-  it('getGroupsByIds()', async () => {
-    const mock = [{ id: 1 }];
-    testEntitySourceController.batchGet.mockResolvedValue(mock);
+      const result1 = await groupFetchDataController.getGroupsByIds([]);
+      expect(result1).toEqual([]);
 
-    const result1 = await groupFetchDataController.getGroupsByIds([]);
-    expect(result1).toEqual([]);
+      const result2 = await groupFetchDataController.getGroupsByIds([1]);
+      expect(result2).toEqual(mock);
+    });
 
-    const result2 = await groupFetchDataController.getGroupsByIds([1]);
-    expect(result2).toEqual(mock);
+    it('should return favorite list exclude the team which current user not belong to', async () => {
+      const curUserId = 3;
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValueOnce(curUserId);
+      const mock = [{ id: 1, members: [1, 2, 3] }, { id: 2, members: [1, 2] }];
+      daoManager.getDao.mockReturnValue(groupDao);
+
+      groupDao.queryAllGroups.mockResolvedValue(mock);
+      profileService.getProfile.mockResolvedValueOnce({
+        favorite_group_ids: [1, 2],
+      });
+      groupService.getGroupsByIds = jest.fn().mockReturnValue(mock);
+      const result22 = await groupFetchDataController.getGroupsByType(
+        GROUP_QUERY_TYPE.FAVORITE,
+        0,
+        20,
+      );
+      expect(result22).toEqual([{ id: 1, members: [1, 2, 3] }]);
+    });
   });
 
   describe('getLocalGroup()', () => {
@@ -310,47 +332,6 @@ describe('GroupFetchDataController', () => {
         12,
         mockUserId,
       ]);
-    });
-  });
-  describe('getGroupByMemberList()', () => {
-    it('should return result with group if it already existed in local', async () => {
-      const mockNormal = { id: 1 };
-      const memberIDs = [1, 2];
-      // group exist in DB already
-      daoManager.getDao.mockReturnValue(groupDao);
-      groupDao.queryGroupByMemberList.mockResolvedValue(mockNormal);
-      const result1 = await groupFetchDataController.getOrCreateGroupByMemberList(
-        memberIDs,
-      );
-      expect(result1).toEqual(mockNormal);
-    });
-
-    it('should return result with group if it can get from remote', async () => {
-      const mockNormal = { id: 1 };
-      const memberIDs = [1, 2];
-      jest
-        .spyOn(groupFetchDataController, 'requestRemoteGroupByMemberList')
-        .mockResolvedValueOnce(mockNormal);
-      groupDao.queryGroupByMemberList.mockResolvedValueOnce(null);
-      const result = await groupFetchDataController.getOrCreateGroupByMemberList(
-        memberIDs,
-      );
-      expect(result).toEqual(mockNormal);
-    });
-
-    it('should return result with error if it can not get from remote', async () => {
-      const memberIDs = [1, 2];
-      const error = new JNetworkError(
-        ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR,
-        '',
-      );
-      jest
-        .spyOn(groupFetchDataController, 'requestRemoteGroupByMemberList')
-        .mockRejectedValueOnce(error);
-      groupDao.queryGroupByMemberList.mockResolvedValueOnce(null);
-      await expect(
-        groupFetchDataController.getOrCreateGroupByMemberList(memberIDs),
-      ).rejects.toEqual(error);
     });
   });
 
@@ -501,6 +482,64 @@ describe('GroupFetchDataController', () => {
       expect(result.terms[0]).toBe('this');
       expect(result.terms[1]).toBe('team');
       expect(result.terms[2]).toBe('name');
+    });
+  });
+  describe('doFuzzySearchAllGroups', () => {
+    beforeEach(() => {
+      entityCacheController.clear();
+      prepareGroupsForSearch(entityCacheController);
+      SearchUtils.isUseSoundex = jest.fn().mockReturnValue(false);
+    });
+
+    it('should return empty data when search key is empty and fetch all is false/undefined', async () => {
+      const result = await groupFetchDataController.doFuzzySearchAllGroups(
+        '',
+        false,
+      );
+      expect(result).toEqual({ sortableModels: [], terms: [] });
+    });
+
+    it('should return all when terms is empty and fetch all is true', async () => {
+      const result: any = await groupFetchDataController.doFuzzySearchAllGroups(
+        '',
+        true,
+      );
+      expect(result.sortableModels.length).toEqual(1505);
+    });
+
+    it('should return no data when terms match no group name and fetch all is true', async () => {
+      const result: any = await groupFetchDataController.doFuzzySearchAllGroups(
+        'ppp',
+        true,
+      );
+      expect(result.sortableModels.length).toEqual(0);
+    });
+
+    it('fetch all matched groups and includes not my members ', async () => {
+      const result: any = await groupFetchDataController.doFuzzySearchAllGroups(
+        'name',
+        false,
+        false,
+      );
+      expect(result.sortableModels.length).toEqual(505);
+    });
+
+    it('fetch all matched groups and includes my members ', async () => {
+      const result: any = await groupFetchDataController.doFuzzySearchAllGroups(
+        'name',
+        false,
+        true,
+      );
+      expect(result.sortableModels.length).toEqual(505);
+    });
+
+    it('fetch all matched groups and includes my members ', async () => {
+      const result: any = await groupFetchDataController.doFuzzySearchAllGroups(
+        '1', // all teams has name 1xxxx, all groups has name includes 1
+        false,
+        true,
+      );
+      expect(result.sortableModels.length).toEqual(1505);
     });
   });
 

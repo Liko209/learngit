@@ -7,7 +7,8 @@ import * as format from 'string-format';
 import { getLogger } from 'log4js';
 import { IStep, Status, IConsoleLog, Process } from '../models';
 import { MiscUtils } from '../utils';
-import { getTmtIds, parseFormalName } from '../../libs/filter';
+import { getTmtIds, parseFormalName, formalNameWithTestMetaPrefix } from '../../libs/filter';
+
 import { BrandTire } from '../../config';
 import { H, h } from '.';
 import { BeatsClient, Test, Step } from 'bendapi-ts';
@@ -20,7 +21,7 @@ const StatusMap = {
   [Status.FAILED]: 8,
 };
 
-const ProccessMap = {
+const ProcessMap = {
   [Process.RUN]: 0,
   [Process.FINISH]: 1,
 };
@@ -106,12 +107,13 @@ export class DashboardHelper {
 
     const beatsTest = new Test();
     beatsTest.run = runId;
-    beatsTest.name = `${testRun.test.name}    (${(_.findKey(BrandTire, (value) => value === accountType)) || accountType})`;
+    const caseName = formalNameWithTestMetaPrefix(testRun.test.name, testRun.test.meta);
+    beatsTest.name = `${caseName}    (${(_.findKey(BrandTire, (value) => value === accountType)) || accountType})`;
     beatsTest.status = StatusMap[status];
     beatsTest.manualIds = getTmtIds(tags, 'JPT');
     beatsTest.startTime = testRun.startTime;
     beatsTest.endTime = new Date();
-    beatsTest.process = ProccessMap[Process.FINISH];
+    beatsTest.process = ProcessMap[Process.FINISH];
 
     beatsTest.metadata = {
       browser: userAgent.family,

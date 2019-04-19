@@ -18,7 +18,7 @@ import StoreViewModel from '@/store/ViewModel';
 
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
-import { StreamProps, StreamItemType, StreamItem } from './types';
+import { StreamProps, StreamItemType, StreamItem, STATUS } from './types';
 
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -36,6 +36,8 @@ import { PostService } from 'sdk/module/post';
 import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
+const BLACKLISTED_PROPS = ['viewRef'];
+
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService = ServiceLoader.getInstance<StateService>(
     ServiceConfig.STATE_SERVICE,
@@ -48,6 +50,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   );
   private _streamController: StreamController;
   private _historyHandler: HistoryHandler;
+
+  @observable
+  loadingStatus: STATUS = STATUS.PENDING;
 
   @observable loadInitialPostsError?: Error;
 
@@ -119,7 +124,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   constructor(props: StreamProps) {
-    super(props);
+    super(props, BLACKLISTED_PROPS);
     this.markAsRead = this.markAsRead.bind(this);
     this.loadInitialPosts = this.loadInitialPosts.bind(this);
     this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
@@ -129,6 +134,15 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       props.groupId,
       this._historyHandler,
       props.jumpToPostId,
+    );
+    this.reaction(
+      () => this.loadingStatus,
+      (status: STATUS) => {
+        props.updateConversationStatus(status);
+      },
+      {
+        fireImmediately: true,
+      },
     );
   }
 
@@ -177,13 +191,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @action
   async loadInitialPosts() {
     this.loadInitialPostsError = undefined;
+    this.loadingStatus = STATUS.PENDING;
     try {
       if (this.props.jumpToPostId) {
         await this._loadSiblingPosts(this.props.jumpToPostId);
       } else {
         await this._streamController.fetchInitialData(QUERY_DIRECTION.OLDER);
       }
+      this.loadingStatus = STATUS.SUCCESS;
     } catch (err) {
+      this.loadingStatus = STATUS.FAILED;
       this._handleLoadInitialPostsError(err);
     }
   }

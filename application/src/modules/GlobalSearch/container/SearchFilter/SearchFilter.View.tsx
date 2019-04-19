@@ -40,7 +40,6 @@ class SearchFilterViewComponent extends Component<ViewProps> {
       handleSearchGroupChange,
       handleSearchTypeChange,
       handleSearchPostDateChange,
-      options,
     } = this.props;
     return (
       <JuiSearchFilter title={t('globalSearch.filters')}>
@@ -71,7 +70,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           handleChange={handleSearchTypeChange}
           label={t('globalSearch.Type')}
           isFullWidth={true}
-          value={options.type as string}
+          value={searchOptions.type as string}
           automationId="typeSelector"
         >
           {typeFilter.map((item: SearchContentTypeItem) => {
@@ -82,7 +81,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
                 key={item.id}
               >
                 {t(`globalSearch.${item.name}`)}
-                {item.count ? ` (${item.count})` : ''}
+                {item.count !== null ? ` (${item.count})` : ''}
               </JuiMenuItem>
             );
           })}

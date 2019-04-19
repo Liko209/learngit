@@ -3,11 +3,14 @@ import { WithTranslation } from 'react-i18next';
 import { RouteComponentProps } from 'react-router';
 
 enum STATUS {
+  PENDING,
   SUCCESS,
   FAILED,
 }
 
 type ConversationPageViewProps = WithTranslation & {
+  loadingStatus: STATUS,
+  updateStatus: () => void,
   canPost: boolean;
   groupId: number;
 } & RouteComponentProps;
@@ -24,9 +27,4 @@ const ConversationPageContext = createContext({
   disableMoreAction: false,
 } as ConversationPageContextInfo);
 
-export {
-  STATUS,
-  ConversationPageProps,
-  ConversationPageViewProps,
-  ConversationPageContext,
-};
+export { STATUS, ConversationPageProps, ConversationPageViewProps, ConversationPageContext };

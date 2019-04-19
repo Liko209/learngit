@@ -64,11 +64,11 @@ class JuiTextarea extends React.PureComponent<TextFieldProps> {
 
   InputProps = isOutlinedTextFieldProps(this.props)
     ? {
-      classes: { root: 'input-root' },
-    }
+        classes: { root: 'input-root' },
+      }
     : {
-      classes: { root: 'input-root', underline: 'input-underline' },
-    };
+        classes: { root: 'input-root', underline: 'input-underline' },
+      };
 
   render() {
     const { rows, ...textFieldRest } = this.props;
@@ -83,6 +83,7 @@ class JuiTextarea extends React.PureComponent<TextFieldProps> {
             root: 'form-label-root',
             focused: 'form-label-focus',
           },
+          shrink: true,
         }}
         rows={rows || 3}
         onChange={this.handleChange}

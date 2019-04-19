@@ -14,6 +14,13 @@ class HistoryStack {
 
   @action
   push(pathname: string) {
+    // check if need to push, if already have same as last, do nothing.
+    if (this._stack.length > 0) {
+      const last = this._stack[this._stack.length - 1];
+      if (last === pathname) {
+        return;
+      }
+    }
     if (this._stack.length !== this._cursor + 1) {
       this._stack.length = this._cursor + 1;
     }

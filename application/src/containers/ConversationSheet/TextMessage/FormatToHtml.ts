@@ -22,6 +22,7 @@ class FormatToHtml {
     currentUserId,
     staticHttpServer,
     customEmojiMap,
+    highlightTerms,
   }: FormatToHtmlParams) {
     const glipDownText = FormatToHtml.formatToGlipdown(
       text,
@@ -35,7 +36,12 @@ class FormatToHtml {
       customEmojiMap,
     );
 
-    return glipDownTextWithEmoji;
+    const glipDownTextWithHighlight =
+      highlightTerms && highlightTerms.length
+        ? FormatToHtml.formatToHighlight(glipDownTextWithEmoji, highlightTerms)
+        : glipDownTextWithEmoji;
+
+    return glipDownTextWithHighlight;
   }
 
   static formatToGlipdown(
@@ -58,6 +64,39 @@ class FormatToHtml {
     customEmojiMap: CustomEmojiMap,
   ) {
     return new Emoji(text, staticHttpServer, customEmojiMap).text;
+  }
+
+  static formatToHighlight(text: string, terms: string[]) {
+    const container = document.createElement('div');
+    container.innerHTML = text;
+    function replaceMatchedText(node: Node) {
+      Array.from(node.childNodes).forEach((child: ChildNode) => {
+        if (child.nodeType === 3) {
+          const fullTextContent = child.textContent || '';
+          let reg = terms.join('|');
+          reg = reg.replace(/([.?*+^$[\]\\(){}-])/g, '\\$1');
+          const html = fullTextContent.replace(
+            new RegExp(reg, 'gi'),
+            (term: string) => {
+              return `<span class="highlight-term">${term}</span>`;
+            },
+          );
+          const span = document.createElement('span');
+          span.innerHTML = html;
+          const parentNode = child.parentNode;
+          Array.from(span.childNodes).forEach(node => {
+            if (parentNode) {
+              parentNode.insertBefore(node, child);
+            }
+          });
+          parentNode && parentNode.removeChild(child);
+        } else {
+          replaceMatchedText(child);
+        }
+      });
+    }
+    replaceMatchedText(container);
+    return container.innerHTML;
   }
 }
 

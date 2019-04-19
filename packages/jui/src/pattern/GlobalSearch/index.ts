@@ -11,3 +11,4 @@ export * from './SearchTitle';
 export * from './RecentSearch';
 export * from './FullSearch';
 export * from './EmptyScreen';
+export * from './ListSearchResult';

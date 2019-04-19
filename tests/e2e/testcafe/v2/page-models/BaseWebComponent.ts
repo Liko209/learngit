@@ -68,6 +68,11 @@ export abstract class BaseWebComponent {
     return this.t.hover(this.self, options);
   }
 
+  async enter() {
+    await this.t.click(this.self);
+    await this.waitForAllSpinnersToDisappear();
+  }
+
   getComponent<T extends BaseWebComponent>(ctor: { new(t: TestController): T }, root: Selector = null): T {
     const component = new ctor(this.t);
     if (root) {
