@@ -51,6 +51,7 @@ export class WebphoneSession {
     await H.retryUntilPass(async () => {
       await this.update();
       assert.ok('accepted' != this.status, `webphone status: expect not "accepted", but actual "${this.status}"`);
+      assert.ok('invited' != this.status, `webphone status: expect not "invited", but actual "${this.status}"`);
     }, 10, 1e3);
     await this.webphoneClient.makeCall(this.phoneId, this.sessionId, destNumber);
   }

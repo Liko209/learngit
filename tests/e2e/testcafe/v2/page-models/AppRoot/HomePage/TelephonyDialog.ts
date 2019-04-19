@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import { h } from '../../../helpers';
 import { BaseWebComponent } from "../../BaseWebComponent";
 
 
@@ -124,16 +123,20 @@ export class TelephonyDialog extends BaseWebComponent {
     await this.t.click(this.actionsButton);
   }
 
-  get backButtonOnKeypadPage() {
+  get hideKeypadPageButton() {
     return this.buttonOfIcon('previous');
   }
 
-  async clickBackButton() {
-    return this.t.click(this.backButtonOnKeypadPage);
+  async clickHideKeypadButton() {
+    return this.t.click(this.hideKeypadPageButton);
   }
 
-  get keyRecordArea() {
-    return this.backButtonOnKeypadPage.nextSibling('div'); // todo: automation id
+  get keysRecordArea() {
+    return this.hideKeypadPageButton.nextSibling('div'); // todo: automation id
+  }
+
+  async keysRecordShouldBe(text: string) {
+    await this.t.expect(this.keysRecordArea.textContent).eql(text);
   }
 
   // keypad
@@ -152,7 +155,7 @@ export class TelephonyDialog extends BaseWebComponent {
     '#': 'hash'
   }
 
-  async pressKeypad(keys: string | string[]) {
+  async tapKeypad(keys: string | string[]) {
     for (const i of keys) {
       await this.t.wait(5e2);
       await this.t.click(this.buttonOfIcon(this.keyMap[i]));
