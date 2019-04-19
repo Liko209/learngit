@@ -36,11 +36,11 @@ const marquee = keyframes`
 
 const StyledNode = styled.span<NodeProps>`
   display: inline-block;
-  padding-left: ${({ overflowWidth }) => (overflowWidth > 0 ? '100%' : '')};
   text-indent: 0;
   ${({ overflowWidth, time }) =>
     overflowWidth > 0
       ? css`
+          padding-left: 100%;
           animation: ${marquee} ${time}s linear infinite;
         `
       : ''}
@@ -75,10 +75,7 @@ class JuiMarquee extends PureComponent<Props> {
     const { overflowWidth } = this.state;
     const { hoverToStop, time, text } = this.props;
     return (
-      <StyledContainer
-        className={`ui-marquee ${this.props.className}`}
-        ref={this.containerRef}
-      >
+      <StyledContainer ref={this.containerRef}>
         <StyledNode
           time={time}
           ref={this.nodeRef}
