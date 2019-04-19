@@ -115,10 +115,28 @@ describe('TelephonyAccountController', () => {
         .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
       Object.assign(accountController, {
         _makeCallController: makeCallController,
+        _telephonyCallDelegate: undefined,
       });
       const res = await accountController.makeCall(toNum);
       expect(res).toBe(MAKE_CALL_ERROR_CODE.NO_ERROR);
       expect(rtcAccount.makeCall).toBeCalled();
+    });
+
+    it('should return error when there is an ongoing call', async () => {
+      rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce({
+        voipCountryBlocked: false,
+        voipFeatureEnabled: true,
+      });
+      const makeCallController = new MakeCallController();
+      makeCallController.tryMakeCall = jest
+        .fn()
+        .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
+      Object.assign(accountController, {
+        _makeCallController: makeCallController,
+        _telephonyCallDelegate: {},
+      });
+      const res = await accountController.makeCall(toNum);
+      expect(res).toBe(MAKE_CALL_ERROR_CODE.MAX_CALLS_REACHED);
     });
   });
 
