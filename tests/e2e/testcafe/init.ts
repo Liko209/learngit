@@ -194,12 +194,6 @@ export function teardownCase() {
     // release account
     await h(t).dataHelper.teardown();
 
-    // convert screenshot to webp format
-    const failScreenShotPath = t['testRun'].errs.length > 0 ? t['testRun'].errs[0].screenshotPath : null;
-    if (failScreenShotPath) {
-      t['testRun'].errs[0].screenshotPath = await MiscUtils.convertToWebp(failScreenShotPath);
-    };
-
     // fetch console log from browser
     const consoleLog = await t.getBrowserConsoleMessages()
     const zipConsoleLog = new JSZip();
