@@ -156,6 +156,7 @@ export function setupCase(accountType: string) {
 
     await h(t).logHelper.setup();
 
+    // FIXME: refactoring needed
     if (mockClient) {
       h(t).mockClient = mockClient;
       const mockEnvConfig = BrowserInitDto.of()
@@ -172,7 +173,16 @@ export function setupCase(accountType: string) {
       h(t).jupiterHelper.mockRequestId = h(t).mockRequestId;
     }
 
-    await t.resizeWindow(RUNNER_OPTS.MAX_RESOLUTION[0], RUNNER_OPTS.MAX_RESOLUTION[1]);
+    // Set Initial Resolution
+    if (!RUNNER_OPTS.INIT_RESOLUTION[0] || !RUNNER_OPTS.INIT_RESOLUTION[1]) {
+      // if INIT_RESOLUTION is not provided, then maximize window
+      // set browser to recommended resolution (1280x720) before maximize in case of maximizeWindow is not supported
+      await t.resizeWindow(1280, 720);
+      await t.maximizeWindow();
+    } else {
+      // resize to INIT_RESOLUTION
+      await t.resizeWindow(RUNNER_OPTS.INIT_RESOLUTION[0], RUNNER_OPTS.INIT_RESOLUTION[1]);
+    }
   }
 }
 
