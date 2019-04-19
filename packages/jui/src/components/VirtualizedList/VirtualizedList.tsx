@@ -23,13 +23,7 @@ import {
   useScroll,
   PartialScrollPosition,
 } from './hooks';
-import {
-  createKeyMapper,
-  createRange,
-  getChildren,
-  isRangeEqual,
-  isRangeIn,
-} from './utils';
+import { createKeyMapper, createRange, getChildren, isRangeIn } from './utils';
 import { usePrevious } from './hooks/usePrevious';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
@@ -171,7 +165,7 @@ const JuiVirtualizedList: RefForwardingComponent<
 
   const jumpToPosition = (position: PartialScrollPosition) => {
     rememberScrollPosition(position);
-    setRenderedRange(
+    setVisibleRange(
       createRange({
         startIndex: position.index,
         size: renderedRangeSize,
@@ -233,18 +227,8 @@ const JuiVirtualizedList: RefForwardingComponent<
           });
         }
 
-        const newRenderedRange = computeRenderedRange(visibleRange);
-
         // TODO Don't re-render if range not changed
-        setRenderedRange(newRenderedRange);
-
-        // Emit events
-        if (!isRangeEqual(renderedRange, newRenderedRange)) {
-          onRenderedRangeChange(newRenderedRange);
-        }
-        if (!isRangeEqual(prevVisibleRange, visibleRange)) {
-          onVisibleRangeChange(visibleRange);
-        }
+        setVisibleRange(visibleRange);
       }
     }
   };
@@ -295,7 +279,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     height / rowManager.getEstimateRowHeight(),
   );
 
-  const { range: renderedRange, setRange: setRenderedRange } = useRange(
+  const { range: visibleRange, setRange: setVisibleRange } = useRange(
     createRange({
       startIndex: initialScrollToIndex,
       size: renderedRangeSize,
@@ -303,6 +287,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       max: maxIndex,
     }),
   );
+  const renderedRange = computeRenderedRange(visibleRange);
 
   const prevAtBottomRef = useRef(false);
   const shouldScrollToBottom = () => prevAtBottomRef.current && stickToBottom;
@@ -413,13 +398,14 @@ const JuiVirtualizedList: RefForwardingComponent<
   },              [scrollEffectTriggerRef.current, height, childrenCount]);
 
   //
-  // Emit visible range change when component mounted
+  // Emit visible range change
   //
   useEffect(() => {
-    const visibleRange = computeVisibleRange();
     onVisibleRangeChange(visibleRange);
-    onRenderedRangeChange(visibleRange);
-  },        []);
+  },        [JSON.stringify(visibleRange)]);
+  useEffect(() => {
+    onRenderedRangeChange(renderedRange);
+  },        [JSON.stringify(renderedRange)]);
 
   //
   // Update prevAtBottom
