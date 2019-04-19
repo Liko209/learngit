@@ -53,8 +53,9 @@ type StyledFabButtonProps = Omit<JuiFabProps, 'iconName'> & {
 };
 
 type Size = 'small' | 'medium' | 'large' | 'moreLarge';
+type ButtonSize = Size | 'midLarge';
 
-const buttonSizes: { [k in Size]: number } = {
+const buttonSizes: { [k in ButtonSize]: number } = {
   moreLarge: 16,
   midLarge: 14,
   large: 15,
