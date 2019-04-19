@@ -54,22 +54,14 @@ describe('Sdk', () => {
   });
 
   describe('init()', () => {
-    it('should init all module', async () => {
+    it('should check login status', async () => {
       accountManager.syncLogin.mockReturnValueOnce({
         isRCOnlyMode: false,
         success: true,
       });
-      ServiceLoader.getInstance = jest.fn().mockReturnValue('accountService');
 
       await sdk.init({ api: {}, db: {} });
-      expect(Foundation.init).toBeCalled();
-      expect(Api.init).toBeCalled();
       expect(DataMigration.migrateKVStorage).toBeCalled();
-      expect(daoManager.initDatabase).toBeCalled();
-      expect(serviceManager.startService).toBeCalled();
-      expect(HandleByRingCentral.platformHandleDelegate).toEqual(
-        'accountService',
-      );
       expect(accountManager.updateSupportedServices).toBeCalled();
       expect(notificationCenter.emitKVChange).toBeCalledWith(SERVICE.LOGIN);
     });
@@ -87,17 +79,25 @@ describe('Sdk', () => {
       ServiceLoader.getInstance = jest.fn().mockReturnValue(mockAccountService);
 
       await sdk.init({ api: {}, db: {} });
-      expect(Foundation.init).toBeCalled();
-      expect(Api.init).toBeCalled();
       expect(DataMigration.migrateKVStorage).toBeCalled();
-      expect(daoManager.initDatabase).toBeCalled();
-      expect(serviceManager.startService).toBeCalled();
-      expect(HandleByRingCentral.platformHandleDelegate).toEqual(
-        mockAccountService,
-      );
       expect(mockReLogin).toBeCalled();
       expect(accountManager.updateSupportedServices).toBeCalled();
       expect(notificationCenter.emitKVChange).not.toBeCalledWith(SERVICE.LOGIN);
+    });
+  });
+
+  describe('onStartLogin()', () => {
+    it('should init all module', async () => {
+      ServiceLoader.getInstance = jest.fn().mockReturnValue('accountService');
+      sdk['_sdkConfig'] = { api: {}, db: {} };
+      await sdk.onStartLogin();
+      expect(Foundation.init).toBeCalled();
+      expect(Api.init).toBeCalled();
+      expect(daoManager.initDatabase).toBeCalled();
+      expect(serviceManager.startService).toBeCalled();
+      expect(HandleByRingCentral.platformHandleDelegate).toEqual(
+        'accountService',
+      );
     });
   });
 
