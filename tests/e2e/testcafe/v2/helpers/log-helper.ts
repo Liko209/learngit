@@ -76,7 +76,7 @@ class Step implements IStep {
     // log to stdout
     console.log(`${new Date(this.startTime).toLocaleString()} [${this.status}] ${this.text} (${this.endTime - this.startTime}ms)`);
     // take screenshot
-    if (this.options.takeScreenshot)
+    if (this.options.takeScreenshot || this.options.screenshotPath)
       this.screenshotPath = await this.takeScreenShot(this.options.screenshotPath);
 
     if (this.error)
@@ -85,10 +85,11 @@ class Step implements IStep {
   }
 
   async takeScreenShot(relativePath?: string, ): Promise<string> {
-    // FIXME: electron is not support screenshot
-    if (await H.isElectron()) {
+    if (this.t.ctx.runnerOpts.DISABLE_SCREENSHOT)
       return null;
-    }
+    // FIXME: electron is not support screenshot
+    if (await H.isElectron())
+      return null;
     relativePath = `${relativePath || uuid()}.png`;
     const imagePath = path.join(this.t['testRun'].opts.screenshotPath, relativePath);
     await this.t.takeScreenshot(relativePath);
