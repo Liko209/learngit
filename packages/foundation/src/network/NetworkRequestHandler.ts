@@ -68,6 +68,7 @@ class NetworkRequestHandler
     this.appendTask(task, isTail);
     networkLogger.info(
       'addRequestToQueue: ',
+      `id:${request.id}`,
       `path:${request.path}`,
       `headers:${JSON.stringify(request.headers)}`,
       `params:${JSON.stringify(request.params)}`,
