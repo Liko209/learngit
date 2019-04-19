@@ -41,7 +41,7 @@ test(formalName('Enter every entries in left navigator', ['P0', 'LeftNav']), asy
     await h(t).withLog(`When I click "${entry.name}" entry`, async () => {
       await entry.enter();
     });
-    await h(t).log(`Then I should enter ${entry.name} panel`, { takeScreenshot: true, screenshotPath: entry.name });
+    await h(t).log(`Then I should enter ${entry.name} panel`, true);
     await h(t).withLog(`And the url should be "/${entry.name}"`, async () => {
       await t.expect(h(t).href).contains(entry.name);
     });
