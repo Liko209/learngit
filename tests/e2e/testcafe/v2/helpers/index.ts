@@ -18,6 +18,7 @@ import { IUser, IStep, IStepOptions } from '../models';
 import { AppRoot } from '../page-models/AppRoot';
 import { SITE_URL, SITE_ENV } from '../../config';
 import { WebphoneHelper } from './webphone-helper';
+import { WebphoneSession } from '../webphone/session';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -105,6 +106,11 @@ class Helper {
     cb: (step?: IStep) => Promise<any>,
     options?: boolean | IStepOptions) {
     return await this.logHelper.withLog(step, cb, options);
+  }
+
+  async withSession(sessions: WebphoneSession[] | WebphoneSession,
+    cb: (sessions?) => Promise<any>) {
+    return await this.webphoneHelper.withSession(sessions, cb);
   }
 
   async getGlip(user: IUser) {

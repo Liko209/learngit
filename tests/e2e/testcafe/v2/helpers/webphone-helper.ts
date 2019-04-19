@@ -23,6 +23,23 @@ export class WebphoneHelper {
     return session;
   }
 
-
-
+  async withSession(sessions: WebphoneSession[] | WebphoneSession, cb: (sessions?) => Promise<any>) {
+    try {
+      const ret = await cb(sessions);
+      return ret;
+    } catch (error) {
+      throw error;
+    } finally {
+      let allSessions: WebphoneSession[] = [].concat(sessions);
+      for (const session of allSessions) {
+        if (session) {
+          try {
+            await session.close()
+          } catch (error) {
+            throw error;
+          }
+        }
+      }
+    }
+  }
 }

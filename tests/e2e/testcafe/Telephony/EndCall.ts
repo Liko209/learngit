@@ -2,7 +2,7 @@
  * @Author: Potar.He 
  * @Date: 2019-04-17 15:12:44 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-19 16:22:33
+ * @Last Modified time: 2019-04-19 17:58:01
  */
 
 import { h } from '../v2/helpers'
@@ -276,6 +276,7 @@ test.meta(<ITestMeta>{
 
   let session: WebphoneSession;
 
+
   await h(t).withLog(`Given another user login webphone:  ${anotherUser.company.number}#${anotherUser.extension}`, async () => {
     session = await h(t).webphone(anotherUser);
   });
@@ -348,7 +349,7 @@ test.meta(<ITestMeta>{
 });
 
 
-test.only.meta(<ITestMeta>{
+test.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-1642'],
   maintainers: ['Potar.He'],
@@ -373,66 +374,69 @@ test.only.meta(<ITestMeta>{
     session = await h(t).webphone(anotherUser);
   });
 
-  await h(t).withLog(`And I have a 1:1 conversation with antherUser '`, async () => {
-    await h(t).scenarioHelper.createOrOpenChat(chat);
-  });
+  await h(t).withSession(session, async () => {
+    await h(t).withLog(`And I have a 1:1 conversation with antherUser '`, async () => {
+      await h(t).scenarioHelper.createOrOpenChat(chat);
+    });
 
-  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
-    await app.homePage.ensureLoaded();
-  });
+    await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    });
 
-  const telephonyDialog = app.homePage.telephonyDialog;
-  // Inbound call
-  await h(t).withLog('When anotherUser make call to this loginUser', async () => {
-    await session.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
-  });
+    const telephonyDialog = app.homePage.telephonyDialog;
+    // Inbound call
+    await h(t).withLog('When anotherUser make call to this loginUser', async () => {
+      await session.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
+    });
 
-  await h(t).withLog('Then loginUser click send to voice mail button', async () => {
-    await telephonyDialog.ensureLoaded();
-    await telephonyDialog.clickSendToVoiceMailButton();
-  });
+    await h(t).withLog('Then loginUser click send to voice mail button', async () => {
+      await telephonyDialog.ensureLoaded();
+      await telephonyDialog.clickSendToVoiceMailButton();
+    });
 
-  await h(t).withLog(`And webphone session status should be 'accepted'`, async () => {
-    await session.waitForStatus('accepted');
-  });
+    await h(t).withLog(`And webphone session status should be 'accepted'`, async () => {
+      await session.waitForStatus('accepted');
+    });
 
-  await h(t).withLog('Then telephony dialog should dismiss', async () => {
-    await telephonyDialog.ensureDismiss();
-  });
+    await h(t).withLog('Then telephony dialog should dismiss', async () => {
+      await telephonyDialog.ensureDismiss();
+    });
 
-  await h(t).withLog('When anotherUser(webphone) hangup the call', async () => {
-    await session.hangup();
-  });
+    await h(t).withLog('When anotherUser(webphone) hangup the call', async () => {
+      await session.hangup();
+    });
 
-  await h(t).withLog('And anotherUser webphone session status is "terminated"', async () => {
-    await session.waitForStatus('terminated');
-  });
+    await h(t).withLog('And anotherUser webphone session status is "terminated"', async () => {
+      await session.waitForStatus('terminated');
+    });
 
-  // outbound call
-  await h(t).withLog('When I enter the conversation withe antherUser', async () => {
-    await app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId).enter();
-  });
+    // outbound call
+    await h(t).withLog('When I enter the conversation withe antherUser', async () => {
+      await app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId).enter();
+    });
 
-  await h(t).withLog('And I click telephone call button', async () => {
-    await app.homePage.messageTab.conversationPage.clickTelephonyButton();
-  });
+    await h(t).withLog('And I click telephone call button', async () => {
+      await app.homePage.messageTab.conversationPage.clickTelephonyButton();
+    });
 
 
-  await h(t).withLog(`And anotherUser does not answer the call(session status: invited)`, async () => {
-    await session.waitForStatus('invited');
-  });
+    await h(t).withLog(`And anotherUser does not answer the call(session status: invited)`, async () => {
+      await session.waitForStatus('invited');
+    });
 
-  await h(t).withLog('When loginUser click hangup button', async () => {
-    await telephonyDialog.clickHangupButton();
-  });
+    await h(t).withLog('When loginUser click hangup button', async () => {
+      await telephonyDialog.clickHangupButton();
+    });
 
-  await h(t).withLog('Then telephony dialog should dismiss', async () => {
-    await telephonyDialog.ensureDismiss();
-  });
+    await h(t).withLog('Then telephony dialog should dismiss', async () => {
+      await telephonyDialog.ensureDismiss();
+    });
 
-  await h(t).withLog('And anotherUser webphone session status is "terminated"', async () => {
-    await session.waitForStatus('terminated');
-    await session.close();
-  });
+    await h(t).withLog('And anotherUser webphone session status is "terminated"', async () => {
+      await session.waitForStatus('terminated');
+      await session.close();
+    });
+  })
+
 });
