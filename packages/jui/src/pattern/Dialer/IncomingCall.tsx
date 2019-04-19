@@ -30,7 +30,7 @@ const StyledIncomingCall = styled('div')`
 const StyledIgnoreContainer = styled('div')`
   position: absolute;
   right: ${spacing(2)};
-  top: ${spacing(2)};
+  top: ${spacing(1.5)};
 `;
 
 const StyledMarquee = styled(JuiMarquee)`
@@ -57,7 +57,7 @@ const StyledInfo = styled('div')`
 const StyledActionsContainer = styled('div')`
   display: flex;
   justify-content: space-between;
-  padding: ${spacing(0, 6, 6)};
+  padding: ${spacing(0, 6, 3)};
 `;
 
 class JuiIncomingCall extends PureComponent<Props> {

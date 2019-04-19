@@ -35,12 +35,12 @@ const StyledInfoContainer = styled('div')`
 `;
 
 const StyledName = styled('div')`
-  ${typography('body2')};
+  ${typography('subheading3')};
   ${ellipsis()};
 `;
 
 const StyledPhone = styled('div')`
-  ${typography('caption1')};
+  ${typography('body1')};
   ${ellipsis()};
 `;
 
