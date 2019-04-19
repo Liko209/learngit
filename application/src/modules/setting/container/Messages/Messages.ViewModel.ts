@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { MessagingProps } from './types';
+import { MessagesProps } from './types';
 import { StoreViewModel } from '@/store/ViewModel';
 
-class MessagingViewModel extends StoreViewModel<MessagingProps> {}
+class MessagesViewModel extends StoreViewModel<MessagesProps> {}
 
-export { MessagingViewModel };
+export { MessagesViewModel };
