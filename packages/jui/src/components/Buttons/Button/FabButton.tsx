@@ -26,7 +26,7 @@ import {
   IconColor,
 } from '../../../foundation/Iconography';
 
-type IconButtonSize = 'small' | 'medium' | 'large' | 'moreLarge';
+type IconButtonSize = 'small' | 'medium' | 'large' | 'midLarge' | 'moreLarge';
 
 type ButtonProps = {
   size?: IconButtonSize;
@@ -56,6 +56,7 @@ type Size = 'small' | 'medium' | 'large' | 'moreLarge';
 
 const buttonSizes: { [k in Size]: number } = {
   moreLarge: 16,
+  midLarge: 14,
   large: 15,
   medium: 8,
   small: 5,

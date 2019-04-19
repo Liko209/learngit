@@ -33,41 +33,78 @@ const Key2IconMap = {
   zero: '0',
   hash: '#',
 };
+const AcceptableKeys = Object.values(Key2IconMap);
+
+const throttledHandler = (f: any) =>
+  _.throttle(f, 30, {
+    trailing: true,
+    leading: false,
+  });
 
 @observer
 class DialerContainerView extends React.Component<DialerContainerViewProps> {
   private _keypadKeys: React.ComponentType[];
+  private _onKeyup: (e: KeyboardEvent) => void;
 
   constructor(props: DialerContainerViewProps) {
     super(props);
+
+    this._onKeyup = throttledHandler(({ key }: KeyboardEvent) => {
+      const { keypadEntered, dtmf } = this.props;
+      if (AcceptableKeys.includes(key) && keypadEntered) {
+        dtmf(key);
+      }
+    });
+
     // Since we know that the dtmf() method for a view-model instance won't change during the runtime, then we can cache the buttons
     this._keypadKeys = [
-      'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'asterisk', 'zero', 'hash',
-    ].map(
-      str => {
-        const res = () => (
-          <JuiIconButton
-            disableToolTip={true}
-            onClick={_.throttle(
-              () => props.dtmf(Key2IconMap[str]),
-              30,
-              { trailing: true, leading: false },
-            )}
-            size="xxlarge"
-            key={str}
-            color="grey.900"
-            stretchIcon={true}
-          >
-            {str}
-          </JuiIconButton>
-        );
-        res.displayName = str;
-        return res;
-      });
+      'one',
+      'two',
+      'three',
+      'four',
+      'five',
+      'six',
+      'seven',
+      'eight',
+      'nine',
+      'asterisk',
+      'zero',
+      'hash',
+    ].map((str) => {
+      const res = () => (
+        <JuiIconButton
+          disableToolTip={true}
+          onClick={throttledHandler(() => props.dtmf(Key2IconMap[str]))}
+          size="xxlarge"
+          key={str}
+          color="grey.900"
+          stretchIcon={true}
+        >
+          {str}
+        </JuiIconButton>
+      );
+      res.displayName = str;
+      return res;
+    });
+  }
+
+  componentDidMount() {
+    window.addEventListener('keyup', this._onKeyup);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keyup', this._onKeyup);
   }
 
   render() {
-    return <JuiContainer End={End} KeypadActions={this.props.keypadEntered ? this._keypadKeys : KeypadActions} />;
+    return (
+      <JuiContainer
+        End={End}
+        KeypadActions={
+          this.props.keypadEntered ? this._keypadKeys : KeypadActions
+        }
+      />
+    );
   }
 }
 
