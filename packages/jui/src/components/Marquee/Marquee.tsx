@@ -73,9 +73,9 @@ class JuiMarquee extends PureComponent<Props> {
 
   render() {
     const { overflowWidth } = this.state;
-    const { hoverToStop, time, text } = this.props;
+    const { hoverToStop, time, text, className } = this.props;
     return (
-      <StyledContainer ref={this.containerRef}>
+      <StyledContainer className={`${className}`} ref={this.containerRef}>
         <StyledNode
           time={time}
           ref={this.nodeRef}
