@@ -54,6 +54,7 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
         );
         this._largeRawImageURL = url;
       },
+      { fireImmediately: true },
     );
   }
 
