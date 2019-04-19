@@ -106,7 +106,10 @@ class PostFetchController {
       }
     }
     result.limit = limit;
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      result.posts && result.posts.length,
+    );
     return result;
   }
 
@@ -145,7 +148,10 @@ class PostFetchController {
       result.items = data.items;
       result.hasMore = result.posts.length === limit;
     }
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      result.posts.length,
+    );
     return result;
   }
 
@@ -252,7 +258,7 @@ class PostFetchController {
     result.posts = posts;
     result.items =
       posts.length === 0 ? [] : await itemService.getByPosts(posts);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId, posts.length);
     return result;
   }
 

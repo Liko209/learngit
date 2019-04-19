@@ -49,7 +49,7 @@ class PostDataController {
       (await ServiceLoader.getInstance<ItemService>(
         ServiceConfig.ITEM_SERVICE,
       ).handleIncomingData(data.items)) || [];
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId, posts.length);
     return {
       posts,
       items,
