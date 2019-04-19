@@ -4,6 +4,7 @@ import { Selector } from 'testcafe';
 import axios from 'axios';
 import { URL } from 'url';
 import { IUser } from '../models';
+import { ENV_OPTS, SITE_URL } from '../../config';
 
 export class JupiterHelper {
 
@@ -77,9 +78,50 @@ export class JupiterHelper {
       data['extension'] = user.extension;
     }
 
+    const getRCAuthSession = async (): Promise<string> => {
+      const loginSite = new URL(this.authUrl);
+      const siteUrl = new URL(SITE_URL);
+      const siteHost = `${siteUrl.protocol}//${siteUrl.hostname}`
+      let response = await axios.get(`${loginSite.protocol}//${loginSite.hostname}/mobile/loginDispatcher`,
+        {
+          params: {
+            responseType: 'code',
+            clientId: ENV_OPTS.JUPITER_APP_KEY,
+            brandId: 1210,
+            appUrlScheme: siteHost,
+            glipAppRedirectURL: `${siteHost}?t=`,
+            state: `/?env=${this.siteEnv}`,
+            localeId: "en_US",
+            display: "touch",
+            prompt: "login sso",
+            scope: "",
+            ui_options: "external_popup remember_me_on show_back_to_app hide_consent",
+            code_challenge: "",
+            code_challenge_method: "",
+            hideNavigationBar: [true, true],
+            glip_auth: true,
+            response_hint: "remember_me+login_type",
+            force: true,
+            title_bar: true
+          }
+        }
+      );
+
+      const cookies = [];
+      for (let item of response.headers['set-cookie']) {
+        if (item.startsWith('RCAuthSession')) {
+          cookies.push(item.split(';')[0]);
+          break;
+        }
+      }
+
+      return cookies.join(';');
+    }
+    const cookie = await getRCAuthSession();
     const response = await axios.post(this.authUrl, data, {
       headers: {
-        'x-mock-request-id': this.mockRequestId || 'no mock'
+        'x-mock-request-id': this.mockRequestId || 'no mock',
+        "Cookie": cookie,
       }
     });
     return response.data.redirectUri;
