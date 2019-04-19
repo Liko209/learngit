@@ -5,6 +5,7 @@
  */
 import _ from 'lodash';
 import { useRef, useState, useEffect, memo, useCallback } from 'react';
+import { useMountState } from './hooks';
 import { noop } from '../../foundation/utils';
 import { ILoadMoreStrategy } from './LoadMoreStrategy/ILoadMoreStrategy';
 import { IndexRange, Direction, IndexConstraint, Delta } from './types';
@@ -42,6 +43,7 @@ const JuiDataLoader = ({
   const [loadingInitial, setLoadingInitial] = useState(false);
   const [loadingInitialFailed, setLoadingInitialFailed] = useState(false);
   const loading = loadingUp || loadingDown || loadingInitial;
+  const isMountedRef = useMountState();
 
   const getMap = useCallback(() => {
     return {
@@ -71,10 +73,10 @@ const JuiDataLoader = ({
       onFailed(false);
       load(count)
         .catch(() => {
-          onFailed(true);
+          isMountedRef.current && onFailed(true);
         })
         .then(() => {
-          setLoading(false);
+          isMountedRef.current && setLoading(false);
         });
     },         1000),
     [getMap],
