@@ -81,7 +81,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
                 key={item.id}
               >
                 {t(`globalSearch.${item.name}`)}
-                {item.count ? ` (${item.count})` : ''}
+                {item.count !== null ? ` (${item.count})` : ''}
               </JuiMenuItem>
             );
           })}
