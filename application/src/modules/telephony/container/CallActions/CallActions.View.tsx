@@ -23,15 +23,14 @@ class CallActionsViewComponent extends Component<Props> {
   }
 
   render() {
-    const { t, showLabel, shouldPersistBg } = this.props;
+    const { t, showLabel } = this.props;
     return (
       <JuiKeypadAction>
         <JuiIconButton
           color="grey.900"
-          shouldPersistBg={shouldPersistBg}
           disableToolTip={true}
           onClick={this._handleCallActions}
-          size={shouldPersistBg ? 'xlarge' : 'xxlarge'}
+          size="xxlarge"
           disabled={true}
           data-test-automation-id="telephony-call-actions-btn"
         >

@@ -161,12 +161,6 @@ type Theme = {
       fontFamily: string;
       lineHeight: string;
     };
-    subheading3: {
-      fontSize: string;
-      fontWeight: number;
-      fontFamily: string;
-      lineHeight: string;
-    };
     subheading2: {
       fontSize: string;
       fontWeight: number;

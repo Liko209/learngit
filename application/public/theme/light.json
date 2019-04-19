@@ -190,12 +190,6 @@
       "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
       "lineHeight": "24px"
     },
-    "subheading3": {
-      "fontSize": "1rem",
-      "fontWeight": 600,
-      "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
-      "lineHeight": "22px"
-    },
     "subheading2": {
       "fontSize": "1rem",
       "fontWeight": 500,
