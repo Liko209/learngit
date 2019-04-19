@@ -335,7 +335,6 @@ class TelephonyService {
   }
 
   dtmf = (digits: string) => {
-    // TODO: determine if the dialer is minimized
     this._telephonyStore.inputKey(digits);
     return this._serverTelephonyService.dtmf(this._callId as string, digits);
   }

@@ -12,9 +12,7 @@ import { FakeInput } from '../FakeInput';
 import { DialerKeypadHeaderViewProps } from './types';
 
 @observer
-class DialerKeypadHeaderView extends React.Component<
-  DialerKeypadHeaderViewProps
-> {
+class DialerKeypadHeaderView extends React.Component<DialerKeypadHeaderViewProps> {
   render() {
     return (
       <KeypadHeaderContainer>
@@ -23,7 +21,7 @@ class DialerKeypadHeaderView extends React.Component<
           color="common.white"
           disableToolTip={true}
           onClick={this.props.quitKeypad}
-          size="large"
+          size="small"
         >
           previous
         </JuiIconButton>
