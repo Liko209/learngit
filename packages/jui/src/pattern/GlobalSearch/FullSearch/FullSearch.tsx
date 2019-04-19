@@ -9,6 +9,8 @@ import { spacing } from '../../../foundation/utils/styles';
 
 const JuiFullSearch = styled.div`
   padding: ${spacing(2, 0, 0)};
+  display: flex;
+  flex-direction: column;
 `;
 
 export { JuiFullSearch };
