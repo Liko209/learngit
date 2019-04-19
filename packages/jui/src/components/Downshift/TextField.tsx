@@ -53,7 +53,7 @@ const StyledTextField = styled<TextFieldProps>(JuiTextField)`
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      color: ${grey('900')};
+      color: ${grey('400')};
       ${typography('body1')};
     }
   }
