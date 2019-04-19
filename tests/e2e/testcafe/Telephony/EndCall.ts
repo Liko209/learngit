@@ -2,7 +2,7 @@
  * @Author: Potar.He 
  * @Date: 2019-04-17 15:12:44 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-19 12:17:48
+ * @Last Modified time: 2019-04-19 14:57:24
  */
 
 import { h } from '../v2/helpers'
@@ -86,10 +86,19 @@ test.meta(<ITestMeta>{
     await logoutDialog.ensureLoaded();
   });
 
-  await h(t).withLog('Then the content of prompt pop-up should be correct', async () => {
+  await h(t).withLog(`Then the title of prompt pop-up should be "${title}"`, async () => {
     await t.expect(logoutDialog.title.textContent).eql(title);
+  });
+
+  await h(t).withLog(`And the content should be "${content}"`, async () => {
     await logoutDialog.ConfirmationTextShouldBe(content);
+  });
+
+  await h(t).withLog(`And should have "${cancelButtonText}" button`, async () => {
     await logoutDialog.shouldHaveButtonOfText(cancelButtonText);
+  });
+
+  await h(t).withLog(`And should have "${logoutButtonText}" button`, async () => {
     await logoutDialog.shouldHaveButtonOfText(logoutButtonText);
   });
 
