@@ -5,18 +5,18 @@
  */
 
 import React, { Component } from 'react';
-import { MessagingViewProps } from './types';
+import { MessagesViewProps } from './types';
 import { observer } from 'mobx-react';
 import { SETTING_LIST_TYPE } from '../SettingLeftRail/types';
 import { SettingContainer } from '../SettingContainer';
 
 @observer
-class MessagingViewComponent extends Component<MessagingViewProps> {
+class MessagesViewComponent extends Component<MessagesViewProps> {
   renderPlaceHolderItems() {
     return (
       <React.Fragment>
         {Array.from(Array(100), (v, k) => {
-          return <p key={k}>MessagingViewComponent - {k}</p>;
+          return <p key={k}>MessagesViewComponent - {k}</p>;
         })}
       </React.Fragment>
     );
@@ -24,11 +24,11 @@ class MessagingViewComponent extends Component<MessagingViewProps> {
 
   render() {
     return (
-      <SettingContainer type={SETTING_LIST_TYPE.MESSAGING}>
+      <SettingContainer type={SETTING_LIST_TYPE.MESSAGES}>
         {this.renderPlaceHolderItems()}
       </SettingContainer>
     );
   }
 }
 
-export { MessagingViewComponent as MessagingView };
+export { MessagesViewComponent as MessagesView };

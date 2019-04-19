@@ -523,7 +523,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           }
         });
       }
-      PerformanceTracerHolder.getPerformanceTracer().end(logId);
+      PerformanceTracerHolder.getPerformanceTracer().end(logId, groups.length);
     }
   }
 
