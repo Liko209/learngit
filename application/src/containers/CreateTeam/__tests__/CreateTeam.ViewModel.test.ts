@@ -153,18 +153,21 @@ describe('CreateTeamVM', () => {
     expect(createTeamVM.description).toBe('123');
   });
 
-  it('createErrorHandle()', () => {
-    let error = getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN);
-    createTeamVM.createErrorHandler(error);
-    expect(createTeamVM.errorMsg).toBe('people.prompt.alreadyTaken');
-    expect(createTeamVM.nameError).toBe(true);
-
-    error = getNewJServerError(
-      ERROR_CODES_SERVER.INVALID_FIELD,
-      'This is not a valid email address: q@qq.com.',
-    );
-    createTeamVM.createErrorHandler(error);
-    expect(createTeamVM.emailErrorMsg).toBe('people.prompt.InvalidEmail');
-    expect(createTeamVM.emailError).toBe(true);
+  describe('createErrorHandle()', () => {
+    it('failed to create a team when team name duplicate', () => {
+      const error = getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN);
+      createTeamVM.createErrorHandler(error);
+      expect(createTeamVM.errorMsg).toBe('people.prompt.alreadyTaken');
+      expect(createTeamVM.nameError).toBe(true);
+    });
+    it('failed to create a team when mail address is invalid', () => {
+      const error = getNewJServerError(
+        ERROR_CODES_SERVER.INVALID_FIELD,
+        'This is not a valid email address: q@qq.com.',
+      );
+      createTeamVM.createErrorHandler(error);
+      expect(createTeamVM.emailErrorMsg).toBe('people.prompt.InvalidEmail');
+      expect(createTeamVM.emailError).toBe(true);
+    });
   });
 });
