@@ -26,7 +26,7 @@ import {
   IconColor,
 } from '../../../foundation/Iconography';
 
-type IconButtonSize = 'small' | 'medium' | 'large' | 'moreLarge';
+type IconButtonSize = 'small' | 'medium' | 'large' | 'midLarge' | 'moreLarge';
 
 type ButtonProps = {
   size?: IconButtonSize;
@@ -53,9 +53,11 @@ type StyledFabButtonProps = Omit<JuiFabProps, 'iconName'> & {
 };
 
 type Size = 'small' | 'medium' | 'large' | 'moreLarge';
+type ButtonSize = Size | 'midLarge';
 
-const buttonSizes: { [k in Size]: number } = {
+const buttonSizes: { [k in ButtonSize]: number } = {
   moreLarge: 16,
+  midLarge: 14,
   large: 15,
   medium: 8,
   small: 5,

@@ -16,13 +16,21 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   implements DialerContainerViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
   private _telephonyService: TelephonyService = container.get(TelephonyService);
-  private _audio: HTMLAudioElement | null;
+  private _audioPool: HTMLMediaElement[] | null;
+  private _nextAvailableSoundTrack: number | null;
+  private _canPlayOgg = false;
   private _frameId?: number;
 
   constructor(...args: DialerContainerProps[]) {
     super(...args);
     if (typeof document !== 'undefined' && document.createElement) {
-      this._audio = document.createElement('audio');
+      this._audioPool = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map((i) =>
+        document.createElement('audio'),
+      );
+      let t: HTMLMediaElement | null = document.createElement('audio');
+      this._canPlayOgg = t.canPlayType('audio/ogg') !== '';
+      t = null;
+      this._nextAvailableSoundTrack = 0;
     }
   }
 
@@ -32,13 +40,22 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   private _playAudio = (value: string) => {
-    if (this._audio && this._audio.canPlayType('audio/ogg') !== '' && audios[value]) {
-      if (!this._audio.paused) {
-        this._audio.pause();
+    if (
+      this._audioPool &&
+      this._canPlayOgg &&
+      audios[value] &&
+      this._nextAvailableSoundTrack !== null
+    ) {
+      const soundTrack = this._audioPool[this._nextAvailableSoundTrack];
+      if (!soundTrack.paused) {
+        soundTrack.pause();
       }
-      this._audio.src = audios[value];
-      this._audio.currentTime = 0;
-      this._audio.play();
+      soundTrack.src = audios[value];
+      soundTrack.currentTime = 0;
+      soundTrack.play();
+      this._nextAvailableSoundTrack =
+        ((this._nextAvailableSoundTrack as number) + 1) %
+        this._audioPool.length;
     }
   }
 
@@ -51,7 +68,8 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   dispose = () => {
-    this._audio = null;
+    this._audioPool = null;
+    this._nextAvailableSoundTrack = null;
     if (this._frameId) {
       cancelAnimationFrame(this._frameId);
     }
