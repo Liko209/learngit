@@ -24,12 +24,11 @@ const JuiConversationPostText = styled('div')`
   }
 
   .at_mention_compose {
-    display: inline;
+    max-width: 100%;
     padding: 0;
     border: none;
     background: none;
     text-align: left;
-    word-break: break-word;
     ${typography('body1')};
     font-weight: ${({ theme }) => theme.typography.body2.fontWeight};
     color: ${palette('primary', 'main')};
