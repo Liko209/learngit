@@ -9,9 +9,7 @@ import { width } from '../../foundation/utils';
 import { StyledSearchIconButton } from './StyledSearchIconButton';
 import { JuiLogo } from './Logo';
 
-type Props = {};
-
-const StyledLeft = styled<Props, 'div'>('div')`
+const StyledLeft = styled('div')`
   display: flex;
   align-items: center;
   @media (min-width: 1280px) {
