@@ -27,7 +27,7 @@ const StyledLeft = styled<Props, 'div'>('div')`
   }
   @media (max-width: 600px) {
     justify-content: space-between;
-    .search-bar {
+    .topBar-search-bar {
       display: ${({ isShowSearchBar }) => (isShowSearchBar ? 'block' : 'none')};
     }
     ${StyledSearchIconButton} {

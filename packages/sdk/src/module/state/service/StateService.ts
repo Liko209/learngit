@@ -33,6 +33,7 @@ class StateService extends EntityBaseService<GroupState>
         [SERVICE.GROUP_CURSOR]: this.handleGroupCursor,
         [ENTITY.GROUP]: this.handleGroupChangeForTotalUnread,
         [ENTITY.PROFILE]: this.handleProfileChangeForTotalUnread,
+        [ENTITY.GROUP_STATE]: this.handleStateChangeForTotalUnread,
       }),
     );
 
@@ -109,6 +110,14 @@ class StateService extends EntityBaseService<GroupState>
     await this.getStateController()
       .getStateDataHandleController()
       .handleGroupCursor(groups);
+  }
+
+  handleStateChangeForTotalUnread = (
+    payload: NotificationEntityPayload<GroupState>,
+  ): void => {
+    this.getStateController()
+      .getTotalUnreadController()
+      .handleGroupState(payload);
   }
 
   handleGroupChangeForTotalUnread = (

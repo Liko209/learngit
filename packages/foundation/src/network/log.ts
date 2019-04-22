@@ -7,15 +7,14 @@ export function doResponseLog(response: IResponse) {
   delete response.request;
 
   networkLogger.info(
-    'responseTime: ',
-    Date.now(),
-    'request: ',
+    'receiveResponse: ',
+    '==request==: ',
     request,
-    'response: ',
+    '\n==response==: ',
     response,
   );
 }
 
 export function doRequestLog(request: IRequest) {
-  networkLogger.info('requestTime: ', Date.now(), 'request: ', request);
+  networkLogger.info('startRequest: ', request);
 }

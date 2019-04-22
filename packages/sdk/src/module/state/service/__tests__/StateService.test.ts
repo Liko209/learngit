@@ -26,6 +26,7 @@ describe('StateService', () => {
   const mockHandleState = jest.fn();
   const mockHandleGroupCursor = jest.fn();
   const mockHandleGroup = jest.fn();
+  const mockHandleGroupState = jest.fn();
   const mockHandleProfile = jest.fn();
   const mockGetSingleUnreadInfo = jest.fn();
 
@@ -46,6 +47,7 @@ describe('StateService', () => {
     });
     const mockTotalUnreadController = jest.fn().mockReturnValue({
       handleGroup: mockHandleGroup,
+      handleGroupState: mockHandleGroupState,
       handleProfile: mockHandleProfile,
       getSingleUnreadInfo: mockGetSingleUnreadInfo,
     });
@@ -117,6 +119,14 @@ describe('StateService', () => {
       const groups: Partial<Group>[] = [];
       await stateService.handleGroupCursor(groups);
       expect(mockHandleGroupCursor).toBeCalledWith(groups);
+    });
+  });
+
+  describe('handleStateChangeForTotalUnread()', () => {
+    it('should call with correct params', async () => {
+      const payload = {} as NotificationEntityPayload<Group>;
+      await stateService.handleStateChangeForTotalUnread(payload);
+      expect(mockHandleGroupState).toBeCalledWith(payload);
     });
   });
 

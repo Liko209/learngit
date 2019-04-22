@@ -12,6 +12,7 @@ import PostModel from '@/store/models/Post';
 type StreamProps = {
   selfProvide?: boolean; // should be true if postIds are provided by the postFetcher
   postIds: number[];
+  usedHeight: number;
   postFetcher: (
     direction: QUERY_DIRECTION,
     pageSize: number,
@@ -24,9 +25,10 @@ type StreamProps = {
 
 type StreamViewProps = {
   ids: number[];
-  hasMore: boolean;
+  hasMoreDown: boolean;
   plugins: TPluginsProps;
-  fetchInitialPosts: () => void;
+  fetchInitialPosts: () => Promise<void>;
+  fetchNextPagePosts: () => Promise<void>;
 };
 
 type TPluginsProps = {

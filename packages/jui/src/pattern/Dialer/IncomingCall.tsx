@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { PureComponent } from 'react';
+// @ts-ignore
+import { JuiMarquee } from '../../components/Marquee';
 import styled from '../../foundation/styled-components';
 import {
   spacing,
@@ -28,10 +30,10 @@ const StyledIncomingCall = styled('div')`
 const StyledIgnoreContainer = styled('div')`
   position: absolute;
   right: ${spacing(2)};
-  top: ${spacing(2)};
+  top: ${spacing(1.5)};
 `;
 
-const StyledName = styled('div')`
+const StyledMarquee = styled(JuiMarquee)`
   ${typography('headline')};
   color: ${palette('text', 'primary')};
   text-align: center;
@@ -49,12 +51,13 @@ const StyledInfo = styled('div')`
   flex-direction: column;
   justify-content: center;
   height: ${height(30)};
+  padding: ${spacing(0, 6)};
 `;
 
 const StyledActionsContainer = styled('div')`
   display: flex;
   justify-content: space-between;
-  padding: ${spacing(0, 6, 6)};
+  padding: ${spacing(0, 6, 3)};
 `;
 
 class JuiIncomingCall extends PureComponent<Props> {
@@ -67,7 +70,7 @@ class JuiIncomingCall extends PureComponent<Props> {
         </StyledIgnoreContainer>
         <Avatar />
         <StyledInfo>
-          <StyledName>{name}</StyledName>
+          <StyledMarquee text={name} time={15} hoverToStop={true} />
           {phone && <StyledPhone>{phone}</StyledPhone>}
         </StyledInfo>
         <StyledActionsContainer>

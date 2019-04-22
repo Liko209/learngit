@@ -25,7 +25,7 @@ class PerformanceTracer {
     }
   }
 
-  end(id: number) {
+  end(id: number, count?: number) {
     if (this.scenarios.has(id)) {
       const startTime = this.scenarios.get(id);
       if (startTime) {
@@ -33,7 +33,13 @@ class PerformanceTracer {
         const key = this.keys.get(id);
         if (key) {
           this.tracePerformance(key, { startTime, endTime });
-          mainLogger.info(key, ':', String(endTime - startTime));
+          mainLogger.info(
+            key,
+            ':',
+            String(endTime - startTime),
+            ', count:',
+            count,
+          );
         }
       }
       this.scenarios.delete(id);

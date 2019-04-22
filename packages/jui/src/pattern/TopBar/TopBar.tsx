@@ -8,7 +8,7 @@ import React, { ComponentType } from 'react';
 import { StyledAppBar } from './StyledAppBar';
 import { StyledToolbar } from './StyledToolbar';
 import { StyledMenuWithLogo } from './StyledMenuWithLogo';
-// import { StyledSearchIconButton } from './StyledSearchIconButton';
+import { StyledSearchIconButton } from './StyledSearchIconButton';
 import { StyledLeft } from './StyledLeft';
 import { StyledRight } from './StyledRight';
 import { StyledJuiSearchBar } from './StyledSearchBar';
@@ -39,7 +39,7 @@ class JuiTopBar extends React.PureComponent<Props, States> {
   }
 
   showSearchBar = () => {
-    this.setState((prevState) => ({
+    this.setState(prevState => ({
       isShowSearchBar: !prevState.isShowSearchBar,
     }));
   }
@@ -75,29 +75,24 @@ class JuiTopBar extends React.PureComponent<Props, States> {
               // isShowSearchBar={isShowSearchBar}
               // closeSearchBar={this.showSearchBar}
             />
-            {/* <StyledSearchIconButton
-              onClick={this.showSearchBar}
+            <StyledSearchIconButton
+              onClick={openGlobalSearch}
               tooltipTitle="Search"
               size="medium"
+              color="common.white"
             >
               search
-            </StyledSearchIconButton> */}
+            </StyledSearchIconButton>
           </StyledLeft>
           <StyledRight>
             <Dialpad />
             <NewActions />
             <AvatarActions />
-            {/* <StyledMoreIconButton tooltipTitle="More" size="medium">
-              more_vert
-            </StyledMoreIconButton> */}
           </StyledRight>
         </StyledToolbar>
       </StyledAppBar>
     );
   }
 }
-
-// JuiTopBar.displayName = 'JuiTopBar';
-// JuiTopBar.dependencies = [];
 
 export { JuiTopBar };

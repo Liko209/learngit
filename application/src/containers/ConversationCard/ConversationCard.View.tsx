@@ -61,8 +61,7 @@ export class ConversationCard extends React.Component<
   }
 
   jumpToPost = () => {
-    const { id, groupId, beforeJump } = this.props;
-    beforeJump();
+    const { id, groupId } = this.props;
     jumpToPost({ id, groupId });
   }
 

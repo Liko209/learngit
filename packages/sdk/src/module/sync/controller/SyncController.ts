@@ -373,7 +373,10 @@ class SyncController {
     await ServiceLoader.getInstance<CompanyService>(
       ServiceConfig.COMPANY_SERVICE,
     ).handleIncomingData(companies, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      companies && companies.length,
+    );
   }
 
   private async _handleIncomingItem(items: Raw<Item>[], source: SYNC_SOURCE) {
@@ -390,7 +393,10 @@ class SyncController {
     await ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
     ).handleIncomingData(items);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      items && items.length,
+    );
   }
 
   private async _handleIncomingPresence(
@@ -410,7 +416,10 @@ class SyncController {
     await ServiceLoader.getInstance<PresenceService>(
       ServiceConfig.PRESENCE_SERVICE,
     ).presenceHandleData(presences);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      presences && presences.length,
+    );
   }
 
   private async _handleIncomingState(states: any[], source: SYNC_SOURCE) {
@@ -427,7 +436,10 @@ class SyncController {
     await ServiceLoader.getInstance<StateService>(
       ServiceConfig.STATE_SERVICE,
     ).handleState(states, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      states && states.length,
+    );
   }
 
   private async _handleIncomingProfile(
@@ -466,7 +478,10 @@ class SyncController {
     await ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     ).handleIncomingData(persons, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      persons && persons.length,
+    );
   }
 
   private async _handleIncomingGroup(
@@ -486,7 +501,10 @@ class SyncController {
     await ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     ).handleData(groups, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      groups && groups.length,
+    );
   }
 
   private async _handleIncomingPost(
@@ -496,7 +514,7 @@ class SyncController {
   ) {
     mainLogger.info(
       LOG_INDEX_DATA,
-      `_handleIncomingPost() groups.length: ${posts &&
+      `_handleIncomingPost() posts.length: ${posts &&
         posts.length}, source: ${source}`,
     );
     const logId = Date.now();
@@ -507,7 +525,10 @@ class SyncController {
     await ServiceLoader.getInstance<PostService>(
       ServiceConfig.POST_SERVICE,
     ).handleIndexData(posts, maxPostsExceeded);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      posts && posts.length,
+    );
   }
 
   private async _handleIncomingData(
@@ -526,18 +547,12 @@ class SyncController {
         source === SYNC_SOURCE.INDEX || source === SYNC_SOURCE.INITIAL;
       if (timestamp && shouldSaveTimeStamp) {
         this.updateIndexTimestamp(timestamp, true);
-        notificationCenter.emitKVChange(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
       }
 
       const shouldSaveScoreboard =
         source === SYNC_SOURCE.INDEX || source === SYNC_SOURCE.INITIAL;
       if (shouldSaveScoreboard && scoreboard) {
-        const socketUserConfig = new SyncUserConfig();
-        socketUserConfig.setIndexSocketServerHost(scoreboard);
-        notificationCenter.emitKVChange(
-          CONFIG.INDEX_SOCKET_SERVER_HOST,
-          scoreboard,
-        );
+        this._updateIndexSocketAddress(scoreboard);
       }
 
       if (staticHttpServer) {
@@ -553,6 +568,18 @@ class SyncController {
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_ERROR, {
         error: ErrorParserHolder.getErrorParser().parse(error),
       });
+    }
+  }
+
+  private _updateIndexSocketAddress(scoreboard: string) {
+    const socketUserConfig = new SyncUserConfig();
+    const oldValue = socketUserConfig.getIndexSocketServerHost();
+    if (oldValue !== scoreboard) {
+      socketUserConfig.setIndexSocketServerHost(scoreboard);
+      notificationCenter.emitKVChange(
+        CONFIG.INDEX_SOCKET_SERVER_HOST,
+        scoreboard,
+      );
     }
   }
 

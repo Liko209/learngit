@@ -20,6 +20,8 @@ import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
 import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { Person } from 'sdk/module/person/entity';
+import PersonModel from '@/store/models/Person';
 
 class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
@@ -43,6 +45,24 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   @computed
+  get effectiveIds() {
+    const { assignedToIds } = this.task;
+    if (!assignedToIds) {
+      return [];
+    }
+
+    return assignedToIds
+      .map((assignedId: number) => {
+        const person = getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, assignedId);
+        if (person.isMocked) {
+          return null;
+        }
+        return assignedId;
+      })
+      .filter(item => item !== null);
+  }
+
+  @computed
   get groupId() {
     return this.post && this.post.groupId;
   }
@@ -51,9 +71,7 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
     const permissionService = ServiceLoader.getInstance<PermissionService>(
       ServiceConfig.PERMISSION_SERVICE,
     );
-    return await permissionService.hasPermission(
-      UserPermissionType.JUPITER_CAN_SHOW_IMAGE_DIALOG,
-    );
+    return await permissionService.hasPermission(UserPermissionType.JUPITER_CAN_SHOW_IMAGE_DIALOG);
   }
 
   truncateNotesOrSection = (text: string, subLength: number) => {

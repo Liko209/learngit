@@ -521,18 +521,18 @@
   "feedback": {
     "name": "Feedback",
     "uploading": "uploading",
-    "uploadRecentLogsDialogHeader": "Send feedback",
+    "uploadRecentLogsDialogHeader": "Send Feedback",
     "uploadRecentLogsDialogContent": "Upload recent logs to Jupiter feedback email.",
     "submit": "Send",
     "describeYourProblemHere": "Describe your problem here",
     "uploadLogSuccess": "Upload log successfully.",
     "uploadLogFailed": "Sorry, we weren't able to upload the logs.",
     "openEmailFailed": "Open email failed.",
-    "sendFeedbackSuccess": "Send feedback successfully.",
+    "sendFeedbackSuccess": "Feedback sent successfully.",
     "sendFeedbackFailed": "Send feedback failed.",
     "title": "It looks like we're having issues.",
     "issueTitle": "Summary",
     "issueDescription": "What happened?",
-    "sendingInBackground": "Sending feedback in background."
+    "sendingInBackground": "Sending feedback..."
   }
 }

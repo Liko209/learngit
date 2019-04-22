@@ -68,13 +68,17 @@ class PresenceController {
     this.saveToMemory(transformedData);
   }
 
-  handleStore({ state }: { state: any }) {
+  handleSocketStateChange(state: string) {
     if (state === 'connected') {
-      this._subscribeController.reset();
+      this.reset();
       notificationCenter.emitEntityReload(ENTITY.PRESENCE);
     } else if (state === 'disconnected') {
-      notificationCenter.emitEntityReset(ENTITY.PRESENCE);
+      this.resetPresence();
     }
+  }
+
+  resetPresence() {
+    notificationCenter.emitEntityReset(ENTITY.PRESENCE);
   }
 
   /**

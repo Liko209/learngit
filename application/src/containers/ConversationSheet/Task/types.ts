@@ -28,6 +28,7 @@ type ViewProps = {
   hasTime: boolean;
   color?: [keyof Palette, string];
   groupId: number;
+  effectiveIds: (number | null)[];
   getShowDialogPermission: () => Promise<boolean>;
 };
 
@@ -35,6 +36,7 @@ type TaskUpdateViewProps = {
   activityData: ActivityData;
   task: TaskItemModel;
   color?: [keyof Palette, string];
+  effectiveIds: (number | null)[];
 };
 
 export {

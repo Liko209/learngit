@@ -20,6 +20,8 @@ import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { GROUP_CAN_NOT_SHOWN_REASON } from 'sdk/module/group/constants';
 import i18nT from '@/utils/i18nT';
+import { getGlobalValue } from '@/store/utils/entities';
+import _ from 'lodash';
 class GroupHandler {
   static accessGroup(id: number) {
     const accessTime: number = +new Date();
@@ -121,6 +123,14 @@ export class MessageRouterChangeHelper {
   ) {
     switch (action) {
       case 'REPLACE':
+        if (
+          Number(id) === getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID) &&
+          _.isEqual(state, history.location.state)
+        ) {
+          // to trigger history.listen even if it's same conversation. useful to detect when user tries to go to conversation on popups.
+          // history.listen will not trigger if the location and state is the same so we need to manually create a random state change.
+          history.replace(`/messages/${id}`, { _temp_: Date.now() });
+        }
         history.replace(`/messages/${id}`, state);
         break;
       default:

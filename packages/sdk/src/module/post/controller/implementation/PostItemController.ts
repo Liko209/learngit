@@ -21,7 +21,9 @@ import { IPostItemController } from '../interface/IPostItemController';
 import { ItemService } from '../../../item';
 import { PostControllerUtils } from './PostControllerUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { mainLogger } from 'foundation';
 
+const LOG_TAG = 'PostItemController';
 class PostItemController implements IPostItemController {
   constructor(public postActionController: IPostActionController) {}
 
@@ -174,6 +176,7 @@ class PostItemController implements IPostItemController {
   ) {
     let shouldUpdatePost: boolean = true;
     const { status, preInsertId, updatedId } = params;
+    mainLogger.tags(LOG_TAG).log('updatePreInsertItemVersion', params);
     if (status === PROGRESS_STATUS.CANCELED) {
       _.remove(post.item_ids, (id: number) => {
         return id === preInsertId;
