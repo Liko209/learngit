@@ -80,6 +80,7 @@ export class HomePage extends BaseWebComponent {
   get convertToTeamModal() {
     return this.getComponent(ConvertToTeamDialog);
   }
+  
   get sendNewMessageModal() {
     return this.getComponent(SendNewMessageModal);
   }
