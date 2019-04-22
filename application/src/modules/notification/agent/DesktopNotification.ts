@@ -21,15 +21,16 @@ export class DeskTopNotification extends AbstractNotification<Notification> {
     delete opts.actions;
     delete opts.onClick;
 
+    this.handlePriority(opts);
     const notification = new Notification(title, opts);
-    notification.onclick = (event) => {
+    notification.onclick = event => {
       window.focus();
       (event.target as Notification).close();
       this._store.remove(scope, id);
       onClick && onClick(event);
     };
 
-    notification.onclose = (event) => {
+    notification.onclose = event => {
       this._store.remove(scope, id);
     };
 
@@ -37,11 +38,16 @@ export class DeskTopNotification extends AbstractNotification<Notification> {
   }
 
   close(scope: string, id: number) {
-    return this._store.get(scope, id).close();
+    const notification = this._store.get(scope, id);
+    if (notification && notification[0]) {
+      notification[0].close();
+    }
   }
 
   clear(scope: string) {
     // to-do
-    Object.values(this._store.items).forEach((i: Notification) => i.close());
+    Object.values(this._store.items).forEach((i: Notification[]) =>
+      i[0].close(),
+    );
   }
 }

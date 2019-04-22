@@ -82,6 +82,7 @@ export class SWNotification extends AbstractNotification<NotificationAction> {
     const isSuccessful = await this._checkNotificationValid(id);
     logger.log(`check notification for ${opts.tag} is valid`, isSuccessful);
     if (isSuccessful) {
+      this.handlePriority(opts);
       await this._reg.showNotification(title, opts);
       this._store.add(scope, id, actions);
       this._updateNotificationsList();

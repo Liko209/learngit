@@ -31,3 +31,8 @@ export type Global = {
   Notification: Notification;
   navigator: Navigator;
 };
+
+export enum NOTIFICATION_PRIORITY {
+  INCOMING_CALL = 1,
+  MESSAGE,
+}
