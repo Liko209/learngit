@@ -416,7 +416,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     if (!isRangeEqual(visibleRange, initialVisibleRange)) {
       onVisibleRangeChange(visibleRange);
     }
-  },        [visibleRange.startIndex, visibleRange.stopIndex, initialVisibleRange]);
+  },        [visibleRange.startIndex, visibleRange.stopIndex, initialVisibleRange.startIndex, initialVisibleRange.stopIndex]);
   useEffect(() => {
     onRenderedRangeChange(renderedRange);
   },        [renderedRange.startIndex, renderedRange.stopIndex]);
