@@ -22,19 +22,19 @@ import { TaskUpdateViewProps } from './types';
 @observer
 class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
   private _getTaskAvatarNames = (assignedIds: number[]) =>
-    assignedIds.map((assignedId: number) => (
-      <AvatarName key={assignedId} id={assignedId} />
-    ))
+    assignedIds
+      .map((assignedId: number) => (
+        <AvatarName key={assignedId} id={assignedId} />
+      ))
 
   private _getTitleText(text: string) {
-    const { task, activityData } = this.props;
+    const { activityData, effectiveIds } = this.props;
     const { value, key } = activityData;
-    const { assignedToIds } = task;
 
     switch (key) {
       case 'complete_people_ids':
-        return `${value ? value.length : 0}/${assignedToIds &&
-          assignedToIds.length} ${text}`;
+        return `${value ? value.length : 0}/${effectiveIds &&
+          effectiveIds.length} ${text}`;
       case 'complete_percentage':
         return `${value || 0}% ${text}`;
       default:
@@ -46,6 +46,7 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
     const { task, activityData, color } = this.props;
     const { text, complete } = task;
     const { value, key, old_value } = activityData;
+
     return (
       <TaskUpdateViewCard
         title={this._getTitleText(text)}
@@ -69,7 +70,7 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
           ) : null
         }
       >
-        {key === 'assigned_to_ids' ? (
+        {key === 'assigned_to_ids' && value.length > 0 ? (
           <JuiLabelWithContent label={i18next.t('item.assignee')}>
             <JuiTaskAvatarNames>
               {this._getTaskAvatarNames(value)}
