@@ -296,23 +296,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  loadPostUntilFirstUnread = async () => {
-    const loadCount =
-      this._historyHandler.getDistanceToFirstUnread(this.postIds) + 1;
-    if (loadCount > 0) {
-      this._streamController.enableNewMessageSep();
-      try {
-        await this._loadPosts(QUERY_DIRECTION.OLDER, loadCount);
-      } catch (err) {
-        this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
-        throw err;
-      }
-    }
-    return this.firstHistoryUnreadPostId;
-  }
-
+  @action
   getFirstUnreadPostByLoadAllUnread = async () => {
-    let firstUnreadPostId: number | undefined = undefined;
+    let firstUnreadPostId: number | undefined;
     if (!this.firstHistoryUnreadInPage) {
       try {
         const posts = await this._loadAllUnreadPosts();
@@ -325,6 +311,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
         throw err;
       }
+    } else {
+      firstUnreadPostId = this.firstHistoryUnreadPostId;
     }
     return firstUnreadPostId;
   }

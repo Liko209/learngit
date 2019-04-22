@@ -6,9 +6,7 @@ import { AutoSizerProps } from 'jui/components/AutoSizer';
 import { LoadingMorePlugin } from '@/plugins';
 import GroupStateModel from '@/store/models/GroupState';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
-import {
-  JuiInfiniteList,
-} from 'jui/components/VirtualizedList';
+import { JuiInfiniteList } from 'jui/components/VirtualizedList';
 import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
 import { theme } from '@/__tests__/utils';
 import { ConversationPost } from '../../../ConversationPost';
@@ -54,7 +52,6 @@ const baseProps = {
   hasHistoryUnread: false,
   firstHistoryUnreadInPage: false,
   clearHistoryUnread: jest.fn().mockName('setHasUnread'),
-  loadPostUntilFirstUnread: jest.fn().mockName('loadPostUntilFirstUnread'),
   getFirstUnreadPostByLoadAllUnread: jest
     .fn()
     .mockName('getFirstUnreadPostByLoadAllUnread'),

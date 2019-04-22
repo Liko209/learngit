@@ -68,7 +68,6 @@ type StreamViewProps = {
   enableNewMessageSeparatorHandler: () => void;
   disableNewMessageSeparatorHandler: () => void;
   handleNewMessageSeparatorState: (event: React.UIEvent<HTMLElement>) => void;
-  loadPostUntilFirstUnread: () => Promise<number | undefined>;
   getFirstUnreadPostByLoadAllUnread: () => Promise<number | undefined>;
   updateHistoryHandler: () => void;
   hasHistoryUnread: boolean;
