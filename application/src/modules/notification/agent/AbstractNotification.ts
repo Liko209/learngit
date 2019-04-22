@@ -16,13 +16,16 @@ export abstract class AbstractNotification<T> {
       const { priority } = opts.data;
       const lowPriorityNotifications = Object.values(this._store.items).filter(
         item => {
+          if (!item[0]) {
+            return false;
+          }
           const { priority: itemPriority } = item[0].data;
           return itemPriority ? itemPriority > priority : true;
         },
       );
 
       lowPriorityNotifications.forEach(notification => {
-        notification[0].close();
+        notification[0] && notification[0].close();
       });
     }
   }
