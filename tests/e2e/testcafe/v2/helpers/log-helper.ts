@@ -66,17 +66,15 @@ class Step implements IStep {
         ret = await this.closure(this);
       } catch (error) {
         this.status = Status.FAILED;
-        // takeScreenshot will failed when testcafe throw error
-        this.options.takeScreenshot = false;
-        this.error = error
+        this.error = error;
       }
+      this.endTime = Date.now();
     }
     // post-execute
-    this.endTime = Date.now();
     // log to stdout
     console.log(`${new Date(this.startTime).toLocaleString()} [${this.status}] ${this.text} (${this.endTime - this.startTime}ms)`);
     // take screenshot
-    if (this.options.takeScreenshot || this.options.screenshotPath)
+    if (!this.error && (this.options.takeScreenshot || this.options.screenshotPath))
       this.screenshotPath = await this.takeScreenShot(this.options.screenshotPath);
 
     if (this.error)
