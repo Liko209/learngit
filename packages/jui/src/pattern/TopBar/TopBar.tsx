@@ -18,6 +18,7 @@ type Props = {
   Logo: ComponentType;
   AvatarActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   NewActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
+  Dialpad: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   BackNForward: ComponentType<any>;
   openGlobalSearch: (event: React.MouseEvent<HTMLElement>) => void;
   searchKey: string;
@@ -38,7 +39,7 @@ class JuiTopBar extends React.PureComponent<Props, States> {
   }
 
   showSearchBar = () => {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       isShowSearchBar: !prevState.isShowSearchBar,
     }));
   }
@@ -55,6 +56,7 @@ class JuiTopBar extends React.PureComponent<Props, States> {
       searchKey,
       searchPlaceholder,
       onClear,
+      Dialpad,
     } = this.props;
     return (
       <StyledAppBar>
@@ -82,6 +84,7 @@ class JuiTopBar extends React.PureComponent<Props, States> {
             </StyledSearchIconButton> */}
           </StyledLeft>
           <StyledRight>
+            <Dialpad />
             <NewActions />
             <AvatarActions />
             {/* <StyledMoreIconButton tooltipTitle="More" size="medium">

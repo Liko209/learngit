@@ -127,6 +127,7 @@ storiesOf('Pattern/TopBar', module)
         onClear={() => {}}
         NewActions={NewActions}
         MainMenu={MainMenu}
+        Dialpad={NewActions}
         Logo={Logo}
         BackNForward={BackNForward}
         AvatarActions={AvatarActions}
