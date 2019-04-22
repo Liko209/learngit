@@ -25,7 +25,7 @@ test.meta(<ITestMeta>{
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
   const tooltipText = 'Send to voicemail';
-  const callerWebPhone = await h(t).webphone(caller);
+  const callerWebPhone = await h(t).newWebphoneSession(caller);
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -48,7 +48,6 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`Then Display a tooltip: '${tooltipText}`, async () => {
     await telephonyDialog.showTooltip(tooltipText);
   });
-  await callerWebPhone.close();
 });
 
 test.meta(<ITestMeta>{
@@ -60,7 +59,7 @@ test.meta(<ITestMeta>{
   const loginUser = h(t).rcData.mainCompany.users[0];
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
-  const loginUserWebPhone = await h(t).webphone(loginUser);
+  const loginUserWebPhone = await h(t).newWebphoneSession(loginUser);
   let callerWebPhone = undefined;
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -69,7 +68,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And I also login in another platform (webphone) ${caller.company.number}#${caller.extension}`, async () => {
-    callerWebPhone = await h(t).webphone(caller);
+    callerWebPhone = await h(t).newWebphoneSession(caller);
   });
 
   const telephonyDialog = app.homePage.telephonyDialog;
@@ -92,9 +91,6 @@ test.meta(<ITestMeta>{
 
     await t.expect(actual).eql('invited');
   });
-
-  await loginUserWebPhone.close();
-  await callerWebPhone.close();
 });
 
 test.meta(<ITestMeta>{
@@ -109,7 +105,7 @@ test.meta(<ITestMeta>{
   let callerWebPhone: WebphoneSession;
 
   await h(t).withLog(`Given I login in another platform (webphone) ${caller.company.number}#${caller.extension}`, async () => {
-    callerWebPhone = await h(t).webphone(caller);
+    callerWebPhone = await h(t).newWebphoneSession(caller);
   });
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -131,7 +127,4 @@ test.meta(<ITestMeta>{
     await telephonyDialog.ensureDismiss();
   });
 
-  //TODO: check The caller should hear the leave voicemail prompt
-
-  await callerWebPhone.close();
 });

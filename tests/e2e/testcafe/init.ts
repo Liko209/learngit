@@ -194,9 +194,6 @@ export function teardownCase() {
     // release account
     await h(t).dataHelper.teardown();
 
-    // release webphone session
-    await h(t).webphoneHelper.tearDown();
-    
     // fetch console log from browser
     const consoleLog = await t.getBrowserConsoleMessages()
     const zipConsoleLog = new JSZip();
@@ -234,6 +231,10 @@ export function teardownCase() {
         await h(t).dashboardHelper.teardown(beatsClient, runId, consoleLogObj, accountType, rcDataPath);
       }
     }
+
+    // clean up webphone sessions
+    await h(t).webphoneHelper.tearDown();
+
     assert(RUNNER_OPTS.SKIP_CONSOLE_ERROR || 0 === errorConsoleLogNumber, `console error is detected: ${errorLog}!`);
     assert(RUNNER_OPTS.SKIP_CONSOLE_WARN || 0 === warnConsoleLogNumber, `console warn is detected: ${warnLog}!`);
   }

@@ -1,6 +1,6 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-04-19 12:16:25 
+ * @Author: Potar.He
+ * @Date: 2019-04-19 12:16:25
  * @Last Modified by: Potar.He
  * @Last Modified time: 2019-04-19 12:18:34
  */
@@ -42,7 +42,7 @@ test.meta(<ITestMeta>{
 
   let session: WebphoneSession;
   await h(t).withLog('And anpther user login webphone', async () => {
-    session = await h(t).webphone(anotherUser);
+    session = await h(t).newWebphoneSession(anotherUser);
   });
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -134,7 +134,7 @@ test.meta(<ITestMeta>{
   });
 
   // TODO: Check voice
-  
+
   await h(t).withLog('Then "unhold" button changed to "hold" button', async () => {
     await t.expect(telephonyDialog.unHoldButton.exists).notOk();
     await t.expect(telephonyDialog.holdButton.exists).ok();

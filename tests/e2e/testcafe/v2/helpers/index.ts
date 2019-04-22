@@ -71,13 +71,8 @@ class Helper {
     return new AllureHelper(this.t);
   }
 
-  private _webphoneS: WebphoneHelper;
-
   get webphoneHelper() {
-    if (!this._webphoneS) {
-      this._webphoneS = new WebphoneHelper(this.t);
-    }
-    return this._webphoneS;
+    return new WebphoneHelper(this.t);
   }
 
   get scenarioHelper() {
@@ -113,9 +108,12 @@ class Helper {
     return await this.logHelper.withLog(step, cb, options);
   }
 
-  async withSession(sessions: WebphoneSession[] | WebphoneSession,
-    cb: (sessions?) => Promise<any>) {
-    return await this.webphoneHelper.withSession(sessions, cb);
+  async withPhoneSession(user: IUser, cb: (session: WebphoneSession) => Promise<any>) {
+    return await this.webphoneHelper.withSession(user, cb);
+  }
+
+  async newWebphoneSession(user: IUser) {
+    return await this.webphoneHelper.newWebphoneSession(user);
   }
 
   async getGlip(user: IUser) {
@@ -138,10 +136,6 @@ class Helper {
 
   platform(user: IUser) {
     return this.sdkHelper.sdkManager.platform(user);
-  }
-
-  webphone(user: IUser) {
-    return this.webphoneHelper.webphone(user);
   }
 
   // testcafe extend
