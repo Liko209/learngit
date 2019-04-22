@@ -6,6 +6,7 @@
 import { mainLogger } from 'sdk';
 import { AbstractNotification } from './AbstractNotification';
 import { NotificationOpts } from '../interface';
+import { isSafari } from '@/common/isUserAgent';
 import _ from 'lodash';
 const logger = mainLogger.tags('DesktopNotification');
 export class DeskTopNotification extends AbstractNotification<Notification> {
@@ -34,6 +35,12 @@ export class DeskTopNotification extends AbstractNotification<Notification> {
       this._store.remove(scope, id);
     };
 
+    if (isSafari) {
+      Object.defineProperty(notification, 'data', {
+        writable: true,
+        value: opts.data,
+      });
+    }
     this._store.add(scope, id, [notification]);
   }
 

@@ -16,11 +16,11 @@ export abstract class AbstractNotification<T> {
       const { priority } = opts.data;
       const lowPriorityNotifications = Object.values(this._store.items).filter(
         item => {
-          if (!item[0]) {
-            return false;
+          if (item[0] && item[0].data) {
+            const { priority: itemPriority } = item[0].data;
+            return itemPriority ? itemPriority > priority : true;
           }
-          const { priority: itemPriority } = item[0].data;
-          return itemPriority ? itemPriority > priority : true;
+          return false;
         },
       );
 
