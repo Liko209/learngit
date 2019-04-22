@@ -18,7 +18,7 @@ import { StateFetchDataController } from './StateFetchDataController';
 import { mainLogger } from 'foundation';
 import { AccountUserConfig } from '../../../../module/account/config';
 import { MyStateConfig } from '../../../state/config';
-import { SYNC_SOURCE } from '../../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../../module/sync/types';
 import { shouldEmitNotification } from '../../../../utils/notificationUtils';
 
 type DataHandleTask = StateHandleTask | GroupCursorHandleTask;
@@ -35,7 +35,7 @@ class StateDataHandleController {
   async handleState(
     states: Partial<State>[],
     source: SYNC_SOURCE,
-    entities?: Map<string, any[]>,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<void> {
     const stateTask: DataHandleTask = {
       type: TASK_DATA_TYPE.STATE,
@@ -43,7 +43,7 @@ class StateDataHandleController {
     };
     this._taskArray.push(stateTask);
     if (this._taskArray.length === 1) {
-      await this._startDataHandleTask(this._taskArray[0], source, entities);
+      await this._startDataHandleTask(this._taskArray[0], source, changeMap);
     }
   }
 
@@ -61,7 +61,7 @@ class StateDataHandleController {
   private async _startDataHandleTask(
     task: DataHandleTask,
     source?: SYNC_SOURCE,
-    entities?: Map<string, any[]>,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<void> {
     try {
       let transformedState: TransformedState;
@@ -74,7 +74,7 @@ class StateDataHandleController {
       await this._updateEntitiesAndDoNotification(
         updatedState,
         source,
-        entities,
+        changeMap,
       );
       this._totalUnreadController.handleGroupState(updatedState.groupStates);
     } catch (err) {
@@ -350,7 +350,7 @@ class StateDataHandleController {
   private async _updateEntitiesAndDoNotification(
     transformedState: TransformedState,
     source?: SYNC_SOURCE,
-    entities?: Map<string, any[]>,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<void> {
     if (transformedState.myState) {
       const myState = transformedState.myState;
@@ -362,8 +362,11 @@ class StateDataHandleController {
         mainLogger.error(`StateDataHandleController, my state error, ${err}`);
       }
       // if (Date.now() === 0) {
-      if (entities) {
-        entities.set(ENTITY.MY_STATE, [myState]);
+      if (changeMap) {
+        changeMap.set(ENTITY.MY_STATE, {
+          entities: [myState],
+          partials: [myState],
+        });
       } else {
         notificationCenter.emitEntityUpdate(
           ENTITY.MY_STATE,
@@ -378,8 +381,11 @@ class StateDataHandleController {
         transformedState.groupStates,
       );
       if (shouldEmitNotification(source)) {
-        if (entities) {
-          entities.set(ENTITY.GROUP_STATE, transformedState.groupStates);
+        if (changeMap) {
+          changeMap.set(ENTITY.GROUP_STATE, {
+            entities: transformedState.groupStates,
+            partials: transformedState.groupStates,
+          });
         } else {
           notificationCenter.emitEntityUpdate(
             ENTITY.GROUP_STATE,

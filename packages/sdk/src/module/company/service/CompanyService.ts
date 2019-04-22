@@ -14,7 +14,7 @@ import { daoManager } from '../../../dao';
 import Api from '../../../api/api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { Raw } from '../../../framework/model';
-import { SYNC_SOURCE } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 
 class CompanyService extends EntityBaseService<Company> {
@@ -48,12 +48,12 @@ class CompanyService extends EntityBaseService<Company> {
   async handleIncomingData(
     companies: Raw<Company>[],
     source: SYNC_SOURCE,
-    entities?: Map<string, any[]>,
+    changeMap?: Map<string, ChangeModel>,
   ) {
     await this.getCompanyController().handleCompanyData(
       companies,
       source,
-      entities,
+      changeMap,
     );
   }
 

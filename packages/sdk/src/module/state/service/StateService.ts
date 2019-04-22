@@ -17,7 +17,7 @@ import { IGroupService } from '../../group/service/IGroupService';
 import { Profile } from '../../profile/entity';
 import { NotificationEntityPayload } from '../../../service/notificationCenter';
 import { SectionUnread } from '../types';
-import { SYNC_SOURCE } from '../../sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 
 class StateService extends EntityBaseService<GroupState>
@@ -100,11 +100,11 @@ class StateService extends EntityBaseService<GroupState>
   handleState = async (
     states: Partial<State>[],
     source: SYNC_SOURCE,
-    entities?: Map<string, any[]>,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<void> => {
     await this.getStateController()
       .getStateDataHandleController()
-      .handleState(states, source, entities);
+      .handleState(states, source, changeMap);
   }
 
   handleGroupCursor = async (groups: Partial<Group>[]): Promise<void> => {

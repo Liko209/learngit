@@ -24,6 +24,7 @@ import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
 import { EntityNotificationController } from '../../../framework/controller/impl/EntityNotificationController';
 import { AccountUserConfig } from '../../account/config/AccountUserConfig';
+import { ChangeModel } from 'sdk/module/sync/types';
 
 class PostService extends EntityBaseService<Post> {
   postController: PostController;
@@ -152,11 +153,11 @@ class PostService extends EntityBaseService<Post> {
   handleIndexData = async (
     data: Raw<Post>[],
     maxPostsExceed: boolean,
-    entities?: Map<string, any[]>,
+    changeMap?: Map<string, ChangeModel>,
   ) => {
     await this.getPostController()
       .getPostDataController()
-      .handleIndexPosts(data, maxPostsExceed, entities);
+      .handleIndexPosts(data, maxPostsExceed, changeMap);
   }
 
   handleSexioData = async (data: Raw<Post>[]) => {

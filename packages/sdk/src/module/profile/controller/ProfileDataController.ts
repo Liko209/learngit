@@ -16,7 +16,7 @@ import { ENTITY } from '../../../service/eventKey';
 import _ from 'lodash';
 import { transform } from '../../../service/utils';
 import { shouldEmitNotification } from '../../../utils/notificationUtils';
-import { SYNC_SOURCE } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 
 const DEFAULT_LEFTRAIL_GROUP: number = 20;
 
@@ -28,14 +28,14 @@ class ProfileDataController {
   async profileHandleData(
     profile: Raw<Profile> | null,
     source: SYNC_SOURCE,
-    entities?: Map<string, any[]>,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<Profile | null> {
     let result: Profile | null = null;
     if (profile) {
       if (_.isArray(profile)) {
-        result = await this._handleProfile(profile[0], source);
+        result = await this._handleProfile(profile[0], source, changeMap);
       } else {
-        result = await this._handleProfile(profile, source);
+        result = await this._handleProfile(profile, source, changeMap);
       }
     }
     return result;
@@ -86,7 +86,7 @@ class ProfileDataController {
   private async _handleProfile(
     profile: Raw<Profile>,
     source: SYNC_SOURCE,
-    entities?: Map<string, any[]>,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<Profile | null> {
     try {
       if (profile) {
@@ -94,8 +94,8 @@ class ProfileDataController {
         if (transformedData) {
           await this.entitySourceController.put(transformedData);
           if (shouldEmitNotification(source)) {
-            if (entities) {
-              entities.set(ENTITY.PROFILE, [transformedData]);
+            if (changeMap) {
+              changeMap.set(ENTITY.PROFILE, { entities: [transformedData] });
             } else {
               notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [
                 transformedData,

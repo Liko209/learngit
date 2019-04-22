@@ -29,7 +29,7 @@ import { PersonDataController } from './PersonDataController';
 import { ContactType } from '../types';
 import notificationCenter from '../../../service/notificationCenter';
 import { ENTITY } from '../../../service/eventKey';
-import { SYNC_SOURCE } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { FileTypeUtils } from '../../../utils/file/FileTypeUtils';
 
 const PersonFlags = {
@@ -72,11 +72,11 @@ class PersonController {
   async handleIncomingData(
     persons: Raw<Person>[],
     source: SYNC_SOURCE,
-    entities?: Map<string, any[]>,
+    changeMap?: Map<string, ChangeModel>,
   ) {
     await new PersonDataController(
       this._entitySourceController,
-    ).handleIncomingData(persons, source, entities);
+    ).handleIncomingData(persons, source, changeMap);
   }
 
   async getPersonsByIds(ids: number[]): Promise<Person[]> {

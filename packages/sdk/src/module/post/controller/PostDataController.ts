@@ -24,6 +24,7 @@ import { IGroupService } from '../../group/service/IGroupService';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 import { SortUtils } from '../../../framework/utils';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { ChangeModel } from '../../sync/types';
 
 class PostDataController {
   constructor(
@@ -66,7 +67,7 @@ class PostDataController {
   async handleIndexPosts(
     data: Raw<Post>[],
     maxPostsExceed: boolean,
-    entities?: Map<string, any[]>,
+    changeMap?: Map<string, ChangeModel>,
   ) {
     if (data.length) {
       let posts = this.transformData(data);
@@ -80,7 +81,7 @@ class PostDataController {
         LOG_INDEX_DATA_POST,
         `filterAndSavePosts() before posts.length: ${posts && posts.length}`,
       );
-      posts = await this.filterAndSavePosts(posts, true, entities);
+      posts = await this.filterAndSavePosts(posts, true, changeMap);
       mainLogger.info(
         LOG_INDEX_DATA_POST,
         `filterAndSavePosts() after posts.length: ${posts && posts.length}`,
@@ -88,8 +89,8 @@ class PostDataController {
       if (result && result.deleteMap.size > 0) {
         result.deleteMap.forEach((value: number[], key: number) => {
           this._groupService.updateHasMore(key, QUERY_DIRECTION.OLDER, true);
-          if (entities) {
-            entities.set(`${ENTITY.FOC_RELOAD}.${key}`, value);
+          if (changeMap) {
+            changeMap.set(`${ENTITY.FOC_RELOAD}.${key}`, { entities: value });
           } else {
             notificationCenter.emit(`${ENTITY.FOC_RELOAD}.${key}`, value);
           }
@@ -285,7 +286,7 @@ class PostDataController {
   async filterAndSavePosts(
     posts: Post[],
     save: boolean,
-    entities?: Map<string, any[]>,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<Post[]> {
     if (!posts || !posts.length) {
       return posts;
@@ -294,7 +295,7 @@ class PostDataController {
     const postDao = daoManager.getDao(PostDao);
     const normalPosts = await baseHandleData(
       {
-        entities,
+        changeMap,
         data: posts,
         dao: postDao,
         eventKey: ENTITY.POST,

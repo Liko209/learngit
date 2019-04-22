@@ -14,7 +14,7 @@ import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SOCKET, SERVICE } from '../../../service/eventKey';
 import { Raw } from '../../../framework/model/Raw';
 import { ProfileController } from '../controller/ProfileController';
-import { SYNC_SOURCE } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { SettingOption } from '../types';
 
@@ -44,11 +44,11 @@ class ProfileService extends EntityBaseService<Profile>
   handleIncomingData = async (
     profile: Raw<Profile> | null,
     source: SYNC_SOURCE,
-    entities?: Map<string, any[]>,
+    changeMap?: Map<string, ChangeModel>,
   ) => {
     await this.getProfileController()
       .getProfileDataController()
-      .profileHandleData(profile, source, entities);
+      .profileHandleData(profile, source, changeMap);
   }
 
   handleGroupIncomesNewPost = async (groupIds: number[]) => {

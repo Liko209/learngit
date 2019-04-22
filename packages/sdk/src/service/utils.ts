@@ -41,7 +41,7 @@ const transformAll = <T extends { id: number }>(target: any): T[] => {
 };
 
 const baseHandleData = async (
-  { data, dao, eventKey, noSavingToDB, source, entities }: any,
+  { data, dao, eventKey, noSavingToDB, source, changeMap }: any,
   filterFunc?: (data: IdModel[]) => { eventKey: string; entities: IdModel[] }[],
 ) => {
   // ** NOTICE **
@@ -69,8 +69,10 @@ const baseHandleData = async (
         const notifications = filterFunc(data);
         notifications.forEach(
           (notification: { eventKey: string; entities: IdModel[] }) => {
-            if (entities) {
-              entities.set(notification.eventKey, notification.entities);
+            if (changeMap) {
+              changeMap.set(notification.eventKey, {
+                entities: notification.entities,
+              });
             } else {
               notificationCenter.emitEntityUpdate(
                 notification.eventKey,
@@ -80,8 +82,8 @@ const baseHandleData = async (
           },
         );
       } else {
-        if (entities) {
-          entities.set(eventKey, data);
+        if (changeMap) {
+          changeMap.set(eventKey, { entities: data });
         } else {
           notificationCenter.emitEntityUpdate(eventKey, data);
         }

@@ -25,7 +25,7 @@ import {
 import { IGroupService } from './IGroupService';
 import { NotificationEntityUpdatePayload } from '../../../service/notificationCenter';
 import { Post } from '../../post/entity';
-import { SYNC_SOURCE } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { GroupEntityCacheController } from '../controller/GroupEntityCacheController';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 
@@ -91,11 +91,11 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   handleData = async (
     groups: Raw<Group>[],
     source: SYNC_SOURCE,
-    entities?: Map<string, any[]>,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<void> => {
     await this.getGroupController()
       .getHandleDataController()
-      .handleData(groups, source, entities);
+      .handleData(groups, source, changeMap);
   }
 
   handleGroupMostRecentPostChanged = async (

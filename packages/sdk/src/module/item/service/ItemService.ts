@@ -27,6 +27,7 @@ import { Raw } from '../../../framework/model';
 import { ItemQueryOptions, ItemFilterFunction } from '../types';
 import { mainLogger } from 'foundation';
 import { ItemNotification } from '../utils/ItemNotification';
+import { ChangeModel } from '../../sync/types';
 
 class ItemService extends EntityBaseService<Item> implements IItemService {
   private _itemServiceController: ItemServiceController;
@@ -49,7 +50,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
 
   handleIncomingData = async (
     items: Raw<Item>[],
-    entities?: Map<string, any[]>,
+    changeMap?: Map<string, ChangeModel>,
   ) => {
     if (items.length === 0) {
       return;
@@ -57,7 +58,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     const transformedData = items.map(item => transform<Item>(item));
     const result = await baseHandleData(
       {
-        entities,
+        changeMap,
         data: transformedData,
         dao: daoManager.getDao(ItemDao),
         eventKey: ENTITY.ITEM,

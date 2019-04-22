@@ -11,6 +11,7 @@ import { SubscribeController } from '../../base/controller/SubscribeController';
 import { PresenceController } from '../controller/PresenceController';
 import { AccountUserConfig } from '../../../module/account/config';
 import { PRESENCE } from '../constant/Presence';
+import { ChangeModel } from '../../sync/types';
 
 class PresenceService extends EntityBaseService {
   private _presenceController: PresenceController;
@@ -52,11 +53,11 @@ class PresenceService extends EntityBaseService {
 
   presenceHandleData = async (
     presences: RawPresence[],
-    entities?: Map<string, any[]>,
+    changeMap?: Map<string, ChangeModel>,
   ) => {
     await this._presenceController.handlePresenceIncomingData(
       presences,
-      entities,
+      changeMap,
     );
   }
 
