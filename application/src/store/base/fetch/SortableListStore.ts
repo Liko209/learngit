@@ -7,6 +7,7 @@ import { computed, action } from 'mobx';
 import { ListStore } from './ListStore';
 import { ISortableModel, ISortFunc } from './types';
 import _ from 'lodash';
+import { mainLogger } from 'sdk';
 
 // const defaultSortFunc: ISortFunc<ISortableModel> = (
 //   first: ISortableModel,
@@ -24,10 +25,30 @@ export class SortableListStore<T = any> extends ListStore<ISortableModel<T>> {
   @action
   upsert(idArray: ISortableModel<T>[]) {
     if (idArray.length) {
-      const unionArray = _.unionBy(idArray, this.items, 'id');
+      const unionArray = _.unionBy(idArray, this._items, 'id');
       const unionAndSortIds = this._sortFunc
         ? unionArray.sort(this._sortFunc)
         : _.sortBy(unionArray, 'sortValue');
+
+      if (
+        unionAndSortIds.length === this._items.length &&
+        _.isEqualWith(
+          unionAndSortIds,
+          this._items,
+          (objValue: ISortableModel<T>, otherValue: ISortableModel<T>) => {
+            return objValue.id === otherValue.id;
+          },
+        )
+      ) {
+        mainLogger.debug(
+          'SortableListStore',
+          `updated items.size=${
+            unionAndSortIds.length
+          }, is same with original items`,
+        );
+        return;
+      }
+
       this.replaceAll(unionAndSortIds);
     }
   }
