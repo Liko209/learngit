@@ -9,7 +9,11 @@ import { width } from '../../foundation/utils';
 import { StyledSearchIconButton } from './StyledSearchIconButton';
 import { JuiLogo } from './Logo';
 
-const StyledLeft = styled('div')`
+type Props = {
+  isShowSearchBar: boolean;
+};
+
+const StyledLeft = styled<Props, 'div'>('div')`
   display: flex;
   align-items: center;
   @media (min-width: 1280px) {
@@ -24,13 +28,13 @@ const StyledLeft = styled('div')`
   @media (max-width: 600px) {
     justify-content: space-between;
     .topBar-search-bar {
-      display: none;
+      display: ${({ isShowSearchBar }) => (isShowSearchBar ? 'block' : 'none')};
     }
     ${StyledSearchIconButton} {
-      display: block;
+      display: ${({ isShowSearchBar }) => (isShowSearchBar ? 'none' : 'block')};
     }
     ${JuiLogo} {
-      display: block;
+      display: ${({ isShowSearchBar }) => (isShowSearchBar ? 'none' : 'block')};
       width: ${width(24)};
     }
   }
