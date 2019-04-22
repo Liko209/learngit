@@ -55,17 +55,19 @@ class TopBar extends React.Component<TopBarProps> {
     const { openGlobalSearch, searchKey, onClear, t } = this.props;
 
     return (
-      <JuiTopBar
-        MainMenu={this._MainMenu}
-        AvatarActions={AvatarActions}
-        NewActions={NewActions}
-        Logo={this._Logo}
-        BackNForward={BackNForward}
-        openGlobalSearch={openGlobalSearch}
-        searchKey={searchKey}
-        searchPlaceholder={t('globalSearch.search')}
-        onClear={onClear}
-      />
+      <React.Fragment>
+        <JuiTopBar
+          MainMenu={this._MainMenu}
+          AvatarActions={AvatarActions}
+          NewActions={NewActions}
+          Logo={this._Logo}
+          BackNForward={BackNForward}
+          openGlobalSearch={openGlobalSearch}
+          searchKey={searchKey}
+          searchPlaceholder={t('globalSearch.search')}
+          onClear={onClear}
+        />
+      </React.Fragment>
     );
   }
 }
