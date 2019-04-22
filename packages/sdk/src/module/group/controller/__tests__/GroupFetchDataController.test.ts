@@ -1,4 +1,3 @@
-/// <reference path="../../../../__tests__/types.d.ts" />
 import { ERROR_CODES_NETWORK, JNetworkError } from 'foundation';
 import _ from 'lodash';
 
@@ -42,12 +41,11 @@ jest.mock('../../../post');
 jest.mock('sdk/api');
 jest.mock('sdk/api/glip/group');
 
-const profileService = new ProfileService();
-const personService = new PersonService();
-const companyService = {
-  getCompanyEmailDomain: jest.fn().mockResolvedValue('companyDomain'),
-};
-
+function clearMock() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
 describe('GroupFetchDataController', () => {
   let testEntitySourceController: IEntitySourceController<Group>;
   let groupFetchDataController: GroupFetchDataController;
@@ -59,6 +57,9 @@ describe('GroupFetchDataController', () => {
 
   const groupDao = new GroupDao(null);
   const postService = new PostService();
+  const profileService = new ProfileService();
+  const personService = new PersonService();
+  const companyService = new CompanyService();
   const mockUserId = 1;
   function prepareGroupsForSearch() {
     AccountUserConfig.prototype.getGlipUserId = jest
@@ -200,9 +201,7 @@ describe('GroupFetchDataController', () => {
     }
   }
 
-  beforeEach(() => {
-    jest.restoreAllMocks();
-    jest.clearAllMocks();
+  function setup() {
     AccountUserConfig.prototype.getGlipUserId = jest
       .fn()
       .mockImplementation(() => mockUserId);
@@ -249,6 +248,10 @@ describe('GroupFetchDataController', () => {
       testEntityCacheSearchController,
       new GroupHandleDataController(groupService),
     );
+  }
+  beforeEach(() => {
+    clearMock();
+    setup();
   });
   describe('getGroupsByType()', () => {
     it('getGroupsByType()', async () => {
@@ -326,6 +329,7 @@ describe('GroupFetchDataController', () => {
 
   describe('getLocalGroup()', () => {
     it('should call groupDao with personIds append self id', async () => {
+      daoManager.getDao.mockReturnValue(groupDao);
       await groupFetchDataController.getLocalGroup([11, 12]);
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([
         11,
@@ -365,7 +369,6 @@ describe('GroupFetchDataController', () => {
     AccountUserConfig.prototype.getGlipUserId.mockReturnValueOnce(1);
 
     daoManager.getDao.mockReturnValueOnce(groupDao);
-
     groupDao.queryGroupByMemberList.mockResolvedValue(mock);
     const result1 = await groupFetchDataController.getGroupByPersonId(2);
     expect(result1).toEqual(mock);
@@ -374,17 +377,11 @@ describe('GroupFetchDataController', () => {
   describe('get left rail conversations', () => {
     it('get left rail conversations', async () => {
       const mock = [{ id: 1 }, { id: 2 }];
-      testEntitySourceController.batchGet.mockResolvedValue(mock);
-      groupDao.queryGroups.mockResolvedValue([{ id: 3 }]);
-      jest.spyOn(
-        groupFetchDataController.groupHandleDataController,
-        'filterGroups',
-      );
-      groupFetchDataController.groupHandleDataController.filterGroups.mockResolvedValue(
-        mock,
-      );
+      groupFetchDataController.getGroupsByType = jest
+        .fn()
+        .mockReturnValue(mock);
       const groups = await groupFetchDataController.getLeftRailGroups();
-      expect(groups.length).toBe(4);
+      expect(groups.length).toBe(6);
     });
   });
 
@@ -849,9 +846,7 @@ describe('GroupFetchDataController', () => {
     };
 
     const companyReplyDomain = 'companyDomain';
-    const companyService = new CompanyService();
     beforeEach(() => {
-      CompanyService.getInstance = jest.fn().mockReturnValue(companyService);
       companyService.getCompanyEmailDomain.mockResolvedValueOnce(
         companyReplyDomain,
       );
@@ -882,7 +877,7 @@ describe('GroupFetchDataController', () => {
     });
   });
 
-  describe.skip('doFuzzySearch use soundex', () => {
+  describe('doFuzzySearch use soundex', () => {
     beforeEach(() => {
       entityCacheController.clear();
       groupService['_entityCacheController'] = entityCacheController;
