@@ -18,8 +18,8 @@ import { Record } from '../Record';
 import { CallActions } from '../CallActions';
 import { End } from '../End';
 
-const KeypadActions = [Mute, Keypad, Hold, Add, Record, CallActions];
-const Key2IconMap = {
+const KEYPAD_ACTIONS = [Mute, Keypad, Hold, Add, Record, CallActions];
+const KEY_2_ICON_MAP = {
   one: '1',
   two: '2',
   three: '3',
@@ -33,41 +33,79 @@ const Key2IconMap = {
   zero: '0',
   hash: '#',
 };
+const ACCEPTABLE_KEYS = Object.values(KEY_2_ICON_MAP);
+const KEY_UP = 'keyup';
+
+const throttledHandler = (f: any) =>
+  _.throttle(f, 30, {
+    trailing: true,
+    leading: false,
+  });
 
 @observer
 class DialerContainerView extends React.Component<DialerContainerViewProps> {
   private _keypadKeys: React.ComponentType[];
+  private _onKeyup: (e: KeyboardEvent) => void;
 
   constructor(props: DialerContainerViewProps) {
     super(props);
+
+    this._onKeyup = throttledHandler(({ key }: KeyboardEvent) => {
+      const { keypadEntered, dtmf } = this.props;
+      if (ACCEPTABLE_KEYS.includes(key) && keypadEntered) {
+        dtmf(key);
+      }
+    });
+
     // Since we know that the dtmf() method for a view-model instance won't change during the runtime, then we can cache the buttons
     this._keypadKeys = [
-      'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'asterisk', 'zero', 'hash',
-    ].map(
-      str => {
-        const res = () => (
-          <JuiIconButton
-            disableToolTip={true}
-            onClick={_.throttle(
-              () => props.dtmf(Key2IconMap[str]),
-              30,
-              { trailing: true, leading: false },
-            )}
-            size="xxlarge"
-            key={str}
-            color="grey.900"
-            stretchIcon={true}
-          >
-            {str}
-          </JuiIconButton>
-        );
-        res.displayName = str;
-        return res;
-      });
+      'one',
+      'two',
+      'three',
+      'four',
+      'five',
+      'six',
+      'seven',
+      'eight',
+      'nine',
+      'asterisk',
+      'zero',
+      'hash',
+    ].map((str) => {
+      const res = () => (
+        <JuiIconButton
+          disableToolTip={true}
+          onClick={throttledHandler(() => props.dtmf(KEY_2_ICON_MAP[str]))}
+          size="xxlarge"
+          key={str}
+          color="grey.900"
+          stretchIcon={true}
+        >
+          {str}
+        </JuiIconButton>
+      );
+      res.displayName = str;
+      return res;
+    });
+  }
+
+  componentDidMount() {
+    window.addEventListener(KEY_UP, this._onKeyup);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener(KEY_UP, this._onKeyup);
   }
 
   render() {
-    return <JuiContainer End={End} KeypadActions={this.props.keypadEntered ? this._keypadKeys : KeypadActions} />;
+    return (
+      <JuiContainer
+        End={End}
+        KeypadActions={
+          this.props.keypadEntered ? this._keypadKeys : KEYPAD_ACTIONS
+        }
+      />
+    );
   }
 }
 

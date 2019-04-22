@@ -33,6 +33,7 @@ const defaultDBConfig: DBConfig = {
 
 class Sdk {
   private _glipToken: string;
+  private _sdkConfig: ISdkConfig;
 
   constructor(
     public daoManager: DaoManager,
@@ -43,34 +44,15 @@ class Sdk {
   ) {}
 
   async init(config: ISdkConfig) {
-    // Use default config value
-    const apiConfig: ApiConfig = merge({}, defaultApiConfig, config.api);
-    const dbConfig: DBConfig = merge({}, defaultDBConfig, config.db);
-    // Initialize foundation
-    Foundation.init({
-      dbAdapter: dbConfig.adapter,
-    });
-
-    Api.init(apiConfig, this.networkManager);
-
+    this._sdkConfig = config;
     DataMigration.migrateKVStorage();
-
-    await this.daoManager.initDatabase();
-
-    // Sync service should always start before login
-    this.serviceManager.startService(SyncService.name);
-
-    const accountService = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    );
-    HandleByRingCentral.platformHandleDelegate = accountService;
 
     notificationCenter.on(
       SHOULD_UPDATE_NETWORK_TOKEN,
       this.updateNetworkToken.bind(this),
     );
-
     // Listen to account events to init network and service
+    this.accountManager.on(AM.START_LOGIN, this.onStartLogin.bind(this));
     this.accountManager.on(AM.AUTH_SUCCESS, this.onAuthSuccess.bind(this));
     this.accountManager.on(AM.EVENT_LOGOUT, this.onLogout.bind(this));
     this.accountManager.on(
@@ -83,19 +65,47 @@ class Sdk {
       AutoAuthenticator.name,
     );
 
-    if (loginResp.isRCOnlyMode) {
-      this.accountManager.updateSupportedServices();
-      const accountService = ServiceLoader.getInstance<AccountService>(
-        ServiceConfig.ACCOUNT_SERVICE,
-      );
-      accountService.reLoginGlip();
-    } else if (loginResp && loginResp.success) {
-      // TODO replace all LOGIN listen on notificationCenter
-      // with accountManager.on(EVENT_LOGIN)
-      this.accountManager.updateSupportedServices();
-      notificationCenter.emitKVChange(SERVICE.LOGIN);
+    if (loginResp && loginResp.success) {
+      if (loginResp.isRCOnlyMode) {
+        this.accountManager.updateSupportedServices();
+        const accountService = ServiceLoader.getInstance<AccountService>(
+          ServiceConfig.ACCOUNT_SERVICE,
+        );
+        accountService.reLoginGlip();
+      } else {
+        // TODO replace all LOGIN listen on notificationCenter
+        // with accountManager.on(EVENT_LOGIN)
+        this.accountManager.updateSupportedServices();
+        notificationCenter.emitKVChange(SERVICE.LOGIN);
+      }
+    } else {
+      indexedDB.deleteDatabase('Glip');
     }
     this._initDataAnalysis();
+  }
+
+  async onStartLogin() {
+    // Use default config value
+    const apiConfig: ApiConfig = merge(
+      {},
+      defaultApiConfig,
+      this._sdkConfig.api,
+    );
+    const dbConfig: DBConfig = merge({}, defaultDBConfig, this._sdkConfig.db);
+
+    Foundation.init({
+      dbAdapter: dbConfig.adapter,
+    });
+    Api.init(apiConfig, this.networkManager);
+    await this.daoManager.initDatabase();
+
+    // Sync service should always start before login
+    this.serviceManager.startService(SyncService.name);
+
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
+    HandleByRingCentral.platformHandleDelegate = accountService;
   }
 
   async onAuthSuccess(isRCOnlyMode: boolean) {
@@ -147,7 +157,7 @@ class Sdk {
   async onLogout() {
     this.networkManager.clearToken();
     this.serviceManager.stopAllServices();
-    await this.daoManager.deleteDatabase();
+    this.daoManager.deleteDatabase();
     ServiceLoader.getInstance<UserConfigService>(
       ServiceConfig.USER_CONFIG_SERVICE,
     ).clear();

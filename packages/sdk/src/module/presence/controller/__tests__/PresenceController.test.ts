@@ -12,14 +12,11 @@ jest.mock('../SubscribeController');
 jest.mock('../../../../service/notificationCenter');
 
 const _INTERVAL = 250;
-let presenceController: PresenceController = new PresenceController(
-  5,
-  _INTERVAL,
-);
+let presenceController: PresenceController;
 
 describe('Presence Controller', () => {
   beforeEach(() => {
-    presenceController.reset();
+    presenceController = new PresenceController(5, _INTERVAL);
     jest.restoreAllMocks();
     jest.clearAllMocks();
   });
@@ -54,7 +51,7 @@ describe('Presence Controller', () => {
 
   it('should call subscribeSuccess() when success', () => {
     presenceController.handlePresenceIncomingData = jest.fn();
-    presenceController.saveToMemory([{ id: 1, presence: 'Available' }]);
+    presenceController.saveToMemory([{ id: 1, presence: PRESENCE.AVAILABLE }]);
     presenceController.subscribeSuccess([
       {
         personId: 1,
@@ -77,11 +74,11 @@ describe('Presence Controller', () => {
     presenceController.saveToMemory([
       {
         id: 1,
-        presence: 'Unavailable',
+        presence: PRESENCE.UNAVAILABLE,
       },
       {
         id: 2,
-        presence: 'Available',
+        presence: PRESENCE.AVAILABLE,
       },
     ]);
     presenceController.reset();
@@ -92,12 +89,12 @@ describe('Presence Controller', () => {
     presenceController.saveToMemory([
       {
         id: 1,
-        presence: 'Unavailable',
+        presence: PRESENCE.UNAVAILABLE,
       },
     ]);
     expect(await presenceController.getById(1)).toEqual({
       id: 1,
-      presence: 'Unavailable',
+      presence: PRESENCE.UNAVAILABLE,
     });
   });
 
@@ -111,7 +108,9 @@ describe('Presence Controller', () => {
   });
 
   it('should clear caches when call reset() ', () => {
-    presenceController.getCaches().set(1, { id: 1, presence: 'Unavailable' });
+    presenceController
+      .getCaches()
+      .set(1, { id: 1, presence: PRESENCE.UNAVAILABLE });
     presenceController.reset();
     expect(presenceController.getCaches().size).toBe(0);
     expect(
@@ -153,14 +152,26 @@ describe('Presence Controller', () => {
         ],
       );
     });
+  });
 
-    it('should call reset() and notify reset when state changed to disconnected', () => {
-      presenceController.handleStore({ state: 'connected' });
-      presenceController.handleStore({ state: 'disconnected' });
+  describe('handleSocketStateChange', () => {
+    it('should call reset() and notify reload when state changed to connected', () => {
+      presenceController.reset = jest.fn();
+      presenceController.handleSocketStateChange('connected');
+      expect(presenceController.reset).toHaveBeenCalled();
       expect(notificationCenter.emitEntityReload).toHaveBeenCalled();
-      expect(
-        presenceController.getSubscribeController().reset,
-      ).toHaveBeenCalled();
+    });
+
+    it('should call resetPresence() when state changed to connected', () => {
+      presenceController.resetPresence = jest.fn();
+      presenceController.handleSocketStateChange('disconnected');
+      expect(presenceController.resetPresence).toHaveBeenCalled();
+    });
+  });
+
+  describe('resetPresence', () => {
+    it('should notify reset presence', () => {
+      presenceController.resetPresence();
       expect(notificationCenter.emitEntityReset).toHaveBeenCalled();
     });
   });

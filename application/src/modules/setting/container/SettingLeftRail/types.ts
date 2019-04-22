@@ -7,7 +7,7 @@
 enum SETTING_LIST_TYPE {
   GENERAL = 'general',
   NOTIFICATION_AND_SOUNDS = 'notification_and_sounds',
-  MESSAGING = 'messaging',
+  MESSAGES = 'messages',
   PHONE = 'phone',
   MEETINGS = 'meetings',
   CALENDAR = 'calendar',

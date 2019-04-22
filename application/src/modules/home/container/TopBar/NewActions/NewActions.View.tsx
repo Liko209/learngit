@@ -19,10 +19,9 @@ type NewActionsProps = WithTranslation & ViewProps;
 class NewActions extends React.Component<NewActionsProps> {
   constructor(props: NewActionsProps) {
     super(props);
-    this._Anchor = this._Anchor.bind(this);
   }
 
-  private _Anchor() {
+  private _Anchor = () => {
     const { t } = this.props;
     return (
       <JuiFabButton
@@ -30,6 +29,7 @@ class NewActions extends React.Component<NewActionsProps> {
         tooltipTitle={t('home.newActions')}
         data-test-automation-id="addMenuBtn"
         iconName="new_actions"
+        disableRipple={true}
       />
     );
   }
@@ -39,8 +39,8 @@ class NewActions extends React.Component<NewActionsProps> {
   handleNewMessage = () => NewMessage.show();
 
   renderCreateTeam() {
-    const { t } = this.props;
-    return this.props.canCreateTeam ? (
+    const { t, canCreateTeam } = this.props;
+    return canCreateTeam ? (
       <JuiMenuItem onClick={this.handleCreateTeam}>
         {t('people.team.CreateTeam')}
       </JuiMenuItem>
@@ -48,8 +48,8 @@ class NewActions extends React.Component<NewActionsProps> {
   }
 
   renderSendNewMessage() {
-    const { t } = this.props;
-    return this.props.canSendNewMessage ? (
+    const { t, canSendNewMessage } = this.props;
+    return canSendNewMessage ? (
       <JuiMenuItem
         onClick={this.handleNewMessage}
         data-test-automation-id="sendNewMessage"
@@ -61,24 +61,22 @@ class NewActions extends React.Component<NewActionsProps> {
 
   render() {
     return (
-      <>
-        <JuiNewActions
-          Anchor={this._Anchor}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-          }}
-        >
-          <JuiMenuList>
-            {this.renderCreateTeam()}
-            {this.renderSendNewMessage()}
-          </JuiMenuList>
-        </JuiNewActions>
-      </>
+      <JuiNewActions
+        Anchor={this._Anchor}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        <JuiMenuList>
+          {this.renderCreateTeam()}
+          {this.renderSendNewMessage()}
+        </JuiMenuList>
+      </JuiNewActions>
     );
   }
 }

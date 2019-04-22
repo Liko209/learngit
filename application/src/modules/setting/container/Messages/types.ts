@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type MessagingProps = {};
+type MessagesProps = {};
 
-type MessagingViewProps = {};
+type MessagesViewProps = {};
 
-export { MessagingProps, MessagingViewProps };
+export { MessagesProps, MessagesViewProps };

@@ -132,6 +132,7 @@ type JuiOutlineTextFieldProps = {
   size?: OutlineTextSize;
   iconPosition?: IconPosition;
   iconName?: string | string[];
+  className?: string;
 };
 
 type JuiOutlineTextFieldRef = {
