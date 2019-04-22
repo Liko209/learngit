@@ -75,7 +75,11 @@ describe('PostService', () => {
     it('should call post data controller', async () => {
       const rawPost = [{ _id: 1 }, { _id: 2 }] as any;
       await postService.handleIndexData(rawPost, true);
-      expect(postDataController.handleIndexPosts).toBeCalledWith(rawPost, true);
+      expect(postDataController.handleIndexPosts).toBeCalledWith(
+        rawPost,
+        true,
+        undefined,
+      );
     });
   });
   describe('PostSearchController', () => {

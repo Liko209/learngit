@@ -28,7 +28,6 @@ export class SortableListStore<T = any> extends ListStore<ISortableModel<T>> {
       const unionAndSortIds = this._sortFunc
         ? unionArray.sort(this._sortFunc)
         : _.sortBy(unionArray, 'sortValue');
-
       this.replaceAll(unionAndSortIds);
     }
   }

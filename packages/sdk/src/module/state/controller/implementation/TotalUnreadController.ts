@@ -26,7 +26,6 @@ import { SERVICE } from '../../../../service/eventKey';
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
-import { number } from '@storybook/addon-knobs';
 
 type DataHandleTask =
   | GroupStateHandleTask

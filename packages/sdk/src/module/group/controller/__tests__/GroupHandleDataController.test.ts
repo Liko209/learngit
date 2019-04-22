@@ -263,7 +263,7 @@ describe('GroupHandleDataController', () => {
       ]);
       await groupHandleDataController.handlePartialData(groups);
       expect(daoManager.getDao(GroupDao).update).toHaveBeenCalledTimes(0);
-      expect(GroupAPI.requestGroupById).toHaveBeenCalledTimes(1);
+      expect(entitySourceController.get).toHaveBeenCalledTimes(1);
     });
   });
   describe('handleFavoriteGroupsChanged()', () => {
@@ -350,7 +350,7 @@ describe('GroupHandleDataController', () => {
         most_recent_post_created_at: 99,
         members: [],
       });
-      entitySourceController.get.mockResolvedValueOnce({
+      entitySourceController.get.mockResolvedValue({
         id: 2,
         most_recent_post_created_at: 99,
         members: [],
@@ -373,7 +373,7 @@ describe('GroupHandleDataController', () => {
         id: 2,
         members: [],
       });
-      entitySourceController.get.mockResolvedValueOnce({
+      entitySourceController.get.mockResolvedValue({
         id: 2,
         members: [],
       });
