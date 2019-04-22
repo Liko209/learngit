@@ -23,7 +23,13 @@ import {
   useScroll,
   PartialScrollPosition,
 } from './hooks';
-import { createKeyMapper, createRange, getChildren, isRangeIn } from './utils';
+import {
+  createKeyMapper,
+  createRange,
+  getChildren,
+  isRangeIn,
+  isRangeEqual,
+} from './utils';
 import { usePrevious } from './hooks/usePrevious';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
@@ -279,13 +285,14 @@ const JuiVirtualizedList: RefForwardingComponent<
     height / rowManager.getEstimateRowHeight(),
   );
 
+  const initialVisibleRange = createRange({
+    startIndex: initialScrollToIndex,
+    size: renderedRangeSize,
+    min: minIndex,
+    max: maxIndex,
+  });
   const { range: visibleRange, setRange: setVisibleRange } = useRange(
-    createRange({
-      startIndex: initialScrollToIndex,
-      size: renderedRangeSize,
-      min: minIndex,
-      max: maxIndex,
-    }),
+    initialVisibleRange,
   );
   const renderedRange = computeRenderedRange(visibleRange);
 
@@ -406,11 +413,13 @@ const JuiVirtualizedList: RefForwardingComponent<
   // Emit visible range change
   //
   useEffect(() => {
-    onVisibleRangeChange(visibleRange);
-  },        [JSON.stringify(visibleRange)]);
+    if (!isRangeEqual(visibleRange, initialVisibleRange)) {
+      onVisibleRangeChange(visibleRange);
+    }
+  },        [visibleRange.startIndex, visibleRange.stopIndex, initialVisibleRange]);
   useEffect(() => {
     onRenderedRangeChange(renderedRange);
-  },        [JSON.stringify(renderedRange)]);
+  },        [renderedRange.startIndex, renderedRange.stopIndex]);
 
   //
   // Update prevAtBottom
