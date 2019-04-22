@@ -454,6 +454,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         transformFunc: groupTransformFunc,
         entityName: ENTITY_NAME.GROUP,
         eventName: undefined, // it should not subscribe notification by itself
+        limit: 50,
       },
     );
   }
@@ -486,6 +487,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       transformFunc: groupTransformFunc,
       entityName: ENTITY_NAME.GROUP,
       eventName: undefined, // it should not subscribe notification by itself
+      limit: 50,
     });
   }
 

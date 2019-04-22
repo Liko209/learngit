@@ -76,7 +76,6 @@ class StateDataHandleController {
         source,
         changeMap,
       );
-      this._totalUnreadController.handleGroupState(updatedState.groupStates);
     } catch (err) {
       mainLogger.error(`StateDataHandleController, handle task error, ${err}`);
     }
