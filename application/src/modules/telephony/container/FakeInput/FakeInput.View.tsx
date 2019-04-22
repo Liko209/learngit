@@ -14,12 +14,12 @@ import { FakeInputViewProps } from './types';
 @observer
 class FakeInputView extends Component<FakeInputViewProps> {
   // Perf: this is the fastest solution by using js-bench in node.V10.15.0
-  static reverse(strings: string) {
-    let a = '';
-    for (let i = strings.length - 1; i >= 0; i--) {
-      a += strings[i];
+  static reverse(str: string) {
+    let reversed = '';
+    for (let i = str.length - 1; i >= 0; i--) {
+      reversed += str[i];
     }
-    return a;
+    return reversed;
   }
 
   // HACK: using `direction:rtl` and `unicode-bidi` while also reversing the input string
