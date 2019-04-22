@@ -121,7 +121,7 @@ describe('StreamViewModel', () => {
     });
   });
 
-  describe.only('getFirstUnreadPostByLoadAllUnread()', () => {
+  describe('getFirstUnreadPostByLoadAllUnread()', () => {
     function setupMock({
       groupState,
       currentPosts,
