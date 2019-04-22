@@ -5,14 +5,14 @@
  */
 import { NotificationStore } from '../store/NotificationStore';
 import { NotificationOpts } from '../interface';
-import { isElectron, isSafari, isWindows } from '@/common/isUserAgent';
+import { isElectron, isWindows, isEdge } from '@/common/isUserAgent';
 export abstract class AbstractNotification<T> {
   protected _store: NotificationStore<T>;
   constructor() {
     this._store = new NotificationStore();
   }
   protected handlePriority(opts: NotificationOpts) {
-    if (isSafari || (isElectron && isWindows)) {
+    if (isEdge || (isElectron && isWindows)) {
       const { priority } = opts.data;
       const lowPriorityNotifications = Object.values(this._store.items).filter(
         item => {
