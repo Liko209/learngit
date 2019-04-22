@@ -12,13 +12,17 @@ import { ViewProps } from './types';
 @observer
 class AvatarNameView extends React.Component<ViewProps> {
   render() {
-    const { name, id } = this.props;
+    const { id, person } = this.props;
+
+    if (person.isMocked) {
+      return null;
+    }
 
     return (
       <JuiAvatarName
         key={id}
         Avatar={<Avatar uid={id} size="small" />}
-        name={name}
+        name={person.userDisplayName}
       />
     );
   }
