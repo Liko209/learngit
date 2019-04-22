@@ -8,7 +8,7 @@ fixture('Accessibility')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Accessibility', ['Henry.Xu']), async (t) => {
+test.skip(formalName('Accessibility', ['Henry.Xu']), async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
 
