@@ -114,11 +114,11 @@ test.meta(<ITestMeta>{
   });
 
   const telephonyDialog = app.homePage.telephonyDialog;
-  await h(t).withLog('When I receive an in-comming call', async () => {
+  await h(t).withLog('When I receive an incoming call', async () => {
     await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
   });
 
-  await h(t).withLog('And I ignore this in-comming call in Jupiter', async () => {
+  await h(t).withLog('And I click the to voicemail button in Jupiter', async () => {
     await telephonyDialog.ensureLoaded();
     await telephonyDialog.clickSendToVoiceMailButton();
   });

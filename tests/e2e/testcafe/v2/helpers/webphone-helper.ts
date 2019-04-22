@@ -8,7 +8,7 @@ import { ENV_OPTS } from '../../config';
 export class WebphoneHelper {
 
   constructor(private t: TestController) {
-    this.sessions = [];
+    this.sessions = this.sessions || [];
   }
 
   set sessions(sessions: WebphoneSession[]) {
