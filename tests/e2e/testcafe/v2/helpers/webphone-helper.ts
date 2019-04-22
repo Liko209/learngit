@@ -7,7 +7,9 @@ import { ENV_OPTS } from '../../config';
 
 export class WebphoneHelper {
 
-  constructor(private t: TestController) { }
+  constructor(private t: TestController) {
+    this.sessions = [];
+  }
 
   set sessions(sessions: WebphoneSession[]) {
     this.t.ctx.__webphoneSessions = sessions;
@@ -29,9 +31,6 @@ export class WebphoneHelper {
 
   async newWebphoneSession(user: IUser) {
     const session = new WebphoneSession(ENV_OPTS.WEBPHONE_ENV, user.company.number, user.extension, user.password);
-    if (this.sessions === undefined) {
-      this.sessions = [];
-    }
     this.sessions.push(session);
     await session.init();
     return session;
