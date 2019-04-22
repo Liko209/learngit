@@ -27,6 +27,8 @@ abstract class StoreViewModel<P = {}> extends BaseNotificationSubscribable
   implements IViewModel<P> {
   private _reactionDisposers: IReactionDisposer[] = [];
 
+  _BLACKLISTED_PROPS?: string[];
+
   @observable
   private _props: P;
 
@@ -35,16 +37,25 @@ abstract class StoreViewModel<P = {}> extends BaseNotificationSubscribable
     return this._props;
   }
 
-  constructor(props?: P) {
+  private _getAttributes = (props?: Partial<P>) => {
+    return props && this._BLACKLISTED_PROPS
+      ? _.omit<{}>(props, this._BLACKLISTED_PROPS)
+      : props;
+  }
+
+  constructor(props?: P, BLACKLISTED_PROPS?: string[]) {
     super();
-    this._props = props || ({} as P);
+    this._BLACKLISTED_PROPS = BLACKLISTED_PROPS;
+    const attributes = this._getAttributes(props);
+    this._props = (attributes as P) || ({} as P);
   }
 
   onReceiveProps?(props: P): void;
 
   @action
   getDerivedProps(props: Partial<P>) {
-    for (const key in props) {
+    const attributes = this._getAttributes(props);
+    for (const key in attributes) {
       if (this._props[key] === undefined && props[key] !== undefined) {
         set(this._props, { [key]: props[key] });
       } else if (typeof props[key] !== 'object') {

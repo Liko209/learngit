@@ -95,7 +95,7 @@ const StyledWrapper = styled<CompositeWrapperProps>(CompositeWrapper)`
 const StyledInput = styled(InputBase)`
   && {
     flex: 1;
-    ${typography('body1')};
+    ${typography('subheading1')};
     color: ${grey('900')};
   }
 `;
@@ -132,6 +132,7 @@ type JuiOutlineTextFieldProps = {
   size?: OutlineTextSize;
   iconPosition?: IconPosition;
   iconName?: string | string[];
+  className?: string;
 };
 
 type JuiOutlineTextFieldRef = {

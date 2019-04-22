@@ -16,11 +16,9 @@ import { StyledJuiSearchBar } from './StyledSearchBar';
 type Props = {
   MainMenu: ComponentType<any>;
   Logo: ComponentType;
-  // Search: ComponentType,
-  AvatarActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
-  NewActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
+  AvatarActions: ComponentType<any>;
+  NewActions: ComponentType<any>;
   BackNForward: ComponentType<any>;
-  SearchBar: ComponentType<any>;
   openGlobalSearch: (event: React.MouseEvent<HTMLElement>) => void;
   searchKey: string;
   searchPlaceholder: string;
@@ -57,7 +55,6 @@ class JuiTopBar extends React.PureComponent<Props, States> {
       searchKey,
       searchPlaceholder,
       onClear,
-      // SearchBar,
     } = this.props;
     return (
       <StyledAppBar>
@@ -77,9 +74,10 @@ class JuiTopBar extends React.PureComponent<Props, States> {
               // closeSearchBar={this.showSearchBar}
             />
             <StyledSearchIconButton
-              onClick={this.showSearchBar}
+              onClick={openGlobalSearch}
               tooltipTitle="Search"
               size="medium"
+              color="common.white"
             >
               search
             </StyledSearchIconButton>
@@ -87,17 +85,11 @@ class JuiTopBar extends React.PureComponent<Props, States> {
           <StyledRight>
             <NewActions />
             <AvatarActions />
-            {/* <StyledMoreIconButton tooltipTitle="More" size="medium">
-              more_vert
-            </StyledMoreIconButton> */}
           </StyledRight>
         </StyledToolbar>
       </StyledAppBar>
     );
   }
 }
-
-// JuiTopBar.displayName = 'JuiTopBar';
-// JuiTopBar.dependencies = [];
 
 export { JuiTopBar };

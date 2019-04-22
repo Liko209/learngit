@@ -329,7 +329,7 @@
     },
     "team": {
       "Members": "Members",
-      "SearchContactPlaceholder": "Members (enter names or email addresses)",
+      "SearchContactPlaceholder": "Enter names or email addresses",
       "CreateTeam": "Create Team",
       "Create": "Create",
       "SetAsPublicTeam": "Public Team (visible to any co-worker)",
@@ -337,6 +337,7 @@
       "MembersMayAddOtherMembers": "Allow members to add other members",
       "MembersMayPinPosts": "Allow members to pin posts",
       "teamName": "Team name",
+      "teamNamePlaceholder": "Enter team name",
       "teamDescription": "Team description",
       "allowTeamMembersTo": "Allow team members to",
       "addTeamMembers": "Add team members",
@@ -388,7 +389,8 @@
       "markAsUnread": "Mark as unread",
       "convertToTeam": "Convert to team",
       "convertToTeamNamePrefix": "Team: ",
-      "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content."
+      "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content.",
+      "noMatchesFound": "No matches found"
     },
     "company": {},
     "prompt": {
@@ -496,7 +498,7 @@
     "teamSettings": "Settings",
     "general": "General",
     "notificationAndSounds": "Notification and Sounds",
-    "messaging": "Messaging",
+    "messages": "Messages",
     "phone": "Phone",
     "meetings": "Meetings",
     "calendar": "Calendar"
@@ -519,18 +521,18 @@
   "feedback": {
     "name": "Feedback",
     "uploading": "uploading",
-    "uploadRecentLogsDialogHeader": "Send feedback",
+    "uploadRecentLogsDialogHeader": "Send Feedback",
     "uploadRecentLogsDialogContent": "Upload recent logs to Jupiter feedback email.",
     "submit": "Send",
     "describeYourProblemHere": "Describe your problem here",
     "uploadLogSuccess": "Upload log successfully.",
     "uploadLogFailed": "Sorry, we weren't able to upload the logs.",
     "openEmailFailed": "Open email failed.",
-    "sendFeedbackSuccess": "Send feedback successfully.",
+    "sendFeedbackSuccess": "Feedback sent successfully.",
     "sendFeedbackFailed": "Send feedback failed.",
     "title": "It looks like we're having issues.",
     "issueTitle": "Summary",
     "issueDescription": "What happened?",
-    "sendingInBackground": "Sending feedback in background."
+    "sendingInBackground": "Sending feedback..."
   }
 }

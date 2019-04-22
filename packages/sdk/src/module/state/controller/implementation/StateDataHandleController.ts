@@ -15,7 +15,6 @@ import { StateHandleTask, GroupCursorHandleTask } from '../../types';
 import notificationCenter from '../../../../service/notificationCenter';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { StateFetchDataController } from './StateFetchDataController';
-import { TotalUnreadController } from './TotalUnreadController';
 import { mainLogger } from 'foundation';
 import { AccountUserConfig } from '../../../../module/account/config';
 import { MyStateConfig } from '../../../state/config';
@@ -29,7 +28,6 @@ class StateDataHandleController {
   constructor(
     private _entitySourceController: IEntitySourceController<GroupState>,
     private _stateFetchDataController: StateFetchDataController,
-    private _totalUnreadController: TotalUnreadController,
   ) {
     this._taskArray = [];
   }
@@ -72,7 +70,6 @@ class StateDataHandleController {
       }
       const updatedState = await this._generateUpdatedState(transformedState);
       await this._updateEntitiesAndDoNotification(updatedState, source);
-      this._totalUnreadController.handleGroupState(updatedState.groupStates);
     } catch (err) {
       mainLogger.error(`StateDataHandleController, handle task error, ${err}`);
     }

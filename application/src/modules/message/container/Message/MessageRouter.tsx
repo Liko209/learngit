@@ -74,7 +74,10 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
   componentDidMount() {
     const targetConversationId = this.props.match.params.subPath;
     targetConversationId
-      ? MessageRouterChangeHelper.goToConversation(targetConversationId)
+      ? MessageRouterChangeHelper.goToConversation(
+          targetConversationId,
+          'REPLACE',
+        )
       : MessageRouterChangeHelper.goToLastOpenedGroup();
   }
 

@@ -88,7 +88,9 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
       return result;
     }
-
+    if (this._telephonyCallDelegate) {
+      return MAKE_CALL_ERROR_CODE.MAX_CALLS_REACHED;
+    }
     this._telephonyCallDelegate = new TelephonyCallController(
       this._callDelegate,
     );
@@ -248,6 +250,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   callStateChanged = (callId: string, state: RTC_CALL_STATE) => {
     if (state === RTC_CALL_STATE.DISCONNECTED) {
       this._processLogoutIfNeeded();
+      delete this._telephonyCallDelegate;
     }
   }
 

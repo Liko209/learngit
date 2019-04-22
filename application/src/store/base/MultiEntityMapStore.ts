@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { onBecomeObserved, onBecomeUnobserved, action, observable } from 'mobx';
-import { service } from 'sdk';
+import { service, mainLogger } from 'sdk';
 import { IdModel, Raw } from 'sdk/framework/model';
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
@@ -203,11 +203,15 @@ export default class MultiEntityMapStore<
       } else {
         const res = this.getByService(id);
         if (res instanceof Promise) {
-          res.then((res: T & { error?: {} }) => {
-            if (res && !res.error) {
-              this.partialUpdate(res as T, id);
-            }
-          });
+          res
+            .then((res: T & { error?: {} }) => {
+              if (res && !res.error) {
+                this.partialUpdate(res as T, id);
+              }
+            })
+            .catch(error => {
+              mainLogger.log('MultiEntityMapStore get error', error);
+            });
         } else {
           if (res) {
             this.partialUpdate(res as T, id);

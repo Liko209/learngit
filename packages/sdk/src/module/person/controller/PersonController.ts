@@ -341,9 +341,14 @@ class PersonController {
       },
     );
 
-    return result && result.sortableModels.length > 0
-      ? result.sortableModels[0].entity
-      : null;
+    if (result) {
+      const res = result.sortableModels.find((item: { entity: Person }) => {
+        return !this._isDeactivated(item.entity);
+      });
+      return res ? res.entity : null;
+    }
+
+    return null;
   }
 
   public async refreshPersonData(personId: number): Promise<void> {
