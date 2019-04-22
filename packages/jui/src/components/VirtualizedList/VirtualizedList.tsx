@@ -359,7 +359,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     };
 
     const observeDynamicRow = (el: HTMLElement, i: number) => {
-      const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+      const cb = (entries: ResizeObserverEntry[]) => {
         for (const entry of entries) {
           const { diff } = handleRowSizeChange(entry.target as HTMLElement, i);
 
@@ -370,19 +370,20 @@ const JuiVirtualizedList: RefForwardingComponent<
             ensureNoBlankArea();
           }
         }
-      });
+      };
+      const observer = new ResizeObserver(cb);
       observer.observe(el);
-      return observer;
+      return { observer, cb };
     };
 
     const rowElements = getChildren(contentRef.current);
     rowElements.forEach(handleRowSizeChange);
-    let observers: ResizeObserver[] | undefined = rowElements.map(
-      observeDynamicRow,
-    );
+    const observers = rowElements.map(observeDynamicRow);
     return () => {
-      observers && observers.forEach((ro: ResizeObserver) => ro.disconnect());
-      observers = undefined;
+      observers.forEach(observer => {
+        observer.observer.disconnect();
+        delete observer.cb;
+      });
     };
   },              [keyMapper(startIndex), keyMapper(Math.min(stopIndex, maxIndex))]);
 
