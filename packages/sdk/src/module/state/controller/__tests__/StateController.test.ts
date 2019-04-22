@@ -43,10 +43,6 @@ describe('StateController', () => {
       expect(StateFetchDataController).toBeCalledWith(
         mockEntitySourceController,
       );
-      expect(TotalUnreadController).toBeCalledWith(
-        groupService,
-        mockEntitySourceController,
-      );
       expect(StateActionController).toBeCalled();
       expect(result instanceof StateActionController).toBe(true);
     });
@@ -56,10 +52,6 @@ describe('StateController', () => {
     it('should call functions with correct params', () => {
       const result = stateController.getStateDataHandleController();
       expect(StateFetchDataController).toBeCalledWith(
-        mockEntitySourceController,
-      );
-      expect(TotalUnreadController).toBeCalledWith(
-        groupService,
         mockEntitySourceController,
       );
       expect(StateDataHandleController).toBeCalled();
