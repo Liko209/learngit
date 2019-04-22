@@ -42,28 +42,25 @@ class GroupHandleDataController {
       groups.map(async (item: Partial<Raw<Group>>) => {
         if (item._id) {
           const finalItem = item;
-          const existedGroup = await this.entitySourceController.get(item._id);
-          if (existedGroup) {
-            // If existed in DB, update directly and return the updated result for notification later
-            type Transformed = PartialWithKey<Group>;
-            const transformed: Transformed = transform<Transformed>(finalItem);
-            await this.entitySourceController.update(transformed);
-            if (transformed.id) {
-              const updated = await this.entitySourceController.get(
-                transformed.id,
+          try {
+            const existedGroup = await this.entitySourceController.get(
+              item._id,
+            );
+            if (existedGroup) {
+              type Transformed = PartialWithKey<Group>;
+              const transformed: Transformed = transform<Transformed>(
+                finalItem,
               );
-              return updated;
+              await this.entitySourceController.update(transformed);
+              if (transformed.id) {
+                const updated = await this.entitySourceController.get(
+                  transformed.id,
+                );
+                return updated;
+              }
             }
-          } else {
-            // If not existed in DB, request from API and handle the response again
-            let result;
-            try {
-              result = await GroupAPI.requestGroupById(item._id);
-              this.handleData([result]);
-              return result;
-            } catch (error) {
-              mainLogger.error(`${JSON.stringify(error)}`);
-            }
+          } catch (error) {
+            mainLogger.error(`${JSON.stringify(error)}`);
           }
         }
         return null;
@@ -183,7 +180,8 @@ class GroupHandleDataController {
       (groups && groups.length) ||
       (deactivatedData && deactivatedData.length)
     ) {
-      const combindGroups = deactivatedData && deactivatedData.length
+      const combindGroups =
+        deactivatedData && deactivatedData.length
           ? [...groups, ...deactivatedData]
           : groups;
       if (entities) {
@@ -391,16 +389,22 @@ class GroupHandleDataController {
     await groupDao.doInTransaction(async () => {
       const groups: (null | Partial<Raw<Group>>)[] = await Promise.all(
         uniqMaxPosts.map(async (post: Post) => {
-          const group: null | Group = await groupDao.get(post.group_id);
-          if (group && this.isNeedToUpdateMostRecent4Group(post, group)) {
-            ids.push(post.group_id);
-            const pg: Partial<Raw<Group>> = {
-              _id: post.group_id,
-              most_recent_post_created_at: post.created_at,
-              most_recent_content_modified_at: post.modified_at,
-              most_recent_post_id: post.id,
-            };
-            return pg;
+          try {
+            const group: null | Group = await this.entitySourceController.get(
+              post.group_id,
+            );
+            if (group && this.isNeedToUpdateMostRecent4Group(post, group)) {
+              ids.push(post.group_id);
+              const pg: Partial<Raw<Group>> = {
+                _id: post.group_id,
+                most_recent_post_created_at: post.created_at,
+                most_recent_content_modified_at: post.modified_at,
+                most_recent_post_id: post.id,
+              };
+              return pg;
+            }
+          } catch (error) {
+            return null;
           }
           return null;
         }),
