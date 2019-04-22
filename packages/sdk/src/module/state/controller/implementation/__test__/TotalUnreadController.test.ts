@@ -29,6 +29,7 @@ import { IEntityPersistentController } from '../../../../../framework/controller
 import { AccountUserConfig } from '../../../../../module/account/config';
 import { ServiceLoader } from '../../../../../module/serviceLoader';
 import { EntityPersistentController } from 'sdk/framework/controller/impl/EntityPersistentController';
+import { TestDatabase } from 'sdk/framework/controller/__tests__/TestTypes';
 
 jest.mock('../../../../../module/config');
 jest.mock('../../../../group');
@@ -48,7 +49,7 @@ describe('TotalUnreadController', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockEntityPersistentController = new EntityPersistentController(
-      new GroupStateDao(null),
+      new GroupStateDao(new TestDatabase()),
     );
     mockEntitySourceController = new EntitySourceController<GroupState>(
       mockEntityPersistentController as IEntityPersistentController,
@@ -804,7 +805,7 @@ describe('TotalUnreadController', () => {
       const group = { id: groupId } as Group;
       totalUnreadController['_favoriteGroupIds'] = [11223344];
       totalUnreadController['_modifyTotalUnread'] = jest.fn();
-      await totalUnreadController['_addNewGroupUnread'](group, null);
+      await totalUnreadController['_addNewGroupUnread'](group, { id: 3 });
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.DIRECT_MESSAGE,
         0,
