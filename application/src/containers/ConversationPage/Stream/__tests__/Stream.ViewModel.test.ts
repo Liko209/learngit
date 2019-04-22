@@ -37,7 +37,28 @@ jest.mock('sdk/module/group');
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
 function setup(obj?: any) {
+  const {
+    currentPosts = [],
+    postsNewerThanAnchor = [],
+    postsOlderThanAnchor = [],
+  } = obj;
   jest.spyOn(notificationCenter, 'on').mockImplementation();
+  const dataProvider = { fetchData: jest.fn().mockName('fetchData()') };
+  dataProvider.fetchData
+    .mockResolvedValueOnce({ data: postsNewerThanAnchor, hasMore: true })
+    .mockResolvedValueOnce({ data: postsOlderThanAnchor, hasMore: false });
+  const listHandler = new FetchSortableDataListHandler<Post>(dataProvider, {
+    isMatchFunc: () => true,
+    transformFunc: (post: Post) => {
+      return { id: post.id, sortValue: post.created_at, data: post };
+    },
+  });
+  listHandler.upsert(currentPosts);
+  listHandler.setHasMore(true, QUERY_DIRECTION.OLDER);
+  listHandler.setHasMore(true, QUERY_DIRECTION.NEWER);
+  jest
+    .spyOn(ConversationPostFocBuilder, 'buildConversationPostFoc')
+    .mockReturnValue(listHandler);
   const vm = new StreamViewModel({
     viewRef: React.createRef(),
     groupId: obj.groupId || 1,
@@ -51,14 +72,6 @@ describe('StreamViewModel', () => {
   let itemService: ItemService;
   let postService: PostService;
   let stateService: StateService;
-
-  const streamController = {
-    dispose: jest.fn(),
-    hasMore: jest.fn(),
-    fetchAllUnreadData: jest.fn(),
-    enableNewMessageSep: jest.fn(),
-    disableNewMessageSep: jest.fn(),
-  };
 
   beforeEach(() => {
     jest.clearAllMocks();
