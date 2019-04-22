@@ -4,6 +4,9 @@
       "./fixtures/ContentPanel/JumpToUnreadButton.ts",
       "./fixtures/ConversationStream/ConversationStream.ts"
     ],
+    "exclude_tags": [
+        "JPT-208"
+    ],
     "browsers": ["selenium:chrome"]
  }
 }
