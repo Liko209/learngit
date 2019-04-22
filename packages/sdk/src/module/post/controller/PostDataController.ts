@@ -25,6 +25,7 @@ import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 import { SortUtils } from '../../../framework/utils';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { ChangeModel } from '../../sync/types';
+import GroupService from '../../group';
 
 class PostDataController {
   constructor(
@@ -404,8 +405,9 @@ class PostDataController {
   private async _ensureGroupExist(posts: Post[]): Promise<void> {
     if (posts.length) {
       const notExistedGroups: number[] = [];
+      const groupService = this._groupService as GroupService;
       posts.forEach((post: Post) => {
-        const group = this._groupService.getSynchronously(post.group_id);
+        const group = groupService.getSynchronously(post.group_id);
         if (!group) {
           notExistedGroups.push(post.group_id);
         }
@@ -419,7 +421,7 @@ class PostDataController {
           }`,
         );
         try {
-          await this._groupService.batchGet(notExistedGroups);
+          await groupService.batchGet(notExistedGroups);
         } catch (error) {
           mainLogger
             .tags('PostDataController')
