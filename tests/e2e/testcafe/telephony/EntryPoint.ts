@@ -69,7 +69,7 @@ test.meta(<ITestMeta>{
     await telephonyDialog.ensureLoaded();
   });
 
-  await h(t).withLog('When I click the hand up button', async () => {
+  await h(t).withLog('When I click the hang up button', async () => {
     await telephonyDialog.clickHangupButton();
   });
 
@@ -95,7 +95,7 @@ test.meta(<ITestMeta>{
     await telephonyDialog.ensureLoaded();
   });
 
-  await h(t).withLog('When I click the hand up button', async () => {
+  await h(t).withLog('When I click the hang up button', async () => {
     await telephonyDialog.clickHangupButton();
   });
 
@@ -126,7 +126,7 @@ test.meta(<ITestMeta>{
   //   await telephonyDialog.ensureLoaded();
   // });
 
-  // await h(t).withLog('When I click the hand up button', async () => {
+  // await h(t).withLog('When I click the hang up button', async () => {
   //   await telephonyDialog.clickHandUpButton();
   // });
 
@@ -157,7 +157,7 @@ test.meta(<ITestMeta>{
     await telephonyDialog.ensureLoaded();
   });
 
-  await h(t).withLog('When I click the hand up button', async () => {
+  await h(t).withLog('When I click the hang up button', async () => {
     await telephonyDialog.clickHangupButton();
   });
 
