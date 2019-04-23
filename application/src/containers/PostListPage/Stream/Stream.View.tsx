@@ -20,6 +20,7 @@ import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import _ from 'lodash';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
+
 @observer
 class StreamViewComponent extends Component<Props> {
   listRef: React.RefObject<HTMLElement> = React.createRef();
@@ -56,7 +57,11 @@ class StreamViewComponent extends Component<Props> {
     this.setState({ width: size.width, height: size.height - usedHeight });
   }
   render() {
-    const { ids } = this.props;
+    const { ids, isShow = true } = this.props;
+    // if conversation post include video and play video
+    // when switch tab in global search will cache tabs
+    // so we need to unmount conversation post
+
     const { height } = this.state;
     const defaultLoading = <DefaultLoadingWithDelay delay={100} />;
     const defaultLoadingMore = <DefaultLoadingMore />;
@@ -75,14 +80,16 @@ class StreamViewComponent extends Component<Props> {
             hasMore={this._hasMore}
             loadingMoreRenderer={defaultLoadingMore}
           >
-            {ids.map(id => (
-              <ConversationPost
-                id={id}
-                key={id}
-                cardRef={this._jumpToPostRef}
-                mode="navigation"
-              />
-            ))}
+            {isShow
+              ? ids.map(id => (
+                  <ConversationPost
+                    id={id}
+                    key={id}
+                    cardRef={this._jumpToPostRef}
+                    mode="navigation"
+                  />
+                ))
+              : []}
           </JuiInfiniteList>
         </JuiStream>
       </>
