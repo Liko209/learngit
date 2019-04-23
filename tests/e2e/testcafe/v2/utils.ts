@@ -34,26 +34,27 @@ export class MiscUtils {
     return filepath;
   }
 
-  // FIXME
-  static async convertToWebp(imagePath: string) {
+  static async convertToWebp(imagePath: string, quality?: string, width?: string) {
     if (path.extname(imagePath) == '.webp' || !fs.existsSync(imagePath)) {
       return imagePath;
     }
+
     try {
-      const webpIamgePath = imagePath + ".webp";
+      const webImagePath = imagePath + ".webp";
       const image = sharp(imagePath);
       await image
         .metadata()
         .then(function (metadata) {
+          const newWidth = +width ? +width : Math.round(metadata.width / 2);
           return image
-            .resize(Math.round(metadata.width / 2)) // FIXME: should be configurable
-            .webp({ quality: RUNNER_OPTS.SCREENSHOT_WEBP_QUALITY })  // FIXME: should not use global
+            .resize(newWidth)
+            .webp({ quality })
             .toBuffer();
         })
         .then((data) => {
-          fs.writeFileSync(webpIamgePath, data)
+          fs.writeFileSync(webImagePath, data)
         });
-      return webpIamgePath;
+      return webImagePath;
     } catch {
       return imagePath;
     }

@@ -88,8 +88,13 @@ class Step implements IStep {
     relativePath = `${relativePath || uuid()}.png`;
     const imagePath = path.join(this.t['testRun'].opts.screenshotPath, relativePath);
     await this.t.takeScreenshot(relativePath);
-    if (this.t.ctx.runnerOpts.SCREENSHOT_WEBP_QUALITY)
-      return await MiscUtils.convertToWebp(imagePath);
+    if (this.t.ctx.runnerOpts.SCREENSHOT_WEBP_QUALITY) {
+      return await MiscUtils.convertToWebp(
+        imagePath,
+        this.t.ctx.runnerOpts.SCREENSHOT_WEBP_QUALITY,
+        this.t.ctx.runnerOpts.SCREENSHOT_WEBP_WIDTH
+      );
+    }
     return imagePath;
   }
 
