@@ -62,9 +62,9 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
 
     // if the current <audio/> is playing, search for the next none
     if (!currentSoundTrack.paused) {
+      await sleep(34);
       const _nextAvailableSoundTrack =
-        ((this._currentSoundTrack as number) + 1) % this._audioPool.length;
-      await sleep(0);
+        ((cursor as number) + 1) % this._audioPool.length;
       return this.getPlayableSoundTrack(_nextAvailableSoundTrack);
     }
     return [currentSoundTrack, cursor];
