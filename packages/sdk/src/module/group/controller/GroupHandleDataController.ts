@@ -43,21 +43,17 @@ class GroupHandleDataController {
         if (item._id) {
           const finalItem = item;
           try {
-            console.error(`get existedGroup:${item._id}`);
             const existedGroup = await this.entitySourceController.get(
               item._id,
             );
-            console.error(`existedGroup:${existedGroup}`);
 
             if (existedGroup) {
               type Transformed = PartialWithKey<Group>;
               const transformed: Transformed = transform<Transformed>(
                 finalItem,
               );
-              console.error(`before:${transformed._id}`);
 
               await this.entitySourceController.update(transformed);
-              console.error(`after:${transformed._id}`);
 
               if (transformed.id) {
                 const updated = await this.entitySourceController.get(
@@ -170,7 +166,6 @@ class GroupHandleDataController {
     groups: Group[],
     changeMap?: Map<string, ChangeModel>,
   ) => {
-    console.error(`groups.length: ${groups.length}`);
     if (groups.length) {
       if (changeMap) {
         changeMap.set(SERVICE.GROUP_CURSOR, { entities: groups });
@@ -212,7 +207,7 @@ class GroupHandleDataController {
         this.entitySourceController.bulkUpdate(normalData);
       }
     } catch (e) {
-      console.error(`operateGroupDao error ${JSON.stringify(e)}`);
+      mainLogger.error(`operateGroupDao error ${JSON.stringify(e)}`);
     }
   }
 
@@ -401,7 +396,6 @@ class GroupHandleDataController {
             const group: null | Group = await this.entitySourceController.get(
               post.group_id,
             );
-            console.error(`group:${group}`);
             if (group && this.isNeedToUpdateMostRecent4Group(post, group)) {
               ids.push(post.group_id);
               const pg: Partial<Raw<Group>> = {
@@ -422,7 +416,6 @@ class GroupHandleDataController {
         Raw<Group>
       >[];
     });
-    console.error(`validGroups:${validGroups.length}`);
     await this.handlePartialData(validGroups);
     ids.length &&
       notificationCenter.emit(SERVICE.POST_SERVICE.NEW_POST_TO_GROUP, ids);
@@ -509,7 +502,6 @@ class GroupHandleDataController {
     const transformData = await this.getExistedAndTransformDataFromPartial(
       groups,
     );
-    console.error(`transformData:${transformData.length}`);
     await this.doNotification([], transformData);
   }
 }

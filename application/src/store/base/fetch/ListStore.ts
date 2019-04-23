@@ -11,7 +11,7 @@ import { mainLogger } from 'sdk';
 export class ListStore<T> extends BaseNotificationSubscribe {
   _items: IObservableArray<T> = observable([], { deep: false });
 
-  _limit?: number;
+  protected _limit?: number;
 
   @observable
   _hasMoreUp: boolean = false;
@@ -58,22 +58,6 @@ export class ListStore<T> extends BaseNotificationSubscribe {
       this._limit && newItems.length > this._limit
         ? newItems.slice(0, this._limit)
         : [...newItems];
-
-    if (
-      replaceItems.length === this._items.length &&
-      _.isEqualWith(replaceItems, this._items, (objValue: T, otherValue: T) => {
-        return objValue['id'] === otherValue['id'];
-      })
-    ) {
-      mainLogger.debug(
-        'ListStore',
-        `updated items.size=${
-          replaceItems.length
-        }, is same with original items`,
-      );
-      return;
-    }
-
     this._items.replace(replaceItems);
   }
 
