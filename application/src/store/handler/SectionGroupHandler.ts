@@ -27,6 +27,7 @@ import _ from 'lodash';
 import storeManager from '@/store';
 import history from '@/history';
 import {
+  NotificationEntityPayload,
   NotificationEntityUpdateBody,
   NotificationEntityUpdatePayload,
 } from 'sdk/service/notificationCenter';
@@ -223,9 +224,29 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private _subscribeNotification() {
-    this.subscribeNotification(ENTITY.GROUP, () => {
-      this._handleGroupsChanges();
-    });
+    this.subscribeNotification(
+      ENTITY.GROUP,
+      (payload: NotificationEntityPayload<Group>) => {
+        console.error('_subscribeNotification:');
+        let ids: number[] = [];
+        if (payload.type === EVENT_TYPES.UPDATE) {
+          ids = payload.body!.ids!;
+          const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+          ids = ids.filter((id: number) => {
+            const group = payload.body.entities.get(id);
+            return (
+              !group ||
+              group.deactivated ||
+              !_.includes(group.members, currentUserId) ||
+              group.is_archived
+            );
+          });
+        }
+        // update url
+        this._updateUrl(EVENT_TYPES.DELETE, ids);
+        this._handleGroupsChanges();
+      },
+    );
     this.subscribeNotification(ENTITY.GROUP_STATE, () => {
       this._handleGroupsChanges();
     });
@@ -416,12 +437,11 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         groupService.isValid(model)
       );
     };
-    const limit = await this._getMaxLeftRailGroup();
     return this._addSection(
       SECTION_TYPE.DIRECT_MESSAGE,
       GROUP_QUERY_TYPE.GROUP,
       {
-        limit,
+        limit: 50,
         isMatchFunc: isMatchFun,
         transformFunc: groupTransformFunc,
         entityName: ENTITY_NAME.GROUP,
@@ -454,9 +474,8 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         groupService.isValid(model)
       );
     };
-    const limit = await this._getMaxLeftRailGroup();
     return this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
-      limit,
+      limit: 50,
       isMatchFunc: isMatchFun,
       transformFunc: groupTransformFunc,
       entityName: ENTITY_NAME.GROUP,
