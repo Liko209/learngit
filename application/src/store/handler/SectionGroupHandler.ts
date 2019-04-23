@@ -26,7 +26,11 @@ import GroupStateModel from '@/store/models/GroupState';
 import _ from 'lodash';
 import storeManager from '@/store';
 import history from '@/history';
-import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
+import {
+  NotificationEntityPayload,
+  NotificationEntityUpdateBody,
+  NotificationEntityUpdatePayload,
+} from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
 import { StateService } from 'sdk/module/state';
@@ -60,6 +64,10 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
     this._queryType = queryType;
   }
 
+  getType() {
+    return this._queryType;
+  }
+
   async fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
@@ -81,6 +89,7 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
 const LOG_TAG = 'SectionGroupHandler';
 class SectionGroupHandler extends BaseNotificationSubscribable {
   private _handlersMap: {} = {};
+  private _queryMap: {} = {};
   private _oldFavGroupIds: number[] = [];
   private static _instance: SectionGroupHandler | undefined = undefined;
   private _hiddenGroupIds: number[] = [];
@@ -219,37 +228,43 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private _subscribeNotification() {
-    this.subscribeNotification(
-      ENTITY.GROUP,
-      (payload: NotificationEntityPayload<Group>) => {
-        const keys = Object.keys(this._handlersMap);
-        let ids: number[] = [];
-        if (payload.type === EVENT_TYPES.UPDATE) {
-          ids = payload.body!.ids!;
-          const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-          ids = ids.filter((id: number) => {
-            const group = payload.body.entities.get(id);
-            return (
-              !group ||
-              group.deactivated ||
-              !_.includes(group.members, currentUserId) ||
-              group.is_archived
-            );
-          });
-        }
-        // update url
-        this._updateUrl(EVENT_TYPES.DELETE, ids);
-        keys.forEach((key: string) => {
-          this._handlersMap[key].onDataChanged(payload);
-        });
-      },
+    this.subscribeNotification(ENTITY.GROUP, () => {
+      this._handleGroupsChanges();
+    });
+    this.subscribeNotification(ENTITY.GROUP_STATE, () => {
+      this._handleGroupsChanges();
+    });
+  }
+
+  private _handleGroupsChanges() {
+    const keys = Object.keys(this._handlersMap);
+
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
     );
-    this.subscribeNotification(
-      ENTITY.GROUP_STATE,
-      (payload: NotificationEntityPayload<GroupState>) => {
-        this._handleIncomesGroupState(payload);
-      },
-    );
+
+    keys.forEach(async (key: string) => {
+      const result = await groupService.getGroupsByType(this._queryMap[key]);
+
+      const entityMap = new Map<number, Group>();
+      result.forEach((group: Group) => {
+        entityMap.set(group.id, group);
+      });
+
+      const ids = Array.from(entityMap.keys());
+
+      const notificationBody: NotificationEntityUpdateBody<Group> = {
+        ids,
+        entities: entityMap,
+      };
+
+      const notification: NotificationEntityUpdatePayload<Group> = {
+        type: EVENT_TYPES.UPDATE,
+        body: notificationBody,
+      };
+
+      this._handlersMap[key].onDataChanged(notification);
+    });
   }
 
   private async _handleWithUnread(ids: number[]) {
@@ -292,7 +307,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   @action
-  private async _handleIncomesGroupState(
+  public async handleIncomesGroupState(
     payload: NotificationEntityPayload<GroupState>,
   ) {
     if (payload.type !== EVENT_TYPES.UPDATE || !payload.body.entities) {
@@ -380,6 +395,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     this._handlersMap[sectionType].addDataChangeCallback(
       this._handleGroupChanged,
     );
+
+    this._queryMap[sectionType] = queryType;
+
     return this.fetchGroups(sectionType, QUERY_DIRECTION.NEWER);
   }
 
