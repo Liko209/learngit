@@ -3,7 +3,7 @@
  * @Date: 2018-09-28 17:23:20
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { promisedComputed } from 'computed-async-mobx';
 import { observable, computed, action } from 'mobx';
 import { Group } from 'sdk/module/group/entity';
 import { Person } from 'sdk/module/person/entity';
@@ -14,7 +14,7 @@ import PersonModel from '@/store/models/Person';
 import { ENTITY_NAME } from '@/store';
 import { AbstractViewModel } from '@/base';
 import { CONVERSATION_TYPES } from '@/constants';
-import i18next from 'i18next';
+import i18nT from '@/utils/i18nT';
 import _ from 'lodash';
 
 class HeaderViewModel extends AbstractViewModel {
@@ -32,24 +32,28 @@ class HeaderViewModel extends AbstractViewModel {
   }
 
   @computed
-  get title() {
+  get group() {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id);
-    let title = group.displayName;
-    if (group.type === CONVERSATION_TYPES.SMS) {
-      title += ` (${i18next.t('message.messageTypeNameSMS')})`;
-    }
-    return title;
+    return group;
   }
+
+  title = promisedComputed(this.group.displayName, async () => {
+    const group = this.group;
+    if (group.type === CONVERSATION_TYPES.SMS) {
+      return `${group.displayName} (${await i18nT('message.messageTypeNameSMS')})`;
+    }
+    return group.displayName;
+  });
 
   @computed
   get analysisSource() {
-    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id);
+    const group = this.group;
     return group.analysisType;
   }
 
   @computed
   get customStatus() {
-    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id);
+    const group = this.group;
     if (group.isTeam) {
       return null;
     }
@@ -71,13 +75,13 @@ class HeaderViewModel extends AbstractViewModel {
 
   @computed
   get type() {
-    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id);
+    const group = this.group;
     return group.type;
   }
 
   @computed
   get isFavorite() {
-    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id);
+    const group = this.group;
     return group.isFavorite;
   }
 }

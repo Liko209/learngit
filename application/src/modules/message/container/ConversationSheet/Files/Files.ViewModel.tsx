@@ -12,7 +12,6 @@ import { Post } from 'sdk/module/post/entity';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
-import i18next from 'i18next';
 import { Notification } from '@/containers/Notification';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { notificationCenter, ENTITY, EVENT_TYPES } from 'sdk/service';
@@ -198,7 +197,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
     if (status === 'offline') {
       Notification.flashToast({
-        message: i18next.t('item.prompt.notAbleToCancelUpload'),
+        message: 'item.prompt.notAbleToCancelUpload',
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
@@ -216,7 +215,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         this._deleteIds.add(id);
       } catch (e) {
         Notification.flashToast({
-          message: i18next.t('item.prompt.notAbleToCancelUploadTryAgain'),
+          message: 'item.prompt.notAbleToCancelUploadTryAgain',
           type: ToastType.ERROR,
           messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,

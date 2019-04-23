@@ -14,7 +14,7 @@ import { Props, ViewProps } from './types';
 import { container } from 'framework';
 import { TelephonyService } from '@/modules/telephony/service';
 import { Dialog } from '@/containers/Dialog';
-import i18next from 'i18next';
+import i18nT from '@/utils/i18nT';
 import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
@@ -44,10 +44,10 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
     }
     if (callCount > 0) {
       Dialog.confirm({
-        title: i18next.t('telephony.prompt.LogoutTitle'),
-        content: i18next.t('telephony.prompt.LogoutContent'),
-        okText: i18next.t('telephony.prompt.LogoutOk'),
-        cancelText: i18next.t('common.dialog.cancel'),
+        title: await i18nT('telephony.prompt.LogoutTitle'),
+        content: await i18nT('telephony.prompt.LogoutContent'),
+        okText: await i18nT('telephony.prompt.LogoutOk'),
+        cancelText: await i18nT('common.dialog.cancel'),
         onOK: () => {
           mainLogger.info(
             `[AvatarActionsViewModel] [UI TelephonyService] User confirmed to logout and current call count: ${callCount}`,

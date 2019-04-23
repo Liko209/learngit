@@ -3,6 +3,7 @@
  * @Date: 2018-09-28 18:22:26
  * Copyright © RingCentral. All rights reserved.
  */
+import { promisedComputed } from 'computed-async-mobx';
 import { observable, computed } from 'mobx';
 import _ from 'lodash';
 import { Group } from 'sdk/module/group/entity';
@@ -13,7 +14,7 @@ import { getEntity, getSingleEntity } from '@/store/utils';
 import { compareName } from '../helper';
 import { CONVERSATION_TYPES } from '@/constants';
 import Base from './Base';
-import i18next from 'i18next';
+import i18nT from '@/utils/i18nT';
 import { TeamPermission, GroupService } from 'sdk/module/group';
 import { PERMISSION_ENUM } from 'sdk/service';
 import { AccountUserConfig } from 'sdk/module/account/config';
@@ -112,6 +113,10 @@ export default class GroupModel extends Base<Group> {
     );
   }
 
+  meGroupText = promisedComputed('message.meGroup', async () => {
+    return `${await i18nT('message.meGroup')}`;
+  });
+
   @computed
   get displayName(): string {
     if (this.type === CONVERSATION_TYPES.TEAM) {
@@ -124,9 +129,7 @@ export default class GroupModel extends Base<Group> {
 
     if (this.type === CONVERSATION_TYPES.ME) {
       const person = getEntity(ENTITY_NAME.PERSON, currentUserId);
-      return `${person.userDisplayNameForGroupName || ''} (${i18next.t(
-        'message.meGroup',
-      )})`;
+      return `${person.userDisplayNameForGroupName || ''} (${this.meGroupText.get()})`;
     }
 
     if (

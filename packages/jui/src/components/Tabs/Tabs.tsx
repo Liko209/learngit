@@ -3,7 +3,7 @@
  * @Date: 2019-01-02 10:54:22
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { isEqual } from 'lodash';
 import React, {
   PureComponent,
   ReactElement,
@@ -107,6 +107,23 @@ class JuiTabs extends PureComponent<Props, States> {
     this._measureTabWidths();
     this._measureContainerWidth();
     this._calculateIndexTabsAndIndexMenus();
+  }
+
+  componentWillReceiveProps(nextProps: Props) {
+    const { children } = nextProps;
+    const newTabTitles: (string | JSX.Element)[] = [];
+    Children.map(
+      children,
+      (child: ReactElement<JuiTabProps>) => {
+        return newTabTitles.push(child.props.title);
+      },
+    );
+    // force update after i18n ready
+    if (!isEqual(newTabTitles.sort(), this._tabTitles.sort())) {
+      this._moreWidth = 0;
+      this._tabTitles = newTabTitles;
+      this.setState({ remeasure: true });
+    }
   }
 
   private _measureMoreWidth = () => {
