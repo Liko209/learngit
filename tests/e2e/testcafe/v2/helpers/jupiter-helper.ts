@@ -108,10 +108,12 @@ export class JupiterHelper {
       );
 
       const cookies = [];
-      for (let item of response.headers['set-cookie']) {
-        if (item.startsWith('RCAuthSession')) {
-          cookies.push(item.split(';')[0]);
-          break;
+      if (response.headers['set-cookie']) {
+        for (let item of response.headers['set-cookie']) {
+          if (item.startsWith('RCAuthSession')) {
+            cookies.push(item.split(';')[0]);
+            break;
+          }
         }
       }
 
