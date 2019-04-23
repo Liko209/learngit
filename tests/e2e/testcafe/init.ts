@@ -29,6 +29,8 @@ function updateCapabilitiesFile(capabilitiesFile: string, browsers: string[], la
           return objValue.concat(srcValue);
         }
       });
+    // !!!CURSE YOU!!! https://github.com/webdriverio/webdriverio/issues/2645
+    capabilities[b]['goog:chromeOptions'] = capabilities[b].chromeOptions;
   });
   fs.writeFileSync(capabilitiesFile, JSON.stringify(capabilities, null, 4));
 }
