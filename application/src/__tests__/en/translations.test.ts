@@ -282,11 +282,17 @@ describe.skip('i18next-en', () => {
     expect(i18next.t('SorryWeWereNotAbleToSendTheMessage')).toEqual(
       "Sorry, we weren't able to send the message. Try again.",
     );
-    expect(i18next.t('SorryWeWereNotAbleToLikeTheMessage')).toEqual(
-      "Sorry, we weren't able to like this message. Try again.",
+    expect(i18next.t('notAbleToUnlikeForNetworkIssue')).toEqual(
+      "We weren't able to unlike this message. Check your network connection, then try again.",
     );
-    expect(i18next.t('SorryWeWereNotAbleToUnlikeTheMessage')).toEqual(
-      "Sorry, we weren't able to unlike this message. Try again.",
+    expect(i18next.t('notAbleToUnlikeForServerIssue')).toEqual(
+      "Sorry, something went wrong on our end and we weren't able to unlike this message. Try again later.",
+    );
+    expect(i18next.t('notAbleToLikeThisMessageForNetworkIssue')).toEqual(
+      "We weren't able to like this message. Check your network connection, then try again.",
+    );
+    expect(i18next.t('notAbleToLikeThisMessageForServerIssue')).toEqual(
+      "Sorry, something went wrong on our end and we weren't able to like this message. Try again later.",
     );
     expect(i18next.t('SorryWeWereNotAbleToCloseTheConversation')).toEqual(
       "Sorry, we weren't able to close the conversation. Try again.",
