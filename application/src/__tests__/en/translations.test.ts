@@ -138,11 +138,17 @@ describe.skip('i18next-en', () => {
     expect(i18next.t('setStateUnFavorites')).toEqual('Remove from Favorites');
     expect(i18next.t('setStatePublic')).toEqual('Change to Public Team');
     expect(i18next.t('setStatePrivate')).toEqual('Change to Private Team');
-    expect(i18next.t('markFavoriteServerErrorContent')).toEqual(
-      "We weren't able to favorite this conversation. Try again.",
+    expect(i18next.t('notAbleToUnFavoriteForNetworkIssue')).toEqual(
+      "We weren't able to remove this conversation from favorites. Check your network connection, then try again.",
     );
-    expect(i18next.t('markUnFavoriteServerErrorContent')).toEqual(
-      "We weren't able to remove this conversation from favorites. Try again.",
+    expect(i18next.t('notAbleToUnFavoriteForServerIssue')).toEqual(
+      "Sorry, something went wrong on our end and we weren't able to remove this conversation from favorites. Try again later.",
+    );
+    expect(i18next.t('notAbleToFavoriteThisMessageForNetworkIssue')).toEqual(
+      "Sorry, we weren't able to favorite this conversation. Check your network connection, then try again.",
+    );
+    expect(i18next.t('notAbleToFavoriteThisMessageForServerIssue')).toEqual(
+      "Sorry, something went wrong on our end and we weren't able to favorite this conversation. Try again later.",
     );
     expect(i18next.t('markPublicServerErrorContent')).toEqual(
       "We weren't able to public this conversation. Try again.",
