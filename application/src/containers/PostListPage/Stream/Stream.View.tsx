@@ -79,6 +79,7 @@ class StreamViewComponent extends Component<Props> {
             loadingRenderer={defaultLoading}
             hasMore={this._hasMore}
             loadingMoreRenderer={defaultLoadingMore}
+            stickToLastPosition={false}
           >
             {isShow
               ? ids.map(id => (
