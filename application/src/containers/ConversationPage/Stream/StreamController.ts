@@ -193,6 +193,7 @@ class StreamController {
       sortableModel = this._orderListHandler.transform2SortableModel(post!);
     }
 
+    this.enableNewMessageSep();
     const postsNewerThanAnchor = await this._orderListHandler.fetchDataByAnchor(
       QUERY_DIRECTION.NEWER,
       pageSize,
