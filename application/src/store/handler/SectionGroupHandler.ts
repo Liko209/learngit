@@ -63,10 +63,6 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
     this._queryType = queryType;
   }
 
-  getType() {
-    return this._queryType;
-  }
-
   async fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
