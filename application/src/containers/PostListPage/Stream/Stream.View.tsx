@@ -19,9 +19,7 @@ import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import _ from 'lodash';
 
-type Props = WithTranslation &
-  StreamViewProps &
-  StreamProps & { isShow?: boolean };
+type Props = WithTranslation & StreamViewProps & StreamProps;
 
 @observer
 class StreamViewComponent extends Component<Props> {
