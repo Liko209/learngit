@@ -7,12 +7,8 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { Notification } from '@/containers/Notification';
 import { FavoriteViewProps } from './types';
-import {
-  ToastType,
-  ToastMessageAlign,
-} from '@/containers/ToastWrapper/Toast/types';
+import { catchError } from '@/common/catchError';
 
 type Props = FavoriteViewProps & WithTranslation;
 
@@ -22,22 +18,25 @@ class FavoriteViewComponent extends Component<Props> {
     size: 'small',
   };
 
-  onClickFavorite = async () => {
-    const { handlerFavorite, isFavorite } = this.props;
-    try {
-      await handlerFavorite();
-    } catch {
-      const message = isFavorite
-        ? 'people.prompt.markUnFavoriteServerErrorContent'
-        : 'people.prompt.markFavoriteServerErrorContent';
-      Notification.flashToast({
-        message,
-        type: ToastType.ERROR,
-        messageAlign: ToastMessageAlign.LEFT,
-        fullWidth: false,
-        dismissible: false,
-      });
-    }
+  private _handleToggleFavorite = async () => {
+    const { handlerFavorite } = this.props;
+    await handlerFavorite();
+  }
+
+  @catchError.flash({
+    network: 'message.prompt.notAbleToUnFavoriteForNetworkIssue',
+    server: 'message.prompt.notAbleToUnFavoriteForServerIssue',
+  })
+  private _handleRemoveFavorite = () => {
+    return this._handleToggleFavorite();
+  }
+
+  @catchError.flash({
+    network: 'message.prompt.notAbleToFavoriteThisMessageForNetworkIssue',
+    server: 'message.prompt.notAbleToFavoriteThisMessageForServerIssue',
+  })
+  private _handleFavorite = () => {
+    return this._handleToggleFavorite();
   }
 
   render() {
@@ -55,7 +54,7 @@ class FavoriteViewComponent extends Component<Props> {
         size={size}
         className="favorite"
         color="accent.gold"
-        onClick={this.onClickFavorite}
+        onClick={isFavorite ? this._handleRemoveFavorite : this._handleFavorite}
         tooltipTitle={t(tooltipKey)}
         ariaLabel={t(tooltipKey)}
         data-test-automation-id="favorite-icon"
