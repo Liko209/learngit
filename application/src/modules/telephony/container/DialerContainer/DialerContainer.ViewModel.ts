@@ -12,6 +12,14 @@ import { TelephonyStore } from '../../store';
 import { TelephonyService } from '../../service';
 import audios from './sounds/sounds.json';
 
+const sleep = function (time: number) {
+  return new Promise((resolve: Function) => {
+    setTimeout(() => {
+      resolve();
+    },         time);
+  });
+};
+
 class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   implements DialerContainerViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
@@ -56,6 +64,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
     if (!currentSoundTrack.paused) {
       const _nextAvailableSoundTrack =
         ((this._currentSoundTrack as number) + 1) % this._audioPool.length;
+      await sleep(0);
       return this.getPlayableSoundTrack(_nextAvailableSoundTrack);
     }
     return [currentSoundTrack, cursor];
