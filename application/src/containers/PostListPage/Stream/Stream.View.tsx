@@ -57,7 +57,7 @@ class StreamViewComponent extends Component<Props> {
     this.setState({ width: size.width, height: size.height - usedHeight });
   }
   render() {
-    const { ids, isShow } = this.props;
+    const { ids, isShow = true } = this.props;
     // if conversation post include video and play video
     // when switch tab in global search will cache tabs
     // so we need to unmount conversation post
