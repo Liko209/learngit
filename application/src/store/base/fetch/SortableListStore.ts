@@ -7,7 +7,7 @@ import { computed, action } from 'mobx';
 import { ListStore } from './ListStore';
 import { ISortableModel, ISortFunc } from './types';
 import _ from 'lodash';
-import { mainLogger } from 'sdk/src';
+import { mainLogger } from 'sdk';
 
 // const defaultSortFunc: ISortFunc<ISortableModel> = (
 //   first: ISortableModel,
