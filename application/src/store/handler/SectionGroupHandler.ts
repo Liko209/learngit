@@ -19,7 +19,7 @@ import { GroupState } from 'sdk/module/state/entity';
 
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
-import { autorun, observable, computed, reaction, action } from 'mobx';
+import { autorun, observable, computed, reaction } from 'mobx';
 import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
 import GroupStateModel from '@/store/models/GroupState';
@@ -27,7 +27,6 @@ import _ from 'lodash';
 import storeManager from '@/store';
 import history from '@/history';
 import {
-  NotificationEntityPayload,
   NotificationEntityUpdateBody,
   NotificationEntityUpdatePayload,
 } from 'sdk/service/notificationCenter';
@@ -267,18 +266,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     });
   }
 
-  private async _handleWithUnread(ids: number[]) {
-    await this._changeGroupsInGroupSections(ids, true);
-  }
-
-  private async _handleWithoutUnread(ids: number[]) {
-    const intersectionIds = _.intersection(ids, this.groupIdsExcludeFavorites);
-    if (!intersectionIds.length) {
-      return;
-    }
-    this._remove(intersectionIds, true);
-  }
-
   private async _remove(ids: number[], checkLimit: boolean = false) {
     let limit = 0;
     if (checkLimit) {
@@ -304,34 +291,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       this._removeByIds(SECTION_TYPE.DIRECT_MESSAGE, directIdsShouldBeRemoved);
     teamIdsShouldBeRemoved.length &&
       this._removeByIds(SECTION_TYPE.TEAM, teamIdsShouldBeRemoved);
-  }
-
-  @action
-  public async handleIncomesGroupState(
-    payload: NotificationEntityPayload<GroupState>,
-  ) {
-    if (payload.type !== EVENT_TYPES.UPDATE || !payload.body.entities) {
-      return;
-    }
-
-    const unreadIds: number[] = [];
-    const withoutUnreadIds: number[] = [];
-    const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
-
-    payload.body.entities.forEach((state: GroupState) => {
-      const hasUnread =
-        state.marked_as_unread ||
-        state.unread_count ||
-        state.unread_mentions_count;
-      if (hasUnread) {
-        unreadIds.push(state.id);
-      } else if (currentId !== state.id) {
-        withoutUnreadIds.push(state.id);
-      }
-    });
-
-    this._handleWithUnread(unreadIds);
-    this._handleWithoutUnread(withoutUnreadIds);
   }
 
   private _updateUrl(type: EVENT_TYPES, ids: number[]) {
