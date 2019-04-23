@@ -269,10 +269,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private async _remove(ids: number[], checkLimit: boolean = false) {
     let limit = 0;
     if (checkLimit) {
-      const profileService = ServiceLoader.getInstance<ProfileService>(
-        ServiceConfig.PROFILE_SERVICE,
-      );
-      limit = await profileService.getMaxLeftRailGroup();
+      limit = await this._getMaxLeftRailGroup();
     }
     mainLogger.info(LOG_TAG, `_remove limit: ${limit}`);
     const directIdsShouldBeRemoved: number[] = [];
@@ -423,18 +420,20 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         groupService.isValid(model)
       );
     };
+    const limit = await this._getMaxLeftRailGroup();
     return this._addSection(
       SECTION_TYPE.DIRECT_MESSAGE,
       GROUP_QUERY_TYPE.GROUP,
       {
+        limit,
         isMatchFunc: isMatchFun,
         transformFunc: groupTransformFunc,
         entityName: ENTITY_NAME.GROUP,
         eventName: undefined, // it should not subscribe notification by itself
-        limit: 50,
       },
     );
   }
+
   private async _addTeamSection() {
     const isMatchFun = (model: Group) => {
       const groupState: GroupStateModel = getEntity(
@@ -459,12 +458,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         groupService.isValid(model)
       );
     };
+    const limit = await this._getMaxLeftRailGroup();
     return this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
+      limit,
       isMatchFunc: isMatchFun,
       transformFunc: groupTransformFunc,
       entityName: ENTITY_NAME.GROUP,
       eventName: undefined, // it should not subscribe notification by itself
-      limit: 50,
     });
   }
 
@@ -581,11 +581,8 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
   async removeOverLimitGroupByChangingCurrentGroupId() {
     const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
-    const profileService = ServiceLoader.getInstance<ProfileService>(
-      ServiceConfig.PROFILE_SERVICE,
-    );
     const lastGroupId = this._lastGroupId;
-    const limit = await profileService.getMaxLeftRailGroup();
+    const limit = await this._getMaxLeftRailGroup();
     mainLogger.info(
       LOG_TAG,
       `removeOverLimitGroupByChangingCurrentGroupId limit: ${limit}`,
@@ -634,12 +631,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (this._lastGroupId === 0) {
       return;
     }
-    const profileService = ServiceLoader.getInstance<ProfileService>(
-      ServiceConfig.PROFILE_SERVICE,
-    );
     const directIds = this.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE);
     const teamIds = this.getGroupIdsByType(SECTION_TYPE.TEAM);
-    const limit = await profileService.getMaxLeftRailGroup();
+    const limit = await this._getMaxLeftRailGroup();
     mainLogger.info(
       LOG_TAG,
       `removeOverLimitGroupByChangingIds limit: ${limit}`,
@@ -682,6 +676,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         ? this._handlersMap[type].sortableListStore.getIds
         : [];
     return ids;
+  }
+
+  private async _getMaxLeftRailGroup() {
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
+    return await profileService.getMaxLeftRailGroup();
   }
 }
 

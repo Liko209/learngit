@@ -118,9 +118,7 @@ export class GroupFetchDataController {
       }
       result = await this.groupHandleDataController.filterGroups(result, limit);
     }
-    return groupType === GROUP_QUERY_TYPE.FAVORITE
-      ? result
-      : result.slice(0, result.length > 50 ? 50 : result.length);
+    return result;
   }
 
   async getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]> {

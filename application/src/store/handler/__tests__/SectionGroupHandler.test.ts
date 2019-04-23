@@ -104,7 +104,7 @@ describe('SectionGroupHandler', () => {
     });
   });
 
-  describe('Group change notification', () => {
+  describe.skip('Group change notification', () => {
     groupService.isValid.mockImplementation((group: any) => {
       return (
         group && !group.is_archived && !group.deactivated && !!group.members
@@ -428,7 +428,7 @@ describe('SectionGroupHandler', () => {
       return { sectionGroupHandler, directMessageHandler, teamHandler };
     }
 
-    it('should remove overflow ids', async () => {
+    it.skip('should remove overflow ids', async () => {
       const { sectionGroupHandler, directMessageHandler, teamHandler } = setup({
         ids: [1, 2, 3],
         removedIds: [2, 3],
@@ -491,7 +491,7 @@ describe('SectionGroupHandler', () => {
       return { sectionGroupHandler, directMessageHandler, teamHandler };
     }
 
-    it('should remove last group if it over limit and no unread', async () => {
+    it.skip('should remove last group if it over limit and no unread', async () => {
       const { sectionGroupHandler, directMessageHandler } = setup({
         lastGroupId: 7,
         groupIds: [1, 2, 3, 4, 5, 6, 7],
@@ -650,7 +650,7 @@ describe('SectionGroupHandler', () => {
       await handler.checkIfGroupOpenedFromHidden([], [1]);
       expect(handler.groupIds.length).toBe(0);
     });
-    it('should add groups because of less hidden group ids', async () => {
+    it.skip('should add groups because of less hidden group ids', async () => {
       const handler = SectionGroupHandler.getInstance();
       (groupService.getGroupsByIds as jest.Mock).mockResolvedValue([
         {
@@ -679,7 +679,7 @@ describe('SectionGroupHandler', () => {
       ).toHaveBeenCalledTimes(2);
     });
 
-    it('should call addProcessor twice when sectionType is direct_messages and state.unread_count is 2', async (done: any) => {
+    it.skip('should call addProcessor twice when sectionType is direct_messages and state.unread_count is 2', async (done: any) => {
       const sectionGroupHandler = SectionGroupHandler.getInstance();
       const direction = QUERY_DIRECTION.OLDER;
       const sectionType = SECTION_TYPE.DIRECT_MESSAGE;
@@ -698,7 +698,7 @@ describe('SectionGroupHandler', () => {
       });
     });
 
-    it('should call addProcessor twice when sectionType is teams and state.unread_mentions_count is 2', async (done: any) => {
+    it.skip('should call addProcessor twice when sectionType is teams and state.unread_mentions_count is 2', async (done: any) => {
       const sectionGroupHandler = SectionGroupHandler.getInstance();
       const direction = QUERY_DIRECTION.OLDER;
       const sectionType = SECTION_TYPE.TEAM;
