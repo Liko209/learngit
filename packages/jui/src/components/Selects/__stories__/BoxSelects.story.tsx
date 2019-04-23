@@ -19,8 +19,14 @@ type Menu = {
   value: string;
 };
 
+type TestBoxSelectProps = {
+  heightSize: 'default' | 'large';
+  menuItemStyle?: 'fixed' | 'MUINative';
+  disabled: boolean;
+};
+
 function getKnobs() {
-  const heightSize = select(
+  const heightSize = select<TestBoxSelectProps['heightSize']>(
     'heightSize',
     {
       default: 'default',
@@ -28,7 +34,7 @@ function getKnobs() {
     },
     'large',
   );
-  const menuItemStyle = select(
+  const menuItemStyle = select<TestBoxSelectProps['menuItemStyle']>(
     'menuItemStyle',
     {
       MUINative: 'MUINative',
@@ -44,11 +50,7 @@ function getKnobs() {
   };
 }
 
-class TestBoxSelect extends React.Component<{
-  heightSize: 'default' | 'large';
-  menuItemStyle?: 'fixed' | 'MUINative';
-  disabled: boolean;
-}> {
+class TestBoxSelect extends React.Component<TestBoxSelectProps> {
   state = {
     value: 1,
     menu: [

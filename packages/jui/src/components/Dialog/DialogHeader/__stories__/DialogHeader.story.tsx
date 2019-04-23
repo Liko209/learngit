@@ -10,7 +10,6 @@ import { JuiDialogHeader } from '../DialogHeader';
 import { JuiDialogHeaderTitle } from '../DialogHeaderTitle';
 import { JuiDialogHeaderActions } from '../DialogHeaderActions';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
-import backgrounds from '@storybook/addon-backgrounds';
 import { JuiIconButton } from '../../../Buttons/IconButton/IconButton';
 import { JuiMenuList, JuiMenuItem } from '../../../Menus';
 import { JuiPopoverMenu } from '../../../../pattern/PopoverMenu/PopoverMenu';
@@ -23,9 +22,6 @@ import {
 import { JuiButtonBar } from '../../../Buttons/ButtonBar';
 
 storiesOf('Components/Dialog/DialogHeader', module)
-  .addDecorator(
-    backgrounds([{ name: 'slide-background', value: '#f3f3f3', default: true }]),
-  )
   .addDecorator(withInfoDecorator(JuiDialogHeader))
   .add('Title only', () => {
     const title = text('title', 'Title');

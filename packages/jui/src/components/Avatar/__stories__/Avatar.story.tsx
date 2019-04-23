@@ -8,14 +8,14 @@ import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
-import { JuiAvatar } from '..';
+import { JuiAvatar, JuiAvatarProps } from '..';
 import { JuiPresence, PRESENCE } from '../../Presence';
 
 import avatar from './img/avatar.jpg';
 
 const knobs = {
   size: () =>
-    select(
+    select<JuiAvatarProps['size']>(
       'size',
       {
         small: 'small',
