@@ -19,8 +19,11 @@ import { Stream as PostListStream } from '@/containers/PostListPage/Stream';
 import { SearchFilter } from '@/modules/GlobalSearch/container/SearchFilter';
 import { ConversationPageContext } from '@/containers/ConversationPage/types';
 
-type Props = ContentSearchResultViewProps & WithTranslation;
+type Props = ContentSearchResultViewProps &
+  WithTranslation & { isShow: boolean };
 
+// Section Header + Tabs Height + Search Input + Margin
+const USED_HEIGHT = 36 + 40 + 48 + 56;
 @observer
 class ContentSearchResultViewComponent extends Component<Props> {
   private _stream: RefObject<any> = createRef();
@@ -43,25 +46,28 @@ class ContentSearchResultViewComponent extends Component<Props> {
       setSearchOptions,
       searchOptions,
       isEmpty,
+      isShow,
     } = this.props;
     return (
       <ConversationPageContext.Provider value={{ disableMoreAction: true }}>
         <JuiFullSearchWrapper>
           <JuiFullSearchResultWrapper>
-            {
-              searchState.requestId ? <JuiListSubheader data-test-automation-id="searchResultsCount">
-              {t('globalSearch.Results', { count: postsCount })}
-            </JuiListSubheader> : null
-            }
+            {searchState.requestId ? (
+              <JuiListSubheader data-test-automation-id="searchResultsCount">
+                {t('globalSearch.Results', { count: postsCount })}
+              </JuiListSubheader>
+            ) : null}
             {isEmpty ? (
               <JuiTabPageEmptyScreen text={t('globalSearch.NoMatchesFound')} />
             ) : (
               <JuiFullSearchResultStreamWrapper>
                 <PostListStream
+                  isShow={isShow}
                   ref={this._stream}
                   postIds={searchState.postIds}
                   postFetcher={onPostsFetch}
                   selfProvide={true}
+                  usedHeight={USED_HEIGHT}
                 />
               </JuiFullSearchResultStreamWrapper>
             )}

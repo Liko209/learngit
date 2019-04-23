@@ -11,6 +11,7 @@ const JuiFullSearch = styled.div`
   padding: ${spacing(2, 0, 0)};
   display: flex;
   flex-direction: column;
+  min-height: 0;
 `;
 
 export { JuiFullSearch };

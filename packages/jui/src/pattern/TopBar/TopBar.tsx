@@ -30,21 +30,7 @@ type States = {
 };
 
 class JuiTopBar extends React.PureComponent<Props, States> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      isShowSearchBar: false,
-    };
-  }
-
-  showSearchBar = () => {
-    this.setState(prevState => ({
-      isShowSearchBar: !prevState.isShowSearchBar,
-    }));
-  }
-
   render() {
-    const { isShowSearchBar } = this.state;
     const {
       MainMenu,
       Logo,
@@ -59,7 +45,7 @@ class JuiTopBar extends React.PureComponent<Props, States> {
     return (
       <StyledAppBar>
         <StyledToolbar>
-          <StyledLeft isShowSearchBar={isShowSearchBar}>
+          <StyledLeft>
             <StyledMenuWithLogo>
               <MainMenu />
               <Logo />
@@ -70,14 +56,13 @@ class JuiTopBar extends React.PureComponent<Props, States> {
               value={searchKey}
               onClear={onClear}
               placeholder={searchPlaceholder}
-              // isShowSearchBar={isShowSearchBar}
-              // closeSearchBar={this.showSearchBar}
             />
             <StyledSearchIconButton
               onClick={openGlobalSearch}
-              tooltipTitle="Search"
+              tooltipTitle={searchPlaceholder}
               size="medium"
               color="common.white"
+              disableRipple={true}
             >
               search
             </StyledSearchIconButton>

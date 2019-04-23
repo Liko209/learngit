@@ -51,7 +51,7 @@ class FullSearchViewComponent extends Component<Props> {
                   title={t(title)}
                   automationId={automationID}
                 >
-                  <Component />
+                  <Component isShow={index === currentTab} />
                 </JuiTab>
               );
             },

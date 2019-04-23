@@ -94,10 +94,9 @@ const FILE_COMPS = {
 @observer
 class Task extends React.Component<taskViewProps> {
   private get _taskAvatarNames() {
-    const { task } = this.props;
-    const { assignedToIds } = task;
+    const { effectiveIds } = this.props;
 
-    const assignedIds = assignedToIds ? assignedToIds.slice(0, 2) : [];
+    const assignedIds = effectiveIds ? effectiveIds.slice(0, 2) : [];
 
     return assignedIds.map((assignedId: number) => (
       <AvatarName key={assignedId} id={assignedId} />
@@ -122,18 +121,17 @@ class Task extends React.Component<taskViewProps> {
   }
 
   private _getTitleText(text: string) {
-    const { task } = this.props;
+    const { task, effectiveIds } = this.props;
     const {
       completeType,
       completePeopleIds,
-      assignedToIds,
       completePercentage,
     } = task;
 
     switch (completeType) {
       case 'all':
         return `${completePeopleIds ? completePeopleIds.length : 0}/${
-          assignedToIds.length
+          effectiveIds.length
         } ${text}`;
       case 'percentage':
         return `${completePercentage || 0}% ${text}`;
@@ -153,11 +151,11 @@ class Task extends React.Component<taskViewProps> {
       t,
       notes,
       section,
+      effectiveIds,
     } = this.props;
     const {
       text,
       complete,
-      assignedToIds,
       repeat,
       repeatEndingAfter,
       repeatEnding,
@@ -186,12 +184,12 @@ class Task extends React.Component<taskViewProps> {
           </JuiLabelWithContent>
         )}
 
-        {assignedToIds && assignedToIds.length > 0 && (
+        {effectiveIds && effectiveIds.length > 0 && (
           <JuiLabelWithContent label={t('item.assignee')}>
             <JuiTaskAvatarNames
-              count={assignedToIds && assignedToIds.length}
+              count={effectiveIds && effectiveIds.length}
               otherText={t('item.avatarNamesWithOthers', {
-                count: assignedToIds.length - 2,
+                count: effectiveIds.length - 2,
               })}
             >
               {this._taskAvatarNames}

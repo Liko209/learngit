@@ -211,17 +211,29 @@ class GroupHandleDataController {
     }
   }
 
+  extractGroupCursor(groups: Group[]) {
+    const groupCursors = _.cloneDeep(groups);
+    groupCursors.length &&
+      notificationCenter.emit(SERVICE.GROUP_CURSOR, groupCursors);
+    return groups.map((group: Group) => {
+      return _.omit(group, ['post_cursor', 'post_drp_cursor']);
+    });
+  }
+
   saveDataAndDoNotification = async (
     groups: Group[],
     source?: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
   ) => {
-    const deactivatedData = groups.filter(
+    const pureGroups = this.extractGroupCursor(groups);
+
+    const deactivatedData = pureGroups.filter(
       (item: Group) => item && item.deactivated,
     );
-    const normalData = groups.filter(
+    const normalData = pureGroups.filter(
       (item: Group) => item && !item.deactivated,
     );
+
     await this.operateGroupDao(deactivatedData, normalData);
     if (shouldEmitNotification(source)) {
       await this.doNotification(deactivatedData, normalData, changeMap);

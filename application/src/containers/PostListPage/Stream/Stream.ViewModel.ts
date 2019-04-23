@@ -5,13 +5,12 @@
  */
 
 import _ from 'lodash';
-import { computed } from 'mobx';
+import { computed, action } from 'mobx';
 import StoreViewModel from '@/store/ViewModel';
 import { StreamProps, SuccinctPost } from './types';
 import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDataListHandler';
 import { ENTITY_NAME } from '@/store/constants';
 import { ISortableModel } from '@/store/base/fetch/types';
-import { loading, loadingBottom, onScrollToBottom } from '@/plugins';
 import { Post } from 'sdk/module/post/entity';
 import { EVENT_TYPES, ENTITY } from 'sdk/service';
 import { PostService } from 'sdk/module/post';
@@ -136,18 +135,18 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  @loading
-  fetchInitialPosts() {
+  @action
+  fetchInitialPosts = async () => {
     this._sortableListHandler.setHasMore(true, QUERY_DIRECTION.NEWER);
-    return this._batchFetchPosts();
+    return await this._batchFetchPosts();
   }
 
-  @onScrollToBottom((vm: StreamViewModel) => vm.hasMoreDown)
-  @loadingBottom
-  fetchNextPagePosts() {
-    return this._batchFetchPosts();
+  @action
+  fetchNextPagePosts = async () => {
+    return await this._batchFetchPosts();
   }
 
+  @action
   private async _batchFetchPosts() {
     const direction = QUERY_DIRECTION.NEWER;
     if (this._sortableListHandler.hasMore(direction)) {
@@ -172,6 +171,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     });
   }
 
+  @action
   async reInit() {
     if (!this.props.selfProvide) {
       return;

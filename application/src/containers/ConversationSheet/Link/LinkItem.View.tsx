@@ -1,67 +1,83 @@
 /*
- * @Author: Alvin Huang (alvin.huang@ringcentral.com)
- * @Date: 2018-10-30 09:29:02
+ * @Author: Aaron Huo (aaron.huo@ringcentral.com)
+ * @Date: 2019-04-22 09:29:02
  * Copyright © RingCentral. All rights reserved.
  */
 
 import React from 'react';
 import { observer } from 'mobx-react';
+import { JuiConversationPostText } from 'jui/pattern/ConversationCard';
 import {
   JuiConversationCardLinkItems,
   JuiConversationCardVideoLink,
 } from 'jui/pattern/ConversationCardLinkItems';
-import LinkItemModel from '@/store/models/LinkItem';
+import { LinkItemModel, LinkItemViewProps } from './types';
 
-type Props = {
-  postItems: LinkItemModel[];
-  onLinkItemClose: Function;
-};
 @observer
-class LinkItemView extends React.Component<Props> {
+class LinkItemView extends React.Component<LinkItemViewProps> {
   onLinkItemClose = (id: number) => () => {
     const { onLinkItemClose } = this.props;
+
     onLinkItemClose(id);
   }
 
-  renderLink = (item: LinkItemModel) => {
-    const { url, title, image, summary, id, favicon, providerName } = item;
-    let itemUrlWithProtocol;
+  formatUrlStamp = (url: string) => {
     // In Glip must has this key
     // hard code in order to show the current image
-    const imgStamp = '&key=4527f263d6e64d7a8251b007b1ba9972';
+    const stamp = '&key=4527f263d6e64d7a8251b007b1ba9972';
 
-    if (url) {
-      itemUrlWithProtocol = url.match('http://|https://')
-        ? url
-        : `http://${url}`;
-    } else {
-      itemUrlWithProtocol = url;
-    }
-    const thumbnail = image ? `${image}${imgStamp}` : '';
-    return title || image || summary ? (
+    return url && `${url}${stamp}`;
+  }
+
+  formatLinkProtocol = (url: string) => {
+    return url.match('http://|https://') ? url : `http://${url}`;
+  }
+
+  renderLinkCard = (item: LinkItemModel) => {
+    const { url, title, image, summary, id, favicon, providerName } = item;
+
+    const isUnableShow = !(title || image || summary);
+
+    return isUnableShow ? null : (
       <JuiConversationCardLinkItems
         key={id}
         title={title}
         summary={summary}
-        thumbnail={thumbnail}
-        url={itemUrlWithProtocol}
+        thumbnail={this.formatUrlStamp(image)}
+        url={this.formatLinkProtocol(url)}
         onLinkItemClose={this.onLinkItemClose(id)}
-        favicon={
-          favicon
-            ? `${favicon}${imgStamp}` // hard code in order to show the current image
-            : ''
-        }
+        favicon={this.formatUrlStamp(favicon)}
         faviconName={providerName}
       />
-    ) : null;
+    );
+  }
+
+  renderLinkText = (item: LinkItemModel) => {
+    const { text: postText } = this.props.post;
+    const { id, url, title } = item;
+
+    return postText ? null : (
+      <JuiConversationPostText>
+        <a key={id} href={this.formatLinkProtocol(url)}>
+          {title}
+        </a>
+      </JuiConversationPostText>
+    );
+  }
+
+  renderContent = (item: LinkItemModel) => {
+    const { doNotRender } = item;
+
+    return doNotRender ? this.renderLinkText(item) : this.renderLinkCard(item);
   }
 
   renderVideo = (item: LinkItemModel) => {
-    if (!item.data) {
-      return null;
-    }
-    const { id, url } = item;
-    const { object, title } = item.data;
+    const { id, url, data } = item;
+
+    if (!data) return null;
+
+    const { object, title } = data;
+
     return (
       <JuiConversationCardVideoLink
         key={id}
@@ -73,24 +89,18 @@ class LinkItemView extends React.Component<Props> {
     );
   }
 
+  renderLink = (item: LinkItemModel) => {
+    const { deactivated, isVideo } = item;
+
+    if (deactivated) return null;
+
+    return isVideo ? this.renderVideo(item) : this.renderContent(item);
+  }
+
   render() {
     const { postItems } = this.props;
-    return (
-      <>
-        {postItems.map((item: LinkItemModel) => {
-          const { doNotRender, deactivated } = item;
-          if (doNotRender || deactivated) {
-            return null;
-          }
 
-          if (!item.isVideo) {
-            return this.renderLink(item);
-          }
-
-          return this.renderVideo(item);
-        })}
-      </>
-    );
+    return <>{postItems.map(this.renderLink)}</>;
   }
 }
 export { LinkItemView };

@@ -12,6 +12,8 @@ import { Stream } from './Stream';
 import { ConversationPageContext } from '../ConversationPage/types';
 import { withTranslation } from 'react-i18next';
 
+// app top bar header & stream header
+const USED_HEIGHT = 64 + 48;
 @observer
 class PostListPageViewComponent extends Component<PostListPageViewProps> {
   componentWillUnmount() {
@@ -30,7 +32,12 @@ class PostListPageViewComponent extends Component<PostListPageViewProps> {
             title={t(caption)}
           />
           {ids ? (
-            <Stream postIds={ids} key={type} postFetcher={postFetcher} />
+            <Stream
+              postIds={ids}
+              key={type}
+              postFetcher={postFetcher}
+              usedHeight={USED_HEIGHT}
+            />
           ) : null}
         </JuiConversationPage>
       </ConversationPageContext.Provider>

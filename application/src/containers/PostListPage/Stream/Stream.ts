@@ -7,21 +7,11 @@
 import { buildContainer } from '@/base';
 import { StreamView } from './Stream.View';
 import { StreamViewModel } from './Stream.ViewModel';
-import { LoadingMorePlugin, LoadingPlugin } from '@/plugins';
 import { StreamProps } from './types';
 
 const Stream = buildContainer<StreamProps>({
   View: StreamView,
   ViewModel: StreamViewModel,
-  plugins() {
-    return {
-      loadingMorePlugin: new LoadingMorePlugin({
-        thresholdDown: 600,
-        stickTo: 'top',
-      }),
-      loadingPlugin: new LoadingPlugin(),
-    };
-  },
 });
 
 export { Stream };
