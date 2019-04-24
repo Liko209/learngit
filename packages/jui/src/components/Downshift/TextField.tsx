@@ -9,7 +9,6 @@ import styled from '../../foundation/styled-components';
 import { JuiTextField } from '../../components/Forms/TextField';
 import { GetInputPropsOptions } from 'downshift';
 import { isEmailByReg } from '../../foundation/utils';
-import { grey, typography } from '../../foundation/utils/styles';
 
 type SelectedItem = {
   label: string;
@@ -52,8 +51,6 @@ const StyledTextField = styled<TextFieldProps>(JuiTextField)`
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      color: ${grey('400')};
-      ${typography('body1')};
     }
   }
 ` as typeof MuiTextField;
