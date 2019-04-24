@@ -37,14 +37,18 @@ class Upgrade {
     });
   }
 
+  public logInfo(text: string) {
+    mainLogger.info(`${logTag}${text}`);
+  }
+
   public setServiceWorkerURL(swURL: string) {
     mainLogger.info(`${logTag}setServiceWorkerURL: ${swURL}`);
     this._swURL = swURL;
   }
 
-  public onNewContentAvailable() {
+  public onNewContentAvailable(isCurrentPageInControl: boolean) {
     mainLogger.info(
-      `${logTag}New content available. hasFocus: ${document.hasFocus()}`,
+      `${logTag}New content available. hasFocus: ${document.hasFocus()}, control: ${isCurrentPageInControl}`,
     );
     this._hasNewVersion = true;
 
@@ -82,6 +86,19 @@ class Upgrade {
         .getRegistration(this._swURL)
         .then((registration: ServiceWorkerRegistration) => {
           this._lastCheckTime = new Date();
+
+          const activeWorker = registration.active;
+          const installingWorker = registration.installing;
+          const waitingWorker = registration.waiting;
+          mainLogger.info(
+            `${logTag}active[${!!activeWorker}]${
+              !!activeWorker ? activeWorker.state : ''
+            }, ${logTag}installing[${!!installingWorker}]${
+              !!installingWorker ? installingWorker.state : ''
+            }, ${logTag}waiting[${!!waitingWorker}]${
+              !!waitingWorker ? waitingWorker.state : ''
+            }, }`,
+          );
 
           registration
             .update()
