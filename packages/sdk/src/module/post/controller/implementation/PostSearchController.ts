@@ -157,8 +157,8 @@ class PostSearchController {
   private async _requestSearchPosts(
     options: ContentSearchParams,
   ): Promise<SearchedResultData> {
-    mainLogger.tags(LOG_TAG).log('searchPosts', options);
     const result = await SearchAPI.search(options);
+    mainLogger.tags(LOG_TAG).log('_requestSearchPosts', result);
     return new Promise((resolve, reject) => {
       this._saveSearchInfo(result.request_id, {
         resolve,
@@ -264,6 +264,12 @@ class PostSearchController {
     this._endListenSocketSearchChange();
     this._clearSearchTimeout();
     await this._clearSearchData();
+    mainLogger
+      .tags(LOG_TAG)
+      .log(
+        'endPostSearch done, exist request ids:',
+        Array.from(this._queryInfos.keys()),
+      );
   }
 
   private async _clearSearchData() {
@@ -286,6 +292,7 @@ class PostSearchController {
     options: ContentSearchParams,
   ): Promise<SearchContentTypesCount> {
     const result = await SearchAPI.search({ ...options, count_types: 1 });
+    mainLogger.tags(LOG_TAG).log('getContentsCount', { result });
     return new Promise((resolve, reject) => {
       this._saveSearchInfo(result.request_id, {
         q: options.q as string,
