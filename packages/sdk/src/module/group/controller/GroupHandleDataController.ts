@@ -166,13 +166,6 @@ class GroupHandleDataController {
     groups: Group[],
     changeMap?: Map<string, ChangeModel>,
   ) => {
-    if (groups.length) {
-      if (changeMap) {
-        changeMap.set(SERVICE.GROUP_CURSOR, { entities: groups });
-      } else {
-        notificationCenter.emit(SERVICE.GROUP_CURSOR, groups);
-      }
-    }
     // https://jira.ringcentral.com/browse/FIJI-4264
     // const deactivatedGroupIds = _.map(deactivatedData, (group: Group) => {
     //   return group.id;
@@ -211,10 +204,17 @@ class GroupHandleDataController {
     }
   }
 
-  extractGroupCursor(groups: Group[]) {
+  extractGroupCursor(groups: Group[], changeMap?: Map<string, ChangeModel>) {
     const groupCursors = _.cloneDeep(groups);
-    groupCursors.length &&
-      notificationCenter.emit(SERVICE.GROUP_CURSOR, groupCursors);
+    if (groupCursors.length) {
+      if (changeMap) {
+        changeMap.set(SERVICE.GROUP_CURSOR, {
+          entities: groups,
+        });
+      } else {
+        notificationCenter.emit(SERVICE.GROUP_CURSOR, groups);
+      }
+    }
     return groups.map((group: Group) => {
       return _.omit(group, ['post_cursor', 'post_drp_cursor']);
     });
@@ -225,7 +225,7 @@ class GroupHandleDataController {
     source?: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
   ) => {
-    const pureGroups = this.extractGroupCursor(groups);
+    const pureGroups = this.extractGroupCursor(groups, changeMap);
 
     const deactivatedData = pureGroups.filter(
       (item: Group) => item && item.deactivated,

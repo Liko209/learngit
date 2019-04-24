@@ -20,7 +20,7 @@ export type NotificationEntityUpdateBody<T> = NotificationEntityBody<T> & {
   partials?: Map<number, Partial<Raw<T>>>;
 };
 
-type NotificationEntityReplaceBody<T> = NotificationEntityBody<T> & {
+export type NotificationEntityReplaceBody<T> = NotificationEntityBody<T> & {
   isReplaceAll: boolean;
 };
 

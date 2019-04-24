@@ -27,9 +27,9 @@ import _ from 'lodash';
 import storeManager from '@/store';
 import history from '@/history';
 import {
-  NotificationEntityUpdateBody,
-  NotificationEntityUpdatePayload,
   NotificationEntityPayload,
+  NotificationEntityReplacePayload,
+  NotificationEntityReplaceBody,
 } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
@@ -285,7 +285,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     );
-
     keys.forEach(async (key: string) => {
       let limitCount = 0;
       switch (key) {
@@ -305,21 +304,22 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         0,
         limitCount,
       );
-
       const entityMap = new Map<number, Group>();
-      result.forEach((group: Group) => {
-        entityMap.set(group.id, group);
-      });
-
+      if (result && result.length) {
+        result.forEach((group: Group) => {
+          entityMap.set(group.id, group);
+        });
+      }
       const ids = Array.from(entityMap.keys());
 
-      const notificationBody: NotificationEntityUpdateBody<Group> = {
+      const notificationBody: NotificationEntityReplaceBody<Group> = {
         ids,
         entities: entityMap,
+        isReplaceAll: true,
       };
 
-      const notification: NotificationEntityUpdatePayload<Group> = {
-        type: EVENT_TYPES.UPDATE,
+      const notification: NotificationEntityReplacePayload<Group> = {
+        type: EVENT_TYPES.REPLACE,
         body: notificationBody,
       };
 
