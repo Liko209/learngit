@@ -92,7 +92,7 @@ class Step implements IStep {
       return await MiscUtils.convertToWebp(
         imagePath,
         this.t.ctx.runnerOpts.SCREENSHOT_WEBP_QUALITY,
-        this.t.ctx.runnerOpts.SCREENSHOT_WEBP_WIDTH
+        this.t.ctx.runnerOpts.SCREENSHOT_WEBP_SCALE
       );
     }
     return imagePath;

@@ -34,7 +34,7 @@ export class MiscUtils {
     return filepath;
   }
 
-  static async convertToWebp(imagePath: string, quality?: string, width?: string) {
+  static async convertToWebp(imagePath: string, quality?: string, scale?: string) {
     if (path.extname(imagePath) == '.webp' || !fs.existsSync(imagePath)) {
       return imagePath;
     }
@@ -45,7 +45,7 @@ export class MiscUtils {
       await image
         .metadata()
         .then(function (metadata) {
-          const newWidth = +width ? +width : Math.round(metadata.width / 2);
+          const newWidth = +scale <= 1 ? Math.round(metadata.width * +scale) : Math.round(metadata.width * 0.5);
           return image
             .resize(newWidth)
             .webp({ quality })
