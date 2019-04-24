@@ -222,7 +222,7 @@ describe('GroupHandleDataController', () => {
       expect(entitySourceController.bulkDelete).toHaveBeenCalledTimes(1);
       expect(entitySourceController.bulkUpdate).toHaveBeenCalledTimes(1);
       // expect doNotification function
-      expect(notificationCenter.emit).not.toHaveBeenCalledTimes(1);
+      expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
       expect(notificationCenter.emitEntityDelete).not.toHaveBeenCalledTimes(1);
       expect(notificationCenter.emitEntityUpdate).not.toHaveBeenCalledTimes(1);
     });
@@ -245,7 +245,7 @@ describe('GroupHandleDataController', () => {
       ]);
       await groupHandleDataController.handlePartialData(groups);
       expect(entitySourceController.update).toHaveBeenCalledTimes(1);
-      expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
+      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
 
       expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
       expect(GroupAPI.requestGroupById).not.toHaveBeenCalled();
@@ -361,7 +361,7 @@ describe('GroupHandleDataController', () => {
           entities: map,
         },
       });
-      expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
+      expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     });
     it('group has not most_recent_post_created_at should update group recent modified time', async () => {
       daoManager
@@ -383,7 +383,7 @@ describe('GroupHandleDataController', () => {
           entities: map,
         },
       });
-      expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
+      expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     });
     it('group has most_recent_post_created_at and greater then post created_at should not update group recent modified time', async () => {
       daoManager
@@ -680,6 +680,32 @@ describe('GroupHandleDataController', () => {
       expect(groupedPosts.length).toEqual(2);
       expect(groupedPosts[0].id).toEqual(2);
       expect(groupedPosts[1].id).toEqual(3);
+    });
+  });
+
+  describe('extractGroupCursor', () => {
+    it('should remove cursors in groups', () => {
+      const groups = [
+        {
+          id: 1,
+          post_cursor: 2,
+          post_drp_cursor: 3,
+        },
+        {
+          id: 2,
+          post_cursor: 2,
+          post_drp_cursor: 3,
+        },
+      ] as any;
+      expect(groupHandleDataController.extractGroupCursor(groups)).toEqual([
+        {
+          id: 1,
+        },
+        {
+          id: 2,
+        },
+      ]);
+      expect(notificationCenter.emit).toBeCalledTimes(1);
     });
   });
 

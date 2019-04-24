@@ -56,6 +56,7 @@ class TopBar extends React.Component<TopBarProps> {
     const { openGlobalSearch, searchKey, onClear, t } = this.props;
 
     return (
+<<<<<<< HEAD
       <React.Fragment>
         <JuiTopBar
           MainMenu={this._MainMenu}
@@ -70,6 +71,19 @@ class TopBar extends React.Component<TopBarProps> {
           Dialpad={Dialpad}
         />
       </React.Fragment>
+=======
+      <JuiTopBar
+        MainMenu={this._MainMenu}
+        AvatarActions={AvatarActions}
+        NewActions={NewActions}
+        Logo={this._Logo}
+        BackNForward={BackNForward}
+        openGlobalSearch={openGlobalSearch}
+        searchKey={searchKey}
+        searchPlaceholder={t('globalSearch.search')}
+        onClear={onClear}
+      />
+>>>>>>> stage/1.3.0
     );
   }
 }

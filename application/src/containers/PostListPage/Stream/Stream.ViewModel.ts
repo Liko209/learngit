@@ -5,7 +5,7 @@
  */
 
 import _ from 'lodash';
-import { computed } from 'mobx';
+import { computed, action } from 'mobx';
 import StoreViewModel from '@/store/ViewModel';
 import { StreamProps, SuccinctPost } from './types';
 import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDataListHandler';
@@ -135,15 +135,18 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
+  @action
   fetchInitialPosts = async () => {
     this._sortableListHandler.setHasMore(true, QUERY_DIRECTION.NEWER);
     return await this._batchFetchPosts();
   }
 
+  @action
   fetchNextPagePosts = async () => {
     return await this._batchFetchPosts();
   }
 
+  @action
   private async _batchFetchPosts() {
     const direction = QUERY_DIRECTION.NEWER;
     if (this._sortableListHandler.hasMore(direction)) {
@@ -168,6 +171,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     });
   }
 
+  @action
   async reInit() {
     if (!this.props.selfProvide) {
       return;

@@ -19,7 +19,8 @@ import { Stream as PostListStream } from '@/containers/PostListPage/Stream';
 import { SearchFilter } from '@/modules/GlobalSearch/container/SearchFilter';
 import { ConversationPageContext } from '@/containers/ConversationPage/types';
 
-type Props = ContentSearchResultViewProps & WithTranslation;
+type Props = ContentSearchResultViewProps &
+  WithTranslation & { isShow: boolean };
 
 // Section Header + Tabs Height + Search Input + Margin
 const USED_HEIGHT = 36 + 40 + 48 + 56;
@@ -45,6 +46,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
       setSearchOptions,
       searchOptions,
       isEmpty,
+      isShow,
     } = this.props;
     return (
       <ConversationPageContext.Provider value={{ disableMoreAction: true }}>
@@ -60,6 +62,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
             ) : (
               <JuiFullSearchResultStreamWrapper>
                 <PostListStream
+                  isShow={isShow}
                   ref={this._stream}
                   postIds={searchState.postIds}
                   postFetcher={onPostsFetch}
