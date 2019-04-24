@@ -82,7 +82,7 @@ const SKIP_CONSOLE_WARN = !(process.env.SKIP_CONSOLE_WARN === 'false');
 const ENABLE_SSL = process.env.ENABLE_SSL === 'true';
 const SELENIUM_CAPABILITIES = process.env.SELENIUM_CAPABILITIES || 'capabilities.json' // ref: https://github.com/link89/testcafe-browser-provider-selenium/tree/customize-chrome-option
 const DISABLE_SCREENSHOT = process.env.DISABLE_SCREENSHOT === 'true';
-const SCREENSHOT_WEBP_SCALE =  process.env.SCREENSHOT_WEBP_SCALE;
+const SCREENSHOT_WEBP_SCALE = Number(process.env.SCREENSHOT_WEBP_SCALE) || 0.5;
 
 const RUNNER_OPTS = {
   REPORTER,
@@ -105,7 +105,7 @@ const RUNNER_OPTS = {
   SELENIUM_CAPABILITIES,
   LANGUAGE_CODE,
   DISABLE_SCREENSHOT,
-  SCREENSHOT_WEBP_SCALE 
+  SCREENSHOT_WEBP_SCALE
 }
 
 // beat dashboard configuration
