@@ -38,23 +38,22 @@ export class MiscUtils {
     if (path.extname(imagePath) == '.webp' || !fs.existsSync(imagePath)) {
       return imagePath;
     }
-
+    console.log(imagePath, quality, scale)
     try {
-      const webImagePath = imagePath + ".webp";
+      const webpImagePath = imagePath + ".webp";
       const image = sharp(imagePath);
       await image
         .metadata()
         .then(function (metadata) {
-          const newWidth = Math.round(metadata.width * scale);
           return image
-            .resize(newWidth)
+            .resize(Math.round(metadata.width * scale))
             .webp({ quality })
             .toBuffer();
         })
         .then((data) => {
-          fs.writeFileSync(webImagePath, data)
+          fs.writeFileSync(webpImagePath, data)
         });
-      return webImagePath;
+      return webpImagePath;
     } catch {
       return imagePath;
     }
