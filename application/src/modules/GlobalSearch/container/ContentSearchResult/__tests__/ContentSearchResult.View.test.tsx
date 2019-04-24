@@ -21,8 +21,8 @@ const i18n = (key: string, { count }: { count?: number } = {}) => {
 };
 
 jest.mock('sdk/module/post');
-jest.mock('@/modules/messages/container/ConversationSheet', () => ({}));
-jest.mock('@/modules/messages/container/ConversationPost', () => () =>
+jest.mock('@/modules/message/container/ConversationSheet', () => ({}));
+jest.mock('@/modules/message/container/ConversationPost', () => () =>
   'conversation',
 );
 
