@@ -57,7 +57,7 @@ class StreamViewComponent extends Component<Props> {
     JuiVirtualizedListHandles
   > = React.createRef();
   private _globalStore = storeManager.getGlobalStore();
-  private _historyViewed = false;
+  @observable private _historyViewed: boolean | null = null;
   private _timeout: NodeJS.Timeout | null;
   private _jumpToPostRef: RefObject<JuiConversationCard> = createRef();
   private _disposers: Disposer[] = [];
@@ -211,7 +211,7 @@ class StreamViewComponent extends Component<Props> {
     const shouldHaveJumpButton =
       hasHistoryUnread &&
       historyUnreadCount > 1 &&
-      (!firstHistoryUnreadInPage || !this._historyViewed);
+      (!firstHistoryUnreadInPage || this._historyViewed === false);
 
     const countText =
       historyUnreadCount > 99 ? '99+' : String(historyUnreadCount);
@@ -306,10 +306,13 @@ class StreamViewComponent extends Component<Props> {
       );
       if (isHistoryRead) {
         this.handleFirstUnreadViewed();
+      } else {
+        this._historyViewed = false;
       }
     }
   }
 
+  @action
   handleFirstUnreadViewed = () => {
     this._historyViewed = true;
     this.props.clearHistoryUnread();
@@ -349,10 +352,10 @@ class StreamViewComponent extends Component<Props> {
 
   @action
   private _loadInitialPosts = async () => {
-    const { loadInitialPosts, markAsRead } = this.props;
+    const { loadInitialPosts, markAsRead, updateHistoryHandler } = this.props;
     await loadInitialPosts();
     runInAction(() => {
-      this.props.updateHistoryHandler();
+      updateHistoryHandler();
       markAsRead();
     });
     requestAnimationFrame(() => {
@@ -392,28 +395,30 @@ class StreamViewComponent extends Component<Props> {
           <Observer>
             {() => (
               <JuiStream ref={ref}>
-                {this._renderJumpToFirstUnreadButton()}
-                {loadingStatus === STATUS.FAILED ?
+                {loadingStatus === STATUS.FAILED ? (
                   this._onInitialDataFailed
-                  :
-                  <JuiInfiniteList
-                    contentStyle={this._contentStyleGen(height)}
-                    ref={this._listRef}
-                    height={height}
-                    stickToBottom={true}
-                    loadMoreStrategy={this._loadMoreStrategy}
-                    initialScrollToIndex={initialPosition}
-                    minRowHeight={50} // extract to const
-                    loadInitialData={this._loadInitialPosts}
-                    loadMore={loadMore}
-                    loadingRenderer={defaultLoading}
-                    hasMore={hasMore}
-                    loadingMoreRenderer={defaultLoadingMore}
-                    onVisibleRangeChange={this._handleVisibilityChanged}
-                  >
-                    {this._renderStreamItems()}
-                  </JuiInfiniteList>
-                }
+                ) : (
+                  <>
+                    {this._renderJumpToFirstUnreadButton()}
+                    <JuiInfiniteList
+                      contentStyle={this._contentStyleGen(height)}
+                      ref={this._listRef}
+                      height={height}
+                      stickToBottom={true}
+                      loadMoreStrategy={this._loadMoreStrategy}
+                      initialScrollToIndex={initialPosition}
+                      minRowHeight={50} // extract to const
+                      loadInitialData={this._loadInitialPosts}
+                      loadMore={loadMore}
+                      loadingRenderer={defaultLoading}
+                      hasMore={hasMore}
+                      loadingMoreRenderer={defaultLoadingMore}
+                      onVisibleRangeChange={this._handleVisibilityChanged}
+                    >
+                      {this._renderStreamItems()}
+                    </JuiInfiniteList>
+                  </>
+                )}
               </JuiStream>
             )}
           </Observer>

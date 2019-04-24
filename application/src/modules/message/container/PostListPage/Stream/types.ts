@@ -13,6 +13,7 @@ type StreamProps = {
   selfProvide?: boolean; // should be true if postIds are provided by the postFetcher
   postIds: number[];
   usedHeight: number;
+  isShow?: boolean;
   postFetcher: (
     direction: QUERY_DIRECTION,
     pageSize: number,
