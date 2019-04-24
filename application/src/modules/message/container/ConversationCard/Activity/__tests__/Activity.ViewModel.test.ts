@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity } from '../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { ActivityViewModel } from '../Activity.ViewModel';
 import { TypeDictionary } from 'sdk/utils';
 
-jest.mock('../../../../store/utils');
+jest.mock('@/store/utils');
 
 const mockPostEntityData: {
   activityData?: {

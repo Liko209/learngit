@@ -3,13 +3,13 @@
  * @Date: 2019-01-21 13:31:38
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { ThumbnailViewModel } from '../Thumbnail.ViewModel';
 import * as getThumbnailURL from '@/common/getThumbnailURL';
 import { observable } from 'mobx';
 
-jest.mock('../../../store/utils');
-jest.mock('../../../common/getFileType');
+jest.mock('@/store/utils');
+jest.mock('@/common/getFileType');
 jest.mock('sdk/module/item/service');
 
 let thumbnailViewModel: ThumbnailViewModel;

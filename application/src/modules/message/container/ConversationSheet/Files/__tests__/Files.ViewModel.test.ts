@@ -3,7 +3,7 @@
  * @Date: 2018-10-25 15:06:10
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity, getGlobalValue } from '../../../../../../store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { FilesViewModel } from '../Files.ViewModel';
 
 import { FileType, FilesViewProps } from '../types';
@@ -15,7 +15,7 @@ import { getThumbnailURLWithType } from '@/common/getThumbnailURL';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/post');
-jest.mock('../../../../store/utils');
+jest.mock('@/store/utils');
 jest.mock('@/containers/Notification');
 jest.mock('@/common/getThumbnailURL');
 

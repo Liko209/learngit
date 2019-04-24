@@ -1,11 +1,11 @@
 /*
-* @Author: Chris Zhan (chris.zhan@ringcentral.com)
-* @Date: 2018-10-24 19:30:05
-* Copyright © RingCentral. All rights reserved.
-*/
-import { getEntity, getGlobalValue } from '../../../../../../store/utils';
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-10-24 19:30:05
+ * Copyright © RingCentral. All rights reserved.
+ */
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { HeaderViewModel } from '../Header.ViewModel';
-jest.mock('../../../../store/utils');
+jest.mock('@/store/utils');
 const vm = new HeaderViewModel();
 
 describe('ConversationPageHeaderViewModel', () => {

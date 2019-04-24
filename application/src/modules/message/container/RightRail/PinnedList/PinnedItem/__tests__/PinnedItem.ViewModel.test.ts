@@ -3,12 +3,12 @@
  * @Date: 2019-02-19 16:10:37
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '../../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { TypeDictionary, GlipTypeUtil } from 'sdk/utils';
 import { PinnedItemViewModel } from '../PinnedItem.ViewModel';
 import { ENTITY_NAME } from '@/store';
 
-jest.mock('../../../../../store/utils');
+jest.mock('@/store/utils');
 jest.mock('sdk/utils');
 
 describe('PinnedItemViewModel', () => {

@@ -3,13 +3,13 @@
  * @Date: 2018-12-06 13:29:53
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity, getGlobalValue } from '../../../../../../../store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { MoreViewModel } from '../More.ViewModel';
 import { MENU_LIST_ITEM_TYPE } from '../types';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { TypeDictionary } from 'sdk/utils';
-jest.mock('../../../../../store/utils');
+jest.mock('@/store/utils');
 jest.mock('sdk/utils');
 
 let ViewModel: MoreViewModel;

@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { getEntity, getGlobalValue } from '../../../../../../store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { Footer } from '../Footer';
 import { FooterViewModel } from '../Footer.ViewModel';
 import { shallow } from 'enzyme';
 
-jest.mock('../../../../store/utils');
+jest.mock('@/store/utils');
 
 const t = (key: string) => {
   const map = {

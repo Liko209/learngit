@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity } from '../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { LinkItemViewModel } from '../LinkItem.ViewModel';
 import { dateFormatter } from '../../../../../../utils/date';
 import { ENTITY_NAME } from '../../../../../../store';
 
-jest.mock('../../../../store/utils');
+jest.mock('@/store/utils');
 
 const mockLink = {
   createdAt: 1547086968632,

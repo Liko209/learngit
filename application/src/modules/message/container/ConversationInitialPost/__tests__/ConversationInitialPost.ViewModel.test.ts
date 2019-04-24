@@ -3,9 +3,9 @@
  * @Date: 2018-10-29 16:15:26
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { ConversationInitialPostViewModel } from '../ConversationInitialPost.ViewModel';
-jest.mock('../../../store/utils');
+jest.mock('@/store/utils');
 
 const presenceViewModel = new ConversationInitialPostViewModel();
 

@@ -3,13 +3,13 @@
  * @Date: 2018-11-15 10:10:26
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { TaskViewModel } from '../Task.ViewModel';
 import * as date from '../../../../../../utils/date';
 import { getDateAndTime } from '../../helper';
-jest.mock('../../../../store/utils');
+jest.mock('@/store/utils');
 jest.mock('../../helper');
-jest.mock('../../../../utils/date');
+jest.mock('@/utils/date');
 
 const mockData = {
   attachmentIds: [123],

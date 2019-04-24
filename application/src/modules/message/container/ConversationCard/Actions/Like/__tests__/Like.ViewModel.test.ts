@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity, getGlobalValue } from '../../../../../../../store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { LikeViewModel } from '../Like.ViewModel';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
@@ -15,7 +15,7 @@ const mockPostService = {
 
 ServiceLoader.getInstance = jest.fn().mockReturnValue(mockPostService);
 
-jest.mock('../../../../../store/utils');
+jest.mock('@/store/utils');
 
 let likeViewModel: LikeViewModel;
 const mockPostEntityData: {

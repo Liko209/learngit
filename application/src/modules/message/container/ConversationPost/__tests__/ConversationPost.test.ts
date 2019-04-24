@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { POST_TYPE } from '../../../../../common/getPostType';
-import { getEntity } from '../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { ConversationPostViewModel } from '../ConversationPost.ViewModel';
 import { ENTITY_NAME } from '@/store';
 
-jest.mock('../../../store/utils');
+jest.mock('@/store/utils');
 
 const mockPostData = {
   id: 123,

@@ -3,12 +3,12 @@
  * @Date: 2019-01-16 15:01:30
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { EventItemViewModel } from '../EventItem.ViewModel';
 import { dateFormatter } from '../../../../../../utils/date';
 import moment from 'moment';
 
-jest.mock('../../../../store/utils');
+jest.mock('@/store/utils');
 
 const mockEvent = {
   start: 1547629200000,

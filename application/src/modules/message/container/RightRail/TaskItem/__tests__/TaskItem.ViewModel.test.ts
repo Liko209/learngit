@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ENTITY_NAME } from '../../../../../../store';
-import { getEntity } from '../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { TaskItemViewModel } from '../TaskItem.ViewModel';
 
-jest.mock('../../../../store/utils');
+jest.mock('@/store/utils');
 
 const taskItemViewModel = new TaskItemViewModel();
 

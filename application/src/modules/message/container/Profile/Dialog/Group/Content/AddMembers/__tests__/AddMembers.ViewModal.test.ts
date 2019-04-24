@@ -3,14 +3,14 @@
  * @Date: 2019-01-15 15:03:48
  * Copyright © RingCentral. All rights reserved.
  */
-import storeManager from '../../../../../../../../../store';
+import storeManager from '@/store';
 import { AddMembersViewModel } from '../AddMembers.ViewModel';
 import { GroupService } from 'sdk/module/group';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 
-jest.mock('../../../../../../Notification');
-jest.mock('../../../../../../../store/utils');
-jest.mock('../../../../../../../store/index');
+jest.mock('@/containers/Notification');
+jest.mock('@/store/utils');
+jest.mock('@/store/index');
 
 jest.mock('sdk/module/group', () => ({
   GroupService: jest.fn(),

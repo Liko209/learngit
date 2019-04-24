@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity, getGlobalValue } from '../../../../../../../../../../store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { MemberHeaderViewModel } from '../MemberHeader.ViewModel';
 import { PersonService } from 'sdk/module/person';
 
-jest.mock('../../../../../../../../store/utils');
+jest.mock('@/store/utils');
 
 const mockGroup = {
   id: 1,

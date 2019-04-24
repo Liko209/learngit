@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity } from '../../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import * as errorUtil from '@/utils/error';
 import { ProfileMiniCardGroupViewModel } from '../Group.ViewModel';
 import storeManager from '@/store';
@@ -18,7 +18,7 @@ import { ServiceLoader } from 'sdk/module/serviceLoader';
 jest.mock('sdk/module/group', () => ({
   GroupService: jest.fn(),
 }));
-jest.mock('../../../../../store/utils');
+jest.mock('@/store/utils');
 jest.mock('@/utils/error');
 jest.mock('sdk/api');
 jest.mock('sdk/dao');

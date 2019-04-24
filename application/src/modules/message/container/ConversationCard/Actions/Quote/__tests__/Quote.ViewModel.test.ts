@@ -3,11 +3,11 @@
  * @Date: 2018-12-10 16:17:36
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '../../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { QuoteViewModel } from '../Quote.ViewModel';
 
-jest.mock('../../../../../store/utils');
+jest.mock('@/store/utils');
 
 let ViewModel: QuoteViewModel;
 

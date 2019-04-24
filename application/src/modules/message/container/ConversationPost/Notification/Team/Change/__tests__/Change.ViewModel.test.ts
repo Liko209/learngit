@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity } from '../../../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { ChangeViewModel } from '../Change.ViewModel';
 import { ENTITY_NAME } from '@/store';
 
-jest.mock('../../../../../../store/utils');
+jest.mock('@/store/utils');
 
 const now = Date.now();
 

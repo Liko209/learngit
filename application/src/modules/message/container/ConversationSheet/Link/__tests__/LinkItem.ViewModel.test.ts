@@ -3,7 +3,7 @@
  * @Date: 2018-10-30 09:29:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { LinkItemViewModel } from '../LinkItem.ViewModel';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 
@@ -12,7 +12,7 @@ const itemService = {
 };
 ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
 
-jest.mock('../../../../store/utils');
+jest.mock('@/store/utils');
 
 const linkItemVM = new LinkItemViewModel({
   ids: [123, 456, 678],

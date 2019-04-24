@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity } from '../../../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { ProfileDialogPersonContentViewModel } from '../Content.ViewModel';
 import { ENTITY_NAME } from '@/store';
 import { PHONE_NUMBER_TYPE } from 'sdk/module/person/entity';
 
-jest.mock('../../../../../../store/utils');
+jest.mock('@/store/utils');
 
 const mockCompanyData = {
   name: 'RingCentral',

@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity } from '../../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { MenuViewModel } from '../Menu.ViewModel';
 import { CONVERSATION_TYPES } from '@/constants';
 
-jest.mock('../../../../../store/utils');
+jest.mock('@/store/utils');
 
 const mockEntityGroup = {
   displayName: 'Group name',

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { container, Jupiter } from 'framework';
-import { getEntity } from '../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { ConversationCardViewModel } from '../ConversationCard.ViewModel';
 import { config } from '@/modules/GlobalSearch/module.config';
 
@@ -12,7 +12,7 @@ jest.mock('i18next', () => ({
   t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
 }));
 
-jest.mock('../../../store/utils');
+jest.mock('@/store/utils');
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(config);

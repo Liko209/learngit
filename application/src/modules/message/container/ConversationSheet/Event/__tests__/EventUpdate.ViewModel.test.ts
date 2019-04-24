@@ -3,10 +3,10 @@
  * @Date: 2018-11-14 19:56:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { EventUpdateViewModel } from '../EventUpdate.ViewModel';
 
-jest.mock('../../../../store/utils');
+jest.mock('@/store/utils');
 
 const mockData = {};
 

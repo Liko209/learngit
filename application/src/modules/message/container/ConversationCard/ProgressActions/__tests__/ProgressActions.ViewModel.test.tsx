@@ -5,12 +5,12 @@
  */
 
 import { ProgressActionsViewModel } from '../ProgressActions.ViewModel';
-import { getEntity } from '../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { Notification } from '@/containers/Notification';
 import { PROGRESS_STATUS } from 'sdk/module/progress';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
-jest.mock('../../../../store/utils');
+jest.mock('@/store/utils');
 jest.mock('sdk/module/post');
 jest.mock('sdk/module/item');
 jest.mock('@/containers/Notification');

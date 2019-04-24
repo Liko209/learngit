@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity } from '../../../../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { MembersViewModel } from '../Members.ViewModel';
 import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandler';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import debounce from 'lodash/debounce';
 
-jest.mock('../../../../../../../store/utils');
+jest.mock('@/store/utils');
 
 jest.useFakeTimers();
 

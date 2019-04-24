@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity } from '../../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { PinViewModel } from '../Pin.ViewModel';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 
@@ -14,7 +14,7 @@ const mockGroupService = {
 
 ServiceLoader.getInstance = jest.fn().mockReturnValue(mockGroupService);
 
-jest.mock('../../../../../store/utils');
+jest.mock('@/store/utils');
 
 let pinViewModel: PinViewModel;
 const mockGroupEntityData: {

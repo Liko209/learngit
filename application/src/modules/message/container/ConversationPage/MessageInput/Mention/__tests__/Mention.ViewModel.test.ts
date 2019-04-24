@@ -3,12 +3,12 @@
  * @Date: 2018-11-28 09:16:47
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '../../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { CONVERSATION_TYPES } from '@/constants';
 import { MentionViewModel } from '../Mention.ViewModel';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 
-jest.mock('../../../../../store/utils');
+jest.mock('@/store/utils');
 jest.mock('sdk/module/search');
 
 let mentionViewModel: MentionViewModel;

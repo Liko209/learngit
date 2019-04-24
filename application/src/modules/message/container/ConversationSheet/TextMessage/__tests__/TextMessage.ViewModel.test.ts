@@ -3,12 +3,12 @@
  * @Date: 2018-10-25 10:29:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { TextMessageViewModel } from '../TextMessage.ViewModel';
 import { FormatToHtml } from '../FormatToHtml';
 
-jest.mock('../../../../store/utils');
+jest.mock('@/store/utils');
 
 // const GROUP_ID = 52994050;
 // const TEAM_ID = 11370502;

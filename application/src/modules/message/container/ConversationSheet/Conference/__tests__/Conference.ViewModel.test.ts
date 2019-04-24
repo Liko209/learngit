@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity, getGlobalValue } from '../../../../../../store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ConferenceViewModel } from '../Conference.ViewModel';
-jest.mock('../../../../store/utils');
+jest.mock('@/store/utils');
 
 const mockData = {
   creatorId: 101,

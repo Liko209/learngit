@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity } from '../../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { TeamViewModel } from '../Team.ViewModel';
 import { ENTITY_NAME } from '@/store';
 import moment from 'moment';
 import { isPlainObject, isFunction } from 'lodash';
 
-jest.mock('../../../../../store/utils');
+jest.mock('@/store/utils');
 
 const now = Date.now();
 

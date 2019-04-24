@@ -3,13 +3,13 @@
  * @Date: 2019-02-15 15:04:45
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { PinnedListViewModel } from '../PinnedList.ViewModel';
 // import { ENTITY_NAME } from '../../../../store';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 
 jest.mock('sdk/api');
-jest.mock('../../../../store/utils');
+jest.mock('@/store/utils');
 
 function setup(groupModel: any) {
   (getEntity as jest.Mock).mockReturnValue(groupModel);

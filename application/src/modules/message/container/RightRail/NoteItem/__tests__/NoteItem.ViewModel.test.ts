@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity } from '../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { NoteItemViewModel } from '../NoteItem.ViewModel';
 import { GLOBAL_KEYS, ENTITY_NAME } from '../../../../../../store/constants';
 
-jest.mock('../../../../store/utils');
+jest.mock('@/store/utils');
 
 const noteItemViewModel = new NoteItemViewModel({ id: 123 });
 

@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity } from '../../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { ProfileMiniCardPersonViewModel } from '../Person.ViewModel';
 
-jest.mock('../../../../../store/utils');
+jest.mock('@/store/utils');
 
 const mockData = {
   userDisplayName: 'Person Name',

@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity, getGlobalValue } from '../../../../../../../../store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { ProfileDialogGroupContentViewModel } from '../Content.ViewModel';
 
-jest.mock('../../../../../../store/utils');
+jest.mock('@/store/utils');
 
 const mockData = {
   members: [1, 2, 3],

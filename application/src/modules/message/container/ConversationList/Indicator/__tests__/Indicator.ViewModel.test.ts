@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity } from '../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { IndicatorViewModel } from '../Indicator.ViewModel';
 
-jest.mock('../../../../store/utils');
+jest.mock('@/store/utils');
 
 function clearMocks() {
   jest.clearAllMocks();

@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getSingleEntity } from '../../../../../../../store/utils';
+import { getSingleEntity } from '@/store/utils';
 import { BookmarkViewModel } from '../Bookmark.ViewModel';
 import { PostService } from 'sdk/module/post';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/post');
-jest.mock('../../../../../store/utils');
+jest.mock('@/store/utils');
 
 const postService = new PostService();
 ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);

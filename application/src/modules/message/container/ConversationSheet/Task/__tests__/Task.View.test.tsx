@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { getEntity } from '../../../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { TaskView } from '../Task.View';
 import { shallow } from 'enzyme';
 import { JuiTimeMessage } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 
-jest.mock('../../../../store/utils');
+jest.mock('@/store/utils');
 jest.mock('i18next', () => ({
   t: (text: string) => text,
 }));
