@@ -57,7 +57,7 @@ export class ListStore<T> extends BaseNotificationSubscribe {
     const replaceItems =
       this._limit && newItems.length > this._limit
         ? newItems.slice(0, this._limit)
-        : newItems;
+        : [...newItems];
     this._items.replace(replaceItems);
   }
 

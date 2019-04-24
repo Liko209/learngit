@@ -28,8 +28,8 @@ import storeManager from '@/store';
 import history from '@/history';
 import {
   NotificationEntityPayload,
-  NotificationEntityReplacePayload,
-  NotificationEntityReplaceBody,
+  NotificationEntityUpdatePayload,
+  NotificationEntityUpdateBody,
 } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
@@ -312,14 +312,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       }
       const ids = Array.from(entityMap.keys());
 
-      const notificationBody: NotificationEntityReplaceBody<Group> = {
+      const notificationBody: NotificationEntityUpdateBody<Group> = {
         ids,
         entities: entityMap,
-        isReplaceAll: true,
       };
 
-      const notification: NotificationEntityReplacePayload<Group> = {
-        type: EVENT_TYPES.REPLACE,
+      const notification: NotificationEntityUpdatePayload<Group> = {
+        type: EVENT_TYPES.UPDATE,
         body: notificationBody,
       };
 
