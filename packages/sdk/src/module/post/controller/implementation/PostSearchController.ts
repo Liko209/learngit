@@ -261,31 +261,28 @@ class PostSearchController {
   }
 
   async endPostSearch() {
+    mainLogger
+    .tags(LOG_TAG)
+    .log(
+      'endPostSearch, exist request ids:',
+      Array.from(this._queryInfos.keys()),
+    );
     this._endListenSocketSearchChange();
     this._clearSearchTimeout();
-    await this._clearSearchData();
-    mainLogger
-      .tags(LOG_TAG)
-      .log(
-        'endPostSearch done, exist request ids:',
-        Array.from(this._queryInfos.keys()),
-      );
+    this._clearSearchData();
   }
 
-  private async _clearSearchData() {
-    try {
-      const requestIds = Array.from(this._queryInfos.keys());
-      this._queryInfos.clear();
-      const promises = requestIds.map((requestId: number) => {
-        return SearchAPI.search({ previous_server_request_id: requestId });
-      });
-      await Promise.all(promises);
-    } catch (error) {
-      // no error handling here.
+  private _clearSearchData() {
+    const requestIds = Array.from(this._queryInfos.keys());
+    this._queryInfos.clear();
+    const promises = requestIds.map((requestId: number) => {
+      return SearchAPI.search({ previous_server_request_id: requestId });
+    });
+    Promise.all(promises).catch(error => {
       mainLogger
         .tags(LOG_TAG)
         .log('PostSearchController -> catch -> error', error);
-    }
+    });
   }
 
   async getContentsCount(
@@ -416,6 +413,9 @@ class PostSearchController {
     requestId: number,
     contentCounts: SearchContentTypesCount,
   ) {
+    mainLogger
+      .tags(LOG_TAG)
+      .log('_notifyContentsCountComes', { requestId, contentCounts });
     const info = this._queryInfos.get(requestId);
     if (info) {
       info.contentCountResolve && info.contentCountResolve(contentCounts);
