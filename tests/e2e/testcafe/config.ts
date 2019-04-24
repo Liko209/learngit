@@ -33,7 +33,7 @@ const ENV_OPTS = {
     GLIP_SERVER_BASE_URL: 'https://xmnup.asialab.glip.net',
     AUTH_URL: 'https://login-xmnup.lab.nordigy.ru/api/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
-    WEBPHONE_BASE_URL: 'http://webphone.lab.rcch.ringcentral.com',
+    WEBPHONE_BASE_URL: 'https://jupiter-webphone.lab.rcch.ringcentral.com',
     WEBPHONE_ENV: 'xmnup',
   },
   'GLP-CI1-XMN': {
@@ -44,7 +44,7 @@ const ENV_OPTS = {
     GLIP_SERVER_BASE_URL: 'https://glpci1xmn.asialab.glip.net',
     AUTH_URL: 'https://login-glpci1xmn.lab.nordigy.ru/api/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
-    WEBPHONE_BASE_URL: 'http://webphone.lab.rcch.ringcentral.com',
+    WEBPHONE_BASE_URL: 'https://jupiter-webphone.lab.rcch.ringcentral.com',
     WEBPHONE_ENV: 'glpci1xmn',
   },
 }[SITE_ENV];
@@ -120,7 +120,7 @@ enum BrandTire {
 };
 
 const WebphoneConfig = {
-  TTL: 1800000,
+  TTL: 600000,
   reserve: false,
 }
 

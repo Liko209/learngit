@@ -29,6 +29,8 @@ function updateCapabilitiesFile(capabilitiesFile: string, browsers: string[], la
           return objValue.concat(srcValue);
         }
       });
+    // !!!CURSE YOU!!! https://github.com/webdriverio/webdriverio/issues/2645
+    capabilities[b]['goog:chromeOptions'] = capabilities[b].chromeOptions;
   });
   fs.writeFileSync(capabilitiesFile, JSON.stringify(capabilities, null, 4));
 }
@@ -231,6 +233,10 @@ export function teardownCase() {
         await h(t).dashboardHelper.teardown(beatsClient, runId, consoleLogObj, accountType, rcDataPath);
       }
     }
+
+    // clean up webphone sessions
+    await h(t).webphoneHelper.tearDown();
+
     assert(RUNNER_OPTS.SKIP_CONSOLE_ERROR || 0 === errorConsoleLogNumber, `console error is detected: ${errorLog}!`);
     assert(RUNNER_OPTS.SKIP_CONSOLE_WARN || 0 === warnConsoleLogNumber, `console warn is detected: ${warnLog}!`);
   }
