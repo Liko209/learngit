@@ -9,7 +9,7 @@ import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandl
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 
-jest.mock('../../../../../../../../store/handler/SectionGroupHandler');
+jest.mock('@/store/handler/SectionGroupHandler');
 
 const allMembersIds: number[] = [];
 for (let i = 0; i < 50; i++) {

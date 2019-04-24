@@ -8,7 +8,7 @@ import { TAB_TYPE } from '../../ItemList/types';
 import { shallow } from 'enzyme';
 import { FullSearchView } from '../FullSearch.View';
 import history from '@/history';
-jest.mock('@/containers/ConversationSheet', () => ({}));
+jest.mock('@/modules/messages/container/ConversationSheet', () => ({}));
 
 describe('FullSearch.View', () => {
   it('should call jumpToConversationCallback when jump to conversation', () => {

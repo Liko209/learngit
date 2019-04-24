@@ -30,7 +30,7 @@ import { StreamController } from '../StreamController';
 jest.mock('sdk/module/item');
 jest.mock('sdk/module/post');
 jest.mock('sdk/module/group');
-jest.mock('../../../../store/base/visibilityChangeEvent');
+jest.mock('@/store/base/visibilityChangeEvent');
 
 function setup(obj?: any) {
   jest.spyOn(notificationCenter, 'on').mockImplementation();
