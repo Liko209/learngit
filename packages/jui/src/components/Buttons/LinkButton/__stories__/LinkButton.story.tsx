@@ -10,11 +10,11 @@ import {
   alignCenterDecorator,
 } from '../../../../foundation/utils/decorators';
 import { boolean, select, text } from '@storybook/addon-knobs';
-import { JuiLinkButton } from '../';
+import { JuiLinkButton, JuiLinkButtonProps } from '../';
 
 function getKnobs() {
   const content = text('content', 'button');
-  const size = select(
+  const size = select<JuiLinkButtonProps['size']>(
     'size',
     {
       small: 'small',
@@ -22,7 +22,7 @@ function getKnobs() {
     },
     'large',
   );
-  const color = select(
+  const color = select<JuiLinkButtonProps['color']>(
     'color',
     {
       primary: 'primary',

@@ -6,7 +6,6 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text, boolean } from '@storybook/addon-knobs';
-import backgrounds from '@storybook/addon-backgrounds';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiConversationPostLike } from '../../ConversationPostLike';
 import {
@@ -20,9 +19,6 @@ import JuiConversationCardBody from '../ConversationCardBody';
 
 storiesOf('Pattern', module)
   .addDecorator(withInfoDecorator(JuiConversationCard, { inline: true }))
-  .addDecorator(
-    backgrounds([{ name: 'slide-background', value: '#f3f3f3', default: true }]),
-  )
   .add('ConversationCard', () => {
     const name = text('name', 'John Smith');
     const groupName = text('Group name', 'Team AAA');
