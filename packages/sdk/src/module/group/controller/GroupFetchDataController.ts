@@ -64,12 +64,12 @@ export class GroupFetchDataController {
   async getGroupsByType(
     groupType = GROUP_QUERY_TYPE.ALL,
     offset = 0,
-    _limit?: number,
+    limit: number,
   ): Promise<Group[]> {
     const profileService = ServiceLoader.getInstance<ProfileService>(
       ServiceConfig.PROFILE_SERVICE,
     );
-    const limit = _limit || (await profileService.getMaxLeftRailGroup());
+
     mainLogger.debug(`offset:${offset} limit:${limit} groupType:${groupType}`);
     let result: Group[] = [];
     const dao = daoManager.getDao(GroupDao);

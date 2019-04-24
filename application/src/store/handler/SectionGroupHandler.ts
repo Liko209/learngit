@@ -27,9 +27,9 @@ import _ from 'lodash';
 import storeManager from '@/store';
 import history from '@/history';
 import {
-  NotificationEntityPayload,
   NotificationEntityUpdateBody,
   NotificationEntityUpdatePayload,
+  NotificationEntityPayload,
 } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
@@ -39,6 +39,7 @@ import { TDelta } from '../base/fetch/types';
 import { mainLogger } from 'sdk';
 import preFetchConversationDataHandler from './PreFetchConversationDataHandler';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { AccountUserConfig } from 'sdk/module/account/config';
 
 function groupTransformFunc(data: Group): ISortableModel<Group> {
   const {
@@ -58,11 +59,10 @@ function groupTransformFunc(data: Group): ISortableModel<Group> {
 }
 
 class GroupDataProvider implements IFetchSortableDataProvider<Group> {
-  private _queryType: GROUP_QUERY_TYPE;
-
-  constructor(queryType: GROUP_QUERY_TYPE) {
-    this._queryType = queryType;
-  }
+  constructor(
+    private _queryType: GROUP_QUERY_TYPE,
+    private _limitCountFunc: () => number,
+  ) {}
 
   async fetchData(
     direction: QUERY_DIRECTION,
@@ -72,7 +72,24 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     );
-    const result = await groupService.getGroupsByType(this._queryType);
+    let limitCount = 0;
+    switch (this._queryType) {
+      case GROUP_QUERY_TYPE.FAVORITE:
+        limitCount = Infinity;
+        break;
+      case GROUP_QUERY_TYPE.GROUP:
+        limitCount = this._limitCountFunc();
+        break;
+      case GROUP_QUERY_TYPE.TEAM:
+        limitCount = this._limitCountFunc();
+        break;
+    }
+
+    const result = await groupService.getGroupsByType(
+      this._queryType,
+      0,
+      limitCount,
+    );
     mainLogger.info(
       `fetch left rail group: ${result && result.length} type: ${
         this._queryType
@@ -83,6 +100,9 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
 }
 
 const LOG_TAG = 'SectionGroupHandler';
+const DEFAULT_LEFT_RAIL_GROUP: number = 20;
+const MAX_LEFT_RAIL_GROUP: number = 50;
+
 class SectionGroupHandler extends BaseNotificationSubscribable {
   private _handlersMap: {} = {};
   private _queryMap: {} = {};
@@ -93,9 +113,14 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private _lastGroupId: number = 0;
   private _dataLoader: Promise<any>;
   private _initFavorites = false;
+
   constructor() {
     super();
-    this._dataLoader = this._initHandlerMap();
+    this._dataLoader = this._init();
+  }
+
+  private async _init() {
+    await this._initHandlerMap();
     this._lastGroupId = storeManager
       .getGlobalStore()
       .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
@@ -211,6 +236,8 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       );
       const groups = await groupService.getGroupsByType(
         GROUP_QUERY_TYPE.FAVORITE,
+        0,
+        Infinity,
       );
       this._handlersMap[SECTION_TYPE.FAVORITE].replaceAll(groups);
 
@@ -227,7 +254,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     this.subscribeNotification(
       ENTITY.GROUP,
       (payload: NotificationEntityPayload<Group>) => {
-        console.error('_subscribeNotification:');
         let ids: number[] = [];
         if (payload.type === EVENT_TYPES.UPDATE) {
           ids = payload.body!.ids!;
@@ -247,12 +273,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         this._handleGroupsChanges();
       },
     );
+
     this.subscribeNotification(ENTITY.GROUP_STATE, () => {
       this._handleGroupsChanges();
     });
   }
 
-  private _handleGroupsChanges() {
+  private async _handleGroupsChanges() {
     const keys = Object.keys(this._handlersMap);
 
     const groupService = ServiceLoader.getInstance<GroupService>(
@@ -260,7 +287,24 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     );
 
     keys.forEach(async (key: string) => {
-      const result = await groupService.getGroupsByType(this._queryMap[key]);
+      let limitCount = 0;
+      switch (key) {
+        case GROUP_QUERY_TYPE.FAVORITE:
+          limitCount = Infinity;
+          break;
+        case GROUP_QUERY_TYPE.GROUP:
+          limitCount = this._getMaxLeftRailGroup();
+          break;
+        case GROUP_QUERY_TYPE.TEAM:
+          limitCount = this._getMaxLeftRailGroup();
+          break;
+      }
+
+      const result = await groupService.getGroupsByType(
+        this._queryMap[key],
+        0,
+        limitCount,
+      );
 
       const entityMap = new Map<number, Group>();
       result.forEach((group: Group) => {
@@ -286,7 +330,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private async _remove(ids: number[], checkLimit: boolean = false) {
     let limit = 0;
     if (checkLimit) {
-      limit = await this._getMaxLeftRailGroup();
+      limit = this._getMaxLeftRailGroup();
     }
     mainLogger.info(LOG_TAG, `_remove limit: ${limit}`);
     const directIdsShouldBeRemoved: number[] = [];
@@ -360,7 +404,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     queryType: GROUP_QUERY_TYPE,
     config: IFetchSortableDataListHandlerOptions<Group>,
   ) {
-    const dataProvider = new GroupDataProvider(queryType);
+    const dataProvider = new GroupDataProvider(
+      queryType,
+      this._getMaxLeftRailGroup,
+    );
     this._handlersMap[sectionType] = new FetchSortableDataListHandler(
       dataProvider,
       config,
@@ -437,15 +484,16 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         groupService.isValid(model)
       );
     };
+    const limitCount = this._getMaxLeftRailGroup();
     return this._addSection(
       SECTION_TYPE.DIRECT_MESSAGE,
       GROUP_QUERY_TYPE.GROUP,
       {
-        limit: 50,
         isMatchFunc: isMatchFun,
         transformFunc: groupTransformFunc,
         entityName: ENTITY_NAME.GROUP,
         eventName: undefined, // it should not subscribe notification by itself
+        limit: limitCount,
       },
     );
   }
@@ -474,12 +522,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         groupService.isValid(model)
       );
     };
+    const limitCount = this._getMaxLeftRailGroup();
     return this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
-      limit: 50,
       isMatchFunc: isMatchFun,
       transformFunc: groupTransformFunc,
       entityName: ENTITY_NAME.GROUP,
       eventName: undefined, // it should not subscribe notification by itself
+      limit: limitCount,
     });
   }
 
@@ -597,7 +646,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   async removeOverLimitGroupByChangingCurrentGroupId() {
     const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     const lastGroupId = this._lastGroupId;
-    const limit = await this._getMaxLeftRailGroup();
+    const limit = this._getMaxLeftRailGroup();
     mainLogger.info(
       LOG_TAG,
       `removeOverLimitGroupByChangingCurrentGroupId limit: ${limit}`,
@@ -648,7 +697,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     }
     const directIds = this.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE);
     const teamIds = this.getGroupIdsByType(SECTION_TYPE.TEAM);
-    const limit = await this._getMaxLeftRailGroup();
+    const limit = this._getMaxLeftRailGroup();
     mainLogger.info(
       LOG_TAG,
       `removeOverLimitGroupByChangingIds limit: ${limit}`,
@@ -693,11 +742,20 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     return ids;
   }
 
-  private async _getMaxLeftRailGroup() {
+  private _getMaxLeftRailGroup = (): number => {
     const profileService = ServiceLoader.getInstance<ProfileService>(
       ServiceConfig.PROFILE_SERVICE,
     );
-    return await profileService.getMaxLeftRailGroup();
+
+    const userConfig = new AccountUserConfig();
+    const currentProfileId = userConfig.getCurrentUserProfileId();
+
+    let count = DEFAULT_LEFT_RAIL_GROUP;
+    const profile = profileService.getSynchronously(currentProfileId);
+    if (profile && profile.max_leftrail_group_tabs2) {
+      count = Number(profile.max_leftrail_group_tabs2);
+    }
+    return count > MAX_LEFT_RAIL_GROUP ? MAX_LEFT_RAIL_GROUP : count;
   }
 }
 

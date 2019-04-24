@@ -237,12 +237,12 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   async getGroupsByType(
     groupType: GROUP_QUERY_TYPE,
     offset: number = 0,
-    _limit?: number,
+    limit: number,
   ): Promise<Group[]> {
     return await this._groupFetchDataController.getGroupsByType(
       groupType,
       offset,
-      _limit,
+      limit,
     );
   }
 

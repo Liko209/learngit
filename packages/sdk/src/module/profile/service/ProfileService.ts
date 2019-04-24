@@ -70,12 +70,6 @@ class ProfileService extends EntityBaseService<Profile>
       .getProfile();
   }
 
-  async getMaxLeftRailGroup(): Promise<number> {
-    return await this.getProfileController()
-      .getProfileDataController()
-      .getMaxLeftRailGroup();
-  }
-
   async isConversationHidden(groupId: number) {
     return await this.getProfileController()
       .getProfileDataController()

@@ -18,9 +18,6 @@ import { transform } from '../../../service/utils';
 import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 
-const DEFAULT_LEFTRAIL_GROUP: number = 20;
-const MAX_LEFTRAIL_GROUP: number = 50;
-
 class ProfileDataController {
   constructor(
     public entitySourceController: IEntitySourceController<Profile>,
@@ -60,15 +57,6 @@ class ProfileDataController {
       );
     }
     return profile;
-  }
-
-  async getMaxLeftRailGroup(): Promise<number> {
-    let count = DEFAULT_LEFTRAIL_GROUP;
-    const profile = await this.getProfile();
-    if (profile && profile.max_leftrail_group_tabs2) {
-      count = Number(profile.max_leftrail_group_tabs2);
-    }
-    return count > MAX_LEFTRAIL_GROUP ? MAX_LEFTRAIL_GROUP : count;
   }
 
   async isConversationHidden(groupId: number) {
