@@ -35,7 +35,6 @@ const baseProps = {
   hasHistoryUnread: false,
   firstHistoryUnreadInPage: false,
   clearHistoryUnread: jest.fn().mockName('setHasUnread'),
-  loadPostUntilFirstUnread: jest.fn().mockName('loadPostUntilFirstUnread'),
   getFirstUnreadPostByLoadAllUnread: jest
     .fn()
     .mockName('getFirstUnreadPostByLoadAllUnread'),

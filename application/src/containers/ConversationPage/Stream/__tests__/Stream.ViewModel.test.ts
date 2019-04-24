@@ -26,6 +26,10 @@ import { StreamProps, StreamItemType } from '../types';
 import { StreamViewModel } from '../Stream.ViewModel';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { StreamController } from '../StreamController';
+import { HistoryHandler } from '../HistoryHandler';
+import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPostFocBuilder';
+import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDataListHandler';
+import { Post } from 'sdk/module/post/entity';
 
 jest.mock('sdk/module/item');
 jest.mock('sdk/module/post');
@@ -33,7 +37,28 @@ jest.mock('sdk/module/group');
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
 function setup(obj?: any) {
+  const {
+    currentPosts = [],
+    postsNewerThanAnchor = [],
+    postsOlderThanAnchor = [],
+  } = obj;
   jest.spyOn(notificationCenter, 'on').mockImplementation();
+  const dataProvider = { fetchData: jest.fn().mockName('fetchData()') };
+  dataProvider.fetchData
+    .mockResolvedValueOnce({ data: postsNewerThanAnchor, hasMore: true })
+    .mockResolvedValueOnce({ data: postsOlderThanAnchor, hasMore: false });
+  const listHandler = new FetchSortableDataListHandler<Post>(dataProvider, {
+    isMatchFunc: () => true,
+    transformFunc: (post: Post) => {
+      return { id: post.id, sortValue: post.created_at, data: post };
+    },
+  });
+  listHandler.upsert(currentPosts);
+  listHandler.setHasMore(true, QUERY_DIRECTION.OLDER);
+  listHandler.setHasMore(true, QUERY_DIRECTION.NEWER);
+  jest
+    .spyOn(ConversationPostFocBuilder, 'buildConversationPostFoc')
+    .mockReturnValue(listHandler);
   const vm = new StreamViewModel({
     viewRef: React.createRef(),
     groupId: obj.groupId || 1,
@@ -47,14 +72,6 @@ describe('StreamViewModel', () => {
   let itemService: ItemService;
   let postService: PostService;
   let stateService: StateService;
-
-  const streamController = {
-    dispose: jest.fn(),
-    hasMore: jest.fn(),
-    fetchAllUnreadData: jest.fn(),
-    enableNewMessageSep: jest.fn(),
-    disableNewMessageSep: jest.fn(),
-  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -117,71 +134,95 @@ describe('StreamViewModel', () => {
     });
   });
 
-  describe('loadPostUntilFirstUnread()', () => {
-    function setupLoadPostUntilFirstUnread(obj: any) {
-      const vm = setup({
-        streamController,
-        _historyHandler: {
-          getDistanceToFirstUnread: jest
-            .fn()
-            .mockReturnValue(obj.distanceToFirstUnread),
-          getFirstUnreadPostId: jest.fn(),
+  describe('getFirstUnreadPostByLoadAllUnread()', () => {
+    function setupMock({
+      groupState,
+      currentPosts,
+      readThroughPost,
+      postsNewerThanAnchor,
+      postsOlderThanAnchor,
+    }: any) {
+      const postService = ServiceLoader.getInstance<PostService>(
+        ServiceConfig.POST_SERVICE,
+      );
+      jest.spyOn(postService, 'getById').mockResolvedValue(readThroughPost);
+
+      const historyHandler = new HistoryHandler();
+      const dataProvider = { fetchData: jest.fn().mockName('fetchData()') };
+      dataProvider.fetchData
+        .mockResolvedValueOnce({ data: postsNewerThanAnchor, hasMore: true })
+        .mockResolvedValueOnce({ data: postsOlderThanAnchor, hasMore: false });
+      const listHandler = new FetchSortableDataListHandler<Post>(dataProvider, {
+        isMatchFunc: () => true,
+        transformFunc: (post: Post) => {
+          return { id: post.id, sortValue: post.created_at, data: post };
         },
       });
-
-      const loadPosts = jest
-        .spyOn<StreamViewModel, any>(vm, '_loadPosts')
-        .mockImplementation(() => {});
-
-      return { vm, loadPosts };
-    }
-
-    it('should load 6 posts when distance to first unread is 5', async () => {
-      const { vm, loadPosts } = setupLoadPostUntilFirstUnread({
-        distanceToFirstUnread: 5,
-      });
-      await vm.loadPostUntilFirstUnread();
-      expect(loadPosts).toHaveBeenCalledWith(QUERY_DIRECTION.OLDER, 6);
-    });
-
-    it('should not load posts when distance to first unread <= 0', async () => {
-      const { vm, loadPosts } = setupLoadPostUntilFirstUnread({
-        distanceToFirstUnread: -1,
-      });
-
-      await vm.loadPostUntilFirstUnread();
-
-      expect(loadPosts).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('getFirstUnreadPostByLoadAllUnread()', () => {
-    function setupMock(obj: any) {
+      listHandler.upsert(currentPosts);
+      listHandler.setHasMore(true, QUERY_DIRECTION.OLDER);
+      listHandler.setHasMore(true, QUERY_DIRECTION.NEWER);
+      jest.spyOn(listHandler, 'fetchDataByAnchor');
+      jest
+        .spyOn(ConversationPostFocBuilder, 'buildConversationPostFoc')
+        .mockReturnValue(listHandler);
+      historyHandler.update(groupState, _.map(currentPosts, post => post.id));
+      const streamController = new StreamController(1, historyHandler, 1);
       const vm = setup({
         _streamController: streamController,
-        _historyHandler: {
-          unreadCount: obj.unreadCount,
-          getFirstUnreadPostId: jest.fn(),
-        },
+        _historyHandler: historyHandler,
       });
 
-      const loadAllUnreadPosts = jest
-        .spyOn<StreamController, any>(
-          vm._streamController,
-          'fetchAllUnreadData',
-        )
-        .mockImplementation(() => {});
-
-      return { vm, loadAllUnreadPosts };
+      return { vm, historyHandler, streamController };
     }
 
-    it('should try to load all unread posts', async () => {
-      const { vm, loadAllUnreadPosts } = setupMock({});
-      jest
-        .spyOn<StreamController, any>(vm._streamController, 'hasMore')
-        .mockReturnValue(true);
-      await vm.getFirstUnreadPostByLoadAllUnread();
-      expect(loadAllUnreadPosts).toHaveBeenCalled();
+    it('should load posts and return firstUnreadPostId', async () => {
+      const readThroughPost = { id: 4, created_at: 104, creator_id: 1 };
+      const postsOlderThanAnchor = [
+        { id: 1, created_at: 101, creator_id: 1 },
+        { id: 2, created_at: 102, creator_id: 1 },
+        { id: 3, created_at: 103, creator_id: 1 },
+        { id: 4, created_at: 104, creator_id: 1 },
+      ];
+      const postsNewerThanAnchor = [
+        { id: 5, created_at: 105, creator_id: 1 },
+        { id: 6, created_at: 106, creator_id: 1 },
+        { id: 7, created_at: 107, creator_id: 1 },
+        { id: 8, created_at: 108, creator_id: 1 },
+      ];
+      const { vm } = setupMock({
+        postsNewerThanAnchor,
+        postsOlderThanAnchor,
+        readThroughPost,
+        groupState: { unreadCount: 4, readThrough: readThroughPost.id },
+        currentPosts: [{ id: 8, created_at: 108, creator_id: 1 }],
+      });
+      const firstUnreadPostId = await vm.getFirstUnreadPostByLoadAllUnread();
+
+      expect(vm.postIds).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+      expect(firstUnreadPostId).toBe(5);
+    });
+
+    it('should return first unread post id when it is already in current posts', async () => {
+      const readThroughPost = { id: 4, created_at: 104, creator_id: 1 };
+
+      const { vm, historyHandler } = setupMock({
+        readThroughPost,
+        groupState: { unreadCount: 4, readThrough: readThroughPost.id },
+        currentPosts: [
+          { id: 1, created_at: 101, creator_id: 1 },
+          { id: 2, created_at: 102, creator_id: 1 },
+          { id: 3, created_at: 103, creator_id: 1 },
+          { id: 4, created_at: 104, creator_id: 1 },
+          { id: 5, created_at: 105, creator_id: 1 },
+          { id: 6, created_at: 106, creator_id: 1 },
+          { id: 7, created_at: 107, creator_id: 1 },
+          { id: 8, created_at: 108, creator_id: 1 },
+        ],
+      });
+      jest.spyOn(historyHandler, 'getFirstUnreadPostId').mockReturnValue(5);
+      const firstUnreadPostId = await vm.getFirstUnreadPostByLoadAllUnread();
+
+      expect(firstUnreadPostId).toBe(5);
     });
   });
 
