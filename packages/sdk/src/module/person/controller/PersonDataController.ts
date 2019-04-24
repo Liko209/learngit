@@ -73,11 +73,17 @@ class PersonDataController {
     source: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
   ) {
-    const deactivatedData = persons.filter(
-      (item: any) => item.deactivated === true,
-    );
-
-    const normalData = persons.filter((item: any) => item.deactivated !== true);
+    const deactivatedData: Person[] = [];
+    const normalData: Person[] = [];
+    persons.forEach((person: Person) => {
+      if (person) {
+        if (person.deactivated) {
+          deactivatedData.push(person);
+        } else {
+          normalData.push(person);
+        }
+      }
+    });
 
     this._saveData(deactivatedData, normalData);
     if (shouldEmitNotification(source)) {
