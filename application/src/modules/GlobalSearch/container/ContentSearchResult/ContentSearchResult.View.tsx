@@ -15,9 +15,9 @@ import {
   JuiFullSearchResultStreamWrapper,
 } from 'jui/pattern/FullSearchResult';
 import { JuiListSubheader } from 'jui/components/Lists';
-import { Stream as PostListStream } from '@/containers/PostListPage/Stream';
+import { Stream as PostListStream } from '@/modules/message/container/PostListPage/Stream';
 import { SearchFilter } from '@/modules/GlobalSearch/container/SearchFilter';
-import { ConversationPageContext } from '@/containers/ConversationPage/types';
+import { ConversationPageContext } from '@/modules/message/container/ConversationPage/types';
 
 type Props = ContentSearchResultViewProps & WithTranslation;
 
