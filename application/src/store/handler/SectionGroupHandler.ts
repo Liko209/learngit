@@ -28,8 +28,8 @@ import storeManager from '@/store';
 import history from '@/history';
 import {
   NotificationEntityPayload,
-  NotificationEntityUpdatePayload,
-  NotificationEntityUpdateBody,
+  NotificationEntityReplacePayload,
+  NotificationEntityReplaceBody,
 } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
@@ -288,13 +288,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     keys.forEach(async (key: string) => {
       let limitCount = 0;
       switch (key) {
-        case GROUP_QUERY_TYPE.FAVORITE:
+        case SECTION_TYPE.FAVORITE:
           limitCount = Infinity;
           break;
-        case GROUP_QUERY_TYPE.GROUP:
+        case SECTION_TYPE.DIRECT_MESSAGE:
           limitCount = this._getMaxLeftRailGroup();
           break;
-        case GROUP_QUERY_TYPE.TEAM:
+        case SECTION_TYPE.TEAM:
           limitCount = this._getMaxLeftRailGroup();
           break;
       }
@@ -312,13 +312,14 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       }
       const ids = Array.from(entityMap.keys());
 
-      const notificationBody: NotificationEntityUpdateBody<Group> = {
+      const notificationBody: NotificationEntityReplaceBody<Group> = {
         ids,
         entities: entityMap,
+        isReplaceAll: true,
       };
 
-      const notification: NotificationEntityUpdatePayload<Group> = {
-        type: EVENT_TYPES.UPDATE,
+      const notification: NotificationEntityReplacePayload<Group> = {
+        type: EVENT_TYPES.REPLACE,
         body: notificationBody,
       };
 
