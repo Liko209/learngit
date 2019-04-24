@@ -290,10 +290,6 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .convertToTeam(groupId, memberIds, teamSetting);
   }
 
-  async getLeftRailGroups(): Promise<Group[]> {
-    return await this._groupFetchDataController.getLeftRailGroups();
-  }
-
   async updateGroupPrivacy(params: {
     id: number;
     privacy: string;

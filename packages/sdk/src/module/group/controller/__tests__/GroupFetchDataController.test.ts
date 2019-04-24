@@ -374,17 +374,6 @@ describe('GroupFetchDataController', () => {
     expect(result1).toEqual(mock);
   });
 
-  describe('get left rail conversations', () => {
-    it('get left rail conversations', async () => {
-      const mock = [{ id: 1 }, { id: 2 }];
-      groupFetchDataController.getGroupsByType = jest
-        .fn()
-        .mockReturnValue(mock);
-      const groups = await groupFetchDataController.getLeftRailGroups();
-      expect(groups.length).toBe(6);
-    });
-  });
-
   describe('doFuzzySearch', () => {
     beforeEach(() => {
       entityCacheController.clear();

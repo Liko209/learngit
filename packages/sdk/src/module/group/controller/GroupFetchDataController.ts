@@ -165,19 +165,6 @@ export class GroupFetchDataController {
     return transform<Group>(result);
   }
 
-  async getLeftRailGroups(): Promise<Group[]> {
-    let result: Group[] = [];
-    let groups = await this.getGroupsByType(GROUP_QUERY_TYPE.FAVORITE);
-    result = result.concat(groups);
-
-    groups = await this.getGroupsByType(GROUP_QUERY_TYPE.GROUP);
-    result = result.concat(groups);
-
-    groups = await this.getGroupsByType(GROUP_QUERY_TYPE.TEAM);
-    result = result.concat(groups);
-    return result;
-  }
-
   async isFavored(id: number, type: number): Promise<boolean> {
     let groupId: number | undefined = undefined;
     switch (type) {

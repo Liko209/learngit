@@ -83,8 +83,6 @@ interface IGroupService {
     options: TeamSetting,
   ): Promise<Group>;
 
-  getLeftRailGroups(): Promise<Group[]>;
-
   updateGroupPrivacy(params: { id: number; privacy: string }): Promise<void>;
 
   isFavored(id: number, type: number): Promise<boolean>;
