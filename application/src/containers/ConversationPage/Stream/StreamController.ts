@@ -22,6 +22,7 @@ import preFetchConversationDataHandler from '@/store/handler/PreFetchConversatio
 import conversationPostCacheController from '@/store/handler/cache/ConversationPostCacheController';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
+const BEFORE_ANCHOR_POSTS_COUNT = 20;
 const LOAD_UNREAD_POSTS_REDUNDANCY = 500;
 
 const transformFunc = <T extends { id: number }>(dataModel: T) => ({
@@ -30,7 +31,7 @@ const transformFunc = <T extends { id: number }>(dataModel: T) => ({
   data: dataModel,
 });
 
-export class StreamController {
+class StreamController {
   private _orderListHandler: FetchSortableDataListHandler<Post>;
   private _streamListHandler: FetchSortableDataListHandler<StreamItem>;
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
@@ -192,10 +193,29 @@ export class StreamController {
       sortableModel = this._orderListHandler.transform2SortableModel(post!);
     }
 
-    return await this._orderListHandler.fetchDataByAnchor(
+    this.enableNewMessageSep();
+    const postsNewerThanAnchor = await this._orderListHandler.fetchDataByAnchor(
       QUERY_DIRECTION.NEWER,
       pageSize,
       sortableModel,
     );
+
+    const firstPost = postsNewerThanAnchor[0];
+
+    if (firstPost) {
+      await this._orderListHandler.fetchDataByAnchor(
+        QUERY_DIRECTION.OLDER,
+        BEFORE_ANCHOR_POSTS_COUNT,
+        this._orderListHandler.transform2SortableModel(firstPost),
+      );
+    }
+
+    return this._orderListHandler.listStore.items;
   }
 }
+
+export {
+  StreamController,
+  BEFORE_ANCHOR_POSTS_COUNT,
+  LOAD_UNREAD_POSTS_REDUNDANCY,
+};

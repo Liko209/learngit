@@ -96,7 +96,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       (selfProvide && this._initial) ||
       (!selfProvide && !this._postIds.length && postIds.length);
     if (shouldRunInitial) {
-      this._initial = false;
       this._postIds = postIds;
       await this.fetchInitialPosts();
       return;
@@ -137,6 +136,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @action
   fetchInitialPosts = async () => {
+    this._initial = false;
     this._sortableListHandler.setHasMore(true, QUERY_DIRECTION.NEWER);
     return await this._batchFetchPosts();
   }
@@ -169,17 +169,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         type: EVENT_TYPES.UPDATE,
       });
     });
-  }
-
-  @action
-  async reInit() {
-    if (!this.props.selfProvide) {
-      return;
-    }
-    this._initial = true;
-    this._postIds = [];
-    this._sortableListHandler.replaceAll([]);
-    await this.fetchInitialPosts();
   }
 }
 

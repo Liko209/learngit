@@ -26,8 +26,8 @@ const StyledSelectBoxContainer = styled.div`
   padding-bottom: ${spacing(3)};
 `;
 const StyledSelectBoxHeader = styled.div`
-  color: ${grey('900')};
-  ${typography('body2')};
+  color: ${grey('600')};
+  ${typography('caption2')};
   padding-bottom: ${spacing(2)};
 `;
 
