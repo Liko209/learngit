@@ -170,17 +170,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       });
     });
   }
-
-  @action
-  async reInit() {
-    if (!this.props.selfProvide) {
-      return;
-    }
-    this._initial = true;
-    this._postIds = [];
-    this._sortableListHandler.replaceAll([]);
-    await this.fetchInitialPosts();
-  }
 }
 
 export { StreamViewModel };
