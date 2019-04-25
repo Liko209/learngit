@@ -442,7 +442,7 @@ module.exports = {
     }),
     shouldUploadMapToSentry
       ? new SentryWebpackPlugin({
-          release: 'Web@' + appPackage.version,
+          release: 'web@' + appPackage.version,
           include: './build/static/js',
           urlPrefix: '~/static/js',
           configFile: './sentryclirc',

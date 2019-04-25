@@ -11,10 +11,12 @@ import {
   RTCCall,
 } from 'voip';
 import { ITelephonyCallDelegate } from '../service/ITelephonyCallDelegate';
+import { CallStateCallback } from '../types';
 
 class TelephonyCallController implements IRTCCallDelegate {
   private _callDelegate: ITelephonyCallDelegate;
   private _rtcCall: RTCCall;
+  private _callback: CallStateCallback;
 
   constructor(delegate: ITelephonyCallDelegate) {
     this._callDelegate = delegate;
@@ -24,11 +26,18 @@ class TelephonyCallController implements IRTCCallDelegate {
     this._rtcCall = call;
   }
 
+  setCallStateCallback(callback: CallStateCallback) {
+    this._callback = callback;
+  }
+
   onCallStateChange(state: RTC_CALL_STATE) {
     this._callDelegate.onCallStateChange(
       this._rtcCall.getCallInfo().uuid,
       state,
     );
+    if (this._callback) {
+      this._callback(this._rtcCall.getCallInfo().uuid, state);
+    }
   }
 
   onCallActionSuccess(

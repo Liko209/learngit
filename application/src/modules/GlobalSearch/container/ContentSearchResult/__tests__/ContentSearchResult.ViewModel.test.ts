@@ -232,6 +232,7 @@ describe('ContentSearchResult fix(FIJI-4990)', () => {
 
 describe('ContentSearchResult fix(FIJI-4870)', () => {
   let postService: PostService;
+
   beforeEach(() => {
     postService = {
       endPostSearch: jest.fn().mockResolvedValue(null),
@@ -267,5 +268,38 @@ describe('ContentSearchResult fix(FIJI-4870)', () => {
     await vm.onPostsFetch();
 
     expect(vm.searchState.contentsCount[-1]).toBe(18);
+  });
+});
+
+describe('ContentSearchResult fix(FIJI-5161)', () => {
+  const TIMING = 100;
+  let postService: PostService;
+
+  beforeEach(() => {
+    postService = {
+      getSearchContentsCount: () =>
+        new Promise((res, rej) => setTimeout(rej, TIMING)),
+      searchPosts: () => new Promise((res, rej) => setTimeout(rej, TIMING)),
+    };
+
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
+  });
+
+  it('Should error be throw out when one of service is rejected.', async () => {
+    const vm = new ContentSearchResultViewModel({});
+
+    const mockAsyncTest = jest.fn(async () => {
+      let timer = Date.now();
+
+      try {
+        await vm._onPostsInit();
+      } catch {
+        timer = Date.now() - timer;
+      }
+
+      return timer;
+    });
+
+    expect(await mockAsyncTest()).toBeLessThan(TIMING * 2);
   });
 });

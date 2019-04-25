@@ -21,7 +21,8 @@ class PresenceService extends EntityBaseService {
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SOCKET.PRESENCE]: this.presenceHandleData,
-        [SERVICE.SOCKET_STATE_CHANGE]: this.handleStore,
+        [SERVICE.SOCKET_STATE_CHANGE]: this.handleSocketStateChange,
+        [SERVICE.STOPPING_SOCKET]: this.resetPresence,
       }),
     );
   }
@@ -53,8 +54,12 @@ class PresenceService extends EntityBaseService {
     await this._presenceController.handlePresenceIncomingData(presences);
   }
 
-  handleStore = ({ state }: { state: any }) => {
-    this._presenceController.handleStore(state);
+  handleSocketStateChange = ({ state }: { state: string }) => {
+    this._presenceController.handleSocketStateChange(state);
+  }
+
+  resetPresence = () => {
+    this._presenceController.resetPresence();
   }
 }
 

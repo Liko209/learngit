@@ -9,11 +9,12 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import styled from '../../foundation/styled-components';
 import { JuiOutlineTextField } from '../../components/Forms/OutlineTextField';
 // import { JuiSearchBar } from '../SearchBar';
-import { width, palette, opacity } from '../../foundation/utils';
+import { width, palette, opacity, typography } from '../../foundation/utils';
 import { Theme } from '../../foundation/theme/theme';
 
 const TobBarSearch = styled(JuiOutlineTextField)`
-  width: ${width(67)};
+  width: 100%;
+  max-width: ${width(67)};
   background-color: ${({ theme }: { theme: Theme }) =>
     fade(palette('common', 'white')({ theme }), opacity('p20')({ theme }))};
   border: 0;
@@ -28,6 +29,7 @@ const TobBarSearch = styled(JuiOutlineTextField)`
   input {
     cursor: pointer;
     color: ${palette('common', 'white')};
+    ${typography('body1')};
   }
   span.search,
   span.close {
@@ -36,7 +38,6 @@ const TobBarSearch = styled(JuiOutlineTextField)`
 `;
 
 type StyledJuiSearchBarProps = {
-  // isShowSearchBar: boolean;
   // closeSearchBar: Function;
   onClick: (event: React.MouseEvent<HTMLElement>) => void;
   onClear: () => void;
@@ -69,6 +70,7 @@ const StyledJuiSearchBar = memo((props: StyledJuiSearchBarProps) => {
         },
       }}
       data-test-automation-id="topBar-search-bar"
+      className="topBar-search-bar"
     />
   );
 });

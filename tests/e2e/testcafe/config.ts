@@ -33,7 +33,7 @@ const ENV_OPTS = {
     GLIP_SERVER_BASE_URL: 'https://xmnup.asialab.glip.net',
     AUTH_URL: 'https://login-xmnup.lab.nordigy.ru/api/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
-    WEBPHONE_BASE_URL: 'http://webphone.lab.rcch.ringcentral.com',
+    WEBPHONE_BASE_URL: 'https://jupiter-webphone.lab.rcch.ringcentral.com',
     WEBPHONE_ENV: 'xmnup',
   },
   'GLP-CI1-XMN': {
@@ -44,7 +44,7 @@ const ENV_OPTS = {
     GLIP_SERVER_BASE_URL: 'https://glpci1xmn.asialab.glip.net',
     AUTH_URL: 'https://login-glpci1xmn.lab.nordigy.ru/api/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
-    WEBPHONE_BASE_URL: 'http://webphone.lab.rcch.ringcentral.com',
+    WEBPHONE_BASE_URL: 'https://jupiter-webphone.lab.rcch.ringcentral.com',
     WEBPHONE_ENV: 'glpci1xmn',
   },
 }[SITE_ENV];
@@ -62,10 +62,11 @@ const configLoader = new ConfigLoader(
 
 configLoader.load();
 
+const LANGUAGE_CODE = process.env.LANGUAGE_CODE || 'en' // ref: https://www.w3schools.com/tags/ref_language_codes.asp
 const REPORTER = process.env.REPORTER || 'spec';
-const SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp';
+const SCREENSHOTS_PATH = path.join(process.env.SCREENSHOTS_PATH || '/tmp', LANGUAGE_CODE);
 const SCREENSHOT_ON_FAIL = !(process.env.SCREENSHOT_ON_FAIL === 'false');
-const SCREENSHOT_WEBP_QUALITY = Number(process.env.SCREENSHOT_WEBP_QUALITY || '50');
+const SCREENSHOT_WEBP_QUALITY = Number(process.env.SCREENSHOT_WEBP_QUALITY);
 const CONCURRENCY = Number(process.env.CONCURRENCY || '1');
 const SHUFFLE_FIXTURES = process.env.SHUFFLE_FIXTURES === 'true';
 const FIXTURES = flattenGlobs(process.env.FIXTURES ? parseArgs(process.env.FIXTURES) : configLoader.fixtures, SHUFFLE_FIXTURES);
@@ -73,13 +74,14 @@ const BROWSERS = process.env.BROWSERS ? parseArgs(process.env.BROWSERS) : config
 const INCLUDE_TAGS = process.env.INCLUDE_TAGS ? parseArgs(process.env.INCLUDE_TAGS) : configLoader.includeTags;
 const EXCLUDE_TAGS = process.env.EXCLUDE_TAGS ? parseArgs(process.env.EXCLUDE_TAGS) : configLoader.excludeTags;
 const STOP_ON_FIRST_FAIL = process.env.STOP_ON_FIRST_FAIL === 'true';
-const MAX_RESOLUTION = (process.env.MAX_RESOLUTION || '1280x720').split('x').map(n => parseInt(n, 10));
+const INIT_RESOLUTION = (process.env.INIT_RESOLUTION || process.env.MAX_RESOLUTION || '0x0').split('x').map(n => parseInt(n, 10));
 const ASSERTION_TIMEOUT = Number(process.env.ASSERTION_TIMEOUT) || 8e3;
 const SKIP_JS_ERROR = !(process.env.SKIP_JS_ERROR === 'false');
 const SKIP_CONSOLE_ERROR = !(process.env.SKIP_CONSOLE_ERROR === 'false');
 const SKIP_CONSOLE_WARN = !(process.env.SKIP_CONSOLE_WARN === 'false');
 const ENABLE_SSL = process.env.ENABLE_SSL === 'true';
-
+const SELENIUM_CAPABILITIES = process.env.SELENIUM_CAPABILITIES || 'capabilities.json' // ref: https://github.com/link89/testcafe-browser-provider-selenium/tree/customize-chrome-option
+const DISABLE_SCREENSHOT = process.env.DISABLE_SCREENSHOT === 'true';
 
 const RUNNER_OPTS = {
   REPORTER,
@@ -93,12 +95,15 @@ const RUNNER_OPTS = {
   EXCLUDE_TAGS,
   QUARANTINE_MODE,
   STOP_ON_FIRST_FAIL,
-  MAX_RESOLUTION,
+  INIT_RESOLUTION,
   ASSERTION_TIMEOUT,
   SKIP_JS_ERROR,
   SKIP_CONSOLE_ERROR,
   SKIP_CONSOLE_WARN,
   ENABLE_SSL,
+  SELENIUM_CAPABILITIES,
+  LANGUAGE_CODE,
+  DISABLE_SCREENSHOT,
 }
 
 // beat dashboard configuration
@@ -110,11 +115,12 @@ const RUN_NAME = process.env.RUN_NAME || `[Jupiter][Debug][${new Date().toLocale
 enum BrandTire {
   "RCOFFICE" = "kamino(Fiji,Jupiter,1210,4488)",
   "RC_PROFESSIONAL_TIER" = "kamino(Fiji,Jupiter,1210,4442)",
-  "RC_FIJI_GUEST" = "kamino(Fiji-with-guest,Jupiter,1210,4488)"
+  "RC_FIJI_GUEST" = "kamino(Fiji-with-guest,Jupiter,1210,4488)",
+  "RC_USERS_20" = "kamino(FIJI-Users-20,Jupiter,1210,4488)"
 };
 
 const WebphoneConfig = {
-  TTL: 1800000,
+  TTL: 600000,
   reserve: false,
 }
 

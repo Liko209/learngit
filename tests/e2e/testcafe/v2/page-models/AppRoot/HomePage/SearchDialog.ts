@@ -3,7 +3,7 @@ import * as assert from 'assert';
 import * as _ from 'lodash';
 import { BaseConversationPage } from "./MessageTab/ConversationPage";
 import { H } from "../../../helpers";
-import { searchComoBox } from "./SearchComboBox";
+import { SearchComoBox } from "./SearchComboBox";
 
 
 export class SearchDialog extends BaseWebComponent {
@@ -218,19 +218,36 @@ class RecentSearch extends BaseSearchResultPage {
   }
 
   get contentItems() {
-    return this.getSelectorByAutomationId('search-message-item'); //todo
+    return this.getSelectorByAutomationId('search-message-item');
   }
 
   get contentInGlobalItems() {
-    return this.contentItems.filter(':not([data-id])'); //todo
+    return this.contentItems.withAttribute('data-id', '');
   }
 
   get contentInConversationItems() {
-    return this.contentItems.withAttribute('data-id'); //todo
+    return this.contentItems.filter(el => { return '' != el.getAttribute('data-id') }
+    );
   }
 
   contentInConversationByCId(cid: string) {
-    return this.contentInConversationItems.filter(`[data-id="${cid}"]`)
+    return this.getComponent(SearchItem, this.contentInConversationItems.filter(`[data-id="${cid}"]`));
+  }
+
+  itemByName(name: string) {
+    return this.getComponent(SearchItem, this.itemsNames.withExactText(name).parent('li'));
+  }
+
+  contentItemByName(name: string) {
+    return this.getComponent(SearchItem, this.contentItems.find('[data-test-automation-id="search-item-text"]').withExactText(name).parent('li'));
+  }
+
+  contentInGlobalBYName(name: string) {
+    return this.getComponent(SearchItem, this.contentInGlobalItems.find('[data-test-automation-id="search-item-text"]').withExactText(name).parent('li'));
+  }
+
+  contentInConversationByName(name: string) {
+    return this.getComponent(SearchItem, this.contentInConversationItems.find('[data-test-automation-id="search-item-text"]').withExactText(name).parent('li'));
   }
 
   get conversationItems() {
@@ -319,13 +336,17 @@ class MessagesResultTab extends BaseConversationPage {
     })
   }
 
+  get scrollDiv() {
+    return this.stream.parent("div");
+  }
+
   /* filter */
   get postByField() {
-    return this.getComponent(searchComoBox, this.self.find('#downshift-multiple-input').nth(0).parent('*[role="combobox"]'));
+    return this.getComponent(SearchComoBox, this.self.find('#downshift-multiple-input').nth(0).parent('*[role="combobox"]'));
   }
 
   get postInField() {
-    return this.getComponent(searchComoBox, this.self.find('#downshift-multiple-input').nth(1).parent('*[role="combobox"]'));
+    return this.getComponent(SearchComoBox, this.self.find('#downshift-multiple-input').nth(1).parent('*[role="combobox"]'));
   }
 
   get typeOptionSelector() {
@@ -435,10 +456,6 @@ class SearchItem extends BaseWebComponent {
     return await this.cid;
   }
 
-  async enter() {
-    await this.t.click(this.self);
-  }
-
   get privateLabel() {
     return this.getSelectorByAutomationId('search-item-private', this.self);
   }
@@ -495,7 +512,7 @@ class SearchItem extends BaseWebComponent {
     return this.getSelectorByIcon('messages', this.messageButton);
   }
 
-  async clickMessageButton() {
+  async HoverAndClickMessageButton() {
     await this.t.hover(this.self).click(this.messageButton);
   }
 }

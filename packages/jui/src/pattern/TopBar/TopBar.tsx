@@ -16,11 +16,10 @@ import { StyledJuiSearchBar } from './StyledSearchBar';
 type Props = {
   MainMenu: ComponentType<any>;
   Logo: ComponentType;
-  // Search: ComponentType,
   AvatarActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   NewActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
+  Dialpad: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   BackNForward: ComponentType<any>;
-  SearchBar: ComponentType<any>;
   openGlobalSearch: (event: React.MouseEvent<HTMLElement>) => void;
   searchKey: string;
   searchPlaceholder: string;
@@ -32,21 +31,7 @@ type States = {
 };
 
 class JuiTopBar extends React.PureComponent<Props, States> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      isShowSearchBar: false,
-    };
-  }
-
-  showSearchBar = () => {
-    this.setState(prevState => ({
-      isShowSearchBar: !prevState.isShowSearchBar,
-    }));
-  }
-
   render() {
-    const { isShowSearchBar } = this.state;
     const {
       MainMenu,
       Logo,
@@ -57,12 +42,12 @@ class JuiTopBar extends React.PureComponent<Props, States> {
       searchKey,
       searchPlaceholder,
       onClear,
-      // SearchBar,
+      Dialpad,
     } = this.props;
     return (
       <StyledAppBar>
         <StyledToolbar>
-          <StyledLeft isShowSearchBar={isShowSearchBar}>
+          <StyledLeft>
             <StyledMenuWithLogo>
               <MainMenu />
               <Logo />
@@ -73,31 +58,26 @@ class JuiTopBar extends React.PureComponent<Props, States> {
               value={searchKey}
               onClear={onClear}
               placeholder={searchPlaceholder}
-              // isShowSearchBar={isShowSearchBar}
-              // closeSearchBar={this.showSearchBar}
             />
             <StyledSearchIconButton
-              onClick={this.showSearchBar}
-              tooltipTitle="Search"
+              onClick={openGlobalSearch}
+              tooltipTitle={searchPlaceholder}
               size="medium"
+              color="common.white"
+              disableRipple={true}
             >
               search
             </StyledSearchIconButton>
           </StyledLeft>
           <StyledRight>
+            <Dialpad />
             <NewActions />
             <AvatarActions />
-            {/* <StyledMoreIconButton tooltipTitle="More" size="medium">
-              more_vert
-            </StyledMoreIconButton> */}
           </StyledRight>
         </StyledToolbar>
       </StyledAppBar>
     );
   }
 }
-
-// JuiTopBar.displayName = 'JuiTopBar';
-// JuiTopBar.dependencies = [];
 
 export { JuiTopBar };

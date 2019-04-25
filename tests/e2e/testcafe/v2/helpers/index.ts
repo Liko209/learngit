@@ -14,10 +14,11 @@ import { AllureHelper } from './allure-helper';
 import { ScenarioHelper } from './scenario-helper';
 import { H } from './utils';
 
-import { IUser, IStep, LogOptions } from '../models';
+import { IUser, IStep, IStepOptions } from '../models';
 import { AppRoot } from '../page-models/AppRoot';
 import { SITE_URL, SITE_ENV } from '../../config';
 import { WebphoneHelper } from './webphone-helper';
+import { WebphoneSession } from '../webphone/session';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -73,7 +74,7 @@ class Helper {
   get webphoneHelper() {
     return new WebphoneHelper(this.t);
   }
-  
+
   get scenarioHelper() {
     return new ScenarioHelper(this.t, this.sdkHelper);
   }
@@ -97,14 +98,22 @@ class Helper {
   }
 
   async log(step: IStep | string,
-    options?: boolean | LogOptions) {
+    options?: boolean | IStepOptions) {
     return await this.logHelper.log(step, options);
   }
 
   async withLog(step: IStep | string,
     cb: (step?: IStep) => Promise<any>,
-    options?: boolean | LogOptions) {
+    options?: boolean | IStepOptions) {
     return await this.logHelper.withLog(step, cb, options);
+  }
+
+  async withPhoneSession(user: IUser, cb: (session: WebphoneSession) => Promise<any>) {
+    return await this.webphoneHelper.withSession(user, cb);
+  }
+
+  async newWebphoneSession(user: IUser) {
+    return await this.webphoneHelper.newWebphoneSession(user);
   }
 
   async getGlip(user: IUser) {
@@ -127,10 +136,6 @@ class Helper {
 
   platform(user: IUser) {
     return this.sdkHelper.sdkManager.platform(user);
-  }
-
-  webphone(user: IUser) {
-    return this.webphoneHelper.webphone(user);
   }
 
   // testcafe extend

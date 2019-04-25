@@ -31,6 +31,7 @@ const StyledMuiTab = styled<MuiTabProps>(MuiTab)`
   }
   &.selected {
     .label {
+      ${typography('body2')};
       color: ${primary('700')}
     }
   }
@@ -42,7 +43,7 @@ const StyledMuiTab = styled<MuiTabProps>(MuiTab)`
     box-sizing: border-box;
   }
   .label {
-    ${typography('caption2')}
+    ${typography('body1')}
     color: ${grey('900')}
   }
 `;

@@ -36,7 +36,7 @@ class LeftNav extends Component<LeftNavProps> {
   onRouteChange = (url: string) => {
     const { history, location } = this.props;
     if (url === location.pathname) return;
-    if (location.pathname.includes(url)) {
+    if (new RegExp(`^${url}`).test(location.pathname)) {
       // FIJI-3794
       return;
     }

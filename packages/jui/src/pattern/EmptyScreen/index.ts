@@ -6,3 +6,4 @@
 export * from './RightShelfEmptyScreen';
 export * from './ConversationPageInit';
 export * from './types';
+export * from './MemberListEmptyView';

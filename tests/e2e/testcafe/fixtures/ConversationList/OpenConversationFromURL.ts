@@ -443,10 +443,8 @@ test.skip.meta(<ITestMeta>{
     await app.homePage.openAddActionMenu();
     await app.homePage.addActionMenu.sendNewMessageEntry.enter();
     await sendNewMessageModal.ensureLoaded();
-    await sendNewMessageModal.typeMember(otherUserName, { paste: true });
-    await t.wait(3e3);
-    await sendNewMessageModal.selectMemberByNth(0);
-    await sendNewMessageModal.clickSendButton();
+    await sendNewMessageModal.memberInput.typeText(otherUserName);
+    await sendNewMessageModal.memberInput.selectMemberByNth(0);
   });
 
   await stepsToCheckPositionOnTop(topChat.glipId, otherUserName);

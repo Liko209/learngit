@@ -9,3 +9,10 @@ export type UploadResult = {
   size: number;
   url: string;
 };
+
+export type FeedbackData = {
+  comments: string;
+  event_id: string;
+  email: string;
+  name: string;
+};

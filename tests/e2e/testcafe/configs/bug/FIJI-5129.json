@@ -1,0 +1,13 @@
+{
+    "on_merge": {
+        "fixtures": [
+            "./fixtures/ConversationList/OpenConversation.ts",
+            "./fixtures/ConversationList/OpenConversationFromURL.ts"
+        ],
+        "browsers": [
+            "selenium:chrome"
+        ],
+    
+        "include_tags": ["P1","P2","P3","P0"]
+    }
+}

@@ -101,7 +101,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog('When other user send a post without @mention to the team', async () => {
-    await h(t).scenarioHelper.sentAndGetTextPostId(`![:Person](${loginUser.rcId}), ${uuid()}`, team, otherUser);
+    await h(t).scenarioHelper.sentAndGetTextPostId(`${uuid()}`, team, otherUser);
   });
 
   await h(t).withLog(`Then the team should have 2 umi, no change`, async () => {

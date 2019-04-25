@@ -5,7 +5,7 @@
  */
 import { getGlobalValue, getEntity } from '../../utils/entities';
 import SectionGroupHandler from '../SectionGroupHandler';
-import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
+import { SECTION_TYPE } from '@/modules/message/container/LeftRail/Section/types';
 import { ProfileService } from 'sdk/module/profile';
 import { StateService } from 'sdk/module/state';
 import { GroupService } from 'sdk/module/group';

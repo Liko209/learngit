@@ -3,12 +3,7 @@ import styled from '../../foundation/styled-components';
 import { JuiConversationPageMemberProps } from './types';
 import { JuiArrowTip } from '../../components';
 import { JuiIconography } from '../../foundation/Iconography';
-import {
-  spacing,
-  grey,
-  typography,
-  width,
-} from '../../foundation/utils/styles';
+import { grey, typography, width } from '../../foundation/utils/styles';
 import { darken } from '@material-ui/core/styles/colorManipulator';
 import { IconButtonSize, iconSizes } from '../../components/Buttons';
 
@@ -17,17 +12,21 @@ type MemberProps = {
 };
 
 const StyledConversationPageMember = styled.button<MemberProps>`
+  position: relative;
   display: inline-flex;
   flex: none;
   align-self: center;
   align-items: center;
   border: none;
-  padding: ${spacing(0, 3)};
+  padding: 0;
   height: ${({ size = 'medium', theme }) =>
     width(iconSizes[size] * 2)({ theme })};
   background: none;
   color: ${grey('500')};
-  cursor: pointer;
+
+  &&& {
+    margin-left: ${width(1)};
+  }
 
   > span {
     ${typography('body1')};
@@ -43,6 +42,21 @@ const StyledConversationPageMember = styled.button<MemberProps>`
         palette: { tonalOffset, grey },
       },
     }) => darken(grey['500'], tonalOffset)};
+
+    > button {
+      display: block;
+    }
+  }
+
+  > button {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    cursor: pointer;
   }
 `;
 
@@ -54,12 +68,9 @@ class JuiConversationPageMember extends React.Component<
 
     return (
       <JuiArrowTip title={title}>
-        <StyledConversationPageMember
-          aria-label={ariaLabel}
-          onClick={onClick}
-          size={size}
-        >
+        <StyledConversationPageMember aria-label={ariaLabel} size={size}>
           <JuiIconography iconSize="medium">member_count</JuiIconography>
+          <button onClick={onClick} />
           {children}
         </StyledConversationPageMember>
       </JuiArrowTip>

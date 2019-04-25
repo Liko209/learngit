@@ -1,6 +1,9 @@
 
 import { WebphoneClient } from 'webphone-client'
 import { ENV_OPTS, WebphoneConfig } from '../../config';
+import { H } from '../helpers';
+import * as assert from 'assert';
+
 export class WebphoneSession {
   phoneId: string;
   sessionId: string;
@@ -12,6 +15,8 @@ export class WebphoneSession {
   message: string;
   TTL: number;
   occupied: boolean;
+  isOpen: boolean = false;
+
 
   webphoneClient: WebphoneClient;
 
@@ -45,12 +50,19 @@ export class WebphoneSession {
   }
 
   async makeCall(destNumber: string) {
+    await H.retryUntilPass(async () => {
+      await this.update();
+      assert.ok('accepted' != this.status, `webphone status: expect not "accepted", but actual "${this.status}"`);
+      assert.ok('invited' != this.status, `webphone status: expect not "invited", but actual "${this.status}"`);
+    }, 10, 1e3);
     await this.webphoneClient.makeCall(this.phoneId, this.sessionId, destNumber);
   }
 
   async close() {
     await this.webphoneClient.closeSession(this.phoneId, this.sessionId);
+    this.isOpen = false;
   }
+
 
   async operate(action: string, destNumber?: string) {
     if (destNumber) {
@@ -59,4 +71,27 @@ export class WebphoneSession {
       await this.webphoneClient.operateSession(this.phoneId, this.sessionId, action);
     }
   }
+
+  async answer() {
+    await this.waitForStatus('invited');
+    await this.operate('answerCall');
+  }
+
+  async decline() {
+    await this.waitForStatus('invited');
+    await this.operate('decline');
+  }
+
+  async hangup() {
+    await this.waitForStatus('accepted');
+    await this.operate('hangup');
+  }
+
+  async waitForStatus(status: string) {
+    await H.retryUntilPass(async () => {
+      await this.update();
+      assert.ok(status == this.status, `webphone status: expect "${status}", but actual "${this.status}"`);
+    }, 10, 1e3);
+  }
+
 }

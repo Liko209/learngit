@@ -55,7 +55,7 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
   }
   @computed
   get timeType() {
-    const beginTime = this.props.options.begin_time;
+    const beginTime = this.props.searchOptions.begin_time;
     if (!beginTime) {
       return DATE_DICTIONARY.ANY_TIME;
     }

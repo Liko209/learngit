@@ -10,24 +10,18 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiSearchFilter } from 'jui/pattern/SearchFilter';
 import { ContactSearch, GroupSearch } from '@/containers/Downshift';
 import { SearchFilterViewProps, SearchContentTypeItem } from './types';
-import {
-  JuiBoxSelect,
-  JuiBoxSelectProps,
-} from 'jui/components/Selects/BoxSelect';
+import { JuiLineSelect, MenuProps } from 'jui/components/Selects/LineSelect';
 import { JuiMenuItem } from 'jui/components';
 type ViewProps = SearchFilterViewProps & WithTranslation;
 
 @observer
 class SearchFilterViewComponent extends Component<ViewProps> {
-  boxSelectProps: Partial<JuiBoxSelectProps> = {
-    heightSize: 'default',
-    MenuProps: {
-      anchorOrigin: {
-        vertical: 'top',
-        horizontal: 'left',
-      },
-      getContentAnchorEl: null,
+  lineSelectProps: Partial<MenuProps> = {
+    anchorOrigin: {
+      vertical: 'top',
+      horizontal: 'left',
     },
+    getContentAnchorEl: null,
   };
 
   render() {
@@ -40,7 +34,6 @@ class SearchFilterViewComponent extends Component<ViewProps> {
       handleSearchGroupChange,
       handleSearchTypeChange,
       handleSearchPostDateChange,
-      options,
     } = this.props;
     return (
       <JuiSearchFilter title={t('globalSearch.filters')}>
@@ -66,12 +59,11 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           }
           maxLength={60}
         />
-        <JuiBoxSelect
-          {...this.boxSelectProps}
+        <JuiLineSelect
+          menuProps={this.lineSelectProps}
           onChange={handleSearchTypeChange}
           label={t('globalSearch.Type')}
-          isFullWidth={true}
-          value={options.type as string}
+          value={searchOptions.type as string}
           automationId="typeSelector"
         >
           {typeFilter.map((item: SearchContentTypeItem) => {
@@ -82,17 +74,16 @@ class SearchFilterViewComponent extends Component<ViewProps> {
                 key={item.id}
               >
                 {t(`globalSearch.${item.name}`)}
-                {item.count ? ` (${item.count})` : ''}
+                {item.count !== null ? ` (${item.count})` : ''}
               </JuiMenuItem>
             );
           })}
-        </JuiBoxSelect>
+        </JuiLineSelect>
 
-        <JuiBoxSelect
-          {...this.boxSelectProps}
+        <JuiLineSelect
+          menuProps={this.lineSelectProps}
           onChange={handleSearchPostDateChange}
           label={t('globalSearch.TimePosted')}
-          isFullWidth={true}
           automationId="timePostSelector"
           value={this.props.timeType}
         >
@@ -107,7 +98,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
               </JuiMenuItem>
             );
           })}
-        </JuiBoxSelect>
+        </JuiLineSelect>
       </JuiSearchFilter>
     );
   }

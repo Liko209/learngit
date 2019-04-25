@@ -10,11 +10,11 @@ import {
   withInfoDecorator,
   alignCenterDecorator,
 } from '../../../foundation/utils/decorators';
-import { JuiLink } from '../';
+import { JuiLink, JuiLinkProps } from '../';
 
 function getKnobs() {
   const content = text('content', 'button');
-  const size = select(
+  const size = select<JuiLinkProps['size']>(
     'size',
     {
       small: 'small',
@@ -23,7 +23,7 @@ function getKnobs() {
     },
     'medium',
   );
-  const color = select(
+  const color = select<JuiLinkProps['color']>(
     'color',
     {
       primary: 'primary',

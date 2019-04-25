@@ -5,7 +5,13 @@
  */
 import { TelephonyAccountController } from '../TelephonyAccountController';
 import { ITelephonyAccountDelegate } from '../../service/ITelephonyAccountDelegate';
-import { RTC_ACCOUNT_STATE, RTCAccount, RTCCall, RTCCallInfo } from 'voip/src';
+import {
+  RTC_ACCOUNT_STATE,
+  RTCAccount,
+  RTCCall,
+  RTCCallInfo,
+  RTC_CALL_STATE,
+} from 'voip/src';
 import { TelephonyCallInfo, MAKE_CALL_ERROR_CODE } from '../../types';
 import { TelephonyCallController } from '../TelephonyCallController';
 import { MakeCallController } from '../../controller/MakeCallController';
@@ -109,10 +115,28 @@ describe('TelephonyAccountController', () => {
         .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
       Object.assign(accountController, {
         _makeCallController: makeCallController,
+        _telephonyCallDelegate: undefined,
       });
       const res = await accountController.makeCall(toNum);
       expect(res).toBe(MAKE_CALL_ERROR_CODE.NO_ERROR);
       expect(rtcAccount.makeCall).toBeCalled();
+    });
+
+    it('should return error when there is an ongoing call', async () => {
+      rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce({
+        voipCountryBlocked: false,
+        voipFeatureEnabled: true,
+      });
+      const makeCallController = new MakeCallController();
+      makeCallController.tryMakeCall = jest
+        .fn()
+        .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
+      Object.assign(accountController, {
+        _makeCallController: makeCallController,
+        _telephonyCallDelegate: {},
+      });
+      const res = await accountController.makeCall(toNum);
+      expect(res).toBe(MAKE_CALL_ERROR_CODE.MAX_CALLS_REACHED);
     });
   });
 
@@ -120,6 +144,41 @@ describe('TelephonyAccountController', () => {
     it('should call rtcAccount to logout', () => {
       accountController.logout();
       expect(rtcAccount.logout).toBeCalled();
+    });
+  });
+
+  describe('callStateChanged', () => {
+    it('should call rtcAccount to logout when it is disposed and call count = 1', () => {
+      const logoutCallback = jest.fn();
+      Object.assign(accountController, {
+        _logoutCallback: logoutCallback,
+        _isDisposing: jest.fn().mockReturnValue(true),
+      });
+      rtcAccount.callCount = jest.fn().mockReturnValue(1);
+      accountController.callStateChanged(callId, RTC_CALL_STATE.DISCONNECTED);
+      expect(rtcAccount.logout).toBeCalled();
+      expect(logoutCallback).toBeCalled();
+    });
+    it('should not call rtcAccount to logout when it is not disposed', () => {
+      Object.assign(accountController, {
+        _isDisposing: jest.fn().mockReturnValue(false),
+      });
+      accountController.callStateChanged(callId, RTC_CALL_STATE.DISCONNECTED);
+      expect(rtcAccount.logout).not.toBeCalled();
+    });
+    it('should not call rtcAccount to logout when it is disposed but call count = 0', () => {
+      const logoutCallback = jest.fn();
+      Object.assign(accountController, {
+        _logoutCallback: logoutCallback,
+        _isDisposing: jest.fn().mockReturnValue(true),
+      });
+      rtcAccount.callCount = jest.fn().mockReturnValue(0);
+      accountController.callStateChanged(callId, RTC_CALL_STATE.DISCONNECTED);
+      expect(rtcAccount.logout).not.toBeCalled();
+    });
+    it('should not call rtcAccount to logout when call state is not disconnected', () => {
+      accountController.callStateChanged(callId, RTC_CALL_STATE.CONNECTED);
+      expect(rtcAccount.logout).not.toBeCalled();
     });
   });
 

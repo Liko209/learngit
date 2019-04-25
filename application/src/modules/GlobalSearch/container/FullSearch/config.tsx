@@ -7,10 +7,13 @@ import React from 'react';
 import { ContentSearchResult } from '../ContentSearchResult';
 import { ListSearchResult } from '../ListSearchResult';
 import { TAB_TYPE } from './types';
+type TabProps = {
+  isShow: boolean;
+};
 
 type TabConfig = {
   title: string;
-  container: React.ComponentType;
+  container: React.ComponentType<TabProps>;
   automationID: string;
   empty: {
     text: string;
@@ -20,7 +23,7 @@ type TabConfig = {
 const TAB_CONFIG = [
   {
     title: 'globalSearch.Messages',
-    container: () => <ContentSearchResult />,
+    container: (props: TabProps) => <ContentSearchResult {...props} />,
     empty: {
       text: 'item.youHaveNothingPinnedYet',
     },
