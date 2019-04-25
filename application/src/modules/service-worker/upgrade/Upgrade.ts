@@ -93,9 +93,9 @@ class Upgrade {
           mainLogger.info(
             `${logTag}active[${!!activeWorker}]${
               !!activeWorker ? activeWorker.state : ''
-            }, ${logTag}installing[${!!installingWorker}]${
+            }, installing[${!!installingWorker}]${
               !!installingWorker ? installingWorker.state : ''
-            }, ${logTag}waiting[${!!waitingWorker}]${
+            }, waiting[${!!waitingWorker}]${
               !!waitingWorker ? waitingWorker.state : ''
             }, }`,
           );
