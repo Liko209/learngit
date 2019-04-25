@@ -23,7 +23,7 @@ class ProfileService extends EntityBaseService<Profile>
   private profileController: ProfileController;
 
   constructor() {
-    super(false, daoManager.getDao(ProfileDao), {
+    super(true, daoManager.getDao(ProfileDao), {
       basePath: '/profile',
       networkClient: Api.glipNetworkClient,
     });
