@@ -76,12 +76,12 @@ class Upgrade {
 
   private _queryIfHasNewVersion() {
     if (!window.navigator.onLine) {
-      mainLogger.info(`${logTag}Ignore update due to offline`);
+      this.logInfo('Ignore update due to offline');
       return;
     }
 
     if (this._swURL && navigator.serviceWorker) {
-      mainLogger.info(`${logTag}Will check new version`);
+      this.logInfo('Will check new version');
       navigator.serviceWorker
         .getRegistration(this._swURL)
         .then((registration: ServiceWorkerRegistration) => {
@@ -114,6 +114,11 @@ class Upgrade {
             });
           mainLogger.info(`${logTag}Checking new version`);
         });
+    } else {
+      this.logInfo(
+        `Query no started. _swURL ${!!this
+          ._swURL}, ${!!navigator.serviceWorker}`,
+      );
     }
   }
 
