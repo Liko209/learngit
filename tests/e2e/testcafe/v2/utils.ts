@@ -29,6 +29,9 @@ export class MiscUtils {
 
   static createTmpFile(content: any, filename?: string) {
     filename = filename || `${uuid()}.tmp`;
+    if( !fs.existsSync(TMPFILE_PATH)){
+      fs.mkdirSync(TMPFILE_PATH);
+    }
     const filepath = path.join(TMPFILE_PATH, filename);
     fs.writeFileSync(filepath, content);
     return filepath;
