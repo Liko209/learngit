@@ -434,7 +434,11 @@ class GroupHandleDataController {
   }
 
   getGroupTime = (group: Group) => {
-    return group.most_recent_post_created_at || group.created_at;
+    return (
+      group.__last_accessed_at ||
+      group.most_recent_post_created_at ||
+      group.created_at
+    );
   }
 
   hasUnread = (groupState: GroupState) => {

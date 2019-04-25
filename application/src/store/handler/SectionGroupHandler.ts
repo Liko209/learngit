@@ -484,7 +484,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         groupService.isValid(model)
       );
     };
-    const limitCount = this._getMaxLeftRailGroup();
     return this._addSection(
       SECTION_TYPE.DIRECT_MESSAGE,
       GROUP_QUERY_TYPE.GROUP,
@@ -493,7 +492,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         transformFunc: groupTransformFunc,
         entityName: ENTITY_NAME.GROUP,
         eventName: undefined, // it should not subscribe notification by itself
-        limit: limitCount,
+        limit: MAX_LEFT_RAIL_GROUP,
       },
     );
   }
@@ -522,13 +521,12 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         groupService.isValid(model)
       );
     };
-    const limitCount = this._getMaxLeftRailGroup();
     return this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
       isMatchFunc: isMatchFun,
       transformFunc: groupTransformFunc,
       entityName: ENTITY_NAME.GROUP,
       eventName: undefined, // it should not subscribe notification by itself
-      limit: limitCount,
+      limit: MAX_LEFT_RAIL_GROUP,
     });
   }
 
