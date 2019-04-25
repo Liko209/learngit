@@ -49,16 +49,25 @@ const baseHandleData = async (
   // if you have more complex logic, should not use it
   // TODO if is a team, should consider archived case, do delete emit, but no delete it in dao
   try {
-    // delete deactivatedData
-    const deactivatedData = data.filter(
-      (item: any) => item.deactivated === true,
-    );
+    if (!data || !data.length) {
+      return [];
+    }
+
+    const deactivatedData: any[] = [];
+    const normalData: any[] = [];
+    data.forEach((item: any) => {
+      if (item.deactivated) {
+        deactivatedData.push(item);
+      } else {
+        normalData.push(item);
+      }
+    });
+
     if (deactivatedData.length > 0) {
       await daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData);
       await dao.bulkDelete(deactivatedData.map((item: any) => item.id));
     }
-    // put normalData
-    const normalData = data.filter((item: any) => item.deactivated !== true);
+
     if (normalData.length > 0) {
       if (!noSavingToDB) {
         await dao.bulkPut(normalData);
