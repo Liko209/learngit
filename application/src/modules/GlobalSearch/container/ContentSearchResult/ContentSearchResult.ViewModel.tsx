@@ -115,7 +115,7 @@ class ContentSearchResultViewModel
 
     !isInitial && (await this.onSearchEnd());
 
-    this._setSearchState({ requestId: null });
+    this._setSearchState({ requestId: null, postIds: [] });
 
     this.showResult = true;
   }
