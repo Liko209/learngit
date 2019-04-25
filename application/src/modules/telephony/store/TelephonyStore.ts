@@ -83,13 +83,13 @@ class TelephonyStore {
       ['_recordFSM', 'recordState'],
       ['_recordDisableFSM', 'recordDisabledState'],
     ].forEach(([fsm, observableProp]: [FSM, FSMProps]) => {
-      this[fsm].observe(
-        'onAfterTransition',
-        (lifecycle: LifeCycle) => {
-          const { to } = lifecycle;
-          this[observableProp] = to as CALL_WINDOW_STATUS | RECORD_STATE | RECORD_DISABLED_STATE;
-        },
-      );
+      this[fsm].observe('onAfterTransition', (lifecycle: LifeCycle) => {
+        const { to } = lifecycle;
+        this[observableProp] = to as
+          | CALL_WINDOW_STATUS
+          | RECORD_STATE
+          | RECORD_DISABLED_STATE;
+      });
     });
 
     this._holdFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
@@ -120,6 +120,7 @@ class TelephonyStore {
           this.activeCallTime = undefined;
         case CALL_STATE.IDLE:
           this.quitKeypad();
+          this._clearEnteredKeys();
           break;
         default:
           setTimeout(() => {
@@ -179,7 +180,6 @@ class TelephonyStore {
 
   quitKeypad = () => {
     this.keypadEntered = false;
-    this._clearEnteredKeys();
   }
 
   inputKey = (key: string) => {
@@ -339,7 +339,7 @@ class TelephonyStore {
 
   @computed
   get isRecording() {
-    return (this.recordState === RECORD_STATE.RECORDING);
+    return this.recordState === RECORD_STATE.RECORDING;
   }
 
   @computed

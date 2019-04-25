@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component, RefObject, createRef } from 'react';
+import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ContentSearchResultViewProps } from './types';
@@ -26,17 +26,10 @@ type Props = ContentSearchResultViewProps &
 const USED_HEIGHT = 36 + 40 + 48 + 56;
 @observer
 class ContentSearchResultViewComponent extends Component<Props> {
-  private _stream: RefObject<any> = createRef();
-
-  componentDidMount() {
-    if (this._stream && this._stream.current) {
-      this.props.setStreamVM(this._stream);
-    }
-  }
-
   componentWillUnmount() {
     this.props.onSearchEnd();
   }
+
   render() {
     const {
       t,
@@ -47,12 +40,13 @@ class ContentSearchResultViewComponent extends Component<Props> {
       searchOptions,
       isEmpty,
       isShow,
+      showResult,
     } = this.props;
     return (
       <ConversationPageContext.Provider value={{ disableMoreAction: true }}>
         <JuiFullSearchWrapper>
           <JuiFullSearchResultWrapper>
-            {searchState.requestId ? (
+            {showResult && searchState.requestId ? (
               <JuiListSubheader data-test-automation-id="searchResultsCount">
                 {t('globalSearch.Results', { count: postsCount })}
               </JuiListSubheader>
@@ -61,14 +55,15 @@ class ContentSearchResultViewComponent extends Component<Props> {
               <JuiTabPageEmptyScreen text={t('globalSearch.NoMatchesFound')} />
             ) : (
               <JuiFullSearchResultStreamWrapper>
-                <PostListStream
-                  isShow={isShow}
-                  ref={this._stream}
-                  postIds={searchState.postIds}
-                  postFetcher={onPostsFetch}
-                  selfProvide={true}
-                  usedHeight={USED_HEIGHT}
-                />
+                {showResult && (
+                  <PostListStream
+                    isShow={isShow}
+                    postIds={searchState.postIds}
+                    postFetcher={onPostsFetch}
+                    selfProvide={true}
+                    usedHeight={USED_HEIGHT}
+                  />
+                )}
               </JuiFullSearchResultStreamWrapper>
             )}
           </JuiFullSearchResultWrapper>
