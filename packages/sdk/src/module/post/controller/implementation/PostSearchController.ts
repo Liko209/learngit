@@ -157,8 +157,8 @@ class PostSearchController {
   private async _requestSearchPosts(
     options: ContentSearchParams,
   ): Promise<SearchedResultData> {
-    mainLogger.tags(LOG_TAG).log('searchPosts', options);
     const result = await SearchAPI.search(options);
+    mainLogger.tags(LOG_TAG).log('_requestSearchPosts', result);
     return new Promise((resolve, reject) => {
       this._saveSearchInfo(result.request_id, {
         resolve,
@@ -261,31 +261,35 @@ class PostSearchController {
   }
 
   async endPostSearch() {
+    mainLogger
+    .tags(LOG_TAG)
+    .log(
+      'endPostSearch, exist request ids:',
+      Array.from(this._queryInfos.keys()),
+    );
     this._endListenSocketSearchChange();
     this._clearSearchTimeout();
-    await this._clearSearchData();
+    this._clearSearchData();
   }
 
-  private async _clearSearchData() {
-    try {
-      const requestIds = Array.from(this._queryInfos.keys());
-      this._queryInfos.clear();
-      const promises = requestIds.map((requestId: number) => {
-        return SearchAPI.search({ previous_server_request_id: requestId });
-      });
-      await Promise.all(promises);
-    } catch (error) {
-      // no error handling here.
+  private _clearSearchData() {
+    const requestIds = Array.from(this._queryInfos.keys());
+    this._queryInfos.clear();
+    const promises = requestIds.map((requestId: number) => {
+      return SearchAPI.search({ previous_server_request_id: requestId });
+    });
+    Promise.all(promises).catch(error => {
       mainLogger
         .tags(LOG_TAG)
         .log('PostSearchController -> catch -> error', error);
-    }
+    });
   }
 
   async getContentsCount(
     options: ContentSearchParams,
   ): Promise<SearchContentTypesCount> {
     const result = await SearchAPI.search({ ...options, count_types: 1 });
+    mainLogger.tags(LOG_TAG).log('getContentsCount', { result });
     return new Promise((resolve, reject) => {
       this._saveSearchInfo(result.request_id, {
         q: options.q as string,
@@ -409,6 +413,9 @@ class PostSearchController {
     requestId: number,
     contentCounts: SearchContentTypesCount,
   ) {
+    mainLogger
+      .tags(LOG_TAG)
+      .log('_notifyContentsCountComes', { requestId, contentCounts });
     const info = this._queryInfos.get(requestId);
     if (info) {
       info.contentCountResolve && info.contentCountResolve(contentCounts);
