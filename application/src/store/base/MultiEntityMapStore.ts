@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import { onBecomeObserved, onBecomeUnobserved, action, observable } from 'mobx';
-import { service } from 'sdk';
-import { BaseService } from 'sdk/service';
+import { service, mainLogger } from 'sdk';
 import { IdModel, Raw } from 'sdk/framework/model';
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
@@ -10,6 +9,7 @@ import { Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import IUsedCache from './IUsedCache';
+import { EntityBaseService } from 'sdk/framework/service';
 
 const modelProvider = new ModelProvider();
 const { EVENT_TYPES } = service;
@@ -24,7 +24,7 @@ export default class MultiEntityMapStore<
 
   private _getService: Function | [Function, string];
   private _maxCacheCount: number;
-  private _service: BaseService<T>;
+  private _service: EntityBaseService<T>;
 
   private _usedCacheArr: IUsedCache[] = [];
 
@@ -106,7 +106,10 @@ export default class MultiEntityMapStore<
     const model = this._data[id];
     if (model) {
       Object.keys(partialEntity).forEach((key: string) => {
-        model[_.camelCase(key)] = partialEntity[key];
+        const camelCaseKey = _.camelCase(key);
+        if (model.hasOwnProperty(camelCaseKey)) {
+          model[camelCaseKey] = partialEntity[key];
+        }
       });
       model.isMocked = false;
     }
@@ -200,11 +203,15 @@ export default class MultiEntityMapStore<
       } else {
         const res = this.getByService(id);
         if (res instanceof Promise) {
-          res.then((res: T & { error?: {} }) => {
-            if (res && !res.error) {
-              this.partialUpdate(res as T, id);
-            }
-          });
+          res
+            .then((res: T & { error?: {} }) => {
+              if (res && !res.error) {
+                this.partialUpdate(res as T, id);
+              }
+            })
+            .catch(error => {
+              mainLogger.log('MultiEntityMapStore get error', error);
+            });
         } else {
           if (res) {
             this.partialUpdate(res as T, id);

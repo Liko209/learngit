@@ -90,6 +90,7 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
       currentUserId: this._currentUserId,
       staticHttpServer: this._staticHttpServer,
       customEmojiMap: this._customEmojiMap,
+      highlightTerms: this.props.terms,
     });
     return formatToHtml.text;
   }

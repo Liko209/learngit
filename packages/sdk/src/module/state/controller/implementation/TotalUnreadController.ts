@@ -14,10 +14,10 @@ import {
 import { Group } from '../../../group/entity';
 import { Profile } from '../../../profile/entity';
 import { GroupState } from '../../entity';
-import { GroupService } from '../../../group';
-import { ProfileService } from '../../../profile';
+import { IGroupService } from '../../../group/service/IGroupService';
+import { ProfileService } from '../../../profile/service/ProfileService';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import notificationCenter, {
   NotificationEntityPayload,
 } from '../../../../service/notificationCenter';
@@ -25,6 +25,7 @@ import { EVENT_TYPES } from '../../../../service/constants';
 import { SERVICE } from '../../../../service/eventKey';
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 type DataHandleTask =
   | GroupStateHandleTask
@@ -38,6 +39,7 @@ class TotalUnreadController {
   private _totalUnreadMap: Map<UMI_SECTION_TYPE, SectionUnread>;
   private _favoriteGroupIds: number[];
   constructor(
+    private _groupService: IGroupService,
     private _entitySourceController: IEntitySourceController<GroupState>,
   ) {
     this._taskArray = [];
@@ -75,10 +77,10 @@ class TotalUnreadController {
     return this._groupSectionUnread.get(id);
   }
 
-  handleGroupState(groupStates: GroupState[]): void {
+  handleGroupState(payload: NotificationEntityPayload<GroupState>): void {
     const task: DataHandleTask = {
       type: TASK_DATA_TYPE.GROUP_STATE,
-      data: groupStates,
+      data: payload,
     };
     this._taskArray.push(task);
     if (this._taskArray.length === 1) {
@@ -133,16 +135,18 @@ class TotalUnreadController {
   }
 
   private async _updateTotalUnreadByStateChanges(
-    groupStates: GroupState[],
+    payload: NotificationEntityPayload<GroupState>,
   ): Promise<void> {
-    groupStates.forEach((groupState: GroupState) => {
-      const groupUnread = this._groupSectionUnread.get(groupState.id);
-      if (groupUnread) {
-        this._updateToTotalUnread(groupUnread, groupState);
-        groupUnread.unreadCount = groupState.unread_count || 0;
-        groupUnread.mentionCount = groupState.unread_mentions_count || 0;
-      }
-    });
+    if (payload.type === EVENT_TYPES.UPDATE) {
+      payload.body.entities.forEach((groupState: GroupState) => {
+        const groupUnread = this._groupSectionUnread.get(groupState.id);
+        if (groupUnread) {
+          this._updateToTotalUnread(groupUnread, groupState);
+          groupUnread.unreadCount = groupState.unread_count || 0;
+          groupUnread.mentionCount = groupState.unread_mentions_count || 0;
+        }
+      });
+    }
   }
 
   private async _updateTotalUnreadByGroupChanges(
@@ -150,7 +154,7 @@ class TotalUnreadController {
   ): Promise<void> {
     if (payload.type === EVENT_TYPES.UPDATE) {
       const userConfig = new AccountUserConfig();
-      const currentUserId = userConfig.getGlipUserId();
+      const glipId = userConfig.getGlipUserId();
       await Promise.all(
         payload.body.ids.map(async (id: number) => {
           const group = payload.body.entities.get(id);
@@ -159,9 +163,8 @@ class TotalUnreadController {
           }
           const groupUnread = this._groupSectionUnread.get(id);
           if (
-            group.deactivated ||
-            group.is_archived ||
-            !group.members.includes(currentUserId)
+            !this._groupService.isValid(group) ||
+            !group.members.includes(glipId)
           ) {
             if (groupUnread) {
               this._deleteFromTotalUnread(groupUnread);
@@ -249,16 +252,20 @@ class TotalUnreadController {
   private async _initializeTotalUnread(): Promise<void> {
     this.reset();
 
-    const groupService: GroupService = GroupService.getInstance();
-    const profileService: ProfileService = ProfileService.getInstance();
-    const groups = await groupService.getEntitySource().getEntities();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
+    const groups = await this._groupService.getEntities();
     this._favoriteGroupIds = (await profileService.getFavoriteGroupIds()) || [];
     const userConfig = new AccountUserConfig();
     const glipId = userConfig.getGlipUserId();
 
     await Promise.all(
       groups.map(async (group: Group) => {
-        if (!groupService.isValid(group) || !group.members.includes(glipId)) {
+        if (
+          !this._groupService.isValid(group) ||
+          !group.members.includes(glipId)
+        ) {
           return;
         }
         await this._addNewGroupUnread(group);
@@ -279,7 +286,7 @@ class TotalUnreadController {
       mentionCount = groupState.unread_mentions_count || 0;
     }
 
-    if (this._favoriteGroupIds.includes(group.id)) {
+    if (this._favoriteGroupIds && this._favoriteGroupIds.includes(group.id)) {
       section = UMI_SECTION_TYPE.FAVORITE;
     } else if (!group.is_team) {
       section = UMI_SECTION_TYPE.DIRECT_MESSAGE;

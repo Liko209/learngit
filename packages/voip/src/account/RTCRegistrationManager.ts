@@ -20,21 +20,18 @@ import {
   RTCSipProvisionInfo,
 } from './types';
 import async, { AsyncQueue } from 'async';
-import {
-  kRTCRegisterRetryTimerMin,
-  kRTCRegisterRetryTimerMax,
-} from './constants';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 
 const LOG_TAG = 'RTCRegistrationManager';
-
+const registerRetryMinValue = 30;
+const registerRetryValueFloatRange = 31;
 class RTCRegistrationManager extends EventEmitter2
   implements IRTCRegistrationFsmDependency {
   private _fsm: RTCRegistrationFSM;
   private _eventQueue: AsyncQueue<RTCRegisterAsyncTask>;
   private _userAgent: IRTCUserAgent;
   private _retryTimer: NodeJS.Timeout | null = null;
-  private _retryInterval: number = kRTCRegisterRetryTimerMin;
+  private _retryInterval: number;
 
   onNetworkChangeToOnlineAction(): void {
     this.reRegister();
@@ -256,18 +253,11 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   private _onUAReceiveInvite(session: any) {
-    this._eventQueue.push(
-      {
-        name: REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE_TASK,
-        data: { callSession: session },
-      },
-      (data?: any) => {
-        this._fsm.receiveIncomingInvite(data.callSession);
-      },
-    );
+    this._fsm.receiveIncomingInvite(session);
   }
 
   private _scheduleRegisterRetryTimer() {
+    this._calculateNextRetryInterval();
     rtcLogger.debug(
       LOG_TAG,
       `Schedule retry registration in ${this._retryInterval} seconds`,
@@ -278,7 +268,6 @@ class RTCRegistrationManager extends EventEmitter2
     this._retryTimer = setTimeout(() => {
       this.reRegister();
     },                            this._retryInterval * 1000);
-    this._calculateNextRetryInterval();
   }
 
   private _clearRegisterRetryTimer() {
@@ -287,14 +276,12 @@ class RTCRegistrationManager extends EventEmitter2
       clearTimeout(this._retryTimer);
     }
     this._retryTimer = null;
-    this._retryInterval = kRTCRegisterRetryTimerMin;
   }
 
   private _calculateNextRetryInterval() {
-    this._retryInterval = this._retryInterval * 2;
-    if (this._retryInterval > kRTCRegisterRetryTimerMax) {
-      this._retryInterval = kRTCRegisterRetryTimerMax;
-    }
+    this._retryInterval =
+      registerRetryMinValue +
+      Math.floor(Math.random() * registerRetryValueFloatRange);
   }
 
   private _restartUA(

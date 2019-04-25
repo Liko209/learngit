@@ -9,7 +9,7 @@ import { FeedbackService } from './service';
 
 const config = {
   entry: FeedbackModule,
-  provides: { FeedbackService },
+  provides: [FeedbackService],
 };
 
 export { config };

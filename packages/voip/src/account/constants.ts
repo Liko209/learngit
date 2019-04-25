@@ -11,8 +11,6 @@ export const kRTCProvParamsErrorRertyTimer = 7200;
 export const kRTCProvFreshTimer = 24 * 3600;
 export const kRTCProvRefreshByRegFailedInterval = 3600;
 export const kRTCMaxCallCount = 1;
-export const kRTCRegisterRetryTimerMin = 2;
-export const kRTCRegisterRetryTimerMax = 3600;
 export const kRTCAnonymous = 'anonymous';
 export const kRTCHangupInvalidCallInterval = 10;
 export const kRTCGetStatsInterval = 2;
@@ -28,3 +26,5 @@ export const kRTCProvisioningOptions = {
   reconnectionTimeout: '5',
   connectionTimeout: '5',
 };
+
+export const defaultAudioID = 'default';

@@ -17,7 +17,7 @@ type StateHandleTask = {
 
 type GroupStateHandleTask = {
   type: TASK_DATA_TYPE.GROUP_STATE;
-  data: GroupState[];
+  data: NotificationEntityPayload<GroupState>;
 };
 
 type GroupCursorHandleTask = {

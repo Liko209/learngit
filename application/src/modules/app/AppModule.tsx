@@ -28,9 +28,13 @@ import {
   errorReporter,
   getAppContextInfo,
 } from '@/utils/error';
-import { AccountUserConfig } from 'sdk/service/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config';
+import { AccountService } from 'sdk/module/account';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
-import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
+import { AppEnvSetting } from 'sdk/module/env';
+import { SyncGlobalConfig } from 'sdk/module/sync/config';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { analyticsCollector } from '@/AnalyticsCollector';
 import { Pal } from 'sdk/pal';
 
 /**
@@ -43,6 +47,7 @@ class AppModule extends AbstractModule {
   @inject(AppStore) private _appStore: AppStore;
   private _subModuleRegistered: boolean = false;
   private _umiEventKeyMap: Map<UMI_SECTION_TYPE, GLOBAL_KEYS>;
+  private _logControlManager: LogControlManager = LogControlManager.instance();
 
   async bootstrap() {
     try {
@@ -56,7 +61,7 @@ class AppModule extends AbstractModule {
   }
 
   private async _init() {
-    LogControlManager.instance().setDebugMode(
+    this._logControlManager.setDebugMode(
       process.env.NODE_ENV === 'development',
     );
     const { search } = window.location;
@@ -65,17 +70,17 @@ class AppModule extends AbstractModule {
       const stateSearch = state.substring(state.indexOf('?'));
       const { env } = parse(stateSearch, { ignoreQueryPrefix: true });
       if (env && env.length) {
-        const configService: service.ConfigService = service.ConfigService.getInstance();
-        const envChanged = await configService.switchEnv(env);
+        const envChanged = await AppEnvSetting.switchEnv(
+          env,
+          ServiceLoader.getInstance<AccountService>(
+            ServiceConfig.ACCOUNT_SERVICE,
+          ),
+        );
         if (envChanged) {
           config.loadEnvConfig();
         }
       }
     }
-    const versionInfo = await fetchVersionInfo();
-    Pal.instance.setApplicationInfo({
-      getAppVersion: () => versionInfo.deployedVersion,
-    });
 
     window.addEventListener('error', (event: ErrorEvent) => {
       generalErrorHandler(
@@ -85,9 +90,7 @@ class AppModule extends AbstractModule {
 
     const {
       notificationCenter,
-      AccountService,
       socketManager,
-      ConfigService,
       SOCKET,
       SERVICE,
       CONFIG,
@@ -102,8 +105,10 @@ class AppModule extends AbstractModule {
     // subscribe service notification to global store
     const globalStore = storeManager.getGlobalStore();
 
-    const updateAccountInfoForGlobalStore = () => {
-      const accountService: service.AccountService = AccountService.getInstance();
+    const updateAccountInfoForGlobalStore = (isRCOnlyMode: boolean = false) => {
+      const accountService = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      );
 
       if (accountService.isAccountReady()) {
         const accountUserConfig = new AccountUserConfig();
@@ -112,6 +117,13 @@ class AppModule extends AbstractModule {
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
         getAppContextInfo().then(contextInfo => {
+          Pal.instance.setApplicationInfo({
+            env: contextInfo.env,
+            appVersion: contextInfo.version,
+            browser: contextInfo.browser,
+            os: contextInfo.os,
+            platform: contextInfo.platform,
+          });
           window.jupiterElectron &&
             window.jupiterElectron.setContextInfo &&
             window.jupiterElectron.setContextInfo(contextInfo);
@@ -145,20 +157,20 @@ class AppModule extends AbstractModule {
     const setStaticHttpServer = (url?: string) => {
       let staticHttpServer = url;
       if (!staticHttpServer) {
-        const configService: service.ConfigService = ConfigService.getInstance();
-        staticHttpServer = configService.getStaticHttpServer();
+        staticHttpServer = SyncGlobalConfig.getStaticHttpServer();
       }
       globalStore.set(GLOBAL_KEYS.STATIC_HTTP_SERVER, staticHttpServer || '');
     };
 
     setStaticHttpServer(); // When the browser refreshes, it needs to be fetched locally
 
-    notificationCenter.on(SERVICE.LOGIN, () => {
-      updateAccountInfoForGlobalStore();
+    notificationCenter.on(SERVICE.LOGIN, (isRCOnlyMode: boolean) => {
+      updateAccountInfoForGlobalStore(isRCOnlyMode);
     });
 
     notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
       updateAccountInfoForGlobalStore();
+      analyticsCollector.identify();
     });
 
     notificationCenter.on(CONFIG.STATIC_HTTP_SERVER, (url: string) => {
@@ -211,14 +223,15 @@ class AppModule extends AbstractModule {
 
     notificationCenter.on(SERVICE.DO_SIGN_OUT, async () => {
       // force logout
-      const authService: service.AuthService = service.AuthService.getInstance();
-      await authService.logout();
+      const accountService = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      );
+      await accountService.logout();
       window.location.href = '/';
     });
 
     const api = config.get('api');
     const db = config.get('db');
-
     await Sdk.init({
       api,
       db,

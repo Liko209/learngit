@@ -26,7 +26,7 @@ test(formalName('Open personal profile via top bar avatar then open conversation
         await app.homePage.settingMenu.clickViewYourProfile();
     });
     await h(t).withLog('Then I can see Profile title', async () => {
-        await viewProfile.shouldBePopUp();
+        await viewProfile.ensureLoaded();
     }, true);
     await h(t).withLog('When I click messasge link in Profile', async () => {
         await viewProfile.goToMessages();

@@ -5,32 +5,31 @@
  */
 
 import { Upgrade } from '../Upgrade';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
-jest.mock('sdk/module/item/service', () => ({
-  ItemService: {
-    getInstance: () => {
+ServiceLoader.getInstance = jest
+  .fn()
+  .mockImplementation((serviceName: string) => {
+    if (ServiceConfig.ITEM_SERVICE === serviceName) {
       return {
         hasUploadingFiles: () => {
           return false;
         },
       };
-    },
-  },
-}));
+    }
 
-jest.mock('sdk/module/telephony', () => ({
-  TelephonyService: {
-    getInstance: () => {
+    if (ServiceConfig.TELEPHONY_SERVICE === serviceName) {
       return {
         getAllCallCount: () => {
           return 0;
         },
       };
-    },
-  },
-}));
+    }
 
-describe('Upgrade', async () => {
+    return null;
+  });
+
+describe('Upgrade', () => {
   let upgradeHandler: Upgrade | undefined;
 
   afterEach(() => {
@@ -45,5 +44,14 @@ describe('Upgrade', async () => {
     upgradeHandler.onNewContentAvailable();
     upgradeHandler.reloadIfAvailable('Test');
     expect(mockFn).toBeCalled();
+  });
+
+  it('manual update', () => {
+    upgradeHandler = new Upgrade();
+    upgradeHandler.setServiceWorkerURL('/service-worker.js');
+    const mockFn = jest.fn();
+    jest.spyOn(upgradeHandler, 'logInfo').mockImplementation(mockFn);
+    upgradeHandler._queryIfHasNewVersion();
+    expect(upgradeHandler.logInfo).toBeCalled();
   });
 });

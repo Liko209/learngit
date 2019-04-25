@@ -17,13 +17,14 @@ type Props = WithTranslation & CallViewProps & CallProps;
 class CallViewComponent extends Component<Props> {
   private _handleClick = (evt: React.MouseEvent) => {
     evt.stopPropagation();
-    const { directCall, onClick } = this.props;
+    const { directCall, onClick, trackCall } = this.props;
     if (onClick) {
       onClick();
     } else {
       portalManager.dismissLast();
     }
     directCall();
+    trackCall(this.props.analysisSource);
   }
 
   render() {
@@ -43,6 +44,7 @@ class CallViewComponent extends Component<Props> {
         })}
         variant={variant}
         color={color}
+        data-test-automation-id="telephony-call-btn"
       >
         phone
       </JuiIconButton>

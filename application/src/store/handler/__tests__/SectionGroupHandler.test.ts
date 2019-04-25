@@ -12,6 +12,7 @@ import { GroupService } from 'sdk/module/group';
 import { notificationCenter, ENTITY } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import preFetchConversationDataHandler from '../PreFetchConversationDataHandler';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('../PreFetchConversationDataHandler');
 jest.mock('sdk/api');
@@ -23,13 +24,29 @@ jest.mock('../../utils/entities');
 const profileService = new ProfileService();
 const stateService = new StateService();
 const groupService = new GroupService();
-(ProfileService as any).getInstance = () => profileService;
-(StateService as any).getInstance = () => stateService;
-(GroupService as any).getInstance = () => groupService;
 
 beforeEach(() => {
   jest.clearAllMocks();
   jest.restoreAllMocks();
+
+  ServiceLoader.getInstance = jest
+    .fn()
+    .mockImplementation((serviceName: string) => {
+      if (ServiceConfig.PROFILE_SERVICE === serviceName) {
+        return profileService;
+      }
+
+      if (ServiceConfig.STATE_SERVICE === serviceName) {
+        return stateService;
+      }
+
+      if (ServiceConfig.GROUP_SERVICE === serviceName) {
+        return groupService;
+      }
+
+      return null;
+    });
+
   Object.assign(SectionGroupHandler, { _instance: undefined });
   (profileService.getProfile as jest.Mock).mockResolvedValue({});
   (getGlobalValue as jest.Mock).mockReturnValue(1);

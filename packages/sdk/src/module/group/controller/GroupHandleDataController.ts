@@ -25,9 +25,10 @@ import { Profile } from '../../profile/entity';
 import { StateService } from '../../state';
 import { Group } from '../entity';
 import { IGroupService } from '../service/IGroupService';
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { SYNC_SOURCE } from '../../../module/sync/types';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 class GroupHandleDataController {
   constructor(
@@ -161,7 +162,6 @@ class GroupHandleDataController {
   }
 
   doNotification = async (deactivatedData: Group[], groups: Group[]) => {
-    groups.length && notificationCenter.emit(SERVICE.GROUP_CURSOR, groups);
     // https://jira.ringcentral.com/browse/FIJI-4264
     // const deactivatedGroupIds = _.map(deactivatedData, (group: Group) => {
     //   return group.id;
@@ -194,13 +194,25 @@ class GroupHandleDataController {
     }
   }
 
+  extractGroupCursor(groups: Group[]) {
+    const groupCursors = _.cloneDeep(groups);
+    groupCursors.length &&
+      notificationCenter.emit(SERVICE.GROUP_CURSOR, groupCursors);
+    return groups.map((group: Group) => {
+      return _.omit(group, ['post_cursor', 'post_drp_cursor']);
+    });
+  }
+
   saveDataAndDoNotification = async (groups: Group[], source?: SYNC_SOURCE) => {
-    const deactivatedData = groups.filter(
+    const pureGroups = this.extractGroupCursor(groups);
+
+    const deactivatedData = pureGroups.filter(
       (item: Group) => item && item.deactivated,
     );
-    const normalData = groups.filter(
+    const normalData = pureGroups.filter(
       (item: Group) => item && !item.deactivated,
     );
+
     await this.operateGroupDao(deactivatedData, normalData);
     if (shouldEmitNotification(source)) {
       await this.doNotification(deactivatedData, normalData);
@@ -232,7 +244,9 @@ class GroupHandleDataController {
 
     const replaceGroups = new Map<number, Group>();
     if (filteredFavIds.length) {
-      const profileService: ProfileService = ProfileService.getInstance();
+      const profileService = ServiceLoader.getInstance<ProfileService>(
+        ServiceConfig.PROFILE_SERVICE,
+      );
       const profile = await profileService.getProfile();
       const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
       const validFavIds = _.difference(filteredFavIds, hiddenIds);
@@ -398,7 +412,9 @@ class GroupHandleDataController {
 
   getUnreadGroupIds = async (groups: Group[]) => {
     const ids = _.map(groups, 'id');
-    const stateService: StateService = StateService.getInstance();
+    const stateService = ServiceLoader.getInstance<StateService>(
+      ServiceConfig.STATE_SERVICE,
+    );
     const states = (await stateService.getAllGroupStatesFromLocal(ids)) || [];
     return states.filter(this.hasUnread).map(state => state.id);
   }

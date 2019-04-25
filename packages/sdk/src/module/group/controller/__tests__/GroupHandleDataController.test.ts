@@ -18,20 +18,19 @@ import { StateService } from '../../../state';
 import { GroupDao } from '../../dao';
 import { Group } from '../../entity';
 import { GroupHandleDataController } from '../GroupHandleDataController';
-import { GlobalConfigService } from '../../../../module/config';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { SYNC_SOURCE } from '../../../../module/sync';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 jest.mock('../../../../module/config');
-jest.mock('../../../../service/account/config');
-GlobalConfigService.getInstance = jest.fn();
+jest.mock('../../../../module/account/config');
 
 jest.mock('../../../../api');
 jest.mock('../../../../framework/controller/impl/EntitySourceController');
 
 jest.mock('../../../profile');
-jest.mock('../../../../service/account');
+jest.mock('../../../../module/account');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../state');
 jest.mock('../../../../dao', () => {
@@ -48,16 +47,6 @@ jest.mock('../../../../dao', () => {
       getDao: () => dao,
       getKVDao: () => dao,
     },
-  };
-});
-
-jest.mock('../../../../service/serviceManager', () => {
-  const instance = {
-    getProfile: jest.fn().mockResolvedValue({ favorite_group_ids: [1, 2] }),
-    getPersonsByIds: jest.fn().mockResolvedValue({}),
-  };
-  return {
-    getInstance: () => instance,
   };
 });
 
@@ -125,9 +114,22 @@ const groupService = {
 beforeEach(() => {
   jest.clearAllMocks();
   GroupAPI.requestGroupById.mockResolvedValue(requestGroupByIdResult);
-  StateService.getInstance = jest.fn().mockReturnValue(stateService);
-  PersonService.getInstance = jest.fn().mockReturnValue(personService);
-  ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
+
+  ServiceLoader.getInstance = jest
+    .fn()
+    .mockImplementation((serviceName: string) => {
+      if (serviceName === ServiceConfig.STATE_SERVICE) {
+        return stateService;
+      }
+      if (serviceName === ServiceConfig.PERSON_SERVICE) {
+        return personService;
+      }
+
+      if (serviceName === ServiceConfig.PROFILE_SERVICE) {
+        return profileService;
+      }
+      return null;
+    });
 });
 
 describe('GroupHandleDataController', () => {
@@ -220,7 +222,7 @@ describe('GroupHandleDataController', () => {
       expect(entitySourceController.bulkDelete).toHaveBeenCalledTimes(1);
       expect(entitySourceController.bulkUpdate).toHaveBeenCalledTimes(1);
       // expect doNotification function
-      expect(notificationCenter.emit).not.toHaveBeenCalledTimes(1);
+      expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
       expect(notificationCenter.emitEntityDelete).not.toHaveBeenCalledTimes(1);
       expect(notificationCenter.emitEntityUpdate).not.toHaveBeenCalledTimes(1);
     });
@@ -243,7 +245,7 @@ describe('GroupHandleDataController', () => {
       ]);
       await groupHandleDataController.handlePartialData(groups);
       expect(entitySourceController.update).toHaveBeenCalledTimes(1);
-      expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
+      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
 
       expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
       expect(GroupAPI.requestGroupById).not.toHaveBeenCalled();
@@ -359,7 +361,7 @@ describe('GroupHandleDataController', () => {
           entities: map,
         },
       });
-      expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
+      expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     });
     it('group has not most_recent_post_created_at should update group recent modified time', async () => {
       daoManager
@@ -381,7 +383,7 @@ describe('GroupHandleDataController', () => {
           entities: map,
         },
       });
-      expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
+      expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     });
     it('group has most_recent_post_created_at and greater then post created_at should not update group recent modified time', async () => {
       daoManager
@@ -678,6 +680,32 @@ describe('GroupHandleDataController', () => {
       expect(groupedPosts.length).toEqual(2);
       expect(groupedPosts[0].id).toEqual(2);
       expect(groupedPosts[1].id).toEqual(3);
+    });
+  });
+
+  describe('extractGroupCursor', () => {
+    it('should remove cursors in groups', () => {
+      const groups = [
+        {
+          id: 1,
+          post_cursor: 2,
+          post_drp_cursor: 3,
+        },
+        {
+          id: 2,
+          post_cursor: 2,
+          post_drp_cursor: 3,
+        },
+      ] as any;
+      expect(groupHandleDataController.extractGroupCursor(groups)).toEqual([
+        {
+          id: 1,
+        },
+        {
+          id: 2,
+        },
+      ]);
+      expect(notificationCenter.emit).toBeCalledTimes(1);
     });
   });
 

@@ -3,22 +3,16 @@
  * @Date: 2018-02-28 00:26:24
  */
 /// <reference path="../../__tests__/types.d.ts" />
-import {
-  KVStorage,
-  DBManager,
-  KVStorageManager,
-  DexieDB,
-  IDatabase,
-} from 'foundation';
+import { KVStorage, DBManager, DexieDB, IDatabase } from 'foundation';
 import DaoManager from '../DaoManager';
 import { BaseDao, BaseKVDao } from '../../framework/dao';
 import Dexie from 'dexie';
 import { IdModel } from '../../framework/model';
-import { GlobalConfigService, UserConfigService } from '../../module/config';
-import { NewGlobalConfig } from '../../service/config/NewGlobalConfig';
-import { AccountGlobalConfig } from '../../service/account/config';
+import { DaoGlobalConfig } from '../config';
+import { AccountGlobalConfig } from '../../module/account/config';
 import { SyncUserConfig } from '../../module/sync/config';
-import { AuthUserConfig } from '../../service/auth/config';
+
+jest.mock('../../module/env/index');
 
 // Using manual mock to improve mock priority.
 jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
@@ -45,13 +39,8 @@ jest.mock('../schema', () => ({
   },
 }));
 jest.mock('../../module/config');
-jest.mock('../../service/config/NewGlobalConfig');
-jest.mock('../../service/auth/config');
-jest.mock('../../service/account/config');
+jest.mock('../../module/account/config/AccountGlobalConfig');
 jest.mock('../../module/sync/config');
-
-GlobalConfigService.getInstance = jest.fn();
-UserConfigService.getInstance = jest.fn();
 
 class TestKVDao extends BaseKVDao {
   static COLLECTION_NAME = 'TestKVDao';
@@ -79,14 +68,14 @@ describe('DaoManager', () => {
 
   describe('initDataBase()', () => {
     it('should init database', async () => {
-      NewGlobalConfig.getDBSchemaVersion = jest.fn().mockReturnValueOnce(1);
+      DaoGlobalConfig.getDBSchemaVersion = jest.fn().mockReturnValueOnce(1);
       await daoManager.initDatabase();
       expect(DBManager.mock.instances[0].initDatabase).toHaveBeenCalled();
     });
 
     describe('db upgrade', () => {
       it('should not delete old db if version is same', async () => {
-        NewGlobalConfig.getDBSchemaVersion = jest.fn().mockReturnValueOnce(1);
+        DaoGlobalConfig.getDBSchemaVersion = jest.fn().mockReturnValueOnce(1);
         await daoManager.initDatabase();
         expect(
           DBManager.mock.instances[0].deleteDatabase,
@@ -97,7 +86,7 @@ describe('DaoManager', () => {
       });
 
       it('should delete old db if version is deprecated', async () => {
-        NewGlobalConfig.getDBSchemaVersion = jest.fn().mockReturnValueOnce(0);
+        DaoGlobalConfig.getDBSchemaVersion = jest.fn().mockReturnValueOnce(0);
         AccountGlobalConfig.getUserDictionary.mockReturnValue('123');
         await daoManager.initDatabase();
         expect(DBManager.mock.instances[0].deleteDatabase).toHaveBeenCalled();
@@ -107,7 +96,7 @@ describe('DaoManager', () => {
       });
 
       it('should delete old db if local version is not found', async () => {
-        NewGlobalConfig.getDBSchemaVersion = jest
+        DaoGlobalConfig.getDBSchemaVersion = jest
           .fn()
           .mockReturnValueOnce(null);
         await daoManager.initDatabase();

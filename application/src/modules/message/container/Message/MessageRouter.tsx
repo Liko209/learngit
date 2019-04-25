@@ -74,7 +74,10 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
   componentDidMount() {
     const targetConversationId = this.props.match.params.subPath;
     targetConversationId
-      ? MessageRouterChangeHelper.goToConversation(targetConversationId)
+      ? MessageRouterChangeHelper.goToConversation(
+          targetConversationId,
+          'REPLACE',
+        )
       : MessageRouterChangeHelper.goToLastOpenedGroup();
   }
 
@@ -83,7 +86,6 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
     const prevSubPath = prevProps.match.params.subPath;
     if (subPath !== prevSubPath) {
       MessageRouterChangeHelper.updateCurrentConversationId(subPath);
-      MessageRouterChangeHelper.ensureGroupIsOpened(Number(subPath));
     }
   }
 
@@ -99,10 +101,10 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
     }
   }
 
-  retryMessage = () => {
+  retryMessage = async () => {
     const { retryParams } = this.state;
     if (!retryParams) return;
-    goToConversationWithLoading(retryParams);
+    return goToConversationWithLoading(retryParams);
   }
 
   render() {

@@ -14,7 +14,7 @@ import {
   PerformanceTracerHolder,
   PERFORMANCE_KEYS,
 } from '../../../utils/performance';
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 import {
   RecentSearchTypes,
   FuzzySearchPersonOptions,
@@ -22,6 +22,7 @@ import {
 } from '../entity';
 import { SearchUtils } from '../../../framework/utils/SearchUtils';
 import { Terms } from '../../../framework/controller/interface/IEntityCacheSearchController';
+import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 class SearchPersonController {
   constructor(private _searchService: ISearchService) {}
 
@@ -53,7 +54,9 @@ class SearchPersonController {
       fetchAllIfSearchKeyEmpty,
       recentFirst,
     );
-    const personService = PersonService.getInstance() as PersonService;
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
     const cacheSearchController = personService.getEntityCacheSearchController();
     const result = await cacheSearchController.searchEntities(
       toSortableModelFunc,
@@ -105,10 +108,14 @@ class SearchPersonController {
       : undefined;
 
     const individualGroups = recentFirst
-      ? GroupService.getInstance<GroupService>().getIndividualGroups()
+      ? ServiceLoader.getInstance<GroupService>(
+          ServiceConfig.GROUP_SERVICE,
+        ).getIndividualGroups()
       : undefined;
 
-    const personService = PersonService.getInstance() as PersonService;
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
 
     return (person: Person, terms: Terms) => {
       do {
@@ -127,20 +134,13 @@ class SearchPersonController {
         let name: string = personService.getName(person);
         let sortValue: number = 0;
         if (searchKeyTerms.length > 0) {
-          const lowerCaseName = name.toLowerCase();
-          const lowerCaseEmail = person.email.toLowerCase();
           const isNameMatched =
-            SearchUtils.isFuzzyMatched(lowerCaseName, searchKeyTerms) ||
-            SearchUtils.isSoundexMatched(
-              lowerCaseName,
-              searchKeyTermsToSoundex,
-            );
-          const isEmailMatched =
-            SearchUtils.isFuzzyMatched(lowerCaseEmail, searchKeyTerms) ||
-            SearchUtils.isSoundexMatched(
-              lowerCaseEmail,
-              searchKeyTermsToSoundex,
-            );
+            SearchUtils.isFuzzyMatched(name.toLowerCase(), searchKeyTerms) ||
+            (searchKeyTermsToSoundex.length &&
+              SearchUtils.isSoundexMatched(
+                personService.getSoundexById(person.id),
+                searchKeyTermsToSoundex,
+              ));
 
           if (isNameMatched) {
             sortValue = PersonSortingOrder.FullNameMatching;
@@ -161,7 +161,13 @@ class SearchPersonController {
             ) {
               sortValue += PersonSortingOrder.LastNameMatching;
             }
-          } else if (person.email && isEmailMatched) {
+          } else if (
+            person.email &&
+            SearchUtils.isFuzzyMatched(
+              person.email.toLowerCase(),
+              searchKeyTerms,
+            )
+          ) {
             sortValue = PersonSortingOrder.EmailMatching;
           } else {
             break;

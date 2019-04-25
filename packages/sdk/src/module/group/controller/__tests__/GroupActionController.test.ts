@@ -16,7 +16,7 @@ import { IEntitySourceController } from '../../../../framework/controller/interf
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { Raw } from '../../../../framework/model';
 import { buildRequestController } from '../../../../framework/controller';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ProfileService } from '../../../profile';
 import { PostService } from '../../../post';
@@ -30,6 +30,7 @@ import { TeamPermissionController } from '../TeamPermissionController';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { DEFAULT_ADMIN_PERMISSION_LEVEL } from '../../constants';
 import { PERMISSION_ENUM } from '../../../../service';
+import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../GroupHandleDataController');
 jest.mock('../../../../dao');
@@ -38,7 +39,7 @@ jest.mock('../../../../framework/controller/impl/EntityPersistentController');
 jest.mock('../../../person');
 jest.mock('../../dao');
 jest.mock('../../../profile');
-jest.mock('../../../../service/account/config');
+jest.mock('../../../../module/account/config');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../module/company');
 jest.mock('../../../post');
@@ -83,8 +84,17 @@ describe('GroupFetchDataController', () => {
   const mockUserId = 1;
 
   function setUp() {
-    PersonService.getInstance = jest.fn().mockReturnValue(personService);
-    ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.PERSON_SERVICE) {
+          return personService;
+        }
+
+        if (serviceName === ServiceConfig.PROFILE_SERVICE) {
+          return profileService;
+        }
+      });
 
     buildRequestController.mockImplementation((params: any) => {
       if (params.basePath === '/group') {
@@ -375,7 +385,7 @@ describe('GroupFetchDataController', () => {
       );
     });
   });
-  describe('removeTeamsByIds()', async () => {
+  describe('removeTeamsByIds()', () => {
     it('should not do notify', async () => {
       daoManager.getDao.mockReturnValueOnce(groupDao);
       daoManager.getDao.mockReturnValueOnce(groupConfigDao);
@@ -469,6 +479,29 @@ describe('GroupFetchDataController', () => {
         members: [userId, 3323],
       });
       expect(groupActionController.isInTeam(userId, group)).toBeTruthy();
+    });
+  });
+
+  describe('isInGroup()', () => {
+    it('should return false when group is undefined', async () => {
+      const userId = 123;
+      const group = groupFactory.build(undefined);
+      expect(groupActionController.isInGroup(userId, group)).toBeFalsy();
+    });
+    it('should return false when userId is not in members', async () => {
+      const userId = 123;
+      const group = groupFactory.build({
+        members: [3323],
+      });
+      expect(groupActionController.isInGroup(userId, group)).toBeFalsy();
+    });
+    it('should return true  when userId is in members', async () => {
+      const userId = 123;
+      const group = groupFactory.build({
+        is_team: true,
+        members: [userId, 3323],
+      });
+      expect(groupActionController.isInGroup(userId, group)).toBeTruthy();
     });
   });
 
@@ -663,6 +696,12 @@ describe('GroupFetchDataController', () => {
     it('should add user to permissions.admin.uids when permission not exist', async () => {
       const mockTeam = groupFactory.build({
         members: [1, 2, 3],
+        permissions: {
+          user: {
+            uids: [456],
+            level: 15,
+          },
+        },
       });
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
@@ -677,6 +716,10 @@ describe('GroupFetchDataController', () => {
               admin: {
                 uids: [2],
               },
+              user: {
+                uids: [456],
+                level: 15,
+              },
             },
           },
           replaceArray,
@@ -689,6 +732,10 @@ describe('GroupFetchDataController', () => {
         permissions: {
           admin: {
             uids: [1],
+          },
+          user: {
+            uids: [456],
+            level: 15,
           },
         },
       });
@@ -705,6 +752,10 @@ describe('GroupFetchDataController', () => {
               admin: {
                 uids: [1, 2],
               },
+              user: {
+                uids: [456],
+                level: 15,
+              },
             },
           },
           replaceArray,
@@ -717,6 +768,10 @@ describe('GroupFetchDataController', () => {
         permissions: {
           admin: {
             uids: [1, 2],
+          },
+          user: {
+            uids: [456],
+            level: 15,
           },
         },
       });
@@ -731,25 +786,18 @@ describe('GroupFetchDataController', () => {
     it('should not broken when permissions not exist', async () => {
       const mockTeam = groupFactory.build({
         members: [1, 2, 3],
+        permissions: {
+          user: {
+            uids: [456],
+            level: 15,
+          },
+        },
       });
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
       await groupActionController.makeOrRevokeAdmin(mockTeam.id, 2, false);
-      expect(testTeamRequestController.put).toBeCalledWith(
-        _.mergeWith(
-          {},
-          mockTeam,
-          {
-            permissions: {
-              admin: {
-                uids: [],
-              },
-            },
-          },
-          replaceArray,
-        ),
-      );
+      expect(testTeamRequestController.put).not.toBeCalled();
     });
     it('should remove user from permissions.admin.uids', async () => {
       const mockTeam = groupFactory.build({
@@ -757,6 +805,10 @@ describe('GroupFetchDataController', () => {
         permissions: {
           admin: {
             uids: [1, 2],
+          },
+          user: {
+            uids: [456],
+            level: 15,
           },
         },
       });
@@ -773,6 +825,10 @@ describe('GroupFetchDataController', () => {
               admin: {
                 uids: [1],
               },
+              user: {
+                uids: [456],
+                level: 15,
+              },
             },
           },
           replaceArray,
@@ -785,6 +841,10 @@ describe('GroupFetchDataController', () => {
         permissions: {
           admin: {
             uids: [1],
+          },
+          user: {
+            uids: [456],
+            level: 15,
           },
         },
       });

@@ -3,11 +3,14 @@
  * @Date: 2019-04-02 15:59:05
  * Copyright © RingCentral. All rights reserved.
  */
-import { AccountService } from 'sdk/service';
-import { AccountUserConfig } from 'sdk/service/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config';
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import pkg from '../../../package.json';
 import { UserContextInfo } from './types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { AccountService } from 'sdk/module/account';
+import { UAParser } from 'ua-parser-js';
+const uaParser = new UAParser(navigator.userAgent);
 
 export async function getAppContextInfo(): Promise<UserContextInfo> {
   const config = require('@/config').default;
@@ -15,18 +18,28 @@ export async function getAppContextInfo(): Promise<UserContextInfo> {
   const currentUserId = accountUserConfig.getGlipUserId();
   const currentCompanyId = accountUserConfig.getCurrentCompanyId();
   return Promise.all([
-    AccountService.getInstance<AccountService>().getCurrentUserInfo(),
+    ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).getCurrentUserInfo(),
     fetchVersionInfo(),
   ]).then(([userInfo, { deployedVersion }]) => {
+    const { display_name = '', email = '' } = userInfo || {};
+    const {
+      name: browserName,
+      version: browserVersion,
+    } = uaParser.getBrowser();
+    const { name: osName, version: osVersion } = uaParser.getOS();
     return {
+      email,
+      username: display_name,
       id: currentUserId,
-      username: userInfo['display_name'],
-      email: userInfo['email'],
       companyId: currentCompanyId,
       env: config.getEnv(),
       version: deployedVersion || pkg.version,
       url: location.href,
-      environment: window.jupiterElectron ? 'Electron' : 'Browser',
+      platform: window.jupiterElectron ? 'Desktop' : 'Web',
+      browser: `${browserName} - ${browserVersion}`,
+      os: `${osName} - ${osVersion}`,
     };
   });
 }

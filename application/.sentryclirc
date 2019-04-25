@@ -6,6 +6,6 @@
 [defaults]
 url=https://sentry.io/
 org=jupiter-ct
-project=javascript
+project=web
 [auth]
 token=83afdd544cfb4c48bdb2ccc3a5f1e58b1fabcf6cb96d440680331fcfa9496743

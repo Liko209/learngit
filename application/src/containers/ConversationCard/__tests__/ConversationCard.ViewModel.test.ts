@@ -3,14 +3,19 @@
  * @Date: 2018-10-23 15:33:02
  * Copyright © RingCentral. All rights reserved.
  */
+import { container, Jupiter } from 'framework';
 import { getEntity } from '../../../store/utils';
 import { ConversationCardViewModel } from '../ConversationCard.ViewModel';
+import { config } from '@/modules/GlobalSearch/module.config';
 
 jest.mock('i18next', () => ({
   t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
 }));
 
 jest.mock('../../../store/utils');
+
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(config);
 
 const conversationCardVM = new ConversationCardViewModel();
 
@@ -23,6 +28,7 @@ const DATE_2018_12_30 = DATE_2019_1_4 - 5 * DAY;
 const DATE_2018_12_29 = DATE_2019_1_4 - 6 * DAY;
 const DATE_2018_12_28 = DATE_2019_1_4 - 7 * DAY;
 const DATE_2019_1_5 = DATE_2019_1_4 + DAY;
+
 describe('ConversationCardViewModel', () => {
   beforeAll(() => {
     jest.resetAllMocks();

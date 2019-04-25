@@ -6,8 +6,13 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { FilesView } from '../Files.View';
-import { JuiPreviewImage } from 'jui/pattern/ConversationCard/Files';
+import { JuiPreviewImage, StyledImg } from 'jui/pattern/ConversationCard/Files';
 import * as Viewer from '@/containers/Viewer';
+
+const mockEvent = {
+  stopPropagation: () => undefined,
+  currentTarget: { querySelector: () => {} },
+};
 
 const someProps = {
   files: [
@@ -48,8 +53,8 @@ describe('FilesView', () => {
       wrapper
         .find(JuiPreviewImage)
         .shallow()
-        .find('img')
-        .simulate('click', { stopPropagation: () => undefined });
+        .find(StyledImg)
+        .simulate('click', mockEvent);
 
       setTimeout(() => {
         expect(Viewer.showImageViewer).toHaveBeenCalled();
@@ -66,8 +71,8 @@ describe('FilesView', () => {
       wrapper
         .find(JuiPreviewImage)
         .shallow()
-        .find('img')
-        .simulate('click', { stopPropagation: () => undefined });
+        .find(StyledImg)
+        .simulate('click', mockEvent);
 
       setTimeout(() => {
         expect(Viewer.showImageViewer).not.toHaveBeenCalled();

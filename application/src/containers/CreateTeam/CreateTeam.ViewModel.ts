@@ -6,13 +6,14 @@
 import { action, computed, observable } from 'mobx';
 
 import GroupService, { TeamSetting, Group } from 'sdk/module/group';
-import { AccountUserConfig } from 'sdk/service/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config';
 
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { matchInvalidEmail } from '@/utils/string';
 import { JError, ERROR_TYPES, ERROR_CODES_SERVER } from 'sdk/error';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class CreateTeamViewModel extends AbstractViewModel {
   @observable
@@ -72,7 +73,9 @@ class CreateTeamViewModel extends AbstractViewModel {
     memberIds: (number | string)[],
     options: TeamSetting,
   ): Promise<Group | null> => {
-    const groupService: GroupService = GroupService.getInstance();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
     const userConfig = new AccountUserConfig();
     const creatorId = userConfig.getGlipUserId();
     try {

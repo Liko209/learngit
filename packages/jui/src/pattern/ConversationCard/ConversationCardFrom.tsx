@@ -33,6 +33,7 @@ const StyledName = styled('div')`
     color: ${grey('900')};
   }
   .conversation-name {
+    cursor: pointer;
     ${ellipsis()}
   }
 `;

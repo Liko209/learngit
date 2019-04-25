@@ -16,6 +16,14 @@ enum E911_STATUS {
   DISCLINED,
 }
 
+type TelephonyCallInfo = {
+  fromName?: string;
+  fromNum: string;
+  toName?: string;
+  toNum: string;
+  callId: string;
+};
+
 enum MAKE_CALL_ERROR_CODE {
   NO_ERROR,
   E911_ACCEPT_REQUIRED,
@@ -45,10 +53,16 @@ enum MAKE_CALL_ERROR_CODE {
   INVALID_STATE,
 }
 
+type CallStateCallback = (callId: string, state: RTC_CALL_STATE) => void;
+type LogoutCallback = () => void;
+
 export {
   RTC_ACCOUNT_STATE,
   RTC_CALL_STATE,
   FEATURE_PERMISSIONS,
   MAKE_CALL_ERROR_CODE,
   E911_STATUS,
+  TelephonyCallInfo,
+  CallStateCallback,
+  LogoutCallback,
 };

@@ -5,6 +5,8 @@
  */
 import { TDelta, ISortableModel } from '../../../store/base/fetch/types';
 import PostModel from '../../../store/models/Post';
+import { STATUS } from '../types';
+
 enum SeparatorType {
   DATE = 'DATE',
   NEW_MSG = 'NEW_MSG',
@@ -50,6 +52,7 @@ type StreamProps = {
   viewRef: React.RefObject<any>;
   refresh: () => void;
   jumpToPostId?: number;
+  updateConversationStatus: (status: STATUS) => void;
 };
 
 type StreamViewProps = {
@@ -65,7 +68,6 @@ type StreamViewProps = {
   enableNewMessageSeparatorHandler: () => void;
   disableNewMessageSeparatorHandler: () => void;
   handleNewMessageSeparatorState: (event: React.UIEvent<HTMLElement>) => void;
-  loadPostUntilFirstUnread: () => Promise<number | undefined>;
   getFirstUnreadPostByLoadAllUnread: () => Promise<number | undefined>;
   updateHistoryHandler: () => void;
   hasHistoryUnread: boolean;
@@ -74,9 +76,13 @@ type StreamViewProps = {
   historyReadThrough?: number;
   firstHistoryUnreadPostId?: number;
   loadInitialPostsError?: Error;
+  loadingStatus: STATUS;
   loading?: boolean;
   lastPost?: PostModel;
   loadMore: (direction: 'up' | 'down', count: number) => Promise<void>;
+  hasNewMessageSeparator: () => boolean;
+  findNewMessageSeparatorIndex: () => number;
+  findPostIndex: (postId?: number) => number;
 };
 
 type StreamSnapshot = {
@@ -90,6 +96,7 @@ type TDeltaWithData = TDelta & {
 type ISortableModelWithData = ISortableModel & { data: any };
 
 export {
+  STATUS,
   StreamSnapshot,
   StreamProps,
   StreamViewProps,

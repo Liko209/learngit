@@ -1,11 +1,10 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "tsBuildInfoFile": "./.tsc_cache/cache_path",
     "target": "es5",
     "lib": ["es6", "dom"],
     "types": ["reflect-metadata"],
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "moduleResolution": "node"
   }
 }

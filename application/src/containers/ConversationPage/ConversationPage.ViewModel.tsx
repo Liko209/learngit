@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed } from 'mobx';
+import { computed, observable, action } from 'mobx';
 import { GroupService } from 'sdk/module/group';
 import { StateService } from 'sdk/module/state';
 import { Group } from 'sdk/module/group/entity';
@@ -12,14 +12,22 @@ import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import StoreViewModel from '@/store/ViewModel';
 import { ENTITY_NAME } from '@/store';
-import { ConversationPageProps } from './types';
+import { ConversationPageProps, STATUS } from './types';
 import _ from 'lodash';
 import history from '@/history';
 import { mainLogger } from 'sdk';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
-  private _groupService: GroupService = GroupService.getInstance();
-  private _stateService: StateService = StateService.getInstance();
+  private _groupService = ServiceLoader.getInstance<GroupService>(
+    ServiceConfig.GROUP_SERVICE,
+  );
+  private _stateService = ServiceLoader.getInstance<StateService>(
+    ServiceConfig.STATE_SERVICE,
+  );
+
+  @observable
+  loadingStatus: STATUS = STATUS.PENDING;
 
   constructor(props: ConversationPageProps) {
     super(props);
@@ -37,8 +45,10 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
         }
         if (!group || !this._groupService.isValid(group!)) {
           history.replace('/messages/loading', {
-            id: groupId,
             error: true,
+            params: {
+              id: groupId,
+            },
           });
           return;
         }
@@ -74,6 +84,11 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
 
   private async _readGroup(groupId: number) {
     this._throttledUpdateLastGroup(groupId);
+  }
+
+  @action
+  updateStatus = (status: STATUS) => {
+    this.loadingStatus = status;
   }
 }
 

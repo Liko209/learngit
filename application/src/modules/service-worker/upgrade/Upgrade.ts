@@ -8,6 +8,7 @@ import history from '@/history';
 import { mainLogger } from 'sdk';
 import { ItemService } from 'sdk/module/item/service';
 import { TelephonyService } from 'sdk/module/telephony';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const logTag = '[Upgrade]';
 const DEFAULT_UPDATE_INTERVAL = 60 * 60 * 1000;
@@ -36,14 +37,18 @@ class Upgrade {
     });
   }
 
+  public logInfo(text: string) {
+    mainLogger.info(`${logTag}${text}`);
+  }
+
   public setServiceWorkerURL(swURL: string) {
     mainLogger.info(`${logTag}setServiceWorkerURL: ${swURL}`);
     this._swURL = swURL;
   }
 
-  public onNewContentAvailable() {
+  public onNewContentAvailable(isCurrentPageInControl: boolean) {
     mainLogger.info(
-      `${logTag}New content available. hasFocus: ${document.hasFocus()}`,
+      `${logTag}New content available. hasFocus: ${document.hasFocus()}, control: ${isCurrentPageInControl}`,
     );
     this._hasNewVersion = true;
 
@@ -71,16 +76,29 @@ class Upgrade {
 
   private _queryIfHasNewVersion() {
     if (!window.navigator.onLine) {
-      mainLogger.info(`${logTag}Ignore update due to offline`);
+      this.logInfo('Ignore update due to offline');
       return;
     }
 
     if (this._swURL && navigator.serviceWorker) {
-      mainLogger.info(`${logTag}Will check new version`);
+      this.logInfo('Will check new version');
       navigator.serviceWorker
         .getRegistration(this._swURL)
         .then((registration: ServiceWorkerRegistration) => {
           this._lastCheckTime = new Date();
+
+          const activeWorker = registration.active;
+          const installingWorker = registration.installing;
+          const waitingWorker = registration.waiting;
+          mainLogger.info(
+            `${logTag}active[${!!activeWorker}]${
+              !!activeWorker ? activeWorker.state : ''
+            }, installing[${!!installingWorker}]${
+              !!installingWorker ? installingWorker.state : ''
+            }, waiting[${!!waitingWorker}]${
+              !!waitingWorker ? waitingWorker.state : ''
+            }, }`,
+          );
 
           registration
             .update()
@@ -96,6 +114,11 @@ class Upgrade {
             });
           mainLogger.info(`${logTag}Checking new version`);
         });
+    } else {
+      this.logInfo(
+        `Query no started. _swURL ${!!this
+          ._swURL}, ${!!navigator.serviceWorker}`,
+      );
     }
   }
 
@@ -151,7 +174,9 @@ class Upgrade {
       return false;
     }
 
-    const itemService = ItemService.getInstance() as ItemService;
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
     if (itemService.hasUploadingFiles()) {
       mainLogger.info(`${logTag}Forbidden to reload due to uploading file`);
       return false;
@@ -200,7 +225,9 @@ class Upgrade {
   }
 
   private _hasInProgressCall() {
-    const telephony: TelephonyService = TelephonyService.getInstance();
+    const telephony = ServiceLoader.getInstance<TelephonyService>(
+      ServiceConfig.TELEPHONY_SERVICE,
+    );
     return telephony.getAllCallCount() > 0;
   }
 

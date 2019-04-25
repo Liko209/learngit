@@ -6,6 +6,10 @@
 import history from '@/history';
 import { GroupService } from 'sdk/module/group';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { MessageRouterChangeHelper } from '../modules/message/container/Message/helper';
+import { getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 type BaseGoToConversationParams = {
   conversationId: number;
@@ -25,7 +29,9 @@ const goToConversationCallBackName = Symbol('goToConversationCallBackName');
 const DELAY_LOADING = 500;
 
 const getConversationId = async (id: number | number[]) => {
-  const groupService: GroupService = GroupService.getInstance();
+  const groupService = ServiceLoader.getInstance<GroupService>(
+    ServiceConfig.GROUP_SERVICE,
+  );
   const type = Array.isArray(id)
     ? TypeDictionary.TYPE_ID_PERSON
     : GlipTypeUtil.extractTypeId(id);
@@ -50,7 +56,10 @@ const getConversationId = async (id: number | number[]) => {
 
 async function goToConversationWithLoading(params: GoToConversationParams) {
   const { id, jumpToPostId, beforeJump, hasBeforeJumpFun } = params;
+  let needReplaceHistory = false;
+
   const timer = setTimeout(() => {
+    needReplaceHistory = true;
     history.push('/messages/loading');
   },                       DELAY_LOADING);
 
@@ -71,7 +80,7 @@ async function goToConversationWithLoading(params: GoToConversationParams) {
     await goToConversation({
       conversationId,
       jumpToPostId,
-      replaceHistory: true,
+      replaceHistory: needReplaceHistory,
     });
     return true;
   } catch (err) {
@@ -93,16 +102,19 @@ function goToConversation({
   jumpToPostId,
   replaceHistory,
 }: BaseGoToConversationParams) {
-  const args: [string, any?] = [`/messages/${conversationId}`];
+  const args: [string, any?] = [String(conversationId)];
+  const currentConversation = getGlobalValue(
+    GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
+  );
+  if (replaceHistory || conversationId === currentConversation) {
+    args.push('REPLACE');
+  } else {
+    args.push('PUSH');
+  }
   if (jumpToPostId) {
     args.push({ jumpToPostId });
   }
-
-  if (replaceHistory) {
-    history.replace(...args);
-  } else {
-    history.push(...args);
-  }
+  MessageRouterChangeHelper.goToConversation(...args);
 }
 
 export {

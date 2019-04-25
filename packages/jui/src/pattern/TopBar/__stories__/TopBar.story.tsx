@@ -20,7 +20,6 @@ import {
   JuiHistoryOperation,
   OPERATION,
 } from '../../../pattern/HistoryOperation';
-import { JuiSearchBar } from '../../../pattern/SearchBar';
 
 const fakeHandler = () => null;
 
@@ -117,28 +116,19 @@ const BackNForward = () => {
   );
 };
 
-const SearchBar = () => {
-  return (
-    <JuiSearchBar
-      onClose={fakeHandler}
-      focus={false}
-      tabIndex={0}
-      onBlur={fakeHandler}
-      onFocus={fakeHandler}
-    />
-  );
-};
-
 storiesOf('Pattern/TopBar', module)
   .addDecorator(withInfoDecorator(JuiTopBar, { inline: true }))
   .add('TopBar', () => (
     <div style={{ padding: '20px', background: 'silver' }}>
       <JuiTopBar
+        openGlobalSearch={() => {}}
+        searchKey={''}
+        searchPlaceholder={'search'}
+        onClear={() => {}}
         NewActions={NewActions}
         MainMenu={MainMenu}
         Logo={Logo}
         BackNForward={BackNForward}
-        SearchBar={SearchBar}
         AvatarActions={AvatarActions}
       />
     </div>

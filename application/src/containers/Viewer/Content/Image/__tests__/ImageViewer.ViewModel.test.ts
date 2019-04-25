@@ -10,9 +10,9 @@ import { getEntity } from '@/store/utils';
 import { getMaxThumbnailURLInfo } from '@/common/getThumbnailURL';
 import { ImageViewerProps } from '../types';
 import { VIEWER_ITEM_TYPE } from '../../../constants';
-import { ItemService } from 'sdk/module/item/service';
 import { Pal } from 'sdk/pal';
 import FileItemModel from '@/store/models/FileItem';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 const palInstance = {
   getImageDownloader: () => {
@@ -36,7 +36,7 @@ jest.mock('@/store/utils', () => {
   };
 });
 jest.mock('sdk/module/item/service');
-ItemService.getInstance = () => itemService;
+ServiceLoader.getInstance = () => itemService;
 Pal.getInstance = () => palInstance;
 jest.mock('@/common/getThumbnailURL', () => {
   return {
@@ -104,14 +104,16 @@ describe('ImageViewer.ViewModel', () => {
       });
     });
     it('should return raw image info when support', () => {
-      const vm = new ImageViewerViewModel(props);
       const item = {
         versionUrl: '',
         origWidth: 1,
         origHeight: 2,
+        id: 11,
       } as FileItemModel;
       getEntity.mockReturnValue(item);
       FileItemUtils.isSupportShowRawImage.mockReturnValue(true);
+      const vm = new ImageViewerViewModel(props);
+      vm._largeRawImageURL = item.versionUrl;
       const imageInfo = vm.imageInfo;
       expect(FileItemUtils.isSupportShowRawImage).toBeCalled();
       expect(FileItemUtils.isSupportPreview).not.toBeCalled();
@@ -122,7 +124,6 @@ describe('ImageViewer.ViewModel', () => {
       });
     });
     it('should return thumbnail image when support', () => {
-      const vm = new ImageViewerViewModel(props);
       const item = {
         downloadUrl: '',
         origWidth: 1,
@@ -130,6 +131,7 @@ describe('ImageViewer.ViewModel', () => {
         thumbs: {},
       } as FileItemModel;
       getEntity.mockReturnValue(item);
+      const vm = new ImageViewerViewModel(props);
       FileItemUtils.isSupportShowRawImage.mockReturnValue(false);
       FileItemUtils.isSupportPreview.mockReturnValue(true);
       getMaxThumbnailURLInfo.mockReturnValue({});
@@ -140,13 +142,13 @@ describe('ImageViewer.ViewModel', () => {
       expect(imageInfo).toEqual({});
     });
     it('should try to generate thumbnail when not exist', (done: jest.DoneCallback) => {
-      const vm = new ImageViewerViewModel(props);
       const item = {
         downloadUrl: '',
         origWidth: 1,
         origHeight: 2,
       };
       getEntity.mockReturnValue(item);
+      const vm = new ImageViewerViewModel(props);
       const spy = jest.spyOn(itemService, 'getThumbsUrlWithSize');
       FileItemUtils.isSupportShowRawImage.mockReturnValue(false);
       FileItemUtils.isSupportPreview.mockReturnValue(true);

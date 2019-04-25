@@ -4,25 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 /// <reference path="./types.d.ts" />
-import { Foundation, NetworkManager, Token } from 'foundation';
+import { Foundation, NetworkManager } from 'foundation';
 import Sdk from '../Sdk';
-import {
-  Api,
-  HandleByGlip,
-  HandleByRingCentral,
-  HandleByUpload,
-  HandleByGlip2,
-} from '../api';
+import { Api, HandleByRingCentral } from '../api';
 import { daoManager } from '../dao';
 import { AccountManager, ServiceManager } from '../framework';
-import { GlobalConfigService, UserConfigService } from '../module/config';
-import { AuthUserConfig } from '../service/auth/config';
+import { DataMigration } from '../module/config';
+import notificationCenter from '../service/notificationCenter';
+import { SERVICE } from '../service';
 import { SyncService } from '../module/sync';
-import { AccountGlobalConfig } from '../service/account/config';
+import { AccountGlobalConfig } from '../module/account/config';
+import { ServiceLoader } from '../module/serviceLoader';
 
 jest.mock('../module/config');
-jest.mock('../service/auth/config');
-GlobalConfigService.getInstance = jest.fn();
+jest.mock('../module/account/config');
 
 // Using manual mock to improve mock priority.
 jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
@@ -31,6 +26,7 @@ jest.mock('../dao');
 jest.mock('../api');
 jest.mock('../utils');
 jest.mock('../framework');
+jest.mock('../service/notificationCenter');
 
 describe('Sdk', () => {
   let sdk: Sdk;
@@ -58,19 +54,50 @@ describe('Sdk', () => {
   });
 
   describe('init()', () => {
-    beforeEach(async () => {
+    it('should check login status', async () => {
+      accountManager.syncLogin.mockReturnValueOnce({
+        isRCOnlyMode: false,
+        success: true,
+      });
+
       await sdk.init({ api: {}, db: {} });
+      expect(DataMigration.migrateKVStorage).toBeCalled();
+      expect(accountManager.updateSupportedServices).toBeCalled();
+      expect(notificationCenter.emitKVChange).toBeCalledWith(SERVICE.LOGIN);
     });
-    it('should init Foundation', () => {
-      expect(Foundation.init).toHaveBeenCalled();
-    });
+    it('should re login when app in RC only mode', async () => {
+      accountManager.syncLogin.mockReturnValueOnce({
+        isRCOnlyMode: true,
+        success: true,
+      });
+      const mockReLogin = jest.fn();
 
-    it('should init Api', () => {
-      expect(Api.init).toHaveBeenCalled();
-    });
+      const mockAccountService = {
+        reLoginGlip: mockReLogin,
+      };
 
-    it('should init Dao', () => {
-      expect(daoManager.initDatabase).toHaveBeenCalled();
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(mockAccountService);
+
+      await sdk.init({ api: {}, db: {} });
+      expect(DataMigration.migrateKVStorage).toBeCalled();
+      expect(mockReLogin).toBeCalled();
+      expect(accountManager.updateSupportedServices).toBeCalled();
+      expect(notificationCenter.emitKVChange).not.toBeCalledWith(SERVICE.LOGIN);
+    });
+  });
+
+  describe('onStartLogin()', () => {
+    it('should init all module', async () => {
+      ServiceLoader.getInstance = jest.fn().mockReturnValue('accountService');
+      sdk['_sdkConfig'] = { api: {}, db: {} };
+      await sdk.onStartLogin();
+      expect(Foundation.init).toBeCalled();
+      expect(Api.init).toBeCalled();
+      expect(daoManager.initDatabase).toBeCalled();
+      expect(serviceManager.startService).toBeCalled();
+      expect(HandleByRingCentral.platformHandleDelegate).toEqual(
+        'accountService',
+      );
     });
   });
 
@@ -78,21 +105,25 @@ describe('Sdk', () => {
     beforeEach(() => {
       AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValueOnce(1);
       jest.spyOn(sdk, 'updateNetworkToken').mockImplementation(() => {});
-      sdk.onAuthSuccess();
     });
     afterEach(() => jest.restoreAllMocks());
-
-    it('should init networkManager', () => {
-      expect(sdk.updateNetworkToken).toHaveBeenCalled();
+    it('should init networkManager and sync data', () => {
+      sdk.onAuthSuccess(false);
+      expect(sdk.updateNetworkToken).toBeCalled();
+      expect(syncService.syncData).toBeCalled();
+      expect(notificationCenter.emitKVChange).not.toBeCalled();
     });
-    it('should sync data', () => {
-      expect(syncService.syncData).toHaveBeenCalled();
+    it('should not sync data when in rc only mode', () => {
+      sdk.onAuthSuccess(true);
+      expect(sdk.updateNetworkToken).toBeCalled();
+      expect(syncService.syncData).not.toBeCalled();
+      expect(notificationCenter.emitKVChange).toBeCalled();
     });
   });
 
   describe('onLogout()', () => {
     beforeEach(async () => {
-      UserConfigService.getInstance = jest
+      ServiceLoader.getInstance = jest
         .fn()
         .mockReturnValue({ clear: jest.fn() });
       await sdk.onLogout();

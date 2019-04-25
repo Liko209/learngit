@@ -14,11 +14,7 @@ import {
 } from '../Viewer.DataSource';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { Item } from 'sdk/module/item/entity';
-import { TypeDictionary } from 'sdk/utils/glip-type-dictionary';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
-import { ITEM_SORT_KEYS } from 'sdk/module/item';
-
-jest.mock('sdk/module/item/module/file/utils');
 
 jest.mock('@/store/base/fetch/FetchSortableDataListHandler', () => {
   const handler: FetchSortableDataListHandler<Item> = {
@@ -108,103 +104,15 @@ describe('Viewer.DataSource', () => {
       expect(result).toEqual(listHandler.sortableListStore.getIds[1]);
     });
   });
-  describe('isExpectedItemOfThisGroup()', () => {
-    const fileId = TypeDictionary.TYPE_ID_FILE;
-    const notFileId = TypeDictionary.TYPE_ID_TASK;
-    it.each`
-      expected | groupId | groupIds | postIds | itemId    | deactivated | includeDeactivated
-      ${true}  | ${1}    | ${[1]}   | ${[11]} | ${fileId} | ${false}    | ${false}
-      ${false} | ${0}    | ${[1]}   | ${[11]} | ${fileId} | ${false}    | ${false}
-      ${false} | ${1}    | ${[2]}   | ${[11]} | ${fileId} | ${false}    | ${false}
-      ${false} | ${1}    | ${[]}    | ${[11]} | ${fileId} | ${false}    | ${false}
-      ${false} | ${1}    | ${[1]}   | ${[11]} | ${fileId} | ${true}     | ${false}
-      ${true}  | ${1}    | ${[1]}   | ${[11]} | ${fileId} | ${false}    | ${true}
-      ${true}  | ${1}    | ${[1]}   | ${[11]} | ${fileId} | ${true}     | ${true}
-    `(
-      'should work correctly with Image type',
-      ({
-        groupId,
-        groupIds,
-        postIds,
-        itemId,
-        deactivated,
-        includeDeactivated,
-        expected,
-      }) => {
-        const dataSource = new ItemListDataSource(props);
-        const item: Item = {
-          deactivated,
-          id: itemId,
-          group_ids: groupIds,
-          post_ids: postIds,
-        } as Item;
-        jest
-          .spyOn(dataSource, 'getFilterFunc')
-          .mockImplementation(() => (item: Item) => {
-            return true;
-          });
-        const result = dataSource.isExpectedItemOfThisGroup(
-          groupId,
-          VIEWER_ITEM_TYPE.IMAGE_FILES,
-          item,
-          includeDeactivated,
-        );
-        expect(result).toEqual(expected);
-      },
-    );
-    it.each`
-      expected | groupId | groupIds | postIds | itemId       | deactivated | includeDeactivated
-      ${false} | ${1}    | ${[1]}   | ${[11]} | ${notFileId} | ${false}    | ${false}
-      ${false} | ${0}    | ${[1]}   | ${[11]} | ${notFileId} | ${false}    | ${false}
-      ${false} | ${1}    | ${[2]}   | ${[11]} | ${notFileId} | ${false}    | ${false}
-      ${false} | ${1}    | ${[]}    | ${[11]} | ${notFileId} | ${false}    | ${false}
-      ${false} | ${1}    | ${[1]}   | ${[11]} | ${notFileId} | ${true}     | ${false}
-      ${false} | ${1}    | ${[1]}   | ${[11]} | ${notFileId} | ${false}    | ${true}
-      ${false} | ${1}    | ${[1]}   | ${[11]} | ${notFileId} | ${true}     | ${true}
-    `(
-      'should work correctly with Image type when item not a image',
-      ({
-        groupId,
-        groupIds,
-        postIds,
-        itemId,
-        deactivated,
-        includeDeactivated,
-        expected,
-      }) => {
-        const dataSource = new ItemListDataSource(props);
-        const item: Item = {
-          deactivated,
-          id: itemId,
-          group_ids: groupIds,
-          post_ids: postIds,
-        } as Item;
-        jest
-          .spyOn(dataSource, 'getFilterFunc')
-          .mockImplementation(() => (item: Item) => {
-            return true;
-          });
-        const result = dataSource.isExpectedItemOfThisGroup(
-          groupId,
-          VIEWER_ITEM_TYPE.IMAGE_FILES,
-          item,
-          includeDeactivated,
-        );
-        expect(result).toEqual(expected);
-      },
-    );
-  });
   describe('_transformFunc()', () => {
     it('should get version date as SortableModel data property', () => {
       const dataSource = new ItemListDataSource(props);
       const item: Item = {
         id: 1,
+        post_ids: [111, 222],
       } as Item;
-      const mockVersionDate = 222;
-      FileItemUtils.getVersionDate.mockReturnValue(mockVersionDate);
       const result = dataSource['_transformFunc'](item);
-      expect(FileItemUtils.getVersionDate).toBeCalledWith({ id: 1 });
-      expect(result.sortValue).toEqual(mockVersionDate);
+      expect(result.sortValue).toEqual(222);
     });
   });
 });

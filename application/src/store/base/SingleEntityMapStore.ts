@@ -4,9 +4,10 @@ import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
 import { Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
-import { BaseService, EVENT_TYPES } from 'sdk/service';
+import { EVENT_TYPES } from 'sdk/service';
 import { IdModel } from 'sdk/framework/model';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
+import { EntityBaseService } from 'sdk/framework/service';
 
 const modelProvider = new ModelProvider();
 
@@ -18,7 +19,7 @@ export default class SingleEntityMapStore<
   data: ObservableMap = new ObservableMap<keyof Entity, any>();
   init: boolean;
   getService: Function;
-  service: BaseService<T>;
+  service: EntityBaseService<T>;
   constructor(entityName: ENTITY_NAME, { service, event }: EntitySetting<K>) {
     super(entityName);
     this.init = false;

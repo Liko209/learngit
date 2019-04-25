@@ -4,13 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ReactElement } from 'react';
-import { Item } from 'sdk/src/module/item/entity';
+import { Item } from 'sdk/module/item/entity';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { VIEWER_ITEM_TYPE } from './constants';
 
 type CommonProps = {
   groupId: number;
   itemId: number; // imageId || fileId || otherItemId
+  isNavigation?: boolean;
+  postId?: number;
   type: VIEWER_ITEM_TYPE;
 };
 

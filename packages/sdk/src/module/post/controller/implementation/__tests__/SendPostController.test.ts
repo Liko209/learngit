@@ -22,11 +22,11 @@ import notificationCenter from '../../../../../service/notificationCenter';
 import { ExtendedBaseModel } from '../../../../models';
 import { PROGRESS_STATUS } from '../../../../progress';
 import { GlobalConfigService } from '../../../../../module/config';
-import { AccountUserConfig } from '../../../../../service/account/config';
+import { AccountUserConfig } from '../../../../../module/account/config';
+import { ServiceLoader } from '../../../../serviceLoader';
 
 jest.mock('../../../../../module/config');
-jest.mock('../../../../../service/account/config/AccountUserConfig');
-GlobalConfigService.getInstance = jest.fn();
+jest.mock('../../../../../module/account/config/AccountUserConfig');
 
 jest.mock('../PostActionController');
 jest.mock('../../../../groupConfig');
@@ -67,9 +67,7 @@ describe('SendPostController', () => {
   beforeEach(() => {
     const actionController = new PostActionController(null, null);
     const preInsertController = new MockPreInsertController<Post>();
-    GroupConfigService.getInstance = jest
-      .fn()
-      .mockReturnValue(groupConfigService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(groupConfigService);
     sendPostController = new SendPostController(
       actionController,
       preInsertController,

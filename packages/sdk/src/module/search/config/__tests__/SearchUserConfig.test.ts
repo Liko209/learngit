@@ -5,12 +5,13 @@
  */
 
 import { SearchUserConfig } from '../SearchUserConfig';
-import { AccountGlobalConfig } from '../../../../service/account/config';
+import { AccountGlobalConfig } from '../../../../module/account/config';
 import { UserConfigService } from '../../../config/service/UserConfigService';
 import { SEARCH_CONFIG_KEYS } from '../configKeys';
+import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../../../config/service/UserConfigService');
-jest.mock('../../../../service/account/config');
+jest.mock('../../../../module/account/config');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -24,9 +25,7 @@ describe('SearchUserConfig', () => {
   function setUp() {
     userConfigService = new UserConfigService();
     userConfigService.setUserId = jest.fn();
-    UserConfigService.getInstance = jest
-      .fn()
-      .mockReturnValue(userConfigService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(userConfigService);
 
     AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(222);
     searchUserConfig = new SearchUserConfig();

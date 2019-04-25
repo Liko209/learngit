@@ -3,6 +3,7 @@
  * @Date: 2018-11-08 17:27:47
  * Copyright © RingCentral. All rights reserved.
  */
+import PersonModel from '@/store/models/Person';
 
 type Props = {
   id: number;
@@ -10,7 +11,7 @@ type Props = {
 
 type ViewProps = {
   id: number;
-  name: string;
+  person: PersonModel;
 };
 
 export { Props, ViewProps };

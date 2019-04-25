@@ -5,13 +5,13 @@
  */
 
 import { MoreViewModel } from '../More.ViewModel';
-import { GroupService } from 'sdk/module/group';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 const groupService = {
   getGroupEmail: jest.fn(),
 };
 
-GroupService.getInstance = jest.fn().mockResolvedValue(groupService);
+ServiceLoader.getInstance = jest.fn().mockResolvedValue(groupService);
 
 const props = {
   id: 123,

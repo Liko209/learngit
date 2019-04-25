@@ -14,9 +14,10 @@ import {
 import { getGlobalValue } from '../../../store/utils';
 import storeManager from '../../../store/index';
 import { CreateTeamViewModel } from '../CreateTeam.ViewModel';
-import { AccountUserConfig } from 'sdk/service/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
-jest.mock('sdk/service/account/config');
+jest.mock('sdk/module/account/config');
 jest.mock('../../Notification');
 jest.mock('../../../store/utils');
 jest.mock('../../../store/index');
@@ -33,7 +34,7 @@ function getNewJServerError(code: string, message: string = '') {
 describe('CreateTeamVM', () => {
   beforeAll(() => {
     jest.resetAllMocks();
-    jest.spyOn(GroupService, 'getInstance').mockReturnValue(groupService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(groupService);
     const gs = {
       get: jest.fn(),
       set: jest.fn(),

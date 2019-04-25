@@ -90,6 +90,7 @@ export class ConversationCard extends React.Component<
       onHighlightAnimationStart,
       isEditMode,
       showActivityStatus,
+      terms,
       ...rest
     } = this.props;
     const { isHover } = this.state;
@@ -106,7 +107,7 @@ export class ConversationCard extends React.Component<
     );
     const activity = <Activity id={id} />;
     const from = mode === 'navigation' ? <From id={post.groupId} /> : undefined;
-    const onClickHandler = mode ? this.jumpToPost : undefined;
+    const jumpToPost = mode ? this.jumpToPost : undefined;
     return (
       <JuiConversationCard
         data-name="conversation-card"
@@ -115,7 +116,7 @@ export class ConversationCard extends React.Component<
         onMouseOver={this.handleMouseOver}
         onMouseLeave={this.handleMouseLeave}
         mode={mode}
-        onClick={onClickHandler}
+        jumpToPost={jumpToPost}
         onAnimationStart={onAnimationStart}
         ref={cardRef}
         {...rest}
@@ -134,12 +135,16 @@ export class ConversationCard extends React.Component<
           )}
         </JuiConversationCardHeader>
         <JuiConversationCardBody data-name="body">
-          {!hideText && !isEditMode && <TextMessage id={id} />}
+          {!hideText && !isEditMode && <TextMessage id={id} terms={terms} />}
           {isEditMode && (
             <EditMessageInput viewRef={this._editMessageInputRef} id={id} />
           )}
           {itemTypeIds && (
-            <IdsToConversationSheet itemTypeIds={itemTypeIds} postId={id} />
+            <IdsToConversationSheet
+              itemTypeIds={itemTypeIds}
+              postId={id}
+              mode={mode}
+            />
           )}
         </JuiConversationCardBody>
         <Footer postId={id} />

@@ -13,11 +13,12 @@ import { DeactivatedDao } from '../../../../../dao';
 import { StateFetchDataController } from '../StateFetchDataController';
 import { GroupState } from '../../../entity';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
-import { TotalUnreadController } from '../TotalUnreadController';
 
 jest.mock('../../../../post/service/PostService');
 jest.mock('../StateFetchDataController');
 jest.mock('../../../../../framework/controller/impl/EntitySourceController');
+jest.mock('../../../../group');
+
 class MockRequestController implements IRequestController {
   get = jest.fn();
   put = jest.fn();
@@ -52,7 +53,7 @@ describe('StateActionController', () => {
   let mockRequestController: MockRequestController;
   let mockEntitySourceController: EntitySourceController;
   let mockStateFetchDataController: StateFetchDataController;
-  let mockTotalUnreadController: TotalUnreadController;
+  const mockGroupService = new GroupService();
   beforeEach(() => {
     jest.clearAllMocks();
     mockRequestController = new MockRequestController();
@@ -65,14 +66,11 @@ describe('StateActionController', () => {
     mockStateFetchDataController = new StateFetchDataController(
       mockEntitySourceController,
     );
-    mockTotalUnreadController = new TotalUnreadController(
-      mockEntitySourceController,
-    );
     stateActionController = new StateActionController(
+      mockGroupService,
       mockEntitySourceController,
       mockRequestController,
       mockStateFetchDataController,
-      mockTotalUnreadController,
     );
   });
 
@@ -80,10 +78,8 @@ describe('StateActionController', () => {
     it('should mark as unread when (lastPostId && myStateId > 0)', async () => {
       const groupId: number = 55668833;
       const isUnread: boolean = true;
-      GroupService.getInstance = jest.fn().mockReturnValue({
-        getById: jest.fn().mockReturnValue({
-          most_recent_post_id: 123,
-        }),
+      mockGroupService.getById = jest.fn().mockReturnValue({
+        most_recent_post_id: 123,
       });
 
       const originalModel = {
@@ -101,7 +97,7 @@ describe('StateActionController', () => {
       jest
         .spyOn(mockEntitySourceController, 'get')
         .mockImplementationOnce(() => {
-          return originalModel;
+          return originalModel as any;
         });
       mockStateFetchDataController.getMyStateId = jest
         .fn()
@@ -113,22 +109,12 @@ describe('StateActionController', () => {
       Object.assign(stateActionController, {
         _partialModifyController: mockPartialModifyController,
       });
-      mockTotalUnreadController.handleGroupState = jest.fn();
       stateActionController['_buildUpdateUnreadStatusParams'] = jest.fn();
 
       await stateActionController.updateReadStatus(groupId, isUnread, true);
-      expect(GroupService.getInstance<GroupService>().getById).toBeCalledWith(
-        groupId,
-      );
+      expect(mockGroupService.getById).toBeCalledWith(groupId);
       expect(mockStateFetchDataController.getMyStateId).toBeCalled();
       expect(mockPartialModifyController.updatePartially).toBeCalled();
-      expect(mockTotalUnreadController.handleGroupState).toBeCalledWith([
-        {
-          unread_count: 1,
-          marked_as_unread: true,
-          post_cursor: 0,
-        },
-      ]);
       expect(
         stateActionController['_buildUpdateUnreadStatusParams'],
       ).toBeCalled();
@@ -137,10 +123,8 @@ describe('StateActionController', () => {
     it('should mark as read when (lastPostId && myStateId > 0)', async () => {
       const groupId: number = 55668833;
       const isUnread: boolean = false;
-      GroupService.getInstance = jest.fn().mockReturnValue({
-        getById: jest.fn().mockReturnValue({
-          most_recent_post_id: 123,
-        }),
+      mockGroupService.getById = jest.fn().mockReturnValue({
+        most_recent_post_id: 123,
       });
       mockStateFetchDataController.getMyStateId = jest
         .fn()
@@ -161,7 +145,7 @@ describe('StateActionController', () => {
       jest
         .spyOn(mockEntitySourceController, 'get')
         .mockImplementationOnce(() => {
-          return originalModel;
+          return originalModel as any;
         });
 
       const mockPartialModifyController = new MockPartialModifyController(
@@ -170,31 +154,24 @@ describe('StateActionController', () => {
       Object.assign(stateActionController, {
         _partialModifyController: mockPartialModifyController,
       });
-      mockTotalUnreadController.handleGroupState = jest.fn();
-      stateActionController['_buildUpdateReadStatusParams'] = jest.fn().mockImplementationOnce(() => {
-        throw 'err';
-      });
+
+      // fix prettier lint error
+      const jestMockImpl = jest.fn().mockImplementationOnce;
+      stateActionController['_buildUpdateReadStatusParams'] = jestMockImpl(
+        () => {
+          throw 'err';
+        },
+      );
 
       try {
         await stateActionController.updateReadStatus(groupId, isUnread, false);
       } catch (err) {
         expect(err).toEqual('err');
       }
-      expect(GroupService.getInstance<GroupService>().getById).toBeCalledWith(
-        groupId,
-      );
+      expect(mockGroupService.getById).toBeCalledWith(groupId);
       expect(mockStateFetchDataController.getMyStateId).toBeCalled();
       expect(mockPartialModifyController.updatePartially).toBeCalled();
-      expect(mockTotalUnreadController.handleGroupState).toBeCalledWith([
-        {
-          unread_count: 0,
-          unread_mentions_count: 0,
-          read_through: 123,
-          last_read_through: 123,
-          marked_as_unread: false,
-          unread_deactivated_count: 0,
-        },
-      ]);
+
       expect(
         stateActionController['_buildUpdateReadStatusParams'],
       ).toBeCalled();

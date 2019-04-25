@@ -13,16 +13,17 @@ import { SOCKET, SERVICE, ENTITY } from '../../../service/eventKey';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { StateController } from '../controller/StateController';
 import { Group } from '../../group/entity';
+import { IGroupService } from '../../group/service/IGroupService';
 import { Profile } from '../../profile/entity';
 import { NotificationEntityPayload } from '../../../service/notificationCenter';
 import { SectionUnread } from '../types';
 import { SYNC_SOURCE } from '../../sync/types';
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 
 class StateService extends EntityBaseService<GroupState>
   implements IStateService {
-  static serviceName = 'StateService';
   private _stateController: StateController;
-  constructor() {
+  constructor(private _groupService: IGroupService) {
     super(true, daoManager.getDao(GroupStateDao));
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
@@ -32,13 +33,24 @@ class StateService extends EntityBaseService<GroupState>
         [SERVICE.GROUP_CURSOR]: this.handleGroupCursor,
         [ENTITY.GROUP]: this.handleGroupChangeForTotalUnread,
         [ENTITY.PROFILE]: this.handleProfileChangeForTotalUnread,
+        [ENTITY.GROUP_STATE]: this.handleStateChangeForTotalUnread,
       }),
     );
+
+    this.setCheckTypeFunc((id: number) => {
+      return (
+        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_TEAM) ||
+        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_GROUP)
+      );
+    });
   }
 
   protected getStateController(): StateController {
     if (!this._stateController) {
-      this._stateController = new StateController(this.getEntitySource());
+      this._stateController = new StateController(
+        this._groupService,
+        this.getEntitySource(),
+      );
     }
     return this._stateController;
   }
@@ -98,6 +110,14 @@ class StateService extends EntityBaseService<GroupState>
     await this.getStateController()
       .getStateDataHandleController()
       .handleGroupCursor(groups);
+  }
+
+  handleStateChangeForTotalUnread = (
+    payload: NotificationEntityPayload<GroupState>,
+  ): void => {
+    this.getStateController()
+      .getTotalUnreadController()
+      .handleGroupState(payload);
   }
 
   handleGroupChangeForTotalUnread = (

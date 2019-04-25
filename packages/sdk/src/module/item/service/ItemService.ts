@@ -29,8 +29,6 @@ import { mainLogger } from 'foundation';
 import { ItemNotification } from '../utils/ItemNotification';
 
 class ItemService extends EntityBaseService<Item> implements IItemService {
-  static serviceName = 'ItemService';
-
   private _itemServiceController: ItemServiceController;
 
   constructor() {
@@ -225,7 +223,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       ': item count:',
       String(itemIds.length),
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId, itemIds.length);
 
     return items;
   }

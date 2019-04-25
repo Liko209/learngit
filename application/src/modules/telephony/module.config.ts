@@ -6,10 +6,11 @@
 import { TelephonyModule } from './TelephonyModule';
 import { TelephonyService } from './service';
 import { TelephonyStore } from './store';
+import { TelephonyNotificationManager } from './TelephonyNotificationManager';
 
 const config = {
   entry: TelephonyModule,
-  provides: { TelephonyService, TelephonyStore },
+  provides: [TelephonyService, TelephonyStore, TelephonyNotificationManager],
 };
 
 export { config };

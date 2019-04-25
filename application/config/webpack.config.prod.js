@@ -7,6 +7,7 @@
 
 const path = require('path');
 const webpack = require('webpack');
+const resolve = require('resolve');
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
@@ -44,8 +45,6 @@ const shouldUploadMapToSentry = ['production', 'public'].includes(
 // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
 // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
 const publicUrl = publicPath.slice(0, -1);
-const iconUrl =
-  'https://s3.amazonaws.com/icomoon.io/79019/Jupiter/symbol-defs.svg';
 // Get environment variables to inject into our app.
 const env = getClientEnvironment(publicUrl);
 
@@ -121,6 +120,9 @@ module.exports = {
             // https://github.com/terser-js/terser/issues/120
             inline: 2,
           },
+          // mangle: {
+          //   safari10: true
+          // },
           mangle: false,
           output: {
             ecma: 5,
@@ -185,22 +187,8 @@ module.exports = {
     // https://github.com/facebookincubator/create-react-app/issues/290
     // `web` extension prefixes have been added for better support
     // for React Native Web.
-    extensions: [
-      '.mjs',
-      '.web.ts',
-      '.ts',
-      '.web.tsx',
-      '.tsx',
-      '.web.js',
-      '.js',
-      '.json',
-      '.web.jsx',
-      '.jsx',
-    ],
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.mjs'],
     alias: {
-      // Support React Native Web
-      // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
-      'react-native': 'react-native-web',
       '@': paths.appSrc,
     },
     plugins: [
@@ -258,6 +246,8 @@ module.exports = {
               loader: 'babel-loader',
               options: {
                 cacheDirectory: true,
+                cacheCompression: true,
+                compact: true,
                 babelrc: false,
                 presets: [['react-app', { flow: false, typescript: true }]],
                 plugins: ['@babel/plugin-syntax-dynamic-import'],
@@ -333,7 +323,7 @@ module.exports = {
             // it's runtime that would otherwise processed through "file" loader.
             // Also exclude `html` and `json` extensions so they get processed
             // by webpack internal loaders.
-            exclude: [/\.(js|jsx|mjs)$/, /\.html$/, /\.json$/],
+            exclude: [/\.(ts|tsx|js|jsx|mjs)$/, /\.html$/, /\.json$/],
             options: {
               name: 'static/media/[name].[hash:8].[ext]',
             },
@@ -409,9 +399,26 @@ module.exports = {
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     // Perform type checking and linting in a separate process to speed up compilation
     new ForkTsCheckerWebpackPlugin({
+      typescript: resolve.sync('typescript', {
+        basedir: paths.appNodeModules,
+      }),
       async: false,
-      tsconfig: paths.appTsProdConfig,
+      useTypescriptIncrementalApi: true,
+      checkSyntacticErrors: true,
+      tsconfig: paths.appTsConfig,
       tslint: paths.appTsLint,
+      reportFiles: [
+        '**',
+        '!**/*.json',
+        '!**/__tests__/**',
+        '!**/?(*.)(spec|test).*',
+        '!**/src/setupProxy.*',
+        '!**/src/setupTests.*',
+      ],
+      watch: paths.appSrc,
+      silent: true,
+      // The formatter is invoked directly in WebpackDevServerUtils during development
+      // formatter: typescriptFormatter,
     }),
     // generate service worker
     new GenerateSW({
@@ -431,10 +438,11 @@ module.exports = {
         '': '/',
       },
       runtimeCaching,
+      importScripts: ['sw-notification.js'],
     }),
     shouldUploadMapToSentry
       ? new SentryWebpackPlugin({
-          release: 'jupiter@' + appPackage.version,
+          release: 'web@' + appPackage.version,
           include: './build/static/js',
           urlPrefix: '~/static/js',
           configFile: './sentryclirc',

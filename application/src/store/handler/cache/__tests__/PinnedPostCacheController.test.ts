@@ -12,7 +12,6 @@ import { PinnedPostListHandler } from '../../PinnedPostListHandler';
 
 jest.mock('sdk/api');
 jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
-jest.mock('../../PinnedPostListHandler');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -67,6 +66,9 @@ describe('PinnedPostCacheController', () => {
       );
 
       expect(pinnedPostHandler).toBeInstanceOf(PinnedPostListHandler);
+      expect(
+        pinnedPostHandler.fetchSortableDataHandler().maintainMode,
+      ).toBeTruthy();
     });
   });
 
@@ -123,6 +125,7 @@ describe('PinnedPostCacheController', () => {
 
     it('should call dispose of pinned post  handler when remove a cacahe', () => {
       const pinnedPostHandler = new PinnedPostListHandler(2, []);
+      pinnedPostHandler.dispose = jest.fn();
       pinnedPostCacheController['_pinPostHandlerCache'] = new Map([
         [2, pinnedPostHandler],
       ]);
@@ -134,6 +137,7 @@ describe('PinnedPostCacheController', () => {
 
     it('should not remove data when input group id is same as current group id', () => {
       const pinnedPostHandler = new PinnedPostListHandler(2, []);
+      pinnedPostHandler.dispose = jest.fn();
       pinnedPostCacheController['_pinPostHandlerCache'] = new Map([
         [2, pinnedPostHandler],
       ]);

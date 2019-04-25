@@ -6,11 +6,12 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { ConversationPostViewProps, POST_TYPE } from './types';
+import { ConversationPostViewProps } from './types';
 import { ConversationCard } from '../ConversationCard';
 import { Notification } from './Notification';
 import { MiniCard } from '@/containers/MiniCard';
 import { Profile, PROFILE_TYPE } from '@/containers/Profile';
+import { POST_TYPE } from '@/common/getPostType';
 
 const PostTypeMappingComponent = {
   [POST_TYPE.POST]: ConversationCard,
@@ -25,7 +26,16 @@ class ConversationPostView extends Component<ConversationPostViewProps> {
   }
 
   onClickAtMention(event: React.MouseEvent) {
-    const target = event.target as HTMLElement;
+    const getAtMentionNode = (target: HTMLElement): HTMLElement => {
+      if (
+        target.classList.contains('at_mention_compose') ||
+        !target.parentElement
+      ) {
+        return target;
+      }
+      return getAtMentionNode(target.parentElement);
+    };
+    const target = getAtMentionNode(event.target as HTMLElement);
     const className = target.getAttribute('class') || '';
     const id = Number(target.getAttribute('id'));
     if (className.indexOf('at_mention_compose') > -1 && id > 0) {
@@ -37,10 +47,15 @@ class ConversationPostView extends Component<ConversationPostViewProps> {
   }
 
   render() {
-    const { type, id, cardRef } = this.props;
+    const { type, id, cardRef, mode } = this.props;
     const Component = PostTypeMappingComponent[type];
     return (
-      <Component id={id} onClick={this.onClickAtMention} cardRef={cardRef} />
+      <Component
+        id={id}
+        onClick={this.onClickAtMention}
+        cardRef={cardRef}
+        mode={mode}
+      />
     );
   }
 }

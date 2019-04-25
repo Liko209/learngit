@@ -30,6 +30,7 @@ import {
 import { RULE } from '@/common/generateModifiedImageURL';
 import { UploadFileTracker } from './UploadFileTracker';
 import { getThumbnailURLWithType } from '@/common/getThumbnailURL';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
@@ -42,8 +43,12 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
 
   constructor(props: FilesViewProps) {
     super(props);
-    this._itemService = ItemService.getInstance();
-    this._postService = PostService.getInstance();
+    this._itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
+    this._postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
     const { ids } = props;
     if (ids.some(looper => looper < 0)) {
       notificationCenter.on(ENTITY.PROGRESS, this._handleItemChanged);
@@ -65,7 +70,9 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   }
 
   getShowDialogPermission = async () => {
-    const permissionService: PermissionService = PermissionService.getInstance();
+    const permissionService = ServiceLoader.getInstance<PermissionService>(
+      ServiceConfig.PERMISSION_SERVICE,
+    );
     return await permissionService.hasPermission(
       UserPermissionType.JUPITER_CAN_SHOW_IMAGE_DIALOG,
     );

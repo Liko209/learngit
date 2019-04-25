@@ -15,11 +15,11 @@ import { SOCKET, SERVICE } from '../../../service/eventKey';
 import { Raw } from '../../../framework/model/Raw';
 import { ProfileController } from '../controller/ProfileController';
 import { SYNC_SOURCE } from '../../../module/sync/types';
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
+import { SettingOption } from '../types';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {
-  static serviceName = 'ProfileService';
-
   private profileController: ProfileController;
 
   constructor() {
@@ -35,6 +35,10 @@ class ProfileService extends EntityBaseService<Profile>
           .handleGroupIncomesNewPost,
       }),
     );
+
+    this.setCheckTypeFunc((id: number) => {
+      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PROFILE);
+    });
   }
 
   handleIncomingData = async (
@@ -124,6 +128,12 @@ class ProfileService extends EntityBaseService<Profile>
     return await this.getProfileController()
       .getProfileDataController()
       .getFavoriteGroupIds();
+  }
+
+  async updateSettingOptions(options: SettingOption[]) {
+    await this.getProfileController()
+      .getSettingsActionController()
+      .updateSettingOptions(options);
   }
 }
 

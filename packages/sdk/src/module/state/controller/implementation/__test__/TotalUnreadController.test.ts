@@ -15,7 +15,6 @@ import { Profile } from '../../../../profile/entity';
 import { UMI_SECTION_TYPE, TASK_DATA_TYPE } from '../../../constants';
 import { GroupState } from '../../../entity';
 import { GroupService } from '../../../../group';
-import { ProfileService } from '../../../../profile';
 import { TotalUnreadController } from '../TotalUnreadController';
 import { DeactivatedDao } from '../../../../../dao';
 import { NotificationEntityPayload } from '../../../../../service/notificationCenter';
@@ -26,12 +25,12 @@ import {
 } from '../../../../../service';
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
-import { GlobalConfigService } from '../../../../../module/config';
-import { AccountUserConfig } from '../../../../../service/account/config';
+import { AccountUserConfig } from '../../../../../module/account/config';
+import { ServiceLoader } from '../../../../../module/serviceLoader';
 
 jest.mock('../../../../../module/config');
-jest.mock('../../../../../service/account/config');
-GlobalConfigService.getInstance = jest.fn();
+jest.mock('../../../../group');
+jest.mock('../../../../../module/account/config');
 
 type DataHandleTask =
   | GroupStateHandleTask
@@ -41,6 +40,7 @@ type DataHandleTask =
 describe('TotalUnreadController', () => {
   let totalUnreadController: TotalUnreadController;
   let mockEntitySourceController: EntitySourceController;
+  const mockGroupService = new GroupService();
   beforeEach(() => {
     jest.clearAllMocks();
     mockEntitySourceController = new EntitySourceController<GroupState>(
@@ -48,6 +48,7 @@ describe('TotalUnreadController', () => {
       {} as DeactivatedDao,
     );
     totalUnreadController = new TotalUnreadController(
+      mockGroupService,
       mockEntitySourceController,
     );
   });
@@ -137,22 +138,22 @@ describe('TotalUnreadController', () => {
 
   describe('handleGroupState()', () => {
     it('should start handle task when array only has one task', async () => {
-      const groupState: GroupState[] = [{ id: 123 }];
+      const payload = {} as NotificationEntityPayload<GroupState>;
       totalUnreadController['_startDataHandleTask'] = jest.fn();
-      await totalUnreadController.handleGroupState(groupState);
+      await totalUnreadController.handleGroupState(payload);
       expect(totalUnreadController['_startDataHandleTask']).toBeCalledWith({
         type: TASK_DATA_TYPE.GROUP_STATE,
-        data: groupState,
+        data: payload,
       });
     });
 
     it('should only add task to array when array has more than one task', async () => {
-      const groupState: GroupState[] = [{ id: 123 }];
+      const payload = {} as NotificationEntityPayload<GroupState>;
       totalUnreadController['_taskArray'] = [
-        { type: TASK_DATA_TYPE.GROUP_STATE, data: groupState },
+        { type: TASK_DATA_TYPE.GROUP_STATE, data: payload },
       ];
       totalUnreadController['_startDataHandleTask'] = jest.fn();
-      await totalUnreadController.handleGroupState(groupState);
+      await totalUnreadController.handleGroupState(payload);
       expect(totalUnreadController['_startDataHandleTask']).toBeCalledTimes(0);
     });
   });
@@ -205,7 +206,7 @@ describe('TotalUnreadController', () => {
     it('should init and stop the queue when _unreadInitialized === false', async () => {
       const task: DataHandleTask = {
         type: TASK_DATA_TYPE.GROUP_STATE,
-        data: [],
+        data: 'data' as any,
       };
       totalUnreadController['_unreadInitialized'] = false;
       totalUnreadController['_initializeTotalUnread'] = jest.fn();
@@ -233,7 +234,7 @@ describe('TotalUnreadController', () => {
     it('should handle task and stop the queue when _unreadInitialized === true', async () => {
       const task: DataHandleTask = {
         type: TASK_DATA_TYPE.GROUP_STATE,
-        data: [],
+        data: 'data' as any,
       };
       totalUnreadController['_unreadInitialized'] = true;
       totalUnreadController['_initializeTotalUnread'] = jest.fn();
@@ -270,11 +271,10 @@ describe('TotalUnreadController', () => {
       totalUnreadController['_taskArray'] = [task, task2];
       totalUnreadController['_unreadInitialized'] = true;
       totalUnreadController['_initializeTotalUnread'] = jest.fn();
-      totalUnreadController['_updateTotalUnreadByStateChanges'] = jest
-        .fn()
-        .mockImplementation(() => {
-          throw Error('error');
-        });
+      // prettier-ignore
+      totalUnreadController['_updateTotalUnreadByStateChanges'] = jest.fn().mockImplementation(() => {
+        throw Error('error');
+      });
       totalUnreadController['_updateTotalUnreadByGroupChanges'] = jest.fn();
       totalUnreadController['_updateTotalUnreadByProfileChanges'] = jest.fn();
       totalUnreadController['_doNotification'] = jest.fn();
@@ -304,13 +304,17 @@ describe('TotalUnreadController', () => {
         unreadCount: 8,
         mentionCount: 2,
       });
-      const groupStates = [
-        { id: 1, unread_count: 17, unread_mentions_count: 1 },
-        { id: 2 },
-      ] as GroupState[];
-      await totalUnreadController['_updateTotalUnreadByStateChanges'](
-        groupStates,
-      );
+      const entityMap = new Map<number, GroupState>();
+      entityMap.set(1, { id: 1, unread_count: 17, unread_mentions_count: 1 });
+      entityMap.set(2, { id: 2 });
+      const payload: NotificationEntityPayload<GroupState> = {
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          ids: [1, 2],
+          entities: entityMap,
+        },
+      };
+      await totalUnreadController['_updateTotalUnreadByStateChanges'](payload);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.DIRECT_MESSAGE,
@@ -332,13 +336,17 @@ describe('TotalUnreadController', () => {
         mentionCount: 2,
         isTeam: true,
       });
-      const groupStates = [
-        { id: 1, unread_count: 0, unread_mentions_count: 1 },
-        { id: 2 },
-      ] as GroupState[];
-      await totalUnreadController['_updateTotalUnreadByStateChanges'](
-        groupStates,
-      );
+      const entityMap = new Map<number, GroupState>();
+      entityMap.set(1, { id: 1, unread_count: 0, unread_mentions_count: 1 });
+      entityMap.set(2, { id: 2 });
+      const payload: NotificationEntityPayload<GroupState> = {
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          ids: [1, 2],
+          entities: entityMap,
+        },
+      };
+      await totalUnreadController['_updateTotalUnreadByStateChanges'](payload);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.TEAM,
@@ -361,13 +369,17 @@ describe('TotalUnreadController', () => {
         mentionCount: 2,
         isTeam: true,
       });
-      const groupStates = [
-        { id: 1, unread_count: 6, unread_mentions_count: 17 },
-        { id: 2 },
-      ] as GroupState[];
-      await totalUnreadController['_updateTotalUnreadByStateChanges'](
-        groupStates,
-      );
+      const entityMap = new Map<number, GroupState>();
+      entityMap.set(1, { id: 1, unread_count: 6, unread_mentions_count: 17 });
+      entityMap.set(2, { id: 2 });
+      const payload: NotificationEntityPayload<GroupState> = {
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          ids: [1, 2],
+          entities: entityMap,
+        },
+      };
+      await totalUnreadController['_updateTotalUnreadByStateChanges'](payload);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.TEAM,
@@ -390,13 +402,17 @@ describe('TotalUnreadController', () => {
         mentionCount: 2,
         isTeam: true,
       });
-      const groupStates = [
-        { id: 1, unread_count: 0, unread_mentions_count: 17 },
-        { id: 2 },
-      ] as GroupState[];
-      await totalUnreadController['_updateTotalUnreadByStateChanges'](
-        groupStates,
-      );
+      const entityMap = new Map<number, GroupState>();
+      entityMap.set(1, { id: 1, unread_count: 0, unread_mentions_count: 17 });
+      entityMap.set(2, { id: 2 });
+      const payload: NotificationEntityPayload<GroupState> = {
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          ids: [1, 2],
+          entities: entityMap,
+        },
+      };
+      await totalUnreadController['_updateTotalUnreadByStateChanges'](payload);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.TEAM,
@@ -416,7 +432,9 @@ describe('TotalUnreadController', () => {
     beforeEach(() => {});
 
     it('should update correctly when update groups', async () => {
-      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(5683);
+      AccountUserConfig.prototype.getGlipUserId = jest
+        .fn()
+        .mockReturnValue(5683);
       totalUnreadController['_modifyTotalUnread'] = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
       totalUnreadController['_groupSectionUnread'].set(1, {
@@ -424,6 +442,13 @@ describe('TotalUnreadController', () => {
         unreadCount: 8,
         mentionCount: 2,
       });
+      mockGroupService.isValid = jest
+        .fn()
+        .mockImplementation((group: Group) => {
+          return (
+            group && !group.is_archived && !group.deactivated && !!group.members
+          );
+        });
       const entityMap = new Map<number, Group>();
       entityMap.set(1, {
         deactivated: true,
@@ -616,37 +641,33 @@ describe('TotalUnreadController', () => {
       totalUnreadController.reset = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
 
-      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(5683);
-      GroupService.getInstance = jest.fn().mockReturnValue({
-        getEntitySource: jest.fn().mockReturnValue({
-          getEntities: jest
-            .fn()
-            .mockReturnValue([
-              { members: [0] },
-              { members: [1, 5683] },
-              { members: [123, 5683] },
-            ]),
-        }),
-        isValid: jest
-          .fn()
-          .mockReturnValueOnce(true)
-          .mockReturnValueOnce(true)
-          .mockReturnValueOnce(false),
-      });
-      ProfileService.getInstance = jest.fn().mockReturnValue({
+      AccountUserConfig.prototype.getGlipUserId = jest
+        .fn()
+        .mockReturnValue(5683);
+      mockGroupService.getEntities = jest
+        .fn()
+        .mockReturnValue([
+          { members: [0] },
+          { members: [1, 5683] },
+          { members: [123, 5683] },
+        ]);
+      mockGroupService.isValid = jest
+        .fn()
+        .mockReturnValueOnce(true)
+        .mockReturnValueOnce(true)
+        .mockReturnValueOnce(false);
+
+      const profileService = {
         getFavoriteGroupIds: jest.fn().mockReturnValue(undefined),
-      });
+      };
+
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(profileService);
+
       await totalUnreadController['_initializeTotalUnread']();
       expect(totalUnreadController.reset).toBeCalledTimes(1);
-      expect(
-        ProfileService.getInstance<ProfileService>().getFavoriteGroupIds,
-      ).toBeCalledTimes(1);
-      expect(
-        GroupService.getInstance<GroupService>().getEntitySource().getEntities,
-      ).toBeCalledTimes(1);
-      expect(GroupService.getInstance<GroupService>().isValid).toBeCalledTimes(
-        3,
-      );
+      expect(profileService.getFavoriteGroupIds).toBeCalledTimes(1);
+      expect(mockGroupService.getEntities).toBeCalledTimes(1);
+      expect(mockGroupService.isValid).toBeCalledTimes(3);
       expect(AccountUserConfig.prototype.getGlipUserId).toBeCalledTimes(1);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledWith({
@@ -660,37 +681,31 @@ describe('TotalUnreadController', () => {
       totalUnreadController.reset = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
 
-      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(5683);
-      GroupService.getInstance = jest.fn().mockReturnValue({
-        getEntitySource: jest.fn().mockReturnValue({
-          getEntities: jest
-            .fn()
-            .mockReturnValue([
-              { members: [0] },
-              { members: [1, 5683] },
-              { members: [123, 5683] },
-            ]),
-        }),
-        isValid: jest
-          .fn()
-          .mockReturnValueOnce(true)
-          .mockReturnValueOnce(true)
-          .mockReturnValueOnce(false),
-      });
-      ProfileService.getInstance = jest.fn().mockReturnValue({
+      AccountUserConfig.prototype.getGlipUserId = jest
+        .fn()
+        .mockReturnValue(5683);
+      mockGroupService.getEntities = jest
+        .fn()
+        .mockReturnValue([
+          { members: [0] },
+          { members: [1, 5683] },
+          { members: [123, 5683] },
+        ]);
+      mockGroupService.isValid = jest
+        .fn()
+        .mockReturnValueOnce(true)
+        .mockReturnValueOnce(true)
+        .mockReturnValueOnce(false);
+      const profileService = {
         getFavoriteGroupIds: jest.fn().mockReturnValue([123, 456]),
-      });
+      };
+
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(profileService);
       await totalUnreadController['_initializeTotalUnread']();
       expect(totalUnreadController.reset).toBeCalledTimes(1);
-      expect(
-        ProfileService.getInstance<ProfileService>().getFavoriteGroupIds,
-      ).toBeCalledTimes(1);
-      expect(
-        GroupService.getInstance<GroupService>().getEntitySource().getEntities,
-      ).toBeCalledTimes(1);
-      expect(GroupService.getInstance<GroupService>().isValid).toBeCalledTimes(
-        3,
-      );
+      expect(profileService.getFavoriteGroupIds).toBeCalledTimes(1);
+      expect(mockGroupService.getEntities).toBeCalledTimes(1);
+      expect(mockGroupService.isValid).toBeCalledTimes(3);
       expect(AccountUserConfig.prototype.getGlipUserId).toBeCalledTimes(1);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledWith({

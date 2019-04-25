@@ -10,8 +10,8 @@ import {
   IDatabaseCollection,
   KVStorageManager,
 } from 'foundation';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../../utils';
-import { configManager } from '../config';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
+import { configManager } from '../../config';
 import schema, { TABLE_LOG } from './schema';
 import { ILogPersistent, PersistentLogEntity } from './types';
 
@@ -19,7 +19,7 @@ export class LogPersistent implements ILogPersistent {
   private _kvStorageManager: KVStorageManager;
   private _dbManager: DBManager;
   private _db: IDatabase;
-  private _collection: IDatabaseCollection<PersistentLogEntity>;
+  private _collection: IDatabaseCollection<PersistentLogEntity, number>;
   private _isInit: boolean;
 
   _ensureInit = async () => {
@@ -32,7 +32,9 @@ export class LogPersistent implements ILogPersistent {
         : DatabaseType.LokiDB;
       this._dbManager.initDatabase(schema, dbType);
       this._db = this._dbManager.getDatabase();
-      this._collection = this._db.getCollection<PersistentLogEntity>(TABLE_LOG);
+      this._collection = this._db.getCollection<PersistentLogEntity, number>(
+        TABLE_LOG,
+      );
       await this.cleanPersistentWhenReachLimit(
         configManager.getConfig().persistentLimit,
       );

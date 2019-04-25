@@ -5,5 +5,5 @@
  */
 
 export * from './types';
-export { RcInfoApi } from './RcInfoApi';
-export { TelephonyApi } from './telephonyApi';
+export { RCInfoApi } from './RCInfoApi';
+export { RCAuthApi } from './RCAuthApi';

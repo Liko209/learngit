@@ -6,6 +6,7 @@
 
 type TextMessageProps = {
   id: number; // post id
+  terms?: string[];
 };
 
 type TextMessageViewProps = {
@@ -21,11 +22,18 @@ type AtMentions = {
 };
 
 type FormatToHtmlParams = {
-  text: string,
-  atMentions: AtMentions,
-  currentUserId: number,
-  staticHttpServer: string,
-  customEmojiMap: CustomEmojiMap,
+  text: string;
+  atMentions: AtMentions;
+  currentUserId: number;
+  staticHttpServer: string;
+  customEmojiMap: CustomEmojiMap;
+  highlightTerms?: string[];
 };
 
-export { TextMessageProps, TextMessageViewProps, CustomEmojiMap, AtMentions, FormatToHtmlParams };
+export {
+  TextMessageProps,
+  TextMessageViewProps,
+  CustomEmojiMap,
+  AtMentions,
+  FormatToHtmlParams,
+};

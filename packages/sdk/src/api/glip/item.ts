@@ -52,14 +52,14 @@ function getItemServerUrl(id: number): string {
 class ItemAPI extends Api {
   static basePath = '/item';
   static sendFileItem(data: object) {
-    return this.glipNetworkClient.post<Raw<ItemFile>>('/file', data);
+    return this.glipNetworkClient.post<Raw<ItemFile>>({ data, path: '/file' });
   }
 
   static requestAmazonFilePolicy(fileInfo: AmazonFilePolicyRequestModel) {
-    return this.glipNetworkClient.post<AmazonFileUploadPolicyData>(
-      '/s3/v1/post-policy',
-      fileInfo,
-    );
+    return this.glipNetworkClient.post<AmazonFileUploadPolicyData>({
+      path: '/s3/v1/post-policy',
+      data: fileInfo,
+    });
   }
 
   static uploadFileToAmazonS3(
@@ -87,30 +87,6 @@ class ItemAPI extends Api {
     );
   }
 
-  static uploadFileItem(
-    files: FormData,
-    callback: ProgressCallback,
-    requestHolder?: RequestHolder,
-  ) {
-    return this.uploadNetworkClient.http<StoredFile>(
-      {
-        path: '/upload',
-        method: NETWORK_METHOD.POST,
-        via: NETWORK_VIA.HTTP,
-        data: files,
-        requestConfig: {
-          onUploadProgress(event: ProgressEventInit): void {
-            if (callback) {
-              callback(event);
-            }
-          },
-        },
-        timeout: TEN_MINUTE_TIMEOUT,
-      },
-      requestHolder,
-    );
-  }
-
   static cancelUploadRequest(requestHolder: RequestHolder) {
     if (requestHolder && requestHolder.request) {
       this.uploadNetworkClient.cancelRequest(requestHolder.request);
@@ -118,32 +94,39 @@ class ItemAPI extends Api {
   }
 
   static requestById(id: number) {
-    return this.glipNetworkClient.get<Raw<ItemFile>>(getItemServerUrl(id));
+    return this.glipNetworkClient.get<Raw<ItemFile>>({
+      path: getItemServerUrl(id),
+    });
   }
 
   static getItems(typeId: number, groupId: number, newerThan: number) {
-    return this.glipNetworkClient.get<Raw<Item>[]>('/items', {
-      type_id: typeId,
-      group_ids: groupId,
-      newer_than: newerThan,
+    return this.glipNetworkClient.get<Raw<Item>[]>({
+      path: '/items',
+      params: {
+        type_id: typeId,
+        group_ids: groupId,
+        newer_than: newerThan,
+      },
     });
   }
 
   static requestRightRailItems(groupId: number) {
-    return this.glipNetworkClient.get<IRightRailItemModel>(
-      '/web_client_right_rail_items',
-      {
+    return this.glipNetworkClient.get<IRightRailItemModel>({
+      path: '/web_client_right_rail_items',
+      params: {
         group_id: groupId,
       },
-    );
+    });
   }
 
   static getNote(id: number) {
-    return this.glipNetworkClient.get<Raw<NoteItem>>(`/pages_body/${id}`);
+    return this.glipNetworkClient.get<Raw<NoteItem>>({
+      path: `/pages_body/${id}`,
+    });
   }
 
   static putItem<T>(id: number, type: string, data: Partial<T>) {
-    return this.glipNetworkClient.put<Raw<T>>(`/${type}/${id}`, data);
+    return this.glipNetworkClient.put<Raw<T>>({ data, path: `/${type}/${id}` });
   }
 }
 

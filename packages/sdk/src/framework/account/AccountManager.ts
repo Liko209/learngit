@@ -9,7 +9,7 @@ import { mainLogger, Container } from 'foundation';
 import { fetchWhiteList } from './helper';
 import { AbstractAccount } from './AbstractAccount';
 import { IAccount } from './IAccount';
-import { NewGlobalConfig } from '../../service/config/NewGlobalConfig';
+import { AppEnvSetting } from '../../module/env';
 
 import {
   IAccountInfo,
@@ -18,12 +18,14 @@ import {
   ISyncAuthenticator,
 } from './IAuthenticator';
 
+const START_LOGIN = 'ACCOUNT_MANAGER.START_LOGIN';
 const AUTH_SUCCESS = 'ACCOUNT_MANAGER.AUTH_SUCCESS';
 const EVENT_LOGOUT = 'ACCOUNT_MANAGER.EVENT_LOGOUT';
 const EVENT_SUPPORTED_SERVICE_CHANGE =
   'ACCOUNT_MANAGER.EVENT_SUPPORTED_SERVICE_CHANGE';
 
 class AccountManager extends EventEmitter2 {
+  static START_LOGIN = START_LOGIN;
   static AUTH_SUCCESS = AUTH_SUCCESS;
   static EVENT_LOGOUT = EVENT_LOGOUT;
   static EVENT_SUPPORTED_SERVICE_CHANGE = EVENT_SUPPORTED_SERVICE_CHANGE;
@@ -39,10 +41,14 @@ class AccountManager extends EventEmitter2 {
   async syncLogin(authType: string, params?: any) {
     const authenticator = this._container.get<ISyncAuthenticator>(authType);
     const resp = authenticator.authenticate(params);
+    if (resp.success) {
+      await this.emitAsync(START_LOGIN);
+    }
     return this._handleAuthResponse(resp);
   }
 
   async login(authType: string, params?: any) {
+    await this.emitAsync(START_LOGIN);
     const authenticator = this._container.get<IAuthenticator>(authType);
     const resp = await authenticator.authenticate(params);
     if (!resp.accountInfos) {
@@ -52,6 +58,16 @@ class AccountManager extends EventEmitter2 {
 
     await this.makeSureUserInWhitelist(mailboxID);
     return this._handleAuthResponse(resp);
+  }
+
+  async reLogin(authType: string): Promise<boolean> {
+    const authenticator = this._container.get<IAuthenticator>(authType);
+    const resp = await authenticator.authenticate({});
+    if (!resp.success) {
+      return false;
+    }
+    this._handleAuthResponse(resp);
+    return true;
   }
 
   async makeSureUserInWhitelist(mailboxID: string) {
@@ -120,7 +136,7 @@ class AccountManager extends EventEmitter2 {
   }
 
   async sanitizeUser(mailboxID: string) {
-    const env = NewGlobalConfig.getEnv();
+    const env = AppEnvSetting.getEnv();
     const whiteList = await fetchWhiteList();
     const allAccount = whiteList[env];
     if (allAccount !== undefined) {
@@ -128,7 +144,9 @@ class AccountManager extends EventEmitter2 {
         return account === mailboxID;
       });
       mainLogger.info(
-        `[Auth]${mailboxID} ${isLegalUser ? '' : 'not '}in whitelist for ${env}`,
+        `[Auth]${mailboxID} ${
+          isLegalUser ? '' : 'not '
+        }in whitelist for ${env}`,
       );
       return isLegalUser;
     }
@@ -141,11 +159,12 @@ class AccountManager extends EventEmitter2 {
     if (!resp.accountInfos || resp.accountInfos.length <= 0) {
       return { success: false, error: new Error('Auth fail') };
     }
-    this.emit(AUTH_SUCCESS, resp.accountInfos);
     this._isLogin = true;
     const accounts = this._createAccounts(resp.accountInfos);
+    this.emit(AUTH_SUCCESS, resp.isRCOnlyMode);
     return {
       accounts,
+      isRCOnlyMode: resp.isRCOnlyMode,
       success: true,
     };
   }

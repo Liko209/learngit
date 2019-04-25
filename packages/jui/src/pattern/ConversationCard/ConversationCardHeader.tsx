@@ -12,6 +12,7 @@ import {
   width,
 } from '../../foundation/utils';
 import styled from '../../foundation/styled-components';
+import _ from 'lodash';
 
 const StyledLeftSection = styled('div')`
   flex-grow: 1;
@@ -89,16 +90,32 @@ class JuiConversationCardHeader extends React.PureComponent<
     if (!this.leftSection) {
       return;
     }
-    const width =
-      this.leftSection.clientWidth /
-      Array.from(this.leftSection.childNodes).filter(childNode =>
-        childNode.hasChildNodes(),
-      ).length;
-    if (this.state.headerItemMaxWidth !== width) {
-      this.setState({
-        headerItemMaxWidth: width,
-      });
+    const childrenWithContent = Array.from(this.leftSection.children).filter(
+      childElement => childElement.hasChildNodes(),
+    );
+    const totalWidth = _.sum(
+      childrenWithContent.map(child => child.clientWidth),
+    );
+    const leftSectionWidth = this.leftSection.clientWidth;
+    if (totalWidth < leftSectionWidth) {
+      return;
     }
+    const shareChildren: Element[] = [];
+    let shareChildrenCount = childrenWithContent.length;
+    let sharedWidth = leftSectionWidth / shareChildrenCount;
+    childrenWithContent.forEach(childElement => {
+      const currentWidth = childElement.clientWidth;
+      if (currentWidth < sharedWidth) {
+        shareChildrenCount -= 1;
+        sharedWidth = (leftSectionWidth - currentWidth) / shareChildrenCount;
+      } else {
+        shareChildren.push(childElement);
+      }
+    });
+    shareChildren.forEach(
+      shareChild =>
+        ((shareChild as HTMLElement).style.maxWidth = `${sharedWidth}px`),
+    );
   }
 
   componentDidMount() {
@@ -116,33 +133,24 @@ class JuiConversationCardHeader extends React.PureComponent<
 
   render() {
     const { name, status, notification, from, time, children } = this.props;
-    const inlineStyle = {
-      maxWidth: `${this.state.headerItemMaxWidth}px`,
-    };
     return (
       <StyledConversationCardHeader>
         <StyledLeftSection ref={this.setLeftSectionRef}>
-          <StyledName data-name="name" style={inlineStyle}>
-            {name}
-          </StyledName>
+          <StyledName data-name="name">{name}</StyledName>
           {status ? (
-            <StyledStatus data-name="cardHeaderUserStatus" style={inlineStyle}>
+            <StyledStatus data-name="cardHeaderUserStatus">
               {status}
             </StyledStatus>
           ) : null}
           {notification ? (
-            <StyledNotification
-              data-name="cardHeaderNotification"
-              style={inlineStyle}
-            >
+            <StyledNotification data-name="cardHeaderNotification">
               {notification}
             </StyledNotification>
           ) : null}
           {from
             ? React.cloneElement(from, {
-              style: inlineStyle,
-              'data-name': 'cardHeaderFrom',
-            })
+                'data-name': 'cardHeaderFrom',
+              })
             : null}
         </StyledLeftSection>
         <RightSection>

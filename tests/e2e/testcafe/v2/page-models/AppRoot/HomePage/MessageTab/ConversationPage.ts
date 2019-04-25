@@ -56,55 +56,35 @@ class HeaderMoreMenu extends BaseWebComponent {
   }
 }
 
-class BaseConversationPage extends BaseWebComponent {
+export class BaseConversationPage extends BaseWebComponent {
+  private _self: Selector = this.getSelectorByAutomationId('messagePanel');
 
-  get jumpToFirstUnreadButtonWrapper() {
-    return this.getSelectorByAutomationId('jump-to-first-unread-button')
+  get self() {
+    return this._self;
   }
 
-  async countOnUnreadButtonShouldBe(n: string | number) {
-    const reg = new RegExp(`^\\D*${n}\\D+$`)
-    await this.t.expect(this.jumpToFirstUnreadButtonWrapper.find('span').textContent).match(reg);
-  }
-
-  async clickJumpToFirstUnreadButton() {
-    await this.t.click(this.jumpToFirstUnreadButtonWrapper);
+  set self(root: Selector) {
+    this._self = root;
   }
 
   get posts() {
     return this.self.find('[data-name="conversation-card"]');
+  }
+  
+  get postSenders() {
+    return this.self.find('[data-name="name"]');
   }
 
   get header() {
     return this.getSelectorByAutomationId('conversation-page-header');
   }
 
-  get headerStatus() {
-    return this.getSelectorByAutomationId("conversation-page-header-status", this.header);
-  }
-
-  get title() {
-    return this.getSelectorByAutomationId('conversation-page-header-title');
-  }
-
-  get favoriteButton() {
-    return this.getSelectorByAutomationId('favorite-icon', this.self);
-  }
-
-  get unFavoriteStatusIcon() {
-    return this.getSelectorByIcon("star_border", this.favoriteButton);
-  }
-
-  get favoriteStatusIcon() {
-    return this.getSelectorByIcon("star", this.favoriteButton);
-  }
-
   get leftWrapper() {
     return this.header.find('.left-wrapper');
   }
 
-  async clickFavoriteButton() {
-    await this.t.click(this.favoriteButton);
+  get title() {
+    return this.getSelectorByAutomationId('conversation-page-header-title');
   }
 
   nthPostItem(nth: number) {
@@ -126,11 +106,11 @@ class BaseConversationPage extends BaseWebComponent {
   }
 
   get streamWrapper() {
-    return this.getSelectorByAutomationId('jui-stream-wrapper');
+    return this.getSelectorByAutomationId('jui-stream-wrapper', this.self);
   }
 
   get stream() {
-    return this.getSelectorByAutomationId('jui-stream');
+    return this.getSelectorByAutomationId('jui-stream', this.self);
   }
 
   get loadingCircle() {
@@ -144,7 +124,6 @@ class BaseConversationPage extends BaseWebComponent {
 
   /* scroll */
   get scrollDiv() {
-    this.warnFlakySelector();
     return this.getSelectorByAutomationId('virtualized-list', this.stream);
   }
 
@@ -229,7 +208,8 @@ class BaseConversationPage extends BaseWebComponent {
   }
 
   get newMessageDeadLine() {
-    return this.stream.find('span').withText('New Messages');
+    this.warnFlakySelector();
+    return this.stream.find('span').withText('New Messages').parent(1); // todo: automation Id;
   }
 
   async isVisible(el: Selector) {
@@ -278,8 +258,52 @@ class BaseConversationPage extends BaseWebComponent {
 }
 
 export class ConversationPage extends BaseConversationPage {
-  get self() {
-    return this.getSelector('.conversation-page');
+  get jumpToFirstUnreadButtonWrapper() {
+    return this.getSelectorByAutomationId('jump-to-first-unread-button')
+  }
+
+  async countOnUnreadButtonShouldBe(n: string | number) {
+    const reg = new RegExp(`^\\D*${n}\\D+$`)
+    await this.t.expect(this.jumpToFirstUnreadButtonWrapper.find('span').textContent).match(reg);
+  }
+
+  async clickJumpToFirstUnreadButton() {
+    await this.t.click(this.jumpToFirstUnreadButtonWrapper);
+  }
+  get headerStatus() {
+    return this.getSelectorByAutomationId("conversation-page-header-status", this.header);
+  }
+
+  get favoriteButton() {
+    return this.getSelectorByAutomationId('favorite-icon', this.leftWrapper);
+  }
+
+  get favoriteStatusIcon() {
+    return this.getSelectorByIcon('star', this.favoriteButton);
+  }
+
+  get unFavoriteStatusIcon() {
+    return this.getSelectorByIcon('star_border', this.favoriteButton);
+  }
+
+  async favorite() {
+    await this.t.click(this.leftWrapper.find('.icon.star').nextSibling('input'));
+  }
+
+  async unFavorite() {
+    await this.t.click(this.leftWrapper.find('.icon.star_border').nextSibling('input'));
+  }
+
+  async clickFavoriteButton() {
+    await this.t.click(this.favoriteButton);
+  }
+
+  get memberCountIcon() {
+    return this.getSelectorByIcon('member_count', this.header);
+  }
+
+  async clickMemberCountIcon() {
+    await this.t.click(this.memberCountIcon);
   }
 
   get messageInputArea() {
@@ -291,6 +315,24 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.getAttribute('data-group-id');
   }
 
+  async elementShouldBeOnTheTop(sel: Selector) {
+    await H.retryUntilPass(async () => {
+      const containerTop = await this.self.getBoundingClientRectProperty('top');
+      const headerHeight = await this.header.getBoundingClientRectProperty('height');
+      const targetTop = await sel.getBoundingClientRectProperty('top');
+      assert.strictEqual(containerTop + headerHeight, targetTop, 'this post card is not on the top of conversation page')
+    });
+  }
+
+  async postCardByIdShouldBeOnTheTop(postId: string) {
+    const postCard = this.posts.filter(`[data-id="${postId}"]`);
+    await this.elementShouldBeOnTheTop(postCard);
+  }
+
+  async newMessageDeadLineShouldBeOnTheTop() {
+    await this.elementShouldBeOnTheTop(this.newMessageDeadLine);
+  }
+
   async shouldFocusOnMessageInputArea() {
     await this.t.expect(this.messageInputArea.focused).ok({ timeout: 5e3 });
   }
@@ -300,6 +342,27 @@ export class ConversationPage extends BaseConversationPage {
       .click(this.messageInputArea)
       .typeText(this.messageInputArea, message, options)
       .pressKey('enter');
+  }
+
+  async typeAtSymbol() {
+    await this.t.click(this.messageInputArea).typeText(this.messageInputArea, '@');
+  }
+
+  async typeAtMentionUserNameAndPressEnter(userName: string) {
+    await this.typeAtSymbol();
+    await this.t.typeText(this.messageInputArea, userName, { paste: true })
+    await this.mentionUser.ensureLoaded();
+    await this.t.pressKey('enter');
+  }
+
+  async addMentionUser(userName: string) {
+    await this.t.typeText(this.messageInputArea, `@${userName}`);
+    await this.mentionUser.ensureLoaded();
+    await this.mentionUser.selectMemberByName(userName);
+  }
+
+  get mentionUser() {
+    return this.getComponent(MentionUsers);
   }
 
   async pressEnterWhenFocusOnMessageInputArea() {
@@ -324,25 +387,7 @@ export class ConversationPage extends BaseConversationPage {
     return this.getSelectorByIcon('lock_open', this.privacyToggle);
   }
 
-  get favoriteButton() {
-    return this.getSelectorByAutomationId('favorite-icon', this.leftWrapper);
-  }
 
-  get favoriteStatusIcon() {
-    return this.getSelectorByIcon('star', this.favoriteButton);
-  }
-
-  get unFavoriteStatusIcon() {
-    return this.getSelectorByIcon('star_border', this.favoriteButton);
-  }
-
-  async favorite() {
-    await this.t.click(this.leftWrapper.find('.icon.star').nextSibling('input'));
-  }
-
-  async unFavorite() {
-    await this.t.click(this.leftWrapper.find('.icon.star_border').nextSibling('input'));
-  }
 
   async groupIdShouldBe(id: string | number) {
     await this.t.expect(this.currentGroupId).eql(id.toString());
@@ -456,6 +501,10 @@ export class MentionPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('post-list-page').filter('[data-type="mentions"]');
   }
 
+  get scrollDiv() {
+    return this.stream.parent('div');
+  }
+
   async waitUntilPostsBeLoaded(timeout = 20e3) {
     await this.t.wait(1e3); // loading circle is invisible in first 1 second.
     await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
@@ -465,6 +514,10 @@ export class MentionPage extends BaseConversationPage {
 export class BookmarkPage extends BaseConversationPage {
   get self() {
     return this.getSelectorByAutomationId('post-list-page').filter('[data-type="bookmarks"]');
+  }
+
+  get scrollDiv() {
+    return this.stream.parent('div');
   }
 
   async waitUntilPostsBeLoaded(timeout = 20e3) {
@@ -713,16 +766,10 @@ export class PostItem extends BaseWebComponent {
   }
 
   get jumpToConversationButton() {
-    // FIXME: should take i18n into account
-    this.warnFlakySelector();
-    return this.self.find(`span`).withText(/Jump To Conversation/i).parent('button');
+    return this.getSelectorByAutomationId('jumpToConversation', this.self);
   }
 
-  async jumpToConversationByClickPost() {
-    await this.t.click(this.self);
-  }
-
-  async clickConversationByButton() {
+  async hoverPostAndClickJumpToConversationButton() {
     const buttonElement = this.jumpToConversationButton;
     const displayJumpButton = ClientFunction(() => {
       buttonElement().style["opacity"] = "1";
@@ -752,6 +799,15 @@ export class PostItem extends BaseWebComponent {
       ele.scrollIntoView()
     })(this.self)
   }
+
+  get isHighLight() {
+    return this.self.hasClass('highlight')
+  }
+
+  async shouldBeHighLight() {
+    await this.t.expect(this.isHighLight).ok();
+  }
+
 }
 
 class AudioConference extends BaseWebComponent {
@@ -796,5 +852,24 @@ class AudioConference extends BaseWebComponent {
 
   get participantCode() {
     return this.getSelectorByAutomationId('conferenceParticipantCode', this.self);
+  }
+}
+
+class MentionUsers extends BaseWebComponent {
+  get self() {
+    return this.getSelector('*[role="rowgroup"]');
+  }
+
+  get members() {
+    this.warnFlakySelector();
+    return this.self.find('div').withAttribute('uid');
+  }
+
+  async selectMemberByNth(n: number) {
+    await this.t.click(this.members.nth(n));
+  }
+
+  async selectMemberByName(name: string) {
+    await this.t.click(this.members.withExactText(name));
   }
 }

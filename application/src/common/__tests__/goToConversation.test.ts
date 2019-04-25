@@ -13,6 +13,8 @@ import {
   DELAY_LOADING,
 } from '@/common/goToConversation';
 import { PostService } from 'sdk/module/post';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { MessageRouterChangeHelper } from '../../modules/message/container/Message/helper';
 
 jest.mock('sdk/module/post');
 jest.mock('@/history');
@@ -22,17 +24,31 @@ jest.mock('@/containers/Notification');
 const {} = service;
 
 const postService = new PostService();
-PostService.getInstance = jest.fn().mockReturnValue(postService);
-
 const groupService = new GroupService();
-GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+
+ServiceLoader.getInstance = jest
+  .fn()
+  .mockImplementation((serviceName: string) => {
+    if (serviceName === ServiceConfig.POST_SERVICE) {
+      return postService;
+    }
+    if (serviceName === ServiceConfig.GROUP_SERVICE) {
+      return groupService;
+    }
+    return null;
+  });
+
 beforeAll(() => {
+  jest.clearAllMocks();
   Object.defineProperty(window.history, 'state', {
     writable: true,
     value: {},
   });
   history.push = jest.fn().mockImplementation(jest.fn());
   history.replace = jest.fn().mockImplementation(jest.fn());
+  jest
+    .spyOn(MessageRouterChangeHelper, 'goToConversation')
+    .mockImplementation();
 });
 
 describe('goToConversation()', () => {
@@ -42,7 +58,10 @@ describe('goToConversation()', () => {
     );
 
     expect(await goToConversationWithLoading({ id: 1 })).toEqual(true);
-    expect(history.replace).toHaveBeenCalledWith('/messages/1');
+    expect(MessageRouterChangeHelper.goToConversation).toHaveBeenCalledWith(
+      '1',
+      'PUSH',
+    );
   });
 
   it('getConversationId() with team type conversationId [JPT-717]', async () => {
@@ -50,7 +69,10 @@ describe('goToConversation()', () => {
       TypeDictionary.TYPE_ID_TEAM,
     );
     expect(await goToConversationWithLoading({ id: 1 })).toEqual(true);
-    expect(history.replace).toHaveBeenCalledWith('/messages/1');
+    expect(MessageRouterChangeHelper.goToConversation).toHaveBeenCalledWith(
+      '1',
+      'PUSH',
+    );
   });
 
   it('getConversationId() with other type conversationId', async () => {
@@ -78,7 +100,10 @@ describe('getConversationId() with person type conversationId', () => {
     });
     expect(await goToConversationWithLoading({ id: 1 })).toEqual(true);
     expect(groupService.getOrCreateGroupByMemberList).toHaveBeenCalledWith([1]);
-    expect(history.replace).toHaveBeenCalledWith('/messages/2');
+    expect(MessageRouterChangeHelper.goToConversation).toHaveBeenCalledWith(
+      '2',
+      'PUSH',
+    );
   });
 
   it('groupService should return err', async () => {
@@ -104,7 +129,10 @@ describe('getConversationId() with  multiple person type conversationId', () => 
       2,
       3,
     ]);
-    expect(history.replace).toHaveBeenCalledWith('/messages/2');
+    expect(MessageRouterChangeHelper.goToConversation).toHaveBeenCalledWith(
+      '2',
+      'PUSH',
+    );
   });
 
   it('groupService should return err', async () => {
@@ -143,7 +171,10 @@ describe('getConversationId() with message', () => {
       groupId: 2,
       text: 'hahahah',
     });
-    expect(history.replace).toHaveBeenCalledWith('/messages/2');
+    expect(MessageRouterChangeHelper.goToConversation).toHaveBeenCalledWith(
+      '2',
+      'PUSH',
+    );
   });
 
   it('should show loading then show error page if failed [JPT-280]', async () => {
@@ -213,6 +244,9 @@ describe('has loading component', () => {
     expect(await goToConversationWithLoading({ id: 1 })).toEqual(true);
     expect(groupService.getOrCreateGroupByMemberList).toHaveBeenCalledWith([1]);
     expect(history.push).toHaveBeenCalledWith('/messages/loading');
-    expect(history.replace).toHaveBeenCalledWith('/messages/1');
+    expect(MessageRouterChangeHelper.goToConversation).toHaveBeenCalledWith(
+      '1',
+      'PUSH',
+    );
   });
 });

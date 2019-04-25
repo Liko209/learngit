@@ -1,4 +1,3 @@
-/// <reference path="../../../../__tests__/types.d.ts" />
 import { ERROR_CODES_NETWORK, JNetworkError } from 'foundation';
 import _ from 'lodash';
 
@@ -13,9 +12,7 @@ import { EntityCacheController } from '../../../../framework/controller/impl/Ent
 import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
-import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
-import { AccountUserConfig } from '../../../../service/account/config';
-import { AccountGlobalConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../account/config';
 import { CompanyService } from '../../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../../service/constants';
 import { ProfileService } from '../../../profile';
@@ -29,29 +26,26 @@ import { GroupService } from '../../index';
 import { GroupFetchDataController } from '../GroupFetchDataController';
 import { GroupHandleDataController } from '../GroupHandleDataController';
 import { SearchUtils } from '../../../../framework/utils/SearchUtils';
-
+import { GroupEntityCacheController } from '../GroupEntityCacheController';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+const soundex = require('soundex-code');
 jest.mock('../../../../dao');
 jest.mock('../../../groupConfig/dao');
 jest.mock('../../../../framework/controller/impl/EntityPersistentController');
-jest.mock('../../../person');
 jest.mock('../../dao');
 jest.mock('../../../profile');
-jest.mock('../../../../service/account/config');
+jest.mock('../../../../module/account/config');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../module/company');
 jest.mock('../../../post');
 jest.mock('sdk/api');
 jest.mock('sdk/api/glip/group');
 
-const profileService = new ProfileService();
-const personService = new PersonService();
-beforeEach(() => {
+function clearMock() {
   jest.clearAllMocks();
-
-  PersonService.getInstance = jest.fn().mockReturnValue(personService);
-  ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
-});
-
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
 describe('GroupFetchDataController', () => {
   let testEntitySourceController: IEntitySourceController<Group>;
   let groupFetchDataController: GroupFetchDataController;
@@ -63,16 +57,173 @@ describe('GroupFetchDataController', () => {
 
   const groupDao = new GroupDao(null);
   const postService = new PostService();
+  const profileService = new ProfileService();
+  const personService = new PersonService();
+  const companyService = new CompanyService();
   const mockUserId = 1;
+  function prepareGroupsForSearch() {
+    AccountUserConfig.prototype.getGlipUserId = jest
+      .fn()
+      .mockImplementation(() => 1);
 
-  beforeEach(() => {
-    jest.restoreAllMocks();
-    jest.clearAllMocks();
+    const person1: Person = {
+      id: 11001,
+      created_at: 1,
+      modified_at: 1,
+      creator_id: 1,
+      is_new: false,
+      deactivated: false,
+      version: 1,
+      company_id: 1,
+      email: 'ben1.niu1@ringcentral.com',
+      me_group_id: 1,
+      first_name: 'ben1',
+      last_name: 'niu1',
+      display_name: 'ben1 niu1',
+    };
+
+    const person2: Person = {
+      id: 12001,
+      created_at: 1,
+      modified_at: 1,
+      creator_id: 1,
+      is_new: false,
+      deactivated: false,
+      version: 1,
+      company_id: 1,
+      email: 'tu1.tu1@ringcentral.com',
+      me_group_id: 1,
+      first_name: 'tu1',
+      last_name: 'tu1',
+      display_name: 'tu1 tu1',
+    };
+    personService._entityCacheController._soundexValue = new Map([
+      [11001, person1.display_name.split(' ').map(item => soundex(item))],
+      [12001, person2.display_name.split(' ').map(item => soundex(item))],
+    ]);
+
+    personService.getSynchronously = jest
+      .fn()
+      .mockImplementation((id: number) => (id <= 12000 ? person1 : person2));
+
+    personService.getName = jest
+      .fn()
+      .mockImplementation((person: Person) =>
+        person.id > 12000 ? 'ben1' : 'tu1',
+      );
+
+    const userId = mockUserId;
+    // prepare one : one
+    for (let i = 10000; i <= 11000; i += 1) {
+      const group: Group = {
+        id: i,
+        created_at: i,
+        modified_at: i,
+        creator_id: i,
+        is_new: false,
+        deactivated: i % 2 === 0,
+        version: i,
+        members: [userId, i],
+        company_id: i,
+        is_company_team: false,
+        set_abbreviation: '',
+        email_friendly_abbreviation: '',
+        most_recent_content_modified_at: i,
+      };
+      entityCacheController.put(group);
+    }
+
+    // prepare multi members as a group
+    for (let i = 11001; i <= 12000; i += 1) {
+      const group: Group = {
+        id: i,
+        created_at: i,
+        modified_at: i,
+        creator_id: i,
+        is_new: false,
+        is_team: false,
+        deactivated: i % 2 === 0,
+        version: i,
+        members: [userId, i, i + 1000],
+        company_id: i,
+        is_company_team: false,
+        set_abbreviation: '',
+        email_friendly_abbreviation: '',
+        most_recent_content_modified_at: i,
+      };
+      entityCacheController.put(group);
+    }
+
+    // prepare teams
+    // prepare multi members as a group
+    for (let i = 12001; i <= 13000; i += 1) {
+      const group: Group = {
+        id: i,
+        created_at: i,
+        modified_at: i,
+        creator_id: i,
+        is_team: true,
+        is_new: false,
+        is_archived: false,
+        privacy: i % 2 === 0 ? 'protected' : 'private',
+        deactivated: i % 2 !== 0,
+        version: i,
+        members: i % 2 === 0 ? [userId, i, i + 1000] : [i, i + 1000],
+        company_id: i,
+        is_company_team: false,
+        set_abbreviation: `this is a team name${i.toString()}`,
+        email_friendly_abbreviation: '',
+        most_recent_content_modified_at: i,
+      };
+      entityCacheController.put(group);
+    }
+
+    for (let i = 13001; i <= 13010; i += 1) {
+      const group: Group = {
+        id: i,
+        created_at: i,
+        modified_at: i,
+        creator_id: i,
+        is_team: true,
+        is_new: false,
+        is_archived: false,
+        privacy: i % 2 === 0 ? 'protected' : 'private',
+        deactivated: i % 2 !== 0,
+        version: i,
+        members: i % 2 === 0 ? [userId, i, i + 1000] : [i, i + 1000],
+        company_id: i,
+        is_company_team: false,
+        set_abbreviation: `Team name of ${i.toString()}`,
+        email_friendly_abbreviation: '',
+        most_recent_content_modified_at: i,
+      };
+      entityCacheController.put(group);
+    }
+  }
+
+  function setup() {
     AccountUserConfig.prototype.getGlipUserId = jest
       .fn()
       .mockImplementation(() => mockUserId);
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.PERSON_SERVICE) {
+          return personService;
+        }
 
+        if (serviceName === ServiceConfig.PROFILE_SERVICE) {
+          return profileService;
+        }
+
+        if (serviceName === ServiceConfig.POST_SERVICE) {
+          return postService;
+        }
+
+        if (serviceName === ServiceConfig.COMPANY_SERVICE) {
+          return companyService;
+        }
+      });
     testEntitySourceController = new TestEntitySourceController<Group>(
       groupFactory,
     );
@@ -82,11 +233,14 @@ describe('GroupFetchDataController', () => {
     testPartialModifyController = new TestPartialModifyController(
       testEntitySourceController,
     );
-    entityCacheController = new EntityCacheController();
+    entityCacheController = GroupEntityCacheController.buildGroupEntityCacheController(
+      groupService,
+    );
     testEntityCacheSearchController = new TestEntityCacheSearchController(
       entityCacheController,
     );
     groupService = new GroupService();
+
     groupFetchDataController = new GroupFetchDataController(
       groupService,
       testEntitySourceController,
@@ -94,108 +248,94 @@ describe('GroupFetchDataController', () => {
       testEntityCacheSearchController,
       new GroupHandleDataController(groupService),
     );
+  }
+  beforeEach(() => {
+    clearMock();
+    setup();
   });
+  describe('getGroupsByType()', () => {
+    it('getGroupsByType()', async () => {
+      const mock = [{ id: 1 }, { id: 2 }];
+      daoManager.getDao.mockReturnValue(groupDao);
 
-  it('getGroupsByType()', async () => {
-    const mock = [{ id: 1 }, { id: 2 }];
-    daoManager.getDao.mockReturnValue(groupDao);
+      // GROUP_QUERY_TYPE.ALL
+      groupDao.queryAllGroups.mockResolvedValue(mock);
+      const result1 = await groupFetchDataController.getGroupsByType();
+      expect(result1).toEqual(mock);
 
-    // GROUP_QUERY_TYPE.ALL
-    groupDao.queryAllGroups.mockResolvedValue(mock);
-    const result1 = await groupFetchDataController.getGroupsByType();
-    expect(result1).toEqual(mock);
+      // GROUP_QUERY_TYPE.FAVORITE
+      // profileService.getProfile.mockResolvedValueOnce({ favorite_group_ids: [1] });
+      // groupDao.queryGroupsByIds.mockResolvedValue(mock);
+      // const result2 = await groupService.getGroupsByType(GROUP_QUERY_TYPE.FAVORITE, 0, 20);
+      // expect(result2).toEqual(mock);
+      // TO be fixed
 
-    // GROUP_QUERY_TYPE.FAVORITE
-    // profileService.getProfile.mockResolvedValueOnce({ favorite_group_ids: [1] });
-    // groupDao.queryGroupsByIds.mockResolvedValue(mock);
-    // const result2 = await groupService.getGroupsByType(GROUP_QUERY_TYPE.FAVORITE, 0, 20);
-    // expect(result2).toEqual(mock);
-    // TO be fixed
+      profileService.getProfile.mockResolvedValueOnce({
+        favorite_group_ids: [],
+      });
+      const result22 = await groupFetchDataController.getGroupsByType(
+        GROUP_QUERY_TYPE.FAVORITE,
+        0,
+        20,
+      );
+      expect(result22).toEqual([]);
+      jest.spyOn(
+        groupFetchDataController.groupHandleDataController,
+        'filterGroups',
+      );
+      groupFetchDataController.groupHandleDataController.filterGroups.mockResolvedValueOnce(
+        mock,
+      );
+      // GROUP_QUERY_TYPE.GROUP && GROUP_QUERY_TYPE.TEAM
+      groupDao.queryGroups.mockResolvedValue(mock);
+      const result3 = await groupFetchDataController.getGroupsByType(
+        GROUP_QUERY_TYPE.GROUP,
+        0,
+        20,
+      );
+      expect(result3).toEqual(mock);
+    });
 
-    profileService.getProfile.mockResolvedValueOnce({ favorite_group_ids: [] });
-    const result22 = await groupFetchDataController.getGroupsByType(
-      GROUP_QUERY_TYPE.FAVORITE,
-      0,
-      20,
-    );
-    expect(result22).toEqual([]);
-    jest.spyOn(
-      groupFetchDataController.groupHandleDataController,
-      'filterGroups',
-    );
-    groupFetchDataController.groupHandleDataController.filterGroups.mockResolvedValueOnce(
-      mock,
-    );
-    // GROUP_QUERY_TYPE.GROUP && GROUP_QUERY_TYPE.TEAM
-    groupDao.queryGroups.mockResolvedValue(mock);
-    const result3 = await groupFetchDataController.getGroupsByType(
-      GROUP_QUERY_TYPE.GROUP,
-      0,
-      20,
-    );
-    expect(result3).toEqual(mock);
-  });
+    it('getGroupsByIds()', async () => {
+      const mock = [{ id: 1 }];
+      testEntitySourceController.batchGet.mockResolvedValue(mock);
 
-  it('getGroupsByIds()', async () => {
-    const mock = [{ id: 1 }];
-    testEntitySourceController.batchGet.mockResolvedValue(mock);
+      const result1 = await groupFetchDataController.getGroupsByIds([]);
+      expect(result1).toEqual([]);
 
-    const result1 = await groupFetchDataController.getGroupsByIds([]);
-    expect(result1).toEqual([]);
+      const result2 = await groupFetchDataController.getGroupsByIds([1]);
+      expect(result2).toEqual(mock);
+    });
 
-    const result2 = await groupFetchDataController.getGroupsByIds([1]);
-    expect(result2).toEqual(mock);
+    it('should return favorite list exclude the team which current user not belong to', async () => {
+      const curUserId = 3;
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValueOnce(curUserId);
+      const mock = [{ id: 1, members: [1, 2, 3] }, { id: 2, members: [1, 2] }];
+      daoManager.getDao.mockReturnValue(groupDao);
+
+      groupDao.queryAllGroups.mockResolvedValue(mock);
+      profileService.getProfile.mockResolvedValueOnce({
+        favorite_group_ids: [1, 2],
+      });
+      groupService.getGroupsByIds = jest.fn().mockReturnValue(mock);
+      const result22 = await groupFetchDataController.getGroupsByType(
+        GROUP_QUERY_TYPE.FAVORITE,
+        0,
+        20,
+      );
+      expect(result22).toEqual([{ id: 1, members: [1, 2, 3] }]);
+    });
   });
 
   describe('getLocalGroup()', () => {
     it('should call groupDao with personIds append self id', async () => {
+      daoManager.getDao.mockReturnValue(groupDao);
       await groupFetchDataController.getLocalGroup([11, 12]);
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([
         11,
         12,
         mockUserId,
       ]);
-    });
-  });
-  describe('getGroupByMemberList()', async () => {
-    it('should return result with group if it already existed in local', async () => {
-      const mockNormal = { id: 1 };
-      const memberIDs = [1, 2];
-      // group exist in DB already
-      daoManager.getDao.mockReturnValue(groupDao);
-      groupDao.queryGroupByMemberList.mockResolvedValue(mockNormal);
-      const result1 = await groupFetchDataController.getOrCreateGroupByMemberList(
-        memberIDs,
-      );
-      expect(result1).toEqual(mockNormal);
-    });
-
-    it('should return result with group if it can get from remote', async () => {
-      const mockNormal = { id: 1 };
-      const memberIDs = [1, 2];
-      jest
-        .spyOn(groupFetchDataController, 'requestRemoteGroupByMemberList')
-        .mockResolvedValueOnce(mockNormal);
-      groupDao.queryGroupByMemberList.mockResolvedValueOnce(null);
-      const result = await groupFetchDataController.getOrCreateGroupByMemberList(
-        memberIDs,
-      );
-      expect(result).toEqual(mockNormal);
-    });
-
-    it('should return result with error if it can not get from remote', async () => {
-      const memberIDs = [1, 2];
-      const error = new JNetworkError(
-        ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR,
-        '',
-      );
-      jest
-        .spyOn(groupFetchDataController, 'requestRemoteGroupByMemberList')
-        .mockRejectedValueOnce(error);
-      groupDao.queryGroupByMemberList.mockResolvedValueOnce(null);
-      await expect(
-        groupFetchDataController.getOrCreateGroupByMemberList(memberIDs),
-      ).rejects.toEqual(error);
     });
   });
 
@@ -229,7 +369,6 @@ describe('GroupFetchDataController', () => {
     AccountUserConfig.prototype.getGlipUserId.mockReturnValueOnce(1);
 
     daoManager.getDao.mockReturnValueOnce(groupDao);
-
     groupDao.queryGroupByMemberList.mockResolvedValue(mock);
     const result1 = await groupFetchDataController.getGroupByPersonId(2);
     expect(result1).toEqual(mock);
@@ -238,156 +377,15 @@ describe('GroupFetchDataController', () => {
   describe('get left rail conversations', () => {
     it('get left rail conversations', async () => {
       const mock = [{ id: 1 }, { id: 2 }];
-      testEntitySourceController.batchGet.mockResolvedValue(mock);
-      groupDao.queryGroups.mockResolvedValue([{ id: 3 }]);
-      jest.spyOn(
-        groupFetchDataController.groupHandleDataController,
-        'filterGroups',
-      );
-      groupFetchDataController.groupHandleDataController.filterGroups.mockResolvedValue(
-        mock,
-      );
+      groupFetchDataController.getGroupsByType = jest
+        .fn()
+        .mockReturnValue(mock);
       const groups = await groupFetchDataController.getLeftRailGroups();
-      expect(groups.length).toBe(4);
+      expect(groups.length).toBe(6);
     });
   });
 
   describe('doFuzzySearch', () => {
-    function prepareGroupsForSearch() {
-      AccountUserConfig.prototype.getGlipUserId = jest
-        .fn()
-        .mockImplementation(() => 1);
-
-      const person1: Person = {
-        id: 11001,
-        created_at: 1,
-        modified_at: 1,
-        creator_id: 1,
-        is_new: false,
-        deactivated: false,
-        version: 1,
-        company_id: 1,
-        email: 'ben1.niu1@ringcentral.com',
-        me_group_id: 1,
-        first_name: 'ben1',
-        last_name: 'niu1',
-        display_name: 'ben1 niu1',
-      };
-
-      const person2: Person = {
-        id: 12001,
-        created_at: 1,
-        modified_at: 1,
-        creator_id: 1,
-        is_new: false,
-        deactivated: false,
-        version: 1,
-        company_id: 1,
-        email: 'tu1.tu1@ringcentral.com',
-        me_group_id: 1,
-        first_name: 'tu1',
-        last_name: 'tu1',
-        display_name: 'tu1 tu1',
-      };
-
-      personService.getSynchronously = jest
-        .fn()
-        .mockImplementation((id: number) => (id <= 12000 ? person1 : person2));
-
-      personService.getName = jest
-        .fn()
-        .mockImplementation((person: Person) =>
-          person.id > 12000 ? 'ben1' : 'tu1',
-        );
-
-      const userId = mockUserId;
-      // prepare one : one
-      for (let i = 10000; i <= 11000; i += 1) {
-        const group: Group = {
-          id: i,
-          created_at: i,
-          modified_at: i,
-          creator_id: i,
-          is_new: false,
-          deactivated: i % 2 === 0,
-          version: i,
-          members: [userId, i],
-          company_id: i,
-          is_company_team: false,
-          set_abbreviation: '',
-          email_friendly_abbreviation: '',
-          most_recent_content_modified_at: i,
-        };
-        entityCacheController.put(group);
-      }
-
-      // prepare multi members as a group
-      for (let i = 11001; i <= 12000; i += 1) {
-        const group: Group = {
-          id: i,
-          created_at: i,
-          modified_at: i,
-          creator_id: i,
-          is_new: false,
-          is_team: false,
-          deactivated: i % 2 === 0,
-          version: i,
-          members: [userId, i, i + 1000],
-          company_id: i,
-          is_company_team: false,
-          set_abbreviation: '',
-          email_friendly_abbreviation: '',
-          most_recent_content_modified_at: i,
-        };
-        entityCacheController.put(group);
-      }
-
-      // prepare teams
-      // prepare multi members as a group
-      for (let i = 12001; i <= 13000; i += 1) {
-        const group: Group = {
-          id: i,
-          created_at: i,
-          modified_at: i,
-          creator_id: i,
-          is_team: true,
-          is_new: false,
-          is_archived: false,
-          privacy: i % 2 === 0 ? 'protected' : 'private',
-          deactivated: i % 2 !== 0,
-          version: i,
-          members: i % 2 === 0 ? [userId, i, i + 1000] : [i, i + 1000],
-          company_id: i,
-          is_company_team: false,
-          set_abbreviation: `this is a team name${i.toString()}`,
-          email_friendly_abbreviation: '',
-          most_recent_content_modified_at: i,
-        };
-        entityCacheController.put(group);
-      }
-
-      for (let i = 13001; i <= 13010; i += 1) {
-        const group: Group = {
-          id: i,
-          created_at: i,
-          modified_at: i,
-          creator_id: i,
-          is_team: true,
-          is_new: false,
-          is_archived: false,
-          privacy: i % 2 === 0 ? 'protected' : 'private',
-          deactivated: i % 2 !== 0,
-          version: i,
-          members: i % 2 === 0 ? [userId, i, i + 1000] : [i, i + 1000],
-          company_id: i,
-          is_company_team: false,
-          set_abbreviation: `Team name of ${i.toString()}`,
-          email_friendly_abbreviation: '',
-          most_recent_content_modified_at: i,
-        };
-        entityCacheController.put(group);
-      }
-    }
     beforeEach(() => {
       entityCacheController.clear();
       prepareGroupsForSearch();
@@ -483,6 +481,64 @@ describe('GroupFetchDataController', () => {
       expect(result.terms[2]).toBe('name');
     });
   });
+  describe('doFuzzySearchAllGroups', () => {
+    beforeEach(() => {
+      entityCacheController.clear();
+      prepareGroupsForSearch(entityCacheController);
+      SearchUtils.isUseSoundex = jest.fn().mockReturnValue(false);
+    });
+
+    it('should return empty data when search key is empty and fetch all is false/undefined', async () => {
+      const result = await groupFetchDataController.doFuzzySearchAllGroups(
+        '',
+        false,
+      );
+      expect(result).toEqual({ sortableModels: [], terms: [] });
+    });
+
+    it('should return all when terms is empty and fetch all is true', async () => {
+      const result: any = await groupFetchDataController.doFuzzySearchAllGroups(
+        '',
+        true,
+      );
+      expect(result.sortableModels.length).toEqual(1505);
+    });
+
+    it('should return no data when terms match no group name and fetch all is true', async () => {
+      const result: any = await groupFetchDataController.doFuzzySearchAllGroups(
+        'ppp',
+        true,
+      );
+      expect(result.sortableModels.length).toEqual(0);
+    });
+
+    it('fetch all matched groups and includes not my members ', async () => {
+      const result: any = await groupFetchDataController.doFuzzySearchAllGroups(
+        'name',
+        false,
+        false,
+      );
+      expect(result.sortableModels.length).toEqual(505);
+    });
+
+    it('fetch all matched groups and includes my members ', async () => {
+      const result: any = await groupFetchDataController.doFuzzySearchAllGroups(
+        'name',
+        false,
+        true,
+      );
+      expect(result.sortableModels.length).toEqual(505);
+    });
+
+    it('fetch all matched groups and includes my members ', async () => {
+      const result: any = await groupFetchDataController.doFuzzySearchAllGroups(
+        '1', // all teams has name 1xxxx, all groups has name includes 1
+        false,
+        true,
+      );
+      expect(result.sortableModels.length).toEqual(1505);
+    });
+  });
 
   describe('doFuzzySearchTeamWithPriority', () => {
     const team1: Group = {
@@ -561,6 +617,25 @@ describe('GroupFetchDataController', () => {
       most_recent_content_modified_at: 1,
     };
 
+    const team5: Group = {
+      id: 5,
+      created_at: 1,
+      modified_at: 1,
+      creator_id: 1,
+      is_team: true,
+      is_new: false,
+      is_archived: false,
+      privacy: 'protected',
+      deactivated: false,
+      version: 1,
+      members: [1, 2],
+      company_id: 1,
+      is_company_team: false,
+      set_abbreviation: 'Jupiter Engineer - test Jupiter project ',
+      email_friendly_abbreviation: '',
+      most_recent_content_modified_at: 1,
+    };
+
     function prepareGroupsForSearch() {
       AccountUserConfig.prototype.getGlipUserId = jest
         .fn()
@@ -570,6 +645,7 @@ describe('GroupFetchDataController', () => {
       entityCacheController.put(team2);
       entityCacheController.put(team3);
       entityCacheController.put(team4);
+      entityCacheController.put(team5);
     }
 
     beforeEach(() => {
@@ -581,11 +657,12 @@ describe('GroupFetchDataController', () => {
       const result = await groupFetchDataController.doFuzzySearchTeams(
         'Jupiter, E',
       );
-      expect(result.sortableModels.length).toBe(4);
+      expect(result.sortableModels.length).toBe(5);
       expect(result.sortableModels[0].entity).toEqual(team3);
-      expect(result.sortableModels[1].entity).toEqual(team4);
-      expect(result.sortableModels[2].entity).toEqual(team1);
-      expect(result.sortableModels[3].entity).toEqual(team2);
+      expect(result.sortableModels[1].entity).toEqual(team5);
+      expect(result.sortableModels[2].entity).toEqual(team4);
+      expect(result.sortableModels[3].entity).toEqual(team1);
+      expect(result.sortableModels[4].entity).toEqual(team2);
     });
   });
 
@@ -736,7 +813,7 @@ describe('GroupFetchDataController', () => {
     });
   });
 
-  describe('isTeamAdmin', async () => {
+  describe('isTeamAdmin', () => {
     it('should return true if no team permission model', async () => {
       expect(groupFetchDataController.isTeamAdmin(11, undefined)).toBeTruthy;
     });
@@ -769,9 +846,7 @@ describe('GroupFetchDataController', () => {
     };
 
     const companyReplyDomain = 'companyDomain';
-    const companyService = new CompanyService();
     beforeEach(() => {
-      CompanyService.getInstance = jest.fn().mockReturnValue(companyService);
       companyService.getCompanyEmailDomain.mockResolvedValueOnce(
         companyReplyDomain,
       );
@@ -803,143 +878,9 @@ describe('GroupFetchDataController', () => {
   });
 
   describe('doFuzzySearch use soundex', () => {
-    function prepareGroupsForSearch() {
-      AccountGlobalConfig.getCurrentUserId = jest
-        .fn()
-        .mockImplementation(() => 1);
-
-      const person1: Person = {
-        id: 11001,
-        created_at: 1,
-        modified_at: 1,
-        creator_id: 1,
-        is_new: false,
-        deactivated: false,
-        version: 1,
-        company_id: 1,
-        email: 'ben1.niu1@ringcentral.com',
-        me_group_id: 1,
-        first_name: 'ben1',
-        last_name: 'niu1',
-        display_name: 'ben1 niu1',
-      };
-
-      const person2: Person = {
-        id: 12001,
-        created_at: 1,
-        modified_at: 1,
-        creator_id: 1,
-        is_new: false,
-        deactivated: false,
-        version: 1,
-        company_id: 1,
-        email: 'tu1.tu1@ringcentral.com',
-        me_group_id: 1,
-        first_name: 'tu1',
-        last_name: 'tu1',
-        display_name: 'tu1 tu1',
-      };
-
-      personService.getSynchronously = jest
-        .fn()
-        .mockImplementation((id: number) => (id <= 12000 ? person1 : person2));
-
-      personService.getName = jest
-        .fn()
-        .mockImplementation((person: Person) =>
-          person.id > 12000 ? 'ben1' : 'tu1',
-        );
-
-      const userId = mockUserId;
-      // prepare one : one
-      for (let i = 10000; i <= 11000; i += 1) {
-        const group: Group = {
-          id: i,
-          created_at: i,
-          modified_at: i,
-          creator_id: i,
-          is_new: false,
-          deactivated: i % 2 === 0,
-          version: i,
-          members: [userId, i],
-          company_id: i,
-          is_company_team: false,
-          set_abbreviation: '',
-          email_friendly_abbreviation: '',
-          most_recent_content_modified_at: i,
-        };
-        entityCacheController.put(group);
-      }
-
-      // prepare multi members as a group
-      for (let i = 11001; i <= 12000; i += 1) {
-        const group: Group = {
-          id: i,
-          created_at: i,
-          modified_at: i,
-          creator_id: i,
-          is_new: false,
-          is_team: false,
-          deactivated: i % 2 === 0,
-          version: i,
-          members: [userId, i, i + 1000],
-          company_id: i,
-          is_company_team: false,
-          set_abbreviation: '',
-          email_friendly_abbreviation: '',
-          most_recent_content_modified_at: i,
-        };
-        entityCacheController.put(group);
-      }
-
-      // prepare teams
-      // prepare multi members as a group
-      for (let i = 12001; i <= 13000; i += 1) {
-        const group: Group = {
-          id: i,
-          created_at: i,
-          modified_at: i,
-          creator_id: i,
-          is_team: true,
-          is_new: false,
-          is_archived: false,
-          privacy: i % 2 === 0 ? 'protected' : 'private',
-          deactivated: i % 2 !== 0,
-          version: i,
-          members: i % 2 === 0 ? [userId, i, i + 1000] : [i, i + 1000],
-          company_id: i,
-          is_company_team: false,
-          set_abbreviation: `this is a team name${i.toString()}`,
-          email_friendly_abbreviation: '',
-          most_recent_content_modified_at: i,
-        };
-        entityCacheController.put(group);
-      }
-
-      for (let i = 13001; i <= 13010; i += 1) {
-        const group: Group = {
-          id: i,
-          created_at: i,
-          modified_at: i,
-          creator_id: i,
-          is_team: true,
-          is_new: false,
-          is_archived: false,
-          privacy: i % 2 === 0 ? 'protected' : 'private',
-          deactivated: i % 2 !== 0,
-          version: i,
-          members: i % 2 === 0 ? [userId, i, i + 1000] : [i, i + 1000],
-          company_id: i,
-          is_company_team: false,
-          set_abbreviation: `Team name of ${i.toString()}`,
-          email_friendly_abbreviation: '',
-          most_recent_content_modified_at: i,
-        };
-        entityCacheController.put(group);
-      }
-    }
     beforeEach(() => {
       entityCacheController.clear();
+      groupService['_entityCacheController'] = entityCacheController;
       prepareGroupsForSearch();
       SearchUtils.isUseSoundex = jest.fn().mockReturnValue(true);
     });

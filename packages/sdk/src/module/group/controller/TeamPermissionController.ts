@@ -5,7 +5,7 @@
  */
 import _ from 'lodash';
 
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 
 import {
   DEFAULT_ADMIN_PERMISSION_LEVEL,

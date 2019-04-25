@@ -40,7 +40,7 @@ describe('ProfileDataController', () => {
       expect(result).toEqual(2);
     });
   });
-  describe('getMaxLeftRailGroup()', async () => {
+  describe('getMaxLeftRailGroup()', () => {
     it('should return default value 20 because of not profile', async () => {
       profileDataController.getProfile = jest
         .fn()
@@ -62,7 +62,7 @@ describe('ProfileDataController', () => {
         .mockImplementationOnce(() => {
           return {
             id: 1,
-            max_leftrail_group_tabs2: 5,
+            max_leftrail_group_tabs2: '5',
           };
         });
       const result = await profileDataController.getMaxLeftRailGroup();

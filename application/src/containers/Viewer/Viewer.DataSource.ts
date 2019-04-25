@@ -13,16 +13,13 @@ import {
 import { ENTITY_NAME } from '@/store/constants';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { SortUtils } from 'sdk/framework/utils';
-import {
-  ITEM_SORT_KEYS,
-  ItemService,
-  ItemUtils,
-  ItemNotification,
-} from 'sdk/module/item';
+import { ITEM_SORT_KEYS, ItemService, ItemNotification } from 'sdk/module/item';
 import { Item } from 'sdk/module/item/entity';
-import { GlipTypeUtil } from 'sdk/utils';
 import { VIEWER_ITEM_TYPE, ViewerItemTypeIdMap } from './constants';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+
+import { getTypeId, isExpectedItemOfThisGroup, getFilterFunc } from './Utils';
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   constructor(
@@ -38,7 +35,9 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
     pageSize: number,
     anchor?: ISortableModel<Item>,
   ): Promise<{ data: Item[]; hasMore: boolean }> {
-    const itemService: ItemService = ItemService.getInstance();
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
     const result = await itemService.getItems({
       direction,
       typeId: this._typeId,
@@ -70,7 +69,7 @@ class ItemListDataSource {
     this._buildSortableMemberListHandler(
       this.groupId,
       type,
-      ITEM_SORT_KEYS.LATEST_VERSION_DATE,
+      ITEM_SORT_KEYS.LATEST_POST_ID,
       false,
     );
   }
@@ -78,7 +77,7 @@ class ItemListDataSource {
   private _transformFunc = (model: Item) => {
     return {
       id: model.id,
-      sortValue: FileItemUtils.getVersionDate(model) || model.created_at,
+      sortValue: FileItemUtils.getLatestPostId(model),
     } as ISortableModel<Item>;
   }
 
@@ -89,11 +88,11 @@ class ItemListDataSource {
     sortKey: ITEM_SORT_KEYS,
     desc: boolean,
   ) {
-    const typeId = this.getTypeId(type);
+    const typeId = getTypeId(type);
 
     const isMatchFunc = (model: Item) => {
       return model
-        ? this.isExpectedItemOfThisGroup(groupId, type, model, false)
+        ? isExpectedItemOfThisGroup(groupId, type, model, false)
         : false;
     };
 
@@ -101,7 +100,7 @@ class ItemListDataSource {
       lhs: ISortableModel<Item>,
       rhs: ISortableModel<Item>,
     ): number => {
-      return SortUtils.sortModelByKey(lhs, rhs, 'sortValue', desc);
+      return SortUtils.sortModelByKey(lhs, rhs, ['sortValue'], desc);
     };
 
     const dataProvider = new GroupItemDataProvider(
@@ -109,7 +108,7 @@ class ItemListDataSource {
       typeId,
       sortKey,
       desc,
-      this.getFilterFunc(groupId, type),
+      getFilterFunc(groupId, type),
     );
 
     if (this._sortableDataHandler) {
@@ -125,53 +124,6 @@ class ItemListDataSource {
       hasMoreDown: true,
       hasMoreUp: true,
     });
-  }
-
-  isExpectedItemOfThisGroup(
-    groupId: number,
-    type: VIEWER_ITEM_TYPE,
-    item: Item,
-    includeDeactivated: boolean,
-  ) {
-    let isValidItem = item.post_ids.length > 0;
-    if (!includeDeactivated) {
-      isValidItem = !item.deactivated;
-    }
-    switch (type) {
-      case VIEWER_ITEM_TYPE.IMAGE_FILES:
-        isValidItem =
-          isValidItem &&
-          (this.getFilterFunc(groupId, type) as (valid: Item) => boolean)(
-            item,
-          ) &&
-          GlipTypeUtil.extractTypeId(item.id) === this.getTypeId(type) &&
-          ItemUtils.isValidItem(groupId, item);
-        break;
-      default:
-        isValidItem =
-          isValidItem &&
-          GlipTypeUtil.extractTypeId(item.id) === this.getTypeId(type) &&
-          ItemUtils.isValidItem(groupId, item);
-    }
-    return isValidItem;
-  }
-
-  getFilterFunc(groupId: number, type: VIEWER_ITEM_TYPE) {
-    switch (type) {
-      case VIEWER_ITEM_TYPE.IMAGE_FILES:
-        return (file: Item) => {
-          return (
-            ItemUtils.fileFilter(groupId, true)(file) &&
-            FileItemUtils.isSupportPreview(file)
-          );
-        };
-      default:
-        return undefined;
-    }
-  }
-
-  getTypeId(type: VIEWER_ITEM_TYPE) {
-    return ViewerItemTypeIdMap[type];
   }
 
   getIds() {
@@ -204,6 +156,22 @@ class ItemListDataSource {
         id: itemId,
       } as Item),
     );
+  }
+
+  @action
+  async fetchIndexInfo(itemId: number) {
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
+    return await itemService.getItemIndexInfo(itemId, {
+      typeId: ViewerItemTypeIdMap[this.type],
+      groupId: this.groupId,
+      sortKey: ITEM_SORT_KEYS.LATEST_POST_ID,
+      desc: false,
+      limit: Infinity,
+      offsetItemId: undefined,
+      filterFunc: getFilterFunc(this.groupId, this.type),
+    });
   }
 
   dispose() {

@@ -17,8 +17,8 @@ fixture('ContentPanel/JumpToUnreadButton')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-
-test(formalName('Unread button will disappear when resizing window then full screen can show all new messages', ['JPT-208', 'P2', 'Wayne.Zhou', 'Stream']), async (t) => {
+// TODO JPT-208 always failed when run with selenium
+test.skip(formalName('Unread button will disappear when resizing window then full screen can show all new messages', ['JPT-208', 'P2', 'Wayne.Zhou', 'Stream']), async (t) => {
   if (await H.isElectron() || await H.isEdge()) {
     await h(t).log('This case (resize) is not working on Electron or Edge!');
     return;
@@ -78,8 +78,7 @@ test(formalName('Unread button will disappear when resizing window then full scr
   });
 });
 
-// bug: https://jira.ringcentral.com/browse/FIJI-2688
-test.skip(formalName('Click the unread button (up) then jump to first unread post', ['JPT-211', 'P0', 'Wayne.Zhou', 'Stream']), async (t) => {
+test(formalName('Click the unread button (up) then jump to first unread post', ['JPT-211', 'P0', 'Wayne.Zhou', 'Stream']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
   const otherUser = users[5];
@@ -102,7 +101,7 @@ test.skip(formalName('Click the unread button (up) then jump to first unread pos
   });
 
   let firstUnreadPostId;
-  await h(t).withLog(`And has more one  screen unread messages`, async () => {
+  await h(t).withLog(`And has more one screen unread messages`, async () => {
     firstUnreadPostId = await h(t).scenarioHelper.sentAndGetTextPostId(uuid(), team, otherUser);
     for (const i of _.range(3)) {
       await h(t).scenarioHelper.sendTextPost(H.multilineString(), team, otherUser);
@@ -137,9 +136,10 @@ test.skip(formalName('Click the unread button (up) then jump to first unread pos
     await conversationPage.postByIdExpectVisible(firstUnreadPostId, true);
   });
 
-  await h(t).withLog('And New Messages indicator exist and can not be seen', async () => {
+  await h(t).withLog('And should see New Messages indicator on the top', async () => {
     await t.expect(conversationPage.newMessageDeadLine.exists).ok();
-    await conversationPage.newMessageDeadLineExpectVisible(false);
+    await conversationPage.newMessageDeadLineExpectVisible(true);
+    await conversationPage.newMessageDeadLineShouldBeOnTheTop();
   });
 
 });

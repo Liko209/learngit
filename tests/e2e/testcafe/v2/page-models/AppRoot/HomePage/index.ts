@@ -7,11 +7,13 @@ import { AddActionMenu } from './AddActionMenu';
 import { SettingMenu } from './SettingMenu';
 import { LeftPanel } from './LeftPanel';
 import { MessageTab } from './MessageTab';
-import { Header, joinTeamDialog } from './header';
+import { Header } from './header';
 import { MiniProfile, ProfileDialog } from './ViewProfile';
 import { AddTeamMembers } from './AddTeamMembers';
 import { TeamSettingDialog } from './TeamSettingDialog';
 import { LeaveTeamDialog } from './LeaveTeamDialog';
+import { TelephonyPOC } from './TelephonyPOC'
+
 import { DeleteTeamDialog } from './DeleteTeamDialog';
 import { ArchiveTeamDialog } from './ArchiveTeamDialog';
 import { AlertDialog } from "./AlertDialog";
@@ -19,6 +21,8 @@ import { IUser } from '../../../models';
 import { TelephonyDialog } from './TelephonyDialog';
 import { FileAndImagePreviewer } from './ImagePreviewer';
 import { ViewerDialog } from './ViewerDialog';
+import { SearchDialog, JoinTeamDialog } from './SearchDialog';
+import { SettingTab } from './SettingTab';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
@@ -48,9 +52,12 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(LeftPanel);
   }
 
-
   get messageTab() {
     return this.getComponent(MessageTab);
+  }
+
+  get settingTab() {
+    return this.getComponent(SettingTab);
   }
 
   get header() {
@@ -72,7 +79,7 @@ export class HomePage extends BaseWebComponent {
 
   get convertToTeamModal() {
     return this.getComponent(ConvertToTeamDialog);
-  }  
+  }
   get sendNewMessageModal() {
     return this.getComponent(SendNewMessageModal);
   }
@@ -110,13 +117,16 @@ export class HomePage extends BaseWebComponent {
   }
 
   get joinTeamDialog() {
-    return this.getComponent(joinTeamDialog);
+    return this.getComponent(JoinTeamDialog);
   }
 
   get leaveTeamDialog() {
     return this.getComponent(LeaveTeamDialog);
   }
 
+  get telephonyPOCPage() {
+    return this.getComponent(TelephonyPOC);
+  }
   get deleteTeamDialog() {
     return this.getComponent(DeleteTeamDialog);
   }
@@ -132,12 +142,17 @@ export class HomePage extends BaseWebComponent {
   get telephonyDialog() {
     return this.getComponent(TelephonyDialog);
   }
-  
+
   get fileAndImagePreviewer() {
     return this.getComponent(FileAndImagePreviewer);
   }
+
   get viewerDialog() {
     return this.getComponent(ViewerDialog);
+  }
+
+  get searchDialog() {
+    return this.getComponent(SearchDialog);
   }
 
 }

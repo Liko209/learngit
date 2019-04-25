@@ -9,8 +9,8 @@ import {
   NETWORK_VIA,
   NETWORK_HANDLE_TYPE,
 } from 'foundation';
-import Api from '../api';
-import { IPlatformHandleDelegate } from '../ringcentral/IPlatformHandleDelegate';
+import { ApiConfiguration } from '../config';
+import { IPlatformHandleDelegate } from './IPlatformHandleDelegate';
 
 const HandleByRingCentral = new class extends AbstractHandleType {
   name = NETWORK_HANDLE_TYPE.RINGCENTRAL;
@@ -21,8 +21,8 @@ const HandleByRingCentral = new class extends AbstractHandleType {
   platformHandleDelegate: IPlatformHandleDelegate;
 
   basic() {
-    const str = `${Api.httpConfig.rc.clientId}:${
-      Api.httpConfig.rc.clientSecret
+    const str = `${ApiConfiguration.apiConfig.rc.clientId}:${
+      ApiConfiguration.apiConfig.rc.clientSecret
     }`;
 
     return this.btoa(str);
@@ -58,12 +58,12 @@ const HandleByRingCentral = new class extends AbstractHandleType {
       try {
         if (this.platformHandleDelegate) {
           const refreshedToken = await this.platformHandleDelegate.refreshRCToken();
-          refreshedToken ? resolve(refreshedToken) : reject(refreshedToken);
+          refreshedToken ? resolve(refreshedToken) : reject();
         } else {
-          reject(token);
+          reject();
         }
-      } catch (err) {
-        reject(token);
+      } catch (errorCode) {
+        reject(errorCode);
       }
     });
   }
@@ -78,11 +78,11 @@ const HandleByRingCentral = new class extends AbstractHandleType {
     this.platformHandleDelegate.checkServerStatus(callback);
   }
 
-  onRefreshTokenFailure = () => {
+  onRefreshTokenFailure = (forceLogout: boolean) => {
     if (!this.platformHandleDelegate) {
       return;
     }
-    this.platformHandleDelegate.onRefreshTokenFailure();
+    this.platformHandleDelegate.onRefreshTokenFailure(forceLogout);
   }
 }();
 

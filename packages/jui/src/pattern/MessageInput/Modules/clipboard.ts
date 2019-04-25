@@ -12,7 +12,7 @@ class PlainClipboard extends Clipboard {
   onPaste(e: ClipboardEvent) {
     e.preventDefault();
     const range = this.quill.getSelection();
-    const text = e.clipboardData.getData('text/plain');
+    const text = e.clipboardData ? e.clipboardData.getData('text/plain') : '';
     this.container.innerHTML = '';
     const delta = new Delta()
       .retain(range.index)

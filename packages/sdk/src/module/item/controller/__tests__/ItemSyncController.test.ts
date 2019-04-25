@@ -8,8 +8,8 @@ import { GroupConfigService } from '../../../groupConfig';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ItemSyncController } from '../ItemSyncController';
 import { Listener } from 'eventemitter2';
-import { SERVICE } from '../../../../service/eventKey';
 import { JServerError, ERROR_CODES_SERVER } from '../../../../error';
+import { ServiceLoader } from '../../../serviceLoader';
 import { TypeDictionary } from '../../../../utils/glip-type-dictionary';
 
 jest.mock('../../../../api/glip/item');
@@ -42,9 +42,7 @@ describe('ItemSyncController', () => {
 
     itemSyncController = new ItemSyncController(itemService);
 
-    GroupConfigService.getInstance = jest
-      .fn()
-      .mockReturnValue(groupConfigService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(groupConfigService);
 
     ItemApi.getItems = jest.fn();
   }

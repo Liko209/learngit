@@ -97,63 +97,77 @@ function loginGlip(authData: object) {
  */
 function indexData(params: object, requestConfig = {}, headers = {}) {
   const priority = REQUEST_PRIORITY.HIGH;
-  return Api.glipNetworkClient.get<IndexDataModel>(
-    '/index',
+  return Api.glipNetworkClient.get<IndexDataModel>({
     params,
-    NETWORK_VIA.HTTP,
     requestConfig,
     headers,
-    DEFAULT_RETRY_COUNT,
     priority,
-    HA_PRIORITY.BASIC,
-    TEN_MINUTE_TIMEOUT,
-  );
+    path: '/index',
+    via: NETWORK_VIA.HTTP,
+    retryCount: DEFAULT_RETRY_COUNT,
+    HAPriority: HA_PRIORITY.BASIC,
+    timeout: TEN_MINUTE_TIMEOUT,
+  });
 }
 
 function initialData(params: object, requestConfig = {}, headers = {}) {
   const priority = REQUEST_PRIORITY.HIGH;
-  return Api.glipDesktopNetworkClient.get<IndexDataModel>(
-    '/initial',
+  return Api.glipDesktopNetworkClient.get<IndexDataModel>({
     params,
-    NETWORK_VIA.HTTP,
     requestConfig,
     headers,
-    DEFAULT_RETRY_COUNT,
     priority,
-    HA_PRIORITY.BASIC,
-    TEN_MINUTE_TIMEOUT,
-  );
+    path: '/initial',
+    via: NETWORK_VIA.HTTP,
+    retryCount: DEFAULT_RETRY_COUNT,
+    HAPriority: HA_PRIORITY.BASIC,
+    timeout: TEN_MINUTE_TIMEOUT,
+  });
 }
 
 function remainingData(params: object, requestConfig = {}, headers = {}) {
   const priority = REQUEST_PRIORITY.HIGH;
-  return Api.glipDesktopNetworkClient.get<IndexDataModel>(
-    '/remaining',
+  return Api.glipDesktopNetworkClient.get<IndexDataModel>({
     params,
-    NETWORK_VIA.HTTP,
     requestConfig,
     headers,
-    DEFAULT_RETRY_COUNT,
     priority,
-    HA_PRIORITY.BASIC,
-    TEN_MINUTE_TIMEOUT,
-  );
+    path: '/remaining',
+    via: NETWORK_VIA.HTTP,
+    retryCount: DEFAULT_RETRY_COUNT,
+    HAPriority: HA_PRIORITY.BASIC,
+    timeout: TEN_MINUTE_TIMEOUT,
+  });
 }
 
-// plugins data
+function glipStatus() {
+  return Api.glipNetworkClient.http({
+    via: NETWORK_VIA.HTTP,
+    path: '/status',
+    method: NETWORK_METHOD.GET,
+    authFree: true,
+  });
+}
 
 function canConnect(
   params: CanConnectParasType,
   requestConfig = {},
   headers = {},
 ) {
-  return Api.glipNetworkClient.get<CanConnectModel>(
-    '/can-reconnect-v2',
+  return Api.glipNetworkClient.get<CanConnectModel>({
     params,
-    NETWORK_VIA.HTTP,
     requestConfig,
     headers,
-  );
+    path: '/can-reconnect-v2',
+    via: NETWORK_VIA.HTTP,
+  });
 }
 
-export { loginGlip, indexData, initialData, remainingData, canConnect };
+export {
+  loginGlip,
+  indexData,
+  initialData,
+  remainingData,
+  canConnect,
+  glipStatus,
+};

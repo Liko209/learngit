@@ -22,6 +22,8 @@ import {
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
   RTCCallActionSuccessOptions,
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
 } from './types';
 import { v4 as uuid } from 'uuid';
 import { RC_SIP_HEADER_NAME } from '../signaling/types';
@@ -62,6 +64,7 @@ class RTCCall {
   private _isAnonymous: boolean = false;
   private _hangupInvalidCallTimer: NodeJS.Timeout | null = null;
   private _rtcMediaStatsManager: RTCMediaStatsManager;
+  private _isReinviteForHoldOrUnhold: boolean;
 
   constructor(
     isIncoming: boolean,
@@ -146,8 +149,44 @@ class RTCCall {
     this._fsm.reject();
   }
 
+  ignore(): void {
+    this._fsm.ignore();
+  }
+
   sendToVoicemail(): void {
     this._fsm.sendToVoicemail();
+  }
+
+  startReply(): void {
+    if (!this.isIncomingCall()) {
+      this._onCallActionFailed(RTC_CALL_ACTION.START_REPLY);
+      return;
+    }
+    this._fsm.startReplyWithMessage();
+  }
+
+  replyWithMessage(message: string): void {
+    if (!message || message.length === 0) {
+      this._onCallActionFailed(RTC_CALL_ACTION.REPLY_WITH_MSG);
+      return;
+    }
+    if (!this.isIncomingCall()) {
+      this._onCallActionFailed(RTC_CALL_ACTION.REPLY_WITH_MSG);
+      return;
+    }
+    this._fsm.replyWithMessage(message);
+  }
+
+  replyWithPattern(
+    pattern: RTC_REPLY_MSG_PATTERN,
+    time: number = 0,
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT = RTC_REPLY_MSG_TIME_UNIT.MINUTE,
+  ): void {
+    if (!this.isIncomingCall()) {
+      this._onCallActionFailed(RTC_CALL_ACTION.REPLY_WITH_PATTERN);
+      return;
+    }
+    this._fsm.replyWithPattern(pattern, time, timeUnit);
   }
 
   hangup(): void {
@@ -167,10 +206,12 @@ class RTCCall {
   }
 
   hold(): void {
+    this._isReinviteForHoldOrUnhold = true;
     this._fsm.hold();
   }
 
   unhold(): void {
+    this._isReinviteForHoldOrUnhold = true;
     this._fsm.unhold();
   }
 
@@ -202,6 +243,14 @@ class RTCCall {
     this._fsm.transfer(target);
   }
 
+  forward(target: string): void {
+    if (target.length === 0 || !this._isIncomingCall) {
+      this._delegate.onCallActionFailed(RTC_CALL_ACTION.FORWARD);
+      return;
+    }
+    this._fsm.forward(target);
+  }
+
   dtmf(digits: string): void {
     if (digits.length === 0) {
       return;
@@ -210,11 +259,15 @@ class RTCCall {
   }
 
   onAccountReady() {
-    this._fsm.accountReady();
+    if (!this.isIncomingCall()) {
+      this._fsm.accountReady();
+    }
   }
 
   onAccountNotReady() {
-    this._fsm.accountNotReady();
+    if (!this.isIncomingCall()) {
+      this._fsm.accountNotReady();
+    }
   }
 
   setCallSession(session: any): void {
@@ -320,6 +373,9 @@ class RTCCall {
     this._fsm.on(CALL_FSM_NOTIFY.TRANSFER_ACTION, (target: string) => {
       this._onTransferAction(target);
     });
+    this._fsm.on(CALL_FSM_NOTIFY.FORWARD_ACTION, (target: string) => {
+      this._onForwardAction(target);
+    });
     this._fsm.on(CALL_FSM_NOTIFY.PARK_ACTION, () => {
       this._onParkAction();
     });
@@ -337,6 +393,22 @@ class RTCCall {
     });
     this._fsm.on(CALL_FSM_NOTIFY.DTMF_ACTION, (digits: string) => {
       this._onDtmfAction(digits);
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.START_REPLY_ACTION, () => {
+      this._onStartReplyAction();
+    });
+    this._fsm.on(
+      CALL_FSM_NOTIFY.REPLY_WITH_PATTERN_ACTION,
+      (
+        pattern: RTC_REPLY_MSG_PATTERN,
+        time: number,
+        timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+      ) => {
+        this._onReplyWithPatternAction(pattern, time, timeUnit);
+      },
+    );
+    this._fsm.on(CALL_FSM_NOTIFY.REPLY_WITH_MESSAGE_ACTION, (msg: string) => {
+      this._onReplyWithMessageAction(msg);
     });
     this._fsm.on(
       CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
@@ -462,11 +534,17 @@ class RTCCall {
   }
 
   private _onSessionReinviteAccepted(session: any) {
-    this._onCallActionSuccess(this._getSessionReinviteAction(session));
+    if (this._isReinviteForHoldOrUnhold) {
+      this._onCallActionSuccess(this._getSessionReinviteAction(session));
+      this._isReinviteForHoldOrUnhold = false;
+    }
   }
 
   private _onSessionReinviteFailed(session: any) {
-    this._onCallActionFailed(this._getSessionReinviteAction(session));
+    if (this._isReinviteForHoldOrUnhold) {
+      this._onCallActionFailed(this._getSessionReinviteAction(session));
+      this._isReinviteForHoldOrUnhold = false;
+    }
   }
 
   // fsm listener
@@ -502,6 +580,10 @@ class RTCCall {
     this._callSession.transfer(target);
   }
 
+  private _onForwardAction(target: string) {
+    this._callSession.forward(target);
+  }
+
   private _onParkAction() {
     this._callSession.park();
   }
@@ -534,6 +616,22 @@ class RTCCall {
 
   private _onDtmfAction(digits: string) {
     this._callSession.dtmf(digits);
+  }
+
+  private _onStartReplyAction() {
+    this._callSession.startReply();
+  }
+
+  private _onReplyWithPatternAction(
+    pattern: RTC_REPLY_MSG_PATTERN,
+    time: number,
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+  ) {
+    this._callSession.replyWithPattern(pattern, time, timeUnit);
+  }
+
+  private _onReplyWithMessageAction(msg: string) {
+    this._callSession.replyWithMessage(msg);
   }
 
   private _onCreateOutingCallSession() {

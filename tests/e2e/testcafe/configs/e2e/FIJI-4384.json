@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/MessageInput/UploadFiles.ts"
+    ],
+    "include_tags": [
+      "JPT-1438"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

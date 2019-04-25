@@ -4,16 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ItemService } from 'sdk/module/item/service';
 import { generateModifiedImageURL, RULE } from '../generateModifiedImageURL';
-
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 const url = 'URL';
 const id = 1;
 
 const itemService = {
   getThumbsUrlWithSize: jest.fn().mockResolvedValue(url),
 };
-ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
 
 describe('generateModifiedImageURL', () => {
   describe('cut out to a square', () => {
@@ -33,8 +32,8 @@ describe('generateModifiedImageURL', () => {
         height: 36,
         top: 0,
         left: 0,
-        justifyWidth: false,
-        justifyHeight: true,
+        justifyWidth: true,
+        justifyHeight: false,
         imageHeight: 1000,
         imageWidth: 1000,
       });
@@ -57,8 +56,8 @@ describe('generateModifiedImageURL', () => {
         height: squareSize,
         top: 0,
         left: 0,
-        justifyWidth: false,
-        justifyHeight: true,
+        justifyWidth: true,
+        justifyHeight: false,
         imageHeight: 1000,
         imageWidth: 1000,
       });
@@ -79,8 +78,8 @@ describe('generateModifiedImageURL', () => {
         height: 36,
         top: 0,
         left: -18,
-        justifyWidth: false,
-        justifyHeight: true,
+        justifyWidth: true,
+        justifyHeight: false,
         imageHeight: 500,
         imageWidth: 1000,
       });
@@ -103,8 +102,8 @@ describe('generateModifiedImageURL', () => {
         height: squareSize,
         top: -90,
         left: 0,
-        justifyWidth: true,
-        justifyHeight: false,
+        justifyWidth: false,
+        justifyHeight: true,
         imageHeight: 1000,
         imageWidth: 500,
       });

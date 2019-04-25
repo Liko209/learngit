@@ -17,8 +17,12 @@ import { postTimestamp, dateFormatter } from '@/utils/date';
 import PersonModel from '@/store/models/Person';
 import { StoreViewModel } from '@/store/ViewModel';
 import ProgressModel from '@/store/models/Progress';
+import { container } from 'framework';
+import { GlobalSearchStore } from '@/modules/GlobalSearch/store';
 
 class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
+  private _globalSearchStore = container.get(GlobalSearchStore);
+
   @computed
   get id() {
     return this.props.id;
@@ -99,6 +103,14 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   @computed
   get showActivityStatus() {
     return !!(this.post.parentId || this.post.existItemIds.length);
+  }
+
+  @computed
+  get terms() {
+    if (this._globalSearchStore.open) {
+      return this._globalSearchStore.searchKey.split(' ');
+    }
+    return [];
   }
 }
 

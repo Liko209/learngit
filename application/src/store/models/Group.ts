@@ -16,7 +16,8 @@ import Base from './Base';
 import i18next from 'i18next';
 import { TeamPermission, GroupService } from 'sdk/module/group';
 import { PERMISSION_ENUM } from 'sdk/service';
-import { AccountUserConfig } from 'sdk/service/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 export default class GroupModel extends Base<Group> {
   @observable
@@ -187,6 +188,24 @@ export default class GroupModel extends Base<Group> {
   }
 
   @computed
+  get analysisType() {
+    const type = this.type;
+    let result = '';
+    switch (type) {
+      case CONVERSATION_TYPES.TEAM:
+        result = 'Team conversation';
+        break;
+      case CONVERSATION_TYPES.NORMAL_ONE_TO_ONE:
+        result = '1:1 conversation';
+        break;
+      case CONVERSATION_TYPES.NORMAL_GROUP:
+        result = 'Group conversation';
+        break;
+    }
+    return result;
+  }
+
+  @computed
   get membersExcludeMe() {
     const members = this.members || [];
     const userConfig = new AccountUserConfig();
@@ -213,7 +232,9 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get isCurrentUserHasPermissionAddMember() {
-    const groupService: GroupService = GroupService.getInstance();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
     return groupService.isCurrentUserHasPermission(
       PERMISSION_ENUM.TEAM_ADD_MEMBER,
       this.teamPermissionParams,
@@ -221,7 +242,9 @@ export default class GroupModel extends Base<Group> {
   }
 
   get isAdmin() {
-    const groupService: GroupService = GroupService.getInstance();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
     return groupService.isCurrentUserHasPermission(
       PERMISSION_ENUM.TEAM_ADMIN,
       this.teamPermissionParams,
@@ -229,7 +252,9 @@ export default class GroupModel extends Base<Group> {
   }
 
   isThePersonAdmin(personId: number) {
-    const groupService: GroupService = GroupService.getInstance();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
     return this.type === CONVERSATION_TYPES.TEAM
       ? groupService.isTeamAdmin(personId, this.permissions)
       : false;
@@ -249,7 +274,9 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get canPost() {
-    const groupService: GroupService = GroupService.getInstance();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
     return groupService.isCurrentUserHasPermission(
       PERMISSION_ENUM.TEAM_POST,
       this.teamPermissionParams,
@@ -258,7 +285,9 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get canPin() {
-    const groupService: GroupService = GroupService.getInstance();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
     return groupService.isCurrentUserHasPermission(
       PERMISSION_ENUM.TEAM_PIN_POST,
       this.teamPermissionParams,

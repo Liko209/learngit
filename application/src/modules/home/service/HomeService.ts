@@ -14,7 +14,7 @@ class HomeService {
 
   registerSubModule(name: string) {
     const subModuleConfig = config.subModules[name];
-    this._registerSubModule(subModuleConfig);
+    this._registerSubModule(name, subModuleConfig);
   }
 
   registerSubModules(names: string[]) {
@@ -25,12 +25,20 @@ class HomeService {
     this._homeStore.setDefaultRouterPaths(paths);
   }
 
-  private _registerSubModule(subModuleConfig: SubModuleConfig) {
+  private _registerSubModule(name: string, subModuleConfig: SubModuleConfig) {
     const config = _.cloneDeep(subModuleConfig);
-    this._homeStore.addSubModule(config);
+    this._homeStore.addSubModule(name, config);
 
     if (config.loader) {
       this._jupiter.registerModuleAsync(config.loader, config.afterBootstrap);
+    }
+  }
+
+  async unRegisterModule(name: string) {
+    const subModuleConfig = this._homeStore.getSubModule(name);
+    if (subModuleConfig && subModuleConfig.loader) {
+      const { config } = await subModuleConfig.loader();
+      config.entry && this._jupiter.unRegisterModule(config.entry);
     }
   }
 }

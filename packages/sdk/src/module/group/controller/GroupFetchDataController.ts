@@ -16,7 +16,7 @@ import {
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { SortableModel } from '../../../framework/model';
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 import { CompanyService } from '../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { versionHash } from '../../../utils/mathUtils';
@@ -39,6 +39,7 @@ import { GroupDao } from '../dao';
 import { Group, TeamPermission } from '../entity';
 import { IGroupService } from '../service/IGroupService';
 import { GroupHandleDataController } from './GroupHandleDataController';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 function buildNewGroupInfo(members: number[]) {
   const userConfig = new AccountUserConfig();
@@ -65,7 +66,9 @@ export class GroupFetchDataController {
     offset = 0,
     _limit?: number,
   ): Promise<Group[]> {
-    const profileService: ProfileService = ProfileService.getInstance();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     const limit = _limit || (await profileService.getMaxLeftRailGroup());
     mainLogger.debug(`offset:${offset} limit:${limit} groupType:${groupType}`);
     let result: Group[] = [];
@@ -123,7 +126,7 @@ export class GroupFetchDataController {
   async getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]> {
     if (ids.length) {
       const groups = await this.entitySourceController.batchGet(ids, order);
-      return groups.filter(group => group !== null) as Group[];
+      return groups.filter((group: Group) => group !== null) as Group[];
     }
     return [];
   }
@@ -201,166 +204,23 @@ export class GroupFetchDataController {
 
     return false;
   }
-  async doFuzzySearchGroups(
+
+  async doFuzzySearchAllGroups(
     searchKey: string,
     fetchAllIfSearchKeyEmpty?: boolean,
+    myGroupsOnly?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
     const logId = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.SEARCH_GROUP,
+      PERFORMANCE_KEYS.SEARCH_ALL_GROUP,
       logId,
     );
-    const userConfig = new AccountUserConfig();
-    const currentUserId = userConfig.getGlipUserId();
-    if (!currentUserId) {
-      return null;
-    }
-    const sortFunc = (
-      group: Group,
-      terms: Terms,
-    ): SortableModel<Group> | null => {
-      if (this._isValidGroup(group) && group.members.length > 2) {
-        const groupName = this.getGroupNameByMultiMembers(
-          group.members,
-          currentUserId,
-        );
-        const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
-        const lowerCaseGroupName = groupName.toLowerCase();
-        const isFuzzyMatched =
-          this.entityCacheSearchController.isFuzzyMatched(
-            lowerCaseGroupName,
-            searchKeyTerms,
-          ) ||
-          this.entityCacheSearchController.isSoundexMatched(
-            lowerCaseGroupName,
-            searchKeyTermsToSoundex,
-          );
-        if (
-          (searchKeyTerms.length > 0 && isFuzzyMatched) ||
-          (fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0)
-        ) {
-          return {
-            id: group.id,
-            displayName: groupName,
-            firstSortKey: lowerCaseGroupName,
-            entity: group,
-          };
-        }
-      }
-      return null;
-    };
 
     const result = await this.entityCacheSearchController.searchEntities(
-      sortFunc,
-      searchKey,
-      undefined,
-      (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
-        if (groupA.firstSortKey < groupB.firstSortKey) {
-          return -1;
-        }
-        if (groupA.firstSortKey > groupB.firstSortKey) {
-          return 1;
-        }
-        return 0;
-      },
-    );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
-    return result;
-  }
-
-  async doFuzzySearchTeams(
-    searchKey?: string,
-    fetchAllIfSearchKeyEmpty?: boolean,
-  ): Promise<{
-    terms: string[];
-    sortableModels: SortableModel<Group>[];
-  } | null> {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.SEARCH_TEAM,
-      logId,
-    );
-    const userConfig = new AccountUserConfig();
-    const currentUserId = userConfig.getGlipUserId();
-    if (!currentUserId) {
-      return null;
-    }
-
-    const kSortingRateWithFirstMatched: number = 1;
-    const kSortingRateWithFirstAndPositionMatched: number = 1.1;
-
-    const result = await this.entityCacheSearchController.searchEntities(
-      (team: Group, terms: Terms) => {
-        let isMatched: boolean = false;
-        let sortValue: number = 0;
-        do {
-          const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
-          if (!this._idValidTeam(team)) {
-            break;
-          }
-
-          if (fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0) {
-            isMatched = this._isPublicTeamOrIncludeUser(team, currentUserId);
-          }
-
-          if (isMatched || searchKeyTerms.length === 0) {
-            break;
-          }
-          const lowerCaseAbbreviation = team.set_abbreviation.toLowerCase();
-
-          const isFuzzyMatched =
-            this.entityCacheSearchController.isFuzzyMatched(
-              lowerCaseAbbreviation,
-              searchKeyTerms,
-            ) ||
-            this.entityCacheSearchController.isSoundexMatched(
-              lowerCaseAbbreviation,
-              searchKeyTermsToSoundex,
-            );
-          if (!isFuzzyMatched) {
-            break;
-          }
-
-          if (!this._isPublicTeamOrIncludeUser(team, currentUserId)) {
-            break;
-          }
-
-          const splitNames = this.entityCacheSearchController.getTermsFromSearchKey(
-            lowerCaseAbbreviation,
-          );
-
-          for (let i = 0; i < splitNames.length; ++i) {
-            for (let j = 0; j < searchKeyTerms.length; ++j) {
-              if (
-                this.entityCacheSearchController.isStartWithMatched(
-                  splitNames[i].toLowerCase(),
-                  [searchKeyTerms[j]],
-                )
-              ) {
-                sortValue +=
-                  i === j
-                    ? kSortingRateWithFirstAndPositionMatched
-                    : kSortingRateWithFirstMatched;
-              }
-            }
-          }
-
-          isMatched = true;
-        } while (false);
-
-        return isMatched
-          ? {
-            id: team.id,
-            displayName: team.set_abbreviation,
-            firstSortKey: sortValue,
-            secondSortKey: team.set_abbreviation.toLowerCase(),
-            entity: team,
-          }
-          : null;
-      },
+      this._getTransformAllGroupFunc(fetchAllIfSearchKeyEmpty, myGroupsOnly),
       searchKey,
       undefined,
       (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
@@ -384,23 +244,327 @@ export class GroupFetchDataController {
     return result;
   }
 
-  getGroupNameByMultiMembers(members: number[], currentUserId: number) {
-    const names: string[] = [];
-    const emails: string[] = [];
+  private get _currentUserId() {
+    const userConfig = new AccountUserConfig();
+    return userConfig.getGlipUserId();
+  }
+
+  private _getTransformGroupFunc(fetchAllIfSearchKeyEmpty?: boolean) {
+    return (group: Group, terms: Terms) => {
+      if (this._isValidGroup(group) && group.members.length > 2) {
+        const allPersons = this.getAllPersonOfGroup(
+          group.members,
+          this._currentUserId,
+        );
+        const groupName = this.getGroupNameByMultiMembers(allPersons);
+        const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
+        const lowerCaseGroupName = groupName.toLowerCase();
+        const isFuzzyMatched =
+          this.entityCacheSearchController.isFuzzyMatched(
+            lowerCaseGroupName,
+            searchKeyTerms,
+          ) ||
+          (searchKeyTermsToSoundex.length &&
+            this.entityCacheSearchController.isSoundexMatched(
+              this.getSoundexValueOfGroup(allPersons),
+              searchKeyTermsToSoundex,
+            ));
+        if (
+          (searchKeyTerms.length > 0 && isFuzzyMatched) ||
+          (fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0)
+        ) {
+          return {
+            id: group.id,
+            displayName: groupName,
+            firstSortKey: lowerCaseGroupName,
+            entity: group,
+          };
+        }
+      }
+      return null;
+    };
+  }
+
+  async doFuzzySearchGroups(
+    searchKey: string,
+    fetchAllIfSearchKeyEmpty?: boolean,
+  ): Promise<{
+    terms: string[];
+    sortableModels: SortableModel<Group>[];
+  } | null> {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.SEARCH_GROUP,
+      logId,
+    );
+
+    const result = await this.entityCacheSearchController.searchEntities(
+      this._getTransformGroupFunc(fetchAllIfSearchKeyEmpty),
+      searchKey,
+      undefined,
+      (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
+        if (groupA.firstSortKey < groupB.firstSortKey) {
+          return -1;
+        }
+        if (groupA.firstSortKey > groupB.firstSortKey) {
+          return 1;
+        }
+        return 0;
+      },
+    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    return result;
+  }
+
+  private _getTransformAllGroupFunc(
+    fetchAllIfSearchKeyEmpty?: boolean,
+    myGroupsOnly?: boolean,
+  ) {
+    let groupName: string = '';
+    let lowerCaseName: string = '';
+    const currentUserId = this._currentUserId;
+    return (group: Group, terms: Terms) => {
+      let isMatched: boolean = false;
+      let sortValue: number = 0;
+      do {
+        if (!this.groupService.isValid(group)) {
+          break;
+        }
+
+        const isValidGroup = myGroupsOnly
+          ? group.members.includes(currentUserId)
+          : !group.is_team ||
+            this._isPublicTeamOrIncludeUser(group, currentUserId);
+        if (!isValidGroup) {
+          break;
+        }
+
+        const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
+        const shouldFetchAll =
+          fetchAllIfSearchKeyEmpty! && searchKeyTerms.length === 0;
+        isMatched = shouldFetchAll && isValidGroup;
+        if (isMatched || searchKeyTerms.length === 0) {
+          break;
+        }
+        let isFuzzy: boolean = false;
+        if (group.is_team) {
+          groupName = group.set_abbreviation;
+          lowerCaseName = groupName.toLowerCase();
+          isFuzzy =
+            this.entityCacheSearchController.isFuzzyMatched(
+              lowerCaseName,
+              searchKeyTerms,
+            ) ||
+            (searchKeyTermsToSoundex.length > 0 &&
+              this.entityCacheSearchController.isSoundexMatched(
+                this.groupService.getSoundexById(group.id),
+                searchKeyTermsToSoundex,
+              ));
+        } else {
+          const allPerson = this.getAllPersonOfGroup(
+            group.members,
+            currentUserId,
+          );
+          groupName = this.getGroupNameByMultiMembers(allPerson);
+          lowerCaseName = groupName.toLowerCase();
+          isFuzzy =
+            this.entityCacheSearchController.isFuzzyMatched(
+              lowerCaseName,
+              searchKeyTerms,
+            ) ||
+            (searchKeyTermsToSoundex.length > 0 &&
+              this.entityCacheSearchController.isSoundexMatched(
+                this.getSoundexValueOfGroup(allPerson),
+                searchKeyTermsToSoundex,
+              ));
+        }
+        if (!isFuzzy) {
+          break;
+        }
+
+        sortValue = this._getSortKeyWeight(lowerCaseName, searchKeyTerms);
+
+        isMatched = true;
+      } while (false);
+
+      return isMatched
+        ? {
+            id: group.id,
+            displayName: groupName,
+            firstSortKey: sortValue,
+            secondSortKey: lowerCaseName,
+            entity: group,
+          }
+        : null;
+    };
+  }
+
+  private _getSortKeyWeight(lowerCaseName: string, searchKeyTerms: string[]) {
+    const kSortingRateWithFirstMatched: number = 1;
+    const kSortingRateWithFirstAndPositionMatched: number = 1.1;
+
+    const splitNames = this.entityCacheSearchController.getTermsFromSearchKey(
+      lowerCaseName,
+    );
+    let sortValue = 0;
+
+    const setKeyMatched: Set<string> = new Set();
+    for (let i = 0; i < splitNames.length; ++i) {
+      for (let j = 0; j < searchKeyTerms.length; ++j) {
+        if (
+          !setKeyMatched.has(searchKeyTerms[j]) &&
+          this.entityCacheSearchController.isStartWithMatched(
+            splitNames[i].toLowerCase(),
+            [searchKeyTerms[j]],
+          )
+        ) {
+          setKeyMatched.add(searchKeyTerms[j]);
+          sortValue +=
+            i === j
+              ? kSortingRateWithFirstAndPositionMatched
+              : kSortingRateWithFirstMatched;
+        }
+      }
+    }
+
+    return sortValue;
+  }
+
+  private _getTransformTeamsFunc(fetchAllIfSearchKeyEmpty?: boolean) {
+    const currentUserId = this._currentUserId;
+    return (team: Group, terms: Terms) => {
+      let isMatched: boolean = false;
+      let sortValue: number = 0;
+      do {
+        if (!this._idValidTeam(team)) {
+          break;
+        }
+
+        const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
+        if (fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0) {
+          isMatched = this._isPublicTeamOrIncludeUser(team, currentUserId);
+        }
+
+        if (isMatched || searchKeyTerms.length === 0) {
+          break;
+        }
+
+        const lowerCaseAbbreviation = team.set_abbreviation.toLowerCase();
+        if (
+          !(
+            this.entityCacheSearchController.isFuzzyMatched(
+              lowerCaseAbbreviation,
+              searchKeyTerms,
+            ) ||
+            (searchKeyTermsToSoundex.length &&
+              this.entityCacheSearchController.isSoundexMatched(
+                this.groupService.getSoundexById(team.id),
+                searchKeyTermsToSoundex,
+              ))
+          )
+        ) {
+          break;
+        }
+
+        if (!this._isPublicTeamOrIncludeUser(team, currentUserId)) {
+          break;
+        }
+
+        sortValue = this._getSortKeyWeight(
+          lowerCaseAbbreviation,
+          searchKeyTerms,
+        );
+
+        isMatched = true;
+      } while (false);
+
+      return isMatched
+        ? {
+            id: team.id,
+            displayName: team.set_abbreviation,
+            firstSortKey: sortValue,
+            secondSortKey: team.set_abbreviation.toLowerCase(),
+            entity: team,
+          }
+        : null;
+    };
+  }
+
+  async doFuzzySearchTeams(
+    searchKey?: string,
+    fetchAllIfSearchKeyEmpty?: boolean,
+  ): Promise<{
+    terms: string[];
+    sortableModels: SortableModel<Group>[];
+  } | null> {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.SEARCH_TEAM,
+      logId,
+    );
+
+    const result = await this.entityCacheSearchController.searchEntities(
+      this._getTransformTeamsFunc(fetchAllIfSearchKeyEmpty),
+      searchKey,
+      undefined,
+      (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
+        if (groupA.firstSortKey > groupB.firstSortKey) {
+          return -1;
+        }
+        if (groupA.firstSortKey < groupB.firstSortKey) {
+          return 1;
+        }
+
+        if (groupA.secondSortKey < groupB.secondSortKey) {
+          return -1;
+        }
+        if (groupA.secondSortKey > groupB.secondSortKey) {
+          return 1;
+        }
+        return 0;
+      },
+    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    return result;
+  }
+
+  getAllPersonOfGroup(members: number[], currentUserId: number) {
     const allPersons: Person[] = [];
-    const personService: PersonService = PersonService.getInstance();
-    const diffMembers = _.difference(members, [currentUserId]);
-    diffMembers.forEach((id: number) => {
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
+    members.forEach((id: number) => {
+      if (id === currentUserId) {
+        return;
+      }
       const person = personService.getSynchronously(id);
       if (person) {
         allPersons.push(person);
       }
     });
-
+    return allPersons;
+  }
+  getSoundexValueOfGroup(allPersons: Person[]): string[] {
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
+    let soundexResult: string[] = [];
+    allPersons.forEach((person: Person) => {
+      const soundexOfPerson = personService.getSoundexById(person.id);
+      soundexResult = soundexResult.concat(soundexOfPerson);
+    });
+    return soundexResult;
+  }
+  getGroupNameByMultiMembers(allPersons: Person[]) {
+    const names: string[] = [];
+    const emails: string[] = [];
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
     allPersons.forEach((person: Person) => {
       if (person) {
         const name = personService.getName(person);
-        if (name.length > 0) {
+        if (name.length) {
           names.push(name);
         } else {
           emails.push(person.email);
@@ -427,7 +591,9 @@ export class GroupFetchDataController {
     const group = await this.entitySourceController.get(groupId);
     let email = '';
     if (group) {
-      const companyService: CompanyService = CompanyService.getInstance();
+      const companyService = ServiceLoader.getInstance<CompanyService>(
+        ServiceConfig.COMPANY_SERVICE,
+      );
       const companyReplyDomain = await companyService.getCompanyEmailDomain(
         group.company_id,
       );
@@ -448,23 +614,10 @@ export class GroupFetchDataController {
     return email;
   }
 
-  async isGroupCanBeShown(groupId: number): Promise<boolean> {
-    const profileService: ProfileService = ProfileService.getInstance();
-    const isHidden = await profileService.isConversationHidden(groupId);
-    let isIncludeSelf = false;
-    let isValid = false;
-    const group = await this.entitySourceController.get(groupId);
-    if (group) {
-      isValid = this.groupService.isValid(group);
-      const userConfig = new AccountUserConfig();
-      const currentUserId = userConfig.getGlipUserId();
-      isIncludeSelf = group.members.includes(currentUserId);
-    }
-    return !isHidden && isValid && isIncludeSelf;
-  }
-
   private async _isGroupFavored(groupId: number): Promise<boolean> {
-    const profileService: ProfileService = ProfileService.getInstance();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     const profile = await profileService.getProfile();
     const favoriteGroupIds =
       profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
@@ -534,7 +687,9 @@ export class GroupFetchDataController {
   }
 
   private async _getFavoriteGroups(): Promise<Group[]> {
-    const profileService: ProfileService = ProfileService.getInstance();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     const profile = await profileService.getProfile();
     if (
       profile &&
@@ -550,7 +705,14 @@ export class GroupFetchDataController {
         favoriteGroupIds,
         true,
       );
-      return groups.filter((item: Group) => this.groupService.isValid(item));
+      const userConfig = new AccountUserConfig();
+      const currentUserId = userConfig.getGlipUserId();
+
+      return groups.filter(
+        (item: Group) =>
+          this.groupService.isValid(item) &&
+          this.groupService.isInGroup(currentUserId, item),
+      );
     }
     return [];
   }

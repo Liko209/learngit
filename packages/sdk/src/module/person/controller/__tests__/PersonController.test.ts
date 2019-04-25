@@ -24,18 +24,16 @@ import { IEntityCacheController } from '../../../../framework/controller/interfa
 import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../../group/entity';
 import { GlobalConfigService } from '../../../../module/config';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import { ContactType } from '../../types';
 import { SearchUtils } from '../../../../framework/utils/SearchUtils';
 
 jest.mock('../../../../module/config');
-jest.mock('../../../../service/account/config');
+jest.mock('../../../../module/account/config');
 
 jest.mock('../../../../module/group');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../dao/DaoManager');
-
-GlobalConfigService.getInstance = jest.fn();
 
 describe('PersonService', () => {
   let personController: PersonController;
@@ -178,7 +176,7 @@ describe('PersonService', () => {
       { id: 11, phoneNumber: '5', usageType: 'MainCompanyNumber' },
       { id: 12, phoneNumber: '234567', usageType: 'DirectNumber' },
     ];
-    const sanitizedRcExtension = { extensionNumber: '4711', type: 'User' };
+    const sanitizedRCExtension = { extensionNumber: '4711', type: 'User' };
     const ext = {
       type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
       phoneNumber: '4711',
@@ -200,15 +198,15 @@ describe('PersonService', () => {
         personController.getAvailablePhoneNumbers(
           123,
           rcPhoneNumbers,
-          sanitizedRcExtension,
+          sanitizedRCExtension,
         ),
       ).toEqual([did]);
     });
 
     it.each([
-      [rcPhoneNumbers, sanitizedRcExtension, [ext, did]],
+      [rcPhoneNumbers, sanitizedRCExtension, [ext, did]],
       [rcPhoneNumbers, undefined, [did]],
-      [undefined, sanitizedRcExtension, [ext]],
+      [undefined, sanitizedRCExtension, [ext]],
     ])(
       'should return all available phone numbers, case index: %#',
       (rcPhones, rcExt, expectRes) => {
@@ -528,6 +526,58 @@ describe('PersonService', () => {
         };
         await entityCacheController.put(person);
       }
+
+      const deactivatedPerson2: Person = {
+        id: 39,
+        created_at: 39,
+        modified_at: 39,
+        creator_id: 39,
+        is_new: false,
+        version: 39,
+        company_id: 1,
+        email: 'deactivatedPerson2@ringcentral.com',
+        first_name: 'deactivatedPerson2',
+        last_name: 'deactivatedPerson2',
+        display_name: 'deactivatedPerson2',
+        flags: 6,
+        sanitized_rc_extension: {
+          extensionNumber: '39',
+          type: 'User',
+        },
+        rc_phone_numbers: [
+          {
+            id: 39,
+            phoneNumber: '8885287464',
+            usageType: 'MainCompanyNumber',
+          },
+          { id: 39, phoneNumber: '6502270039', usageType: 'DirectNumber' },
+        ],
+      };
+      await entityCacheController.put(deactivatedPerson2);
+
+      const deactivatedPerson1: Person = {
+        id: 38,
+        created_at: 38,
+        modified_at: 38,
+        creator_id: 38,
+        is_new: false,
+        version: 38,
+        company_id: 1,
+        email: 'deactivatedPerson1@ringcentral.com',
+        first_name: 'deactivatedPerson1',
+        last_name: 'deactivatedPerson1',
+        display_name: 'deactivatedPerson1',
+        deactivated: true,
+        rc_phone_numbers: [
+          {
+            id: 38,
+            phoneNumber: '8885287464',
+            usageType: 'MainCompanyNumber',
+          },
+          { id: 38, phoneNumber: '6502270038', usageType: 'DirectNumber' },
+        ],
+      };
+      await entityCacheController.put(deactivatedPerson1);
     }
 
     beforeEach(async () => {
@@ -552,7 +602,11 @@ describe('PersonService', () => {
       );
       expect(result).toBeNull();
     });
-    it('should return when short number is matched', async () => {
+
+    it('should return when both short number and company id are matched', async () => {
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValueOnce(1);
       await preparePhoneNumData();
       const result = await personController.matchContactByPhoneNumber(
         '21',
@@ -561,6 +615,19 @@ describe('PersonService', () => {
       expect(result).not.toBeNull();
       expect(result.id).toBe(21);
     });
+
+    it('should not return when short number is matched, but company not', async () => {
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValueOnce(2);
+      await preparePhoneNumData();
+      const result = await personController.matchContactByPhoneNumber(
+        '21',
+        ContactType.GLIP_CONTACT,
+      );
+      expect(result).toBeNull();
+    });
+
     it('should return when long number is matched', async () => {
       await preparePhoneNumData();
       const result = await personController.matchContactByPhoneNumber(
@@ -578,6 +645,30 @@ describe('PersonService', () => {
       );
       expect(result).not.toBeNull();
       expect(result.id).toBe(36);
+    });
+
+    it('should not return when phone number matches, but user is deactivated', async () => {
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValueOnce(1);
+      await preparePhoneNumData();
+      const result = await personController.matchContactByPhoneNumber(
+        '6502270038',
+        ContactType.GLIP_CONTACT,
+      );
+      expect(result).toBeNull();
+    });
+
+    it('should not return when phone number matches, but user flag is deactivated', async () => {
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValueOnce(1);
+      await preparePhoneNumData();
+      const result = await personController.matchContactByPhoneNumber(
+        '39',
+        ContactType.GLIP_CONTACT,
+      );
+      expect(result).toBeNull();
     });
   });
 

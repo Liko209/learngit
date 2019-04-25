@@ -4,24 +4,35 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AbstractModule, inject } from 'framework';
-import { ILeaveBlockerService } from '../leave-blocker/interface';
-import { LeaveBlockerService } from '../leave-blocker/service';
+import {
+  ILeaveBlockerService,
+  LEAVE_BLOCKER_SERVICE,
+} from '../leave-blocker/interface';
 import { ItemService } from 'sdk/module/item/service';
 
-const itemService = ItemService.getInstance() as ItemService;
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { MessageNotificationManager } from './MessageNotificationManager';
+import { MESSAGE_NOTIFICATION_MANAGER } from './interface/constant';
+
+const itemService = ServiceLoader.getInstance<ItemService>(
+  ServiceConfig.ITEM_SERVICE,
+);
 
 class MessageModule extends AbstractModule {
-  @inject(LeaveBlockerService) _leaveBlockerService: ILeaveBlockerService;
-
+  @inject(LEAVE_BLOCKER_SERVICE) _leaveBlockerService: ILeaveBlockerService;
+  @inject(MESSAGE_NOTIFICATION_MANAGER)
+  _messageNotificationManager: MessageNotificationManager;
   handleLeave = () => {
     return itemService.hasUploadingFiles();
   }
 
   async bootstrap() {
+    this._messageNotificationManager.init();
     this._leaveBlockerService.onLeave(this.handleLeave);
   }
 
   dispose() {
+    this._messageNotificationManager.dispose();
     this._leaveBlockerService.offLeave(this.handleLeave);
   }
 }

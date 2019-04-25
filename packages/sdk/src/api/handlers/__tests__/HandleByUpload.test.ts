@@ -1,8 +1,12 @@
-import { OAuthTokenHandler, NETWORK_METHOD, NetworkRequestBuilder } from 'foundation';
+import {
+  OAuthTokenHandler,
+  NETWORK_METHOD,
+  NetworkRequestBuilder,
+} from 'foundation';
 import HandleByUpload from '../HandleByUpload';
 const handler = new OAuthTokenHandler(HandleByUpload, null);
 
-jest.mock('../../api');
+// jest.mock('../../api');
 const postRequest = () => {
   return new NetworkRequestBuilder()
     .setPath('/')
@@ -31,7 +35,9 @@ describe('HandleByUpload', () => {
     const request = postRequest();
     request.needAuth = jest.fn().mockImplementation(() => false);
     const decoratedRequest = decoration(request);
-    expect(decoratedRequest.params.tk).toBeUndefined();
+    expect(
+      decoratedRequest.params && decoratedRequest.params.tk,
+    ).toBeUndefined();
     expect(decoratedRequest.headers.Authorization).toBeUndefined();
     expect(decoratedRequest).toEqual(request);
   });
@@ -40,20 +46,24 @@ describe('HandleByUpload', () => {
     handler.accessToken = jest.fn().mockImplementation(() => 'token');
     const decoration = HandleByUpload.requestDecoration(handler);
     const request = postRequest();
+    const path = request.path;
     request.needAuth = jest.fn().mockImplementation(() => true);
     const decoratedRequest = decoration(request);
-    expect(decoratedRequest.params.tk).toBeUndefined();
-    expect(decoratedRequest.headers.Authorization).not.toBeUndefined();
+    expect(
+      decoratedRequest.params && decoratedRequest.params.tk,
+    ).toBeUndefined();
+    expect(decoratedRequest.path).toEqual(`${path}?tk=token`);
   });
   it('should not add tk to headers if isOAuthTokenAvailable is false ', () => {
     handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => false);
     handler.accessToken = jest.fn().mockImplementation(() => 'token');
     const decoration = HandleByUpload.requestDecoration(handler);
     const request = postRequest();
+    const path = request.path;
     request.needAuth = jest.fn().mockImplementation(() => true);
     const decoratedRequest = decoration(request);
-    expect(request.params.tk).toBeUndefined();
-    expect(request.headers.Authorization).toBeUndefined();
+    expect(request.params && request.params.tk).toBeUndefined();
+    expect(decoratedRequest.path).toEqual(path);
     expect(decoratedRequest).toEqual(request);
   });
   it('should not add tk to params if isOAuthTokenAvailable is false ', () => {

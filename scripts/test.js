@@ -60,7 +60,7 @@ switch (true) {
     break;
   default:
     process.env.APP =
-      '<rootDir>/(application|packages/sdk|packages/foundation|packages/voip|packages/jui)';
+      '<rootDir>/(application|packages/sdk|packages/foundation|packages/voip|packages/jui|packages/framework)';
     break;
 }
 

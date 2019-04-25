@@ -5,12 +5,11 @@
  */
 
 import { GroupState, State } from '../../entity/State';
-import { GroupService } from '../../../group';
+import { IGroupService } from '../../../group/service/IGroupService';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { StateFetchDataController } from './StateFetchDataController';
-import { TotalUnreadController } from './TotalUnreadController';
 import { Raw } from '../../../../framework/model';
 import { mainLogger } from 'foundation';
 import { PartialModifyController } from '../../../../framework/controller/impl/PartialModifyController';
@@ -18,10 +17,10 @@ import { PartialModifyController } from '../../../../framework/controller/impl/P
 class StateActionController {
   private _partialModifyController: IPartialModifyController<GroupState>;
   constructor(
+    private _groupService: IGroupService,
     private _entitySourceController: IEntitySourceController<GroupState>,
     private _requestController: IRequestController<State>,
     private _stateFetchDataController: StateFetchDataController,
-    private _totalUnreadController: TotalUnreadController,
   ) {
     this._partialModifyController = new PartialModifyController<GroupState>(
       this._entitySourceController,
@@ -33,10 +32,9 @@ class StateActionController {
     isUnread: boolean,
     ignoreError: boolean,
   ): Promise<void> {
-    const groupService: GroupService = GroupService.getInstance();
     let group;
     try {
-      group = await groupService.getById(groupId);
+      group = await this._groupService.getById(groupId);
     } catch (error) {
       group = null;
     }
@@ -85,7 +83,6 @@ class StateActionController {
           };
         },
         async (updatedEntity: GroupState) => {
-          this._totalUnreadController.handleGroupState([updatedEntity]);
           try {
             if (isUnread) {
               return await this._requestController.put(

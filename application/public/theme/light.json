@@ -85,6 +85,15 @@
       "lake": "#6FAFEB"
     }
   },
+  "radius": {
+    "circle": "50%",
+    "round": 0.5,
+    "zero": 0,
+    "sm": "2px",
+    "md": "3px",
+    "lg": "4px",
+    "xl": "8px"
+  },
   "shape": {
     "borderRadius": 4,
     "border1": "1px solid rgba(255,55,55,.1)",
@@ -181,6 +190,12 @@
       "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
       "lineHeight": "24px"
     },
+    "subheading3": {
+      "fontSize": "1rem",
+      "fontWeight": 600,
+      "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
+      "lineHeight": "22px"
+    },
     "subheading2": {
       "fontSize": "1rem",
       "fontWeight": 500,
@@ -242,8 +257,13 @@
   "opacity": {
     "p05": 0.05,
     "p10": 0.1,
+    "p20": 0.2,
+    "p30": 0.3,
+    "p40": 0.4,
     "p50": 0.5,
     "p60": 0.6,
-    "p80": 0.8
+    "p70": 0.7,
+    "p80": 0.8,
+    "p90": 0.9
   }
 }

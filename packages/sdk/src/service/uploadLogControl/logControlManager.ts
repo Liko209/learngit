@@ -3,54 +3,45 @@
  * @Date: 2018-06-08 11:05:46
  */
 import { LogEntity, logManager, LOG_LEVEL, mainLogger } from 'foundation';
-import { PermissionService, UserPermissionType } from '../../module/permission';
-import { ENTITY, SERVICE, WINDOW } from '../../service/eventKey';
-import notificationCenter from '../notificationCenter';
-import {
-  LogMemoryPersistent,
-  IAccessor,
-  configManager as logConsumerConfigManager,
-  LogUploadConsumer,
-  MemoryLogConsumer,
-} from './consumer';
+import { PermissionService, UserPermissionType } from 'sdk/module/permission';
+import { ENTITY, SERVICE, WINDOW, DOCUMENT } from 'sdk/service/eventKey';
+import notificationCenter from 'sdk/service/notificationCenter';
+import { LogMemoryPersistent, LogUploadConsumer, IAccessor } from './consumer';
+import { configManager } from './config';
 import { LogUploader } from './LogUploader';
+import {
+  ConsumerCollector,
+  MemoryCollector,
+  FixSizeMemoryLogCollection,
+} from './collectors';
 import _ from 'lodash';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
   private _isOnline: boolean;
   private _onUploadAccessorChange: (accessible: boolean) => void;
-  private _tagBlackList: string[] = [];
-  private _tagWhiteList: string[] = [];
   uploadLogConsumer: LogUploadConsumer;
-  memoryLogConsumer: MemoryLogConsumer;
+  logUploadCollector: ConsumerCollector;
+  memoryLogCollector: MemoryCollector;
   private constructor() {
     this._isOnline = window.navigator.onLine;
-    this.uploadLogConsumer = new LogUploadConsumer(
-      new LogUploader(),
-      new LogMemoryPersistent(
-        logConsumerConfigManager.getConfig().persistentLimit,
+    this.memoryLogCollector = new MemoryCollector();
+    this.logUploadCollector = new ConsumerCollector(
+      new FixSizeMemoryLogCollection(
+        configManager.getConfig().memoryCacheSizeThreshold,
       ),
+    );
+    this.uploadLogConsumer = new LogUploadConsumer(
+      this.logUploadCollector,
+      new LogUploader(),
+      new LogMemoryPersistent(configManager.getConfig().persistentLimit),
       this,
     );
-    this.memoryLogConsumer = new MemoryLogConsumer();
-    this.memoryLogConsumer.setSizeThreshold(
-      logConsumerConfigManager.getConfig().memoryCacheSizeThreshold,
-    );
-    this.memoryLogConsumer.setFilter((log: LogEntity) => {
-      return this._whiteListFilter(log) || !this._blackListFilter(log);
-    });
-    logManager.addConsumer(this.memoryLogConsumer);
-    logManager.addConsumer(this.uploadLogConsumer);
+    this.logUploadCollector.setConsumer(this.uploadLogConsumer);
+    logManager.addCollector(this.logUploadCollector);
+    logManager.addCollector(this.memoryLogCollector);
     this.subscribeNotifications();
-  }
-
-  private _whiteListFilter = (log: LogEntity) => {
-    return _.intersection(this._tagWhiteList, log.tags).length > 0;
-  }
-
-  private _blackListFilter = (log: LogEntity) => {
-    return _.intersection(this._tagBlackList, log.tags).length > 0;
   }
 
   public static instance(): LogControlManager {
@@ -74,12 +65,16 @@ export class LogControlManager implements IAccessor {
       this.flush();
     });
 
-    notificationCenter.on(WINDOW.BLUR, () => {
-      this.flush();
+    notificationCenter.on(DOCUMENT.VISIBILITYCHANGE, ({ isHidden }) => {
+      isHidden && this.flush();
     });
 
     if (typeof window !== 'undefined') {
       window.addEventListener('error', this.windowError.bind(this));
+      window.addEventListener(
+        'unhandledrejection',
+        this.windowError.bind(this),
+      );
       window.addEventListener('beforeunload', (event: any) => {
         this.flush();
       });
@@ -110,7 +105,9 @@ export class LogControlManager implements IAccessor {
   }
 
   async configByPermission() {
-    const permissionService: PermissionService = PermissionService.getInstance();
+    const permissionService = ServiceLoader.getInstance<PermissionService>(
+      ServiceConfig.PERMISSION_SERVICE,
+    );
     try {
       const logEnabled = await permissionService.hasPermission(
         UserPermissionType.JUPITER_CAN_SAVE_LOG, // flag for console log
@@ -123,7 +120,7 @@ export class LogControlManager implements IAccessor {
           enabled: logEnabled,
         },
       });
-      logConsumerConfigManager.mergeConfig({
+      configManager.mergeConfig({
         uploadEnabled: logUploadEnabled,
       });
     } catch (error) {
@@ -132,29 +129,18 @@ export class LogControlManager implements IAccessor {
   }
 
   getRecentLogs(): LogEntity[] {
-    return this.memoryLogConsumer.getRecentLogs();
+    return this.memoryLogCollector.getAll();
   }
 
-  windowError(msg: string, url: string, line: number) {
-    const message = `Error in ('${url ||
-      window.location}) on line ${line} with message (${msg})`;
-    mainLogger.fatal(message);
+  windowError(event: ErrorEvent | PromiseRejectionEvent) {
+    if (event instanceof ErrorEvent) {
+      const { error, message } = event;
+      mainLogger.fatal(message, error);
+    } else {
+      const { reason, promise } = event;
+      mainLogger.fatal(reason, promise);
+    }
     this.flush();
   }
 
-  addTag2BlackList(...tags: string[]) {
-    this._tagBlackList = _.uniq([...this._tagBlackList, ...tags]);
-  }
-
-  removeFromBlackList(...tags: string[]) {
-    this._tagBlackList = _.difference(tags, this._tagBlackList);
-  }
-
-  addTag2WhiteList(...tags: string[]) {
-    this._tagWhiteList = _.uniq([...this._tagWhiteList, ...tags]);
-  }
-
-  removeFromWhiteList(...tags: string[]) {
-    this._tagWhiteList = _.difference(tags, this._tagWhiteList);
-  }
 }

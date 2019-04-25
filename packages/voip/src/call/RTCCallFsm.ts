@@ -7,6 +7,7 @@ import { RTCCallFsmTable, IRTCCallFsmTableDependency } from './RTCCallFsmTable';
 import { EventEmitter2 } from 'eventemitter2';
 import async from 'async';
 import { CALL_FSM_NOTIFY } from './types';
+import { RTC_REPLY_MSG_PATTERN, RTC_REPLY_MSG_TIME_UNIT } from '../api/types';
 
 const CallFsmEvent = {
   HANGUP: 'hangupEvent',
@@ -16,13 +17,18 @@ const CallFsmEvent = {
   MUTE: 'muteEvent',
   UNMUTE: 'unmuteEvent',
   TRANSFER: 'transferEvent',
+  FORWARD: 'forwardEvent',
   ANSWER: 'answerEvent',
   REJECT: 'rejectEvent',
+  IGNORE: 'ignoreEvent',
   SEND_TO_VOICEMAIL: 'sendToVoicemailEvent',
   HOLD: 'holdEvent',
   UNHOLD: 'unholdEvent',
   PARK: 'parkEvent',
   DTMF: 'dtmfEvent',
+  START_REPLY: 'startReplyEvent',
+  REPLY_WITH_MSG: 'replyWithMsgEvent',
+  REPLY_WITH_PATTERN: 'replyWithPatternEvent',
   ACCOUNT_READY: 'accountReadyEvent',
   ACCOUNT_NOT_READY: 'accountNotReadyEvent',
   SESSION_ACCEPTED: 'sessionAcceptedEvent',
@@ -80,6 +86,12 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
   public reject() {
     this._eventQueue.push({ name: CallFsmEvent.REJECT }, () => {
       this._onReject();
+    });
+  }
+
+  public ignore() {
+    this._eventQueue.push({ name: CallFsmEvent.IGNORE }, () => {
+      this._callFsmTable.ignore();
     });
   }
 
@@ -143,6 +155,15 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     );
   }
 
+  forward(target: string): void {
+    this._eventQueue.push(
+      { name: CallFsmEvent.FORWARD, params: target },
+      (params: any) => {
+        this._onForward(params);
+      },
+    );
+  }
+
   hold(): void {
     this._eventQueue.push({ name: CallFsmEvent.HOLD }, () => {
       this._onHold();
@@ -162,6 +183,28 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
         this._onDtmf(params);
       },
     );
+  }
+
+  startReplyWithMessage(): void {
+    this._eventQueue.push({ name: CallFsmEvent.START_REPLY }, () => {
+      this._onStartReplyWithMessage();
+    });
+  }
+
+  replyWithMessage(message: string): void {
+    this._eventQueue.push({ name: CallFsmEvent.REPLY_WITH_MSG }, () => {
+      this._callFsmTable.replyWithMessage(message);
+    });
+  }
+
+  replyWithPattern(
+    pattern: RTC_REPLY_MSG_PATTERN,
+    time: number,
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+  ): void {
+    this._eventQueue.push({ name: CallFsmEvent.REPLY_WITH_MSG }, () => {
+      this._callFsmTable.replyWithPattern(pattern, time, timeUnit);
+    });
   }
 
   public accountReady() {
@@ -252,6 +295,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this.emit(CALL_FSM_NOTIFY.TRANSFER_ACTION, target);
   }
 
+  onForwardAction(target: string) {
+    this.emit(CALL_FSM_NOTIFY.FORWARD_ACTION, target);
+  }
+
   onParkAction() {
     this.emit(CALL_FSM_NOTIFY.PARK_ACTION);
   }
@@ -288,6 +335,27 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this.emit(CALL_FSM_NOTIFY.DTMF_ACTION, digits);
   }
 
+  onStartReplyAction() {
+    this.emit(CALL_FSM_NOTIFY.START_REPLY_ACTION);
+  }
+
+  onReplyWithPatternAction(
+    pattern: RTC_REPLY_MSG_PATTERN,
+    time: number,
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+  ): void {
+    this.emit(
+      CALL_FSM_NOTIFY.REPLY_WITH_PATTERN_ACTION,
+      pattern,
+      time,
+      timeUnit,
+    );
+  }
+
+  onReplyWithMessageAction(msg: string) {
+    this.emit(CALL_FSM_NOTIFY.REPLY_WITH_MESSAGE_ACTION, msg);
+  }
+
   private _onHangup() {
     this._callFsmTable.hangup();
   }
@@ -298,6 +366,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onTransfer(target: string) {
     this._callFsmTable.transfer(target);
+  }
+
+  private _onForward(target: string) {
+    this._callFsmTable.forward(target);
   }
 
   private _onPark() {
@@ -342,6 +414,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onDtmf(digits: string) {
     this._callFsmTable.dtmf(digits);
+  }
+
+  private _onStartReplyWithMessage() {
+    this._callFsmTable.startReplyWithMessage();
   }
 
   private _onAccountReady() {

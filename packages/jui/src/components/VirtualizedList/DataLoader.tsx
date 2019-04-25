@@ -5,6 +5,7 @@
  */
 import _ from 'lodash';
 import { useRef, useState, useEffect, memo, useCallback } from 'react';
+import { useMountState } from './hooks';
 import { noop } from '../../foundation/utils';
 import { ILoadMoreStrategy } from './LoadMoreStrategy/ILoadMoreStrategy';
 import { IndexRange, Direction, IndexConstraint, Delta } from './types';
@@ -42,6 +43,7 @@ const JuiDataLoader = ({
   const [loadingInitial, setLoadingInitial] = useState(false);
   const [loadingInitialFailed, setLoadingInitialFailed] = useState(false);
   const loading = loadingUp || loadingDown || loadingInitial;
+  const isMountedRef = useMountState();
 
   const getMap = useCallback(() => {
     return {
@@ -57,24 +59,25 @@ const JuiDataLoader = ({
       },
       initial: {
         setLoading: setLoadingInitial,
-        load: () => loadInitialData(),
+        load: (count: number) => loadInitialData(),
         onFailed: setLoadingInitialFailed,
       },
     };
   },                         [loadMore, loadMore, loadInitialData]);
 
   const loadData = useCallback(
-    _.throttle(async (type: 'initial' | 'up' | 'down', count: number = 10) => {
+    _.throttle((type: 'initial' | 'up' | 'down', count: number = 10) => {
       const map = getMap();
       const { setLoading, load, onFailed } = map[type];
       setLoading(true);
       onFailed(false);
-      try {
-        await load(count);
-      } catch {
-        onFailed(true);
-      }
-      setLoading(false);
+      load(count)
+        .catch(() => {
+          isMountedRef.current && onFailed(true);
+        })
+        .then(() => {
+          isMountedRef.current && setLoading(false);
+        });
     },         1000),
     [getMap],
   );
@@ -103,7 +106,7 @@ const JuiDataLoader = ({
         loadData(direction, count);
       }
     },
-    [loadData, loadMoreStrategy],
+    [loadData, loadMoreStrategy, loading],
   );
 
   useEffect(() => {

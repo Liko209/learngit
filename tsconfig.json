@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "incremental": true,
     "allowJs": true,
     "checkJs": false,
     "allowSyntheticDefaultImports": true,
@@ -19,6 +20,7 @@
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "resolveJsonModule": true
   },
   "files": [
@@ -27,6 +29,7 @@
     "./typings/string-natural-compare.d.ts",
     "./typings/react-visibility-sensor.d.ts",
     "./typings/glipdown.d.ts",
-    "./typings/i18next-intervalPlural-postProcessor.d.ts"
+    "./typings/i18next-intervalPlural-postProcessor.d.ts",
+    "./typings/load-segment.d.ts"
   ]
 }

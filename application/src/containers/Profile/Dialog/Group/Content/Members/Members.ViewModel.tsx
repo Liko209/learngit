@@ -11,6 +11,7 @@ import { SearchService } from 'sdk/module/search';
 import { Person } from 'sdk/module/person/entity';
 import { SortableModel } from 'sdk/framework/model';
 import { debounce } from 'lodash';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const DELAY_DEBOUNCE = 300;
 
@@ -70,20 +71,28 @@ class MembersViewModel extends ProfileDialogGroupViewModel
 
   @action
   handleSearch = async () => {
-    const result = await SearchService.getInstance().doFuzzySearchPersons({
-      searchKey: this.keywords,
-      excludeSelf: false,
-      arrangeIds: this.sortedAllMemberIds,
-      fetchAllIfSearchKeyEmpty: true,
-      asIdsOrder: true,
-    });
-    if (result !== null) {
-      const ids = result.sortableModels.map(
-        (person: SortableModel<Person>) => person.id,
+    if (this.keywords) {
+      const searchService = ServiceLoader.getInstance<SearchService>(
+        ServiceConfig.SEARCH_SERVICE,
       );
-      this.filteredMemberIds = ids;
+      const result = await searchService.doFuzzySearchPersons({
+        searchKey: this.keywords,
+        excludeSelf: false,
+        arrangeIds: this.sortedAllMemberIds,
+        fetchAllIfSearchKeyEmpty: true,
+        asIdsOrder: true,
+      });
+      if (result !== null) {
+        const ids = result.sortableModels.map(
+          (person: SortableModel<Person>) => person.id,
+        );
+        this.filteredMemberIds = ids;
+      }
+      return result;
     }
-    return result;
+    // when no keywords, just reset the member list.
+    this.filteredMemberIds = this.sortedAllMemberIds;
+    return null;
   }
 }
 export { MembersViewModel };

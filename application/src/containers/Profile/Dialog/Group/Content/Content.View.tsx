@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
+import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ProfileDialogGroupContentViewProps } from './types';
@@ -20,18 +20,48 @@ import {
 } from 'jui/pattern/Profile/Dialog';
 import { goToConversationWithLoading } from '@/common/goToConversation';
 import { Members } from './Members';
-import { joinTeam } from '@/common/joinPublicTeam';
+import { joinPublicTeam } from '@/common/joinPublicTeam';
 import portalManager from '@/common/PortalManager';
 import { renderButton } from './common/button';
+import { ProfileContext } from '../types';
+import RO from 'resize-observer-polyfill';
 
+// padding for `Summary`
+const PADDING_FIX = 20 + 20;
 @observer
 class ProfileDialogGroupContentViewComponent extends Component<
   WithTranslation & ProfileDialogGroupContentViewProps
 > {
+  static contextType = ProfileContext;
+  private _ref: RefObject<any> = createRef();
+  private _observer?: RO;
+  private _handleResize = (entries: ResizeObserverEntry[]) => {
+    const entry = entries[0];
+    const { width, height } = entry.contentRect;
+    const { sizeManager } = this.context;
+    sizeManager.updateSize('profileDialogSummary', {
+      width,
+      height: height + PADDING_FIX,
+    });
+  }
+
+  componentDidMount() {
+    const { current } = this._ref;
+    if (current) {
+      this._observer = new RO(this._handleResize);
+      this._observer.observe(current);
+    }
+  }
+
+  componentWillUnmount() {
+    if (this._observer) {
+      this._observer.disconnect();
+    }
+  }
+
   joinTeamAfterClick = () => {
-    const handerJoinTeam = joinTeam(this.props.group);
     portalManager.dismissLast();
-    handerJoinTeam();
+    joinPublicTeam(this.props.group);
   }
 
   messageAfterClick = async () => {
@@ -44,7 +74,7 @@ class ProfileDialogGroupContentViewComponent extends Component<
     const { id, group, showMessage, showJoinTeam } = this.props;
     return (
       <>
-        <Summary data-test-automation-id="profileDialogSummary">
+        <Summary ref={this._ref} data-test-automation-id="profileDialogSummary">
           <Left>
             <GroupAvatar
               cid={id}

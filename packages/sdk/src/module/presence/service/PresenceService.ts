@@ -9,11 +9,10 @@ import { SOCKET, SERVICE } from '../../../service/eventKey';
 import { Presence, RawPresence } from '../entity';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { PresenceController } from '../controller/PresenceController';
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 import { PRESENCE } from '../constant/Presence';
 
 class PresenceService extends EntityBaseService {
-  static key = 'PresenceService';
   private _presenceController: PresenceController;
 
   constructor(threshold: number = 29, interval: number = 200) {
@@ -22,7 +21,8 @@ class PresenceService extends EntityBaseService {
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SOCKET.PRESENCE]: this.presenceHandleData,
-        [SERVICE.SOCKET_STATE_CHANGE]: this.handleStore,
+        [SERVICE.SOCKET_STATE_CHANGE]: this.handleSocketStateChange,
+        [SERVICE.STOPPING_SOCKET]: this.resetPresence,
       }),
     );
   }
@@ -54,8 +54,12 @@ class PresenceService extends EntityBaseService {
     await this._presenceController.handlePresenceIncomingData(presences);
   }
 
-  handleStore = ({ state }: { state: any }) => {
-    this._presenceController.handleStore(state);
+  handleSocketStateChange = ({ state }: { state: string }) => {
+    this._presenceController.handleSocketStateChange(state);
+  }
+
+  resetPresence = () => {
+    this._presenceController.resetPresence();
   }
 }
 

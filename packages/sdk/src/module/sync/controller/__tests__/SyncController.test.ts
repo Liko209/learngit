@@ -4,26 +4,22 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { NewGlobalConfig } from '../../../../service/config/NewGlobalConfig';
 import { indexData, initialData, remainingData } from '../../../../api';
 import { SyncUserConfig } from '../../config/SyncUserConfig';
 import { GlobalConfigService } from '../../../config';
 import { SyncController } from '../SyncController';
-import {
-  AccountGlobalConfig,
-  AccountUserConfig,
-} from '../../../../service/account/config';
+import { AccountGlobalConfig } from '../../../../module/account/config';
 import { JNetworkError, ERROR_CODES_NETWORK } from '../../../../error';
 import { GroupConfigService } from '../../../../module/groupConfig';
 import { PersonService } from '../../../person';
 import { GroupService } from '../../../group';
 import { PostService } from '../../../post';
 import { ItemService } from '../../../item/service';
-import { AccountService } from '../../../../service/account/accountService';
-import socketManager from '../../../../service/socket';
+import { AccountService } from '../../../../module/account';
+import { ServiceLoader, ServiceConfig } from '../../../../module/serviceLoader';
 
 jest.mock('../../config/SyncUserConfig');
-jest.mock('../../../../service/config/NewGlobalConfig');
+
 jest.mock('../../../../api');
 jest.mock('../../../config');
 jest.mock('../../../../module/groupConfig');
@@ -31,9 +27,8 @@ jest.mock('../../../person');
 jest.mock('../../../group');
 jest.mock('../../../post');
 jest.mock('../../../item/service');
-jest.mock('../../../../service/account/config');
-jest.mock('../../../../service/account/accountService');
-jest.mock('../../../../service/socket');
+jest.mock('../../../../module/account/config');
+jest.mock('../../../../module/account');
 
 let groupConfigService: GroupConfigService;
 let personService: PersonService;
@@ -49,29 +44,56 @@ describe('SyncController ', () => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     syncController = new SyncController();
-    GlobalConfigService.getInstance = jest.fn().mockReturnValue({
-      get: jest.fn(),
-      put: jest.fn(),
-    });
+
     groupConfigService = new GroupConfigService();
-    GroupConfigService.getInstance = jest
-      .fn()
-      .mockReturnValue(groupConfigService);
 
     personService = new PersonService();
-    PersonService.getInstance = jest.fn().mockReturnValue(personService);
 
     groupService = new GroupService();
-    GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 
     postService = new PostService();
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
 
     itemService = new ItemService();
-    ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 
-    accountService = new AccountService();
-    AccountService.getInstance = jest.fn().mockReturnValue(accountService);
+    accountService = new AccountService(null);
+
+    groupConfigService = new GroupConfigService();
+
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        let result: any = null;
+        switch (serviceName) {
+          case ServiceConfig.PERSON_SERVICE:
+            result = personService;
+            break;
+          case ServiceConfig.GROUP_SERVICE:
+            result = groupService;
+            break;
+          case ServiceConfig.POST_SERVICE:
+            result = postService;
+            break;
+          case ServiceConfig.ITEM_SERVICE:
+            result = itemService;
+            break;
+          case ServiceConfig.ACCOUNT_SERVICE:
+            result = accountService;
+            break;
+          case ServiceConfig.GLOBAL_CONFIG_SERVICE:
+            result = {
+              get: jest.fn(),
+              put: jest.fn(),
+              clear: jest.fn(),
+            };
+            break;
+          case ServiceConfig.GROUP_CONFIG_SERVICE:
+            result = groupConfigService;
+            break;
+          default:
+            break;
+        }
+        return result;
+      });
   });
 
   describe('getIndexTimestamp', () => {
@@ -118,8 +140,39 @@ describe('SyncController ', () => {
         .mockReturnValue(1);
       SyncUserConfig.prototype.getFetchedRemaining = jest
         .fn()
-        .mockReturnValue(1);
+        .mockReturnValue(true);
       const spy2 = jest.spyOn(syncController, '_fetchRemaining');
+      await syncController.syncData();
+      expect(spy2).toBeCalledTimes(0);
+    });
+
+    it('should call fetchRemainingData when sync index data and remaining had ever called', async () => {
+      AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValueOnce(1);
+      jest.spyOn(syncController, 'fetchIndexData').mockResolvedValueOnce({});
+
+      SyncUserConfig.prototype.getLastIndexTimestamp = jest
+        .fn()
+        .mockReturnValue(1);
+      SyncUserConfig.prototype.getFetchedRemaining = jest
+        .fn()
+        .mockReturnValue(false);
+      const spy2 = jest.spyOn(syncController, 'fetchRemainingData');
+      await syncController.syncData();
+      expect(spy2).toBeCalledTimes(1);
+    });
+
+    it('should not call fetchRemainingData when is doing fetchRemainingData', async () => {
+      AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValueOnce(1);
+      jest.spyOn(syncController, 'fetchIndexData').mockResolvedValueOnce({});
+
+      SyncUserConfig.prototype.getLastIndexTimestamp = jest
+        .fn()
+        .mockReturnValue(1);
+      SyncUserConfig.prototype.getFetchedRemaining = jest
+        .fn()
+        .mockReturnValue(false);
+      Object.assign(syncController, { _isFetchingRemaining: true });
+      const spy2 = jest.spyOn(syncController, 'fetchRemainingData');
       await syncController.syncData();
       expect(spy2).toBeCalledTimes(0);
     });
@@ -129,53 +182,55 @@ describe('SyncController ', () => {
       jest.clearAllMocks();
       jest.resetModules();
     });
-    it('should call updateCanUpdateIndexTimeStamp when forceUpdate is true and socket is connected', () => {
-      jest
-        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
-        .mockImplementationOnce(() => {});
-      socketManager.isConnected.mockReturnValueOnce(true);
+    it('should update timestamp when is forceUpdate', () => {
       syncController.updateIndexTimestamp(1, true);
-      expect(syncController.updateCanUpdateIndexTimeStamp).toBeCalledTimes(1);
-      expect(SyncUserConfig.prototype.setLastIndexTimestamp).toBeCalledTimes(1);
+      expect(
+        SyncUserConfig.prototype.setLastIndexTimestamp,
+      ).toHaveBeenCalledWith(1);
     });
+    describe('update timestamp from socket', () => {
+      function setUp(socktTime: any, indexTime: any) {
+        SyncUserConfig.prototype.getSocketConnectedLocalTime = jest
+          .fn()
+          .mockReturnValueOnce(socktTime);
+        SyncUserConfig.prototype.getIndexStartLocalTime = jest
+          .fn()
+          .mockReturnValueOnce(indexTime);
+      }
+      it('should not update when there is not socket connected local time', () => {
+        setUp(null, 1);
+        syncController.updateIndexTimestamp(10, false);
+        expect(
+          SyncUserConfig.prototype.setLastIndexTimestamp,
+        ).not.toHaveBeenCalled();
+      });
+      it('should not update when socket connected local time is 0', () => {
+        setUp(0, 1);
+        syncController.updateIndexTimestamp(10, false);
+        expect(
+          SyncUserConfig.prototype.setLastIndexTimestamp,
+        ).not.toHaveBeenCalled();
+      });
 
-    it('should not call updateCanUpdateIndexTimeStamp when forceUpdate is true but socket is not connected', () => {
-      jest
-        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
-        .mockImplementationOnce(() => {});
-      socketManager.isConnected.mockReturnValueOnce(false);
-      syncController.updateIndexTimestamp(1, true);
-      expect(syncController.updateCanUpdateIndexTimeStamp).toBeCalledTimes(0);
-      expect(SyncUserConfig.prototype.setLastIndexTimestamp).toBeCalledTimes(1);
-    });
-
-    it('should not call updateCanUpdateIndexTimeStamp when forceUpdate is false', () => {
-      jest
-        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
-        .mockImplementationOnce(() => {});
-      jest
-        .spyOn(syncController, 'canUpdateIndexTimeStamp')
-        .mockReturnValueOnce(true);
-      syncController.updateIndexTimestamp(1, false);
-      expect(syncController.updateCanUpdateIndexTimeStamp).toBeCalledTimes(0);
-      expect(SyncUserConfig.prototype.setLastIndexTimestamp).toBeCalledTimes(1);
-    });
-
-    it('should not call NewGlobalConfig.setLastIndexTimestamp when it is not forceUpdate and can not update time stamp', () => {
-      jest
-        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
-        .mockImplementationOnce(() => {});
-      jest
-        .spyOn(syncController, 'canUpdateIndexTimeStamp')
-        .mockReturnValueOnce(false);
-      syncController.updateIndexTimestamp(1, false);
-      expect(syncController.updateCanUpdateIndexTimeStamp).toBeCalledTimes(0);
-      expect(SyncUserConfig.prototype.setLastIndexTimestamp).toBeCalledTimes(0);
+      it('should not update when socket connected local time is larger than index time', () => {
+        setUp(9, 1);
+        syncController.updateIndexTimestamp(10, false);
+        expect(
+          SyncUserConfig.prototype.setLastIndexTimestamp,
+        ).not.toHaveBeenCalled();
+      });
+      it('should update when socket connected local time is less than index time', () => {
+        setUp(6, 8);
+        syncController.updateIndexTimestamp(10, false);
+        expect(
+          SyncUserConfig.prototype.setLastIndexTimestamp,
+        ).toHaveBeenCalledWith(10);
+      });
     });
   });
   describe('_handleIncomingData', () => {
     it('should call setLastIndexTimestamp and setSocketServerHost only once when first login', async () => {
-      NewGlobalConfig.getLastIndexTimestamp = jest
+      SyncUserConfig.prototype.getLastIndexTimestamp = jest
         .fn()
         .mockReturnValue(undefined);
       initialData.mockResolvedValueOnce({
@@ -193,6 +248,35 @@ describe('SyncController ', () => {
       expect(
         SyncUserConfig.prototype.setLastIndexTimestamp,
       ).toHaveBeenCalledTimes(1);
+      expect(
+        SyncUserConfig.prototype.setIndexSocketServerHost,
+      ).toHaveBeenCalledTimes(1);
+    });
+    it('should not update setIndexSocketServerHost if it is not changed', async () => {
+      SyncUserConfig.prototype.getLastIndexTimestamp = jest
+        .fn()
+        .mockReturnValue(undefined);
+      initialData.mockResolvedValueOnce({
+        timestamp: 11,
+        scoreboard: 'aws11',
+      });
+      remainingData.mockResolvedValueOnce({
+        timestamp: 222,
+        scoreboard: 'aws22',
+      });
+      jest
+        .spyOn(syncController, '_dispatchIncomingData')
+        .mockImplementationOnce(() => {});
+      SyncUserConfig.prototype.getIndexSocketServerHost = jest
+        .fn()
+        .mockReturnValueOnce('aws11');
+      await syncController.syncData();
+      expect(
+        SyncUserConfig.prototype.setLastIndexTimestamp,
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        SyncUserConfig.prototype.setIndexSocketServerHost,
+      ).toHaveBeenCalledTimes(0);
     });
   });
 
@@ -280,24 +364,82 @@ describe('SyncController ', () => {
       });
     });
   });
-  describe('updateCanUpdateIndexTimeStamp', () => {
-    beforeEach(() => {
-      jest
-        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
-        .mockReturnValueOnce(1);
-      AccountGlobalConfig.getUserDictionary.mockReturnValueOnce(1);
+
+  describe('handleSocketConnectionStateChanged', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
     });
-    it('should call updateCanUpdateIndexTimeStamp when stopping FSM', () => {
+    describe('connected', () => {
+      it('should call setSocketConnectedLocalTime', () => {
+        SyncUserConfig.prototype.setSocketConnectedLocalTime = jest
+          .fn()
+          .mockImplementationOnce(() => {});
+        syncController.handleSocketConnectionStateChanged({
+          state: 'connected',
+        });
+        expect(
+          SyncUserConfig.prototype.setSocketConnectedLocalTime,
+        ).toHaveBeenCalled();
+      });
+    });
+    describe('disconnected', () => {
+      it('should call setSocketConnectedLocalTime when user has login', () => {
+        AccountGlobalConfig.getUserDictionary = jest
+          .fn()
+          .mockReturnValueOnce(undefined);
+        SyncUserConfig.prototype.setSocketConnectedLocalTime = jest
+          .fn()
+          .mockImplementationOnce(() => {});
+        syncController.handleSocketConnectionStateChanged({
+          state: 'disconnected',
+        });
+        expect(
+          SyncUserConfig.prototype.setSocketConnectedLocalTime,
+        ).not.toHaveBeenCalled();
+      });
+      it('should not call setSocketConnectedLocalTime when user has not login', () => {
+        AccountGlobalConfig.getUserDictionary = jest
+          .fn()
+          .mockReturnValueOnce(1);
+        SyncUserConfig.prototype.setSocketConnectedLocalTime = jest
+          .fn()
+          .mockImplementationOnce(() => {});
+        syncController.handleSocketConnectionStateChanged({
+          state: 'disconnected',
+        });
+        expect(
+          SyncUserConfig.prototype.setSocketConnectedLocalTime,
+        ).toHaveBeenCalledWith(0);
+      });
+    });
+  });
+  describe('handleStoppingSocketEvent', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+    });
+    it('should call setSocketConnectedLocalTime when user has login', () => {
+      AccountGlobalConfig.getUserDictionary = jest
+        .fn()
+        .mockReturnValueOnce(undefined);
+      SyncUserConfig.prototype.setSocketConnectedLocalTime = jest
+        .fn()
+        .mockImplementationOnce(() => {});
       syncController.handleStoppingSocketEvent();
       expect(
-        syncController.updateCanUpdateIndexTimeStamp,
-      ).toHaveBeenCalledTimes(1);
+        SyncUserConfig.prototype.setSocketConnectedLocalTime,
+      ).not.toHaveBeenCalled();
     });
-    it('should call updateCanUpdateIndexTimeStamp when wake up from sleep mode', () => {
-      syncController.handleWakeUpFromSleep();
+    it('should not call setSocketConnectedLocalTime when user has not login', () => {
+      AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValueOnce(1);
+      SyncUserConfig.prototype.setSocketConnectedLocalTime = jest
+        .fn()
+        .mockImplementationOnce(() => {});
+      syncController.handleStoppingSocketEvent();
       expect(
-        syncController.updateCanUpdateIndexTimeStamp,
-      ).toHaveBeenCalledTimes(1);
+        SyncUserConfig.prototype.setSocketConnectedLocalTime,
+      ).toHaveBeenCalledWith(0);
     });
   });
 });

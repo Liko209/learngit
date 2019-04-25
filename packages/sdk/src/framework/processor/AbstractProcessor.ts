@@ -62,9 +62,14 @@ abstract class AbstractProcessor {
   }
 
   removeProcessor(processor: IProcessor): boolean {
+    const name = processor.name();
+    return this.removeProcessorByName(name);
+  }
+
+  removeProcessorByName(name: string): boolean {
     let existed = false;
     this._processors = this._processors.filter((item: IProcessor) => {
-      if (item.name() === processor.name()) {
+      if (item.name() === name) {
         existed = true;
         return false;
       }

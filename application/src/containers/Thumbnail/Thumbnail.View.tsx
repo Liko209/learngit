@@ -12,25 +12,26 @@ import { ViewProps, Props } from './types';
 
 @observer
 class ThumbnailView extends React.Component<ViewProps & Props> {
-  render() {
-    const { icon, thumbsUrlWithSize, type } = this.props;
+  private _renderIcon = () => {
+    const { thumbsUrlWithSize, onClick } = this.props;
+    const imagePreview = (
+      <JuiIconography iconSize="extraLarge">image_preview</JuiIconography>
+    );
+    if (!thumbsUrlWithSize) {
+      return imagePreview;
+    }
     return (
-      <>
-        {type === 'image' ? (
-          <PreloadImg
-            url={thumbsUrlWithSize}
-            placeholder={
-              <JuiIconography iconSize="extraLarge">
-                image_preview
-              </JuiIconography>
-            }
-          >
-            <JuiThumbnail url={thumbsUrlWithSize} />
-          </PreloadImg>
-        ) : (
-          <JuiThumbnail iconType={icon} />
-        )}
-      </>
+      <PreloadImg url={thumbsUrlWithSize} placeholder={imagePreview}>
+        <JuiThumbnail url={thumbsUrlWithSize} onClick={onClick} />
+      </PreloadImg>
+    );
+  }
+  render() {
+    const { icon, type } = this.props;
+    return type === 'image' ? (
+      this._renderIcon()
+    ) : (
+      <JuiThumbnail iconType={icon} />
     );
   }
 }

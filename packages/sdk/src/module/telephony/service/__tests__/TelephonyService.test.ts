@@ -9,12 +9,20 @@ import { ITelephonyAccountDelegate } from '../ITelephonyAccountDelegate';
 import { TELEPHONY_ACCOUNT_STATE, MAKE_CALL_ERROR_CODE } from '../../types';
 import { GlobalConfigService } from '../../../config';
 import { MakeCallController } from '../../controller/MakeCallController';
+import { ITelephonyCallDelegate } from '../ITelephonyCallDelegate';
+import {
+  RTC_CALL_ACTION,
+  RTC_CALL_STATE,
+  RTCCallActionSuccessOptions,
+} from 'voip';
+import { TelephonyAccountController } from '../../controller/TelephonyAccountController';
+import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../../controller/TelephonyEngineController');
 jest.mock('../../controller/TelephonyAccountController');
 jest.mock('../../controller/MakeCallController');
 jest.mock('../../../config');
-GlobalConfigService.getInstance = jest.fn();
+ServiceLoader.getInstance = jest.fn();
 
 describe('TelephonyService', () => {
   let telephonyService: TelephonyService;
@@ -22,8 +30,19 @@ describe('TelephonyService', () => {
   let accountController;
   let makeCallController: MakeCallController;
 
+  const callId = '123';
+  const toNum = '123';
   class MockAcc implements ITelephonyAccountDelegate {
     onAccountStateChanged(state: TELEPHONY_ACCOUNT_STATE) {}
+  }
+
+  class MockCall implements ITelephonyCallDelegate {
+    onCallStateChange(callId: string, state: RTC_CALL_STATE) {}
+    onCallActionSuccess(
+      callAction: RTC_CALL_ACTION,
+      options: RTCCallActionSuccessOptions,
+    ) {}
+    onCallActionFailed(callAction: RTC_CALL_ACTION) {}
   }
 
   function clearMocks() {
@@ -35,13 +54,7 @@ describe('TelephonyService', () => {
   function setup() {
     telephonyService = new TelephonyService();
     engineController = new TelephonyEngineController();
-    accountController = {
-      makeCall: jest.fn(),
-      hangUp: jest.fn(),
-      mute: jest.fn(),
-      unmute: jest.fn(),
-      getCallCount: jest.fn(),
-    };
+    accountController = new TelephonyAccountController(null, null, null);
 
     engineController.getAccountController = jest
       .fn()
@@ -61,37 +74,30 @@ describe('TelephonyService', () => {
   describe('createAccount', () => {
     it('should call controller to create account', () => {
       const mockAcc = new MockAcc();
-      telephonyService.createAccount(mockAcc);
-      expect(engineController.createAccount).toHaveBeenCalledWith(mockAcc);
+      const mockCall = new MockCall();
+      telephonyService.createAccount(mockAcc, mockCall);
+      expect(engineController.createAccount).toHaveBeenCalledWith(
+        mockAcc,
+        mockCall,
+      );
     });
   });
   describe('makeCall', () => {
     it('should call account controller to make call', async () => {
-      jest
-        .spyOn(makeCallController, 'getE164PhoneNumber')
-        .mockReturnValue('123');
-      jest
-        .spyOn(makeCallController, 'tryMakeCall')
-        .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
-      const res = await telephonyService.makeCall('123', null);
-      expect(makeCallController.getE164PhoneNumber).toHaveBeenCalled();
-      expect(accountController.makeCall).toHaveBeenCalledWith('123', null);
-      expect(res).toBe(MAKE_CALL_ERROR_CODE.NO_ERROR);
+      await telephonyService.makeCall('123');
+      expect(accountController.makeCall).toHaveBeenCalledWith('123');
     });
 
-    it('should not call account controller to make call when getting errors', async () => {
-      jest
-        .spyOn(makeCallController, 'getE164PhoneNumber')
-        .mockReturnValue('123');
-      jest
-        .spyOn(makeCallController, 'tryMakeCall')
-        .mockReturnValue(MAKE_CALL_ERROR_CODE.N11_101);
-      const res = await telephonyService.makeCall('123', null);
-      expect(makeCallController.getE164PhoneNumber).toHaveBeenCalled();
-      expect(accountController.makeCall).not.toHaveBeenCalledWith('123', null);
-      expect(res).toBe(MAKE_CALL_ERROR_CODE.N11_101);
+    it('should return error when account controller is not created', async () => {
+      engineController.getAccountController = jest
+        .fn()
+        .mockReturnValueOnce(null);
+      const result = await telephonyService.makeCall(toNum);
+      expect(accountController.makeCall).not.toHaveBeenCalled();
+      expect(result).toBe(MAKE_CALL_ERROR_CODE.INVALID_STATE);
     });
   });
+
   describe('hangUp', () => {
     it('should call account controller to hang up ', () => {
       telephonyService.hangUp('123');
@@ -110,10 +116,61 @@ describe('TelephonyService', () => {
       expect(accountController.unmute).toHaveBeenCalledWith('123');
     });
   });
+  describe('hold', () => {
+    it('should call account controller to hold', () => {
+      telephonyService.hold('123');
+      expect(accountController.hold).toHaveBeenCalledWith('123');
+    });
+  });
+  describe('unhold', () => {
+    it('should call account controller to unhold', () => {
+      telephonyService.unhold('123');
+      expect(accountController.unhold).toHaveBeenCalledWith('123');
+    });
+  });
+  describe('startRecord', () => {
+    it('should call account controller to startRecord', () => {
+      telephonyService.startRecord('123');
+      expect(accountController.startRecord).toHaveBeenCalledWith('123');
+    });
+  });
+  describe('stopRecord', () => {
+    it('should call account controller to stopRecord', () => {
+      telephonyService.stopRecord('123');
+      expect(accountController.stopRecord).toHaveBeenCalledWith('123');
+    });
+  });
+  describe('dtmf', () => {
+    it('should call account controller to dtmf', () => {
+      telephonyService.dtmf('123', '456');
+      expect(accountController.dtmf).toHaveBeenCalledWith('123', '456');
+    });
+  });
   describe('getAllCallCount', () => {
     it('should call account controller to get call count', () => {
       telephonyService.getAllCallCount();
       expect(accountController.getCallCount).toHaveBeenCalled();
+    });
+  });
+
+  describe('answer', () => {
+    it('should call account controller to answer call', () => {
+      telephonyService.answer(callId);
+      expect(accountController.answer).toHaveBeenCalledWith(callId);
+    });
+  });
+
+  describe('sendToVoiceMail', () => {
+    it('should call account controller to send call to voice mail', () => {
+      telephonyService.sendToVoiceMail(callId);
+      expect(accountController.sendToVoiceMail).toHaveBeenCalledWith(callId);
+    });
+  });
+
+  describe('ignore', () => {
+    it('should call account controller to ignore', () => {
+      telephonyService.ignore(callId);
+      expect(accountController.ignore).toHaveBeenCalledWith(callId);
     });
   });
 });

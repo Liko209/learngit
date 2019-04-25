@@ -11,6 +11,7 @@ import { GroupConfigService } from '../../groupConfig';
 import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE } from '../../../service/eventKey';
 import { GroupConfig } from '../../groupConfig/entity';
+import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import {
   SequenceProcessorHandler,
   IProcessor,
@@ -115,7 +116,9 @@ class ItemSyncController {
   }
 
   async requestSyncGroupItems(groupId: number) {
-    const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
+    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
     const groupConfig = await groupConfigService.getById(groupId);
     const typeIdKeys = Object.keys(GroupItemKeyMap).reverse();
     const itemSyncProcessors: IProcessor[] = [];
@@ -188,7 +191,9 @@ class ItemSyncController {
   }
 
   private async _updateGroupItemNewerThan(groupId: number, typeId: number) {
-    const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
+    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
     const partialData = {
       id: groupId,
       [GroupItemKeyMap[typeId]]: Date.now(),

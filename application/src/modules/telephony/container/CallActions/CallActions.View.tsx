@@ -15,25 +15,31 @@ type Props = CallActionsViewProps & WithTranslation;
 
 @observer
 class CallActionsViewComponent extends Component<Props> {
+  static defaultProps = { showLabel: true };
+
   private _handleCallActions = async () => {
     const { callActions } = this.props;
     callActions();
   }
 
   render() {
-    const { t } = this.props;
+    const { t, showLabel, shouldPersistBg } = this.props;
     return (
       <JuiKeypadAction>
         <JuiIconButton
           color="grey.900"
+          shouldPersistBg={shouldPersistBg}
           disableToolTip={true}
           onClick={this._handleCallActions}
-          size="xxlarge"
+          size={shouldPersistBg ? 'xlarge' : 'xxlarge'}
           disabled={true}
+          data-test-automation-id="telephony-call-actions-btn"
         >
           call_more
         </JuiIconButton>
-        <span className="disabled">{t('telephony.action.callActions')}</span>
+        {showLabel && (
+          <span className="disabled">{t('telephony.action.callActions')}</span>
+        )}
       </JuiKeypadAction>
     );
   }

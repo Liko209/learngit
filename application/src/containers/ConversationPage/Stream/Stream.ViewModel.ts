@@ -18,7 +18,7 @@ import StoreViewModel from '@/store/ViewModel';
 
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
-import { StreamProps, StreamItemType } from './types';
+import { StreamProps, StreamItemType, StreamItem, STATUS } from './types';
 
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -34,13 +34,25 @@ import { StreamController } from './StreamController';
 import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import { mainLogger } from 'sdk';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+
+const BLACKLISTED_PROPS = ['viewRef'];
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
-  private _stateService: StateService = StateService.getInstance();
-  private _postService: PostService = PostService.getInstance();
-  private _itemService: ItemService = ItemService.getInstance();
+  private _stateService = ServiceLoader.getInstance<StateService>(
+    ServiceConfig.STATE_SERVICE,
+  );
+  private _postService = ServiceLoader.getInstance<PostService>(
+    ServiceConfig.POST_SERVICE,
+  );
+  private _itemService = ServiceLoader.getInstance<ItemService>(
+    ServiceConfig.ITEM_SERVICE,
+  );
   private _streamController: StreamController;
   private _historyHandler: HistoryHandler;
+
+  @observable
+  loadingStatus: STATUS = STATUS.PENDING;
 
   @observable loadInitialPostsError?: Error;
 
@@ -112,7 +124,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   constructor(props: StreamProps) {
-    super(props);
+    super(props, BLACKLISTED_PROPS);
     this.markAsRead = this.markAsRead.bind(this);
     this.loadInitialPosts = this.loadInitialPosts.bind(this);
     this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
@@ -122,6 +134,15 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       props.groupId,
       this._historyHandler,
       props.jumpToPostId,
+    );
+    this.reaction(
+      () => this.loadingStatus,
+      (status: STATUS) => {
+        props.updateConversationStatus(status);
+      },
+      {
+        fireImmediately: true,
+      },
     );
   }
 
@@ -142,6 +163,27 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, lastPostId);
   }
 
+  hasNewMessageSeparator = () => {
+    return this.findNewMessageSeparatorIndex() > -1;
+  }
+
+  findNewMessageSeparatorIndex = () => {
+    return this.items.findIndex(
+      (item: StreamItem) => item.type === StreamItemType.NEW_MSG_SEPARATOR,
+    );
+  }
+
+  findPostIndex = (postId?: number) => {
+    return postId
+      ? this.items.findIndex(
+          (item: StreamItem) =>
+            item.type === StreamItemType.POST &&
+            !!item.value &&
+            item.value.includes(postId),
+        )
+      : -1;
+  }
+
   updateHistoryHandler() {
     this._historyHandler.update(this._groupState, this.postIds);
   }
@@ -149,13 +191,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @action
   async loadInitialPosts() {
     this.loadInitialPostsError = undefined;
+    this.loadingStatus = STATUS.PENDING;
     try {
       if (this.props.jumpToPostId) {
         await this._loadSiblingPosts(this.props.jumpToPostId);
       } else {
         await this._streamController.fetchInitialData(QUERY_DIRECTION.OLDER);
       }
+      this.loadingStatus = STATUS.SUCCESS;
     } catch (err) {
+      this.loadingStatus = STATUS.FAILED;
       this._handleLoadInitialPostsError(err);
     }
   }
@@ -232,12 +277,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return await this._streamController.fetchData(direction, limit);
   }
 
-  private async _loadAllUnreadPosts(): Promise<Post[]> {
+  private _loadAllUnreadPosts() {
     if (!this._streamController.hasMore(QUERY_DIRECTION.OLDER)) {
       return [];
     }
 
-    return await this._streamController.fetchAllUnreadData();
+    return this._streamController.fetchAllUnreadData();
   }
 
   private async _loadSiblingPosts(anchorPostId: number) {
@@ -253,31 +298,25 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  loadPostUntilFirstUnread = async () => {
-    const loadCount =
-      this._historyHandler.getDistanceToFirstUnread(this.postIds) + 1;
-    if (loadCount > 0) {
-      this._streamController.enableNewMessageSep();
-      try {
-        await this._loadPosts(QUERY_DIRECTION.OLDER, loadCount);
-      } catch (err) {
-        this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
-        throw err;
-      }
-    }
-    return this.firstHistoryUnreadPostId;
-  }
-
+  @action
   getFirstUnreadPostByLoadAllUnread = async () => {
+    let firstUnreadPostId: number | undefined;
     if (!this.firstHistoryUnreadInPage) {
       try {
-        await this._loadAllUnreadPosts();
+        const posts = await this._loadAllUnreadPosts();
+        firstUnreadPostId = this.firstHistoryUnreadPostId;
+        const firstPost = posts[0];
+        if (!firstUnreadPostId && firstPost) {
+          firstUnreadPostId = firstPost.id;
+        }
       } catch (err) {
         this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
         throw err;
       }
+    } else {
+      firstUnreadPostId = this.firstHistoryUnreadPostId;
     }
-    return this.firstHistoryUnreadPostId;
+    return firstUnreadPostId;
   }
 
   initialize = (groupId: number) => {

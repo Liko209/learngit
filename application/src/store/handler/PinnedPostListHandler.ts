@@ -13,10 +13,13 @@ import { Post } from 'sdk/module/post/entity';
 import { PostService } from 'sdk/module/post';
 import storeManager, { ENTITY_NAME } from '@/store';
 import { IEntityDataProvider } from '../base/fetch/types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class PostProvider implements IEntityDataProvider<Post> {
   async getByIds(ids: number[]) {
-    const postService = PostService.getInstance() as PostService;
+    const postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
     const { posts, items } = await postService.getPostsByIds(ids);
     // set items to store.
     storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items, false);

@@ -24,14 +24,41 @@ import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import { StreamProps, StreamItemType } from '../types';
 import { StreamViewModel } from '../Stream.ViewModel';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { StreamController } from '../StreamController';
+import { HistoryHandler } from '../HistoryHandler';
+import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPostFocBuilder';
+import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDataListHandler';
+import { Post } from 'sdk/module/post/entity';
 
 jest.mock('sdk/module/item');
 jest.mock('sdk/module/post');
+jest.mock('sdk/module/group');
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
 function setup(obj?: any) {
+  const {
+    currentPosts = [],
+    postsNewerThanAnchor = [],
+    postsOlderThanAnchor = [],
+  } = obj;
   jest.spyOn(notificationCenter, 'on').mockImplementation();
+  const dataProvider = { fetchData: jest.fn().mockName('fetchData()') };
+  dataProvider.fetchData
+    .mockResolvedValueOnce({ data: postsNewerThanAnchor, hasMore: true })
+    .mockResolvedValueOnce({ data: postsOlderThanAnchor, hasMore: false });
+  const listHandler = new FetchSortableDataListHandler<Post>(dataProvider, {
+    isMatchFunc: () => true,
+    transformFunc: (post: Post) => {
+      return { id: post.id, sortValue: post.created_at, data: post };
+    },
+  });
+  listHandler.upsert(currentPosts);
+  listHandler.setHasMore(true, QUERY_DIRECTION.OLDER);
+  listHandler.setHasMore(true, QUERY_DIRECTION.NEWER);
+  jest
+    .spyOn(ConversationPostFocBuilder, 'buildConversationPostFoc')
+    .mockReturnValue(listHandler);
   const vm = new StreamViewModel({
     viewRef: React.createRef(),
     groupId: obj.groupId || 1,
@@ -44,22 +71,32 @@ function setup(obj?: any) {
 describe('StreamViewModel', () => {
   let itemService: ItemService;
   let postService: PostService;
-
-  const streamController = {
-    dispose: jest.fn(),
-    hasMore: jest.fn(),
-    fetchAllUnreadData: jest.fn(),
-    enableNewMessageSep: jest.fn(),
-    disableNewMessageSep: jest.fn(),
-  };
+  let stateService: StateService;
 
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     itemService = new ItemService();
     postService = new PostService();
-    ItemService.getInstance = jest.fn().mockReturnValue(itemService);
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    stateService = new StateService();
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.ITEM_SERVICE) {
+          return itemService;
+        }
+
+        if (serviceName === ServiceConfig.POST_SERVICE) {
+          return postService;
+        }
+
+        if (serviceName === ServiceConfig.STATE_SERVICE) {
+          return stateService;
+        }
+
+        return null;
+      });
+
     spyOn(storeManager, 'dispatchUpdatedDataModels');
   });
 
@@ -97,71 +134,95 @@ describe('StreamViewModel', () => {
     });
   });
 
-  describe('loadPostUntilFirstUnread()', () => {
-    function setupLoadPostUntilFirstUnread(obj: any) {
-      const vm = setup({
-        streamController,
-        _historyHandler: {
-          getDistanceToFirstUnread: jest
-            .fn()
-            .mockReturnValue(obj.distanceToFirstUnread),
-          getFirstUnreadPostId: jest.fn(),
+  describe('getFirstUnreadPostByLoadAllUnread()', () => {
+    function setupMock({
+      groupState,
+      currentPosts,
+      readThroughPost,
+      postsNewerThanAnchor,
+      postsOlderThanAnchor,
+    }: any) {
+      const postService = ServiceLoader.getInstance<PostService>(
+        ServiceConfig.POST_SERVICE,
+      );
+      jest.spyOn(postService, 'getById').mockResolvedValue(readThroughPost);
+
+      const historyHandler = new HistoryHandler();
+      const dataProvider = { fetchData: jest.fn().mockName('fetchData()') };
+      dataProvider.fetchData
+        .mockResolvedValueOnce({ data: postsNewerThanAnchor, hasMore: true })
+        .mockResolvedValueOnce({ data: postsOlderThanAnchor, hasMore: false });
+      const listHandler = new FetchSortableDataListHandler<Post>(dataProvider, {
+        isMatchFunc: () => true,
+        transformFunc: (post: Post) => {
+          return { id: post.id, sortValue: post.created_at, data: post };
         },
       });
-
-      const loadPosts = jest
-        .spyOn<StreamViewModel, any>(vm, '_loadPosts')
-        .mockImplementation(() => {});
-
-      return { vm, loadPosts };
-    }
-
-    it('should load 6 posts when distance to first unread is 5', async () => {
-      const { vm, loadPosts } = setupLoadPostUntilFirstUnread({
-        distanceToFirstUnread: 5,
-      });
-      await vm.loadPostUntilFirstUnread();
-      expect(loadPosts).toHaveBeenCalledWith(QUERY_DIRECTION.OLDER, 6);
-    });
-
-    it('should not load posts when distance to first unread <= 0', async () => {
-      const { vm, loadPosts } = setupLoadPostUntilFirstUnread({
-        distanceToFirstUnread: -1,
-      });
-
-      await vm.loadPostUntilFirstUnread();
-
-      expect(loadPosts).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('getFirstUnreadPostByLoadAllUnread()', () => {
-    function setupMock(obj: any) {
+      listHandler.upsert(currentPosts);
+      listHandler.setHasMore(true, QUERY_DIRECTION.OLDER);
+      listHandler.setHasMore(true, QUERY_DIRECTION.NEWER);
+      jest.spyOn(listHandler, 'fetchDataByAnchor');
+      jest
+        .spyOn(ConversationPostFocBuilder, 'buildConversationPostFoc')
+        .mockReturnValue(listHandler);
+      historyHandler.update(groupState, _.map(currentPosts, post => post.id));
+      const streamController = new StreamController(1, historyHandler, 1);
       const vm = setup({
         _streamController: streamController,
-        _historyHandler: {
-          unreadCount: obj.unreadCount,
-          getFirstUnreadPostId: jest.fn(),
-        },
+        _historyHandler: historyHandler,
       });
 
-      const loadAllUnreadPosts = jest
-        .spyOn<StreamController, any>(
-          vm._streamController,
-          'fetchAllUnreadData',
-        )
-        .mockImplementation(() => {});
-
-      return { vm, loadAllUnreadPosts };
+      return { vm, historyHandler, streamController };
     }
 
-    it('should try to load all unread posts', async () => {
-      const { vm, loadAllUnreadPosts } = setupMock({});
-      jest
-        .spyOn<StreamController, any>(vm._streamController, 'hasMore')
-        .mockReturnValue(true);
-      await vm.getFirstUnreadPostByLoadAllUnread();
-      expect(loadAllUnreadPosts).toHaveBeenCalled();
+    it('should load posts and return firstUnreadPostId', async () => {
+      const readThroughPost = { id: 4, created_at: 104, creator_id: 1 };
+      const postsOlderThanAnchor = [
+        { id: 1, created_at: 101, creator_id: 1 },
+        { id: 2, created_at: 102, creator_id: 1 },
+        { id: 3, created_at: 103, creator_id: 1 },
+        { id: 4, created_at: 104, creator_id: 1 },
+      ];
+      const postsNewerThanAnchor = [
+        { id: 5, created_at: 105, creator_id: 1 },
+        { id: 6, created_at: 106, creator_id: 1 },
+        { id: 7, created_at: 107, creator_id: 1 },
+        { id: 8, created_at: 108, creator_id: 1 },
+      ];
+      const { vm } = setupMock({
+        postsNewerThanAnchor,
+        postsOlderThanAnchor,
+        readThroughPost,
+        groupState: { unreadCount: 4, readThrough: readThroughPost.id },
+        currentPosts: [{ id: 8, created_at: 108, creator_id: 1 }],
+      });
+      const firstUnreadPostId = await vm.getFirstUnreadPostByLoadAllUnread();
+
+      expect(vm.postIds).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+      expect(firstUnreadPostId).toBe(5);
+    });
+
+    it('should return first unread post id when it is already in current posts', async () => {
+      const readThroughPost = { id: 4, created_at: 104, creator_id: 1 };
+
+      const { vm, historyHandler } = setupMock({
+        readThroughPost,
+        groupState: { unreadCount: 4, readThrough: readThroughPost.id },
+        currentPosts: [
+          { id: 1, created_at: 101, creator_id: 1 },
+          { id: 2, created_at: 102, creator_id: 1 },
+          { id: 3, created_at: 103, creator_id: 1 },
+          { id: 4, created_at: 104, creator_id: 1 },
+          { id: 5, created_at: 105, creator_id: 1 },
+          { id: 6, created_at: 106, creator_id: 1 },
+          { id: 7, created_at: 107, creator_id: 1 },
+          { id: 8, created_at: 108, creator_id: 1 },
+        ],
+      });
+      jest.spyOn(historyHandler, 'getFirstUnreadPostId').mockReturnValue(5);
+      const firstUnreadPostId = await vm.getFirstUnreadPostByLoadAllUnread();
+
+      expect(firstUnreadPostId).toBe(5);
     });
   });
 
@@ -242,9 +303,7 @@ describe('StreamViewModel', () => {
 
   describe('markAsRead()', () => {
     it('should call storeManager.getGlobalStore().set with arguments', () => {
-      const stateService = new StateService();
       const spy = jest.spyOn(stateService, 'updateReadStatus');
-      StateService.getInstance = jest.fn().mockReturnValue(stateService);
       const groupId = 123123;
       const vm = setup({ groupId });
       vm.markAsRead();
@@ -499,6 +558,122 @@ describe('StreamViewModel', () => {
       await vm.loadNextPosts();
 
       expect(Notification.flashToast).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('findNewMessageSeparatorIndex()', () => {
+    it('should return index of new message separator', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.NEW_MSG_SEPARATOR },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+          ],
+        },
+      });
+
+      expect(vm.findNewMessageSeparatorIndex()).toBe(2);
+    });
+
+    it('should return -1 if no new message separator ', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+          ],
+        },
+      });
+
+      expect(vm.findNewMessageSeparatorIndex()).toBe(-1);
+    });
+  });
+
+  describe('hasNewMessageSeparator()', () => {
+    it('should be true if there is a new message separator', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.NEW_MSG_SEPARATOR },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+          ],
+        },
+      });
+
+      expect(vm.hasNewMessageSeparator()).toBeTruthy();
+    });
+
+    it('should be false if no any new message separator', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+          ],
+        },
+      });
+
+      expect(vm.hasNewMessageSeparator()).toBeFalsy();
+    });
+  });
+
+  describe('findPostIndex()', () => {
+    it('should return index of the post', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST, value: [10] },
+            { type: StreamItemType.POST, value: [11] },
+            { type: StreamItemType.POST, value: [12] },
+            { type: StreamItemType.POST, value: [13] },
+          ],
+        },
+      });
+
+      expect(vm.findPostIndex(11)).toBe(1);
+    });
+
+    it('should return -1 if the post no existed', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST, value: [10] },
+            { type: StreamItemType.POST, value: [11] },
+            { type: StreamItemType.POST, value: [12] },
+            { type: StreamItemType.POST, value: [13] },
+          ],
+        },
+      });
+
+      expect(vm.findPostIndex(14)).toBe(-1);
+    });
+
+    it('should return -1 if the postId is undefined', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST, value: [10] },
+            { type: StreamItemType.POST, value: [11] },
+            { type: StreamItemType.POST, value: [12] },
+            { type: StreamItemType.POST, value: [13] },
+          ],
+        },
+      });
+
+      expect(vm.findPostIndex()).toBe(-1);
     });
   });
 });

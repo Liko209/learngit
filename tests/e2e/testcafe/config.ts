@@ -33,6 +33,8 @@ const ENV_OPTS = {
     GLIP_SERVER_BASE_URL: 'https://xmnup.asialab.glip.net',
     AUTH_URL: 'https://login-xmnup.lab.nordigy.ru/api/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
+    WEBPHONE_BASE_URL: 'http://webphone.lab.rcch.ringcentral.com',
+    WEBPHONE_ENV: 'xmnup',
   },
   'GLP-CI1-XMN': {
     ACCOUNT_POOL_BASE_URL: 'http://xia01-i01-hbt02.lab.rcch.ringcentral.com:9997',
@@ -42,6 +44,8 @@ const ENV_OPTS = {
     GLIP_SERVER_BASE_URL: 'https://glpci1xmn.asialab.glip.net',
     AUTH_URL: 'https://login-glpci1xmn.lab.nordigy.ru/api/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
+    WEBPHONE_BASE_URL: 'http://webphone.lab.rcch.ringcentral.com',
+    WEBPHONE_ENV: 'glpci1xmn',
   },
 }[SITE_ENV];
 
@@ -74,6 +78,8 @@ const ASSERTION_TIMEOUT = Number(process.env.ASSERTION_TIMEOUT) || 8e3;
 const SKIP_JS_ERROR = !(process.env.SKIP_JS_ERROR === 'false');
 const SKIP_CONSOLE_ERROR = !(process.env.SKIP_CONSOLE_ERROR === 'false');
 const SKIP_CONSOLE_WARN = !(process.env.SKIP_CONSOLE_WARN === 'false');
+const ENABLE_SSL = process.env.ENABLE_SSL === 'true';
+
 
 const RUNNER_OPTS = {
   REPORTER,
@@ -92,6 +98,7 @@ const RUNNER_OPTS = {
   SKIP_JS_ERROR,
   SKIP_CONSOLE_ERROR,
   SKIP_CONSOLE_WARN,
+  ENABLE_SSL,
 }
 
 // beat dashboard configuration
@@ -102,8 +109,15 @@ const RUN_NAME = process.env.RUN_NAME || `[Jupiter][Debug][${new Date().toLocale
 
 enum BrandTire {
   "RCOFFICE" = "kamino(Fiji,Jupiter,1210,4488)",
-  "RC_PROFESSIONAL_TIER" = "kamino(Fiji,Jupiter,1210,4442)"
+  "RC_PROFESSIONAL_TIER" = "kamino(Fiji,Jupiter,1210,4442)",
+  "RC_FIJI_GUEST" = "kamino(Fiji-with-guest,Jupiter,1210,4488)",
+  "RC_USERS_20" = "kamino(FIJI-Users-20,Jupiter,1210,4488)"
 };
+
+const WebphoneConfig = {
+  TTL: 1800000,
+  reserve: false,
+}
 
 export {
   APP_ROOT,
@@ -119,7 +133,7 @@ export {
   DASHBOARD_URL,
   RUN_NAME,
   BrandTire,
-
+  WebphoneConfig,
   ENABLE_MOCK_SERVER,
   MOCK_SERVER_URL,
   MOCK_ENV,

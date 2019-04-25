@@ -8,25 +8,32 @@ import _ from 'lodash';
 import { daoManager, DeactivatedDao, QUERY_DIRECTION } from '../../../dao';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Raw } from '../../../framework/model';
-import { SortUtils } from '../../../framework/utils';
 import { ENTITY, SERVICE } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
 import { baseHandleData, transform } from '../../../service/utils';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 import { IPreInsertController } from '../../common/controller/interface/IPreInsertController';
-import { GroupService } from '../../group';
 import { ItemService } from '../../item';
-import { INDEX_POST_MAX_SIZE, LOG_INDEX_DATA_POST } from '../constant';
+import {
+  INDEX_POST_MAX_SIZE,
+  LOG_INDEX_DATA_POST,
+  LOG_FETCH_POST,
+} from '../constant';
 import { PostDao, PostDiscontinuousDao } from '../dao';
 import { IRawPostResult, Post } from '../entity';
+import { IGroupService } from '../../group/service/IGroupService';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { SortUtils } from '../../../framework/utils';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 class PostDataController {
   constructor(
+    private _groupService: IGroupService,
     public preInsertController: IPreInsertController,
     public entitySourceController: IEntitySourceController<Post>,
   ) {}
 
   async handleFetchedPosts(data: IRawPostResult, shouldSaveToDb: boolean) {
+    mainLogger.info(LOG_FETCH_POST, 'handleFetchedPosts()');
     const logId = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
       PERFORMANCE_KEYS.CONVERSATION_HANDLE_DATA_FROM_SERVER,
@@ -39,10 +46,10 @@ class PostDataController {
     const posts: Post[] =
       (await this.filterAndSavePosts(transformedData, shouldSaveToDb)) || [];
     const items =
-      (await ItemService.getInstance<ItemService>().handleIncomingData(
-        data.items,
-      )) || [];
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+      (await ServiceLoader.getInstance<ItemService>(
+        ServiceConfig.ITEM_SERVICE,
+      ).handleIncomingData(data.items)) || [];
+    PerformanceTracerHolder.getPerformanceTracer().end(logId, posts.length);
     return {
       posts,
       items,
@@ -75,9 +82,8 @@ class PostDataController {
         `filterAndSavePosts() after posts.length: ${posts && posts.length}`,
       );
       if (result && result.deleteMap.size > 0) {
-        const groupService: GroupService = GroupService.getInstance();
         result.deleteMap.forEach((value: number[], key: number) => {
-          groupService.updateHasMore(key, QUERY_DIRECTION.OLDER, true);
+          this._groupService.updateHasMore(key, QUERY_DIRECTION.OLDER, true);
           notificationCenter.emit(`${ENTITY.FOC_RELOAD}.${key}`, value);
         });
       }
@@ -91,17 +97,16 @@ class PostDataController {
    * 2, handlePreInsert
    * 3, filterAndSavePosts
    */
-  async handleSexioPosts(data: Raw<Post>[]) {
+  async handleSexioPosts(data: Post[]) {
     if (data.length) {
-      let posts = this.transformData(data);
       this._handleModifiedDiscontinuousPosts(
-        posts.filter((post: Post) => post.created_at !== post.modified_at),
+        data.filter((post: Post) => post.created_at !== post.modified_at),
       );
-      posts = await this.handleSexioModifiedPosts(posts);
+      const posts = await this.handleSexioModifiedPosts(data);
       await this.preInsertController.bulkDelete(posts);
       return await this.filterAndSavePosts(posts, true);
     }
-    return data;
+    return [];
   }
 
   private async _deletePreInsertPosts(posts: Post[]) {
@@ -298,7 +303,7 @@ class PostDataController {
   }
 
   postCreationTimeSortingFn = (lhs: Post, rhs: Post) => {
-    return SortUtils.sortModelByKey(lhs, rhs, 'created_at', false);
+    return SortUtils.sortModelByKey(lhs, rhs, ['created_at'], false);
   }
 
   /**
@@ -390,9 +395,8 @@ class PostDataController {
   private async _ensureGroupExist(posts: Post[]): Promise<void> {
     if (posts.length) {
       posts.forEach(async (post: Post) => {
-        const groupService: GroupService = GroupService.getInstance();
         try {
-          await groupService.getById(post.group_id);
+          await this._groupService.getById(post.group_id);
         } catch (error) {
           mainLogger
             .tags('PostDataController')

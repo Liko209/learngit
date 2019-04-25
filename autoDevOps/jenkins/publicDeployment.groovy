@@ -34,15 +34,16 @@ class Context {
     String buildDirectory
     String whiteListFile
     String buildPackageName
+    String electronBuildDirectory
 
     URI[] deployTargets
     String deployCredentialId
     String deployDirectory
+    String[] electronBuildUrls
 }
 
 
 Context context = new Context(
-
     buildNode: params.BUILD_NODE ?: env.BUILD_NODE,
     timestamp: System.currentTimeMillis(),
     timeLabel: new Date().format("yyyyMMddhhmmss", TimeZone.getTimeZone("Asia/Shanghai")),
@@ -56,10 +57,12 @@ Context context = new Context(
 
     buildDirectory: 'application/build',
     whiteListFile: 'application/build/whiteListedId.json',
+    electronBuildDirectory: 'application/build/downloads',
 
-    deployTargets:  params.DEPLOY_TARGETS.split('\n').collect{ new URI(it) },
+    deployTargets:  params.DEPLOY_TARGETS.trim().split('\n').collect{ new URI(it) },
     deployCredentialId: params.DEPLOY_CREDENTIAL,
     deployDirectory: params.DEPLOY_DIRECTORY,
+    electronBuildUrls: params.ELECTRON_BUILD_URLS.trim().split('\n'),
 )
 
 
@@ -89,8 +92,9 @@ def checkoutStage(Context context) {
 
 def installDependencyStage(Context context) {
     sh "echo 'registry=${context.npmRegistry}' > .npmrc"
-    sh "[ -f package-lock.json ] && rm package-lock.json || true"
     sshagent (credentials: [context.gitCredentialId]) {
+        sh 'npm install @sentry/cli@1.40.0 --unsafe-perm'
+        sh 'npm install @babel/parser@7.3.4 --ignore-scripts --unsafe-perm'
         sh 'npm install --only=dev --ignore-scripts --unsafe-perm'
         sh 'npm install --ignore-scripts --unsafe-perm'
         sh 'npx lerna bootstrap --hoist --no-ci --ignore-scripts'
@@ -106,33 +110,51 @@ def buildStage(Context context) {
     sh 'npm run build:public'
     // write white list file
     writeFile file: context.whiteListFile, text: context.whiteList, encoding: 'utf-8'
+    // download electron clients
+    sh "mkdir -p ${context.electronBuildDirectory}"
+    context.electronBuildUrls.each { url ->
+        sh "wget --no-check-certificate -P ${context.electronBuildDirectory} ${url}"
+    }
     // update version info
     sh "sed -i 's/{{deployedCommit}}/${context.gitHead.substring(0,9)}/;s/{{deployedTime}}/${context.timestamp}/' ${context.buildDirectory}/static/js/versionInfo.*.chunk.js || true"
+    sh "sed -i 's/{{buildCommit}}/${context.gitHead.substring(0,9)}/;s/{{buildTime}}/${context.timestamp}/' ${context.buildDirectory}/static/js/versionInfo.*.chunk.js || true"
     // make package
-    context.buildPackageName = "${context.gitBranch}-${context.timeLabel}.tar.gz".toString()
+    context.buildPackageName = "${context.gitBranch}-${context.gitHead}-${context.timeLabel}.tar.gz".toString()
     sh "tar -czvf ${context.buildPackageName} -C ${context.buildDirectory} ."
     // archive for trace back
     archiveArtifacts artifacts: context.buildPackageName, fingerprint: true
 }
 
 def deployStage(Context context) {
-    context.deployTargets.each { deployTarget ->
-        // clean old deployment
-        // TODO: maybe we should make a backup
-        sshCmd(deployTarget, context.deployCredentialId, "rm -rf ${context.deployDirectory}/*".toString())
+    // the reason we break it into two parts is copy package to remote machine may take a long time
+    // we hope that both machine updated at the same time
+    // so we first copy package,
+    // and then clean up the old version and unpack the new one
+
+    // step 1: copy package to remote target
+    parallel context.deployTargets.collectEntries { deployTarget -> [deployTarget.toString(), {
+        // ensure dir exists
+        sshCmd(deployTarget, context.deployCredentialId, "mkdir -p ${context.deployDirectory}".toString())
         // copy package to target machine
         copyToRemote(deployTarget, context.deployCredentialId, context.buildPackageName, context.deployDirectory)
+    }]}
+
+    // step 2: clean old version and unpack new one
+    parallel context.deployTargets.collectEntries { deployTarget -> [deployTarget.toString(), {
+        // clean old deployment
+        sshCmd(deployTarget, context.deployCredentialId,
+            "find ${context.deployDirectory} -type f -not -name '*.tar.gz' | xargs rm".toString())
         // unpack package
         sshCmd(deployTarget, context.deployCredentialId,
-            "tar -xvf ${context.deployDirectory}/${context.buildPackageName} -C ${context.deployDirectory}".toString()
-        )
-    }
+            "tar -xvf ${context.deployDirectory}/${context.buildPackageName} -C ${context.deployDirectory}".toString())
+    }]}
 }
 
 node(context.buildNode) {
-    prepareStage(context)
-    checkoutStage(context)
-    installDependencyStage(context)
-    buildStage(context)
-    deployStage(context)
+    env.SENTRYCLI_CDNURL='https://cdn.npm.taobao.org/dist/sentry-cli'
+    stage('prepare') {prepareStage(context)}
+    stage('checkout') {checkoutStage(context)}
+    stage('install dependencies') {installDependencyStage(context)}
+    stage('build') {buildStage(context)}
+    stage('deploy') {deployStage(context)}
 }

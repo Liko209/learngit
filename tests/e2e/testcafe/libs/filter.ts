@@ -1,12 +1,15 @@
-import { AssertionError } from "assert";
-
 /*
- * @Author: Potar He(Potar.He@ringcentral.com)
- * @Date: 2018-08-15 11:15:59
- * Copyright © RingCentral. All rights reserved.
+ * @Author: Potar.He 
+ * @Date: 2019-04-10 17:37:00 
+ * @Last Modified by: Potar.He
+ * @Last Modified time: 2019-04-10 17:37:23
  */
+import { AssertionError } from "assert";
+import * as assert from "assert";
+import { ITestMeta } from "../v2/models";
+import * as _ from "lodash";
 
-type CaseFilter = (caseName: string, fixtureName: string, fixturePath: string) => boolean;
+type CaseFilter = (caseName: string, fixtureName: string, fixturePath: string, testMeta: any, fixtureMeta: any) => boolean;
 
 export interface INameTags {
   name: string;
@@ -42,6 +45,19 @@ export function formalName(name: string, tags?: string[]): string {
   return formalName;
 }
 
+export function formalNameWithTestMetaPrefix(name: string, testMeta: ITestMeta): string {
+  let formalName: string = name;
+  const tags = [].concat(testMeta.priority, testMeta.caseIds);
+  if (tags.length > 0) {
+    formalName = tags
+      .filter(tag => tag)
+      .map(tag => tag.trim())
+      .map(tag => isValidTag(tag, true) && `[${tag}]`)
+      .join('') + ' ' + formalName;
+  }
+  return formalName.trim();
+}
+
 export function parseFormalName(formalName: string): INameTags {
   const tags: string[] = [];
   let rest = formalName;
@@ -53,20 +69,38 @@ export function parseFormalName(formalName: string): INameTags {
   return { tags, name: rest.trim() };
 }
 
-export function filterByTags(
-  includeTags?: string[],
-  excludeTags?: string[]): CaseFilter {
-  return (caseName: string, fixtureName: string, fixturePath: string): boolean => {
+export function filterByTags(includeTags?: string[], excludeTags?: string[]): CaseFilter {
+  return (caseName: string, fixtureName: string, fixturePath: string, testMeta: any, fixtureMeta: any): boolean => {
     let flag: boolean = true;
     const nameTags = parseFormalName(caseName);
+    const testMetaTags = getTagsFromMeta(testMeta);
     if (includeTags && includeTags.length > 0) {
-      flag = flag && nameTags.tags.some(tag => includeTags.some(includeTag => tag === includeTag));
+      flag = flag && hasAtLeastOneTagInTargetLists(includeTags, nameTags.tags, testMetaTags);
     }
     if (excludeTags && excludeTags.length > 0) {
-      flag = flag && !nameTags.tags.some(tag => excludeTags.some(excludeTag => tag === excludeTag));
+      flag = flag && !hasAtLeastOneTagInTargetLists(excludeTags, nameTags.tags, testMetaTags);
     }
     return flag;
-  };
+  }
+}
+
+function getTagsFromMeta(meta: ITestMeta) {
+  let tags = [];
+  for (const key in meta) {
+    tags = _.union(tags, meta[key]);
+  }
+  return tags;
+}
+
+function hasAtLeastOneTagInTargetLists(tags: string[], ...targetLists) {
+  let flag: boolean;
+  assert.ok(targetLists.length > 0, 'required target tags')
+  for (const targetList of targetLists) {
+    if (targetList) {
+      flag = flag || tags.some(tag => targetList.some(item => tag.toLowerCase() == item.toLowerCase()));
+    }
+  }
+  return flag;
 }
 
 export function getTmtIds(tags: string[], prefix: string) {

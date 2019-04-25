@@ -3,14 +3,12 @@
  * @Date: 2018-11-27 15:22:58
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { GroupService } from 'sdk/module/group';
-import { ProfileService } from 'sdk/module/profile';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import { getEntity, getGlobalValue } from '../../../../store/utils';
 import { FavoriteViewModel } from '../Favorite.ViewModel';
 import { FavoriteProps } from '../types';
 import { GLOBAL_KEYS } from '../../../../store/constants';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('../../../../store/utils');
 
@@ -23,17 +21,6 @@ const mockEntityGroup: any = {
   members: [],
 };
 
-const profileService = {
-  markGroupAsFavorite: jest.fn().mockResolvedValue(ServiceCommonErrorType.NONE),
-};
-
-const groupService = {
-  getLocalGroup: jest.fn().mockResolvedValue(mockServiceGroup),
-};
-
-GroupService.getInstance = jest.fn().mockReturnValue(groupService);
-ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
-
 const mockGlobalValue = {
   [GLOBAL_KEYS.CURRENT_USER_ID]: 1,
 };
@@ -42,9 +29,33 @@ let props: FavoriteProps;
 let vm: FavoriteViewModel;
 
 describe('FavoriteViewModel', () => {
+  let profileService: any;
+  let groupService: any;
+
   beforeEach(() => {
     jest.clearAllMocks();
-    GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+
+    profileService = {
+      markGroupAsFavorite: jest
+        .fn()
+        .mockResolvedValue(ServiceCommonErrorType.NONE),
+    };
+
+    groupService = {
+      getLocalGroup: jest.fn().mockResolvedValue(mockServiceGroup),
+    };
+
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.PROFILE_SERVICE) {
+          return profileService;
+        }
+        if (serviceName === ServiceConfig.GROUP_SERVICE) {
+          return groupService;
+        }
+        return null;
+      });
     (getEntity as jest.Mock).mockReturnValue(mockEntityGroup);
     (getGlobalValue as jest.Mock).mockImplementation((key: GLOBAL_KEYS) => {
       return mockGlobalValue[key];
@@ -75,7 +86,6 @@ describe('FavoriteViewModel', () => {
 
     it('should be not available conversation id when it is the person id and 1:1 talk was never created', async () => {
       groupService.getLocalGroup = jest.fn().mockResolvedValue(undefined);
-      GroupService.getInstance = jest.fn().mockReturnValue(groupService);
       props.id = 237571; // person id
       vm = new FavoriteViewModel(props);
       await vm.getConversationId(); // Note: You need to wait for asynchronous processing
@@ -130,7 +140,6 @@ describe('FavoriteViewModel', () => {
       profileService.markGroupAsFavorite = jest
         .fn()
         .mockResolvedValue(ServiceCommonErrorType.NONE);
-      GroupService.getInstance = jest.fn().mockReturnValue(groupService);
       const result = await vm.handlerFavorite();
       expect(result).toEqual(ServiceCommonErrorType.NONE);
     });
@@ -139,7 +148,6 @@ describe('FavoriteViewModel', () => {
       profileService.markGroupAsFavorite = jest
         .fn()
         .mockResolvedValue(ServiceCommonErrorType.SERVER_ERROR);
-      GroupService.getInstance = jest.fn().mockReturnValue(groupService);
       const result = await vm.handlerFavorite();
       expect(result).toEqual(ServiceCommonErrorType.SERVER_ERROR);
     });

@@ -7,10 +7,10 @@
 import { IndexDataModel } from '../../../api/glip/user';
 
 import { indexData, initialData, remainingData } from '../../../api';
-import accountHandleData from '../../../service/account/handleData';
+import { accountHandleData } from '../../../module/account/service';
 
 import { SERVICE, CONFIG } from '../../../service/eventKey';
-import { progressBar } from '../../../utils/progress';
+import { progressManager, ProgressBar } from '../../../utils/progress';
 import { mainLogger, ERROR_CODES_NETWORK } from 'foundation';
 import notificationCenter from '../../../service/notificationCenter';
 import { ErrorParserHolder } from '../../../error/ErrorParserHolder';
@@ -26,7 +26,6 @@ import { PersonService } from '../../person';
 import { GroupService, Group } from '../../group';
 import { PostService } from '../../post';
 import { SyncListener } from '../service/SyncListener';
-import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
 import { SyncUserConfig } from '../config/SyncUserConfig';
 import { IndexRequestProcessor } from './IndexRequestProcessor';
 import {
@@ -34,13 +33,14 @@ import {
   IProcessor,
 } from '../../../framework/processor';
 import { SYNC_SOURCE } from '../types';
-import { AccountGlobalConfig } from '../../../service/account/config';
+import { AccountGlobalConfig } from '../../../module/account/config';
 import { GroupConfigService } from '../../../module/groupConfig';
-import { AccountService } from '../../../service/account/accountService';
-import socketManager from '../../../service/socket';
-import { Company } from '../../../module/company/entity';
+import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { AccountService } from '../../../module/account';
+import { Company } from '../../../module/company/entity';
 import { LOG_INDEX_DATA } from '../constant';
+import { SyncGlobalConfig } from '../config';
 import { Item } from '../../../module/item/entity';
 import { RawPresence } from '../../../module/presence/entity';
 import { Person } from '../../../module/person/entity';
@@ -49,10 +49,13 @@ import { Post } from '../../../module/post/entity';
 const LOG_TAG = 'SyncController';
 const INDEX_MAX_QUEUE = 2;
 class SyncController {
+  private _isFetchingRemaining: boolean;
   private _syncListener: SyncListener;
   private _processorHandler: SequenceProcessorHandler;
+  private _progressBar: ProgressBar;
 
   constructor() {
+    this._progressBar = progressManager.newProgressBar();
     this._processorHandler = new SequenceProcessorHandler(
       'Index_SyncController',
       undefined,
@@ -72,17 +75,16 @@ class SyncController {
   }
 
   handleSocketConnectionStateChanged({ state }: { state: any }) {
-    mainLogger.log(
-      LOG_TAG,
-      `sync service SERVICE.SOCKET_STATE_CHANGE:${state}`,
-    );
-    if (state === 'connected' || state === 'refresh') {
+    mainLogger.log(LOG_TAG, 'sync service SERVICE.SOCKET_STATE_CHANGE', state);
+    if (state === 'connected') {
+      this._onSocketConnected();
+    } else if (state === 'refresh') {
       this.syncData();
     } else if (state === 'connecting') {
-      progressBar.start();
+      this._progressBar.start();
     } else if (state === 'disconnected') {
-      this.updateCanUpdateIndexTimeStamp(false);
-      progressBar.stop();
+      this._onSocketDisconnected();
+      this._progressBar.stop();
     }
   }
 
@@ -96,36 +98,6 @@ class SyncController {
       return syncConfig.getLastIndexTimestamp();
     }
     return null;
-  }
-
-  updateIndexTimestamp(time: number, forceUpdate: boolean) {
-    const syncConfig = new SyncUserConfig();
-    if (forceUpdate) {
-      const isConnected = socketManager.isConnected();
-      mainLogger.log(
-        LOG_TAG,
-        `updateIndexTimestamp time: ${time} forceUpdate:${forceUpdate} socket is connected:${isConnected}`,
-      );
-      syncConfig.setLastIndexTimestamp(time);
-      isConnected && this.updateCanUpdateIndexTimeStamp(true);
-    } else if (this.canUpdateIndexTimeStamp()) {
-      mainLogger.log(
-        LOG_TAG,
-        `updateIndexTimestamp time: ${time} forceUpdate:false`,
-      );
-      syncConfig.setLastIndexTimestamp(time);
-    }
-  }
-
-  updateCanUpdateIndexTimeStamp(can: boolean) {
-    mainLogger.log(LOG_TAG, `updateCanUpdateIndexTimeStamp: ${can}`);
-    const syncConfig = new SyncUserConfig();
-    return syncConfig.updateCanUpdateIndexTimeStamp(can);
-  }
-
-  canUpdateIndexTimeStamp() {
-    const syncConfig = new SyncUserConfig();
-    return syncConfig.getCanUpdateIndexTimeStamp();
   }
 
   async syncData(syncListener?: SyncListener) {
@@ -147,23 +119,21 @@ class SyncController {
   handleStoppingSocketEvent() {
     // this is for update newer than tag
     mainLogger.log(LOG_TAG, 'handleStoppingSocketEvent');
-    this._disableCanUpdateIndexTimeStampFlag();
+    this._resetSocketConnectedLocalTime();
   }
 
   handleWakeUpFromSleep() {
     mainLogger.log(LOG_TAG, 'handleWakeUpFromSleep');
-    this._disableCanUpdateIndexTimeStampFlag();
-  }
-
-  private _disableCanUpdateIndexTimeStampFlag() {
-    if (AccountGlobalConfig.getUserDictionary()) {
-      this.updateCanUpdateIndexTimeStamp(false);
-    }
+    this._resetSocketConnectedLocalTime();
   }
 
   private async _firstLogin() {
-    progressBar.start();
+    this._progressBar.start();
     const currentTime = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.FIRST_LOGIN,
+      currentTime,
+    );
     try {
       await this._fetchInitial(currentTime);
       mainLogger.info(LOG_TAG, 'fetch initial data success');
@@ -173,20 +143,24 @@ class SyncController {
       // actually, should only do sign out when initial failed
       notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
     }
-    try {
-      await this._fetchRemaining(currentTime);
-      mainLogger.info(LOG_TAG, 'fetch remaining data success');
-    } catch (e) {
-      mainLogger.error(LOG_TAG, 'fetch remaining data error');
-    }
-    progressBar.stop();
+    this._checkFetchedRemaining(currentTime);
+    PerformanceTracerHolder.getPerformanceTracer().end(currentTime);
+    this._progressBar.stop();
   }
 
   private async _fetchInitial(time: number) {
     const { onInitialLoaded, onInitialHandled } = this._syncListener;
     const initialResult = await this.fetchInitialData(time);
     onInitialLoaded && (await onInitialLoaded(initialResult));
+
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INITIAL_DATA,
+      logId,
+    );
     await this._handleIncomingData(initialResult, SYNC_SOURCE.INITIAL);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+
     onInitialHandled && (await onInitialHandled());
     mainLogger.log(LOG_TAG, 'fetch initial data and handle success');
   }
@@ -195,8 +169,15 @@ class SyncController {
     const syncConfig = new SyncUserConfig();
     if (!syncConfig.getFetchedRemaining()) {
       try {
+        if (this._isFetchingRemaining) {
+          mainLogger.info(LOG_TAG, 'is fetching remaining data');
+          return;
+        }
+        this._isFetchingRemaining = true;
         await this._fetchRemaining(time);
+        mainLogger.info(LOG_TAG, 'fetch remaining data success');
       } catch (e) {
+        this._isFetchingRemaining = false;
         mainLogger.error(LOG_TAG, 'fetch remaining data error');
       }
     }
@@ -207,18 +188,26 @@ class SyncController {
     const { onRemainingLoaded, onRemainingHandled } = this._syncListener;
     const remainingResult = await this.fetchRemainingData(time);
     onRemainingLoaded && (await onRemainingLoaded(remainingResult));
+
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_REMAINING_DATA,
+      logId,
+    );
     await this._handleIncomingData(remainingResult, SYNC_SOURCE.REMAINING);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+
     onRemainingHandled && (await onRemainingHandled());
+    mainLogger.log('fetch remaining data and handle success');
     const syncConfig = new SyncUserConfig();
     syncConfig.setFetchedRemaining(true);
-    mainLogger.log('fetch remaining data and handle success');
   }
 
   private async _syncIndexData() {
     const executeFunc = async () => {
       const timeStamp = this.getIndexTimestamp();
       mainLogger.log(LOG_TAG, `start fetching index:${timeStamp}`);
-      progressBar.start();
+      this._progressBar.start();
       const { onIndexLoaded, onIndexHandled } = this._syncListener;
       const syncConfig = new SyncUserConfig();
       // 5 minutes ago to ensure data is correct
@@ -226,17 +215,24 @@ class SyncController {
         const result = await this.fetchIndexData(String(timeStamp - 300000));
         mainLogger.log(LOG_TAG, 'fetch index done');
         onIndexLoaded && (await onIndexLoaded(result));
+
+        const logId = Date.now();
+        PerformanceTracerHolder.getPerformanceTracer().start(
+          PERFORMANCE_KEYS.HANDLE_INDEX_DATA,
+          logId,
+        );
         await this._handleIncomingData(result, SYNC_SOURCE.INDEX);
+        PerformanceTracerHolder.getPerformanceTracer().end(logId);
+
         onIndexHandled && (await onIndexHandled());
         syncConfig.updateIndexSucceed(true);
         mainLogger.log(LOG_TAG, 'handle index done');
       } catch (error) {
         mainLogger.log(LOG_TAG, 'fetch index failed');
-        this.updateCanUpdateIndexTimeStamp(false);
         syncConfig.updateIndexSucceed(false);
         await this._handleSyncIndexError(error);
       }
-      progressBar.stop();
+      this._progressBar.stop();
     };
     const processor = new IndexRequestProcessor(executeFunc);
     this._processorHandler.addProcessor(processor);
@@ -262,11 +258,21 @@ class SyncController {
     syncConfig.setLastIndexTimestamp('');
 
     await Promise.all([
-      ItemService.getInstance<ItemService>().clear(),
-      PostService.getInstance<PostService>().clear(),
-      GroupConfigService.getInstance<GroupConfigService>().clear(),
-      GroupService.getInstance<GroupService>().clear(),
-      PersonService.getInstance<PersonService>().clear(),
+      ServiceLoader.getInstance<ItemService>(
+        ServiceConfig.ITEM_SERVICE,
+      ).clear(),
+      ServiceLoader.getInstance<PostService>(
+        ServiceConfig.POST_SERVICE,
+      ).clear(),
+      ServiceLoader.getInstance<GroupConfigService>(
+        ServiceConfig.GROUP_CONFIG_SERVICE,
+      ).clear(),
+      ServiceLoader.getInstance<GroupService>(
+        ServiceConfig.GROUP_SERVICE,
+      ).clear(),
+      ServiceLoader.getInstance<PersonService>(
+        ServiceConfig.PERSON_SERVICE,
+      ).clear(),
     ]);
 
     await this._firstLogin();
@@ -338,6 +344,7 @@ class SyncController {
         clientConfig,
         profileId: profile ? profile._id : undefined,
       }),
+
       this._handleIncomingCompany(companies, source),
       this._handleIncomingItem(items, source),
       this._handleIncomingPresence(presences, source),
@@ -363,11 +370,13 @@ class SyncController {
       PERFORMANCE_KEYS.HANDLE_INCOMING_COMPANY,
       logId,
     );
-    await CompanyService.getInstance<CompanyService>().handleIncomingData(
-      companies,
-      source,
+    await ServiceLoader.getInstance<CompanyService>(
+      ServiceConfig.COMPANY_SERVICE,
+    ).handleIncomingData(companies, source);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      companies && companies.length,
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   private async _handleIncomingItem(items: Raw<Item>[], source: SYNC_SOURCE) {
@@ -381,8 +390,13 @@ class SyncController {
       PERFORMANCE_KEYS.HANDLE_INCOMING_ITEM,
       logId,
     );
-    await (ItemService.getInstance() as ItemService).handleIncomingData(items);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    await ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    ).handleIncomingData(items);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      items && items.length,
+    );
   }
 
   private async _handleIncomingPresence(
@@ -399,10 +413,13 @@ class SyncController {
       PERFORMANCE_KEYS.HANDLE_INCOMING_PRESENCE,
       logId,
     );
-    await PresenceService.getInstance<PresenceService>().presenceHandleData(
-      presences,
+    await ServiceLoader.getInstance<PresenceService>(
+      ServiceConfig.PRESENCE_SERVICE,
+    ).presenceHandleData(presences);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      presences && presences.length,
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   private async _handleIncomingState(states: any[], source: SYNC_SOURCE) {
@@ -416,11 +433,13 @@ class SyncController {
       PERFORMANCE_KEYS.HANDLE_INCOMING_STATE,
       logId,
     );
-    await (StateService.getInstance() as StateService).handleState(
-      states,
-      source,
+    await ServiceLoader.getInstance<StateService>(
+      ServiceConfig.STATE_SERVICE,
+    ).handleState(states, source);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      states && states.length,
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   private async _handleIncomingProfile(
@@ -436,10 +455,9 @@ class SyncController {
       PERFORMANCE_KEYS.HANDLE_INCOMING_PROFILE,
       logId,
     );
-    await ProfileService.getInstance<ProfileService>().handleIncomingData(
-      profile,
-      source,
-    );
+    await ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    ).handleIncomingData(profile, source);
     PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
@@ -457,11 +475,13 @@ class SyncController {
       PERFORMANCE_KEYS.HANDLE_INCOMING_PERSON,
       logId,
     );
-    await PersonService.getInstance<PersonService>().handleIncomingData(
-      persons,
-      source,
+    await ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    ).handleIncomingData(persons, source);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      persons && persons.length,
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   private async _handleIncomingGroup(
@@ -478,8 +498,13 @@ class SyncController {
       PERFORMANCE_KEYS.HANDLE_INCOMING_GROUP,
       logId,
     );
-    await GroupService.getInstance<GroupService>().handleData(groups, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    await ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    ).handleData(groups, source);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      groups && groups.length,
+    );
   }
 
   private async _handleIncomingPost(
@@ -489,7 +514,7 @@ class SyncController {
   ) {
     mainLogger.info(
       LOG_INDEX_DATA,
-      `_handleIncomingPost() groups.length: ${posts &&
+      `_handleIncomingPost() posts.length: ${posts &&
         posts.length}, source: ${source}`,
     );
     const logId = Date.now();
@@ -497,11 +522,13 @@ class SyncController {
       PERFORMANCE_KEYS.HANDLE_INCOMING_POST,
       logId,
     );
-    await PostService.getInstance<PostService>().handleIndexData(
-      posts,
-      maxPostsExceeded,
+    await ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    ).handleIndexData(posts, maxPostsExceeded);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      posts && posts.length,
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   private async _handleIncomingData(
@@ -520,20 +547,16 @@ class SyncController {
         source === SYNC_SOURCE.INDEX || source === SYNC_SOURCE.INITIAL;
       if (timestamp && shouldSaveTimeStamp) {
         this.updateIndexTimestamp(timestamp, true);
-        notificationCenter.emitKVChange(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
       }
 
       const shouldSaveScoreboard =
-        scoreboard &&
-        (source === SYNC_SOURCE.INDEX || source === SYNC_SOURCE.INITIAL);
-      if (shouldSaveScoreboard) {
-        const socketUserConfig = new SyncUserConfig();
-        socketUserConfig.setSocketServerHost(scoreboard);
-        notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST, scoreboard);
+        source === SYNC_SOURCE.INDEX || source === SYNC_SOURCE.INITIAL;
+      if (shouldSaveScoreboard && scoreboard) {
+        this._updateIndexSocketAddress(scoreboard);
       }
 
       if (staticHttpServer) {
-        NewGlobalConfig.setStaticHttpServer(staticHttpServer);
+        SyncGlobalConfig.setStaticHttpServer(staticHttpServer);
         notificationCenter.emitKVChange(
           CONFIG.STATIC_HTTP_SERVER,
           staticHttpServer,
@@ -548,12 +571,26 @@ class SyncController {
     }
   }
 
+  private _updateIndexSocketAddress(scoreboard: string) {
+    const socketUserConfig = new SyncUserConfig();
+    const oldValue = socketUserConfig.getIndexSocketServerHost();
+    if (oldValue !== scoreboard) {
+      socketUserConfig.setIndexSocketServerHost(scoreboard);
+      notificationCenter.emitKVChange(
+        CONFIG.INDEX_SOCKET_SERVER_HOST,
+        scoreboard,
+      );
+    }
+  }
+
   private async _onPageFocused() {
     this._checkIndex();
   }
 
   private async _checkIndex() {
-    const accountService: AccountService = AccountService.getInstance();
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
     if (accountService.isGlipLogin()) {
       const socketUserConfig = new SyncUserConfig();
       const succeed = socketUserConfig.getIndexSucceed();
@@ -563,6 +600,59 @@ class SyncController {
         await this.syncData();
       }
     }
+  }
+
+  /**
+   * update index timestamp related functions
+   *
+   * 1. index request local time should larger than socket connected local time
+   * 2. reset socket connected time to 0 once it disconnected
+   */
+
+  // index/initial ==> forceUpdate ==> true
+  // socket ==> forceUpdate ==> false
+  updateIndexTimestamp(time: number, forceUpdate: boolean) {
+    const syncConfig = new SyncUserConfig();
+    if (forceUpdate) {
+      mainLogger.log(
+        LOG_TAG,
+        `updateIndexTimestamp time: ${time} forceUpdate:${forceUpdate}`,
+      );
+      syncConfig.setLastIndexTimestamp(time);
+    } else if (this.canUpdateIndexTimeStamp()) {
+      mainLogger.log(
+        LOG_TAG,
+        `updateIndexTimestamp time: ${time} forceUpdate:false`,
+      );
+      syncConfig.setLastIndexTimestamp(time);
+    }
+  }
+
+  canUpdateIndexTimeStamp() {
+    const syncConfig = new SyncUserConfig();
+    const socketTime = syncConfig.getSocketConnectedLocalTime();
+    const indexTime = syncConfig.getIndexStartLocalTime();
+    return socketTime && indexTime > socketTime;
+  }
+
+  private _onSocketDisconnected() {
+    this._resetSocketConnectedLocalTime();
+  }
+  private _onSocketConnected() {
+    this._updateSocketConnectedLocalTime(Date.now());
+    this.syncData();
+  }
+
+  private _resetSocketConnectedLocalTime() {
+    if (AccountGlobalConfig.getUserDictionary()) {
+      mainLogger.info(LOG_TAG, 'reset socket connected time');
+      this._updateSocketConnectedLocalTime(0);
+    }
+  }
+
+  private _updateSocketConnectedLocalTime(time: number) {
+    const syncUserConfig = new SyncUserConfig();
+    syncUserConfig.setSocketConnectedLocalTime(time);
   }
 }
 

@@ -22,9 +22,11 @@ import { IPostItemController } from '../interface/IPostItemController';
 import { ISendPostController } from '../interface/ISendPostController';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 import { Raw } from '../../../../framework/model';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import { PostControllerUtils } from './PostControllerUtils';
 import { PROGRESS_STATUS } from '../../../progress';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { PostUtils } from '../../utils/PostUtils';
 
 type PostData = {
   id: number;
@@ -187,26 +189,33 @@ class SendPostController implements ISendPostController {
     );
     const dao = daoManager.getDao(PostDao);
 
-    const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
+    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
     await groupConfigService.deletePostId(post.group_id, originalPost.id);
 
     // 1. change status
     // 2. delete from db
-    await this.preInsertController.delete(originalPost);
-
+    await this.preInsertController.delete(
+      PostUtils.transformToPreInsertPost(originalPost),
+    );
     await dao.put(post);
     return result;
   }
 
   async handleSendPostFail(originalPost: Post, groupId: number) {
     this.preInsertController.updateStatus(originalPost, PROGRESS_STATUS.FAIL);
-    const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
+    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
     await groupConfigService.addPostId(groupId, originalPost.id);
     return [];
   }
 
   private async _cleanUploadingFiles(groupId: number, itemIds: number[]) {
-    const itemService: ItemService = ItemService.getInstance();
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
     itemService.cleanUploadingFiles(groupId, itemIds);
   }
 }

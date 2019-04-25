@@ -28,10 +28,14 @@ import { UploadRecentLogs, FeedbackService } from '@/modules/feedback';
 import { container } from 'framework';
 import { saveBlob } from '@/common/blobUtils';
 import _ from 'lodash';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 const DEBUG_COMMAND_MAP = {
   '/debug': () => UploadRecentLogs.show(),
   '/debug-save': () => {
+    // todo use schema
+    // feedback://..., object;
     container
       .get(FeedbackService)
       .zipRecentLogs()
@@ -82,10 +86,16 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   constructor(props: MessageInputProps) {
     super(props);
-    this._postService = PostService.getInstance();
+    this._postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
 
-    this._itemService = ItemService.getInstance();
-    this._groupConfigService = GroupConfigService.getInstance();
+    this._itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
+    this._groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
     this._sendPost = this._sendPost.bind(this);
     this._oldId = props.id;
     this.reaction(
@@ -229,6 +239,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this.cleanDraft();
     const items = this.items;
     try {
+      this._trackSendPost();
       let realContent: string = content;
 
       if (content.trim().length === 0) {
@@ -258,6 +269,15 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   addOnPostCallback = (callback: OnPostCallback) => {
     this._onPostCallbacks.push(callback);
+  }
+
+  private _trackSendPost() {
+    const type = this.items.length ? 'file' : 'text';
+    analyticsCollector.sendPost(
+      'conversation thread',
+      type,
+      this._group.analysisType,
+    );
   }
 }
 

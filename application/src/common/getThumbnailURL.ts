@@ -12,7 +12,8 @@ import {
 } from '@/common/generateModifiedImageURL';
 import { ItemService } from 'sdk/module/item/service';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
-import { ItemVersions } from 'sdk/src/module/item/entity';
+import { ItemVersions } from 'sdk/module/item/entity';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 enum IMAGE_TYPE {
   THUMBNAIL_IMAGE,
@@ -29,6 +30,8 @@ type ImageInfo = {
 };
 
 const SQUARE_SIZE = 180;
+const DEFAULT_WIDTH = 1000;
+const DEFAULT_HEIGHT = 200;
 
 function getThumbnailURL(
   item: ImageInfo,
@@ -105,7 +108,9 @@ async function getThumbnailURLWithType(
     }
 
     if (!url && FileItemUtils.isSupportPreview({ type })) {
-      const itemService = ItemService.getInstance() as ItemService;
+      const itemService = ServiceLoader.getInstance<ItemService>(
+        ServiceConfig.ITEM_SERVICE,
+      );
       url = await itemService.getThumbsUrlWithSize(
         id,
         SQUARE_SIZE,
@@ -146,7 +151,14 @@ async function getThumbnailURLWithType(
   }
 
   if (!url) {
-    url = versionUrl || '';
+    const result = await generateModifiedImageURL({
+      id,
+      rule: RULE.RECTANGLE_IMAGE,
+      origHeight: DEFAULT_HEIGHT,
+      origWidth: DEFAULT_WIDTH,
+      squareSize: SQUARE_SIZE,
+    });
+    url = result.url;
     return { url, type: IMAGE_TYPE.ORIGINAL_IMAGE };
   }
   return { url, type: IMAGE_TYPE.UNKNOWN_IMAGE };

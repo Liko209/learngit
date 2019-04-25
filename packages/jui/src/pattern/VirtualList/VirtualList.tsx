@@ -62,6 +62,7 @@ const MIN_CELL_HEIGHT = 10;
 @observer
 class JuiVirtualList<K, V> extends Component<JuiVirtualListProps<K, V>, State> {
   static MIN_CELL_HEIGHT: number = MIN_CELL_HEIGHT;
+  private _animationID: number;
   private _cache: CellMeasurerCache;
   private _listRef: List;
   private _skipStickTo: boolean = false;
@@ -100,6 +101,7 @@ class JuiVirtualList<K, V> extends Component<JuiVirtualListProps<K, V>, State> {
 
   componentWillUnmount() {
     this._unmounted = true;
+    window.cancelAnimationFrame(this._animationID);
   }
 
   private _registerList = (callback: (ref: List) => void) => (ref: List) => {
@@ -279,8 +281,12 @@ class JuiVirtualList<K, V> extends Component<JuiVirtualListProps<K, V>, State> {
   scrollToCell = (index: number) => {
     if (Number.isInteger(index)) {
       // This is trick for virtual list.
-      this._listRef.scrollToRow(index);
-      window.requestAnimationFrame(() => this._listRef.scrollToRow(index));
+      if (this._listRef) {
+        this._listRef.scrollToRow(index);
+        this._animationID = window.requestAnimationFrame(
+          () => this._listRef && this._listRef.scrollToRow(index),
+        );
+      }
     }
   }
 

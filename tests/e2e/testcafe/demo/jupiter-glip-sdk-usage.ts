@@ -6,19 +6,14 @@ import {
 
 import PostAPI from '../../../../packages/sdk/src/api/glip/post';
 import {
-  HandleByGlip2,
   Api,
   HandleByRingCentral,
+  HandleByGlip,
   HandleByUpload,
 } from '../../../../packages/sdk/src/api';
 
 const chrisSandboxConfig = {
   rc: {
-    server: 'https://api-glpdevxmn.lab.nordigy.ru',
-    clientId: 'FVKGRbLRTxGxPempqg5f9g',
-    clientSecret: 'bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ',
-  },
-  glip2: {
     server: 'https://api-glpdevxmn.lab.nordigy.ru',
     clientId: 'FVKGRbLRTxGxPempqg5f9g',
     clientSecret: 'bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ',
@@ -29,8 +24,7 @@ const chrisSandboxConfig = {
   },
   glip_desktop: {
     server: 'https://aws13-g04-uds02.asialab.glip.net:11904',
-    apiPlatformVersion: 'v1.0',
-    apiPlatform: '/desktop',
+    pathPrefix: '/v1.0/desktop'
   },
 };
 
@@ -45,7 +39,7 @@ const token = {
 
 function setUpUser(token: Token) {
   const oAuthToken = new OAuthTokenManager();
-  [HandleByGlip2, HandleByRingCentral, HandleByGlip2, HandleByUpload].forEach(
+  [HandleByGlip, HandleByRingCentral, HandleByUpload].forEach(
     oAuthToken.setOAuthToken.bind(oAuthToken, token),
   );
   const networkManagerA = new NetworkManager(oAuthToken);

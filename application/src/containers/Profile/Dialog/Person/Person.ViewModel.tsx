@@ -16,6 +16,7 @@ import { Person } from 'sdk/module/person/entity';
 import { ENTITY_NAME } from '@/store';
 import { PersonService } from 'sdk/module/person';
 import { generalErrorHandler } from '@/utils/error';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class ProfileDialogPersonViewModel
   extends AbstractViewModel<ProfileDialogPersonProps>
@@ -46,7 +47,9 @@ class ProfileDialogPersonViewModel
   }
   refreshPersonData = async () => {
     try {
-      const personService = PersonService.getInstance<PersonService>();
+      const personService = ServiceLoader.getInstance<PersonService>(
+        ServiceConfig.PERSON_SERVICE,
+      );
       await personService.refreshPersonData(this.id);
     } catch (err) {
       generalErrorHandler(err);

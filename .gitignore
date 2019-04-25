@@ -40,3 +40,9 @@ packages/jui/.cache
 /ut
 # jira
 jira.config.json
+
+# v8-compile-cache
+v8-compile-cache*
+
+# ts cache
+.tsc_cache*

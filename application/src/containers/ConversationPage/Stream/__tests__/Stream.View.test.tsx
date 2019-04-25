@@ -6,11 +6,13 @@ import { AutoSizerProps } from 'jui/components/AutoSizer';
 import { LoadingMorePlugin } from '@/plugins';
 import GroupStateModel from '@/store/models/GroupState';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
+import { JuiInfiniteList } from 'jui/components/VirtualizedList';
+import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
 import { theme } from '@/__tests__/utils';
 import { ConversationPost } from '../../../ConversationPost';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
 import { StreamViewComponent as StreamView } from '../Stream.View';
-import { StreamItemType, StreamViewProps } from '../types';
+import { StreamItemType, StreamViewProps, STATUS } from '../types';
 
 import { PostService } from 'sdk/module/post';
 PostService.getInstance = jest.fn();
@@ -50,7 +52,6 @@ const baseProps = {
   hasHistoryUnread: false,
   firstHistoryUnreadInPage: false,
   clearHistoryUnread: jest.fn().mockName('setHasUnread'),
-  loadPostUntilFirstUnread: jest.fn().mockName('loadPostUntilFirstUnread'),
   getFirstUnreadPostByLoadAllUnread: jest
     .fn()
     .mockName('getFirstUnreadPostByLoadAllUnread'),
@@ -58,8 +59,9 @@ const baseProps = {
   loadInitialPosts: async () => {},
   updateHistoryHandler: () => {},
   mostRecentPostId: 0,
-  resetJumpToPostId: () => null,
+  resetJumpToPostId: () => {},
   resetAll: (id: number) => {},
+  refresh: () => {},
 };
 
 function mountStreamWithUnreadButton({
@@ -104,9 +106,10 @@ function mountStream(otherProps: Partial<StreamViewProps>) {
   };
 }
 
-describe.skip('StreamView', () => {
+describe('StreamView', () => {
   describe('render()', () => {
-    it('should render <ConversationPost>', () => {
+    // TODO This case should be moved to electron environment
+    it.skip('should render <ConversationPost>', () => {
       PostService.getInstance.mockReturnValue(new PostService());
       const props = {
         ...baseProps,
@@ -132,7 +135,8 @@ describe.skip('StreamView', () => {
       rootWrapper.unmount();
     });
 
-    it('should render <TimeNodeDivider>', () => {
+    // TODO This case should be moved to electron environment
+    it.skip('should render <TimeNodeDivider>', () => {
       const props = {
         ...baseProps,
         postIds: [1, 2],
@@ -148,7 +152,6 @@ describe.skip('StreamView', () => {
         ],
       };
       const { wrapper, rootWrapper } = mountStream(props);
-      console.log('rootWrapper: ', rootWrapper.html());
       expect(wrapper.find(ConversationPost)).toHaveLength(2);
       expect(wrapper.find(TimeNodeDivider)).toHaveLength(1);
       rootWrapper.unmount();
@@ -230,6 +233,31 @@ describe.skip('StreamView', () => {
         });
         expect(hasJumpToFirstUnreadButton).toBeTruthy();
         rootWrapper.unmount();
+      });
+    });
+
+    describe('display JuiInfiniteList or JuiStreamLoading', () => {
+      it('success', () => {
+        const { wrapper } = mountStream(baseProps);
+        expect(wrapper.find(JuiInfiniteList)).toHaveLength(1);
+      });
+
+      it('pending', () => {
+        const props = {
+          ...baseProps,
+          loadingStatus: STATUS.PENDING,
+        };
+        const { wrapper } = mountStream(props);
+        expect(wrapper.find(JuiInfiniteList)).toHaveLength(1);
+      });
+
+      it('failed', () => {
+        const props = {
+          ...baseProps,
+          loadingStatus: STATUS.FAILED,
+        };
+        const { wrapper } = mountStream(props);
+        expect(wrapper.find(JuiStreamLoading)).toHaveLength(1);
       });
     });
 

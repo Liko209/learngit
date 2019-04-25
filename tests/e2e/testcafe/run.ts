@@ -7,16 +7,22 @@ import { getLogger } from 'log4js';
 
 import { filterByTags } from './libs/filter';
 import { RUNNER_OPTS } from './config';
-import { accountPoolClient } from './init';
+import { accountPoolClient, finishRun } from './init';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
 
 const createTestCafe = require('testcafe');
+const selfSignedCert = require('openssl-self-signed-certificate');
+
+const sslOptions = RUNNER_OPTS.ENABLE_SSL ? {
+  key: selfSignedCert.key,
+  cert: selfSignedCert.cert
+} : undefined;
 
 async function runTests(runnerOpts) {
   let failed = 0;
-  const testCafe = await createTestCafe();
+  const testCafe = await createTestCafe(undefined, undefined, undefined, sslOptions);
   const runner = testCafe.createRunner();
   logger.info(`runner options: ${JSON.stringify(runnerOpts, null, 2)}`);
 
@@ -37,6 +43,7 @@ async function runTests(runnerOpts) {
       assertionTimeout: runnerOpts.ASSERTION_TIMEOUT,
     });
   } finally {
+    await finishRun().catch(error => logger.error(error));
     await testCafe.close();
   }
   return failed;

@@ -10,10 +10,10 @@ import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE, CONFIG, SOCKET } from '../../../service/eventKey';
 import SocketIO from '../__mocks__/socket';
 import { SocketClient } from 'foundation';
-import { GlobalConfigService } from '../../../module/config';
 import { SocketCanConnectController } from '../SocketCanConnectController';
 import { getCurrentTime } from '../../../utils/jsUtils';
 import { SyncUserConfig } from '../../../module/sync/config/SyncUserConfig';
+import { ServiceLoader } from '../../../module/serviceLoader';
 
 jest.mock('../../../module/config');
 jest.mock('../SocketCanConnectController', () => {
@@ -30,9 +30,8 @@ jest.mock('../SocketCanConnectController', () => {
   };
 });
 jest.mock('../../../utils/jsUtils');
-jest.mock('../../../service/config');
 
-GlobalConfigService.getInstance = jest.fn();
+ServiceLoader.getInstance = jest.fn();
 
 jest.mock('foundation/src/network/client/socket');
 jest.mock('../../../dao');
@@ -80,7 +79,10 @@ describe('Socket Manager', () => {
     getCurrentTime.mockReturnValue(1);
     syncUserConfig = new SyncUserConfig();
     mockedSetReconnection.mockRestore();
-    syncUserConfig.getSocketServerHost = jest.fn().mockReturnValue(test_url);
+    syncUserConfig.getIndexSocketServerHost = jest
+      .fn()
+      .mockReturnValue(test_url);
+    syncUserConfig.getReconnectSocketServerHost = jest.fn().mockReturnValue('');
     mock.payload = test_url;
     notificationCenter.emitKVChange(SERVICE.LOGOUT);
   }
@@ -238,63 +240,165 @@ describe('Socket Manager', () => {
     });
 
     describe('server_host_updated', () => {
-      it('not login', () => {
-        notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
+      it('should do nothing when user has not login', () => {
+        notificationCenter.emitKVChange(CONFIG.INDEX_SOCKET_SERVER_HOST, 'url');
         expect(socketManager.hasActiveFSM()).toBeFalsy();
-        syncUserConfig.getSocketServerHost = jest
+        notificationCenter.emitKVChange(
+          CONFIG.INDEX_SOCKET_SERVER_HOST,
+          'new_url_server_host_updated',
+        );
+        expect(socketManager.hasActiveFSM()).toBeFalsy();
+      });
+      it('incomes new index socket host', () => {
+        syncUserConfig = new SyncUserConfig();
+        syncUserConfig.getLastIndexTimestamp = jest.fn().mockReturnValue('1');
+        syncUserConfig.getIndexSocketServerHost = jest
           .fn()
-          .mockReturnValue('new_url_server_host_updated');
-        notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
+          .mockReturnValueOnce('');
         expect(socketManager.hasActiveFSM()).toBeFalsy();
+
+        const url = 'incomes_new_index_socket_url';
+
+        notificationCenter.emitKVChange(CONFIG.INDEX_SOCKET_SERVER_HOST, url);
+        // 1. use has not not login do nothing
+        expect(socketManager.hasActiveFSM()).toBeFalsy();
+
+        notificationCenter.emitKVChange(SERVICE.LOGIN);
+        // 2. should not start FSM since there is not socket host
+        expect(socketManager._hasLoggedIn).toBeTruthy();
+        expect(socketManager.hasActiveFSM()).toBeFalsy();
+
+        notificationCenter.emitKVChange(CONFIG.INDEX_SOCKET_SERVER_HOST, '');
+        // 3. do nothing for invalid url
+        expect(socketManager.hasActiveFSM()).toBeFalsy();
+
+        syncUserConfig.getIndexSocketServerHost = jest
+          .fn()
+          .mockReturnValue(url);
+        notificationCenter.emitKVChange(CONFIG.INDEX_SOCKET_SERVER_HOST, url);
+        expect(socketManager.hasActiveFSM()).toBeTruthy();
+
+        // 4. should not start a new one when socket is connected
+        const fsm1 = socketManager.activeFSM.name;
+        socketManager.activeFSM.finishConnect();
+        notificationCenter.emitKVChange(
+          CONFIG.INDEX_SOCKET_SERVER_HOST,
+          'new_one1',
+        );
+        const fsm2 = socketManager.activeFSM.name;
+        expect(fsm1).toEqual(fsm2);
+
+        // 5. should start a new one when socket is not connected
+        socketManager.activeFSM.fireDisconnect();
+        notificationCenter.emitKVChange(
+          CONFIG.INDEX_SOCKET_SERVER_HOST,
+          'new_one2',
+        );
+        const fsm3 = socketManager.activeFSM.name;
+        expect(fsm1).not.toEqual(fsm3);
       });
 
-      it('invalid new url', () => {
-        syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
+      it('incomes new reconnect socket address', () => {
+        syncUserConfig = new SyncUserConfig();
+        syncUserConfig.getLastIndexTimestamp = jest.fn().mockReturnValue('');
+        syncUserConfig.getIndexSocketServerHost = jest.fn().mockReturnValue('');
+        syncUserConfig.getLastIndexTimestamp = jest.fn().mockReturnValue('1');
+        expect(socketManager.hasActiveFSM()).toBeFalsy();
+
         notificationCenter.emitKVChange(SERVICE.LOGIN);
-        const fsmName1 = socketManager.activeFSM.name;
+        expect(socketManager._hasLoggedIn).toBeTruthy();
 
-        notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
-        const fsmName2 = socketManager.activeFSM.name;
-        expect(socketManager.hasActiveFSM()).toBeTruthy();
-        expect(fsmName1).toEqual(fsmName2);
-      });
+        // 1. should do nothing when new url is invalid
+        notificationCenter.emitKVChange(SOCKET.RECONNECT, { body: '' });
+        expect(socketManager.hasActiveFSM()).toBeFalsy();
 
-      it('url no changed', () => {
-        syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
-        notificationCenter.emitKVChange(SERVICE.LOGIN);
-        expect(socketManager.hasActiveFSM()).toBeTruthy();
-        const fsmName1 = socketManager.activeFSM.name;
+        notificationCenter.emitKVChange(SOCKET.RECONNECT, {
+          body: 'server:""',
+        });
+        expect(socketManager.hasActiveFSM()).toBeFalsy();
 
-        notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
-        const fsmName2 = socketManager.activeFSM.name;
-        expect(socketManager.hasActiveFSM()).toBeTruthy();
-        expect(fsmName1).toEqual(fsmName2);
-      });
+        syncUserConfig.setReconnectSocketServerHost = jest
+          .fn()
+          .mockImplementation(() => {});
 
-      it('url changed', () => {
-        syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
-        notificationCenter.emitKVChange(SERVICE.LOGIN);
+        // 2. should start a new one
+        let url = 'reconnect_url_1';
+        syncUserConfig.getIndexSocketServerHost = jest
+          .fn()
+          .mockReturnValue(url);
+        notificationCenter.emitKVChange(SOCKET.RECONNECT, {
+          body: JSON.stringify({ server: url }),
+        });
         expect(socketManager.hasActiveFSM()).toBeTruthy();
-        const fsmName1 = socketManager.activeFSM.name;
 
         socketManager.activeFSM.finishConnect();
-        syncUserConfig.getSocketServerHost = jest
-          .fn()
-          .mockReturnValue('new_url_changed');
-
-        notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
-        const fsmName2 = socketManager.activeFSM.name;
-        expect(fsmName1).not.toEqual(fsmName2);
+        const fsm1 = socketManager.activeFSM.name;
+
+        // 3. should not start a new one if the old url is the same to new
+        notificationCenter.emitKVChange(SOCKET.RECONNECT, {
+          body: JSON.stringify({ server: url }),
+        });
+        const fsm2 = socketManager.activeFSM.name;
+        expect(fsm1).toEqual(fsm2);
+
+        // 4. should start a new one if url are not the same
+        url = 'reconnect_url_2';
+        notificationCenter.emitKVChange(SOCKET.RECONNECT, {
+          body: JSON.stringify({ server: url }),
+        });
+        const fsm3 = socketManager.activeFSM.name;
+        expect(fsm1).not.toEqual(fsm3);
+      });
+
+      it('should clear reconnect socket address if use it connect fail', () => {
+        syncUserConfig = new SyncUserConfig();
+        syncUserConfig.setReconnectSocketServerHost = jest.fn();
+        syncUserConfig.getReconnectSocketServerHost = jest
+          .fn()
+          .mockReturnValue('reconnect_socket');
+        syncUserConfig.getIndexSocketServerHost = jest
+          .fn()
+          .mockReturnValue('index_socket');
+
+        syncUserConfig.getLastIndexTimestamp = jest.fn().mockReturnValue('1');
+
+        // 1. use reconnect-socket-address first
+        notificationCenter.emitKVChange(SERVICE.LOGIN);
+        expect(socketManager.hasActiveFSM()).toBeTruthy();
+        expect(socketManager.isConnected()).toBeFalsy();
+        expect(socketManager.activeFSM.serverUrl).toEqual('reconnect_socket');
 
         socketManager.activeFSM.finishConnect();
-        syncUserConfig.getSocketServerHost = jest
+
+        // 2. should clear reconnect-socket-address if connect failed
+        socketManager.activeFSM.fireDisconnect();
+        expect(
+          syncUserConfig.setReconnectSocketServerHost,
+        ).toHaveBeenCalledWith('');
+      });
+      it('should not clear reconnect socket address if does not use it to connect', () => {
+        syncUserConfig = new SyncUserConfig();
+        syncUserConfig.setReconnectSocketServerHost = jest.fn();
+        syncUserConfig.getReconnectSocketServerHost = jest
           .fn()
-          .mockReturnValue(test_url);
-        notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
-        expect(socketManager.hasActiveFSM()).toBeTruthy();
-        const fsmName3 = socketManager.activeFSM.name;
-        expect(fsmName3).toEqual(fsmName2);
+          .mockReturnValue('');
+        syncUserConfig.getIndexSocketServerHost = jest
+          .fn()
+          .mockReturnValue('index_socket');
+
+        syncUserConfig.getLastIndexTimestamp = jest.fn().mockReturnValue('1');
+
+        notificationCenter.emitKVChange(SERVICE.LOGIN);
+
+        socketManager.activeFSM.finishConnect();
+        socketManager.activeFSM.fireDisconnect();
+        expect(
+          syncUserConfig.setReconnectSocketServerHost,
+        ).toHaveBeenCalledTimes(0);
+
+        // does not have reconnect-socket-host, use index-socket-host
+        expect(socketManager.activeFSM.serverUrl).toEqual('index_socket');
       });
     });
 

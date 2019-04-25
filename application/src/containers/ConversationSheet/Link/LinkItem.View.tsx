@@ -1,64 +1,106 @@
 /*
- * @Author: Alvin Huang (alvin.huang@ringcentral.com)
- * @Date: 2018-10-30 09:29:02
+ * @Author: Aaron Huo (aaron.huo@ringcentral.com)
+ * @Date: 2019-04-22 09:29:02
  * Copyright © RingCentral. All rights reserved.
  */
 
 import React from 'react';
 import { observer } from 'mobx-react';
-import { JuiConversationCardLinkItems } from 'jui/pattern/ConversationCardLinkItems';
-import LinkItemModel from '@/store/models/LinkItem';
+import { JuiConversationPostText } from 'jui/pattern/ConversationCard';
+import {
+  JuiConversationCardLinkItems,
+  JuiConversationCardVideoLink,
+} from 'jui/pattern/ConversationCardLinkItems';
+import { LinkItemModel, LinkItemViewProps } from './types';
 
-type Props = {
-  postItems: LinkItemModel[];
-  onLinkItemClose: Function;
-};
 @observer
-class LinkItemView extends React.Component<Props> {
+class LinkItemView extends React.Component<LinkItemViewProps> {
   onLinkItemClose = (id: number) => () => {
     const { onLinkItemClose } = this.props;
+
     onLinkItemClose(id);
   }
+
+  formatUrlStamp = (url: string) => {
+    // In Glip must has this key
+    // hard code in order to show the current image
+    const stamp = '&key=4527f263d6e64d7a8251b007b1ba9972';
+
+    return url && `${url}${stamp}`;
+  }
+
+  formatLinkProtocol = (url: string) => {
+    return url.match('http://|https://') ? url : `http://${url}`;
+  }
+
+  renderLinkCard = (item: LinkItemModel) => {
+    const { url, title, image, summary, id, favicon, providerName } = item;
+
+    const isUnableShow = !(title || image || summary);
+
+    return isUnableShow ? null : (
+      <JuiConversationCardLinkItems
+        key={id}
+        title={title}
+        summary={summary}
+        thumbnail={this.formatUrlStamp(image)}
+        url={this.formatLinkProtocol(url)}
+        onLinkItemClose={this.onLinkItemClose(id)}
+        favicon={this.formatUrlStamp(favicon)}
+        faviconName={providerName}
+      />
+    );
+  }
+
+  renderLinkText = (item: LinkItemModel) => {
+    const { text: postText } = this.props.post;
+    const { id, url, title } = item;
+
+    return postText ? null : (
+      <JuiConversationPostText>
+        <a key={id} href={this.formatLinkProtocol(url)}>
+          {title}
+        </a>
+      </JuiConversationPostText>
+    );
+  }
+
+  renderContent = (item: LinkItemModel) => {
+    const { doNotRender } = item;
+
+    return doNotRender ? this.renderLinkText(item) : this.renderLinkCard(item);
+  }
+
+  renderVideo = (item: LinkItemModel) => {
+    const { id, url, data } = item;
+
+    if (!data) return null;
+
+    const { object, title } = data;
+
+    return (
+      <JuiConversationCardVideoLink
+        key={id}
+        title={title}
+        url={url}
+        html={object ? object.html : ''}
+        onLinkItemClose={this.onLinkItemClose(id)}
+      />
+    );
+  }
+
+  renderLink = (item: LinkItemModel) => {
+    const { deactivated, isVideo } = item;
+
+    if (deactivated) return null;
+
+    return isVideo ? this.renderVideo(item) : this.renderContent(item);
+  }
+
   render() {
     const { postItems } = this.props;
-    return (
-      <>
-        {postItems.map((item: LinkItemModel) => {
-          // In Glip must has this key
-          // hard code in order to show the current image
-          let itemUrlWithProtocol;
-          const imgStamp = '&key=4527f263d6e64d7a8251b007b1ba9972';
-          const itemUrl = item.url;
-          if (itemUrl) {
-            itemUrlWithProtocol =
-              itemUrl.match('http://|https://')
-                ? itemUrl
-                : `http://${itemUrl}`;
-          } else {
-            itemUrlWithProtocol = itemUrl;
-          }
-          const image = item.image ? `${item.image}${imgStamp}` : '';
-          return (item.title || item.image || item.summary) &&
-            !item.doNotRender &&
-            !item.deactivated ? (
-            <JuiConversationCardLinkItems
-              key={item.id}
-              title={item.title}
-              summary={item.summary}
-              thumbnail={image}
-              url={itemUrlWithProtocol}
-              onLinkItemClose={this.onLinkItemClose(item.id)}
-              favicon={
-                item.favicon
-                  ? `${item.favicon}${imgStamp}` // hard code in order to show the current image
-                  : ''
-              }
-              faviconName={item.providerName}
-            />
-          ) : null;
-        })}
-      </>
-    );
+
+    return <>{postItems.map(this.renderLink)}</>;
   }
 }
 export { LinkItemView };
