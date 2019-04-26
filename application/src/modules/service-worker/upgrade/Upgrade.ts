@@ -7,7 +7,7 @@
 import history from '@/history';
 import { mainLogger } from 'sdk';
 import { ItemService } from 'sdk/module/item/service';
-import { TelephonyService } from 'sdk/module/telephony';
+// import { TelephonyService } from 'sdk/module/telephony';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const logTag = '[Upgrade]';
@@ -203,10 +203,12 @@ class Upgrade {
   }
 
   private _hasInProgressCall() {
-    const telephony = ServiceLoader.getInstance<TelephonyService>(
-      ServiceConfig.TELEPHONY_SERVICE,
-    );
-    return telephony.getAllCallCount() > 0;
+    // const telephony = ServiceLoader.getInstance<TelephonyService>(
+    //   ServiceConfig.TELEPHONY_SERVICE,
+    // );
+    // return telephony.getAllCallCount() > 0;
+    // TODO
+    return false;
   }
 
   private _reloadApp() {

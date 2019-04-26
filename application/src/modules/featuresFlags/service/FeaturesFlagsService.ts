@@ -7,6 +7,7 @@
 import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { featureModuleConfig } from '../config/featureModuleConfig';
 class FeaturesFlagsService {
   private _permissionService = ServiceLoader.getInstance<PermissionService>(
     ServiceConfig.PERMISSION_SERVICE,
@@ -22,6 +23,44 @@ class FeaturesFlagsService {
         UserPermissionType.JUPITER_CAN_USE_TELEPHONY,
       ))
     );
+  }
+
+  getSupportFeatureModules = async () => {
+    const featureModuleMap = new Map();
+    featureModuleConfig.forEach(feature => {
+      const { featureName, depModules } = feature;
+      featureModuleMap.set(featureName, depModules);
+    });
+
+    const supportFeature = await this._getSupportFeature();
+    let featureModules: string[] = [];
+
+    supportFeature.forEach(feature => {
+      if (featureModuleMap.has(feature)) {
+        const modules = featureModuleMap.get(feature);
+        featureModules = featureModules.concat(modules);
+      }
+    });
+
+    // TODO uniq
+
+    return ['message', 'telephony'];
+  }
+
+  private async _getSupportFeature() {
+    const defaultSupportFeatures: string[] = [];
+    featureModuleConfig.forEach(feature => {
+      const { featureName } = feature;
+      defaultSupportFeatures.push(featureName);
+    });
+
+    const supportFeature: string[] = defaultSupportFeatures;
+
+    if (!(await this.canUseTelephony())) {
+      //
+    }
+
+    return supportFeature;
   }
 }
 

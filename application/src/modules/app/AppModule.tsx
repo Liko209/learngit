@@ -20,7 +20,6 @@ import { App } from './container';
 
 import { RouterService } from '@/modules/router';
 import { config as appConfig } from './app.config';
-import { HomeService } from '@/modules/home';
 
 import './index.css';
 import {
@@ -43,9 +42,7 @@ import { Pal } from 'sdk/pal';
  */
 class AppModule extends AbstractModule {
   @inject(RouterService) private _routerService: RouterService;
-  @inject(HomeService) private _homeService: HomeService;
   @inject(AppStore) private _appStore: AppStore;
-  private _subModuleRegistered: boolean = false;
   private _umiEventKeyMap: Map<UMI_SECTION_TYPE, GLOBAL_KEYS>;
   private _logControlManager: LogControlManager = LogControlManager.instance();
 
@@ -129,28 +126,8 @@ class AppModule extends AbstractModule {
             window.jupiterElectron.setContextInfo(contextInfo);
           errorReporter.setUserContextInfo(contextInfo);
         });
-
-        if (!this._subModuleRegistered) {
-          // load phone parser module
-          PhoneParserUtility.loadModule();
-
-          // TODO register subModule according to account profile
-          this._homeService.registerSubModules([
-            'dashboard',
-            'message',
-            'telephony',
-            'meeting',
-            'contact',
-            'calendar',
-            'task',
-            'note',
-            'file',
-            'setting',
-          ]);
-
-          // Avoid duplicate register
-          this._subModuleRegistered = true;
-        }
+        // load phone parser module
+        PhoneParserUtility.loadModule();
       }
     };
 
