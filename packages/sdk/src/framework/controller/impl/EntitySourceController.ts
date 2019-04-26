@@ -56,31 +56,42 @@ class EntitySourceController<T extends IdModel = IdModel>
   }
 
   async batchGet(ids: number[], order?: boolean): Promise<T[]> {
+    const idsSet = new Set<number>(ids);
+    const nonDuplicatedIds = [...idsSet];
     const existsEntities = await this.entityPersistentController.batchGet(
-      ids,
+      nonDuplicatedIds,
       order,
     );
-    if (ids.length === existsEntities.length) {
+    if (nonDuplicatedIds.length === existsEntities.length) {
       return existsEntities;
     }
 
+    let resultEntities = existsEntities;
     const existsIds = this._getIds(existsEntities);
-    const diffIds = _.difference(ids, existsIds);
+    const diffIds = _.difference(nonDuplicatedIds, existsIds);
     const deactivatedEntities = await this.deactivatedDao.batchGet(diffIds);
+    if (deactivatedEntities.length) {
+      this.entityPersistentController.saveToMemory &&
+        this.entityPersistentController.saveToMemory(deactivatedEntities);
+      resultEntities = resultEntities.concat(deactivatedEntities);
+    }
 
     const deactivatedIds = this._getIds(deactivatedEntities);
     const remoteIds = _.difference(diffIds, deactivatedIds);
-    const remoteEntities = await this._getEntitiesRemoteServer(remoteIds);
 
-    let entities = existsEntities
-      .concat(deactivatedEntities)
-      .concat(remoteEntities);
-
-    if (order && entities.length) {
-      entities = this._orderAsIds(ids, entities);
+    if (remoteIds && remoteIds.length) {
+      const remoteEntities = await this._getEntitiesRemoteServer(remoteIds);
+      if (remoteEntities && remoteEntities.length) {
+        resultEntities = resultEntities.concat(remoteEntities);
+        await this.entityPersistentController.bulkPut(remoteEntities);
+      }
     }
 
-    return entities;
+    if (order && resultEntities.length) {
+      resultEntities = this._orderAsIds(nonDuplicatedIds, resultEntities);
+    }
+
+    return resultEntities;
   }
 
   private _getIds(entities: T[]): number[] {

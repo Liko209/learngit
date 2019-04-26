@@ -94,6 +94,7 @@ class PreFetchConversationDataHandler {
 
   removeCache(groupId: number) {
     this._cachedGroupIds.delete(groupId);
+    this._preFetchQueueHandler.removeProcessorByName(`${groupId}`);
     this._preFetchControllers.forEach(controller => controller.remove(groupId));
   }
 

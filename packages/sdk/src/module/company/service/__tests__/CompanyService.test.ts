@@ -63,6 +63,7 @@ describe('CompanyController', () => {
       expect(companyController.handleCompanyData).toBeCalledWith(
         [],
         SYNC_SOURCE.INDEX,
+        undefined,
       );
     });
 
@@ -71,6 +72,7 @@ describe('CompanyController', () => {
       expect(companyController.handleCompanyData).toBeCalledWith(
         [],
         SYNC_SOURCE.REMAINING,
+        undefined,
       );
     });
   });
