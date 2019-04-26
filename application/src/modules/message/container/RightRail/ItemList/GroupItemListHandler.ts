@@ -147,14 +147,6 @@ class GroupItemListHandler extends FetchSortableDataListHandler<Item>
     this._disposers = [disposer];
   }
 
-  getOldest() {
-    return this.sortableListStore.first();
-  }
-
-  getNewest() {
-    return this.sortableListStore.last();
-  }
-
   async fetchData(direction: QUERY_DIRECTION, pageSize?: number) {
     const size = pageSize ? pageSize : this._pageSize;
     const anchor =
