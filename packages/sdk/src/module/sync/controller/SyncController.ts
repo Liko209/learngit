@@ -213,7 +213,7 @@ class SyncController {
       const syncConfig = new SyncUserConfig();
       // 5 minutes ago to ensure data is correct
       try {
-        const result = await this.fetchIndexData(String(1543622400000));
+        const result = await this.fetchIndexData(String(timeStamp - 300000));
         mainLogger.log(LOG_INDEX_DATA, 'fetch index done');
         onIndexLoaded && (await onIndexLoaded(result));
 
