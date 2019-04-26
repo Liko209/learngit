@@ -196,7 +196,8 @@ const JuiVirtualizedList: RefForwardingComponent<
 
   const scrollToBottom = () => {
     if (ref.current) {
-      ref.current.scrollTop = ref.current.scrollHeight - height;
+      // JIRA FIJI-5392 scroll to bottom should be more strict because the height detacted is not precise and lagged
+      ref.current.scrollTop = ref.current.scrollHeight;
     }
   };
 
@@ -372,7 +373,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     rowElements.forEach(handleRowSizeChange);
     const observers = rowElements.map(observeDynamicRow);
     return () => {
-      observers.forEach(observer => {
+      observers.forEach((observer) => {
         observer.observer.disconnect();
         delete observer.cb;
       });
