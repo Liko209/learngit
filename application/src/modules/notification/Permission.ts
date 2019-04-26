@@ -9,7 +9,7 @@ enum PERMISSION {
   DENIED = 'denied',
 }
 
-export class Permission {
+class Permission {
   private _permissions = PERMISSION;
   async request() {
     const currentPermission = this.current;
@@ -28,3 +28,5 @@ export class Permission {
     return this.current === this._permissions.GRANTED;
   }
 }
+
+export { Permission, PERMISSION };
