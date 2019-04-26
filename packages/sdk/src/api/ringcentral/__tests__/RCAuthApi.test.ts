@@ -6,7 +6,7 @@
 
 import { RCAuthApi } from '../RCAuthApi';
 import { NETWORK_VIA, NETWORK_METHOD, HA_PRIORITY } from 'foundation';
-
+import { ApiConfiguration } from '../../config';
 jest.mock('../../api');
 jest.mock('foundation/src/network/NetworkRequestExecutor');
 
@@ -26,7 +26,11 @@ describe('RCAuthApi', () => {
       RCAuthApi.oauthTokenViaAuthCode({ name: 'aaa' }, { auth: 'xxxx' });
       expect(RCAuthApi.rcNetworkClient.http).toHaveBeenCalledWith({
         authFree: true,
-        data: { grant_type: 'authorization_code', name: 'aaa' },
+        data: {
+          grant_type: 'authorization_code',
+          name: 'aaa',
+          client_id: '',
+        },
         headers: { auth: 'xxxx' },
         method: 'post',
         via: NETWORK_VIA.HTTP,
@@ -103,6 +107,7 @@ describe('RCAuthApi', () => {
             grant_type: 'refresh_token',
             refresh_token: 'refresh_token',
             endpoint_id: 'endpoint_id',
+            client_id: '',
           },
           method: 'post',
           via: NETWORK_VIA.HTTP,
