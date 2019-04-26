@@ -75,6 +75,7 @@ class DialerContainerView extends React.Component<DialerContainerViewProps> {
       const res = () => (
         <JuiIconButton
           disableToolTip={true}
+          disableRipple={true}
           onClick={throttledHandler(() => props.dtmf(KEY_2_ICON_MAP[str]))}
           size="xxlarge"
           key={str}

@@ -37,14 +37,18 @@ class Upgrade {
     });
   }
 
+  public logInfo(text: string) {
+    mainLogger.info(`${logTag}${text}`);
+  }
+
   public setServiceWorkerURL(swURL: string) {
     mainLogger.info(`${logTag}setServiceWorkerURL: ${swURL}`);
     this._swURL = swURL;
   }
 
-  public onNewContentAvailable() {
+  public onNewContentAvailable(isCurrentPageInControl: boolean) {
     mainLogger.info(
-      `${logTag}New content available. hasFocus: ${document.hasFocus()}`,
+      `${logTag}New content available. hasFocus: ${document.hasFocus()}, control: ${isCurrentPageInControl}`,
     );
     this._hasNewVersion = true;
 
@@ -72,16 +76,29 @@ class Upgrade {
 
   private _queryIfHasNewVersion() {
     if (!window.navigator.onLine) {
-      mainLogger.info(`${logTag}Ignore update due to offline`);
+      this.logInfo('Ignore update due to offline');
       return;
     }
 
     if (this._swURL && navigator.serviceWorker) {
-      mainLogger.info(`${logTag}Will check new version`);
+      this.logInfo('Will check new version');
       navigator.serviceWorker
         .getRegistration(this._swURL)
         .then((registration: ServiceWorkerRegistration) => {
           this._lastCheckTime = new Date();
+
+          const activeWorker = registration.active;
+          const installingWorker = registration.installing;
+          const waitingWorker = registration.waiting;
+          mainLogger.info(
+            `${logTag}active[${!!activeWorker}]${
+              !!activeWorker ? activeWorker.state : ''
+            }, installing[${!!installingWorker}]${
+              !!installingWorker ? installingWorker.state : ''
+            }, waiting[${!!waitingWorker}]${
+              !!waitingWorker ? waitingWorker.state : ''
+            }, }`,
+          );
 
           registration
             .update()
@@ -97,6 +114,11 @@ class Upgrade {
             });
           mainLogger.info(`${logTag}Checking new version`);
         });
+    } else {
+      this.logInfo(
+        `Query no started. _swURL ${!!this
+          ._swURL}, ${!!navigator.serviceWorker}`,
+      );
     }
   }
 

@@ -29,6 +29,7 @@ jest.mock('@/modules/message/container/ConversationPost', () => () =>
 describe('ContentSearchResult', () => {
   it('component should display empty page when there are no records found matching and title should be "Results (0)"[JPT-1596]', () => {
     const props = {
+      showResult: true,
       postsCount: 0,
       isEmpty: true,
       searchState: {
@@ -83,11 +84,13 @@ describe('ContentSearchResult.View [bug/FIJI-5103]', () => {
       onPostsFetch: jest.fn(),
       setSearchOptions: jest.fn(),
       onSearchEnd: jest.fn(),
+      showResult: true,
     };
     const wrapper = shallow(<ContentSearchResultView {...props} />);
     expect(wrapper.find(JuiListSubheader).exists()).toBe(false);
 
     wrapper.setProps({
+      showResult: true,
       searchState: {
         postIds: [],
         requestId: 12,
