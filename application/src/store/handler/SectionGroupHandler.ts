@@ -279,14 +279,14 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     });
   }
 
-  private async _handleGroupsChanges(isIncludeFavorite: boolean) {
+  private async _handleGroupsChanges(isIncludeFavorite: boolean = true) {
     const keys = Object.keys(this._handlersMap);
 
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     );
     keys.forEach(async (key: string) => {
-      if (!isIncludeFavorite) {
+      if (key === SECTION_TYPE.FAVORITE && !isIncludeFavorite) {
         return;
       }
       let limitCount = 0;
