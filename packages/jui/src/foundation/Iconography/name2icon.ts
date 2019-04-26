@@ -83,6 +83,7 @@ const name2icon = {
   default_video: 'default-video',
   default_avatar: 'default-avatar',
   pin: 'pin',
+  unpin: 'unpin',
   zoom_out: 'zoom-out',
   zoom_in: 'zoom-in',
   info: 'info',
