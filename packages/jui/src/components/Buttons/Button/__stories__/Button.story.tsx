@@ -10,12 +10,12 @@ import {
   withInfoDecorator,
   alignCenterDecorator,
 } from '../../../../foundation/utils/decorators';
-import { JuiFabButton, JuiButton } from '../';
+import { JuiFabButton, JuiButton, JuiButtonProps } from '../';
 import styled from '../../../../foundation/styled-components';
 
 function getKnobs() {
   const content = text('content', 'button');
-  const size = select(
+  const size = select<JuiButtonProps['size']>(
     'size',
     {
       small: 'small',
@@ -23,7 +23,7 @@ function getKnobs() {
     },
     'large',
   );
-  const color = select(
+  const color = select<JuiButtonProps['color']>(
     'color',
     {
       primary: 'primary',

@@ -17,7 +17,7 @@ import { Group } from 'sdk/module/group/entity';
 import { Profile } from 'sdk/module/profile/entity';
 import { GroupState } from 'sdk/module/state/entity';
 
-import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
+import { SECTION_TYPE } from '@/modules/message/container/LeftRail/Section/types';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { autorun, observable, computed, reaction, action } from 'mobx';
 import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';

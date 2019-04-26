@@ -11,7 +11,7 @@ import {
   withInfoDecorator,
 } from '../../../../foundation/utils/decorators';
 
-import { JuiIconButton } from '..';
+import { JuiIconButton, JuiIconButtonProps } from '..';
 import styled from '../../../../foundation/styled-components';
 
 const Wrapper = styled.div`
@@ -22,7 +22,7 @@ const Wrapper = styled.div`
 
 const knobs = {
   size: () =>
-    select(
+    select<JuiIconButtonProps['size']>(
       'size',
       {
         small: 'small',

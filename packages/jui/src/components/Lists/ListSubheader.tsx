@@ -21,7 +21,7 @@ const JuiListSubheader = styled(MuiListSubheader)`
   && {
     height: ${height(9)};
     display: flex;
-    padding: ${spacing(3, 2, 1, 2)} !important;
+    padding: ${spacing(3, 2, 1, 4)} !important;
     background: ${palette('common', 'white')};
     color: ${grey('700')};
     ${typography('body1')}

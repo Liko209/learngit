@@ -33,7 +33,7 @@ const ENV_OPTS = {
     GLIP_SERVER_BASE_URL: 'https://xmnup.asialab.glip.net',
     AUTH_URL: 'https://login-xmnup.lab.nordigy.ru/api/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
-    WEBPHONE_BASE_URL: 'http://webphone.lab.rcch.ringcentral.com',
+    WEBPHONE_BASE_URL: 'https://jupiter-webphone.lab.rcch.ringcentral.com',
     WEBPHONE_ENV: 'xmnup',
   },
   'GLP-CI1-XMN': {
@@ -44,7 +44,7 @@ const ENV_OPTS = {
     GLIP_SERVER_BASE_URL: 'https://glpci1xmn.asialab.glip.net',
     AUTH_URL: 'https://login-glpci1xmn.lab.nordigy.ru/api/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
-    WEBPHONE_BASE_URL: 'http://webphone.lab.rcch.ringcentral.com',
+    WEBPHONE_BASE_URL: 'https://jupiter-webphone.lab.rcch.ringcentral.com',
     WEBPHONE_ENV: 'glpci1xmn',
   },
 }[SITE_ENV];
@@ -67,6 +67,7 @@ const REPORTER = process.env.REPORTER || 'spec';
 const SCREENSHOTS_PATH = path.join(process.env.SCREENSHOTS_PATH || '/tmp', LANGUAGE_CODE);
 const SCREENSHOT_ON_FAIL = !(process.env.SCREENSHOT_ON_FAIL === 'false');
 const SCREENSHOT_WEBP_QUALITY = Number(process.env.SCREENSHOT_WEBP_QUALITY);
+const SCREENSHOT_WEBP_SCALE = Number(process.env.SCREENSHOT_WEBP_SCALE) <= 1 ? Number(process.env.SCREENSHOT_WEBP_SCALE) : 0.5;
 const CONCURRENCY = Number(process.env.CONCURRENCY || '1');
 const SHUFFLE_FIXTURES = process.env.SHUFFLE_FIXTURES === 'true';
 const FIXTURES = flattenGlobs(process.env.FIXTURES ? parseArgs(process.env.FIXTURES) : configLoader.fixtures, SHUFFLE_FIXTURES);
@@ -88,6 +89,7 @@ const RUNNER_OPTS = {
   SCREENSHOT_ON_FAIL,
   SCREENSHOTS_PATH,
   SCREENSHOT_WEBP_QUALITY,
+  SCREENSHOT_WEBP_SCALE,
   CONCURRENCY,
   FIXTURES,
   BROWSERS,
@@ -120,7 +122,7 @@ enum BrandTire {
 };
 
 const WebphoneConfig = {
-  TTL: 1800000,
+  TTL: 600000,
   reserve: false,
 }
 

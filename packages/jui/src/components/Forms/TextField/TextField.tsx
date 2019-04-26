@@ -6,12 +6,28 @@
 import React from 'react';
 import styled from '../../../foundation/styled-components';
 import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
-import { spacing, palette } from '../../../foundation/utils/styles';
+import {
+  spacing,
+  palette,
+  grey,
+  typography,
+} from '../../../foundation/utils/styles';
 import isOutlinedTextFieldProps from '../isOutlinedTextFieldProps';
 
 const TextField = styled(MuiTextField)`
   && {
     margin: 0 0 ${spacing(4)} 0;
+    label {
+      color: ${grey('600')};
+      ${typography('caption2')};
+      transform: scale(1);
+    }
+    input {
+      ::placeholder {
+        color: ${grey('600')};
+        ${typography('body1')};
+      }
+    }
   }
   && {
     .form-label-focused:not(.form-label-error) {

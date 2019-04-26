@@ -9,7 +9,11 @@ import { storiesOf } from '@storybook/react';
 import styled from '../../../foundation/styled-components';
 import { select, boolean } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { JuiSnackbarContent, JuiSnackbarAction } from '..';
+import {
+  JuiSnackbarContent,
+  JuiSnackbarAction,
+  JuiSnackbarContentProps,
+} from '..';
 
 const Wrapper = styled.div`
   text-align: center;
@@ -24,7 +28,7 @@ const Wrapper = styled.div`
 
 const knobs = {
   type: () =>
-    select(
+    select<JuiSnackbarContentProps['type']>(
       'type',
       {
         success: 'success',
@@ -35,7 +39,7 @@ const knobs = {
       'success',
     ),
   messageAlign: () =>
-    select(
+    select<JuiSnackbarContentProps['messageAlign']>(
       'messageAlign',
       {
         left: 'left',
@@ -44,7 +48,7 @@ const knobs = {
       'left',
     ),
   message: () =>
-    select(
+    select<JuiSnackbarContentProps['message']>(
       'message',
       {
         success: 'This is a success message.',
