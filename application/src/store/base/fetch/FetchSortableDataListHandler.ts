@@ -355,12 +355,23 @@ export class FetchSortableDataListHandler<
     return this.maintainMode || this._dataChangeCallBacks.length;
   }
 
+  getOldest() {
+    return this.sortableListStore.last();
+  }
+
+  getNewest() {
+    return this.sortableListStore.first();
+  }
+
   private _isInRange(newData: ISortableModel<T>) {
     let inRange = false;
     const idArray = this.sortableListStore.items;
     if (idArray && idArray.length > 0) {
-      const first = idArray[0];
-      const last = idArray[idArray.length - 1];
+      const first = this.getNewest();
+      const last = this.getOldest();
+
+      if (!(first && last)) return;
+
       if (this._sortFun) {
         inRange =
           this._sortFun(newData, first) >= 0 &&
