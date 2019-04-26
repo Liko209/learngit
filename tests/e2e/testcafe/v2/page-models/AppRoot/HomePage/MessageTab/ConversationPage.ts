@@ -70,9 +70,13 @@ export class BaseConversationPage extends BaseWebComponent {
   get posts() {
     return this.self.find('[data-name="conversation-card"]');
   }
-  
+
   get postSenders() {
     return this.self.find('[data-name="name"]');
+  }
+
+  get postTimes() {
+    return this.self.find('[data-name="time"]');
   }
 
   get header() {
@@ -85,6 +89,30 @@ export class BaseConversationPage extends BaseWebComponent {
 
   get title() {
     return this.getSelectorByAutomationId('conversation-page-header-title');
+  }
+
+  async timeOfPostsShouldOrderByAsc() {
+    const count = await this.postTimes.count;
+    let lastTime: number;
+    for (const i of _.range(count)) {
+      const currentTime = H.convertPostTimeToTimestamp(await this.postTimes.nth(i).textContent);
+      if (lastTime) {
+        assert.ok(lastTime <= currentTime, 'the posts not order By ASC');
+      }
+      lastTime = currentTime;
+    }
+  }
+
+  async timeOfPostsShouldOrderByDesc() {
+    const count = await this.postTimes.count;
+    let lastTime: number;
+    for (const i of _.range(count)) {
+      const currentTime = H.convertPostTimeToTimestamp(await this.postTimes.nth(i).textContent);
+      if (lastTime) {
+        assert.ok(lastTime >= currentTime, 'the posts not order by Desc');
+      }
+      lastTime = currentTime;
+    }
   }
 
   nthPostItem(nth: number) {
