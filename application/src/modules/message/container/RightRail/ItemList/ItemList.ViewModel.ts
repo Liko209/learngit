@@ -154,7 +154,6 @@ class ItemListViewModel extends StoreViewModel<Props> {
         data,
         id: model.id,
         sortValue: model.id,
-        data: model,
       } as ISortableModelWithData<Item>;
     };
 

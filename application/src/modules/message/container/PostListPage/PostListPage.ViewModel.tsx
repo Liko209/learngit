@@ -20,7 +20,7 @@ import { PostService } from 'sdk/module/post';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import { Post } from 'sdk/module/post/entity';
-import { ISortableModel } from '@/store/base/fetch/types';
+import { ISortableModelWithData } from '@/store/base/fetch/types';
 import PostModel from '@/store/models/Post';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
@@ -108,7 +108,7 @@ class PostListPageViewModel extends AbstractViewModel {
   postFetcher = async (
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor?: ISortableModel<Post>,
+    anchor?: ISortableModelWithData<Post>,
   ) => {
     const postService = ServiceLoader.getInstance<PostService>(
       ServiceConfig.POST_SERVICE,

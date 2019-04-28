@@ -78,7 +78,7 @@ class ItemListDataSource {
     return {
       id: model.id,
       sortValue: FileItemUtils.getLatestPostId(model),
-    } as ISortableModel<Item>;
+    } as ISortableModelWithData<Item>;
   }
 
   @action

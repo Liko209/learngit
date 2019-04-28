@@ -110,7 +110,7 @@ export class FetchSortableDataListHandler<
   async fetchDataByAnchor(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor: ISortableModelWithData<T>,
+    anchor?: ISortableModelWithData<T>,
   ) {
     return this.fetchDataInternal(direction, pageSize, anchor);
   }
@@ -124,7 +124,7 @@ export class FetchSortableDataListHandler<
   protected async fetchDataInternal(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor: ISortableModelWithData<T>,
+    anchor?: ISortableModelWithData<T>,
   ) {
     if (!this._sortableDataProvider) {
       mainLogger.warn(

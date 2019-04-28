@@ -16,7 +16,7 @@ import { GroupState } from 'sdk/module/state/entity';
 import GroupStateModel from '@/store/models/GroupState';
 import { HistoryHandler } from './HistoryHandler';
 import { PostService } from 'sdk/module/post';
-import { ISortableModel } from '@/store/base';
+import { ISortableModelWithData } from '@/store/base';
 import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPostFocBuilder';
 import preFetchConversationDataHandler from '@/store/handler/PreFetchConversationDataHandler';
 import conversationPostCacheController from '@/store/handler/cache/ConversationPostCacheController';
@@ -184,7 +184,7 @@ class StreamController {
     const pageSize = this.historyUnreadCount + LOAD_UNREAD_POSTS_REDUNDANCY;
     const readThrough = this.historyReadThrough || 0;
 
-    let sortableModel: ISortableModel<Post> | undefined = undefined;
+    let sortableModel: ISortableModelWithData<Post> | undefined = undefined;
     if (readThrough !== 0) {
       const postService = ServiceLoader.getInstance<PostService>(
         ServiceConfig.POST_SERVICE,
