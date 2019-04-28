@@ -11,13 +11,12 @@ import {
   TDelta,
   DeltaDataHandler,
 } from '@/store/base';
-import { Post } from 'sdk/module/post/entity';
+import { Post, PostStreamData } from 'sdk/module/post/entity';
 import storeManager, { ENTITY_NAME } from '@/store';
 import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
 import { TypeDictionary } from 'sdk/utils';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import PostModel from '@/store/models/Post';
-import _ from 'lodash';
 import { ThumbnailPreloadController } from './ThumbnailPreloadController';
 import { PostCacheController } from './PostCacheController';
 import { ConversationPostFocBuilder } from './ConversationPostFocBuilder';
@@ -66,7 +65,7 @@ class ConversationPostCacheController extends PostCacheController {
     }
   }
 
-  get(groupId: number): FetchSortableDataListHandler<Post> {
+  get(groupId: number): FetchSortableDataListHandler<PostStreamData> {
     let listHandler = this._cacheMap.get(groupId);
     if (!listHandler) {
       const fetchDataCallback = async (delta: TDelta) => {

@@ -5,7 +5,7 @@
  */
 
 import { FetchSortableDataListHandler } from '@/store/base';
-import { Post } from 'sdk/module/post/entity';
+import { Post, PostStreamData } from 'sdk/module/post/entity';
 import storeManager, { ENTITY_NAME } from '@/store';
 import { Item } from 'sdk/module/item/entity';
 import { mainLogger } from 'sdk';
@@ -18,7 +18,10 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import { PostUsedItemCache } from './PostUsedItemCache';
 
 abstract class PostCacheController implements IPreFetchController {
-  protected _cacheMap: Map<number, FetchSortableDataListHandler<Post>>;
+  protected _cacheMap: Map<
+    number,
+    FetchSortableDataListHandler<PostStreamData>
+  >;
   protected _currentGroupId: number = 0;
   protected _postUsedItemCache = new PostUsedItemCache();
 
@@ -36,7 +39,7 @@ abstract class PostCacheController implements IPreFetchController {
     >).addUsedCache(this._postUsedItemCache);
   }
 
-  abstract get(groupId: number): FetchSortableDataListHandler<Post>;
+  abstract get(groupId: number): FetchSortableDataListHandler<PostStreamData>;
 
   abstract doPreFetch(groupId: number): Promise<void>;
 
@@ -49,7 +52,7 @@ abstract class PostCacheController implements IPreFetchController {
   getUsedIds(): number[] {
     const handlerArr = Array.from(this._cacheMap.values());
     const idsArr = handlerArr.map(
-      (handler: FetchSortableDataListHandler<Post>) => {
+      (handler: FetchSortableDataListHandler<PostStreamData>) => {
         const items = handler.sortableListStore.items;
         return _.map(items, 'id');
       },
@@ -64,7 +67,7 @@ abstract class PostCacheController implements IPreFetchController {
   getUnCachedGroupIds(): number[] {
     const needCacheGroupIds: number[] = [];
     this._cacheMap.forEach(
-      (value: FetchSortableDataListHandler<Post>, key: number) => {
+      (value: FetchSortableDataListHandler<PostStreamData>, key: number) => {
         this.needToCache(key) && needCacheGroupIds.push(key);
       },
     );
@@ -109,7 +112,10 @@ abstract class PostCacheController implements IPreFetchController {
     }
   }
 
-  set(groupId: number, listHandler: FetchSortableDataListHandler<Post>) {
+  set(
+    groupId: number,
+    listHandler: FetchSortableDataListHandler<PostStreamData>,
+  ) {
     this._cacheMap.set(groupId, listHandler);
   }
 

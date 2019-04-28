@@ -16,6 +16,12 @@ import storeManager, { ENTITY_NAME } from '@/store';
 import { ENTITY } from 'sdk/service';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
+type PostData = {
+  id: number;
+  created_at: number;
+  creator_id: number;
+};
+
 class PostDataProvider implements IFetchSortableDataProvider<Post> {
   private _postService = ServiceLoader.getInstance<PostService>(
     ServiceConfig.POST_SERVICE,
@@ -53,11 +59,12 @@ class ConversationPostFocBuilder {
       dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 
     const options = {
-      transformFunc: (dataModel: any) => ({
+      transformFunc: (dataModel: PostData) => ({
         id: dataModel.id,
         sortValue: dataModel.created_at,
         data: {
           id: dataModel.id,
+          created_at: dataModel.created_at,
           creator_id: dataModel.creator_id,
         },
       }),

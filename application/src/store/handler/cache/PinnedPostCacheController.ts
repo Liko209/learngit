@@ -5,7 +5,7 @@
  */
 
 import { FetchSortableDataListHandler } from '@/store/base';
-import { Post } from 'sdk/module/post/entity';
+import { PostStreamData } from 'sdk/module/post/entity';
 import GroupModel from '@/store/models/Group';
 import _ from 'lodash';
 import { PostCacheController } from './PostCacheController';
@@ -28,7 +28,7 @@ class PinnedPostCacheController extends PostCacheController {
     return 'PinnedPostCacheController';
   }
 
-  get(groupId: number): FetchSortableDataListHandler<Post> {
+  get(groupId: number): FetchSortableDataListHandler<PostStreamData> {
     if (!this._cacheMap.has(groupId)) {
       this._initPinnedPostHandler(groupId);
     }

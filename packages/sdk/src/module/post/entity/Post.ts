@@ -39,6 +39,12 @@ export type Post = ExtendedBaseModel & {
   };
 };
 
+export type PostStreamData = {
+  id: number;
+  created_at: number;
+  creator_id: number;
+};
+
 export type PostView = IdModel & {
   group_id: number;
   created_at: number;

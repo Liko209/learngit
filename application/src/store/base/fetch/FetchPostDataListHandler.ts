@@ -9,14 +9,17 @@ import {
   IFetchSortableDataProvider,
   IFetchSortableDataListHandlerOptions,
 } from './FetchSortableDataListHandler';
-import { Post } from 'sdk/module/post/entity';
+import { Post, PostStreamData } from 'sdk/module/post/entity';
 import { SortableListStore } from './SortableListStore';
 import { ENTITY, EVENT_TYPES } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { mainLogger } from 'sdk';
 
 const LOG_TAG = 'FetchPostDataListHandler';
-class FetchPostDataListHandler extends FetchSortableDataListHandler<Post> {
+
+class FetchPostDataListHandler extends FetchSortableDataListHandler<
+  PostStreamData
+> {
   constructor(
     dataProvider: IFetchSortableDataProvider<Post>,
     options: IFetchSortableDataListHandlerOptions<Post>,

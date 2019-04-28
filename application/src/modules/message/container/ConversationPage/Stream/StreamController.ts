@@ -6,7 +6,7 @@ import { StreamItemAssemblyLine } from './StreamItemAssemblyLine/StreamItemAssem
 import { StreamItem, TDeltaWithData, StreamItemType } from './types';
 import { FetchSortableDataListHandler } from '@/store/base/fetch';
 import { NewMessageSeparatorHandler } from './StreamItemAssemblyLine/Assembler/NewMessageSeparator';
-import { Post } from 'sdk/module/post/entity';
+import { Post, PostStreamData } from 'sdk/module/post/entity';
 import _ from 'lodash';
 import { computed, action } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
@@ -32,7 +32,7 @@ const transformFunc = <T extends { id: number }>(dataModel: T) => ({
 });
 
 class StreamController {
-  private _orderListHandler: FetchSortableDataListHandler<Post>;
+  private _orderListHandler: FetchSortableDataListHandler<PostStreamData>;
   private _streamListHandler: FetchSortableDataListHandler<StreamItem>;
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
   private _assemblyLine: StreamItemAssemblyLine;
@@ -184,7 +184,9 @@ class StreamController {
     const pageSize = this.historyUnreadCount + LOAD_UNREAD_POSTS_REDUNDANCY;
     const readThrough = this.historyReadThrough || 0;
 
-    let sortableModel: ISortableModelWithData<Post> | undefined = undefined;
+    let sortableModel:
+      | ISortableModelWithData<PostStreamData>
+      | undefined = undefined;
     if (readThrough !== 0) {
       const postService = ServiceLoader.getInstance<PostService>(
         ServiceConfig.POST_SERVICE,
