@@ -13,15 +13,17 @@ import notificationCenter from '../../../service/notificationCenter';
 import { baseHandleData, transform } from '../../../service/utils';
 import { IPreInsertController } from '../../common/controller/interface/IPreInsertController';
 import { ItemService } from '../../item';
-import { INDEX_POST_MAX_SIZE } from '../constant';
+import {
+  INDEX_POST_MAX_SIZE,
+  LOG_INDEX_DATA_POST,
+  LOG_FETCH_POST,
+} from '../constant';
 import { PostDao, PostDiscontinuousDao } from '../dao';
 import { IRawPostResult, Post } from '../entity';
 import { IGroupService } from '../../group/service/IGroupService';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 import { SortUtils } from '../../../framework/utils';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
-
-const TAG = 'PostDataController';
 
 class PostDataController {
   constructor(
@@ -31,6 +33,7 @@ class PostDataController {
   ) {}
 
   async handleFetchedPosts(data: IRawPostResult, shouldSaveToDb: boolean) {
+    mainLogger.info(LOG_FETCH_POST, 'handleFetchedPosts()');
     const logId = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
       PERFORMANCE_KEYS.CONVERSATION_HANDLE_DATA_FROM_SERVER,
@@ -46,7 +49,7 @@ class PostDataController {
       (await ServiceLoader.getInstance<ItemService>(
         ServiceConfig.ITEM_SERVICE,
       ).handleIncomingData(data.items)) || [];
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId, posts.length);
     return {
       posts,
       items,
@@ -67,9 +70,17 @@ class PostDataController {
         posts.filter((post: Post) => post.created_at !== post.modified_at),
       );
       const result = await this.handelPostsOverThreshold(posts, maxPostsExceed);
-      await this.preInsertController.bulkDelete(posts);
+      await this._deletePreInsertPosts(posts);
       posts = await this.handleIndexModifiedPosts(posts);
+      mainLogger.info(
+        LOG_INDEX_DATA_POST,
+        `filterAndSavePosts() before posts.length: ${posts && posts.length}`,
+      );
       posts = await this.filterAndSavePosts(posts, true);
+      mainLogger.info(
+        LOG_INDEX_DATA_POST,
+        `filterAndSavePosts() after posts.length: ${posts && posts.length}`,
+      );
       if (result && result.deleteMap.size > 0) {
         result.deleteMap.forEach((value: number[], key: number) => {
           this._groupService.updateHasMore(key, QUERY_DIRECTION.OLDER, true);
@@ -96,6 +107,19 @@ class PostDataController {
       return await this.filterAndSavePosts(posts, true);
     }
     return [];
+  }
+
+  private async _deletePreInsertPosts(posts: Post[]) {
+    try {
+      await this.preInsertController.bulkDelete(posts);
+    } catch (error) {
+      mainLogger.info(
+        LOG_INDEX_DATA_POST,
+        `_handlePreInsert() preInsertController.bulkDelete error ${JSON.stringify(
+          error,
+        )}`,
+      );
+    }
   }
 
   /**
@@ -133,8 +157,8 @@ class PostDataController {
     maxPostsExceed: boolean,
   ) {
     mainLogger.info(
-      TAG,
-      `maxPostsExceed: ${maxPostsExceed} transformedData.length: ${
+      LOG_INDEX_DATA_POST,
+      `handelPostsOverThreshold() maxPostsExceed: ${maxPostsExceed} transformedData.length: ${
         posts.length
       }`,
     );
@@ -152,10 +176,6 @@ class PostDataController {
           shouldRemoveGroupIds.push(Number(groupId));
         }
       });
-      mainLogger.info(
-        TAG,
-        `handelPostsOverThreshold shouldRemoveGroupIds: ${shouldRemoveGroupIds}`,
-      );
       if (shouldRemoveGroupIds.length) {
         let deletePostIds: number[] = [];
         const deleteMap: Map<number, number[]> = new Map();
@@ -166,24 +186,26 @@ class PostDataController {
             const postIds = await daoManager
               .getDao(PostDao)
               .queryPostIdsByGroupId(id);
-            deletePostIds = deletePostIds.concat(postIds);
-            deleteMap.set(id, postIds);
+            if (postIds.length > 0) {
+              mainLogger.info(
+                LOG_INDEX_DATA_POST,
+                `handelPostsOverThreshold() groupId:${id}, deletePostIds(start-end): ${
+                  deletePostIds[0]
+                } - ${deletePostIds[deletePostIds.length - 1]}, length:${
+                  deletePostIds.length
+                }`,
+              );
+              deletePostIds = deletePostIds.concat(postIds);
+              deleteMap.set(id, postIds);
+            }
           }),
-        );
-        mainLogger.info(
-          TAG,
-          `handelPostsOverThreshold deletePostIds(start-end): ${
-            deletePostIds[0]
-          } - ${deletePostIds[deletePostIds.length - 1]}, length:${
-            deletePostIds.length
-          }`,
         );
         if (deletePostIds.length > 0) {
           try {
             await this.entitySourceController.bulkDelete(deletePostIds);
           } catch (error) {
             mainLogger.info(
-              TAG,
+              LOG_INDEX_DATA_POST,
               `handelPostsOverThreshold bulkDelete failed ${JSON.stringify(
                 error,
               )}`,
@@ -198,8 +220,16 @@ class PostDataController {
 
   protected async handleIndexModifiedPosts(posts: Post[]) {
     if (!posts || !posts.length) {
+      mainLogger.info(
+        LOG_INDEX_DATA_POST,
+        'handleIndexModifiedPosts() posts empty',
+      );
       return posts;
     }
+    mainLogger.info(
+      LOG_INDEX_DATA_POST,
+      `handleIndexModifiedPosts() posts.length: ${posts.length}`,
+    );
     const groupPosts: { [groupId: number]: Post[] } = {};
     posts.forEach((post: Post) => {
       groupPosts[post.group_id]
@@ -208,11 +238,6 @@ class PostDataController {
     });
 
     const removedIds = await this.removeDiscontinuousPosts(groupPosts);
-    mainLogger.info(
-      TAG,
-      'handleIndexModifiedPosts remove post ids:',
-      removedIds,
-    );
     const resultPosts = posts.filter(
       (post: Post) => !removedIds.includes(post.id),
     );
@@ -336,13 +361,12 @@ class PostDataController {
               deletePostIds.concat(deletePosts.map((post: Post) => post.id));
             }
           }
+          mainLogger.info(
+            LOG_INDEX_DATA_POST,
+            `removeDiscontinuousPosts() remove groupId: ${groupId}, deletePostIds: ${deletePostIds}`,
+          );
         }
       }),
-    );
-    mainLogger.info(
-      TAG,
-      'handleIndexModifiedPosts remove group ids:',
-      [deleteGroupIdSet].join(','),
     );
     if (deleteGroupIdSet.size > 0) {
       // mark group has more as true

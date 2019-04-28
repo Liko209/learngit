@@ -26,11 +26,11 @@ describe('config', () => {
     it('should merge object type in config', async () => {
       const rawConfig = configManager.getConfig();
       const result = configManager.mergeConfig({
-        consumer: {
+        collector: {
           enabled: false,
         },
       });
-      expect(result).toEqual({ ...rawConfig, consumer: { enabled: false } });
+      expect(result).toEqual({ ...rawConfig, collector: { enabled: false } });
     });
 
     it('should replace array value in config', async () => {

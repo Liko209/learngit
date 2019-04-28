@@ -127,9 +127,10 @@ export class FetchSortableDataListHandler<
     anchor: ISortableModelWithData<T>,
   ) {
     if (!this._sortableDataProvider) {
-      return mainLogger.warn(
+      mainLogger.warn(
         'FetchSortableDataListHandler: data fetcher should be defined ',
       );
+      return [];
     }
     const { data = [], hasMore } = await this._sortableDataProvider.fetchData(
       direction,
@@ -474,6 +475,10 @@ export class FetchSortableDataListHandler<
       type: EVENT_TYPES.REPLACE,
       body: notificationBody,
     });
+  }
+
+  transform2SortableModel(originalModel: T) {
+    return this._transformFunc(originalModel);
   }
 
   private async _updateTotalCount() {

@@ -3,11 +3,11 @@
  * @Date: 2019-1-2 15:50:00
  * Copyright © RingCentral. All rights reserved.
  */
-
+import _ from 'lodash';
 import { setup } from '../../../../../../dao/__tests__/utils';
 import { FileItemDao } from '../FileItemDao';
 
-describe('Event Item Dao', () => {
+describe('File Item Dao', () => {
   let dao: FileItemDao;
 
   const items = [
@@ -124,7 +124,7 @@ describe('Event Item Dao', () => {
     }
 
     const { fileItem } = setUpData();
-    it('should return sanitized item', () => {
+    it('should return sanitized file item', () => {
       expect(dao.toSanitizedItem(fileItem as any)).toEqual({
         id: fileItem.id,
         group_ids: fileItem.group_ids,
@@ -132,12 +132,12 @@ describe('Event Item Dao', () => {
         modified_at: fileItem.modified_at,
         name: fileItem.name,
         type: fileItem.type,
-        __latest_version_date: fileItem.created_at,
+        __latest_post_id: 3361800196,
       });
     });
 
     it('should set _latest_version_date to latest valid version', () => {
-      fileItem.versions = [{ date: 999, deactivated: true }, { date: 888 }];
+      fileItem.post_ids = [3361800196, 1, 2, 3];
       expect(dao.toSanitizedItem(fileItem as any)).toEqual({
         id: fileItem.id,
         group_ids: fileItem.group_ids,
@@ -145,7 +145,7 @@ describe('Event Item Dao', () => {
         modified_at: fileItem.modified_at,
         name: fileItem.name,
         type: fileItem.type,
-        __latest_version_date: 888,
+        __latest_post_id: 3361800196,
       });
     });
   });

@@ -11,11 +11,12 @@ import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiPopover } from '../index';
 import { JuiMenuList, JuiMenuItem } from '../../Menus';
 import { JuiButton } from '../../Buttons';
+import { PopoverOrigin } from '@material-ui/core/Popover';
 
 const knobs = {
   anchorOrigin: {
     vertical: () =>
-      select(
+      select<PopoverOrigin['vertical']>(
         'anchorOrigin.vertical',
         {
           top: 'top',
@@ -25,7 +26,7 @@ const knobs = {
         'bottom',
       ),
     horizontal: () =>
-      select(
+      select<PopoverOrigin['horizontal']>(
         'anchorOrigin.horizontal',
         {
           left: 'left',
@@ -37,7 +38,7 @@ const knobs = {
   },
   transformOrigin: {
     vertical: () =>
-      select(
+      select<PopoverOrigin['vertical']>(
         'transformOrigin.vertical',
         {
           top: 'top',
@@ -47,7 +48,7 @@ const knobs = {
         'top',
       ),
     horizontal: () =>
-      select(
+      select<PopoverOrigin['horizontal']>(
         'transformOrigin.horizontal',
         {
           left: 'left',

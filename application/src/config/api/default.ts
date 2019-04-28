@@ -28,9 +28,9 @@ const config: ApiConfig = {
     clientSecret: '2rvs5gfmofo7giss2t6u1ebvi0dirt5ooqmt',
   },
   sumologic: {
-    server: 'https://endpoint1.collection.us2.sumologic.com/receiver/v1/http/',
+    server: 'https://collectors.sumologic.com/receiver/v1/http/',
     uniqueHttpCollectorCode:
-      'ZaVnC4dhaV28t7AbUj9Cd_JP7Cb44le-OLPq1-sjIkhGgL155gqi8P3etfNtjzOLtijRtTufVhjoqOMZFNCSDEnTAcEAN36bfF41Jmf7_nssAS-z8jTnjg==',
+      'ZaVnC4dhaV3dzvBaY1wZqHcCh6D_2Ai3S-v_j39KpeGfbifz6Ir-C_hqAy0SaJROQ8A6tBsgSOKrmgynKRSZW9CCGvcqfYV1crTV9x0NDS6bYSZIC7Z4jw==',
   },
 };
 export default config;

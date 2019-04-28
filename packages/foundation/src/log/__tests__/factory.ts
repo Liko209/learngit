@@ -23,7 +23,7 @@ const logConfigBuilder: Builder<LogConfig> = {
   browser: {
     enabled: false,
   },
-  consumer: {
+  collector: {
     enabled: true,
   },
   decorators: [],

@@ -5,44 +5,137 @@
  */
 import { container } from 'framework';
 import { AbstractViewModel } from '@/base';
-import { observable } from 'mobx';
-import { mainLogger } from 'sdk';
-import { UploadRecentLogsViewModelProps } from './types';
+import { observable, computed } from 'mobx';
+import { logger } from '../utils';
+import { UploadRecentLogsViewModelProps, TaskStatus } from './types';
+import { UploadResult } from '../types';
 import { FeedbackService } from '../service/FeedbackService';
-import { DEFAULT_FEEDBACK_EMAIL } from '../constants';
+import {
+  TaskQueueLoop,
+  Task,
+} from 'sdk/service/uploadLogControl/consumer/task';
+import { Nullable } from 'sdk/types';
+
+const TASK_NAME = {
+  UPLOAD_LOGS: 'UPLOAD_LOGS',
+  SEND_FEEDBACK: 'SEND_FEEDBACK',
+};
+
+export const isTaskInQueue = (taskStatus: TaskStatus) => {
+  return [TaskStatus.PENDING, TaskStatus.EXECUTING].indexOf(taskStatus) > -1;
+};
+
 export class UploadRecentLogsViewModel extends AbstractViewModel
   implements UploadRecentLogsViewModelProps {
   private _feedbackService: FeedbackService = container.get(FeedbackService);
-  @observable isUploadingFeedback: boolean = false;
-  @observable isFeedbackError: boolean = false;
+  private _uploadLogResult: Nullable<UploadResult>;
+  private _taskQueue: TaskQueueLoop;
+  private _onSendFeedbackDoneCallback: (taskStatus: TaskStatus) => void;
+  @observable uploadLogsStatus: TaskStatus = TaskStatus.IDLE;
+  @observable sendFeedbackStatus: TaskStatus = TaskStatus.IDLE;
+  @observable issueTitle: string = '';
+  @observable issueDescription: string = '';
 
-  openEmail = (subject: string, body: string) => {
-    const popupWindow = window.open(
-      `mailto:${DEFAULT_FEEDBACK_EMAIL}?subject=${subject}&body=${body}`,
-      '_self',
-    );
-    try {
-      popupWindow!.focus();
-      return true;
-    } catch (e) {
-      this.isFeedbackError = true;
-      mainLogger.error('Open email fail');
-    }
-    return false;
+  constructor(props: UploadRecentLogsViewModelProps) {
+    super(props);
+    this._taskQueue = new TaskQueueLoop();
+    this.uploadLogsStatus = TaskStatus.PENDING;
+    this._taskQueue.addTail(this._createUploadLogsTask());
   }
 
-  uploadRecentLogs = async () => {
-    if (this.isUploadingFeedback) return null;
-    this.isUploadingFeedback = true;
-    this.isFeedbackError = false;
-    try {
-      return await this._feedbackService.uploadRecentLogs();
-    } catch (error) {
-      this.isFeedbackError = true;
-      mainLogger.error('Upload recent logs fail');
-    } finally {
-      this.isUploadingFeedback = false;
+  private _createUploadLogsTask = () => {
+    return new Task({
+      name: TASK_NAME.UPLOAD_LOGS,
+      onExecute: async () => {
+        this.uploadLogsStatus = TaskStatus.EXECUTING;
+        logger.debug('upload recent logs start');
+        await this._uploadRecentLogs();
+      },
+      onCompleted: async () => {
+        this.uploadLogsStatus = TaskStatus.SUCCESS;
+        logger.debug('upload recent logs success');
+      },
+      onError: async error => {
+        this.uploadLogsStatus = TaskStatus.FAILED;
+        logger.debug('upload recent logs failed', error);
+      },
+    });
+  }
+
+  private _createSendFeedbackTask = () => {
+    return new Task({
+      name: TASK_NAME.SEND_FEEDBACK,
+      onExecute: async () => {
+        this.sendFeedbackStatus = TaskStatus.EXECUTING;
+        logger.debug('send feedback start');
+        await this._sendFeedback();
+      },
+      onCompleted: async () => {
+        this.sendFeedbackStatus = TaskStatus.SUCCESS;
+        logger.debug('send feedback success');
+        this._onSendFeedbackDoneCallback &&
+          this._onSendFeedbackDoneCallback(TaskStatus.SUCCESS);
+      },
+      onError: async error => {
+        this.sendFeedbackStatus = TaskStatus.FAILED;
+        logger.debug('Send feedback fail', error);
+        this._onSendFeedbackDoneCallback &&
+          this._onSendFeedbackDoneCallback(TaskStatus.FAILED);
+      },
+    });
+  }
+
+  private _sendFeedback = async (): Promise<void> => {
+    const uploadResult = this._uploadLogResult;
+    if (uploadResult) {
+      const comments = `Describe your problem here:\n\n${
+        this.issueDescription
+      }\n---\nID: ${uploadResult.handle}\nFile: ${uploadResult.filename}\nurl:${
+        uploadResult.url
+      }`;
+      await this._feedbackService.sendFeedback(this.issueTitle, comments);
+    } else {
+      logger.debug('Send feedback without recent logs');
+      await this._feedbackService
+        .sendFeedback(this.issueTitle, this.issueDescription)
+        .catch();
+      throw 'upload step failed, can not send feedback.';
     }
-    return null;
+  }
+
+  private _uploadRecentLogs = async () => {
+    this._uploadLogResult = null;
+    this._uploadLogResult = await this._feedbackService.uploadRecentLogs();
+    if (!this._uploadLogResult) {
+      logger.debug('Upload recent logs failed.');
+      throw 'Upload recent logs failed.';
+    }
+  }
+
+  @computed get isLoading() {
+    return isTaskInQueue(this.sendFeedbackStatus);
+  }
+
+  onSendFeedbackDone = (callback: (taskStatus: TaskStatus) => void) => {
+    this._onSendFeedbackDoneCallback = callback;
+  }
+
+  sendFeedback = () => {
+    if (!isTaskInQueue(this.uploadLogsStatus)) {
+      this.uploadLogsStatus = TaskStatus.PENDING;
+      this._taskQueue.addTail(this._createUploadLogsTask());
+    }
+    if (!isTaskInQueue(this.sendFeedbackStatus)) {
+      this.sendFeedbackStatus = TaskStatus.PENDING;
+      this._taskQueue.addTail(this._createSendFeedbackTask());
+    }
+  }
+
+  handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.issueTitle = e.target.value.trim();
+  }
+
+  handleDescChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.issueDescription = e.target.value.trim();
   }
 }

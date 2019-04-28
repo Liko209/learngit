@@ -15,7 +15,7 @@ import { JuiButton } from '../../../components/Buttons';
 const knobs = {
   anchorOrigin: {
     vertical: () =>
-      select(
+      select<'bottom' | 'top' | 'center'>(
         'anchorOrigin.vertical',
         {
           top: 'top',
@@ -25,7 +25,7 @@ const knobs = {
         'bottom',
       ),
     horizontal: () =>
-      select(
+      select<'left' | 'center' | 'right'>(
         'anchorOrigin.horizontal',
         {
           left: 'left',
@@ -37,7 +37,7 @@ const knobs = {
   },
   transformOrigin: {
     vertical: () =>
-      select(
+      select<'bottom' | 'top' | 'center'>(
         'transformOrigin.vertical',
         {
           top: 'top',
@@ -47,7 +47,7 @@ const knobs = {
         'top',
       ),
     horizontal: () =>
-      select(
+      select<'left' | 'center' | 'right'>(
         'transformOrigin.horizontal',
         {
           left: 'left',

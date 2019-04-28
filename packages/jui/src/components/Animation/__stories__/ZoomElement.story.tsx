@@ -32,8 +32,6 @@ class Test extends React.Component {
 
   setTargetImageRef = (element: any) => {
     this.targetImage = element;
-    console.log(element);
-
     this.forceUpdate();
   }
 

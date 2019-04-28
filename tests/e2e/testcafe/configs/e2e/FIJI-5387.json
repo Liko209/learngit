@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ContentPanel/FileAndImagePreviewer.ts"
+    ],
+    "include_tags": [
+      "JPT-1356"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

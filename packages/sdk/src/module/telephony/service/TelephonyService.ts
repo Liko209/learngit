@@ -9,6 +9,7 @@ import { ITelephonyCallDelegate } from './ITelephonyCallDelegate';
 import { ITelephonyAccountDelegate } from './ITelephonyAccountDelegate';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SERVICE } from '../../../service/eventKey';
+import { MAKE_CALL_ERROR_CODE } from '../types';
 
 class TelephonyService extends EntityBaseService {
   private _telephonyEngineController: TelephonyEngineController;
@@ -51,7 +52,11 @@ class TelephonyService extends EntityBaseService {
   }
 
   makeCall = async (toNumber: string) => {
-    return this.telephonyController.getAccountController().makeCall(toNumber);
+    const accountController = this.telephonyController.getAccountController();
+    if (accountController) {
+      return this.telephonyController.getAccountController().makeCall(toNumber);
+    }
+    return MAKE_CALL_ERROR_CODE.INVALID_STATE;
   }
 
   hangUp = (callId: string) => {

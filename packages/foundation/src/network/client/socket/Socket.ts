@@ -16,9 +16,11 @@ class Socket extends BaseClient {
     if (socket) {
       socket.request(socketRequest).then(
         (response: SocketResponse) => {
+          this.tasks.delete(request.id);
           listener.onSuccess(response);
         },
         (response: SocketResponse) => {
+          this.tasks.delete(request.id);
           listener.onFailure(response);
         },
       );

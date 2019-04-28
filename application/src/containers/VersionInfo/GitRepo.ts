@@ -3,7 +3,7 @@
  * @Date: 2018-04-02 09:41:46
  * Copyright © RingCentral. All rights reserved.
  */
-
+// tslint:disable:no-console
 const { exec } = require('child_process');
 const Async = require('async');
 const fs = require('fs');

@@ -51,7 +51,7 @@ const Left = styled<LeftNavProps>(CustomLeftNav)`
         color: ${grey('500')}; // 500
       }
       .nav-text span {
-        color: ${grey('700')}; // 700
+        color: ${grey('900')};
       }
     }
     &::-webkit-scrollbar {
@@ -151,7 +151,7 @@ const ListLink = styled.a`
     color: ${palette('accent', 'ash')};
   }
   .nav-text span {
-    color: ${palette('accent', 'ash')};
+    color: ${grey('600')};
   }
 `;
 

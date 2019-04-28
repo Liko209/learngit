@@ -71,6 +71,47 @@
     "deployedTime": "Date",
     "allRightsReserved": "All rights reserved"
   },
+  "globalSearch": {
+    "search": "Search",
+    "showMore": "Show more",
+    "ClearHistory": "Clear history",
+    "RecentSearches": "Recent searches",
+    "contentSearch": "Content search",
+    "inThisConversation": "in this conversation",
+    "Messages": "Messages",
+    "people": "people",
+    "groups": "groups",
+    "team": "team",
+    "postedBy": "Posted by",
+    "postedIn": "Posted in",
+    "postedByPlaceholder": "Enter name or email",
+    "postedInPlaceholder": "Enter a team or conversation",
+    "filters": "Filters",
+    "People": "People",
+    "Groups": "Groups",
+    "Teams": "Teams",
+    "All": "All",
+    "Events": "Events",
+    "Files": "Files",
+    "Links": "Links",
+    "Notes": "Notes",
+    "Tasks": "Tasks",
+    "Type": "Type",
+    "TimePosted": "Time posted",
+    "Anytime": "Anytime",
+    "ThisWeek": "This week",
+    "ThisMonth": "This month",
+    "ThisYear": "This year",
+
+    "prompt": {
+      "contentSearchNetworkError": "We weren't able to conduct the search. Check your network connection, then try again.",
+      "contentSearchServiceError": "Sorry, something went wrong on our end and we weren't able to conduct the search. Try again later."
+    },
+    "Results": "Results ({{count}})",
+    "NoMatchesFound": "No matches found",
+    "SearchForContactsAndKeywords": "Search for contacts and keywords",
+    "in": "in"
+  },
   "dashboard": {
     "Dashboard": "Dashboard"
   },
@@ -288,7 +329,7 @@
     },
     "team": {
       "Members": "Members",
-      "SearchContactPlaceholder": "Members (enter names or email addresses)",
+      "SearchContactPlaceholder": "Enter names or email addresses",
       "CreateTeam": "Create Team",
       "Create": "Create",
       "SetAsPublicTeam": "Public Team (visible to any co-worker)",
@@ -296,6 +337,7 @@
       "MembersMayAddOtherMembers": "Allow members to add other members",
       "MembersMayPinPosts": "Allow members to pin posts",
       "teamName": "Team name",
+      "teamNamePlaceholder": "Enter team name",
       "teamDescription": "Team description",
       "allowTeamMembersTo": "Allow team members to",
       "addTeamMembers": "Add team members",
@@ -347,7 +389,8 @@
       "markAsUnread": "Mark as unread",
       "convertToTeam": "Convert to team",
       "convertToTeamNamePrefix": "Team: ",
-      "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content."
+      "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content.",
+      "noMatchesFound": "No matches found"
     },
     "company": {},
     "prompt": {
@@ -455,7 +498,7 @@
     "teamSettings": "Settings",
     "general": "General",
     "notificationAndSounds": "Notification and Sounds",
-    "messaging": "Messaging",
+    "messages": "Messages",
     "phone": "Phone",
     "meetings": "Meetings",
     "calendar": "Calendar"
@@ -478,12 +521,18 @@
   "feedback": {
     "name": "Feedback",
     "uploading": "uploading",
-    "uploadRecentLogsDialogHeader": "Upload log?",
+    "uploadRecentLogsDialogHeader": "Send Feedback",
     "uploadRecentLogsDialogContent": "Upload recent logs to Jupiter feedback email.",
-    "upload": "Upload",
+    "submit": "Send",
     "describeYourProblemHere": "Describe your problem here",
-    "uploadLogSuccess": "Upload log successfully, please send it via email.",
+    "uploadLogSuccess": "Upload log successfully.",
     "uploadLogFailed": "Sorry, we weren't able to upload the logs.",
-    "openEmailFailed": "Open email failed."
+    "openEmailFailed": "Open email failed.",
+    "sendFeedbackSuccess": "Feedback sent successfully.",
+    "sendFeedbackFailed": "Send feedback failed.",
+    "title": "It looks like we're having issues.",
+    "issueTitle": "Summary",
+    "issueDescription": "What happened?",
+    "sendingInBackground": "Sending feedback..."
   }
 }

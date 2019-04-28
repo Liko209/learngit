@@ -5,6 +5,7 @@
  */
 
 import store from 'store2';
+import { mainLogger } from 'foundation';
 
 // TODO FIJI-4002 should remove this after migration completed
 
@@ -27,7 +28,7 @@ class DataMigration {
   static migrateKVStorage() {
     const userId = store.get('account/user_id');
     if (!userId) {
-      console.log('No need to migrate KV data');
+      mainLogger.info('No need to migrate KV data');
       return;
     }
 

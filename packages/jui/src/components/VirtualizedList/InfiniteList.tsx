@@ -110,8 +110,10 @@ const JuiInfiniteList: RefForwardingComponent<
         const _handleScroll = (delta?: { x: number; y: number; z: number }) => {
           if (ref.current) {
             const visibleRange = ref.current.getVisibleRange();
+            const prevVisibleRange = ref.current.getPrevVisibleRange();
             handleScroll(
               visibleRange,
+              prevVisibleRange,
               {
                 minIndex: 0,
                 maxIndex: children.length - 1,

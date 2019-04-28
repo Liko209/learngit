@@ -62,6 +62,7 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
           },
         },
       ],
+      requireInteraction: true,
       tag: callId,
       data: {
         id: callId,
@@ -73,7 +74,7 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
   }
 
   private _closeNotification() {
-    this.close(this._telephonyStore.callId);
+    this._telephonyStore.callId && this.close(this._telephonyStore.callId);
   }
 
   public dispose() {

@@ -194,4 +194,4 @@ class JuiCheckboxButton extends React.PureComponent<JuiCheckboxButtonProps> {
   }
 }
 
-export { JuiCheckboxButton, CheckboxButtonProps };
+export { JuiCheckboxButton, JuiCheckboxButtonProps, CheckboxButtonProps };

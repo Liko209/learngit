@@ -12,7 +12,7 @@ abstract class BaseClient implements IClient {
   }
 
   request(request: IRequest, listener: INetworkRequestExecutorListener): void {
-    this.tasks[request.id] = request;
+    this.tasks.set(request.id, request);
   }
 
   cancelRequest(request: IRequest): void {

@@ -1,4 +1,6 @@
 const name2icon = {
+  voicemail: 'voicemail',
+  answer: 'answer',
   member_count: 'people',
   phone: 'phone',
   meetings: 'videocam',
@@ -81,6 +83,7 @@ const name2icon = {
   default_video: 'default-video',
   default_avatar: 'default-avatar',
   pin: 'pin',
+  unpin: 'unpin',
   zoom_out: 'zoom-out',
   zoom_in: 'zoom-in',
   info: 'info',
@@ -113,6 +116,7 @@ const name2icon = {
   bell: 'bell',
   bubble_lines: 'bubble_lines',
   event_new: 'event-new',
+  history: 'history',
   videocam: 'videocam',
   hash: 'hash',
   asterisk: 'asterisk',

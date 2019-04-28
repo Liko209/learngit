@@ -3,6 +3,7 @@
  * @Date: 2018-11-23 13:57:46
  * Copyright © RingCentral. All rights reserved.
  */
+// tslint:disable:no-console
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';

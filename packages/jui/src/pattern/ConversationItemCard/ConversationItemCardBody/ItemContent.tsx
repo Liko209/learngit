@@ -20,7 +20,7 @@ const StyledWrapper = styled.div`
 
 const StyledChildrenWrapper = styled.div`
   display: flex;
-  flex-direction: "row";
+  flex-direction: row;
 `;
 
 const StyledTitle = styled.div`

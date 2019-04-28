@@ -84,4 +84,55 @@ describe('SyncUserConfig', () => {
       expect(res).toEqual(data);
     });
   });
+
+  describe('SYNC_CONFIG_KEYS.INDEX_START_LOCAL_TIME', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('setIndexStartLocalTime()', () => {
+      const data: number = 1;
+      syncUserConfig.setIndexStartLocalTime(data);
+      expect(userConfigService.put).toBeCalledWith(
+        'sync',
+        SYNC_CONFIG_KEYS.INDEX_START_LOCAL_TIME,
+        data,
+      );
+    });
+
+    it('getIndexStartLocalTime()', () => {
+      const data: number = 1;
+      userConfigService.get = jest.fn().mockImplementation(() => {
+        return data;
+      });
+      const res = syncUserConfig.getIndexStartLocalTime();
+      expect(res).toEqual(data);
+    });
+  });
+  describe('SYNC_CONFIG_KEYS.SOCKET_CONNECTED_LOCAL_TIME', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('setSocketConnectedLocalTime()', () => {
+      const data: number = 1;
+      syncUserConfig.setSocketConnectedLocalTime(data);
+      expect(userConfigService.put).toBeCalledWith(
+        'sync',
+        SYNC_CONFIG_KEYS.SOCKET_CONNECTED_LOCAL_TIME,
+        data,
+      );
+    });
+
+    it('getSocketConnectedLocalTime()', () => {
+      const data: number = 1;
+      userConfigService.get = jest.fn().mockImplementation(() => {
+        return data;
+      });
+      const res = syncUserConfig.getSocketConnectedLocalTime();
+      expect(res).toEqual(data);
+    });
+  });
 });

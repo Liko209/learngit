@@ -3,9 +3,13 @@
  * @Date: 2019-04-01 15:16:45
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
+import { mainLogger } from 'sdk';
 import { AbstractNotification } from './AbstractNotification';
 import { NotificationOpts } from '../interface';
 import _ from 'lodash';
+import { container } from 'framework';
+import { CLIENT_SERVICE, IClientService } from '@/modules/common/interface';
+const logger = mainLogger.tags('DesktopNotification');
 
 export class DeskTopNotification extends AbstractNotification<Notification> {
   isSupported() {
@@ -13,6 +17,7 @@ export class DeskTopNotification extends AbstractNotification<Notification> {
   }
 
   create(title: string, opts: NotificationOpts) {
+    logger.log(`creating notification for ${opts.tag}`);
     const { scope, id } = opts.data;
     const onClick = opts.onClick;
 
@@ -21,7 +26,8 @@ export class DeskTopNotification extends AbstractNotification<Notification> {
 
     const notification = new Notification(title, opts);
     notification.onclick = (event) => {
-      window.focus();
+      const windowService: IClientService = container.get(CLIENT_SERVICE);
+      windowService.focus();
       (event.target as Notification).close();
       this._store.remove(scope, id);
       onClick && onClick(event);

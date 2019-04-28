@@ -1,5 +1,5 @@
 import { BaseWebComponent } from '../../BaseWebComponent';
-import { MemberInput } from './memberInput';
+import { SearchComoBox } from './SearchComboBox';
 
 export class AddTeamMembers extends BaseWebComponent {
 
@@ -12,7 +12,7 @@ export class AddTeamMembers extends BaseWebComponent {
   }
 
   get memberInput() {
-    return this.getComponent(MemberInput);
+    return this.getComponent(SearchComoBox, this.self.find('*[role="combobox"]'));
   }
 
   get addButton() {

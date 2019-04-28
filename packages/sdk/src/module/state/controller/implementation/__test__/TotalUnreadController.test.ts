@@ -138,22 +138,22 @@ describe('TotalUnreadController', () => {
 
   describe('handleGroupState()', () => {
     it('should start handle task when array only has one task', async () => {
-      const groupState: GroupState[] = [{ id: 123 }];
+      const payload = {} as NotificationEntityPayload<GroupState>;
       totalUnreadController['_startDataHandleTask'] = jest.fn();
-      await totalUnreadController.handleGroupState(groupState);
+      await totalUnreadController.handleGroupState(payload);
       expect(totalUnreadController['_startDataHandleTask']).toBeCalledWith({
         type: TASK_DATA_TYPE.GROUP_STATE,
-        data: groupState,
+        data: payload,
       });
     });
 
     it('should only add task to array when array has more than one task', async () => {
-      const groupState: GroupState[] = [{ id: 123 }];
+      const payload = {} as NotificationEntityPayload<GroupState>;
       totalUnreadController['_taskArray'] = [
-        { type: TASK_DATA_TYPE.GROUP_STATE, data: groupState },
+        { type: TASK_DATA_TYPE.GROUP_STATE, data: payload },
       ];
       totalUnreadController['_startDataHandleTask'] = jest.fn();
-      await totalUnreadController.handleGroupState(groupState);
+      await totalUnreadController.handleGroupState(payload);
       expect(totalUnreadController['_startDataHandleTask']).toBeCalledTimes(0);
     });
   });
@@ -206,7 +206,7 @@ describe('TotalUnreadController', () => {
     it('should init and stop the queue when _unreadInitialized === false', async () => {
       const task: DataHandleTask = {
         type: TASK_DATA_TYPE.GROUP_STATE,
-        data: [],
+        data: 'data' as any,
       };
       totalUnreadController['_unreadInitialized'] = false;
       totalUnreadController['_initializeTotalUnread'] = jest.fn();
@@ -234,7 +234,7 @@ describe('TotalUnreadController', () => {
     it('should handle task and stop the queue when _unreadInitialized === true', async () => {
       const task: DataHandleTask = {
         type: TASK_DATA_TYPE.GROUP_STATE,
-        data: [],
+        data: 'data' as any,
       };
       totalUnreadController['_unreadInitialized'] = true;
       totalUnreadController['_initializeTotalUnread'] = jest.fn();
@@ -304,13 +304,17 @@ describe('TotalUnreadController', () => {
         unreadCount: 8,
         mentionCount: 2,
       });
-      const groupStates = [
-        { id: 1, unread_count: 17, unread_mentions_count: 1 },
-        { id: 2 },
-      ] as GroupState[];
-      await totalUnreadController['_updateTotalUnreadByStateChanges'](
-        groupStates,
-      );
+      const entityMap = new Map<number, GroupState>();
+      entityMap.set(1, { id: 1, unread_count: 17, unread_mentions_count: 1 });
+      entityMap.set(2, { id: 2 });
+      const payload: NotificationEntityPayload<GroupState> = {
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          ids: [1, 2],
+          entities: entityMap,
+        },
+      };
+      await totalUnreadController['_updateTotalUnreadByStateChanges'](payload);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.DIRECT_MESSAGE,
@@ -332,13 +336,17 @@ describe('TotalUnreadController', () => {
         mentionCount: 2,
         isTeam: true,
       });
-      const groupStates = [
-        { id: 1, unread_count: 0, unread_mentions_count: 1 },
-        { id: 2 },
-      ] as GroupState[];
-      await totalUnreadController['_updateTotalUnreadByStateChanges'](
-        groupStates,
-      );
+      const entityMap = new Map<number, GroupState>();
+      entityMap.set(1, { id: 1, unread_count: 0, unread_mentions_count: 1 });
+      entityMap.set(2, { id: 2 });
+      const payload: NotificationEntityPayload<GroupState> = {
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          ids: [1, 2],
+          entities: entityMap,
+        },
+      };
+      await totalUnreadController['_updateTotalUnreadByStateChanges'](payload);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.TEAM,
@@ -361,13 +369,17 @@ describe('TotalUnreadController', () => {
         mentionCount: 2,
         isTeam: true,
       });
-      const groupStates = [
-        { id: 1, unread_count: 6, unread_mentions_count: 17 },
-        { id: 2 },
-      ] as GroupState[];
-      await totalUnreadController['_updateTotalUnreadByStateChanges'](
-        groupStates,
-      );
+      const entityMap = new Map<number, GroupState>();
+      entityMap.set(1, { id: 1, unread_count: 6, unread_mentions_count: 17 });
+      entityMap.set(2, { id: 2 });
+      const payload: NotificationEntityPayload<GroupState> = {
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          ids: [1, 2],
+          entities: entityMap,
+        },
+      };
+      await totalUnreadController['_updateTotalUnreadByStateChanges'](payload);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.TEAM,
@@ -390,13 +402,17 @@ describe('TotalUnreadController', () => {
         mentionCount: 2,
         isTeam: true,
       });
-      const groupStates = [
-        { id: 1, unread_count: 0, unread_mentions_count: 17 },
-        { id: 2 },
-      ] as GroupState[];
-      await totalUnreadController['_updateTotalUnreadByStateChanges'](
-        groupStates,
-      );
+      const entityMap = new Map<number, GroupState>();
+      entityMap.set(1, { id: 1, unread_count: 0, unread_mentions_count: 17 });
+      entityMap.set(2, { id: 2 });
+      const payload: NotificationEntityPayload<GroupState> = {
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          ids: [1, 2],
+          entities: entityMap,
+        },
+      };
+      await totalUnreadController['_updateTotalUnreadByStateChanges'](payload);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.TEAM,

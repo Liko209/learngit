@@ -37,12 +37,18 @@ class HoldViewComponent extends Component<Props> {
           disabled={disabled}
           awake={held}
           shouldPersistBg={held}
-          data-test-automation-id="holdBtn"
-          aria-label={held ? t('telephony.accessibility.resume') : t('telephony.accessibility.hold')}
+          data-test-automation-id="telephony-hold-btn"
+          aria-label={
+            held
+              ? t('telephony.accessibility.resume')
+              : t('telephony.accessibility.hold')
+          }
         >
           hold
         </JuiIconButton>
-        <span className={disabled ? 'disabled' : undefined}>{held ? t('telephony.action.unhold') : t('telephony.action.hold')}</span>
+        <span className={disabled ? 'disabled' : undefined}>
+          {held ? t('telephony.action.unhold') : t('telephony.action.hold')}
+        </span>
       </JuiKeypadAction>
     );
   }

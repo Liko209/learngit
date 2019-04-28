@@ -77,10 +77,10 @@ class TotalUnreadController {
     return this._groupSectionUnread.get(id);
   }
 
-  handleGroupState(groupStates: GroupState[]): void {
+  handleGroupState(payload: NotificationEntityPayload<GroupState>): void {
     const task: DataHandleTask = {
       type: TASK_DATA_TYPE.GROUP_STATE,
-      data: groupStates,
+      data: payload,
     };
     this._taskArray.push(task);
     if (this._taskArray.length === 1) {
@@ -135,16 +135,18 @@ class TotalUnreadController {
   }
 
   private async _updateTotalUnreadByStateChanges(
-    groupStates: GroupState[],
+    payload: NotificationEntityPayload<GroupState>,
   ): Promise<void> {
-    groupStates.forEach((groupState: GroupState) => {
-      const groupUnread = this._groupSectionUnread.get(groupState.id);
-      if (groupUnread) {
-        this._updateToTotalUnread(groupUnread, groupState);
-        groupUnread.unreadCount = groupState.unread_count || 0;
-        groupUnread.mentionCount = groupState.unread_mentions_count || 0;
-      }
-    });
+    if (payload.type === EVENT_TYPES.UPDATE) {
+      payload.body.entities.forEach((groupState: GroupState) => {
+        const groupUnread = this._groupSectionUnread.get(groupState.id);
+        if (groupUnread) {
+          this._updateToTotalUnread(groupUnread, groupState);
+          groupUnread.unreadCount = groupState.unread_count || 0;
+          groupUnread.mentionCount = groupState.unread_mentions_count || 0;
+        }
+      });
+    }
   }
 
   private async _updateTotalUnreadByGroupChanges(

@@ -151,41 +151,28 @@ class PersonController {
     headshot: HeadShotModel,
     size: number,
   ) {
-    let url: string | null = null;
-    let originalUrl: string | null = null;
-
-    do {
-      if (typeof headshot !== 'string') {
-        if (headshot.thumbs) {
-          url = this._getHighestResolutionHeadshotUrlFromThumbs(
-            headshot.thumbs,
-            size,
-            headshot.stored_file_id,
-          );
+    if (typeof headshot !== 'string') {
+      let url: string | null = null;
+      if (FileTypeUtils.isGif(headshot.url)) {
+        return headshot.url;
+      }
+      if (headshot.thumbs) {
+        url = this._getHighestResolutionHeadshotUrlFromThumbs(
+          headshot.thumbs,
+          size,
+          headshot.stored_file_id,
+        );
+      }
+      if (!url) {
+        if (headshot_version) {
+          url = this._getHeadShotByVersion(uid, headshot_version, size);
+        } else {
+          url = headshot.url;
         }
-        originalUrl = headshot.url;
-      } else {
-        originalUrl = headshot;
       }
-
-      // in case of gif FIJI-4678
-      if (originalUrl && FileTypeUtils.isGif(originalUrl)) {
-        url = originalUrl;
-      }
-
-      if (url) {
-        break;
-      }
-
-      if (headshot_version) {
-        url = this._getHeadShotByVersion(uid, headshot_version, size);
-        break;
-      }
-
-      url = originalUrl;
-    } while (false);
-
-    return url;
+      return url;
+    }
+    return headshot;
   }
 
   async buildPersonFeatureMap(
@@ -354,9 +341,14 @@ class PersonController {
       },
     );
 
-    return result && result.sortableModels.length > 0
-      ? result.sortableModels[0].entity
-      : null;
+    if (result) {
+      const res = result.sortableModels.find((item: { entity: Person }) => {
+        return !this._isDeactivated(item.entity);
+      });
+      return res ? res.entity : null;
+    }
+
+    return null;
   }
 
   public async refreshPersonData(personId: number): Promise<void> {

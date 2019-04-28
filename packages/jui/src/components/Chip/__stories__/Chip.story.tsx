@@ -25,11 +25,15 @@ storiesOf('Components/Chip', module)
   })
   .add('with Avatar & DeleteIcon', () => {
     return (
-      <JuiChip label="Basic Chip" ChipAvatar={Avatar} onDelete={handleDelete} />
+      <JuiChip
+        label="Basic Chip"
+        PersonAvatar={Avatar}
+        onDelete={handleDelete}
+      />
     );
   })
   .add('with Avatar', () => {
-    return <JuiChip label="Basic Chip" ChipAvatar={Avatar} />;
+    return <JuiChip label="Basic Chip" PersonAvatar={Avatar} />;
   })
   .add('with DeleteIcon', () => {
     return <JuiChip label="Basic Chip" onDelete={handleDelete} />;

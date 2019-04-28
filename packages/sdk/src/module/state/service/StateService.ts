@@ -18,12 +18,7 @@ import { Profile } from '../../profile/entity';
 import { NotificationEntityPayload } from '../../../service/notificationCenter';
 import { SectionUnread } from '../types';
 import { SYNC_SOURCE } from '../../sync/types';
-import {
-  PerformanceTracerHolder,
-  PERFORMANCE_KEYS,
-  GlipTypeUtil,
-  TypeDictionary,
-} from '../../../utils';
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 
 class StateService extends EntityBaseService<GroupState>
   implements IStateService {
@@ -38,6 +33,7 @@ class StateService extends EntityBaseService<GroupState>
         [SERVICE.GROUP_CURSOR]: this.handleGroupCursor,
         [ENTITY.GROUP]: this.handleGroupChangeForTotalUnread,
         [ENTITY.PROFILE]: this.handleProfileChangeForTotalUnread,
+        [ENTITY.GROUP_STATE]: this.handleStateChangeForTotalUnread,
       }),
     );
 
@@ -105,21 +101,23 @@ class StateService extends EntityBaseService<GroupState>
     states: Partial<State>[],
     source: SYNC_SOURCE,
   ): Promise<void> => {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.HANDLE_INCOMING_STATE,
-      logId,
-    );
     await this.getStateController()
       .getStateDataHandleController()
       .handleState(states, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   handleGroupCursor = async (groups: Partial<Group>[]): Promise<void> => {
     await this.getStateController()
       .getStateDataHandleController()
       .handleGroupCursor(groups);
+  }
+
+  handleStateChangeForTotalUnread = (
+    payload: NotificationEntityPayload<GroupState>,
+  ): void => {
+    this.getStateController()
+      .getTotalUnreadController()
+      .handleGroupState(payload);
   }
 
   handleGroupChangeForTotalUnread = (

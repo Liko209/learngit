@@ -1,6 +1,6 @@
 {
   "name": "application",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "private": true,
   "scripts": {
     "postinstall": "npm run build:dll",
@@ -17,7 +17,7 @@
     "computed-async-mobx": "4.1.1",
     "copy-to-clipboard": "3.0.8",
     "filestack-js": "2.0.2",
-    "framework": "1.2.1",
+    "framework": "1.3.0",
     "glipdown": "0.0.54",
     "hoist-non-react-statics": "3.1.0",
     "i18next": "15.0.7",
@@ -25,9 +25,8 @@
     "i18next-intervalplural-postprocessor": "1.0.2",
     "i18next-xhr-backend": "1.5.1",
     "jszip": "3.2.1",
-    "jui": "1.2.1",
+    "jui": "1.3.0",
     "libphonenumber-js": "1.6.4",
-    "load-segment": "git+ssh://git@git.ringcentral.com:Fiji/segment.git",
     "lodash": "4.17.11",
     "mobx": "5.9.0",
     "mobx-react": "5.4.3",
@@ -42,7 +41,7 @@
     "react-resize-detector": "4.0.5",
     "react-router-dom": "4.3.1",
     "react-visibility-sensor": "5.0.2",
-    "sdk": "1.2.1",
+    "sdk": "1.3.0",
     "styled-components": "4.0.2",
     "ts-javascript-state-machine": "3.1.3",
     "typeface-roboto": "0.0.54",
@@ -77,7 +76,7 @@
     "dotenv-expand": "4.2.0",
     "extract-text-webpack-plugin": "3.0.2",
     "file-loader": "2.0.0",
-    "fork-ts-checker-webpack-plugin": "0.4.14",
+    "fork-ts-checker-webpack-plugin": "1.2.0",
     "fs-extra": "7.0.0",
     "html-webpack-plugin": "4.0.0-beta.1",
     "mini-css-extract-plugin": "0.4.4",
@@ -94,7 +93,7 @@
     "source-map-loader": "0.2.4",
     "style-loader": "0.23.1",
     "terser-webpack-plugin": "1.1.0",
-    "test-util": "1.2.1",
+    "test-util": "1.3.0",
     "tsconfig-paths-webpack-plugin": "3.2.0",
     "typescript": "3.4.2",
     "url-loader": "1.1.2",
@@ -103,6 +102,7 @@
     "webpack-cli": "3.1.2",
     "webpack-dev-server": "3.1.10",
     "webpack-manifest-plugin": "2.0.4 ",
-    "workbox-webpack-plugin": "4.1.1"
+    "workbox-webpack-plugin": "4.1.1",
+    "http-proxy-middleware": "0.19.1"
   }
 }

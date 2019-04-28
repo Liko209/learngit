@@ -35,12 +35,12 @@ const StyledInfoContainer = styled('div')`
 `;
 
 const StyledName = styled('div')`
-  ${typography('body2')};
+  ${typography('subheading3')};
   ${ellipsis()};
 `;
 
 const StyledPhone = styled('div')`
-  ${typography('caption1')};
+  ${typography('body1')};
   ${ellipsis()};
 `;
 
@@ -61,7 +61,7 @@ const StyledHeaderNoPadding = styled('div')`
     display: flex;
     justify-content: space-between;
     box-sizing: border-box;
-    height: ${height(14)};
+    height: ${height(13)};
   }
 `;
 
@@ -106,6 +106,7 @@ class JuiHeader extends PureComponent<Props, State> {
       <StyledHeader
         onMouseEnter={this._handleMouseEvent}
         onMouseLeave={this._handleMouseEvent}
+        data-test-automation-id="telephony-dialer-header"
       >
         <StyledLeft>
           {Back && (
@@ -115,8 +116,14 @@ class JuiHeader extends PureComponent<Props, State> {
           )}
           <Avatar />
           <StyledInfoContainer>
-            <StyledName>{name}</StyledName>
-            {phone && <StyledPhone>{phone}</StyledPhone>}
+            <StyledName data-test-automation-id="telephony-dialer-header-name">
+              {name}
+            </StyledName>
+            {phone && (
+              <StyledPhone data-test-automation-id="telephony-dialer-header-phone">
+                {phone}
+              </StyledPhone>
+            )}
           </StyledInfoContainer>
         </StyledLeft>
         {HoverActions && showHoverActions && (

@@ -13,40 +13,49 @@
 const webpack = require('webpack');
 const path = require('path');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-const HappyPack = require('happypack');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-module.exports = (baseConfig, env, config) => {
-  config.module.rules.push({
-    test: /\.(ts|tsx)$/,
-    include: path.resolve(__dirname, '../src'),
-    loader: 'happypack/loader?id=ts',
-  });
-
-  config.plugins.push(
-    new HappyPack({
-      id: 'ts',
-      // 3) re-add the loaders you replaced above in #1:
-      loaders: [
-        {
-          path: 'babel-loader',
-          query: {
-            cacheDirectory: true,
-            babelrc: false,
-            presets: [['react-app', { flow: false, typescript: true }]],
+module.exports = async ({ config }) => ({
+  ...config,
+  module: {
+    ...config.module,
+    rules: [
+      ...config.module.rules,
+      {
+        test: /\.story\.tsx?$/,
+        use: [
+          {
+            loader: '@storybook/addon-storysource/loader',
+            options: { parser: 'typescript' },
           },
-        },
-        {
-          path: 'react-docgen-typescript-loader',
-        },
-      ],
-    }),
+        ],
+        include: path.resolve(__dirname, '../src'),
+        enforce: 'pre',
+      },
+      {
+        test: /\.tsx?$/,
+        include: path.resolve(__dirname, '../src'),
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              // disable type checker - we will use it in fork plugin
+              transpileOnly: true,
+            },
+          },
+          {
+            loader: 'react-docgen-typescript-loader',
+          },
+        ],
+      },
+    ],
+  },
+  plugins: [
+    ...config.plugins,
     new CopyWebpackPlugin([
       { from: '../../application/public/theme/', to: 'theme' },
     ]),
-  );
-  config.plugins.push(
     new ForkTsCheckerWebpackPlugin({
       checkSyntacticErrors: true,
     }),
@@ -54,12 +63,14 @@ module.exports = (baseConfig, env, config) => {
       'window.Quill': 'quill/dist/quill.js',
       Quill: 'quill/dist/quill.js',
     }),
-  );
-  config.resolve.plugins = [
-    new TsconfigPathsPlugin({
-      configFile: path.resolve(__dirname, '../tsconfig.json'),
-    }),
-  ];
-  config.resolve.extensions.push('.ts', '.tsx');
-  return config;
-};
+  ],
+  resolve: {
+    ...config.resolve,
+    plugins: [
+      new TsconfigPathsPlugin({
+        configFile: path.resolve(__dirname, '../tsconfig.json'),
+      }),
+    ],
+    extensions: [...(config.resolve.extensions || []), '.ts', '.tsx'],
+  },
+});

@@ -18,7 +18,7 @@ import { Group } from 'sdk/module/group/entity';
 import { Profile } from 'sdk/module/profile/entity';
 import { GroupState } from 'sdk/module/state/entity';
 
-import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
+import { SECTION_TYPE } from '@/modules/message/container/LeftRail/Section/types';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { autorun, observable, computed, reaction, action } from 'mobx';
 import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
@@ -188,14 +188,15 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         ENTITY_NAME.PROFILE,
         'favoriteGroupIds',
       ) || [];
-    if (this._oldFavGroupIds.toString() === newFavIds.toString()) {
-      return;
-    }
     if (!this._initFavorites) {
       this._oldFavGroupIds = newFavIds;
       this._initFavorites = true;
       return;
     }
+    if (this._oldFavGroupIds.toString() === newFavIds.toString()) {
+      return;
+    }
+
     if (this._oldFavGroupIds.toString() !== newFavIds.toString()) {
       const more = _.difference(this._oldFavGroupIds, newFavIds); // less fav more groups
       const less = _.difference(newFavIds, this._oldFavGroupIds); // less group more fav
@@ -524,7 +525,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           }
         });
       }
-      PerformanceTracerHolder.getPerformanceTracer().end(logId);
+      PerformanceTracerHolder.getPerformanceTracer().end(logId, groups.length);
     }
   }
 

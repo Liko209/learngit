@@ -24,13 +24,14 @@ class VoiceMailViewComponent extends Component<Props> {
     return (
       <JuiFabButton
         color="semantic.negative"
-        size="moreLarge"
+        size="midLarge"
         showShadow={false}
         tooltipPlacement="top"
-        iconName="hand_up"
+        iconName="voicemail"
         tooltipTitle={t('telephony.sendToVoicemail')}
         aria-label={t('telephony.sendToVoicemail')}
         onClick={this._handleVoiceMail}
+        data-test-automation-id="telephony-voice-mail-btn"
       />
     );
   }

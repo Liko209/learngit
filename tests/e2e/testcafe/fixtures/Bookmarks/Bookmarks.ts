@@ -87,7 +87,7 @@ test(formalName('Jump to post position when click jump to conversation button.[B
 });
 
 //skip due to https://jira.ringcentral.com/browse/FIJI-4527
-test.skip(formalName('Jump to conversation bottom when click name and conversation show in the top of conversation list.[Bookmarks]', ['P2', 'JPT-314', 'Bookmarks']), async (t: TestController) => {
+test(formalName('Jump to conversation bottom when click name and conversation show in the top of conversation list.[Bookmarks]', ['P2', 'JPT-314', 'Bookmarks']), async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const otherUser = users[5];

@@ -9,5 +9,5 @@ import { SanitizedItem } from '../../base/entity';
 export type SanitizedFileItem = SanitizedItem & {
   name: string;
   type: string;
-  __latest_version_date: number;
+  __latest_post_id: number;
 };

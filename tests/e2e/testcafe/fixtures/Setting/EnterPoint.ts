@@ -1,6 +1,6 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-04-08 14:34:14 
+ * @Author: Potar.He
+ * @Date: 2019-04-08 14:34:14
  * @Last Modified by: Potar.He
  * @Last Modified time: 2019-04-08 19:13:30
  */
@@ -36,20 +36,20 @@ test.meta(<ITestMeta>{
   const subSettingEntries = [
     settingTab.generalEntry,
     settingTab.notificationAndSoundsEntry,
-    settingTab.messagingEntry,
+    settingTab.messagesEntry,
     settingTab.phoneEntry,
     settingTab.meetingsEntry,
     settingTab.calendarEntry
   ];
 
   const entryNames = [
-    'General', 'Notification and Sounds', 'Messaging', 'Phone', 'Meetings', 'Calendar'
+    'General', 'Notification and Sounds', 'Messages', 'Phone', 'Meetings', 'Calendar'
   ];
 
   const urlPaths = [
     'settings/general',
     'settings/notification_and_sounds',
-    'settings/messaging',
+    'settings/messages',
     'settings/phone',
     'settings/meetings',
     'settings/calendar'
@@ -96,7 +96,7 @@ test.meta(<ITestMeta>{
   const subSettingEntries = [
     settingTab.generalEntry,
     settingTab.notificationAndSoundsEntry,
-    settingTab.messagingEntry,
+    settingTab.messagesEntry,
     settingTab.phoneEntry,
     settingTab.meetingsEntry,
     settingTab.calendarEntry
@@ -161,20 +161,20 @@ test.meta(<ITestMeta>{
   const subSettingEntries = [
     settingTab.generalEntry,
     settingTab.notificationAndSoundsEntry,
-    settingTab.messagingEntry,
+    settingTab.messagesEntry,
     settingTab.phoneEntry,
     settingTab.meetingsEntry,
     settingTab.calendarEntry
   ];
 
   const entryNames = [
-    'General', 'Notification and Sounds', 'Messaging', 'Phone', 'Meetings', 'Calendar'
+    'General', 'Notification and Sounds', 'Messages', 'Phone', 'Meetings', 'Calendar'
   ];
 
   const urlPaths = [
     'settings/general',
     'settings/notification_and_sounds',
-    'settings/messaging',
+    'settings/messages',
     'settings/phone',
     'settings/meetings',
     'settings/calendar'

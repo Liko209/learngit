@@ -3,7 +3,7 @@
  * @Date: 2018-12-17 16:21:08
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { mainLogger } from 'foundation';
 import { LOG_LEVEL, IRTCLogger } from './IRTCLogger';
 class RTCLoggerProxy {
   private _logger: IRTCLogger;
@@ -56,7 +56,7 @@ class RTCLoggerProxy {
   private _doLog(level: LOG_LEVEL, tag: string, message: string): void {
     if (!this._logger) {
       const msg = this._formatMsg(tag, message);
-      console.log(
+      mainLogger.info(
         `[${new Date().toISOString()}][${this._loglevelString(level)}] ${msg}`,
       );
       return;

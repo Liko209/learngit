@@ -5,11 +5,10 @@
  */
 
 export * from './EventLocation';
-export * from './EventContent';
+export * from './LabelWithContent';
 export * from './EventDescription';
 export * from './TaskSectionOrDescription';
 export * from './TaskAvatarNames';
-export * from './TaskContent';
 export * from './ItemContent';
 export * from './ItemTextValue';
 export * from './ItemConjunctionText';
