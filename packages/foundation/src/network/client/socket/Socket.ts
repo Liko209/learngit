@@ -8,6 +8,7 @@ import { SocketResponse } from './SocketResponse';
 import { SocketClient } from './SocketIOClient';
 import { IRequest, INetworkRequestExecutorListener } from '../../network';
 import SocketRequest from './SocketRequest';
+import { networkLogger } from '../../../log';
 class Socket extends BaseClient {
   request(request: IRequest, listener: INetworkRequestExecutorListener) {
     super.request(request, listener);
@@ -20,6 +21,11 @@ class Socket extends BaseClient {
           listener.onSuccess(response);
         },
         (response: SocketResponse) => {
+          networkLogger.debug('TCL: Socket -> request -> request', request);
+          networkLogger.debug(
+            'TCL: Socket -> onFailure -> request -> response',
+            response,
+          );
           this.tasks.delete(request.id);
           listener.onFailure(response);
         },

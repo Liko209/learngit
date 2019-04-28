@@ -2,7 +2,7 @@ import { NetworkRequestExecutor } from '../NetworkRequestExecutor';
 import { getFakeRequest, getFakeClient, getFakeResponse } from './utils';
 import {
   NETWORK_REQUEST_EXECUTOR_STATUS,
-  NETWORK_FAIL_TYPE,
+  NETWORK_FAIL_TEXT,
   HTTP_STATUS_CODE,
   NETWORK_HANDLE_TYPE,
   IResponse,
@@ -54,7 +54,7 @@ describe('NetworkRequestExecutor', () => {
         .mockImplementation(() => {});
       const response = getFakeResponse();
       response.status = HTTP_STATUS_CODE.BAD_GATEWAY;
-      response.statusText = NETWORK_FAIL_TYPE.BAD_GATEWAY;
+      response.statusText = NETWORK_FAIL_TEXT.BAD_GATEWAY;
       networkExecutor.onFailure(response);
       expect(spy502CB).toBeCalled();
       expect(spyApiCB).toBeCalled();
@@ -75,7 +75,7 @@ describe('NetworkRequestExecutor', () => {
         .mockImplementation(() => {});
       const response = getFakeResponse();
       response.status = HTTP_STATUS_CODE.SERVICE_UNAVAILABLE;
-      response.statusText = NETWORK_FAIL_TYPE.SERVICE_UNAVAILABLE;
+      response.statusText = NETWORK_FAIL_TEXT.SERVICE_UNAVAILABLE;
       networkExecutor.onFailure(response);
       expect(spy503CB).toBeCalled();
       expect(spyApiCB).toBeCalled();
@@ -88,7 +88,7 @@ describe('NetworkRequestExecutor', () => {
       networkExecutor.status = NETWORK_REQUEST_EXECUTOR_STATUS.EXECUTING;
       networkExecutor.retryCount = 3;
       const response = getFakeResponse();
-      response.statusText = NETWORK_FAIL_TYPE.TIME_OUT;
+      response.statusText = NETWORK_FAIL_TEXT.TIME_OUT;
       const spy = jest.spyOn(networkExecutor, '_retry');
       networkExecutor.onFailure(response);
       expect(spy).toBeCalled();
@@ -98,7 +98,7 @@ describe('NetworkRequestExecutor', () => {
       networkExecutor.status = NETWORK_REQUEST_EXECUTOR_STATUS.EXECUTING;
       const oauthFailedResponse = getFakeResponse();
       oauthFailedResponse.status = HTTP_STATUS_CODE.UNAUTHORIZED;
-      oauthFailedResponse.statusText = NETWORK_FAIL_TYPE.UNAUTHORIZED;
+      oauthFailedResponse.statusText = NETWORK_FAIL_TEXT.UNAUTHORIZED;
       const request = getFakeRequest();
       request.headers = {
         Authorization: '111',
@@ -235,7 +235,7 @@ describe('NetworkRequestExecutor', () => {
       expect(networkExecutor['_cancelClientRequest']).toBeCalled();
       expect(networkExecutor['_callXApiResponse']).toBeCalledWith(
         0,
-        NETWORK_FAIL_TYPE.TIME_OUT,
+        NETWORK_FAIL_TEXT.TIME_OUT,
       );
     });
   });

@@ -5,7 +5,6 @@
  */
 
 import _ from 'lodash';
-import { BaseResponse, NETWORK_FAIL_TYPE } from 'foundation';
 import { ItemFile } from '../../../../../../module/item/entity';
 import { daoManager } from '../../../../../../dao';
 import { ItemDao } from '../../../../dao';

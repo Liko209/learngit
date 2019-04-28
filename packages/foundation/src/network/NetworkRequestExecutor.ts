@@ -16,21 +16,33 @@ import {
   IResponseListener,
   INetworkRequestConsumerListener,
   IResponse,
-  NETWORK_FAIL_TYPE,
+  NETWORK_FAIL_TEXT,
   HTTP_STATUS_CODE,
   SURVIVAL_MODE,
   IRequestDecoration,
   NETWORK_HANDLE_TYPE,
+  RetryStrategy,
+  RESPONSE_STATUS_CODE,
 } from './network';
 import { SERVER_ERROR_CODE, DEFAULT_RETRY_COUNT } from './Constants';
 import { doResponseLog, doRequestLog } from './log';
 import { networkLogger } from '../log';
+
+const DEFAULT_RETRY_STRATEGY: RetryStrategy = (
+  doRetry: () => void,
+  retryCounter: number,
+) => {
+  setTimeout(doRetry, 3000);
+};
+
 export class NetworkRequestExecutor
   implements INetworkRequestExecutorListener, INetworkRequestExecutor {
   request: IRequest;
   via: NETWORK_VIA;
   handlerType: IHandleType;
   retryCount: number = DEFAULT_RETRY_COUNT;
+  retryCounter: number = 0;
+  retryStrategy: RetryStrategy;
   client: BaseClient;
   status: NETWORK_REQUEST_EXECUTOR_STATUS =
     NETWORK_REQUEST_EXECUTOR_STATUS.IDLE;
@@ -49,6 +61,7 @@ export class NetworkRequestExecutor
     this.via = request.via;
     this.handlerType = request.handlerType;
     this.retryCount = request.retryCount;
+    this.retryStrategy = request.retryStrategy || DEFAULT_RETRY_STRATEGY;
     this.client = client;
     this._requestDecoration = decoration;
   }
@@ -68,12 +81,13 @@ export class NetworkRequestExecutor
       return;
     }
 
-    if (response.statusText !== NETWORK_FAIL_TYPE.TIME_OUT) {
+    if (this.canRetry(response) && this.retryCounter < this.retryCount) {
+      this.retryCounter += 1;
+      this._retry();
+    } else {
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
       this._callXApiResponseCallback(response);
       doResponseLog(response);
-    } else {
-      this._retry();
     }
   }
 
@@ -81,13 +95,16 @@ export class NetworkRequestExecutor
     return this.request;
   }
 
-  execute() {
+  execute = () => {
     if (this.client.isNetworkReachable()) {
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.EXECUTING;
       this._performNetworkRequest();
     } else {
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
-      this._callXApiResponse(0, NETWORK_FAIL_TYPE.NOT_NETWORK_CONNECTION);
+      this._callXApiResponse(
+        RESPONSE_STATUS_CODE.LOCAL_DISCONNECTED,
+        NETWORK_FAIL_TEXT.NOT_NETWORK_CONNECTION,
+      );
     }
   }
 
@@ -98,11 +115,20 @@ export class NetworkRequestExecutor
 
     this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
     this._cancelClientRequest();
-    this._callXApiResponse(0, NETWORK_FAIL_TYPE.CANCELLED);
+    this._callXApiResponse(
+      RESPONSE_STATUS_CODE.LOCAL_CANCEL,
+      NETWORK_FAIL_TEXT.CANCELLED,
+    );
   }
 
   isPause() {
     return this.status === NETWORK_REQUEST_EXECUTOR_STATUS.PAUSE;
+  }
+
+  canRetry(response: IResponse) {
+    if (response.status === HTTP_STATUS_CODE.DEFAULT) {
+    }
+    return false;
   }
 
   private _isCompletion() {
@@ -124,16 +150,20 @@ export class NetworkRequestExecutor
     }
   }
 
-  private _retry() {
-    if (this.retryCount > 0) {
-      this.execute();
-      this.retryCount -= 1;
-    } else {
-      this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
-      this._cancelClientRequest();
-      this._callXApiResponse(0, NETWORK_FAIL_TYPE.TIME_OUT);
-    }
+  private _retry = () => {
+    this.retryStrategy(this.execute, this.retryCounter);
   }
+
+  // private _doRetry = () => {
+  //   if (this.retryCount > 0) {
+  //     this.execute();
+  //     this.retryCount -= 1;
+  //   } else {
+  //     this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
+  //     this._cancelClientRequest();
+  //     this._callXApiResponse(0, NETWORK_FAIL_TEXT.TIME_OUT);
+  //   }
+  // }
 
   private _cancelClientRequest() {
     this.client.cancelRequest(this.request);

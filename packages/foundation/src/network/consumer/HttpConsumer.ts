@@ -33,7 +33,7 @@ class HttpConsumer extends AbstractConsumer {
   }
 
   protected canHandleRequest() {
-    return !this.isRequestExceeded();
+    return this.client.isNetworkReachable() && !this.isRequestExceeded();
   }
 }
 

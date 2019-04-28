@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseResponse, HTTP_STATUS_CODE, NETWORK_FAIL_TYPE } from 'foundation';
+import { BaseResponse, HTTP_STATUS_CODE, NETWORK_FAIL_TEXT } from 'foundation';
 import isNumber from 'lodash/isNumber';
 import isString from 'lodash/isString';
 import { JError, JNetworkError, ERROR_CODES_NETWORK } from '../../error';
@@ -30,7 +30,7 @@ export class CommonResponseParser implements IResponseParser {
           ERROR_CODES_NETWORK.NETWORK_ERROR,
           'Api Error: Please check whether server crash',
         );
-      case NETWORK_FAIL_TYPE.NOT_NETWORK_CONNECTION:
+      case NETWORK_FAIL_TEXT.NOT_NETWORK_CONNECTION:
         return new JNetworkError(
           ERROR_CODES_NETWORK.NOT_NETWORK,
           'Api Error: Please check network connection',
