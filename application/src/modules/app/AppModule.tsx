@@ -36,6 +36,7 @@ import { SyncGlobalConfig } from 'sdk/module/sync/config';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { Pal } from 'sdk/pal';
+import { isProductionVersion } from '@/common/envUtils';
 
 /**
  * The root module, we call it AppModule,
@@ -61,9 +62,7 @@ class AppModule extends AbstractModule {
   }
 
   private async _init() {
-    this._logControlManager.setDebugMode(
-      process.env.NODE_ENV === 'development',
-    );
+    this._logControlManager.setDebugMode(isProductionVersion);
     const { search } = window.location;
     const { state } = parse(search, { ignoreQueryPrefix: true });
     if (state && state.length) {

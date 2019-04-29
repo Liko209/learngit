@@ -20,6 +20,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
   private _isOnline: boolean;
+  private _debugMode: boolean;
   private _onUploadAccessorChange: (accessible: boolean) => void;
   uploadLogConsumer: LogUploadConsumer;
   logUploadCollector: ConsumerCollector;
@@ -82,7 +83,18 @@ export class LogControlManager implements IAccessor {
   }
 
   public setDebugMode(isDebug: boolean) {
-    isDebug && logManager.setAllLoggerLevel(LOG_LEVEL.ALL);
+    this._debugMode = isDebug;
+    if (isDebug) {
+      logManager.config({
+        browser: {
+          enabled: true,
+        },
+      });
+      logManager.setAllLoggerLevel(LOG_LEVEL.ALL);
+      configManager.mergeConfig({
+        uploadEnabled: false,
+      });
+    }
   }
 
   public async flush() {
@@ -117,11 +129,11 @@ export class LogControlManager implements IAccessor {
       );
       logManager.config({
         browser: {
-          enabled: logEnabled,
+          enabled: this._debugMode || logEnabled,
         },
       });
       configManager.mergeConfig({
-        uploadEnabled: logUploadEnabled,
+        uploadEnabled: !this._debugMode && logUploadEnabled,
       });
     } catch (error) {
       mainLogger.warn('getUserPermission fail:', error);
@@ -142,5 +154,4 @@ export class LogControlManager implements IAccessor {
     }
     this.flush();
   }
-
 }
