@@ -54,9 +54,15 @@ export class MessageNotificationManager extends AbstractNotificationManager {
   }
 
   handlePostEntityChanged = async (entities: Post[]) => {
-    const postId = entities[0].id;
+    const post = entities[0];
+    const postId = post.id;
     logger.info(`prepare notification for ${postId}`);
-    const result = await this.shouldEmitNotification(postId);
+
+    if (post.deactivated) {
+      this.handleDeletedPost(postId);
+    }
+
+    const result = await this.shouldEmitNotification(post);
 
     if (!result) {
       logger.info(`notification for ${postId} is not permitted`);
@@ -88,14 +94,15 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     this.show(title, opts);
   }
 
-  async shouldEmitNotification(postId: number) {
-    if (postId <= 0) {
+  handleDeletedPost(postId: number) {
+    this.close(postId);
+  }
+
+  async shouldEmitNotification(post: Post) {
+    if (post.id <= 0) {
       return false;
     }
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-    const post = await ServiceLoader.getInstance<PostService>(
-      ServiceConfig.POST_SERVICE,
-    ).getById(postId);
 
     if (!post || post.creator_id === currentUserId || post.deactivated) {
       return false;
