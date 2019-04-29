@@ -10,3 +10,5 @@ targets
 
 # vs code
 .vscode
+
+benchmark.json

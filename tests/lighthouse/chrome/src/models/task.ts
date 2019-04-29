@@ -3,10 +3,10 @@
  * @Date: 2018-12-17 09:02:45
  */
 import {
-  Table, Column, Model, Sequelize
+  Table, Column, Model, DataType
 } from 'sequelize-typescript';
 
-@Table({ tableName: 't_task' })
+@Table({ modelName: 't_task' })
 class TaskDto extends Model<TaskDto> {
 
   @Column({
@@ -14,7 +14,7 @@ class TaskDto extends Model<TaskDto> {
     autoIncrement: true,
     allowNull: false,
     field: 'id',
-    type: Sequelize.BIGINT
+    type: DataType.BIGINT
   })
   id: number;
 
@@ -22,13 +22,13 @@ class TaskDto extends Model<TaskDto> {
     allowNull: false,
     comment: 'host',
     field: 'host',
-    type: Sequelize.STRING
+    type: DataType.STRING
   })
   host: string;
 
   @Column({
     allowNull: false,
-    type: Sequelize.ENUM('0', '1'), // 1: success, 0: failure
+    type: DataType.ENUM('0', '1'), // 1: success, 0: failure
     defaultValue: '1',
     field: 'status',
   })
@@ -36,14 +36,14 @@ class TaskDto extends Model<TaskDto> {
 
   @Column({
     allowNull: true,
-    type: Sequelize.DATE,
+    type: DataType.DATE,
     field: 'start_time',
   })
   startTime?: Date;
 
   @Column({
     allowNull: true,
-    type: Sequelize.DATE,
+    type: DataType.DATE,
     field: 'end_time',
   })
   endTime?: Date;
