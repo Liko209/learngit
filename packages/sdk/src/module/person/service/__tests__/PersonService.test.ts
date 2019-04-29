@@ -47,6 +47,7 @@ describe('PersonService', () => {
       expect(personController.handleIncomingData).toBeCalledWith(
         persons,
         SYNC_SOURCE.INDEX,
+        undefined,
       );
     });
   });
@@ -135,6 +136,16 @@ describe('PersonService', () => {
     it('should call controller with correct parameter', async () => {
       personService.refreshPersonData(111);
       expect(personController.refreshPersonData).toBeCalledWith(111);
+    });
+  });
+
+  describe('getById', () => {
+    it('shoule receive null when id is not correct person id', async () => {
+      try {
+        await personService.getById(1);
+      } catch (e) {
+        expect(e).toBeNull();
+      }
     });
   });
 });

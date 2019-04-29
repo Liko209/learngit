@@ -20,6 +20,7 @@ import { ItemService } from '../../../../module/item/service';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { PostControllerUtils } from './PostControllerUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+
 class PostActionController implements IPostActionController {
   constructor(
     public partialModifyController: IPartialModifyController<Post>,
@@ -129,7 +130,7 @@ class PostActionController implements IPostActionController {
     if (id < 0) {
       return this._deletePreInsertedPost(id);
     }
-    return !!this._deletePostFromRemote(id);
+    return !!(await this._deletePostFromRemote(id));
   }
 
   async removeItemFromPost(postId: number, itemId: number) {

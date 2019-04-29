@@ -27,10 +27,14 @@ class ProcessGatherer extends Gatherer {
     const driver = passContext.driver;
     let ws = await driver.wsEndpoint();
     this.browser = await PptrUtils.connect(ws);
+    let hasBind = false;
 
     FunctionUtils.bindEvent(this.browser, "targetchanged", async target => {
       let page = await target.page();
       if (page) {
+        if (hasBind) {
+          return;
+        }
         FunctionUtils.bindEvent(page, "console", msg => {
           const str = msg._text;
           if (str.startsWith(EXTENSION_TAG)) {
@@ -48,6 +52,7 @@ class ProcessGatherer extends Gatherer {
             }
           }
         });
+        hasBind = true;
       }
     });
 

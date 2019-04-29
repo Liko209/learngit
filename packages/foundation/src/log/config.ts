@@ -9,11 +9,11 @@ const defaultConfig: LogConfig = {
   browser: {
     enabled: true,
   },
-  consumer: {
+  collector: {
     enabled: true,
   },
   decorators: [],
-  truncateThreshold: 1024 * 1024,
+  truncateThreshold: 4000,
 };
 
 class ConfigManager {

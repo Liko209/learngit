@@ -9,6 +9,8 @@ export * from './network';
 export * from './log';
 export * from './telephony';
 export * from './error';
+export * from './analysis';
+export * from './utils/BuildUtils';
 
 export { default as Foundation } from './Foundation';
-export { default as config } from './config';
+export { config } from './config';

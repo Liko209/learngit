@@ -11,7 +11,7 @@ import { SubscribeController } from '../../base/controller/SubscribeController';
 import { PresenceController } from '../controller/PresenceController';
 import { AccountUserConfig } from '../../../module/account/config';
 import { PRESENCE } from '../constant/Presence';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { ChangeModel } from '../../sync/types';
 
 class PresenceService extends EntityBaseService {
   private _presenceController: PresenceController;
@@ -22,7 +22,8 @@ class PresenceService extends EntityBaseService {
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SOCKET.PRESENCE]: this.presenceHandleData,
-        [SERVICE.SOCKET_STATE_CHANGE]: this.handleStore,
+        [SERVICE.SOCKET_STATE_CHANGE]: this.handleSocketStateChange,
+        [SERVICE.STOPPING_SOCKET]: this.resetPresence,
       }),
     );
   }
@@ -50,18 +51,22 @@ class PresenceService extends EntityBaseService {
     this._presenceController.reset();
   }
 
-  presenceHandleData = async (presences: RawPresence[]) => {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.HANDLE_INCOMING_PRESENCE,
-      logId,
+  presenceHandleData = async (
+    presences: RawPresence[],
+    changeMap?: Map<string, ChangeModel>,
+  ) => {
+    await this._presenceController.handlePresenceIncomingData(
+      presences,
+      changeMap,
     );
-    await this._presenceController.handlePresenceIncomingData(presences);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
-  handleStore = ({ state }: { state: any }) => {
-    this._presenceController.handleStore(state);
+  handleSocketStateChange = ({ state }: { state: string }) => {
+    this._presenceController.handleSocketStateChange(state);
+  }
+
+  resetPresence = () => {
+    this._presenceController.resetPresence();
   }
 }
 

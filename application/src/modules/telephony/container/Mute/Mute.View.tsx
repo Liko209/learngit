@@ -29,6 +29,7 @@ class MuteViewComponent extends Component<Props> {
           disableToolTip={true}
           onClick={this._handleMute}
           size="xxlarge"
+          data-test-automation-id="telephony-mute-btn"
         >
           {isMute ? 'mic_off' : 'mic'}
         </JuiIconButton>

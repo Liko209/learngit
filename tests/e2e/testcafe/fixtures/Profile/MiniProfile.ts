@@ -16,7 +16,8 @@ fixture('Profile/MiniProfile')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Open mini profile via post avatar then open conversation', ['JPT-449', 'P1', 'Potar.He', 'Profile']), async (t) => {
+// skip by https://jira.ringcentral.com/browse/FIJI-5156
+test.skip(formalName('Open mini profile via post avatar then open conversation', ['JPT-449', 'P1', 'Potar.He', 'Profile']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
@@ -161,7 +162,7 @@ test(formalName('Open mini profile via @mention then open profile', ['JPT-436', 
     });
 
     await h(t).withLog('Then the profile dialog should be popup', async () => {
-      await profileDialog.shouldBePopUp();
+      await profileDialog.ensureLoaded();
     });
 
     await h(t).withLog(`And the profile dialog id should be same as mini Profile id: ${miniProfileId}`, async () => {
@@ -179,7 +180,7 @@ test(formalName('Favorite/Unfavorite a conversation from mini profile', ['JPT-56
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
   await h(t).glip(loginUser).resetProfileAndState();
-  
+
   const otherUser = users[5];
   await h(t).platform(otherUser).init();
 

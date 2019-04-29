@@ -14,10 +14,11 @@ import {
   DragDropContext,
 } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import { ThemeProps } from '../../foundation/theme/theme';
+import { ThemeProps, Theme } from '../../foundation/theme/theme';
 import { grey, palette } from '../../foundation/utils/styles';
 
 type JuiDropZoneProps = {
+  hidden?: boolean,
   dropzoneClass?: CSSProperties;
 };
 
@@ -42,8 +43,28 @@ class TargetBox extends PureComponent<
       detectedFolderDrop && detectedFolderDrop();
     }
   }
+
+  private _getOpacity = (
+    {
+      theme,
+      hidden,
+      showHoverStyle,
+    }:
+    {
+      theme: Theme,
+      hidden?: boolean,
+      showHoverStyle: boolean,
+    },
+  ) => {
+    if (hidden) {
+      return 0;
+    }
+    return showHoverStyle ? theme.palette.action.hoverOpacity * 2 : 1;
+  }
+
   render() {
     const {
+      hidden = false,
       isOver,
       connectDropTarget,
       dropzoneClass,
@@ -54,12 +75,15 @@ class TargetBox extends PureComponent<
     const showHoverStyle = hasDroppedFolder
       ? !hasDroppedFolder() && isOver
       : isOver;
+
+    const opacity = this._getOpacity({ theme, hidden, showHoverStyle });
+
     const style: CSSProperties = {
+      opacity,
       border: showHoverStyle
         ? `2px dotted ${palette('secondary', '600')({ theme })}`
         : 'none',
       background: showHoverStyle ? grey('200')({ theme }) : 'transparent',
-      opacity: showHoverStyle ? theme.palette.action.hoverOpacity * 2 : 1,
       // minHeight: 100 /* firefox compatibility */,
       ...dropzoneClass,
     };

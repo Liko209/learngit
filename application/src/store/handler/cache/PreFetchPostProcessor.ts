@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IProcessor } from 'sdk/src/framework/processor/IProcessor';
+import { IProcessor } from 'sdk/framework/processor/IProcessor';
 import { mainLogger } from 'sdk';
 
 export default class PreFetchPostProcessor implements IProcessor {
@@ -18,7 +18,7 @@ export default class PreFetchPostProcessor implements IProcessor {
     try {
       await this._processFunc(this._groupId);
     } catch (e) {
-      mainLogger.error(`failed to preFetch post of group ${this.name()}`, e);
+      mainLogger.warn(`failed to preFetch post of group ${this.name()}`, e);
     }
     return Promise.resolve(true);
   }

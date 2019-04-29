@@ -9,12 +9,16 @@ import {
   RTC_CALL_ACTION,
   RTCCallActionSuccessOptions,
   RTCCall,
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip';
 import { ITelephonyCallDelegate } from '../service/ITelephonyCallDelegate';
+import { CallStateCallback } from '../types';
 
 class TelephonyCallController implements IRTCCallDelegate {
   private _callDelegate: ITelephonyCallDelegate;
   private _rtcCall: RTCCall;
+  private _callback: CallStateCallback;
 
   constructor(delegate: ITelephonyCallDelegate) {
     this._callDelegate = delegate;
@@ -24,11 +28,18 @@ class TelephonyCallController implements IRTCCallDelegate {
     this._rtcCall = call;
   }
 
+  setCallStateCallback(callback: CallStateCallback) {
+    this._callback = callback;
+  }
+
   onCallStateChange(state: RTC_CALL_STATE) {
     this._callDelegate.onCallStateChange(
       this._rtcCall.getCallInfo().uuid,
       state,
     );
+    if (this._callback) {
+      this._callback(this._rtcCall.getCallInfo().uuid, state);
+    }
   }
 
   onCallActionSuccess(
@@ -84,6 +95,22 @@ class TelephonyCallController implements IRTCCallDelegate {
 
   ignore() {
     this._rtcCall.ignore();
+  }
+
+  startReply() {
+    this._rtcCall.startReply();
+  }
+
+  replyWithMessage(message: string) {
+    this._rtcCall.replyWithMessage(message);
+  }
+
+  replyWithPattern(
+    pattern: RTC_REPLY_MSG_PATTERN,
+    time: number,
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+  ) {
+    this._rtcCall.replyWithPattern(pattern, time, timeUnit);
   }
 }
 

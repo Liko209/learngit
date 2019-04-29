@@ -43,16 +43,22 @@ class SettingLeftRailViewModel extends StoreViewModel {
         testId: 'entry-notificationAndSounds',
       },
       {
-        title: 'setting.messaging',
+        title: 'setting.messages',
         icon: 'bubble_lines',
-        type: SETTING_LIST_TYPE.MESSAGING,
-        testId: 'entry-messaging',
+        type: SETTING_LIST_TYPE.MESSAGES,
+        testId: 'entry-messages',
       },
       {
         title: 'setting.phone',
         icon: 'phone',
         type: SETTING_LIST_TYPE.PHONE,
         testId: 'entry-phone',
+      },
+      {
+        title: 'setting.meetings',
+        icon: 'videocam',
+        type: SETTING_LIST_TYPE.MEETINGS,
+        testId: 'entry-meetings',
       },
       {
         title: 'setting.calendar',

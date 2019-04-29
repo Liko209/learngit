@@ -21,15 +21,14 @@ function hasLoadedNamespace() {
 
   return false;
 }
-
-function i18nT(key: string) {
+function i18nT(key: string, options?: i18next.TOptions | string) {
   if (i18next.isInitialized && hasLoadedNamespace()) {
-    return i18next.t(key);
+    return i18next.t(key, options);
   }
 
   return new Promise((resolve: (value: string) => void) => {
     i18next.on('loaded', () => {
-      resolve(i18next.t(key));
+      resolve(i18next.t(key, options));
     });
   });
 }

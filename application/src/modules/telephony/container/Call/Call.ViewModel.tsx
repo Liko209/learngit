@@ -23,6 +23,7 @@ import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 class CallViewModel extends AbstractViewModel<CallProps>
   implements CallViewProps {
@@ -98,11 +99,18 @@ class CallViewModel extends AbstractViewModel<CallProps>
     }
   }
 
+  @action
+  trackCall = (analysisSource?: string) => {
+    if (analysisSource) {
+      analyticsCollector.makeOutboundCall(analysisSource);
+    }
+  }
+
   showIcon = promisedComputed(false, async () => {
     const phoneNumber = this.phoneNumber;
+    const { id, groupId } = this.props;
     const canUseTelephony = await this._featuresFlagsService.canUseTelephony();
     if (canUseTelephony && phoneNumber) {
-      const { id, groupId } = this.props;
       if (id) {
         return this._currentUserId !== id;
       }

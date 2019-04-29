@@ -20,8 +20,6 @@ class EntityCacheController<T extends IdModel = IdModel>
 
   private _initialStatus: CACHE_INITIAL_STATUS;
 
-  private _filterFunc: (entity: T) => boolean;
-
   constructor() {
     this._initialStatus = CACHE_INITIAL_STATUS.NONE;
   }
@@ -45,13 +43,17 @@ class EntityCacheController<T extends IdModel = IdModel>
     if (Array.isArray(item)) {
       await this.bulkPut(item);
     } else {
-      this.putInternal(item);
+      if (item) {
+        this.putInternal(item);
+      }
     }
   }
 
   async bulkPut(array: T[]): Promise<void> {
-    array.forEach(async (item: T) => {
-      await this.putInternal(item);
+    array.forEach((item: T) => {
+      if (item) {
+        this.putInternal(item);
+      }
     });
   }
 
@@ -64,8 +66,8 @@ class EntityCacheController<T extends IdModel = IdModel>
   }
 
   async bulkDelete(keys: number[]): Promise<void> {
-    keys.forEach(async (key: number) => {
-      await this.deleteInternal(key);
+    keys.forEach((key: number) => {
+      this.deleteInternal(key);
     });
   }
 
@@ -89,16 +91,11 @@ class EntityCacheController<T extends IdModel = IdModel>
   async batchGet(ids: number[], order?: boolean): Promise<T[]> {
     const entities: T[] = [];
 
-    const promises = ids.map(async (id: number) => {
-      return this.get(id);
-    });
-
-    await Promise.all(promises).then((results: (T | null)[]) => {
-      results.forEach((result: T | null) => {
-        if (result) {
-          entities.push(result);
-        }
-      });
+    ids.forEach((id: number) => {
+      const entity = this.getSynchronously(id);
+      if (entity) {
+        entities.push(entity);
+      }
     });
 
     return entities;
@@ -152,7 +149,7 @@ class EntityCacheController<T extends IdModel = IdModel>
       partials.forEach((partialModel, id) => {
         const oldEntity = this._entities[id];
         if (oldEntity) {
-          this._updatePartial(oldEntity, partialModel);
+          this.updatePartial(oldEntity, partialModel);
         } else {
           const partialObject: {} = partialModel;
           this._entities[id] = partialObject as T;
@@ -165,14 +162,10 @@ class EntityCacheController<T extends IdModel = IdModel>
     }
   }
 
-  setFilter(filterFunc: (entity: T) => boolean) {
-    this._filterFunc = filterFunc;
-  }
-
   private _update(entity: T, id: number) {
     const oldEntity = this._entities.get(id);
     if (oldEntity) {
-      this._updatePartial(oldEntity, entity);
+      this.updatePartial(oldEntity, entity);
     } else {
       this.putInternal(entity);
     }
@@ -202,13 +195,10 @@ class EntityCacheController<T extends IdModel = IdModel>
   }
 
   protected putInternal(item: T) {
-    if (this._filterFunc && !this._filterFunc(item)) {
-      return;
-    }
     this._entities.set(item.id, item);
   }
 
-  private _updatePartial(oldEntity: T, partialEntity: Partial<Raw<T>> | T) {
+  protected updatePartial(oldEntity: T, partialEntity: Partial<Raw<T>> | T) {
     Object.keys(partialEntity).forEach((key: string) => {
       oldEntity[key] = partialEntity[key];
     });

@@ -97,10 +97,16 @@ describe('PostFetchController()', () => {
     });
 
     it('should return local + server result when shouldSaveToDb===true & local count < limit', async () => {
-      const mockPosts = [{ id: 1, version: 1 }, { id: 2, version: 2 }];
+      const mockPosts = [
+        { id: 1, version: 1, unique_id: '1' },
+        { id: 2, version: 2, unique_id: '2' },
+      ];
       const mockItems = [{ id: 11 }, { id: 22 }];
       const data = {
-        posts: [{ id: 3, version: 3 }, { id: 4, version: 4 }],
+        posts: [
+          { id: 3, version: 3, unique_id: '3' },
+          { id: 4, version: 4, unique_id: '4' },
+        ],
         items: [{ id: 12 }, { id: 23 }],
       };
       groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
@@ -126,10 +132,10 @@ describe('PostFetchController()', () => {
         hasMore: false,
         items: [{ id: 11 }, { id: 22 }, { id: 12 }, { id: 23 }],
         posts: [
-          { id: 1, version: 1 },
-          { id: 2, version: 2 },
-          { id: 3, version: 3 },
-          { id: 4, version: 4 },
+          { id: 1, version: 1, unique_id: '1' },
+          { id: 2, version: 2, unique_id: '2' },
+          { id: 3, version: 3, unique_id: '3' },
+          { id: 4, version: 4, unique_id: '4' },
         ],
         limit: 20,
       });
@@ -294,10 +300,16 @@ describe('PostFetchController()', () => {
     });
 
     it('should remove pre-insert post when shouldSaveToDb===true & local count < limit', async () => {
-      const mockPosts = [{ id: -1, version: 100 }, { id: 2, version: 101 }];
+      const mockPosts = [
+        { id: -1, version: 100, unique_id: '100' },
+        { id: 2, version: 101, unique_id: '101' },
+      ];
       const mockItems = [{ id: 11 }, { id: 22 }];
       const data = {
-        posts: [{ id: 3, version: 100 }, { id: 4, version: 102 }],
+        posts: [
+          { id: 3, version: 100, unique_id: '100' },
+          { id: 4, version: 102, unique_id: '102' },
+        ],
         items: [{ id: 12 }, { id: 23 }],
       };
       groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
@@ -323,9 +335,9 @@ describe('PostFetchController()', () => {
         hasMore: false,
         items: [{ id: 11 }, { id: 22 }, { id: 12 }, { id: 23 }],
         posts: [
-          { id: 2, version: 101 },
-          { id: 3, version: 100 },
-          { id: 4, version: 102 },
+          { id: 2, version: 101, unique_id: '101' },
+          { id: 3, version: 100, unique_id: '100' },
+          { id: 4, version: 102, unique_id: '102' },
         ],
         limit: 20,
       });

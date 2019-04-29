@@ -482,6 +482,29 @@ describe('GroupFetchDataController', () => {
     });
   });
 
+  describe('isInGroup()', () => {
+    it('should return false when group is undefined', async () => {
+      const userId = 123;
+      const group = groupFactory.build(undefined);
+      expect(groupActionController.isInGroup(userId, group)).toBeFalsy();
+    });
+    it('should return false when userId is not in members', async () => {
+      const userId = 123;
+      const group = groupFactory.build({
+        members: [3323],
+      });
+      expect(groupActionController.isInGroup(userId, group)).toBeFalsy();
+    });
+    it('should return true  when userId is in members', async () => {
+      const userId = 123;
+      const group = groupFactory.build({
+        is_team: true,
+        members: [userId, 3323],
+      });
+      expect(groupActionController.isInGroup(userId, group)).toBeTruthy();
+    });
+  });
+
   describe('canJoinTeam()', () => {
     it('should not able join a team when privacy=private', async () => {
       const team = groupFactory.build({
@@ -673,6 +696,12 @@ describe('GroupFetchDataController', () => {
     it('should add user to permissions.admin.uids when permission not exist', async () => {
       const mockTeam = groupFactory.build({
         members: [1, 2, 3],
+        permissions: {
+          user: {
+            uids: [456],
+            level: 15,
+          },
+        },
       });
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
@@ -687,6 +716,10 @@ describe('GroupFetchDataController', () => {
               admin: {
                 uids: [2],
               },
+              user: {
+                uids: [456],
+                level: 15,
+              },
             },
           },
           replaceArray,
@@ -699,6 +732,10 @@ describe('GroupFetchDataController', () => {
         permissions: {
           admin: {
             uids: [1],
+          },
+          user: {
+            uids: [456],
+            level: 15,
           },
         },
       });
@@ -715,6 +752,10 @@ describe('GroupFetchDataController', () => {
               admin: {
                 uids: [1, 2],
               },
+              user: {
+                uids: [456],
+                level: 15,
+              },
             },
           },
           replaceArray,
@@ -727,6 +768,10 @@ describe('GroupFetchDataController', () => {
         permissions: {
           admin: {
             uids: [1, 2],
+          },
+          user: {
+            uids: [456],
+            level: 15,
           },
         },
       });
@@ -741,25 +786,18 @@ describe('GroupFetchDataController', () => {
     it('should not broken when permissions not exist', async () => {
       const mockTeam = groupFactory.build({
         members: [1, 2, 3],
+        permissions: {
+          user: {
+            uids: [456],
+            level: 15,
+          },
+        },
       });
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
       await groupActionController.makeOrRevokeAdmin(mockTeam.id, 2, false);
-      expect(testTeamRequestController.put).toBeCalledWith(
-        _.mergeWith(
-          {},
-          mockTeam,
-          {
-            permissions: {
-              admin: {
-                uids: [],
-              },
-            },
-          },
-          replaceArray,
-        ),
-      );
+      expect(testTeamRequestController.put).not.toBeCalled();
     });
     it('should remove user from permissions.admin.uids', async () => {
       const mockTeam = groupFactory.build({
@@ -767,6 +805,10 @@ describe('GroupFetchDataController', () => {
         permissions: {
           admin: {
             uids: [1, 2],
+          },
+          user: {
+            uids: [456],
+            level: 15,
           },
         },
       });
@@ -783,6 +825,10 @@ describe('GroupFetchDataController', () => {
               admin: {
                 uids: [1],
               },
+              user: {
+                uids: [456],
+                level: 15,
+              },
             },
           },
           replaceArray,
@@ -795,6 +841,10 @@ describe('GroupFetchDataController', () => {
         permissions: {
           admin: {
             uids: [1],
+          },
+          user: {
+            uids: [456],
+            level: 15,
           },
         },
       });

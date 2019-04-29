@@ -93,7 +93,7 @@ test(formalName('Check the maximum length of the Team Name input box', ['P1', 'J
 
   await h(t).withLog('And I click "Convert to team" button', async () => {
     await conversationPage.headerMoreMenu.convertToTeam.enter()
-  }); 
+  });
 
   const convertToTeamModal = app.homePage.convertToTeamModal;
   await h(t).withLog('Then ConvertToTeam dialog should be popup', async () => {
@@ -255,7 +255,7 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
 
   const createTeamSteps = async (key: string, text: string, i: number) => {
     await h(t).withLog(`When I type ${key}: ${text}, and select the first search user`, async () => {
-      await createTeamModal.memberInput.typeMember(text, { paste: true });
+      await createTeamModal.memberInput.typeText(text, { paste: true });
       await t.wait(3e3);
       await createTeamModal.memberInput.selectMemberByNth(0);
     });
@@ -270,7 +270,7 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
       })
     } else {
       await h(t).withLog(`When I tap the "delete" icon of the selected contact`, async () => {
-        await createTeamModal.memberInput.removeSelectedMember();
+        await createTeamModal.memberInput.removeSelectedItem();
       })
     }
 
@@ -301,13 +301,12 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
 
   const sendNewMessageSteps = async (key: string, text: string, i: number) => {
     await h(t).withLog(`When I type ${key}: ${text}, and select the first search user`, async () => {
-      await sendNewMessageModal.typeMember(text, { paste: true });
-      await t.wait(3e3);
-      await sendNewMessageModal.selectMemberByNth(0);
+      await sendNewMessageModal.memberInput.typeText(text);
+      await sendNewMessageModal.memberInput.selectMemberByNth(0);
     });
 
     await h(t).withLog(`Then the selected members count should be 1`, async () => {
-      await t.expect(sendNewMessageModal.selectedMembers.count).eql(1);
+      await t.expect(sendNewMessageModal.memberInput.selectedMembers.count).eql(1);
     });
 
     if (i == 0) {
@@ -316,12 +315,12 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
       })
     } else {
       await h(t).withLog(`When I tap the "delete" icon of the selected contact`, async () => {
-        await sendNewMessageModal.removeSelectedMember();
+        await sendNewMessageModal.memberInput.removeSelectedMember();
       })
     }
 
     await h(t).withLog(`Then the last selected members should be removed`, async () => {
-      await t.expect(sendNewMessageModal.selectedMembers.exists).notOk();
+      await t.expect(sendNewMessageModal.memberInput.selectedMembers.exists).notOk();
     });
   }
 

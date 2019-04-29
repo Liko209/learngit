@@ -4,41 +4,39 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import {
-  Task,
   IDeque,
   IQueueLoop,
   OnTaskCompletedController,
   OnTaskErrorController,
 } from './types';
+import { Task } from './Task';
 import { MemoryQueue } from './MemoryQueue';
 
 export class TaskQueueLoop implements IQueueLoop, IDeque<Task> {
   private _isLooping: boolean;
   private _isSleeping: boolean;
-  private _taskQueue: MemoryQueue<Task>;
+  private _taskQueue: MemoryQueue<Task> = new MemoryQueue();
   private _timeoutId: NodeJS.Timeout;
-  private _onTaskError: (
+
+  onTaskError = async (
     task: Task,
     error: Error,
-    handler: OnTaskErrorController,
-  ) => Promise<void>;
-  private _onTaskCompleted: (
+    loopController: OnTaskErrorController,
+  ) => await loopController.abort()
+
+  onTaskCompleted = async (
     task: Task,
     loopController: OnTaskCompletedController,
-  ) => Promise<void>;
-  private _onLoopCompleted: () => Promise<void>;
+  ) => await loopController.next()
 
-  constructor() {
-    this._taskQueue = new MemoryQueue();
-    this.setOnTaskError(
-      async (task: Task, error: Error, loopController: OnTaskErrorController) =>
-        await loopController.abort(),
-    );
-    this.setOnTaskCompleted(
-      async (task: Task, loopController: OnTaskCompletedController) =>
-        await loopController.next(),
-    );
-    this.setOnLoopCompleted(async () => {});
+  onLoopCompleted = async () => {};
+  name: string;
+
+  constructor(options?: Partial<TaskQueueLoop>) {
+    options &&
+      Object.keys(options).forEach(key => {
+        this[key] = options[key];
+      });
   }
 
   setOnTaskError(
@@ -48,7 +46,7 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task> {
       OnTaskErrorController: OnTaskErrorController,
     ) => Promise<void>,
   ): TaskQueueLoop {
-    this._onTaskError = callback;
+    this.onTaskError = callback;
     return this;
   }
 
@@ -58,12 +56,12 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task> {
       loopController: OnTaskCompletedController,
     ) => Promise<void>,
   ): TaskQueueLoop {
-    this._onTaskCompleted = callback;
+    this.onTaskCompleted = callback;
     return this;
   }
 
   setOnLoopCompleted(callback: () => Promise<void>): TaskQueueLoop {
-    this._onLoopCompleted = callback;
+    this.onLoopCompleted = callback;
     return this;
   }
 
@@ -103,14 +101,17 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task> {
     while (task) {
       try {
         await task.onExecute();
-        await this._onTaskCompleted(task, completedController);
+        await this.onTaskCompleted(task, completedController);
       } catch (error) {
         await task.onError(error);
-        await this._onTaskError(task, error, errorController);
+        await this.onTaskError(task, error, errorController);
+      }
+      if (!task) {
+        task = this.peekHead();
       }
     }
     this._isLooping = false;
-    await this._onLoopCompleted();
+    await this.onLoopCompleted();
   }
 
   createErrorController(setTask: (task: Task) => void): OnTaskErrorController {
@@ -129,12 +130,11 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task> {
         setTask(this.getHead());
       },
       abortAll: async () => {
-        let task = this.peekHead();
-        while (task) {
+        const tasks = this.peekAll();
+        tasks.forEach(async task => {
           await task.onAbort().catch();
-          task = this.peekHead();
-        }
-        setTask(task);
+        });
+        setTask(this.getHead());
       },
     };
   }
@@ -161,10 +161,15 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task> {
     };
   }
 
-  abortAll(): void {
+  async abortAll(): Promise<void> {
+    let currentTask;
+    if (this._isLooping) {
+      currentTask = this._taskQueue.peekHead();
+    }
     const tasks = this._taskQueue.peekAll();
-    tasks.forEach((task: Task) => {
-      task.onAbort().catch();
+    currentTask && this._taskQueue.addTail(currentTask);
+    tasks.forEach(async (task: Task) => {
+      await task.onAbort().catch();
     });
   }
 

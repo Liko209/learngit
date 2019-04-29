@@ -33,6 +33,18 @@ describe('PinnedPostListHandler', () => {
       setUp();
     });
 
+    it('should filter useless ids', () => {
+      pinnedPostListHandler = new PinnedPostListHandler(1, [
+        1,
+        2,
+        null as any,
+        3,
+        null,
+      ]);
+
+      expect(pinnedPostListHandler['_sourceIds']).toEqual([1, 2, 3]);
+    });
+
     it('should return pinned post ids ', () => {
       getEntity = jest.fn().mockReturnValue({
         id: 1,

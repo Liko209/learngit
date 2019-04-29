@@ -3,9 +3,8 @@
  * @Date: 2019-01-04 08:52:26
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../../../../../__tests__/types.d.ts" />
+
 import _ from 'lodash';
-import { BaseResponse, NETWORK_FAIL_TYPE } from 'foundation';
 import { ItemFile } from '../../../../../../module/item/entity';
 import { daoManager } from '../../../../../../dao';
 import { ItemDao } from '../../../../dao';
@@ -16,11 +15,7 @@ import notificationCenter from '../../../../../../service/notificationCenter';
 import { RequestHolder } from '../../../../../../api/requestHolder';
 import { Progress, PROGRESS_STATUS } from '../../../../../progress';
 import { ENTITY, SERVICE } from '../../../../../../service/eventKey';
-import {
-  AccountGlobalConfig,
-  AccountUserConfig,
-} from '../../../../../../module/account/config';
-import { isInBeta } from '../../../../../../module/account/service';
+import { AccountUserConfig } from '../../../../../../module/account/config';
 import { PartialModifyController } from '../../../../../../framework/controller/impl/PartialModifyController';
 import { EntitySourceController } from '../../../../../../framework/controller/impl/EntitySourceController';
 import { RequestController } from '../../../../../../framework/controller/impl/RequestController';
@@ -136,9 +131,10 @@ describe('fileUploadController', () => {
     });
 
     it('should update local upload file record', async () => {
-      jest
-        .spyOn(fileUploadController, '_sendItemFile')
+      fileUploadController['_sendItemFile'] = jest
+        .fn()
         .mockImplementation(() => {});
+
       const spy_cancelUpload = jest.spyOn(fileUploadController, 'cancelUpload');
 
       const uploadingFiles = new Map();
@@ -162,10 +158,10 @@ describe('fileUploadController', () => {
     });
 
     it('should return null when no valid file', async () => {
-      const file = undefined as File;
+      const file = undefined;
       const result = await fileUploadController.sendItemFile(
         groupId,
-        file,
+        file as any,
         false,
       );
       expect(result).toBe(null);
@@ -191,13 +187,20 @@ describe('fileUploadController', () => {
     it('should insert pseudo item to db and return pseudo item', async (done: jest.DoneCallback) => {
       entitySourceController.get.mockResolvedValue(itemFile);
       entitySourceController.put = jest.fn();
-      ItemAPI.uploadFileItem.mockImplementation(
-        (files: FormData, callback: ProgressCallback) => {
-          callback({ lengthComputable: false, loaded: 0, total: 100 });
-          callback({ lengthComputable: false, loaded: 10, total: 100 });
-          return Promise.resolve(mockStoredFileRes);
-        },
-      );
+      ItemAPI.requestAmazonFilePolicy = jest.fn().mockReturnValue({
+        post_url: 'rc.com',
+        signed_post_form: { filename: 'f' },
+        stored_file: { _id: 1070710226956 },
+      });
+      ItemAPI.uploadFileToAmazonS3 = jest
+        .fn()
+        .mockImplementation(
+          (host: string, files: FormData, callback: ProgressCallback) => {
+            callback({ lengthComputable: false, loaded: 0, total: 100 });
+            callback({ lengthComputable: false, loaded: 10, total: 100 });
+            return Promise.resolve(mockStoredFileRes);
+          },
+        );
 
       const file = { name: '1.ts', type: 'image/ts', size: 123 } as File;
       const res = (await fileUploadController.sendItemFile(
@@ -245,14 +248,16 @@ describe('fileUploadController', () => {
       const errResponse = new JServerError(ERROR_CODES_SERVER.GENERAL, 'error');
 
       entitySourceController.get.mockResolvedValue(itemFile);
-      ItemAPI.uploadFileItem.mockResolvedValue(errResponse);
+      ItemAPI.requestAmazonFilePolicy = jest
+        .fn()
+        .mockResolvedValue(errResponse);
 
       const file = new FormData();
       file.append('file', { name: '1.ts', type: 'ts' } as File);
-      await fileUploadController.sendItemFile(groupId, file, false);
+      await fileUploadController.sendItemFile(groupId, file as any, false);
       const fileItem = fileUploadController.getUploadItems(groupId)[0];
       setTimeout(() => {
-        expect(ItemAPI.uploadFileItem).toBeCalled();
+        expect(ItemAPI.requestAmazonFilePolicy).toBeCalled();
         expect(ItemAPI.sendFileItem).not.toBeCalled();
         expect(notificationCenter.emitAsync).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
@@ -261,19 +266,19 @@ describe('fileUploadController', () => {
         expect(fileUploadController.getItemsSendStatus([fileItem.id])).toEqual([
           PROGRESS_STATUS.FAIL,
         ]);
-        expect(
-          fileUploadController.getUploadProgress(fileItem.id).rate.loaded,
-        ).toBe(-1);
+        const progress = fileUploadController.getUploadProgress(
+          fileItem.id,
+        ) as any;
+        expect(progress.rate.loaded).toBe(-1);
         done();
       },         1000);
     });
 
     it('should not handle failed result when the request is failed because the user canceled it.  ', async (done: jest.DoneCallback) => {
       const errRes = new JServerError(ERROR_CODES_SERVER.GENERAL, 'error');
-      ItemAPI.uploadFileItem.mockRejectedValue(errRes);
-      jest
-        .spyOn(fileUploadController, '_handleFileUploadSuccess')
-        .mockImplementation(() => {});
+      ItemAPI.requestAmazonFilePolicy = jest.fn().mockRejectedValue(errRes);
+      // prettier-ignore
+      fileUploadController['_handleFileUploadSuccess'] = jest.fn().mockImplementation(() => {});
 
       const cancel = {
         has: jest.fn().mockReturnValue(true),
@@ -287,7 +292,7 @@ describe('fileUploadController', () => {
       await fileUploadController.sendItemFile(groupId, file, true);
 
       setTimeout(() => {
-        expect(ItemAPI.uploadFileItem).toBeCalled();
+        expect(ItemAPI.requestAmazonFilePolicy).toBeCalled();
         expect(fileRequestController.post).not.toBeCalled();
 
         expect(notificationCenter.emit).not.toBeCalled();
@@ -518,7 +523,6 @@ describe('fileUploadController', () => {
     beforeEach(() => {
       clearMocks();
       setup();
-      isInBeta.mockReturnValue(false);
     });
 
     it('should just send item to server when all file has beed uploaded and has stored file', async (done: jest.DoneCallback) => {
@@ -750,7 +754,6 @@ describe('fileUploadController', () => {
   describe('uploadFileToAmazonS3', () => {
     beforeEach(() => {
       clearMocks();
-      isInBeta.mockReturnValue(true);
       setup();
     });
 
@@ -847,8 +850,8 @@ describe('fileUploadController', () => {
       );
       spyHandleFailed.mockImplementationOnce(() => {});
 
-      ItemAPI.requestAmazonFilePolicy.mockResolvedValue(okRes);
-      ItemAPI.uploadFileToAmazonS3.mockResolvedValue(okRes);
+      ItemAPI.requestAmazonFilePolicy = jest.fn().mockResolvedValue(okRes);
+      ItemAPI.uploadFileToAmazonS3 = jest.fn().mockResolvedValue(okRes);
 
       await fileUploadController.sendItemFile(groupId, file, false);
 
@@ -859,6 +862,24 @@ describe('fileUploadController', () => {
         expect(ItemAPI.uploadFileToAmazonS3).toBeCalled();
         done();
       });
+    });
+
+    it('should execute upload file in sequence queue', async (done: any) => {
+      const { groupId, file } = uploadFileToAmazonS3_setUp();
+
+      fileUploadController['_uploadFileQueue'] = {
+        addProcessor: jest.fn(),
+      } as any;
+
+      fileUploadController.sendItemFile(groupId, file, false);
+      fileUploadController.sendItemFile(groupId + 1, file, false);
+
+      setTimeout(() => {
+        expect(
+          fileUploadController['_uploadFileQueue'].addProcessor,
+        ).toHaveBeenCalledTimes(2);
+        done();
+      },         100);
     });
   });
 
@@ -1538,7 +1559,7 @@ describe('fileUploadController', () => {
       const existItem: ItemFile = { group_ids: [11], versions: [{ size: 10 }] };
       const preInsertItem: ItemFile = {
         group_ids: [11],
-        versions: [{ size: 11 }],
+        versions: [{ size: 11 }] as any,
       };
       await fileUploadController['_updateItem'](existItem, preInsertItem, true);
       expect(fileRequestController.put).toBeCalledWith(existItem);

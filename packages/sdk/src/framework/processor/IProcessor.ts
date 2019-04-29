@@ -6,8 +6,9 @@
 
 interface IProcessor {
   process(): Promise<boolean>;
-  canContinue(): boolean;
   name(): string;
+  canContinue?: () => boolean;
+  cancel?(): void;
 }
 
 export { IProcessor };

@@ -29,7 +29,7 @@ import { PersonDataController } from './PersonDataController';
 import { ContactType } from '../types';
 import notificationCenter from '../../../service/notificationCenter';
 import { ENTITY } from '../../../service/eventKey';
-import { SYNC_SOURCE } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { FileTypeUtils } from '../../../utils/file/FileTypeUtils';
 
 const PersonFlags = {
@@ -69,10 +69,14 @@ class PersonController {
     this._cacheSearchController = _cacheSearchController;
   }
 
-  async handleIncomingData(persons: Raw<Person>[], source: SYNC_SOURCE) {
+  async handleIncomingData(
+    persons: Raw<Person>[],
+    source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
+  ) {
     await new PersonDataController(
       this._entitySourceController,
-    ).handleIncomingData(persons, source);
+    ).handleIncomingData(persons, source, changeMap);
   }
 
   async getPersonsByIds(ids: number[]): Promise<Person[]> {
@@ -151,41 +155,28 @@ class PersonController {
     headshot: HeadShotModel,
     size: number,
   ) {
-    let url: string | null = null;
-    let originalUrl: string | null = null;
-
-    do {
-      if (typeof headshot !== 'string') {
-        if (headshot.thumbs) {
-          url = this._getHighestResolutionHeadshotUrlFromThumbs(
-            headshot.thumbs,
-            size,
-            headshot.stored_file_id,
-          );
+    if (typeof headshot !== 'string') {
+      let url: string | null = null;
+      if (FileTypeUtils.isGif(headshot.url)) {
+        return headshot.url;
+      }
+      if (headshot.thumbs) {
+        url = this._getHighestResolutionHeadshotUrlFromThumbs(
+          headshot.thumbs,
+          size,
+          headshot.stored_file_id,
+        );
+      }
+      if (!url) {
+        if (headshot_version) {
+          url = this._getHeadShotByVersion(uid, headshot_version, size);
+        } else {
+          url = headshot.url;
         }
-        originalUrl = headshot.url;
-      } else {
-        originalUrl = headshot;
       }
-
-      // in case of gif FIJI-4678
-      if (originalUrl && FileTypeUtils.isGif(originalUrl)) {
-        url = originalUrl;
-      }
-
-      if (url) {
-        break;
-      }
-
-      if (headshot_version) {
-        url = this._getHeadShotByVersion(uid, headshot_version, size);
-        break;
-      }
-
-      url = originalUrl;
-    } while (false);
-
-    return url;
+      return url;
+    }
+    return headshot;
   }
 
   async buildPersonFeatureMap(
@@ -269,17 +260,22 @@ class PersonController {
     return person.flags === 0;
   }
 
+  private _hasBogusEmail(person: Person) {
+    return this._hasTrueValue(person, PersonFlags.has_bogus_email);
+  }
+
   isCacheValid = (person: Person) => {
     return (
       !this._isUnregistered(person) &&
       this._isVisible(person) &&
       !this._hasTrueValue(person, PersonFlags.is_removed_guest) &&
       !this._hasTrueValue(person, PersonFlags.am_removed_guest) &&
-      !person.is_pseudo_user
+      !person.is_pseudo_user &&
+      !this._hasBogusEmail(person)
     );
   }
 
-  isValid(person: Person) {
+  isValid(person: Person): boolean {
     return this.isCacheValid(person) && !this._isDeactivated(person);
   }
 
@@ -315,11 +311,14 @@ class PersonController {
     e164PhoneNumber: string,
     contactType: ContactType,
   ): Promise<Person | null> {
+    const userConfig = new AccountUserConfig();
+    const companyId = userConfig.getCurrentCompanyId();
     const result = await this._cacheSearchController.searchEntities(
       (person: Person, terms: Terms) => {
         if (
           person.sanitized_rc_extension &&
-          person.sanitized_rc_extension.extensionNumber === e164PhoneNumber
+          person.sanitized_rc_extension.extensionNumber === e164PhoneNumber &&
+          person.company_id === companyId
         ) {
           return {
             id: person.id,
@@ -329,25 +328,31 @@ class PersonController {
         }
 
         if (person.rc_phone_numbers) {
-          for (const index in person.rc_phone_numbers) {
-            if (
-              person.rc_phone_numbers[index].phoneNumber === e164PhoneNumber
-            ) {
-              return {
-                id: person.id,
-                displayName: name,
-                entity: person,
-              };
-            }
+          const res = person.rc_phone_numbers.find(
+            (phoneNumberModel: PhoneNumberModel) => {
+              return phoneNumberModel.phoneNumber === e164PhoneNumber;
+            },
+          );
+          if (res) {
+            return {
+              id: person.id,
+              displayName: name,
+              entity: person,
+            };
           }
         }
         return null;
       },
     );
 
-    return result && result.sortableModels.length > 0
-      ? result.sortableModels[0].entity
-      : null;
+    if (result) {
+      const res = result.sortableModels.find((item: { entity: Person }) => {
+        return !this._isDeactivated(item.entity);
+      });
+      return res ? res.entity : null;
+    }
+
+    return null;
   }
 
   public async refreshPersonData(personId: number): Promise<void> {

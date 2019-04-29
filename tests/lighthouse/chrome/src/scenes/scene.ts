@@ -7,7 +7,7 @@ import * as lighthouse from "lighthouse";
 import { LogUtils } from "../utils/logUtils";
 import { PptrUtils } from "../utils/pptrUtils";
 import { TaskDto, SceneDto } from "../models";
-import { FileService, MetricService } from "../services";
+import { FileService, MetricService, DashboardService } from "../services";
 import * as reportGenerater from "lighthouse/lighthouse-core/report/report-generator";
 import { Config } from "../config";
 
@@ -63,7 +63,10 @@ class Scene {
       if (this.isSuccess()) {
         await this.saveMetircsIntoDisk();
 
-        await this.saveMetircsIntoDb();
+        let sceneDto = await this.saveMetircsIntoDb();
+
+        await this.afterSaveMetrics(sceneDto);
+
         return true;
       }
     }
@@ -157,7 +160,8 @@ class Scene {
         this.finallyUrl(),
         {
           port: new URL(this.browser.wsEndpoint()).port,
-          logLevel: "info"
+          logLevel: "info",
+          maxWaitForLoad: 120 * 1000
         },
         this.config.toLightHouseConfig()
       );
@@ -192,6 +196,16 @@ class Scene {
     }
 
     return sceneDto;
+  }
+
+  async afterSaveMetrics(sceneDto: SceneDto) {
+    if (!sceneDto) {
+      return;
+    }
+
+    if (this.supportDashboard() && !this.fpsMode) {
+      await DashboardService.addItem(this.taskDto, sceneDto, this.artifacts);
+    }
   }
 
   isSuccess(): boolean {
@@ -270,6 +284,10 @@ class Scene {
     if (this.supportFps()) {
       this.fpsMode = true;
     }
+  }
+
+  supportDashboard(): boolean {
+    return false;
   }
 }
 

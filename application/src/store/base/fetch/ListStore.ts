@@ -11,10 +11,17 @@ import { mainLogger } from 'sdk';
 export class ListStore<T> extends BaseNotificationSubscribe {
   _items: IObservableArray<T> = observable([], { deep: false });
 
+  protected _limit?: number;
+
   @observable
   _hasMoreUp: boolean = false;
   @observable
   _hasMoreDown: boolean = false;
+
+  constructor(limit?: number) {
+    super();
+    this._limit = limit;
+  }
 
   @action
   append(newItems: T[], inFront: boolean = false) {
@@ -24,8 +31,19 @@ export class ListStore<T> extends BaseNotificationSubscribe {
 
     if (inFront) {
       this._items.unshift(...newItems);
+      if (this._limit && this._items.length > this._limit) {
+        this._items.splice(this._limit, this._items.length);
+      }
     } else {
-      this._items.push(...newItems);
+      if (this._limit) {
+        const items =
+          newItems.length > this._limit
+            ? newItems.slice(0, this._limit)
+            : newItems;
+        this._items.push(...items);
+      } else {
+        this._items.push(...newItems);
+      }
     }
   }
 
@@ -36,13 +54,19 @@ export class ListStore<T> extends BaseNotificationSubscribe {
 
   @action
   replaceAll(newItems: T[]) {
-    this._items.replace(newItems);
+    const replaceItems =
+      this._limit && newItems.length > this._limit
+        ? newItems.slice(0, this._limit)
+        : newItems;
+    this._items.replace(replaceItems);
   }
 
   @action
   remove(element: T) {
-    const index = _(this._items).indexOf(element);
-    this.removeAt(index);
+    const index = this._items.indexOf(element);
+    if (index !== -1) {
+      this._items.splice(index, 1);
+    }
   }
 
   @action
@@ -70,7 +94,7 @@ export class ListStore<T> extends BaseNotificationSubscribe {
   }
 
   last() {
-    return this.size > 0 ? this._items[this.size - 1] : undefined;
+    return this.size ? this._items[this.size - 1] : undefined;
   }
 
   dump(...args: any[]) {

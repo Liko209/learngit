@@ -100,7 +100,7 @@ test(formalName('Only admin has the ability to remove members from the team', ['
   });
 
   await h(t).withLog(`Then admin2 is removed from the list and Profile dialog shouldn't dismiss `, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
     await t.expect(profileDialog.memberEntryByName(adminName2).exists).notOk();
     await H.retryUntilPass(async () => {
       const members = await h(t).glip(admin1).getGroup(teamId).then(res => res.data.members);
@@ -130,7 +130,7 @@ test(formalName('Only admin has the ability to remove members from the team', ['
   });
 
   await h(t).withLog(`Then the member is removed from the list and Profile dialog shouldn't dismiss `, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
     await t.expect(profileDialog.memberEntryByName(memberName).exists).notOk();
     await H.retryUntilPass(async () => {
       const members = await h(t).glip(admin1).getGroup(teamId).then(res => res.data.members);
@@ -266,7 +266,7 @@ test(formalName('The remove team member permission should sync dynamically', ['J
     });
 
     await h(t).withLog(`Then member ${memberName} is removed from the list and Profile dialog shouldn't dismiss `, async () => {
-      await profileDialog.shouldBePopUp();
+      await profileDialog.ensureLoaded();
       await t.expect(profileDialog.memberEntryByName(memberName).exists).notOk();
       await H.retryUntilPass(async () => {
         const members = await h(t).glip(loginMember).getGroup(teamId).then(res => res.data.members);
@@ -330,7 +330,7 @@ test(formalName(`The team should be removed from the removed member's side`, ['J
     });
 
     await h(t).withLog(`Then the member ${memberName} is removed from the list and Profile dialog shouldn't dismiss `, async () => {
-      await profileDialog.shouldBePopUp();
+      await profileDialog.ensureLoaded();
       await t.expect(profileDialog.memberEntryByName(memberName).exists).notOk();
     }, true);
 

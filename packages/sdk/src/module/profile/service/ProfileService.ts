@@ -14,15 +14,16 @@ import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SOCKET, SERVICE } from '../../../service/eventKey';
 import { Raw } from '../../../framework/model/Raw';
 import { ProfileController } from '../controller/ProfileController';
-import { SYNC_SOURCE } from '../../../module/sync/types';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
+import { SettingOption } from '../types';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {
   private profileController: ProfileController;
 
   constructor() {
-    super(false, daoManager.getDao(ProfileDao), {
+    super(true, daoManager.getDao(ProfileDao), {
       basePath: '/profile',
       networkClient: Api.glipNetworkClient,
     });
@@ -34,21 +35,20 @@ class ProfileService extends EntityBaseService<Profile>
           .handleGroupIncomesNewPost,
       }),
     );
+
+    this.setCheckTypeFunc((id: number) => {
+      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PROFILE);
+    });
   }
 
   handleIncomingData = async (
     profile: Raw<Profile> | null,
     source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ) => {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.HANDLE_INCOMING_PROFILE,
-      logId,
-    );
-    this.getProfileController()
+    await this.getProfileController()
       .getProfileDataController()
-      .profileHandleData(profile, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+      .profileHandleData(profile, source, changeMap);
   }
 
   handleGroupIncomesNewPost = async (groupIds: number[]) => {
@@ -68,12 +68,6 @@ class ProfileService extends EntityBaseService<Profile>
     return await this.getProfileController()
       .getProfileDataController()
       .getProfile();
-  }
-
-  async getMaxLeftRailGroup(): Promise<number> {
-    return await this.getProfileController()
-      .getProfileDataController()
-      .getMaxLeftRailGroup();
   }
 
   async isConversationHidden(groupId: number) {
@@ -129,6 +123,12 @@ class ProfileService extends EntityBaseService<Profile>
     return await this.getProfileController()
       .getProfileDataController()
       .getFavoriteGroupIds();
+  }
+
+  async updateSettingOptions(options: SettingOption[]) {
+    await this.getProfileController()
+      .getSettingsActionController()
+      .updateSettingOptions(options);
   }
 }
 

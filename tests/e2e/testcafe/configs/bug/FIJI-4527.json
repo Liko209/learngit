@@ -1,0 +1,13 @@
+{
+    "on_merge": {
+        "fixtures": [
+            "./fixtures/Logout.ts"
+        ],
+        "browsers": [
+            "selenium:chrome"
+        ],
+        "include_tags": [
+            "JPT-314"
+        ]
+    }
+}

@@ -71,6 +71,47 @@
     "deployedTime": "Date",
     "allRightsReserved": "All rights reserved"
   },
+  "globalSearch": {
+    "search": "Search",
+    "showMore": "Show more",
+    "ClearHistory": "Clear history",
+    "RecentSearches": "Recent searches",
+    "contentSearch": "Content search",
+    "inThisConversation": "in this conversation",
+    "Messages": "Messages",
+    "people": "people",
+    "groups": "groups",
+    "team": "team",
+    "postedBy": "Posted by",
+    "postedIn": "Posted in",
+    "postedByPlaceholder": "Enter name or email",
+    "postedInPlaceholder": "Enter a team or conversation",
+    "filters": "Filters",
+    "People": "People",
+    "Groups": "Groups",
+    "Teams": "Teams",
+    "All": "All",
+    "Events": "Events",
+    "Files": "Files",
+    "Links": "Links",
+    "Notes": "Notes",
+    "Tasks": "Tasks",
+    "Type": "Type",
+    "TimePosted": "Time posted",
+    "Anytime": "Anytime",
+    "ThisWeek": "This week",
+    "ThisMonth": "This month",
+    "ThisYear": "This year",
+
+    "prompt": {
+      "contentSearchNetworkError": "We weren't able to conduct the search. Check your network connection, then try again.",
+      "contentSearchServiceError": "Sorry, something went wrong on our end and we weren't able to conduct the search. Try again later."
+    },
+    "Results": "Results ({{count}})",
+    "NoMatchesFound": "No matches found",
+    "SearchForContactsAndKeywords": "Search for contacts and keywords",
+    "in": "in"
+  },
   "dashboard": {
     "Dashboard": "Dashboard"
   },
@@ -288,7 +329,7 @@
     },
     "team": {
       "Members": "Members",
-      "SearchContactPlaceholder": "Members (enter names or email addresses)",
+      "SearchContactPlaceholder": "Enter names or email addresses",
       "CreateTeam": "Create Team",
       "Create": "Create",
       "SetAsPublicTeam": "Public Team (visible to any co-worker)",
@@ -296,6 +337,7 @@
       "MembersMayAddOtherMembers": "Allow members to add other members",
       "MembersMayPinPosts": "Allow members to pin posts",
       "teamName": "Team name",
+      "teamNamePlaceholder": "Enter team name",
       "teamDescription": "Team description",
       "allowTeamMembersTo": "Allow team members to",
       "addTeamMembers": "Add team members",
@@ -347,7 +389,8 @@
       "markAsUnread": "Mark as unread",
       "convertToTeam": "Convert to team",
       "convertToTeamNamePrefix": "Team: ",
-      "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content."
+      "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content.",
+      "noMatchesFound": "No matches found"
     },
     "company": {},
     "prompt": {
@@ -385,7 +428,9 @@
       "InvalidEmail": "Invalid Email",
       "markAsRead": "Failed to mark this conversation as read. Try again later.",
       "markAsUnread": "Failed to mark this conversation as unread. Try again later.",
-      "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later."
+      "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later.",
+      "conversationDeleted": "The team was deleted. To know more, contact the team administrator.",
+      "conversationArchived": "The team was archived. To know more, contact the team administrator."
     }
   },
   "contact": {
@@ -405,15 +450,43 @@
       "unmute": "Unmute",
       "keypad": "Keypad",
       "hold": "Hold",
+      "unhold": "Unhold",
       "add": "Add",
       "record": "Record",
+      "stopRecord": "Stop",
       "callActions": "Call Actions",
-      "end": "End"
+      "end": "End",
+      "Answer": "Answer"
     },
+    "ignoreTheCall": "Ignore the call",
+    "sendToVoicemail": "Send to voicemail",
+    "answerTheCall": "Answer the call",
+    "unknownCaller": "Unknown Caller",
     "prompt": {
       "NoNetwork": "Sorry, we weren't able to place the call since there is no connection to the server. Try again later.",
       "CallFailed": "Sorry, we are having trouble placing this call, try again later.",
-      "CallTimeout": "Sorry, we weren't able to place the call. Try again later."
+      "CallTimeout": "Sorry, we weren't able to place the call. Try again later.",
+      "LogoutTitle": "Log out?",
+      "LogoutContent": "Your call will be disconnected if you log out. Do you want to log out and end the call?",
+      "LogoutOk": "Log out",
+      "FailedToHold": "Sorry, something went wrong on our end, we weren't able to hold the call",
+      "FailedToResume": "Sorry, something went wrong on our end, we weren't able to resume the call",
+      "FailedToRecord": "Sorry, we weren't able to record the call. Try again later.",
+      "FailedToStopRecording": "Sorry, we weren't able to stop recording the call. Try again later.",
+      "LackOfRecordingPermission": "Sorry, your account does not have the feature to record a call. To enable the feature, contact your account administrator.",
+      "RecordOnServiceWeb": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
+      "RecordAutomatically": "Cannot start call recording."
+    },
+    "notification": {
+      "incomingCall": "Incoming Call",
+      "answer": "Answer",
+      "unknownCaller": "Unknown Caller"
+    },
+    "accessibility": {
+      "hold": "Hold the call",
+      "resume": "Resume the call",
+      "record": "Record the call",
+      "stopRecord": "Stop recording"
     }
   },
   "meeting": {
@@ -425,7 +498,7 @@
     "teamSettings": "Settings",
     "general": "General",
     "notificationAndSounds": "Notification and Sounds",
-    "messaging": "Messaging",
+    "messages": "Messages",
     "phone": "Phone",
     "meetings": "Meetings",
     "calendar": "Calendar"
@@ -442,15 +515,24 @@
     "TeamArchived": "The team was archived. To know more, contact the team administrator.",
     "ConversationClosed": "You removed the conversation."
   },
+  "notification": {
+    "mentioned": "You were mentioned"
+  },
   "feedback": {
     "name": "Feedback",
     "uploading": "uploading",
-    "uploadRecentLogsDialogHeader": "Upload log?",
+    "uploadRecentLogsDialogHeader": "Send Feedback",
     "uploadRecentLogsDialogContent": "Upload recent logs to Jupiter feedback email.",
-    "upload": "Upload",
+    "submit": "Send",
     "describeYourProblemHere": "Describe your problem here",
-    "uploadLogSuccess": "Upload log successfully, please send it via email.",
+    "uploadLogSuccess": "Upload log successfully.",
     "uploadLogFailed": "Sorry, we weren't able to upload the logs.",
-    "openEmailFailed": "Open email failed."
+    "openEmailFailed": "Open email failed.",
+    "sendFeedbackSuccess": "Feedback sent successfully.",
+    "sendFeedbackFailed": "Send feedback failed.",
+    "title": "It looks like we're having issues.",
+    "issueTitle": "Summary",
+    "issueDescription": "What happened?",
+    "sendingInBackground": "Sending feedback..."
   }
 }

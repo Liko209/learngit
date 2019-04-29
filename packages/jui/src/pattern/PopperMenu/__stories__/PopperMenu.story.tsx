@@ -8,13 +8,13 @@ import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { select } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { JuiPopperMenu } from '../index';
+import { JuiPopperMenu, JuiPopperMenuProps } from '../index';
 import { JuiMenuList, JuiMenuItem } from '../../../components/Menus';
 import { JuiButton } from '../../../components/Buttons';
 
 const knobs = {
   placement: () =>
-    select(
+    select<JuiPopperMenuProps['placement']>(
       'placement',
       {
         bottomEnd: 'bottom-end',

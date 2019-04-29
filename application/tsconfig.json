@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "tsBuildInfoFile": "./.tsc_cache/cache_path",
     "baseUrl": ".",
     "outDir": "build",
     "target": "es6",

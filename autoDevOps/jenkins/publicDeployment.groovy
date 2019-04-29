@@ -93,6 +93,8 @@ def checkoutStage(Context context) {
 def installDependencyStage(Context context) {
     sh "echo 'registry=${context.npmRegistry}' > .npmrc"
     sshagent (credentials: [context.gitCredentialId]) {
+        sh 'npm install @sentry/cli@1.40.0 --unsafe-perm'
+        sh 'npm install @babel/parser@7.3.4 --ignore-scripts --unsafe-perm'
         sh 'npm install --only=dev --ignore-scripts --unsafe-perm'
         sh 'npm install --ignore-scripts --unsafe-perm'
         sh 'npx lerna bootstrap --hoist --no-ci --ignore-scripts'
@@ -124,22 +126,32 @@ def buildStage(Context context) {
 }
 
 def deployStage(Context context) {
-    context.deployTargets.each { deployTarget ->
+    // the reason we break it into two parts is copy package to remote machine may take a long time
+    // we hope that both machine updated at the same time
+    // so we first copy package,
+    // and then clean up the old version and unpack the new one
+
+    // step 1: copy package to remote target
+    parallel context.deployTargets.collectEntries { deployTarget -> [deployTarget.toString(), {
         // ensure dir exists
         sshCmd(deployTarget, context.deployCredentialId, "mkdir -p ${context.deployDirectory}".toString())
-        // clean old deployment
-        // TODO: maybe we should make a backup
-        sshCmd(deployTarget, context.deployCredentialId, "rm -rf ${context.deployDirectory}/*".toString())
         // copy package to target machine
         copyToRemote(deployTarget, context.deployCredentialId, context.buildPackageName, context.deployDirectory)
+    }]}
+
+    // step 2: clean old version and unpack new one
+    parallel context.deployTargets.collectEntries { deployTarget -> [deployTarget.toString(), {
+        // clean old deployment
+        sshCmd(deployTarget, context.deployCredentialId,
+            "find ${context.deployDirectory} -type f -not -name '*.tar.gz' | xargs rm".toString())
         // unpack package
         sshCmd(deployTarget, context.deployCredentialId,
-            "tar -xvf ${context.deployDirectory}/${context.buildPackageName} -C ${context.deployDirectory}".toString()
-        )
-    }
+            "tar -xvf ${context.deployDirectory}/${context.buildPackageName} -C ${context.deployDirectory}".toString())
+    }]}
 }
 
 node(context.buildNode) {
+    env.SENTRYCLI_CDNURL='https://cdn.npm.taobao.org/dist/sentry-cli'
     stage('prepare') {prepareStage(context)}
     stage('checkout') {checkoutStage(context)}
     stage('install dependencies') {installDependencyStage(context)}

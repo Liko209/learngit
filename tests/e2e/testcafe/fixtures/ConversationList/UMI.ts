@@ -64,15 +64,15 @@ test(formalName('UMI should be added received messages count in conversations', 
     directMessagesSection.conversationEntryById(privateChat.glipId).enter();
   });
 
-  let groupConversation, teamConversation;
+  const groupConversation = directMessagesSection.conversationEntryById(groupChat.glipId);
+  const teamConversation = teamsSection.conversationEntryById(team.glipId);
   await h(t).withLog(`And make preconditions: group ${groupChat.name} and team ${team.name} both with UMI=1`, async () => {
     await h(t).scenarioHelper.sentAndGetTextPostId(`![:Person](${loginUser.rcId}), ${uuid()}`, groupChat, otherUser);
     await h(t).scenarioHelper.sentAndGetTextPostId(`![:Person](${loginUser.rcId}), ${uuid()}`, team, otherUser);
     await directMessagesSection.expand();
-    groupConversation = directMessagesSection.conversationEntryById(groupChat.glipId);
-    await teamsSection.expand();
-    teamConversation = teamsSection.conversationEntryById(team.glipId);
     await groupConversation.umi.shouldBeNumber(1);
+    await teamsSection.expand();
+
     await teamConversation.umi.shouldBeNumber(1);
   });
 
@@ -101,7 +101,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog('When other user send a post without @mention to the team', async () => {
-    await h(t).scenarioHelper.sentAndGetTextPostId(`![:Person](${loginUser.rcId}), ${uuid()}`, team, otherUser);
+    await h(t).scenarioHelper.sentAndGetTextPostId(`${uuid()}`, team, otherUser);
   });
 
   await h(t).withLog(`Then the team should have 2 umi, no change`, async () => {
@@ -524,8 +524,8 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     await h(t).platform(otherUser).init();
 
     const directMessagesSection = app.homePage.messageTab.directMessagesSection;
-    
-    let group = <IGroup> {
+
+    let group = <IGroup>{
       type: "DirectMessage",
       members: [loginUser, otherUser, users[1]],
       owner: loginUser

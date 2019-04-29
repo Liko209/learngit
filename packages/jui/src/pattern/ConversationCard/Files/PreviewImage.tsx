@@ -5,12 +5,7 @@
  */
 import * as Jui from './style';
 import { FileName } from './FileName';
-import React, {
-  PureComponent,
-  RefObject,
-  createRef,
-  CSSProperties,
-} from 'react';
+import React, { PureComponent, RefObject, createRef } from 'react';
 import {
   getThumbnailSize,
   ThumbnailInfo,
@@ -110,9 +105,24 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
     }
   }
 
+  private _getImageStyle = (squareWidth: number, squareHeight: number) => {
+    if (!this._loaded) return { display: 'none' };
+
+    const { justifyHeight, justifyWidth } = this._imageInfo;
+
+    const styleWidth = justifyWidth ? { width: squareWidth } : {};
+    const styleHeight = justifyHeight ? { height: squareHeight } : {};
+
+    return { ...styleWidth, ...styleHeight, display: 'block' };
+  }
+
   private _handleImageClick = (ev: React.MouseEvent) => {
     this.props.handleImageClick &&
       this.props.handleImageClick(ev, this._loaded);
+  }
+
+  private _handleInfoClick(event: React.MouseEvent<HTMLElement>) {
+    event.stopPropagation();
   }
 
   componentDidMount() {
@@ -123,24 +133,10 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
   }
   render() {
     const { Actions, fileName, forceSize, url, placeholder } = this.props;
-    let { width, height } = this.props;
-    const imageProps = {} as SizeType;
-    const imageStyle: CSSProperties = { position: 'absolute', display: 'none' };
-    if (this._loaded) {
-      if (!forceSize) {
-        height = this._imageInfo.height;
-        width = this._imageInfo.width;
-      }
-      const { justifyHeight, justifyWidth, top, left } = this._imageInfo;
-      imageStyle.top = top;
-      imageStyle.left = left;
-      imageStyle.display = 'block';
-      if (justifyHeight) {
-        imageProps.height = this._imageInfo.height;
-      } else if (justifyWidth) {
-        imageProps.width = this._imageInfo.width;
-      }
-    }
+    const { width, height } =
+      this._loaded && !forceSize ? this._imageInfo : this.props;
+    const imageStyle = this._getImageStyle(width, height);
+
     return (
       <>
         {!this._loaded && placeholder}
@@ -154,14 +150,12 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
           />
         )}
         {this._loaded && (
-          <Jui.ImageCard width={width} height={height}>
+          <Jui.ImageCard width={width} height={height} onClick={this._handleImageClick}>
             <StyledImg
               style={imageStyle}
               src={url}
-              onClick={this._handleImageClick}
-              {...imageProps}
             />
-            <Jui.ImageFileInfo width={width} height={height} component="div">
+            <Jui.ImageFileInfo width={width} height={height} component="div" onClick={this._handleInfoClick}>
               <FileName filename={fileName} />
               <Jui.FileActionsWrapper>{Actions}</Jui.FileActionsWrapper>
             </Jui.ImageFileInfo>

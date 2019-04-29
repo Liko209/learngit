@@ -92,9 +92,9 @@ describe('RequestController', () => {
 
       const result = await requestController.put({ id: 1, name: 'jupiter' });
 
-      expect(networkConfig.networkClient.put).toBeCalledWith('/basePath/1', {
+      expect(networkConfig.networkClient.put).toBeCalledWith({path: '/basePath/1', data: {
         _id: 1,
-        name: 'jupiter',
+        name: 'jupiter'},
       });
 
       expect(result).toEqual({ id: 1, name: 'jupiter' });

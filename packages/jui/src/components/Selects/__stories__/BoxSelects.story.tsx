@@ -4,60 +4,135 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import * as React from 'react';
+import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { JuiBoxSelect } from '..';
+import {
+  withInfoDecorator,
+  alignCenterDecorator,
+} from '../../../foundation/utils/decorators';
+import { boolean, select } from '@storybook/addon-knobs';
+import { JuiBoxSelect, JuiLineSelect } from '..';
+import { JuiMenuItem } from '../../../components/Menus';
 
-class TestBoxSelect extends React.Component {
+type Menu = {
+  id: number | string;
+  value: string;
+};
+
+type TestBoxSelectProps = {
+  heightSize: 'default' | 'large';
+  menuItemStyle?: 'fixed' | 'MUINative';
+  disabled: boolean;
+};
+
+function getKnobs() {
+  const heightSize = select<TestBoxSelectProps['heightSize']>(
+    'heightSize',
+    {
+      default: 'default',
+      large: 'large',
+    },
+    'large',
+  );
+  const menuItemStyle = select<TestBoxSelectProps['menuItemStyle']>(
+    'menuItemStyle',
+    {
+      MUINative: 'MUINative',
+      Fixed: 'fixed',
+    },
+    'MUINative',
+  );
+  const disabled = boolean('disabled', false);
+  return {
+    heightSize,
+    disabled,
+    menuItemStyle,
+  };
+}
+
+const menu = [
+  { id: 1, value: 'One' },
+  { id: 2, value: 'Two' },
+  { id: 3, value: 'Three' },
+];
+
+const MenuProps: any = {
+  anchorOrigin: {
+    vertical: 'top',
+    horizontal: 'left',
+  },
+  getContentAnchorEl: null,
+};
+
+class TestBoxSelect extends React.Component<TestBoxSelectProps> {
   state = {
     value: 1,
-    menu: [
-      { id: 1, value: 'One' },
-      { id: 2, value: 'Two' },
-      { id: 3, value: 'Three' },
-    ],
   };
-  onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = event.target.value;
+  handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = event.target;
     this.setState({ value });
   }
 
   render() {
-    const { value, menu } = this.state;
+    const { disabled, heightSize } = this.props;
+
     return (
-      <div>
-        <JuiBoxSelect value={value} menu={menu} onChange={this.onChange} />
-        <br />
-        <br />
-        <JuiBoxSelect
-          value={value}
-          menu={menu}
-          onChange={this.onChange}
-          heightSize="large"
-        />
-        <br />
-        <br />
-        <JuiBoxSelect value={1} menu={menu} disabled={true} />
-        <br />
-        <br />
-        <JuiBoxSelect
-          value={1}
-          menu={menu}
-          disabled={true}
-          heightSize="large"
-        />
-      </div>
+      <JuiBoxSelect
+        {...this.state}
+        MenuProps={this.props.menuItemStyle === 'fixed' ? MenuProps : {}}
+        heightSize={heightSize}
+        disabled={disabled}
+        label="Select Demo"
+        onChange={this.handleChange}
+        automationId={'demo'}
+      >
+        {menu.map((item: Menu) => (
+          <JuiMenuItem value={item.id} key={item.id}>
+            {item.value}
+          </JuiMenuItem>
+        ))}
+      </JuiBoxSelect>
     );
   }
 }
 
+const LineSelect = () => {
+  const [value, setValue] = useState('');
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = event.target;
+    setValue(value);
+  };
+  return (
+    <JuiLineSelect
+      onChange={handleChange}
+      value={value}
+      label="select"
+      menuProps={MenuProps}
+      style={{ width: '200px', textAlign: 'left' }}
+    >
+      {menu.map((item: Menu) => (
+        <JuiMenuItem value={item.id} key={item.id}>
+          {item.value}
+        </JuiMenuItem>
+      ))}
+    </JuiLineSelect>
+  );
+};
+
 storiesOf('Components/Selects', module)
+  .addDecorator(alignCenterDecorator)
   .addDecorator(withInfoDecorator(JuiBoxSelect, { inline: true }))
   .add('BoxSelect', () => {
     return (
       <div style={{ padding: '0 30%' }}>
-        <TestBoxSelect />
+        <TestBoxSelect {...getKnobs()} />
+      </div>
+    );
+  })
+  .add('LineSelect', () => {
+    return (
+      <div style={{ padding: '0 30%' }}>
+        <LineSelect />
       </div>
     );
   });

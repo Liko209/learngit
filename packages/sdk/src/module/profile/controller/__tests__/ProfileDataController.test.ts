@@ -40,35 +40,7 @@ describe('ProfileDataController', () => {
       expect(result).toEqual(2);
     });
   });
-  describe('getMaxLeftRailGroup()', () => {
-    it('should return default value 20 because of not profile', async () => {
-      profileDataController.getProfile = jest
-        .fn()
-        .mockImplementationOnce(() => undefined);
-      const result = await profileDataController.getMaxLeftRailGroup();
-      expect(result).toBe(20);
-    });
-    it('should return default value 20 because of key max_leftrail_group_tabs2 in profile', async () => {
-      profileDataController.getProfile = jest
-        .fn()
-        .mockImplementationOnce(() => {});
-      const result = await profileDataController.getMaxLeftRailGroup();
-      expect(result).toBe(20);
-    });
 
-    it('should return 5 because of max_leftrail_group_tabs2 in profile is 5', async () => {
-      profileDataController.getProfile = jest
-        .fn()
-        .mockImplementationOnce(() => {
-          return {
-            id: 1,
-            max_leftrail_group_tabs2: 5,
-          };
-        });
-      const result = await profileDataController.getMaxLeftRailGroup();
-      expect(result).toBe(5);
-    });
-  });
   describe('isConversationHidden()', () => {
     it('should return false because of not profile', async () => {
       profileDataController.getProfile = jest

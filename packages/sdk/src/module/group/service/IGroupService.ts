@@ -5,7 +5,11 @@ import { Raw, SortableModel } from '../../../framework/model';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { PERMISSION_ENUM } from '../constants';
 import { Group, TeamPermission, TeamPermissionParams } from '../entity';
-import { PermissionFlags, TeamSetting } from '../types';
+import {
+  PermissionFlags,
+  TeamSetting,
+  GroupCanBeShownResponse,
+} from '../types';
 import { SYNC_SOURCE } from '../../../module/sync/types';
 
 interface IGroupService {
@@ -14,6 +18,8 @@ interface IGroupService {
   handleData(groups: Raw<Group>[], source: SYNC_SOURCE): Promise<void>;
 
   isInTeam(userId: number, team: Group): boolean;
+
+  isInGroup(userId: number, team: Group): boolean;
 
   canJoinTeam(team: Group): boolean;
 
@@ -77,8 +83,6 @@ interface IGroupService {
     options: TeamSetting,
   ): Promise<Group>;
 
-  getLeftRailGroups(): Promise<Group[]>;
-
   updateGroupPrivacy(params: { id: number; privacy: string }): Promise<void>;
 
   isFavored(id: number, type: number): Promise<boolean>;
@@ -111,7 +115,7 @@ interface IGroupService {
     timestamp: number;
   }): Promise<boolean>;
 
-  isGroupCanBeShown(groupId: number): Promise<boolean>;
+  isGroupCanBeShown(groupId: number): Promise<GroupCanBeShownResponse>;
 
   deleteGroupsConfig(ids: number[]): Promise<void>;
 
@@ -124,6 +128,8 @@ interface IGroupService {
   isValid(group: Group): boolean;
 
   getEntities(): Promise<Group[]>;
+
+  getSoundexById(id: number): string[];
 }
 
 export { IGroupService };

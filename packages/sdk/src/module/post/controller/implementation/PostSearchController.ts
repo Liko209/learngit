@@ -12,23 +12,34 @@ import { SOCKET } from '../../../../service/eventKey';
 import { SubscribeController } from '../../../base/controller/SubscribeController';
 import {
   SearchResult,
-  ESearchContentTypes,
-  ContentTypes,
+  SearchContentTypesCount,
   SearchedResultData,
   SearchRequestInfo,
 } from './types';
 import { SearchAPI, ContentSearchParams } from '../../../../api/glip/search';
 import { transformAll } from '../../../../service/utils';
-import { GlipTypeUtil, TypeDictionary } from '../../../../utils';
-import { JSdkError, ERROR_CODES_SDK } from '../../../../error/sdk';
+import {
+  GlipTypeUtil,
+  TypeDictionary,
+  PERFORMANCE_KEYS,
+  PerformanceTracerHolder,
+} from '../../../../utils';
 import { mainLogger } from 'foundation';
+import {
+  ERROR_TYPES,
+  ErrorParserHolder,
+  JNetworkError,
+  ERROR_CODES_NETWORK,
+} from '../../../../error';
 
 const LOG_TAG = 'PostSearchController';
+const SEARCH_TIMEOUT = 60 * 1000;
 
 class PostSearchController {
   private _queryInfos: Map<number, SearchRequestInfo> = new Map();
   private _hasSubscribed = false;
   private _subscribeController: SubscribeController;
+  private _searchResultWaiter: NodeJS.Timer;
   constructor() {
     this._subscribeController = SubscribeController.buildSubscriptionController(
       {
@@ -37,24 +48,168 @@ class PostSearchController {
     );
   }
 
-  searchPosts(options: ContentSearchParams): Promise<SearchedResultData> {
-    if (options.previous_server_request_id) {
-      this._clearSearchData(options.previous_server_request_id);
-    }
-
+  async searchPosts(options: ContentSearchParams): Promise<SearchedResultData> {
+    mainLogger.tags(LOG_TAG).log('searchPosts options', options);
     this._startListenSocketSearchChange();
-    return new Promise(async (resolve, reject) => {
-      mainLogger.log(LOG_TAG, 'searchPosts', options);
-      const result = await SearchAPI.search(options);
+    return this._doSearch(this._searchPosts(options));
+  }
+
+  private async _doSearch(searchPromise: Promise<SearchedResultData>) {
+    try {
+      const waiter = this._setSearchTimeout();
+      const searchRes = (await Promise.race([
+        searchPromise,
+        waiter,
+      ])) as SearchedResultData;
+      this._clearSearchTimeout();
+      return searchRes;
+    } catch (error) {
+      this._clearSearchTimeout();
+      throw error;
+    }
+  }
+
+  private async _searchPosts(
+    options: ContentSearchParams,
+  ): Promise<SearchedResultData> {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.SEARCH_POST,
+      logId,
+    );
+
+    let results = await this._requestSearchPosts(options);
+    if (
+      options.scroll_size &&
+      this._needContinueFetch(results, options.scroll_size)
+    ) {
+      mainLogger
+        .tags(LOG_TAG)
+        .log(
+          'searchPosts, size does not match, we need to fetch more for this search',
+          {
+            options,
+            postLen: results.posts.length,
+            itemLen: results.items.length,
+          },
+        );
+      results = await this._searchUntilMeetSize(results, options.scroll_size);
+    }
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+
+    mainLogger.tags(LOG_TAG).log('searchPosts, return result = ', {
+      options,
+      postLen: results.posts.length,
+      itemLen: results.items.length,
+    });
+    return results;
+  }
+
+  private _needContinueFetch(
+    searchResult: SearchedResultData,
+    fetchSize: number,
+  ) {
+    return searchResult.hasMore && searchResult.posts.length < fetchSize;
+  }
+
+  private async _searchUntilMeetSize(
+    preResult: SearchedResultData,
+    fetchSize: number,
+  ) {
+    let scrollSearchRes = await this._requestScrollSearchPosts(
+      preResult.requestId,
+    );
+    scrollSearchRes = this._combineSearchResults(
+      preResult,
+      scrollSearchRes,
+      preResult.requestId,
+    );
+
+    mainLogger.tags(LOG_TAG).log(' _searchUntilMeetSize -> scrollSearchRes', {
+      fetchSize,
+      postLen: scrollSearchRes.posts.length,
+      itemLen: scrollSearchRes.items.length,
+    });
+
+    if (this._needContinueFetch(scrollSearchRes, fetchSize)) {
+      const needFetchSize = fetchSize - scrollSearchRes.posts.length;
+      scrollSearchRes = await this._searchUntilMeetSize(
+        scrollSearchRes,
+        needFetchSize,
+      );
+    }
+    return scrollSearchRes;
+  }
+
+  private _combineSearchResults(
+    resA: SearchedResultData,
+    resB: SearchedResultData,
+    requestId: number,
+  ): SearchedResultData {
+    return {
+      requestId,
+      posts: resA.posts.concat(resB.posts),
+      items: resA.items.concat(resB.items),
+      hasMore: resA.hasMore && resB.hasMore,
+    };
+  }
+
+  private async _requestSearchPosts(
+    options: ContentSearchParams,
+  ): Promise<SearchedResultData> {
+    const result = await SearchAPI.search(options);
+    mainLogger.tags(LOG_TAG).log('_requestSearchPosts', result);
+    return new Promise((resolve, reject) => {
       this._saveSearchInfo(result.request_id, {
         resolve,
         reject,
         q: options.q as string,
+        scrollSize: options.scroll_size,
       });
     });
   }
 
-  scrollSearchPosts(requestId: number): Promise<SearchedResultData> {
+  async scrollSearchPosts(requestId: number): Promise<SearchedResultData> {
+    mainLogger.tags(LOG_TAG).log('scrollSearchPosts requestId', requestId);
+    return this._doSearch(this._scrollSearchPosts(requestId));
+  }
+
+  private async _scrollSearchPosts(
+    requestId: number,
+  ): Promise<SearchedResultData> {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.SCROLL_SEARCH_POST,
+      logId,
+    );
+
+    let result = await this._requestScrollSearchPosts(requestId);
+    const info = this._queryInfos.get(requestId);
+    if (
+      info &&
+      info.scrollSize &&
+      this._needContinueFetch(result, info.scrollSize)
+    ) {
+      mainLogger
+        .tags(LOG_TAG)
+        .log(
+          'scrollSearchPosts, size does not match, we need to fetch more for this search',
+          { postLen: result.posts.length, itemLen: result.items.length },
+        );
+      result = await this._searchUntilMeetSize(result, info.scrollSize);
+    }
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+
+    mainLogger.tags(LOG_TAG).log('scrollSearchPosts, return result = ', {
+      postLen: result.posts.length,
+      itemLen: result.items.length,
+    });
+    return result;
+  }
+
+  private async _requestScrollSearchPosts(
+    requestId: number,
+  ): Promise<SearchedResultData> {
     if (this._isSearchEnded(requestId)) {
       return Promise.resolve({
         requestId,
@@ -64,39 +219,78 @@ class PostSearchController {
       });
     }
 
-    return new Promise(async (resolve, reject) => {
-      const info = this._queryInfos.get(requestId);
-      if (info) {
+    const info = this._queryInfos.get(requestId);
+    if (info) {
+      try {
         await SearchAPI.scrollSearch({
           search_request_id: requestId,
           scroll_request_id: info.scrollRequestId || 1,
         });
+      } catch (error) {
+        const e = ErrorParserHolder.getErrorParser().parse(error);
+        if (e.isMatch({ type: ERROR_TYPES.SERVER, codes: ['DELETED'] })) {
+          return Promise.resolve({
+            requestId,
+            posts: [],
+            items: [],
+            hasMore: false,
+          });
+        }
+        return Promise.reject(error);
+      }
+
+      return new Promise((resolve, reject) => {
         this._updateSearchInfo(requestId, {
           resolve,
           reject,
           q: info.q,
         });
-      } else {
-        reject(new JSdkError(ERROR_CODES_SDK.GENERAL, 'failed to search more'));
-      }
+      });
+    }
+
+    mainLogger
+      .tags(LOG_TAG)
+      .info(`scrollSearchPosts, failed to find request id, ${requestId}`);
+
+    return Promise.resolve({
+      requestId,
+      posts: [],
+      items: [],
+      hasMore: false,
     });
   }
 
-  async endPostSearch(requestId: number) {
+  async endPostSearch() {
+    mainLogger
+    .tags(LOG_TAG)
+    .log(
+      'endPostSearch, exist request ids:',
+      Array.from(this._queryInfos.keys()),
+    );
     this._endListenSocketSearchChange();
-    this._clearSearchData(requestId);
-    try {
-      await SearchAPI.search({ previous_server_request_id: requestId });
-    } catch (error) {
-      // no error handling here.
-      mainLogger.log(LOG_TAG, 'PostSearchController -> catch -> error', error);
-    }
+    this._clearSearchTimeout();
+    this._clearSearchData();
   }
 
-  getContentsCount(options: ContentSearchParams): Promise<{ string: number }> {
-    return new Promise(async (resolve, reject) => {
-      options.count_types = 1;
-      const result = await SearchAPI.search(options);
+  private _clearSearchData() {
+    const requestIds = Array.from(this._queryInfos.keys());
+    this._queryInfos.clear();
+    const promises = requestIds.map((requestId: number) => {
+      return SearchAPI.search({ previous_server_request_id: requestId });
+    });
+    Promise.all(promises).catch(error => {
+      mainLogger
+        .tags(LOG_TAG)
+        .log('PostSearchController -> catch -> error', error);
+    });
+  }
+
+  async getContentsCount(
+    options: ContentSearchParams,
+  ): Promise<SearchContentTypesCount> {
+    const result = await SearchAPI.search({ ...options, count_types: 1 });
+    mainLogger.tags(LOG_TAG).log('getContentsCount', { result });
+    return new Promise((resolve, reject) => {
       this._saveSearchInfo(result.request_id, {
         q: options.q as string,
         contentCountResolve: resolve,
@@ -105,23 +299,22 @@ class PostSearchController {
   }
 
   handleSearchResults = async (searchResult: SearchResult) => {
-    mainLogger.log(
-      LOG_TAG,
-      'handleSearchResults -> searchResult',
-      searchResult,
-    );
     const {
       request_id: requestId,
       query,
       results = [],
       response_id: responseId = 1,
       content_types: contentTypes = false,
-      scroll_request_id: scrollRequestId = 0,
     } = searchResult;
-
+    const scrollRequestId = searchResult.scroll_request_id
+      ? Number(searchResult.scroll_request_id)
+      : 0;
     const info = this._queryInfos.get(requestId);
     if (!info) {
-      mainLogger.log(LOG_TAG, 'unrecorded search response', searchResult);
+      mainLogger.tags(LOG_TAG).log('unrecorded search response', {
+        query: searchResult.query,
+        request_id: searchResult.request_id,
+      });
       return;
     }
 
@@ -134,10 +327,6 @@ class PostSearchController {
     }
 
     const currentScrollId = (info && info.scrollRequestId) || 0;
-    mainLogger.log(LOG_TAG, 'handleSearchResults', {
-      currentScrollId,
-      scrollRequestId,
-    });
     if (currentScrollId === scrollRequestId) {
       const resultData: SearchedResultData = {
         requestId,
@@ -157,7 +346,7 @@ class PostSearchController {
       resultData.hasMore =
         resultData.posts.length !== 0 || resultData.items.length !== 0;
 
-      this._notifySearchResultComes(resultData);
+      !contentTypes && this._notifySearchResultComes(resultData);
       contentTypes && this._notifyContentsCountComes(requestId, contentTypes);
     }
   }
@@ -186,19 +375,25 @@ class PostSearchController {
     }
   }
 
-  private _clearSearchData(requestId: number) {
-    this._queryInfos.delete(requestId);
-  }
-
   private _notifySearchResultComes(searchedContents: SearchedResultData) {
     const info = this._queryInfos.get(searchedContents.requestId);
     if (info && info.resolve) {
+      mainLogger.tags(LOG_TAG).log('_notifySearchResultComes, result = ', {
+        requestId: searchedContents.requestId,
+        postLen: searchedContents.posts.length,
+        itemLen: searchedContents.items.length,
+        hasMore: searchedContents.hasMore,
+      });
       info.resolve(searchedContents);
     }
   }
 
   private _handlePostsAndItems(contents: (Raw<Post> | Raw<Item>)[]) {
-    const objects: (Post | Item)[] = transformAll(contents);
+    let objects: (Post | Item)[] = transformAll(contents);
+    objects = objects.filter((value: Post | Item) => {
+      return !value.deactivated;
+    });
+
     const posts: Post[] = [];
     const items: Item[] = [];
     objects.map((value: Post | Item) => {
@@ -216,11 +411,15 @@ class PostSearchController {
 
   private _notifyContentsCountComes(
     requestId: number,
-    contentCounts: ContentTypes,
+    contentCounts: SearchContentTypesCount,
   ) {
+    mainLogger
+      .tags(LOG_TAG)
+      .log('_notifyContentsCountComes', { requestId, contentCounts });
     const info = this._queryInfos.get(requestId);
-    if (info && info.contentCountResolve) {
-      info.contentCountResolve(contentCounts);
+    if (info) {
+      info.contentCountResolve && info.contentCountResolve(contentCounts);
+      this._queryInfos.delete(requestId);
     }
   }
 
@@ -228,6 +427,36 @@ class PostSearchController {
     const info = this._queryInfos.get(requestId);
     return (info && info.isSearchEnded) || false;
   }
+
+  private _clearSearchTimeout() {
+    if (this._searchResultWaiter) {
+      mainLogger
+        .tags(LOG_TAG)
+        .log('_clearSearchTimeout', this._searchResultWaiter);
+      clearTimeout(this._searchResultWaiter);
+      delete this._searchResultWaiter;
+    }
+  }
+
+  private _setSearchTimeout() {
+    this._clearSearchTimeout();
+    return new Promise((resolve, reject) => {
+      const tId = setTimeout(() => {
+        mainLogger
+          .tags(LOG_TAG)
+          .log('_setSearchTimeout,  trigger', this._searchResultWaiter);
+        this._clearSearchTimeout();
+        reject(
+          new JNetworkError(
+            ERROR_CODES_NETWORK.NETWORK_ERROR,
+            'retrieve search result timeout ',
+          ),
+        );
+      },                     SEARCH_TIMEOUT);
+      mainLogger.tags(LOG_TAG).log('_setSearchTimeout', tId);
+      this._searchResultWaiter = tId;
+    });
+  }
 }
 
-export { PostSearchController, ESearchContentTypes, ContentSearchParams };
+export { PostSearchController, ContentSearchParams };

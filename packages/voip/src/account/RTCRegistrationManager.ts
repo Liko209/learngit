@@ -261,15 +261,7 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   private _onUAReceiveInvite(session: any) {
-    this._eventQueue.push(
-      {
-        name: REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE_TASK,
-        data: { callSession: session },
-      },
-      (data?: any) => {
-        this._fsm.receiveIncomingInvite(data.callSession);
-      },
-    );
+    this._fsm.receiveIncomingInvite(session);
   }
 
   private _scheduleRegisterRetryTimer() {

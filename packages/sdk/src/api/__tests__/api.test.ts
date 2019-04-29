@@ -21,20 +21,11 @@ describe('Api', () => {
       const networkClient = Api.getNetworkClient('glip', HandleByGlip);
       expect(networkClient).toBe(Api.getNetworkClient('glip', HandleByGlip));
     });
-
-    it('should throw error when Api not initialized', () => {
-      Api._httpConfig = null;
-      expect(() => Api.getNetworkClient('glip', HandleByGlip)).toThrow();
-    });
   });
 
   describe('getter', () => {
     it('glipNetworkClient', () => {
       expect(Api.glipNetworkClient).toBeInstanceOf(NetworkClient);
-    });
-
-    it('glip2NetworkClient', () => {
-      expect(Api.glip2NetworkClient).toBeInstanceOf(NetworkClient);
     });
 
     it('rcNetworkClient', () => {

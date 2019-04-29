@@ -25,10 +25,11 @@ class EndViewComponent extends Component<Props> {
         color="semantic.negative"
         disableToolTip={true}
         onClick={this._handleEnd}
-        size="large"
+        size="moreLarge"
         showShadow={false}
         tooltipPlacement="top"
         iconName="hand_up"
+        data-test-automation-id="telephony-end-btn"
       />
     );
   }

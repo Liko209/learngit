@@ -7,6 +7,7 @@
 export type PerformanceItem = {
   startTime: number;
   endTime: number;
+  count?: number;
 };
 
 export enum PERFORMANCE_KEYS {
@@ -17,6 +18,7 @@ export enum PERFORMANCE_KEYS {
   SEARCH_PERSON = 'search_people',
   SEARCH_GROUP = 'search_group',
   SEARCH_TEAM = 'search_team',
+  SEARCH_ALL_GROUP = 'search_all_group',
   GOTO_CONVERSATION_SHELF_FETCH_ITEMS = 'goto_conversation_shelf_fetch_items',
   GOTO_CONVERSATION_FETCH_POSTS = 'goto_conversation_fetch_posts',
   GOTO_CONVERSATION_FETCH_ITEMS = 'goto_conversation_fetch_items',
@@ -33,4 +35,12 @@ export enum PERFORMANCE_KEYS {
   HANDLE_INCOMING_PERSON = 'handle_incoming_person',
   HANDLE_INCOMING_GROUP = 'handle_incoming_group',
   HANDLE_INCOMING_POST = 'handle_incoming_post',
+  SEARCH_POST = 'search_post',
+  SCROLL_SEARCH_POST = 'scroll_search_post',
+  HANDLE_INDEX_DATA = 'handle_index_data',
+  HANDLE_REMAINING_DATA = 'handle_remaining_data',
+  HANDLE_INITIAL_DATA = 'handle_initial_data',
+  FETCH_LEFT_RAIL = 'fetch_left_rail',
+  UNIFIED_LOGIN = 'unified_login',
+  FIRST_LOGIN = 'first_login',
 }

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-const PING_TIMEOUT = 5000; // 5s
+const PING_TIMEOUT = 20000; // 20s
 const GLIP_PING = 'glip_ping';
 const GLIP_PONG = 'glip_pong';
 const CHECK_CONNECTED_INTERVAL = 1000; // 1s

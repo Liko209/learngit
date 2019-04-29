@@ -92,9 +92,6 @@ class MoreMenu extends Entry {
 }
 
 class MenuItem extends Entry {
-  async click() {
-    await this.t.click(this.self);
-  }
 
   get disabled(): Promise<string> {
     return this.self.getAttribute("data-disabled");
@@ -185,10 +182,6 @@ class ConversationEntry extends BaseWebComponent {
 }
 
 class ConversationSection extends BaseWebComponent {
-  ensureLoaded() {
-    return this.waitUntilExist(this.self);
-  }
-
   get toggleButton() {
     return this.self.find('[role="button"]');
   }
@@ -280,12 +273,12 @@ class CloseConversationModal extends BaseWebComponent {
 
   get cancelButton() {
     this.warnFlakySelector();
-    return this.button('Cancel');
+    return this.buttonOfText('Cancel');
   }
 
   get closeButton() {
     this.warnFlakySelector();
-    return this.button('Close');
+    return this.buttonOfText('Close');
   }
 
   async toggleDontAskAgain() {

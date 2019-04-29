@@ -15,25 +15,40 @@ type Props = HoldViewProps & WithTranslation;
 
 @observer
 class HoldViewComponent extends Component<Props> {
-  private _handleHold = async () => {
-    const { hold } = this.props;
-    hold();
+  private _handleHold: () => void;
+
+  constructor(props: Props) {
+    super(props);
+    this._handleHold = () => {
+      const { handleClick } = this.props;
+      return handleClick();
+    };
   }
 
   render() {
-    const { t } = this.props;
+    const { t, disabled, held } = this.props;
     return (
       <JuiKeypadAction>
         <JuiIconButton
-          color="grey.900"
+          color={held ? 'primary.600' : 'grey.900'}
           disableToolTip={true}
           onClick={this._handleHold}
           size="xxlarge"
-          disabled={true}
+          disabled={disabled}
+          awake={held}
+          shouldPersistBg={held}
+          data-test-automation-id="telephony-hold-btn"
+          aria-label={
+            held
+              ? t('telephony.accessibility.resume')
+              : t('telephony.accessibility.hold')
+          }
         >
           hold
         </JuiIconButton>
-        <span className="disabled">{t('telephony.action.hold')}</span>
+        <span className={disabled ? 'disabled' : undefined}>
+          {held ? t('telephony.action.unhold') : t('telephony.action.hold')}
+        </span>
       </JuiKeypadAction>
     );
   }

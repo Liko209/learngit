@@ -8,10 +8,7 @@ import MuiListItem from '@material-ui/core/ListItem';
 import MuiListItemText from '@material-ui/core/ListItemText';
 import MuiCardContent from '@material-ui/core/CardContent';
 import MuiCardActions from '@material-ui/core/CardActions';
-import {
-  JuiTypography,
-  JuiTypographyProps,
-} from '../../../foundation/Typography';
+import { JuiTypography, JuiTypographyProps } from '../../../foundation/Typography';
 import { JuiCardMedia, JuiCard } from '../../../components/Cards';
 import styled from '../../../foundation/styled-components';
 import {
@@ -22,10 +19,7 @@ import {
   palette,
   typography,
 } from '../../../foundation/utils/styles';
-import {
-  JuiIconography,
-  JuiIconographyProps,
-} from '../../../foundation/Iconography';
+import { JuiIconography, JuiIconographyProps } from '../../../foundation/Iconography';
 
 const ITEM_WIDTH = 84;
 const FILE_CARD_HEIGHT = 68;
@@ -45,10 +39,7 @@ const FileItem = styled(MuiListItem)`
 `;
 
 const FileIcon = styled<FileIconProps>(({ size, ...rest }) => (
-  <JuiIconography
-    iconSize={size === 'small' ? 'medium' : 'extraLarge'}
-    {...rest}
-  />
+  <JuiIconography iconSize={size === 'small' ? 'medium' : 'extraLarge'} {...rest} />
 ))`
   && {
     margin: ${({ size }) => (size === 'small' ? spacing(0, 2, 0, 0) : null)};
@@ -132,11 +123,10 @@ const CardFileActions = styled(MuiCardActions)`
 type ImageCardProps = {
   width: number;
   height: number;
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
-const WrapperImageCard = ({ width, height, ...rest }: ImageCardProps) => (
-  <JuiCard {...rest} />
-);
+const WrapperImageCard = ({ width, height, ...rest }: ImageCardProps) => <JuiCard {...rest} />;
 
 type ImageFileInfoProps = ImageCardProps & JuiTypographyProps;
 
@@ -148,6 +138,7 @@ const ImageFileInfo = styled<ImageFileInfoProps>(WrapperImageFileInfo)`
   position: absolute;
   bottom: 0;
   left: 0;
+  cursor: default;
   width: 100%;
   height: ${height(9)};
   padding: ${spacing(2)};
@@ -164,12 +155,17 @@ const ImageFileInfo = styled<ImageFileInfoProps>(WrapperImageFileInfo)`
 
 const ImageCard = styled<ImageCardProps>(WrapperImageCard)`
   && {
-    display: inline-block;
+    cursor: pointer;
+    float: left;
+    display: flex;
     margin: ${spacing(0, 2, 2, 0)};
     width: ${props => width(props.width / 4)};
     height: ${props => height(props.height / 4)};
     position: relative;
     border-radius: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: ${palette('grey', '100')};
     box-shadow: none;
   }
   &:hover ${ImageFileInfo} {

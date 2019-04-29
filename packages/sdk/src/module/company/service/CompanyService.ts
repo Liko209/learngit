@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { CompanyEntityCacheController } from '../controller/CompanyEntityCacheController';
 import { CompanyController } from '../controller/CompanyController';
 import { CompanyDao } from '../dao/CompanyDao';
 import { Company } from '../entity';
@@ -13,8 +14,8 @@ import { daoManager } from '../../../dao';
 import Api from '../../../api/api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { Raw } from '../../../framework/model';
-import { SYNC_SOURCE } from '../../../module/sync/types';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 
 class CompanyService extends EntityBaseService<Company> {
   private _companyController: CompanyController;
@@ -30,20 +31,30 @@ class CompanyService extends EntityBaseService<Company> {
         [SOCKET.COMPANY]: this.handleIncomingData.bind(this),
       }),
     );
+
+    this.setCheckTypeFunc((id: number) => {
+      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_COMPANY);
+    });
+  }
+
+  protected buildEntityCacheController() {
+    return new CompanyEntityCacheController();
   }
 
   async getCompanyEmailDomain(id: number): Promise<string | null> {
     return await this.getCompanyController().getCompanyEmailDomain(id);
   }
 
-  async handleIncomingData(companies: Raw<Company>[], source: SYNC_SOURCE) {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.HANDLE_INCOMING_COMPANY,
-      logId,
+  async handleIncomingData(
+    companies: Raw<Company>[],
+    source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
+  ) {
+    await this.getCompanyController().handleCompanyData(
+      companies,
+      source,
+      changeMap,
     );
-    await this.getCompanyController().handleCompanyData(companies, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   protected getCompanyController() {
@@ -51,6 +62,14 @@ class CompanyService extends EntityBaseService<Company> {
       this._companyController = new CompanyController(this.getEntitySource());
     }
     return this._companyController;
+  }
+
+  async getUserAccountTypeFromSP430() {
+    return await this.getCompanyController().getUserAccountTypeFromSP430();
+  }
+
+  async isUserCompanyTelephonyOn() {
+    return await this.getCompanyController().isUserCompanyTelephonyOn();
   }
 }
 

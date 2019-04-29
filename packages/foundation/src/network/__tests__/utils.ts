@@ -4,12 +4,14 @@ import {
   NETWORK_VIA,
   ITokenHandler,
   IToken,
+  INetworkRequestProducer,
+  IResponseListener,
 } from '../network';
 import { NetworkRequestExecutor } from '../NetworkRequestExecutor';
 import RequestTask from '../RequestTask';
 import BaseClient from '../client/BaseClient';
 import { HttpResponseBuilder } from '../client/http';
-import NetworkRequestConsumer from '../NetworkRequestConsumer';
+import { AbstractConsumer } from '../consumer/AbstractConsumer';
 import NetworkRequestSurvivalMode from '../NetworkRequestSurvivalMode';
 import AbstractHandleType from '../AbstractHandleType';
 import NetworkRequestBuilder from '../client/NetworkRequestBuilder';
@@ -17,6 +19,24 @@ import Token from '../Token';
 import OAuthTokenManager from '../OAuthTokenManager';
 import NetworkRequestHandler from '../NetworkRequestHandler';
 import OAuthTokenHandler from '../OAuthTokenHandler';
+import NetworkRequestDecorator from '../NetworkRequestDecorator';
+
+class FakeConsumer extends AbstractConsumer {
+  constructor(
+    producer: INetworkRequestProducer,
+    responseListener: IResponseListener,
+    client: BaseClient,
+    networkRequestDecorator: NetworkRequestDecorator,
+    via: NETWORK_VIA,
+  ) {
+    super(producer, responseListener, client, networkRequestDecorator, via);
+  }
+
+  canHandleRequest() {
+    return false;
+  }
+}
+
 const fakeHandleType = new class extends AbstractHandleType {}();
 
 const getFakeRequest = () => {
@@ -58,13 +78,12 @@ const getFakeDecoration = () => {
 };
 
 const getFakeConsumer = () => {
-  return new NetworkRequestConsumer(
+  return new FakeConsumer(
+    getFakeHandler(),
     getFakeHandler(),
     getFakeClient(),
-    10,
-    NETWORK_VIA.HTTP,
-    getFakeHandler(),
     null,
+    NETWORK_VIA.HTTP,
   );
 };
 

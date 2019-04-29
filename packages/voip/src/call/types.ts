@@ -44,6 +44,9 @@ enum CALL_FSM_NOTIFY {
   UNHOLD_ACTION = 'unholdAction',
   PARK_ACTION = 'parkAction',
   DTMF_ACTION = 'dtmfAction',
+  START_REPLY_ACTION = 'startReplyAction',
+  REPLY_WITH_PATTERN_ACTION = 'replyWithPatternAction',
+  REPLY_WITH_MESSAGE_ACTION = 'replyWithMessageAction',
 }
 
 export { CALL_SESSION_STATE, CALL_FSM_NOTIFY };

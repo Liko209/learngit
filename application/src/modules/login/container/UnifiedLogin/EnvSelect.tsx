@@ -10,7 +10,6 @@ import { AppEnvSetting } from 'sdk/module/env';
 
 import Config from '@/config';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-console.log('Config: ', Config);
 
 type Props = {};
 type States = {

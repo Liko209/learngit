@@ -14,6 +14,8 @@ import {
   RTC_CALL_ACTION,
   RTC_CALL_STATE,
   RTCCallActionSuccessOptions,
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip';
 import { TelephonyAccountController } from '../../controller/TelephonyAccountController';
 import { ServiceLoader } from '../../../serviceLoader';
@@ -31,6 +33,7 @@ describe('TelephonyService', () => {
   let makeCallController: MakeCallController;
 
   const callId = '123';
+  const toNum = '123';
   class MockAcc implements ITelephonyAccountDelegate {
     onAccountStateChanged(state: TELEPHONY_ACCOUNT_STATE) {}
   }
@@ -83,31 +86,20 @@ describe('TelephonyService', () => {
   });
   describe('makeCall', () => {
     it('should call account controller to make call', async () => {
-      jest
-        .spyOn(makeCallController, 'getE164PhoneNumber')
-        .mockReturnValue('123');
-      jest
-        .spyOn(makeCallController, 'tryMakeCall')
-        .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
-      const res = await telephonyService.makeCall('123');
-      expect(makeCallController.getE164PhoneNumber).toHaveBeenCalled();
+      await telephonyService.makeCall('123');
       expect(accountController.makeCall).toHaveBeenCalledWith('123');
-      expect(res).toBe(MAKE_CALL_ERROR_CODE.NO_ERROR);
     });
 
-    it('should not call account controller to make call when getting errors', async () => {
-      jest
-        .spyOn(makeCallController, 'getE164PhoneNumber')
-        .mockReturnValue('123');
-      jest
-        .spyOn(makeCallController, 'tryMakeCall')
-        .mockReturnValue(MAKE_CALL_ERROR_CODE.N11_101);
-      const res = await telephonyService.makeCall('123', null);
-      expect(makeCallController.getE164PhoneNumber).toHaveBeenCalled();
-      expect(accountController.makeCall).not.toHaveBeenCalledWith('123', null);
-      expect(res).toBe(MAKE_CALL_ERROR_CODE.N11_101);
+    it('should return error when account controller is not created', async () => {
+      engineController.getAccountController = jest
+        .fn()
+        .mockReturnValueOnce(null);
+      const result = await telephonyService.makeCall(toNum);
+      expect(accountController.makeCall).not.toHaveBeenCalled();
+      expect(result).toBe(MAKE_CALL_ERROR_CODE.INVALID_STATE);
     });
   });
+
   describe('hangUp', () => {
     it('should call account controller to hang up ', () => {
       telephonyService.hangUp('123');
@@ -181,6 +173,39 @@ describe('TelephonyService', () => {
     it('should call account controller to ignore', () => {
       telephonyService.ignore(callId);
       expect(accountController.ignore).toHaveBeenCalledWith(callId);
+    });
+  });
+
+  describe('startReply', () => {
+    it('should call account controller to startReply', () => {
+      telephonyService.startReply(callId);
+      expect(accountController.startReply).toHaveBeenCalledWith(callId);
+    });
+  });
+
+  describe('replyWithMessage', () => {
+    it('should call account controller to replyWithMessage', () => {
+      const message = 'test message';
+      telephonyService.replyWithMessage(callId, message);
+      expect(accountController.replyWithMessage).toHaveBeenCalledWith(
+        callId,
+        message,
+      );
+    });
+  });
+
+  describe('replyWithPattern', () => {
+    it('should call account controller to replyWithPattern', () => {
+      const pattern = RTC_REPLY_MSG_PATTERN.WILL_CALL_YOU_BACK_LATER;
+      const time = 13;
+      const timeUnit = RTC_REPLY_MSG_TIME_UNIT.MINUTE;
+      telephonyService.replyWithPattern(callId, pattern, time, timeUnit);
+      expect(accountController.replyWithPattern).toHaveBeenCalledWith(
+        callId,
+        pattern,
+        time,
+        timeUnit,
+      );
     });
   });
 });

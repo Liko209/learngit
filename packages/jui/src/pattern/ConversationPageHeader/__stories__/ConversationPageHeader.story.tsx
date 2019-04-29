@@ -5,7 +5,6 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import backgrounds from '@storybook/addon-backgrounds';
 import { text } from '@storybook/addon-knobs';
 import { JuiIconButton } from '../../../components/Buttons/IconButton';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
@@ -17,9 +16,6 @@ const getTitleKnob = () => text('title', 'Global UXD');
 const getStatusKnob = () => text('status', '🏝on vacation 10/16-10/24');
 storiesOf('Pattern', module)
   .addDecorator(withInfoDecorator(JuiConversationPageHeader, { inline: true }))
-  .addDecorator(
-    backgrounds([{ name: 'slide-background', value: '#f3f3f3', default: true }]),
-  )
   .add('ConversationPageHeader', () => {
     return (
       <JuiConversationPageHeader

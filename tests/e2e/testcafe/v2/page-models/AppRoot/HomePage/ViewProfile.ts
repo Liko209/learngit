@@ -148,10 +148,6 @@ export class ProfileDialog extends BaseWebComponent {
     return this.profileTitle.exists;
   }
 
-  async shouldBePopUp() {
-    await this.t.expect(this.profileTitle.exists).ok();
-  }
-
   get favoriteButton() {
     return this.getSelectorByAutomationId('favorite-icon', this.self);
   }
@@ -281,6 +277,10 @@ export class ProfileDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('profileDialogMemberHeader');
   }
 
+  get memberSearch() {
+    return this.getSelectorByAutomationId('profileDialogMemberSearch');
+  }
+
   async countOnMemberHeaderShouldBe(n: number) {
     const reg = new RegExp(`\(${n}\)`)
     await this.t.expect(this.memberHeader.textContent).match(reg);
@@ -292,6 +292,10 @@ export class ProfileDialog extends BaseWebComponent {
 
   get memberList() {
     return this.self.find('*[role="rowgroup"]');
+  }
+
+  get visualList() {
+    return this.self.find('.ReactVirtualized__List');
   }
 
   get memberNames() {

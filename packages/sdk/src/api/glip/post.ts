@@ -25,7 +25,7 @@ class PostAPI extends Api {
    */
   static basePath = '/post';
   static requestPosts(params: object) {
-    return this.glipNetworkClient.get<IPostsModel>('/posts', params);
+    return this.glipNetworkClient.get<IPostsModel>({ params, path: '/posts' });
   }
 
   /**
@@ -44,8 +44,11 @@ class PostAPI extends Api {
   }
 
   static requestByIds(ids: number[]) {
-    return this.glipNetworkClient.get<IPostsModel>('/posts_items_by_ids', {
-      post_ids: ids.join(','),
+    return this.glipNetworkClient.get<IPostsModel>({
+      path: '/posts_items_by_ids',
+      params: {
+        post_ids: ids.join(','),
+      },
     });
   }
 }

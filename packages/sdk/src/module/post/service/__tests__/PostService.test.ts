@@ -7,10 +7,28 @@
 import { PostController } from '../../controller/PostController';
 import { PostSearchController } from '../../controller/implementation/PostSearchController';
 import { PostService } from '../PostService';
+import { PostDataController } from '../../controller/PostDataController';
+import { ProfileService } from '../../../profile';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
+jest.mock('../../../account/config/AccountUserConfig', () => {
+  const xx = {
+    getGlipUserId() {
+      return 1;
+    },
+  };
+  return {
+    AccountUserConfig: () => {
+      return xx;
+    },
+  };
+});
+jest.mock('../../controller/PostDataController');
 jest.mock('../../controller/PostController');
 jest.mock('../../controller/implementation/PostSearchController');
 jest.mock('../../../../api');
+jest.mock('../../../../dao');
+jest.mock('../../../profile');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -30,6 +48,71 @@ describe('PostService', () => {
     clearMocks();
   });
 
+  describe('handleSexioData', () => {
+    let postDataController: PostDataController;
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      postDataController = new PostDataController(
+        null as any,
+        null as any,
+        null as any,
+      );
+
+      postController.getPostDataController = jest
+        .fn()
+        .mockImplementation(() => {
+          return postDataController;
+        });
+      postService.postController = postController;
+    });
+
+    it('should call entity notification controller and post data handle controller', async () => {
+      const rawPost = [{ _id: 1 }, { _id: 2 }] as any;
+      const post = [{ id: 1 }, { id: 2 }] as any;
+      postDataController.transformData = jest.fn().mockReturnValue(post);
+      const notificationController = postService.getEntityNotificationController();
+      notificationController['onReceivedNotification'] = jest.fn();
+      await postService.handleSexioData(rawPost);
+
+      expect(postDataController.transformData).toBeCalledWith(rawPost);
+      expect(postDataController.handleSexioPosts).toBeCalledWith(post);
+      expect(notificationController.onReceivedNotification).toBeCalledWith(
+        post,
+      );
+    });
+
+    it('should call post data controller', async () => {
+      const rawPost = [{ _id: 1 }, { _id: 2 }] as any;
+      await postService.handleIndexData(rawPost, true);
+      expect(postDataController.handleIndexPosts).toBeCalledWith(
+        rawPost,
+        true,
+        undefined,
+      );
+    });
+
+    it('should not filter deactivated post', async () => {
+      const rawPost = [
+        { _id: 1, creator_id: 2 },
+        { _id: 2, deactivated: false, creator_id: 2 },
+        { _id: 3, deactivated: true, creator_id: 2 },
+        { _id: 4, deactivated: true, creator_id: 1 },
+      ] as any;
+      postDataController.transformData = jest.fn().mockReturnValue(rawPost);
+      const observer = new class {
+        onEntitiesChanged = jest.fn();
+      }();
+      postService.addEntityNotificationObserver(observer);
+      await postService.handleSexioData(rawPost);
+
+      expect(observer.onEntitiesChanged).toBeCalledWith([
+        rawPost[0],
+        rawPost[1],
+        rawPost[2],
+      ]);
+    });
+  });
   describe('PostSearchController', () => {
     let postSearchController: PostSearchController;
     beforeEach(() => {
@@ -65,9 +148,32 @@ describe('PostService', () => {
     });
 
     it('endPostSearch', async () => {
-      const requestId = Date.now();
-      await postService.endPostSearch(requestId);
-      expect(postSearchController.endPostSearch).toBeCalledWith(requestId);
+      await postService.endPostSearch();
+      expect(postSearchController.endPostSearch).toBeCalledWith();
+    });
+  });
+
+  describe('bookmarkPost', () => {
+    it('bookmarkPost', async () => {
+      const profileService = new ProfileService();
+      ServiceLoader.getInstance = jest
+        .fn()
+        .mockImplementation((serviceName: string) => {
+          if (serviceName === ServiceConfig.PROFILE_SERVICE) {
+            return profileService;
+          }
+        });
+      await postService.bookmarkPost(1, true);
+      expect(profileService.putFavoritePost).toBeCalledWith(1, true);
+    });
+  });
+  describe('getById', () => {
+    it('shoule receive error when id is not correct post id', async () => {
+      try {
+        await postService.getById(1);
+      } catch (e) {
+        expect(e).toBeNull();
+      }
     });
   });
 });

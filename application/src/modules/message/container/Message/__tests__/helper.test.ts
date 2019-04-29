@@ -9,11 +9,11 @@ jest.mock('sdk/module/group');
 jest.mock('@/history');
 jest.mock('@/store/handler/SectionGroupHandler');
 
-import { ProfileService } from 'sdk/module/profile';
 import history from '@/history';
 import storeManager from '@/store';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
 import { MessageRouterChangeHelper } from '../helper';
+import * as utils from '@/store/utils/entities';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 let mockedStateService: any;
@@ -43,7 +43,10 @@ function resetMockedServices() {
     },
     updateGroupLastAccessedTime: jest.fn().mockResolvedValue(''),
     async isGroupCanBeShown(id: number) {
-      return this.valid && !(await mockedProfileService.isConversationHidden());
+      return {
+        canBeShown:
+          this.valid && !(await mockedProfileService.isConversationHidden()),
+      };
     },
   };
   mockedGlobalStore = {
@@ -83,6 +86,7 @@ function mockDependencies() {
     .mockImplementation(() => mockedGlobalStore);
   history.push = jest.fn().mockImplementation(jest.fn());
   history.replace = jest.fn().mockImplementation(jest.fn());
+  jest.spyOn(utils, 'getGlobalValue').mockImplementation(() => {});
 }
 
 describe('MessageRouterChangeHelper', () => {
@@ -95,9 +99,10 @@ describe('MessageRouterChangeHelper', () => {
     jest.clearAllMocks();
   });
   describe('go to last group()', () => {
+    const state = undefined;
     it('should go to the last group when group is valid', async () => {
       await MessageRouterChangeHelper.goToLastOpenedGroup();
-      expect(history.replace).toBeCalledWith('/messages/110');
+      expect(history.replace).toBeCalledWith('/messages/110', state);
       expect(mockedGlobalStore.set).toBeCalledWith(
         GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
         110,
@@ -106,7 +111,7 @@ describe('MessageRouterChangeHelper', () => {
     it('should go to the default page when last group is invalid', async () => {
       mockedGroupService.valid = false;
       await MessageRouterChangeHelper.goToLastOpenedGroup();
-      expect(history.replace).toBeCalledWith('/messages/');
+      expect(history.replace).toBeCalledWith('/messages/', state);
       expect(mockedGlobalStore.set).toBeCalledWith(
         GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
         0,
@@ -115,7 +120,7 @@ describe('MessageRouterChangeHelper', () => {
     it('should go to the default page when last group is hidden', async () => {
       mockedProfileService.hidden = true;
       await MessageRouterChangeHelper.goToLastOpenedGroup();
-      expect(history.replace).toBeCalledWith('/messages/');
+      expect(history.replace).toBeCalledWith('/messages/', state);
       expect(mockedGlobalStore.set).toBeCalledWith(
         GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
         0,
@@ -175,7 +180,9 @@ describe('ensureGroupOpened', () => {
       expect(mockedProfileService.reopenConversation).toHaveBeenCalled();
       expect(history.replace).toBeCalledWith('/messages/loading', {
         error: true,
-        id: 110,
+        params: {
+          id: 110,
+        },
       });
       done();
     });

@@ -16,6 +16,9 @@ import { ItemService } from 'sdk/module/item/service';
 import { Pal } from 'sdk/pal';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
+// same with dThor
+const LARGE_IMAGE_SIZE = 2000;
+
 class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
   @observable
   thumbnailSrc?: string;
@@ -25,6 +28,8 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
   private _initialHeight?: number;
   @observable
   private _buildThumbnailStatus: 'idle' | 'building' | 'fail' = 'idle';
+  @observable
+  private _largeRawImageURL?: string;
 
   constructor(props: ImageViewerProps) {
     super(props);
@@ -32,6 +37,25 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
     this._initialWidth = props.initialOptions.initialWidth;
     this._initialHeight = props.initialOptions.initialHeight;
     this.props.setOnItemSwitchCb(this._clearThumbnailInfo);
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
+    this.reaction(
+      () => {
+        const item = this.item;
+        return item ? item.id : 0;
+      },
+      async (id: number) => {
+        this._largeRawImageURL = undefined;
+        const url = await itemService.getThumbsUrlWithSize(
+          id,
+          LARGE_IMAGE_SIZE,
+          LARGE_IMAGE_SIZE,
+        );
+        this._largeRawImageURL = url;
+      },
+      { fireImmediately: true },
+    );
   }
 
   @computed
@@ -39,7 +63,7 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
     const item = this.item;
     if (FileItemUtils.isSupportShowRawImage(item)) {
       return {
-        url: item.versionUrl,
+        url: this._largeRawImageURL,
         width: item.origWidth,
         height: item.origHeight,
       };

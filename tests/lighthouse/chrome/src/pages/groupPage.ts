@@ -9,9 +9,9 @@ class GroupPage extends Page {
   private conversationItem: string =
     "div.conversation-list-section li.conversation-list-item";
 
-  async waitForCompleted() {
+  async waitForCompleted(): Promise<boolean> {
     let page = await this.page();
-    await PptrUtils.waitForSelector(page, this.conversationItem);
+    return await PptrUtils.waitForSelector(page, this.conversationItem);
   }
 }
 

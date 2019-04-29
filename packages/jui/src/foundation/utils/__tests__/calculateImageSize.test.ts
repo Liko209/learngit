@@ -62,26 +62,26 @@ describe('calculateImageSize', () => {
   describe('getThumbnailForSquareSize()', () => {
     const size = 180;
     it('should fit to size when width < height', () => {
-      const { width, height, justifyWidth, top } = getThumbnailForSquareSize(
+      const { width, height, justifyHeight, top } = getThumbnailForSquareSize(
         200,
         300,
-        size,
-      );
-      expect(width).toEqual(size);
-      expect(height).toEqual(size);
-      expect(justifyWidth).toEqual(true);
-      expect(top).toEqual(-45);
-    });
-
-    it('should fit to size when width > height', () => {
-      const { width, height, justifyHeight, left } = getThumbnailForSquareSize(
-        300,
-        200,
         size,
       );
       expect(width).toEqual(size);
       expect(height).toEqual(size);
       expect(justifyHeight).toEqual(true);
+      expect(top).toEqual(-45);
+    });
+
+    it('should fit to size when width > height', () => {
+      const { width, height, justifyWidth, left } = getThumbnailForSquareSize(
+        300,
+        200,
+        size,
+      );
+      expect(width).toEqual(size);
+      expect(height).toEqual(size);
+      expect(justifyWidth).toEqual(true);
       expect(left).toEqual(-45);
     });
   });

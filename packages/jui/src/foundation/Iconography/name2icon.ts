@@ -1,4 +1,6 @@
 const name2icon = {
+  voicemail: 'voicemail',
+  answer: 'answer',
   member_count: 'people',
   phone: 'phone',
   meetings: 'videocam',
@@ -81,6 +83,7 @@ const name2icon = {
   default_video: 'default-video',
   default_avatar: 'default-avatar',
   pin: 'pin',
+  unpin: 'unpin',
   zoom_out: 'zoom-out',
   zoom_in: 'zoom-in',
   info: 'info',
@@ -95,6 +98,7 @@ const name2icon = {
   keypad: 'keypad',
   hold: 'hold',
   record: 'record',
+  stopRecord: 'stop-record',
   call_add: 'call-add',
   call_more: 'call-more',
   leftNavEvent: 'event-new',
@@ -112,6 +116,20 @@ const name2icon = {
   bell: 'bell',
   bubble_lines: 'bubble_lines',
   event_new: 'event-new',
+  history: 'history',
+  videocam: 'videocam',
+  hash: 'hash',
+  asterisk: 'asterisk',
+  zero: '0',
+  one: '1',
+  two: '2',
+  three: '3',
+  four: '4',
+  five: '5',
+  six: '6',
+  seven: '7',
+  eight: '8',
+  nine: '9',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

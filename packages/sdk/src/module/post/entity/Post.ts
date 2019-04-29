@@ -19,7 +19,7 @@ export type Post = ExtendedBaseModel & {
   post_ids: number[]; // quoted posts
   likes?: number[];
   activity?: string;
-  activity_data?: object;
+  activity_data?: { [key: string]: string };
   at_mention_item_ids?: number[];
   at_mention_non_item_ids?: number[];
   new_version?: number; // This field should be moved to base model?
@@ -29,6 +29,7 @@ export type Post = ExtendedBaseModel & {
   items?: object[];
   source?: string;
   parent_id?: number;
+  unique_id: string;
   annotation?: {
     x_percent: number;
     y_percent: number;

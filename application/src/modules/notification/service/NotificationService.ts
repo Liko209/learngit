@@ -7,20 +7,17 @@
 import { DeskTopNotification } from '../agent/DesktopNotification';
 import _ from 'lodash';
 import { Permission } from '../Permission';
-import {
-  INotificationService,
-  Global,
-  SWNotificationOptions,
-} from '../interface';
+import { INotificationService, NotificationOpts } from '../interface';
 import { AbstractNotification } from '../agent/AbstractNotification';
 import { SWNotification } from '../agent/SWNotification';
+import { isFirefox, isEdge } from '@/common/isUserAgent';
 
 class NotificationService implements INotificationService {
-  // @ts-ignore
-  private _win: Global = window;
   private _permission = new Permission();
   private _notificationDistributors: Map<string, AbstractNotification<any>>;
   private _notificationDistributor: AbstractNotification<any>;
+  private _maximumFirefoxTxtLength = 40;
+  private _maximumEdgeTxtLength = 700;
   constructor() {
     this._notificationDistributors = new Map();
     this._notificationDistributors.set('sw', new SWNotification());
@@ -36,18 +33,30 @@ class NotificationService implements INotificationService {
       }
     }
   }
-
-  async show(title: string, opts: SWNotificationOptions) {
+  addEllipsis(str: string = '', border: number) {
+    return str && str.length > border ? `${str.substr(0, border)}...` : str;
+  }
+  async show(title: string, opts: NotificationOpts) {
+    let titleFormatted = title;
     if (document.hasFocus()) {
       return;
+    }
+    if (isFirefox) {
+      opts.body = this.addEllipsis(opts.body, this._maximumFirefoxTxtLength);
+      titleFormatted = this.addEllipsis(title, this._maximumFirefoxTxtLength);
+    }
+
+    if (isEdge) {
+      opts.body = this.addEllipsis(opts.body, this._maximumEdgeTxtLength);
+      titleFormatted = this.addEllipsis(title, this._maximumEdgeTxtLength);
     }
     if (!this._permission.isGranted) {
       const permission = await this._permission.request();
       if (permission) {
-        this._notificationDistributor.create(title, opts);
+        this._notificationDistributor.create(titleFormatted, opts);
       }
     } else {
-      this._notificationDistributor.create(title, opts);
+      this._notificationDistributor.create(titleFormatted, opts);
     }
   }
 

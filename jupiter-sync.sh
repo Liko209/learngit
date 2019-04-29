@@ -1,7 +1,7 @@
 echo $1
 
 theServer=docker-rc-office
-theFolder=/srv/docker-compose-nginx/html
+theFolder=/data/html
 DATE_WITH_TIME=`date "+%Y%m%d-%H%M%S"`
 case "$1" in
     "as" | "app-sync")

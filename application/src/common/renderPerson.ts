@@ -5,7 +5,7 @@
  */
 
 const renderPerson = (personId: number, personName: string) => {
-  return `<a class="at_mention_compose" href="javascript:void(0)" id="${personId}">${personName}</a>`;
+  return `<button class="at_mention_compose" id="${personId}">${personName}</button>`;
 };
 
 export { renderPerson };

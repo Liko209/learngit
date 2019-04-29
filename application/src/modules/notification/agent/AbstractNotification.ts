@@ -6,9 +6,12 @@
 import { NotificationStore } from '../store/NotificationStore';
 
 export abstract class AbstractNotification<T> {
-  constructor(protected _store: NotificationStore<T>) {}
+  protected _store: NotificationStore<T>;
+  constructor() {
+    this._store = new NotificationStore();
+  }
   abstract isSupported(): boolean;
-  abstract create(title: string, opts: NotificationOptions): any;
-  abstract close(scope: string, id: number): any;
-  abstract clear(scope?: string): any;
+  abstract create(title: string, opts: NotificationOptions): void;
+  abstract close(scope: string, id: number): void;
+  abstract clear(scope?: string): void;
 }
