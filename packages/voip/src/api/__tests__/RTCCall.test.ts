@@ -21,7 +21,6 @@ import { rtcLogger } from '../../utils/RTCLoggerProxy';
 import { RTCMediaDeviceManager } from '../../api/RTCMediaDeviceManager';
 
 describe('RTC call', () => {
-
   afterEach(() => {
     RTCMediaDeviceManager.instance().removeAllListeners();
   });
@@ -2078,7 +2077,7 @@ describe('RTC call', () => {
     });
   });
 
-  describe('forward()', () => {
+  describe('Forward call', () => {
     const forwardNumber = '10000';
     let account: VirturlAccountAndCallObserver;
     let call: RTCCall;
@@ -2099,6 +2098,30 @@ describe('RTC call', () => {
           RTC_CALL_ACTION.FORWARD,
         );
         done();
+      });
+    });
+
+    it("should call webphone's forward API when forward incoming call in idle state", done => {
+      setup();
+      call.forward(forwardNumber);
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('forwarding');
+        expect(session.forward).toBeCalled();
+        done();
+      });
+    });
+
+    it("should call webphone's forward API when forward incoming call in replying state", done => {
+      setup();
+      call.startReply();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('replying');
+        call.forward(forwardNumber);
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('forwarding');
+          expect(session.forward).toBeCalled();
+          done();
+        });
       });
     });
 
