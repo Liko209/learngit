@@ -30,7 +30,7 @@ import { getPostType } from '@/common/getPostType';
 import { IEntityChangeObserver } from 'sdk/framework/controller/types';
 import { mainLogger } from 'sdk';
 import { isFirefox, isWindows } from '@/common/isUserAgent';
-import { throttle } from 'lodash';
+import { throttle, isObject } from 'lodash';
 const logger = mainLogger.tags('MessageNotificationManager');
 const NOTIFY_THROTTLE_FACTOR = 5000;
 export class MessageNotificationManager extends AbstractNotificationManager {
@@ -64,11 +64,16 @@ export class MessageNotificationManager extends AbstractNotificationManager {
 
     const result = await this.shouldEmitNotification(post);
 
-    if (!result) {
-      logger.info(`notification for ${postId} is not permitted`);
+    if (!isObject(result)) {
+      logger.info(
+        `notification for ${postId} is not permitted because ${result}`,
+      );
       return;
     }
-    const { postModel, groupModel } = result;
+    const { postModel, groupModel } = result as {
+      postModel: PostModel;
+      groupModel: GroupModel;
+    };
 
     const person = getEntity<Person, PersonModel>(
       ENTITY_NAME.PERSON,
@@ -98,20 +103,24 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     this.close(postId);
   }
 
-  async shouldEmitNotification(post: Post) {
+  async shouldEmitNotification(
+    post: Post,
+  ): Promise<string | { postModel: PostModel; groupModel: GroupModel }> {
     if (post.id <= 0) {
-      return false;
+      return 'post is from local instead of service';
+    }
+    if (!post || post.deactivated) {
+      return 'post does not exist or has been deleted';
     }
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-
-    if (!post || post.creator_id === currentUserId || post.deactivated) {
-      return false;
+    if (post.creator_id === currentUserId) {
+      return 'post is created by current user';
     }
     const activityData = post.activity_data || {};
     const isPostType =
       !activityData.key || getPostType(activityData.key) === POST_TYPE.POST;
     if (!isPostType) {
-      return false;
+      return 'post type is not message';
     }
 
     const group = await ServiceLoader.getInstance<GroupService>(
@@ -119,14 +128,14 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     ).getById(post.group_id);
 
     if (!group) {
-      return false;
+      return 'group of the post does not exist';
     }
 
     const postModel = new PostModel(post);
     const groupModel = new GroupModel(group);
 
     if (groupModel.isTeam && !this.isMyselfAtMentioned(postModel)) {
-      return false;
+      return 'in team conversation, only post mentioning current user will show notification';
     }
     return { postModel, groupModel };
   }

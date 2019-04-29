@@ -7,6 +7,7 @@ import { ServiceConfig } from 'sdk/module/serviceLoader';
 import * as utils from '@/store/utils';
 import { MessageNotificationManager } from '../MessageNotificationManager';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import isObject from 'lodash/isObject';
 describe('messageNotificationManager', () => {
   let notificationManager: MessageNotificationManager;
   const currentUserId = 110;
@@ -90,43 +91,43 @@ describe('messageNotificationManager', () => {
       const result = await notificationManager.shouldEmitNotification(
         localPost,
       );
-      expect(result).toBeFalsy();
+      expect(isObject(result)).toBeFalsy();
     });
     it('should not show notification when post is deleted', async () => {
       const result = await notificationManager.shouldEmitNotification(
         mockedDeletedPost,
       );
-      expect(result).toBeFalsy();
+      expect(isObject(result)).toBeFalsy();
     });
     it('should not show notification when post is created by user', async () => {
       const result = await notificationManager.shouldEmitNotification(
         mockedPost,
       );
-      expect(result).toBeFalsy();
+      expect(isObject(result)).toBeFalsy();
     });
     it('should not show notification when post is from team with no @mention', async () => {
       const result = await notificationManager.shouldEmitNotification(
         postFromTeam,
       );
-      expect(result).toBeFalsy();
+      expect(isObject(result)).toBeFalsy();
     });
     it('should not show notification when post is from team with @mention other users', async () => {
       const result = await notificationManager.shouldEmitNotification(
         postFromWithMentionOthers,
       );
-      expect(result).toBeFalsy();
+      expect(isObject(result)).toBeFalsy();
     });
     it('should  show notification when post is from group', async () => {
       const result = await notificationManager.shouldEmitNotification(
         postFromGroup,
       );
-      expect(result).toBeTruthy();
+      expect(isObject(result)).toBeTruthy();
     });
     it('should  show notification when post is from team and with current user @mentioned', async () => {
       const result = await notificationManager.shouldEmitNotification(
         postFromWithMentionMe,
       );
-      expect(result).toBeTruthy();
+      expect(isObject(result)).toBeTruthy();
     });
   });
   describe('handleDeletedPost()', () => {
