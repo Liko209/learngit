@@ -51,6 +51,14 @@ export type IPostQuery = {
   direction?: QUERY_DIRECTION;
 };
 
+export type UnreadPostQuery = {
+  groupId: number;
+  startPostId: number;
+  endPostId: number;
+  limit: number;
+  direction?: QUERY_DIRECTION;
+};
+
 export type IPostResult = {
   posts: Post[];
   items: Item[];

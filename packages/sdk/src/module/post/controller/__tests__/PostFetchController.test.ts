@@ -425,6 +425,91 @@ describe('PostFetchController()', () => {
     });
   });
 
+  describe('getUnreadPostsByGroupId()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should return [] if start post id is 0', async () => {
+      const result = await postFetchController.getUnreadPostsByGroupId({
+        groupId: 1,
+        startPostId: 1,
+        endPostId: 2,
+        limit: 500,
+      });
+      const localSpy = jest.spyOn(
+        postFetchController,
+        '_getIntervalPostsFromDb',
+      );
+      const remoteSpy = jest.spyOn(
+        postFetchController,
+        'getRemotePostsByGroupId',
+      );
+      expect(localSpy).not.toBeCalled();
+      expect(remoteSpy).not.toBeCalled();
+      expect(result).toEqual({
+        hasMore: true,
+        items: [],
+        posts: [],
+        limit: 500,
+      });
+    });
+
+    it('should just return local post when read through post in db', async () => {
+      const mockPosts = postFactory.buildList(2);
+      const mockItems = itemFactory.buildList(3);
+      postDao.queryIntervalPostsByGroupId.mockResolvedValue(mockPosts);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+      jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(true);
+      const result = await postFetchController.getUnreadPostsByGroupId({
+        groupId: 1,
+        startPostId: 1,
+        endPostId: 2,
+        limit: 500,
+      });
+
+      expect(result).toEqual({
+        hasMore: true,
+        items: mockItems,
+        posts: mockPosts,
+        limit: 500,
+      });
+    });
+
+    it('should return server result when read through post not in db', async () => {
+      const mockPosts = postFactory.buildList(2);
+      const mockItems = itemFactory.buildList(3);
+      jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(false);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+      jest
+        .spyOn(postFetchController, 'getRemotePostsByGroupId')
+        .mockResolvedValueOnce({
+          success: true,
+          hasMore: false,
+          posts: mockPosts,
+          items: mockItems,
+        });
+      itemService.handleIncomingData = jest
+        .fn()
+        .mockResolvedValueOnce(mockItems);
+
+      const result = await postFetchController.getUnreadPostsByGroupId({
+        groupId: 1,
+        startPostId: 1,
+        endPostId: 2,
+        limit: 500,
+      });
+
+      expect(result).toEqual({
+        hasMore: false,
+        items: mockItems,
+        posts: mockPosts,
+        limit: 500,
+      });
+    });
+  });
+
   describe('fetchPaginationPosts()', () => {
     beforeEach(() => {
       clearMocks();
