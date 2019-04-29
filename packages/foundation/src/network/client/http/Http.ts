@@ -78,12 +78,12 @@ class Http extends BaseClient {
         let retryAfter = 0;
         if (isAxiosError(err)) {
           const { response, message, code } = err;
-          networkLogger.debug('axios error: ', { message, code });
+          networkLogger.info('axios error: ', { message, code });
           if (response) {
             // parse server error info
             status = response.status;
             statusText = response.statusText || message;
-            networkLogger.debug('server error: ', { status, statusText });
+            networkLogger.info('server error: ', { status, statusText });
             responseHeaders = response.headers;
             data = response['data'];
             if (
@@ -95,7 +95,7 @@ class Http extends BaseClient {
               retryAfter = response['headers'][RESPONSE_HEADER_KEY.RETRY_AFTER];
             }
           } else {
-            networkLogger.debug('local error, code: ', code);
+            networkLogger.info('local error, code: ', code);
             if (code === 'ECONNABORTED') {
               if (message === 'Request aborted') {
                 status = RESPONSE_STATUS_CODE.LOCAL_ABORTED;
@@ -110,7 +110,7 @@ class Http extends BaseClient {
             statusText = message;
           }
         } else if (err instanceof axios.Cancel) {
-          networkLogger.debug('Http request canceled!');
+          networkLogger.info('Http request canceled!');
           status = RESPONSE_STATUS_CODE.LOCAL_CANCELLED;
           statusText = NETWORK_FAIL_TEXT.CANCELLED;
         }

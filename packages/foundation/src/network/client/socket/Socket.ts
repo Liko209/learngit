@@ -21,11 +21,10 @@ class Socket extends BaseClient {
           listener.onSuccess(response);
         },
         (response: SocketResponse) => {
-          networkLogger.debug('TCL: Socket -> request -> request', request);
-          networkLogger.debug(
-            'TCL: Socket -> onFailure -> request -> response',
-            response,
-          );
+          networkLogger.info('Socket request failed', {
+            status: response.status,
+            statusText: response.statusText,
+          });
           this.tasks.delete(request.id);
           listener.onFailure(response);
         },

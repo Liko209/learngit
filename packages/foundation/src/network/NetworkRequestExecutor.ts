@@ -76,18 +76,13 @@ export class NetworkRequestExecutor
   }
 
   onFailure(response: IResponse): void {
-    networkLogger.log('TCL: onFailure', ' executor status:', this.status);
+    networkLogger.info('onFailure', ' executor status:', this.status);
 
     if (this._isCompletion()) {
       return;
     }
 
     if (this.canRetry(response) && this.retryCounter < this.retryCount) {
-      networkLogger.log(
-        'TCL: _retry',
-        ' counter/total',
-        `${this.retryCounter}/${this.retryCount}`,
-      );
       this._retry();
     } else {
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
@@ -158,6 +153,11 @@ export class NetworkRequestExecutor
 
   private _retry() {
     this.retryCounter += 1;
+    networkLogger.info(
+      '_retry()',
+      ' counter/total',
+      `${this.retryCounter}/${this.retryCount}`,
+    );
     this.retryStrategy(this.execute, this.retryCounter);
   }
 
