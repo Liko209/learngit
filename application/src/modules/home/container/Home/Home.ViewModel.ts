@@ -10,13 +10,12 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { Action, Location } from 'history';
 import { action, observable, computed } from 'mobx';
 import { GlobalSearchStore } from '@/modules/GlobalSearch/store';
-// import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
-// import { container } from 'framework';
+import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 
 class HomeViewModel extends StoreViewModel {
-  // private _featuresFlagsService: FeaturesFlagsService = container.get(
-  //   FeaturesFlagsService,
-  // );
+  private _featuresFlagsService: FeaturesFlagsService = container.get(
+    FeaturesFlagsService,
+  );
   @observable
   openCreateTeam: boolean = false;
   private _globalSearchStore: GlobalSearchStore = container.get(
@@ -55,8 +54,7 @@ class HomeViewModel extends StoreViewModel {
 
   @computed
   get canRenderDialer() {
-    // return this._featuresFlagsService.canUseTelephony();
-    return false;
+    return this._featuresFlagsService.canUseTelephony();
   }
 }
 export { HomeViewModel };

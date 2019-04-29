@@ -3,7 +3,7 @@
  * @Date: 2019-01-08 17:08:34
  * Copyright © RingCentral. All rights reserved.
  */
-import { AbstractModule, inject, ModuleManager } from 'framework';
+import { AbstractModule, inject, Jupiter } from 'framework';
 import { HomeService } from './service';
 import { config } from './home.config';
 
@@ -15,12 +15,13 @@ import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 
 import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
+// import { reaction } from 'mobx';
 
 class HomeModule extends AbstractModule {
   @inject(HomeService) private _homeService: HomeService;
   @inject(FeaturesFlagsService)
   private _featuresFlagsService: FeaturesFlagsService;
-  @inject(ModuleManager) private _moduleManager: ModuleManager;
+  @inject(Jupiter) private _jupiter: Jupiter;
   private _subModuleRegistered: boolean = false;
 
   async bootstrap() {
@@ -35,13 +36,6 @@ class HomeModule extends AbstractModule {
         this._initialSubModules,
       );
     });
-
-    // featuresFlag changed
-    // setTimeout(() => {
-    //   // Remove Telephony Feature Flag => unRegister telephony module
-    //   console.log('---[HomeModule]: unRegister telephony');
-    //   this._homeService.unRegisterModule('telephony');
-    // },         20000);
   }
 
   private _initialSubModules = async () => {
@@ -65,24 +59,14 @@ class HomeModule extends AbstractModule {
 
   addAsyncModuleOnInitializedListener() {
     if (this._homeService.hasModules(['message', 'telephony'])) {
-      this._moduleManager.onInitialized(
+      this._jupiter.onInitialized(
         [MESSAGE_SERVICE, TELEPHONY_SERVICE],
         async (MessageService, TelephonyService) => {
-          console.log(
-            '---[ModuleManager]: MESSAGE_SERVICE TELEPHONY_SERVICE is initialed',
-            MessageService,
-            TelephonyService,
-          );
-          // TODO
-          // create Call HOC in telephony module and add Call component in home module
+          // TODO create Call HOC in telephony module and add Call component in home module
           const { Call } = await TelephonyService.callComponent();
           MessageService.registerConversationHeaderExtension(Call); // [TelephonyButton, MeetingButton]
         },
       );
-
-      this._moduleManager.onDisposed(TELEPHONY_SERVICE, () => {
-        console.log('---[ModuleManager]: TELEPHONY_SERVICE is disposed');
-      });
     }
   }
 }

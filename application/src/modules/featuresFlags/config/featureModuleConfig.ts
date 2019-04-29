@@ -1,19 +1,15 @@
 const featureModuleDep = [
   {
+    featureName: 'Dashboard',
+    depModules: ['dashboard'],
+  },
+  {
     featureName: 'Message',
     depModules: ['message'],
   },
   {
     featureName: 'Telephony',
     depModules: ['telephony'],
-  },
-  {
-    featureName: 'Settings',
-    depModules: ['setting'],
-  },
-  {
-    featureName: 'Dashboard',
-    depModules: ['dashboard'],
   },
   {
     featureName: 'Meeting',
@@ -39,6 +35,12 @@ const featureModuleDep = [
     featureName: 'File',
     depModules: ['file'],
   },
+  {
+    featureName: 'Settings',
+    depModules: ['setting'],
+  },
 ];
 
-export { featureModuleDep as featureModuleConfig };
+const featureModuleConfig = featureModuleDep;
+
+export { featureModuleConfig };

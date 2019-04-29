@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AbstractModule, inject, ModuleManager } from 'framework';
+import { AbstractModule, inject, Jupiter } from 'framework';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { TelephonyService } from '@/modules/telephony/service';
 import { TELEPHONY_SERVICE } from './interface/constant';
@@ -26,7 +26,7 @@ class TelephonyModule extends AbstractModule {
   @inject(LEAVE_BLOCKER_SERVICE) _leaveBlockerService: ILeaveBlockerService;
   @inject(TelephonyNotificationManager)
   private _telephonyNotificationManager: TelephonyNotificationManager;
-  @inject(ModuleManager) _moduleManager: ModuleManager;
+  @inject(Jupiter) _jupiter: Jupiter;
 
   initTelephony = () => {
     this._TelephonyService.init();
@@ -44,7 +44,7 @@ class TelephonyModule extends AbstractModule {
   }
 
   async bootstrap() {
-    this._moduleManager.emitModuleInitial(TELEPHONY_SERVICE);
+    this._jupiter.emitModuleInitial(TELEPHONY_SERVICE);
 
     const canUseTelephony = await this._FeaturesFlagsService.canUseTelephony();
     if (canUseTelephony) {
@@ -63,9 +63,6 @@ class TelephonyModule extends AbstractModule {
     );
     this._telephonyNotificationManager.dispose();
     this._leaveBlockerService.offLeave(this.handleLeave);
-
-    console.log('---[Dispose Module]: TelephonyModule');
-    this._moduleManager.emitModuleDispose(TELEPHONY_SERVICE);
   }
 
   handleLeave = () => {

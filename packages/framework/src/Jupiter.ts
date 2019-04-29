@@ -11,10 +11,8 @@ import {
   decorate,
   injectable,
   interfaces,
-  inject,
 } from './ioc';
-import { ModuleConfig, Provide } from './types';
-import { ModuleManager } from './ModuleManager';
+import { ModuleConfig, Provide, LISTENER_TYPE } from './types';
 
 /**
  * Jupiter Framework
@@ -25,7 +23,11 @@ class Jupiter {
   private _moduleEntries: interfaces.Newable<AbstractModule>[] = [];
   private _container: Container = container;
   private _asyncModulePromises: Promise<void>[] = [];
-  @inject(ModuleManager) _moduleManager: ModuleManager;
+  private _identifiersMap = new Map();
+  // prettier-ignore
+  private _initializedListenerMap = new Map<interfaces.ServiceIdentifier<any>[], any[]>();
+  // prettier-ignore
+  private _disposedListenerMap = new Map<interfaces.ServiceIdentifier<any>[], any[]>();
 
   registerModule(
     { provides, entry }: ModuleConfig,
@@ -43,11 +45,6 @@ class Jupiter {
       if (this._running) {
         // async module
         this.bootstrapModule(entry, afterBootstrap);
-        console.log(
-          '--- %c async module run bootstrap',
-          'background-color: yellow',
-          entry,
-        );
       }
     }
   }
@@ -116,18 +113,14 @@ class Jupiter {
     if (!Reflect.hasOwnMetadata(METADATA_KEY.PARAM_TYPES, creator)) {
       decorate(injectable(), creator);
     }
-    console.log('--- %c container bind:', 'background-color: red;', identifier);
+
     this._container.bind(identifier).to(creator);
-    this._moduleManager.identifiersMap.set(identifier, null);
+    this._identifiersMap.set(identifier, null);
   }
 
   unbindProvide<T>(provide: Provide<T>) {
     const { identifier } = this._parseProvide(provide);
-    console.log(
-      '--- %c container unbind:',
-      'background-color: green;',
-      identifier,
-    );
+
     this._container.unbind(identifier);
   }
 
@@ -141,12 +134,6 @@ class Jupiter {
     moduleEntry: interfaces.ServiceIdentifier<T>,
     afterBootstrap?: () => void | Promise<void>,
   ) {
-    console.log(
-      '--- %c before bootstrapModule check isBound and start run bootstrap: ',
-      'background-color: green;',
-      this._container.isBound(moduleEntry),
-      moduleEntry,
-    );
     const m = this._container.get<AbstractModule>(moduleEntry);
     await m.bootstrap();
 
@@ -156,7 +143,6 @@ class Jupiter {
   }
 
   async bootstrap() {
-    console.log('---- jupiter bootstrap');
     if (this._running) {
       throw new Error('Jupiter already running.');
     }
@@ -174,6 +160,199 @@ class Jupiter {
     );
 
     this._running = true;
+  }
+
+  emitModuleInitial(identifier: interfaces.ServiceIdentifier<any>) {
+    const filterListenerKeys = this._findListenerKeyByIdentifier(
+      identifier,
+      LISTENER_TYPE.INITIALIZED,
+    );
+
+    filterListenerKeys.forEach(key => {
+      const areModulesInitialized = this._areModulesBound(key);
+      if (areModulesInitialized) {
+        this._executeModulesInitialCallback(key);
+      } else {
+        return null;
+      }
+    });
+  }
+
+  emitModuleDispose(identifier: interfaces.ServiceIdentifier<any>) {
+    const filterListenerKeys = this._findListenerKeyByIdentifier(
+      identifier,
+      LISTENER_TYPE.DISPOSED,
+    );
+
+    filterListenerKeys.forEach(key => {
+      const areModulesUnBound = this._areModulesUnBound(key);
+      if (areModulesUnBound) {
+        this._executeModulesDisposeCallback(key);
+      } else {
+        return null;
+      }
+    });
+  }
+
+  onInitialized<T>(
+    identifier:
+      | interfaces.ServiceIdentifier<T>
+      | interfaces.ServiceIdentifier<T>[],
+    callback: (...args: any[]) => void,
+  ) {
+    let identifiers: interfaces.ServiceIdentifier<T>[] = [];
+
+    identifiers = !Array.isArray(identifier) ? [identifier] : identifier;
+
+    const areIdentifierModuleInitialized = this._areModulesBound(identifiers);
+
+    if (areIdentifierModuleInitialized) {
+      const identifierModules = this._getModulesByIdentifier(identifiers);
+      callback.apply(null, identifierModules);
+    } else {
+      this._addModulesListener(
+        identifiers,
+        callback,
+        LISTENER_TYPE.INITIALIZED,
+      );
+    }
+  }
+
+  onDisposed<T>(
+    identifier:
+      | interfaces.ServiceIdentifier<T>
+      | interfaces.ServiceIdentifier<T>[],
+    callback: () => void,
+  ) {
+    let identifiers: interfaces.ServiceIdentifier<T>[] = [];
+
+    identifiers = !Array.isArray(identifier) ? [identifier] : identifier;
+
+    const areModulesUnBound = this._areModulesUnBound(identifiers);
+    const areModulesBoundBefore = this._areModulesBoundBefore(identifiers);
+
+    if (areModulesUnBound && areModulesBoundBefore) {
+      callback();
+    } else {
+      this._addModulesListener(identifiers, callback, LISTENER_TYPE.DISPOSED);
+    }
+  }
+
+  getModulesListenerByType(listenerType: LISTENER_TYPE) {
+    const listenerMap =
+      listenerType === LISTENER_TYPE.INITIALIZED
+        ? this._initializedListenerMap
+        : this._disposedListenerMap;
+    return listenerMap;
+  }
+
+  private _areModulesBoundBefore<T>(
+    identifiers: interfaces.ServiceIdentifier<T>[],
+  ) {
+    const identifiersLength = identifiers.length;
+    if (identifiersLength === 0) {
+      return false;
+    }
+    for (let i = 0; i < identifiersLength; i++) {
+      if (!this._identifiersMap.has(identifiers[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private _areModulesUnBound<T>(
+    identifiers: interfaces.ServiceIdentifier<T>[],
+  ) {
+    const identifiersLength = identifiers.length;
+    if (identifiersLength === 0) {
+      return true;
+    }
+    for (let i = 0; i < identifiersLength; i++) {
+      if (this._container.isBound(identifiers[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private _executeModulesInitialCallback<T>(
+    identifiers: interfaces.ServiceIdentifier<T>[],
+  ) {
+    const callbacks = this._initializedListenerMap.get(identifiers);
+    if (callbacks && callbacks.length !== 0) {
+      const module = this._getModulesByIdentifier(identifiers);
+      callbacks.forEach((cb, idx) => {
+        cb && cb.apply(null, module);
+        callbacks.splice(idx, 1);
+      });
+    }
+  }
+
+  private _executeModulesDisposeCallback<T>(
+    identifiers: interfaces.ServiceIdentifier<T>[],
+  ) {
+    const callbacks = this._disposedListenerMap.get(identifiers);
+    if (callbacks && callbacks.length !== 0) {
+      callbacks.forEach((cb, idx) => {
+        cb && cb();
+        callbacks.splice(idx, 1);
+      });
+    }
+  }
+
+  private _findListenerKeyByIdentifier<T>(
+    identifiers: interfaces.ServiceIdentifier<T>,
+    listenerType: LISTENER_TYPE,
+  ) {
+    const listenerKey = [];
+    const listenerMap = this.getModulesListenerByType(listenerType);
+    for (const key of listenerMap.keys()) {
+      if (key.includes(identifiers)) {
+        listenerKey.push(key);
+      }
+    }
+    return listenerKey;
+  }
+
+  private _areModulesBound<T>(
+    identifiers: interfaces.ServiceIdentifier<T>[],
+  ): boolean {
+    const identifiersLength = identifiers.length;
+    if (identifiersLength === 0) {
+      return false;
+    }
+    for (let i = 0; i < identifiersLength; i++) {
+      if (!this._container.isBound(identifiers[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private _getModulesByIdentifier<T>(
+    identifiers: interfaces.ServiceIdentifier<T>[],
+  ) {
+    const modules: interfaces.Newable<T>[] = [];
+    identifiers.forEach(i => {
+      modules.push(this._container.get(i));
+    });
+    return modules;
+  }
+
+  private _addModulesListener<T>(
+    identifiers: interfaces.ServiceIdentifier<T>[],
+    callback: (...args: any[]) => void,
+    listenerType: LISTENER_TYPE,
+  ) {
+    const listenerMap = this.getModulesListenerByType(listenerType);
+
+    if (listenerMap.has(identifiers)) {
+      const callbacks = listenerMap.get(identifiers);
+      callbacks && callbacks.push(callback);
+    } else {
+      listenerMap.set(identifiers, [callback]);
+    }
   }
 }
 

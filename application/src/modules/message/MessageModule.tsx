@@ -3,7 +3,7 @@
  * @Date: 2019-01-17 15:16:45
  * Copyright © RingCentral. All rights reserved.
  */
-import { AbstractModule, inject, ModuleManager } from 'framework';
+import { AbstractModule, inject, Jupiter } from 'framework';
 import {
   ILeaveBlockerService,
   LEAVE_BLOCKER_SERVICE,
@@ -22,7 +22,7 @@ const itemService = ServiceLoader.getInstance<ItemService>(
 
 class MessageModule extends AbstractModule {
   @inject(LEAVE_BLOCKER_SERVICE) _leaveBlockerService: ILeaveBlockerService;
-  @inject(ModuleManager) private _moduleManager: ModuleManager;
+  @inject(Jupiter) private _jupiter: Jupiter;
   @inject(MESSAGE_NOTIFICATION_MANAGER)
   _messageNotificationManager: MessageNotificationManager;
   handleLeave = () => {
@@ -32,18 +32,13 @@ class MessageModule extends AbstractModule {
   async bootstrap() {
     this._messageNotificationManager.init();
     this._leaveBlockerService.onLeave(this.handleLeave);
-    // await this.messageService.initialize();
-    this._moduleManager.emitModuleInitial(MESSAGE_SERVICE);
 
-    // 1. get module from container
-    // 2. emit initialized listener
+    this._jupiter.emitModuleInitial(MESSAGE_SERVICE);
   }
 
   dispose() {
     this._messageNotificationManager.dispose();
     this._leaveBlockerService.offLeave(this.handleLeave);
-
-    this._moduleManager.emitModuleDispose(MESSAGE_SERVICE);
   }
 }
 

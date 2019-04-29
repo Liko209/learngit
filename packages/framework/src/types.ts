@@ -9,9 +9,9 @@ import { AbstractModule } from './AbstractModule';
 
 type Provide<T> =
   | {
-    name: string | interfaces.Newable<T>;
-    value: interfaces.Newable<T>;
-  }
+      name: string | interfaces.Newable<T>;
+      value: interfaces.Newable<T>;
+    }
   | interfaces.Newable<T>;
 
 type ModuleConfig = {
@@ -19,4 +19,9 @@ type ModuleConfig = {
   provides?: Provide<any>[];
 };
 
-export { Provide, ModuleConfig };
+enum LISTENER_TYPE {
+  INITIALIZED,
+  DISPOSED,
+}
+
+export { Provide, ModuleConfig, LISTENER_TYPE };

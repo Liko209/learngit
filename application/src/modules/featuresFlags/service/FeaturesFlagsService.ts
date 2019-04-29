@@ -8,6 +8,8 @@ import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { featureModuleConfig } from '../config/featureModuleConfig';
+import _ from 'lodash';
+
 class FeaturesFlagsService {
   private _permissionService = ServiceLoader.getInstance<PermissionService>(
     ServiceConfig.PERMISSION_SERVICE,
@@ -15,6 +17,14 @@ class FeaturesFlagsService {
   private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
     ServiceConfig.RC_INFO_SERVICE,
   );
+  private _featureModuleMap = new Map();
+
+  constructor() {
+    featureModuleConfig.forEach(feature => {
+      const { featureName, depModules } = feature;
+      this._featureModuleMap.set(featureName, depModules);
+    });
+  }
 
   canUseTelephony = async () => {
     return (
@@ -26,38 +36,37 @@ class FeaturesFlagsService {
   }
 
   getSupportFeatureModules = async () => {
-    const featureModuleMap = new Map();
-    featureModuleConfig.forEach(feature => {
-      const { featureName, depModules } = feature;
-      featureModuleMap.set(featureName, depModules);
-    });
-
     const supportFeature = await this._getSupportFeature();
     let featureModules: string[] = [];
 
-    supportFeature.forEach(feature => {
-      if (featureModuleMap.has(feature)) {
-        const modules = featureModuleMap.get(feature);
-        featureModules = featureModules.concat(modules);
-      }
+    supportFeature.forEach(featureName => {
+      featureModules = featureModules.concat(
+        this.getModulesByFeatureName(featureName),
+      );
     });
 
-    // TODO uniq
+    return _.uniq(featureModules);
+  }
 
-    return ['message', 'telephony'];
+  getModulesByFeatureName = (featureName: string) => {
+    let modules: string[] = [];
+    const hasFeature = this._featureModuleMap.has(featureName);
+    if (hasFeature) {
+      modules = this._featureModuleMap.get(featureName);
+    }
+    return modules;
   }
 
   private async _getSupportFeature() {
     const defaultSupportFeatures: string[] = [];
     featureModuleConfig.forEach(feature => {
-      const { featureName } = feature;
-      defaultSupportFeatures.push(featureName);
+      defaultSupportFeatures.push(feature.featureName);
     });
 
-    const supportFeature: string[] = defaultSupportFeatures;
+    let supportFeature: string[] = defaultSupportFeatures;
 
     if (!(await this.canUseTelephony())) {
-      //
+      supportFeature = supportFeature.filter(i => i !== 'Telephony');
     }
 
     return supportFeature;

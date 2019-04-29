@@ -7,5 +7,4 @@ export * from './ioc';
 export * from './IModule';
 export * from './AbstractModule';
 export * from './Jupiter';
-export * from './ModuleManager';
 export * from './types';
