@@ -296,19 +296,19 @@ class RTCRegistrationManager extends EventEmitter2
     provisionData: RTCSipProvisionInfo,
     options: ProvisionDataOptions,
   ) {
-    if (
-      this._userAgentInfo &&
-      this._userAgentInfo.endpointId &&
-      this._userAgentInfo.endpointId.length > 0
-    ) {
-      options.uuid = this._userAgentInfo.endpointId;
-    }
-    if (
-      this._userAgentInfo &&
-      this._userAgentInfo.userAgent &&
-      this._userAgentInfo.userAgent.length > 0
-    ) {
-      options.appName = this._userAgentInfo.userAgent;
+    if (this._userAgentInfo) {
+      if (
+        this._userAgentInfo.endpointId &&
+        this._userAgentInfo.endpointId.length > 0
+      ) {
+        options.uuid = this._userAgentInfo.endpointId;
+      }
+      if (
+        this._userAgentInfo.userAgent &&
+        this._userAgentInfo.userAgent.length > 0
+      ) {
+        options.appName = this._userAgentInfo.userAgent;
+      }
     }
     this._userAgent.restartUA(provisionData, options);
   }
