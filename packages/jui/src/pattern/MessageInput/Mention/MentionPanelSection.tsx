@@ -7,7 +7,7 @@ type Props = {
 };
 
 const Wrapper = styled.div<Props>`
-  max-height: ${height(68)}px;
+  max-height: ${height(68)};
 `;
 
 class JuiMentionPanelSection extends PureComponent<Props> {

@@ -58,6 +58,7 @@ describe('StateDataHandleController', () => {
           data: states,
         },
         SYNC_SOURCE.INDEX,
+        undefined,
       );
     });
 

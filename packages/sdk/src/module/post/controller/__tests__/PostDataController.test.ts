@@ -206,7 +206,7 @@ describe('PostDataController', () => {
           modified_at: i % 2 === 0 ? i : i + 1,
         });
       }
-      postDao.queryOldestPostByGroupId.mockResolvedValue(posts[10]);
+      postDao.queryOldestPostCreationTimeByGroupId.mockResolvedValue(posts[10]);
       let result = await postDataController.handleIndexPosts(posts, true);
 
       result = _.orderBy(result, 'id', 'asc');
@@ -265,7 +265,7 @@ describe('PostDataController', () => {
           modified_at: i % 2 === 0 ? i : i + 1,
         });
       }
-      postDao.queryOldestPostByGroupId.mockImplementation(arg => {
+      postDao.queryOldestPostCreationTimeByGroupId.mockImplementation(arg => {
         if (arg === 1) {
           return posts[9];
         }
@@ -298,7 +298,7 @@ describe('PostDataController', () => {
           modified_at: i % 2 === 0 ? i : i + 1,
         });
       }
-      postDao.queryOldestPostByGroupId.mockImplementation(arg => {
+      postDao.queryOldestPostCreationTimeByGroupId.mockImplementation(arg => {
         if (arg === 1) {
           return posts[9];
         }
@@ -331,7 +331,7 @@ describe('PostDataController', () => {
           modified_at: i % 2 === 0 ? i : i + 1,
         });
       }
-      postDao.queryOldestPostByGroupId.mockImplementation(arg => {
+      postDao.queryOldestPostCreationTimeByGroupId.mockImplementation(arg => {
         if (arg === 1) {
           return posts[9];
         }
@@ -364,7 +364,7 @@ describe('PostDataController', () => {
           modified_at: i % 2 === 0 ? i : i + 1,
         });
       }
-      postDao.queryOldestPostByGroupId.mockImplementation(arg => {
+      postDao.queryOldestPostCreationTimeByGroupId.mockImplementation(arg => {
         if (arg === 1) {
           return posts[9];
         }
