@@ -7,7 +7,7 @@ import { INotification } from '../../models';
 import { AbstractNotification } from './abstract-notification';
 
 type SWSenderDto = {
-  id: number;
+  id: any;
   action: string;
   scope: string;
 };
@@ -20,7 +20,7 @@ type SWReceiverDto = {
 const INTERVAL_TIME = 200;
 
 export class SWNotification extends AbstractNotification {
-  private senderStore: Map<number, SWSenderDto> = new Map();
+  private senderStore: Map<any, SWSenderDto> = new Map();
 
   private receiverStore: Map<number, SWReceiverDto> = new Map();
 
@@ -120,8 +120,8 @@ export class SWNotification extends AbstractNotification {
     }
   }
 
-  async next(): Promise<INotification> {
-    return new Promise<INotification>((resolve, reject) => {
+  async next(): Promise<Array<INotification>> {
+    return new Promise<Array<INotification>>((resolve, reject) => {
       const version = ++this.version;
 
       let isFind = false;
@@ -141,6 +141,7 @@ export class SWNotification extends AbstractNotification {
           return;
         }
 
+        let result = [];
         let notifications = await this.getNotifications();
         for (let item of notifications) {
           if (this.senderStore.has(item.id)) {
@@ -154,20 +155,25 @@ export class SWNotification extends AbstractNotification {
             scope: item.scope
           });
 
-          resolve(<INotification>{ id: item.id, title: item.title, body: item.body });
-          break;
+          result.push(<INotification>{ id: item.id, title: item.title, body: item.body });
+        }
+        if (isFind) {
+          resolve(result);
         }
       }, INTERVAL_TIME);
     })
   }
 
-  async click(notification: INotification): Promise<void> {
+  async click(notification: INotification, action: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.senderStore.has(notification.id)) {
         reject(`Notification id (${notification.id}) don't exist`);
       }
 
       const dto = this.senderStore.get(notification.id);
+      if (action) {
+        dto.action = action;
+      }
       this.receiverStore.set(notification.id, <SWReceiverDto>{ resolve, reject });
 
       let isFind = false;

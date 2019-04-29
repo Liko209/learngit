@@ -4,6 +4,7 @@
  */
 import { AbstractNotification } from './abstract-notification';
 import { SWNotification } from './sw-notification';
+import { DesktopNotification } from './desktop-notification';
 import { ENABLE_NOTIFICATION, SITE_URL } from '../../../config';
 import { ClientFunction, RequestMock } from 'testcafe';
 import { INotification } from '../../models';
@@ -17,6 +18,7 @@ class NotificationHelper {
 
   constructor(private t: TestController) {
     this.notificationDistributors.set('sw', new SWNotification(t));
+    this.notificationDistributors.set('desktop', new DesktopNotification(t));
   }
 
   async setup(): Promise<void> {
@@ -63,7 +65,7 @@ class NotificationHelper {
 
   async withNotification(
     before: () => Promise<void>,
-    callback: (notification: INotification) => Promise<any>,
+    callback: (notifications: Array<INotification>) => Promise<any>,
     timeout: number = 60e3): Promise<void> {
     return new Promise(async (resolve, reject) => {
       if (!this.notificationDistributor) {
@@ -79,11 +81,11 @@ class NotificationHelper {
 
       this.notificationDistributor.inject().then(() => {
         before().then(() => {
-          this.notificationDistributor.next().then(async (notification) => {
+          this.notificationDistributor.next().then(async (notifications) => {
             if (timeoutId) {
               clearTimeout(timeoutId);
             }
-            await callback(notification);
+            await callback(notifications);
 
             resolve();
           });
@@ -92,7 +94,7 @@ class NotificationHelper {
     });
   }
 
-  async clickNotification(notification: INotification, timeout: number = 60e3): Promise<void> {
+  async clickNotification(notification: INotification, action: string = 'click', timeout: number = 60e3): Promise<void> {
     return new Promise(async (resolve, reject) => {
       if (!this.notificationDistributor) {
         reject('Notification not support.');
@@ -105,7 +107,7 @@ class NotificationHelper {
         reject(`Can't click this notification[${notification.id}] in ${timeout}ms`)
       }, timeout);
 
-      this.notificationDistributor.click(notification).then(() => {
+      this.notificationDistributor.click(notification, action).then(() => {
         if (timeoutId) {
           clearTimeout(timeoutId);
         }
