@@ -6,7 +6,7 @@
 import React from 'react';
 import { CodeSnippetView } from '../CodeSnippetItem.View';
 import copy from 'copy-to-clipboard';
-import { shallow, mount } from 'enzyme';
+import { shallow } from 'enzyme';
 
 jest.mock('copy-to-clipboard');
 
