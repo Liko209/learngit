@@ -6,6 +6,7 @@ import {
   IToken,
   INetworkRequestProducer,
   IResponseListener,
+  INetworkRequestExecutorListener,
 } from '../network';
 import { NetworkRequestExecutor } from '../NetworkRequestExecutor';
 import RequestTask from '../RequestTask';
@@ -113,6 +114,13 @@ const getFakeOAuthTokenHandler = () => {
   return new OAuthTokenHandler(fakeHandleType, getFakeTokenHandler());
 };
 
+const getFakeNetworkRequestExecutorListener = (): INetworkRequestExecutorListener => {
+  return {
+    onFailure: jest.fn(),
+    onSuccess: jest.fn(),
+  };
+};
+
 export {
   fakeHandleType,
   getFakeRequest,
@@ -128,4 +136,5 @@ export {
   getFakeSurvivalMode,
   getFakeTokenHandler,
   getFakeOAuthTokenHandler,
+  getFakeNetworkRequestExecutorListener,
 };

@@ -99,10 +99,12 @@ class Http extends BaseClient {
             if (code === 'ECONNABORTED') {
               if (message === 'Request aborted') {
                 status = RESPONSE_STATUS_CODE.LOCAL_ABORTED;
-              } else if (message === 'Network Error') {
-                status = RESPONSE_STATUS_CODE.NETWORK_ERROR;
               } else if (message.startsWith('timeout')) {
                 status = RESPONSE_STATUS_CODE.LOCAL_TIME_OUT;
+              }
+            } else if (code === null) {
+              if (message === 'Network Error') {
+                status = RESPONSE_STATUS_CODE.NETWORK_ERROR;
               }
             }
             statusText = message;
