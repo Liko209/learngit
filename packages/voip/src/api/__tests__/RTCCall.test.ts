@@ -21,7 +21,6 @@ import { rtcLogger } from '../../utils/RTCLoggerProxy';
 import { RTCMediaDeviceManager } from '../../api/RTCMediaDeviceManager';
 
 describe('RTC call', () => {
-
   afterEach(() => {
     RTCMediaDeviceManager.instance().removeAllListeners();
   });
@@ -1587,6 +1586,24 @@ describe('RTC call', () => {
       setImmediate(() => {
         expect(call._fsm.state()).toBe('connected');
         done();
+      });
+    });
+
+    it('should enter connected state wheh hold call throw exception in holding state.', done => {
+      setup();
+      session.hold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      setImmediate(() => {
+        call._callSession.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.HOLD,
+        );
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('connected');
+          done();
+        });
       });
     });
 
