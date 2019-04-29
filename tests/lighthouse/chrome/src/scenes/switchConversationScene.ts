@@ -43,6 +43,10 @@ class SwitchConversationScene extends Scene {
   supportFps(): boolean {
     return true;
   }
+
+  supportDashboard(): boolean {
+    return true;
+  }
 }
 
 export { SwitchConversationScene };
