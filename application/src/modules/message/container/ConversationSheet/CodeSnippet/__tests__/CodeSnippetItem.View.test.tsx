@@ -6,7 +6,7 @@
 import React from 'react';
 import { CodeSnippetView } from '../CodeSnippetItem.View';
 import copy from 'copy-to-clipboard';
-import { shallow } from 'enzyme';
+import { shallow, mount } from 'enzyme';
 
 jest.mock('copy-to-clipboard');
 
@@ -53,9 +53,10 @@ describe('CodeSnippetItem.View', () => {
       codeSnippet = shallow(<CodeSnippetView {...props} />);
       expect(codeSnippet.state().isCollapse).toBe(true);
     });
-    it('should update state if vm updated', () => {
+    it.only('should update state if vm updated', () => {
       props.isCollapse = true;
       const codeSnippet = shallow(<CodeSnippetView {...props} />);
+      console.log(codeSnippet.instance());
       expect(codeSnippet.state().isCollapse).toBe(true);
 
       codeSnippet.setProps({ isCollapse: false });
@@ -64,11 +65,16 @@ describe('CodeSnippetItem.View', () => {
     it('should update vm on user toggle on view', () => {
       props.isCollapse = true;
       props.setCollapse = jest.fn();
-      const codeSnippet = new CodeSnippetView(props);
-      codeSnippet.handleCollapse();
-      expect(props.setCollapse).toHaveBeenCalledWith(true);
-      codeSnippet.handleExpand();
-      expect(props.setCollapse).toHaveBeenCalledWith(false);
+      const codeSnippet = shallow(<CodeSnippetView {...props} />);
+      const component: CodeSnippetView = codeSnippet.instance();
+
+      component.handleExpand();
+      expect(component.state.isCollapse).toBeFalsy();
+      expect(component.props.setCollapse).toHaveBeenCalledWith(false);
+
+      component.handleCollapse();
+      expect(component.state.isCollapse).toBeTruthy();
+      expect(component.props.setCollapse).toHaveBeenCalledWith(true);
     });
   });
 });
