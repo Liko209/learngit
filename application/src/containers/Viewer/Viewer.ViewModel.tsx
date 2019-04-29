@@ -65,13 +65,13 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
     this._itemListDataSource = isNavigation
       ? new ItemListDataSourceByPost({ groupId, type, postId })
       : new ItemListDataSource({
-        groupId,
-        type,
-      });
+          groupId,
+          type,
+        });
     this._preloadController = new PreloadController();
 
     const itemNotificationKey = ItemNotification.getItemNotificationKey(
-      ViewerItemTypeIdMap[this.props.type],
+      ViewerItemTypeIdMap[props.type],
       groupId,
     );
     notificationCenter.on(itemNotificationKey, this._onItemDataChange);
@@ -135,6 +135,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
     }
   }
 
+  @action
   stopPreload = () => {
     this._preloadController.stop();
   }
