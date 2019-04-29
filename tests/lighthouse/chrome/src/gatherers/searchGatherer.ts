@@ -5,6 +5,7 @@
 const Gatherer = require("lighthouse/lighthouse-core/gather/gatherers/gatherer");
 import { SearchPage } from "../pages";
 import { LogUtils } from "../utils";
+import { Config } from "../config";
 
 class SearchGatherer extends Gatherer {
   private keywords: Array<string>;
@@ -29,13 +30,13 @@ class SearchGatherer extends Gatherer {
     await page.evaluate(() => {
       performance["jupiter"] = {};
     });
-
-    // switch conversation
-    await this.search(searchPage, 40);
   }
 
   async afterPass(passContext) {
     let searchPage = new SearchPage(passContext);
+
+    // switch conversation
+    await this.search(searchPage, Config.sceneRepeatCount);
 
     let page = await searchPage.page();
 

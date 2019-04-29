@@ -118,13 +118,19 @@ class Helper {
 
   async withNotification(
     before: () => Promise<void>,
-    callback: (notification: INotification) => Promise<any>,
+    callback: (notification: Array<INotification>) => Promise<any>,
     timeout: number = 60e3): Promise<void> {
     await this.notificationHelper.withNotification(before, callback, timeout);
   }
 
-  async clickNotification(notification: INotification, timeout: number = 60e3): Promise<void> {
-    return await this.notificationHelper.clickNotification(notification, timeout);
+  /**
+   *
+   * @param notification
+   * @param action  'click', 'answer', 'close'.
+   * @param timeout
+   */
+  async clickNotification(notification: INotification, action: string = 'click', timeout: number = 60e3): Promise<void> {
+    return await this.notificationHelper.clickNotification(notification, action, timeout);
   }
 
   async supportNotification(): Promise<boolean> {
@@ -168,10 +174,10 @@ class Helper {
 
   async interceptHasFocus(isFocus: boolean) {
     // intercept return value of document.hasFocus to cheat SUT
-    await ClientFunction(
-      (_isFocus) => {
-        Object.defineProperty(document, 'hasFocus', { value: () => _isFocus, configurable: true });
-      })(isFocus);
+    await ClientFunction((_isFocus) => {
+      _isFocus ? window.dispatchEvent(new Event('focus')) : window.dispatchEvent(new Event('blur'));
+      Object.defineProperty(document, 'hasFocus', { value: () => _isFocus, configurable: true });
+    })(isFocus);
   }
 
   async reload() {

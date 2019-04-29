@@ -13,6 +13,8 @@ import {
   RTCCallInfo,
   RTC_STATUS_CODE,
   RTC_CALL_STATE,
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip';
 import { TelephonyCallController } from '../controller/TelephonyCallController';
 import { ITelephonyCallDelegate } from '../service/ITelephonyCallDelegate';
@@ -161,6 +163,22 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this._telephonyCallDelegate.ignore();
   }
 
+  startReply(callId: string) {
+    this._telephonyCallDelegate.startReply();
+  }
+
+  replyWithMessage(callId: string, message: string) {
+    this._telephonyCallDelegate.replyWithMessage(message);
+  }
+
+  replyWithPattern(
+    callId: string,
+    pattern: RTC_REPLY_MSG_PATTERN,
+    time: number,
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+  ) {
+    this._telephonyCallDelegate.replyWithPattern(pattern, time, timeUnit);
+  }
   onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
     this._telephonyAccountDelegate.onAccountStateChanged(state);
   }

@@ -369,6 +369,9 @@ export class GroupActionController {
   }
 
   deleteAllTeamInformation = async (ids: number[]) => {
+    if (!ids || !ids.length) {
+      return;
+    }
     const postService = ServiceLoader.getInstance<PostService>(
       ServiceConfig.POST_SERVICE,
     );

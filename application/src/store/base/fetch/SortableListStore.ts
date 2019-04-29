@@ -7,6 +7,7 @@ import { computed, action } from 'mobx';
 import { ListStore } from './ListStore';
 import { ISortFunc, ISortableModel } from './types';
 import _ from 'lodash';
+import { mainLogger } from 'sdk';
 
 // const defaultSortFunc: ISortFunc<ISortableModel> = (
 //   first: ISortableModel,
@@ -18,8 +19,8 @@ export class SortableListStore<
 > extends ListStore<SortableModel> {
   private _sortFunc?: ISortFunc<SortableModel>;
 
-  constructor(sortFunc?: ISortFunc<SortableModel>) {
-    super();
+  constructor(sortFunc?: ISortFunc<SortableModel>, limit?: number) {
+    super(limit);
     this._sortFunc = sortFunc;
   }
 
@@ -30,6 +31,26 @@ export class SortableListStore<
       const unionAndSortIds = this._sortFunc
         ? unionArray.sort(this._sortFunc)
         : _.sortBy(unionArray, 'sortValue');
+      if (
+        this._limit &&
+        unionAndSortIds.length === this._items.length &&
+        _.isEqualWith(
+          unionAndSortIds,
+          this._items,
+          (objValue: ISortableModel, otherValue: ISortableModel) => {
+            return objValue.id === otherValue.id;
+          },
+        )
+      ) {
+        mainLogger.debug(
+          'SortableListStore',
+          `updated items.size=${
+            unionAndSortIds.length
+          }, is same with original items`,
+        );
+        return;
+      }
+
       this.replaceAll(unionAndSortIds);
     }
   }
@@ -48,7 +69,7 @@ export class SortableListStore<
   }
 
   findIndexById(id: number) {
-    return this._items.findIndex(item => item.id === id);
+    return this.items.findIndex(item => item.id === id);
   }
 
   @computed

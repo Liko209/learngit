@@ -16,9 +16,7 @@ import { ENTITY } from '../../../service/eventKey';
 import _ from 'lodash';
 import { transform } from '../../../service/utils';
 import { shouldEmitNotification } from '../../../utils/notificationUtils';
-import { SYNC_SOURCE } from '../../../module/sync/types';
-
-const DEFAULT_LEFTRAIL_GROUP: number = 20;
+import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 
 class ProfileDataController {
   constructor(
@@ -28,13 +26,14 @@ class ProfileDataController {
   async profileHandleData(
     profile: Raw<Profile> | null,
     source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<Profile | null> {
     let result: Profile | null = null;
     if (profile) {
       if (_.isArray(profile)) {
-        result = await this._handleProfile(profile[0], source);
+        result = await this._handleProfile(profile[0], source, changeMap);
       } else {
-        result = await this._handleProfile(profile, source);
+        result = await this._handleProfile(profile, source, changeMap);
       }
     }
     return result;
@@ -60,14 +59,6 @@ class ProfileDataController {
     return profile;
   }
 
-  async getMaxLeftRailGroup(): Promise<number> {
-    const profile = await this.getProfile();
-    if (profile && profile.max_leftrail_group_tabs2) {
-      return Number(profile.max_leftrail_group_tabs2);
-    }
-    return DEFAULT_LEFTRAIL_GROUP;
-  }
-
   async isConversationHidden(groupId: number) {
     const profile = await this.getProfile();
     if (profile) {
@@ -85,6 +76,7 @@ class ProfileDataController {
   private async _handleProfile(
     profile: Raw<Profile>,
     source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<Profile | null> {
     try {
       if (profile) {
@@ -92,9 +84,13 @@ class ProfileDataController {
         if (transformedData) {
           await this.entitySourceController.put(transformedData);
           if (shouldEmitNotification(source)) {
-            notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [
-              transformedData,
-            ]);
+            if (changeMap) {
+              changeMap.set(ENTITY.PROFILE, { entities: [transformedData] });
+            } else {
+              notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [
+                transformedData,
+              ]);
+            }
           }
           return transformedData;
         }
