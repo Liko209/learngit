@@ -104,6 +104,11 @@ class ContentSearchResultViewModel
     );
   }
 
+  @computed
+  get searchTerms(): string[] {
+    return this._searchKey.split(' ');
+  }
+
   @action
   setSearchOptions = async (
     options: ContentSearchOptions,

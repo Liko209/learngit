@@ -18,12 +18,14 @@ import { JuiListSubheader } from 'jui/components/Lists';
 import { Stream as PostListStream } from '@/containers/PostListPage/Stream';
 import { SearchFilter } from '@/modules/GlobalSearch/container/SearchFilter';
 import { ConversationPageContext } from '@/containers/ConversationPage/types';
+import { SearchHighlightContext } from 'jui/hoc/withHighlight';
 
 type Props = ContentSearchResultViewProps &
   WithTranslation & { isShow: boolean };
 
 // Section Header + Tabs Height + Search Input + Margin
 const USED_HEIGHT = 36 + 40 + 48 + 56;
+
 @observer
 class ContentSearchResultViewComponent extends Component<Props> {
   componentWillUnmount() {
@@ -41,6 +43,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
       isEmpty,
       isShow,
       showResult,
+      searchTerms,
     } = this.props;
     return (
       <ConversationPageContext.Provider value={{ disableMoreAction: true }}>
@@ -56,13 +59,17 @@ class ContentSearchResultViewComponent extends Component<Props> {
             ) : (
               <JuiFullSearchResultStreamWrapper>
                 {showResult && (
-                  <PostListStream
-                    isShow={isShow}
-                    postIds={searchState.postIds}
-                    postFetcher={onPostsFetch}
-                    selfProvide={true}
-                    usedHeight={USED_HEIGHT}
-                  />
+                  <SearchHighlightContext.Provider
+                    value={{ terms: searchTerms }}
+                  >
+                    <PostListStream
+                      isShow={isShow}
+                      postIds={searchState.postIds}
+                      postFetcher={onPostsFetch}
+                      selfProvide={true}
+                      usedHeight={USED_HEIGHT}
+                    />
+                  </SearchHighlightContext.Provider>
                 )}
               </JuiFullSearchResultStreamWrapper>
             )}
