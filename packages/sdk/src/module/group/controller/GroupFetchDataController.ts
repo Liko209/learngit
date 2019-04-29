@@ -638,7 +638,7 @@ export class GroupFetchDataController {
       ServiceConfig.PERSON_SERVICE,
     );
     allPersons.forEach((person: Person) => {
-      if (person) {
+      if (person && personService.isValidPerson(person)) {
         const name = personService.getName(person);
         if (name.length) {
           names.push(name);

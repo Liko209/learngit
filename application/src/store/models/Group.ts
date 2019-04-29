@@ -18,6 +18,7 @@ import { TeamPermission, GroupService } from 'sdk/module/group';
 import { PERMISSION_ENUM } from 'sdk/service';
 import { AccountService } from 'sdk/module/account';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import PersonModel from './Person';
 
 export default class GroupModel extends Base<Group> {
   @observable
@@ -156,13 +157,15 @@ export default class GroupModel extends Base<Group> {
       const emails: string[] = [];
       diffMembers
         .map(id => getEntity(ENTITY_NAME.PERSON, id))
-        .forEach(({ firstName, lastName, email }) => {
-          if (!firstName && !lastName) {
-            emails.push(email);
-          } else if (firstName) {
-            names.push(firstName);
-          } else if (lastName) {
-            names.push(lastName);
+        .forEach((personModel: PersonModel) => {
+          if (personModel && !personModel.deactivated) {
+            if (!personModel.firstName && !personModel.lastName) {
+              emails.push(personModel.email);
+            } else if (personModel.firstName) {
+              names.push(personModel.firstName);
+            } else if (personModel.lastName) {
+              names.push(personModel.lastName);
+            }
           }
         });
       return names
