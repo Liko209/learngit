@@ -90,7 +90,7 @@ export interface ITestMeta {
 
 
 export interface INotification {
-  id: number;
+  id: any;
   title: string;
   body: string;
 }

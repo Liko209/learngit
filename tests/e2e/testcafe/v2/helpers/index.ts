@@ -118,13 +118,13 @@ class Helper {
 
   async withNotification(
     before: () => Promise<void>,
-    callback: (notification: INotification) => Promise<any>,
+    callback: (notification: Array<INotification>) => Promise<any>,
     timeout: number = 60e3): Promise<void> {
     await this.notificationHelper.withNotification(before, callback, timeout);
   }
 
-  async clickNotification(notification: INotification, timeout: number = 60e3): Promise<void> {
-    return await this.notificationHelper.clickNotification(notification, timeout);
+  async clickNotification(notification: INotification, action: string = 'click', timeout: number = 60e3): Promise<void> {
+    return await this.notificationHelper.clickNotification(notification, action, timeout);
   }
 
   async supportNotification(): Promise<boolean> {

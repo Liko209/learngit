@@ -9,8 +9,8 @@ export abstract class AbstractNotification {
 
   abstract inject(): Promise<void>;
 
-  abstract next(): Promise<INotification>;
+  abstract next(): Promise<Array<INotification>>;
 
-  abstract click(notification: INotification): Promise<void>;
+  abstract click(notification: INotification, action: string): Promise<void>;
 }
 
