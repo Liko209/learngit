@@ -172,8 +172,6 @@ class Jupiter {
       const areModulesInitialized = this._areModulesBound(key);
       if (areModulesInitialized) {
         this._executeModulesInitialCallback(key);
-      } else {
-        return null;
       }
     });
   }
@@ -188,8 +186,6 @@ class Jupiter {
       const areModulesUnBound = this._areModulesUnBound(key);
       if (areModulesUnBound) {
         this._executeModulesDisposeCallback(key);
-      } else {
-        return null;
       }
     });
   }
