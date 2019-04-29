@@ -15,7 +15,6 @@ import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 
 import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
-// import { reaction } from 'mobx';
 
 class HomeModule extends AbstractModule {
   @inject(HomeService) private _homeService: HomeService;

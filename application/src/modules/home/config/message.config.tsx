@@ -17,7 +17,6 @@ import { lazyComponent } from '@/modules/common/util/lazyComponent';
 const config: SubModuleConfig = {
   route: {
     path: '/messages',
-    // component: Message,
     component: lazyComponent({
       loader: () =>
         import(/*
@@ -41,11 +40,6 @@ const config: SubModuleConfig = {
   loader: () =>
     import(/*
     webpackChunkName: "m.message" */ '@/modules/message'),
-  afterBootstrap: () => {
-    // const messageService = container.get(MessageService);
-    // Check user permission and register extensions
-    // messageService.registerConversationHeaderExtension(Call); // [TelephonyButton, MeetingButton]
-  },
 };
 
 export { config };
