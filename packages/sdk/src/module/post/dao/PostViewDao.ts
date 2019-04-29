@@ -78,7 +78,7 @@ class PostViewDao extends BaseDao<PostView> {
 
         const startIndex = postIds.indexOf(startPostId);
         const endIndex = postIds.indexOf(endPostId);
-        if (startIndex === -1 || (endIndex !== -1 && startIndex > endIndex)) {
+        if (startIndex === -1 || (endIndex !== -1 && startIndex >= endIndex)) {
           break;
         }
 

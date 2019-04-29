@@ -283,6 +283,21 @@ describe('PostViewDao', () => {
       expect(spy).not.toBeCalled();
     });
 
+    it('should return [] if start post id is 0 but end post is in db', async () => {
+      const result = await postViewDao.queryIntervalPostsByGroupId(
+        fetchPostsFunc,
+        {
+          groupId: 9163628546,
+          startPostId: 0,
+          endPostId: 1151236554700,
+          limit: 500,
+        },
+      );
+      const spy = jest.spyOn(postViewDao, 'queryPostIdsByGroupId');
+      expect(result).toHaveLength(0);
+      expect(spy).not.toBeCalled();
+    });
+
     it('should return [] if start post not in db', async () => {
       const result = await postViewDao.queryIntervalPostsByGroupId(
         fetchPostsFunc,
@@ -290,6 +305,21 @@ describe('PostViewDao', () => {
           groupId: 9163628546,
           startPostId: 5752569593860,
           endPostId: 0,
+          limit: 500,
+        },
+      );
+      const spy = jest.spyOn(postViewDao, 'queryPostIdsByGroupId');
+      expect(result).toHaveLength(0);
+      expect(spy).not.toBeCalled();
+    });
+
+    it('should return [] if start post not in db but end post is in db', async () => {
+      const result = await postViewDao.queryIntervalPostsByGroupId(
+        fetchPostsFunc,
+        {
+          groupId: 9163628546,
+          startPostId: 5752569593860,
+          endPostId: 1151236554701,
           limit: 500,
         },
       );
@@ -350,6 +380,21 @@ describe('PostViewDao', () => {
           groupId: 9163628546,
           startPostId: 1151236554701,
           endPostId: 3752569593860,
+          limit: 500,
+        },
+      );
+      const spy = jest.spyOn(postViewDao, 'queryPostIdsByGroupId');
+      expect(result).toHaveLength(0);
+      expect(spy).not.toBeCalled();
+    });
+
+    it('should return [] if start post is in db and end post is in db, but start post created_at === end post created_at', async () => {
+      const result = await postViewDao.queryIntervalPostsByGroupId(
+        fetchPostsFunc,
+        {
+          groupId: 9163628546,
+          startPostId: 1151236554701,
+          endPostId: 1151236554701,
           limit: 500,
         },
       );

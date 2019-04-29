@@ -117,8 +117,8 @@ class PostFetchController {
     groupId,
     startPostId,
     endPostId,
-    limit,
-    direction,
+    limit = DEFAULT_PAGE_SIZE,
+    direction = QUERY_DIRECTION.NEWER,
   }: UnreadPostQuery): Promise<IPostResult> {
     let result: IPostResult = {
       limit,
@@ -152,7 +152,7 @@ class PostFetchController {
         const serverResult = await this.getRemotePostsByGroupId({
           groupId,
           limit,
-          direction: direction || QUERY_DIRECTION.NEWER,
+          direction,
           postId: startPostId,
           shouldSaveToDb: false,
         });

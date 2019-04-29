@@ -434,7 +434,32 @@ describe('PostFetchController()', () => {
     it('should return [] if start post id is 0', async () => {
       const result = await postFetchController.getUnreadPostsByGroupId({
         groupId: 1,
-        startPostId: 1,
+        startPostId: 0,
+        endPostId: 2,
+        limit: 500,
+      });
+      const localSpy = jest.spyOn(
+        postFetchController,
+        '_getIntervalPostsFromDb',
+      );
+      const remoteSpy = jest.spyOn(
+        postFetchController,
+        'getRemotePostsByGroupId',
+      );
+      expect(localSpy).not.toBeCalled();
+      expect(remoteSpy).not.toBeCalled();
+      expect(result).toEqual({
+        hasMore: true,
+        items: [],
+        posts: [],
+        limit: 500,
+      });
+    });
+
+    it('should return [] if start post id is undefined', async () => {
+      const result = await postFetchController.getUnreadPostsByGroupId({
+        groupId: 1,
+        startPostId: undefined,
         endPostId: 2,
         limit: 500,
       });
