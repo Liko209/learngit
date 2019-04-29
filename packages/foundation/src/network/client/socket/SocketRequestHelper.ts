@@ -73,7 +73,7 @@ class SocketRequestHelper implements ISocketRequestManager {
   private _onRequestTimeout(requestId: string, reject: any) {
     mainLogger.info('[Socket]: request timeout');
     const response = new SocketResponseBuilder()
-      .setStatus(0)
+      .setStatus(RESPONSE_STATUS_CODE.LOCAL_CANCELLED)
       .setStatusText(NETWORK_FAIL_TEXT.TIME_OUT)
       .build();
     reject(response);
@@ -85,7 +85,7 @@ class SocketRequestHelper implements ISocketRequestManager {
         `[Socket]: socket disconnect, return SOCKET_DISCONNECTED error for request id:${requestId}`,
       );
       const response = new SocketResponseBuilder()
-        .setStatus(RESPONSE_STATUS_CODE.LOCAL_DISCONNECTED)
+        .setStatus(RESPONSE_STATUS_CODE.LOCAL_NOT_NETWORK_CONNECTION)
         .setStatusText(NETWORK_FAIL_TEXT.SOCKET_DISCONNECTED)
         .build();
       this._removeRequestTimer(requestId);

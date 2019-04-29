@@ -14,7 +14,6 @@ import {
   DEFAULT_TIMEOUT_INTERVAL,
   HA_PRIORITY,
   REQUEST_PRIORITY,
-  networkLogger,
 } from 'foundation';
 import { RequestHolder } from './requestHolder';
 import { omitLocalProperties, serializeUrlParams } from '../utils';
@@ -153,14 +152,6 @@ export default class NetworkClient {
           requestHolder.request = request;
         }
       }
-
-      setTimeout(() => {
-        // networkLogger.log(
-        //   'TCL: NetworkClient -> request.cancel',
-        //   request.cancel,
-        // );
-        this.cancelRequest(request);
-      },         10);
     });
   }
 
@@ -203,7 +194,7 @@ export default class NetworkClient {
       .setAuthfree(authFree || false)
       .setRequestConfig(requestConfig || {})
       .setRetryCount(retryCount || 0)
-      .setTimeout(5 * 1000 || timeout || DEFAULT_TIMEOUT_INTERVAL)
+      .setTimeout(timeout || DEFAULT_TIMEOUT_INTERVAL)
       .setVia(via)
       .setNetworkManager(this.networkManager)
       .setPriority(priority ? priority : REQUEST_PRIORITY.NORMAL)

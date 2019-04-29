@@ -100,7 +100,7 @@ class Http extends BaseClient {
               if (message === 'Request aborted') {
                 status = RESPONSE_STATUS_CODE.LOCAL_ABORTED;
               } else if (message === 'Network Error') {
-                status = RESPONSE_STATUS_CODE.LOCAL_DISCONNECTED;
+                status = RESPONSE_STATUS_CODE.NETWORK_ERROR;
               } else if (message.startsWith('timeout')) {
                 status = RESPONSE_STATUS_CODE.LOCAL_TIME_OUT;
               }
@@ -109,7 +109,7 @@ class Http extends BaseClient {
           }
         } else if (err instanceof axios.Cancel) {
           networkLogger.debug('Http request canceled!');
-          status = RESPONSE_STATUS_CODE.LOCAL_CANCEL;
+          status = RESPONSE_STATUS_CODE.LOCAL_CANCELLED;
           statusText = NETWORK_FAIL_TEXT.CANCELLED;
         }
         const res = HttpResponseBuilder.builder

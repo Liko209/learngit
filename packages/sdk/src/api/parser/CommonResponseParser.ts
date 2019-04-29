@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseResponse, HTTP_STATUS_CODE, NETWORK_FAIL_TEXT } from 'foundation';
+import { BaseResponse, RESPONSE_STATUS_CODE } from 'foundation';
 import isNumber from 'lodash/isNumber';
 import isString from 'lodash/isString';
 import { JError, JNetworkError, ERROR_CODES_NETWORK } from '../../error';
@@ -17,30 +17,22 @@ export class CommonResponseParser implements IResponseParser {
 
   parse(response: BaseResponse): JError | null {
     const { status, statusText } = response;
-    return (
-      this._parseByStatusText(statusText) ||
-      this._parseByStatus(status, statusText)
-    );
+    return this._parseByStatus(status, statusText);
   }
 
-  private _parseByStatusText(statusText: string) {
-    switch (statusText) {
-      case 'Network Error':
-        return new JNetworkError(
-          ERROR_CODES_NETWORK.NETWORK_ERROR,
-          'Api Error: Please check whether server crash',
-        );
-      case NETWORK_FAIL_TEXT.NOT_NETWORK_CONNECTION:
-        return new JNetworkError(
-          ERROR_CODES_NETWORK.NOT_NETWORK,
-          'Api Error: Please check network connection',
-        );
-      default:
-        return null;
+  private _parseByStatus(status: RESPONSE_STATUS_CODE, statusText: string) {
+    if (status === RESPONSE_STATUS_CODE.NETWORK_ERROR) {
+      return new JNetworkError(
+        ERROR_CODES_NETWORK.NETWORK_ERROR,
+        'Api Error: Please check whether server crash',
+      );
     }
-  }
-
-  private _parseByStatus(status: HTTP_STATUS_CODE, statusText: string) {
+    if (status === RESPONSE_STATUS_CODE.LOCAL_NOT_NETWORK_CONNECTION) {
+      return new JNetworkError(
+        ERROR_CODES_NETWORK.NOT_NETWORK,
+        'Api Error: Please check network connection',
+      );
+    }
     if (
       (isNumber(status) && 399 < status && 600 > status) ||
       (isString(status) && REGEXP_4XX_5XX.test(status))
@@ -56,7 +48,7 @@ export class CommonResponseParser implements IResponseParser {
      */
     return new JNetworkError(
       ERROR_CODES_NETWORK.GENERAL,
-      'Api Error: Unknown error.',
+      `Api Error: Unknown error. status: ${status}, statusText: ${statusText}`,
     );
   }
 }

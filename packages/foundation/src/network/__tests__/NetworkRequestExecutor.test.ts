@@ -3,11 +3,12 @@ import { getFakeRequest, getFakeClient, getFakeResponse } from './utils';
 import {
   NETWORK_REQUEST_EXECUTOR_STATUS,
   NETWORK_FAIL_TEXT,
-  HTTP_STATUS_CODE,
+  RESPONSE_STATUS_CODE,
   NETWORK_HANDLE_TYPE,
   IResponse,
 } from '../network';
 import { SERVER_ERROR_CODE } from '../Constants';
+import { HttpResponseBuilder } from '../client';
 
 let networkExecutor: NetworkRequestExecutor;
 
@@ -53,7 +54,7 @@ describe('NetworkRequestExecutor', () => {
         .spyOn(networkExecutor, '_handle502XApiCompletionCallback')
         .mockImplementation(() => {});
       const response = getFakeResponse();
-      response.status = HTTP_STATUS_CODE.BAD_GATEWAY;
+      response.status = RESPONSE_STATUS_CODE.BAD_GATEWAY;
       response.statusText = NETWORK_FAIL_TEXT.BAD_GATEWAY;
       networkExecutor.onFailure(response);
       expect(spy502CB).toBeCalled();
@@ -74,7 +75,7 @@ describe('NetworkRequestExecutor', () => {
         .spyOn(networkExecutor, '_handle503XApiCompletionCallback')
         .mockImplementation(() => {});
       const response = getFakeResponse();
-      response.status = HTTP_STATUS_CODE.SERVICE_UNAVAILABLE;
+      response.status = RESPONSE_STATUS_CODE.SERVICE_UNAVAILABLE;
       response.statusText = NETWORK_FAIL_TEXT.SERVICE_UNAVAILABLE;
       networkExecutor.onFailure(response);
       expect(spy503CB).toBeCalled();
@@ -97,7 +98,7 @@ describe('NetworkRequestExecutor', () => {
     it('should remove oauth token when token is invalid', () => {
       networkExecutor.status = NETWORK_REQUEST_EXECUTOR_STATUS.EXECUTING;
       const oauthFailedResponse = getFakeResponse();
-      oauthFailedResponse.status = HTTP_STATUS_CODE.UNAUTHORIZED;
+      oauthFailedResponse.status = RESPONSE_STATUS_CODE.UNAUTHORIZED;
       oauthFailedResponse.statusText = NETWORK_FAIL_TEXT.UNAUTHORIZED;
       const request = getFakeRequest();
       request.headers = {
@@ -254,7 +255,7 @@ describe('NetworkRequestExecutor', () => {
     it('should call _handle401XApiCompletionCallback when status is UNAUTHORIZED', () => {
       networkExecutor['_handle401XApiCompletionCallback'] = jest.fn();
       const mockResponse = {
-        status: HTTP_STATUS_CODE.UNAUTHORIZED,
+        status: RESPONSE_STATUS_CODE.UNAUTHORIZED,
       } as any;
       networkExecutor['_callXApiResponseCallback'](mockResponse);
       expect(
@@ -266,7 +267,7 @@ describe('NetworkRequestExecutor', () => {
       networkExecutor['_handle502XApiCompletionCallback'] = jest.fn();
       networkExecutor['_callXApiCompletionCallback'] = jest.fn();
       const mockResponse = {
-        status: HTTP_STATUS_CODE.BAD_GATEWAY,
+        status: RESPONSE_STATUS_CODE.BAD_GATEWAY,
       } as any;
       networkExecutor['_callXApiResponseCallback'](mockResponse);
       expect(
@@ -281,7 +282,7 @@ describe('NetworkRequestExecutor', () => {
       networkExecutor['_handle503XApiCompletionCallback'] = jest.fn();
       networkExecutor['_callXApiCompletionCallback'] = jest.fn();
       const mockResponse = {
-        status: HTTP_STATUS_CODE.SERVICE_UNAVAILABLE,
+        status: RESPONSE_STATUS_CODE.SERVICE_UNAVAILABLE,
       } as any;
       networkExecutor['_callXApiResponseCallback'](mockResponse);
       expect(
@@ -368,5 +369,28 @@ describe('NetworkRequestExecutor', () => {
         networkExecutor['_isServerErrorCodeMatched'](data, err),
       ).toBeFalsy();
     });
+  });
+
+  describe('canRetry()', () => {
+    it.each`
+      status                                               | result
+      ${RESPONSE_STATUS_CODE.DEFAULT}                      | ${false}
+      ${RESPONSE_STATUS_CODE.LOCAL_ABORTED}                | ${false}
+      ${RESPONSE_STATUS_CODE.LOCAL_CANCELLED}              | ${false}
+      ${RESPONSE_STATUS_CODE.LOCAL_NOT_NETWORK_CONNECTION} | ${false}
+      ${RESPONSE_STATUS_CODE.LOCAL_TIME_OUT}               | ${false}
+      ${RESPONSE_STATUS_CODE.NETWORK_ERROR}                | ${true}
+      ${400}                                               | ${false}
+      ${500}                                               | ${true}
+    `(
+      'should return $result when response.status = $status',
+      ({ status, result }) => {
+        expect(
+          networkExecutor.canRetry(
+            HttpResponseBuilder.builder.setStatus(status).build(),
+          ),
+        ).toEqual(result);
+      },
+    );
   });
 });

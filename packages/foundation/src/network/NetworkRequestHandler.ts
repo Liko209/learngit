@@ -20,6 +20,7 @@ import {
   REQUEST_WEIGHT,
   SURVIVAL_MODE,
   HA_PRIORITY,
+  RESPONSE_STATUS_CODE,
 } from './network';
 import { networkLogger } from '../log';
 import { NetworkRequestBuilder } from './client';
@@ -59,7 +60,11 @@ class NetworkRequestHandler
         this.isInSurvivalMode() &&
         !this.canHandleInSurvivalMode(request.HAPriority)
       ) {
-        this._callXApiResponseCallback(NETWORK_FAIL_TEXT.SERVER_ERROR, request);
+        this._callXApiResponseCallback(
+          RESPONSE_STATUS_CODE.DEFAULT,
+          NETWORK_FAIL_TEXT.SERVER_ERROR,
+          request,
+        );
         return;
       }
     }
@@ -94,7 +99,11 @@ class NetworkRequestHandler
   cancelRequest(request: IRequest) {
     if (this.isRequestInPending(request)) {
       this.deletePendingRequest(request);
-      this._callXApiResponseCallback(NETWORK_FAIL_TEXT.CANCELLED, request);
+      this._callXApiResponseCallback(
+        RESPONSE_STATUS_CODE.LOCAL_CANCELLED,
+        NETWORK_FAIL_TEXT.CANCELLED,
+        request,
+      );
     } else {
       const consumer = this.consumers.get(request.via);
       if (consumer) {
@@ -202,6 +211,7 @@ class NetworkRequestHandler
     this.pendingTasks.forEach((queue: RequestTask[]) => {
       queue.forEach((task: RequestTask) => {
         this._callXApiResponseCallback(
+          RESPONSE_STATUS_CODE.LOCAL_CANCELLED,
           NETWORK_FAIL_TEXT.CANCELLED,
           task.request,
         );
@@ -278,11 +288,13 @@ class NetworkRequestHandler
   }
 
   private _callXApiResponseCallback(
+    status: RESPONSE_STATUS_CODE,
     type: NETWORK_FAIL_TEXT,
     request: IRequest,
   ) {
     const response = HttpResponseBuilder.builder
       .setRequest(request)
+      .setStatus(status)
       .setStatusText(type)
       .build();
     if (request.callback) {

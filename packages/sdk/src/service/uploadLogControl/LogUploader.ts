@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import axios, { AxiosError } from 'axios';
-import { HTTP_STATUS_CODE, LogEntity, mainLogger } from 'foundation';
+import { RESPONSE_STATUS_CODE, LogEntity, mainLogger } from 'foundation';
 import { Api } from 'sdk/api';
 import { Pal } from 'sdk/pal';
 import { ILogUploader } from './consumer';
@@ -50,10 +50,10 @@ export class LogUploader implements ILogUploader {
     }
     if (
       [
-        HTTP_STATUS_CODE.UNAUTHORIZED,
-        HTTP_STATUS_CODE.TOO_MANY_REQUESTS,
-        HTTP_STATUS_CODE.SERVICE_UNAVAILABLE,
-        HTTP_STATUS_CODE.GATEWAY_TIME_OUT,
+        RESPONSE_STATUS_CODE.UNAUTHORIZED,
+        RESPONSE_STATUS_CODE.TOO_MANY_REQUESTS,
+        RESPONSE_STATUS_CODE.SERVICE_UNAVAILABLE,
+        RESPONSE_STATUS_CODE.GATEWAY_TIME_OUT,
       ].includes(response.status)
     ) {
       mainLogger.debug('Log errorHandler: retry');
