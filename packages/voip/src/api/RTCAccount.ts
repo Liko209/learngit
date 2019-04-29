@@ -41,7 +41,7 @@ class RTCAccount implements IRTCAccount {
   private _callManager: RTCCallManager;
   private _networkListener: Listener;
 
-  constructor(listener: IRTCAccountDelegate, userAgentInfo?: RTCUserAgentInfo) {
+  constructor(listener: IRTCAccountDelegate, userAgentInfo: RTCUserAgentInfo) {
     this._state = RTC_ACCOUNT_STATE.IDLE;
     this._delegate = listener;
     this._regManager = new RTCRegistrationManager(userAgentInfo);

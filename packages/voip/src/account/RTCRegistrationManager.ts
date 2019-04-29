@@ -66,7 +66,7 @@ class RTCRegistrationManager extends EventEmitter2
     this.emit(REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE, callSession);
   }
 
-  constructor(userAgentInfo?: RTCUserAgentInfo) {
+  constructor(userAgentInfo: RTCUserAgentInfo) {
     super();
     if (userAgentInfo) {
       this._userAgentInfo = userAgentInfo;

@@ -20,17 +20,14 @@ class RTCEngine {
   private static _instance: RTCEngine | null;
   private _userAgentInfo: RTCUserAgentInfo;
 
-  public static getInstance(info?: RTCUserAgentInfo) {
+  public static getInstance() {
     if (!RTCEngine._instance) {
-      RTCEngine._instance = new RTCEngine(info);
+      RTCEngine._instance = new RTCEngine();
     }
     return RTCEngine._instance;
   }
 
-  protected constructor(info?: RTCUserAgentInfo) {
-    if (info) {
-      this._userAgentInfo = info;
-    }
+  protected constructor() {
     RTCMediaDeviceManager.instance().updateMediaDevices();
     RTCMediaDeviceManager.instance().subscribeDeviceChange();
   }
@@ -38,6 +35,12 @@ class RTCEngine {
   public destroy() {
     RTCMediaDeviceManager.instance().destroy();
     RTCEngine._instance = null;
+  }
+
+  public setUserAgentInfo(info: RTCUserAgentInfo) {
+    if (info) {
+      this._userAgentInfo = info;
+    }
   }
 
   public createAccount(delegate: IRTCAccountDelegate): RTCAccount {
