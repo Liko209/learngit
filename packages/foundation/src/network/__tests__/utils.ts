@@ -121,6 +121,12 @@ const getFakeNetworkRequestExecutorListener = (): INetworkRequestExecutorListene
   };
 };
 
+function sleep(timeout: number) {
+  return new Promise(resolve => {
+    setTimeout(resolve, timeout);
+  });
+}
+
 export {
   fakeHandleType,
   getFakeRequest,
@@ -137,4 +143,5 @@ export {
   getFakeTokenHandler,
   getFakeOAuthTokenHandler,
   getFakeNetworkRequestExecutorListener,
+  sleep,
 };

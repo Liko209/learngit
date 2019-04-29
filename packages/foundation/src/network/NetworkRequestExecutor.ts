@@ -83,7 +83,6 @@ export class NetworkRequestExecutor
     }
 
     if (this.canRetry(response) && this.retryCounter < this.retryCount) {
-      this.retryCounter += 1;
       networkLogger.log(
         'TCL: _retry',
         ' counter/total',
@@ -101,7 +100,7 @@ export class NetworkRequestExecutor
     return this.request;
   }
 
-  execute = () => {
+  execute() {
     if (this.client.isNetworkReachable()) {
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.EXECUTING;
       this._performNetworkRequest();
@@ -157,7 +156,8 @@ export class NetworkRequestExecutor
     }
   }
 
-  private _retry = () => {
+  private _retry() {
+    this.retryCounter += 1;
     this.retryStrategy(this.execute, this.retryCounter);
   }
 
