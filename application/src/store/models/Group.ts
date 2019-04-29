@@ -3,8 +3,7 @@
  * @Date: 2018-09-28 18:22:26
  * Copyright © RingCentral. All rights reserved.
  */
-import { promisedComputed } from 'computed-async-mobx';
-import { observable, computed } from 'mobx';
+import { observable, computed, reaction } from 'mobx';
 import _ from 'lodash';
 import { Group } from 'sdk/module/group/entity';
 import { Profile } from 'sdk/module/profile/entity';
@@ -49,6 +48,8 @@ export default class GroupModel extends Base<Group> {
   isArchived?: boolean;
   @observable
   convertedToTeam?: { team_id?: number; created?: number };
+  @observable
+  translation: { [key: string ]: string } = {};
 
   isCompanyTeam: boolean;
   latestTime: number;
@@ -93,6 +94,15 @@ export default class GroupModel extends Base<Group> {
     this.isArchived = is_archived;
     this.isCompanyTeam = is_company_team;
     this.convertedToTeam = converted_to_team;
+    reaction(
+      () => this.type,
+      async () => {
+        this.translation['message.meGroup'] = await i18nT('message.meGroup');
+      },
+      {
+        fireImmediately: true,
+      },
+    );
   }
 
   @computed
@@ -113,10 +123,6 @@ export default class GroupModel extends Base<Group> {
     );
   }
 
-  meGroupText = promisedComputed('message.meGroup', async () => {
-    return `${await i18nT('message.meGroup')}`;
-  });
-
   @computed
   get displayName(): string {
     if (this.type === CONVERSATION_TYPES.TEAM) {
@@ -129,7 +135,8 @@ export default class GroupModel extends Base<Group> {
 
     if (this.type === CONVERSATION_TYPES.ME) {
       const person = getEntity(ENTITY_NAME.PERSON, currentUserId);
-      return `${person.userDisplayNameForGroupName || ''} (${this.meGroupText.get()})`;
+      const meGroup = this.translation['message.meGroup'] || 'message.meGroup';
+      return `${person.userDisplayNameForGroupName || ''} (${meGroup})`;
     }
 
     if (
