@@ -14,10 +14,11 @@ import { AllureHelper } from './allure-helper';
 import { ScenarioHelper } from './scenario-helper';
 import { H } from './utils';
 
-import { IUser, IStep, IStepOptions } from '../models';
+import { IUser, IStep, IStepOptions, INotification } from '../models';
 import { AppRoot } from '../page-models/AppRoot';
 import { SITE_URL, SITE_ENV } from '../../config';
 import { WebphoneHelper } from './webphone-helper';
+import { NotificationHelper } from './notification';
 import { WebphoneSession } from '../webphone/session';
 
 const logger = getLogger(__filename);
@@ -79,6 +80,13 @@ class Helper {
     return new ScenarioHelper(this.t, this.sdkHelper);
   }
 
+  get notificationHelper(): NotificationHelper {
+    if (!this.t.ctx.__notificationHelper) {
+      this.t.ctx.__notificationHelper = new NotificationHelper(this.t);
+    }
+    return this.t.ctx.__notificationHelper;
+  }
+
   /* delegate following method */
   get rcData() {
     return this.dataHelper.rcData;
@@ -106,6 +114,21 @@ class Helper {
     cb: (step?: IStep) => Promise<any>,
     options?: boolean | IStepOptions) {
     return await this.logHelper.withLog(step, cb, options);
+  }
+
+  async withNotification(
+    before: () => Promise<void>,
+    callback: (notification: INotification) => Promise<any>,
+    timeout: number = 60e3): Promise<void> {
+    await this.notificationHelper.withNotification(before, callback, timeout);
+  }
+
+  async clickNotification(notification: INotification, timeout: number = 60e3): Promise<void> {
+    return await this.notificationHelper.clickNotification(notification, timeout);
+  }
+
+  async supportNotification(): Promise<boolean> {
+    return await this.notificationHelper.support();
   }
 
   async withPhoneSession(user: IUser, cb: (session: WebphoneSession) => Promise<any>) {

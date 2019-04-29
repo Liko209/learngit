@@ -22,17 +22,19 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
   contentTypeItemsMap = [];
 
   @action
-  handleSearchTypeChange = (type: ESearchContentTypes) => {
+  handleSearchTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const currentType = this.props.searchOptions.type;
-    if (type !== currentType) {
-      this.props.setSearchOptions({ type });
+    const { value } = e.target;
+    if (value !== currentType) {
+      this.props.setSearchOptions({ type: value as ESearchContentTypes });
     }
   }
   @action
-  handleSearchPostDateChange = (items: number) => {
+  handleSearchPostDateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const beginTime = this.props.searchOptions.begin_time || null;
+    const time = Number(e.target.value);
     const TimeStamp =
-      items === DATE_DICTIONARY.ANY_TIME ? null : this.getTimeStamp(items);
+      time === DATE_DICTIONARY.ANY_TIME ? null : this.getTimeStamp(time);
     if (TimeStamp !== beginTime) {
       this.props.setSearchOptions({ begin_time: TimeStamp });
     }

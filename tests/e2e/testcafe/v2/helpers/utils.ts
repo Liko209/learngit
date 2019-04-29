@@ -68,6 +68,6 @@ export class H {
   }
 
   static toNumberArray(data: string | number | string[] | number[]): number[] {
-    return [].concat(data).map(item => +item);
+    return [].concat(data).map(Number);
   }
 }

@@ -4,15 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import * as React from 'react';
+import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import {
   withInfoDecorator,
   alignCenterDecorator,
 } from '../../../foundation/utils/decorators';
 import { boolean, select } from '@storybook/addon-knobs';
-import { JuiBoxSelect } from '..';
-import { JuiMenuItem } from 'src/components/Menus';
+import { JuiBoxSelect, JuiLineSelect } from '..';
+import { JuiMenuItem } from '../../../components/Menus';
 
 type Menu = {
   id: number | string;
@@ -50,29 +50,31 @@ function getKnobs() {
   };
 }
 
+const menu = [
+  { id: 1, value: 'One' },
+  { id: 2, value: 'Two' },
+  { id: 3, value: 'Three' },
+];
+
+const MenuProps: any = {
+  anchorOrigin: {
+    vertical: 'top',
+    horizontal: 'left',
+  },
+  getContentAnchorEl: null,
+};
+
 class TestBoxSelect extends React.Component<TestBoxSelectProps> {
   state = {
     value: 1,
-    menu: [
-      { id: 1, value: 'One' },
-      { id: 2, value: 'Two' },
-      { id: 3, value: 'Three' },
-    ],
   };
-  handleChange = (value: string | number) => {
+  handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = event.target;
     this.setState({ value });
   }
 
   render() {
-    const { menu, ...rest } = this.state;
     const { disabled, heightSize } = this.props;
-    const MenuProps: any = {
-      anchorOrigin: {
-        vertical: 'top',
-        horizontal: 'left',
-      },
-      getContentAnchorEl: null,
-    };
 
     return (
       <JuiBoxSelect
@@ -81,11 +83,11 @@ class TestBoxSelect extends React.Component<TestBoxSelectProps> {
         heightSize={heightSize}
         disabled={disabled}
         label="Select Demo"
-        handleChange={this.handleChange}
+        onChange={this.handleChange}
         automationId={'demo'}
       >
         {menu.map((item: Menu) => (
-          <JuiMenuItem {...rest} value={item.id} key={item.id}>
+          <JuiMenuItem value={item.id} key={item.id}>
             {item.value}
           </JuiMenuItem>
         ))}
@@ -94,6 +96,29 @@ class TestBoxSelect extends React.Component<TestBoxSelectProps> {
   }
 }
 
+const LineSelect = () => {
+  const [value, setValue] = useState('');
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = event.target;
+    setValue(value);
+  };
+  return (
+    <JuiLineSelect
+      onChange={handleChange}
+      value={value}
+      label="select"
+      menuProps={MenuProps}
+      style={{ width: '200px', textAlign: 'left' }}
+    >
+      {menu.map((item: Menu) => (
+        <JuiMenuItem value={item.id} key={item.id}>
+          {item.value}
+        </JuiMenuItem>
+      ))}
+    </JuiLineSelect>
+  );
+};
+
 storiesOf('Components/Selects', module)
   .addDecorator(alignCenterDecorator)
   .addDecorator(withInfoDecorator(JuiBoxSelect, { inline: true }))
@@ -101,6 +126,13 @@ storiesOf('Components/Selects', module)
     return (
       <div style={{ padding: '0 30%' }}>
         <TestBoxSelect {...getKnobs()} />
+      </div>
+    );
+  })
+  .add('LineSelect', () => {
+    return (
+      <div style={{ padding: '0 30%' }}>
+        <LineSelect />
       </div>
     );
   });
