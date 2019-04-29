@@ -81,7 +81,8 @@ export class SWNotification extends AbstractNotification {
                 id: item.data.id,
                 scope: item.data.scope,
                 body: item.body,
-                title: item.title
+                title: item.title,
+                icon: item.icon
               });
             }
           }
@@ -155,7 +156,12 @@ export class SWNotification extends AbstractNotification {
             scope: item.scope
           });
 
-          result.push(<INotification>{ id: item.id, title: item.title, body: item.body });
+          result.push(<INotification>{
+            id: item.id,
+            title: item.title,
+            body: item.body,
+            icon: item.icon
+          });
         }
         if (isFind) {
           resolve(result);
