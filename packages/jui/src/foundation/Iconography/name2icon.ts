@@ -129,6 +129,7 @@ const name2icon = {
   seven: '7',
   eight: '8',
   nine: '9',
+  emoji: 'emoji',
 };
 
 export type ICON_NAME = keyof typeof name2icon;
