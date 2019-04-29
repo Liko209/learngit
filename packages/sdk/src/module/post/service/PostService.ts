@@ -47,7 +47,7 @@ class PostService extends EntityBaseService<Post> {
     const userConfig = new AccountUserConfig();
     const currentUserId = userConfig.getGlipUserId();
     return new EntityNotificationController<Post>((post: Post) => {
-      return !post.deactivated && post.creator_id !== currentUserId;
+      return post.creator_id !== currentUserId;
     });
   }
 
