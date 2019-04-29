@@ -3,32 +3,33 @@
  * @Date: 2019-01-08 10:55:47
  * Copyright © RingCentral. All rights reserved.
  */
-import { TDeltaWithData, StreamItem } from '../types';
+import { IStreamItemSortableModel } from '../types';
 import { Assembler } from './Assembler/Assembler';
-import { PostStreamData } from 'sdk/module/post/entity';
-import { ISortableModelWithData } from '@/store/base';
 import _ from 'lodash';
+import { TDelta } from '@/store/base';
 
 export class StreamItemAssemblyLine {
   constructor(private _assemblers: Assembler[]) {}
   process = (
-    delta: TDeltaWithData,
-    postList: ISortableModelWithData<PostStreamData>[],
+    delta: TDelta<IStreamItemSortableModel>,
     hasMore: boolean,
-    streamItemList: StreamItem[],
     readThrough: number,
+    sortableModels: IStreamItemSortableModel[],
+    postList: IStreamItemSortableModel[],
   ) => {
     const { added, deleted } = delta;
-    let _streamItemList = _(streamItemList);
+    let _streamItemList = _(sortableModels)
+      .map('data')
+      .compact();
 
     if (added.length) {
       _streamItemList = this._assemblers.reduce(
         (prev, current) => current.onAdd(prev),
         {
           added,
-          postList,
           hasMore,
           readThrough,
+          postList,
           streamItemList: _streamItemList,
         },
       ).streamItemList;
@@ -39,8 +40,8 @@ export class StreamItemAssemblyLine {
         (prev, current) => current.onDelete(prev),
         {
           deleted,
-          postList,
           readThrough,
+          postList,
           streamItemList: _streamItemList,
         },
       ).streamItemList;

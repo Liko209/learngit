@@ -7,16 +7,19 @@
 import _ from 'lodash';
 import { NewMessageSeparatorHandler } from '@/modules/message/container/ConversationPage/Stream/StreamItemAssemblyLine/Assembler/NewMessageSeparator';
 import { ISortableModel } from '@/store/base';
-import { StreamItem, StreamItemType } from '@/modules/message/container/ConversationPage/Stream/types';
+import {
+  StreamItem,
+  StreamItemType,
+} from '@/modules/message/container/ConversationPage/Stream/types';
 import {
   AssemblerAddFuncArgs,
   AssemblerDelFuncArgs,
 } from '@/modules/message/container/ConversationPage/Stream/StreamItemAssemblyLine/Assembler/types';
 import * as utils from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
 
 type OnAddCaseConfig = {
   readThrough?: number;
-  postCreatorId?: number;
   currentUserId?: number;
   allPosts: ISortableModel[];
   streamItemList: _.LoDashImplicitWrapper<StreamItem[]>;
@@ -27,7 +30,7 @@ type OnAddCaseConfig = {
 type OnDeleteCaseConfig = {
   separatorId?: number;
   readThrough?: number;
-  deleted?: number[],
+  deleted?: number[];
   allPosts: ISortableModel[];
   streamItemList: _.LoDashImplicitWrapper<StreamItem[]>;
   setup?: (separator: NewMessageSeparatorHandler) => void;
@@ -35,7 +38,6 @@ type OnDeleteCaseConfig = {
 
 function runOnAdd({
   readThrough = 0,
-  postCreatorId = 1,
   currentUserId = 2,
   allPosts,
   streamItemList,
@@ -46,9 +48,6 @@ function runOnAdd({
 
   const separator = new NewMessageSeparatorHandler();
   setup && setup(separator);
-  allPosts.forEach(
-    item => (item.data = item.data || { creator_id: postCreatorId }),
-  );
   return separator.onAdd(<AssemblerAddFuncArgs>{
     hasMore,
     streamItemList,
@@ -76,10 +75,13 @@ function runOnDelete({
 }
 
 describe('NewMessageSeparator', () => {
-
   describe('onAdd()', () => {
     it('should have a separator next to the readThrough post', () => {
-      const firstUnreadPost = { id: 620257284, sortValue: 1540461970776, data: { created_at: 1540461970776 } };
+      const firstUnreadPost = {
+        id: 620257284,
+        sortValue: 1540461970776,
+        data: { created_at: 1540461970776 },
+      };
       const separator = runOnAdd(<OnAddCaseConfig>{
         streamItemList: _([]),
         readThrough: 620249092,
@@ -170,17 +172,21 @@ describe('NewMessageSeparator', () => {
     });
 
     it('should not add separator when the post is send by current user', () => {
+      jest
+        .spyOn(utils, 'getEntity')
+        .mockImplementation((_: ENTITY_NAME, id: number) => {
+          return { id, creatorId: 1, isMocked: false };
+        });
       const separator = runOnAdd(<OnAddCaseConfig>{
-        postCreatorId: 1,
         currentUserId: 1,
         streamItemList: _([]),
         allPosts: [
-          { id: 620232708, sortValue: 1540461821422, data: { creator_id: 1 } },
-          { id: 620240900, sortValue: 1540461830617, data: { creator_id: 1 } },
-          { id: 620249092, sortValue: 1540461830964, data: { creator_id: 1 } },
-          { id: 620265476, sortValue: 1540461970958, data: { creator_id: 1 } },
-          { id: 620273668, sortValue: 1540461971175, data: { creator_id: 1 } },
-          { id: 620281860, sortValue: 1540461972285, data: { creator_id: 1 } },
+          { id: 620232708, sortValue: 1540461821422 },
+          { id: 620240900, sortValue: 1540461830617 },
+          { id: 620249092, sortValue: 1540461830964 },
+          { id: 620265476, sortValue: 1540461970958 },
+          { id: 620273668, sortValue: 1540461971175 },
+          { id: 620281860, sortValue: 1540461972285 },
         ],
       });
 
@@ -235,7 +241,10 @@ describe('NewMessageSeparator', () => {
       });
 
       expect(separator.streamItemList.size()).toEqual(1);
-      expect(separator.streamItemList.value()[0]).toHaveProperty('type', StreamItemType.NEW_MSG_SEPARATOR);
+      expect(separator.streamItemList.value()[0]).toHaveProperty(
+        'type',
+        StreamItemType.NEW_MSG_SEPARATOR,
+      );
     });
 
     it('should have separator when readThrough is empty and hasMore=false', () => {
@@ -252,7 +261,10 @@ describe('NewMessageSeparator', () => {
       });
 
       expect(separator.streamItemList.size()).toBe(1);
-      expect(separator.streamItemList.value()[0]).toHaveProperty('type', StreamItemType.NEW_MSG_SEPARATOR);
+      expect(separator.streamItemList.value()[0]).toHaveProperty(
+        'type',
+        StreamItemType.NEW_MSG_SEPARATOR,
+      );
     });
 
     it('should have not separator when readThrough === last post', () => {
@@ -316,12 +328,15 @@ describe('NewMessageSeparator', () => {
       });
 
       expect(separator.streamItemList.size()).toBe(1);
-      expect(separator.streamItemList.value()[0]).toHaveProperty('type', StreamItemType.NEW_MSG_SEPARATOR);
+      expect(separator.streamItemList.value()[0]).toHaveProperty(
+        'type',
+        StreamItemType.NEW_MSG_SEPARATOR,
+      );
     });
   });
 
   describe('onDelete()', () => {
-    it('should do nothing when no message separator exists already',  () => {
+    it('should do nothing when no message separator exists already', () => {
       const separator = runOnDelete(<OnDeleteCaseConfig>{
         deleted: [620232708, 620273668],
         streamItemList: _([]),
@@ -339,7 +354,7 @@ describe('NewMessageSeparator', () => {
       expect(separator.streamItemList.value()).toEqual([]);
     });
 
-    it('should remove the new message separator when no following message',  () => {
+    it('should remove the new message separator when no following message', () => {
       const unReadPost = {
         id: 620257284,
         sortValue: 1540461970776,
@@ -361,17 +376,14 @@ describe('NewMessageSeparator', () => {
           separator.separatorId = existNewMsgSeparator.id;
         },
         deleted: [620257284],
-        streamItemList: _([
-          existNewMsgSeparator,
-          unReadPostStream,
-        ]),
+        streamItemList: _([existNewMsgSeparator, unReadPostStream]),
         allPosts: [],
       });
       expect(separator.streamItemList.value().length).toEqual(1);
       expect(separator.streamItemList.value()).toEqual([unReadPostStream]);
     });
 
-    it('should not remove the separator when it is followed by a message',  () => {
+    it('should not remove the separator when it is followed by a message', () => {
       const firstUnreadPost = {
         id: 620257284,
         sortValue: 1540461970776,

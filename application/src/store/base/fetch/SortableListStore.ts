@@ -5,7 +5,7 @@
  */
 import { computed, action } from 'mobx';
 import { ListStore } from './ListStore';
-import { ISortableModelWithData, ISortFunc } from './types';
+import { ISortFunc, ISortableModel } from './types';
 import _ from 'lodash';
 
 // const defaultSortFunc: ISortFunc<ISortableModel> = (
@@ -13,18 +13,18 @@ import _ from 'lodash';
 //   second: ISortableModel,
 // ) => first.sortValue - second.sortValue;
 
-export class SortableListStore<T = any> extends ListStore<
-  ISortableModelWithData<T>
-> {
-  private _sortFunc?: ISortFunc<ISortableModelWithData<T>>;
+export class SortableListStore<
+  SortableModel extends ISortableModel = ISortableModel
+> extends ListStore<SortableModel> {
+  private _sortFunc?: ISortFunc<SortableModel>;
 
-  constructor(sortFunc?: ISortFunc<ISortableModelWithData<T>>) {
+  constructor(sortFunc?: ISortFunc<SortableModel>) {
     super();
     this._sortFunc = sortFunc;
   }
 
   @action
-  upsert(idArray: ISortableModelWithData<T>[]) {
+  upsert(idArray: SortableModel[]) {
     if (idArray.length) {
       const unionArray = _.unionBy(idArray, this.items, 'id');
       const unionAndSortIds = this._sortFunc
@@ -57,6 +57,6 @@ export class SortableListStore<T = any> extends ListStore<
   }
 
   getById(id: number) {
-    return _.find(this.items, { id });
+    return _.find(this.items, { id }) as SortableModel | undefined;
   }
 }

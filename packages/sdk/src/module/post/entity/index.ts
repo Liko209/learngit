@@ -7,7 +7,6 @@
 export {
   Post,
   PostView,
-  PostStreamData,
   IPostQuery,
   IPostResult,
   IRawPostResult,

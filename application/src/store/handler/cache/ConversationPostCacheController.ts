@@ -11,7 +11,7 @@ import {
   TDelta,
   DeltaDataHandler,
 } from '@/store/base';
-import { Post, PostStreamData } from 'sdk/module/post/entity';
+import { Post } from 'sdk/module/post/entity';
 import storeManager, { ENTITY_NAME } from '@/store';
 import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
 import { TypeDictionary } from 'sdk/utils';
@@ -65,7 +65,7 @@ class ConversationPostCacheController extends PostCacheController {
     }
   }
 
-  get(groupId: number): FetchSortableDataListHandler<PostStreamData> {
+  get(groupId: number): FetchSortableDataListHandler<Post> {
     let listHandler = this._cacheMap.get(groupId);
     if (!listHandler) {
       const fetchDataCallback = async (delta: TDelta) => {

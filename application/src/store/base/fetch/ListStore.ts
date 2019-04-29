@@ -57,7 +57,7 @@ export class ListStore<T> extends BaseNotificationSubscribe {
     this._items.clear();
   }
 
-  get items() {
+  get items(): T[] {
     return this._items;
   }
 

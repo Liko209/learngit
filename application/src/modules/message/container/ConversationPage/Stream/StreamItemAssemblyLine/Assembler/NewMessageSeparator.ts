@@ -5,7 +5,7 @@
  */
 import _ from 'lodash';
 import { observable, computed } from 'mobx';
-import { ISortableModel, ISortableModelWithData } from '@/store/base';
+import { ISortableModel } from '@/store/base';
 
 import { StreamItemType, StreamItem } from '../../types';
 import { Assembler } from './Assembler';
@@ -16,8 +16,10 @@ import {
   AssemblerDelFunc,
 } from './types';
 
-import { GLOBAL_KEYS } from '@/store/constants';
-import { getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
+import { getGlobalValue, getEntity } from '@/store/utils';
+import { Post } from 'sdk/module/post/entity';
+import PostModel from '@/store/models/Post';
 
 class NewMessageSeparatorHandler extends Assembler {
   private _readThrough: number = 0;
@@ -84,18 +86,18 @@ class NewMessageSeparatorHandler extends Assembler {
      * (4)
      * Separator in current page, let's find it now.
      */
-    const firstUnreadPost = this._findNextOthersPost(
+    const firstSortableModel = this._findNextOthersSortableModel(
       postList,
       this._readThrough,
     );
     let items = streamItemList;
-    if (firstUnreadPost) {
-      const separatorId = firstUnreadPost.sortValue - 1;
-      this._setSeparator(firstUnreadPost.id, separatorId);
+    if (firstSortableModel) {
+      const separatorId = firstSortableModel.sortValue - 1;
+      this._setSeparator(firstSortableModel.id, separatorId);
       items = items.concat({
         id: separatorId,
         type: StreamItemType.NEW_MSG_SEPARATOR,
-        timeStart: firstUnreadPost.sortValue - 1,
+        timeStart: firstSortableModel.sortValue - 1,
       });
       return { ...args, streamItemList: items };
     }
@@ -139,24 +141,24 @@ class NewMessageSeparatorHandler extends Assembler {
     this._disabled = false;
   }
 
-  private _findNextOthersPost(
-    allPosts: ISortableModelWithData<{ creator_id: number }>[],
+  private _findNextOthersSortableModel(
+    allPosts: ISortableModel[],
     postId: number,
   ) {
     const len = allPosts.length;
-    let targetPost;
+    let result: ISortableModel | undefined = undefined;
     for (let i = 0; i < len; i++) {
-      const post = allPosts[i];
-      if (
-        post.id > postId &&
-        post.data &&
-        post.data.creator_id !== this._userId
-      ) {
-        targetPost = post;
+      const sortableModel = allPosts[i];
+      const post = getEntity<Post, PostModel>(
+        ENTITY_NAME.POST,
+        sortableModel.id,
+      );
+      if (post.id > postId && post.creatorId !== this._userId) {
+        result = sortableModel;
         break;
       }
     }
-    return targetPost;
+    return result;
   }
 
   private _setSeparator(postId: number, separatorId: number) {

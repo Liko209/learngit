@@ -9,15 +9,11 @@ import {
   FetchSortableDataListHandler,
   IdListPagingDataProvider,
   IEntityDataProvider,
+  ISortableModel,
 } from '../base/fetch';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { IdModel } from 'sdk/framework/model';
-import {
-  IMatchFunc,
-  ISortableModelWithData,
-  ISortFunc,
-  ITransformFunc,
-} from '../base/fetch/types';
+import { IMatchFunc, ISortFunc, ITransformFunc } from '../base/fetch/types';
 import { Entity } from '../store';
 import { ENTITY_NAME } from '../constants';
 
@@ -28,7 +24,7 @@ type IdListPaginationOptions<T, K> = {
   filterFunc: IMatchFunc<K>;
   transformFunc?: ITransformFunc<T>;
   isMatchFunc?: IMatchFunc<T>;
-  sortFunc?: ISortFunc<ISortableModelWithData<T>>;
+  sortFunc?: ISortFunc<ISortableModel>;
 };
 
 class IdListPaginationHandler<T extends IdModel, K extends Entity> {
@@ -86,8 +82,8 @@ class IdListPaginationHandler<T extends IdModel, K extends Entity> {
   }
 
   protected defaultSortFunc = (
-    lhs: ISortableModelWithData<T>,
-    rhs: ISortableModelWithData<T>,
+    lhs: ISortableModel,
+    rhs: ISortableModel,
   ): number => {
     let lhsPos = -1;
     let rhsPos = -1;
