@@ -22,6 +22,12 @@ const mockFeatureModule = [
   },
 ];
 
+const permission = {
+  hasPermission: jest.fn().mockResolvedValue(true),
+  isVoipCallingAvailable: jest.fn().mockResolvedValue(true),
+};
+ServiceLoader.getInstance = jest.fn().mockReturnValue(permission);
+
 describe('FeaturesFlagsService', () => {
   beforeEach(() => {
     jest.resetModules();
@@ -40,11 +46,6 @@ describe('FeaturesFlagsService', () => {
 
   describe('canUseTelephony()', () => {
     it('should use telephony when service has permission', async () => {
-      const permission = {
-        hasPermission: jest.fn().mockResolvedValue(true),
-        isVoipCallingAvailable: jest.fn().mockResolvedValue(true),
-      };
-      ServiceLoader.getInstance = jest.fn().mockReturnValue(permission);
       const featuresFlagsService = new FeaturesFlagsService();
 
       expect(await featuresFlagsService.canUseTelephony()).toBeTruthy();
