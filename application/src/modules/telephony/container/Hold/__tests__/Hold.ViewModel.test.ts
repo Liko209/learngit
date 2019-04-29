@@ -7,10 +7,14 @@
 import { container, decorate, injectable } from 'framework';
 import { TelephonyStore } from '../../../store';
 import { HoldViewModel } from '../Hold.ViewModel';
-import { TelephonyService } from '../../../service';
+import { TELEPHONY_SERVICE } from '../../../interface/constant';
+import { TelephonyService } from '../../../service/TelephonyService';
 
-[TelephonyService, TelephonyStore].forEach(kls => decorate(injectable(), kls));
-[TelephonyService, TelephonyStore].forEach(kls => container.bind(kls).to(kls));
+decorate(injectable(), TelephonyStore);
+decorate(injectable(), TelephonyService);
+
+container.bind(TELEPHONY_SERVICE).to(TelephonyService);
+container.bind(TelephonyStore).to(TelephonyStore);
 
 let holdViewModel: HoldViewModel;
 

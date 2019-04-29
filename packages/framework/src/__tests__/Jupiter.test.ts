@@ -1,5 +1,6 @@
 import { Jupiter } from '../Jupiter';
 import { container } from '../ioc';
+import { LISTENER_TYPE } from '../types';
 
 describe('Jupiter', () => {
   afterEach(() => {
@@ -127,11 +128,6 @@ describe('JupiterModule', () => {
   afterEach(() => {
     container.unbindAll();
   });
-
-  const LISTENER_TYPE = {
-    INITIALIZED: 'Initialized',
-    DISPOSED: 'Disposed',
-  };
 
   const _jupiter = new Jupiter();
   const MESSAGE_SERVICE = 'MESSAGE_SERVICE';
