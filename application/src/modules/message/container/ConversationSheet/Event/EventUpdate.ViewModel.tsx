@@ -3,6 +3,7 @@
  * @Date: 2018-11-07 15:45:04
  * Copyright © RingCentral. All rights reserved.
  */
+import { promisedComputed } from 'computed-async-mobx';
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Item } from 'sdk/module/item/entity';
@@ -66,17 +67,15 @@ class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
     );
   }
 
-  @computed
-  get oldTimeText() {
+  oldTimeText = promisedComputed('', async () => {
     const { old_values } = this.activityData;
-    return this.getTimeText(old_values, this.event);
-  }
+    return await this.getTimeText(old_values, this.event);
+  });
 
-  @computed
-  get newTimeText() {
+  newTimeText = promisedComputed('', async () => {
     const { new_values } = this.activityData;
-    return this.getTimeText(new_values, this.event);
-  }
+    return await this.getTimeText(new_values, this.event);
+  });
 }
 
 export { EventUpdateViewModel };

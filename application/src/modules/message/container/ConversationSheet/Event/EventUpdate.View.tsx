@@ -77,7 +77,7 @@ class EventUpdate extends React.Component<Props> {
               hideText={t('item.hideEventHistory')}
             >
               {hasOldTime && (
-                <JuiEventCollapseContent>{`${oldTime} ${oldTimeText}`}</JuiEventCollapseContent>
+                <JuiEventCollapseContent>{`${oldTime} ${oldTimeText.get()}`}</JuiEventCollapseContent>
               )}
               {oldLocation && (
                 <JuiEventCollapseContent>{oldLocation}</JuiEventCollapseContent>
@@ -88,7 +88,7 @@ class EventUpdate extends React.Component<Props> {
       >
         {hasNewTime && (
           <JuiLabelWithContent label={t('item.due')}>
-            <JuiTimeMessage time={`${newTime} ${newTimeText}`} />
+            <JuiTimeMessage time={`${newTime} ${newTimeText.get()}`} />
           </JuiLabelWithContent>
         )}
         {newLocation && (

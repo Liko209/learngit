@@ -3,7 +3,7 @@
  * @Date: 2018-11-08 19:18:07
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { promisedComputed } from 'computed-async-mobx';
 import { computed } from 'mobx';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
@@ -106,17 +106,15 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
     return !!(start && due);
   }
 
-  @computed
-  get startTime() {
+  startTime = promisedComputed('', async () => {
     const startTime = this.task.start;
-    return startTime ? recentlyTwoDayAndOther(startTime) : '';
-  }
+    return startTime ? await recentlyTwoDayAndOther(startTime) : '';
+  });
 
-  @computed
-  get endTime() {
+  endTime = promisedComputed('', async () => {
     const endTime = this.task.due;
-    return endTime ? getDateAndTime(endTime) : '';
-  }
+    return endTime ? await getDateAndTime(endTime) : '';
+  });
 
   @computed
   get attachmentIds() {

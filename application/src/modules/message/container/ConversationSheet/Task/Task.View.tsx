@@ -178,7 +178,7 @@ class Task extends React.Component<taskViewProps> {
         {endTime && (
           <JuiLabelWithContent label={t('item.due')}>
             <JuiTimeMessage
-              time={`${startTime} ${hasTime ? '-' : ''} ${endTime} ${timeText}`}
+              time={`${startTime.get()} ${hasTime ? '-' : ''} ${endTime.get()} ${timeText}`}
             />
           </JuiLabelWithContent>
         )}

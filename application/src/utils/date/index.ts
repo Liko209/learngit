@@ -1,11 +1,11 @@
 import moment from 'moment';
-import i18next from 'i18next';
+import i18nT from '@/utils/i18nT';
 import _ from 'lodash';
 
-function getDateMessage(
+async function getDateMessage(
   timestamp: any,
   format: string = 'ddd, MMM Do',
-): string {
+): Promise<string> {
   const m = moment(timestamp)
     .hour(0)
     .minute(0)
@@ -18,13 +18,13 @@ function getDateMessage(
     .millisecond(0);
   const diff = now.diff(m, 'days', true);
   if (diff === 0) {
-    return i18next.t('common.time.today');
+    return await i18nT('common.time.today');
   }
   if (diff === 1) {
-    return i18next.t('common.time.yesterday');
+    return await i18nT('common.time.yesterday');
   }
   if (diff === -1) {
-    return i18next.t('common.time.tomorrow');
+    return await i18nT('common.time.tomorrow');
   }
   if (diff <= 7) {
     return m.format(format); // Tue, Oct 30th  周二, 10月30日
@@ -41,35 +41,42 @@ const WEEKDAY = [
   'common.time.Friday',
   'common.time.Saturday',
 ];
+
 type Moment = moment.Moment;
+
 const dateFormatter = {
-  localTime: (m: Moment) => {
+  localTime: (m: Moment): string => {
     return m.format('LT');
   },
-  today: () => {
-    return i18next.t('common.time.today');
+  today: async (): Promise<string> => {
+    const text: string = await i18nT('common.time.today');
+    return text;
   },
-  yesterday: () => {
-    return i18next.t('common.time.yesterday');
+  yesterday: async (): Promise<string> => {
+    const text: string = await i18nT('common.time.yesterday');
+    return text;
   },
-  weekday: (m: Moment) => {
-    return i18next.t(WEEKDAY[m.day()]);
+  weekday: async (m: Moment): Promise<string> => {
+    const text: string = await i18nT(WEEKDAY[m.day()]);
+    return text;
   },
-  exactDate: (m: Moment) => {
-    return `${dateFormatter.weekday(m).slice(0, 3)}, ${m.format('l')}`;
+  exactDate: async (m: Moment): Promise<string> => {
+    const weekday: string = await dateFormatter.weekday(m);
+    return `${weekday.slice(0, 3)}, ${m.format('l')}`;
   },
-  weekdayAndTime: (m: Moment) => {
-    return `${dateFormatter.weekday(m).slice(0, 3)}, ${dateFormatter.localTime(
+  weekdayAndTime: async (m: Moment): Promise<string> => {
+    const weekday: string = await dateFormatter.weekday(m);
+    return `${weekday.slice(0, 3)}, ${dateFormatter.localTime(
       m,
     )}`;
   },
-  dateAndTime: (m: Moment) => {
-    return `${dateFormatter.exactDate(m)} ${dateFormatter.localTime(m)}`;
+  dateAndTime: async (m: Moment): Promise<string> => {
+    return `${await dateFormatter.exactDate(m)} ${dateFormatter.localTime(m)}`;
   },
-  date: (timestamp: number) => {
+  date: (timestamp: number): string => {
     return moment(timestamp).format('l');
   },
-  dateAndTimeWithoutWeekday: (m: Moment) => {
+  dateAndTimeWithoutWeekday: (m: Moment): string => {
     return `${m.format('l')} ${dateFormatter.localTime(m)}`;
   },
 };
@@ -98,7 +105,7 @@ const condition = {
 function buildFormatter(
   buildCondition: { condition: Function; formatter: Function }[],
 ): Function {
-  return function (timestamp: Date): string {
+  return function (timestamp: Date): Promise<string> | string {
     const mInit = moment(timestamp);
     const m = moment(timestamp)
       .hour(0)
@@ -171,11 +178,13 @@ const postTimestamp = buildFormatter([
     formatter: dateFormatter.dateAndTime,
   },
 ]);
-function getDateTimeStamp(timestamp: number) {
+
+function getDateTimeStamp(timestamp: number): number {
   return moment(timestamp)
     .startOf('day')
     .valueOf();
 }
+
 function handleTimeZoneOffset(
   timestamp: number,
   timezoneOffset: number,
@@ -185,7 +194,7 @@ function handleTimeZoneOffset(
   return timestamp + (localTimezoneOffset - timezoneOffset) * MINUTE;
 }
 
-function twoDigit(n: number) {
+function twoDigit(n: number): string {
   return (n < 10 ? '0' : '') + n;
 }
 
