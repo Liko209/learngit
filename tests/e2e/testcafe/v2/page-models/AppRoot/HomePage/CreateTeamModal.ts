@@ -52,7 +52,7 @@ class BaseTeamSetting extends BaseWebComponent {
   }
 
   async typeTeamName(teamName) {
-    await this.clickAndTypeText(this.teamNameInput, teamName, { replace: true, });
+    await this.clickAndTypeText(this.teamNameInput, teamName, { replace: true, paste: true });
   }
 
   randomString(length: number) {
