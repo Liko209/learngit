@@ -77,17 +77,14 @@ abstract class PostCacheController implements IPreFetchController {
         mainLogger.debug(
           `PostCacheController: setCurrentCacheConversation original =>  ${
             this._currentGroupId
-          }, post ids ${this.get(groupId).sortableListStore &&
-            this.get(groupId).sortableListStore.getIds}`,
+          }`,
         );
         this.get(this._currentGroupId).maintainMode = true;
       }
 
       if (this.hasCache(groupId)) {
         mainLogger.debug(
-          `PostCacheController: setCurrentCacheConversation new => ${groupId}, post ids ${this.get(
-            groupId,
-          ).sortableListStore && this.get(groupId).sortableListStore.getIds}`,
+          `PostCacheController: setCurrentCacheConversation new => ${groupId}`,
         );
         this.get(groupId).maintainMode = false;
       }

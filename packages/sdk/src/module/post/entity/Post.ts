@@ -55,8 +55,7 @@ export type UnreadPostQuery = {
   groupId: number;
   startPostId: number;
   endPostId: number;
-  limit: number;
-  direction?: QUERY_DIRECTION;
+  unreadCount: number;
 };
 
 export type IPostResult = {

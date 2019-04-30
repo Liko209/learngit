@@ -117,18 +117,17 @@ class PostFetchController {
     groupId,
     startPostId,
     endPostId,
-    limit = DEFAULT_PAGE_SIZE,
-    direction = QUERY_DIRECTION.NEWER,
+    unreadCount = DEFAULT_PAGE_SIZE,
   }: UnreadPostQuery): Promise<IPostResult> {
     let result: IPostResult = {
-      limit,
+      limit: unreadCount,
       posts: [],
       items: [],
       hasMore: true,
     };
     mainLogger.info(
       LOG_FETCH_POST,
-      `getUnreadPosts() groupId: ${groupId} startPostId: ${startPostId} endPostId: ${endPostId} limit: ${limit}`,
+      `getUnreadPosts() groupId: ${groupId} startPostId: ${startPostId} endPostId: ${endPostId}`,
     );
 
     if (startPostId) {
@@ -144,16 +143,15 @@ class PostFetchController {
           groupId,
           startPostId,
           endPostId,
-          limit,
-          direction,
+          unreadCount,
         });
       } else {
         mainLogger.info(LOG_FETCH_POST, 'getUnreadPosts() get from server');
         const serverResult = await this.getRemotePostsByGroupId({
           groupId,
-          limit,
-          direction,
+          limit: unreadCount,
           postId: startPostId,
+          direction: QUERY_DIRECTION.NEWER,
           shouldSaveToDb: false,
         });
         if (serverResult) {
@@ -323,7 +321,7 @@ class PostFetchController {
     unreadPostQuery: UnreadPostQuery,
   ): Promise<IPostResult> {
     const result: IPostResult = {
-      limit: unreadPostQuery.limit,
+      limit: unreadPostQuery.unreadCount,
       posts: [],
       items: [],
       hasMore: true,
