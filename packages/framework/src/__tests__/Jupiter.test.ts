@@ -121,6 +121,29 @@ describe('Jupiter', () => {
       expect(afterUnregisterFun).toBeCalled();
       expect(container.isBound(MyModule)).toBeFalsy();
     });
+
+    it('should not execute unbind when module already unRegister', async () => {
+      const jupiter = new Jupiter();
+      jupiter.bindProvide(MyModule);
+      jupiter.bindProvide(MyService);
+      const moduleConfig = {
+        entry: MyModule,
+        provides: [MyService],
+      };
+      expect(jupiter.get<MyModule>(MyModule)).toBeInstanceOf(MyModule);
+      expect(jupiter.get<MyService>(MyService)).toBeInstanceOf(MyService);
+
+      const afterUnregisterFun = jest.fn();
+      const afterUnregisterFun1 = jest.fn();
+      await jupiter.unRegisterModule(moduleConfig, afterUnregisterFun);
+      expect(afterUnregisterFun).toBeCalled();
+      expect(container.isBound(MyModule)).toBeFalsy();
+
+      await jupiter.unRegisterModule(moduleConfig, afterUnregisterFun1);
+      expect(disposeFun).toBeCalled();
+      expect(afterUnregisterFun1).not.toBeCalled();
+      expect(container.isBound(MyModule)).toBeFalsy();
+    });
   });
 });
 

@@ -5,11 +5,7 @@
  */
 import React from 'react';
 import i18nT from '@/utils/i18nT';
-// import { container } from 'framework';
-// import { MessageService } from '@/modules/message/service/MessageService';
-// import { Call } from '@/modules/telephony/container';
 import { MessageUmi } from '../container/MessageUmi';
-// import Message from './lazy/Message';
 import { SubModuleConfig } from '../types';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { lazyComponent } from '@/modules/common/util/lazyComponent';
