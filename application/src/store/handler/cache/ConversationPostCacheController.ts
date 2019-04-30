@@ -7,6 +7,7 @@
 import {
   FetchSortableDataListHandler,
   ISortableModel,
+  ISortableModelWithData,
   TDelta,
   DeltaDataHandler,
 } from '@/store/base';
@@ -16,7 +17,6 @@ import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
 import { TypeDictionary } from 'sdk/utils';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import PostModel from '@/store/models/Post';
-import _ from 'lodash';
 import { ThumbnailPreloadController } from './ThumbnailPreloadController';
 import { PostCacheController } from './PostCacheController';
 import { ConversationPostFocBuilder } from './ConversationPostFocBuilder';
@@ -86,7 +86,7 @@ class ConversationPostCacheController extends PostCacheController {
 
             await Promise.all(
               sortableModels.map(
-                async (sortableModel: ISortableModel<Post>) => {
+                async (sortableModel: ISortableModelWithData<Post>) => {
                   if (
                     sortableModel &&
                     sortableModel.id &&
