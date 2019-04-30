@@ -1,0 +1,82 @@
+/*
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2019-04-26 10:29:30
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import { highlightFormatter } from '../utils';
+describe('highlightForamtter', () => {
+  it('should format correctly non-HTML text', () => {
+    expect(highlightFormatter(['abc'], 'tttabcttt')).toBe(
+      'ttt<span class="highlight-term">abc</span>ttt',
+    );
+    expect(highlightFormatter(['abc', 'z'], 'tttabcttzt')).toBe(
+      'ttt<span class="highlight-term">abc</span>tt<span class="highlight-term">z</span>t',
+    );
+    expect(highlightFormatter(['abc', 'z'], 'tttabczttt')).toBe(
+      'ttt<span class="highlight-term">abc</span><span class="highlight-term">z</span>ttt',
+    );
+    expect(highlightFormatter(['1'], '1')).toBe(
+      '<span class="highlight-term">1</span>',
+    );
+    expect(highlightFormatter(['1'], '2221abc')).toBe(
+      '222<span class="highlight-term">1</span>abc',
+    );
+    expect(highlightFormatter(['221'], '2221abc')).toBe(
+      '2<span class="highlight-term">221</span>abc',
+    );
+    expect(highlightFormatter(['221', 'c'], '2221abc')).toBe(
+      '2<span class="highlight-term">221</span>ab<span class="highlight-term">c</span>',
+    );
+    expect(highlightFormatter(['221', 'c'], '222 1abc')).toBe(
+      '222 1ab<span class="highlight-term">c</span>',
+    );
+  });
+  it('should format correctly HTML text', () => {
+    expect(highlightFormatter(['abc'], 't<a>ttabctt</a>t')).toBe(
+      't<a>tt<span class="highlight-term">abc</span>tt</a>t',
+    );
+    expect(highlightFormatter(['abc', 'z'], 't<a>ttabcttz</a>t')).toBe(
+      't<a>tt<span class="highlight-term">abc</span>tt<span class="highlight-term">z</span></a>t',
+    );
+    expect(highlightFormatter(['span', 'z'], '<span>span</span>')).toBe(
+      '<span><span class="highlight-term">span</span></span>',
+    );
+    expect(highlightFormatter(['span', 'z'], '<span>span z</span>')).toBe(
+      '<span><span class="highlight-term">span</span> <span class="highlight-term">z</span></span>',
+    );
+    expect(highlightFormatter(['span', 'z'], '<span>sp an z</span>')).toBe(
+      '<span>sp an <span class="highlight-term">z</span></span>',
+    );
+    expect(highlightFormatter(['span', 'z'], '<span>sp an z</span>')).toBe(
+      '<span>sp an <span class="highlight-term">z</span></span>',
+    );
+    expect(highlightFormatter(['span', 'z'], 'span<br> spanning <br> zz')).toBe(
+      '<span class="highlight-term">span</span><br> <span class="highlight-term">span</span>ning <br> <span class="highlight-term">z</span><span class="highlight-term">z</span>',
+    );
+    expect(
+      highlightFormatter(
+        ['5', 'ww'],
+        '<a href="www.gggolegg.com">www.115.com</a>',
+      ),
+    ).toBe(
+      '<a href="www.gggolegg.com"><span class="highlight-term">ww</span>w.11<span class="highlight-term">5</span>.com</a>',
+    );
+    expect(
+      highlightFormatter(
+        ['5', 'ww'],
+        '<a href="www.gggolegg.com">www.115.com</a> 546',
+      ),
+    ).toBe(
+      '<a href="www.gggolegg.com"><span class="highlight-term">ww</span>w.11<span class="highlight-term">5</span>.com</a> <span class="highlight-term">5</span>46',
+    );
+    expect(
+      highlightFormatter(
+        ['5'],
+        '<div class="jss74 jss83 sc-iomxrj csAIRQ sc-eIHaNI cOOlkC"><div data-test-automation-id="file-name" class="sc-cBdUnI cGhMVG"><span class="sc-exkUMo fyTiJZ">photo-1529946890443-82ca0ff80</span><span>d5d.jpeg</span></div></div>',
+      ),
+    ).toBe(
+      '<div class="jss74 jss83 sc-iomxrj csAIRQ sc-eIHaNI cOOlkC"><div data-test-automation-id="file-name" class="sc-cBdUnI cGhMVG"><span class="sc-exkUMo fyTiJZ">photo-1<span class="highlight-term">5</span>29946890443-82ca0ff80</span><span>d<span class="highlight-term">5</span>d.jpeg</span></div></div>',
+    );
+  });
+});

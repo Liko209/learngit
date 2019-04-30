@@ -8,8 +8,9 @@ import _ from 'lodash';
 import { BaseDao } from '../../../framework/dao';
 import { Post, PostView } from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
-import { DEFAULT_PAGE_SIZE } from '../constant';
+import { DEFAULT_PAGE_SIZE, LOG_FETCH_POST } from '../constant';
 import { ArrayUtils } from '../../../utils/ArrayUtils';
+
 class PostViewDao extends BaseDao<PostView> {
   static COLLECTION_NAME = 'postView';
   // TODO, use IDatabase after import foundation module in
@@ -29,6 +30,10 @@ class PostViewDao extends BaseDao<PostView> {
     if (anchorPostId) {
       anchorPost = await this.get(anchorPostId);
       if (!anchorPost) {
+        mainLogger.info(
+          LOG_FETCH_POST,
+          `queryPostsByGroupId() return [] for groupId:${groupId} anchorPostId:${anchorPostId} direction:${direction} limit:${limit}`,
+        );
         return [];
       }
     }
@@ -43,22 +48,30 @@ class PostViewDao extends BaseDao<PostView> {
       direction,
     );
     const end = performance.now();
-    mainLogger.debug(`queryPostsByGroupId from postView ${end - start}`);
+    mainLogger.info(
+      LOG_FETCH_POST,
+      `queryPostsByGroupId() from postView ${end - start}, groupId:${groupId}`,
+    );
 
     // 3. Get posts via ids from post table
     const posts = await fetchPostFunc(postIds);
-    mainLogger.debug(
-      `queryPostsByGroupId via ids from post ${performance.now() - end}`,
+    mainLogger.info(
+      LOG_FETCH_POST,
+      `queryPostsByGroupId() via ids from post ${performance.now() -
+        end}, groupId:${groupId}`,
     );
     return posts;
   }
 
   async queryPostIdsByGroupId(groupId: number): Promise<number[]> {
+    const postViews = await this.queryPostByGroupId(groupId);
+    return postViews.map(postView => postView.id);
+  }
+
+  async queryPostByGroupId(groupId: number): Promise<PostView[]> {
     const query = this.createQuery().equal('group_id', groupId);
     const postViews = await query.toArray();
-    return _.orderBy(postViews, 'created_at', 'asc').map(
-      postView => postView.id,
-    );
+    return _.orderBy(postViews, 'created_at', 'asc');
   }
 }
 export { PostViewDao };

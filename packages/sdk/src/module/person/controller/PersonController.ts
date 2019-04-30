@@ -29,7 +29,7 @@ import { PersonDataController } from './PersonDataController';
 import { ContactType } from '../types';
 import notificationCenter from '../../../service/notificationCenter';
 import { ENTITY } from '../../../service/eventKey';
-import { SYNC_SOURCE } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { FileTypeUtils } from '../../../utils/file/FileTypeUtils';
 
 const PersonFlags = {
@@ -55,6 +55,10 @@ const HEADSHOT_THUMB_HEIGHT = 'height';
 
 const SIZE = 'size';
 
+const PhoneNumberUsageType = {
+  DIRECT_NUMBER: 'DirectNumber',
+};
+
 class PersonController {
   private _entitySourceController: IEntitySourceController<Person>;
   private _cacheSearchController: IEntityCacheSearchController<Person>;
@@ -69,10 +73,14 @@ class PersonController {
     this._cacheSearchController = _cacheSearchController;
   }
 
-  async handleIncomingData(persons: Raw<Person>[], source: SYNC_SOURCE) {
+  async handleIncomingData(
+    persons: Raw<Person>[],
+    source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
+  ) {
     await new PersonDataController(
       this._entitySourceController,
-    ).handleIncomingData(persons, source);
+    ).handleIncomingData(persons, source, changeMap);
   }
 
   async getPersonsByIds(ids: number[]): Promise<Person[]> {
@@ -326,7 +334,11 @@ class PersonController {
         if (person.rc_phone_numbers) {
           const res = person.rc_phone_numbers.find(
             (phoneNumberModel: PhoneNumberModel) => {
-              return phoneNumberModel.phoneNumber === e164PhoneNumber;
+              return (
+                phoneNumberModel.phoneNumber === e164PhoneNumber &&
+                phoneNumberModel.usageType ===
+                  PhoneNumberUsageType.DIRECT_NUMBER
+              );
             },
           );
           if (res) {
@@ -341,9 +353,14 @@ class PersonController {
       },
     );
 
-    return result && result.sortableModels.length > 0
-      ? result.sortableModels[0].entity
-      : null;
+    if (result) {
+      const res = result.sortableModels.find((item: { entity: Person }) => {
+        return !this._isDeactivated(item.entity);
+      });
+      return res ? res.entity : null;
+    }
+
+    return null;
   }
 
   public async refreshPersonData(personId: number): Promise<void> {

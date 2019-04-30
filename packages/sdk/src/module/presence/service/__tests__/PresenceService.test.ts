@@ -70,17 +70,27 @@ describe('Presence Controller', () => {
       ]);
       expect(
         presenceController.handlePresenceIncomingData,
-      ).toHaveBeenCalledWith([
-        {
-          personId: 1,
-          calculatedStatus: PRESENCE.AVAILABLE,
-        },
-      ]);
+      ).toHaveBeenCalledWith(
+        [
+          {
+            personId: 1,
+            calculatedStatus: PRESENCE.AVAILABLE,
+          },
+        ],
+        undefined,
+      );
     });
 
     it('should call handleStore with correct parameter', () => {
-      presenceService.handleStore({ state: 'connected' });
-      expect(presenceController.handleStore).toHaveBeenCalledWith('connected');
+      presenceService.handleSocketStateChange({ state: 'connected' });
+      expect(presenceController.handleSocketStateChange).toHaveBeenCalledWith(
+        'connected',
+      );
+    });
+
+    it('should call handleStore with correct parameter', () => {
+      presenceService.resetPresence();
+      expect(presenceController.resetPresence).toHaveBeenCalled();
     });
   });
 });

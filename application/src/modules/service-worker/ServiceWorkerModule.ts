@@ -11,8 +11,11 @@ class ServiceWorkerModule extends AbstractModule {
       (swURL: string) => {
         this._upgradeHandler.setServiceWorkerURL(swURL);
       },
-      () => {
-        this._upgradeHandler.onNewContentAvailable();
+      (isCurrentPageInControl: boolean) => {
+        this._upgradeHandler.onNewContentAvailable(isCurrentPageInControl);
+      },
+      (text: string) => {
+        this._upgradeHandler.logInfo(text);
       },
     );
   }

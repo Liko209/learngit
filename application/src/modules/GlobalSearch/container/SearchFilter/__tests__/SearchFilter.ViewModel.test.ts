@@ -29,10 +29,27 @@ describe('SearchFilterViewModel', () => {
     it('should have been called with ESearchContentTypes', () => {
       const props = {
         setSearchOptions: jest.fn(),
+        searchOptions: {},
       } as any;
       searchFilterViewModel = new SearchFilterViewModel(props);
-      searchFilterViewModel.handleSearchTypeChange(ESearchContentTypes.ALL);
+      searchFilterViewModel.handleSearchTypeChange({
+        target: { value: ESearchContentTypes.ALL },
+      } as React.ChangeEvent<HTMLSelectElement>);
       expect(props.setSearchOptions).toHaveBeenCalledWith({
+        type: ESearchContentTypes.ALL,
+      });
+    });
+
+    it('should NOT have been called with ESearchContentTypes if select same type', () => {
+      const props = {
+        setSearchOptions: jest.fn(),
+        searchOptions: { type: ESearchContentTypes.ALL },
+      } as any;
+      searchFilterViewModel = new SearchFilterViewModel(props);
+      searchFilterViewModel.handleSearchTypeChange({
+        target: { value: ESearchContentTypes.ALL },
+      } as React.ChangeEvent<HTMLSelectElement>);
+      expect(props.setSearchOptions).not.toHaveBeenCalledWith({
         type: ESearchContentTypes.ALL,
       });
     });
@@ -42,15 +59,50 @@ describe('SearchFilterViewModel', () => {
     it('should have been called with time stamp', () => {
       const props = {
         setSearchOptions: jest.fn(),
+        searchOptions: {},
       } as any;
       searchFilterViewModel = new SearchFilterViewModel(props);
       const TimeStamp = searchFilterViewModel.getTimeStamp(
         DATE_DICTIONARY.THIS_WEEK,
       );
-      searchFilterViewModel.handleSearchPostDateChange(
-        DATE_DICTIONARY.THIS_WEEK,
-      );
+      searchFilterViewModel.handleSearchPostDateChange({
+        target: { value: String(DATE_DICTIONARY.THIS_WEEK) },
+      } as React.ChangeEvent<HTMLSelectElement>);
       expect(props.setSearchOptions).toHaveBeenCalledWith({
+        begin_time: TimeStamp,
+      });
+    });
+
+    it('should not have been called with time stamp if date is undefined', () => {
+      const props = {
+        setSearchOptions: jest.fn(),
+        searchOptions: {},
+      } as any;
+      searchFilterViewModel = new SearchFilterViewModel(props);
+      const TimeStamp = searchFilterViewModel.getTimeStamp(
+        DATE_DICTIONARY.ANY_TIME,
+      );
+      searchFilterViewModel.handleSearchPostDateChange({
+        target: { value: String(DATE_DICTIONARY.ANY_TIME) },
+      } as React.ChangeEvent<HTMLSelectElement>);
+      expect(props.setSearchOptions).not.toHaveBeenCalledWith({
+        begin_time: TimeStamp,
+      });
+    });
+
+    it('should not have been called with time stamp if date is same', () => {
+      const props = {
+        setSearchOptions: jest.fn(),
+        searchOptions: { items: DATE_DICTIONARY.ANY_TIME },
+      } as any;
+      searchFilterViewModel = new SearchFilterViewModel(props);
+      const TimeStamp = searchFilterViewModel.getTimeStamp(
+        DATE_DICTIONARY.ANY_TIME,
+      );
+      searchFilterViewModel.handleSearchPostDateChange({
+        target: { value: String(DATE_DICTIONARY.ANY_TIME) },
+      } as React.ChangeEvent<HTMLSelectElement>);
+      expect(props.setSearchOptions).not.toHaveBeenCalledWith({
         begin_time: TimeStamp,
       });
     });

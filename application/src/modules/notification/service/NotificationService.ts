@@ -10,13 +10,14 @@ import { Permission } from '../Permission';
 import { INotificationService, NotificationOpts } from '../interface';
 import { AbstractNotification } from '../agent/AbstractNotification';
 import { SWNotification } from '../agent/SWNotification';
+import { isFirefox, isEdge } from '@/common/isUserAgent';
 
 class NotificationService implements INotificationService {
   private _permission = new Permission();
   private _notificationDistributors: Map<string, AbstractNotification<any>>;
   private _notificationDistributor: AbstractNotification<any>;
-  private _isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
-  private _maximumTitleLength = 40;
+  private _maximumFirefoxTxtLength = 40;
+  private _maximumEdgeTxtLength = 700;
   constructor() {
     this._notificationDistributors = new Map();
     this._notificationDistributors.set('sw', new SWNotification());
@@ -32,24 +33,26 @@ class NotificationService implements INotificationService {
       }
     }
   }
-  formatterForFirefox(str: string = '') {
-    return str && str.length > this._maximumTitleLength
-      ? `${str.substr(0, this._maximumTitleLength)}...`
-      : str;
+  addEllipsis(str: string = '', border: number) {
+    return str && str.length > border ? `${str.substr(0, border)}...` : str;
   }
   async show(title: string, opts: NotificationOpts) {
     let titleFormatted = title;
     if (document.hasFocus()) {
       return;
     }
+    if (isFirefox) {
+      opts.body = this.addEllipsis(opts.body, this._maximumFirefoxTxtLength);
+      titleFormatted = this.addEllipsis(title, this._maximumFirefoxTxtLength);
+    }
 
-    if (this._isFirefox) {
-      opts.body = this.formatterForFirefox(opts.body);
-      titleFormatted = this.formatterForFirefox(title);
+    if (isEdge) {
+      opts.body = this.addEllipsis(opts.body, this._maximumEdgeTxtLength);
+      titleFormatted = this.addEllipsis(title, this._maximumEdgeTxtLength);
     }
     if (!this._permission.isGranted) {
-      const permission = await this._permission.request();
-      if (permission) {
+      await this._permission.request();
+      if (this._permission.isGranted) {
         this._notificationDistributor.create(titleFormatted, opts);
       }
     } else {

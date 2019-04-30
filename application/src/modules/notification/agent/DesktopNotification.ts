@@ -7,7 +7,10 @@ import { mainLogger } from 'sdk';
 import { AbstractNotification } from './AbstractNotification';
 import { NotificationOpts } from '../interface';
 import _ from 'lodash';
+import { container } from 'framework';
+import { CLIENT_SERVICE, IClientService } from '@/modules/common/interface';
 const logger = mainLogger.tags('DesktopNotification');
+
 export class DeskTopNotification extends AbstractNotification<Notification> {
   isSupported() {
     return !!Notification;
@@ -23,7 +26,8 @@ export class DeskTopNotification extends AbstractNotification<Notification> {
 
     const notification = new Notification(title, opts);
     notification.onclick = (event) => {
-      window.focus();
+      const windowService: IClientService = container.get(CLIENT_SERVICE);
+      windowService.focus();
       (event.target as Notification).close();
       this._store.remove(scope, id);
       onClick && onClick(event);

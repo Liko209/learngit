@@ -24,7 +24,6 @@ import {
 import { networkLogger } from '../log';
 import { NetworkRequestBuilder } from './client';
 
-const LOG_TAG = 'NetworkRequestHandler';
 class NetworkRequestHandler
   implements IResponseListener, INetworkRequestProducer {
   pendingTasks: Map<REQUEST_PRIORITY, RequestTask[]>;
@@ -68,11 +67,12 @@ class NetworkRequestHandler
 
     this.appendTask(task, isTail);
     networkLogger.info(
-      LOG_TAG,
-      'addToQueueTime: ',
-      Date.now(),
-      'request: ',
-      request,
+      'addRequestToQueue: ',
+      `id:${request.id}`,
+      `path:${request.path}`,
+      `headers:${JSON.stringify(request.headers)}`,
+      `params:${JSON.stringify(request.params)}`,
+      `data:${JSON.stringify(request.data)}`,
     );
     this.notifyRequestArrived(request.via);
   }
@@ -184,6 +184,11 @@ class NetworkRequestHandler
       } else {
         queue.unshift(task);
       }
+      networkLogger.info(
+        `appendTask() task priority: ${task.priority()}, pending queue size:${
+          queue.length
+        }`,
+      );
     }
   }
 

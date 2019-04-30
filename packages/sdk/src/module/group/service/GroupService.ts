@@ -25,7 +25,7 @@ import {
 import { IGroupService } from './IGroupService';
 import { NotificationEntityUpdatePayload } from '../../../service/notificationCenter';
 import { Post } from '../../post/entity';
-import { SYNC_SOURCE } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { GroupEntityCacheController } from '../controller/GroupEntityCacheController';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 
@@ -91,10 +91,11 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   handleData = async (
     groups: Raw<Group>[],
     source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<void> => {
     await this.getGroupController()
       .getHandleDataController()
-      .handleData(groups, source);
+      .handleData(groups, source, changeMap);
   }
 
   handleGroupMostRecentPostChanged = async (
@@ -123,6 +124,12 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     return this.getGroupController()
       .getGroupActionController()
       .isInTeam(userId, team);
+  }
+
+  isInGroup(userId: number, team: Group) {
+    return this.getGroupController()
+      .getGroupActionController()
+      .isInGroup(userId, team);
   }
 
   canJoinTeam(team: Group) {
@@ -230,12 +237,12 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   async getGroupsByType(
     groupType: GROUP_QUERY_TYPE,
     offset: number = 0,
-    _limit?: number,
+    limit: number,
   ): Promise<Group[]> {
     return await this._groupFetchDataController.getGroupsByType(
       groupType,
       offset,
-      _limit,
+      limit,
     );
   }
 
@@ -281,10 +288,6 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     return await this.getGroupController()
       .getGroupActionController()
       .convertToTeam(groupId, memberIds, teamSetting);
-  }
-
-  async getLeftRailGroups(): Promise<Group[]> {
-    return await this._groupFetchDataController.getLeftRailGroups();
   }
 
   async updateGroupPrivacy(params: {

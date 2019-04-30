@@ -19,7 +19,6 @@ import { Raw } from '../../../framework/model';
 import { GroupApiType } from '../../../models';
 import { ENTITY } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
-import { ProfileService } from '../../profile';
 import { PostService } from '../../post';
 import { transform } from '../../../service/utils';
 import { GroupDao } from '../dao';
@@ -47,12 +46,11 @@ export class GroupActionController {
   ) {}
 
   isInTeam(userId: number, team: Group): boolean {
-    return !!(
-      team &&
-      team.is_team &&
-      team.members &&
-      team.members.includes(userId)
-    );
+    return !!(team && team.is_team && this.isInGroup(userId, team));
+  }
+
+  isInGroup(userId: number, team: Group): boolean {
+    return !!(team && team.members && team.members.includes(userId));
   }
 
   canJoinTeam(team: Group) {
@@ -83,7 +81,7 @@ export class GroupActionController {
       teamId,
       (partialEntity, originalEntity) => {
         const members: number[] = originalEntity.members.filter(
-          (member) => member !== userId,
+          (member: number) => member !== userId,
         );
         return {
           ...partialEntity,
@@ -207,28 +205,26 @@ export class GroupActionController {
     await this.partialModifyController.updatePartially(
       teamId,
       (partialEntity, originalEntity: Group) => {
-        const {
-          permissions: { admin: { uids: adminUids = [] } = {} } = {},
-        } = originalEntity;
-        let finalPartialEntity = partialEntity;
+        const permissions = originalEntity.permissions
+          ? _.cloneDeep(originalEntity.permissions)
+          : {};
         if (isMake) {
-          finalPartialEntity = _.merge(partialEntity, {
-            permissions: {
-              admin: {
-                uids: _.union(adminUids, [member]),
-              },
-            },
-          });
+          if (permissions.admin) {
+            permissions.admin.uids = _.union(permissions.admin.uids, [member]);
+          } else {
+            permissions.admin = { uids: [member] };
+          }
         } else {
-          finalPartialEntity = _.merge(partialEntity, {
-            permissions: {
-              admin: {
-                uids: _.difference(adminUids, [member]),
-              },
-            },
-          });
+          if (permissions.admin) {
+            permissions.admin.uids = _.difference(permissions.admin.uids, [
+              member,
+            ]);
+          }
         }
-        return finalPartialEntity;
+        return {
+          ...partialEntity,
+          permissions,
+        };
       },
       async (updateEntity: Group) => {
         return await this._getTeamRequestController().put(updateEntity);
@@ -373,6 +369,9 @@ export class GroupActionController {
   }
 
   deleteAllTeamInformation = async (ids: number[]) => {
+    if (!ids || !ids.length) {
+      return;
+    }
     const postService = ServiceLoader.getInstance<PostService>(
       ServiceConfig.POST_SERVICE,
     );
@@ -414,10 +413,6 @@ export class GroupActionController {
   }
 
   async isGroupCanBeShown(groupId: number): Promise<GroupCanBeShownResponse> {
-    const profileService = ServiceLoader.getInstance<ProfileService>(
-      ServiceConfig.PROFILE_SERVICE,
-    );
-    const isHidden = await profileService.isConversationHidden(groupId);
     let isIncludeSelf = false;
     let isValid = false;
     let group;
@@ -451,8 +446,6 @@ export class GroupActionController {
       }
     } else if (!isIncludeSelf) {
       result.reason = GROUP_CAN_NOT_SHOWN_REASON.NOT_INCLUDE_SELF;
-    } else if (isHidden) {
-      result.reason = GROUP_CAN_NOT_SHOWN_REASON.HIDDEN;
     } else {
       result.canBeShown = true;
     }

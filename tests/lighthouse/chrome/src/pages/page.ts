@@ -58,7 +58,8 @@ class Page {
     return this._page;
   }
 
-  async waitForCompleted() {
+  async waitForCompleted(): Promise<boolean> {
+    return true;
   }
 }
 

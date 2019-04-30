@@ -7,6 +7,7 @@ import {
   ITelephonyNetworkDelegate,
   IRequest,
   ITelephonyDaoDelegate,
+  telephonyLogger,
 } from 'foundation';
 import { RTCEngine } from 'voip';
 import { Api } from '../../../api';
@@ -15,6 +16,12 @@ import { ITelephonyAccountDelegate } from '../service/ITelephonyAccountDelegate'
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 import { ITelephonyCallDelegate } from '../service';
 import { TelephonyLogController } from './TelephonyLogController';
+import { notificationCenter } from '../../../service';
+import { RC_INFO, SERVICE } from '../../../service/eventKey';
+import { RCInfoService } from '../../rcInfo';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { PermissionService, UserPermissionType } from '../../permission';
+import { ENTITY } from 'sdk/service/eventKey';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -56,10 +63,60 @@ class TelephonyEngineController {
   voipNetworkDelegate: VoIPNetworkClient;
   voipDaoDelegate: VoIPDaoClient;
   private _accountController: TelephonyAccountController;
+  private _preCallingPermission: boolean = false;
 
   constructor() {
     this.voipNetworkDelegate = new VoIPNetworkClient();
     this.voipDaoDelegate = new VoIPDaoClient();
+
+    this.subscribeNotifications();
+  }
+
+  async getVoipCallPermission() {
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+    const permissionService = ServiceLoader.getInstance<PermissionService>(
+      ServiceConfig.PERMISSION_SERVICE,
+    );
+
+    const voipCalling =
+      (await rcInfoService.isVoipCallingAvailable()) &&
+      (await permissionService.hasPermission(
+        UserPermissionType.JUPITER_CAN_USE_TELEPHONY,
+      ));
+    return voipCalling;
+  }
+
+  onPermissionUpdated = async () => {
+    const currentCallingPermission = await this.getVoipCallPermission();
+    telephonyLogger.debug(
+      `onPermissionUpdated voipCalling: ${currentCallingPermission} ${
+        this._preCallingPermission
+      }`,
+    );
+    if (currentCallingPermission === this._preCallingPermission) {
+      telephonyLogger.debug('No permission change');
+      return;
+    }
+    if (currentCallingPermission) {
+      this._preCallingPermission = true;
+      notificationCenter.emitKVChange(
+        SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
+        true,
+      );
+    } else {
+      this.logout();
+    }
+  }
+
+  subscribeNotifications() {
+    notificationCenter.on(ENTITY.USER_PERMISSION, () => {
+      this.onPermissionUpdated();
+    });
+    notificationCenter.on(RC_INFO.EXTENSION_INFO, () => {
+      this.onPermissionUpdated();
+    });
   }
 
   initEngine() {
@@ -74,6 +131,7 @@ class TelephonyEngineController {
     callDelegate: ITelephonyCallDelegate,
   ) {
     // Engine can hold multiple accounts for multiple calls
+    this._preCallingPermission = true;
     this._accountController = new TelephonyAccountController(
       this.rtcEngine,
       accountDelegate,
@@ -86,7 +144,15 @@ class TelephonyEngineController {
   }
 
   logout() {
-    this._accountController.logout();
+    if (this._accountController) {
+      this._accountController.logout(() => {
+        this._preCallingPermission = false;
+        notificationCenter.emitKVChange(
+          SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
+          false,
+        );
+      });
+    }
   }
 }
 

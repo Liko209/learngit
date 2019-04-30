@@ -5,7 +5,7 @@ import { H } from "../../../helpers";
 
 export class FileAndImagePreviewer extends BaseWebComponent {
   get self() {
-    return this.getSelector('[role="document"]');
+    return this.getSelectorByAutomationId('Viewer');
   }
 
   async shouldBeFullScreen() {

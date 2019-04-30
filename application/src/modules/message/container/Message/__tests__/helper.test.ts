@@ -13,6 +13,7 @@ import history from '@/history';
 import storeManager from '@/store';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
 import { MessageRouterChangeHelper } from '../helper';
+import * as utils from '@/store/utils/entities';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 let mockedStateService: any;
@@ -85,6 +86,7 @@ function mockDependencies() {
     .mockImplementation(() => mockedGlobalStore);
   history.push = jest.fn().mockImplementation(jest.fn());
   history.replace = jest.fn().mockImplementation(jest.fn());
+  jest.spyOn(utils, 'getGlobalValue').mockImplementation(() => {});
 }
 
 describe('MessageRouterChangeHelper', () => {

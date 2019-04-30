@@ -24,14 +24,15 @@ type SearchFilterProps = {
   setSearchOptions(searchOptions: ContentSearchOptions): void;
   searchOptions: ContentSearchOptions;
   contentsCount: object;
-  options: ContentSearchOptions;
 };
 
 type SearchFilterViewProps = SearchFilterProps & {
   handleSearchPersonChange: (items: SelectedItem) => void;
   handleSearchGroupChange: (items: SelectedItem) => void;
-  handleSearchTypeChange: (items: string) => void;
-  handleSearchPostDateChange: (items: string) => void;
+  handleSearchTypeChange: (items: React.ChangeEvent<HTMLSelectElement>) => void;
+  handleSearchPostDateChange: (
+    items: React.ChangeEvent<HTMLSelectElement>,
+  ) => void;
   typeFilter: SearchContentTypeItem[];
   timePeriodFilter: SearchContentTypeItem[];
   timeType: string;

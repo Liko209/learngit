@@ -41,7 +41,7 @@ const transformAll = <T extends { id: number }>(target: any): T[] => {
 };
 
 const baseHandleData = async (
-  { data, dao, eventKey, noSavingToDB, source }: any,
+  { data, dao, eventKey, noSavingToDB, source, changeMap }: any,
   filterFunc?: (data: IdModel[]) => { eventKey: string; entities: IdModel[] }[],
 ) => {
   // ** NOTICE **
@@ -49,35 +49,53 @@ const baseHandleData = async (
   // if you have more complex logic, should not use it
   // TODO if is a team, should consider archived case, do delete emit, but no delete it in dao
   try {
-    // delete deactivatedData
-    const deactivatedData = data.filter(
-      (item: any) => item.deactivated === true,
-    );
+    if (!data || !data.length) {
+      return [];
+    }
+
+    const deactivatedData: any[] = [];
+    const normalData: any[] = [];
+    data.forEach((item: any) => {
+      if (item.deactivated) {
+        deactivatedData.push(item);
+      } else {
+        normalData.push(item);
+      }
+    });
+
     if (deactivatedData.length > 0) {
       await daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData);
       await dao.bulkDelete(deactivatedData.map((item: any) => item.id));
     }
-    // put normalData
-    const normalData = data.filter((item: any) => item.deactivated !== true);
+
     if (normalData.length > 0) {
       if (!noSavingToDB) {
         await dao.bulkPut(normalData);
       }
     }
-
     if (shouldEmitNotification(source)) {
       if (filterFunc) {
         const notifications = filterFunc(data);
         notifications.forEach(
           (notification: { eventKey: string; entities: IdModel[] }) => {
-            notificationCenter.emitEntityUpdate(
-              notification.eventKey,
-              notification.entities,
-            );
+            if (changeMap) {
+              changeMap.set(notification.eventKey, {
+                entities: notification.entities,
+              });
+            } else {
+              notificationCenter.emitEntityUpdate(
+                notification.eventKey,
+                notification.entities,
+              );
+            }
           },
         );
       } else {
-        notificationCenter.emitEntityUpdate(eventKey, data);
+        if (changeMap) {
+          changeMap.set(eventKey, { entities: data });
+        } else {
+          notificationCenter.emitEntityUpdate(eventKey, data);
+        }
       }
     }
     return normalData;

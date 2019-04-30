@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import styled from '../../foundation/styled-components';
-import { width, spacing } from '../../foundation/utils';
+import { spacing } from '../../foundation/utils';
 
 const JuiFullSearchWrapper = styled.div`
   display: flex;
@@ -12,7 +12,7 @@ const JuiFullSearchWrapper = styled.div`
 `;
 
 const JuiFullSearchResultWrapper = styled.div`
-  width: ${width(132.5)};
+  width: 66.5%;
   padding-bottom: ${spacing(2)};
   position: relative;
   display: flex;
@@ -23,6 +23,7 @@ const JuiFullSearchResultStreamWrapper = styled.div`
   position: relative;
   flex: 1;
   min-height: 0;
+  height: 99999999999px;
 `;
 
 export {

@@ -1,3 +1,5 @@
+import { Raw } from '../../framework/model';
+
 /*
  * @Author: kasni.huang (kasni.huang@ringcentral.com)
  * @Date: 2019-03-15 16:17:53
@@ -10,4 +12,9 @@ enum SYNC_SOURCE {
   REMAINING = 'SYNC_SOURCE.REMAINING',
 }
 
-export { SYNC_SOURCE };
+type ChangeModel = {
+  entities: any[];
+  partials?: Partial<Raw<any>>[];
+};
+
+export { SYNC_SOURCE, ChangeModel };

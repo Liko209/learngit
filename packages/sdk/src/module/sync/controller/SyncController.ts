@@ -10,7 +10,7 @@ import { indexData, initialData, remainingData } from '../../../api';
 import { accountHandleData } from '../../../module/account/service';
 
 import { SERVICE, CONFIG } from '../../../service/eventKey';
-import { progressBar } from '../../../utils/progress';
+import { progressManager, ProgressBar } from '../../../utils/progress';
 import { mainLogger, ERROR_CODES_NETWORK } from 'foundation';
 import notificationCenter from '../../../service/notificationCenter';
 import { ErrorParserHolder } from '../../../error/ErrorParserHolder';
@@ -32,7 +32,7 @@ import {
   SequenceProcessorHandler,
   IProcessor,
 } from '../../../framework/processor';
-import { SYNC_SOURCE } from '../types';
+import { SYNC_SOURCE, ChangeModel } from '../types';
 import { AccountGlobalConfig } from '../../../module/account/config';
 import { GroupConfigService } from '../../../module/groupConfig';
 import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
@@ -45,6 +45,7 @@ import { Item } from '../../../module/item/entity';
 import { RawPresence } from '../../../module/presence/entity';
 import { Person } from '../../../module/person/entity';
 import { Post } from '../../../module/post/entity';
+import _ from 'lodash';
 
 const LOG_TAG = 'SyncController';
 const INDEX_MAX_QUEUE = 2;
@@ -52,8 +53,10 @@ class SyncController {
   private _isFetchingRemaining: boolean;
   private _syncListener: SyncListener;
   private _processorHandler: SequenceProcessorHandler;
+  private _progressBar: ProgressBar;
 
   constructor() {
+    this._progressBar = progressManager.newProgressBar();
     this._processorHandler = new SequenceProcessorHandler(
       'Index_SyncController',
       undefined,
@@ -79,10 +82,10 @@ class SyncController {
     } else if (state === 'refresh') {
       this.syncData();
     } else if (state === 'connecting') {
-      progressBar.start();
+      this._progressBar.start();
     } else if (state === 'disconnected') {
       this._onSocketDisconnected();
-      progressBar.stop();
+      this._progressBar.stop();
     }
   }
 
@@ -126,7 +129,7 @@ class SyncController {
   }
 
   private async _firstLogin() {
-    progressBar.start();
+    this._progressBar.start();
     const currentTime = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
       PERFORMANCE_KEYS.FIRST_LOGIN,
@@ -143,7 +146,7 @@ class SyncController {
     }
     this._checkFetchedRemaining(currentTime);
     PerformanceTracerHolder.getPerformanceTracer().end(currentTime);
-    progressBar.stop();
+    this._progressBar.stop();
   }
 
   private async _fetchInitial(time: number) {
@@ -205,24 +208,32 @@ class SyncController {
     const executeFunc = async () => {
       const timeStamp = this.getIndexTimestamp();
       mainLogger.log(LOG_TAG, `start fetching index:${timeStamp}`);
-      progressBar.start();
+      this._progressBar.start();
       const { onIndexLoaded, onIndexHandled } = this._syncListener;
       const syncConfig = new SyncUserConfig();
       // 5 minutes ago to ensure data is correct
       try {
         const result = await this.fetchIndexData(String(timeStamp - 300000));
-        mainLogger.log(LOG_TAG, 'fetch index done');
+        mainLogger.log(LOG_INDEX_DATA, 'fetch index done');
         onIndexLoaded && (await onIndexLoaded(result));
+
+        const logId = Date.now();
+        PerformanceTracerHolder.getPerformanceTracer().start(
+          PERFORMANCE_KEYS.HANDLE_INDEX_DATA,
+          logId,
+        );
         await this._handleIncomingData(result, SYNC_SOURCE.INDEX);
+        PerformanceTracerHolder.getPerformanceTracer().end(logId);
+
         onIndexHandled && (await onIndexHandled());
         syncConfig.updateIndexSucceed(true);
-        mainLogger.log(LOG_TAG, 'handle index done');
+        mainLogger.log(LOG_INDEX_DATA, 'handle index done');
       } catch (error) {
-        mainLogger.log(LOG_TAG, 'fetch index failed');
+        mainLogger.log(LOG_INDEX_DATA, 'fetch index failed');
         syncConfig.updateIndexSucceed(false);
         await this._handleSyncIndexError(error);
       }
-      progressBar.stop();
+      this._progressBar.stop();
     };
     const processor = new IndexRequestProcessor(executeFunc);
     this._processorHandler.addProcessor(processor);
@@ -327,28 +338,58 @@ class SyncController {
     if (profile && Object.keys(profile).length > 0) {
       transProfile = profile;
     }
-    return await Promise.all([
+    const changeMap = new Map<string, ChangeModel>();
+    const start = Date.now();
+    await Promise.all([
       accountHandleData({
         userId,
         companyId,
         clientConfig,
         profileId: profile ? profile._id : undefined,
       }),
-
-      this._handleIncomingCompany(companies, source),
-      this._handleIncomingItem(items, source),
-      this._handleIncomingPresence(presences, source),
+      this._handleIncomingCompany(companies, source, changeMap),
+      this._handleIncomingItem(items, source, changeMap),
+      this._handleIncomingPresence(presences, source, changeMap),
       this._handleIncomingState(arrState, source),
     ])
-      .then(() => this._handleIncomingProfile(transProfile, source))
-      .then(() => this._handleIncomingPerson(people, source))
-      .then(() => this._handleIncomingGroup(mergedGroups, source))
-      .then(() => this._handleIncomingPost(posts, maxPostsExceeded, source));
+      .then(() => this._handleIncomingProfile(transProfile, source, changeMap))
+      .then(() => this._handleIncomingPerson(people, source, changeMap))
+      .then(() => this._handleIncomingGroup(mergedGroups, source, changeMap))
+      .then(() =>
+        this._handleIncomingPost(posts, maxPostsExceeded, source, changeMap),
+      )
+      .then(() => {
+        mainLogger.debug(
+          LOG_INDEX_DATA,
+          `store index data done===${Date.now() - start}`,
+        );
+      })
+      .then(() => {
+        if (changeMap.size > 0) {
+          const s = Date.now();
+          changeMap.forEach((value: ChangeModel, key: string) => {
+            if (value.partials) {
+              notificationCenter.emitEntityUpdate(
+                key,
+                value.entities,
+                value.partials,
+              );
+            } else {
+              notificationCenter.emitEntityUpdate(key, value.entities);
+            }
+          });
+          mainLogger.debug(
+            LOG_INDEX_DATA,
+            `emit index data done===${Date.now() - s}`,
+          );
+        }
+      });
   }
 
   private async _handleIncomingCompany(
     companies: Raw<Company>[],
     source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ) {
     mainLogger.info(
       LOG_INDEX_DATA,
@@ -362,11 +403,18 @@ class SyncController {
     );
     await ServiceLoader.getInstance<CompanyService>(
       ServiceConfig.COMPANY_SERVICE,
-    ).handleIncomingData(companies, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    ).handleIncomingData(companies, source, changeMap);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      companies && companies.length,
+    );
   }
 
-  private async _handleIncomingItem(items: Raw<Item>[], source: SYNC_SOURCE) {
+  private async _handleIncomingItem(
+    items: Raw<Item>[],
+    source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
+  ) {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingItem() item.length: ${items &&
@@ -379,13 +427,17 @@ class SyncController {
     );
     await ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
-    ).handleIncomingData(items);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    ).handleIncomingData(items, changeMap);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      items && items.length,
+    );
   }
 
   private async _handleIncomingPresence(
     presences: RawPresence[],
     source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ) {
     mainLogger.info(
       LOG_INDEX_DATA,
@@ -399,11 +451,18 @@ class SyncController {
     );
     await ServiceLoader.getInstance<PresenceService>(
       ServiceConfig.PRESENCE_SERVICE,
-    ).presenceHandleData(presences);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    ).presenceHandleData(presences, changeMap);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      presences && presences.length,
+    );
   }
 
-  private async _handleIncomingState(states: any[], source: SYNC_SOURCE) {
+  private async _handleIncomingState(
+    states: any[],
+    source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
+  ) {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingState() states.length: ${states &&
@@ -416,13 +475,17 @@ class SyncController {
     );
     await ServiceLoader.getInstance<StateService>(
       ServiceConfig.STATE_SERVICE,
-    ).handleState(states, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    ).handleState(states, source, changeMap);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      states && states.length,
+    );
   }
 
   private async _handleIncomingProfile(
     profile: Raw<Profile> | null,
     source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ) {
     mainLogger.info(
       LOG_INDEX_DATA,
@@ -435,13 +498,14 @@ class SyncController {
     );
     await ServiceLoader.getInstance<ProfileService>(
       ServiceConfig.PROFILE_SERVICE,
-    ).handleIncomingData(profile, source);
+    ).handleIncomingData(profile, source, changeMap);
     PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   private async _handleIncomingPerson(
     persons: Raw<Person>[],
     source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ) {
     mainLogger.info(
       LOG_INDEX_DATA,
@@ -455,13 +519,17 @@ class SyncController {
     );
     await ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
-    ).handleIncomingData(persons, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    ).handleIncomingData(persons, source, changeMap);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      persons && persons.length,
+    );
   }
 
   private async _handleIncomingGroup(
     groups: Raw<Group>[],
     source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ) {
     mainLogger.info(
       LOG_INDEX_DATA,
@@ -475,18 +543,22 @@ class SyncController {
     );
     await ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
-    ).handleData(groups, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    ).handleData(groups, source, changeMap);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      groups && groups.length,
+    );
   }
 
   private async _handleIncomingPost(
     posts: Raw<Post>[],
     maxPostsExceeded: boolean,
     source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ) {
     mainLogger.info(
       LOG_INDEX_DATA,
-      `_handleIncomingPost() groups.length: ${posts &&
+      `_handleIncomingPost() posts.length: ${posts &&
         posts.length}, source: ${source}`,
     );
     const logId = Date.now();
@@ -496,8 +568,11 @@ class SyncController {
     );
     await ServiceLoader.getInstance<PostService>(
       ServiceConfig.POST_SERVICE,
-    ).handleIndexData(posts, maxPostsExceeded);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    ).handleIndexData(posts, maxPostsExceeded, changeMap);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      posts && posts.length,
+    );
   }
 
   private async _handleIncomingData(
@@ -516,18 +591,12 @@ class SyncController {
         source === SYNC_SOURCE.INDEX || source === SYNC_SOURCE.INITIAL;
       if (timestamp && shouldSaveTimeStamp) {
         this.updateIndexTimestamp(timestamp, true);
-        notificationCenter.emitKVChange(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
       }
 
       const shouldSaveScoreboard =
         source === SYNC_SOURCE.INDEX || source === SYNC_SOURCE.INITIAL;
       if (shouldSaveScoreboard && scoreboard) {
-        const socketUserConfig = new SyncUserConfig();
-        socketUserConfig.setIndexSocketServerHost(scoreboard);
-        notificationCenter.emitKVChange(
-          CONFIG.INDEX_SOCKET_SERVER_HOST,
-          scoreboard,
-        );
+        this._updateIndexSocketAddress(scoreboard);
       }
 
       if (staticHttpServer) {
@@ -543,6 +612,18 @@ class SyncController {
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_ERROR, {
         error: ErrorParserHolder.getErrorParser().parse(error),
       });
+    }
+  }
+
+  private _updateIndexSocketAddress(scoreboard: string) {
+    const socketUserConfig = new SyncUserConfig();
+    const oldValue = socketUserConfig.getIndexSocketServerHost();
+    if (oldValue !== scoreboard) {
+      socketUserConfig.setIndexSocketServerHost(scoreboard);
+      notificationCenter.emitKVChange(
+        CONFIG.INDEX_SOCKET_SERVER_HOST,
+        scoreboard,
+      );
     }
   }
 

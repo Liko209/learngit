@@ -9,6 +9,7 @@ import { LogUtils } from "./logUtils";
 import { FunctionUtils } from "./functionUtils";
 import { MockClient, BrowserInitDto } from 'mock-client';
 import { Config } from '../config';
+import { request } from "https";
 
 const MAX_TRY_COUNT = 10;
 
@@ -234,7 +235,7 @@ class PptrUtils {
   }
 
   static async launch(options = {}): Promise<Browser> {
-    let defaultArgs = ["--ignore-certificate-errors"];
+    let defaultArgs = ["--ignore-certificate-errors", "--disable-web-security"];
     if (options["args"]) {
       defaultArgs = defaultArgs.concat(options["args"]);
     }
@@ -340,7 +341,9 @@ class PptrUtils {
       .env(Config.jupiterEnv)
       .appKey(Config.jupiterAppKey)
       .appSecret(Config.jupiterAppSecret)
-      .useInitialCache(Config.useInitialCache);
+      .useInitialCache(Config.useInitialCache)
+      .record(false)
+      .replay(true);
 
     let requestId = await client.registerBrowser(initDto);
 

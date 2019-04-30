@@ -8,9 +8,9 @@ import { PptrUtils } from '../utils';
 class HomePage extends Page {
   private topBarAvatar: string = 'div[data-test-automation-id="topBarAvatar"]';
 
-  async waitForCompleted() {
+  async waitForCompleted(): Promise<boolean> {
     let page = await this.page();
-    await PptrUtils.waitForSelector(page, this.topBarAvatar);
+    return await PptrUtils.waitForSelector(page, this.topBarAvatar);
   }
 }
 

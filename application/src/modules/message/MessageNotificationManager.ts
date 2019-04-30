@@ -15,30 +15,34 @@ import { AbstractNotificationManager } from '@/modules/notification/manager';
 import {
   getActivity,
   getActivityData,
-} from '@/containers/ConversationCard/Activity/handler/getActivity';
+} from './container/ConversationCard/Activity/handler/getActivity';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
 import { NotificationOpts } from '../notification/interface';
 import i18nT from '@/utils/i18nT';
 import { PersonService } from 'sdk/module/person';
-import { replaceAtMention } from '@/containers/ConversationSheet/TextMessage/utils/handleAtMentionName';
+import { replaceAtMention } from './container/ConversationSheet/TextMessage/utils/handleAtMentionName';
 import GroupModel from '@/store/models/Group';
 import GroupService from 'sdk/module/group';
 import { PostService } from 'sdk/module/post';
 import { getPostType } from '@/common/getPostType';
 import { IEntityChangeObserver } from 'sdk/framework/controller/types';
 import { mainLogger } from 'sdk';
-
+import { isFirefox, isWindows } from '@/common/isUserAgent';
+import { throttle } from 'lodash';
 const logger = mainLogger.tags('MessageNotificationManager');
-
+const NOTIFY_THROTTLE_FACTOR = 5000;
 export class MessageNotificationManager extends AbstractNotificationManager {
   protected _observer: IEntityChangeObserver;
   private _postService: PostService;
   constructor() {
     super('message');
     this._observer = {
-      onEntitiesChanged: this.handlePostEntityChanged,
+      onEntitiesChanged:
+        isFirefox && isWindows
+          ? throttle(this.handlePostEntityChanged, NOTIFY_THROTTLE_FACTOR)
+          : this.handlePostEntityChanged,
     };
   }
 

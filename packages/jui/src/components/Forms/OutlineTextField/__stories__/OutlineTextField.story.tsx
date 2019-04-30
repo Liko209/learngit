@@ -9,14 +9,14 @@ import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 import { select, boolean, number } from '@storybook/addon-knobs';
 
-import { JuiOutlineTextField } from '../';
+import { JuiOutlineTextField, JuiOutlineTextFieldProps } from '../';
 
 storiesOf('Components/Forms', module)
   .addDecorator(withInfoDecorator(JuiOutlineTextField, { inline: true }))
   .add('OutlineTextField', () => {
     const maxLength = number('maxLength', 20);
     const disabled = boolean('disabled', false);
-    const radius = select(
+    const radius = select<JuiOutlineTextFieldProps['radiusType']>(
       'radiusType',
       {
         circle: 'circle',
@@ -25,7 +25,7 @@ storiesOf('Components/Forms', module)
       },
       'rounded',
     );
-    const size = select(
+    const size = select<JuiOutlineTextFieldProps['size']>(
       'size',
       {
         small: 'small',

@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export class Task {
+  public name: string;
   public onExecute: () => Promise<void> = () => Promise.resolve();
   public onError: (error: Error) => Promise<void> = () => Promise.resolve();
   public onAbort: () => Promise<void> = () => Promise.resolve();

@@ -64,27 +64,20 @@ export class GroupFetchDataController {
   async getGroupsByType(
     groupType = GROUP_QUERY_TYPE.ALL,
     offset = 0,
-    _limit?: number,
+    limit: number,
   ): Promise<Group[]> {
     const profileService = ServiceLoader.getInstance<ProfileService>(
       ServiceConfig.PROFILE_SERVICE,
     );
-    const limit = _limit || (await profileService.getMaxLeftRailGroup());
     mainLogger.debug(`offset:${offset} limit:${limit} groupType:${groupType}`);
     let result: Group[] = [];
-    const dao = daoManager.getDao(GroupDao);
-
     if (groupType === GROUP_QUERY_TYPE.FAVORITE) {
       result = await this._getFavoriteGroups();
     } else if (groupType === GROUP_QUERY_TYPE.ALL) {
-      if (this.entityCacheSearchController.isInitialized()) {
-        result = await this.entityCacheSearchController.getEntities(
-          (item: Group) => this.groupService.isValid(item),
-        );
-        result = this._getFromSortedByMostRectPost(result, offset, limit);
-      } else {
-        result = await dao.queryAllGroups(offset, limit);
-      }
+      result = await this.entitySourceController.getEntities((item: Group) =>
+        this.groupService.isValid(item),
+      );
+      result = this._getFromSortedByMostRectPost(result, offset, limit);
     } else {
       const profile = await profileService.getProfile();
       const favoriteGroupIds =
@@ -96,25 +89,15 @@ export class GroupFetchDataController {
       const userConfig = new AccountUserConfig();
       const userId = userConfig.getGlipUserId();
       const isTeam = groupType === GROUP_QUERY_TYPE.TEAM;
-      if (this.entityCacheSearchController.isInitialized()) {
-        result = await this.entityCacheSearchController.getEntities(
-          (item: Group) =>
-            this.groupService.isValid(item) &&
-            !excludeIds.includes(item.id) &&
-            (userId ? item.members.includes(userId) : true) &&
-            (isTeam ? item.is_team === isTeam : !item.is_team),
-        );
-        if (offset !== 0) {
-          result = result.slice(offset + 1, result.length);
-        }
-      } else {
-        result = await dao.queryGroups(
-          offset,
-          Infinity,
-          isTeam,
-          excludeIds,
-          userId,
-        );
+      result = await this.entitySourceController.getEntities(
+        (item: Group) =>
+          this.groupService.isValid(item) &&
+          !excludeIds.includes(item.id) &&
+          (userId ? item.members.includes(userId) : true) &&
+          (isTeam ? item.is_team === isTeam : !item.is_team),
+      );
+      if (offset !== 0) {
+        result = result.slice(offset + 1, result.length);
       }
       result = await this.groupHandleDataController.filterGroups(result, limit);
     }
@@ -126,7 +109,7 @@ export class GroupFetchDataController {
   async getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]> {
     if (ids.length) {
       const groups = await this.entitySourceController.batchGet(ids, order);
-      return groups.filter(group => group !== null) as Group[];
+      return groups.filter((group: Group) => group !== null) as Group[];
     }
     return [];
   }
@@ -163,19 +146,6 @@ export class GroupFetchDataController {
     const info: Partial<Group> = buildNewGroupInfo(memberIds);
     const result = await GroupAPI.requestNewGroup(info);
     return transform<Group>(result);
-  }
-
-  async getLeftRailGroups(): Promise<Group[]> {
-    let result: Group[] = [];
-    let groups = await this.getGroupsByType(GROUP_QUERY_TYPE.FAVORITE);
-    result = result.concat(groups);
-
-    groups = await this.getGroupsByType(GROUP_QUERY_TYPE.GROUP);
-    result = result.concat(groups);
-
-    groups = await this.getGroupsByType(GROUP_QUERY_TYPE.TEAM);
-    result = result.concat(groups);
-    return result;
   }
 
   async isFavored(id: number, type: number): Promise<boolean> {
@@ -320,7 +290,8 @@ export class GroupFetchDataController {
     fetchAllIfSearchKeyEmpty?: boolean,
     myGroupsOnly?: boolean,
   ) {
-    const groupName = '';
+    let groupName: string = '';
+    let lowerCaseName: string = '';
     const currentUserId = this._currentUserId;
     return (group: Group, terms: Terms) => {
       let isMatched: boolean = false;
@@ -346,9 +317,9 @@ export class GroupFetchDataController {
           break;
         }
         let isFuzzy: boolean = false;
-        let lowerCaseName: string = '';
         if (group.is_team) {
-          lowerCaseName = group.set_abbreviation.toLocaleLowerCase();
+          groupName = group.set_abbreviation;
+          lowerCaseName = groupName.toLowerCase();
           isFuzzy =
             this.entityCacheSearchController.isFuzzyMatched(
               lowerCaseName,
@@ -364,7 +335,8 @@ export class GroupFetchDataController {
             group.members,
             currentUserId,
           );
-          lowerCaseName = this.getGroupNameByMultiMembers(allPerson);
+          groupName = this.getGroupNameByMultiMembers(allPerson);
+          lowerCaseName = groupName.toLowerCase();
           isFuzzy =
             this.entityCacheSearchController.isFuzzyMatched(
               lowerCaseName,
@@ -390,7 +362,7 @@ export class GroupFetchDataController {
             id: group.id,
             displayName: groupName,
             firstSortKey: sortValue,
-            secondSortKey: groupName.toLowerCase(),
+            secondSortKey: lowerCaseName,
             entity: group,
           }
         : null;
@@ -703,7 +675,14 @@ export class GroupFetchDataController {
         favoriteGroupIds,
         true,
       );
-      return groups.filter((item: Group) => this.groupService.isValid(item));
+      const userConfig = new AccountUserConfig();
+      const currentUserId = userConfig.getGlipUserId();
+
+      return groups.filter(
+        (item: Group) =>
+          this.groupService.isValid(item) &&
+          this.groupService.isInGroup(currentUserId, item),
+      );
     }
     return [];
   }

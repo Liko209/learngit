@@ -6,11 +6,13 @@
 
 type CallActionsProps = {
   showLabel?: boolean;
+  shouldPersistBg?: boolean;
 };
 
 type CallActionsViewProps = {
   callActions: () => void;
   showLabel?: boolean;
+  shouldPersistBg?: boolean;
 };
 
 export { CallActionsProps, CallActionsViewProps };

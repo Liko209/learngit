@@ -77,10 +77,10 @@ class TotalUnreadController {
     return this._groupSectionUnread.get(id);
   }
 
-  handleGroupState(groupStates: GroupState[]): void {
+  handleGroupState(payload: NotificationEntityPayload<GroupState>): void {
     const task: DataHandleTask = {
       type: TASK_DATA_TYPE.GROUP_STATE,
-      data: groupStates,
+      data: payload,
     };
     this._taskArray.push(task);
     if (this._taskArray.length === 1) {
@@ -135,16 +135,18 @@ class TotalUnreadController {
   }
 
   private async _updateTotalUnreadByStateChanges(
-    groupStates: GroupState[],
+    payload: NotificationEntityPayload<GroupState>,
   ): Promise<void> {
-    groupStates.forEach((groupState: GroupState) => {
-      const groupUnread = this._groupSectionUnread.get(groupState.id);
-      if (groupUnread) {
-        this._updateToTotalUnread(groupUnread, groupState);
-        groupUnread.unreadCount = groupState.unread_count || 0;
-        groupUnread.mentionCount = groupState.unread_mentions_count || 0;
-      }
-    });
+    if (payload.type === EVENT_TYPES.UPDATE) {
+      payload.body.entities.forEach((groupState: GroupState) => {
+        const groupUnread = this._groupSectionUnread.get(groupState.id);
+        if (groupUnread) {
+          this._updateToTotalUnread(groupUnread, groupState);
+          groupUnread.unreadCount = groupState.unread_count || 0;
+          groupUnread.mentionCount = groupState.unread_mentions_count || 0;
+        }
+      });
+    }
   }
 
   private async _updateTotalUnreadByGroupChanges(
@@ -153,28 +155,30 @@ class TotalUnreadController {
     if (payload.type === EVENT_TYPES.UPDATE) {
       const userConfig = new AccountUserConfig();
       const glipId = userConfig.getGlipUserId();
-      await Promise.all(
-        payload.body.ids.map(async (id: number) => {
-          const group = payload.body.entities.get(id);
-          if (!group) {
-            return;
+      const groupsMap = new Map<number, Group>();
+      payload.body.ids.map(async (id: number) => {
+        const group = payload.body.entities.get(id);
+        if (!group) {
+          return;
+        }
+        const groupUnread = this._groupSectionUnread.get(id);
+        if (
+          !this._groupService.isValid(group) ||
+          !group.members.includes(glipId)
+        ) {
+          if (groupUnread) {
+            this._deleteFromTotalUnread(groupUnread);
+            this._groupSectionUnread.delete(id);
           }
-          const groupUnread = this._groupSectionUnread.get(id);
-          if (
-            !this._groupService.isValid(group) ||
-            !group.members.includes(glipId)
-          ) {
-            if (groupUnread) {
-              this._deleteFromTotalUnread(groupUnread);
-              this._groupSectionUnread.delete(id);
-            }
-          } else {
-            if (!groupUnread) {
-              await this._addNewGroupUnread(group);
-            }
+        } else {
+          if (!groupUnread) {
+            groupsMap.set(id, group);
           }
-        }),
-      );
+        }
+      });
+      if (groupsMap.size) {
+        await this._addNewGroupsUnread(groupsMap);
+      }
     }
   }
 
@@ -258,27 +262,32 @@ class TotalUnreadController {
     const userConfig = new AccountUserConfig();
     const glipId = userConfig.getGlipUserId();
 
-    await Promise.all(
-      groups.map(async (group: Group) => {
-        if (
-          !this._groupService.isValid(group) ||
-          !group.members.includes(glipId)
-        ) {
-          return;
-        }
-        await this._addNewGroupUnread(group);
-      }),
-    );
-
+    const groupsMap = new Map<number, Group>();
+    groups.forEach((group: Group) => {
+      if (this._groupService.isValid(group) && group.members.includes(glipId)) {
+        groupsMap.set(group.id, group);
+      }
+    });
+    await this._addNewGroupsUnread(groupsMap);
     this._unreadInitialized = true;
   }
 
-  private async _addNewGroupUnread(group: Group): Promise<void> {
+  private async _addNewGroupsUnread(groupsMap: Map<number, Group>) {
+    const groupStates = await this._entitySourceController.batchGet(
+      Array.from(groupsMap.keys()),
+    );
+    groupStates.forEach((groupState: GroupState) => {
+      const group = groupsMap.get(groupState.id);
+      if (group) {
+        this._addNewGroupUnread(group, groupState);
+      }
+    });
+  }
+
+  private _addNewGroupUnread(group: Group, groupState: GroupState) {
     let section: UMI_SECTION_TYPE;
     let unreadCount: number = 0;
     let mentionCount: number = 0;
-
-    const groupState = await this._entitySourceController.get(group.id);
     if (groupState) {
       unreadCount = groupState.unread_count || 0;
       mentionCount = groupState.unread_mentions_count || 0;

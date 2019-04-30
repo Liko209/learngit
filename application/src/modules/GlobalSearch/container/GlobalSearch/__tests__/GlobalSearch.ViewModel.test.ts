@@ -27,6 +27,12 @@ describe('GlobalSearchViewModel', () => {
   });
 
   describe('onChange [JPT-1567]', () => {
+    it('If search key is blank should be should be show recent search', () => {
+      const emptyValue = '     ';
+      globalSearchViewModel.onChange(emptyValue);
+      expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.RECENT_SEARCH);
+      expect(globalSearchStore.searchKey).toBe(emptyValue);
+    });
     it('If search key is empty current view should be recent search', () => {
       const emptyValue = '';
       globalSearchViewModel.onChange(emptyValue);

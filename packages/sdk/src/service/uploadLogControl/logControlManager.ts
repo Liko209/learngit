@@ -20,6 +20,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
   private _isOnline: boolean;
+  private _debugMode: boolean;
   private _onUploadAccessorChange: (accessible: boolean) => void;
   uploadLogConsumer: LogUploadConsumer;
   logUploadCollector: ConsumerCollector;
@@ -71,6 +72,10 @@ export class LogControlManager implements IAccessor {
 
     if (typeof window !== 'undefined') {
       window.addEventListener('error', this.windowError.bind(this));
+      window.addEventListener(
+        'unhandledrejection',
+        this.windowError.bind(this),
+      );
       window.addEventListener('beforeunload', (event: any) => {
         this.flush();
       });
@@ -78,7 +83,18 @@ export class LogControlManager implements IAccessor {
   }
 
   public setDebugMode(isDebug: boolean) {
-    isDebug && logManager.setAllLoggerLevel(LOG_LEVEL.ALL);
+    this._debugMode = isDebug;
+    if (isDebug) {
+      logManager.config({
+        browser: {
+          enabled: true,
+        },
+      });
+      logManager.setAllLoggerLevel(LOG_LEVEL.ALL);
+      configManager.mergeConfig({
+        uploadEnabled: false,
+      });
+    }
   }
 
   public async flush() {
@@ -113,11 +129,11 @@ export class LogControlManager implements IAccessor {
       );
       logManager.config({
         browser: {
-          enabled: logEnabled,
+          enabled: this._debugMode || logEnabled,
         },
       });
       configManager.mergeConfig({
-        uploadEnabled: logUploadEnabled,
+        uploadEnabled: !this._debugMode && logUploadEnabled,
       });
     } catch (error) {
       mainLogger.warn('getUserPermission fail:', error);
@@ -128,10 +144,14 @@ export class LogControlManager implements IAccessor {
     return this.memoryLogCollector.getAll();
   }
 
-  windowError(msg: string, url: string, line: number) {
-    const message = `Error in ('${url ||
-      window.location}) on line ${line} with message (${msg})`;
-    mainLogger.fatal(message);
+  windowError(event: ErrorEvent | PromiseRejectionEvent) {
+    if (event instanceof ErrorEvent) {
+      const { error, message } = event;
+      mainLogger.fatal(message, error);
+    } else {
+      const { reason, promise } = event;
+      mainLogger.fatal(reason, promise);
+    }
     this.flush();
   }
 }

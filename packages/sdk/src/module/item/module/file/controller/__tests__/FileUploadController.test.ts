@@ -5,7 +5,6 @@
  */
 
 import _ from 'lodash';
-import { BaseResponse, NETWORK_FAIL_TYPE } from 'foundation';
 import { ItemFile } from '../../../../../../module/item/entity';
 import { daoManager } from '../../../../../../dao';
 import { ItemDao } from '../../../../dao';
@@ -863,6 +862,24 @@ describe('fileUploadController', () => {
         expect(ItemAPI.uploadFileToAmazonS3).toBeCalled();
         done();
       });
+    });
+
+    it('should execute upload file in sequence queue', async (done: any) => {
+      const { groupId, file } = uploadFileToAmazonS3_setUp();
+
+      fileUploadController['_uploadFileQueue'] = {
+        addProcessor: jest.fn(),
+      } as any;
+
+      fileUploadController.sendItemFile(groupId, file, false);
+      fileUploadController.sendItemFile(groupId + 1, file, false);
+
+      setTimeout(() => {
+        expect(
+          fileUploadController['_uploadFileQueue'].addProcessor,
+        ).toHaveBeenCalledTimes(2);
+        done();
+      },         100);
     });
   });
 
