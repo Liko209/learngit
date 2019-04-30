@@ -37,7 +37,7 @@ export class DeskTopNotification extends AbstractNotification<Notification> {
       this._store.remove(scope, id);
     };
 
-    this._store.add(scope, id, [notification]);
+    this._store.add(scope, id, notification);
   }
 
   close(scope: string, id: number) {
