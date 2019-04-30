@@ -51,8 +51,8 @@ class BaseTeamSetting extends BaseWebComponent {
     return this.getSelectorByAutomationId('CreateTeamCanPinPost').parent('li');
   }
 
-  async typeTeamName(teamName) {
-    await this.clickAndTypeText(this.teamNameInput, teamName, { replace: true, paste: true });
+  async typeTeamName(teamName: string, options: TypeActionOptions = { replace: true }) {
+    await this.clickAndTypeText(this.teamNameInput, teamName, options);
   }
 
   randomString(length: number) {
