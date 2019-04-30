@@ -136,6 +136,12 @@ class PostDataController {
    * For bookmark/@mentions/pin post/reply
    */
   private async _handleModifiedDiscontinuousPosts(posts: Post[]) {
+    if (!posts || !posts.length) {
+      mainLogger.info(
+        '_handleModifiedDiscontinuousPosts() return directly due to not posts',
+      );
+      return;
+    }
     const postDiscontinuousDao = daoManager.getDao(PostDiscontinuousDao);
     const deactivatedPosts: Post[] = [];
     const normalPosts: Post[] = [];
