@@ -3,7 +3,7 @@
  * @Date: 2019-01-02 10:54:22
  * Copyright © RingCentral. All rights reserved.
  */
-import { isEqual } from 'lodash';
+import { difference } from 'lodash';
 import React, {
   PureComponent,
   ReactElement,
@@ -119,7 +119,7 @@ class JuiTabs extends PureComponent<Props, States> {
       },
     );
     // force update after i18n ready
-    if (!isEqual(newTabTitles.sort(), this._tabTitles.sort())) {
+    if (difference(newTabTitles, this._tabTitles).length !== 0) {
       this._moreWidth = 0;
       this._tabTitles = newTabTitles;
       this.setState({ remeasure: true });
