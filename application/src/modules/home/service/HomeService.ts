@@ -43,15 +43,7 @@ class HomeService {
   }
 
   hasModules(modules: string[]) {
-    if (!modules || modules.length === 0) {
-      return false;
-    }
-    for (let i = 0, len = modules.length; i < len; i++) {
-      if (!this._homeStore.getSubModule(modules[i])) {
-        return false;
-      }
-    }
-    return true;
+    return modules.every(module => !!this._homeStore.getSubModule(module));
   }
 }
 

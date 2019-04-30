@@ -12,7 +12,7 @@ import {
   injectable,
   interfaces,
 } from './ioc';
-import { ModuleConfig, Provide, LISTENER_TYPE } from './types';
+import { ModuleConfig, Provide } from './types';
 
 /**
  * Jupiter Framework
@@ -167,32 +167,24 @@ class Jupiter {
     this._running = true;
   }
 
-  emitModuleInitial(identifier: interfaces.ServiceIdentifier<any>) {
-    const filterListenerKeys = this._findListenerKeyByIdentifier(
-      identifier,
-      LISTENER_TYPE.INITIALIZED,
-    );
+  get initializedListener() {
+    return this._initializedListenerMap;
+  }
 
-    filterListenerKeys.forEach(key => {
-      const areModulesInitialized = this._areModulesBound(key);
-      if (areModulesInitialized) {
-        this._executeModulesInitialCallback(key);
-      }
-    });
+  get disposedListener() {
+    return this._disposedListenerMap;
+  }
+
+  emitModuleInitial(identifier: interfaces.ServiceIdentifier<any>) {
+    this._findListenerKeyByIdentifier(identifier, this._initializedListenerMap)
+      .filter(identifiers => this._areModulesBound(identifiers))
+      .forEach(identifiers => this._executeModulesInitialCallback(identifiers));
   }
 
   emitModuleDispose(identifier: interfaces.ServiceIdentifier<any>) {
-    const filterListenerKeys = this._findListenerKeyByIdentifier(
-      identifier,
-      LISTENER_TYPE.DISPOSED,
-    );
-
-    filterListenerKeys.forEach(key => {
-      const areModulesUnBound = this._areModulesUnBound(key);
-      if (areModulesUnBound) {
-        this._executeModulesDisposeCallback(key);
-      }
-    });
+    this._findListenerKeyByIdentifier(identifier, this._disposedListenerMap)
+      .filter(identifiers => this._areModulesUnBound(identifiers))
+      .forEach(identifiers => this._executeModulesDisposeCallback(identifiers));
   }
 
   onInitialized<T>(
@@ -201,20 +193,16 @@ class Jupiter {
       | interfaces.ServiceIdentifier<T>[],
     callback: (...args: any[]) => void,
   ) {
-    let identifiers: interfaces.ServiceIdentifier<T>[] = [];
-
-    identifiers = !Array.isArray(identifier) ? [identifier] : identifier;
-
+    const identifiers = this._formatIdentifier(identifier);
     const areIdentifierModuleInitialized = this._areModulesBound(identifiers);
 
     if (areIdentifierModuleInitialized) {
-      const identifierModules = this._getModulesByIdentifier(identifiers);
-      callback.apply(null, identifierModules);
+      callback.apply(null, this._getModulesByIdentifier(identifiers));
     } else {
       this._addModulesListener(
         identifiers,
         callback,
-        LISTENER_TYPE.INITIALIZED,
+        this._initializedListenerMap,
       );
     }
   }
@@ -225,56 +213,51 @@ class Jupiter {
       | interfaces.ServiceIdentifier<T>[],
     callback: () => void,
   ) {
-    let identifiers: interfaces.ServiceIdentifier<T>[] = [];
-
-    identifiers = !Array.isArray(identifier) ? [identifier] : identifier;
-
+    const identifiers = this._formatIdentifier(identifier);
     const areModulesUnBound = this._areModulesUnBound(identifiers);
     const areModulesBoundBefore = this._areModulesBoundBefore(identifiers);
 
     if (areModulesUnBound && areModulesBoundBefore) {
       callback();
     } else {
-      this._addModulesListener(identifiers, callback, LISTENER_TYPE.DISPOSED);
+      this._addModulesListener(
+        identifiers,
+        callback,
+        this._disposedListenerMap,
+      );
     }
   }
 
-  getModulesListenerByType(listenerType: LISTENER_TYPE) {
-    const listenerMap =
-      listenerType === LISTENER_TYPE.INITIALIZED
-        ? this._initializedListenerMap
-        : this._disposedListenerMap;
-    return listenerMap;
+  private _formatIdentifier<T>(
+    identifier:
+      | interfaces.ServiceIdentifier<T>
+      | interfaces.ServiceIdentifier<T>[],
+  ) {
+    return !Array.isArray(identifier) ? [identifier] : identifier;
   }
 
   private _areModulesBoundBefore<T>(
     identifiers: interfaces.ServiceIdentifier<T>[],
   ) {
-    const identifiersLength = identifiers.length;
-    if (identifiersLength === 0) {
-      return false;
-    }
-    for (let i = 0; i < identifiersLength; i++) {
-      if (!this._identifiersMap.has(identifiers[i])) {
-        return false;
-      }
-    }
-    return true;
+    return identifiers.every(
+      identifier => !!this._identifiersMap.has(identifier),
+    );
   }
 
   private _areModulesUnBound<T>(
     identifiers: interfaces.ServiceIdentifier<T>[],
   ) {
-    const identifiersLength = identifiers.length;
-    if (identifiersLength === 0) {
-      return true;
-    }
-    for (let i = 0; i < identifiersLength; i++) {
-      if (this._container.isBound(identifiers[i])) {
-        return false;
-      }
-    }
-    return true;
+    return identifiers.every(
+      identifier => !this._container.isBound(identifier),
+    );
+  }
+
+  private _areModulesBound<T>(
+    identifiers: interfaces.ServiceIdentifier<T>[],
+  ): boolean {
+    return identifiers.every(
+      identifier => !!this._container.isBound(identifier),
+    );
   }
 
   private _executeModulesInitialCallback<T>(
@@ -304,31 +287,15 @@ class Jupiter {
 
   private _findListenerKeyByIdentifier<T>(
     identifiers: interfaces.ServiceIdentifier<T>,
-    listenerType: LISTENER_TYPE,
+    listenerMap: Map<interfaces.ServiceIdentifier<any>[], any[]>,
   ) {
     const listenerKey = [];
-    const listenerMap = this.getModulesListenerByType(listenerType);
     for (const key of listenerMap.keys()) {
       if (key.includes(identifiers)) {
         listenerKey.push(key);
       }
     }
     return listenerKey;
-  }
-
-  private _areModulesBound<T>(
-    identifiers: interfaces.ServiceIdentifier<T>[],
-  ): boolean {
-    const identifiersLength = identifiers.length;
-    if (identifiersLength === 0) {
-      return false;
-    }
-    for (let i = 0; i < identifiersLength; i++) {
-      if (!this._container.isBound(identifiers[i])) {
-        return false;
-      }
-    }
-    return true;
   }
 
   private _getModulesByIdentifier<T>(
@@ -344,10 +311,8 @@ class Jupiter {
   private _addModulesListener<T>(
     identifiers: interfaces.ServiceIdentifier<T>[],
     callback: (...args: any[]) => void,
-    listenerType: LISTENER_TYPE,
+    listenerMap: Map<interfaces.ServiceIdentifier<any>[], any[]>,
   ) {
-    const listenerMap = this.getModulesListenerByType(listenerType);
-
     const isSameIdentifier = (
       listenerKey: interfaces.ServiceIdentifier<T>[],
       identifier: interfaces.ServiceIdentifier<T>[],
@@ -363,18 +328,17 @@ class Jupiter {
 
     let isAdded = false;
 
-    if (Array.from(listenerMap.keys()).length !== 0) {
-      for (const key of listenerMap.keys()) {
-        if (
-          key.length === identifiers.length &&
-          isSameIdentifier(key, identifiers)
-        ) {
-          const callbacks = listenerMap.get(key);
-          callbacks && callbacks.push(callback);
-          isAdded = true;
-        }
+    for (const key of listenerMap.keys()) {
+      if (
+        key.length === identifiers.length &&
+        isSameIdentifier(key, identifiers)
+      ) {
+        const callbacks = listenerMap.get(key);
+        callbacks && callbacks.push(callback);
+        isAdded = true;
       }
     }
+
     if (!isAdded) {
       listenerMap.set(identifiers, [callback]);
     }

@@ -19,9 +19,4 @@ type ModuleConfig = {
   provides?: Provide<any>[];
 };
 
-enum LISTENER_TYPE {
-  INITIALIZED,
-  DISPOSED,
-}
-
-export { Provide, ModuleConfig, LISTENER_TYPE };
+export { Provide, ModuleConfig };

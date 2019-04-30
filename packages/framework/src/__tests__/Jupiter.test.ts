@@ -1,6 +1,5 @@
 import { Jupiter } from '../Jupiter';
 import { container } from '../ioc';
-import { LISTENER_TYPE } from '../types';
 
 describe('Jupiter', () => {
   afterEach(() => {
@@ -216,9 +215,7 @@ describe('JupiterModule', () => {
 
       jupiter.onInitialized([MESSAGE_SERVICE, TELEPHONY_SERVICE], () => {});
 
-      const initializedListeners = jupiter.getModulesListenerByType(
-        LISTENER_TYPE.INITIALIZED,
-      );
+      const initializedListeners = jupiter.initializedListener;
       expect(Array.from(initializedListeners).length).toEqual(2);
     });
   });
@@ -385,9 +382,7 @@ describe('JupiterModule', () => {
 
       jupiter.onDisposed([MESSAGE_SERVICE, TELEPHONY_SERVICE], () => {});
 
-      const disposedListeners = jupiter.getModulesListenerByType(
-        LISTENER_TYPE.DISPOSED,
-      );
+      const disposedListeners = jupiter.disposedListener;
 
       expect(Array.from(disposedListeners).length).toEqual(1);
     });
@@ -399,9 +394,7 @@ describe('JupiterModule', () => {
 
       jupiter.onDisposed([MESSAGE_SERVICE, TELEPHONY_SERVICE], () => {});
 
-      const disposedListeners = jupiter.getModulesListenerByType(
-        LISTENER_TYPE.DISPOSED,
-      );
+      const disposedListeners = jupiter.disposedListener;
 
       expect(Array.from(disposedListeners).length).toEqual(2);
     });

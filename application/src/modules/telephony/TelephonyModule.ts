@@ -44,8 +44,6 @@ class TelephonyModule extends AbstractModule {
   }
 
   async bootstrap() {
-    this._jupiter.emitModuleInitial(TELEPHONY_SERVICE);
-
     const canUseTelephony = await this._FeaturesFlagsService.canUseTelephony();
     if (canUseTelephony) {
       this.initTelephony();
@@ -54,6 +52,8 @@ class TelephonyModule extends AbstractModule {
       SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
       this.onVoipCallingStateChanged,
     );
+
+    this._jupiter.emitModuleInitial(TELEPHONY_SERVICE);
   }
 
   dispose() {
