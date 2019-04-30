@@ -11,17 +11,22 @@ import { Item } from 'sdk/module/item/entity';
 import { GlipTypeUtil } from 'sdk/utils/glip-type-dictionary';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import { DEFAULT_PAGE_SIZE } from '@/store/base/fetch/constant';
 import { GroupItemListHandler } from '../GroupItemListHandler';
 import { RIGHT_RAIL_ITEM_TYPE } from '../constants';
 import { getTypeId } from '../utils';
 
-function setup(
-  groupId: number,
-  type: RIGHT_RAIL_ITEM_TYPE,
-  sortableModels: any[],
-) {
+function setup({
+  groupId,
+  type,
+  items,
+}: {
+  groupId: number;
+  type: RIGHT_RAIL_ITEM_TYPE;
+  items: any[];
+}) {
   const listHandler = new GroupItemListHandler(groupId, type);
-  listHandler.listStore.append(sortableModels);
+  listHandler.upsert(items);
   return { listHandler };
 }
 
@@ -41,13 +46,23 @@ function triggerReceiveItem(groupId: number, item: any) {
   );
 }
 
-function buildItem(id: number) {
+function buildTaskItem(id: number, groupId: number = 1) {
   return {
     id,
     type_id: GlipTypeUtil.extractTypeId(id),
-    group_ids: [1],
+    group_ids: [groupId],
     post_ids: [10],
     complete: false,
+    created_at: 100,
+  };
+}
+function buildFileItem(id: number, groupId: number = 1) {
+  return {
+    id,
+    type: 'txt',
+    type_id: GlipTypeUtil.extractTypeId(id),
+    group_ids: [groupId],
+    post_ids: [10],
     created_at: 100,
   };
 }
@@ -85,7 +100,11 @@ describe('GroupItemListHandler', () => {
     it('should be Infinity by default then fetch total', async () => {
       itemService.getGroupItemsCount.mockResolvedValue(100);
 
-      const { listHandler } = setup(1, RIGHT_RAIL_ITEM_TYPE.TASKS, []);
+      const { listHandler } = setup({
+        groupId: 1,
+        type: RIGHT_RAIL_ITEM_TYPE.TASKS,
+        items: [],
+      });
       expect(listHandler.total).toBe(Infinity);
       await flushPromises();
 
@@ -96,14 +115,18 @@ describe('GroupItemListHandler', () => {
       const groupId = 1;
 
       itemService.getGroupItemsCount.mockResolvedValue(100);
-      const { listHandler } = setup(groupId, RIGHT_RAIL_ITEM_TYPE.TASKS, []);
+      const { listHandler } = setup({
+        groupId: 1,
+        type: RIGHT_RAIL_ITEM_TYPE.TASKS,
+        items: [],
+      });
       expect(listHandler.total).toBe(Infinity);
       await flushPromises();
 
       expect(listHandler.total).toBe(100);
 
       itemService.getGroupItemsCount.mockResolvedValue(101);
-      triggerReceiveItem(groupId, buildItem(2147475465));
+      triggerReceiveItem(groupId, buildTaskItem(2147475465));
       await flushPromises();
 
       expect(listHandler.total).toBe(101);
@@ -111,79 +134,158 @@ describe('GroupItemListHandler', () => {
   });
 
   describe('fetchData()', () => {
-    let listHandler: GroupItemListHandler;
-    let mockedFetchDataInternal: jest.Mock;
-
-    beforeEach(() => {
-      ({ listHandler } = setup(1, RIGHT_RAIL_ITEM_TYPE.TASKS, [
-        {
-          id: 2147475465,
-          sortValue: 2147475465,
-          data: { created_at: 100, id: 2147475465 },
-        },
-        {
-          id: 16375,
-          sortValue: 16375,
-          data: { created_at: 100, id: 16375 },
-        },
-        {
-          id: -2147459081,
-          sortValue: -2147459081,
-          data: { created_at: 100, id: -2147459081 },
-        },
-      ]));
-      mockedFetchDataInternal = jest
+    function setupTaskListHandler({
+      fetchedData = [],
+    }: { fetchedData?: any[] } = {}) {
+      const groupId = 1;
+      const { listHandler } = setup({
+        groupId,
+        type: RIGHT_RAIL_ITEM_TYPE.TASKS,
+        items: [
+          buildTaskItem(16393, groupId),
+          buildTaskItem(675938313, groupId),
+          buildTaskItem(736043017, groupId),
+        ],
+      });
+      const mockedFetchDataInternal = jest
         .spyOn<any, any>(listHandler, 'fetchDataInternal')
-        .mockResolvedValue([]);
-    });
+        .mockResolvedValue(fetchedData);
+      return { listHandler, mockedFetchDataInternal };
+    }
+
+    function setupFileListHandler({
+      fetchedData = [],
+    }: { fetchedData?: any[] } = {}) {
+      const groupId = 1;
+      const { listHandler } = setup({
+        groupId,
+        type: RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES,
+        items: [
+          buildFileItem(1130815498, groupId),
+          buildFileItem(1705000970, groupId),
+          buildFileItem(1879384074, groupId),
+        ],
+      });
+      const mockedFetchDataInternal = jest
+        .spyOn<any, any>(listHandler, 'fetchDataInternal')
+        .mockResolvedValue(fetchedData);
+      return { listHandler, mockedFetchDataInternal };
+    }
 
     it('should use first item as anchor when direction is newer', async () => {
-      await listHandler.fetchData(QUERY_DIRECTION.NEWER, 20);
+      const { listHandler, mockedFetchDataInternal } = setupTaskListHandler({
+        fetchedData: [
+          {
+            id: 1003282441,
+            created_at: 104,
+            post_ids: [104],
+            group_ids: [1],
+            complete: false,
+          },
+        ],
+      });
+      const items = await listHandler.fetchData(QUERY_DIRECTION.NEWER, 20);
+
       expect(mockedFetchDataInternal).toBeCalledWith(
         QUERY_DIRECTION.NEWER,
         20,
-        expect.objectContaining({ id: 2147475465 }),
+        expect.objectContaining({ id: 16393 }),
       );
+      expect(items[0]).toHaveProperty('id', 1003282441);
     });
 
     it('should use last item as anchor when direction is older', async () => {
+      const { listHandler, mockedFetchDataInternal } = setupTaskListHandler();
+
       await listHandler.fetchData(QUERY_DIRECTION.OLDER, 20);
       expect(mockedFetchDataInternal).toBeCalledWith(
         QUERY_DIRECTION.OLDER,
         20,
-        expect.objectContaining({ id: -2147459081 }),
+        expect.objectContaining({ id: 736043017 }),
+      );
+    });
+
+    it('should use latest post id as sortKey', async () => {
+      const { listHandler } = setupFileListHandler();
+      expect(listHandler.listStore.first()).toEqual(
+        expect.objectContaining({ sortValue: 1879384074 }),
+      );
+    });
+
+    it('should use default page size', async () => {
+      const { listHandler, mockedFetchDataInternal } = setupTaskListHandler();
+
+      await listHandler.fetchData(QUERY_DIRECTION.OLDER);
+      expect(mockedFetchDataInternal).toBeCalledWith(
+        QUERY_DIRECTION.OLDER,
+        DEFAULT_PAGE_SIZE,
+        expect.objectContaining({ id: 736043017 }),
       );
     });
   });
 
   describe('hasMore()', () => {
     it('should be true in older direction', () => {
-      const { listHandler } = setup(1, RIGHT_RAIL_ITEM_TYPE.TASKS, []);
+      const { listHandler } = setup({
+        groupId: 1,
+        type: RIGHT_RAIL_ITEM_TYPE.TASKS,
+        items: [],
+      });
       expect(listHandler.hasMore(QUERY_DIRECTION.OLDER)).toBeTruthy();
     });
 
+    it('should be false in older direction and size===total', () => {
+      const { listHandler } = setup({
+        groupId: 1,
+        type: RIGHT_RAIL_ITEM_TYPE.TASKS,
+        items: [
+          {
+            id: 2147459081,
+            created_at: 100,
+            post_ids: [101],
+            group_ids: [1],
+          },
+        ],
+      });
+      Object.assign(listHandler, { _total: 1 });
+      expect(listHandler.hasMore(QUERY_DIRECTION.OLDER)).toBeFalsy();
+    });
+
     it('should be false in newer direction', () => {
-      const { listHandler } = setup(1, RIGHT_RAIL_ITEM_TYPE.TASKS, []);
+      const { listHandler } = setup({
+        groupId: 1,
+        type: RIGHT_RAIL_ITEM_TYPE.TASKS,
+        items: [],
+      });
       expect(listHandler.hasMore(QUERY_DIRECTION.NEWER)).toBeFalsy();
     });
 
     it('should be false in newer direction and size===total', () => {
-      const { listHandler } = setup(1, RIGHT_RAIL_ITEM_TYPE.TASKS, [
-        {
-          id: 2147475465,
-          sortValue: 2147475465,
-          data: { created_at: 100, id: 2147475465 },
-        },
-      ]);
+      const { listHandler } = setup({
+        groupId: 1,
+        type: RIGHT_RAIL_ITEM_TYPE.TASKS,
+        items: [
+          {
+            id: 2147459081,
+            created_at: 100,
+            post_ids: [101],
+            group_ids: [1],
+          },
+        ],
+      });
       Object.assign(listHandler, { _total: 1 });
-      expect(listHandler.hasMore(QUERY_DIRECTION.OLDER)).toBeFalsy();
+      expect(listHandler.hasMore(QUERY_DIRECTION.NEWER)).toBeFalsy();
     });
   });
 
   describe('dispose()', () => {
     it('should dispose mobx reactions', () => {
       const disposeFn = jest.fn();
-      const { listHandler } = setup(1, RIGHT_RAIL_ITEM_TYPE.TASKS, []);
+      const { listHandler } = setup({
+        groupId: 1,
+        type: RIGHT_RAIL_ITEM_TYPE.TASKS,
+        items: [],
+      });
       Object.assign(listHandler, { _disposers: [disposeFn] });
 
       listHandler.dispose();
@@ -201,11 +303,15 @@ describe('GroupItemListHandler', () => {
         id: 2147475465,
         type_id: typeId,
         group_ids: [1],
-        post_ids: [10],
+        post_ids: [101],
         complete: false,
         created_at: 100,
       };
-      const { listHandler } = setup(groupId, type, []);
+      const { listHandler } = setup({
+        groupId: 1,
+        type: RIGHT_RAIL_ITEM_TYPE.TASKS,
+        items: [],
+      });
       triggerReceiveItem(groupId, receivedItem);
       expect(listHandler.listStore.items).toEqual([
         {
@@ -219,15 +325,20 @@ describe('GroupItemListHandler', () => {
     it('should remove deleted item [JPT-851, JPT-844]', () => {
       const groupId = 1;
 
-      const { listHandler } = setup(groupId, RIGHT_RAIL_ITEM_TYPE.TASKS, [
-        {
-          id: 2147475465,
-          sortValue: 2147475465,
-          data: { created_at: 100, id: 2147475465 },
-        },
-      ]);
+      const { listHandler } = setup({
+        groupId: 1,
+        type: RIGHT_RAIL_ITEM_TYPE.TASKS,
+        items: [
+          {
+            id: -2147459081,
+            created_at: 100,
+            post_ids: [101],
+            group_ids: [1],
+          },
+        ],
+      });
 
-      triggerDeleteItem(groupId, { id: 2147475465 });
+      triggerDeleteItem(groupId, { id: -2147459081 });
 
       expect(listHandler.listStore.size).toBe(0);
     });

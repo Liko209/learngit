@@ -6,14 +6,13 @@
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataListHandlerOptions,
-  IFetchSortableDataProvider,
   ISortableModel,
 } from '@/store/base/fetch';
 import { ENTITY_NAME } from '@/store/constants';
 import { action, computed, observable, reaction } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { SortUtils } from 'sdk/framework/utils';
-import { ItemNotification, ItemService, ITEM_SORT_KEYS } from 'sdk/module/item';
+import { ItemNotification, ItemService } from 'sdk/module/item';
 import { Item } from 'sdk/module/item/entity';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
@@ -25,37 +24,7 @@ import {
   isExpectedItemOfThisGroup,
   getFilterFunc,
 } from './utils';
-
-class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
-  constructor(
-    private _groupId: number,
-    private _typeId: number,
-    private _sortKey: ITEM_SORT_KEYS,
-    private _desc: boolean,
-    private _filterFunc: ((value: any, index?: number) => boolean) | undefined,
-  ) {}
-
-  async fetchData(
-    direction: QUERY_DIRECTION,
-    pageSize: number,
-    anchor?: ISortableModel<Item>,
-  ): Promise<{ data: Item[]; hasMore: boolean }> {
-    const itemService = ServiceLoader.getInstance<ItemService>(
-      ServiceConfig.ITEM_SERVICE,
-    );
-    const result = await itemService.getItems({
-      typeId: this._typeId,
-      groupId: this._groupId,
-      sortKey: this._sortKey,
-      desc: this._desc,
-      limit: pageSize,
-      offsetItemId: anchor && anchor.id,
-      filterFunc: this._filterFunc,
-    });
-
-    return { data: result, hasMore: result.length === pageSize };
-  }
-}
+import { GroupItemDataProvider } from './GroupItemDataProvider';
 
 // TODO Can be refactored using polymorphism and strategy pattern
 class GroupItemListHandler extends FetchSortableDataListHandler<Item>
@@ -78,7 +47,7 @@ class GroupItemListHandler extends FetchSortableDataListHandler<Item>
     const { sortKey, desc } = getSort(type);
     const typeId = getTypeId(type);
 
-    const isMatchFunc = (model: Item) => {
+    const isMatchFunc = (model?: Item) => {
       return model ? isExpectedItemOfThisGroup(groupId, type, model) : false;
     };
 
