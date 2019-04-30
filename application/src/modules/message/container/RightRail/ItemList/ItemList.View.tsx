@@ -27,7 +27,13 @@ import {
 
 @observer
 class ItemListView extends React.Component<ViewProps & Props> {
-  private _loadMoreStrategy = new ThresholdStrategy(LOAD_MORE_STRATEGY_CONFIG);
+  private _infiniteListProps = {
+    minRowHeight: ITEM_HEIGHT,
+    loadMoreStrategy: new ThresholdStrategy(LOAD_MORE_STRATEGY_CONFIG),
+    loadingRenderer: <JuiRightRailContentLoading delay={LOADING_DELAY} />,
+    loadingMoreRenderer: <JuiRightRailLoadingMore />,
+    stickToLastPosition: false,
+  };
 
   private _renderItems() {
     const { type, groupId, listHandler } = this.props;
@@ -54,17 +60,10 @@ class ItemListView extends React.Component<ViewProps & Props> {
         <DataList
           listHandler={listHandler}
           initialDataCount={INITIAL_DATA_COUNT}
-          InfiniteListProps={{
+          InfiniteListProps={Object.assign(this._infiniteListProps, {
             height: listHeight,
-            minRowHeight: ITEM_HEIGHT,
-            loadMoreStrategy: this._loadMoreStrategy,
-            loadingRenderer: (
-              <JuiRightRailContentLoading delay={LOADING_DELAY} />
-            ),
-            loadingMoreRenderer: <JuiRightRailLoadingMore />,
             noRowsRenderer: emptyView(type),
-            stickToLastPosition: false,
-          }}
+          })}
         >
           {this._renderItems()}
         </DataList>

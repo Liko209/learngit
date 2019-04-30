@@ -363,38 +363,38 @@ export class FetchSortableDataListHandler<
     return this.sortableListStore.first();
   }
 
-  private _isInRange(newData: ISortableModel<T>) {
+  private _isInRange(newData: ISortableModel<T>): boolean {
     let inRange = false;
     const idArray = this.sortableListStore.items;
     if (idArray && idArray.length > 0) {
       const first = this.getNewest();
       const last = this.getOldest();
 
-      if (!(first && last)) return;
-
-      if (this._sortFun) {
-        inRange =
-          this._sortFun(newData, first) >= 0 &&
-          this._sortFun(newData, last) <= 0;
-      } else {
-        inRange =
-          newData.sortValue >= first.sortValue &&
-          newData.sortValue <= last.sortValue;
-      }
-
-      if (!inRange) {
+      if (first && last) {
         if (this._sortFun) {
           inRange =
-            (this._sortFun(newData, first) < 0 &&
-              !this.hasMore(QUERY_DIRECTION.OLDER)) ||
-            (this._sortFun(newData, last) > 0 &&
-              !this.hasMore(QUERY_DIRECTION.NEWER));
+            this._sortFun(newData, first) >= 0 &&
+            this._sortFun(newData, last) <= 0;
         } else {
           inRange =
-            (newData.sortValue < first.sortValue &&
-              !this.hasMore(QUERY_DIRECTION.OLDER)) ||
-            (newData.sortValue > last.sortValue &&
-              !this.hasMore(QUERY_DIRECTION.NEWER));
+            newData.sortValue >= first.sortValue &&
+            newData.sortValue <= last.sortValue;
+        }
+
+        if (!inRange) {
+          if (this._sortFun) {
+            inRange =
+              (this._sortFun(newData, first) < 0 &&
+                !this.hasMore(QUERY_DIRECTION.OLDER)) ||
+              (this._sortFun(newData, last) > 0 &&
+                !this.hasMore(QUERY_DIRECTION.NEWER));
+          } else {
+            inRange =
+              (newData.sortValue < first.sortValue &&
+                !this.hasMore(QUERY_DIRECTION.OLDER)) ||
+              (newData.sortValue > last.sortValue &&
+                !this.hasMore(QUERY_DIRECTION.NEWER));
+          }
         }
       }
     } else {

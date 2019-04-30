@@ -34,6 +34,7 @@ type DataListProps = {
 class DataList extends React.Component<DataListProps> {
   @action
   private _loadInitialData = async () => {
+    // TODO support up=>down and down=>up
     await this.props.listHandler.fetchData(
       this._transformDirection('down'),
       this.props.initialDataCount,
