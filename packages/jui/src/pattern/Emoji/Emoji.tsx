@@ -43,8 +43,8 @@ class Emoji extends React.PureComponent<Props> {
     return (
       <Fragment>
         <JuiIconButton
-          data-test-automation-id="conversation-chatbar-attachment-button"
-          tooltipTitle="Attach file"
+          data-test-automation-id="conversation-chatbar-emoji-button"
+          tooltipTitle="Emoji"
           onClick={this._handleClickEvent}
           size="medium"
         >
@@ -60,7 +60,7 @@ class Emoji extends React.PureComponent<Props> {
               vertical: 'center',
               horizontal: 'left',
             }}
-            data-test-automation-id="conversation-chatbar-attachment-menu"
+            data-test-automation-id="conversation-chatbar-emoji-menu"
             anchorEl={anchorEl}
             MenuListProps={{
               classes: {
