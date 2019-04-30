@@ -42,7 +42,7 @@ import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
 import { TDelta } from '../base/fetch/types';
 import preFetchConversationDataHandler from './PreFetchConversationDataHandler';
 
-function groupTransformFunc(data: Group): ISortableModelWithData<Group> {
+function groupTransformFunc(data: Group): ISortableModel {
   const {
     most_recent_post_created_at = 0,
     created_at,
@@ -68,7 +68,7 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
   async fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor: ISortableModelWithData<Group>,
+    anchor: ISortableModel,
   ): Promise<{ data: Group[]; hasMore: boolean }> {
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
@@ -464,7 +464,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       return {
         id: model.id,
         sortValue: 0,
-      } as ISortableModelWithData<Group>;
+      } as ISortableModel;
     };
 
     return this._addSection(SECTION_TYPE.FAVORITE, GROUP_QUERY_TYPE.FAVORITE, {
