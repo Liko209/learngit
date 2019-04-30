@@ -1,5 +1,5 @@
 import moment from 'moment';
-import i18nT from '@/utils/i18nT';
+import i18nT, { i18nTValueProps } from '@/utils/i18nT';
 import _ from 'lodash';
 
 async function getDateMessage(
@@ -105,7 +105,7 @@ const condition = {
 function buildFormatter(
   buildCondition: { condition: Function; formatter: Function }[],
 ): Function {
-  return function (timestamp: Date): Promise<string> | string {
+  return function (timestamp: Date): i18nTValueProps {
     const mInit = moment(timestamp);
     const m = moment(timestamp)
       .hour(0)
