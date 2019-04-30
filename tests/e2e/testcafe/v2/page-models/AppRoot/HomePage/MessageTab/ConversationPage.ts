@@ -70,7 +70,7 @@ export class BaseConversationPage extends BaseWebComponent {
   get posts() {
     return this.self.find('[data-name="conversation-card"]');
   }
-  
+
   get postSenders() {
     return this.self.find('[data-name="name"]');
   }
@@ -387,14 +387,12 @@ export class ConversationPage extends BaseConversationPage {
     return this.getSelectorByIcon('lock_open', this.privacyToggle);
   }
 
-
-
   async groupIdShouldBe(id: string | number) {
     await this.t.expect(this.currentGroupId).eql(id.toString());
   }
 
   async titleShouldBe(title: string) {
-    await this.t.expect(this.title.withExactText(title).exists).ok();
+    await this.t.expect(this.title.textContent).eql(title);
   }
 
   get messageFilesArea() {
