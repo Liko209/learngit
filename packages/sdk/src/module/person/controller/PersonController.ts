@@ -55,6 +55,10 @@ const HEADSHOT_THUMB_HEIGHT = 'height';
 
 const SIZE = 'size';
 
+const PhoneNumberUsageType = {
+  DIRECT_NUMBER: 'DirectNumber',
+};
+
 class PersonController {
   private _entitySourceController: IEntitySourceController<Person>;
   private _cacheSearchController: IEntityCacheSearchController<Person>;
@@ -330,7 +334,11 @@ class PersonController {
         if (person.rc_phone_numbers) {
           const res = person.rc_phone_numbers.find(
             (phoneNumberModel: PhoneNumberModel) => {
-              return phoneNumberModel.phoneNumber === e164PhoneNumber;
+              return (
+                phoneNumberModel.phoneNumber === e164PhoneNumber &&
+                phoneNumberModel.usageType ===
+                  PhoneNumberUsageType.DIRECT_NUMBER
+              );
             },
           );
           if (res) {
