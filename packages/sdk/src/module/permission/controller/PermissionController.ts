@@ -10,6 +10,10 @@ import { notificationCenter, ENTITY } from '../../../service';
 import { AccountUserConfig } from '../../../module/account/config';
 import { UserPermission } from '../entity';
 import { mainLogger } from 'foundation';
+import {
+  PERMISSION_CONTROLLED_BY,
+  PERMISSION_PLATFORM,
+} from './PermissionControlledBy';
 class PermissionController {
   private splitIOController: SplitIOController;
   private launchDarklyController: LaunchDarklyController;
@@ -18,17 +22,24 @@ class PermissionController {
   }
 
   async hasPermission(type: UserPermissionType): Promise<boolean> {
-    /**
-     * 1. get from beta
-     * 2. get frm rc
-     * 3. get from split IO
-     * result = 1 || 2 || 3;
-     */
-    // TODO: beta / RC
-    const sp = await this.splitIOController.hasPermission(type);
-    const ld = this.launchDarklyController.hasPermission(type);
-    mainLogger.log(`hasPermission of ${type} launchDarkly:${ld} splitIO:${sp}`);
-    return ld || sp;
+    let result = true;
+    if (PERMISSION_CONTROLLED_BY[type] === PERMISSION_PLATFORM.LD) {
+      const ld = this.launchDarklyController.hasPermission(type);
+      mainLogger.log(`hasPermission of ${type} launchDarkly:${ld}`);
+      result = ld;
+    } else if (PERMISSION_CONTROLLED_BY[type] === PERMISSION_PLATFORM.SPLIT) {
+      const sp = await this.splitIOController.hasPermission(type);
+      mainLogger.log(`hasPermission of ${type}  splitIO:${sp}`);
+      result = sp;
+    } else {
+      const sp = await this.splitIOController.hasPermission(type);
+      const ld = this.launchDarklyController.hasPermission(type);
+      mainLogger.log(
+        `hasPermission of ${type} launchDarkly:${ld} splitIO:${sp}`,
+      );
+      result = ld || sp;
+    }
+    return result;
   }
 
   async getById(id: number): Promise<UserPermission> {

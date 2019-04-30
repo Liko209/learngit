@@ -7,6 +7,7 @@
 export type PerformanceItem = {
   startTime: number;
   endTime: number;
+  count?: number;
 };
 
 export enum PERFORMANCE_KEYS {
@@ -36,7 +37,7 @@ export enum PERFORMANCE_KEYS {
   HANDLE_INCOMING_POST = 'handle_incoming_post',
   SEARCH_POST = 'search_post',
   SCROLL_SEARCH_POST = 'scroll_search_post',
-  HANDLE_INDEX_DATA = 'handle_incoming_data',
+  HANDLE_INDEX_DATA = 'handle_index_data',
   HANDLE_REMAINING_DATA = 'handle_remaining_data',
   HANDLE_INITIAL_DATA = 'handle_initial_data',
   FETCH_LEFT_RAIL = 'fetch_left_rail',

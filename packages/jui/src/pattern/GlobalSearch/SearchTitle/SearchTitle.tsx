@@ -65,6 +65,8 @@ const JuiSearchTitle = (props: JuiSearchTitleProps) => {
       <SearchTitleText>{title}</SearchTitleText>
       {showButton && (
         <ShowMoreBtn
+          role="button"
+          tabIndex={0}
           data-test-automation-id={`search-${automationId}-button`}
           onClick={onButtonClick}
         >

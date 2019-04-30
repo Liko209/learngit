@@ -70,8 +70,8 @@ class FileUploadController {
   private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
   private _uploadingFiles: Map<number, ItemFile[]> = new Map();
   private _canceledUploadFileIds: Set<number> = new Set();
-  private _uploadItemQueue = new SequenceProcessorHandler(
-    'FileUploadController - upload item',
+  private _uploadFileQueue = new SequenceProcessorHandler(
+    'FileUploadController - upload file',
   );
 
   constructor(
@@ -88,12 +88,12 @@ class FileUploadController {
     if (file) {
       mainLogger.info(LOG_TAG, 'sendItemFile, start upload file', {
         groupId,
-        file,
         isUpdate,
+        file: file && file.name,
       });
       const itemFile = this._toItemFile(groupId, file, isUpdate);
       await this._preSaveItemFile(itemFile, file);
-      this._sendItemFile(itemFile, file);
+      this._sendItemFileInQueue(itemFile, file);
       return itemFile;
     }
     return null;
@@ -172,7 +172,7 @@ class FileUploadController {
   }
 
   async sendItemData(groupId: number, postItemIds: number[]) {
-    mainLogger.info(LOG_TAG, 'sendItemData', {
+    mainLogger.tags(LOG_TAG).log('sendItemData', {
       groupId,
       postItemIds,
     });
@@ -184,7 +184,7 @@ class FileUploadController {
         const item = itemStatus.itemFile;
         const file = itemStatus.file;
         if (this._hasValidStoredFile(item)) {
-          this._uploadItemInQueue(groupId, item, this._isUpdateItem(item));
+          this._uploadItem(groupId, item, this._isUpdateItem(item));
         } else if (file && file.size > 0) {
           needWaitItemIds.push(item.id);
         } else {
@@ -231,7 +231,7 @@ class FileUploadController {
         item &&
         this._hasValidStoredFile(item)
       ) {
-        this._uploadItemInQueue(groupId, item, this._isUpdateItem(item));
+        this._uploadItem(groupId, item, this._isUpdateItem(item));
       }
 
       if (uploadingItemFileIds.length === 0) {
@@ -280,11 +280,7 @@ class FileUploadController {
     if (itemInDB) {
       const groupId = itemInDB.group_ids[0];
       if (this._hasValidStoredFile(itemInDB)) {
-        await this._uploadItemInQueue(
-          groupId,
-          itemInDB,
-          this._isUpdateItem(itemInDB),
-        );
+        await this._uploadItem(groupId, itemInDB, this._isUpdateItem(itemInDB));
       } else {
         const cacheItem = this._progressCaches.get(itemId);
         if (groupId && cacheItem && cacheItem.file) {
@@ -551,6 +547,9 @@ class FileUploadController {
       extendFileData = await this._requestAmazonS3Policy(file);
       // const extendFileData = policyResponse.unwrap();
       const formData = this._createFromDataWithPolicyData(file, extendFileData);
+      mainLogger.tags(LOG_TAG).log('_createFromDataWithPolicyData done', {
+        stored_file: extendFileData && extendFileData.stored_file,
+      });
       await ItemAPI.uploadFileToAmazonS3(
         extendFileData.post_url,
         formData,
@@ -559,6 +558,10 @@ class FileUploadController {
         },
         requestHolder,
       );
+      mainLogger.tags(LOG_TAG).log('_uploadFileToAmazonS3 done', {
+        groupId,
+        preInsertItem,
+      });
       this._handleFileUploadSuccess(
         extendFileData.stored_file,
         groupId,
@@ -585,25 +588,22 @@ class FileUploadController {
     await this._uploadFileToAmazonS3(file, preInsertItem, requestHolder);
   }
 
-  private async _uploadItemInQueue(
-    groupId: number,
-    preInsertItem: ItemFile,
-    isUpdate: boolean,
-  ) {
+  private async _sendItemFileInQueue(preInsertItem: ItemFile, file: File) {
     const processor = new UploadProcessor(
       this._generateProcessorName(preInsertItem.id),
       async () => {
-        await this._uploadItem(groupId, preInsertItem, isUpdate);
-        mainLogger.log(
-          LOG_TAG,
-          `_uploadItemInQueue, done for ${groupId}_${preInsertItem.id}_${
-            preInsertItem.name
-          }`,
-        );
+        await this._sendItemFile(preInsertItem, file);
+        mainLogger
+          .tags(LOG_TAG)
+          .log(
+            `_sendItemFileInQueue, done for ${preInsertItem.id}_${
+              preInsertItem.name
+            }`,
+          );
       },
     );
 
-    this._uploadItemQueue.addProcessor(processor);
+    this._uploadFileQueue.addProcessor(processor);
   }
 
   private async _uploadItem(
@@ -611,6 +611,11 @@ class FileUploadController {
     preInsertItem: ItemFile,
     isUpdate: boolean,
   ) {
+    mainLogger.tags(LOG_TAG).log('_uploadItem', {
+      groupId,
+      isUpdate,
+      preInsertItemId: preInsertItem.id,
+    });
     let existItemFile: ItemFile | null = null;
     if (isUpdate) {
       existItemFile = await this._getOldestExistFile(
@@ -662,6 +667,9 @@ class FileUploadController {
       itemId,
       preHandlePartial,
       async (updateModel: ItemFile) => {
+        mainLogger
+          .tags(LOG_TAG)
+          .log('_handleFileUploadSuccess, updatePartially', updateModel.id);
         return updateModel;
       },
       undefined,
@@ -695,6 +703,10 @@ class FileUploadController {
     preInsertItem: ItemFile,
     itemFile: ItemFile,
   ) {
+    mainLogger.tags(LOG_TAG).log('_handleItemUploadSuccess', {
+      preInsertItemId: preInsertItem.id,
+      itemFileId: itemFile.id,
+    });
     const preInsertId = preInsertItem.id;
     await this._entitySourceController.delete(preInsertId);
     await this._entitySourceController.update(itemFile);
@@ -719,6 +731,7 @@ class FileUploadController {
   }
 
   private _handleItemFileSendFailed(preInsertId: number) {
+    mainLogger.tags(LOG_TAG).log('_handleItemFileSendFailed', { preInsertId });
     if (this._canceledUploadFileIds.has(preInsertId)) {
       return;
     }
@@ -858,6 +871,9 @@ class FileUploadController {
     preInsertId: number,
     updatedId: number,
   ) {
+    mainLogger
+      .tags(LOG_TAG)
+      .log('_emitItemFileStatus', { status, preInsertId, updatedId });
     await notificationCenter.emitAsync(
       SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
       {
@@ -952,7 +968,7 @@ class FileUploadController {
 
   private _removeProcessor(itemId: number) {
     const name = this._generateProcessorName(itemId);
-    this._uploadItemQueue.removeProcessorByName(name);
+    this._uploadFileQueue.removeProcessorByName(name);
   }
 }
 

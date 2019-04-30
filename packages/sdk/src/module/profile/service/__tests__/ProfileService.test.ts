@@ -65,13 +65,6 @@ describe('ProfileService', () => {
     });
   });
 
-  describe('getMaxLeftRailGroup()', () => {
-    it('should call controller', async () => {
-      await profileService.getMaxLeftRailGroup();
-      expect(mockProfileDataController.getMaxLeftRailGroup).toBeCalled();
-    });
-  });
-
   describe('isConversationHidden()', () => {
     it('should call controller', async () => {
       await profileService.isConversationHidden(678);

@@ -251,6 +251,14 @@ class PhoneParserUtility {
     );
   }
 
+  static async isAreaCodeValid(countryId: number, areaCode: string) {
+    const regionalInfo = await PhoneParserUtility.getRegionalInfo(
+      countryId,
+      areaCode,
+    );
+    return regionalInfo ? !regionalInfo.HasBan() : false;
+  }
+
   static isStationUK(): boolean {
     return PhoneParserUtility.getStationCountryCode() === '44';
   }

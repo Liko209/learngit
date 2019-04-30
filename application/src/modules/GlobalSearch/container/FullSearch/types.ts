@@ -10,6 +10,7 @@ type FullSearchProps = {};
 type FullSearchViewProps = {
   currentTab: TAB_TYPE;
   setCurrentTab: (tab: TAB_TYPE) => void;
+  jumpToConversationCallback: () => void;
 };
 
 export { FullSearchProps, FullSearchViewProps, TAB_TYPE };

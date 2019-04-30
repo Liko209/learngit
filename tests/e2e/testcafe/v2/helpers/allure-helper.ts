@@ -6,6 +6,7 @@ import * as Allure from 'allure-js-commons';
 import { identity, findKey } from 'lodash';
 import { IStep, IConsoleLog } from '../models';
 import { BrandTire } from "../../config";
+import { formalNameWithTestMetaPrefix } from '../../libs/filter';
 
 const testStatusEnum = {
   passed: 'passed',
@@ -84,6 +85,7 @@ export class AllureHelper {
     const {
       test: {
         name: testCaseName,
+        meta: testMeta,
         fixture: {
           name: fixtureName,
         },
@@ -103,7 +105,8 @@ export class AllureHelper {
     const { testStatus, testInfo } = this.buildErrorTestInfo(testRun.errs[0]);
     const failScreenShotPath = testRun.errs.length > 0 ? testRun.errs[0].screenshotPath : null;
     this.startSuite(fixtureName, fixtureStartTime);
-    this.startCase(testCaseName, testCaseStartTime, userAgent, accountType);
+    const caseName = formalNameWithTestMetaPrefix(testCaseName, testMeta);
+    this.startCase(caseName, testCaseStartTime, userAgent, accountType);
     this.writeSteps(steps);
     if (failScreenShotPath) this.addAttachment(failScreenShotPath, 'Screenshot on Failure');
     this.addAttachment(consoleLog.consoleLogPath, 'Console Log Full');

@@ -2,7 +2,7 @@ import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
-import { POST_LIST_TYPE } from '@/containers/PostListPage/types';
+import { POST_LIST_TYPE } from '@/modules/message/container/PostListPage/types';
 import { toTitleCase } from '@/utils/string';
 import { SETTING_LIST_TYPE } from '@/modules/setting/container/SettingLeftRail/types';
 import i18nT from '@/utils/i18nT';

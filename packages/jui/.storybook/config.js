@@ -4,27 +4,174 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { configure, addDecorator } from '@storybook/react';
-import { withKnobs } from '@storybook/addon-knobs';
+import {
+  storiesOf,
+  configure,
+  addDecorator,
+  addParameters,
+} from '@storybook/react';
+import {
+  Global,
+  ThemeProvider,
+  themes,
+  createReset,
+  create,
+  convert,
+} from '@storybook/theming';
 
-import { ThemeProvider } from '../src/foundation/theme/index';
+import { withKnobs } from '@storybook/addon-knobs';
+import { withA11y } from '@storybook/addon-a11y';
+import { withNotes } from '@storybook/addon-notes';
+import { withInfo } from '@storybook/addon-info';
+
+import { ThemeProvider as JuiThemeProvider } from '../src/foundation/theme/index';
 import './index.css';
+
+import addHeadWarning from './head-warning';
+
+if (process.env.NODE_ENV === 'development') {
+  if (!process.env.STORYBOOK_DISPLAY_WARNING) {
+    addHeadWarning('env-glob', 'Global storybook env var not loaded');
+  }
+
+  if (process.env.DISPLAY_WARNING) {
+    addHeadWarning('env-extra', 'Global non-storybook env var loaded');
+  }
+}
+
+addHeadWarning('preview-head-not-loaded', 'Preview head not loaded');
 
 const ThemeDecorator = storyFn => {
   return (
-    <ThemeProvider themeName="light">
-      <div style={{ paddingTop: '25px' }}>{storyFn()}</div>
-    </ThemeProvider>
+    <JuiThemeProvider themeName="light">
+      <ThemeProvider theme={convert(themes.light)}>
+        <Global styles={createReset} />
+        <div style={{ padding: 20 }}>{storyFn()}</div>
+      </ThemeProvider>
+    </JuiThemeProvider>
   );
 };
 
-const req = require.context('../src', true, /\.story\.tsx?$/);
+addDecorator(
+  withInfo({
+    styles: {
+      header: {
+        h1: {
+          marginRight: '20px',
+          fontSize: '25px',
+          display: 'inline',
+        },
+        body: {
+          paddingTop: 0,
+          paddingBottom: 0,
+          marginBottom: 0,
+        },
+        h2: {
+          display: 'inline',
+          color: '#999',
+        },
+      },
+      infoBody: {
+        backgroundColor: '#eee',
+        padding: '0px 5px',
+        lineHeight: '2',
+      },
+    },
+    inline: false,
+    source: false,
+  }),
+);
 
-function loadStories() {
-  req.keys().forEach(filename => req(filename));
-}
-
+addDecorator(withA11y);
+addDecorator(withNotes);
 addDecorator(withKnobs);
 addDecorator(ThemeDecorator);
+
+addParameters({
+  a11y: {
+    configure: {},
+    options: {
+      checks: { 'color-contrast': { options: { noScroll: true } } },
+      restoreScroll: true,
+    },
+  },
+  options: {
+    theme: create({
+      colorPrimary: 'hotpink',
+      colorSecondary: 'orangered',
+      brandTitle: 'Jupiter!',
+    }),
+  },
+  backgrounds: [
+    { name: 'storybook app', value: themes.light.appBg, default: true },
+    { name: 'light', value: '#eeeeee' },
+    { name: 'dark', value: '#222222' },
+  ],
+});
+
+let previousExports = {};
+if (module && module.hot && module.hot.dispose) {
+  ({ previousExports = {} } = module.hot.data || {});
+
+  module.hot.dispose(data => {
+    // eslint-disable-next-line no-param-reassign
+    data.previousExports = previousExports;
+  });
+}
+
+// The simplest version of examples would just export this function for users to use
+function importAll(context) {
+  const storyStore = window.__STORYBOOK_CLIENT_API__._storyStore; // eslint-disable-line no-undef, no-underscore-dangle
+
+  context.keys().forEach(filename => {
+    const fileExports = context(filename);
+
+    // A old-style story file
+    if (!fileExports.default) {
+      return;
+    }
+
+    const { default: component, ...examples } = fileExports;
+    let componentOptions = component;
+    if (component.prototype && component.prototype.isReactComponent) {
+      componentOptions = { component };
+    }
+    const kindName =
+      componentOptions.title || componentOptions.component.displayName;
+
+    if (previousExports[filename]) {
+      if (previousExports[filename] === fileExports) {
+        return;
+      }
+
+      // Otherwise clear this kind
+      storyStore.removeStoryKind(kindName);
+      storyStore.incrementRevision();
+    }
+
+    // We pass true here to avoid the warning about HMR. It's cool clientApi, we got this
+    const kind = storiesOf(kindName, true);
+
+    (componentOptions.decorators || []).forEach(decorator => {
+      kind.addDecorator(decorator);
+    });
+    if (componentOptions.parameters) {
+      kind.addParameters(componentOptions.parameters);
+    }
+
+    Object.keys(examples).forEach(key => {
+      const example = examples[key];
+      const { title = key, parameters } = example;
+      kind.add(title, example, parameters);
+    });
+
+    previousExports[filename] = fileExports;
+  });
+}
+
+function loadStories() {
+  const req = require.context('../src', true, /\.story\.tsx?$/);
+  importAll(req);
+}
 
 configure(loadStories, module);

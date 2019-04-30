@@ -11,7 +11,7 @@ import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { ENTITY } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
-import { SYNC_SOURCE } from '../../sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { AccountUserConfig } from '../../account/config/AccountUserConfig';
 class CompanyController {
   private _currentCompanyId: number;
@@ -84,13 +84,21 @@ class CompanyController {
     ) as Company[];
   }
 
-  async handleCompanyData(companies: Raw<Company>[], source: SYNC_SOURCE) {
+  async handleCompanyData(
+    companies: Raw<Company>[],
+    source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
+  ) {
     if (companies.length === 0) {
       return;
     }
     const transformedData: Company[] = await this._getTransformData(companies);
     if (shouldEmitNotification(source)) {
-      notificationCenter.emitEntityUpdate(ENTITY.COMPANY, transformedData);
+      if (changeMap) {
+        changeMap.set(ENTITY.COMPANY, { entities: transformedData });
+      } else {
+        notificationCenter.emitEntityUpdate(ENTITY.COMPANY, transformedData);
+      }
     }
     await this.entitySourceController.bulkPut(transformedData);
   }

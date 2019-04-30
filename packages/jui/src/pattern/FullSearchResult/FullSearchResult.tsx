@@ -23,6 +23,7 @@ const JuiFullSearchResultStreamWrapper = styled.div`
   position: relative;
   flex: 1;
   min-height: 0;
+  height: 99999999999px;
 `;
 
 export {

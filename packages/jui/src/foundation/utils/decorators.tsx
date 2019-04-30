@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { withInfo, Options as WithInfoOptions } from '@storybook/addon-info';
-import createDependencies from './createDependenciesDoc';
+// import createDependencies from './createDependenciesDoc';
 import { RenderFunction } from '@storybook/react';
 import { StyledComponentClass } from 'styled-components';
 import { Dependencies } from '../styled-components';
@@ -21,10 +21,10 @@ export const withInfoDecorator = (
     | StyledComponentClass<any, Theme, any>) &
     Dependencies,
   options?: WithInfoOptions,
-) => (story: RenderFunction, context: object) =>
-  withInfo({
-    text: Component.dependencies
-      ? createDependencies(Component.dependencies)
-      : undefined,
-    ...options,
-  })(story)(context);
+) => (story: RenderFunction, context: object) => withInfo()(story)(context);
+// withInfo({
+//   text: Component.dependencies
+//     ? createDependencies(Component.dependencies)
+//     : undefined,
+//   ...options,
+// })(story)(context);

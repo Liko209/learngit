@@ -39,6 +39,7 @@ export interface IFetchSortableDataListHandlerOptions<T>
   transformFunc: ITransformFunc<T>;
   sortFunc?: ISortFunc<ISortableModel<T>>;
   eventName?: string;
+  limit?: number;
 }
 export interface IFetchSortableDataProvider<T> {
   fetchData(
@@ -68,6 +69,7 @@ export class FetchSortableDataListHandler<
     options: IFetchSortableDataListHandlerOptions<T>,
     listStore: SortableListStore<T> = new SortableListStore<T>(
       options.sortFunc,
+      options.limit,
     ),
   ) {
     super(null, options, listStore);

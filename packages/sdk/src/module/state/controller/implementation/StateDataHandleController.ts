@@ -15,11 +15,10 @@ import { StateHandleTask, GroupCursorHandleTask } from '../../types';
 import notificationCenter from '../../../../service/notificationCenter';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { StateFetchDataController } from './StateFetchDataController';
-import { TotalUnreadController } from './TotalUnreadController';
 import { mainLogger } from 'foundation';
 import { AccountUserConfig } from '../../../../module/account/config';
 import { MyStateConfig } from '../../../state/config';
-import { SYNC_SOURCE } from '../../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../../module/sync/types';
 import { shouldEmitNotification } from '../../../../utils/notificationUtils';
 
 type DataHandleTask = StateHandleTask | GroupCursorHandleTask;
@@ -29,7 +28,6 @@ class StateDataHandleController {
   constructor(
     private _entitySourceController: IEntitySourceController<GroupState>,
     private _stateFetchDataController: StateFetchDataController,
-    private _totalUnreadController: TotalUnreadController,
   ) {
     this._taskArray = [];
   }
@@ -37,6 +35,7 @@ class StateDataHandleController {
   async handleState(
     states: Partial<State>[],
     source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<void> {
     const stateTask: DataHandleTask = {
       type: TASK_DATA_TYPE.STATE,
@@ -44,7 +43,7 @@ class StateDataHandleController {
     };
     this._taskArray.push(stateTask);
     if (this._taskArray.length === 1) {
-      await this._startDataHandleTask(this._taskArray[0], source);
+      await this._startDataHandleTask(this._taskArray[0], source, changeMap);
     }
   }
 
@@ -62,6 +61,7 @@ class StateDataHandleController {
   private async _startDataHandleTask(
     task: DataHandleTask,
     source?: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<void> {
     try {
       let transformedState: TransformedState;
@@ -71,8 +71,11 @@ class StateDataHandleController {
         transformedState = this._transformGroupData(task.data);
       }
       const updatedState = await this._generateUpdatedState(transformedState);
-      await this._updateEntitiesAndDoNotification(updatedState, source);
-      this._totalUnreadController.handleGroupState(updatedState.groupStates);
+      await this._updateEntitiesAndDoNotification(
+        updatedState,
+        source,
+        changeMap,
+      );
     } catch (err) {
       mainLogger.error(`StateDataHandleController, handle task error, ${err}`);
     }
@@ -83,10 +86,19 @@ class StateDataHandleController {
     }
   }
 
-  private _transformGroupData(groups: Partial<Group>[]): TransformedState {
+  private _transformGroupData(groupArray: any): TransformedState {
     const transformedState: TransformedState = {
       groupStates: [],
     };
+    let groups = groupArray;
+    if (groups && groups.body) {
+      if (groups.body.partials) {
+        groups = Array.from(groups.body.partials.values());
+      } else if (groups.body.entities) {
+        groups = Array.from(groups.body.entities.values());
+      }
+    }
+
     transformedState.groupStates = _.compact(
       groups.map((group: Partial<State>) => {
         const groupId = group._id || group.id;
@@ -122,6 +134,7 @@ class StateDataHandleController {
         return groupState;
       }),
     );
+
     return transformedState;
   }
 
@@ -336,6 +349,7 @@ class StateDataHandleController {
   private async _updateEntitiesAndDoNotification(
     transformedState: TransformedState,
     source?: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<void> {
     if (transformedState.myState) {
       const myState = transformedState.myState;
@@ -346,22 +360,38 @@ class StateDataHandleController {
       } catch (err) {
         mainLogger.error(`StateDataHandleController, my state error, ${err}`);
       }
-      notificationCenter.emitEntityUpdate(
-        ENTITY.MY_STATE,
-        [myState],
-        [myState],
-      );
+      // if (Date.now() === 0) {
+      if (changeMap) {
+        changeMap.set(ENTITY.MY_STATE, {
+          entities: [myState],
+          partials: [myState],
+        });
+      } else {
+        notificationCenter.emitEntityUpdate(
+          ENTITY.MY_STATE,
+          [myState],
+          [myState],
+        );
+      }
+      // }
     }
     if (transformedState.groupStates.length > 0) {
       await this._entitySourceController.bulkUpdate(
         transformedState.groupStates,
       );
       if (shouldEmitNotification(source)) {
-        notificationCenter.emitEntityUpdate(
-          ENTITY.GROUP_STATE,
-          transformedState.groupStates,
-          transformedState.groupStates,
-        );
+        if (changeMap) {
+          changeMap.set(ENTITY.GROUP_STATE, {
+            entities: transformedState.groupStates,
+            partials: transformedState.groupStates,
+          });
+        } else {
+          notificationCenter.emitEntityUpdate(
+            ENTITY.GROUP_STATE,
+            transformedState.groupStates,
+            transformedState.groupStates,
+          );
+        }
       }
     }
   }

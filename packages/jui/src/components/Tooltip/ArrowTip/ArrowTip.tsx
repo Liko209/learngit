@@ -180,3 +180,5 @@ export class JuiArrowTip extends React.PureComponent<JuiTooltipProps> {
     );
   }
 }
+
+export { JuiTooltipProps };

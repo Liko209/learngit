@@ -6,13 +6,13 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs';
-import { JuiArrowTip } from '..';
+import { JuiArrowTip, JuiTooltipProps } from '..';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 
 storiesOf('Components/Tooltip', module)
   .addDecorator(withInfoDecorator(JuiArrowTip, { inline: true }))
   .add('ArrowTip', () => {
-    const placement = select(
+    const placement = select<JuiTooltipProps['placement']>(
       'placement',
       {
         top: 'top',
