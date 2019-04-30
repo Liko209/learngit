@@ -27,7 +27,6 @@ let telephonyService: TelephonyService | null;
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
 jest.mock('../ToastCallError');
-jest.mock('sdk/module/serviceLoader');
 
 const sleep = (time: number): Promise<void> => {
   return new Promise<void>((res, rej) => {
@@ -116,6 +115,11 @@ describe('TelephonyService', () => {
           telephonyService = mockedServerTelephonyService;
           return mockedServerTelephonyService as ServerTelephonyService;
         case ServiceConfig.PERSON_SERVICE:
+          return { getSynchronously: jest.fn() };
+        case ServiceConfig.GLOBAL_CONFIG_SERVICE:
+          return { get: jest.fn() };
+        case ServiceConfig.USER_CONFIG_SERVICE:
+          return { get: jest.fn() };
         default:
           return {} as PersonService;
       }
@@ -128,7 +132,9 @@ describe('TelephonyService', () => {
   });
 
   afterEach(() => {
+    jest.clearAllMocks();
     jest.resetAllMocks();
+    jest.restoreAllMocks();
     container.unbindAll();
     count += 1;
   });
