@@ -3,7 +3,7 @@
  * @Date: 2019-03-24 11:06:33
  * Copyright © RingCentral. All rights reserved.
  */
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { RESPONSE_STATUS_CODE, LogEntity, mainLogger } from 'foundation';
 import { Api } from 'sdk/api';
 import { Pal } from 'sdk/pal';
@@ -48,14 +48,7 @@ export class LogUploader implements ILogUploader {
       mainLogger.debug('Log errorHandler: abortAll');
       return 'abortAll';
     }
-    if (
-      [
-        RESPONSE_STATUS_CODE.UNAUTHORIZED,
-        RESPONSE_STATUS_CODE.TOO_MANY_REQUESTS,
-        RESPONSE_STATUS_CODE.SERVICE_UNAVAILABLE,
-        RESPONSE_STATUS_CODE.GATEWAY_TIME_OUT,
-      ].includes(response.status)
-    ) {
+    if (this._canRetry(response)) {
       mainLogger.debug('Log errorHandler: retry');
       return 'retry';
     }
@@ -85,5 +78,13 @@ export class LogUploader implements ILogUploader {
   private _getLogText(log: LogEntity) {
     const { message = '' } = log;
     return message;
+  }
+
+  private _canRetry(response: AxiosResponse) {
+    return [
+      RESPONSE_STATUS_CODE.TOO_MANY_REQUESTS,
+      RESPONSE_STATUS_CODE.SERVICE_UNAVAILABLE,
+      RESPONSE_STATUS_CODE.GATEWAY_TIME_OUT,
+    ].includes(response.status);
   }
 }

@@ -73,7 +73,7 @@ class SocketRequestHelper implements ISocketRequestManager {
   private _onRequestTimeout(requestId: string, reject: any) {
     mainLogger.info('[Socket]: request timeout');
     const response = new SocketResponseBuilder()
-      .setStatus(RESPONSE_STATUS_CODE.LOCAL_CANCELLED)
+      .setStatus(RESPONSE_STATUS_CODE.LOCAL_TIME_OUT)
       .setStatusText(NETWORK_FAIL_TEXT.TIME_OUT)
       .build();
     reject(response);
