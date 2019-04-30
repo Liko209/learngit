@@ -7,7 +7,7 @@ import { toTitleCase } from '@/utils/string';
 import { SETTING_LIST_TYPE } from '@/modules/setting/container/SettingLeftRail/types';
 import i18nT from '@/utils/i18nT';
 
-function getMessagesTitle(messagePath?: string) {
+function getMessagesTitle(messagePath?: string): string | Promise<string> {
   if (
     messagePath &&
     new RegExp(`^(${Object.values(POST_LIST_TYPE).join('|')})$`).test(
@@ -23,7 +23,7 @@ function getMessagesTitle(messagePath?: string) {
   return i18nT('message.Messages');
 }
 
-function getSettingsTitle(settingPath: string) {
+function getSettingsTitle(settingPath: string): string | Promise<string> {
   const settingI18N = i18nT('setting.Settings');
   if (
     settingPath &&
@@ -45,18 +45,18 @@ function getI18NKeyByRoutePath(path: string) {
 
 const DOC_TITLE = {
   messages: getMessagesTitle,
-  dashboard: () => i18nT('dashboard.Dashboard'),
-  phone: () => i18nT('telephony.Phone'),
-  meetings: () => i18nT('meeting.Meetings'),
-  contacts: () => i18nT('contact.Contacts'),
-  calendar: () => i18nT('calendar.Calendar'),
-  tasks: () => i18nT('item.tasks'),
-  notes: () => i18nT('item.notes'),
-  files: () => i18nT('item.files'),
+  dashboard: (): string | Promise<string> => i18nT('dashboard.Dashboard'),
+  phone: (): string | Promise<string> => i18nT('telephony.Phone'),
+  meetings: (): string | Promise<string> => i18nT('meeting.Meetings'),
+  contacts: (): string | Promise<string> => i18nT('contact.Contacts'),
+  calendar: (): string | Promise<string> => i18nT('calendar.Calendar'),
+  tasks: (): string | Promise<string> => i18nT('item.tasks'),
+  notes: (): string | Promise<string> => i18nT('item.notes'),
+  files: (): string | Promise<string> => i18nT('item.files'),
   settings: getSettingsTitle,
 };
 
-function getDocTitle(pathname: string) {
+function getDocTitle(pathname: string): string | Promise<string> {
   const paths = pathname.split('/');
   const category = paths[1].toLocaleLowerCase();
   const subPath = paths[2];
