@@ -20,6 +20,8 @@ import { IRemotePostRequest, UnreadPostQuery } from '../entity/Post';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
+const ADDITIONAL_UNREAD_POST_COUNT = 500;
+
 class PostFetchController {
   constructor(
     private _groupService: IGroupService,
@@ -120,7 +122,7 @@ class PostFetchController {
     unreadCount = DEFAULT_PAGE_SIZE,
   }: UnreadPostQuery): Promise<IPostResult> {
     let result: IPostResult = {
-      limit: unreadCount,
+      limit: unreadCount ,
       posts: [],
       items: [],
       hasMore: true,
@@ -149,7 +151,7 @@ class PostFetchController {
         mainLogger.info(LOG_FETCH_POST, 'getUnreadPosts() get from server');
         const serverResult = await this.getRemotePostsByGroupId({
           groupId,
-          limit: unreadCount,
+          limit: unreadCount + ADDITIONAL_UNREAD_POST_COUNT,
           postId: startPostId,
           direction: QUERY_DIRECTION.NEWER,
           shouldSaveToDb: false,

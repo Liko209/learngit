@@ -436,7 +436,7 @@ describe('PostFetchController()', () => {
         groupId: 1,
         startPostId: 0,
         endPostId: 2,
-        limit: 500,
+        unreadCount: 500,
       });
       const localSpy = jest.spyOn(
         postFetchController,
@@ -461,7 +461,7 @@ describe('PostFetchController()', () => {
         groupId: 1,
         startPostId: undefined,
         endPostId: 2,
-        limit: 500,
+        unreadCount: 500,
       });
       const localSpy = jest.spyOn(
         postFetchController,
@@ -491,7 +491,7 @@ describe('PostFetchController()', () => {
         groupId: 1,
         startPostId: 1,
         endPostId: 2,
-        limit: 500,
+        unreadCount: 500,
       });
 
       expect(result).toEqual({
@@ -523,7 +523,7 @@ describe('PostFetchController()', () => {
         groupId: 1,
         startPostId: 1,
         endPostId: 2,
-        limit: 500,
+        unreadCount: 500,
       });
 
       expect(result).toEqual({
