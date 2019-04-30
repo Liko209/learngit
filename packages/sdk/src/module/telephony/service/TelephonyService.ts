@@ -51,10 +51,12 @@ class TelephonyService extends EntityBaseService {
     return accountController ? accountController.getCallCount() : 0;
   }
 
-  makeCall = async (toNumber: string) => {
+  makeCall = async (toNumber: string, fromNumber: string) => {
     const accountController = this.telephonyController.getAccountController();
     if (accountController) {
-      return this.telephonyController.getAccountController().makeCall(toNumber);
+      return this.telephonyController
+        .getAccountController()
+        .makeCall(toNumber, fromNumber);
     }
     return MAKE_CALL_ERROR_CODE.INVALID_STATE;
   }
