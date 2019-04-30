@@ -2111,7 +2111,7 @@ describe('RTC call', () => {
       });
     });
 
-    it("should call webphone's forward API when forward incoming call in replying state", done => {
+    it("should call state change to forwarding and call webphone's forward API when call forward in replying state. [JPT-1763]", done => {
       setup();
       call.startReply();
       setImmediate(() => {
