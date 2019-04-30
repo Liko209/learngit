@@ -34,7 +34,7 @@ class BackNForwardViewModel extends StoreViewModel {
   }
 
   @computed
-  get _rawBackRecord() {
+  get rawBackRecord() {
     const backRecord = historyStack.backRecord;
     return backRecord.map((pathname: string) => ({
       pathname,
@@ -43,7 +43,7 @@ class BackNForwardViewModel extends StoreViewModel {
   }
 
   @computed
-  get _rawForwardRecord() {
+  get rawForwardRecord() {
     const forwardRecord = historyStack.forwardRecord;
     return forwardRecord.map((pathname: string) => ({
       pathname,
@@ -51,7 +51,7 @@ class BackNForwardViewModel extends StoreViewModel {
     }));
   }
 
-  backRecord = promisedComputed(this._rawBackRecord, async () => {
+  backRecord = promisedComputed(this.rawBackRecord, async () => {
     const backRecord = historyStack.backRecord;
     const promiseRecord = backRecord.map(async (pathname: string) => ({
       pathname,
@@ -60,7 +60,7 @@ class BackNForwardViewModel extends StoreViewModel {
     return await Promise.all(promiseRecord);
   });
 
-  forwardRecord = promisedComputed(this._rawForwardRecord, async () => {
+  forwardRecord = promisedComputed(this.rawForwardRecord, async () => {
     const forwardRecord = historyStack.forwardRecord;
     const promiseRecord = forwardRecord.map(async (pathname: string) => ({
       pathname,
@@ -71,12 +71,12 @@ class BackNForwardViewModel extends StoreViewModel {
 
   @computed
   get disabledBack() {
-    return this._rawBackRecord.length === 0;
+    return this.rawBackRecord.length === 0;
   }
 
   @computed
   get disabledForward() {
-    return this._rawForwardRecord.length === 0;
+    return this.rawForwardRecord.length === 0;
   }
 
   @action

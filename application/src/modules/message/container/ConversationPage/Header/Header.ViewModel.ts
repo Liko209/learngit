@@ -37,7 +37,7 @@ class HeaderViewModel extends AbstractViewModel {
     return group;
   }
 
-  title = promisedComputed(this.group.displayName, async () => {
+  title = promisedComputed(this.group && this.group.displayName, async () => {
     const group = this.group;
     if (group.type === CONVERSATION_TYPES.SMS) {
       return `${group.displayName} (${await i18nT('message.messageTypeNameSMS')})`;

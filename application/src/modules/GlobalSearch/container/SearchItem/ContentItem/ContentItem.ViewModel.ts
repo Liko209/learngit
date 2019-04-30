@@ -24,7 +24,7 @@ class ContentItemViewModel extends SearchViewModel<ContentProps>
     this.addRecentRecord();
   }
 
-  contentText = promisedComputed(this.props.displayName, async () => {
+  contentText = promisedComputed(this.props && this.props.displayName, async () => {
     const { searchScope, displayName } = this.props;
 
     if (searchScope === SEARCH_SCOPE.CONVERSATION) {
