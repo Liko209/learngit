@@ -43,7 +43,8 @@ class ContentSearchResultViewModel
 
   private _globalSearchStore = container.get(GlobalSearchStore);
 
-  private _stream: any;
+  @observable
+  showResult: boolean = true;
 
   @computed
   private get _type() {
@@ -103,6 +104,11 @@ class ContentSearchResultViewModel
     );
   }
 
+  @computed
+  get searchTerms(): string[] {
+    return this._searchKey.split(' ');
+  }
+
   @action
   setSearchOptions = async (
     options: ContentSearchOptions,
@@ -110,11 +116,13 @@ class ContentSearchResultViewModel
   ) => {
     this.searchOptions = { ...this.searchOptions, ...options };
 
+    this.showResult = false;
+
     !isInitial && (await this.onSearchEnd());
 
-    this._setSearchState({ requestId: null });
+    this._setSearchState({ requestId: null, postIds: [] });
 
-    !isInitial && this._refresh();
+    this.showResult = true;
   }
 
   onPostsFetch = async () => {
@@ -133,14 +141,6 @@ class ContentSearchResultViewModel
   }
 
   onSearchEnd = async () => await this._postService.endPostSearch();
-
-  private _refresh() {
-    if (!this.isEmpty && this._stream && this._stream.current) {
-      this._stream.current.vm.reInit();
-    } else {
-      this._setSearchState({ contentsCount: {} });
-    }
-  }
 
   @action
   private _onSearchInit() {
@@ -236,10 +236,6 @@ class ContentSearchResultViewModel
           dismissible: false,
         })
       : generalErrorHandler(error);
-  }
-
-  setStreamVM = (stream: any) => {
-    this._stream = stream;
   }
 }
 

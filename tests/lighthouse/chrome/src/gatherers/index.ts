@@ -11,6 +11,7 @@ import { SearchGatherer } from './searchGatherer';
 import { SwitchConversationGatherer } from './switchConversationGatherer';
 import { MemoryGatherer } from './memoryGatherer';
 import { FpsGatherer } from './fpsGatherer';
+import { IndexDataGatherer } from './indexDataGatherer';
 
 export {
   ProcessGatherer,
@@ -22,5 +23,6 @@ export {
   SearchGatherer,
   SwitchConversationGatherer,
   MemoryGatherer,
-  FpsGatherer
+  FpsGatherer,
+  IndexDataGatherer
 }

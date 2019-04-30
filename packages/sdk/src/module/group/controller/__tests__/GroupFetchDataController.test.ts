@@ -1,4 +1,3 @@
-/// <reference path="../../../../__tests__/types.d.ts" />
 import { ERROR_CODES_NETWORK, JNetworkError } from 'foundation';
 import _ from 'lodash';
 
@@ -42,12 +41,11 @@ jest.mock('../../../post');
 jest.mock('sdk/api');
 jest.mock('sdk/api/glip/group');
 
-const profileService = new ProfileService();
-const personService = new PersonService();
-const companyService = {
-  getCompanyEmailDomain: jest.fn().mockResolvedValue('companyDomain'),
-};
-
+function clearMock() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
 describe('GroupFetchDataController', () => {
   let testEntitySourceController: IEntitySourceController<Group>;
   let groupFetchDataController: GroupFetchDataController;
@@ -59,6 +57,9 @@ describe('GroupFetchDataController', () => {
 
   const groupDao = new GroupDao(null);
   const postService = new PostService();
+  const profileService = new ProfileService();
+  const personService = new PersonService();
+  const companyService = new CompanyService();
   const mockUserId = 1;
   function prepareGroupsForSearch() {
     AccountUserConfig.prototype.getGlipUserId = jest
@@ -200,9 +201,7 @@ describe('GroupFetchDataController', () => {
     }
   }
 
-  beforeEach(() => {
-    jest.restoreAllMocks();
-    jest.clearAllMocks();
+  function setup() {
     AccountUserConfig.prototype.getGlipUserId = jest
       .fn()
       .mockImplementation(() => mockUserId);
@@ -249,27 +248,24 @@ describe('GroupFetchDataController', () => {
       testEntityCacheSearchController,
       new GroupHandleDataController(groupService),
     );
+  }
+  beforeEach(() => {
+    clearMock();
+    setup();
   });
   describe('getGroupsByType()', () => {
-    it('getGroupsByType()', async () => {
+    it('should can fetch groups via type', async () => {
       const mock = [{ id: 1 }, { id: 2 }];
-      daoManager.getDao.mockReturnValue(groupDao);
-
-      // GROUP_QUERY_TYPE.ALL
-      groupDao.queryAllGroups.mockResolvedValue(mock);
-      const result1 = await groupFetchDataController.getGroupsByType();
+      testEntitySourceController.getEntities = jest
+        .fn()
+        .mockResolvedValue(mock);
+      const result1 = await groupFetchDataController.getGroupsByType(
+        GROUP_QUERY_TYPE.ALL,
+        0,
+        20,
+      );
       expect(result1).toEqual(mock);
 
-      // GROUP_QUERY_TYPE.FAVORITE
-      // profileService.getProfile.mockResolvedValueOnce({ favorite_group_ids: [1] });
-      // groupDao.queryGroupsByIds.mockResolvedValue(mock);
-      // const result2 = await groupService.getGroupsByType(GROUP_QUERY_TYPE.FAVORITE, 0, 20);
-      // expect(result2).toEqual(mock);
-      // TO be fixed
-
-      profileService.getProfile.mockResolvedValueOnce({
-        favorite_group_ids: [],
-      });
       const result22 = await groupFetchDataController.getGroupsByType(
         GROUP_QUERY_TYPE.FAVORITE,
         0,
@@ -326,6 +322,7 @@ describe('GroupFetchDataController', () => {
 
   describe('getLocalGroup()', () => {
     it('should call groupDao with personIds append self id', async () => {
+      daoManager.getDao.mockReturnValue(groupDao);
       await groupFetchDataController.getLocalGroup([11, 12]);
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([
         11,
@@ -365,27 +362,9 @@ describe('GroupFetchDataController', () => {
     AccountUserConfig.prototype.getGlipUserId.mockReturnValueOnce(1);
 
     daoManager.getDao.mockReturnValueOnce(groupDao);
-
     groupDao.queryGroupByMemberList.mockResolvedValue(mock);
     const result1 = await groupFetchDataController.getGroupByPersonId(2);
     expect(result1).toEqual(mock);
-  });
-
-  describe('get left rail conversations', () => {
-    it('get left rail conversations', async () => {
-      const mock = [{ id: 1 }, { id: 2 }];
-      testEntitySourceController.batchGet.mockResolvedValue(mock);
-      groupDao.queryGroups.mockResolvedValue([{ id: 3 }]);
-      jest.spyOn(
-        groupFetchDataController.groupHandleDataController,
-        'filterGroups',
-      );
-      groupFetchDataController.groupHandleDataController.filterGroups.mockResolvedValue(
-        mock,
-      );
-      const groups = await groupFetchDataController.getLeftRailGroups();
-      expect(groups.length).toBe(4);
-    });
   });
 
   describe('doFuzzySearch', () => {
@@ -849,9 +828,7 @@ describe('GroupFetchDataController', () => {
     };
 
     const companyReplyDomain = 'companyDomain';
-    const companyService = new CompanyService();
     beforeEach(() => {
-      CompanyService.getInstance = jest.fn().mockReturnValue(companyService);
       companyService.getCompanyEmailDomain.mockResolvedValueOnce(
         companyReplyDomain,
       );
@@ -882,7 +859,7 @@ describe('GroupFetchDataController', () => {
     });
   });
 
-  describe.skip('doFuzzySearch use soundex', () => {
+  describe('doFuzzySearch use soundex', () => {
     beforeEach(() => {
       entityCacheController.clear();
       groupService['_entityCacheController'] = entityCacheController;

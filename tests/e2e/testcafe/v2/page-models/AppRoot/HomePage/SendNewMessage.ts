@@ -1,10 +1,16 @@
-import { BaseWebComponent } from '../../BaseWebComponent';
+
 import * as faker from 'faker/locale/en';
+import { BaseWebComponent } from '../../BaseWebComponent';
+import { SearchComoBox } from './SearchComboBox';
 
 export class SendNewMessageModal extends BaseWebComponent {
   get self() {
     this.warnFlakySelector();
     return this.getSelector('*[role="dialog"]');
+  }
+
+  get title() {
+    return this.self.find('h2');
   }
 
   get createMessageButton() {
@@ -46,13 +52,6 @@ export class SendNewMessageModal extends BaseWebComponent {
     await this.t.expect(this.isDisable).notOk();
   }
 
-  async setMember(name: string) {
-    await this.clickAndTypeText(this.membersInput, name, { replace: true, paste: true });
-    // FIXME: Need time to wait for search members to display
-    await this.t.wait(1000);
-    await this.t.pressKey('enter');
-  }
-
   async setNewMessage(message: string) {
     await this.clickAndTypeText(this.newMessageTextarea, `${message}`, { replace: true, paste: true });
   }
@@ -61,52 +60,8 @@ export class SendNewMessageModal extends BaseWebComponent {
     return faker.random.alphaNumeric(num);
   }
 
-  get membersInput() {
-    return this.self.find('#downshift-multiple-input');
+  get memberInput() {
+    return this.getComponent(SearchComoBox, this.self.find('*[role="combobox"]'));
   }
 
-  async typeMember(text: string, options?) {
-    await this.clickAndTypeText(this.membersInput, text, options)
-  }
-
-  get selectedMembers() {
-    this.warnFlakySelector();
-    return this.self.find('*[role="button"]').withAttribute('uid');
-  }
-
-  async removeSelectedMember(n: number = -1) {
-    await this.t.click(this.selectedMembers.nth(n).find('button'));
-  }
-
-  get lastSelectedMemberId() {
-    return this.selectedMembers.nth(-1).getAttribute('uid');
-  }
-
-  get lastSelectedMemberName() {
-    return this.selectedMembers.nth(-1).find('.label');
-  }
-
-  async lastSelectedMemberNameShouldBe(name: string) {
-    await this.t.expect(this.lastSelectedMemberName.withText(name)).ok();
-  }
-
-  get contactSearchSuggestionsList() {
-    return this.getSelectorByAutomationId("contactSearchSuggestionsList");
-  }
-
-  get contactSearchItems() {
-    return this.contactSearchSuggestionsList.find('li');
-  }
-
-  async selectMemberByNth(n: number) {
-    await this.t.click(this.contactSearchItems.nth(n));
-  }
-
-  async selectMemberByName(name: string) {
-    await this.t.click(this.contactSearchItems.find('.primary').withText(name));
-  }
-
-  async selectMemberByEmail(email: string) {
-    await this.t.click(this.contactSearchItems.find('.secondary').withText(email));
-  }
 }

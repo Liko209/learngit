@@ -8,7 +8,7 @@ import React, { ComponentType } from 'react';
 import { StyledAppBar } from './StyledAppBar';
 import { StyledToolbar } from './StyledToolbar';
 import { StyledMenuWithLogo } from './StyledMenuWithLogo';
-// import { StyledSearchIconButton } from './StyledSearchIconButton';
+import { StyledSearchIconButton } from './StyledSearchIconButton';
 import { StyledLeft } from './StyledLeft';
 import { StyledRight } from './StyledRight';
 import { StyledJuiSearchBar } from './StyledSearchBar';
@@ -18,6 +18,7 @@ type Props = {
   Logo: ComponentType;
   AvatarActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   NewActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
+  Dialpad: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   BackNForward: ComponentType<any>;
   openGlobalSearch: (event: React.MouseEvent<HTMLElement>) => void;
   searchKey: string;
@@ -30,21 +31,7 @@ type States = {
 };
 
 class JuiTopBar extends React.PureComponent<Props, States> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      isShowSearchBar: false,
-    };
-  }
-
-  showSearchBar = () => {
-    this.setState(prevState => ({
-      isShowSearchBar: !prevState.isShowSearchBar,
-    }));
-  }
-
   render() {
-    const { isShowSearchBar } = this.state;
     const {
       MainMenu,
       Logo,
@@ -55,11 +42,12 @@ class JuiTopBar extends React.PureComponent<Props, States> {
       searchKey,
       searchPlaceholder,
       onClear,
+      Dialpad,
     } = this.props;
     return (
       <StyledAppBar>
         <StyledToolbar>
-          <StyledLeft isShowSearchBar={isShowSearchBar}>
+          <StyledLeft>
             <StyledMenuWithLogo>
               <MainMenu />
               <Logo />
@@ -70,31 +58,26 @@ class JuiTopBar extends React.PureComponent<Props, States> {
               value={searchKey}
               onClear={onClear}
               placeholder={searchPlaceholder}
-              // isShowSearchBar={isShowSearchBar}
-              // closeSearchBar={this.showSearchBar}
             />
-            {/* <StyledSearchIconButton
-              onClick={this.showSearchBar}
-              tooltipTitle="Search"
+            <StyledSearchIconButton
+              onClick={openGlobalSearch}
+              tooltipTitle={searchPlaceholder}
               size="medium"
+              color="common.white"
+              disableRipple={true}
             >
               search
-            </StyledSearchIconButton> */}
+            </StyledSearchIconButton>
           </StyledLeft>
           <StyledRight>
+            <Dialpad />
             <NewActions />
             <AvatarActions />
-            {/* <StyledMoreIconButton tooltipTitle="More" size="medium">
-              more_vert
-            </StyledMoreIconButton> */}
           </StyledRight>
         </StyledToolbar>
       </StyledAppBar>
     );
   }
 }
-
-// JuiTopBar.displayName = 'JuiTopBar';
-// JuiTopBar.dependencies = [];
 
 export { JuiTopBar };

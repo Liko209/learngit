@@ -5,6 +5,7 @@
 const Gatherer = require("lighthouse/lighthouse-core/gather/gatherers/gatherer");
 import { ConversationPage } from "../pages";
 import { LogUtils } from "../utils";
+import { Config } from "../config";
 
 class SwitchConversationGatherer extends Gatherer {
   private conversationIds: Array<string>;
@@ -16,7 +17,8 @@ class SwitchConversationGatherer extends Gatherer {
     this.conversationIds = conversationIds;
   }
 
-  beforePass(passContext) { }
+  async beforePass(passContext) {
+  }
 
   async pass(passContext) {
     let conversationPage = new ConversationPage(passContext);
@@ -29,13 +31,13 @@ class SwitchConversationGatherer extends Gatherer {
     await page.evaluate(() => {
       performance["jupiter"] = {};
     });
-
-    // switch conversation
-    await this.switchConversion(conversationPage, 40);
   }
 
   async afterPass(passContext) {
     let conversationPage = new ConversationPage(passContext);
+
+    // switch conversation
+    await this.switchConversion(conversationPage, Config.sceneRepeatCount);
 
     let page = await conversationPage.page();
 
@@ -46,7 +48,7 @@ class SwitchConversationGatherer extends Gatherer {
     return {
       goto_conversation_fetch_items: { api: metrics["goto_conversation_fetch_items"], ui: [] },
       goto_conversation_fetch_posts: { api: metrics["goto_conversation_fetch_posts"], ui: [] },
-      goto_conversation_shelf_fetch_items: { api: metrics["goto_conversation_shelf_fetch_items"], ui: [] }
+      conversation_fetch_from_db: { api: metrics["conversation_fetch_from_db"], ui: [] }
     };
   }
 
@@ -64,6 +66,7 @@ class SwitchConversationGatherer extends Gatherer {
       index = 0;
     while (index < switchCount) {
       id = this.conversationIds[index++ % this.conversationIds.length];
+      console.log(`switch to ${id}`);
       await page.swichConversationById(id);
     }
   }

@@ -24,6 +24,7 @@ import {
 } from './network';
 import { SERVER_ERROR_CODE, DEFAULT_RETRY_COUNT } from './Constants';
 import { doResponseLog, doRequestLog } from './log';
+import { networkLogger } from '../log';
 export class NetworkRequestExecutor
   implements INetworkRequestExecutorListener, INetworkRequestExecutor {
   request: IRequest;
@@ -109,10 +110,11 @@ export class NetworkRequestExecutor
   }
 
   private _performNetworkRequest() {
-    doRequestLog(this.request);
+    networkLogger.info('_performNetworkRequest()');
     if (this._requestDecoration) {
       this._requestDecoration.decorate(this.request);
     }
+    doRequestLog(this.request);
     this.client.request(this.request, this);
   }
 

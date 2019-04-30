@@ -14,7 +14,7 @@ import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SOCKET, SERVICE } from '../../../service/eventKey';
 import { Raw } from '../../../framework/model/Raw';
 import { ProfileController } from '../controller/ProfileController';
-import { SYNC_SOURCE } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { SettingOption } from '../types';
 
@@ -23,7 +23,7 @@ class ProfileService extends EntityBaseService<Profile>
   private profileController: ProfileController;
 
   constructor() {
-    super(false, daoManager.getDao(ProfileDao), {
+    super(true, daoManager.getDao(ProfileDao), {
       basePath: '/profile',
       networkClient: Api.glipNetworkClient,
     });
@@ -44,10 +44,11 @@ class ProfileService extends EntityBaseService<Profile>
   handleIncomingData = async (
     profile: Raw<Profile> | null,
     source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ) => {
     await this.getProfileController()
       .getProfileDataController()
-      .profileHandleData(profile, source);
+      .profileHandleData(profile, source, changeMap);
   }
 
   handleGroupIncomesNewPost = async (groupIds: number[]) => {
@@ -67,12 +68,6 @@ class ProfileService extends EntityBaseService<Profile>
     return await this.getProfileController()
       .getProfileDataController()
       .getProfile();
-  }
-
-  async getMaxLeftRailGroup(): Promise<number> {
-    return await this.getProfileController()
-      .getProfileDataController()
-      .getMaxLeftRailGroup();
   }
 
   async isConversationHidden(groupId: number) {

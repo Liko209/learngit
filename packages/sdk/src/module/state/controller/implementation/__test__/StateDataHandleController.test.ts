@@ -13,7 +13,6 @@ import { State, GroupState } from '../../../entity';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
 import { TASK_DATA_TYPE } from '../../../constants';
 import { StateHandleTask, GroupCursorHandleTask } from '../../../types';
-import { TotalUnreadController } from '../TotalUnreadController';
 import { SYNC_SOURCE } from '../../../../../module/sync';
 import { ServiceLoader } from '../../../../../module/serviceLoader';
 
@@ -31,7 +30,6 @@ describe('StateDataHandleController', () => {
   let stateDataHandleController: StateDataHandleController;
   let mockEntitySourceController: EntitySourceController;
   let mockStateFetchDataController: StateFetchDataController;
-  let mockTotalUnreadController: TotalUnreadController;
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
@@ -43,14 +41,9 @@ describe('StateDataHandleController', () => {
     mockStateFetchDataController = new StateFetchDataController(
       mockEntitySourceController,
     );
-    mockTotalUnreadController = new TotalUnreadController(
-      {} as any,
-      mockEntitySourceController,
-    );
     stateDataHandleController = new StateDataHandleController(
       mockEntitySourceController,
       mockStateFetchDataController,
-      mockTotalUnreadController,
     );
   });
 
@@ -65,6 +58,7 @@ describe('StateDataHandleController', () => {
           data: states,
         },
         SYNC_SOURCE.INDEX,
+        undefined,
       );
     });
 
@@ -115,7 +109,6 @@ describe('StateDataHandleController', () => {
         groupStates: [],
       });
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
-      mockTotalUnreadController.handleGroupState = jest.fn();
 
       await stateDataHandleController['_startDataHandleTask'](task);
       expect(stateDataHandleController['_transformStateData']).toBeCalledWith(
@@ -130,7 +123,6 @@ describe('StateDataHandleController', () => {
       expect(
         stateDataHandleController['_updateEntitiesAndDoNotification'],
       ).toBeCalledTimes(1);
-      expect(mockTotalUnreadController.handleGroupState).toBeCalledTimes(1);
     });
 
     it('should handle group task and stop the queue', async () => {
@@ -145,7 +137,6 @@ describe('StateDataHandleController', () => {
         groupStates: [],
       });
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
-      mockTotalUnreadController.handleGroupState = jest.fn();
 
       await stateDataHandleController['_startDataHandleTask'](task);
       expect(stateDataHandleController['_transformStateData']).toBeCalledTimes(
@@ -160,7 +151,6 @@ describe('StateDataHandleController', () => {
       expect(
         stateDataHandleController['_updateEntitiesAndDoNotification'],
       ).toBeCalledTimes(1);
-      expect(mockTotalUnreadController.handleGroupState).toBeCalledTimes(1);
     });
 
     it('should handle next task when crashing', async () => {
@@ -181,7 +171,6 @@ describe('StateDataHandleController', () => {
         groupStates: [],
       });
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
-      mockTotalUnreadController.handleGroupState = jest.fn();
 
       await stateDataHandleController['_startDataHandleTask'](task);
       expect(stateDataHandleController['_transformStateData']).toBeCalledWith(
@@ -194,7 +183,6 @@ describe('StateDataHandleController', () => {
       expect(
         stateDataHandleController['_updateEntitiesAndDoNotification'],
       ).toBeCalled();
-      expect(mockTotalUnreadController.handleGroupState).toBeCalled();
     });
   });
 

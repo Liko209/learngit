@@ -3,7 +3,7 @@ import * as assert from 'assert';
 import * as _ from 'lodash';
 import { BaseConversationPage } from "./MessageTab/ConversationPage";
 import { H } from "../../../helpers";
-import { searchComoBox } from "./SearchComboBox";
+import { SearchComoBox } from "./SearchComboBox";
 
 
 export class SearchDialog extends BaseWebComponent {
@@ -342,11 +342,11 @@ class MessagesResultTab extends BaseConversationPage {
 
   /* filter */
   get postByField() {
-    return this.getComponent(searchComoBox, this.self.find('#downshift-multiple-input').nth(0).parent('*[role="combobox"]'));
+    return this.getComponent(SearchComoBox, this.self.find('#downshift-multiple-input').nth(0).parent('*[role="combobox"]'));
   }
 
   get postInField() {
-    return this.getComponent(searchComoBox, this.self.find('#downshift-multiple-input').nth(1).parent('*[role="combobox"]'));
+    return this.getComponent(SearchComoBox, this.self.find('#downshift-multiple-input').nth(1).parent('*[role="combobox"]'));
   }
 
   get typeOptionSelector() {

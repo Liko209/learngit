@@ -10,7 +10,7 @@ import {
   withInfoDecorator,
   alignCenterDecorator,
 } from '../../../../foundation/utils/decorators';
-import { JuiCheckboxButton } from '..';
+import { JuiCheckboxButton, JuiCheckboxButtonProps } from '..';
 import styled from '../../../../foundation/styled-components';
 
 const Wrapper = styled.div`
@@ -21,7 +21,7 @@ const Wrapper = styled.div`
 
 function getKnobs() {
   const content = text('content', 'button');
-  const size = select(
+  const size = select<JuiCheckboxButtonProps['size']>(
     'size',
     {
       small: 'small',
@@ -30,7 +30,7 @@ function getKnobs() {
     },
     'large',
   );
-  const color = select(
+  const color = select<JuiCheckboxButtonProps['color']>(
     'color',
     {
       primary: 'primary',

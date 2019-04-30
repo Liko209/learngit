@@ -22,7 +22,7 @@
     "@types/ua-parser-js": "^0.7.32",
     "@types/uuid": "^3.4.3",
     "allure-js-commons": "^1.3.2",
-    "attest-node": "git+https://git.lab.rcch.ringcentral.com/attest/attest-node.git#accessibility_check",
+    "attest-node": "http://xmn145.rcoffice.ringcentral.com:9003/packages/attest-node-2.5.0.tgz",
     "attest-testcafe": "http://xmn145.rcoffice.ringcentral.com:9003/packages/attest-testcafe-1.0.0.tgz",
     "axios": "0.19.0-beta.1",
     "bendapi-ts": "http://xmn145.rcoffice.ringcentral.com:9003/packages/bendapi-ts-1.0.0.tgz",
@@ -51,7 +51,7 @@
     "typescript": "^3.2.4",
     "ua-parser-js": "^0.7.19",
     "uuid": "^3.3.2",
-    "webphone-client": "http://xmn145.rcoffice.ringcentral.com:9003/packages/webphone-client-0.1.4.tgz",
+    "webphone-client": "http://xmn145.rcoffice.ringcentral.com:9003/packages/webphone-client-0.1.5.tgz",
     "zip-dir": "^1.0.2"
   },
   "devDependencies": {

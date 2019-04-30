@@ -97,4 +97,4 @@ _JuiLozengeButton.defaultProps = {
 };
 _JuiLozengeButton.displayName = 'JuiLozengeButton';
 const JuiLozengeButton = memo(_JuiLozengeButton);
-export { JuiLozengeButton };
+export { JuiLozengeButton, JuiLozengeButtonProps };

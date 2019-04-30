@@ -2,6 +2,7 @@ import 'testcafe';
 import * as fs from 'fs';
 import * as assert from 'assert';
 import * as shortid from 'shortid';
+import * as moment from 'moment';
 
 import { ClientFunction } from 'testcafe';
 
@@ -68,6 +69,18 @@ export class H {
   }
 
   static toNumberArray(data: string | number | string[] | number[]): number[] {
-    return [].concat(data).map(item => +item);
+    return [].concat(data).map(Number);
+  }
+
+  static convertPostTimeToTimestamp(text: string): number {
+    const formats = ['h:mm a', 'ddd, h:mm a', 'ddd, M/D/YYYY h:mm a'];
+    let timestamp: number
+    for (const format of formats) {
+      if (moment(text, format).isValid()) {
+        timestamp = +moment(text, format).format('X');
+        return timestamp;
+      }
+    }
+    assert(timestamp, 'Wrong time format...');
   }
 }

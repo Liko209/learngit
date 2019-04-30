@@ -50,4 +50,4 @@ JuiLinkButtonComponent.defaultProps = {
 
 const JuiLinkButton = React.memo(JuiLinkButtonComponent);
 
-export { JuiLinkButton };
+export { JuiLinkButton, JuiLinkButtonProps };

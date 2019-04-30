@@ -40,7 +40,9 @@ const Textarea = styled<JuiTextFieldProps>(MuiTextField)`
     }
   }
   .form-label-root {
-    color: ${grey('500')};
+    color: ${grey('600')};
+    ${typography('caption2')};
+    transform: scale(1);
     top: ${spacing(1)};
     z-index: 1;
     &.form-label-focus {

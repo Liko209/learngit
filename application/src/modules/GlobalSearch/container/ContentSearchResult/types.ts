@@ -26,14 +26,15 @@ type ContentSearchOptions = {
 type ContentSearchResultProps = {};
 
 type ContentSearchResultViewProps = {
+  showResult: boolean;
   postsCount?: number;
   isEmpty: boolean;
   searchState: ContentSearchState;
   searchOptions: ContentSearchOptions;
+  searchTerms: string[];
   setSearchOptions(searchOptions: ContentSearchOptions): void;
   onPostsFetch(): Promise<ContentSearchResult>;
   onSearchEnd(): Promise<void>;
-  setStreamVM(vm: any): void;
 };
 
 const CONTENT_SEARCH_FETCH_COUNT: number = 20;

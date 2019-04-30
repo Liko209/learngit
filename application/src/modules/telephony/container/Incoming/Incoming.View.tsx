@@ -16,7 +16,7 @@ import { CallActions, CallActionsProps } from '../CallActions';
 import { VoiceMail } from '../VoiceMail';
 
 const More = (props: CallActionsProps) => (
-  <CallActions showLabel={false} {...props} />
+  <CallActions showLabel={false} {...props} shouldPersistBg={true} />
 );
 
 More.displayName = 'more';

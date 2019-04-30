@@ -24,10 +24,10 @@ class AnswerViewComponent extends Component<Props> {
     return (
       <JuiFabButton
         color="semantic.positive"
-        size="moreLarge"
+        size="midLarge"
         showShadow={false}
         tooltipPlacement="top"
-        iconName="phone"
+        iconName="answer"
         tooltipTitle={t('telephony.action.Answer')}
         aria-label={t('telephony.answerTheCall')}
         onClick={this._handleAnswer}

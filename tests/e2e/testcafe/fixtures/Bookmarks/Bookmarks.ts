@@ -329,9 +329,10 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
   }
 
   let bookmarkId;
-  await h(t).withLog('Given I have an Atbookmark message from the conversation', async () => {
+  await h(t).withLog('Given I have an bookmark message from the conversation', async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
     bookmarkId = await h(t).scenarioHelper.sentAndGetTextPostId(`I'm bookmark, ![:Person](${loginUser.rcId})`, chat, otherUser);
+    await h(t).glip(loginUser).bookmarkPosts(bookmarkId);
   });
 
   await h(t).withLog('And I also have more one screen post', async () => {
@@ -348,12 +349,8 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
 
   const chatEntry = app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId);
   const conversationPage = app.homePage.messageTab.conversationPage;
-  await h(t).withLog(`When I jump to the specific conversation And I bookmark the post`, async () => {
-    await chatEntry.enter();
-    await conversationPage.postItemById(bookmarkId).clickBookmarkToggle();
-  });
 
-  await h(t).withLog('And I enter Bookmark page', async () => {
+  await h(t).withLog('When I enter Bookmark page', async () => {
     await app.homePage.messageTab.bookmarksEntry.enter();
   });
 

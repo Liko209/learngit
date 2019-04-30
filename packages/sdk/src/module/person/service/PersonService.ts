@@ -23,7 +23,7 @@ import { PersonController } from '../controller/PersonController';
 import { SOCKET } from '../../../service/eventKey';
 import { ContactType } from '../types';
 import { PersonEntityCacheController } from '../controller/PersonEntityCacheController';
-import { SYNC_SOURCE } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 
 class PersonService extends EntityBaseService<Person>
@@ -63,8 +63,13 @@ class PersonService extends EntityBaseService<Person>
   handleIncomingData = async (
     persons: Raw<Person>[],
     source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<void> => {
-    await this.getPersonController().handleIncomingData(persons, source);
+    await this.getPersonController().handleIncomingData(
+      persons,
+      source,
+      changeMap,
+    );
   }
 
   async getPersonsByIds(ids: number[]): Promise<Person[]> {

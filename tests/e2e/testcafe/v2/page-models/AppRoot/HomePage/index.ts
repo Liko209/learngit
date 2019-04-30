@@ -23,6 +23,7 @@ import { FileAndImagePreviewer } from './ImagePreviewer';
 import { ViewerDialog } from './ViewerDialog';
 import { SearchDialog, JoinTeamDialog } from './SearchDialog';
 import { SettingTab } from './SettingTab';
+import { LogoutDialog } from './LogoutDialog';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
@@ -80,6 +81,7 @@ export class HomePage extends BaseWebComponent {
   get convertToTeamModal() {
     return this.getComponent(ConvertToTeamDialog);
   }
+  
   get sendNewMessageModal() {
     return this.getComponent(SendNewMessageModal);
   }
@@ -153,6 +155,10 @@ export class HomePage extends BaseWebComponent {
 
   get searchDialog() {
     return this.getComponent(SearchDialog);
+  }
+
+  get logoutDialog() {
+    return this.getComponent(LogoutDialog);
   }
 
 }

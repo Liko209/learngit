@@ -14,10 +14,12 @@ import { AllureHelper } from './allure-helper';
 import { ScenarioHelper } from './scenario-helper';
 import { H } from './utils';
 
-import { IUser, IStep, IStepOptions } from '../models';
+import { IUser, IStep, IStepOptions, INotification } from '../models';
 import { AppRoot } from '../page-models/AppRoot';
 import { SITE_URL, SITE_ENV } from '../../config';
 import { WebphoneHelper } from './webphone-helper';
+import { NotificationHelper } from './notification';
+import { WebphoneSession } from '../webphone/session';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -78,6 +80,13 @@ class Helper {
     return new ScenarioHelper(this.t, this.sdkHelper);
   }
 
+  get notificationHelper(): NotificationHelper {
+    if (!this.t.ctx.__notificationHelper) {
+      this.t.ctx.__notificationHelper = new NotificationHelper(this.t);
+    }
+    return this.t.ctx.__notificationHelper;
+  }
+
   /* delegate following method */
   get rcData() {
     return this.dataHelper.rcData;
@@ -107,6 +116,35 @@ class Helper {
     return await this.logHelper.withLog(step, cb, options);
   }
 
+  async withNotification(
+    before: () => Promise<void>,
+    callback: (notification: Array<INotification>) => Promise<any>,
+    timeout: number = 60e3): Promise<void> {
+    await this.notificationHelper.withNotification(before, callback, timeout);
+  }
+
+  /**
+   *
+   * @param notification
+   * @param action  'click', 'answer', 'close'.
+   * @param timeout
+   */
+  async clickNotification(notification: INotification, action: string = 'click', timeout: number = 60e3): Promise<void> {
+    return await this.notificationHelper.clickNotification(notification, action, timeout);
+  }
+
+  async supportNotification(): Promise<boolean> {
+    return await this.notificationHelper.support();
+  }
+
+  async withPhoneSession(user: IUser, cb: (session: WebphoneSession) => Promise<any>) {
+    return await this.webphoneHelper.withSession(user, cb);
+  }
+
+  async newWebphoneSession(user: IUser) {
+    return await this.webphoneHelper.newWebphoneSession(user);
+  }
+
   async getGlip(user: IUser) {
     return await this.sdkHelper.sdkManager.getGlip(user);
   }
@@ -129,10 +167,6 @@ class Helper {
     return this.sdkHelper.sdkManager.platform(user);
   }
 
-  webphone(user: IUser) {
-    return this.webphoneHelper.webphone(user);
-  }
-
   // testcafe extend
   get href() {
     return ClientFunction(() => document.location.href)();
@@ -140,10 +174,10 @@ class Helper {
 
   async interceptHasFocus(isFocus: boolean) {
     // intercept return value of document.hasFocus to cheat SUT
-    await ClientFunction(
-      (_isFocus) => {
-        Object.defineProperty(document, 'hasFocus', { value: () => _isFocus, configurable: true });
-      })(isFocus);
+    await ClientFunction((_isFocus) => {
+      _isFocus ? window.dispatchEvent(new Event('focus')) : window.dispatchEvent(new Event('blur'));
+      Object.defineProperty(document, 'hasFocus', { value: () => _isFocus, configurable: true });
+    })(isFocus);
   }
 
   async reload() {
