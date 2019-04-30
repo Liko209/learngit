@@ -66,7 +66,13 @@ class ProcessGatherer extends Gatherer {
     }, 1000);
   }
   async afterPass(passContext) {
-    await bluebird.delay(5000);
+    const driver = passContext.driver;
+
+    await driver.sendCommand('HeapProfiler.enable');
+
+    await driver.sendCommand('HeapProfiler.collectGarbage');
+
+    await bluebird.delay(10000);
 
     clearInterval(this.intervalId);
 
