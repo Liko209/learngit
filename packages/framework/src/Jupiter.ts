@@ -71,6 +71,9 @@ class Jupiter {
     }
 
     if (entry) {
+      if (!this._container.isBound(entry)) {
+        return;
+      }
       const m = this._container.get<AbstractModule>(entry);
       m.dispose && (await m.dispose());
       this._container.unbind(entry);
@@ -120,7 +123,9 @@ class Jupiter {
 
   unbindProvide<T>(provide: Provide<T>) {
     const { identifier } = this._parseProvide(provide);
-
+    if (!this._container.isBound(identifier)) {
+      return;
+    }
     this._container.unbind(identifier);
   }
 
@@ -278,10 +283,10 @@ class Jupiter {
     const callbacks = this._initializedListenerMap.get(identifiers);
     if (callbacks && callbacks.length !== 0) {
       const module = this._getModulesByIdentifier(identifiers);
-      callbacks.forEach((cb, idx) => {
+      callbacks.forEach(cb => {
         cb && cb.apply(null, module);
-        callbacks.splice(idx, 1);
       });
+      this._initializedListenerMap.set(identifiers, []);
     }
   }
 
@@ -290,10 +295,10 @@ class Jupiter {
   ) {
     const callbacks = this._disposedListenerMap.get(identifiers);
     if (callbacks && callbacks.length !== 0) {
-      callbacks.forEach((cb, idx) => {
+      callbacks.forEach(cb => {
         cb && cb();
-        callbacks.splice(idx, 1);
       });
+      this._disposedListenerMap.set(identifiers, []);
     }
   }
 
@@ -343,10 +348,34 @@ class Jupiter {
   ) {
     const listenerMap = this.getModulesListenerByType(listenerType);
 
-    if (listenerMap.has(identifiers)) {
-      const callbacks = listenerMap.get(identifiers);
-      callbacks && callbacks.push(callback);
-    } else {
+    const isSameIdentifier = (
+      listenerKey: interfaces.ServiceIdentifier<T>[],
+      identifier: interfaces.ServiceIdentifier<T>[],
+    ) => {
+      const listenerKeyLength = listenerKey.length;
+      for (let i = 0; i < listenerKeyLength; i++) {
+        if (!identifier.includes(listenerKey[i])) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    let isAdded = false;
+
+    if (Array.from(listenerMap.keys()).length !== 0) {
+      for (const key of listenerMap.keys()) {
+        if (
+          key.length === identifiers.length &&
+          isSameIdentifier(key, identifiers)
+        ) {
+          const callbacks = listenerMap.get(key);
+          callbacks && callbacks.push(callback);
+          isAdded = true;
+        }
+      }
+    }
+    if (!isAdded) {
       listenerMap.set(identifiers, [callback]);
     }
   }

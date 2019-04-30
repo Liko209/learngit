@@ -208,6 +208,12 @@ describe('JupiterModule', () => {
         messageServiceCallback();
       });
 
+      const messageServiceCallback1 = jest.fn();
+      _jupiter.onInitialized(MESSAGE_SERVICE, messageService => {
+        expect(messageService).toBeInstanceOf(MessageService);
+        messageServiceCallback1();
+      });
+
       const messageNTelephonyServiceCallback = jest.fn();
       _jupiter.onInitialized(
         [MESSAGE_SERVICE, TELEPHONY_SERVICE],
@@ -218,19 +224,31 @@ describe('JupiterModule', () => {
         },
       );
 
+      const messageNTelephonyServiceCallback1 = jest.fn();
+      _jupiter.onInitialized(
+        [MESSAGE_SERVICE, TELEPHONY_SERVICE],
+        (messageService, telephonyService) => {
+          expect(messageService).toBeInstanceOf(MessageService);
+          expect(telephonyService).toBeInstanceOf(TelephonyService);
+          messageNTelephonyServiceCallback1();
+        },
+      );
+
       _jupiter.bindProvide({
         name: MESSAGE_SERVICE,
         value: MessageService,
       });
       _jupiter.emitModuleInitial(MESSAGE_SERVICE);
-      expect(messageServiceCallback).toBeCalled();
+      expect(messageServiceCallback).toBeCalledTimes(1);
+      expect(messageServiceCallback1).toBeCalledTimes(1);
 
       _jupiter.bindProvide({
         name: TELEPHONY_SERVICE,
         value: TelephonyService,
       });
       _jupiter.emitModuleInitial(TELEPHONY_SERVICE);
-      expect(messageNTelephonyServiceCallback).toBeCalled();
+      expect(messageNTelephonyServiceCallback).toBeCalledTimes(1);
+      expect(messageNTelephonyServiceCallback1).toBeCalledTimes(1);
     });
     it('should execute callback once when module are initialized', () => {
       _jupiter.bindProvide({
