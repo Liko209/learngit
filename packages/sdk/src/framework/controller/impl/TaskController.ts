@@ -8,7 +8,13 @@ import { ITaskController } from '../interface/ITaskController';
 import { ITaskStrategy } from 'sdk/framework/strategy/interface/ITaskStrategy';
 
 class TaskController implements ITaskController {
-  start(info: TaskInfo, strategy: ITaskStrategy) {}
+  private _strategy: ITaskStrategy;
+
+  constructor(strategy: ITaskStrategy) {
+    this._strategy = strategy;
+  }
+
+  start(executeFunc: () => any) {}
 }
 
 export { TaskController };

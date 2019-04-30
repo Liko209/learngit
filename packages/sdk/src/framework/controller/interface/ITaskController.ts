@@ -4,10 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ITaskStrategy } from '../../strategy/interface/ITaskStrategy';
-
 interface ITaskController {
-  start(strategy: ITaskStrategy): void;
+  start(executeFunc: () => any): void;
 }
 
 export { ITaskController };
