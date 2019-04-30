@@ -76,7 +76,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return res;
   }
 
-  async makeCall(toNumber: string) {
+  async makeCall(toNumber: string, fromNum: string) {
     let result = this._checkVoipStatus();
     if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
       return result;
@@ -95,10 +95,19 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       this._callDelegate,
     );
     this._telephonyCallDelegate.setCallStateCallback(this.callStateChanged);
-    const makeCallResult = this._rtcAccount.makeCall(
-      toNumber,
-      this._telephonyCallDelegate,
-    );
+    let makeCallResult: RTC_STATUS_CODE;
+    if (fromNum) {
+      makeCallResult = this._rtcAccount.makeCall(
+        toNumber,
+        this._telephonyCallDelegate,
+        { fromNumber: fromNum },
+      );
+    } else {
+      makeCallResult = this._rtcAccount.makeCall(
+        toNumber,
+        this._telephonyCallDelegate,
+      );
+    }
     switch (makeCallResult) {
       case RTC_STATUS_CODE.NUMBER_INVALID: {
         result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
