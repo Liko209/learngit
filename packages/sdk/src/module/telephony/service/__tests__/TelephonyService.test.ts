@@ -84,8 +84,8 @@ describe('TelephonyService', () => {
   });
   describe('makeCall', () => {
     it('should call account controller to make call', async () => {
-      await telephonyService.makeCall('123');
-      expect(accountController.makeCall).toHaveBeenCalledWith('123');
+      await telephonyService.makeCall('123', '456');
+      expect(accountController.makeCall).toHaveBeenCalledWith('123', '456');
     });
 
     it('should return error when account controller is not created', async () => {
