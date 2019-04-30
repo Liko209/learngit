@@ -31,7 +31,7 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
     return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   }
 
-  tmp() {
+  canSignOut() {
     let callCount = 0;
     let telephonyService: TelephonyService | null = null;
     try {
@@ -71,7 +71,7 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
 
   @action
   handleSignOut = async () => {
-    !!this.tmp() && this._doLogout();
+    !!this.canSignOut() && this._doLogout();
   }
 
   private _doLogout = async () => {
