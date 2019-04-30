@@ -5,7 +5,10 @@
  */
 
 import { ITaskController } from '../interface/ITaskController';
+import { ITaskStrategy } from 'sdk/framework/strategy/interface/ITaskStrategy';
 
 class TaskController implements ITaskController {
-  start() {}
+  start(info: TaskInfo, strategy: ITaskStrategy) {}
 }
+
+export { TaskController };
