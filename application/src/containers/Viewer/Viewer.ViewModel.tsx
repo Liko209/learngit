@@ -135,7 +135,6 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
     }
   }
 
-  @action
   stopPreload = () => {
     this._preloadController.stop();
   }
