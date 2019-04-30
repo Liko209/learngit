@@ -11,21 +11,27 @@ export abstract class AbstractNotification<T> {
   constructor() {
     this._store = new NotificationStore();
   }
-  protected handlePriority(opts: NotificationOpts) {
+  protected handlePriority(
+    notifications: Notification[],
+    opts: NotificationOpts,
+  ) {
     if (isEdge || (isElectron && isWindows)) {
       const { priority } = opts.data;
-      const lowPriorityNotifications = Object.values(this._store.items).filter(
-        item => {
-          if (item[0] && item[0].data) {
-            const { priority: itemPriority } = item[0].data;
-            return itemPriority ? itemPriority > priority : true;
-          }
-          return false;
-        },
-      );
+      const lowPriorityNotifications = notifications.filter(item => {
+        if (item.data) {
+          const { priority: itemPriority } = item.data;
+          return itemPriority ? itemPriority > priority : true;
+        }
+        return false;
+      });
 
       lowPriorityNotifications.forEach(notification => {
-        notification[0] && notification[0].close();
+        if (notification.data) {
+          const { scope, id } = notification.data;
+          this.close(scope, id);
+        } else {
+          notification.close();
+        }
       });
     }
   }

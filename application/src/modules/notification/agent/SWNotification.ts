@@ -17,7 +17,7 @@ type SWCallbackArgs = {
 };
 
 const logger = mainLogger.tags('SWNotification');
-export class SWNotification extends AbstractNotification<NotificationAction> {
+export class SWNotification extends AbstractNotification<NotificationAction[]> {
   static CLIENT_ID = Math.random();
   private _reg: ServiceWorkerRegistration;
   private _notifications: Notification[] = [];
@@ -82,7 +82,7 @@ export class SWNotification extends AbstractNotification<NotificationAction> {
     const isSuccessful = await this._checkNotificationValid(id);
     logger.log(`check notification for ${opts.tag} is valid`, isSuccessful);
     if (isSuccessful) {
-      this.handlePriority(opts);
+      this.handlePriority(this._notifications, opts);
       await this._reg.showNotification(title, opts);
       this._store.add(scope, id, actions);
       this._updateNotificationsList();
