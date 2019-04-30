@@ -118,14 +118,21 @@ class NetworkRequestHandler
     });
   }
 
-  produceRequest(via: NETWORK_VIA): IRequest | undefined {
+  produceRequest(
+    via: NETWORK_VIA,
+    isViaReachable: boolean,
+  ): IRequest | undefined {
     let task;
     Object.keys(REQUEST_PRIORITY).some((index: string) => {
       const priority = REQUEST_PRIORITY[index];
       if (!this.canProduceRequest(priority)) {
         return false;
       }
-      task = this._nextTaskInQueue(via, this.pendingTasks.get(priority));
+      task = this._nextTaskInQueue(
+        via,
+        this.pendingTasks.get(priority),
+        isViaReachable,
+      );
 
       if (task) {
         return true;
@@ -305,14 +312,21 @@ class NetworkRequestHandler
   private _nextTaskInQueue(
     via: NETWORK_VIA,
     queue?: RequestTask[],
+    isViaReachable?: boolean,
   ): RequestTask | undefined {
     let result;
     if (queue) {
       queue.some((task, index) => {
-        if (task.via() === via || task.via() === NETWORK_VIA.ALL) {
+        if (
+          task.via() === via ||
+          (isViaReachable && task.via() === NETWORK_VIA.ALL)
+        ) {
           result = task;
           queue.splice(index, 1);
           return true;
+        }
+        if (!isViaReachable && task.via() === NETWORK_VIA.ALL) {
+          this._removeTaskVia(task, via);
         }
         return false;
       });
@@ -347,6 +361,12 @@ class NetworkRequestHandler
       source.splice(taskIndex, 1);
       target.push(findTask);
     }
+  }
+
+  private _removeTaskVia(task: RequestTask, via: NETWORK_VIA) {
+    task.setVia(
+      via === NETWORK_VIA.HTTP ? NETWORK_VIA.SOCKET : NETWORK_VIA.HTTP,
+    );
   }
 }
 

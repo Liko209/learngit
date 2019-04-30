@@ -32,7 +32,9 @@ class PostAPI extends Api {
    *  /api/post
    */
   static sendPost(data: object) {
-    return this.postData<Post>(data, { retryCount: DEFAULT_RETRY_COUNT });
+    return this.postData<Post>(data, {
+      retryCount: DEFAULT_RETRY_COUNT,
+    });
   }
 
   static requestById(id: number) {

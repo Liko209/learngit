@@ -58,7 +58,10 @@ interface INetworkRequestConsumerListener {
   onTokenRefreshed: () => void;
 }
 interface INetworkRequestProducer {
-  produceRequest: (via: NETWORK_VIA) => IRequest | undefined;
+  produceRequest: (
+    via: NETWORK_VIA,
+    isViaReachable: boolean,
+  ) => IRequest | undefined;
 }
 
 interface IResponseListener {
