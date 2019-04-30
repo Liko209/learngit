@@ -1,0 +1,11 @@
+{
+  "default": 1,
+  "banner": 9500,
+  "snackbar": 10000,
+  "dialog": 6000,
+  "mask": 5000,
+  "popup": 3000,
+  "spinner": 9050,
+  "model": 9000,
+  "dropdown": 7000
+}
