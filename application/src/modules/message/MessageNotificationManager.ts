@@ -30,7 +30,7 @@ import { getPostType } from '@/common/getPostType';
 import { IEntityChangeObserver } from 'sdk/framework/controller/types';
 import { mainLogger } from 'sdk';
 import { isFirefox, isWindows } from '@/common/isUserAgent';
-import { throttle, isObject } from 'lodash';
+import { throttle } from 'lodash';
 const logger = mainLogger.tags('MessageNotificationManager');
 const NOTIFY_THROTTLE_FACTOR = 5000;
 export class MessageNotificationManager extends AbstractNotificationManager {
@@ -64,16 +64,10 @@ export class MessageNotificationManager extends AbstractNotificationManager {
 
     const result = await this.shouldEmitNotification(post);
 
-    if (!isObject(result)) {
-      logger.info(
-        `notification for ${postId} is not permitted because ${result}`,
-      );
+    if (!result) {
       return;
     }
-    const { postModel, groupModel } = result as {
-      postModel: PostModel;
-      groupModel: GroupModel;
-    };
+    const { postModel, groupModel } = result;
 
     const person = getEntity<Person, PersonModel>(
       ENTITY_NAME.PERSON,
@@ -103,24 +97,42 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     this.close(postId);
   }
 
-  async shouldEmitNotification(
-    post: Post,
-  ): Promise<string | { postModel: PostModel; groupModel: GroupModel }> {
+  async shouldEmitNotification(post: Post) {
     if (post.id <= 0) {
-      return 'post is from local instead of service';
+      logger.info(
+        `notification for ${
+          post.id
+        } is not permitted because post is from local instead of service`,
+      );
+      return false;
     }
     if (!post || post.deactivated) {
-      return 'post does not exist or has been deleted';
+      logger.info(
+        `notification for ${
+          post.id
+        } is not permitted because post does not exist or has been deleted`,
+      );
+      return false;
     }
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     if (post.creator_id === currentUserId) {
-      return 'post is created by current user';
+      logger.info(
+        `notification for ${
+          post.id
+        } is not permitted because post is created by current user`,
+      );
+      return false;
     }
     const activityData = post.activity_data || {};
     const isPostType =
       !activityData.key || getPostType(activityData.key) === POST_TYPE.POST;
     if (!isPostType) {
-      return 'post type is not message';
+      logger.info(
+        `notification for ${
+          post.id
+        } is not permitted because post type is not message`,
+      );
+      return false;
     }
 
     const group = await ServiceLoader.getInstance<GroupService>(
@@ -128,14 +140,24 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     ).getById(post.group_id);
 
     if (!group) {
-      return 'group of the post does not exist';
+      logger.info(
+        `notification for ${
+          post.id
+        } is not permitted because group of the post does not exist`,
+      );
+      return false;
     }
 
     const postModel = new PostModel(post);
     const groupModel = new GroupModel(group);
 
     if (groupModel.isTeam && !this.isMyselfAtMentioned(postModel)) {
-      return 'in team conversation, only post mentioning current user will show notification';
+      logger.info(
+        `notification for ${
+          post.id
+        } is not permitted because in team conversation, only post mentioning current user will show notification`,
+      );
+      return false;
     }
     return { postModel, groupModel };
   }
