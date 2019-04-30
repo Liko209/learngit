@@ -6,21 +6,8 @@
 
 import { FeaturesFlagsService } from '../FeaturesFlagsService';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
-
-const mockFeatureModule = [
-  {
-    featureName: 'Dashboard',
-    depModules: ['dashboard'],
-  },
-  {
-    featureName: 'Message',
-    depModules: ['message'],
-  },
-  {
-    featureName: 'Telephony',
-    depModules: ['telephony'],
-  },
-];
+import { featureModuleConfig } from '../../config/featureModuleConfig';
+import _ from 'lodash';
 
 const permission = {
   hasPermission: jest.fn().mockResolvedValue(true),
@@ -33,14 +20,25 @@ describe('FeaturesFlagsService', () => {
     jest.resetModules();
   });
 
+  describe('getSupportFeatureModules()', () => {
+    it('should return support module', async () => {
+      const featuresFlagsService = new FeaturesFlagsService();
+      const modules = await featuresFlagsService.getSupportFeatureModules();
+      const featureModules = featureModuleConfig.reduce((modules, feature) => {
+        return modules.concat(feature.depModules);
+      },                                                []);
+      expect(modules).toEqual(featureModules);
+    });
+  });
+
   describe('getModulesByFeatureName()', () => {
     it('should return feature modules by feature name', () => {
       const featuresFlagsService = new FeaturesFlagsService();
       const dashboardModules = featuresFlagsService.getModulesByFeatureName(
-        mockFeatureModule[0].featureName,
+        featureModuleConfig[0].featureName,
       );
 
-      expect(dashboardModules).toEqual(mockFeatureModule[0].depModules);
+      expect(dashboardModules).toEqual(featureModuleConfig[0].depModules);
     });
   });
 
