@@ -228,6 +228,26 @@ describe('SendPostController', () => {
       const result = await sendPostController.sendPostToServer(data);
       expect(result[0].data).toEqual(serverPostJson4UnitTest);
     });
+    it('should call with retryCount', async () => {
+      let retryCount;
+      Object.assign(sendPostController, {
+        postActionController: {
+          requestController: {
+            post: (data: any, option: any) => {
+              retryCount = option && option.retryCount;
+              return serverPostJson4UnitTest;
+            },
+          },
+        },
+      });
+      postDao.put.mockResolvedValueOnce(null);
+      daoManager.getDao.mockReturnValueOnce(postDao);
+      const data = _.cloneDeep(localPostJson4UnitTest);
+      data['id'] = -999;
+      const result = await sendPostController.sendPostToServer(data);
+      expect(result[0].data).toEqual(serverPostJson4UnitTest);
+      expect(retryCount).toEqual(3);
+    });
     it('should throw error when send post failed', async () => {
       Object.assign(sendPostController, {
         postActionController: {
