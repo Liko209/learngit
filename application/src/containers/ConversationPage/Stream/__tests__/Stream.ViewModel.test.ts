@@ -142,31 +142,39 @@ describe('StreamViewModel', () => {
       postsNewerThanAnchor,
       postsOlderThanAnchor,
     }: any) {
-      const postService = ServiceLoader.getInstance<PostService>(
-        ServiceConfig.POST_SERVICE,
-      );
-      jest.spyOn(postService, 'getById').mockResolvedValue(readThroughPost);
-
-      const historyHandler = new HistoryHandler();
+      postService.getById.mockResolvedValue(readThroughPost);
+      postService.getUnreadPostsByGroupId.mockResolvedValue({
+        posts: postsNewerThanAnchor,
+        items: [],
+        hasMore: false,
+      });
       const dataProvider = { fetchData: jest.fn().mockName('fetchData()') };
-      dataProvider.fetchData
-        .mockResolvedValueOnce({ data: postsNewerThanAnchor, hasMore: true })
-        .mockResolvedValueOnce({ data: postsOlderThanAnchor, hasMore: false });
+      dataProvider.fetchData.mockResolvedValueOnce({
+        data: postsOlderThanAnchor,
+        hasMore: false,
+      });
       const listHandler = new FetchSortableDataListHandler<Post>(dataProvider, {
         isMatchFunc: () => true,
         transformFunc: (post: Post) => {
           return { id: post.id, sortValue: post.created_at, data: post };
         },
       });
-      listHandler.upsert(currentPosts);
       listHandler.setHasMore(true, QUERY_DIRECTION.OLDER);
-      listHandler.setHasMore(true, QUERY_DIRECTION.NEWER);
+      listHandler.setHasMore(false, QUERY_DIRECTION.NEWER);
       jest.spyOn(listHandler, 'fetchDataByAnchor');
       jest
         .spyOn(ConversationPostFocBuilder, 'buildConversationPostFoc')
         .mockReturnValue(listHandler);
+
+      const historyHandler = new HistoryHandler();
       historyHandler.update(groupState, _.map(currentPosts, post => post.id));
+
       const streamController = new StreamController(1, historyHandler, 1);
+      streamController.disableNewMessageSep();
+      listHandler.upsert(currentPosts);
+      streamController.enableNewMessageSep();
+      console.log(listHandler.listStore.items);
+
       const vm = setup({
         _streamController: streamController,
         _historyHandler: historyHandler,
@@ -194,11 +202,11 @@ describe('StreamViewModel', () => {
         postsOlderThanAnchor,
         readThroughPost,
         groupState: { unreadCount: 4, readThrough: readThroughPost.id },
-        currentPosts: [{ id: 8, created_at: 108, creator_id: 1 }],
+        currentPosts: [{ id: 9, created_at: 109, creator_id: 1 }],
       });
       const firstUnreadPostId = await vm.getFirstUnreadPostByLoadAllUnread();
 
-      expect(vm.postIds).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+      expect(vm.postIds).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
       expect(firstUnreadPostId).toBe(5);
     });
 
