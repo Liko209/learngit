@@ -21,8 +21,6 @@ import notificationCenter from '../../../../../service/notificationCenter';
 import { AccountUserConfig } from '../../../../../module/account/config';
 import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
 import { IEntitySourceController } from '../../../../../framework/controller/interface/IEntitySourceController';
-
-import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
 import { GroupConfigService } from '../../../../groupConfig';
 import { ItemNotification } from '../../../utils/ItemNotification';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
@@ -76,7 +74,6 @@ class FileUploadController {
 
   constructor(
     private _partialModifyController: IPartialModifyController<Item>,
-    private _fileRequestController: IRequestController<Item>,
     private _entitySourceController: IEntitySourceController<Item>,
   ) {}
 
@@ -863,7 +860,8 @@ class FileUploadController {
       versions: preInsertItem.versions,
       is_new: true,
     };
-    return await this._fileRequestController.post(fileItemOptions);
+    const requestController = this._entitySourceController.getRequestController();
+    return await requestController!.post(fileItemOptions);
   }
 
   private async _emitItemFileStatus(
@@ -894,7 +892,8 @@ class FileUploadController {
     updateModifiedAt && (existItem.modified_at = Date.now());
     existItem._id = existItem.id;
     delete existItem.id;
-    return await this._fileRequestController.put(existItem);
+    const requestController = this._entitySourceController.getRequestController();
+    return await requestController!.put(existItem);
   }
 
   private async _getOldestExistFile(
