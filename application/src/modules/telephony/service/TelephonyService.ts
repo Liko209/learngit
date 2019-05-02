@@ -56,6 +56,9 @@ class TelephonyService {
     this._telephonyStore.callType = CALL_TYPE.INBOUND;
     this._telephonyStore.callerName = fromName;
     this._telephonyStore.phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
+    this._telephonyStore.contact = await this.matchContactByPhoneNumber(
+      this._telephonyStore.phoneNumber,
+    );
     this._telephonyStore.callId = callId;
     this._telephonyStore.incomingCall();
     mainLogger.info(

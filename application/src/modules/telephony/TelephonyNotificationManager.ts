@@ -43,9 +43,9 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
   }
 
   private async _showNotification() {
-    const { phoneNumber, callId } = this._telephonyStore;
+    const { phoneNumber, callId, displayName } = this._telephonyStore;
     let { callerName } = this._telephonyStore;
-    if (!callerName || callerName === phoneNumber || !phoneNumber) {
+    if (!displayName || callerName === phoneNumber || !phoneNumber) {
       callerName =
         (await i18nT('telephony.notification.unknownCaller')) ||
         'Unknown Caller';
@@ -68,7 +68,7 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
         id: callId,
         scope: this._scope,
       },
-      body: `${callerName} ${phoneNumber}`,
+      body: `${displayName || callerName} ${phoneNumber}`,
       icon: '/icon/incomingCall.png',
     });
   }

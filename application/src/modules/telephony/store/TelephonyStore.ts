@@ -7,6 +7,14 @@
 import { LifeCycle } from 'ts-javascript-state-machine';
 import { observable, computed } from 'mobx';
 import { mainLogger } from 'sdk';
+import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
+import PersonModel from '@/store/models/Person';
+import {
+  Person,
+  PhoneNumberInfo,
+  PHONE_NUMBER_TYPE,
+} from 'sdk/module/person/entity';
 import {
   HOLD_STATE,
   HOLD_TRANSITION_NAMES,
@@ -58,6 +66,8 @@ class TelephonyStore {
 
   @observable
   phoneNumber?: string;
+  @observable
+  contact?: Person | null;
   @observable
   callId: string;
   @observable
@@ -129,6 +139,37 @@ class TelephonyStore {
           break;
       }
     });
+  }
+
+  @computed
+  get person() {
+    if (!this.contact) return null;
+    return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, this.contact.id);
+  }
+
+  @computed
+  get displayName() {
+    if (this.person) {
+      return this.person.userDisplayName;
+    }
+    return '';
+  }
+
+  @computed
+  get isExt() {
+    if (this.person) {
+      return this.person.phoneNumbers.some((info: PhoneNumberInfo) => {
+        if (
+          info.type === PHONE_NUMBER_TYPE.EXTENSION_NUMBER &&
+          info.phoneNumber === this.phoneNumber
+        ) {
+          return true;
+        }
+        return false;
+      });
+    }
+
+    return true;
   }
 
   private get _localCallWindowStatus() {
@@ -308,7 +349,9 @@ class TelephonyStore {
   }
 
   enableRecord = () => {
-    return this._recordDisableFSM[RECORD_DISABLED_STATE_TRANSITION_NAMES.ENABLE]();
+    return this._recordDisableFSM[
+      RECORD_DISABLED_STATE_TRANSITION_NAMES.ENABLE
+    ]();
   }
 
   disableHold = () => {
@@ -316,7 +359,9 @@ class TelephonyStore {
   }
 
   disableRecord = () => {
-    return this._recordDisableFSM[RECORD_DISABLED_STATE_TRANSITION_NAMES.DISABLE]();
+    return this._recordDisableFSM[
+      RECORD_DISABLED_STATE_TRANSITION_NAMES.DISABLE
+    ]();
   }
 
   @computed
