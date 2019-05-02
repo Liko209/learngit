@@ -17,10 +17,10 @@ export abstract class AbstractNotification<T> {
   ) {
     if (isEdge || (isElectron && isWindows)) {
       const { priority } = opts.data;
-      const lowPriorityNotifications = notifications.filter(item => {
-        if (item.data) {
-          const { priority: itemPriority } = item.data;
-          return itemPriority && itemPriority > priority;
+      const lowPriorityNotifications = notifications.filter(notification => {
+        if (notification.data) {
+          const { priority: notificationPriority } = notification.data;
+          return notificationPriority && notificationPriority > priority;
         }
         return false;
       });
