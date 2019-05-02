@@ -129,17 +129,23 @@ export class FetchSortableDataListHandler<
     pageSize: number,
     anchor?: ISortableModel<T>,
   ) {
-    if (!this._sortableDataProvider) {
+    const dataProvider = this._sortableDataProvider;
+    if (!dataProvider) {
       mainLogger.warn(
         'FetchSortableDataListHandler: data fetcher should be defined ',
       );
       return [];
     }
-    const { data = [], hasMore } = await this._sortableDataProvider.fetchData(
-      direction,
-      pageSize,
-      anchor,
+    return this.fetchDataBy(direction, () =>
+      dataProvider.fetchData(direction, pageSize, anchor),
     );
+  }
+
+  async fetchDataBy(
+    direction: QUERY_DIRECTION,
+    dataLoader: () => Promise<{ data: T[]; hasMore: boolean }>,
+  ) {
+    const { data = [], hasMore } = await dataLoader();
     const sortableResult: ISortableModel<T>[] = [];
     data.forEach((element: T) => {
       sortableResult.push(this._transformFunc(element));
@@ -164,7 +170,6 @@ export class FetchSortableDataListHandler<
     });
     return data;
   }
-
   @action
   refreshData() {
     mainLogger.debug(

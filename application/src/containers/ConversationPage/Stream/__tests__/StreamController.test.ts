@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Post } from 'sdk/module/post/entity';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { PostService } from 'sdk/module/post/service/PostService';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { FetchSortableDataListHandler } from '@/store/base/fetch';
 import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPostFocBuilder';
@@ -17,16 +19,28 @@ import { StreamItemType } from '../types';
 describe('StreamController', () => {
   describe('fetchAllUnreadData()', () => {
     function setup({
+      currentPosts,
       postsNewerThanAnchor,
       postsOlderThanAnchor,
     }: {
+      currentPosts: Post[];
       postsNewerThanAnchor: Post[];
       postsOlderThanAnchor: Post[];
     }) {
       const dataProvider = { fetchData: jest.fn().mockName('fetchData()') };
-      dataProvider.fetchData
-        .mockResolvedValueOnce({ data: postsNewerThanAnchor, hasMore: true })
-        .mockResolvedValueOnce({ data: postsOlderThanAnchor, hasMore: false });
+      const postService = ServiceLoader.getInstance<PostService>(
+        ServiceConfig.POST_SERVICE,
+      );
+      jest.spyOn(postService, 'getUnreadPostsByGroupId').mockResolvedValueOnce({
+        posts: postsNewerThanAnchor,
+        items: [],
+        hasMore: false,
+      });
+      dataProvider.fetchData.mockResolvedValueOnce({
+        data: postsOlderThanAnchor,
+        hasMore: false,
+      });
+
       const listHandler = new FetchSortableDataListHandler<Post>(dataProvider, {
         isMatchFunc: () => true,
         transformFunc: (post: Post) => {
@@ -34,16 +48,22 @@ describe('StreamController', () => {
         },
       });
       jest.spyOn(listHandler, 'fetchDataByAnchor');
+      const historyHandler = new HistoryHandler();
       jest
         .spyOn(ConversationPostFocBuilder, 'buildConversationPostFoc')
         .mockReturnValue(listHandler);
-      const historyHandler = new HistoryHandler();
       const streamController = new StreamController(1, historyHandler, 1);
+      streamController.disableNewMessageSep();
+      listHandler.upsert(currentPosts);
+      streamController.enableNewMessageSep();
 
-      return { streamController, listHandler };
+      return { streamController, postService, listHandler };
     }
 
     it('should fetch posts newer and older than anchor', async () => {
+      const currentPosts = [
+        { id: 9, created_at: 109, creator_id: 1 },
+      ] as Post[];
       const postsNewerThanAnchor = [
         { id: 5, created_at: 105, creator_id: 1 },
         { id: 6, created_at: 106, creator_id: 1 },
@@ -58,6 +78,7 @@ describe('StreamController', () => {
       ] as Post[];
 
       const { listHandler, streamController } = setup({
+        currentPosts,
         postsNewerThanAnchor,
         postsOlderThanAnchor,
       });
@@ -65,7 +86,6 @@ describe('StreamController', () => {
 
       const posts = await streamController.fetchAllUnreadData();
 
-      expect(listHandler.fetchDataByAnchor).toBeCalledTimes(2);
       expect(listHandler.fetchDataByAnchor).toBeCalledWith(
         QUERY_DIRECTION.OLDER,
         BEFORE_ANCHOR_POSTS_COUNT,
@@ -85,6 +105,7 @@ describe('StreamController', () => {
         { id: 106, type: StreamItemType.POST, value: [6], timeStart: 106 },
         { id: 107, type: StreamItemType.POST, value: [7], timeStart: 107 },
         { id: 108, type: StreamItemType.POST, value: [8], timeStart: 108 },
+        { id: 109, type: StreamItemType.POST, value: [9], timeStart: 109 },
       ]);
       expect(posts).toEqual([
         {
@@ -126,6 +147,11 @@ describe('StreamController', () => {
           id: 8,
           sortValue: 108,
           data: { id: 8, created_at: 108, creator_id: 1 },
+        },
+        {
+          id: 9,
+          sortValue: 109,
+          data: { id: 9, created_at: 109, creator_id: 1 },
         },
       ]);
     });
