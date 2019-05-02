@@ -17,6 +17,7 @@ import { TopBanner } from '../TopBanner';
 import { AppStore } from '../../store';
 import { Title } from './Title';
 import { ElectronBadgeWithAppUmi } from './ElectronBadgeWithAppUmi';
+import { ModalPortal } from '@/containers/Dialog';
 
 @observer
 class App extends React.Component {
@@ -40,6 +41,7 @@ class App extends React.Component {
             <Title />
             <TopBanner />
             <Router />
+            <ModalPortal />
             <AboutView />
             {window.jupiterElectron && <ElectronBadgeWithAppUmi />}
           </>
