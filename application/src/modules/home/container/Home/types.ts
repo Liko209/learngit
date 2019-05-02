@@ -6,6 +6,7 @@ type HomeViewProps = {
   canPost: boolean;
   indexLoaded: boolean;
   showGlobalSearch: boolean;
+  canRenderDialer: boolean;
 } & RouteComponentProps;
 
 export { HomeProps, HomeViewProps };
