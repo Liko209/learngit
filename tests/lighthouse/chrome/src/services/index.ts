@@ -4,8 +4,10 @@
  */
 import { FileService } from './fileService';
 import { MetricService } from './metricService';
+import { DashboardService } from './dashboardService';
 
 export {
   FileService,
-  MetricService
+  MetricService,
+  DashboardService
 }

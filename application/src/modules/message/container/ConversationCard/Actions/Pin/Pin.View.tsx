@@ -58,7 +58,7 @@ class PinViewComponent extends Component<Props> {
           variant="plain"
           data-name="actionBarPin"
         >
-          pin
+          {isPin ? 'pin' : 'unpin'}
         </JuiIconButton>
       )
     );

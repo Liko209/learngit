@@ -104,6 +104,11 @@ class ContentSearchResultViewModel
     );
   }
 
+  @computed
+  get searchTerms(): string[] {
+    return this._searchKey.split(' ');
+  }
+
   @action
   setSearchOptions = async (
     options: ContentSearchOptions,
@@ -115,7 +120,7 @@ class ContentSearchResultViewModel
 
     !isInitial && (await this.onSearchEnd());
 
-    this._setSearchState({ requestId: null });
+    this._setSearchState({ requestId: null, postIds: [] });
 
     this.showResult = true;
   }

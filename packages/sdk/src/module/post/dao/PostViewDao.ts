@@ -64,11 +64,14 @@ class PostViewDao extends BaseDao<PostView> {
   }
 
   async queryPostIdsByGroupId(groupId: number): Promise<number[]> {
+    const postViews = await this.queryPostByGroupId(groupId);
+    return postViews.map(postView => postView.id);
+  }
+
+  async queryPostByGroupId(groupId: number): Promise<PostView[]> {
     const query = this.createQuery().equal('group_id', groupId);
     const postViews = await query.toArray();
-    return _.orderBy(postViews, 'created_at', 'asc').map(
-      postView => postView.id,
-    );
+    return _.orderBy(postViews, 'created_at', 'asc');
   }
 }
 export { PostViewDao };

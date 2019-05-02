@@ -83,6 +83,7 @@ const SKIP_CONSOLE_WARN = !(process.env.SKIP_CONSOLE_WARN === 'false');
 const ENABLE_SSL = process.env.ENABLE_SSL === 'true';
 const SELENIUM_CAPABILITIES = process.env.SELENIUM_CAPABILITIES || 'capabilities.json' // ref: https://github.com/link89/testcafe-browser-provider-selenium/tree/customize-chrome-option
 const DISABLE_SCREENSHOT = process.env.DISABLE_SCREENSHOT === 'true';
+const ENABLE_NOTIFICATION = process.env.ENABLE_NOTIFICATION === 'true';
 
 const RUNNER_OPTS = {
   REPORTER,
@@ -145,4 +146,5 @@ export {
   MOCK_SERVER_URL,
   MOCK_ENV,
   MOCK_AUTH_URL,
+  ENABLE_NOTIFICATION
 };

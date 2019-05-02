@@ -7,7 +7,7 @@
 import { IDatabase } from 'foundation';
 import { BaseDao } from '../../../framework/dao';
 import { PostViewDao } from './PostViewDao';
-import { Post } from '../entity';
+import { Post, PostView } from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
 import { daoManager } from '../../../dao';
 import _ from 'lodash';
@@ -85,13 +85,20 @@ class PostDao extends BaseDao<Post> {
     );
   }
 
-  queryOldestPostByGroupId(groupId: number): Promise<Post | null> {
+  async queryOldestPostByGroupId(groupId: number): Promise<Post | null> {
     const query = this.createQuery();
     return query
       .orderBy('created_at')
       .equal('group_id', groupId)
       .filter((item: Post) => !item.deactivated)
       .first();
+  }
+
+  async queryOldestPostCreationTimeByGroupId(
+    groupId: number,
+  ): Promise<PostView | null> {
+    const postViews = await this._postViewDao.queryPostByGroupId(groupId);
+    return postViews.length ? postViews[0] : null;
   }
 
   async queryPreInsertPost(): Promise<Post[]> {

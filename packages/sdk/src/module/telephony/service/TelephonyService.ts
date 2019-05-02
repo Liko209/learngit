@@ -5,7 +5,11 @@
  */
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { TelephonyEngineController } from '../controller';
-import { ITelephonyCallDelegate } from './ITelephonyCallDelegate';
+import {
+  ITelephonyCallDelegate,
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
+} from './ITelephonyCallDelegate';
 import { ITelephonyAccountDelegate } from './ITelephonyAccountDelegate';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SERVICE } from '../../../service/eventKey';
@@ -51,10 +55,12 @@ class TelephonyService extends EntityBaseService {
     return accountController ? accountController.getCallCount() : 0;
   }
 
-  makeCall = async (toNumber: string) => {
+  makeCall = async (toNumber: string, fromNumber: string) => {
     const accountController = this.telephonyController.getAccountController();
     if (accountController) {
-      return this.telephonyController.getAccountController().makeCall(toNumber);
+      return this.telephonyController
+        .getAccountController()
+        .makeCall(toNumber, fromNumber);
     }
     return MAKE_CALL_ERROR_CODE.INVALID_STATE;
   }
@@ -101,6 +107,27 @@ class TelephonyService extends EntityBaseService {
 
   ignore = (callId: string) => {
     this.telephonyController.getAccountController().ignore(callId);
+  }
+
+  startReply = (callId: string) => {
+    this.telephonyController.getAccountController().startReply(callId);
+  }
+
+  replyWithMessage = (callId: string, message: string) => {
+    this.telephonyController
+      .getAccountController()
+      .replyWithMessage(callId, message);
+  }
+
+  replyWithPattern = (
+    callId: string,
+    pattern: RTC_REPLY_MSG_PATTERN,
+    time: number,
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+  ) => {
+    this.telephonyController
+      .getAccountController()
+      .replyWithPattern(callId, pattern, time, timeUnit);
   }
 }
 

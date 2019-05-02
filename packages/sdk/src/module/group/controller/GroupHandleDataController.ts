@@ -27,7 +27,7 @@ import { Group } from '../entity';
 import { IGroupService } from '../service/IGroupService';
 import { AccountUserConfig } from '../../../module/account/config';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import { SYNC_SOURCE } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 class GroupHandleDataController {
@@ -42,28 +42,28 @@ class GroupHandleDataController {
       groups.map(async (item: Partial<Raw<Group>>) => {
         if (item._id) {
           const finalItem = item;
-          const existedGroup = await this.entitySourceController.get(item._id);
-          if (existedGroup) {
-            // If existed in DB, update directly and return the updated result for notification later
-            type Transformed = PartialWithKey<Group>;
-            const transformed: Transformed = transform<Transformed>(finalItem);
-            await this.entitySourceController.update(transformed);
-            if (transformed.id) {
-              const updated = await this.entitySourceController.get(
-                transformed.id,
+          try {
+            const existedGroup = await this.entitySourceController.get(
+              item._id,
+            );
+
+            if (existedGroup) {
+              type Transformed = PartialWithKey<Group>;
+              const transformed: Transformed = transform<Transformed>(
+                finalItem,
               );
-              return updated;
+
+              await this.entitySourceController.update(transformed);
+
+              if (transformed.id) {
+                const updated = await this.entitySourceController.get(
+                  transformed.id,
+                );
+                return updated;
+              }
             }
-          } else {
-            // If not existed in DB, request from API and handle the response again
-            let result;
-            try {
-              result = await GroupAPI.requestGroupById(item._id);
-              this.handleData([result]);
-              return result;
-            } catch (error) {
-              mainLogger.error(`${JSON.stringify(error)}`);
-            }
+          } catch (error) {
+            mainLogger.error(`${JSON.stringify(error)}`);
           }
         }
         return null;
@@ -161,21 +161,31 @@ class GroupHandleDataController {
     ) as Group[];
   }
 
-  doNotification = async (deactivatedData: Group[], groups: Group[]) => {
+  doNotification = async (
+    deactivatedData: Group[],
+    groups: Group[],
+    changeMap?: Map<string, ChangeModel>,
+  ) => {
     // https://jira.ringcentral.com/browse/FIJI-4264
     // const deactivatedGroupIds = _.map(deactivatedData, (group: Group) => {
     //   return group.id;
     // });
     // deactivatedGroupIds.length &&
     //   notificationCenter.emitEntityDelete(ENTITY.GROUP, deactivatedGroupIds);
-    ((groups && groups.length) ||
-      (deactivatedData && deactivatedData.length)) &&
-      notificationCenter.emitEntityUpdate(
-        ENTITY.GROUP,
+    if (
+      (groups && groups.length) ||
+      (deactivatedData && deactivatedData.length)
+    ) {
+      const allGroups =
         deactivatedData && deactivatedData.length
           ? [...groups, ...deactivatedData]
-          : groups,
-      );
+          : groups;
+      if (changeMap) {
+        changeMap.set(ENTITY.GROUP, { entities: allGroups });
+      } else {
+        notificationCenter.emitEntityUpdate(ENTITY.GROUP, allGroups);
+      }
+    }
   }
 
   operateGroupDao = async (deactivatedData: Group[], normalData: Group[]) => {
@@ -190,21 +200,36 @@ class GroupHandleDataController {
         this.entitySourceController.bulkUpdate(normalData);
       }
     } catch (e) {
-      console.error(`operateGroupDao error ${JSON.stringify(e)}`);
+      mainLogger.error(`operateGroupDao error ${JSON.stringify(e)}`);
     }
   }
 
-  extractGroupCursor(groups: Group[]) {
+  extractGroupCursor(groups: Group[], changeMap?: Map<string, ChangeModel>) {
     const groupCursors = _.cloneDeep(groups);
-    groupCursors.length &&
-      notificationCenter.emit(SERVICE.GROUP_CURSOR, groupCursors);
+    if (groupCursors.length) {
+      if (changeMap) {
+        changeMap.set(SERVICE.GROUP_CURSOR, {
+          entities: groups,
+        });
+      } else {
+        notificationCenter.emit(SERVICE.GROUP_CURSOR, groups);
+      }
+    }
     return groups.map((group: Group) => {
-      return _.omit(group, ['post_cursor', 'post_drp_cursor']);
+      return _.omit(group, [
+        'post_cursor',
+        'post_drp_cursor',
+        'last_author_id',
+      ]);
     });
   }
 
-  saveDataAndDoNotification = async (groups: Group[], source?: SYNC_SOURCE) => {
-    const pureGroups = this.extractGroupCursor(groups);
+  saveDataAndDoNotification = async (
+    groups: Group[],
+    source?: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
+  ) => {
+    const pureGroups = this.extractGroupCursor(groups, changeMap);
 
     const deactivatedData = pureGroups.filter(
       (item: Group) => item && item.deactivated,
@@ -215,12 +240,16 @@ class GroupHandleDataController {
 
     await this.operateGroupDao(deactivatedData, normalData);
     if (shouldEmitNotification(source)) {
-      await this.doNotification(deactivatedData, normalData);
+      await this.doNotification(deactivatedData, normalData, changeMap);
     }
     return normalData;
   }
 
-  handleData = async (groups: Raw<Group>[], source?: SYNC_SOURCE) => {
+  handleData = async (
+    groups: Raw<Group>[],
+    source?: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
+  ) => {
     if (groups.length === 0) {
       return;
     }
@@ -228,7 +257,7 @@ class GroupHandleDataController {
     const data = transformData.filter(item => item);
 
     // handle deactivated data and normal data
-    await this.saveDataAndDoNotification(data, source);
+    await this.saveDataAndDoNotification(data, source, changeMap);
     // check all group members exist in local or not if not, should get from remote
     // seems we only need check normal groups, don't need to check deactivated data
     // if (shouldCheckIncompleteMembers) {
@@ -379,16 +408,22 @@ class GroupHandleDataController {
     await groupDao.doInTransaction(async () => {
       const groups: (null | Partial<Raw<Group>>)[] = await Promise.all(
         uniqMaxPosts.map(async (post: Post) => {
-          const group: null | Group = await groupDao.get(post.group_id);
-          if (group && this.isNeedToUpdateMostRecent4Group(post, group)) {
-            ids.push(post.group_id);
-            const pg: Partial<Raw<Group>> = {
-              _id: post.group_id,
-              most_recent_post_created_at: post.created_at,
-              most_recent_content_modified_at: post.modified_at,
-              most_recent_post_id: post.id,
-            };
-            return pg;
+          try {
+            const group: null | Group = await this.entitySourceController.get(
+              post.group_id,
+            );
+            if (group && this.isNeedToUpdateMostRecent4Group(post, group)) {
+              ids.push(post.group_id);
+              const pg: Partial<Raw<Group>> = {
+                _id: post.group_id,
+                most_recent_post_created_at: post.created_at,
+                most_recent_content_modified_at: post.modified_at,
+                most_recent_post_id: post.id,
+              };
+              return pg;
+            }
+          } catch (error) {
+            return null;
           }
           return null;
         }),
@@ -403,7 +438,11 @@ class GroupHandleDataController {
   }
 
   getGroupTime = (group: Group) => {
-    return group.most_recent_post_created_at || group.created_at;
+    return (
+      group.__last_accessed_at ||
+      group.most_recent_post_created_at ||
+      group.created_at
+    );
   }
 
   hasUnread = (groupState: GroupState) => {

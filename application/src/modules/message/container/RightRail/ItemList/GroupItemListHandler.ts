@@ -6,7 +6,7 @@
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataListHandlerOptions,
-  ISortableModel,
+  ISortableModelWithData,
 } from '@/store/base/fetch';
 import { ENTITY_NAME } from '@/store/constants';
 import { action, computed, observable, reaction } from 'mobx';
@@ -66,12 +66,12 @@ class GroupItemListHandler extends FetchSortableDataListHandler<Item>
         data,
         id: model.id,
         sortValue: model.id,
-      } as ISortableModel<Item>;
+      } as ISortableModelWithData<Item>;
     };
 
     const sortFunc = (
-      lhs: ISortableModel<Item>,
-      rhs: ISortableModel<Item>,
+      lhs: ISortableModelWithData<Item>,
+      rhs: ISortableModelWithData<Item>,
     ): number => {
       return SortUtils.sortModelByKey(
         lhs.data as Item,

@@ -7,14 +7,16 @@
 import { Group } from '../../../../group/entity';
 import { StateDataHandleController } from '../StateDataHandleController';
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
-import { DeactivatedDao } from '../../../../../dao';
+import { DeactivatedDao, daoManager } from '../../../../../dao';
 import { StateFetchDataController } from '../StateFetchDataController';
 import { State, GroupState } from '../../../entity';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
 import { TASK_DATA_TYPE } from '../../../constants';
 import { StateHandleTask, GroupCursorHandleTask } from '../../../types';
-import { SYNC_SOURCE } from '../../../../../module/sync';
-import { ServiceLoader } from '../../../../../module/serviceLoader';
+import { SYNC_SOURCE } from '../../../../sync';
+import { ServiceLoader } from '../../../../serviceLoader';
+import { MyStateConfig } from '../../../config';
+import { notificationCenter } from 'sdk/service';
 
 jest.mock('../../../../../service/notificationCenter');
 jest.mock('../../../../../module/config/service/GlobalConfigService');
@@ -58,6 +60,7 @@ describe('StateDataHandleController', () => {
           data: states,
         },
         SYNC_SOURCE.INDEX,
+        undefined,
       );
     });
 
@@ -193,12 +196,14 @@ describe('StateDataHandleController', () => {
           __trigger_ids: [123],
           post_cursor: 456,
           post_drp_cursor: 789,
+          last_author_id: 2222333,
         },
         {
           id: 11223344,
           __trigger_ids: [5683],
           post_cursor: 654,
           post_drp_cursor: 321,
+          last_author_id: 2223333,
         },
       ];
       ServiceLoader.getInstance = jest.fn().mockReturnValue({
@@ -210,11 +215,13 @@ describe('StateDataHandleController', () => {
           {
             group_post_cursor: 456,
             group_post_drp_cursor: 789,
+            last_author_id: 2222333,
             id: 55668833,
           },
           {
             group_post_cursor: 654,
             group_post_drp_cursor: 321,
+            last_author_id: 2223333,
             id: 11223344,
           },
         ],
@@ -290,6 +297,11 @@ describe('StateDataHandleController', () => {
             unread_deactivated_count: 10,
             unread_mentions_count: 5,
           },
+          {
+            id: 4,
+            marked_as_unread: true,
+            last_author_id: 5684,
+          },
         ],
         isSelf: false,
       };
@@ -319,7 +331,16 @@ describe('StateDataHandleController', () => {
             group_post_cursor: 15,
             group_post_drp_cursor: 9,
           },
+          {
+            id: 4,
+            marked_as_unread: false,
+            last_author_id: 56,
+          },
         ]);
+
+      ServiceLoader.getInstance = jest.fn().mockReturnValue({
+        get: jest.fn().mockReturnValue(5683),
+      });
 
       expect(
         await stateDataHandleController['_generateUpdatedState'](
@@ -351,11 +372,17 @@ describe('StateDataHandleController', () => {
           },
           {
             id: 3,
-            marked_as_unread: false,
+            marked_as_unread: true,
             post_cursor: 8,
             read_through: 6,
             unread_deactivated_count: 10,
             unread_mentions_count: 5,
+            unread_count: 0,
+          },
+          {
+            id: 4,
+            marked_as_unread: true,
+            last_author_id: 5684,
             unread_count: 0,
           },
         ],
@@ -389,6 +416,10 @@ describe('StateDataHandleController', () => {
           },
         ]);
 
+      ServiceLoader.getInstance = jest.fn().mockReturnValue({
+        get: jest.fn().mockReturnValue(5683),
+      });
+
       expect(
         await stateDataHandleController['_generateUpdatedState'](
           transformedState,
@@ -397,7 +428,7 @@ describe('StateDataHandleController', () => {
         groupStates: [
           {
             id: 1,
-            marked_as_unread: false,
+            marked_as_unread: true,
             group_post_cursor: 18,
             post_cursor: 16,
             read_through: 7,
@@ -408,6 +439,326 @@ describe('StateDataHandleController', () => {
         ],
         myState: undefined,
       });
+    });
+
+    it('should return groupState with unread count = 0 when last_author is self and marked_as_unread is false', async () => {
+      const transformedState = {
+        groupStates: [
+          {
+            id: 1,
+            marked_as_unread: false,
+            last_author_id: 5683,
+          },
+        ],
+        isSelf: false,
+      };
+
+      mockStateFetchDataController.getAllGroupStatesFromLocal = jest
+        .fn()
+        .mockReturnValue([
+          {
+            id: 1,
+            marked_as_unread: true,
+            group_post_cursor: 17,
+            post_cursor: 16,
+            read_through: 7,
+            unread_deactivated_count: 0,
+            unread_mentions_count: 0,
+            unread_count: 1,
+          },
+        ]);
+
+      ServiceLoader.getInstance = jest.fn().mockReturnValue({
+        get: jest.fn().mockReturnValue(5683),
+      });
+
+      expect(
+        await stateDataHandleController['_generateUpdatedState'](
+          transformedState,
+        ),
+      ).toEqual({
+        groupStates: [
+          {
+            id: 1,
+            marked_as_unread: false,
+            group_post_cursor: 17,
+            post_cursor: 16,
+            read_through: 7,
+            unread_deactivated_count: 0,
+            unread_mentions_count: 0,
+            unread_count: 0,
+            last_author_id: 5683,
+          },
+        ],
+        myState: undefined,
+      });
+    });
+  });
+
+  describe('_hasInvalidCursor', () => {
+    it('should return true when GCursor + DCursor is invalid', () => {
+      const updateState = {
+        group_post_cursor: 3,
+        group_post_drp_cursor: 6,
+      } as any;
+      const localState = {
+        group_post_cursor: 5,
+        group_post_drp_cursor: 5,
+      } as any;
+      expect(
+        stateDataHandleController['_hasInvalidCursor'](
+          updateState,
+          localState,
+          false,
+        ),
+      ).toBeTruthy();
+    });
+
+    it('should return true when GCursor is invalid', () => {
+      const updateState = {
+        group_post_cursor: 4,
+      } as any;
+      const localState = {
+        group_post_cursor: 5,
+      } as any;
+      expect(
+        stateDataHandleController['_hasInvalidCursor'](
+          updateState,
+          localState,
+          false,
+        ),
+      ).toBeTruthy();
+    });
+
+    it('should return true when DCursor is invalid', () => {
+      const updateState = {
+        group_post_drp_cursor: 4,
+      } as any;
+      const localState = {
+        group_post_drp_cursor: 5,
+      } as any;
+      expect(
+        stateDataHandleController['_hasInvalidCursor'](
+          updateState,
+          localState,
+          false,
+        ),
+      ).toBeTruthy();
+    });
+
+    it('should return true when SCursor is invalid', () => {
+      const updateState = {
+        post_cursor: 3,
+        marked_as_unread: false,
+      } as any;
+      const localState = {
+        post_cursor: 5,
+      } as any;
+      expect(
+        stateDataHandleController['_hasInvalidCursor'](
+          updateState,
+          localState,
+          false,
+        ),
+      ).toBeTruthy();
+    });
+  });
+
+  describe('_isStateChanged', () => {
+    it('should return true when GCursor + DCursor changed', () => {
+      const updateState = {
+        group_post_cursor: 3,
+        group_post_drp_cursor: 8,
+      } as any;
+      const localState = {
+        group_post_cursor: 5,
+        group_post_drp_cursor: 5,
+      } as any;
+      expect(
+        stateDataHandleController['_isStateChanged'](updateState, localState),
+      ).toBeTruthy();
+    });
+
+    it('should return true when GCursor changed', () => {
+      const updateState = {
+        group_post_cursor: 6,
+      } as any;
+      const localState = {
+        group_post_cursor: 5,
+      } as any;
+      expect(
+        stateDataHandleController['_isStateChanged'](updateState, localState),
+      ).toBeTruthy();
+    });
+
+    it('should return true when DCursor changed', () => {
+      const updateState = {
+        group_post_drp_cursor: 8,
+      } as any;
+      const localState = {
+        group_post_drp_cursor: 5,
+      } as any;
+      expect(
+        stateDataHandleController['_isStateChanged'](updateState, localState),
+      ).toBeTruthy();
+    });
+
+    it('should return true when SCursor changed', () => {
+      const updateState = {
+        post_cursor: 4,
+      } as any;
+      const localState = {
+        post_cursor: 5,
+      } as any;
+      expect(
+        stateDataHandleController['_isStateChanged'](updateState, localState),
+      ).toBeTruthy();
+    });
+
+    it('should return true when unread_deactivated_count changed', () => {
+      const updateState = {
+        unread_deactivated_count: 0,
+      } as any;
+      const localState = {
+        unread_deactivated_count: 2,
+      } as any;
+      expect(
+        stateDataHandleController['_isStateChanged'](updateState, localState),
+      ).toBeTruthy();
+    });
+
+    it('should return true when unread_mentions_count changed', () => {
+      const updateState = {
+        unread_mentions_count: 1,
+      } as any;
+      const localState = {
+        unread_mentions_count: 3,
+      } as any;
+      expect(
+        stateDataHandleController['_isStateChanged'](updateState, localState),
+      ).toBeTruthy();
+    });
+
+    it('should return true when read_through changed', () => {
+      const updateState = {
+        read_through: 8,
+      } as any;
+      const localState = {
+        read_through: 5,
+      } as any;
+      expect(
+        stateDataHandleController['_isStateChanged'](updateState, localState),
+      ).toBeTruthy();
+    });
+
+    it('should return true when marked_as_unread changed', () => {
+      const updateState = {
+        marked_as_unread: false,
+      } as any;
+      const localState = {
+        marked_as_unread: true,
+      } as any;
+      expect(
+        stateDataHandleController['_isStateChanged'](updateState, localState),
+      ).toBeTruthy();
+    });
+
+    it('should return true when last_author_id changed', () => {
+      const updateState = {
+        last_author_id: 8444,
+      } as any;
+      const localState = {
+        last_author_id: 51111,
+      } as any;
+      expect(
+        stateDataHandleController['_isStateChanged'](updateState, localState),
+      ).toBeTruthy();
+    });
+
+    it('should return false when nothing changed', () => {
+      const updateState = {
+        group_post_cursor: 3,
+        group_post_drp_cursor: 8,
+        post_cursor: 4,
+        unread_deactivated_count: 0,
+        unread_mentions_count: 1,
+        read_through: 8,
+        marked_as_unread: false,
+        last_author_id: 8444,
+      } as any;
+      const localState = {
+        group_post_cursor: 3,
+        group_post_drp_cursor: 8,
+        post_cursor: 4,
+        unread_deactivated_count: 0,
+        unread_mentions_count: 1,
+        read_through: 8,
+        marked_as_unread: false,
+        last_author_id: 8444,
+      } as any;
+      expect(
+        stateDataHandleController['_isStateChanged'](updateState, localState),
+      ).toBeFalsy();
+    });
+  });
+
+  describe('_calculateUnread', () => {
+    it('should return 0 when isSelf = true', () => {
+      const finalState = {
+        last_author_id: 123,
+      } as any;
+      expect(
+        stateDataHandleController['_calculateUnread'](finalState, true, 11),
+      ).toEqual(0);
+    });
+
+    it('should return 0 when last_author_id is self and marked_as_unread != true', () => {
+      const finalState = {
+        last_author_id: 123,
+        marked_as_unread: false,
+      } as any;
+      expect(
+        stateDataHandleController['_calculateUnread'](finalState, false, 123),
+      ).toEqual(0);
+    });
+
+    it('should return calculated unread', () => {
+      const finalState = {
+        last_author_id: 123,
+        marked_as_unread: false,
+        group_post_cursor: 9,
+        group_post_drp_cursor: 2,
+        post_cursor: 3,
+        unread_deactivated_count: 5,
+      } as any;
+      expect(
+        stateDataHandleController['_calculateUnread'](finalState, false, 11),
+      ).toEqual(3);
+    });
+  });
+
+  describe('_updateEntitiesAndDoNotification', () => {
+    it('should update and notify', async () => {
+      const mockUpdate = jest.fn();
+      daoManager.getDao = jest.fn().mockReturnValueOnce({
+        update: mockUpdate,
+      });
+      MyStateConfig.prototype.setMyStateId = jest.fn();
+      const transformedState = {
+        myState: { id: 123 },
+        groupStates: [
+          {
+            id: 3444,
+          },
+        ],
+      } as any;
+      await stateDataHandleController['_updateEntitiesAndDoNotification'](
+        transformedState,
+      );
+      expect(mockUpdate).toBeCalledTimes(1);
+      expect(MyStateConfig.prototype.setMyStateId).toBeCalledTimes(1);
+      expect(notificationCenter.emitEntityUpdate).toBeCalledTimes(2);
+      expect(mockEntitySourceController.bulkUpdate).toBeCalledTimes(1);
     });
   });
 });

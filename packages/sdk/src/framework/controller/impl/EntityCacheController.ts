@@ -43,13 +43,17 @@ class EntityCacheController<T extends IdModel = IdModel>
     if (Array.isArray(item)) {
       await this.bulkPut(item);
     } else {
-      this.putInternal(item);
+      if (item) {
+        this.putInternal(item);
+      }
     }
   }
 
   async bulkPut(array: T[]): Promise<void> {
-    array.forEach(async (item: T) => {
-      await this.putInternal(item);
+    array.forEach((item: T) => {
+      if (item) {
+        this.putInternal(item);
+      }
     });
   }
 
@@ -62,8 +66,8 @@ class EntityCacheController<T extends IdModel = IdModel>
   }
 
   async bulkDelete(keys: number[]): Promise<void> {
-    keys.forEach(async (key: number) => {
-      await this.deleteInternal(key);
+    keys.forEach((key: number) => {
+      this.deleteInternal(key);
     });
   }
 
@@ -87,16 +91,11 @@ class EntityCacheController<T extends IdModel = IdModel>
   async batchGet(ids: number[], order?: boolean): Promise<T[]> {
     const entities: T[] = [];
 
-    const promises = ids.map(async (id: number) => {
-      return this.get(id);
-    });
-
-    await Promise.all(promises).then((results: (T | null)[]) => {
-      results.forEach((result: T | null) => {
-        if (result) {
-          entities.push(result);
-        }
-      });
+    ids.forEach((id: number) => {
+      const entity = this.getSynchronously(id);
+      if (entity) {
+        entities.push(entity);
+      }
     });
 
     return entities;

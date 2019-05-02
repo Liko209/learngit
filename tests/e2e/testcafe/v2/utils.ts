@@ -41,7 +41,6 @@ export class MiscUtils {
     if (path.extname(imagePath) == '.webp' || !fs.existsSync(imagePath)) {
       return imagePath;
     }
-    console.log(imagePath, quality, scale)
     try {
       const webpImagePath = imagePath + ".webp";
       const image = sharp(imagePath);

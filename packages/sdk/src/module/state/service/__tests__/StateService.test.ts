@@ -110,7 +110,11 @@ describe('StateService', () => {
     it('should call with correct params', async () => {
       const states: Partial<State>[] = [];
       await stateService.handleState(states, SYNC_SOURCE.INDEX);
-      expect(mockHandleState).toBeCalledWith(states, SYNC_SOURCE.INDEX);
+      expect(mockHandleState).toBeCalledWith(
+        states,
+        SYNC_SOURCE.INDEX,
+        undefined,
+      );
     });
   });
 

@@ -7,11 +7,16 @@ import { ENTITY_NAME } from '@/store/constants';
 import storeManager from '@/store';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { TDelta } from './types';
+import { TDelta, ISortableModel } from './types';
 import { ListStore } from './ListStore';
 import { DEFAULT_PAGE_SIZE } from './constant';
 
-export type DeltaDataHandler = (delta: TDelta) => any;
+export type DeltaDataHandler = <
+  SortableModel extends ISortableModel = ISortableModel
+>(
+  delta: TDelta<SortableModel>,
+) => any;
+
 export interface IFetchDataListHandlerOptions {
   pageSize?: number;
   hasMoreUp?: boolean;

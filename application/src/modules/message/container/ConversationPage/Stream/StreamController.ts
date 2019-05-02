@@ -3,8 +3,8 @@ import { OrdinaryPostWrapper } from './StreamItemAssemblyLine/Assembler/Ordinary
 import { SingletonTagChecker } from './StreamItemAssemblyLine/Assembler/CalcItems';
 import { DateSeparator } from './StreamItemAssemblyLine/Assembler/DateSeparator';
 import { StreamItemAssemblyLine } from './StreamItemAssemblyLine/StreamItemAssemblyLine';
-import { StreamItem, TDeltaWithData, StreamItemType } from './types';
-import { FetchSortableDataListHandler } from '@/store/base/fetch';
+import { StreamItem, StreamItemType, IStreamItemSortableModel } from './types';
+import { FetchSortableDataListHandler, TDelta } from '@/store/base/fetch';
 import { NewMessageSeparatorHandler } from './StreamItemAssemblyLine/Assembler/NewMessageSeparator';
 import { Post } from 'sdk/module/post/entity';
 import _ from 'lodash';
@@ -16,7 +16,6 @@ import { GroupState } from 'sdk/module/state/entity';
 import GroupStateModel from '@/store/models/GroupState';
 import { HistoryHandler } from './HistoryHandler';
 import { PostService } from 'sdk/module/post';
-import { ISortableModel } from '@/store/base';
 import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPostFocBuilder';
 import preFetchConversationDataHandler from '@/store/handler/PreFetchConversationDataHandler';
 import conversationPostCacheController from '@/store/handler/cache/ConversationPostCacheController';
@@ -25,15 +24,21 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 const BEFORE_ANCHOR_POSTS_COUNT = 20;
 const LOAD_UNREAD_POSTS_REDUNDANCY = 500;
 
-const transformFunc = <T extends { id: number }>(dataModel: T) => ({
-  id: dataModel.id,
-  sortValue: dataModel.id,
-  data: dataModel,
+const transformFunc = (streamItem: StreamItem): IStreamItemSortableModel => ({
+  id: streamItem.id,
+  sortValue: streamItem.id,
+  data: streamItem,
 });
 
 class StreamController {
-  private _orderListHandler: FetchSortableDataListHandler<Post>;
-  private _streamListHandler: FetchSortableDataListHandler<StreamItem>;
+  private _orderListHandler: FetchSortableDataListHandler<
+    Post,
+    IStreamItemSortableModel
+  >;
+  private _streamListHandler: FetchSortableDataListHandler<
+    StreamItem,
+    IStreamItemSortableModel
+  >;
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
   private _assemblyLine: StreamItemAssemblyLine;
 
@@ -65,7 +70,10 @@ class StreamController {
     private _historyHandler: HistoryHandler,
     private _jumpToPostId?: number,
   ) {
-    let listHandler;
+    let listHandler: FetchSortableDataListHandler<
+      Post,
+      IStreamItemSortableModel
+    >;
     if (this._jumpToPostId) {
       listHandler = ConversationPostFocBuilder.buildConversationPostFoc(
         this._groupId,
@@ -137,17 +145,13 @@ class StreamController {
   }
 
   @action
-  handlePostsChanged = (delta: TDeltaWithData) => {
-    const items = _(this._streamListHandler.listStore.items)
-      .map('data')
-      .compact()
-      .value();
+  handlePostsChanged = (delta: TDelta<IStreamItemSortableModel>) => {
     const { streamItems } = this._assemblyLine.process(
       delta,
-      this._orderListHandler.listStore.items,
       this.hasMore(QUERY_DIRECTION.OLDER),
-      items,
       this._readThrough,
+      this._streamListHandler.listStore.items,
+      this._orderListHandler.listStore.items,
     );
     if (streamItems) {
       this._streamListHandler.replaceAll(streamItems);
@@ -184,7 +188,7 @@ class StreamController {
     const pageSize = this.historyUnreadCount + LOAD_UNREAD_POSTS_REDUNDANCY;
     const readThrough = this.historyReadThrough || 0;
 
-    let sortableModel: ISortableModel<Post> | undefined = undefined;
+    let sortableModel: IStreamItemSortableModel | undefined = undefined;
     if (readThrough !== 0) {
       const postService = ServiceLoader.getInstance<PostService>(
         ServiceConfig.POST_SERVICE,

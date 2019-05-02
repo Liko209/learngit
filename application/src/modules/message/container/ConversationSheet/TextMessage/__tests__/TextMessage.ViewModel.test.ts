@@ -143,27 +143,4 @@ describe('TextMessageViewModel', () => {
       expect(vm.getPerson).toHaveBeenCalledTimes(0);
     });
   });
-
-  describe('highlight', () => {
-    it('should return html with highlighted matched text if provided highlight terms', () => {
-      const text = 'abcdefgsda';
-      mockPostData.text = text;
-      mockPostData.atMentionNonItemIds = [];
-
-      vm.props.terms = [];
-      expect(vm.html).toBe(text);
-
-      FormatToHtml.formatToHtml.clear();
-      vm.props.terms = ['a'];
-      expect(vm.html).toBe(
-        '<span class="highlight-term">a</span>bcdefgsd<span class="highlight-term">a</span>',
-      );
-
-      FormatToHtml.formatToHtml.clear();
-      vm.props.terms = ['a', 'b'];
-      expect(vm.html).toBe(
-        '<span class="highlight-term">a</span><span class="highlight-term">b</span>cdefgsd<span class="highlight-term">a</span>',
-      );
-    });
-  });
 });

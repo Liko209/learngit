@@ -31,6 +31,7 @@ type ContentSearchResultViewProps = {
   isEmpty: boolean;
   searchState: ContentSearchState;
   searchOptions: ContentSearchOptions;
+  searchTerms: string[];
   setSearchOptions(searchOptions: ContentSearchOptions): void;
   onPostsFetch(): Promise<ContentSearchResult>;
   onSearchEnd(): Promise<void>;

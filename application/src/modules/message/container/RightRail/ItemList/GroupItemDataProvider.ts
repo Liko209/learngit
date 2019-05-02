@@ -17,14 +17,12 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
     private _desc: boolean,
     private _filterFunc: ((value: any, index?: number) => boolean) | undefined,
   ) {}
+
   async fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor?: ISortableModel<Item>,
-  ): Promise<{
-    data: Item[];
-    hasMore: boolean;
-  }> {
+    anchor?: ISortableModel,
+  ): Promise<{ data: Item[]; hasMore: boolean }> {
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
     );
@@ -37,6 +35,7 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
       offsetItemId: anchor && anchor.id,
       filterFunc: this._filterFunc,
     });
+
     return { data: result, hasMore: result.length === pageSize };
   }
 }
