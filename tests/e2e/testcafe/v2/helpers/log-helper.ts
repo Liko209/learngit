@@ -1,10 +1,12 @@
 import 'testcafe';
+import 'chalk';
 import { v4 as uuid } from 'uuid';
 import * as path from 'path';
 import { IStep, Status, IStepOptions } from '../models';
 import { getLogger } from 'log4js';
 import { H } from './utils';
 import { MiscUtils } from '../utils';
+import chalk from 'chalk';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -71,7 +73,7 @@ class Step implements IStep {
     }
     // post-execute
     // log to stdout
-    console.log(`${new Date(this.startTime).toLocaleString()} [${this.status}] ${this.text} (${this.endTime - this.startTime}ms)`);
+    console.log(`${new Date(this.startTime).toLocaleString()} [${this.status}] ${this.text}`+ chalk.cyan(this.options.screenshotPath?" "+this.options.screenshotPath:"") +`(${this.endTime - this.startTime}ms)`);
     // take screenshot
     if (!this.error && (this.options.takeScreenshot || this.options.screenshotPath))
       this.screenshotPath = await this.takeScreenShot(this.options.screenshotPath);
