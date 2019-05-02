@@ -1,5 +1,7 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "tsBuildInfoFile": "./.tsc_cache/cache_path",
     "outDir": "build/lib",
     "module": "commonjs",
     "target": "es5",
