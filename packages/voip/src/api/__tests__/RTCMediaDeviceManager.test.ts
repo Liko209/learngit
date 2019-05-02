@@ -5,7 +5,6 @@
  */
 
 import { RTCMediaDeviceManager } from '../RTCMediaDeviceManager';
-import { RTC_MEDIA_ACTION } from '../types';
 
 describe('Media device', () => {
   const devices1: MediaDeviceInfo[] = [

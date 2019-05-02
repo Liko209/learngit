@@ -687,6 +687,7 @@ describe('sip call session', () => {
 
   describe('set default audio input/output device', () => {
     function initDefaultAudioDevice(flag: boolean) {
+      RTCMediaDeviceManager.instance().destroy();
       let deviceInfos: MediaDeviceInfo[];
       if (flag) {
         deviceInfos = [
