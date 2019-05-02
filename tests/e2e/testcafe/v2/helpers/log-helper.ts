@@ -1,5 +1,4 @@
 import 'testcafe';
-import 'chalk';
 import { v4 as uuid } from 'uuid';
 import * as path from 'path';
 import { IStep, Status, IStepOptions } from '../models';
