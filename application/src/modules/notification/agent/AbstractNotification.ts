@@ -17,7 +17,7 @@ export abstract class AbstractNotification<T> {
     this._store = new NotificationStore();
   }
 
-  private _handlePriority(
+  protected handlePriority(
     notifications: Notification[],
     opts: NotificationOpts,
   ) {
@@ -46,10 +46,10 @@ export abstract class AbstractNotification<T> {
     const isValid = await this.checkNotificationValid(opts.data.id);
     this._logger.log(`check notification for ${opts.tag} is valid`, isValid);
     if (isValid) {
-      this._handlePriority(await this.getNotifications(), opts);
+      this.handlePriority(await this.getNotifications(), opts);
       this._logger.log(`creating notification for ${opts.tag}`);
-      const notification = await this.showNotification(title, opts);
-      this._store.add(opts.data.scope, opts.data.id, notification);
+      const result = await this.showNotification(title, opts);
+      this._store.add(opts.data.scope, opts.data.id, result);
     }
   }
 
