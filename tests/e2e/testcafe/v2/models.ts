@@ -93,4 +93,5 @@ export interface INotification {
   id: any;
   title: string;
   body: string;
+  icon: string;
 }

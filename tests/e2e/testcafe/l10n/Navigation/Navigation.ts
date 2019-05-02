@@ -4,8 +4,8 @@ import { formalName } from "../../libs/filter";
 import { h } from '../../v2/helpers';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 
-fixture('Navigation').beforeEach(setupCase(BrandTire.RCOFFICE)).afterEach(teardownCase())
-test(formalName('Check menu tip',['P0','Navigation','Sean']),async(t)=>{
+fixture('Navigation/Navigation').beforeEach(setupCase(BrandTire.RCOFFICE)).afterEach(teardownCase())
+test(formalName('Check menu tip',['P0','Navigation','V1.4','Sean']),async(t)=>{
   const loginUser=h(t).rcData.mainCompany.users[0];
   const app=new AppRoot(t);
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`,async()=>{
@@ -19,5 +19,5 @@ test(formalName('Check menu tip',['P0','Navigation','Sean']),async(t)=>{
   await h(t).withLog('And I hover menu button',async()=>{
     await t.hover(leftPanelEntry.toggleButton);
   })
-  await h(t).log('Then I capture screenshot Jupiter_Navigation',{screenshotPath:'Jupiter_Navigation'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_Navigation'})
 })

@@ -3,42 +3,23 @@
  * @Date: 2019-01-03 13:54:21
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  buildRequestController,
-  buildEntityPersistentController,
-  buildEntitySourceController,
-  buildPartialModifyController,
-} from '../../../../../framework/controller';
+import { buildPartialModifyController } from '../../../../../framework/controller';
 import { FileUploadController } from '../controller/FileUploadController';
-import { Api } from '../../../../../api';
 import { daoManager } from '../../../../../dao';
 import { ItemDao } from '../../../dao';
 import { Item, ItemFile } from '../../../entity';
 import { FileActionController } from './FileActionController';
+import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 class FileItemController {
   private _fileActionController: FileActionController;
   private _fileUploadController: FileUploadController;
 
-  constructor() {}
+  constructor(private _entitySourceController: IEntitySourceController<Item>) {}
 
   get fileActionController() {
     if (!this._fileActionController) {
-      const itemRequestController = buildRequestController<Item>({
-        basePath: '/file',
-        networkClient: Api.glipNetworkClient,
-      });
-
-      const persistentController = buildEntityPersistentController<Item>(
-        daoManager.getDao(ItemDao),
-      );
-
-      const entitySourceController = buildEntitySourceController<Item>(
-        persistentController,
-        itemRequestController,
-      );
-
       this._fileActionController = new FileActionController(
-        entitySourceController,
+        this._entitySourceController,
       );
     }
     return this._fileActionController;
@@ -46,28 +27,13 @@ class FileItemController {
 
   get fileUploadController() {
     if (!this._fileUploadController) {
-      const itemRequestController = buildRequestController<Item>({
-        basePath: '/file',
-        networkClient: Api.glipNetworkClient,
-      });
-
-      const persistentController = buildEntityPersistentController<Item>(
-        daoManager.getDao(ItemDao),
-      );
-
-      const entitySourceController = buildEntitySourceController<Item>(
-        persistentController,
-        itemRequestController,
-      );
-
       const partialModifyController = buildPartialModifyController<Item>(
-        entitySourceController,
+        this._entitySourceController,
       );
 
       this._fileUploadController = new FileUploadController(
         partialModifyController,
-        itemRequestController,
-        entitySourceController,
+        this._entitySourceController,
       );
     }
 
@@ -82,8 +48,8 @@ class FileItemController {
     const files = await dao.getExistGroupFilesByName(groupId, fileName, true);
     return files.length > 0
       ? files.some((x: ItemFile) => {
-        return x.post_ids.length > 0;
-      })
+          return x.post_ids.length > 0;
+        })
       : false;
   }
 }

@@ -3,8 +3,8 @@
  * @Date: 2018-11-13 18:05:16
  * Copyright © RingCentral. All rights reserved.
  */
-import { TDelta, ISortableModel } from '../../../../../store/base/fetch/types';
-import PostModel from '../../../../../store/models/Post';
+import { ISortableModelWithData } from '@/store/base/fetch/types';
+import PostModel from '@/store/models/Post';
 import { STATUS } from '../types';
 
 enum SeparatorType {
@@ -90,10 +90,10 @@ type StreamSnapshot = {
   atTop: boolean;
 };
 
-type TDeltaWithData = TDelta & {
-  added: (ISortableModel & { data: any })[];
-};
-type ISortableModelWithData = ISortableModel & { data: any };
+type IStreamItemSortableModelData = StreamItem;
+
+interface IStreamItemSortableModel
+  extends ISortableModelWithData<IStreamItemSortableModelData> {}
 
 export {
   STATUS,
@@ -107,6 +107,6 @@ export {
   Separator,
   DateSeparator,
   NewSeparator,
-  TDeltaWithData,
-  ISortableModelWithData,
+  IStreamItemSortableModelData,
+  IStreamItemSortableModel,
 };

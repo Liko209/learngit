@@ -123,6 +123,12 @@ class Helper {
     await this.notificationHelper.withNotification(before, callback, timeout);
   }
 
+  /**
+   *
+   * @param notification
+   * @param action  'click', 'answer', 'close'.
+   * @param timeout
+   */
   async clickNotification(notification: INotification, action: string = 'click', timeout: number = 60e3): Promise<void> {
     return await this.notificationHelper.clickNotification(notification, action, timeout);
   }

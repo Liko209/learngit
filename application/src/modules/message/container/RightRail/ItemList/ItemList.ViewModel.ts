@@ -2,7 +2,7 @@ import { observable, action, computed } from 'mobx';
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
-  ISortableModel,
+  ISortableModelWithData,
 } from '@/store/base/fetch';
 import { ENTITY_NAME } from '@/store/constants';
 import { QUERY_DIRECTION } from 'sdk/dao';
@@ -34,7 +34,7 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   async fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor?: ISortableModel<Item>,
+    anchor?: ISortableModelWithData<Item>,
   ): Promise<{ data: Item[]; hasMore: boolean }> {
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
@@ -154,12 +154,12 @@ class ItemListViewModel extends StoreViewModel<Props> {
         data,
         id: model.id,
         sortValue: model.id,
-      } as ISortableModel<Item>;
+      } as ISortableModelWithData<Item>;
     };
 
     const sortFunc = (
-      lhs: ISortableModel<Item>,
-      rhs: ISortableModel<Item>,
+      lhs: ISortableModelWithData<Item>,
+      rhs: ISortableModelWithData<Item>,
     ): number => {
       return SortUtils.sortModelByKey(
         lhs.data as Item,
