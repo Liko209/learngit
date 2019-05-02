@@ -131,6 +131,20 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   @action
+  insertEmoji = (emoji: any) => {
+    const query = '.conversation-page>div>div>.quill>.ql-container';
+    const quill = (document.querySelector(query) as any).__quill;
+    quill.focus();
+    const index = quill.getSelection().index;
+
+    quill.insertText(index, emoji.colons);
+    setTimeout(() => {
+      quill.focus();
+      quill.setSelection(index + emoji.colons.length, 0);
+    },         0);
+  }
+
+  @action
   contentChange = (draft: string) => {
     this.error = '';
     this.draft = draft;

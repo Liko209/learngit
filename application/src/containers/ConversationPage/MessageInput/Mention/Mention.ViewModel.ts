@@ -167,6 +167,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
       // @ts-ignore
       const quill: Quill = this.quill;
       const mentionModules = quill.getModule('mention');
+      console.log('nye ,mentionModules _____>', mentionModules);
       mentionModules.select(
         vm.members[vm.currentIndex - vm.initIndex].id,
         vm.members[vm.currentIndex - vm.initIndex].displayName,
