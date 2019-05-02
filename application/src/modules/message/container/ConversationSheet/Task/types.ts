@@ -26,6 +26,7 @@ type ViewProps = {
   files: ExtendFileItem[];
   startTime: PromisedComputedValue<string>;
   endTime: PromisedComputedValue<string>;
+  timeText: PromisedComputedValue<string>;
   hasTime: boolean;
   color?: [keyof Palette, string];
   groupId: number;

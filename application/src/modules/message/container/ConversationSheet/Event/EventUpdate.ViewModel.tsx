@@ -13,11 +13,19 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { EventUpdateViewProps, EventUpdateProps } from './types';
 import EventItemModel from '@/store/models/EventItem';
-import { getDurationTimeText } from '../helper';
+import { getDurationTimeText, getDurationTime } from '../helper';
 import { accentColor } from '@/common/AccentColor';
 
 class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
   implements EventUpdateViewProps {
+  private _getDurationTime = async (value: any) => {
+    const { start, end } = this.event;
+    return await getDurationTime(
+      !value.start ? start : value.start,
+      !value.end ? end : value.end,
+    );
+  }
+
   @computed
   get _id() {
     return this.props.ids[0];
@@ -66,6 +74,16 @@ class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
       ''
     );
   }
+
+  oldTime = promisedComputed('', async () => {
+    const { old_values } = this.activityData;
+    return await this._getDurationTime(old_values);
+  });
+
+  newTime = promisedComputed('', async () => {
+    const { new_values } = this.activityData;
+    return await this._getDurationTime(new_values);
+  });
 
   oldTimeText = promisedComputed('', async () => {
     const { old_values } = this.activityData;

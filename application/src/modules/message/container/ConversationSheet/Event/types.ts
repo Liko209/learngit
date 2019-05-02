@@ -20,6 +20,7 @@ type EventUpdateProps = {
 } & EventProps;
 
 type EventViewProps = {
+  timeContent: PromisedComputedValue<string>;
   event: EventItemModel;
   color?: [keyof Palette, string];
 };
@@ -27,6 +28,8 @@ type EventViewProps = {
 type EventUpdateViewProps = {
   activityData: ActivityData;
   event: EventItemModel;
+  oldTime: PromisedComputedValue<string>;
+  newTime: PromisedComputedValue<string>;
   oldTimeText: PromisedComputedValue<string>;
   newTimeText: PromisedComputedValue<string>;
   color?: [keyof Palette, string];

@@ -14,7 +14,7 @@ import FileItemModel from '@/store/models/FileItem';
 import { recentlyTwoDayAndOther } from '@/utils/date';
 import { Item } from 'sdk/module/item/entity';
 import { getFileType } from '@/common/getFileType';
-import { getDateAndTime } from '../helper';
+import { getDateAndTime, getDurationTimeText } from '../helper';
 import { accentColor } from '@/common/AccentColor';
 import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
@@ -114,6 +114,22 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
   endTime = promisedComputed('', async () => {
     const endTime = this.task.due;
     return endTime ? await getDateAndTime(endTime) : '';
+  });
+
+  timeText = promisedComputed('', async () => {
+    const {
+      repeat,
+      repeatEndingAfter,
+      repeatEnding,
+      repeatEndingOn,
+    } = this.task;
+
+    return await getDurationTimeText(
+      repeat,
+      repeatEndingAfter,
+      repeatEndingOn,
+      repeatEnding,
+    );
   });
 
   @computed

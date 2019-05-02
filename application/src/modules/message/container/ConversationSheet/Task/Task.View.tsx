@@ -22,7 +22,6 @@ import {
 import { showImageViewer } from '@/containers/Viewer';
 
 import { AvatarName } from './AvatarName';
-import { getDurationTimeText } from '../helper';
 import { ViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
 import { Download } from '@/containers/common/Download';
@@ -151,21 +150,12 @@ class Task extends React.Component<taskViewProps> {
       notes,
       section,
       effectiveIds,
+      timeText,
     } = this.props;
     const {
       text,
       complete,
-      repeat,
-      repeatEndingAfter,
-      repeatEnding,
-      repeatEndingOn,
     } = task;
-    const timeText = getDurationTimeText(
-      repeat,
-      repeatEndingAfter,
-      repeatEndingOn,
-      repeatEnding,
-    );
 
     return (
       <JuiConversationItemCard
@@ -175,10 +165,10 @@ class Task extends React.Component<taskViewProps> {
         Icon={
           <JuiTaskCheckbox customColor={color} checked={complete || false} />}
       >
-        {endTime && (
+        {endTime.get() && (
           <JuiLabelWithContent label={t('item.due')}>
             <JuiTimeMessage
-              time={`${startTime.get()} ${hasTime ? '-' : ''} ${endTime.get()} ${timeText}`}
+              time={`${startTime.get()} ${hasTime ? '-' : ''} ${endTime.get()} ${timeText.get()}`}
             />
           </JuiLabelWithContent>
         )}
