@@ -78,7 +78,9 @@ class PostFetchController {
       );
       mainLogger.info(
         LOG_FETCH_POST,
-        `getPostsByGroupId() groupId: ${groupId} shouldSaveToDb:${shouldSaveToDb} shouldFetch:${shouldFetch}`,
+        `getPostsByGroupId() groupId: ${groupId} shouldSaveToDb:${shouldSaveToDb} shouldFetch:${shouldFetch} localSize:${
+          result.posts.length
+        }`,
       );
       if (!shouldSaveToDb || shouldFetch) {
         const validAnchorPostId = this._findValidAnchorPostId(

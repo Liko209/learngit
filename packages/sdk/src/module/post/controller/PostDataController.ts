@@ -376,9 +376,10 @@ class PostDataController {
               deletePostIds.concat(deletePosts.map((post: Post) => post.id));
             }
           }
+          const postIds = posts && posts.map(post => post._id);
           mainLogger.info(
             LOG_INDEX_DATA_POST,
-            `removeDiscontinuousPosts() remove groupId: ${groupId}, deletePostIds: ${deletePostIds}`,
+            `removeDiscontinuousPosts() remove groupId: ${groupId}, deletePostIds: ${deletePostIds}, postIds:${postIds}`,
           );
         }
       }),
