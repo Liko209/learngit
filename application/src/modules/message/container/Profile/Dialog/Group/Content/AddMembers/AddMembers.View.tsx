@@ -19,7 +19,6 @@ class AddMembers extends React.Component<ViewProps> {
   handleClose = () => portalManager.dismissLast();
 
   @catchError.flash({
-    isNeedReturn: true,
     network: 'people.prompt.AddTeamMembersNetworkError',
     server: 'people.prompt.AddTeamMembersBackendError',
   })

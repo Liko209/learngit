@@ -23,7 +23,6 @@ type NotifyErrorProps = {
   server?: ErrorActionConfig;
   notificationOpts?: ShowNotificationOptions;
   isDebounce?: boolean;
-  isNeedReturn?: boolean;
 };
 
 type StrategyProps = {
@@ -114,25 +113,19 @@ function handleError(
     server,
     notificationOpts = defaultOptions,
     isDebounce,
-    isNeedReturn,
   } = options;
   const notifyFunc = isDebounce
     ? getDebounceNotify(network || server || '')
     : notify;
   if (network && errorHelper.isNetworkConnectionError(error)) {
     notifyFunc(ctx, notificationType, network, notificationOpts, error);
-    return false;
   }
 
   if (server && errorHelper.isBackEndError(error)) {
     notifyFunc(ctx, notificationType, server, notificationOpts, error);
-    return false;
   }
 
   generalErrorHandler(error);
-  if (isNeedReturn) {
-    return false;
-  }
   throw error;
 }
 

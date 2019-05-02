@@ -110,7 +110,6 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   }
 
   @catchError.flash({
-    isNeedReturn: true,
     network: 'people.prompt.deleteTeamNetworkErrorContent',
     server: 'people.prompt.deleteTeamServerErrorContent',
   })
@@ -125,7 +124,6 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   }
 
   @catchError.flash({
-    isNeedReturn: true,
     network: 'people.prompt.archiveTeamNetworkErrorContent',
     server: 'people.prompt.archiveTeamServerErrorContent',
   })
