@@ -1,3 +1,8 @@
+/*
+ * @Author: Conner (conner.kang@ringcentral.com)
+ * @Date: 2019-05-02 15:14:02
+ * Copyright © RingCentral. All rights reserved.
+ */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text, boolean } from '@storybook/addon-knobs';
@@ -15,7 +20,7 @@ const getLongDescriptionKnob = () =>
 const isDisabled = () => boolean('disabled', false);
 
 const getContentKnob = () => text('content', 'Setting Items Here');
-storiesOf('Pattern', module)
+storiesOf('Pattern/Setting', module)
   .addDecorator(withInfoDecorator(JuiSettingSectionItem, { inline: true }))
   .add('SettingSectionItem', () => {
     return (

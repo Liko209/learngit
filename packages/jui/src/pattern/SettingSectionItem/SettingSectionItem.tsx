@@ -1,13 +1,12 @@
+/*
+ * @Author: Conner (conner.kang@ringcentral.com)
+ * @Date: 2019-05-02 15:14:02
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
 import styled from '../../foundation/styled-components';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';
-import {
-  spacing,
-  ellipsis,
-  grey,
-  palette,
-  lineClamp,
-} from '../../foundation/utils';
+import { spacing, ellipsis, grey, lineClamp } from '../../foundation/utils';
 import { JuiDivider, JuiDividerProps } from '../../components/Divider/Divider';
 
 type JuiSettingSectionItemProps = {
@@ -20,8 +19,7 @@ const SettingSectionItemContentWrap = styled.div`
   && {
     width: 100%;
     display: flex;
-    padding: ${spacing(4)};
-    background-color: ${palette('common', 'white')};
+    padding: ${spacing(0, 0, 4, 0)};
   }
 `;
 
@@ -75,14 +73,23 @@ const RightWrap = styled.div`
 
 const DividerWrap = styled<JuiDividerProps>(JuiDivider)`
   && {
-    margin: ${spacing(0, 4)};
     margin-top: -${spacing(0.25)};
   }
 `;
 
 const SettingSectionItemWrap = styled.div`
-  &:last-child ${DividerWrap} {
-    height: 0;
+  && {
+    margin-bottom: ${spacing(4)};
+  }
+  &:last-child {
+    margin-bottom: 0;
+    ${SettingSectionItemContentWrap} {
+      padding-bottom: 0;
+    }
+    ${DividerWrap} {
+      height: 0;
+      display: none;
+    }
   }
 `;
 
