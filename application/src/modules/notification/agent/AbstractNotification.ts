@@ -20,7 +20,7 @@ export abstract class AbstractNotification<T> {
       const lowPriorityNotifications = notifications.filter(item => {
         if (item.data) {
           const { priority: itemPriority } = item.data;
-          return itemPriority ? itemPriority > priority : true;
+          return itemPriority && itemPriority > priority;
         }
         return false;
       });

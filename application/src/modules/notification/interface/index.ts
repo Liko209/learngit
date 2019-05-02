@@ -22,7 +22,7 @@ export type NotificationAction = {
 };
 
 export type NotificationOpts = Omit<NotificationOptions, 'actions'> & {
-  data: { id: NotificationId; scope: string };
+  data: { id: NotificationId; scope: string; priority: NOTIFICATION_PRIORITY };
   actions?: NotificationAction[];
   onClick?: NotificationActionHandler;
 };
