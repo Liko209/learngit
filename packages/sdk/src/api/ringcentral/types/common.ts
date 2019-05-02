@@ -174,6 +174,11 @@ type RCAPIVersion = {
   serverRevision: string;
 };
 
+type RCAuthCodeInfo = {
+  uri: string;
+  code: string;
+};
+
 interface ITokenModel extends Token {
   access_token: string;
   endpoint_id: string;
@@ -197,4 +202,5 @@ export {
   IExtensionPhoneNumberList,
   RCAPIVersion,
   ITokenModel,
+  RCAuthCodeInfo,
 };

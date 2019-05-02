@@ -8,11 +8,10 @@ import { SERVICE } from '../../../service/eventKey';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { RCInfoController } from '../controller/RCInfoController';
-import { ERCServiceFeaturePermission } from '../types';
+import { ERCServiceFeaturePermission, ERCWebSettingUri } from '../types';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { AccountUserConfig } from '../../../module/account/config';
 import { mainLogger } from 'foundation';
-
 class RCInfoService extends EntityBaseService {
   private _rcInfoController: RCInfoController;
 
@@ -111,6 +110,12 @@ class RCInfoService extends EntityBaseService {
     return this.getRCInfoController()
       .getRCPermissionController()
       .isRCFeaturePermissionEnabled(featurePermission);
+  }
+
+  async generateWebSettingUri(type: ERCWebSettingUri) {
+    return this.getRCInfoController()
+      .getRcWebSettingInfoController()
+      .generateRCAuthCodeUri(type);
   }
 }
 
