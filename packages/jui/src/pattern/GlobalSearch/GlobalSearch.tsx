@@ -9,13 +9,15 @@ import { spacing, radius, width, height } from '../../foundation/utils/styles';
 import styled from '../../foundation/styled-components';
 
 const StyledGlobalSearch = styled(JuiDialog)`
+  height: calc(100% - 16px);
   && {
     .paper {
-      margin: 0;
+      margin: 0 auto 0 auto;
       border-radius: ${radius('xl')};
       max-width: ${width(200)};
       max-height: calc(100% - ${height(14)});
-      min-height: ${height(100)};
+      /* should be <min-height in user story> - <margin>, which is (400 - 8 * 2) / 4 */
+      min-height: ${height(96)};
       overflow: hidden;
     }
   }
@@ -36,7 +38,7 @@ const JuiGlobalSearch = (props: JuiGlobalSearchProps) => {
   return (
     <StyledGlobalSearch
       classes={{ container: 'container' }}
-      scroll="paper"
+      scroll="body"
       open={open}
       onClose={onClose}
       disablePortal={true}
