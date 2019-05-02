@@ -9,10 +9,11 @@ import { spacing, radius, width, height } from '../../foundation/utils/styles';
 import styled from '../../foundation/styled-components';
 
 const StyledGlobalSearch = styled(JuiDialog)`
+  /* <height> - <margin> */
   height: calc(100% - 16px);
   && {
     .paper {
-      margin: 0 auto 0 auto;
+      margin: 0 auto;
       border-radius: ${radius('xl')};
       max-width: ${width(200)};
       max-height: calc(100% - ${height(14)});
