@@ -229,6 +229,9 @@ class TelephonyService {
     }
 
     this._telephonyStore.phoneNumber = toNumber;
+    this._telephonyStore.contact = await this.matchContactByPhoneNumber(
+      this._telephonyStore.phoneNumber,
+    );
   }
 
   directCall = (toNumber: string) => {

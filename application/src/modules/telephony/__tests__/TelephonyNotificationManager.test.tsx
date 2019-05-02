@@ -9,9 +9,18 @@ import * as i18nT from '@/utils/i18nT';
 import * as telephony from '@/modules/telephony/module.config';
 import * as notification from '@/modules/notification/module.config';
 import { TelephonyStore } from '../store';
+import { getEntity } from '@/store/utils';
+jest.mock('@/store/utils');
+
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 jupiter.registerModule(notification.config);
+
+beforeAll(() => {
+  (getEntity as jest.Mock).mockReturnValue({
+    userDisplayName: 'alex',
+  });
+});
 
 describe('TelephonyNotificationManager', () => {
   const telephonyNotificationManager = jupiter.get(
@@ -36,6 +45,7 @@ describe('TelephonyNotificationManager', () => {
       callId: '1',
       phoneNumber: '123',
       callerName: 'alex',
+      contact: {},
     });
   });
 
@@ -59,9 +69,9 @@ describe('TelephonyNotificationManager', () => {
       );
     });
 
-    it('should call show() with body contains "Unknown Caller" when the call is from an unrecognized caller [JPT-1489]', async () => {
+    it('should call show() with body contains "Unknown Caller" when the call is from an unrecognized caller which does not have a  match in contacts [JPT-1489]', async () => {
       jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
-      telephonyStore.callerName = '';
+      telephonyStore.contact = null;
       await telephonyNotificationManager._showNotification();
 
       expect(telephonyNotificationManager.show).toHaveBeenCalledWith(
@@ -73,25 +83,6 @@ describe('TelephonyNotificationManager', () => {
             scope: 'telephony',
           },
           body: 'Unknown Caller 123',
-          icon: '/icon/incomingCall.png',
-        }),
-      );
-    });
-
-    it('should call show() with body contains "Unknown Caller" when the phone number is empty [JPT-1489]', async () => {
-      jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
-      telephonyStore.phoneNumber = '';
-      await telephonyNotificationManager._showNotification();
-
-      expect(telephonyNotificationManager.show).toHaveBeenCalledWith(
-        title,
-        expect.objectContaining({
-          tag: '1',
-          data: {
-            id: '1',
-            scope: 'telephony',
-          },
-          body: 'Unknown Caller ',
           icon: '/icon/incomingCall.png',
         }),
       );
