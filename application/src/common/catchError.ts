@@ -119,10 +119,12 @@ function handleError(
     : notify;
   if (network && errorHelper.isNetworkConnectionError(error)) {
     notifyFunc(ctx, notificationType, network, notificationOpts, error);
+    return false;
   }
 
   if (server && errorHelper.isBackEndError(error)) {
     notifyFunc(ctx, notificationType, server, notificationOpts, error);
+    return false;
   }
 
   generalErrorHandler(error);
