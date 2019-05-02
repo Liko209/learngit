@@ -25,7 +25,7 @@ describe('AvatarActionsVM', () => {
   });
 
   describe('handleSignOut()', () => {
-    it('should call AccountService logout() [JPT-70]', async () => {
+    it('should call AccountService logout() [JPT-70]', async (done: jest.DoneCallback) => {
       const accountService = {
         logout: jest.fn(),
       };
@@ -33,6 +33,7 @@ describe('AvatarActionsVM', () => {
 
       await ViewModel.handleSignOut();
       expect(accountService.logout).toHaveBeenCalled();
+      done();
     });
   });
 });
