@@ -12,12 +12,21 @@ import { FileItemDao } from '../dao/FileItemDao';
 import { SanitizedFileItem, FileItem } from '../entity';
 import { BaseSubItemService } from '../../base/service/BaseSubItemService';
 import { GlipTypeUtil, TypeDictionary } from '../../../../../utils';
+import { ItemDao } from 'sdk/module/item/dao';
+import Api from 'sdk/api/api';
 
 class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
   private _fileItemController: FileItemController;
 
   constructor() {
-    super(daoManager.getDao<FileItemDao>(FileItemDao));
+    super(
+      daoManager.getDao<FileItemDao>(FileItemDao),
+      daoManager.getDao(ItemDao),
+      {
+        basePath: '/file',
+        networkClient: Api.glipNetworkClient,
+      },
+    );
     this.setCheckTypeFunc((id: number) => {
       return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_FILE);
     });
@@ -25,7 +34,7 @@ class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
 
   protected get fileItemController() {
     if (!this._fileItemController) {
-      this._fileItemController = new FileItemController();
+      this._fileItemController = new FileItemController(this.getEntitySource());
     }
     return this._fileItemController;
   }

@@ -30,11 +30,13 @@ export function buildPartialModifyController<T extends IdModel = IdModel>(
 export function buildEntitySourceController<T extends IdModel = IdModel>(
   entityPersistentController: IEntityPersistentController<T>,
   requestController?: IRequestController<T>,
+  canSaveRemoteData?: boolean,
 ) {
   return new EntitySourceController<T>(
     entityPersistentController,
     daoManager.getDao(DeactivatedDao),
     requestController,
+    canSaveRemoteData,
   );
 }
 

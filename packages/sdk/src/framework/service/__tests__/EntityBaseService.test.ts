@@ -11,6 +11,7 @@ import { TestDatabase, TestEntity } from '../../controller/__tests__/TestTypes';
 import NetworkClient from '../../../api/NetworkClient';
 import { JNetworkError, ERROR_CODES_NETWORK } from '../../../error';
 import { EntityNotificationController } from '../../controller/impl/EntityNotificationController';
+import { buildEntitySourceController } from 'sdk/framework/controller';
 
 jest.mock('../../../api/NetworkClient');
 jest.mock('../../../dao');
@@ -42,6 +43,22 @@ describe('EntityBaseService', () => {
 
   beforeEach(() => {
     clearMocks();
+  });
+
+  describe('canSaveRemoteEntity()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+    it('should return true', () => {
+      const result = service['canSaveRemoteEntity']();
+      expect(result).toBeTruthy();
+    });
+
+    it('should return true when init entity source controller', () => {
+      service = new EntityBaseService<TestEntity>(false, dao, networkConfig);
+      expect(service.getEntitySource()['canSaveRemoteData']).toBeTruthy();
+    });
   });
 
   describe('getById()', () => {

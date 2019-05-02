@@ -17,6 +17,7 @@ class EntitySourceController<T extends IdModel = IdModel>
     public entityPersistentController: IEntityPersistentController<T>,
     public deactivatedDao: IDao<T>,
     public requestController?: IRequestController<T>,
+    public canSaveRemoteData?: boolean,
   ) {}
 
   async put(item: T | T[]): Promise<void> {
@@ -48,9 +49,9 @@ class EntitySourceController<T extends IdModel = IdModel>
   }
 
   async get(key: number): Promise<T | null> {
-    const result = await this.getEntityLocally(key);
+    let result = await this.getEntityLocally(key);
     if (!result && this.requestController) {
-      return await this.requestController.get(key);
+      result = await this._getEntityFromServer(key);
     }
     return result;
   }
@@ -80,10 +81,9 @@ class EntitySourceController<T extends IdModel = IdModel>
     const remoteIds = _.difference(diffIds, deactivatedIds);
 
     if (remoteIds && remoteIds.length) {
-      const remoteEntities = await this._getEntitiesRemoteServer(remoteIds);
+      const remoteEntities = await this._getEntitiesFromServer(remoteIds);
       if (remoteEntities && remoteEntities.length) {
         resultEntities = resultEntities.concat(remoteEntities);
-        await this.entityPersistentController.bulkPut(remoteEntities);
       }
     }
 
@@ -117,12 +117,20 @@ class EntitySourceController<T extends IdModel = IdModel>
     return orderedEntities;
   }
 
-  private async _getEntitiesRemoteServer(remoteIds: number[]): Promise<T[]> {
+  private async _getEntityFromServer(key: number) {
+    const result = await this.requestController!.get(key);
+    if (this.canSaveRemoteData && result) {
+      await this.put(result);
+    }
+    return result;
+  }
+
+  private async _getEntitiesFromServer(remoteIds: number[]): Promise<T[]> {
     // TODO https://jira.ringcentral.com/browse/FIJI-3903
     const promises = remoteIds.map(async (id: number) => {
       if (this.requestController) {
         try {
-          return this.requestController.get(id);
+          return this._getEntityFromServer(id);
         } catch {
           return null;
         }
