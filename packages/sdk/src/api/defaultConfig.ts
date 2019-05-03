@@ -4,7 +4,6 @@ const defaultConfig: ApiConfig = {
   rc: {
     server: '',
     clientId: '',
-    clientSecret: '',
     redirectUri: '',
   },
   glip: {
