@@ -120,6 +120,11 @@ class RCInfoService extends EntityBaseService {
       .isRCFeaturePermissionEnabled(featurePermission);
   }
 
+  async getCallerIdList() {
+    return await this.getRCInfoController()
+      .getRCCallerIdController()
+      .getCallerIdList();
+  }
   async generateWebSettingUri(type: ERCWebSettingUri) {
     return this.getRCInfoController()
       .getRcWebSettingInfoController()

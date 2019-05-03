@@ -7,6 +7,7 @@
 import { RCInfoFetchController } from './RCInfoFetchController';
 import { RCPermissionController } from './RCPermissionController';
 import { RolePermissionController } from './RolePermissionController';
+import { RCCallerIdController } from './RCCallerIdController';
 import { RegionInfoController } from './RegionInfoController';
 import { RCAccountInfoController } from './RCAccountInfoController';
 import { AccountServiceInfoController } from './AccountServiceInfoController';
@@ -16,6 +17,7 @@ class RCInfoController {
   private _rcInfoFetchController: RCInfoFetchController;
   private _rcPermissionController: RCPermissionController;
   private _rolePermissionController: RolePermissionController;
+  private _rcCallerIdController: RCCallerIdController;
   private _regionInfoController: RegionInfoController;
   private _rcAccountInfoController: RCAccountInfoController;
   private _accountServiceInfoController: AccountServiceInfoController;
@@ -49,6 +51,14 @@ class RCInfoController {
     return this._rolePermissionController;
   }
 
+  getRCCallerIdController(): RCCallerIdController {
+    if (!this._rcCallerIdController) {
+      this._rcCallerIdController = new RCCallerIdController(
+        this.getRCInfoFetchController(),
+      );
+    }
+    return this._rcCallerIdController;
+  }
   getRCAccountInfoController(): RCAccountInfoController {
     if (!this._rcAccountInfoController) {
       this._rcAccountInfoController = new RCAccountInfoController(

@@ -64,6 +64,14 @@ enum RCServiceFeatureName {
   FAX = 'Fax',
   VIDEO_CONFERENCING = 'VideoConferencing',
 }
+enum PhoneNumberType {
+  DirectNumber,
+  MainCompanyNumber,
+  Blocked,
+  NickName,
+  CompanyNumber,
+  CompanyFaxNumber,
+}
 
 enum RCBrandType {
   RINGCENTRAL,
@@ -95,6 +103,7 @@ export {
   RCServiceFeatureName,
   PermissionId,
   ERCServiceFeaturePermission,
+  PhoneNumberType,
   RCBrandType,
   SpecialNumberRuleModel,
   StationLocationSetting,

@@ -73,6 +73,12 @@ class RCInfoFetchController {
         this.requestSpecialNumberRule,
         false,
       );
+
+      this.scheduleRCInfoJob(
+        JOB_KEY.FETCH_EXTENSION_PHONE_NUMBER_LIST,
+        this.requestExtensionPhoneNumberList,
+        false,
+      );
       this.scheduleRCInfoJob(
         JOB_KEY.FETCH_DIALING_PLAN,
         this.requestDialingPlan,
@@ -164,6 +170,16 @@ class RCInfoFetchController {
     notificationCenter.emit(RC_INFO.PHONE_DATA, phoneData);
   }
 
+  requestExtensionPhoneNumberList = async (): Promise<void> => {
+    const extensionPhoneNumberList = await RCInfoApi.getExtensionPhoneNumberList();
+    await this.rcInfoUserConfig.setExtensionPhoneNumberList(
+      extensionPhoneNumberList,
+    );
+    notificationCenter.emit(
+      RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
+      extensionPhoneNumberList,
+    );
+  }
   requestDialingPlan = async (): Promise<void> => {
     const dialingPlan = await RCInfoApi.getDialingPlan();
     await this.rcInfoUserConfig.setDialingPlan(dialingPlan);
@@ -233,6 +249,11 @@ class RCInfoFetchController {
     await this.rcInfoUserConfig.setPhoneDataVersion(version);
   }
 
+  async getExtensionPhoneNumberList() {
+    return (
+      (await this.rcInfoUserConfig.getExtensionPhoneNumberList()) || undefined
+    );
+  }
   async getDialingPlan() {
     return (await this.rcInfoUserConfig.getDialingPlan()) || undefined;
   }
