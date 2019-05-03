@@ -62,7 +62,7 @@ await h(t).log(`Then take screenshot Jupiter_TopBar_ProfileCopyButton`, {screens
 await h(t).withLog(`When I click "About RingCentral" button`,async() => {
 await t.click(closeButton);
 await t.click(topBarAvatar);
-await settingMenu.clickAboutPage();
+await settingMenu.clickAboutButton();
 });
 await h(t).log(`Then take screenshot Jupiter_TopBar_AboutPage`, {screenshotPath:`Jupiter_TopBar_AboutPage`}
 );

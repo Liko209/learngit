@@ -118,8 +118,8 @@ await h(t).withLog(`When I search with "@!#$" and click "@!#$" in this conversat
 await searchDialog.typeSearchKeyword("@!#$");
 await searchDialog.instantPage.clickContentSearchGlobalEntry();
 });
-await h(t).withLog(`And I set filter post by ${loginUserName} and hover "remove" button`, async() => {
-await messagesTab.postByField.typeText(loginUserName);
+await h(t).withLog(`And I set filter post by ${anotherUserName} and hover "remove" button`, async() => {
+await messagesTab.postByField.typeText(anotherUserName);
 await messagesTab.postByField.selectMemberByNth(0);
 await t.hover(messagesTab.postByField.selectedItems.nth(-1).find('button'));
 });
