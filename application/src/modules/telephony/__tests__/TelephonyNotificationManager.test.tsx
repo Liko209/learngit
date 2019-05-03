@@ -45,7 +45,7 @@ describe('TelephonyNotificationManager', () => {
       callId: '1',
       phoneNumber: '123',
       callerName: 'alex',
-      contact: {},
+      uid: 1,
     });
   });
 
@@ -71,7 +71,7 @@ describe('TelephonyNotificationManager', () => {
 
     it('should call show() with body contains "Unknown Caller" when the call is from an unrecognized caller which does not have a  match in contacts [JPT-1489]', async () => {
       jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
-      telephonyStore.contact = null;
+      telephonyStore.uid = null;
       await telephonyNotificationManager._showNotification();
 
       expect(telephonyNotificationManager.show).toHaveBeenCalledWith(
