@@ -30,10 +30,8 @@ class IncomingViewModel extends StoreViewModel<IncomingProps>
 
   @computed
   get uid() {
-    const { contact } = this._telephonyStore;
-    return contact ? contact.id : undefined;
+    return this._telephonyStore.uid;
   }
-
   @computed
   get isExt() {
     return this._telephonyStore.isExt;

@@ -27,10 +27,10 @@ class DialerHeaderViewModel extends StoreViewModel<DialerHeaderProps>
   get name() {
     return this._telephonyStore.displayName;
   }
+
   @computed
   get uid() {
-    const { contact } = this._telephonyStore;
-    return contact ? contact.id : undefined;
+    return this._telephonyStore.uid;
   }
 }
 

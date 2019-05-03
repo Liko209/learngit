@@ -55,10 +55,11 @@ class TelephonyService {
     this._callId = callId;
     this._telephonyStore.callType = CALL_TYPE.INBOUND;
     this._telephonyStore.callerName = fromName;
-    this._telephonyStore.phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
-    this._telephonyStore.contact = await this.matchContactByPhoneNumber(
-      this._telephonyStore.phoneNumber,
-    );
+    const phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
+    if (phoneNumber !== this._telephonyStore.phoneNumber) {
+      this._telephonyStore.isContactMatched = false;
+      this._telephonyStore.phoneNumber = phoneNumber;
+    }
     this._telephonyStore.callId = callId;
     this._telephonyStore.incomingCall();
     mainLogger.info(
@@ -229,9 +230,6 @@ class TelephonyService {
     }
 
     this._telephonyStore.phoneNumber = toNumber;
-    this._telephonyStore.contact = await this.matchContactByPhoneNumber(
-      this._telephonyStore.phoneNumber,
-    );
   }
 
   directCall = (toNumber: string) => {
@@ -300,17 +298,6 @@ class TelephonyService {
         ? this._serverTelephonyService.mute(this._callId)
         : this._serverTelephonyService.unmute(this._callId);
     }
-  }
-
-  matchContactByPhoneNumber = async (phone: string) => {
-    const personService = ServiceLoader.getInstance<PersonService>(
-      ServiceConfig.PERSON_SERVICE,
-    );
-
-    return await personService.matchContactByPhoneNumber(
-      phone,
-      ContactType.GLIP_CONTACT,
-    );
   }
 
   getAllCallCount = () => {
