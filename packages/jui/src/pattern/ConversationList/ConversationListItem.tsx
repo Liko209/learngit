@@ -193,7 +193,7 @@ const JuiConversationListItem: IConversationListItem = memo(
           {title}
         </ItemText>
         {umi}
-        <StyledRightWrapper tabIndex={1}>
+        <StyledRightWrapper tabIndex={-1}>
           {indicator}
           <StyledIconographyMore onClick={onMoreClick}>
             more_vert
