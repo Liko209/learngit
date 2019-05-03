@@ -81,6 +81,9 @@ class JuiEmoji extends React.PureComponent<Props> {
                   emojisToShowFilter={emoji => {
                     return ExcludeList.indexOf(emoji.id as string) < 0;
                   }}
+                  backgroundImageFn={(set, sheetSize) =>
+                    `/icon/sheet_${set}_${sheetSize}.png`
+                  }
                 />
               </ClickAwayListener>
             </JuiMenuList>

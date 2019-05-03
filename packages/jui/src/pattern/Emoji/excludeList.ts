@@ -178,11 +178,8 @@ const ExcludeList = [
   'the_horns',
   'hand',
   'facepunch',
-  'left-facing_fist',
-  'right-facing_fist',
   'i_love_you_hand_sign',
   'palms_up_together',
-  'eye-in-speech-bubble',
   'brain',
   'orange_heart',
   'scarf',
@@ -249,6 +246,15 @@ const ExcludeList = [
   'fleur_de_lis',
   'keycap_star',
   'large_blue_circle',
+  'flag-england',
+  'flag-scotland',
+  'flag-wales',
+];
+
+const ConvertList = [
+  'left-facing_fist',
+  'right-facing_fist',
+  'eye-in-speech-bubble',
   'flag-ac',
   'flag-ad',
   'flag-ae',
@@ -323,7 +329,6 @@ const ExcludeList = [
   'flag-eu',
   'flag-et',
   'flag-er',
-  'flag-england',
   'flag-eh',
   'flag-fo',
   'flag-ga',
@@ -450,7 +455,6 @@ const ExcludeList = [
   'flag-sg',
   'flag-se',
   'flag-sd',
-  'flag-scotland',
   'flag-sm',
   'flag-sn',
   'flag-so',
@@ -490,7 +494,6 @@ const ExcludeList = [
   'flag-vi',
   'flag-vn',
   'flag-vu',
-  'flag-wales',
   'flag-wf',
   'flag-ws',
   'flag-xk',
@@ -502,4 +505,4 @@ const ExcludeList = [
   'flag-za',
 ];
 
-export { ExcludeList };
+export { ExcludeList, ConvertList };
