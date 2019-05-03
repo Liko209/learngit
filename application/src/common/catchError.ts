@@ -19,6 +19,7 @@ import { errorHelper } from 'sdk/error';
 type ErrorActionConfig = string | Function;
 
 type NotifyErrorProps = {
+  authentication?: ErrorActionConfig;
   network?: ErrorActionConfig;
   server?: ErrorActionConfig;
   notificationOpts?: ShowNotificationOptions;
@@ -40,7 +41,7 @@ enum NOTIFICATION_TYPE {
 
 const AUTO_HIDE_AFTER_3_SECONDS = 3000;
 
-const defaultOptions = {
+const defaultNotificationOptions = {
   type: ToastType.ERROR,
   messageAlign: ToastMessageAlign.LEFT,
   fullWidth: false,
@@ -112,17 +113,23 @@ function handleError(
   }
 
   const {
-    network,
     server,
-    notificationOpts = defaultOptions,
+    network,
+    authentication,
+    notificationOpts = defaultNotificationOptions,
     isDebounce,
   } = options;
+
   const notifyFunc = isDebounce
     ? getDebounceNotify(network || server || '')
     : notify;
   if (network && errorHelper.isNetworkConnectionError(error)) {
     notifyFunc(ctx, notificationType, network, notificationOpts, error);
     return false;
+  }
+
+  if (authentication && errorHelper.isAuthenticationError(error)) {
+    return notify(ctx, notificationType, authentication, notificationOpts, error);
   }
 
   if (server && errorHelper.isBackEndError(error)) {
@@ -225,4 +232,4 @@ catchError.flag = function (options: NotifyErrorProps) {
   return decorate(NOTIFICATION_TYPE.FLAG, options);
 };
 
-export { catchError, defaultOptions };
+export { catchError, defaultNotificationOptions, handleError, NOTIFICATION_TYPE };
