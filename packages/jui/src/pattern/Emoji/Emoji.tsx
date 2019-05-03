@@ -15,7 +15,8 @@ import { ExcludeList } from './excludeList';
 type Props = {
   handlerIcon: string;
   handleEmojiClick?: (emoji: any) => void;
-  spritImage?: string;
+  spritImage: string;
+  title: string;
 };
 
 const Menu = styled(JuiMenu)`
@@ -40,7 +41,7 @@ class JuiEmoji extends React.PureComponent<Props> {
 
   render() {
     const { anchorEl } = this.state;
-    const { handleEmojiClick, handlerIcon } = this.props;
+    const { handleEmojiClick, handlerIcon, spritImage, title } = this.props;
     const open = !!anchorEl;
     return (
       <Fragment>
@@ -74,16 +75,14 @@ class JuiEmoji extends React.PureComponent<Props> {
             <JuiMenuList>
               <ClickAwayListener onClickAway={this._hideMenu}>
                 <Picker
-                  title="Pick your emoji…"
+                  title={title}
                   emoji="point_up"
                   set="emojione"
                   onClick={handleEmojiClick}
                   emojisToShowFilter={emoji => {
                     return ExcludeList.indexOf(emoji.id as string) < 0;
                   }}
-                  backgroundImageFn={(set, sheetSize) =>
-                    `/icon/sheet_${set}_${sheetSize}.png`
-                  }
+                  backgroundImageFn={(set, sheetSize) => spritImage}
                 />
               </ClickAwayListener>
             </JuiMenuList>

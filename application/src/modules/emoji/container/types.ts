@@ -5,10 +5,14 @@
  */
 type EmojiProps = {
   handleEmojiClick?: any;
+  title: string;
+  spritImage: string;
 };
 
 type EmojiViewProps = {
   handleEmojiClick: any;
+  title: string;
+  spritImage: string;
 };
 
 export { EmojiProps, EmojiViewProps };

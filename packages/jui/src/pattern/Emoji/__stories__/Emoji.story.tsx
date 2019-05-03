@@ -9,5 +9,11 @@ import { storiesOf } from '@storybook/react';
 import { JuiEmoji } from '..';
 
 storiesOf('Pattern/Emoji', module).add('Emoji Button', () => {
-  return <JuiEmoji handlerIcon="emoji" />;
+  return (
+    <JuiEmoji
+      title="Pick your emoji…"
+      spritImage={'/icon/sheet_emojione_64.png'}
+      handlerIcon="emoji"
+    />
+  );
 });

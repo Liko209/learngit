@@ -126,6 +126,9 @@
     "directGroups": "direct messages",
     "teamGroups": "teams",
     "messageTypeNameSMS": "text",
+    "emoji": {
+      "emojiDefaultTitle": "Pick your emoji…"
+    },
     "initialPost": {
       "directMessageDescription": "This is the beginning of your direct message history with {{displayName}}",
       "createATeam": "created a team",

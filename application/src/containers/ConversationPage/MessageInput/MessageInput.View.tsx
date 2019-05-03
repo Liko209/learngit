@@ -106,7 +106,12 @@ class MessageInputViewComponent extends Component<
           onFileChanged={this._autoUploadFile}
           data-test-automation-id="message-action-bar-attachment"
         />
-        <Emoji handleEmojiClick={insertEmoji} ref={this._emojiRef} />
+        <Emoji
+          handleEmojiClick={insertEmoji}
+          spritImage={'/icon/sheet_emojione_64.png'}
+          title={t('message.emoji.emojiDefaultTitle')}
+          ref={this._emojiRef}
+        />
       </MessageActionBar>
     );
     const attachmentsNode = (
