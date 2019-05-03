@@ -34,13 +34,15 @@ describe('eventUpdateViewModel', () => {
     expect(eventUpdateViewModel.event).toBe(mockData);
   });
 
-  it('computed oldTimeText', () => {
+  it('computed oldTimeText', async (done: jest.DoneCallback) => {
     jest.spyOn(eventUpdateViewModel, 'getTimeText').mockReturnValue('');
-    expect(eventUpdateViewModel.oldTimeText).toBe('');
+    expect(await eventUpdateViewModel.oldTimeText.fetch()).toBe('');
+    done();
   });
 
-  it('computed newTimeText', () => {
+  it('computed newTimeText', async (done: jest.DoneCallback) => {
     jest.spyOn(eventUpdateViewModel, 'getTimeText').mockReturnValue('text');
-    expect(eventUpdateViewModel.newTimeText).toBe('text');
+    expect(await eventUpdateViewModel.newTimeText.fetch()).toBe('text');
+    done();
   });
 });

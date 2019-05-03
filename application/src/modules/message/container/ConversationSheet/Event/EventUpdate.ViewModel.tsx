@@ -3,6 +3,7 @@
  * @Date: 2018-11-07 15:45:04
  * Copyright © RingCentral. All rights reserved.
  */
+import { promisedComputed } from 'computed-async-mobx';
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Item } from 'sdk/module/item/entity';
@@ -12,11 +13,19 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { EventUpdateViewProps, EventUpdateProps } from './types';
 import EventItemModel from '@/store/models/EventItem';
-import { getDurationTimeText } from '../helper';
+import { getDurationTimeText, getDurationTime } from '../helper';
 import { accentColor } from '@/common/AccentColor';
 
 class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
   implements EventUpdateViewProps {
+  private _getDurationTime = async (value: any) => {
+    const { start, end } = this.event;
+    return await getDurationTime(
+      !value.start ? start : value.start,
+      !value.end ? end : value.end,
+    );
+  }
+
   @computed
   get _id() {
     return this.props.ids[0];
@@ -66,17 +75,25 @@ class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
     );
   }
 
-  @computed
-  get oldTimeText() {
+  oldTime = promisedComputed('', async () => {
     const { old_values } = this.activityData;
-    return this.getTimeText(old_values, this.event);
-  }
+    return await this._getDurationTime(old_values);
+  });
 
-  @computed
-  get newTimeText() {
+  newTime = promisedComputed('', async () => {
     const { new_values } = this.activityData;
-    return this.getTimeText(new_values, this.event);
-  }
+    return await this._getDurationTime(new_values);
+  });
+
+  oldTimeText = promisedComputed('', async () => {
+    const { old_values } = this.activityData;
+    return await this.getTimeText(old_values, this.event);
+  });
+
+  newTimeText = promisedComputed('', async () => {
+    const { new_values } = this.activityData;
+    return await this.getTimeText(new_values, this.event);
+  });
 }
 
 export { EventUpdateViewModel };
