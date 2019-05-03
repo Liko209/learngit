@@ -124,7 +124,7 @@ class PostFetchController {
     unreadCount = DEFAULT_PAGE_SIZE,
   }: UnreadPostQuery): Promise<IPostResult> {
     let result: IPostResult = {
-      limit: unreadCount ,
+      limit: unreadCount,
       posts: [],
       items: [],
       hasMore: true,
@@ -134,41 +134,40 @@ class PostFetchController {
       `getUnreadPosts() groupId: ${groupId} startPostId: ${startPostId} endPostId: ${endPostId}`,
     );
 
-    if (startPostId) {
-      const logId = Date.now();
-      PerformanceTracerHolder.getPerformanceTracer().start(
-        PERFORMANCE_KEYS.CONVERSATION_FETCH_UNREAD_POST,
-        logId,
-      );
-      const isPostInDb = await this._isPostInDb(startPostId);
-      if (isPostInDb) {
-        mainLogger.info(LOG_FETCH_POST, 'getUnreadPosts() get from db');
-        result = await this._getIntervalPostsFromDb({
-          groupId,
-          startPostId,
-          endPostId,
-          unreadCount,
-        });
-      } else {
-        mainLogger.info(LOG_FETCH_POST, 'getUnreadPosts() get from server');
-        const serverResult = await this.getRemotePostsByGroupId({
-          groupId,
-          limit: unreadCount + ADDITIONAL_UNREAD_POST_COUNT,
-          postId: startPostId,
-          direction: QUERY_DIRECTION.NEWER,
-          shouldSaveToDb: false,
-        });
-        if (serverResult) {
-          result.posts = serverResult.posts;
-          result.items = serverResult.items;
-          result.hasMore = serverResult.hasMore;
-        }
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.CONVERSATION_FETCH_UNREAD_POST,
+      logId,
+    );
+    const isPostInDb = startPostId && (await this._isPostInDb(startPostId));
+    if (isPostInDb) {
+      mainLogger.info(LOG_FETCH_POST, 'getUnreadPosts() get from db');
+      result = await this._getIntervalPostsFromDb({
+        groupId,
+        startPostId,
+        endPostId,
+        unreadCount,
+      });
+    } else {
+      mainLogger.info(LOG_FETCH_POST, 'getUnreadPosts() get from server');
+      const serverResult = await this.getRemotePostsByGroupId({
+        groupId,
+        limit: unreadCount + ADDITIONAL_UNREAD_POST_COUNT,
+        postId: startPostId,
+        direction: QUERY_DIRECTION.NEWER,
+        shouldSaveToDb: false,
+      });
+      if (serverResult) {
+        result.posts = serverResult.posts;
+        result.items = serverResult.items;
+        result.hasMore = serverResult.hasMore;
       }
-      PerformanceTracerHolder.getPerformanceTracer().end(
-        logId,
-        result.posts && result.posts.length,
-      );
     }
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      result.posts && result.posts.length,
+    );
+
     return result;
   }
 
