@@ -183,33 +183,52 @@ class StreamController {
   @action
   async fetchAllUnreadData() {
     this.enableNewMessageSep();
-
-    const postsNewerThanAnchor = await this._orderListHandler.fetchDataBy(
+    await this._orderListHandler.fetchDataBy(
       QUERY_DIRECTION.NEWER,
-      this._postsNewerThanAnchorLoader,
+      this._unreadPostsLoader,
     );
-
-    const firstPost = postsNewerThanAnchor[0];
-
-    if (firstPost) {
-      await this._orderListHandler.fetchDataByAnchor(
-        QUERY_DIRECTION.OLDER,
-        BEFORE_ANCHOR_POSTS_COUNT,
-        this._orderListHandler.transform2SortableModel(firstPost),
-      );
-    }
-
     return this._orderListHandler.listStore.items;
   }
 
-  private _postsNewerThanAnchorLoader = async () => {
-    const { posts, hasMore } = await this._postService.getUnreadPostsByGroupId({
+  private _unreadPostsLoader = async () => {
+    let hasMore = true;
+    let postsNewerThanAnchor: Post[] = [];
+    let postsOlderThanAnchor: Post[] = [];
+
+    // (1)
+    // Fetch all posts between readThrough and firstPost
+    ({
+      hasMore,
+      posts: postsNewerThanAnchor,
+    } = await this._postService.getUnreadPostsByGroupId({
       groupId: this._groupId,
       unreadCount: this.historyUnreadCount,
       startPostId: this.historyReadThrough || 0,
       endPostId: this._orderListHandler.listStore.items[0].id,
-    });
-    return { hasMore, data: posts };
+    }));
+
+    // (2)
+    // Fetch $BEFORE_ANCHOR_POSTS_COUNT posts that older than
+    // oldest post of (1)
+    const oldestPost = _.last(postsNewerThanAnchor);
+    if (oldestPost) {
+      ({
+        hasMore,
+        posts: postsOlderThanAnchor,
+      } = await this._postService.getPostsByGroupId({
+        groupId: this._groupId,
+        postId: oldestPost.id,
+        direction: QUERY_DIRECTION.OLDER,
+        limit: BEFORE_ANCHOR_POSTS_COUNT,
+      }));
+    }
+
+    // (3)
+    // Return all the posts from (1) and (2)
+    return {
+      hasMore,
+      data: [...postsNewerThanAnchor, ...postsOlderThanAnchor],
+    };
   }
 }
 
