@@ -31,11 +31,14 @@ enum NOTIFICATION_TYPE {
   FLAG,
 }
 
+const AUTO_HIDE_AFTER_3_SECONDS = 3000;
+
 const defaultOptions = {
   type: ToastType.ERROR,
   messageAlign: ToastMessageAlign.LEFT,
   fullWidth: false,
   dismissible: false,
+  autoHideDuration: AUTO_HIDE_AFTER_3_SECONDS,
 };
 
 function notify(
