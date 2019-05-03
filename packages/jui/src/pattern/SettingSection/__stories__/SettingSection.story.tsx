@@ -15,8 +15,13 @@ storiesOf('Pattern/Setting', module)
   .addDecorator(withInfoDecorator(JuiSettingSection, { inline: true }))
   .add('SettingSection', () => {
     return (
-      <JuiSettingSection title={getTitleKnob()}>
-        {getContentKnob()}
-      </JuiSettingSection>
+      <div>
+        <JuiSettingSection title={getTitleKnob()}>
+          {getContentKnob()}
+        </JuiSettingSection>
+        <JuiSettingSection title={getTitleKnob()}>
+          {getContentKnob()}
+        </JuiSettingSection>
+      </div>
     );
   });

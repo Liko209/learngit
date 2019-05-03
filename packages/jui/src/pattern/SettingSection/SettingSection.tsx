@@ -3,27 +3,33 @@
  * @Date: 2019-05-02 15:14:02
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
-import {
-  JuiListSubheader,
-  JuiListSubheaderProps,
-} from '../../components/Lists/ListSubheader';
+import React, { ReactNode } from 'react';
+import MuiListSubheader, {
+  ListSubheaderProps as MuiListSubheaderProps,
+} from '@material-ui/core/ListSubheader';
 import {
   JuiCard,
   JuiCardContent,
   JuiCardContentProps,
 } from '../../components/Cards';
 import styled from '../../foundation/styled-components';
-import { spacing, ellipsis } from '../../foundation/utils/styles';
+import {
+  spacing,
+  ellipsis,
+  grey,
+  typography,
+} from '../../foundation/utils/styles';
 
 type JuiSettingSectionProps = {
-  title?: string;
+  title?: ReactNode;
 };
 
-const TitleHeaderWrap = styled<JuiListSubheaderProps>(JuiListSubheader)`
+const TitleHeaderWrap = styled<MuiListSubheaderProps>(MuiListSubheader)`
   && {
-    background: transparent;
-    padding: ${spacing(3, 2, 1, 0)} !important;
+    display: flex;
+    color: ${grey('700')};
+    ${typography('body1')}
+    padding: ${spacing(0, 0, 1, 0)};
   }
 `;
 
@@ -42,11 +48,17 @@ const ContentWrap = styled<JuiCardContentProps>(JuiCardContent)`
   }
 `;
 
+const SettingSectionWrap = styled.div`
+  && {
+    margin-bottom: ${spacing(4)};
+  }
+`;
+
 class JuiSettingSection extends React.PureComponent<JuiSettingSectionProps> {
   render() {
     const { children, title } = this.props;
     return (
-      <div className="setting-section">
+      <SettingSectionWrap className="setting-section">
         <TitleHeaderWrap component="div">
           <TitleWrap className="setting-section-title">{title}</TitleWrap>
         </TitleHeaderWrap>
@@ -55,7 +67,7 @@ class JuiSettingSection extends React.PureComponent<JuiSettingSectionProps> {
             {children}
           </ContentWrap>
         </JuiCard>
-      </div>
+      </SettingSectionWrap>
     );
   }
 }
