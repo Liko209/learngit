@@ -24,16 +24,16 @@ class FavoriteViewComponent extends Component<Props> {
   }
 
   @catchError.flash({
-    network: 'message.prompt.notAbleToUnFavoriteForNetworkIssue',
-    server: 'message.prompt.notAbleToUnFavoriteForServerIssue',
+    network: 'people.prompt.notAbleToUnFavoriteForNetworkIssue',
+    server: 'people.prompt.notAbleToUnFavoriteForServerIssue',
   })
   private _handleRemoveFavorite = () => {
     return this._handleToggleFavorite();
   }
 
   @catchError.flash({
-    network: 'message.prompt.notAbleToFavoriteThisMessageForNetworkIssue',
-    server: 'message.prompt.notAbleToFavoriteThisMessageForServerIssue',
+    network: 'people.prompt.notAbleToFavoriteThisMessageForNetworkIssue',
+    server: 'people.prompt.notAbleToFavoriteThisMessageForServerIssue',
   })
   private _handleFavorite = () => {
     return this._handleToggleFavorite();

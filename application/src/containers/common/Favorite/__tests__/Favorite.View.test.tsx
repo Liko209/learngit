@@ -18,7 +18,7 @@ function setUpMock(isFavorite: boolean, isFailed: boolean, errorType: 'network' 
     id: 1,
     isMember: true,
     conversationId: 1,
-    getConversationId() {},
+    getConversationId() { },
     handlerFavorite: jest.fn().mockImplementationOnce(() => {
       if (errorType === 'network') {
         throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK');
@@ -33,7 +33,7 @@ function setUpMock(isFavorite: boolean, isFailed: boolean, errorType: 'network' 
 describe('FavoriteView', () => {
   describe('render()', () => {
     beforeEach(() => {
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
+      Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
     });
 
     it('should display flash toast notification when remove favorite conversation failed for backend issue.[JPT-1529]', async (done: jest.DoneCallback) => {
@@ -43,7 +43,7 @@ describe('FavoriteView', () => {
       expect(props.handlerFavorite).toHaveBeenCalledTimes(1);
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: 'message.prompt.notAbleToUnFavoriteForServerIssue',
+          message: 'people.prompt.notAbleToUnFavoriteForServerIssue',
         }),
       );
       done();
@@ -56,7 +56,7 @@ describe('FavoriteView', () => {
       expect(props.handlerFavorite).toHaveBeenCalledTimes(1);
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: 'message.prompt.notAbleToFavoriteThisMessageForServerIssue',
+          message: 'people.prompt.notAbleToFavoriteThisMessageForServerIssue',
         }),
       );
       done();
@@ -69,7 +69,7 @@ describe('FavoriteView', () => {
       expect(props.handlerFavorite).toHaveBeenCalledTimes(1);
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: 'message.prompt.notAbleToUnFavoriteForNetworkIssue',
+          message: 'people.prompt.notAbleToUnFavoriteForNetworkIssue',
         }),
       );
       done();
@@ -82,7 +82,7 @@ describe('FavoriteView', () => {
       expect(props.handlerFavorite).toHaveBeenCalledTimes(1);
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: 'message.prompt.notAbleToFavoriteThisMessageForNetworkIssue',
+          message: 'people.prompt.notAbleToFavoriteThisMessageForNetworkIssue',
         }),
       );
       done();
