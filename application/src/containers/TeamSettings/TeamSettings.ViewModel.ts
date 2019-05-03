@@ -27,6 +27,7 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { Notification } from '@/containers/Notification';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { catchError, defaultNotificationOptions } from '@/common/catchError';
 
 class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   @observable
@@ -189,21 +190,15 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
       }
       if (errorHelper.isNetworkConnectionError(error)) {
         Notification.flashToast({
+          ...defaultNotificationOptions,
           message: 'people.prompt.SorryWeWereNotAbleToSaveTheUpdate',
-          type: ToastType.ERROR,
-          messageAlign: ToastMessageAlign.LEFT,
-          fullWidth: false,
-          dismissible: false,
         });
         return false;
       }
       if (errorHelper.isBackEndError(error)) {
         Notification.flashToast({
+          ...defaultNotificationOptions,
           message: 'people.prompt.SorryWeWereNotAbleToSaveTheUpdateTryAgain',
-          type: ToastType.ERROR,
-          messageAlign: ToastMessageAlign.LEFT,
-          fullWidth: false,
-          dismissible: false,
         });
         return false;
       }
