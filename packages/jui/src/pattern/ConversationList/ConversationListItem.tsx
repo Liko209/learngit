@@ -27,6 +27,7 @@ const StyledRightWrapper = styled.div`
   align-items: center;
   justify-content: center;
   z-index: ${({ theme }) => theme.zIndex.elementOnRipple};
+  outline: none;
 `;
 const rippleEnter = (theme: Theme) => keyframes`
   from {
@@ -63,7 +64,6 @@ const JuiMenuContain = styled(JuiMenu)`
   }
 `;
 const StyledListItem = styled(WrapperListItem)`
-
   && {
     display: ${({ hidden }) => (hidden ? 'none' : 'flex')};
     white-space: nowrap;
@@ -193,7 +193,7 @@ const JuiConversationListItem: IConversationListItem = memo(
           {title}
         </ItemText>
         {umi}
-        <StyledRightWrapper>
+        <StyledRightWrapper tabIndex={1}>
           {indicator}
           <StyledIconographyMore onClick={onMoreClick}>
             more_vert
