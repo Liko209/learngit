@@ -154,6 +154,7 @@ type IPhoneNumberRecord = {
   status: string;
   country: ICountryInfo;
   features: string[];
+  label?: string;
 };
 
 type IExtensionPhoneNumberList = {
@@ -231,6 +232,7 @@ export {
   DialingPlanCountryRecord,
   DialingCountryInfo,
   IPhoneNumberRequest,
+  IPhoneNumberRecord,
   IExtensionPhoneNumberList,
   RCAPIVersion,
   ITokenModel,

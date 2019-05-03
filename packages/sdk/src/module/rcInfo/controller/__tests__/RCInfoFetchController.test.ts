@@ -297,6 +297,24 @@ describe('RCInfoFetchController', () => {
     });
   });
 
+  describe('requestExtensionPhoneNumberList', () => {
+    it('should send request and save to storage', async () => {
+      RCInfoApi.getExtensionPhoneNumberList = jest
+        .fn()
+        .mockReturnValue('extensionPhoneNumberList');
+      notificationCenter.emit.mockImplementationOnce(() => {});
+      await rcInfoFetchController.requestExtensionPhoneNumberList();
+      expect(RCInfoApi.getExtensionPhoneNumberList).toBeCalledTimes(1);
+      expect(
+        RCInfoUserConfig.prototype.setExtensionPhoneNumberList,
+      ).toBeCalledWith('extensionPhoneNumberList');
+      expect(notificationCenter.emit).toBeCalledWith(
+        RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
+        'extensionPhoneNumberList',
+      );
+    });
+  });
+
   describe('getRCClientInfo()', () => {
     it('should get value from config when value is invalid', async () => {
       rcInfoFetchController[ 'rcInfoUserConfig'
@@ -372,6 +390,16 @@ describe('RCInfoFetchController', () => {
     });
   });
 
+  describe('getExtensionPhoneNumberList()', () => {
+    it('should get value from config when value is invalid', async () => {
+      rcInfoFetchController.rcInfoUserConfig.getExtensionPhoneNumberList = jest
+        .fn()
+        .mockResolvedValue('test');
+      expect(await rcInfoFetchController.getExtensionPhoneNumberList()).toEqual(
+        'test',
+      );
+    });
+  });
   describe('getStationLocation', () => {
     it('should get value from config', async () => {
       // prettier-ignore
