@@ -225,4 +225,4 @@ catchError.flag = function (options: NotifyErrorProps) {
   return decorate(NOTIFICATION_TYPE.FLAG, options);
 };
 
-export { catchError };
+export { catchError, defaultOptions };

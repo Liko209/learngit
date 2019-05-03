@@ -300,9 +300,6 @@ describe.skip('i18next-en', () => {
     expect(i18next.t('notAbleToLikeThisMessageForServerIssue')).toEqual(
       "Sorry, something went wrong on our end and we weren't able to like this message. Try again later.",
     );
-    expect(i18next.t('SorryWeWereNotAbleToCloseTheConversation')).toEqual(
-      "Sorry, we weren't able to close the conversation. Try again.",
-    );
     expect(i18next.t('notAbleToRemoveYourBookmarkForNetworkIssue')).toEqual(
       "Sorry, we weren't able to remove your bookmark due to a poor network connection. Try again.",
     );
