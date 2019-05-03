@@ -18,12 +18,15 @@ import {
   PHONE_NUMBER_TYPE,
 } from 'sdk/module/person/entity';
 import { IncomingProps, IncomingViewProps } from './types';
+import { TELEPHONY_SERVICE } from '../../interface/constant';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
 class IncomingViewModel extends StoreViewModel<IncomingProps>
   implements IncomingViewProps {
-  private _telephonyService: TelephonyService = container.get(TelephonyService);
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
   private _audio: HTMLAudioElement | null;
   private _frameId?: number;

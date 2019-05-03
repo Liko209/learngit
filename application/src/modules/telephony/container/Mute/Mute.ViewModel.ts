@@ -9,9 +9,12 @@ import { TelephonyService } from '../../service';
 import { MuteProps, MuteViewProps } from './types';
 import { container } from 'framework';
 import { observable, action } from 'mobx';
+import { TELEPHONY_SERVICE } from '../../interface/constant';
 
 class MuteViewModel extends StoreViewModel<MuteProps> implements MuteViewProps {
-  private _telephonyService: TelephonyService = container.get(TelephonyService);
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
 
   @observable
   isMute = false;

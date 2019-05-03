@@ -7,10 +7,13 @@ import { container } from 'framework';
 import { TelephonyService } from '../../service';
 import { StoreViewModel } from '@/store/ViewModel';
 import { MinimizeProps, MinimizeViewProps } from './types';
+import { TELEPHONY_SERVICE } from '../../interface/constant';
 
 class MinimizeViewModel extends StoreViewModel<MinimizeProps>
   implements MinimizeViewProps {
-  private _telephonyService: TelephonyService = container.get(TelephonyService);
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
 
   minimize = () => {
     this._telephonyService.minimize();

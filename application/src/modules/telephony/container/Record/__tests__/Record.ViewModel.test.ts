@@ -8,9 +8,13 @@ import { container, decorate, injectable } from 'framework';
 import { TelephonyStore } from '../../../store';
 import { RecordViewModel } from '../Record.ViewModel';
 import { TelephonyService } from '../../../service';
+import { TELEPHONY_SERVICE } from '../../../interface/constant';
 
-[TelephonyService, TelephonyStore].forEach(kls => decorate(injectable(), kls));
-[TelephonyService, TelephonyStore].forEach(kls => container.bind(kls).to(kls));
+decorate(injectable(), TelephonyStore);
+decorate(injectable(), TelephonyService);
+
+container.bind(TELEPHONY_SERVICE).to(TelephonyService);
+container.bind(TelephonyStore).to(TelephonyStore);
 
 let recordViewModel: RecordViewModel;
 

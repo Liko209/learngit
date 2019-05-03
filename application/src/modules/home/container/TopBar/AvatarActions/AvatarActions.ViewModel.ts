@@ -17,6 +17,7 @@ import { Dialog } from '@/containers/Dialog';
 import i18next from 'i18next';
 import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 
 const globalStore = storeManager.getGlobalStore();
 
@@ -30,19 +31,17 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
     return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   }
 
-  @action
-  handleSignOut = async () => {
+  canSignOut() {
     let callCount = 0;
     let telephonyService: TelephonyService | null = null;
     try {
-      telephonyService = container.get(TelephonyService);
+      telephonyService = container.get<TelephonyService>(TELEPHONY_SERVICE);
       callCount = telephonyService.getAllCallCount();
     } catch (e) {
       mainLogger.info(
         '[AvatarActionsViewModel] [UI TelephonyService] User has no Telephony permission: ${e}',
       );
     }
-
     if (callCount > 0) {
       Dialog.confirm({
         title: i18next.t('telephony.prompt.LogoutTitle'),
@@ -65,9 +64,14 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
           );
         },
       });
-    } else {
-      this._doLogout();
+      return false;
     }
+    return true;
+  }
+
+  @action
+  handleSignOut = async () => {
+    !!this.canSignOut() && this._doLogout();
   }
 
   private _doLogout = async () => {

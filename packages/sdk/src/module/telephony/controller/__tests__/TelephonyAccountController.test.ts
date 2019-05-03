@@ -16,11 +16,14 @@ import { TelephonyCallInfo, MAKE_CALL_ERROR_CODE } from '../../types';
 import { TelephonyCallController } from '../TelephonyCallController';
 import { MakeCallController } from '../../controller/MakeCallController';
 import { ServiceLoader } from '../../../serviceLoader';
+import { TelephonyUserConfig } from '../../config/TelephonyUserConfig';
+import { GlobalConfigService } from '../../../config';
 
 jest.mock('../TelephonyCallController');
 jest.mock('voip/src');
 jest.mock('../../controller/MakeCallController');
 jest.mock('../../../rcInfo/service/RCInfoService');
+jest.mock('../../../config');
 
 describe('TelephonyAccountController', () => {
   class MockAccount implements ITelephonyAccountDelegate {
@@ -336,6 +339,25 @@ describe('TelephonyAccountController', () => {
         toNum: '',
         callId: CALL_ID,
       });
+    });
+  });
+
+  describe('getLastCalledNumber', () => {
+    it('should return last called number when there is any', () => {
+      TelephonyUserConfig.prototype.getLastCalledNumber = jest
+        .fn()
+        .mockReturnValueOnce('test');
+      const result = accountController.getLastCalledNumber();
+      expect(result).toBe('test');
+    });
+  });
+
+  describe('setLastCalledNumber', () => {
+    it('should call telephony to set last called number', () => {
+      const lastCalled = jest.fn();
+      TelephonyUserConfig.prototype.setLastCalledNumber = lastCalled;
+      accountController.setLastCalledNumber('test');
+      expect(lastCalled).toBeCalledWith('test');
     });
   });
 });
