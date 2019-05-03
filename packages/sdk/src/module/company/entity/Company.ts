@@ -29,6 +29,7 @@ type Company = ExtendedBaseModel & {
   webmail_person_id?: number;
   rc_service_parameters?: CompanyServiceParameter[];
   allow_rc_feature_rcphone?: boolean;
+  rc_brand?: string;
 };
 
 export { Company, CompanyServiceParameter, E_ACCOUNT_TYPE };
