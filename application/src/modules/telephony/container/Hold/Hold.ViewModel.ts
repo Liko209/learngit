@@ -9,11 +9,13 @@ import { HoldProps, HoldViewProps } from './types';
 import { TelephonyService } from '../../service';
 import { TelephonyStore } from '../../store';
 import { computed } from 'mobx';
-import {
-  HOLD_STATE,
-} from '../../FSM';
+import { HOLD_STATE } from '../../FSM';
+import { TELEPHONY_SERVICE } from '../../interface/constant';
+
 class HoldViewModel extends StoreViewModel<HoldProps> implements HoldViewProps {
-  private _telephonyService: TelephonyService = container.get(TelephonyService);
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
 
   @computed

@@ -8,4 +8,9 @@ export { RCAccountInfo } from './RCAccountInfo';
 export { RCClientInfo } from './RCClientInfo';
 export { RCExtensionInfo, RCServiceFeature } from './RCExtensionInfo';
 export { RCRolePermissions, RCRolePermission } from './RCRolePermissions';
-export { RCAPIVersion, ISpecialServiceNumber, ITokenModel } from './common';
+export {
+  RCAPIVersion,
+  ISpecialServiceNumber,
+  ITokenModel,
+  RCAuthCodeInfo,
+} from './common';

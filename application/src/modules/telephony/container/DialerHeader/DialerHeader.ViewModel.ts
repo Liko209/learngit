@@ -17,10 +17,13 @@ import {
 } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 import { DialerHeaderProps, DialerHeaderViewProps } from './types';
+import { TELEPHONY_SERVICE } from '../../interface/constant';
 
 class DialerHeaderViewModel extends StoreViewModel<DialerHeaderProps>
   implements DialerHeaderViewProps {
-  private _telephonyService: TelephonyService = container.get(TelephonyService);
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
 
   @computed

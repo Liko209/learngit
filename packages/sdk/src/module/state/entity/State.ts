@@ -23,11 +23,12 @@ export type GroupState = {
   unread_mentions_count?: number;
   read_through?: number;
   last_read_through?: number; // last post of the group
-  marked_as_unread?: boolean;
+  marked_as_unread?: boolean; // please do not use it to check read status
   post_cursor?: number;
   unread_deactivated_count?: number;
   group_post_cursor?: number;
   group_post_drp_cursor?: number;
+  last_author_id?: number;
 };
 
 export type TransformedState = {

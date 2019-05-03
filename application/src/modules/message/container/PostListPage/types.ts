@@ -5,7 +5,7 @@
  */
 import { WithTranslation } from 'react-i18next';
 import { Post } from 'sdk/module/post/entity';
-import { ISortableModel } from '@/store/base/fetch/types';
+import { ISortableModelWithData } from '@/store/base/fetch/types';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import PostModel from '@/store/models/Post';
 
@@ -22,7 +22,7 @@ type PostListPageViewProps = WithTranslation & {
   postFetcher: (
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor?: ISortableModel<Post>,
+    anchor?: ISortableModelWithData<Post>,
   ) => Promise<{
     hasMore: boolean;
     data: (Post | PostModel)[];

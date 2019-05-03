@@ -30,6 +30,8 @@ class FullSearchViewComponent extends Component<Props> {
 
   componentWillUnmount() {
     this._unlisten && this._unlisten();
+
+    this.props.resetSearchScope();
   }
 
   onChangeTab = (tab: TAB_TYPE) => {

@@ -12,11 +12,12 @@ import { NOTIFICATION_PRIORITY } from '@/modules/notification/interface';
 import i18nT from '@/utils/i18nT';
 import { TelephonyStore } from './store';
 import { TelephonyService } from './service';
+import { TELEPHONY_SERVICE } from './interface/constant';
 import { CALL_STATE } from './FSM';
 
 class TelephonyNotificationManager extends AbstractNotificationManager {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
-  @inject(TelephonyService) private _telephonyService: TelephonyService;
+  @inject(TELEPHONY_SERVICE) private _telephonyService: TelephonyService;
   private _disposer: Disposer;
   constructor() {
     super('telephony');

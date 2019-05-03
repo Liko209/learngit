@@ -670,6 +670,18 @@ describe('PersonService', () => {
       );
       expect(result).toBeNull();
     });
+
+    it('should not match when phone number is not direct number', async () => {
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValueOnce(1);
+      await preparePhoneNumData();
+      const result = await personController.matchContactByPhoneNumber(
+        '8885287464',
+        ContactType.GLIP_CONTACT,
+      );
+      expect(result).toBeNull();
+    });
   });
 
   describe('refreshPersonData()', () => {

@@ -10,7 +10,7 @@ import StoreViewModel from '@/store/ViewModel';
 import { StreamProps, SuccinctPost } from './types';
 import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDataListHandler';
 import { ENTITY_NAME } from '@/store/constants';
-import { ISortableModel } from '@/store/base/fetch/types';
+import { ISortableModelWithData } from '@/store/base/fetch/types';
 import { Post } from 'sdk/module/post/entity';
 import { EVENT_TYPES, ENTITY } from 'sdk/service';
 import { PostService } from 'sdk/module/post';
@@ -67,7 +67,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       fetchData: async (
         direction: QUERY_DIRECTION,
         pageSize: number,
-        anchor?: ISortableModel<Post>,
+        anchor?: ISortableModelWithData<Post>,
       ) => {
         const { data, hasMore } = await this.props.postFetcher(
           direction,

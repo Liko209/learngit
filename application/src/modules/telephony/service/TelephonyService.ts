@@ -17,12 +17,15 @@ import {
   TelephonyCallInfo,
 } from 'sdk/module/telephony/types';
 import { PersonService, ContactType } from 'sdk/module/person';
+import { PhoneNumberModel } from 'sdk/module/person/entity';
 import { mainLogger } from 'sdk';
 import { TelephonyStore, CALL_TYPE } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { AccountUserConfig } from 'sdk/module/account/config';
 
 const ANONYMOUS = 'anonymous';
+const DIRECT_NUMBER = 'DirectNumber';
 class TelephonyService {
   static TAG: string = '[UI TelephonyService] ';
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
@@ -181,8 +184,29 @@ class TelephonyService {
     );
   }
 
+  getDefaultCallerId = () => {
+    const userConfig = new AccountUserConfig();
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
+    const person = personService.getSynchronously(userConfig.getGlipUserId());
+    if (person && person.rc_phone_numbers) {
+      const res = person.rc_phone_numbers.find(
+        (phoneNumber: PhoneNumberModel) => {
+          return phoneNumber.usageType === DIRECT_NUMBER;
+        },
+      );
+      if (res) {
+        return res.phoneNumber;
+      }
+      return '';
+    }
+    return '';
+  }
+
   makeCall = async (toNumber: string) => {
-    const rv = await this._serverTelephonyService.makeCall(toNumber);
+    const callerId = this.getDefaultCallerId();
+    const rv = await this._serverTelephonyService.makeCall(toNumber, callerId);
 
     switch (true) {
       case MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION === rv: {
@@ -339,6 +363,8 @@ class TelephonyService {
     this._telephonyStore.inputKey(digits);
     return this._serverTelephonyService.dtmf(this._callId as string, digits);
   }
+
+  callComponent = () => import('../container/Call');
 }
 
 export { TelephonyService };

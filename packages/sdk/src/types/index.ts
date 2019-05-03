@@ -4,6 +4,7 @@ import { DBConfig } from './db';
 type DeepPartial<T> = { [P in keyof T]?: DeepPartial<T[P]> };
 
 type Nullable<T> = T | null;
+type UndefinedAble<T> = T | undefined;
 
 type NonFunctionPropertyNames<T> = {
   [K in keyof T]: T[K] extends (...args: any[]) => any ? never : K
@@ -28,6 +29,7 @@ export {
   ISdkConfig,
   DeepPartial,
   Nullable,
+  UndefinedAble,
   NonFunctionPropertyNames,
   FunctionPropertyNames,
 };

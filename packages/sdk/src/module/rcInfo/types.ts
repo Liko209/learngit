@@ -63,4 +63,16 @@ enum RCServiceFeatureName {
   VIDEO_CONFERENCING = 'VideoConferencing',
 }
 
-export { RCServiceFeatureName, PermissionId, ERCServiceFeaturePermission };
+enum ERCWebSettingUri {
+  BILLING_URI,
+  PHONE_SYSTEM_URI,
+  EXTENSION_URI,
+  ANALYTIC_PORTAL_URI,
+}
+
+export {
+  RCServiceFeatureName,
+  PermissionId,
+  ERCServiceFeaturePermission,
+  ERCWebSettingUri,
+};
