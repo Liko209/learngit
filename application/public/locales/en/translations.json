@@ -415,7 +415,6 @@
       "notAbleToUnFavoriteForServerIssue": "Sorry, something went wrong on our end and we weren't able to remove this conversation from favorites. Try again later.",
       "notAbleToFavoriteThisMessageForNetworkIssue": "Sorry, we weren't able to favorite this conversation. Check your network connection, then try again.",
       "notAbleToFavoriteThisMessageForServerIssue": "Sorry, something went wrong on our end and we weren't able to favorite this conversation. Try again later.",
-      "markFavoriteServerErrorContent": "We weren't able to favorite this conversation. Try again.",
       "leaveTeamServerErrorContent": "Sorry, we weren't able to let you leave the team. Try again.",
       "leaveTeamNetworkErrorContent": "Sorry, we weren't able to let you leave the team.",
       "deleteTeamServerErrorContent": "Sorry, we weren't able to delete this team. Try again.",
