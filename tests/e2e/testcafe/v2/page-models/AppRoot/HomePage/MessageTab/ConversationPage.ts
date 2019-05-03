@@ -233,6 +233,26 @@ export class BaseConversationPage extends BaseWebComponent {
     await this.scrollToY(scrollTop);
   }
 
+  async isPossibleToScrollBottom() {
+    const scrollHeight = await this.scrollDiv.scrollHeight;
+    await this.scrollToBottom();
+    return scrollHeight !== await this.scrollDiv.scrollHeight
+  }
+
+  async isPossibleToScrollUp() {
+    const scrollHeight = await this.scrollDiv.scrollHeight;
+    await this.scrollToTop();
+    return scrollHeight !== await this.scrollDiv.scrollHeight;
+  }
+
+  async scrollToTop() {
+    await this.scrollToY(0);
+  }
+
+  async getScrollHeight() {
+    return await this.scrollDiv.scrollHeight;
+  }
+
   async scrollUpToViewPostById(postId: string) {
     const postItem = this.postItemById(postId)
     for (const i of _.range(10)) {
