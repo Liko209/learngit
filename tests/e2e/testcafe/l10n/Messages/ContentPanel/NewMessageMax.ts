@@ -9,7 +9,7 @@ fixture('ContentPanel')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Send a message with more than 10000 characters', ['P2+', 'Messages', 'ContentPanel', 'V1.4', 'Jenny.Cai']), async (t) => {
+test(formalName('Send a message with more than 10000 characters', ['P2', 'Messages', 'ContentPanel', 'V1.4', 'Jenny.Cai']), async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[4];
   const app = new AppRoot(t);
 
@@ -32,7 +32,7 @@ test(formalName('Send a message with more than 10000 characters', ['P2+', 'Messa
 
   const ConversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog(`And send a message with more than 10000 characters`, async () => {
-    await ConversationPage.sendMessage(postContent);
+    await ConversationPage.sendMessage(postContent, {paste: true});
   });
 
   await h(t).withLog(`Then I can see alert message`, async () => {
@@ -40,5 +40,5 @@ test(formalName('Send a message with more than 10000 characters', ['P2+', 'Messa
     //This step is to check whether the alert appears, need dev to add data-test-automation-id for the alert
   })
 
-  await h(t).log('Then I capture screenshot ', {screenshotPath: 'Jupiter_ContentPanel_SendMessageMax'})
+  await h(t).log('Then I capture screenshot', {screenshotPath: 'Jupiter_ContentPanel_SendMessageMax'})
 })
