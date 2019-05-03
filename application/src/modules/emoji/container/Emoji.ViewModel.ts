@@ -4,9 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 // import { observable, action, comparer } from 'mobx';
-import { EmojiProps } from './types';
+
+import { EmojiProps, EmojiViewProps } from './types';
 import { StoreViewModel } from '@/store/ViewModel';
 
-class EmojiViewModel extends StoreViewModel<EmojiProps> {}
+class EmojiViewModel extends StoreViewModel<EmojiProps>
+  implements EmojiViewProps {}
 
 export { EmojiViewModel };
