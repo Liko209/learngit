@@ -119,7 +119,7 @@ class JuiSettingSectionItem extends React.PureComponent<
               </DescriptionWrap>
             )}
           </LeftWrap>
-          <RightWrap className="setting-section-item-left">
+          <RightWrap className="setting-section-item-right">
             {children}
           </RightWrap>
         </SettingSectionItemContentWrap>
