@@ -83,6 +83,12 @@ test(formalName('Click the unread button (up) then jump to first unread post', [
   const loginUser = users[6];
   const otherUser = users[5];
 
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
   let team = <IGroup>{
     type: "Team",
     name: uuid(),
@@ -90,20 +96,22 @@ test(formalName('Click the unread button (up) then jump to first unread post', [
     members: [loginUser, otherUser]
   }
 
-  await h(t).withLog(`Given I have an extension with one conversation named: ${team.name}`, async () => {
-    await h(t).scenarioHelper.createTeam(team);
+  await h(t).withLog(`Given I have an extension with one 1:1 conversation chat with ${otherUser.extension} and one conversation named: ${team.name}`, async () => {
+    await h(t).scenarioHelper.createTeamsOrChats([chat, team]);
   });
 
-  await h(t).withLog('And has one  old message in it', async () => {
-    await h(t).scenarioHelper.sendTextPost('initial message', team, loginUser);
+  await h(t).withLog('And has one old message in 1:1 conversation chat', async () => {
+    await h(t).scenarioHelper.sendTextPost('initial message', chat, loginUser);
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).markAsRead([team.glipId]);
+    await h(t).glip(loginUser).markAsRead([chat.glipId]);
   });
 
-  let firstUnreadPostId;
-  await h(t).withLog(`And has more one screen unread messages`, async () => {
-    firstUnreadPostId = await h(t).scenarioHelper.sentAndGetTextPostId(uuid(), team, otherUser);
+  let postIdOfFirstUnreadInChat, postIdOfFirstUnreadInTeam;
+  await h(t).withLog(`And both conversations have more one screen unread messages`, async () => {
+    postIdOfFirstUnreadInChat = await h(t).scenarioHelper.sentAndGetTextPostId(uuid(), chat, otherUser);
+    postIdOfFirstUnreadInTeam = await h(t).scenarioHelper.sentAndGetTextPostId(uuid(), team, otherUser);
     for (const i of _.range(3)) {
+      await h(t).scenarioHelper.sendTextPost(H.multilineString(), chat, otherUser);
       await h(t).scenarioHelper.sendTextPost(H.multilineString(), team, otherUser);
     }
   });
@@ -116,12 +124,13 @@ test(formalName('Click the unread button (up) then jump to first unread post', [
   });
 
   const teamsSection = app.homePage.messageTab.teamsSection;
+  const directMessageSection = app.homePage.messageTab.directMessagesSection;
+
   const conversationPage = app.homePage.messageTab.conversationPage;
 
-  await h(t).withLog('And enter the teamA conversation', async () => {
-    await teamsSection.expand();
-    await teamsSection.conversationEntryById(team.glipId).enter();
-    await teamsSection.ensureLoaded();
+  await h(t).withLog('And enter the chat conversation', async () => {
+    await directMessageSection.expand();
+    await directMessageSection.conversationEntryById(chat.glipId).enter();
   });
 
   await h(t).withLog('Then I should see unread button', async () => {
@@ -133,7 +142,7 @@ test(formalName('Click the unread button (up) then jump to first unread post', [
   });
 
   await h(t).withLog('Then I should see the first post', async () => {
-    await conversationPage.postByIdExpectVisible(firstUnreadPostId, true);
+    await conversationPage.postByIdExpectVisible(postIdOfFirstUnreadInChat, true);
   });
 
   await h(t).withLog('And should see New Messages indicator on the top', async () => {
@@ -142,6 +151,26 @@ test(formalName('Click the unread button (up) then jump to first unread post', [
     await conversationPage.newMessageDeadLineShouldBeOnTheTop();
   });
 
+  await h(t).withLog('When I enter the new team conversation', async () => {
+    await teamsSection.expand();
+    await teamsSection.conversationEntryById(team.glipId).enter();
+  });
+
+  await h(t).withLog('Then I should see unread button', async () => {
+    await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
+  });
+
+  await h(t).withLog('When I click jump to first unread button', async () => {
+    await conversationPage.clickJumpToFirstUnreadButton();
+  });
+
+  await h(t).withLog('Then I should see the first post on the top', async () => {
+    await conversationPage.postCardByIdShouldBeOnTheTop(postIdOfFirstUnreadInTeam);
+  });
+
+  await h(t).withLog('And the "new Messages indicator" does not exists', async () => {
+    await t.expect(conversationPage.newMessageDeadLine.exists).notOk();
+  }); 
 });
 
 test(formalName('The count of the unread button (up) should display correct', ['JPT-212', 'P1', 'Wayne.Zhou', 'JumpToUnreadButton']), async (t) => {
