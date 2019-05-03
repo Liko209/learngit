@@ -6,6 +6,7 @@
 import { UserConfigService, GlobalConfigService } from '../../../config';
 import { TelephonyUserConfig } from '../TelephonyUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { TELEPHONY_KEYS } from '../configKeys';
 
 jest.mock('../../../config/service/UserConfigService');
 jest.mock('../../../config/service/GlobalConfigService');
@@ -63,6 +64,25 @@ describe('TelephonyUserConfig', () => {
     it('Should call user config remove function', () => {
       telephonyConfig.removeConfig(KEY);
       expect(mockConfigService.remove).toHaveBeenCalledWith(MODULE, KEY);
+    });
+  });
+
+  describe('setLastCalledNumber', () => {
+    it('Should call user config to set last called number', () => {
+      telephonyConfig.setLastCalledNumber('test');
+      expect(mockConfigService.put).toHaveBeenCalledWith(
+        MODULE,
+        TELEPHONY_KEYS.LAST_CALLED_NUMBER,
+        'test',
+      );
+    });
+  });
+
+  describe('getLastCalledNumber', () => {
+    it('Should call user config to get last called number', () => {
+      jest.spyOn(mockConfigService, 'get').mockReturnValueOnce(VALUE);
+      const res = telephonyConfig.getLastCalledNumber();
+      expect(res).toBe(VALUE);
     });
   });
 });
