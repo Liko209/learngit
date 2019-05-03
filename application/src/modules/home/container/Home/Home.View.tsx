@@ -29,9 +29,7 @@ class HomeView extends Component<HomeViewProps> {
     );
     accountService.makeSureUserInWhitelist();
     if (window.jupiterElectron && window.jupiterElectron.handleUpgradeCheck) {
-      setTimeout(() => {
-        window.jupiterElectron.handleUpgradeCheck();
-      });
+      window.jupiterElectron.handleUpgradeCheck();
     }
   }
 
