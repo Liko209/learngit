@@ -3,12 +3,11 @@
  * @Date: 2019-04-01 15:16:45
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
-import { buildAction } from './utils';
-import { AbstractNotification } from './AbstractNotification';
-import { NotificationOpts, NotificationAction } from '../interface';
 import _ from 'lodash';
 import { isElectron, isSafari } from '@/common/isUserAgent';
-import { mainLogger } from 'sdk';
+import { NotificationOpts, NotificationAction } from '../interface';
+import { buildAction } from './utils';
+import { AbstractNotification } from './AbstractNotification';
 
 type SWCallbackArgs = {
   id: number;
@@ -16,13 +15,12 @@ type SWCallbackArgs = {
   scope: string;
 };
 
-const logger = mainLogger.tags('SWNotification');
 export class SWNotification extends AbstractNotification<NotificationAction[]> {
   static CLIENT_ID = Math.random();
   private _reg: ServiceWorkerRegistration;
   private _notifications: Notification[] = [];
   constructor() {
-    super();
+    super('SWNotification');
     this.isSupported() && this._subscribeWorkerMessage();
   }
 
@@ -61,8 +59,7 @@ export class SWNotification extends AbstractNotification<NotificationAction[]> {
     this._store.remove(scope, id);
   }
 
-  async create(title: string, opts: NotificationOpts) {
-    logger.log(`creating notification for ${opts.tag}`);
+  async showNotification(title: string, opts: NotificationOpts) {
     let registration;
     if (this._reg) {
       registration = this._reg;
@@ -70,8 +67,9 @@ export class SWNotification extends AbstractNotification<NotificationAction[]> {
       registration = await window.navigator.serviceWorker.ready;
       this._reg = registration;
     }
-    const { scope, id } = opts.data;
     opts.data.clientId = SWNotification.CLIENT_ID;
+
+    await this._reg.showNotification(title, opts);
     const actions = [
       ...(opts.actions || []),
       buildAction({
@@ -79,15 +77,8 @@ export class SWNotification extends AbstractNotification<NotificationAction[]> {
         handler: opts.onClick,
       }),
     ];
-    const isSuccessful = await this._checkNotificationValid(id);
-    logger.log(`check notification for ${opts.tag} is valid`, isSuccessful);
-    if (isSuccessful) {
-      this.handlePriority(this._notifications, opts);
-      await this._reg.showNotification(title, opts);
-      this._store.add(scope, id, actions);
-      this._updateNotificationsList();
-    }
-    return isSuccessful;
+    this._updateNotificationsList();
+    return actions;
   }
 
   async close(scope: string, id: number) {
@@ -116,13 +107,14 @@ export class SWNotification extends AbstractNotification<NotificationAction[]> {
     const notifications = await this._reg.getNotifications();
     this._notifications = _.unionBy(this._notifications, notifications, 'tag');
   }
-  private async _getNotifications() {
+
+  async getNotifications() {
     const registration = await window.navigator.serviceWorker.ready;
-    return await registration.getNotifications();
+    return registration.getNotifications();
   }
 
-  private async _checkNotificationValid(id: number) {
-    const notifications = await this._getNotifications();
+  async checkNotificationValid(id: number) {
+    const notifications = await this.getNotifications();
     for (const notification of notifications) {
       const { id: notificationId, clientId } = notification.data;
       const isSameNotificationFromDifferentClient =
