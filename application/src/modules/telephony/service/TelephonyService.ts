@@ -16,7 +16,7 @@ import {
   MAKE_CALL_ERROR_CODE,
   TelephonyCallInfo,
 } from 'sdk/module/telephony/types';
-import { PersonService, ContactType } from 'sdk/module/person';
+import { PersonService } from 'sdk/module/person';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
 import { mainLogger } from 'sdk';
 import { TelephonyStore, CALL_TYPE } from '../store';
