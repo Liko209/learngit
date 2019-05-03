@@ -9,6 +9,7 @@ import { container } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
 import { GlobalSearchStore } from '../../store';
 import { GlobalSearchService } from '../../service';
+import { SEARCH_SCOPE } from '../../types';
 import { FullSearchProps, FullSearchViewProps, TAB_TYPE } from './types';
 
 class FullSearchViewModel extends StoreViewModel<FullSearchProps>
@@ -33,6 +34,11 @@ class FullSearchViewModel extends StoreViewModel<FullSearchProps>
   @action
   setCurrentTab = (tab: TAB_TYPE) => {
     this._globalSearchStore.setCurrentTab(tab);
+  }
+
+  @action
+  resetSearchScope = () => {
+    this._globalSearchStore.setSearchScope(SEARCH_SCOPE.GLOBAL);
   }
 }
 
