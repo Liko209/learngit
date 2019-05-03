@@ -129,6 +129,42 @@ export class BaseConversationPage extends BaseWebComponent {
     }
   }
 
+  get body() {
+    return this.self.find(`[data-name="body"]`);
+  }
+
+  async scrollDownToCheckPostInOrder(posts: string[]) {
+    let remain = true
+    let lastIndex = 0;
+    let currentIndex = 0;
+    let lastScrollTop = await this.scrollDiv.scrollTop;
+    let tryTime = 0;
+    while (remain) {
+      const count = await this.body.count;
+      for (const i of _.range(count)) {
+        const text = await this.body.nth(i).textContent
+        currentIndex = posts.indexOf(text)
+        assert(currentIndex >= 0, 'some post is not in postList')
+        if (i > 0) {
+          assert(currentIndex == lastIndex + 1);
+        }
+        lastIndex = currentIndex
+      }
+      if (currentIndex == posts.length - 1) remain = false;
+      await this.scrollDownOnePage();
+      await this.t.wait(2e3);
+      if (lastScrollTop == await this.scrollDiv.scrollTop) {
+        tryTime = tryTime + 1
+      }
+      if (tryTime == 3) {
+        remain = false;
+        assert(currentIndex == posts.length - 1, "retry some times but all posts did not loaded")
+      }
+      lastScrollTop = await this.scrollDiv.scrollTop;
+      lastIndex = 0;
+    }
+  }
+
   postItemById(postId: string) {
     return this.getComponent(PostItem, this.posts.filter(`[data-id="${postId}"]`));
   }
@@ -197,13 +233,13 @@ export class BaseConversationPage extends BaseWebComponent {
     }
   }
 
-  async scrollToCurrentFirstPost() {
-    const scrollTop = await this.posts.nth(0).scrollTop;
+  async scrollUpOnePage() {
+    const scrollTop = await this.scrollDiv.scrollTop - await this.scrollDiv.clientHeight;
     await this.scrollToY(scrollTop);
   }
 
-  async scrollToCurrentLastPost() {
-    const scrollTop = await this.posts.nth(-1).scrollTop;
+  async scrollDownOnePage() {
+    const scrollTop = await this.scrollDiv.scrollTop + await this.scrollDiv.clientHeight;
     await this.scrollToY(scrollTop);
   }
 
@@ -214,7 +250,7 @@ export class BaseConversationPage extends BaseWebComponent {
         await postItem.scrollIntoView()
         break
       } else {
-        await this.scrollToCurrentFirstPost();
+        await this.scrollUpOnePage();
         await this.t.wait(1e3);
       }
     }
@@ -228,7 +264,7 @@ export class BaseConversationPage extends BaseWebComponent {
         await postItem.scrollIntoView()
         break
       } else {
-        await this.scrollToCurrentLastPost();
+        await this.scrollDownOnePage();
         await this.t.wait(1e3);
       }
     }

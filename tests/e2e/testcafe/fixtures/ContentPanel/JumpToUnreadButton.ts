@@ -11,7 +11,7 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { SITE_URL, BrandTire } from '../../config';
 import { v4 as uuid } from 'uuid';
-import { IGroup } from '../../v2/models';
+import { IGroup, ITestMeta } from '../../v2/models';
 
 fixture('ContentPanel/JumpToUnreadButton')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -170,7 +170,7 @@ test(formalName('Click the unread button (up) then jump to first unread post', [
 
   await h(t).withLog('And the "new Messages indicator" does not exists', async () => {
     await t.expect(conversationPage.newMessageDeadLine.exists).notOk();
-  }); 
+  });
 });
 
 test(formalName('The count of the unread button (up) should display correct', ['JPT-212', 'P1', 'Wayne.Zhou', 'JumpToUnreadButton']), async (t) => {
@@ -222,57 +222,73 @@ test(formalName('The count of the unread button (up) should display correct', ['
 });
 
 // JPT-225 deprecated, should be convert to MT
-test.skip(formalName('JPT-699 The count of the unread button (up) should show "99+" when post more than 99. \
-JPT-225 All unread messages can be downloaded when click the unread button', ['JPT-225', 'JPT-699', 'P2', 'Wayne.Zhou', 'Stream']), async (t) => {
-    const users = h(t).rcData.mainCompany.users;
-    const loginUser = users[6];
-    const otherUser = users[5];
+test.meta(<ITestMeta>{
+  priority: ["P2"],
+  caseIds: ["JPT-699", "JPT-255"],
+  keywords: ["Stream", "UnreadButton", "HighCost"],
+  maintainers: ["Wayne.Zhou", "Potar.He"]
+})('JPT-699 The count of the unread button (up) should show "99+" when post more than 99. & JPT-225 All unread messages can be downloaded when click the unread button', async (t) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[6];
+  const otherUser = users[5];
 
-    let team = <IGroup>{
-      type: "Team",
-      name: uuid(),
-      owner: loginUser,
-      members: [loginUser, otherUser]
+  let team = <IGroup>{
+    type: "Team",
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
+  await h(t).withLog(`Given I have an extension with one conversation named: ${team.name}`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  const msgList = _.range(29).map(i => `${i} ${uuid()}`);
+  let firstUnreadPostId;
+  await h(t).withLog('And this conversation has 100 unread messages for me', async () => {
+    const firstPost = `first post`
+    firstUnreadPostId = await h(t).scenarioHelper.sentAndGetTextPostId(firstPost, team, otherUser);
+    for (let msg of msgList) {
+      await h(t).scenarioHelper.sendTextPost(msg, team, otherUser);
     }
+    msgList.unshift(firstPost);
+  });
 
-    await h(t).withLog(`Given I have an extension with one conversation named: ${team.name}`, async () => {
-      await h(t).scenarioHelper.createTeam(team);
-    });
+  const app = new AppRoot(t);
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
 
-    const msgList = _.range(100).map(i => `${i} ${uuid()}`);
-    await h(t).withLog('And this conversation has 100 unread messages for me', async () => {
-      for (let msg of msgList) {
-        await h(t).scenarioHelper.sentAndGetTextPostId(msg, team, otherUser);
-      }
-    });
+  const teamsSection = app.homePage.messageTab.teamsSection;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog('And enter the team conversation', async () => {
+    await teamsSection.expand();
+    await teamsSection.conversationEntryById(team.glipId).enter();
+    await conversationPage.waitUntilPostsBeLoaded();
+  });
 
-    const app = new AppRoot(t);
-    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    });
+  await h(t).withLog('Then I should see unread button with unread count 99+', async () => {
+    await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok();
+    await conversationPage.countOnUnreadButtonShouldBe('30');
+  });
 
-    const teamsSection = app.homePage.messageTab.teamsSection;
-    const conversationPage = app.homePage.messageTab.conversationPage;
-    await h(t).withLog('And enter the team conversation', async () => {
-      await teamsSection.expand();
-      await teamsSection.conversationEntryById(team.glipId).enter();
-      await conversationPage.waitUntilPostsBeLoaded();
-    });
+  await h(t).withLog('When I click jump to first unread button', async () => {
+    await conversationPage.clickJumpToFirstUnreadButton();
+  });
 
-    await h(t).withLog('Then I should see unread button with unread count 99+', async () => {
-      await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok();
-      await conversationPage.countOnUnreadButtonShouldBe('99+');
-    });
+  await h(t).withLog('Then I should see the first post on the top', async () => {
+    await conversationPage.postCardByIdShouldBeOnTheTop(firstUnreadPostId);
+  });
 
-    await h(t).withLog('When I click jump to first unread button', async () => {
-      await conversationPage.clickJumpToFirstUnreadButton();
-    });
+  await h(t).withLog('And the "new Messages indicator" does not exists', async () => {
+    await t.expect(conversationPage.newMessageDeadLine.exists).notOk();
+  });
 
-    await h(t).withLog('Then the messages should be loaded', async () => {
-      await conversationPage.historyPostsDisplayedInOrder(msgList);
-    });
-  })
+  await h(t).withLog('Then the messages should be loaded', async () => {
+    await conversationPage.scrollDownToCheckPostInOrder(msgList);
+  });
+})
 
 test(formalName('Unread button (up) will dismiss when back and open the conversation', ['JPT-234', 'P1', 'Wayne.Zhou', 'Stream']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
