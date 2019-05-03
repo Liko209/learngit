@@ -16,7 +16,6 @@ import Wrapper from './Wrapper';
 
 import { dao, mainLogger } from 'sdk';
 import { AccountService } from 'sdk/module/account';
-import { ModalPortal } from '@/containers/Dialog';
 import { Dialer } from '@/modules/telephony';
 import { GlobalSearch } from '@/modules/GlobalSearch';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -29,6 +28,9 @@ class HomeView extends Component<HomeViewProps> {
       ServiceConfig.ACCOUNT_SERVICE,
     );
     accountService.makeSureUserInWhitelist();
+    if (window.jupiterElectron && window.jupiterElectron.handleUpgradeCheck) {
+      window.jupiterElectron.handleUpgradeCheck();
+    }
   }
 
   componentWillUnmount() {
@@ -65,7 +67,6 @@ class HomeView extends Component<HomeViewProps> {
             <LeftNav />
             <HomeRouter />
           </Bottom>
-          <ModalPortal />
           <Dialer />
           {showGlobalSearch && <GlobalSearch />}
         </Wrapper>

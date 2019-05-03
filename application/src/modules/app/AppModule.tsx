@@ -37,6 +37,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { Pal } from 'sdk/pal';
 import { isProductionVersion } from '@/common/envUtils';
+import { showUpgradeDialog } from '@/modules/electron';
 
 /**
  * The root module, we call it AppModule,
@@ -99,6 +100,7 @@ class AppModule extends AbstractModule {
       window.jupiterElectron.onPowerMonitorEvent = (actionName: string) => {
         socketManager.onPowerMonitorEvent(actionName);
       };
+      window.jupiterElectron.onUpgradeEvent = showUpgradeDialog;
     }
 
     // subscribe service notification to global store
