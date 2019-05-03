@@ -83,7 +83,7 @@ type IUriInfo = {
   uri: string;
 };
 
-type IPagingInfo = {
+type PagingInfo = {
   page: number;
   totalPages: number;
   perPage: number;
@@ -100,13 +100,13 @@ type INavigationInfo = {
 type ISpecialServiceNumber = {
   uri: string;
   records: ISpecialServiceRecord[];
-  paging: IPagingInfo;
+  paging: PagingInfo;
   navigation: INavigationInfo;
 };
 
 type ISpecialServiceRequest = {
-  page: number;
-  perPage: number;
+  page?: number;
+  perPage?: number;
   countryId: number;
 };
 
@@ -115,18 +115,21 @@ type IDialingPlanRequest = {
   perPage: number;
 };
 
-type IDialingPlanRecord = {
-  uri: string;
+type DialingCountryInfo = {
   id: string;
   name: string;
   isoCode: string;
   callingCode: string;
 };
 
-type IDialingPlan = {
+type DialingPlanCountryRecord = DialingCountryInfo & {
   uri: string;
-  records: IDialingPlanRecord[];
-  paging: IPagingInfo;
+};
+
+type DialingPlan = {
+  uri: string;
+  records: DialingPlanCountryRecord[];
+  paging: PagingInfo;
   navigation: INavigationInfo;
 };
 
@@ -156,7 +159,7 @@ type IPhoneNumberRecord = {
 type IExtensionPhoneNumberList = {
   uri: string;
   records: IPhoneNumberRecord[];
-  paging: IPagingInfo;
+  paging: PagingInfo;
   navigation: INavigationInfo;
 };
 
@@ -190,6 +193,33 @@ interface ITokenModel extends Token {
   token_type: string;
 }
 
+type RCServicePlanInfo = {
+  id?: string;
+  name?: string;
+  edition?: string;
+};
+
+type RCBillingPlanInfo = {
+  id?: string;
+  name?: string;
+  durationUnit?: string;
+  duration?: number;
+  type?: string;
+  includedPhoneLines?: number;
+};
+
+type RCServiceFeature = {
+  enabled?: boolean;
+  featureName: string;
+  reason?: string;
+};
+
+type RCBrandInfo = {
+  id?: string;
+  name?: string;
+  homeCountry?: RCCountryInfo;
+};
+
 export {
   RCCountryInfo,
   RCRegionalSetting,
@@ -197,10 +227,16 @@ export {
   ISpecialServiceRequest,
   ISpecialServiceNumber,
   IDialingPlanRequest,
-  IDialingPlan,
+  DialingPlan,
+  DialingPlanCountryRecord,
+  DialingCountryInfo,
   IPhoneNumberRequest,
   IExtensionPhoneNumberList,
   RCAPIVersion,
   ITokenModel,
+  RCServicePlanInfo,
+  RCBillingPlanInfo,
+  RCServiceFeature,
+  RCBrandInfo,
   RCAuthCodeInfo,
 };

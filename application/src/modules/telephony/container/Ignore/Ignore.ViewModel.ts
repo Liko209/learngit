@@ -8,10 +8,13 @@ import { container } from 'framework';
 import { TelephonyService } from '../../service';
 import { StoreViewModel } from '@/store/ViewModel';
 import { IgnoreProps, IgnoreViewProps } from './types';
+import { TELEPHONY_SERVICE } from '../../interface/constant';
 
 class IgnoreViewModel extends StoreViewModel<IgnoreProps>
   implements IgnoreViewProps {
-  private _telephonyService: TelephonyService = container.get(TelephonyService);
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
   ignore = () => {
     this._telephonyService.ignore();
   }

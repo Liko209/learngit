@@ -14,6 +14,7 @@ import _ from 'lodash';
 import * as md from 'jui/pattern/MessageInput/markdown';
 import { PostService } from 'sdk/module/post';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { DeltaStatic } from 'quill';
 
 jest.mock('sdk/module/post');
 jest.mock('sdk/module/groupConfig');
@@ -62,6 +63,7 @@ describe('MessageInputViewModel', () => {
   });
   afterEach(() => {
     jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('MessageInputViewModel', () => {
@@ -133,6 +135,17 @@ describe('MessageInputViewModel', () => {
         const handler = enterHandler.bind(that);
         const result = handler();
         expect(result).toBeUndefined();
+      });
+      it('should clear last enter line while enter text and press enter button', () => {
+        expect(
+          md.markdownFromDelta({
+            ops: [
+              {
+                insert: '123\n345\n',
+              },
+            ],
+          } as DeltaStatic).content,
+        ).toBe('123\n345');
       });
       it('should always call onPostHandler of the props when a post sent successfully', async () => {
         const onPostHandler = jest.fn();

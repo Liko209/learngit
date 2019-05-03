@@ -8,10 +8,13 @@ import { container } from 'framework';
 import { TelephonyService } from '../../service';
 import { StoreViewModel } from '@/store/ViewModel';
 import { VoiceMailProps, VoiceMailViewProps } from './types';
+import { TELEPHONY_SERVICE } from '../../interface/constant';
 
 class VoiceMailViewModel extends StoreViewModel<VoiceMailProps>
   implements VoiceMailViewProps {
-  private _telephonyService: TelephonyService = container.get(TelephonyService);
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
   sendToVoiceMail = () => {
     this._telephonyService.sendToVoiceMail();
   }

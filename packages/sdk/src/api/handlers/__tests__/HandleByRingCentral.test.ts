@@ -35,24 +35,22 @@ const postRequest = () => {
 describe('HandleByRingCentral', () => {
   it('tokenRefreshable is true and generate basic according to Api.httpConfig', () => {
     ApiConfiguration.setApiConfig({
-      rc: { clientId: 'rc_id', clientSecret: 'rc_secret' },
+      rc: { clientId: 'rc_id' },
     });
     expect(HandleByRingCentral.tokenRefreshable).toBeTruthy();
     expect(HandleByRingCentral.tokenExpirable).toBeTruthy();
     expect(HandleByRingCentral.tokenRefreshable).toBeTruthy();
-    expect(HandleByRingCentral.basic()).toEqual(btoa('rc_id:rc_secret'));
+    expect(HandleByRingCentral.basic()).toEqual('');
   });
 
   describe('requestDecoration', () => {
     it('should add basic token to params if needAuth is false', () => {
       handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => true);
       handler.accessToken = jest.fn().mockImplementation(() => 'token');
-      handler.getBasic = jest.fn().mockImplementation(() => 'basic');
       const decoration = HandleByRingCentral.requestDecoration(handler);
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => false);
       const decoratedRequest = decoration(request);
-      expect(decoratedRequest.headers.Authorization).toEqual('Basic basic');
       expect(decoratedRequest.data).toEqual(
         stringify({
           username: 'test',
@@ -64,12 +62,10 @@ describe('HandleByRingCentral', () => {
     it('should add basic token to params if needAuth is false and isOAuthTokenAvailable is false', () => {
       handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => false);
       handler.accessToken = jest.fn().mockImplementation(() => 'token');
-      handler.getBasic = jest.fn().mockImplementation(() => 'basic');
       const decoration = HandleByRingCentral.requestDecoration(handler);
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => false);
       const decoratedRequest = decoration(request);
-      expect(decoratedRequest.headers.Authorization).toEqual('Basic basic');
       expect(decoratedRequest.data).toEqual(
         stringify({
           username: 'test',
@@ -80,7 +76,6 @@ describe('HandleByRingCentral', () => {
     it('should add Bareea token to headers if needAuth is true', () => {
       handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => true);
       handler.accessToken = jest.fn().mockImplementation(() => 'token');
-      handler.getBasic = jest.fn().mockImplementation(() => 'basic');
       const decoration = HandleByRingCentral.requestDecoration(handler);
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => true);
@@ -94,12 +89,10 @@ describe('HandleByRingCentral', () => {
     it('should add Bareea token to headers if isOAuthTokenAvailable is false', () => {
       handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => false);
       handler.accessToken = jest.fn().mockImplementation(() => 'token');
-      handler.getBasic = jest.fn().mockImplementation(() => 'basic');
       const decoration = HandleByRingCentral.requestDecoration(handler);
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => true);
       const decoratedRequest = decoration(request);
-      expect(decoratedRequest.headers.Authorization).toEqual('Basic basic');
       expect(decoratedRequest.data).toEqual(
         stringify({
           username: 'test',

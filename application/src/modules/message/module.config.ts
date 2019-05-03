@@ -1,4 +1,7 @@
-import { MESSAGE_NOTIFICATION_MANAGER } from './interface/constant';
+import {
+  MESSAGE_NOTIFICATION_MANAGER,
+  MESSAGE_SERVICE,
+} from './interface/constant';
 /*
  * @Author: Valor Lin (valor.lin@ringcentral.com)
  * @Date: 2019-01-17 14:20:22
@@ -13,7 +16,7 @@ const config = {
   entry: MessageModule,
   provides: [
     MessageStore,
-    MessageService,
+    { name: MESSAGE_SERVICE, value: MessageService },
     { name: MESSAGE_NOTIFICATION_MANAGER, value: MessageNotificationManager },
   ],
 };

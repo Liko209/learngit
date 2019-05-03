@@ -356,6 +356,8 @@ class TelephonyService {
     this._telephonyStore.inputKey(digits);
     return this._serverTelephonyService.dtmf(this._callId as string, digits);
   }
+
+  callComponent = () => import('../container/Call');
 }
 
 export { TelephonyService };

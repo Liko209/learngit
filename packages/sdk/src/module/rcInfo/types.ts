@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { ISpecialServiceNumber, DialingCountryInfo } from 'sdk/api';
+
 enum ERCServiceFeaturePermission {
   VOIP_CALLING,
   INTERNATIONAL_CALLING,
@@ -63,6 +65,25 @@ enum RCServiceFeatureName {
   VIDEO_CONFERENCING = 'VideoConferencing',
 }
 
+enum RCBrandType {
+  RINGCENTRAL,
+  RINGCENTRAL_UK,
+  ATT,
+  TELUS,
+  OTHER,
+}
+
+type SpecialNumberRuleModel = {
+  [key: number]: ISpecialServiceNumber;
+};
+
+type StationLocationSetting = {
+  countryInfo: DialingCountryInfo;
+  areaCode: string;
+  areaCodeByManual: boolean;
+  countryByManual: boolean;
+};
+
 enum ERCWebSettingUri {
   BILLING_URI,
   PHONE_SYSTEM_URI,
@@ -74,5 +95,8 @@ export {
   RCServiceFeatureName,
   PermissionId,
   ERCServiceFeaturePermission,
+  RCBrandType,
+  SpecialNumberRuleModel,
+  StationLocationSetting,
   ERCWebSettingUri,
 };

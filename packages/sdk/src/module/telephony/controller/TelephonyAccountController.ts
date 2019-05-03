@@ -29,6 +29,7 @@ import { MakeCallController } from './MakeCallController';
 import { RCInfoService } from '../../rcInfo';
 import { ERCServiceFeaturePermission } from '../../rcInfo/types';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
   private _telephonyAccountDelegate: ITelephonyAccountDelegate;
@@ -78,6 +79,16 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return res;
   }
 
+  getLastCalledNumber() {
+    const telephonyConfig = new TelephonyUserConfig();
+    return telephonyConfig.getLastCalledNumber();
+  }
+
+  setLastCalledNumber(num: string) {
+    const telephonyConfig = new TelephonyUserConfig();
+    telephonyConfig.setLastCalledNumber(num);
+  }
+
   async makeCall(toNumber: string, fromNum: string) {
     let result = this._checkVoipStatus();
     if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
@@ -86,6 +97,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     const e164ToNumber = await this._makeCallController.getE164PhoneNumber(
       toNumber,
     );
+    this.setLastCalledNumber(e164ToNumber);
     result = await this._makeCallController.tryMakeCall(e164ToNumber);
     if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
       return result;

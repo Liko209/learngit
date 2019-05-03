@@ -4,7 +4,6 @@ const config: ApiConfig = {
     server: 'https://platform.ringcentral.com',
     pathPrefix: '/restapi',
     clientId: 'FVKGRbLRTxGxPempqg5f9g',
-    clientSecret: 'bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ',
     redirectUri: 'glip://rclogin',
   },
   glip: {

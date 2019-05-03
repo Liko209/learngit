@@ -12,7 +12,6 @@ type BaseConfig = {
 
 type RcConfig = BaseConfig & {
   clientId: string;
-  clientSecret: string;
   redirectUri: string;
 };
 

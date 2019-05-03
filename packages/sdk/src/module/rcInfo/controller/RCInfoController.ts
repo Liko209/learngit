@@ -7,11 +7,18 @@
 import { RCInfoFetchController } from './RCInfoFetchController';
 import { RCPermissionController } from './RCPermissionController';
 import { RolePermissionController } from './RolePermissionController';
+import { RegionInfoController } from './RegionInfoController';
+import { RCAccountInfoController } from './RCAccountInfoController';
+import { AccountServiceInfoController } from './AccountServiceInfoController';
+
 import { RCWebSettingInfoController } from './RCWebSettingInfoController';
 class RCInfoController {
   private _rcInfoFetchController: RCInfoFetchController;
   private _rcPermissionController: RCPermissionController;
   private _rolePermissionController: RolePermissionController;
+  private _regionInfoController: RegionInfoController;
+  private _rcAccountInfoController: RCAccountInfoController;
+  private _accountServiceInfoController: AccountServiceInfoController;
   private _webSettingInfoController: RCWebSettingInfoController;
 
   constructor() {}
@@ -40,6 +47,35 @@ class RCInfoController {
       );
     }
     return this._rolePermissionController;
+  }
+
+  getRCAccountInfoController(): RCAccountInfoController {
+    if (!this._rcAccountInfoController) {
+      this._rcAccountInfoController = new RCAccountInfoController(
+        this.getRCInfoFetchController(),
+      );
+    }
+    return this._rcAccountInfoController;
+  }
+
+  getAccountServiceInfoController(): AccountServiceInfoController {
+    if (!this._accountServiceInfoController) {
+      this._accountServiceInfoController = new AccountServiceInfoController(
+        this.getRCInfoFetchController(),
+      );
+    }
+    return this._accountServiceInfoController;
+  }
+
+  getRegionInfoController(): RegionInfoController {
+    if (!this._regionInfoController) {
+      this._regionInfoController = new RegionInfoController(
+        this.getRCInfoFetchController(),
+        this.getRCAccountInfoController(),
+        this.getAccountServiceInfoController(),
+      );
+    }
+    return this._regionInfoController;
   }
 
   getRcWebSettingInfoController(): RCWebSettingInfoController {
