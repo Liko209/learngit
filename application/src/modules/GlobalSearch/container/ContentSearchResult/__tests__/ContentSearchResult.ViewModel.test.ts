@@ -5,6 +5,7 @@
  */
 import { container } from 'framework';
 import { errorHelper } from 'sdk/error';
+import * as utils from '@/utils/error';
 import { Post } from 'sdk/module/post/entity';
 import { getGlobalValue } from '@/store/utils';
 import {
@@ -12,15 +13,16 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import { Notification } from '@/containers/Notification';
-import { ContentSearchResultViewModel } from '../ContentSearchResult.ViewModel';
-import { CONTENT_SEARCH_FETCH_COUNT } from '../types';
-import { SEARCH_SCOPE } from '../../../types';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { TypeDictionary } from 'sdk/utils';
 import { ESearchContentTypes } from 'sdk/api/glip/search';
+import storeManager from '@/store';
 import { PostService } from 'sdk/module/post';
+import { ERROR_CODES_NETWORK, JNetworkError, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
+import { ContentSearchResultViewModel } from '../ContentSearchResult.ViewModel';
+import { CONTENT_SEARCH_FETCH_COUNT } from '../types';
+import { SEARCH_SCOPE } from '../../../types';
 import * as config from '../../SearchFilter/config';
-import storeManager, { ENTITY_NAME } from '@/store';
 
 jest.mock('@/store/utils');
 
@@ -49,38 +51,43 @@ describe('ContentSearchResult [JPT-1558]', () => {
     ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
   });
 
-  it('Should network error message be toasted when network error.', async () => {
+  it('Should call generalErrorHandler be toasted when other error.', async (done: jest.DoneCallback) => {
     const vm = new ContentSearchResultViewModel({});
-
-    jest.spyOn(errorHelper, 'isBackEndError').mockReturnValue(false);
-    jest.spyOn(errorHelper, 'isNetworkConnectionError').mockReturnValue(true);
-
-    await vm.onPostsFetch();
-
-    expect(Notification.flashToast).toHaveBeenCalledWith({
-      message: 'globalSearch.prompt.contentSearchNetworkError',
-      dismissible: false,
-      fullWidth: false,
-      messageAlign: ToastMessageAlign.LEFT,
-      type: ToastType.ERROR,
+    jest.spyOn(utils, 'generalErrorHandler').mockReturnValue(jest.fn());
+    vm._onPostsInit = jest.fn().mockImplementationOnce(() => {
+      throw new Error('OTHER_ERROR');
     });
+    await vm.onPostsFetch();
+    expect(utils.generalErrorHandler).toHaveBeenCalled();
+    done();
   });
 
-  it('Should service error message be toasted when service error.', async () => {
+  it('Should network error message be toasted when network error.', async (done: jest.DoneCallback) => {
     const vm = new ContentSearchResultViewModel({});
-
-    jest.spyOn(errorHelper, 'isBackEndError').mockReturnValue(true);
-    jest.spyOn(errorHelper, 'isNetworkConnectionError').mockReturnValue(false);
-
-    await vm.onPostsFetch();
-
-    expect(Notification.flashToast).toHaveBeenCalledWith({
-      message: 'globalSearch.prompt.contentSearchServiceError',
-      dismissible: false,
-      fullWidth: false,
-      messageAlign: ToastMessageAlign.LEFT,
-      type: ToastType.ERROR,
+    vm._onPostsInit = jest.fn().mockImplementationOnce(() => {
+      throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK');
     });
+    await vm.onPostsFetch();
+    expect(Notification.flashToast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'globalSearch.prompt.contentSearchNetworkError',
+      }),
+    );
+    done();
+  });
+
+  it('Should service error message be toasted when service error.', async (done: jest.DoneCallback) => {
+    const vm = new ContentSearchResultViewModel({});
+    vm._onPostsInit = jest.fn().mockImplementationOnce(() => {
+      throw new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
+    });
+    await vm.onPostsFetch();
+    expect(Notification.flashToast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'globalSearch.prompt.contentSearchServiceError',
+      }),
+    );
+    done();
   });
 });
 
