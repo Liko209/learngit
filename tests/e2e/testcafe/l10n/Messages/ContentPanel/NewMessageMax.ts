@@ -13,8 +13,7 @@ test(formalName('Send a message with more than 10000 characters', ['P2', 'Messag
   const loginUser = h(t).rcData.mainCompany.users[4];
   const app = new AppRoot(t);
 
-  let groupId: number;
-  let postContent: string = `Long Message `;
+  let postContent: string = 'Long Message ';
   for(let i = 0; i < 1000; i++){
     postContent += '1234567890';
   }
@@ -27,12 +26,11 @@ test(formalName('Send a message with more than 10000 characters', ['P2', 'Messag
   await h(t).withLog(`When I enter a conversation`, async () => {
     await app.homePage.messageTab.teamsSection.expand();
     await app.homePage.messageTab.teamsSection.nthConversationEntry(0).enter();
-    groupId = await app.homePage.messageTab.getCurrentGroupIdFromURL();
   });
 
   const ConversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog(`And send a message with more than 10000 characters`, async () => {
-    await ConversationPage.sendMessage(postContent, {paste: true});
+    await ConversationPage.sendMessage(postContent, { paste: true });
   });
 
   await h(t).withLog(`Then I can see alert message`, async () => {
