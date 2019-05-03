@@ -30,9 +30,7 @@ class DBManager {
   }
 
   async deleteDatabase(): Promise<void> {
-    if (this.db) {
-      await this.db.delete();
-    }
+    await this.db.delete();
   }
 
   isDatabaseOpen(): boolean {
