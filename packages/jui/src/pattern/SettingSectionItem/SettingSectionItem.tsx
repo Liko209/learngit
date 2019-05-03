@@ -6,7 +6,13 @@
 import React from 'react';
 import styled from '../../foundation/styled-components';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';
-import { spacing, ellipsis, grey, lineClamp } from '../../foundation/utils';
+import {
+  spacing,
+  ellipsis,
+  grey,
+  lineClamp,
+  typography,
+} from '../../foundation/utils';
 import { JuiDivider, JuiDividerProps } from '../../components/Divider/Divider';
 
 type JuiSettingSectionItemProps = {
@@ -32,15 +38,16 @@ const LeftWrap = styled.div`
     overflow: hidden;
     width: 100%;
     flex-shrink: 1;
-    padding-right: ${spacing(2)};
+    padding-right: ${spacing(2.5)};
   }
 `;
 
 const LabelWrap = styled<TypographyProps>(Typography)`
   && {
     color: ${grey('900')};
-    font-size: ${({ theme }) => theme.typography.body2.fontSize};
+    ${typography('body2')}
     ${ellipsis()};
+    margin-bottom: ${spacing(1)};
 
     &.disabled {
       opacity: ${({ theme }) => theme.opacity.p50};
@@ -51,7 +58,7 @@ const LabelWrap = styled<TypographyProps>(Typography)`
 const DescriptionWrap = styled<TypographyProps>(Typography)`
   && {
     color: ${grey('600')};
-    font-size: ${({ theme }) => theme.typography.caption1.fontSize};
+    ${typography('caption1')}
     ${lineClamp(3, 15)}
 
     &.disabled {
@@ -67,15 +74,11 @@ const RightWrap = styled.div`
     justify-content: flex-end;
     width: 100%;
     flex-shrink: 2;
-    padding-left: ${spacing(2)};
+    padding-left: ${spacing(2.5)};
   }
 `;
 
-const DividerWrap = styled<JuiDividerProps>(JuiDivider)`
-  && {
-    margin-top: -${spacing(0.25)};
-  }
-`;
+const DividerWrap = styled<JuiDividerProps>(JuiDivider)``;
 
 const SettingSectionItemWrap = styled.div`
   && {
