@@ -30,6 +30,9 @@ import { HistoryHandler } from '../HistoryHandler';
 import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPostFocBuilder';
 import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDataListHandler';
 import { Post } from 'sdk/module/post/entity';
+import GroupStateModel from '@/store/models/GroupState';
+import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
+import { GroupState } from 'sdk/module/state/entity';
 
 jest.mock('sdk/module/item');
 jest.mock('sdk/module/post');
@@ -136,23 +139,29 @@ describe('StreamViewModel', () => {
 
   describe('getFirstUnreadPostByLoadAllUnread()', () => {
     function setupMock({
+      groupId,
       groupState,
       currentPosts,
       readThroughPost,
       postsNewerThanAnchor,
       postsOlderThanAnchor,
     }: any) {
+      const store = storeManager.getEntityMapStore(
+        ENTITY_NAME.GROUP_STATE,
+      ) as MultiEntityMapStore<GroupState, GroupStateModel>;
+      store.set(groupState);
       postService.getById.mockResolvedValue(readThroughPost);
       postService.getUnreadPostsByGroupId.mockResolvedValue({
         posts: postsNewerThanAnchor,
         items: [],
         hasMore: false,
       });
-      const dataProvider = { fetchData: jest.fn().mockName('fetchData()') };
-      dataProvider.fetchData.mockResolvedValueOnce({
-        data: postsOlderThanAnchor,
+      postService.getPostsByGroupId.mockResolvedValue({
+        posts: postsOlderThanAnchor,
+        items: [],
         hasMore: false,
       });
+      const dataProvider = { fetchData: jest.fn().mockName('fetchData()') };
       const listHandler = new FetchSortableDataListHandler<Post>(dataProvider, {
         isMatchFunc: () => true,
         transformFunc: (post: Post) => {
@@ -169,11 +178,10 @@ describe('StreamViewModel', () => {
       const historyHandler = new HistoryHandler();
       historyHandler.update(groupState, _.map(currentPosts, post => post.id));
 
-      const streamController = new StreamController(1, historyHandler, 1);
+      const streamController = new StreamController(groupId, historyHandler, 1);
       streamController.disableNewMessageSep();
       listHandler.upsert(currentPosts);
       streamController.enableNewMessageSep();
-      console.log(listHandler.listStore.items);
 
       const vm = setup({
         _streamController: streamController,
@@ -214,8 +222,9 @@ describe('StreamViewModel', () => {
       const readThroughPost = { id: 4, created_at: 104, creator_id: 1 };
 
       const { vm, historyHandler } = setupMock({
+        groupId: 1,
         readThroughPost,
-        groupState: { unreadCount: 4, readThrough: readThroughPost.id },
+        groupState: { id: 1, unreadCount: 4, readThrough: readThroughPost.id },
         currentPosts: [
           { id: 1, created_at: 101, creator_id: 1 },
           { id: 2, created_at: 102, creator_id: 1 },
