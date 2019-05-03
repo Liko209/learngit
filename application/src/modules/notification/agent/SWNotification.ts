@@ -17,7 +17,7 @@ type SWCallbackArgs = {
 };
 
 const logger = mainLogger.tags('SWNotification');
-export class SWNotification extends AbstractNotification<NotificationAction> {
+export class SWNotification extends AbstractNotification<NotificationAction[]> {
   static CLIENT_ID = Math.random();
   private _reg: ServiceWorkerRegistration;
   private _notifications: Notification[] = [];
