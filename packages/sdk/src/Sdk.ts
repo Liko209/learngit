@@ -79,7 +79,7 @@ class Sdk {
         notificationCenter.emitKVChange(SERVICE.LOGIN);
       }
     } else {
-      indexedDB.deleteDatabase('Glip');
+      await this.daoManager.deleteDatabase();
     }
     this._initDataAnalysis();
   }
