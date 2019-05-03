@@ -1,5 +1,7 @@
 import { RTCEngine } from '../RTCEngine';
 import { RTCMediaDeviceManager } from '../RTCMediaDeviceManager';
+import { kRTCProvisioningOptions } from '../../account/constants';
+import _ from 'lodash';
 
 describe('Engine', () => {
   describe('getInstance', () => {
@@ -27,6 +29,63 @@ describe('Engine', () => {
       expect(
         RTCMediaDeviceManager.instance().subscribeDeviceChange,
       ).toBeCalled();
+    });
+
+    it('should use customize user agent info when upper layer call setUserAgentInfo API', async () => {
+      RTCEngine.getInstance().destroy();
+      RTCEngine.getInstance().setUserAgentInfo({
+        endpointId: 'endpointId',
+        userAgent: 'userAgent',
+      });
+      const account = RTCEngine.getInstance().createAccount(null);
+      expect(account).not.toBeNull();
+      jest
+        .spyOn(account._regManager._userAgent, 'restartUA')
+        .mockImplementation(() => {});
+      account._regManager._restartUA(
+        {
+          device: {},
+          sipInfo: [],
+          sipFlags: {},
+        },
+        kRTCProvisioningOptions,
+      );
+      const expectedResult = _.cloneDeep(kRTCProvisioningOptions);
+      expectedResult.uuid = 'endpointId';
+      expectedResult.appName = 'userAgent';
+      expect(account._regManager._userAgent.restartUA).toBeCalledWith(
+        {
+          device: {},
+          sipInfo: [],
+          sipFlags: {},
+        },
+        expectedResult,
+      );
+    });
+
+    it("should use 'RingCentral Jupiter' as user agent when upper layer doesn't call setUserAgentInfo API", async () => {
+      RTCEngine.getInstance().destroy();
+      const account = RTCEngine.getInstance().createAccount(null);
+      expect(account).not.toBeNull();
+      jest
+        .spyOn(account._regManager._userAgent, 'restartUA')
+        .mockImplementation(() => {});
+      account._regManager._restartUA(
+        {
+          device: {},
+          sipInfo: [],
+          sipFlags: {},
+        },
+        kRTCProvisioningOptions,
+      );
+      expect(account._regManager._userAgent.restartUA).toBeCalledWith(
+        {
+          device: {},
+          sipInfo: [],
+          sipFlags: {},
+        },
+        kRTCProvisioningOptions,
+      );
     });
   });
 });

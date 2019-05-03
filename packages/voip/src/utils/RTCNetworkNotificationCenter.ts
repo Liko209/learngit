@@ -5,7 +5,6 @@
  */
 
 import { EventEmitter2 } from 'eventemitter2';
-
 import { RTC_NETWORK_EVENT, RTC_NETWORK_STATE } from './types';
 
 class RTCNetworkNotificationCenter extends EventEmitter2 {
@@ -25,7 +24,7 @@ class RTCNetworkNotificationCenter extends EventEmitter2 {
 
   private constructor() {
     super();
-    this._listenEvevt();
+    this._listenEvent();
   }
 
   private _onOnline() {
@@ -42,7 +41,7 @@ class RTCNetworkNotificationCenter extends EventEmitter2 {
     });
   }
 
-  private _listenEvevt() {
+  private _listenEvent() {
     window.addEventListener('online', () => {
       this._onOnline();
     });

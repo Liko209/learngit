@@ -72,8 +72,8 @@ enum RTC_STATUS_CODE {
 }
 
 type RTCUserAgentInfo = {
-  endpointId: string;
-  userAgent: string;
+  endpointId?: string;
+  userAgent?: string;
 };
 
 enum RTC_REPLY_MSG_PATTERN {

@@ -25,6 +25,7 @@ import {
 } from './types';
 import async, { AsyncQueue } from 'async';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
+import _ from 'lodash';
 
 const LOG_TAG = 'RTCRegistrationManager';
 const registerRetryMinValue = 30;
@@ -296,21 +297,22 @@ class RTCRegistrationManager extends EventEmitter2
     provisionData: RTCSipProvisionInfo,
     options: ProvisionDataOptions,
   ) {
+    const cloneOption = _.cloneDeep(options);
     if (this._userAgentInfo) {
       if (
         this._userAgentInfo.endpointId &&
         this._userAgentInfo.endpointId.length > 0
       ) {
-        options.uuid = this._userAgentInfo.endpointId;
+        cloneOption.uuid = this._userAgentInfo.endpointId;
       }
       if (
         this._userAgentInfo.userAgent &&
         this._userAgentInfo.userAgent.length > 0
       ) {
-        options.appName = this._userAgentInfo.userAgent;
+        cloneOption.appName = this._userAgentInfo.userAgent;
       }
     }
-    this._userAgent.restartUA(provisionData, options);
+    this._userAgent.restartUA(provisionData, cloneOption);
   }
 }
 
