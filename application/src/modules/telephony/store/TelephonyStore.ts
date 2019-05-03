@@ -5,7 +5,7 @@
  */
 
 import { LifeCycle } from 'ts-javascript-state-machine';
-import { observable, computed } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import { mainLogger } from 'sdk';
 import {
   HOLD_STATE,
@@ -68,6 +68,8 @@ class TelephonyStore {
   keypadEntered: boolean = false;
   @observable
   enteredKeys: string = '';
+  @observable
+  isMute = false;
 
   @observable
   pendingForHold: boolean = false;
@@ -106,7 +108,10 @@ class TelephonyStore {
     });
 
     this._callFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
-      const { to } = lifecycle;
+      const { to, from } = lifecycle;
+      if (to === from) {
+        return;
+      }
       this.callState = to as CALL_STATE;
       switch (this.callState) {
         case CALL_STATE.CONNECTED:
@@ -308,6 +313,7 @@ class TelephonyStore {
   }
 
   enableRecord = () => {
+    // prettier-ignore
     return this._recordDisableFSM[RECORD_DISABLED_STATE_TRANSITION_NAMES.ENABLE]();
   }
 
@@ -316,6 +322,7 @@ class TelephonyStore {
   }
 
   disableRecord = () => {
+    // prettier-ignore
     return this._recordDisableFSM[RECORD_DISABLED_STATE_TRANSITION_NAMES.DISABLE]();
   }
 
@@ -345,6 +352,11 @@ class TelephonyStore {
   @computed
   get recordDisabled() {
     return this.recordDisabledState === RECORD_DISABLED_STATE.DISABLED;
+  }
+
+  @action
+  switchBetweenMuteAndUnmute = () => {
+    this.isMute = !this.isMute;
   }
 }
 

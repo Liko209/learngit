@@ -14,22 +14,25 @@ type Props = EndViewProps & WithTranslation;
 
 @observer
 class EndViewComponent extends Component<Props> {
-  private _handleEnd = async () => {
+  private _handleEnd = (event: React.MouseEvent) => {
+    event.stopPropagation();
     const { end } = this.props;
     end();
   }
 
   render() {
+    const { size, t } = this.props;
     return (
       <JuiFabButton
         color="semantic.negative"
-        disableToolTip={true}
         onClick={this._handleEnd}
-        size="moreLarge"
+        size={size ? size : 'moreLarge'}
         showShadow={false}
         tooltipPlacement="top"
         iconName="hand_up"
         data-test-automation-id="telephony-end-btn"
+        aria-label={t('telephony.action.end')}
+        tooltipTitle={t('telephony.action.end')}
       />
     );
   }

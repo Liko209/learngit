@@ -5,39 +5,22 @@
  */
 
 import styled from '../../foundation/styled-components';
-import { width } from '../../foundation/utils';
-
-import { JuiAvatarActions } from './AvatarActions';
-import { StyledMoreIconButton } from './StyledMoreIconButton';
+import { StyledSearchIconButton } from './StyledSearchIconButton';
 
 const StyledRight = styled('div')`
   display: flex;
   align-items: center;
   justify-content: flex-end;
 
-  @media (min-width: 1280px) {
-    width: ${width(66)};
+  ${StyledSearchIconButton} {
+    display: none;
   }
 
-  @media (min-width: 1101px) and (max-width: 1279px) {
-    flex: 1;
-  }
-
-  @media (max-width: 1100px) {
-    width: ${width(33)};
-  }
-
-  @media (max-width: 600px) {
-    /* ${JuiAvatarActions} {
-      display: none;
-    } */
-    width: auto;
-  }
-  /* @media (min-width: 601px) {
-    ${StyledMoreIconButton} {
-      display: none;
+  @media (max-width: 805px) {
+    ${StyledSearchIconButton} {
+      display: block;
     }
-  } */
+  }
 `;
 
 StyledRight.displayName = 'StyledRight';
