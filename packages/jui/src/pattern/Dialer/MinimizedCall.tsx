@@ -67,17 +67,19 @@ const StyledActionsContainer = styled('div')`
 
 class JuiMinimizedCall extends PureComponent<Props> {
   render() {
-    const { name, label, Actions, onClick } = this.props;
+    const { name, label, Actions, onClick, ...rest } = this.props;
     return (
-      <StyledMinimizedCall onClick={onClick}>
+      <StyledMinimizedCall onClick={onClick} {...rest}>
         <StyledInfo>
           <StyledMarquee text={name} time={15} hoverToStop={true} />
           <StyledLabel>{label}</StyledLabel>
         </StyledInfo>
         <StyledActionsContainer>
           {Actions &&
-            Actions.map((Action: React.ComponentType) => (
-              <Action key={Action.displayName} />
+            Actions.map((Action: React.ComponentType, index: number) => (
+              <Action
+                key={Action.displayName || `minimized_view_actions_${index}`}
+              />
             ))}
         </StyledActionsContainer>
       </StyledMinimizedCall>

@@ -23,9 +23,15 @@ class DialpadView extends React.Component<DialpadProps> {
         Actions={Actions}
         name="112233112233112233112233"
         label="112233"
+        data-test-automation-id="telephony-minimized-view"
       />
     ) : (
-      <JuiDialpadBtn size="medium" iconName="keypad" disableRipple={true} />
+      <JuiDialpadBtn
+        size="medium"
+        iconName="keypad"
+        disableRipple={true}
+        data-test-automation-id="telephony-dialpad-btn"
+      />
     );
   }
 }
