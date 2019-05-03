@@ -44,9 +44,8 @@ test(formalName('JPT-60 Can scroll up/down when have more than 1 page posts.', [
 
 
     await h(t).withLog('And send 20 messages to conversation', async () => {
-      const posts = [`post:${uuid()}`];
       for (let i of _.range(20)) {
-        postsId.push(await h(t).platform(otherUser).sendTextPost(posts[0] + i, privateChat.glipId));
+        postsId.push(await h(t).platform(otherUser).sendTextPost(i + ` post:${uuid()}`, privateChat.glipId));
       }
     });
 
