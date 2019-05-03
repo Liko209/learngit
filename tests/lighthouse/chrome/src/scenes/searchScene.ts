@@ -34,9 +34,14 @@ class SearchScene extends Scene {
       await FileService.saveTracesIntoDisk(this.artifacts, this.name());
       await FileService.saveMemoryIntoDisk(this.artifacts, this.name());
     }
+    this.artifacts['MemoryGatherer'] = {};
   }
 
   supportFps(): boolean {
+    return true;
+  }
+
+  supportDashboard(): boolean {
     return true;
   }
 }

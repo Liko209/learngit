@@ -35,7 +35,6 @@ class StateController {
         this._entitySourceController,
         requestController,
         this.getStateFetchDataController(),
-        this.getTotalUnreadController(),
       );
     }
     return this._stateActionController;
@@ -46,7 +45,6 @@ class StateController {
       this._stateDataHandleController = new StateDataHandleController(
         this._entitySourceController,
         this.getStateFetchDataController(),
-        this.getTotalUnreadController(),
       );
     }
     return this._stateDataHandleController;

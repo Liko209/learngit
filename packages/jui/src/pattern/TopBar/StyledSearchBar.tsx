@@ -13,7 +13,8 @@ import { width, palette, opacity, typography } from '../../foundation/utils';
 import { Theme } from '../../foundation/theme/theme';
 
 const TobBarSearch = styled(JuiOutlineTextField)`
-  width: ${width(67)};
+  width: 100%;
+  max-width: ${width(67)};
   background-color: ${({ theme }: { theme: Theme }) =>
     fade(palette('common', 'white')({ theme }), opacity('p20')({ theme }))};
   border: 0;
@@ -37,7 +38,6 @@ const TobBarSearch = styled(JuiOutlineTextField)`
 `;
 
 type StyledJuiSearchBarProps = {
-  // isShowSearchBar: boolean;
   // closeSearchBar: Function;
   onClick: (event: React.MouseEvent<HTMLElement>) => void;
   onClear: () => void;
@@ -70,6 +70,7 @@ const StyledJuiSearchBar = memo((props: StyledJuiSearchBarProps) => {
         },
       }}
       data-test-automation-id="topBar-search-bar"
+      className="topBar-search-bar"
     />
   );
 });

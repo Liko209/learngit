@@ -7,6 +7,7 @@
 export type PerformanceItem = {
   startTime: number;
   endTime: number;
+  count?: number;
 };
 
 export enum PERFORMANCE_KEYS {

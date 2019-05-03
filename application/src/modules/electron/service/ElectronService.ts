@@ -6,7 +6,7 @@
 
 class ElectronService {
   constructor() {
-    if (!window.jupiterElectron || !window.jupiterElectron.setBadgeCount) {
+    if (!window.jupiterElectron) {
       throw new Error(
         'Can not instantiate ElectronService in non-electron environment',
       );
@@ -14,7 +14,13 @@ class ElectronService {
   }
 
   setBadgeCount(count: number) {
-    window.jupiterElectron.setBadgeCount(count || 0);
+    window.jupiterElectron.setBadgeCount &&
+      window.jupiterElectron.setBadgeCount(count || 0);
+  }
+
+  bringAppToFront() {
+    const bringAppToFront = window.jupiterElectron.bringAppToFront;
+    bringAppToFront && bringAppToFront();
   }
 }
 

@@ -130,7 +130,7 @@ class PostActionController implements IPostActionController {
     if (id < 0) {
       return this._deletePreInsertedPost(id);
     }
-    return !!this._deletePostFromRemote(id);
+    return !!(await this._deletePostFromRemote(id));
   }
 
   async removeItemFromPost(postId: number, itemId: number) {

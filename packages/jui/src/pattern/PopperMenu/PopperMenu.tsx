@@ -13,7 +13,7 @@ type AnchorProps = {
   tooltipForceHide: boolean;
 };
 
-type PopperMenuProps = {
+type JuiPopperMenuProps = {
   children: React.ReactNode;
   Anchor: React.SFC<AnchorProps>;
   automationId?: string;
@@ -29,10 +29,10 @@ const StyledAnchorWrapper = styled.div`
 `;
 
 class JuiPopperMenu extends React.PureComponent<
-  PopperMenuProps,
+  JuiPopperMenuProps,
   { anchorEl: HTMLElement | null }
 > {
-  constructor(props: PopperMenuProps) {
+  constructor(props: JuiPopperMenuProps) {
     super(props);
     this.state = {
       anchorEl: null,
@@ -97,4 +97,4 @@ class JuiPopperMenu extends React.PureComponent<
   }
 }
 
-export { JuiPopperMenu, PopperMenuProps, AnchorProps };
+export { JuiPopperMenu, JuiPopperMenuProps, AnchorProps };

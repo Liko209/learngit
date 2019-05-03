@@ -11,8 +11,18 @@ import { PostDataController } from '../../controller/PostDataController';
 import { ProfileService } from '../../../profile';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
-jest.mock('../../../account/config/AccountUserConfig');
-jest.mock('../../../../framework/controller/impl/EntityNotificationController');
+jest.mock('../../../account/config/AccountUserConfig', () => {
+  const xx = {
+    getGlipUserId() {
+      return 1;
+    },
+  };
+  return {
+    AccountUserConfig: () => {
+      return xx;
+    },
+  };
+});
 jest.mock('../../controller/PostDataController');
 jest.mock('../../controller/PostController');
 jest.mock('../../controller/implementation/PostSearchController');
@@ -36,6 +46,18 @@ describe('PostService', () => {
 
   beforeEach(() => {
     clearMocks();
+    setUp();
+  });
+
+  describe('canSaveRemoteEntity()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+    it('should return false', () => {
+      const result = postService['canSaveRemoteEntity']();
+      expect(result).toBeFalsy();
+    });
   });
 
   describe('handleSexioData', () => {
@@ -75,7 +97,32 @@ describe('PostService', () => {
     it('should call post data controller', async () => {
       const rawPost = [{ _id: 1 }, { _id: 2 }] as any;
       await postService.handleIndexData(rawPost, true);
-      expect(postDataController.handleIndexPosts).toBeCalledWith(rawPost, true);
+      expect(postDataController.handleIndexPosts).toBeCalledWith(
+        rawPost,
+        true,
+        undefined,
+      );
+    });
+
+    it('should not filter deactivated post', async () => {
+      const rawPost = [
+        { _id: 1, creator_id: 2 },
+        { _id: 2, deactivated: false, creator_id: 2 },
+        { _id: 3, deactivated: true, creator_id: 2 },
+        { _id: 4, deactivated: true, creator_id: 1 },
+      ] as any;
+      postDataController.transformData = jest.fn().mockReturnValue(rawPost);
+      const observer = new class {
+        onEntitiesChanged = jest.fn();
+      }();
+      postService.addEntityNotificationObserver(observer);
+      await postService.handleSexioData(rawPost);
+
+      expect(observer.onEntitiesChanged).toBeCalledWith([
+        rawPost[0],
+        rawPost[1],
+        rawPost[2],
+      ]);
     });
   });
   describe('PostSearchController', () => {

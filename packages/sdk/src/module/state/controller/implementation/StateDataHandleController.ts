@@ -15,21 +15,20 @@ import { StateHandleTask, GroupCursorHandleTask } from '../../types';
 import notificationCenter from '../../../../service/notificationCenter';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { StateFetchDataController } from './StateFetchDataController';
-import { TotalUnreadController } from './TotalUnreadController';
 import { mainLogger } from 'foundation';
 import { AccountUserConfig } from '../../../../module/account/config';
 import { MyStateConfig } from '../../../state/config';
-import { SYNC_SOURCE } from '../../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../../module/sync/types';
 import { shouldEmitNotification } from '../../../../utils/notificationUtils';
 
 type DataHandleTask = StateHandleTask | GroupCursorHandleTask;
+const LOG_TAG = 'StateDataHandleController';
 
 class StateDataHandleController {
   private _taskArray: DataHandleTask[];
   constructor(
     private _entitySourceController: IEntitySourceController<GroupState>,
     private _stateFetchDataController: StateFetchDataController,
-    private _totalUnreadController: TotalUnreadController,
   ) {
     this._taskArray = [];
   }
@@ -37,6 +36,7 @@ class StateDataHandleController {
   async handleState(
     states: Partial<State>[],
     source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<void> {
     const stateTask: DataHandleTask = {
       type: TASK_DATA_TYPE.STATE,
@@ -44,7 +44,7 @@ class StateDataHandleController {
     };
     this._taskArray.push(stateTask);
     if (this._taskArray.length === 1) {
-      await this._startDataHandleTask(this._taskArray[0], source);
+      await this._startDataHandleTask(this._taskArray[0], source, changeMap);
     }
   }
 
@@ -62,6 +62,7 @@ class StateDataHandleController {
   private async _startDataHandleTask(
     task: DataHandleTask,
     source?: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<void> {
     try {
       let transformedState: TransformedState;
@@ -71,8 +72,11 @@ class StateDataHandleController {
         transformedState = this._transformGroupData(task.data);
       }
       const updatedState = await this._generateUpdatedState(transformedState);
-      await this._updateEntitiesAndDoNotification(updatedState, source);
-      this._totalUnreadController.handleGroupState(updatedState.groupStates);
+      await this._updateEntitiesAndDoNotification(
+        updatedState,
+        source,
+        changeMap,
+      );
     } catch (err) {
       mainLogger.error(`StateDataHandleController, handle task error, ${err}`);
     }
@@ -83,10 +87,19 @@ class StateDataHandleController {
     }
   }
 
-  private _transformGroupData(groups: Partial<Group>[]): TransformedState {
+  private _transformGroupData(groupArray: any): TransformedState {
     const transformedState: TransformedState = {
       groupStates: [],
     };
+    let groups = groupArray;
+    if (groups && groups.body) {
+      if (groups.body.partials) {
+        groups = Array.from(groups.body.partials.values());
+      } else if (groups.body.entities) {
+        groups = Array.from(groups.body.entities.values());
+      }
+    }
+
     transformedState.groupStates = _.compact(
       groups.map((group: Partial<State>) => {
         const groupId = group._id || group.id;
@@ -117,11 +130,16 @@ class StateDataHandleController {
               groupState.group_post_drp_cursor = group[key];
               break;
             }
+            case 'last_author_id': {
+              groupState.last_author_id = group[key];
+              break;
+            }
           }
         });
         return groupState;
       }),
     );
+
     return transformedState;
   }
 
@@ -175,7 +193,7 @@ class StateDataHandleController {
         myState[key] = state[key];
       });
     });
-    if (myState.id && myState.id > 0) {
+    if (myState.id !== undefined && myState.id > 0) {
       transformedState.myState = myState as State;
     }
     transformedState.groupStates = Array.from(groupIds).map(
@@ -198,6 +216,8 @@ class StateDataHandleController {
         (await this._stateFetchDataController.getAllGroupStatesFromLocal(
           ids,
         )) || [];
+      const userConfig = new AccountUserConfig();
+      const currentUserId: number = userConfig.getGlipUserId();
       updatedState.groupStates = _.compact(
         groupStates.map((groupState: GroupState) => {
           let stateChanged: boolean = false;
@@ -206,125 +226,36 @@ class StateDataHandleController {
           });
           if (localGroupState) {
             if (
-              groupState.group_post_cursor &&
-              groupState.group_post_drp_cursor
+              this._hasInvalidCursor(
+                groupState,
+                localGroupState,
+                transformedState.isFromIndexData || false,
+              )
             ) {
-              if (
-                groupState.group_post_cursor +
-                  groupState.group_post_drp_cursor <
-                (localGroupState.group_post_cursor || 0) +
-                  (localGroupState.group_post_drp_cursor || 0)
-              ) {
-                mainLogger.info(
-                  '[StateDataHandleController]: invalid group_post_cursor and group_post_drp_cursor change',
-                );
-                return;
-              }
-              if (
-                groupState.group_post_cursor !==
-                  (localGroupState.group_post_cursor || 0) ||
-                groupState.group_post_drp_cursor !==
-                  (localGroupState.group_post_drp_cursor || 0)
-              ) {
-                stateChanged = true;
-              }
-            } else if (groupState.group_post_cursor) {
-              if (
-                groupState.group_post_cursor <
-                (localGroupState.group_post_cursor || 0)
-              ) {
-                mainLogger.info(
-                  '[StateDataHandleController]: invalid group_post_cursor change',
-                );
-                return;
-              }
-              if (
-                groupState.group_post_cursor >
-                (localGroupState.group_post_cursor || 0)
-              ) {
-                stateChanged = true;
-              }
-            } else if (groupState.group_post_drp_cursor) {
-              if (
-                groupState.group_post_drp_cursor <
-                (localGroupState.group_post_drp_cursor || 0)
-              ) {
-                mainLogger.info(
-                  '[StateDataHandleController]: invalid group_post_drp_cursor change',
-                );
-                return;
-              }
-              if (
-                groupState.group_post_drp_cursor >
-                (localGroupState.group_post_drp_cursor || 0)
-              ) {
-                stateChanged = true;
-              }
+              return;
             }
-            if (groupState.post_cursor) {
-              if (groupState.post_cursor > (localGroupState.post_cursor || 0)) {
-                stateChanged = true;
-              } else if (
-                groupState.post_cursor < (localGroupState.post_cursor || 0)
-              ) {
-                if (
-                  !groupState.marked_as_unread &&
-                  !transformedState.isFromIndexData
-                ) {
-                  mainLogger.info(
-                    `[StateDataHandleController]: invalid state_post_cursor change: ${groupState}`,
-                  );
-                  return;
-                }
-                stateChanged = true;
-              }
-            }
-            if (
-              groupState.unread_deactivated_count &&
-              groupState.unread_deactivated_count !==
-                (localGroupState.unread_deactivated_count || 0)
-            ) {
-              stateChanged = true;
-            }
-            if (
-              groupState.unread_mentions_count &&
-              groupState.unread_mentions_count !==
-                (localGroupState.unread_mentions_count || 0)
-            ) {
-              stateChanged = true;
-            }
-            if (
-              groupState.read_through &&
-              groupState.read_through > (localGroupState.read_through || 0)
-            ) {
-              stateChanged = true;
-            }
+            stateChanged = this._isStateChanged(groupState, localGroupState);
           }
           const resultGroupState = _.merge({}, localGroupState, groupState);
 
-          // calculate umi
-          let unreadCount: number = 0;
-          if (transformedState.isSelf) {
-            unreadCount = 0;
-          } else {
-            const group_cursor =
-              (resultGroupState.group_post_cursor || 0) +
-              (resultGroupState.group_post_drp_cursor || 0);
-            const state_cursor =
-              (resultGroupState.post_cursor || 0) +
-              (resultGroupState.unread_deactivated_count || 0);
-            unreadCount = Math.max(group_cursor - state_cursor, 0);
-          }
-
-          if (unreadCount !== resultGroupState.unread_count) {
-            resultGroupState.unread_count = unreadCount;
+          // when read group in local , it may only change the unread_count, so we should calculate umi every time
+          const updateUnread = this._calculateUnread(
+            resultGroupState,
+            transformedState.isSelf || false,
+            currentUserId,
+          );
+          if (updateUnread !== resultGroupState.unread_count) {
+            mainLogger
+              .tags(LOG_TAG)
+              .info(
+                `umi:${resultGroupState.unread_count}->${updateUnread}, id:${
+                  groupState.id
+                }, lastPoster:${resultGroupState.last_author_id}, mark:${
+                  resultGroupState.marked_as_unread
+                }`,
+              );
+            resultGroupState.unread_count = updateUnread;
             stateChanged = true;
-          }
-
-          if (resultGroupState.unread_count > 0) {
-            resultGroupState.marked_as_unread = true;
-          } else {
-            resultGroupState.marked_as_unread = false;
           }
           return stateChanged ? resultGroupState : undefined;
         }),
@@ -333,9 +264,190 @@ class StateDataHandleController {
     return updatedState;
   }
 
+  private _hasInvalidCursor(
+    updateState: GroupState,
+    localState: GroupState,
+    isFromIndex: boolean,
+  ): boolean {
+    if (
+      updateState.group_post_cursor !== undefined &&
+      updateState.group_post_drp_cursor !== undefined
+    ) {
+      if (
+        updateState.group_post_cursor + updateState.group_post_drp_cursor <
+        (localState.group_post_cursor || 0) +
+          (localState.group_post_drp_cursor || 0)
+      ) {
+        mainLogger
+          .tags(LOG_TAG)
+          .info(
+            `invalid GCursor:${updateState.group_post_cursor}, DCursor:${
+              updateState.group_post_drp_cursor
+            }, id:${updateState.id}`,
+          );
+        return true;
+      }
+    } else if (updateState.group_post_cursor !== undefined) {
+      if (updateState.group_post_cursor < (localState.group_post_cursor || 0)) {
+        mainLogger
+          .tags(LOG_TAG)
+          .info(
+            `invalid GCursor:${updateState.group_post_cursor}, id:${
+              updateState.id
+            }`,
+          );
+        return true;
+      }
+    } else if (updateState.group_post_drp_cursor !== undefined) {
+      if (
+        updateState.group_post_drp_cursor <
+        (localState.group_post_drp_cursor || 0)
+      ) {
+        mainLogger
+          .tags(LOG_TAG)
+          .info(
+            `invalid DCursor:${updateState.group_post_drp_cursor}, id:${
+              updateState.id
+            }`,
+          );
+        return true;
+      }
+    }
+    if (
+      updateState.post_cursor !== undefined &&
+      updateState.post_cursor < (localState.post_cursor || 0) &&
+      !updateState.marked_as_unread &&
+      !isFromIndex
+    ) {
+      mainLogger
+        .tags(LOG_TAG)
+        .info(
+          `invalid SCursor:${updateState.post_cursor}, id:${updateState.id}`,
+        );
+      return true;
+    }
+    return false;
+  }
+
+  private _isStateChanged(
+    updateState: GroupState,
+    localState: GroupState,
+  ): boolean {
+    if (
+      updateState.group_post_cursor !== undefined &&
+      updateState.group_post_drp_cursor !== undefined &&
+      (updateState.group_post_cursor !== localState.group_post_cursor ||
+        updateState.group_post_drp_cursor !== localState.group_post_drp_cursor)
+    ) {
+      mainLogger
+        .tags(LOG_TAG)
+        .info(
+          `GCursor:${localState.group_post_cursor}->${
+            updateState.group_post_cursor
+          }, DCursor: ${localState.group_post_drp_cursor}->${
+            updateState.group_post_drp_cursor
+          }, id:${updateState.id}`,
+        );
+      return true;
+    }
+    if (
+      updateState.group_post_cursor !== undefined &&
+      updateState.group_post_cursor !== localState.group_post_cursor
+    ) {
+      mainLogger
+        .tags(LOG_TAG)
+        .info(
+          `GCursor:${localState.group_post_cursor}->${
+            updateState.group_post_cursor
+          }, id:${updateState.id}`,
+        );
+      return true;
+    }
+    if (
+      updateState.group_post_drp_cursor !== undefined &&
+      updateState.group_post_drp_cursor !== localState.group_post_drp_cursor
+    ) {
+      mainLogger
+        .tags(LOG_TAG)
+        .info(
+          `DCursor:${localState.group_post_drp_cursor}->${
+            updateState.group_post_drp_cursor
+          }, id:${updateState.id}`,
+        );
+      return true;
+    }
+    if (
+      updateState.post_cursor !== undefined &&
+      updateState.post_cursor !== localState.post_cursor
+    ) {
+      mainLogger
+        .tags(LOG_TAG)
+        .info(
+          `SCursor:${localState.post_cursor}->${updateState.post_cursor}, id:${
+            updateState.id
+          }`,
+        );
+      return true;
+    }
+    if (
+      updateState.unread_deactivated_count !== undefined &&
+      updateState.unread_deactivated_count !==
+        localState.unread_deactivated_count
+    ) {
+      return true;
+    }
+    if (
+      updateState.unread_mentions_count !== undefined &&
+      updateState.unread_mentions_count !== localState.unread_mentions_count
+    ) {
+      return true;
+    }
+    if (
+      updateState.read_through !== undefined &&
+      updateState.read_through > (localState.read_through || 0)
+    ) {
+      return true;
+    }
+    if (
+      updateState.marked_as_unread !== undefined &&
+      updateState.marked_as_unread !== localState.marked_as_unread
+    ) {
+      return true;
+    }
+    if (
+      updateState.last_author_id !== undefined &&
+      updateState.last_author_id !== localState.last_author_id
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  private _calculateUnread(
+    finalState: GroupState,
+    isSelf: boolean,
+    currentUserId: number,
+  ): number {
+    if (
+      isSelf ||
+      (finalState.last_author_id === currentUserId &&
+        finalState.marked_as_unread !== true)
+    ) {
+      return 0;
+    }
+    const group_cursor =
+      (finalState.group_post_cursor || 0) +
+      (finalState.group_post_drp_cursor || 0);
+    const state_cursor =
+      (finalState.post_cursor || 0) +
+      (finalState.unread_deactivated_count || 0);
+    return Math.max(group_cursor - state_cursor, 0);
+  }
+
   private async _updateEntitiesAndDoNotification(
     transformedState: TransformedState,
     source?: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<void> {
     if (transformedState.myState) {
       const myState = transformedState.myState;
@@ -346,22 +458,38 @@ class StateDataHandleController {
       } catch (err) {
         mainLogger.error(`StateDataHandleController, my state error, ${err}`);
       }
-      notificationCenter.emitEntityUpdate(
-        ENTITY.MY_STATE,
-        [myState],
-        [myState],
-      );
+      // if (Date.now() === 0) {
+      if (changeMap) {
+        changeMap.set(ENTITY.MY_STATE, {
+          entities: [myState],
+          partials: [myState],
+        });
+      } else {
+        notificationCenter.emitEntityUpdate(
+          ENTITY.MY_STATE,
+          [myState],
+          [myState],
+        );
+      }
+      // }
     }
     if (transformedState.groupStates.length > 0) {
       await this._entitySourceController.bulkUpdate(
         transformedState.groupStates,
       );
       if (shouldEmitNotification(source)) {
-        notificationCenter.emitEntityUpdate(
-          ENTITY.GROUP_STATE,
-          transformedState.groupStates,
-          transformedState.groupStates,
-        );
+        if (changeMap) {
+          changeMap.set(ENTITY.GROUP_STATE, {
+            entities: transformedState.groupStates,
+            partials: transformedState.groupStates,
+          });
+        } else {
+          notificationCenter.emitEntityUpdate(
+            ENTITY.GROUP_STATE,
+            transformedState.groupStates,
+            transformedState.groupStates,
+          );
+        }
       }
     }
   }

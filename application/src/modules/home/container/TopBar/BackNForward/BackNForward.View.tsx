@@ -54,7 +54,7 @@ class BackNForward extends Component<Props> {
     } = this.props;
 
     return (
-      <>
+      <div style={{ display: 'flex' }}>
         <JuiHistoryOperation
           type={OPERATION.BACK}
           menu={backRecord.reverse()}
@@ -73,7 +73,7 @@ class BackNForward extends Component<Props> {
           onClickMenu={go}
           menuItemMaxWidth={80}
         />
-      </>
+      </div>
     );
   }
 }

@@ -5,6 +5,7 @@ import { IStep, Status, IStepOptions } from '../models';
 import { getLogger } from 'log4js';
 import { H } from './utils';
 import { MiscUtils } from '../utils';
+import chalk from 'chalk';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -52,7 +53,6 @@ class Step implements IStep {
   }
 
   async execute() {
-    let ret;
     // pre-execute
     if (this.status === undefined)
       this.status = Status.PASSED;
@@ -63,25 +63,21 @@ class Step implements IStep {
     // execute closure
     if (this.closure) {
       try {
-        ret = await this.closure(this);
+        await this.closure(this);
       } catch (error) {
         this.status = Status.FAILED;
-        // takeScreenshot will failed when testcafe throw error
-        this.options.takeScreenshot = false;
-        this.error = error
+        this.error = error;
       }
+      this.endTime = Date.now();
     }
     // post-execute
-    this.endTime = Date.now();
     // log to stdout
-    console.log(`${new Date(this.startTime).toLocaleString()} [${this.status}] ${this.text} (${this.endTime - this.startTime}ms)`);
+    console.log(`${new Date(this.startTime).toLocaleString()} [${this.status}] ${this.text}`+ chalk.cyan(this.options.screenshotPath?" "+this.options.screenshotPath:"") +`(${this.endTime - this.startTime}ms)`);
     // take screenshot
-    if (this.options.takeScreenshot || this.options.screenshotPath)
+    if (!this.error && (this.options.takeScreenshot || this.options.screenshotPath))
       this.screenshotPath = await this.takeScreenShot(this.options.screenshotPath);
-
     if (this.error)
       throw this.error;
-    return ret;
   }
 
   async takeScreenShot(relativePath?: string, ): Promise<string> {
@@ -93,18 +89,24 @@ class Step implements IStep {
     relativePath = `${relativePath || uuid()}.png`;
     const imagePath = path.join(this.t['testRun'].opts.screenshotPath, relativePath);
     await this.t.takeScreenshot(relativePath);
-    if (this.t.ctx.runnerOpts.SCREENSHOT_WEBP_QUALITY)
-      return await MiscUtils.convertToWebp(imagePath);
+    if (this.t.ctx.runnerOpts.SCREENSHOT_WEBP_QUALITY) {
+      return await MiscUtils.convertToWebp(
+        imagePath,
+        this.t.ctx.runnerOpts.SCREENSHOT_WEBP_QUALITY,
+        this.t.ctx.runnerOpts.SCREENSHOT_WEBP_SCALE
+      );
+    }
     return imagePath;
   }
 
-  async withSubStep(stepOrText: IStep | string, cb: (step?: Step) => Promise<any>, options?: IStepOptions | boolean) {
+  async withSubStep(stepOrText: IStep | string, cb: (step?: Step) => Promise<any>, options?: IStepOptions | boolean): Promise<Step> {
     const step = new Step(this.t, stepOrText, cb, options);
     this.children.push(step);
-    return await step.execute();
+    await step.execute();
+    return step;
   }
 
-  async addSubStep(stepOrText: IStep | string, options?: IStepOptions | boolean) {
+  async addSubStep(stepOrText: IStep | string, options?: IStepOptions | boolean): Promise<Step> {
     return await this.withSubStep(stepOrText, undefined, options);
   }
 }
@@ -122,13 +124,14 @@ export class LogHelper {
     this.t.ctx.logs.push(step);
   }
 
-  async log(step: IStep | string, options?: IStepOptions | boolean) {
-    await this.withLog(step, undefined, options);
+  async log(stepOrText: IStep | string, options?: IStepOptions | boolean): Promise<Step> {
+    return await this.withLog(stepOrText, undefined, options);
   }
 
-  async withLog(stepOrText: IStep | string, cb: (step?: IStep) => Promise<any>, options?: IStepOptions | boolean) {
+  async withLog(stepOrText: IStep | string, cb: (step?: IStep) => Promise<any>, options?: IStepOptions | boolean): Promise<Step> {
     const step = new Step(this.t, stepOrText, cb, options);
     this.addStep(step);
     await step.execute();
+    return step;
   }
 }

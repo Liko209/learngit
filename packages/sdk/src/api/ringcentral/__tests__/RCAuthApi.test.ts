@@ -113,6 +113,18 @@ describe('RCAuthApi', () => {
     });
   });
 
+  describe('generateRCCode', () => {
+    it('should be called with correct params', () => {
+      RCAuthApi.generateRCCode('clienid', 100);
+      expect(RCAuthApi.rcNetworkClient.http).toBeCalledWith({
+        path: '/v1.0/interop/generate-code',
+        method: 'post',
+        via: NETWORK_VIA.HTTP,
+        data: { clientId: 'clienid', ttl: 100 },
+      });
+    });
+  });
+
   describe('requestServerStatus()', () => {
     const mockRequest = {};
     it('should call callback with true when request success', () => {

@@ -18,12 +18,14 @@ import {
   ISyncAuthenticator,
 } from './IAuthenticator';
 
+const START_LOGIN = 'ACCOUNT_MANAGER.START_LOGIN';
 const AUTH_SUCCESS = 'ACCOUNT_MANAGER.AUTH_SUCCESS';
 const EVENT_LOGOUT = 'ACCOUNT_MANAGER.EVENT_LOGOUT';
 const EVENT_SUPPORTED_SERVICE_CHANGE =
   'ACCOUNT_MANAGER.EVENT_SUPPORTED_SERVICE_CHANGE';
 
 class AccountManager extends EventEmitter2 {
+  static START_LOGIN = START_LOGIN;
   static AUTH_SUCCESS = AUTH_SUCCESS;
   static EVENT_LOGOUT = EVENT_LOGOUT;
   static EVENT_SUPPORTED_SERVICE_CHANGE = EVENT_SUPPORTED_SERVICE_CHANGE;
@@ -39,10 +41,14 @@ class AccountManager extends EventEmitter2 {
   async syncLogin(authType: string, params?: any) {
     const authenticator = this._container.get<ISyncAuthenticator>(authType);
     const resp = authenticator.authenticate(params);
+    if (resp.success) {
+      await this.emitAsync(START_LOGIN);
+    }
     return this._handleAuthResponse(resp);
   }
 
   async login(authType: string, params?: any) {
+    await this.emitAsync(START_LOGIN);
     const authenticator = this._container.get<IAuthenticator>(authType);
     const resp = await authenticator.authenticate(params);
     if (!resp.accountInfos) {

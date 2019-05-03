@@ -12,6 +12,8 @@ interface IEntityPersistentController<T extends IdModel = IdModel>
   getEntityNotificationKey(): string;
 
   getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]>;
+
+  saveToMemory?: (entities: T[]) => void;
 }
 
 export { IEntityPersistentController };

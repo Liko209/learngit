@@ -1,6 +1,6 @@
 import { BaseWebComponent } from '../../BaseWebComponent';
 
-export class searchComoBox extends BaseWebComponent {
+export class SearchComoBox extends BaseWebComponent {
   get InputArea() {
     return this.self.find('#downshift-multiple-input');
   }

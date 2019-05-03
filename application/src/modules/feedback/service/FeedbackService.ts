@@ -42,7 +42,7 @@ class FeedbackService {
       logger.debug('Recent logs is empty');
       return null;
     }
-    const zipName = `LOG_${recentLogs[0].sessionId}.zip`;
+    const zipName = `RC_LOG_${recentLogs[0].sessionId}.zip`;
     const contextInfo = await getAppContextInfo();
     const contextContent = Object.keys(contextInfo)
       .map(key => {
@@ -92,10 +92,7 @@ class FeedbackService {
     );
   }
 
-  sendFeedback = async (
-    message: string,
-    comments: string,
-  ): Promise<void> => {
+  sendFeedback = async (message: string, comments: string): Promise<void> => {
     if (!Sentry.getCurrentHub().getClient()) {
       throw 'Sentry is not init.';
     }

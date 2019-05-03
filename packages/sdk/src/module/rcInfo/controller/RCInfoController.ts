@@ -7,11 +7,12 @@
 import { RCInfoFetchController } from './RCInfoFetchController';
 import { RCPermissionController } from './RCPermissionController';
 import { RolePermissionController } from './RolePermissionController';
-
+import { RCWebSettingInfoController } from './RCWebSettingInfoController';
 class RCInfoController {
   private _rcInfoFetchController: RCInfoFetchController;
   private _rcPermissionController: RCPermissionController;
   private _rolePermissionController: RolePermissionController;
+  private _webSettingInfoController: RCWebSettingInfoController;
 
   constructor() {}
 
@@ -39,6 +40,15 @@ class RCInfoController {
       );
     }
     return this._rolePermissionController;
+  }
+
+  getRcWebSettingInfoController(): RCWebSettingInfoController {
+    if (!this._webSettingInfoController) {
+      this._webSettingInfoController = new RCWebSettingInfoController(
+        this.getRCInfoFetchController(),
+      );
+    }
+    return this._webSettingInfoController;
   }
 }
 

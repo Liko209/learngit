@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import { h } from '../../../helpers';
 import { BaseWebComponent } from "../../BaseWebComponent";
 
 
@@ -32,12 +31,16 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-dialer-header-phone');
   }
 
-  get handUpButton() {
+  get hangupButton() {
     return this.buttonOfIcon('hand_up');
   }
 
-  async clickHandUpButton() {
-    await this.t.click(this.handUpButton);
+  async clickHangupButton() {
+    await this.t.click(this.hangupButton);
+  }
+
+  get muteToggle() {
+    return this.getSelectorByAutomationId('telephony-mute-btn');
   }
 
   get muteButton() {
@@ -65,7 +68,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get holdToggle() {
-    return this.getSelectorByAutomationId('holdBtn');
+    return this.getSelectorByAutomationId('telephony-hold-btn');
   }
 
   get holdButton() {
@@ -77,7 +80,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get unHoldButton() {
-    return this.holdToggle('holdBtn').withAttribute('aria-label', 'Resume the call');
+    return this.holdToggle.withAttribute('aria-label', 'Resume the call');
   }
 
   async clickUnHoldButton() {
@@ -85,7 +88,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get addButton() {
-    return this.buttonOfIcon('call_add');
+    return this.getSelectorByAutomationId('telephony-add-btn');
   }
 
   async clickAddButton() {
@@ -93,7 +96,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get recordToggle() {
-    return this.getSelectorByAutomationId('recordBtn');
+    return this.getSelectorByAutomationId('telephony-record-btn');
   }
 
   get recordButton() {
@@ -113,23 +116,27 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get actionsButton() {
-    return this.buttonOfIcon('call_more');
+    return this.getSelectorByAutomationId('telephony-call-actions-btn');
   }
 
   async clickActionsButton() {
     await this.t.click(this.actionsButton);
   }
 
-  get backButtonOnKeypadPage() {
+  get hideKeypadPageButton() {
     return this.buttonOfIcon('previous');
   }
 
-  async clickBackButton() {
-    return this.t.click(this.backButtonOnKeypadPage);
+  async clickHideKeypadButton() {
+    return this.t.click(this.hideKeypadPageButton);
   }
 
-  get keyRecordArea() {
-    return this.backButtonOnKeypadPage.nextSibling('div'); // todo: automation id
+  get keysRecordArea() {
+    return this.hideKeypadPageButton.nextSibling('div'); // todo: automation id
+  }
+
+  async keysRecordShouldBe(text: string) {
+    await this.t.expect(this.keysRecordArea.textContent).eql(text);
   }
 
   // keypad
@@ -148,15 +155,16 @@ export class TelephonyDialog extends BaseWebComponent {
     '#': 'hash'
   }
 
-  async pressKeypad(keys: string | string[]) {
+  async tapKeypad(keys: string | string[]) {
     for (const i of keys) {
+      await this.t.wait(5e2);
       await this.t.click(this.buttonOfIcon(this.keyMap[i]));
     }
   }
 
   // inbound call
   get sendToVoiceMailButton() {
-    return this.buttonOfIcon('hold_up').withAttribute('aria-label', 'Send to voicemail');
+    return this.getSelectorByAutomationId('telephony-voice-mail-btn');
   }
 
   async clickSendToVoiceMailButton() {
@@ -164,7 +172,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get answerButton() {
-    return this.buttonOfIcon('phone')
+    return this.getSelectorByAutomationId('telephony-answer-btn');
   }
 
   async clickAnswerButton() {
@@ -178,4 +186,9 @@ export class TelephonyDialog extends BaseWebComponent {
   async clickIgnoreButton() {
     await this.t.click(this.ignoreButton);
   }
+
+  async hoverSendToVoiceMailButton() {
+    await this.t.hover(this.sendToVoiceMailButton);
+  }
+
 }

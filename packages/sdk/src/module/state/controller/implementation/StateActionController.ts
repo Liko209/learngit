@@ -10,7 +10,6 @@ import { IRequestController } from '../../../../framework/controller/interface/I
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { StateFetchDataController } from './StateFetchDataController';
-import { TotalUnreadController } from './TotalUnreadController';
 import { Raw } from '../../../../framework/model';
 import { mainLogger } from 'foundation';
 import { PartialModifyController } from '../../../../framework/controller/impl/PartialModifyController';
@@ -22,7 +21,6 @@ class StateActionController {
     private _entitySourceController: IEntitySourceController<GroupState>,
     private _requestController: IRequestController<State>,
     private _stateFetchDataController: StateFetchDataController,
-    private _totalUnreadController: TotalUnreadController,
   ) {
     this._partialModifyController = new PartialModifyController<GroupState>(
       this._entitySourceController,
@@ -85,7 +83,6 @@ class StateActionController {
           };
         },
         async (updatedEntity: GroupState) => {
-          this._totalUnreadController.handleGroupState([updatedEntity]);
           try {
             if (isUnread) {
               return await this._requestController.put(

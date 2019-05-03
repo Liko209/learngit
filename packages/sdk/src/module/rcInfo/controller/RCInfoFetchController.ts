@@ -18,7 +18,7 @@ import { jobScheduler, JOB_KEY } from '../../../framework/utils/jobSchedule';
 import { mainLogger } from 'foundation';
 import notificationCenter from '../../../service/notificationCenter';
 import { RC_INFO } from '../../../service/eventKey';
-import { AccountUserConfig } from '../../../module/account/config';
+import { AccountUserConfig } from '../../account/config';
 
 class RCInfoFetchController {
   private _rcInfoUserConfig: RCInfoUserConfig;

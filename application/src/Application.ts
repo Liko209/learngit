@@ -12,7 +12,7 @@ import * as app from '@/modules/app/module.config';
 import * as GlobalSearch from '@/modules/GlobalSearch/module.config';
 import * as featuresFlag from '@/modules/featuresFlags/module.config';
 import * as notification from '@/modules/notification/module.config';
-
+import * as common from '@/modules/common/module.config';
 import * as feedback from '@/modules/feedback/module.config';
 import { Pal } from 'sdk/pal';
 import { ImageDownloader } from '@/common/ImageDownloader';
@@ -36,6 +36,7 @@ class Application {
     jupiter.registerModule(GlobalSearch.config);
     jupiter.registerModule(notification.config);
     jupiter.registerModule(feedback.config);
+    jupiter.registerModule(common.config);
 
     if (window.jupiterElectron) {
       jupiter.registerModuleAsync(() =>

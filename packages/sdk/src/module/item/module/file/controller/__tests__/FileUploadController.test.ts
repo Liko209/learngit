@@ -5,7 +5,6 @@
  */
 
 import _ from 'lodash';
-import { BaseResponse, NETWORK_FAIL_TYPE } from 'foundation';
 import { ItemFile } from '../../../../../../module/item/entity';
 import { daoManager } from '../../../../../../dao';
 import { ItemDao } from '../../../../dao';
@@ -58,24 +57,35 @@ function clearMocks() {
 }
 
 describe('fileUploadController', () => {
-  const itemDao = new ItemDao(null);
-  const partialModifyController = new PartialModifyController(
-    null,
-  ) as IPartialModifyController<Item>;
-  const fileRequestController = new RequestController(
-    null,
-  ) as RequestController<Item>;
-  let fileUploadController: FileUploadController;
-
-  const groupConfigService = new GroupConfigService();
-
-  const entitySourceController = new EntitySourceController(null, null, null);
+  let itemDao: ItemDao = null;
+  let partialModifyController: IPartialModifyController<Item> = null;
+  let fileUploadController: FileUploadController = null;
+  let groupConfigService: GroupConfigService = null;
+  let fileRequestController: RequestController<Item> = null;
+  let entitySourceController: EntitySourceController<Item> = null;
 
   function setup() {
     const userId = 2;
     const companyId = 3;
 
+    itemDao = new ItemDao(null);
+    groupConfigService = new GroupConfigService();
     daoManager.getDao = jest.fn().mockReturnValue(itemDao);
+
+    fileRequestController = new RequestController<Item>(null);
+    partialModifyController = new PartialModifyController<Item>(null);
+    entitySourceController = new EntitySourceController<Item>(
+      null,
+      null,
+      fileRequestController,
+      true,
+    );
+
+    fileRequestController.put = jest.fn().mockImplementation(() => {});
+
+    entitySourceController.getRequestController = jest
+      .fn()
+      .mockReturnValue(fileRequestController);
 
     AccountUserConfig.prototype.getCurrentCompanyId.mockReturnValue(companyId);
     AccountUserConfig.prototype.getGlipUserId.mockReturnValue(userId);
@@ -88,7 +98,6 @@ describe('fileUploadController', () => {
 
     fileUploadController = new FileUploadController(
       partialModifyController,
-      fileRequestController,
       entitySourceController,
     );
     partialModifyController.updatePartially = jest.fn();
@@ -864,6 +873,24 @@ describe('fileUploadController', () => {
         done();
       });
     });
+
+    it('should execute upload file in sequence queue', async (done: any) => {
+      const { groupId, file } = uploadFileToAmazonS3_setUp();
+
+      fileUploadController['_uploadFileQueue'] = {
+        addProcessor: jest.fn(),
+      } as any;
+
+      fileUploadController.sendItemFile(groupId, file, false);
+      fileUploadController.sendItemFile(groupId + 1, file, false);
+
+      setTimeout(() => {
+        expect(
+          fileUploadController['_uploadFileQueue'].addProcessor,
+        ).toHaveBeenCalledTimes(2);
+        done();
+      },         100);
+    });
   });
 
   describe('cancelUpload()', () => {
@@ -1518,6 +1545,11 @@ describe('fileUploadController', () => {
     });
   });
   describe('_updateItem()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
     it('should combine versions', async () => {
       const existItem: ItemFile = { group_ids: [11], versions: [{ size: 10 }] };
       const preInsertItem: ItemFile = {

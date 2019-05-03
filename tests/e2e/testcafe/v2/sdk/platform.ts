@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import { getLogger } from 'log4js';
 import Ringcentral from 'ringcentral-js-concise';
 import * as fs from 'fs';
+import * as path from 'path';
 
 import { MiscUtils } from "../utils";
 import { ICredential } from "../models";
@@ -183,20 +184,33 @@ export class RcPlatformSdk {
     });
   }
 
-  // currently only support GLP-CI1-XMN
-  async uploadFile(path: string, name: string, groupId: string) {
+  async uploadFile(path: string, name: string, groupId?: string) {
     const url = `restapi/v1.0/glip/files`;
     const content = fs.readFileSync(path);
-    const params = {
-      groupId,
-      name,
-    }
+    const params = _.pickBy({ groupId, name }, _.identity);
     return await this.retryRequestOnException(async () => {
       return await this.sdk.post(url, content, {
         'Content-Type': 'application/octet-stream',
         params,
       });
     });
+  }
+
+  async createPostWithTextAndFiles(text: string, filePaths: string | string[], groupId: string) {
+    filePaths = [].concat(filePaths);
+    let attachments = [];
+    for (const filePath of filePaths) {
+      const fileName = path.basename(filePath)
+      const fileData = await this.uploadFile(filePath, fileName).then(res => res.data);
+      const file = _.merge(fileData[0], { type: "File" })
+      attachments.push(file);
+    }
+    const data = { text, attachments };
+    return await this.createPost(data, groupId);
+  }
+
+  async createPostWithTextAndFilesThenGetPostId(text: string, filePaths: string | string[], groupId: string) {
+    return await this.createPostWithTextAndFiles(text, filePaths, groupId).then(res => res.data.id);
   }
 
   // deprecated

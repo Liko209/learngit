@@ -87,3 +87,11 @@ export interface ITestMeta {
   maintainers: string[];
   keywords: string[];
 }
+
+
+export interface INotification {
+  id: any;
+  title: string;
+  body: string;
+  icon: string;
+}

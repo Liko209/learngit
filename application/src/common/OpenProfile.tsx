@@ -8,7 +8,7 @@ import { Dialog } from '@/containers/Dialog';
 import {
   ProfileDialogGroup,
   ProfileDialogPerson,
-} from '@/containers/Profile/Dialog';
+} from '@/modules/message/container/Profile/Dialog';
 import { TypeDictionary, GlipTypeUtil } from 'sdk/utils';
 
 const getProfileDialogComponent = (id: number) => {

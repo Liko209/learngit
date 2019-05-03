@@ -16,7 +16,7 @@ import {
 } from 'foundation';
 import Api from '../api';
 import { RINGCENTRAL_API } from './constants';
-import { ITokenModel } from './types';
+import { ITokenModel, RCAuthCodeInfo } from './types';
 import { stringify } from 'qs';
 
 class RCAuthApi extends Api {
@@ -132,6 +132,20 @@ class RCAuthApi extends Api {
     const request = Api.rcNetworkClient.getRequestByVia(query, query.via);
     request.callback = callbackFunc;
     Api.rcNetworkClient.networkManager.addApiRequest(request);
+  }
+
+  static generateRCCode(clientId: string, ttl: number) {
+    const model = {
+      clientId,
+      ttl,
+    };
+
+    return RCAuthApi.rcNetworkClient.http<RCAuthCodeInfo>({
+      path: RINGCENTRAL_API.API_GENERATE_CODE,
+      method: NETWORK_METHOD.POST,
+      via: NETWORK_VIA.HTTP,
+      data: model,
+    });
   }
 }
 

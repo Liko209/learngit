@@ -8,10 +8,13 @@ import axios from 'axios';
 import * as FormData from 'form-data';
 import { LogUtils } from '../utils';
 import { Config } from '../config';
+import * as uuid from 'uuid/v4';
 
 const logger = LogUtils.getLogger(__filename);
 
-const REPORT_DIR_PATH = `${process.cwd()}/${Config.reportUri}`;
+const REPORT_DIR_PATH = path.join(process.cwd(), Config.reportUri);
+
+const HEAP_DIR_PATH = path.join(REPORT_DIR_PATH, 'heaps');
 
 const fileServerUrl = Config.fileServerUrl;
 class FileService {
@@ -21,6 +24,18 @@ class FileService {
   static async checkReportPath() {
     if (!fs.existsSync(REPORT_DIR_PATH)) {
       fs.mkdirSync(REPORT_DIR_PATH);
+    }
+
+    if (fs.existsSync(HEAP_DIR_PATH)) {
+      let files = fs.readdirSync(HEAP_DIR_PATH);
+      for (let file of files) {
+        let filePath = path.join(HEAP_DIR_PATH, file);
+        if (fs.lstatSync(filePath).isFile()) {
+          fs.unlinkSync(filePath);
+        }
+      }
+    } else {
+      fs.mkdirSync(HEAP_DIR_PATH);
     }
   }
 
@@ -32,13 +47,14 @@ class FileService {
     if (!files || files.length === 0) {
       return;
     }
-    let html = fs.readFileSync(`${process.cwd()}/src/index.template.html`, 'utf8');
+    let html = fs.readFileSync(path.join(process.cwd(), 'src', 'index.template.html'), 'utf8');
 
     for (let file of files) {
       if (file.endsWith('.html')
         && file !== 'index.html'
         && file !== 'Traces.html'
-        && file !== 'Heap.html') {
+        && file !== 'Heap.html'
+        && file !== 'dashboard.html') {
         names.push(file.substr(0, file.length - 5));
       }
 
@@ -72,7 +88,7 @@ class FileService {
       }
       htmlArray.push('</body></html>');
 
-      let tracesPath = `${REPORT_DIR_PATH}/Traces.html`;
+      let tracesPath = path.join(REPORT_DIR_PATH, `Traces.html`);
       fs.writeFileSync(tracesPath, htmlArray.join(''));
     }
 
@@ -97,19 +113,18 @@ class FileService {
       }
       htmlArray.push('</body></html>');
 
-      let memoryPath = `${REPORT_DIR_PATH}/Heap.html`;
+      let memoryPath = path.join(REPORT_DIR_PATH, `Heap.html`);
       fs.writeFileSync(memoryPath, htmlArray.join(''));
     }
 
-    if (names.length === 0) {
-      return;
+    if (names.length > 0) {
+      names.sort();
     }
-    names.sort();
 
     html = html.replace('$$FILE_LIST$$', JSON.stringify(names));
     html = html.replace('$$DASHBOARD_URL$$', Config.dashboardUrl);
 
-    let indexPath = `${REPORT_DIR_PATH}/index.html`;
+    let indexPath = path.join(REPORT_DIR_PATH, `index.html`);
 
     fs.writeFileSync(indexPath, html);
     logger.info(`index.html has saved.[${indexPath}]`);
@@ -119,7 +134,7 @@ class FileService {
    * @description: save report into disk
    */
   static async saveReportIntoDisk(report: any, fileName: string) {
-    let reportPath = `${REPORT_DIR_PATH}/${fileName}.html`;
+    let reportPath = path.join(REPORT_DIR_PATH, `${fileName}.html`);
     fs.writeFileSync(reportPath, report);
     logger.info(`report has saved.[${reportPath}]`);
   }
@@ -128,7 +143,7 @@ class FileService {
    * @description: save artifacts into disk
    */
   static async saveArtifactsIntoDisk(artifacts: any, fileName: string) {
-    let artifactsPath = `${REPORT_DIR_PATH}/${fileName}.artifacts.json`;
+    let artifactsPath = path.join(REPORT_DIR_PATH, `${fileName}.artifacts.json`);
     fs.writeFileSync(artifactsPath, JSON.stringify(artifacts));
     logger.info(`artifacts has saved.[${artifactsPath}]`);
   }
@@ -138,7 +153,7 @@ class FileService {
    */
   static async saveTracesIntoDisk(artifacts: any, fileName: string) {
     if (artifacts.traces && artifacts.traces.defaultPass && artifacts.traces.defaultPass.traceEvents) {
-      let tracesPath = `${REPORT_DIR_PATH}/${fileName}.traces.json`;
+      let tracesPath = path.join(REPORT_DIR_PATH, `${fileName}.traces.json`);
       fs.writeFileSync(tracesPath, JSON.stringify(artifacts.traces.defaultPass.traceEvents));
       logger.info(`traces has saved.[${tracesPath}]`);
     }
@@ -151,7 +166,7 @@ class FileService {
     let gatherer = artifacts['MemoryGatherer'];
     if (gatherer && gatherer.data) {
       let conent = gatherer.data.join('');
-      let memoryPath = `${REPORT_DIR_PATH}/${fileName}.heapsnapshot`;
+      let memoryPath = path.join(REPORT_DIR_PATH, `${fileName}.heapsnapshot`);
       fs.writeFileSync(memoryPath, conent);
       logger.info(`memory has saved.[${memoryPath}]`);
     }
@@ -161,9 +176,36 @@ class FileService {
    * @description: save data into disk
    */
   static async saveDataIntoDisk(data: any, fileName: string) {
-    let dataPath = `${REPORT_DIR_PATH}/${fileName}.data.json`;
+    let dataPath = path.join(REPORT_DIR_PATH, `${fileName}.data.json`);
     fs.writeFileSync(dataPath, JSON.stringify(data));
     logger.info(`data has saved.[${dataPath}]`);
+  }
+
+  /**
+   * @description: save dashboard into disk
+   */
+  static async saveDashboardIntoDisk(dashboard: string) {
+    let dashboardPath = path.join(REPORT_DIR_PATH, 'dashboard.html');
+    fs.writeFileSync(dashboardPath, dashboard);
+    logger.info(`dashboard has saved.[${dashboardPath}]`);
+  }
+
+  /**
+   * @description: save dashboard into disk
+   */
+  static async saveGlipMessageIntoDisk(message: string) {
+    let messagePath = path.join(REPORT_DIR_PATH, 'glip.txt');
+    fs.writeFileSync(messagePath, message);
+    logger.info(`glip message has saved.[${messagePath}]`);
+  }
+
+  /**
+  * @description: save dashboard into disk
+  */
+  static async saveHeapIntoDisk(heap: string): Promise<string> {
+    let heapPath = path.join(HEAP_DIR_PATH, `${uuid()}.heapsnapshot`);
+    fs.writeFileSync(heapPath, heap);
+    return heapPath;
   }
 }
 

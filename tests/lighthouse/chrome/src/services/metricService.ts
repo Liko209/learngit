@@ -198,14 +198,15 @@ class MetricService {
     let sceneId = sceneDto.id;
     let artifacts = scene.getArtifacts();
     let gatherer = artifacts[name];
-    let apiTimes = [],
-      dtoArr = [];
+    let apiTimes, dtoArr;
 
     if (!gatherer) {
       return;
     }
 
     for (let key of Object.keys(gatherer)) {
+      dtoArr = [];
+      apiTimes = [];
       let item = gatherer[key];
       let summaryDto = {
         sceneId,
