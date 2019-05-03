@@ -243,7 +243,7 @@ test.meta(<ITestMeta>{
     await h(t).scenarioHelper.createTeam(team);
   });
 
-  const msgList = _.range(29).map(i => `${i} ${uuid()}`);
+  const msgList = _.range(99).map(i => `${i} ${uuid()}`);
   let firstUnreadPostId;
   await h(t).withLog('And this conversation has 100 unread messages for me', async () => {
     const firstPost = `first post`
@@ -270,7 +270,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then I should see unread button with unread count 99+', async () => {
     await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok();
-    await conversationPage.countOnUnreadButtonShouldBe('30');
+    await conversationPage.countOnUnreadButtonShouldBe('99+');
   });
 
   await h(t).withLog('When I click jump to first unread button', async () => {
@@ -401,4 +401,121 @@ test(formalName(`The unread button (up) shouldn't dismiss when opening one conve
   await h(t).withLog(`And the unread button shouldn't dismiss`, async () => {
     await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok();
   });
+});
+
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1893'],
+  maintainers: ['Potar.He'],
+  keywords: ['UnreadButton']
+})('Click the unread button (up) then jump to first unread post for some edge cases', async (t) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[6];
+  const otherUser = users[5];
+
+  const unreadCounts = [19, 20, 21];
+
+  const teams = Array.from({ length: unreadCounts.length }, (x, i) => <IGroup>{
+    name: `${unreadCounts[i]}-${uuid()}`,
+    type: "Team",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  })
+
+  await h(t).withLog(`Given I have an extension with ${unreadCounts.length} conversations`, async () => {
+    await h(t).scenarioHelper.createTeamsOrChats(teams);
+  });
+
+  let firstUnreadPostIds = [];
+  await h(t).withLog(`And both conversations have more one screen unread messages`, async () => {
+    for (const team of teams) {
+      firstUnreadPostIds.push(await h(t).scenarioHelper.sentAndGetTextPostId(uuid(), team, otherUser));
+    }
+    for (const i in unreadCounts) {
+      for (const j of _.range(unreadCounts[i] - 1)) {
+        await h(t).scenarioHelper.sendTextPost(H.multilineString(), teams[i], otherUser);
+      }
+    }
+  });
+
+  const app = new AppRoot(t);
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const teamsSection = app.homePage.messageTab.teamsSection;
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
+  for (const i in teams) {
+    await h(t).withLog('When I enter the new team conversation', async () => {
+      await teamsSection.expand();
+      await teamsSection.conversationEntryById(teams[i].glipId).enter();
+    });
+
+    await h(t).withLog('Then I should see unread button', async () => {
+      await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
+    });
+
+    await h(t).withLog(`Then I should see unread button with unread count ${unreadCounts[i]}`, async () => {
+      await conversationPage.countOnUnreadButtonShouldBe(unreadCounts[i]);
+    });
+
+    await h(t).withLog('When I click jump to first unread button', async () => {
+      await conversationPage.clickJumpToFirstUnreadButton();
+    });
+
+    await h(t).withLog('Then I should see the first post on the top', async () => {
+      await conversationPage.postCardByIdShouldBeOnTheTop(firstUnreadPostIds[i]);
+    });
+
+    await h(t).withLog('And the "new Messages indicator" does not exists', async () => {
+      await t.expect(conversationPage.newMessageDeadLine.exists).notOk();
+    });
+  }
+
+  firstUnreadPostIds = [];
+  await h(t).withLog(`And both conversations have more one screen unread messages`, async () => {
+    for (const team of teams) {
+      firstUnreadPostIds.push(await h(t).scenarioHelper.sentAndGetTextPostId(uuid(), team, otherUser));
+    }
+    for (const i in unreadCounts) {
+      for (const j of _.range(unreadCounts[i] - 1)) {
+        await h(t).scenarioHelper.sendTextPost(H.multilineString(), teams[i], otherUser);
+      }
+    }
+  });
+
+  for (const i in teams) {
+    await h(t).withLog('When I enter the new team conversation', async () => {
+      await teamsSection.expand();
+      await teamsSection.conversationEntryById(teams[i].glipId).enter();
+    });
+
+    await h(t).withLog('Then I should see unread button', async () => {
+      await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
+    });
+
+    await h(t).withLog(`Then I should see unread button with unread count ${unreadCounts[i]}`, async () => {
+      await conversationPage.countOnUnreadButtonShouldBe(unreadCounts[i]);
+    });
+
+    await h(t).withLog('When I click jump to first unread button', async () => {
+      await conversationPage.clickJumpToFirstUnreadButton();
+    });
+
+    await h(t).withLog('Then I should see the first post', async () => {
+      await conversationPage.postByIdExpectVisible(firstUnreadPostIds[i], true);
+    });
+
+    await h(t).withLog('And should see New Messages indicator on the top', async () => {
+      await t.expect(conversationPage.newMessageDeadLine.exists).ok();
+      await conversationPage.newMessageDeadLineExpectVisible(true);
+      await conversationPage.newMessageDeadLineShouldBeOnTheTop();
+    });
+  }
+
 });
