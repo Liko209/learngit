@@ -36,7 +36,7 @@ describe('FavoriteView', () => {
       Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
     });
 
-    it('should display flash toast notification when remove favorite conversation failed for backend issue.[JPT-1529]', async (done: jest.DoneCallback) => {
+    it('display flash toast notification when unfavorite conversation failed for backend issue.[JPT-489]', async (done: jest.DoneCallback) => {
       const props = setUpMock(true, true, 'server');
       const Wrapper = shallow(<FavoriteView {...props} />);
       await Wrapper.find(JuiIconButton).simulate('click');
@@ -49,7 +49,7 @@ describe('FavoriteView', () => {
       done();
     });
 
-    it('should display flash toast notification when favorite conversation failed for backend issue.[JPT-1530]', async (done: jest.DoneCallback) => {
+    it('display flash toast notification when favorite conversation failed for backend issue.[JPT-488]', async (done: jest.DoneCallback) => {
       const props = setUpMock(false, true, 'server');
       const Wrapper = shallow(<FavoriteView {...props} />);
       await Wrapper.find(JuiIconButton).simulate('click');
@@ -62,7 +62,7 @@ describe('FavoriteView', () => {
       done();
     });
 
-    it('should display flash toast notification when remove favorite conversation failed for network issue.[JPT-1531]', async (done: jest.DoneCallback) => {
+    it('display flash toast notification when unfavorite conversation failed for network issue.[JPT-489]', async (done: jest.DoneCallback) => {
       const props = setUpMock(true, true, 'network');
       const Wrapper = shallow(<FavoriteView {...props} />);
       await Wrapper.find(JuiIconButton).simulate('click');
@@ -75,7 +75,7 @@ describe('FavoriteView', () => {
       done();
     });
 
-    it('should display flash toast notification when favorite conversation failed for network issue.[JPT-1532]', async (done: jest.DoneCallback) => {
+    it('display flash toast notification when favorite conversation failed for network issue.[JPT-488]', async (done: jest.DoneCallback) => {
       const props = setUpMock(false, true, 'network');
       const Wrapper = shallow(<FavoriteView {...props} />);
       await Wrapper.find(JuiIconButton).simulate('click');

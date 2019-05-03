@@ -154,7 +154,7 @@ describe('CreateTeamVM', () => {
   });
 
   describe('createErrorHandle()', () => {
-    it('failed to create a team when team name duplicate', () => {
+    it('Error should be displayed if the team is failed to be created due to the name is taken. [JPT-1392]', () => {
       const error = getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN);
       createTeamVM.createErrorHandler(error);
       expect(createTeamVM.errorMsg).toBe('people.prompt.alreadyTaken');

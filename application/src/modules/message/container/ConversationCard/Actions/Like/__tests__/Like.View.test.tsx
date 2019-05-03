@@ -29,10 +29,10 @@ function setUpMock(isLike: boolean, isFailed: boolean, errorType: 'network' | 's
 describe('LikeView', () => {
   describe('render()', () => {
     beforeEach(() => {
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
+      Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
     });
 
-    it('should display flash toast notification when unlike message failed for backend issue.[JPT-1529]', async (done: jest.DoneCallback) => {
+    it('Unlike failed due to backend issue. [JPT-1783]', async (done: jest.DoneCallback) => {
       const props = setUpMock(true, true, 'server');
       const Wrapper = shallow(<LikeView {...props} />);
       await Wrapper.find(JuiIconButton).simulate('click');
@@ -45,7 +45,7 @@ describe('LikeView', () => {
       done();
     });
 
-    it('should display flash toast notification when like failed for backend issue.[JPT-1530]', async (done: jest.DoneCallback) => {
+    it('Like failed due to backend issue. [JPT-1786]', async (done: jest.DoneCallback) => {
       const props = setUpMock(false, true, 'server');
       const Wrapper = shallow(<LikeView {...props} />);
       await Wrapper.find(JuiIconButton).simulate('click');
@@ -58,7 +58,7 @@ describe('LikeView', () => {
       done();
     });
 
-    it('should display flash toast notification when unlike message failed for network issue.[JPT-1531]', async (done: jest.DoneCallback) => {
+    it('Unlike failed due to network disconnection. [JPT-1785]', async (done: jest.DoneCallback) => {
       const props = setUpMock(true, true, 'network');
       const Wrapper = shallow(<LikeView {...props} />);
       await Wrapper.find(JuiIconButton).simulate('click');
@@ -71,7 +71,7 @@ describe('LikeView', () => {
       done();
     });
 
-    it('should display flash toast notification when like failed for network issue.[JPT-1532]', async (done: jest.DoneCallback) => {
+    it('Like failed due to network disconnection. [JPT-1787]', async (done: jest.DoneCallback) => {
       const props = setUpMock(false, true, 'network');
       const Wrapper = shallow(<LikeView {...props} />);
       await Wrapper.find(JuiIconButton).simulate('click');

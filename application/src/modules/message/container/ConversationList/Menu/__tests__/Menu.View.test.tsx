@@ -83,7 +83,7 @@ describe('MenuView', () => {
       },         0);
     }, 2);
 
-    it('should display flash toast notification when remove favorite conversation failed for backend issue.[JPT-488]', async (done: jest.DoneCallback) => {
+    it('display flash toast notification when unfavorite conversation failed for backend issue.[JPT-489]', async (done: jest.DoneCallback) => {
       const props = setUpMockFavorite(true, true, 'server');
       const wrapper = shallow(<MenuViewComponent {...props} />);
 
@@ -99,7 +99,7 @@ describe('MenuView', () => {
       done();
     });
 
-    it('should display flash toast notification when favorite conversation failed for backend issue.[JPT-1530]', async (done: jest.DoneCallback) => {
+    it('display flash toast notification when favorite conversation failed for backend issue.[JPT-488]', async (done: jest.DoneCallback) => {
       const props = setUpMockFavorite(false, true, 'server');
       const wrapper = shallow(<MenuViewComponent {...props} />);
 
@@ -115,7 +115,7 @@ describe('MenuView', () => {
       done();
     });
 
-    it('should display flash toast notification when remove favorite conversation failed for network issue.[JPT-1531]', async (done: jest.DoneCallback) => {
+    it('display flash toast notification when unfavorite conversation failed for network issue.[JPT-489]', async (done: jest.DoneCallback) => {
       const props = setUpMockFavorite(true, true, 'network');
       const wrapper = shallow(<MenuViewComponent {...props} />);
 
@@ -131,7 +131,7 @@ describe('MenuView', () => {
       done();
     });
 
-    it('should display flash toast notification when favorite conversation failed for network issue.[JPT-1532]', async (done: jest.DoneCallback) => {
+    it('display flash toast notification when favorite conversation failed for network issue.[JPT-488]', async (done: jest.DoneCallback) => {
       const props = setUpMockFavorite(false, true, 'network');
       const wrapper = shallow(<MenuViewComponent {...props} />);
 

@@ -50,7 +50,7 @@ describe('TeamSettingsViewModel', () => {
       expect(result).toBe(true);
     });
 
-    it('should be display error message when saving the settings failed due to team name duplicate', async () => {
+    it('Failed to update team name because the team name exists already. [JPT-1832]', async () => {
       groupService.updateTeamSetting = jest
         .fn()
         .mockRejectedValueOnce(getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN));

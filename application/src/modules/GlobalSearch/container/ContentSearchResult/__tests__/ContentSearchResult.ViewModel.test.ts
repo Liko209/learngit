@@ -8,10 +8,7 @@ import { errorHelper } from 'sdk/error';
 import * as utils from '@/utils/error';
 import { Post } from 'sdk/module/post/entity';
 import { getGlobalValue } from '@/store/utils';
-import {
-  ToastType,
-  ToastMessageAlign,
-} from '@/containers/ToastWrapper/Toast/types';
+import { ToastType, ToastMessageAlign } from '@/containers/ToastWrapper/Toast/types';
 import { Notification } from '@/containers/Notification';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { TypeDictionary } from 'sdk/utils';
@@ -62,7 +59,7 @@ describe('ContentSearchResult [JPT-1558]', () => {
     done();
   });
 
-  it('Should network error message be toasted when network error.', async (done: jest.DoneCallback) => {
+  it('Search failed due to network disconnection. [JPT-1796]', async (done: jest.DoneCallback) => {
     const vm = new ContentSearchResultViewModel({});
     vm._onPostsInit = jest.fn().mockImplementationOnce(() => {
       throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK');
@@ -76,7 +73,7 @@ describe('ContentSearchResult [JPT-1558]', () => {
     done();
   });
 
-  it('Should service error message be toasted when service error.', async (done: jest.DoneCallback) => {
+  it('Search failed due to unexpected backend error. [JPT-1794]', async (done: jest.DoneCallback) => {
     const vm = new ContentSearchResultViewModel({});
     vm._onPostsInit = jest.fn().mockImplementationOnce(() => {
       throw new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
@@ -96,9 +93,7 @@ describe('ContentSearchResult [JPT-1562]', () => {
     const postService = {
       endPostSearch: jest.fn().mockResolvedValue(null),
       getSearchContentsCount: jest.fn().mockResolvedValue({}),
-      searchPosts: jest
-        .fn()
-        .mockResolvedValue({ requestId: 1, posts: [], hasMore: true }),
+      searchPosts: jest.fn().mockResolvedValue({ requestId: 1, posts: [], hasMore: true }),
     };
 
     ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
@@ -164,9 +159,7 @@ describe('ContentSearchResult.ViewModel', () => {
     const postService = {
       endPostSearch: jest.fn().mockResolvedValue(null),
       getSearchContentsCount: jest.fn().mockResolvedValue({}),
-      searchPosts: jest
-        .fn()
-        .mockResolvedValue({ requestId: 1, posts: [], hasMore: true }),
+      searchPosts: jest.fn().mockResolvedValue({ requestId: 1, posts: [], hasMore: true }),
     };
 
     ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
@@ -190,9 +183,7 @@ describe('ContentSearchResult fix(FIJI-4990)', () => {
     postService = {
       endPostSearch: jest.fn().mockResolvedValue(null),
       getSearchContentsCount: jest.fn().mockResolvedValue({}),
-      searchPosts: jest
-        .fn()
-        .mockResolvedValue({ requestId: 1, posts: [], hasMore: true }),
+      searchPosts: jest.fn().mockResolvedValue({ requestId: 1, posts: [], hasMore: true }),
     };
 
     ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
@@ -244,9 +235,7 @@ describe('ContentSearchResult fix(FIJI-4870)', () => {
     postService = {
       endPostSearch: jest.fn().mockResolvedValue(null),
       getSearchContentsCount: jest.fn().mockResolvedValue({}),
-      searchPosts: jest
-        .fn()
-        .mockResolvedValue({ requestId: 1, posts: [], hasMore: true }),
+      searchPosts: jest.fn().mockResolvedValue({ requestId: 1, posts: [], hasMore: true }),
     };
 
     ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
@@ -284,8 +273,7 @@ describe('ContentSearchResult fix(FIJI-5161)', () => {
 
   beforeEach(() => {
     postService = {
-      getSearchContentsCount: () =>
-        new Promise((res, rej) => setTimeout(rej, TIMING)),
+      getSearchContentsCount: () => new Promise((res, rej) => setTimeout(rej, TIMING)),
       searchPosts: () => new Promise((res, rej) => setTimeout(rej, TIMING)),
     };
 
