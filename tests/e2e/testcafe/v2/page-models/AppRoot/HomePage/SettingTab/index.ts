@@ -1,5 +1,6 @@
 import { BaseWebComponent } from "../../../BaseWebComponent";
 import { LeftRail } from './LeftRail';
+import { PhoneTab} from './PhoneTab';
 
 class Entry extends BaseWebComponent {
   async enter() {
@@ -26,6 +27,11 @@ export class SettingTab extends BaseWebComponent {
 
   get leftRail() {
     return this.getComponent(LeftRail);
+  }
+
+  // phone setting
+  get phoneTab(){
+    return this.getComponent(PhoneTab);
   }
 
   getSubEntry(automationId: string) {
