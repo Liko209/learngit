@@ -5,7 +5,7 @@
  */
 
 import { init } from 'filestack-js';
-import JSZip from 'jszip';
+// import JSZip from 'jszip';
 import { logger } from '../utils';
 import { LogControlManager } from 'sdk/service/uploadLogControl/logControlManager';
 import { FILE_STACK_API_KEY } from '../constants';
@@ -13,6 +13,7 @@ import { UploadResult } from '../types';
 import { getAppContextInfo } from '@/utils/error';
 import * as Sentry from '@sentry/browser';
 import { FeedbackApi } from '../FeedbackApi';
+import { SessionManager } from 'sdk';
 
 enum ZIP_LEVEL {
   LOW = 3,
@@ -36,36 +37,9 @@ class FeedbackService {
     return this._fileStackClient;
   }
 
-  zipRecentLogs = async (level?: ZIP_LEVEL): Promise<[string, Blob] | null> => {
-    const recentLogs = LogControlManager.instance().getRecentLogs();
-    if (recentLogs.length < 1) {
-      logger.debug('Recent logs is empty');
-      return null;
-    }
-    const zipName = `RC_LOG_${recentLogs[0].sessionId}.zip`;
-    const contextInfo = await getAppContextInfo();
-    const contextContent = Object.keys(contextInfo)
-      .map(key => {
-        return `${key}: ${contextInfo[key]}`;
-      })
-      .join('\n');
-    const logContent = recentLogs
-      .map((log, index: number) => {
-        return `${index}: ${log.message}`;
-      })
-      .join('\n');
-    // webworker
-    const zip = new JSZip();
-    zip.file('ContextInfo.txt', contextContent);
-    zip.file('RecentLogs.txt', logContent);
-    const zipBlob = await zip.generateAsync({
-      type: 'blob',
-      compression: 'DEFLATE',
-      compressionOptions: {
-        level: level || ZIP_LEVEL.HEIGH,
-      },
-    });
-    return [zipName, zipBlob];
+  zipRecentLogs = async (): Promise<[string, Blob] | null> => {
+    const zip = await LogControlManager.instance().getZipLog();
+    return [`RC_LOG_${SessionManager.getInstance().getSession()}.zip`, zip];
   }
 
   uploadRecentLogs = async (

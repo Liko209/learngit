@@ -1,6 +1,6 @@
-import { DATE_FORMATTER } from '../constants';
+import { DATE_FORMATTER } from '../constantss';
 
-class DateFormatter {
+export class DateFormatter {
   formatDate(vDate: Date, vFormat: DATE_FORMATTER) {
     const vDay = this.addZero(vDate.getDate());
     const vMonth = this.addZero(vDate.getMonth() + 1);
@@ -45,5 +45,3 @@ class DateFormatter {
     return date.getTimezoneOffset() < 0 ? `+${h}${m}` : `-${h}${m}`;
   }
 }
-
-export default DateFormatter;

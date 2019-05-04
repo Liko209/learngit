@@ -16,18 +16,24 @@ import {
 } from './collectors';
 import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { IZipItemProvider } from './types';
+import JSZip from 'jszip';
+import { ZipLogZipItemProvider } from './ZipLogZipItemProvider';
+import { MemoryLogZipItemProvider } from './MemoryLogZipItemProvider';
 
 export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
   private _isOnline: boolean;
   private _debugMode: boolean;
   private _onUploadAccessorChange: (accessible: boolean) => void;
+  private _zipItemProviders: IZipItemProvider[] = [];
   uploadLogConsumer: LogUploadConsumer;
   logUploadCollector: ConsumerCollector;
   memoryLogCollector: MemoryCollector;
   private constructor() {
     this._isOnline = window.navigator.onLine;
-    this.memoryLogCollector = new MemoryCollector();
+    const zipLogProvider = new ZipLogZipItemProvider();
+    this.memoryLogCollector = new MemoryCollector(zipLogProvider);
     this.logUploadCollector = new ConsumerCollector(
       new FixSizeMemoryLogCollection(
         configManager.getConfig().memoryCacheSizeThreshold,
@@ -42,6 +48,10 @@ export class LogControlManager implements IAccessor {
     this.logUploadCollector.setConsumer(this.uploadLogConsumer);
     logManager.addCollector(this.logUploadCollector);
     logManager.addCollector(this.memoryLogCollector);
+    this.registerZipProvider(zipLogProvider);
+    this.registerZipProvider(
+      new MemoryLogZipItemProvider(this.memoryLogCollector),
+    );
     this.subscribeNotifications();
   }
 
@@ -153,5 +163,45 @@ export class LogControlManager implements IAccessor {
       mainLogger.fatal(reason, promise);
     }
     this.flush();
+  }
+
+  registerZipProvider(ins: IZipItemProvider) {
+    this._zipItemProviders.push(ins);
+  }
+
+  getZipLog = async () => {
+    const result = await Promise.all(
+      this._zipItemProviders.map(provider => {
+        return provider.getZipItems();
+      }),
+    );
+    const zip = new JSZip();
+    const nameMap = new Map<string, number>();
+    result.forEach(it => {
+      it.forEach(zipItem => {
+        if (nameMap.has(zipItem.name)) {
+          nameMap.set(zipItem.name, nameMap.get(zipItem.name)! + 1);
+          const fileName = `${zipItem.name}-${nameMap.get(zipItem.name)! + 1}${
+            zipItem.type
+          }`;
+          zipItem.folder
+            ? zip.folder(zipItem.folder).file(fileName, zipItem.content)
+            : zip.file(fileName, zipItem.content);
+        } else {
+          nameMap.set(zipItem.name, 1);
+          const fileName = `${zipItem.name}${zipItem.type}`;
+          zipItem.folder
+            ? zip.folder(zipItem.folder).file(fileName, zipItem.content)
+            : zip.file(fileName, zipItem.content);
+        }
+      });
+    });
+    return await zip.generateAsync({
+      type: 'blob',
+      compression: 'DEFLATE',
+      compressionOptions: {
+        level: 9,
+      },
+    });
   }
 }

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export type LogControlConfig = {
+type LogControlConfig = {
   uploadEnabled: boolean;
   memoryCountThreshold: number;
   memorySizeThreshold: number;
@@ -14,3 +14,16 @@ export type LogControlConfig = {
   persistentLimit: number;
   memoryCacheSizeThreshold: number;
 };
+
+type ZipItem = {
+  type: '.txt' | '.zip';
+  name: string;
+  content: string | Blob;
+  folder?: string;
+};
+
+interface IZipItemProvider {
+  getZipItems(): Promise<ZipItem[]>;
+}
+
+export { IZipItemProvider, ZipItem, LogControlConfig };
