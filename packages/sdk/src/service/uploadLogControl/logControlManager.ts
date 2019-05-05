@@ -17,9 +17,9 @@ import {
 import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { IZipItemProvider } from './types';
-import JSZip from 'jszip';
 import { ZipLogZipItemProvider } from './ZipLogZipItemProvider';
 import { MemoryLogZipItemProvider } from './MemoryLogZipItemProvider';
+import * as zipWorker from './zip.worker';
 
 export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
@@ -30,6 +30,8 @@ export class LogControlManager implements IAccessor {
   uploadLogConsumer: LogUploadConsumer;
   logUploadCollector: ConsumerCollector;
   memoryLogCollector: MemoryCollector;
+  worker = (zipWorker as any)() as typeof zipWorker;
+
   private constructor() {
     this._isOnline = window.navigator.onLine;
     const zipLogProvider = new ZipLogZipItemProvider();
@@ -175,33 +177,9 @@ export class LogControlManager implements IAccessor {
         return provider.getZipItems();
       }),
     );
-    const zip = new JSZip();
-    const nameMap = new Map<string, number>();
-    result.forEach(it => {
-      it.forEach(zipItem => {
-        if (nameMap.has(zipItem.name)) {
-          nameMap.set(zipItem.name, nameMap.get(zipItem.name)! + 1);
-          const fileName = `${zipItem.name}-${nameMap.get(zipItem.name)! + 1}${
-            zipItem.type
-          }`;
-          zipItem.folder
-            ? zip.folder(zipItem.folder).file(fileName, zipItem.content)
-            : zip.file(fileName, zipItem.content);
-        } else {
-          nameMap.set(zipItem.name, 1);
-          const fileName = `${zipItem.name}${zipItem.type}`;
-          zipItem.folder
-            ? zip.folder(zipItem.folder).file(fileName, zipItem.content)
-            : zip.file(fileName, zipItem.content);
-        }
-      });
+    const zipItems = result.reduce((previousValue, currentValue) => {
+      return previousValue.concat(currentValue);
     });
-    return await zip.generateAsync({
-      type: 'blob',
-      compression: 'DEFLATE',
-      compressionOptions: {
-        level: 9,
-      },
-    });
+    return this.worker.zip(zipItems);
   }
 }

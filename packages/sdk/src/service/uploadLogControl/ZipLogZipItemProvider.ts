@@ -103,17 +103,18 @@ export class ZipLogZipItemProvider implements IZipItemProvider, IZipProducer {
         content: zip.blob,
       };
     });
-    const text = this.uploaded
+    const uploadedContent = this.uploaded
       .map(item => {
         return `index: ${item.index}\nfileId: ${item.fileId}\nurl: ${item.url}`;
       })
       .join('\n');
-    zipItems.push({
-      type: '.txt',
-      name: 'UploadedZip',
-      folder: 'zip',
-      content: text,
-    });
+    uploadedContent &&
+      zipItems.push({
+        type: '.txt',
+        name: 'UploadedZip',
+        folder: 'zip',
+        content: uploadedContent,
+      });
     return zipItems;
   }
 

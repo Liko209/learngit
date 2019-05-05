@@ -14,7 +14,6 @@ export class MemoryCollector implements ILogCollector {
 
   constructor(zipLogProvider: ZipLogZipItemProvider) {
     this._zipLogProvider = zipLogProvider;
-    (window as any).zipLogProvider = this._zipLogProvider;
     this._collection = new FixSizeMemoryLogCollection(
       configManager.getConfig().memoryCacheSizeThreshold,
     );

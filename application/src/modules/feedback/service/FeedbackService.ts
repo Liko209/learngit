@@ -15,11 +15,6 @@ import * as Sentry from '@sentry/browser';
 import { FeedbackApi } from '../FeedbackApi';
 import { SessionManager } from 'sdk';
 
-enum ZIP_LEVEL {
-  LOW = 3,
-  MIDDLE = 6,
-  HEIGH = 9,
-}
 type UploadOption = { timeout: number; retry: number };
 
 const DEFAULT_OPTION: UploadOption = {
