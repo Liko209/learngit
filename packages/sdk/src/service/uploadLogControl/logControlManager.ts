@@ -20,6 +20,7 @@ import { IZipItemProvider } from './types';
 import { ZipLogZipItemProvider } from './ZipLogZipItemProvider';
 import { MemoryLogZipItemProvider } from './MemoryLogZipItemProvider';
 import * as zipWorker from './zip.worker';
+import { createWorker } from './utils';
 
 export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
@@ -30,7 +31,7 @@ export class LogControlManager implements IAccessor {
   uploadLogConsumer: LogUploadConsumer;
   logUploadCollector: ConsumerCollector;
   memoryLogCollector: MemoryCollector;
-  worker = (zipWorker as any)() as typeof zipWorker;
+  worker: typeof zipWorker = createWorker(zipWorker);
 
   private constructor() {
     this._isOnline = window.navigator.onLine;

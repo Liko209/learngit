@@ -12,6 +12,14 @@ import { LogControlManager } from '../logControlManager';
 import { configManager } from '../config';
 import { ServiceLoader } from '../../../module/serviceLoader';
 
+jest.mock('../utils', () => {
+  return {
+    createWorker: () => {
+      zip: () => {};
+    },
+  };
+});
+jest.mock('../zip.worker');
 jest.mock('axios');
 jest.mock('sdk/module/permission/service/PermissionService');
 
