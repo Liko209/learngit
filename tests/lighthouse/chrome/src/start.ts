@@ -53,7 +53,7 @@ const logger = LogUtils.getLogger(__filename);
       scene = sceneArray.shift();
       result = (await scene.run()) && result;
       scene.clearReportCache();
-      if (scene.supportFps()) {
+      if (Config.runFps && scene.supportFps()) {
         scene.openFpsMode();
         result = (await scene.run()) && result;
         scene.clearReportCache();
@@ -73,7 +73,7 @@ const logger = LogUtils.getLogger(__filename);
   } catch (err) {
     logger.error(err);
   } finally {
-    DashboardService.buildReport();
+    await DashboardService.buildReport();
     // generate report index.html
     await FileService.generateReportIndex();
 

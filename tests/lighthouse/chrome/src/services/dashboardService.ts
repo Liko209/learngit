@@ -2,9 +2,12 @@
  * @Author: doyle.wu
  * @Date: 2019-04-10 16:59:39
  */
+
+import * as os from 'os';
 import * as fs from 'fs';
 import * as path from 'path';
-import { LogUtils } from '../utils';
+import * as plist from 'plist';
+import { LogUtils, PptrUtils } from '../utils';
 import { FileService } from './fileService';
 import { Op } from 'sequelize';
 import { Config } from '../config';
@@ -15,6 +18,13 @@ class DashboardMetricItemConfig {
   name: string;
   url: string;
   apiGoal: number;
+}
+
+class DashboardVersionInfo {
+  platform: string;
+  jupiterVersion: string;
+  appVersion: string;
+  osInfo: string;
 }
 
 class DashboardSceneConfig {
@@ -246,8 +256,8 @@ class DashboardPair {
   unit: string;
 
   constructor(current: number, last: number, unit: string) {
-    this.current = parseFloat('' + current);
-    this.last = parseFloat('' + last);
+    this.current = current;
+    this.last = last;
     this.unit = unit;
   }
 
@@ -271,8 +281,7 @@ class DashboardPair {
     return `<span style="color:${color};margin-left:10px;margin-right:40px;">${text.join('')}</span>`
   }
 
-  formatGlip(title: string, goal?: number): string {
-    let message = [title, ' : '];
+  formatGlip(key: string, handleCount: number, goal?: number): { level: string, text: string } {
     let icon = _config.icons.pass, suffix = '';
     if (this.last) {
       const offset = this.current - this.last;
@@ -284,17 +293,23 @@ class DashboardPair {
       }
     }
 
+    let level = 'pass';
+    if (suffix.startsWith('(+')) {
+      level = 'warn';
+    }
+
     if (goal && this.current > goal) {
       icon = _config.icons.block;
+      level = 'block';
     }
 
-    message.push(icon, this.current.toFixed(2), this.unit, suffix);
-
-    if (icon === _config.icons.block || suffix.startsWith('(+')) {
-      return message.join('');
-    } else {
-      return undefined;
-    }
+    return {
+      level,
+      text: [
+        icon, 'do **', key, '** ', Config.sceneRepeatCount, ' times, average consuming time: **',
+        this.current.toFixed(2), '** ', this.unit, ', number of data: **', handleCount, '**'
+      ].join('')
+    };
   }
 }
 
@@ -306,7 +321,8 @@ class DashboardItem {
       apiMax: DashboardPair,
       apiMin: DashboardPair,
       apiTop90: DashboardPair,
-      apiTop95: DashboardPair
+      apiTop95: DashboardPair,
+      handleCount: number
     }
   };
 
@@ -322,6 +338,8 @@ class MemoryDiffItem {
   size: number;
   countChange: string;
   sizeChange: string;
+  countChangeForGlip: string;
+  sizeChangeForGlip: string;
 }
 
 const items: { [key: string]: DashboardItem } = {};
@@ -387,15 +405,20 @@ class DashboardService {
         apiMax: new DashboardPair(currentItem.apiMax, lastItem['apiMax'], 'ms'),
         apiMin: new DashboardPair(currentItem.apiMin, lastItem['apiMin'], 'ms'),
         apiTop90: new DashboardPair(currentItem.apiTop90, lastItem['apiTop90'], 'ms'),
-        apiTop95: new DashboardPair(currentItem.apiTop95, lastItem['apiTop95'], 'ms')
+        apiTop95: new DashboardPair(currentItem.apiTop95, lastItem['apiTop95'], 'ms'),
+        handleCount: currentItem.handleCount
       }
     });
 
     await DashboardService.memorySummary(item, artifacts);
 
     if (Object.keys(item.metric).length > 0) {
-      item.memory = new DashboardPair(currentSummary.memory, lastSummary.memory, 'MB');
-      item.jsMemory = new DashboardPair(currentSummary.jsMemory, lastSummary.jsMemory, 'MB');
+      if (currentSummary.memory && currentSummary.memory) {
+        item.memory = new DashboardPair(currentSummary.memory, lastSummary.memory, 'MB');
+      }
+      if (currentSummary.jsMemory && currentSummary.jsMemory) {
+        item.jsMemory = new DashboardPair(currentSummary.jsMemory, lastSummary.jsMemory, 'MB');
+      }
       items[scene.name] = item;
     }
   }
@@ -405,13 +428,16 @@ class DashboardService {
     item.memoryDiffArray = result;
 
     if (!artifacts) {
+      logger.info(`artifacts is null.`);
       return;
     }
     let gatherer = artifacts['MemoryGatherer'];
     if (!gatherer) {
+      logger.info(`MemoryGatherer is not exist.`);
       return;
     }
     let memoryFileArray = gatherer['memoryFileArray'];
+    logger.info(`memoryFileArray : ${JSON.stringify(memoryFileArray)}`);
     if (!memoryFileArray || memoryFileArray.length <= 1) {
       return;
     }
@@ -419,6 +445,7 @@ class DashboardService {
     let after: { [key: string]: Array<HeapNode> } = parseMemorySnapshot(memoryFileArray[memoryFileArray.length - 1]);
 
     if (!before || !after) {
+      logger.info(`memory parse : before : ${!!before}, after : ${!!after}`);
       return;
     }
 
@@ -448,7 +475,9 @@ class DashboardService {
           count: arr1.length,
           size: sum1,
           sizeChange: `${formatMemorySize(sum2)} -> ${formatMemorySize(sum1)}`,
-          countChange: `${arr2.length} -> ${arr1.length}`
+          sizeChangeForGlip: `from ${formatMemorySize(sum2)} to **${formatMemorySize(sum1)}**`,
+          countChange: `${arr2.length} -> ${arr1.length}`,
+          countChangeForGlip: `from ${arr2.length} to **${arr1.length}**`,
         });
       } else {
         result.push({
@@ -456,7 +485,9 @@ class DashboardService {
           count: arr1.length,
           size: sum1,
           sizeChange: `0 -> ${formatMemorySize(sum1)}`,
-          countChange: `0 -> ${arr1.length}`
+          sizeChangeForGlip: `from 0 to **${formatMemorySize(sum1)}**`,
+          countChange: `0 -> ${arr1.length}`,
+          countChangeForGlip: `from 0 to **${arr1.length}**`,
         });
       }
     }
@@ -473,7 +504,8 @@ class DashboardService {
         apiMax: number,
         apiMin: number,
         apiTop90: number,
-        apiTop95: number
+        apiTop95: number,
+        handleCount: number
       }
     }
   }> {
@@ -495,7 +527,8 @@ class DashboardService {
         apiMax: number,
         apiMin: number,
         apiTop90: number,
-        apiTop95: number
+        apiTop95: number,
+        handleCount: number
       }
     } = {};
 
@@ -508,32 +541,97 @@ class DashboardService {
     if (loadingTimes && loadingTimes.length > 0) {
       loadingTimes.forEach(time => {
         metric[time.name] = {
-          apiAvg: time.apiAvgTime,
-          apiMax: time.apiMaxTime,
-          apiMin: time.apiMinTime,
-          apiTop90: time.apiTop90Time,
-          apiTop95: time.apiTop95Time
+          apiAvg: parseFloat('' + time.apiAvgTime),
+          apiMax: parseFloat('' + time.apiMaxTime),
+          apiMin: parseFloat('' + time.apiMinTime),
+          apiTop90: parseFloat('' + time.apiTop90Time),
+          apiTop95: parseFloat('' + time.apiTop95Time),
+          handleCount: parseFloat('' + time.apiHandleCount)
         }
       });
     }
     return { memory, jsMemory, metric }
   }
 
-  static buildReport() {
-    let glipMessage = [];
+  static async getVersionInfo(): Promise<DashboardVersionInfo> {
+    const info = new DashboardVersionInfo();
+    const browser = await PptrUtils.launch();
+    const page = await browser.newPage();
+
+    await page.goto(Config.jupiterHost);
+
+    let cnt = 2;
+    let jupiterVersion;
+    const jupiterVersionSelector = "#root > div:nth-child(2) > div > div:nth-child(1)";
+    while (cnt-- > 0) {
+      if (!PptrUtils.waitForSelector(page, jupiterVersionSelector)) {
+        continue;
+      }
+      jupiterVersion = await PptrUtils.text(page, jupiterVersionSelector);
+    }
+
+    if (typeof jupiterVersion === 'boolean') {
+      jupiterVersion = "unknown";
+    } else if (jupiterVersion.startsWith("Version: ")) {
+      jupiterVersion = jupiterVersion.substring("Version: ".length).trim();
+    }
+
+    const appVersion = await page.evaluate(() => {
+      let arr = navigator.appVersion.split(' ');
+      for (let item of arr) {
+        if (item.startsWith("Chrome/")) {
+          return item;
+        }
+      }
+      return "unknown";
+    });
+
+    const osType = os.type();
+    try {
+      if (osType.toLocaleLowerCase() === 'darwin') {
+        let versionInfo = plist.parse(fs.readFileSync("/System/Library/CoreServices/SystemVersion.plist", "utf-8"));
+        info.osInfo = `${versionInfo.ProductName}-${versionInfo.ProductVersion}`.replace(/\s/g, '-').replace(/\./g, '_');
+      }
+    } finally {
+      if (!info.osInfo) {
+        info.osInfo = `${osType}-${os.release()}`.replace(/\s/g, '-').replace(/\./g, '_');
+      }
+    }
+
+    info.platform = "Web";
+    info.jupiterVersion = jupiterVersion;
+    info.appVersion = appVersion.replace('/', '-');
+    await PptrUtils.close(browser);
+
+    return info;
+  }
+
+  static async buildReport() {
+    let glipMessage = [], merticWarnArr = [], merticBlockArr = [], memoryDiff = [];
     let htmlArray = ['<!doctype html><html><head><title>Performance Dashboard</title><style>'];
     htmlArray.push('*{margin:0;padding:0;border:0}');
     htmlArray.push('body{margin-bottom:30px}');
-    htmlArray.push('.dashboard-item{margin:40px auto 0;width:600px;border:1px solid #ddd;border-radius: 10px;padding: 15px 40px;box-shadow:5px 0 5px #e3e3e3}');
+    htmlArray.push('.dashboard-item{margin:40px auto 0;width:700px;border:1px solid #ddd;border-radius: 10px;padding: 15px 40px;box-shadow:5px 0 5px #e3e3e3}');
     htmlArray.push('.dashboard-item-title{text-align:center;font-weight:bold;font-size:20px;}');
+    htmlArray.push('.dashboard-item-info{margin:5px 0px 10px;}');
+    htmlArray.push('.dashboard-item-info > span{font-weight:bold;}');
     htmlArray.push('.dashboard-item-memory{margin:5px 0px 10px;}');
     htmlArray.push('.dashboard-item-point{margin:5px 0px 15px;}');
     htmlArray.push('.dashboard-item-point-title{font-weight:bold;font-size:18px;margin-bottom:10px;}');
     htmlArray.push('.dashboard-item-point-title a {margin-left:20px;text-decoration:none;color:#509ee3;padding: 2px 5px;border-radius: 5px;font-size: 14px;border: 1px solid #eee;}');
     htmlArray.push('.dashboard-item-point-metric{margin-bottom:10px}');
+    htmlArray.push('.dashboard-item-point-number{margin-bottom:10px}');
+    htmlArray.push('.dashboard-item-point-number > span{font-weight:bold;}');
     htmlArray.push('.dashboard-item-memory-diff {border-top:1px solid #eee;border-left:1px solid #eee;}')
     htmlArray.push('.dashboard-item-memory-diff td, .dashboard-item-memory-diff th {padding:2px 10px;text-align:left;min-width:100px;border-bottom:1px solid #eee;border-right:1px solid #eee}');
     htmlArray.push('</style></head><body>');
+
+    const versionInfo: DashboardVersionInfo = await DashboardService.getVersionInfo();
+    const envInfo = `Jupiter ${versionInfo.platform} / ${versionInfo.jupiterVersion} / ${versionInfo.appVersion} ${versionInfo.osInfo}`;
+
+    glipMessage.push(`**Site:**  ${Config.jupiterHost}`);
+    glipMessage.push(`**Env:**  ${envInfo}`);
+    glipMessage.push('\n**Results:**');
 
     Object.keys(items).forEach(key => {
       const item = items[key];
@@ -541,9 +639,16 @@ class DashboardService {
       htmlArray.push(
         '<div class="dashboard-item">',
         '<div class="dashboard-item-title">', key, '</div>',
-        '<div class="dashboard-item-memory">', 'Last memory usage:', item.memory.formatHtml(), 'Last js memory usage:', item.jsMemory.formatHtml(), '</div>',
-        '<div class="dashboard-item-points">',
       );
+
+      htmlArray.push('<div class="dashboard-item-info">Env : <span>', envInfo, '</span></div>');
+      htmlArray.push('<div class="dashboard-item-info">', 'Number of executions : <span>', Config.sceneRepeatCount.toFixed(0), '</span></div>');
+
+      if (item.memory && item.jsMemory) {
+        htmlArray.push('<div class="dashboard-item-memory">', 'Last memory usage:', item.memory.formatHtml(), 'Last js memory usage:', item.jsMemory.formatHtml(), '</div>');
+      }
+
+      htmlArray.push('<div class="dashboard-item-points">');
 
       Object.keys(metric).forEach(k => {
         const m = metric[k];
@@ -554,6 +659,9 @@ class DashboardService {
           '<div class="dashboard-item-point-title">', k,
           '<a href="', url, '?sceneId=', item.sceneId.toString(), '" target="_blank">Trend</a>',
           '<a href="', _config.lodingTimeUrl, '?sceneId=', item.sceneId.toString(), '" target="_blank">Detail</a></div>',
+          '<div class="dashboard-item-point-number">',
+          'Data size : <span>', m.handleCount.toFixed(0),
+          '</span></div>',
           '<div class="dashboard-item-point-metric">',
           'apiAvg:', m.apiAvg.formatHtml(goal),
           'apiMax:', m.apiMax.formatHtml(goal),
@@ -564,25 +672,21 @@ class DashboardService {
           '</div></div>'
         );
 
-        const merticArr = [];
-        ['apiAvg', 'apiTop90', 'apiTop95'].forEach(a => {
-          const res = m[a].formatGlip(a, goal);
-          if (res) {
-            merticArr.push(res);
-          }
-        });
-        if (merticArr.length > 0) {
-          glipMessage.push(`**${k}**`, merticArr.join('    '), '')
+        const avgMertic = m['apiAvg'].formatGlip(k, m.handleCount, goal);
+        if (avgMertic.level === 'warn') {
+          merticWarnArr.push(avgMertic.text);
+        } else if (avgMertic.level === 'block') {
+          merticBlockArr.push(avgMertic.text);
         }
       });
       if (item.memoryDiffArray.length > 0) {
         htmlArray.push('</div><table class="dashboard-item-memory-diff"><tr><th>className</th><th>count</th><th>size</th></tr>');
-        glipMessage.push(`**Memory Diff for ${key}**`);
+        memoryDiff.push(`In **${key}**`);
         let max = 5;
         item.memoryDiffArray.forEach(diff => {
           htmlArray.push('<tr><td>', diff.name, '</td>', '<td>', diff.countChange, '</td>', '<td>', diff.sizeChange, '</td></tr>');
           if (max-- > 0) {
-            glipMessage.push(`${diff.name} (count: ${diff.countChange}, size: ${diff.sizeChange})`);
+            memoryDiff.push(`For class **${diff.name}**, number of instance increase ${diff.countChangeForGlip} and total memory usage increase ${diff.sizeChangeForGlip}`);
           }
         });
         htmlArray.push('</table></div>');
@@ -592,10 +696,21 @@ class DashboardService {
 
     });
     htmlArray.push('</body></html>');
+    if (merticWarnArr.length === 0 && merticBlockArr.length === 0) {
+      glipMessage.push('All of metric seem to be good');
+    } else {
+      glipMessage.push(...merticBlockArr);
+      glipMessage.push(...merticWarnArr);
+    }
 
-    glipMessage.push(`**Dashboard** :\n ${Config.buildURL}Dashboard`);
-    glipMessage.push(`**Lighthouse** :\n ${Config.buildURL}Lighthouse`);
-    glipMessage.push(`**Metabase** :\n ${Config.dashboardUrl}`);
+    if (memoryDiff.length > 0) {
+      glipMessage.push('\n**Memory Diff:**');
+      glipMessage.push(...memoryDiff);
+    }
+
+    glipMessage.push(`\n**Dashboard:**\n ${Config.buildURL}Dashboard`);
+    glipMessage.push(`**Lighthouse:**\n ${Config.buildURL}Lighthouse`);
+    glipMessage.push(`**Metabase:**\n ${Config.dashboardUrl}`);
 
     FileService.saveDashboardIntoDisk(htmlArray.join(''));
     FileService.saveGlipMessageIntoDisk(glipMessage.join('\n'));
