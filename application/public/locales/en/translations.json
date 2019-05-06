@@ -162,6 +162,8 @@
     "conversationDetailsShow": "Show details",
     "conversationDetailsHide": "Hide details",
     "prompt": {
+      "editPostFailedForServerIssue": "Sorry, something went wrong on our end and we weren't able to apply edits to this post. Try again later.",
+      "editPostFailedForNetworkIssue": "We weren't able to apply edits to this post. Check your network connection, then try again.",
       "contentLength": "A maximum of 10000 characters can be sent",
       "contentIllegal": "Javascript not allowed",
       "deletePostTitle": "Delete Post?",
