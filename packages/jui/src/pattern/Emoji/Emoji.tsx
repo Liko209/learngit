@@ -28,8 +28,6 @@ type Props = {
     | undefined;
 };
 
-const defaultPath = '';
-
 const Menu = styled(JuiMenu)`
   .menu-list-root {
     padding: 0;
