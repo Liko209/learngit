@@ -24,6 +24,14 @@ class RCInfoService extends EntityBaseService {
     );
   }
 
+  protected onStarted() {
+    super.onStarted();
+
+    this.getRCInfoController()
+      .getRegionInfoController()
+      .loadRegionInfo();
+  }
+
   protected getRCInfoController(): RCInfoController {
     if (!this._rcInfoController) {
       this._rcInfoController = new RCInfoController();
@@ -112,10 +120,47 @@ class RCInfoService extends EntityBaseService {
       .isRCFeaturePermissionEnabled(featurePermission);
   }
 
+  async getCallerIdList() {
+    return await this.getRCInfoController()
+      .getRCCallerIdController()
+      .getCallerIdList();
+  }
   async generateWebSettingUri(type: ERCWebSettingUri) {
     return this.getRCInfoController()
       .getRcWebSettingInfoController()
       .generateRCAuthCodeUri(type);
+  }
+
+  private get regionInfoController() {
+    return this.getRCInfoController().getRegionInfoController();
+  }
+
+  async getCountryList() {
+    return await this.regionInfoController.getCountryList();
+  }
+
+  async getCurrentCountry() {
+    return await this.regionInfoController.getCurrentCountry();
+  }
+
+  async setDefaultCountry(isoCode: string) {
+    return await this.regionInfoController.setDefaultCountry(isoCode);
+  }
+
+  async setAreaCode(areaCode: string) {
+    return await this.regionInfoController.setAreaCode(areaCode);
+  }
+
+  async getAreaCode() {
+    return await this.regionInfoController.getAreaCode();
+  }
+
+  hasAreaCode(countryCallingCode: string) {
+    return this.regionInfoController.hasAreaCode(countryCallingCode);
+  }
+
+  async isAreaCodeValid(areaCode: string) {
+    return await this.regionInfoController.isAreaCodeValid(areaCode);
   }
 }
 

@@ -20,6 +20,13 @@ class CompanyController {
     this._currentCompanyId = config.getCurrentCompanyId();
   }
 
+  async getBrandType() {
+    const company = await this.entitySourceController.get(
+      this._currentCompanyId,
+    );
+    return (company && company.rc_brand) || undefined;
+  }
+
   async getUserAccountTypeFromSP430(): Promise<E_ACCOUNT_TYPE | undefined> {
     const company = await this.entitySourceController.get(
       this._currentCompanyId,

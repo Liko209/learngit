@@ -5,13 +5,8 @@
  */
 import { ToastCallError } from '../ToastCallError';
 import { Notification } from '@/containers/Notification';
-import i18next from 'i18next';
 
 describe('ToastCallError', () => {
-  i18next.t = jest.fn((key: string) => {
-    return key;
-  });
-
   it('should display call error: unknow_error', () => {
     Notification.flagToast = jest.fn();
     const msg = 'unknow_error';
@@ -29,7 +24,6 @@ describe('ToastCallError', () => {
     ToastCallError.toastNoNetwork();
     const i18nkey = 'telephony.prompt.NoNetwork';
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
-    expect(i18next.t).toHaveBeenCalledWith(i18nkey);
   });
 
   it('should display call error: Call failed [JPT-1393]', () => {
@@ -37,7 +31,6 @@ describe('ToastCallError', () => {
     const i18nkey = 'telephony.prompt.CallFailed';
     ToastCallError.toastCallFailed();
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
-    expect(i18next.t).toHaveBeenCalledWith(i18nkey);
   });
 
   it('should display call error: time out [JPT-1407]', () => {
@@ -45,7 +38,6 @@ describe('ToastCallError', () => {
     const i18nkey = 'telephony.prompt.CallTimeout';
     ToastCallError.toastCallTimeout();
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
-    expect(i18next.t).toHaveBeenCalledWith(i18nkey);
   });
 
   it('should display call error: time out [JPT-1547]', () => {
@@ -53,7 +45,6 @@ describe('ToastCallError', () => {
     const i18nkey = 'telephony.prompt.FailedToHold';
     ToastCallError.toastFailedToHold();
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
-    expect(i18next.t).toHaveBeenCalledWith(i18nkey);
   });
 
   it('should display call error: time out [JPT-1549]', () => {
@@ -61,7 +52,6 @@ describe('ToastCallError', () => {
     const i18nkey = 'telephony.prompt.FailedToResume';
     ToastCallError.toastFailedToResume();
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
-    expect(i18next.t).toHaveBeenCalledWith(i18nkey);
   });
 
   it('should display call error: time out [JPT-1610]', () => {
@@ -69,7 +59,6 @@ describe('ToastCallError', () => {
     const i18nkey = 'telephony.prompt.FailedToRecord';
     ToastCallError.toastFailedToRecord();
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
-    expect(i18next.t).toHaveBeenCalledWith(i18nkey);
   });
 
   it('should display call error: time out [JPT-1612]', () => {
@@ -77,6 +66,5 @@ describe('ToastCallError', () => {
     const i18nkey = 'telephony.prompt.FailedToStopRecording';
     ToastCallError.toastFailedToStopRecording();
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
-    expect(i18next.t).toHaveBeenCalledWith(i18nkey);
   });
 });

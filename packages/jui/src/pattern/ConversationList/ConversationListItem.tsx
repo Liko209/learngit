@@ -63,7 +63,6 @@ const JuiMenuContain = styled(JuiMenu)`
   }
 `;
 const StyledListItem = styled(WrapperListItem)`
-
   && {
     display: ${({ hidden }) => (hidden ? 'none' : 'flex')};
     white-space: nowrap;
@@ -189,9 +188,7 @@ const JuiConversationListItem: IConversationListItem = memo(
         {...rest}
       >
         <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
-        <ItemText disableTooltip={true} style={{ fontWeight }}>
-          {title}
-        </ItemText>
+        <ItemText style={{ fontWeight }}>{title}</ItemText>
         {umi}
         <StyledRightWrapper>
           {indicator}

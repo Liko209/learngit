@@ -129,6 +129,11 @@ class TelephonyService extends EntityBaseService {
       .getAccountController()
       .replyWithPattern(callId, pattern, time, timeUnit);
   }
+
+  getLastCalledNumber = () => {
+    const accountController = this.telephonyController.getAccountController();
+    return accountController ? accountController.getLastCalledNumber() : '';
+  }
 }
 
 export { TelephonyService };

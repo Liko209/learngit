@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import i18next from 'i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiConversationItemCard as TaskUpdateViewCard } from 'jui/pattern/ConversationItemCard';
 import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationItemCardHeader';
 import {
@@ -20,7 +20,7 @@ import { AvatarName } from './AvatarName';
 import { TaskUpdateViewProps } from './types';
 
 @observer
-class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
+class TaskUpdate extends React.Component<TaskUpdateViewProps & WithTranslation> {
   private _getTaskAvatarNames = (assignedIds: number[]) =>
     assignedIds
       .map((assignedId: number) => (
@@ -43,7 +43,7 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
   }
 
   render() {
-    const { task, activityData, color } = this.props;
+    const { task, activityData, color, t } = this.props;
     const { text, complete } = task;
     const { value, key, old_value } = activityData;
 
@@ -56,8 +56,8 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
         Footer={
           key === 'assigned_to_ids' && old_value.length > 0 ? (
             <JuiEventCollapse
-              showText={i18next.t('item.showEventHistory')}
-              hideText={i18next.t('item.hideEventHistory')}
+              showText={t('item.showEventHistory')}
+              hideText={t('item.hideEventHistory')}
             >
               {
                 <JuiEventCollapseContent>
@@ -71,7 +71,7 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
         }
       >
         {key === 'assigned_to_ids' && value.length > 0 ? (
-          <JuiLabelWithContent label={i18next.t('item.assignee')}>
+          <JuiLabelWithContent label={t('item.assignee')}>
             <JuiTaskAvatarNames>
               {this._getTaskAvatarNames(value)}
             </JuiTaskAvatarNames>
@@ -81,5 +81,7 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
     );
   }
 }
+
+const TaskUpdateView = withTranslation('translations')(TaskUpdate);
 
 export { TaskUpdateView };
