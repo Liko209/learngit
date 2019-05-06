@@ -22,6 +22,7 @@ type JuiPopperMenuProps = {
   setMoreItemState?: (value: boolean) => void;
   open: boolean;
   value?: number;
+  noTranslation?: boolean;
 };
 
 const StyledAnchorWrapper = styled.div`
@@ -61,6 +62,7 @@ class JuiPopperMenu extends React.PureComponent<
       transformOrigin,
       placement,
       open,
+      noTranslation,
     } = this.props;
     const id = open ? 'popper-menu' : '';
     const _open = open && Boolean(anchorEl);
@@ -80,6 +82,7 @@ class JuiPopperMenu extends React.PureComponent<
           {({ TransitionProps }) => (
             <Grow
               {...TransitionProps}
+              timeout={noTranslation ? 0 : 'auto'}
               style={{
                 transformOrigin: transformOrigin || 'center top',
               }}
