@@ -164,7 +164,16 @@ class EmojiSection extends BaseWebComponent {
   get list() {
     return this.self.find('.emoji-mart-category-list');
   }
+
+  /* search only */
+  get noResultDiv() {
+    return this.self.find('.emoji-mart-no-results')
+  }
   
+  get noResultLabel() {
+    return this.noResultDiv.find('.emoji-mart-no-results-label');
+  }
+
   get emojis() {
     return this.self.find('.emoji-mart-emoji');
   }
