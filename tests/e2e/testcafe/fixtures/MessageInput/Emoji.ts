@@ -113,3 +113,68 @@ test.meta(<ITestMeta>{
   });
 
 });
+
+
+
+test.meta(<ITestMeta>{
+  priority: ['P2'], caseIds: ['JPT-1789'], keywords: ['emoji'], maintainers: ['Potar.he']
+})('Check emoji can be sorted by type', async (t) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const anotherUser = users[5];
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, users[1]]
+  }
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`Given I have a chat with ${anotherUser.extension}`, async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I enter a chat conversation', async () => {
+    await app.homePage.messageTab.directMessagesSection.expand();
+    await app.homePage.messageTab.directMessagesSection.nthConversationEntry(0).enter();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog('And I click Emoji button', async () => {
+    await conversationPage.clickEmojiButton();
+  });
+
+  const emojiLibrary = app.homePage.messageTab.emojiLibrary;
+  await h(t).withLog('Then the emoji library should be open', async () => {
+    await emojiLibrary.ensureLoaded();
+  });
+
+  await h(t).withLog('When I click emoji tab "Smileys & People"', async () => {
+    await emojiLibrary.clickTabByCategory('Smileys & People');
+  });
+
+  await h(t).withLog('Then this tab should be selected', async () => {
+    await emojiLibrary.selectedTabShouldBeCategory('Smileys & People');
+  });
+
+  await h(t).withLog('And the type header should be on the top', async () => {
+    await emojiLibrary.categoryHeaderOnTopShouldBe('Smileys & People');
+  });
+
+  await h(t).withLog('When I scroll to type "Animals & Nature"', async () => {
+    await emojiLibrary.animalsAndNatureSection.scrollIntoView();
+  });
+
+  await h(t).withLog('Then this tab should be selected', async () => {
+    await emojiLibrary.selectedTabShouldBeCategory('Animals & Nature');
+  });
+
+  await h(t).withLog('And the type header should be on the top', async () => {
+    await emojiLibrary.categoryHeaderOnTopShouldBe('Animals & Nature');
+  });
+
+});

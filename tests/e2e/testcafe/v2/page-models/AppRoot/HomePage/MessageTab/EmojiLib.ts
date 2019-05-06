@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import { h, H } from '../../../../helpers';
+import { ClientFunction } from 'testcafe';
 
 
 export class EmojiLibrary extends BaseWebComponent {
@@ -145,10 +146,10 @@ export class EmojiLibrary extends BaseWebComponent {
     return this.getSection('Flags');
   }
 
-  async categoryOnTopShouldBe(name: string) {
+  async categoryHeaderOnTopShouldBe(category: string) {
     await H.retryUntilPass(async () => {
       const searchBottomHeight = await this.searchBox.getBoundingClientRectProperty('bottom');
-      const categoryTopHeight = await this.getSection(name).header.getBoundingClientRectProperty('top');
+      const categoryTopHeight = await this.getSection(category).header.getBoundingClientRectProperty('top');
       assert.ok(searchBottomHeight == categoryTopHeight, `${searchBottomHeight} != ${categoryTopHeight}`);
     });
   }
@@ -158,9 +159,12 @@ export class EmojiLibrary extends BaseWebComponent {
 
 class EmojiSection extends BaseWebComponent {
   get header() {
-    return this.self.find('.emoji-mart-category-label')
+    return this.self.find('.emoji-mart-category-label');
   }
-
+  get list() {
+    return this.self.find('.emoji-mart-category-list');
+  }
+  
   get emojis() {
     return this.self.find('.emoji-mart-emoji');
   }
@@ -194,7 +198,6 @@ class EmojiSection extends BaseWebComponent {
   async hoverEmojiByValue(key: string) {
     await this.t.hover(this.getEmojiByValue(key));
   }
-
 }
 
 class EmojiItem extends BaseWebComponent {
