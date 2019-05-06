@@ -30,17 +30,17 @@ class ElectronUpgradeDialogComponent extends React.Component<
 
   private _close(userAction?: UpgradeUserAction) {
     if (window.jupiterElectron.handleUpgradeFeedback) {
-      window.jupiterElectron.handleUpgradeFeedback(userAction || {});
+      window.jupiterElectron.handleUpgradeFeedback(userAction);
     }
     ElectronUpgradeDialogComponent._portalRef &&
       ElectronUpgradeDialogComponent._portalRef.dismiss();
   }
 
   handleOk = () => {
-    this._close({});
+    this._close();
   }
   handleUpgrade = () => {
-    this._close({});
+    this._close();
   }
   handleIgnoreOnce = () => {
     TopBannerViewModel.showBanner(ElectronUpgradeBanner);
