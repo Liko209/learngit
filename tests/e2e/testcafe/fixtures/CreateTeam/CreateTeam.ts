@@ -418,7 +418,7 @@ test(formalName('JPT-121 Check "Allow members to post messages" can be turn on o
 
     const otherUser = users[5];
     await h(t).glip(otherUser).init();
-    const teamNames = ['Post On', 'Post Off'];
+    const teamNames = [uuid(), uuid()];
     const anotherUserName = await h(t).glip(loginUser).getPerson(otherUser.rcId).then(res => res.data.display_name);
 
     const createTeam = async (teamName: string) => {
