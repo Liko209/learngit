@@ -11,7 +11,8 @@
   },
   "scripts": {
     "preinstall": "node scripts/check-pm.js",
-    "postinstall": "npm run bt && node scripts/jss-types-workaround",
+    "postinstall": "npm run bt && npm run jss-type-workaround",
+    "jss-type-workaround": "mkdir -p node_modules/@material-ui/core/node_modules/@types/jss && cp -r node_modules/@types/jss node_modules/@material-ui/core/node_modules/@types",
     "start:ui": "cd packages/jui && npm run storybook",
     "start:app": "cd application && npm run start",
     "clean:build": "rm -rf ./packages/*/build ./packages/*/build-es",
