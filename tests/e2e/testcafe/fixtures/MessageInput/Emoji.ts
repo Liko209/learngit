@@ -24,7 +24,7 @@ test.meta(<ITestMeta>{
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const anotherUser = users[5];
-  let chat = <IGroup> {
+  let chat = <IGroup>{
     type: "DirectMessage",
     owner: loginUser,
     members: [loginUser, users[1]]
@@ -50,8 +50,66 @@ test.meta(<ITestMeta>{
     await conversationPage.clickEmojiButton();
   });
 
+  const emojiLibrary = app.homePage.messageTab.emojiLibrary;
   await h(t).withLog('Then the emoji library should be open', async () => {
-    await app.homePage.messageTab.emojiLibrary.ensureLoaded();
+    await emojiLibrary.ensureLoaded();
+  });
+
+  let emojiValue: string
+  let emojis = [];
+  await h(t).withLog('When I click a first emoji in "Smileys & People"', async () => {
+    await emojiLibrary.smileysAndPeopleSection.clickEmojiByNth(0);
+    emojiValue = await emojiLibrary.smileysAndPeopleSection.nthEmojiItem(0).getValue();
+    emojis.push(emojiValue);
+  });
+
+  await h(t).withLog('Then the emoji library should keep open', async () => {
+    await emojiLibrary.ensureLoaded();
+  });
+
+  await h(t).withLog(`And display emoji's key ":${emojiValue}:" in the input box`, async () => {
+    await t.expect(conversationPage.messageInputArea.withAttribute(`:${emojiValue}:`)).ok();
+  });
+
+  await h(t).withLog(`And the selected emoji display in the "frequently used" tab `, async () => {
+    await emojiLibrary.frequentlyUsedSection.emojiItemByValue(emojiValue).ensureLoaded();
+  });
+
+  await h(t).withLog(`And focus on the input box`, async () => {
+    await conversationPage.shouldFocusOnMessageInputArea();
+  });
+
+  await h(t).withLog('When I click a second emoji in "Smileys & People"', async () => {
+    await emojiLibrary.smileysAndPeopleSection.clickEmojiByNth(1);
+    emojiValue = await emojiLibrary.smileysAndPeopleSection.nthEmojiItem(1).getValue();
+    emojis.push(emojiValue);
+  });
+
+  await h(t).withLog('Then the emoji library should keep open', async () => {
+    await emojiLibrary.ensureLoaded();
+  });
+
+  await h(t).withLog(`And display emoji's key ":${emojiValue}:" in the input box`, async () => {
+    await t.expect(conversationPage.messageInputArea.withAttribute(`:${emojiValue}:`)).ok();
+  });
+
+  await h(t).withLog(`And the selected emoji display in the "frequently used" tab `, async () => {
+    await emojiLibrary.frequentlyUsedSection.emojiItemByValue(emojiValue).ensureLoaded();
+  });
+
+  await h(t).withLog(`And focus on the input box`, async () => {
+    await conversationPage.shouldFocusOnMessageInputArea();
+  });
+
+  await h(t).withLog('When I hitting "Enter" on the keyboard"', async () => {
+    await conversationPage.pressEnterWhenFocusOnMessageInputArea();
+    await conversationPage.nthPostItem(-1).waitForPostToSend();
+  });
+
+  await h(t).withLog('Then display the emojis in the conversation stream', async () => {
+    for (const emoji of emojis) {
+      await conversationPage.nthPostItem(-1).shouldHasEmojiByValue(emoji)
+    };
   });
 
 });

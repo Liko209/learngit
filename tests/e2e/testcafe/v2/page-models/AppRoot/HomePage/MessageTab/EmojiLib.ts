@@ -31,9 +31,8 @@ export class EmojiLibrary extends BaseWebComponent {
     return this.getComponent(EmojiItem, this.getEmojiByValue(value));
   }
 
-  getEmojiByValue(key: string) {
-    const emojiRegExp = new RegExp(`.*, ${key}$`)
-    return this.emojis.filter(`[aria-label$=", ${emojiRegExp}"]`);
+  getEmojiByValue(value: string) {
+    return this.emojis.filter(`[aria-label$=", ${value}"]`);
   }
 
   async clickEmojiByValue(key: string) {
@@ -43,7 +42,6 @@ export class EmojiLibrary extends BaseWebComponent {
   async hoverEmojiByValue(key: string) {
     await this.t.hover(this.getEmojiByValue(key));
   }
-
 
   /* tab */
   get tabBar() {
@@ -79,23 +77,6 @@ export class EmojiLibrary extends BaseWebComponent {
     await this.clickAndTypeText(this.searchInputArea, text, { paste: true, replace: true });
   }
 
-  /* categories list*/
-  get categories() {
-    return this.self.find('.emoji-mart-category-label');
-  }
-
-  categoryHeaderByName(name: string) {
-    return this.categories.withAttribute('data-name', name);
-  }
-
-  async categoryOnTopShouldBe(name: string) {
-    await H.retryUntilPass(async () => {
-      const searchBottomHeight = await this.searchBox.getBoundingClientRectProperty('bottom');
-      const categoryTopHeight = await this.categoryHeaderByName(name).getBoundingClientRectProperty('top');
-      assert.ok(searchBottomHeight == categoryTopHeight, `${searchBottomHeight} != ${categoryTopHeight}`);
-    });
-  }
-
   /* preview */
   get previewArea() {
     return this.self.find('.emoji-mart-preview');
@@ -119,6 +100,7 @@ export class EmojiLibrary extends BaseWebComponent {
     return this.previewArea.find('.emoji-mart-preview-shortname');
   }
 
+  /* section */
   getSection(category: string) {
     return this.getComponent(EmojiSection, this.self.find(`.emoji-mart-category[aria-label="${category}"]`));
   }
@@ -162,6 +144,15 @@ export class EmojiLibrary extends BaseWebComponent {
   get flagsSection() {
     return this.getSection('Flags');
   }
+
+  async categoryOnTopShouldBe(name: string) {
+    await H.retryUntilPass(async () => {
+      const searchBottomHeight = await this.searchBox.getBoundingClientRectProperty('bottom');
+      const categoryTopHeight = await this.getSection(name).header.getBoundingClientRectProperty('top');
+      assert.ok(searchBottomHeight == categoryTopHeight, `${searchBottomHeight} != ${categoryTopHeight}`);
+    });
+  }
+
 }
 
 
@@ -192,9 +183,8 @@ class EmojiSection extends BaseWebComponent {
     return this.getComponent(EmojiItem, this.getEmojiByValue(value));
   }
 
-  getEmojiByValue(key: string) {
-    const emojiRegExp = new RegExp(`.*, ${key}$`)
-    return this.emojis.filter(`[aria-label$=", ${emojiRegExp}"]`);
+  getEmojiByValue(value: string) {
+    return this.emojis.filter(`[aria-label$=", ${value}"]`);
   }
 
   async clickEmojiByValue(key: string) {

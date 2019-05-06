@@ -596,8 +596,12 @@ export class PostItem extends BaseWebComponent {
     return this.mentions.filter((el) => el.textContent === name);
   }
 
-  emojiTitle(text) {
-    return this.text.find("img").withAttribute("title", text);
+  get emojis() {
+    return this.self.find('.emoji');
+  }
+
+  async shouldHasEmojiByValue(text:string) {
+    await this.t.expect(this.emojis.withAttribute('title', `:${text}:`))
   }
 
   get likeToggleOnActionBar() {
