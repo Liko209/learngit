@@ -85,6 +85,7 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
     padding: ${spacing(2.5, 4)};
     ${typography('button')};
     color: ${palette('primary', 'main')};
+    text-align: center;
     &.containedButtonStyle {
       color: ${palette('common', 'white')};
       ${shadow(3)}

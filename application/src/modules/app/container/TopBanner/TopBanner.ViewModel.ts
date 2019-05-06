@@ -25,11 +25,12 @@ class TopBannerViewModel extends AbstractViewModel {
     },
   ];
 
-  static showBanner(Comp: BannerType) {
+  static showBanner(Comp: BannerType, props: object = {}) {
     const config = TopBannerViewModel.data.find(
       ({ Component }) => Component === Comp,
     );
     if (config) {
+      config.props = props;
       config.isShow = true;
     }
   }

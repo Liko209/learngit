@@ -28,12 +28,17 @@ class ElectronUpgradeDialogComponent extends React.Component<
     ElectronUpgradeDialogComponent._portalRef = ref;
   }
 
+  static getPortalRef() {
+    return ElectronUpgradeDialogComponent._portalRef;
+  }
+
   private _close(userAction?: UpgradeUserAction) {
     if (window.jupiterElectron.handleUpgradeFeedback) {
       window.jupiterElectron.handleUpgradeFeedback(userAction);
     }
     ElectronUpgradeDialogComponent._portalRef &&
       ElectronUpgradeDialogComponent._portalRef.dismiss();
+    ElectronUpgradeDialogComponent._portalRef = null;
   }
 
   handleOk = () => {
@@ -43,7 +48,9 @@ class ElectronUpgradeDialogComponent extends React.Component<
     this._close();
   }
   handleIgnoreOnce = () => {
-    TopBannerViewModel.showBanner(ElectronUpgradeBanner);
+    TopBannerViewModel.showBanner(ElectronUpgradeBanner, {
+      downloadUrl: this.props.url,
+    });
     this._close({ snooze: true });
   }
   handleNotNow = () => {

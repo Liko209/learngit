@@ -21,6 +21,9 @@ const ElectronUpgradeDialog = buildContainer<ElectronUpgradeDialogProps>({
 });
 
 const showUpgradeDialog = (props: ElectronUpgradeDialogViewProps) => {
+  if (ElectronUpgradeDialogComponent.getPortalRef()) {
+    return;
+  }
   const ref = portalManager.wrapper(ElectronUpgradeDialogView).show(props);
   ElectronUpgradeDialogComponent.setPortalRef(ref);
 };
