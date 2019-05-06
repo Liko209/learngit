@@ -3,6 +3,7 @@
  * @Date: 2018-10-08 16:26:47
  * Copyright © RingCentral. All rights reserved.
  */
+import { PromisedComputedValue } from 'computed-async-mobx';
 import PostModel from '@/store/models/Post';
 import PersonModel from '@/store/models/Person';
 import { RefObject } from 'react';
@@ -22,7 +23,7 @@ type ConversationCardViewProps = {
   groupId: number;
   name: string;
   customStatus?: string;
-  createTime: string;
+  createTime: PromisedComputedValue<string>;
   itemTypeIds?: {
     [key: number]: number[];
   };

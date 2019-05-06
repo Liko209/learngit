@@ -216,7 +216,11 @@ class GroupHandleDataController {
       }
     }
     return groups.map((group: Group) => {
-      return _.omit(group, ['post_cursor', 'post_drp_cursor']);
+      return _.omit(group, [
+        'post_cursor',
+        'post_drp_cursor',
+        'last_author_id',
+      ]);
     });
   }
 

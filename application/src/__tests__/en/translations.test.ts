@@ -138,11 +138,17 @@ describe.skip('i18next-en', () => {
     expect(i18next.t('setStateUnFavorites')).toEqual('Remove from Favorites');
     expect(i18next.t('setStatePublic')).toEqual('Change to Public Team');
     expect(i18next.t('setStatePrivate')).toEqual('Change to Private Team');
-    expect(i18next.t('markFavoriteServerErrorContent')).toEqual(
-      "We weren't able to favorite this conversation. Try again.",
+    expect(i18next.t('notAbleToUnFavoriteForNetworkIssue')).toEqual(
+      "We weren't able to remove this conversation from favorites. Check your network connection, then try again.",
     );
-    expect(i18next.t('markUnFavoriteServerErrorContent')).toEqual(
-      "We weren't able to remove this conversation from favorites. Try again.",
+    expect(i18next.t('notAbleToUnFavoriteForServerIssue')).toEqual(
+      "Sorry, something went wrong on our end and we weren't able to remove this conversation from favorites. Try again later.",
+    );
+    expect(i18next.t('notAbleToFavoriteThisMessageForNetworkIssue')).toEqual(
+      "Sorry, we weren't able to favorite this conversation. Check your network connection, then try again.",
+    );
+    expect(i18next.t('notAbleToFavoriteThisMessageForServerIssue')).toEqual(
+      "Sorry, something went wrong on our end and we weren't able to favorite this conversation. Try again later.",
     );
     expect(i18next.t('markPublicServerErrorContent')).toEqual(
       "We weren't able to public this conversation. Try again.",
@@ -282,11 +288,17 @@ describe.skip('i18next-en', () => {
     expect(i18next.t('SorryWeWereNotAbleToSendTheMessage')).toEqual(
       "Sorry, we weren't able to send the message. Try again.",
     );
-    expect(i18next.t('SorryWeWereNotAbleToLikeTheMessage')).toEqual(
-      "Sorry, we weren't able to like this message. Try again.",
+    expect(i18next.t('notAbleToUnlikeForNetworkIssue')).toEqual(
+      "We weren't able to unlike this message. Check your network connection, then try again.",
     );
-    expect(i18next.t('SorryWeWereNotAbleToUnlikeTheMessage')).toEqual(
-      "Sorry, we weren't able to unlike this message. Try again.",
+    expect(i18next.t('notAbleToUnlikeForServerIssue')).toEqual(
+      "Sorry, something went wrong on our end and we weren't able to unlike this message. Try again later.",
+    );
+    expect(i18next.t('notAbleToLikeThisMessageForNetworkIssue')).toEqual(
+      "We weren't able to like this message. Check your network connection, then try again.",
+    );
+    expect(i18next.t('notAbleToLikeThisMessageForServerIssue')).toEqual(
+      "Sorry, something went wrong on our end and we weren't able to like this message. Try again later.",
     );
     expect(i18next.t('SorryWeWereNotAbleToCloseTheConversation')).toEqual(
       "Sorry, we weren't able to close the conversation. Try again.",
@@ -368,7 +380,7 @@ describe.skip('i18next-en', () => {
   expect(i18next.t('Members')).toEqual('Members');
 
   expect(i18next.t('alreadyTaken')).toEqual(
-    'The name is already taken, choose another one.',
+    'This name is already taken, try choosing another one.',
   );
 
   expect(i18next.t('Invalid Email')).toEqual('Invalid Email');

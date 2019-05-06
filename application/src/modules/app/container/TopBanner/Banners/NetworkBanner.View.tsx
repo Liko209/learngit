@@ -4,8 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import i18next from 'i18next';
-import { WithTranslation } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiSnackbarContent } from 'jui/components/Snackbars';
 import { observer } from 'mobx-react';
 import { NetworkBannerViewProps, NetworkBannerProps } from './types';
@@ -13,21 +12,23 @@ import { NetworkBannerViewProps, NetworkBannerProps } from './types';
 type Props = WithTranslation & NetworkBannerProps & NetworkBannerViewProps;
 
 @observer
-class NetworkBannerView extends React.Component<Props> {
+class NetworkBannerComponent extends React.Component<Props> {
   render() {
-    const { banner } = this.props;
+    const { banner, t } = this.props;
 
     if (!banner) return null;
 
     return (
       <JuiSnackbarContent
         type={banner.type}
-        message={i18next.t(banner.message)}
+        message={t(banner.message)}
         messageAlign="center"
         fullWidth={true}
       />
     );
   }
 }
+
+const NetworkBannerView = withTranslation('translations')(NetworkBannerComponent);
 
 export { NetworkBannerView };

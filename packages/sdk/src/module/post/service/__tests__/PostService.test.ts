@@ -46,6 +46,18 @@ describe('PostService', () => {
 
   beforeEach(() => {
     clearMocks();
+    setUp();
+  });
+
+  describe('canSaveRemoteEntity()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+    it('should return false', () => {
+      const result = postService['canSaveRemoteEntity']();
+      expect(result).toBeFalsy();
+    });
   });
 
   describe('handleSexioData', () => {

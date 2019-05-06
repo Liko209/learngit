@@ -10,20 +10,19 @@ import { observer } from 'mobx-react';
 import { AttachmentsViewProps } from './types';
 import { JuiDuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
 import { extractView } from 'jui/hoc/extractView';
-import i18next from 'i18next';
 
 @observer
 class AttachmentManagerViewComponent extends Component<
   AttachmentsViewProps & WithTranslation
 > {
   private _showDuplicateFilesDialogIfNeeded = () => {
-    const { duplicateFiles, showDuplicateFiles } = this.props;
+    const { duplicateFiles, showDuplicateFiles, t } = this.props;
     if (showDuplicateFiles) {
       return (
         <JuiDuplicateAlert
-          title={i18next.t('item.updateFiles')}
-          subtitle={i18next.t('item.theFollowingFilesAlreadyExist')}
-          footText={i18next.t(
+          title={t('item.updateFiles')}
+          subtitle={t('item.theFollowingFilesAlreadyExist')}
+          footText={t(
             'item.wouldYouLikeToUpdateTheExistingFileOrCreateANewOne',
           )}
           duplicateFiles={duplicateFiles}

@@ -5,6 +5,7 @@
  */
 import { UserConfig } from '../../config';
 import { AccountGlobalConfig } from '../../../module/account/config';
+import { TELEPHONY_KEYS } from './configKeys';
 
 class TelephonyUserConfig extends UserConfig {
   constructor() {
@@ -21,6 +22,14 @@ class TelephonyUserConfig extends UserConfig {
 
   removeConfig(key: string) {
     this.remove(key);
+  }
+
+  setLastCalledNumber(num: string) {
+    this.put(TELEPHONY_KEYS.LAST_CALLED_NUMBER, num);
+  }
+
+  getLastCalledNumber() {
+    return this.get(TELEPHONY_KEYS.LAST_CALLED_NUMBER);
   }
 }
 

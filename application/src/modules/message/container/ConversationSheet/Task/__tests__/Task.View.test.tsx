@@ -43,6 +43,9 @@ describe('TaskView', () => {
           completePercentage: 1,
           hasDueTime: true,
         },
+        endTime: {
+          get() {},
+        },
       };
       const wrapper = shallow(<TaskView {...props} />);
       expect(wrapper.find(JuiTimeMessage)).not;

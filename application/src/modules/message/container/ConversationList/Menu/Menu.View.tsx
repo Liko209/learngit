@@ -19,6 +19,7 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
+import { catchError } from '@/common/catchError';
 
 type Props = MenuViewProps & RouteComponentProps & WithTranslation;
 
@@ -89,25 +90,22 @@ class MenuViewComponent extends Component<Props> {
     }
   }
 
-  private _handleToggleFavorite = async (event: MouseEvent<HTMLElement>) => {
+  @catchError.flash({
+    network: 'people.prompt.notAbleToUnFavoriteForNetworkIssue',
+    server: 'people.prompt.notAbleToUnFavoriteForServerIssue',
+  })
+  private _handleRemoveFavorite = (event: MouseEvent<HTMLElement>) => {
     event.stopPropagation();
-    const { isFavorite } = this.props;
     this.props.onClose(event);
-    try {
-      await this.props.toggleFavorite();
-    } catch {
-      const message = isFavorite
-        ? 'people.prompt.markUnFavoriteServerErrorContent'
-        : 'people.prompt.markFavoriteServerErrorContent';
+    return this.props.toggleFavorite();
+  }
 
-      Notification.flashToast({
-        message,
-        type: ToastType.ERROR,
-        messageAlign: ToastMessageAlign.LEFT,
-        fullWidth: false,
-        dismissible: false,
-      });
-    }
+  @catchError.flash({
+    network: 'people.prompt.notAbleToFavoriteThisMessageForNetworkIssue',
+    server: 'people.prompt.notAbleToFavoriteThisMessageForServerIssue',
+  })
+  private _handleFavorite = (event: MouseEvent<HTMLElement>) => {
+    return this.props.toggleFavorite();
   }
 
   private _checkboxChange = (
@@ -193,6 +191,7 @@ class MenuViewComponent extends Component<Props> {
       onClose,
       favoriteText,
       t,
+      isFavorite,
     } = this.props;
     return (
       <JuiMenuContain
@@ -207,7 +206,7 @@ class MenuViewComponent extends Component<Props> {
         {this._renderReadOrUnreadMenuItem()}
         <JuiMenuItem
           data-test-automation-id="favToggler"
-          onClick={this._handleToggleFavorite}
+          onClick={isFavorite ? this._handleRemoveFavorite : this._handleFavorite}
         >
           {t(`${favoriteText}`)}
         </JuiMenuItem>

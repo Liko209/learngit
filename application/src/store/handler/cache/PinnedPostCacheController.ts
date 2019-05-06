@@ -5,7 +5,6 @@
  */
 
 import { FetchSortableDataListHandler } from '@/store/base';
-import { Post } from 'sdk/module/post/entity';
 import GroupModel from '@/store/models/Group';
 import _ from 'lodash';
 import { PostCacheController } from './PostCacheController';
@@ -14,6 +13,7 @@ import { ENTITY_NAME } from '@/store';
 import { PinnedPostListHandler } from '../PinnedPostListHandler';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { mainLogger } from 'sdk';
+import { Post } from 'sdk/module/post/entity';
 
 const LOG_TAG = 'PinnedPostCacheController';
 class PinnedPostCacheController extends PostCacheController {

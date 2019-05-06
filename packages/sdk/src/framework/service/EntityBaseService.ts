@@ -115,6 +115,10 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     return buildEntityCacheController<T>();
   }
 
+  protected canSaveRemoteEntity(): boolean {
+    return true;
+  }
+
   private _initControllers() {
     if (this.isSupportedCache && !this._entityCacheController) {
       this._entityCacheController = this.buildEntityCacheController();
@@ -130,6 +134,7 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
         this.networkConfig
           ? buildRequestController<T>(this.networkConfig)
           : undefined,
+        this.canSaveRemoteEntity(),
       );
     }
   }
