@@ -334,7 +334,7 @@ module.exports = {
             // include: paths.appSrc,
             exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
             use: [
-              { loader: 'workerize-loader', options: { inline: false } },
+              { loader: 'workerize-loader', options: { inline: true } },
               {
                 loader: require.resolve('babel-loader'),
                 options: {
