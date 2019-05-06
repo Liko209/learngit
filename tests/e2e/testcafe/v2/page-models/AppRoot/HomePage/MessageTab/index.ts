@@ -65,6 +65,11 @@ class MoreMenu extends Entry {
     return this.getSelector('*[role="document"]');
   }
 
+  private getEntryByAutoId(autoId: string) {
+    this.warnFlakySelector();
+    return this.getComponent(Entry, this.self.find(`[data-test-automation-id="${autoId}"]`));
+  }
+
   private getEntry(name: string) {
     this.warnFlakySelector();
     return this.getComponent(Entry, this.self.find('li').withText(name));
@@ -79,11 +84,11 @@ class MoreMenu extends Entry {
   }
 
   get profile() {
-    return this.getEntry('Profile');
+    return this.getEntryByAutoId('profileEntry');
   }
 
   get close() {
-    return this.getComponent(MenuItem, this.self.find('li').withText('Close'));
+    return this.getEntryByAutoId('closeConversation');
   }
 
   async openProfile() {
