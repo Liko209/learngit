@@ -117,6 +117,16 @@ describe('RCInfoFetchController', () => {
         rcInfoFetchController.requestSpecialNumberRule,
         false,
       );
+      expect(rcInfoFetchController.scheduleRCInfoJob).toHaveBeenCalledWith(
+        JOB_KEY.FETCH_DIALING_PLAN,
+        rcInfoFetchController.requestDialingPlan,
+        false,
+      );
+      expect(rcInfoFetchController.scheduleRCInfoJob).toHaveBeenCalledWith(
+        JOB_KEY.FETCH_RC_ACCOUNT_SERVICE_INFO,
+        rcInfoFetchController.requestAccountServiceInfo,
+        false,
+      );
     });
   });
 
@@ -206,16 +216,20 @@ describe('RCInfoFetchController', () => {
 
   describe('requestSpecialNumberRule()', () => {
     it('should send request and save to storage', async () => {
+      RCInfoUserConfig.prototype.getStationLocation = jest
+        .fn()
+        .mockResolvedValue({ countryInfo: { id: '2' } });
       RCInfoApi.getSpecialNumbers = jest.fn().mockReturnValue('specialNumbers');
-      notificationCenter.emit.mockImplementationOnce(() => {});
+      notificationCenter.emit = jest.fn().mockImplementationOnce(() => {});
       await rcInfoFetchController.requestSpecialNumberRule();
-      expect(RCInfoApi.getSpecialNumbers).toBeCalledTimes(1);
-      expect(RCInfoUserConfig.prototype.setSpecialNumberRule).toBeCalledWith(
-        'specialNumbers',
-      );
+
+      expect(RCInfoApi.getSpecialNumbers).toBeCalledWith({ countryId: 2 });
+      expect(RCInfoUserConfig.prototype.setSpecialNumberRules).toBeCalledWith({
+        2: 'specialNumbers',
+      });
       expect(notificationCenter.emit).toBeCalledWith(
         RC_INFO.SPECIAL_NUMBER_RULE,
-        'specialNumbers',
+        { 2: 'specialNumbers' },
       );
     });
   });
@@ -235,6 +249,40 @@ describe('RCInfoFetchController', () => {
     });
   });
 
+  describe('requestDialingPlan', () => {
+    it('should send request and save to storage', async () => {
+      RCInfoApi.getDialingPlan = jest.fn().mockResolvedValue('dialingPlan');
+      notificationCenter.emit = jest.fn().mockImplementationOnce(() => {});
+      await rcInfoFetchController.requestDialingPlan();
+      expect(RCInfoApi.getDialingPlan).toBeCalledTimes(1);
+      expect(notificationCenter.emit).toBeCalledWith(
+        RC_INFO.DIALING_PLAN,
+        'dialingPlan',
+      );
+      expect(RCInfoUserConfig.prototype.setDialingPlan).toBeCalledWith(
+        'dialingPlan',
+      );
+    });
+  });
+
+  describe('requestAccountServiceInfo', () => {
+    it('should send request and save to storage', async () => {
+      RCInfoApi.getAccountServiceInfo = jest
+        .fn()
+        .mockResolvedValue('AccountServiceInfo');
+      notificationCenter.emit = jest.fn().mockImplementationOnce(() => {});
+      await rcInfoFetchController.requestAccountServiceInfo();
+      expect(RCInfoApi.getAccountServiceInfo).toBeCalledTimes(1);
+      expect(notificationCenter.emit).toBeCalledWith(
+        RC_INFO.RC_SERVICE_INFO,
+        'AccountServiceInfo',
+      );
+      expect(RCInfoUserConfig.prototype.setAccountServiceInfo).toBeCalledWith(
+        'AccountServiceInfo',
+      );
+    });
+  });
+
   describe('requestRCAccountRelativeInfo()', () => {
     it('should request rc info', async () => {
       rcInfoFetchController.requestRCClientInfo = jest.fn();
@@ -246,6 +294,24 @@ describe('RCInfoFetchController', () => {
       expect(rcInfoFetchController.requestRCAccountInfo).toBeCalled();
       expect(rcInfoFetchController.requestRCExtensionInfo).toBeCalled();
       expect(rcInfoFetchController.requestRCRolePermissions).toBeCalled();
+    });
+  });
+
+  describe('requestExtensionPhoneNumberList', () => {
+    it('should send request and save to storage', async () => {
+      RCInfoApi.getExtensionPhoneNumberList = jest
+        .fn()
+        .mockReturnValue('extensionPhoneNumberList');
+      notificationCenter.emit.mockImplementationOnce(() => {});
+      await rcInfoFetchController.requestExtensionPhoneNumberList();
+      expect(RCInfoApi.getExtensionPhoneNumberList).toBeCalledTimes(1);
+      expect(
+        RCInfoUserConfig.prototype.setExtensionPhoneNumberList,
+      ).toBeCalledWith('extensionPhoneNumberList');
+      expect(notificationCenter.emit).toBeCalledWith(
+        RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
+        'extensionPhoneNumberList',
+      );
     });
   });
 
@@ -284,12 +350,25 @@ describe('RCInfoFetchController', () => {
   });
 
   describe('getSpecialNumberRule()', () => {
-    it('should get value from config when value is invalid', async () => {
-      rcInfoFetchController[ 'rcInfoUserConfig'
-].getSpecialNumberRule = jest.fn().mockReturnValue('test');
+    it('should get value from config when value is valid', async () => {
+      RCInfoUserConfig.prototype.getStationLocation = jest
+        .fn()
+        .mockResolvedValue({ countryInfo: { id: '2' } });
+      // prettier-ignore
+      rcInfoFetchController['rcInfoUserConfig'].getSpecialNumberRules = jest.fn().mockReturnValue({ 2: 'test', 1: '1' });
       expect(await rcInfoFetchController.getSpecialNumberRule()).toEqual(
         'test',
       );
+    });
+  });
+
+  describe('getSpecialNumberRuleByCountryId', () => {
+    it('should get value from config when value is valid', async () => {
+      // prettier-ignore
+      rcInfoFetchController['rcInfoUserConfig'].getSpecialNumberRules = jest.fn().mockReturnValue({ 2: 'test', 1: '1' });
+      expect(
+        await rcInfoFetchController.getSpecialNumberRuleByCountryId(1),
+      ).toEqual('1');
     });
   });
 
@@ -308,6 +387,53 @@ describe('RCInfoFetchController', () => {
       expect(
         rcInfoFetchController['rcInfoUserConfig'].setPhoneData,
       ).toBeCalledWith('phoneData');
+    });
+  });
+
+  describe('getExtensionPhoneNumberList()', () => {
+    it('should get value from config when value is invalid', async () => {
+      rcInfoFetchController.rcInfoUserConfig.getExtensionPhoneNumberList = jest
+        .fn()
+        .mockResolvedValue('test');
+      expect(await rcInfoFetchController.getExtensionPhoneNumberList()).toEqual(
+        'test',
+      );
+    });
+  });
+  describe('getStationLocation', () => {
+    it('should get value from config', async () => {
+      // prettier-ignore
+      rcInfoFetchController['rcInfoUserConfig'].getStationLocation = jest.fn().mockReturnValue('test');
+      expect(await rcInfoFetchController.getStationLocation()).toEqual('test');
+    });
+  });
+
+  describe('setStationLocation', () => {
+    it('should set value to config', async () => {
+      // prettier-ignore
+      rcInfoFetchController['rcInfoUserConfig'].setStationLocation = jest.fn();
+      await rcInfoFetchController.setStationLocation('test' as any);
+      expect(
+        rcInfoFetchController['rcInfoUserConfig'].setStationLocation,
+      ).toBeCalledWith('test');
+    });
+  });
+
+  describe('getDialingPlan', () => {
+    it('should get value from config', async () => {
+      // prettier-ignore
+      rcInfoFetchController['rcInfoUserConfig'].getDialingPlan = jest.fn().mockReturnValue('test');
+      expect(await rcInfoFetchController.getDialingPlan()).toEqual('test');
+    });
+  });
+
+  describe('getAccountServiceInfo', () => {
+    it('should get value from config', async () => {
+      // prettier-ignore
+      rcInfoFetchController['rcInfoUserConfig'].getAccountServiceInfo = jest.fn().mockReturnValue('test');
+      expect(await rcInfoFetchController.getAccountServiceInfo()).toEqual(
+        'test',
+      );
     });
   });
 });

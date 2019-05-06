@@ -8,13 +8,14 @@ import { container, decorate, injectable } from 'framework';
 import { TelephonyStore } from '../../../store';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { EndViewModel } from '../End.ViewModel';
+import { TELEPHONY_SERVICE } from '../../../interface/constant';
 
 jest.mock('../../../service/TelephonyService');
 
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
 
-container.bind(TelephonyService).to(TelephonyService);
+container.bind(TELEPHONY_SERVICE).to(TelephonyService);
 container.bind(TelephonyStore).to(TelephonyStore);
 
 let endViewModel: EndViewModel;
@@ -27,7 +28,9 @@ beforeAll(() => {
 describe('EndViewModel', () => {
   it('should call hangUp function', () => {
     endViewModel.end();
-    const _telephonyService: TelephonyService = container.get(TelephonyService);
+    const _telephonyService: TelephonyService = container.get(
+      TELEPHONY_SERVICE,
+    );
     expect(_telephonyService.hangUp).toBeCalled();
   });
 });

@@ -5,23 +5,19 @@
  */
 import React from 'react';
 import i18nT from '@/utils/i18nT';
-import { container } from 'framework';
-import { MessageService } from '@/modules/message/service/MessageService';
-import { Call } from '@/modules/telephony/container';
 import { MessageUmi } from '../container/MessageUmi';
-import Message from './lazy/Message';
 import { SubModuleConfig } from '../types';
 import { JuiIconography } from 'jui/foundation/Iconography';
+import { lazyComponent } from '@/modules/common/util/lazyComponent';
 
 const config: SubModuleConfig = {
   route: {
     path: '/messages',
-    component: Message,
-    // component: lazyComponent({
-    //   loader: () =>
-    //     import(/*
-    //     webpackChunkName: "c.message" */ './lazy/Message'),
-    // }),
+    component: lazyComponent({
+      loader: () =>
+        import(/*
+        webpackChunkName: "c.message" */ './lazy/Message'),
+    }),
   },
   nav: async () => {
     return {
@@ -40,11 +36,6 @@ const config: SubModuleConfig = {
   loader: () =>
     import(/*
     webpackChunkName: "m.message" */ '@/modules/message'),
-  afterBootstrap: () => {
-    const messageService = container.get(MessageService);
-    // Check user permission and register extensions
-    messageService.registerConversationHeaderExtension(Call); // [TelephonyButton, MeetingButton]
-  },
 };
 
 export { config };

@@ -4,16 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import ReactDOM from 'react-dom';
 import MuiToolbar, {
   ToolbarProps as MuiToolbarProps,
 } from '@material-ui/core/Toolbar';
 import MuiAppBar, {
   AppBarProps as MuiAppBarProps,
 } from '@material-ui/core/AppBar';
-import Typography, { TypographyProps } from '@material-ui/core/Typography';
+import Typography from '@material-ui/core/Typography';
 import { JuiArrowTip } from '../../components/Tooltip/ArrowTip';
-import ReactResizeDetector from 'react-resize-detector';
+import { JuiText, JuiTextProps } from '../../components/Text/Text';
 
 import {
   typography,
@@ -23,7 +22,6 @@ import {
   spacing,
 } from '../../foundation/utils/styles';
 import styled, { Dependencies } from '../../foundation/styled-components';
-import { isTextOverflow } from '../../foundation/utils';
 import { JuiDivider } from '../../components/Divider/Divider';
 
 type JuiConversationPageHeaderProps = {
@@ -34,11 +32,10 @@ type JuiConversationPageHeaderProps = {
 } & MuiToolbarProps &
   MuiAppBarProps;
 
-const TitleWrapper = styled<TypographyProps>(Typography)`
+const TitleWrapper = styled<JuiTextProps>(JuiText)`
   && {
     color: ${grey('900')};
     ${typography('title2')};
-    ${ellipsis()};
     padding-right: ${spacing(0.5)};
   }
 `;
@@ -91,41 +88,12 @@ type IJuiConversationPageHeader = React.PureComponent<
   Dependencies;
 
 class JuiConversationPageHeader
-  extends React.PureComponent<
-    JuiConversationPageHeaderProps,
-    { showTooltip: boolean }
-  >
+  extends React.PureComponent<JuiConversationPageHeaderProps>
   implements IJuiConversationPageHeader {
-  textRef: React.RefObject<any>;
   static dependencies = [MuiAppBar, MuiToolbar, JuiArrowTip, Typography];
   static defaultProps = {
     title: '',
   };
-  constructor(props: JuiConversationPageHeaderProps) {
-    super(props);
-    this.state = {
-      showTooltip: false,
-    };
-    this.textRef = React.createRef();
-  }
-
-  componentDidUpdate(prevProps: JuiConversationPageHeaderProps) {
-    if (prevProps.title !== this.props.title) {
-      this._checkShouldTooltipRender();
-    }
-  }
-
-  private _checkShouldTooltipRender() {
-    const textEl = ReactDOM.findDOMNode(this.textRef.current);
-
-    this.setState({
-      showTooltip: textEl instanceof HTMLElement && isTextOverflow(textEl),
-    });
-  }
-
-  private _handleResize = () => {
-    this._checkShouldTooltipRender();
-  }
 
   render() {
     const {
@@ -145,7 +113,7 @@ class JuiConversationPageHeader
     );
     const titleElement = (
       <TitleWrapper
-        ref={this.textRef}
+        tooltipTitle={title}
         variant="title"
         component="h6"
         data-test-automation-id="conversation-page-header-title"
@@ -164,11 +132,7 @@ class JuiConversationPageHeader
         <MuiToolbar className="mui-toolbar" variant="dense">
           <div className="left-wrapper">
             <TitleAndStatusWrapper>
-              {this.state.showTooltip ? (
-                <JuiArrowTip title={title}>{titleElement}</JuiArrowTip>
-              ) : (
-                titleElement
-              )}
+              {titleElement}
               {status ? (
                 <StatusWrapper data-test-automation-id="conversation-page-header-status">
                   {status}
@@ -180,12 +144,6 @@ class JuiConversationPageHeader
           {Right ? right : null}
         </MuiToolbar>
         <JuiDivider />
-        <ReactResizeDetector
-          handleWidth={true}
-          onResize={this._handleResize}
-          refreshMode="debounce"
-          refreshRate={1000}
-        />
       </StyledPageHeader>
     );
   }

@@ -11,6 +11,7 @@ import { computed } from 'mobx';
 import { TelephonyStore } from '../../store';
 import { TelephonyService } from '../../service';
 import audios from './sounds/sounds.json';
+import { TELEPHONY_SERVICE } from '../../interface/constant';
 
 const sleep = function () {
   return new Promise((resolve: (args: any) => any) => {
@@ -21,7 +22,9 @@ const sleep = function () {
 class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   implements DialerContainerViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
-  private _telephonyService: TelephonyService = container.get(TelephonyService);
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
   private _audioPool: HTMLMediaElement[] | null;
   private _currentSoundTrack: number | null;
   private _canPlayOgg = false;

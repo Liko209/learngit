@@ -25,7 +25,7 @@ export class DeskTopNotification extends AbstractNotification<Notification> {
     delete opts.onClick;
 
     const notification = new Notification(title, opts);
-    notification.onclick = (event) => {
+    notification.onclick = event => {
       const windowService: IClientService = container.get(CLIENT_SERVICE);
       windowService.focus();
       (event.target as Notification).close();
@@ -33,15 +33,16 @@ export class DeskTopNotification extends AbstractNotification<Notification> {
       onClick && onClick(event);
     };
 
-    notification.onclose = (event) => {
+    notification.onclose = event => {
       this._store.remove(scope, id);
     };
 
-    this._store.add(scope, id, [notification]);
+    this._store.add(scope, id, notification);
   }
 
   close(scope: string, id: number) {
-    return this._store.get(scope, id).close();
+    const notification = this._store.get(scope, id);
+    notification && notification.close();
   }
 
   clear(scope: string) {

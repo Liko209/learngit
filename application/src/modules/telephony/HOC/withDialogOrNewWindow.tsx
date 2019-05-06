@@ -13,6 +13,7 @@ import { TelephonyStore } from '../store';
 import { TelephonyService } from '../service';
 import { CALL_WINDOW_STATUS } from '../FSM';
 import { JuiZoomInFadeOut } from 'jui/components/Animation';
+import { TELEPHONY_SERVICE } from '../interface/constant';
 
 function copyStyles(sourceDoc: Document, targetDoc: Document) {
   Array.from(sourceDoc.styleSheets).forEach((styleSheet: CSSStyleSheet) => {
@@ -63,7 +64,7 @@ function withDialogOrNewWindow<T>(
 
     private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
     private _telephonyService: TelephonyService = container.get(
-      TelephonyService,
+      TELEPHONY_SERVICE,
     );
 
     private _createBackdrop = () => {

@@ -14,14 +14,14 @@ import { Props, ViewProps } from './types';
 import { container } from 'framework';
 import { TelephonyService } from '@/modules/telephony/service';
 import { Dialog } from '@/containers/Dialog';
-import i18next from 'i18next';
+import i18nT from '@/utils/i18nT';
 import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 
 const globalStore = storeManager.getGlobalStore();
 
-class AvatarActionsViewModel extends StoreViewModel<Props>
-  implements ViewProps {
+class AvatarActionsViewModel extends StoreViewModel<Props> implements ViewProps {
   @observable
   private _isShowDialog: boolean = false;
 
@@ -30,12 +30,11 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
     return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   }
 
-  @action
-  handleSignOut = async () => {
+  async canSignOut() {
     let callCount = 0;
     let telephonyService: TelephonyService | null = null;
     try {
-      telephonyService = container.get(TelephonyService);
+      telephonyService = container.get<TelephonyService>(TELEPHONY_SERVICE);
       callCount = telephonyService.getAllCallCount();
     } catch (e) {
       mainLogger.info(
@@ -43,12 +42,17 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
       );
     }
 
+    const title = await i18nT('telephony.prompt.LogoutTitle');
+    const content = await i18nT('telephony.prompt.LogoutContent');
+    const okText = await i18nT('telephony.prompt.LogoutOk');
+    const cancelText = await i18nT('common.dialog.cancel');
+
     if (callCount > 0) {
       Dialog.confirm({
-        title: i18next.t('telephony.prompt.LogoutTitle'),
-        content: i18next.t('telephony.prompt.LogoutContent'),
-        okText: i18next.t('telephony.prompt.LogoutOk'),
-        cancelText: i18next.t('common.dialog.cancel'),
+        title,
+        content,
+        okText,
+        cancelText,
         onOK: () => {
           mainLogger.info(
             `[AvatarActionsViewModel] [UI TelephonyService] User confirmed to logout and current call count: ${callCount}`,
@@ -65,15 +69,18 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
           );
         },
       });
-    } else {
-      this._doLogout();
+      return false;
     }
+    return true;
+  }
+
+  @action
+  handleSignOut = async () => {
+    !!(await this.canSignOut()) && this._doLogout();
   }
 
   private _doLogout = async () => {
-    const accountService = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    );
+    const accountService = ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE);
     await accountService.logout();
     window.location.href = '/';
   }

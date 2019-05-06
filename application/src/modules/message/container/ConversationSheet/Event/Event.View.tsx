@@ -13,11 +13,6 @@ import {
   JuiEventDescription,
   JuiTimeMessage,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
-import {
-  getDurationTime,
-  getDurationTimeText,
-  getDurationDate,
-} from '../helper';
 import { EventViewProps } from './types';
 
 type Props = WithTranslation & EventViewProps;
@@ -25,28 +20,13 @@ type Props = WithTranslation & EventViewProps;
 @observer
 class Event extends React.Component<Props, {}> {
   render() {
-    const { event, t, color } = this.props;
+    const { event, t, color, timeContent } = this.props;
     const {
       location,
       text,
       description,
-      start,
-      end,
-      repeat,
-      allDay,
-      repeatEndingAfter,
-      repeatEnding,
-      repeatEndingOn,
     } = event;
-    const time = allDay
-      ? getDurationDate(start, end)
-      : getDurationTime(start, end);
-    const timeText = getDurationTimeText(
-      repeat,
-      repeatEndingAfter,
-      repeatEndingOn,
-      repeatEnding,
-    );
+
     return (
       <JuiConversationItemCard
         title={text}
@@ -55,7 +35,7 @@ class Event extends React.Component<Props, {}> {
         Icon="event"
       >
         <JuiLabelWithContent label={t('item.due')}>
-          <JuiTimeMessage time={`${time} ${timeText}`} />
+          <JuiTimeMessage time={`${timeContent.get()}`} />
         </JuiLabelWithContent>
         {location && (
           <JuiLabelWithContent label={t('item.locationTitle')}>

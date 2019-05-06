@@ -5,14 +5,14 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import i18next from 'i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
 import {
   JuiInfiniteList,
   ThresholdStrategy,
 } from 'jui/components/VirtualizedList';
-import { emptyView } from './Empty';
+import { EmptyView } from './Empty';
 import {
   JuiRightShelfContent,
   JuiRightRailContentLoading,
@@ -25,8 +25,10 @@ import {
   HEADER_HEIGHT,
 } from '../constants';
 
+type ItemListViewProps = Props & ViewProps & WithTranslation;
+
 @observer
-class ItemListView extends React.Component<ViewProps & Props> {
+class ItemListComponent extends React.Component<ItemListViewProps> {
   private _loadMoreStrategy = new ThresholdStrategy(LOAD_MORE_STRATEGY_CONFIG);
 
   private _renderItems = () => {
@@ -48,7 +50,7 @@ class ItemListView extends React.Component<ViewProps & Props> {
 
   renderEmptyContent = () => {
     const { type } = this.props;
-    return emptyView(type);
+    return <EmptyView type={type} />;
   }
 
   defaultLoading = () => {
@@ -58,14 +60,14 @@ class ItemListView extends React.Component<ViewProps & Props> {
   defaultLoadingMore = () => <JuiRightRailLoadingMore />;
 
   render() {
-    const { type, height, size, total } = this.props;
+    const { type, height, size, total, t } = this.props;
     const { subheader } = getTabConfig(type);
     const h = Math.max(height - HEADER_HEIGHT, 0);
     return (
       <JuiRightShelfContent>
         {(total > 0 || size > 0) && (
           <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
-            {i18next.t(subheader)}
+            {t(subheader)}
           </JuiListSubheader>
         )}
         <JuiInfiniteList
@@ -86,5 +88,7 @@ class ItemListView extends React.Component<ViewProps & Props> {
     );
   }
 }
+
+const ItemListView = withTranslation('translations')(ItemListComponent);
 
 export { ItemListView };
