@@ -79,7 +79,6 @@ class HomeView extends Component<HomeViewProps> {
             <LeftNav />
             <HomeRouter />
           </Bottom>
-          <Dialer />
           <ModalPortal />
           {showGlobalSearch && <GlobalSearch />}
           {canRenderDialer && <LazyDialer />}
