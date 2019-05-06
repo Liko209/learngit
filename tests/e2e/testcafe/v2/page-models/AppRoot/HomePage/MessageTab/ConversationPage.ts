@@ -442,6 +442,14 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.expect(this.readOnlyDiv.exists).ok();
   }
 
+  get emojiButton() {
+    return this.getSelectorByAutomationId('conversation-chatbar-emoji-button');
+  }
+
+  async clickEmojiButton() {
+    await this.t.click(this.emojiButton);
+  }
+
   /* 1:1 */
   get telephonyButton() {
     return this.telephonyIcon.parent('button'); //TODO: add automationId
