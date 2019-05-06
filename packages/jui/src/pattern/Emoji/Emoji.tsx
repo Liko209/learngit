@@ -67,6 +67,16 @@ class JuiEmoji extends React.PureComponent<Props> {
     );
   }
 
+  private isIndexOf = (source: string[], target: string[]) => {
+    let isIndex = true;
+    target.forEach(name => {
+      if (source.indexOf(name as string) > -1) {
+        isIndex = false;
+      }
+    });
+    return isIndex;
+  }
+
   render() {
     const { anchorEl } = this.state;
     const { handleEmojiClick, imgRootPath, sheetSize, set, title } = this.props;
@@ -93,7 +103,7 @@ class JuiEmoji extends React.PureComponent<Props> {
                   set={set}
                   onClick={handleEmojiClick}
                   emojisToShowFilter={emoji => {
-                    return ExcludeList.indexOf(emoji.id as string) < 0;
+                    return this.isIndexOf(ExcludeList, emoji.short_names);
                   }}
                   backgroundImageFn={(set, sheetSize) => {
                     return imgRootPath

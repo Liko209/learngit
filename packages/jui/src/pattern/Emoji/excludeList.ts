@@ -249,6 +249,7 @@ const ExcludeList = [
   'flag-england',
   'flag-scotland',
   'flag-wales',
+  'eye_in-speech-bubble',
 ];
 
 const ConvertList = [
@@ -504,5 +505,11 @@ const ConvertList = [
   'flag-zm',
   'flag-za',
 ];
+const WhiteOnlyList = [
+  'sleeping_accommodation',
+  'man_in_business_suit_levitating',
+  'golfer',
+  'snowboarder',
+];
 
-export { ExcludeList, ConvertList };
+export { ExcludeList, ConvertList, WhiteOnlyList };
