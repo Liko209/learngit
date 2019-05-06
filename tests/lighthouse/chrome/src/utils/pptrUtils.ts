@@ -9,7 +9,6 @@ import { LogUtils } from "./logUtils";
 import { FunctionUtils } from "./functionUtils";
 import { MockClient, BrowserInitDto } from 'mock-client';
 import { Config } from '../config';
-import { request } from "https";
 
 const MAX_TRY_COUNT = 10;
 
@@ -218,7 +217,7 @@ class PptrUtils {
   /**
    * @description: get element text
    */
-  static async text(page: Page, selector: string, options = {}): Promise<boolean> {
+  static async text(page: Page, selector: string, options = {}): Promise<any> {
     if (!(await PptrUtils.waitForSelector(page, selector, options))) {
       return false;
     }
