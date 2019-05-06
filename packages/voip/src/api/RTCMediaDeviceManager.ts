@@ -54,7 +54,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     this._outputDeviceId = deviceId;
     if (this._audioOutputTimer) {
       clearTimeout(this._audioOutputTimer);
-      this._audioInputTimer = null;
+      this._audioOutputTimer = null;
     }
     this._audioOutputTimer = setTimeout(() => {
       this._emitAudioOutputChanged(deviceId);
@@ -144,22 +144,11 @@ class RTCMediaDeviceManager extends EventEmitter2 {
         LOG_TAG,
         "Detect audio devices has 'default' as deviceId",
       );
-      if (this._checkIfDeviceChanged(this._audioInputs, audioInputs)) {
-        rtcLogger.debug(
-          LOG_TAG,
-          `inputs updated: ${JSON.stringify(audioInputs)}`,
-        );
-        this._audioInputs = audioInputs;
-        this.setAudioInputDevice(this._getRealDeviceId(this._audioInputs));
-      }
-      if (this._checkIfDeviceChanged(this._audioOutputs, audioOutputs)) {
-        rtcLogger.debug(
-          LOG_TAG,
-          `outputs updated: ${JSON.stringify(audioOutputs)}`,
-        );
-        this._audioOutputs = audioOutputs;
-        this.setAudioOutputDevice(this._getRealDeviceId(this._audioOutputs));
-      }
+      this._updateAudioDevices(RTC_MEDIA_DEVICE_KIND.AUDIO_INPUT, audioInputs);
+      this._updateAudioDevices(
+        RTC_MEDIA_DEVICE_KIND.AUDIO_OUTPUT,
+        audioOutputs,
+      );
     } else {
       rtcLogger.debug(
         LOG_TAG,
@@ -174,11 +163,35 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     }
   }
 
+  private _updateAudioDevices(
+    kind: RTC_MEDIA_DEVICE_KIND,
+    newDevices: MediaDeviceInfo[],
+  ) {
+    if (
+      !this._checkIfDeviceChanged(
+        kind === RTC_MEDIA_DEVICE_KIND.AUDIO_INPUT
+          ? this._audioInputs
+          : this._audioOutputs,
+        newDevices,
+      )
+    ) {
+      return;
+    }
+    rtcLogger.debug(LOG_TAG, `${kind} updated: ${JSON.stringify(newDevices)}`);
+    if (kind === RTC_MEDIA_DEVICE_KIND.AUDIO_INPUT) {
+      this._audioInputs = newDevices;
+      this.setAudioInputDevice(this._getRealDeviceId(this._audioInputs));
+    } else {
+      this._audioOutputs = newDevices;
+      this.setAudioOutputDevice(this._getRealDeviceId(this._audioOutputs));
+    }
+  }
+
   private _checkIfDeviceChanged(
     oldDevices: MediaDeviceInfo[],
     newDevices: MediaDeviceInfo[],
   ): boolean {
-    if (oldDevices.length === 0 && newDevices.length !== 0) {
+    if (oldDevices.length !== newDevices.length) {
       return true;
     }
     const oldHash = this._generateDevicesHash(oldDevices);
@@ -205,7 +218,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     }
     let label: string = '';
     devices.forEach((device: MediaDeviceInfo) => {
-      if (device.deviceId === defaultAudioID) {
+      if (device.deviceId && device.deviceId === defaultAudioID) {
         label = device.label;
       }
     });
@@ -213,13 +226,15 @@ class RTCMediaDeviceManager extends EventEmitter2 {
       return defaultAudioID;
     }
     rtcLogger.debug(LOG_TAG, `default device label: ${label}`);
-    for (let i = 0; i < devices.length; i++) {
-      if (
-        devices[i].deviceId !== defaultAudioID &&
-        label.endsWith(devices[i].label)
-      ) {
-        return devices[i].deviceId;
-      }
+    const realDevice = devices.find(
+      (device: MediaDeviceInfo): boolean => {
+        return (
+          device.deviceId !== defaultAudioID && label.endsWith(device.label)
+        );
+      },
+    );
+    if (realDevice) {
+      return realDevice.deviceId;
     }
     return defaultAudioID;
   }
