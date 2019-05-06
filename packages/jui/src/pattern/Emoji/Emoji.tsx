@@ -9,6 +9,7 @@ import React, { MouseEvent } from 'react';
 import { JuiIconButton } from '../../components/Buttons';
 import { ExcludeList } from './excludeList';
 import { JuiPopperMenu, AnchorProps } from '../../pattern/PopperMenu';
+import { HotKeys } from '../../hoc/HotKeys';
 import styled from '../../foundation/styled-components';
 
 type Props = {
@@ -43,6 +44,12 @@ class JuiEmoji extends React.PureComponent<Props> {
     anchorEl: null,
   };
 
+  handleClose = () => {
+    this.setState({
+      anchorEl: null,
+    });
+  }
+
   private _handleClickEvent = (evt: MouseEvent) => {
     this.setState({ anchorEl: evt.currentTarget });
   }
@@ -67,30 +74,36 @@ class JuiEmoji extends React.PureComponent<Props> {
     return (
       <>
         {
-          <JuiPopperMenu
-            open={open}
-            placement="bottom-start"
-            Anchor={this._IconButton}
-            noTranslation={true}
+          <HotKeys
+            keyMap={{
+              esc: this.handleClose,
+            }}
           >
-            <StyledEmojiWrapper>
-              <Picker
-                sheetSize={sheetSize}
-                title={title}
-                emoji="point_up"
-                set={set}
-                onClick={handleEmojiClick}
-                emojisToShowFilter={emoji => {
-                  return ExcludeList.indexOf(emoji.id as string) < 0;
-                }}
-                backgroundImageFn={(set, sheetSize) => {
-                  return imgRootPath
-                    ? `/${imgRootPath}/sheet_${set}_${sheetSize}.png`
-                    : `https://unpkg.com/emoji-datasource-${set}@4.0.4/img/${set}/sheets-256/${sheetSize}.png`;
-                }}
-              />
-            </StyledEmojiWrapper>
-          </JuiPopperMenu>
+            <JuiPopperMenu
+              open={open}
+              placement="bottom-start"
+              Anchor={this._IconButton}
+              noTranslation={true}
+            >
+              <StyledEmojiWrapper>
+                <Picker
+                  sheetSize={sheetSize}
+                  title={title}
+                  emoji="point_up"
+                  set={set}
+                  onClick={handleEmojiClick}
+                  emojisToShowFilter={emoji => {
+                    return ExcludeList.indexOf(emoji.id as string) < 0;
+                  }}
+                  backgroundImageFn={(set, sheetSize) => {
+                    return imgRootPath
+                      ? `/${imgRootPath}/sheet_${set}_${sheetSize}.png`
+                      : `https://unpkg.com/emoji-datasource-${set}@4.0.4/img/${set}/sheets-256/${sheetSize}.png`;
+                  }}
+                />
+              </StyledEmojiWrapper>
+            </JuiPopperMenu>
+          </HotKeys>
         }
       </>
     );
