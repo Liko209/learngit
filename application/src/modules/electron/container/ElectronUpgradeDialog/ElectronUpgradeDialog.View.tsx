@@ -37,11 +37,10 @@ class ElectronUpgradeDialogComponent extends React.Component<
   }
 
   handleOk = () => {
-    this._close();
+    this._close({});
   }
   handleUpgrade = () => {
-    window.open(this.props.url, '_blank');
-    this._close();
+    this._close({});
   }
   handleIgnoreOnce = () => {
     TopBannerViewModel.showBanner(ElectronUpgradeBanner);
@@ -59,6 +58,7 @@ class ElectronUpgradeDialogComponent extends React.Component<
       needUpgrade = true,
       type = UpgradeType.FORCE,
       snoozed = true,
+      url,
     } = this.props;
     const buttons = [];
     const IgnoreOnce = (
@@ -67,6 +67,7 @@ class ElectronUpgradeDialogComponent extends React.Component<
         color="primary"
         autoFocus={false}
         key="ignore"
+        aria-label={t('electron.upgrade.ignoreOnce')}
       >
         {t('electron.upgrade.ignoreOnce')}
       </JuiButton>
@@ -76,7 +77,11 @@ class ElectronUpgradeDialogComponent extends React.Component<
         onClick={this.handleUpgrade}
         color="primary"
         autoFocus={false}
+        component="a"
+        download={true}
+        href={url}
         key="upgrade"
+        aria-label={t('electron.upgrade.upgrade')}
       >
         {t('electron.upgrade.upgrade')}
       </JuiButton>
@@ -87,6 +92,7 @@ class ElectronUpgradeDialogComponent extends React.Component<
         color="primary"
         autoFocus={false}
         key="not-now"
+        aria-label={t('electron.upgrade.notNow')}
       >
         {t('electron.upgrade.notNow')}
       </JuiButton>
@@ -97,6 +103,7 @@ class ElectronUpgradeDialogComponent extends React.Component<
         color="primary"
         autoFocus={false}
         key="ignore"
+        aria-label={t('electron.upgrade.ignore')}
       >
         {t('electron.upgrade.ignore')}
       </JuiButton>
@@ -107,6 +114,7 @@ class ElectronUpgradeDialogComponent extends React.Component<
         color="primary"
         autoFocus={false}
         key="ok"
+        aria-label={t('electron.upgrade.noUpgradeDialogOk')}
       >
         {t('electron.upgrade.noUpgradeDialogOk')}
       </JuiButton>
@@ -131,6 +139,11 @@ class ElectronUpgradeDialogComponent extends React.Component<
             : 'electron.upgrade.noUpgradeDialogTitle',
         )}
         footer={<>{[...buttons]}</>}
+        aria-label={t(
+          needUpgrade
+            ? 'electron.upgrade.dialogTitle'
+            : 'electron.upgrade.noUpgradeDialogTitle',
+        )}
       >
         {needUpgrade
           ? t('electron.upgrade.dialogMessage')

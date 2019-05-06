@@ -31,9 +31,13 @@ class ElectronUpgradeBannerViewComponent extends React.Component<
         messageAlign="center"
         fullWidth={true}
         action={
-          <JuiSnackbarAction onClick={this._handleUpgradeClick}>
+          <JuiSnackbarAction
+            aria-label={t('electron.upgrade.upgrade')}
+            onClick={this._handleUpgradeClick}
+          >
             {t('electron.upgrade.upgrade')}
-          </JuiSnackbarAction>}
+          </JuiSnackbarAction>
+        }
       />
     );
   }

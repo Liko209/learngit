@@ -9,7 +9,10 @@ import {
   ElectronUpgradeDialogComponent,
 } from './ElectronUpgradeDialog.View';
 import { ElectronUpgradeDialogViewModel } from './ElectronUpgradeDialog.ViewModel';
-import { ElectronUpgradeDialogProps } from './types';
+import {
+  ElectronUpgradeDialogProps,
+  ElectronUpgradeDialogViewProps,
+} from './types';
 import portalManager from '@/common/PortalManager';
 
 const ElectronUpgradeDialog = buildContainer<ElectronUpgradeDialogProps>({
@@ -17,8 +20,8 @@ const ElectronUpgradeDialog = buildContainer<ElectronUpgradeDialogProps>({
   ViewModel: ElectronUpgradeDialogViewModel,
 });
 
-const showUpgradeDialog = () => {
-  const ref = portalManager.wrapper(ElectronUpgradeDialogView).show();
+const showUpgradeDialog = (props: ElectronUpgradeDialogViewProps) => {
+  const ref = portalManager.wrapper(ElectronUpgradeDialogView).show(props);
   ElectronUpgradeDialogComponent.setPortalRef(ref);
 };
 
