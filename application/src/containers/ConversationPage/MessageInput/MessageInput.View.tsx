@@ -13,6 +13,7 @@ import keyboardEventDefaultHandler from 'jui/pattern/MessageInput/keyboardEventD
 import { observer } from 'mobx-react';
 import { MessageActionBar } from 'jui/pattern/MessageInput/MessageActionBar';
 import { AttachmentView } from 'jui/pattern/MessageInput/Attachment';
+import { Emoji } from '@/modules/emoji';
 import { Attachments } from './Attachments';
 import { extractView } from 'jui/hoc/extractView';
 
@@ -26,6 +27,7 @@ class MessageInputViewComponent extends Component<
 > {
   private _mentionRef: RefObject<any> = createRef();
   private _attachmentsRef: RefObject<any> = createRef();
+  private _emojiRef: RefObject<any> = createRef();
 
   state = {
     modules: {},
@@ -52,6 +54,7 @@ class MessageInputViewComponent extends Component<
   }
 
   updateModules() {
+    const emoji = this._emojiRef.current;
     const mention = this._mentionRef.current;
     const { keyboardEventHandler } = this.props;
     this.setState({
@@ -64,6 +67,7 @@ class MessageInputViewComponent extends Component<
           },
         },
         mention: mention.vm.mentionOptions,
+        emoji: emoji.vm.emojiOptions,
       },
     });
   }
@@ -94,13 +98,19 @@ class MessageInputViewComponent extends Component<
   }
 
   render() {
-    const { draft, contentChange, error, id, t } = this.props;
+    const { draft, contentChange, error, id, t, insertEmoji } = this.props;
     const { modules } = this.state;
     const toolbarNode = (
       <MessageActionBar>
         <AttachmentView
           onFileChanged={this._autoUploadFile}
           data-test-automation-id="message-action-bar-attachment"
+        />
+        <Emoji
+          handleEmojiClick={insertEmoji}
+          spritImage={'/icon/sheet_emojione_64.png'}
+          title={t('message.emoji.emojiDefaultTitle')}
+          ref={this._emojiRef}
         />
       </MessageActionBar>
     );

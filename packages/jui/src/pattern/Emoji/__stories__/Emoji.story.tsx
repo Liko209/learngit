@@ -6,12 +6,14 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import { Emoji } from '..';
+import { JuiEmoji } from '..';
 
 storiesOf('Pattern/Emoji', module).add('Emoji Button', () => {
   return (
-    <div>
-      <Emoji handlerIcon="emoji" />
-    </div>
+    <JuiEmoji
+      title="Pick your emoji…"
+      spritImage={'/icon/sheet_emojione_64.png'}
+      handlerIcon="emoji"
+    />
   );
 });

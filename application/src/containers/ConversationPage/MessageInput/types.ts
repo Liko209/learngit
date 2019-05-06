@@ -20,6 +20,7 @@ type MessageInputViewProps = {
   forceSendPost(): void;
   addOnPostCallback(callback: OnPostCallback): void;
   contentChange(draft: string): void;
+  insertEmoji(emoji: any): void;
   cellWillChange(newGroupId: number, oldGroupId: number): void;
   keyboardEventHandler: {
     enter: {
