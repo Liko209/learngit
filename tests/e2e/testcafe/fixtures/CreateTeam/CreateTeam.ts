@@ -408,3 +408,108 @@ test(formalName('Check \"Allow members to add other members\" can be turn on/off
     await t.expect(app.homePage.profileDialog.addMembersIcon.exists).notOk();
   });
 });
+
+test(formalName('JPT-121 Check "Allow members to post messages" can be turn on or off in the create new team.', ['JPT-121', 'P1', 'ali.naffaa']), async t => {
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const loginUser = users[4];
+    await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfileAndState();
+
+    const otherUser = users[5];
+    await h(t).glip(otherUser).init();
+    const teamNames = ['Post On', 'Post Off'];
+
+    const createTeam = async (teamName: string) => {
+      await app.homePage.createTeamModal.typeTeamName(teamName);
+      await app.homePage.createTeamModal.clickCreateButton();
+      const team = <IGroup> {
+        members: [loginUser],
+        owner: loginUser,
+        glipId : await app.homePage.messageTab.teamsSection.conversationEntryByName(teamName).groupId,
+      };
+      await h(t).scenarioHelper.addMemberToTeam(team, [otherUser]);
+    };
+
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
+        await app.homePage.ensureLoaded();
+      },
+    );
+    await h(t).withLog('And click "Create Team" button on top bar', async () => {
+      await app.homePage.openAddActionMenu();
+      await app.homePage.addActionMenu.createTeamEntry.enter();
+
+    });
+
+    await h(t).withLog('Then check toggle is On for \'Allow members to post messages\'', async () => {
+      await t.expect(await app.homePage.createTeamModal.mayPostMessageToggle().checked).ok();
+    });
+
+    await h(t).withLog('And create a team', async () => {
+      await createTeam(teamNames[0]);
+    });
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${otherUser.company.number}#${otherUser.extension} as member`,
+      async () => {
+        await app.homePage.logoutThenLoginWithUser(SITE_URL, otherUser);
+        await app.homePage.ensureLoaded();
+      },
+    );
+
+    await h(t).withLog('And open a team', async () => {
+        await app.homePage.messageTab.teamsSection.conversationEntryByName(teamNames[0]).enter();
+      },
+    );
+
+    await h(t).withLog('Then team member can see input box in the team', async () => {
+        await t.expect(await app.homePage.messageTab.conversationPage.messageInputArea.exists).ok();
+      },
+    );
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
+      async () => {
+        await app.homePage.logoutThenLoginWithUser(SITE_URL, loginUser);
+        await app.homePage.ensureLoaded();
+      },
+    );
+
+    await h(t).withLog('And click "Create Team" button on top bar', async () => {
+        await app.homePage.openAddActionMenu();
+        await app.homePage.addActionMenu.createTeamEntry.enter();
+      },
+    );
+
+    await h(t).withLog('When I turn off the “Allow members to post messages” toggle', async () => {
+        await app.homePage.createTeamModal.turnOffMayPostMessage();
+      },
+    );
+
+    await h(t).withLog('Then the toggle can be turn off', async () => {
+        await t.expect(await app.homePage.createTeamModal.mayPostMessageToggle().checked).notOk();
+      },
+    );
+
+    await h(t).withLog('And create a team', async () => {
+      await createTeam(teamNames[1]);
+    });
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${otherUser.company.number}#${otherUser.extension} as member`,
+      async () => {
+        await app.homePage.logoutThenLoginWithUser(SITE_URL, otherUser);
+        await app.homePage.ensureLoaded();
+      },
+    );
+
+    await h(t).withLog('And open a team', async () => {
+        await app.homePage.messageTab.teamsSection.conversationEntryByName(teamNames[1]).enter();
+      },
+    );
+
+    await h(t).withLog('Then team member should no see input box in the team', async () => {
+        await t.expect(await app.homePage.messageTab.conversationPage.messageInputArea.exists).notOk();
+      },
+    );
+  });
