@@ -5,8 +5,14 @@
  */
 
 import { LifeCycle } from 'ts-javascript-state-machine';
-import { observable, computed, action } from 'mobx';
+import { observable, computed, action, reaction } from 'mobx';
+import { PersonService, ContactType } from 'sdk/module/person';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { mainLogger } from 'sdk';
+import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
+import PersonModel from '@/store/models/Person';
+import { Person, PHONE_NUMBER_TYPE } from 'sdk/module/person/entity';
 import {
   HOLD_STATE,
   HOLD_TRANSITION_NAMES,
@@ -24,6 +30,7 @@ import {
   CALL_TRANSITION_NAMES,
   CALL_WINDOW_TRANSITION_NAMES,
 } from '../FSM';
+const some = require('lodash/some');
 
 const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
 
@@ -57,7 +64,11 @@ class TelephonyStore {
   recordDisabledState: RECORD_DISABLED_STATE = this._recordDisableFSM.state;
 
   @observable
+  uid?: number;
+  @observable
   phoneNumber?: string;
+  @observable
+  isContactMatched: boolean = false;
   @observable
   callId: string;
   @observable
@@ -134,6 +145,54 @@ class TelephonyStore {
           break;
       }
     });
+
+    reaction(
+      () => this.phoneNumber,
+      async (phoneNumber: string) => {
+        const contact = await this._matchContactByPhoneNumber(phoneNumber);
+        if (contact) {
+          this.uid = contact.id;
+        }
+        this.isContactMatched = true;
+      },
+      { fireImmediately: true },
+    );
+  }
+
+  @computed
+  get person() {
+    if (!this.uid) return null;
+    return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, this.uid);
+  }
+
+  @computed
+  get displayName() {
+    if (this.person) {
+      return this.person.userDisplayName;
+    }
+    return '';
+  }
+
+  @computed
+  get isExt() {
+    if (this.person) {
+      return some(this.person.phoneNumbers, {
+        type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
+        phoneNumber: this.phoneNumber,
+      });
+    }
+    return false;
+  }
+
+  private _matchContactByPhoneNumber = async (phone: string) => {
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
+
+    return await personService.matchContactByPhoneNumber(
+      phone,
+      ContactType.GLIP_CONTACT,
+    );
   }
 
   private get _localCallWindowStatus() {

@@ -6,12 +6,13 @@
 
 import { StoreViewModel } from '@/store/ViewModel';
 import { container } from 'framework';
-import { computed } from 'mobx';
+import { computed, observable, action, comparer } from 'mobx';
 import { Props, ViewProps } from './types';
 import { TelephonyStore } from '../../store';
 import { TelephonyService } from '../../service';
 import { CALL_STATE, CALL_WINDOW_STATUS } from '../../FSM';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
+import { formatSeconds } from '@/utils/date';
 
 class DialpadViewModel extends StoreViewModel<Props> implements ViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
@@ -19,8 +20,39 @@ class DialpadViewModel extends StoreViewModel<Props> implements ViewProps {
     TELEPHONY_SERVICE,
   );
 
+  constructor(props: Props) {
+    super(props);
+    this.reaction(
+      () => ({
+        showMinimized: this.showMinimized,
+        activeCallTime: this._telephonyStore.activeCallTime,
+      }),
+      ({ showMinimized, activeCallTime }) => {
+        if (!showMinimized) {
+          this.dispose();
+        }
+        if (showMinimized) {
+          if (!this._intervalId && activeCallTime) {
+            this._createInterval();
+            this._seconds = Number(
+              `${Date.now() - activeCallTime}`.slice(0, -3),
+            );
+          }
+        }
+      },
+      {
+        equals: comparer.structural,
+      },
+    );
+  }
+
   maximize = () => {
     this._telephonyService.maximize();
+  }
+
+  @computed
+  get name() {
+    return this._telephonyStore.displayName;
   }
 
   @computed
@@ -40,6 +72,45 @@ class DialpadViewModel extends StoreViewModel<Props> implements ViewProps {
         this._callState === CALL_STATE.CONNECTED) &&
       this._callWindowState === CALL_WINDOW_STATUS.MINIMIZED
     );
+  }
+
+  @observable
+  private _seconds = 0;
+
+  @computed
+  private get _timing() {
+    const { secondTime, hourTime, minuteTime } = formatSeconds(this._seconds);
+    let result = `${minuteTime}:${secondTime}`;
+    if (hourTime !== '00') {
+      result = `${hourTime}:${result}`;
+    }
+    return result;
+  }
+
+  private _intervalId?: NodeJS.Timeout;
+
+  @action.bound
+  private _createInterval() {
+    const { activeCallTime } = this._telephonyStore;
+    if (activeCallTime) {
+      this._intervalId = setInterval(() => {
+        this._seconds = Number(`${Date.now() - activeCallTime}`.slice(0, -3));
+      },                             1000);
+    }
+  }
+
+  @computed
+  get timing() {
+    const { activeCallTime } = this._telephonyStore;
+    if (!activeCallTime) {
+      return { key: 'common.Connecting' };
+    }
+    return this._timing;
+  }
+
+  dispose = () => {
+    this._intervalId && clearInterval(this._intervalId);
+    this._intervalId = undefined;
   }
 }
 

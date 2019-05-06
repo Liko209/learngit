@@ -5,24 +5,25 @@
  */
 
 import * as React from 'react';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ViewProps } from './types';
 import { JuiMinimizedCall, JuiDialpadBtn } from 'jui/pattern/Dialer';
 import { Mute } from '../Mute';
 import { End } from '../End';
 
-type DialpadProps = ViewProps;
+type DialpadProps = ViewProps & WithTranslation;
 
 const Actions = [() => <Mute type="fab" />, () => <End size="medium" />];
 
-class DialpadView extends React.Component<DialpadProps> {
+class DialpadViewComponent extends React.Component<DialpadProps> {
   render() {
-    const { showMinimized, maximize } = this.props;
+    const { showMinimized, maximize, name, timing, t } = this.props;
     return showMinimized ? (
       <JuiMinimizedCall
         onClick={maximize}
         Actions={Actions}
-        name="112233112233112233112233"
-        label="112233"
+        name={name ? name : t('telephony.unknownCaller')}
+        label={typeof timing === 'string' ? timing : t(timing.key)}
         data-test-automation-id="telephony-minimized-view"
       />
     ) : (
@@ -35,5 +36,7 @@ class DialpadView extends React.Component<DialpadProps> {
     );
   }
 }
+
+const DialpadView = withTranslation('translations')(DialpadViewComponent);
 
 export { DialpadView };

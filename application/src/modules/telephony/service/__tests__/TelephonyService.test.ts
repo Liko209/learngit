@@ -115,7 +115,10 @@ describe('TelephonyService', () => {
           telephonyService = mockedServerTelephonyService;
           return mockedServerTelephonyService as ServerTelephonyService;
         case ServiceConfig.PERSON_SERVICE:
-          return { getSynchronously: jest.fn() };
+          return {
+            getSynchronously: jest.fn(),
+            matchContactByPhoneNumber: jest.fn(),
+          };
         case ServiceConfig.GLOBAL_CONFIG_SERVICE:
           return { get: jest.fn() };
         case ServiceConfig.USER_CONFIG_SERVICE:
@@ -126,7 +129,6 @@ describe('TelephonyService', () => {
     });
     container.bind(TelephonyStore).to(TelephonyStore);
     container.bind(TelephonyService).to(TelephonyService);
-
     telephonyService = container.get(TelephonyService);
     (telephonyService as TelephonyService).init();
   });

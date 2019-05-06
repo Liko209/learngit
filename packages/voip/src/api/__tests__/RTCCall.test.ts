@@ -21,7 +21,6 @@ import { rtcLogger } from '../../utils/RTCLoggerProxy';
 import { RTCMediaDeviceManager } from '../../api/RTCMediaDeviceManager';
 
 describe('RTC call', () => {
-
   afterEach(() => {
     RTCMediaDeviceManager.instance().removeAllListeners();
   });
@@ -1590,6 +1589,24 @@ describe('RTC call', () => {
       });
     });
 
+    it('should enter connected state wheh hold call throw exception in holding state.', done => {
+      setup();
+      session.hold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      setImmediate(() => {
+        call._callSession.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.HOLD,
+        );
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('connected');
+          done();
+        });
+      });
+    });
+
     it('should enter unholding state when unhold call in holded state. [JPT-824]', done => {
       setup();
       session.hold.mockResolvedValue(null);
@@ -2078,7 +2095,7 @@ describe('RTC call', () => {
     });
   });
 
-  describe('forward()', () => {
+  describe('Forward call', () => {
     const forwardNumber = '10000';
     let account: VirturlAccountAndCallObserver;
     let call: RTCCall;
@@ -2099,6 +2116,30 @@ describe('RTC call', () => {
           RTC_CALL_ACTION.FORWARD,
         );
         done();
+      });
+    });
+
+    it("should call webphone's forward API when forward incoming call in idle state", done => {
+      setup();
+      call.forward(forwardNumber);
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('forwarding');
+        expect(session.forward).toBeCalled();
+        done();
+      });
+    });
+
+    it("should call state change to forwarding and call webphone's forward API when call forward in replying state. [JPT-1763]", done => {
+      setup();
+      call.startReply();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('replying');
+        call.forward(forwardNumber);
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('forwarding');
+          expect(session.forward).toBeCalled();
+          done();
+        });
       });
     });
 
