@@ -26,6 +26,20 @@ describe('ZipLogZipItemProvider', () => {
       // expect()
       expect(provider['zips'].length).toEqual(1);
     });
+    it('should remove zip when limit reach', async () => {
+      const provider = new ZipLogZipItemProvider();
+      provider.worker = {
+        zip: async () => new Blob(),
+      };
+      await provider.addZip([{ message: 'test1' }]);
+      await provider.addZip([{ message: 'test2' }]);
+      await provider.addZip([{ message: 'test3' }]);
+      await provider.addZip([{ message: 'test4' }]);
+      await provider.addZip([{ message: 'test5' }]);
+      await provider.addZip([{ message: 'test6' }]);
+      // expect()
+      expect(provider['zips'].length).toEqual(5);
+    });
   });
   describe('getZipItems()', () => {
     it('should get zip items from zips, uploading, uploaded', async () => {

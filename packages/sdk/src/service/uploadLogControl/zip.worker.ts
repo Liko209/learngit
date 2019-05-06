@@ -18,7 +18,7 @@ export async function zip(zipItems: ZipItem[]) {
   zipItems.forEach(zipItem => {
     if (nameMap.has(zipItem.name)) {
       nameMap.set(zipItem.name, nameMap.get(zipItem.name)! + 1);
-      const fileName = `${zipItem.name}-${nameMap.get(zipItem.name)! + 1}${
+      const fileName = `${zipItem.name}-${nameMap.get(zipItem.name)}${
         zipItem.type
       }`;
       zipItem.folder
