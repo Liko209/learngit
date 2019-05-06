@@ -7,7 +7,7 @@
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
-  ISortableModel,
+  ISortableModelWithData,
 } from '@/store/base/fetch';
 
 import { PersonService } from 'sdk/module/person';
@@ -32,7 +32,7 @@ class GroupMemberDataProvider implements IFetchSortableDataProvider<Person> {
   async fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor: ISortableModel<Person>,
+    anchor: ISortableModelWithData<Person>,
   ): Promise<{ data: Person[]; hasMore: boolean }> {
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
@@ -82,7 +82,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
         id: model.id,
         sortValue: model.id,
         data: model,
-      } as ISortableModel<Person>;
+      } as ISortableModelWithData<Person>;
     };
 
     const personService = ServiceLoader.getInstance<PersonService>(
@@ -90,8 +90,8 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
     );
 
     const sortMemberFunc = (
-      lhs: ISortableModel<Person>,
-      rhs: ISortableModel<Person>,
+      lhs: ISortableModelWithData<Person>,
+      rhs: ISortableModelWithData<Person>,
     ): number => {
       const lPerson = lhs.data!;
       const rPerson = rhs.data!;

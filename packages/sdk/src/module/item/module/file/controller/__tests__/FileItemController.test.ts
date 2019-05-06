@@ -105,30 +105,8 @@ describe('FileItemController', () => {
 
   describe('fileActionController', () => {
     it('should return FileActionController', () => {
-      const fileRequestController = new RequestController(null);
-      const entitySourceController = new EntitySourceController(
-        null,
-        null,
-        null,
-      );
-
-      buildRequestController.mockImplementation(() => {
-        return fileRequestController;
-      });
-
-      buildEntityPersistentController.mockReturnValue(undefined);
-
-      buildEntitySourceController.mockImplementation(() => {
-        return undefined;
-      });
-
       const fileActionController = fileItemController.fileActionController;
       expect(fileActionController).toBeInstanceOf(FileActionController);
-      expect(buildRequestController).toBeCalledWith(
-        expect.objectContaining({
-          basePath: '/file',
-        }),
-      );
     });
   });
 

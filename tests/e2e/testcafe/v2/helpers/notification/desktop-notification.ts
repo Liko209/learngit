@@ -63,6 +63,7 @@ export class DesktopNotification extends AbstractNotification {
           scope: item.notification.data.scope,
           body: item.notification.body,
           title: item.notification.title,
+          icon: item.notification.icon,
           index: item.index
         });
       }
@@ -71,10 +72,17 @@ export class DesktopNotification extends AbstractNotification {
     });
   });
 
-  private postClickEvent = ClientFunction((id: number) => {
-    let event = new Event('click');
+  private postClickEvent = ClientFunction((id: any, action: string) => {
     let item = window['_notificationMap'][id];
-    if (item) {
+
+    if (!item) {
+      return;
+    }
+
+    if (action === 'close') {
+      item.notification.close()
+    } else {
+      let event = new Event(action);
       item.notification.dispatchEvent(event);
     }
   });
@@ -137,10 +145,15 @@ export class DesktopNotification extends AbstractNotification {
             scope: item.scope
           });
 
-          result.push(<INotification>{ id: item.id, title: item.title, body: item.body });
+          result.push(<INotification>{
+            id: item.id,
+            title: item.title,
+            body: item.body,
+            icon: item.icon
+          });
         }
 
-        if(isFind) {
+        if (isFind) {
           resolve(result);
         }
       }, INTERVAL_TIME);
@@ -148,6 +161,6 @@ export class DesktopNotification extends AbstractNotification {
   }
 
   async click(notification: INotification, action: string): Promise<void> {
-    await this.postClickEvent(notification.id);
+    await this.postClickEvent(notification.id, action);
   }
 }

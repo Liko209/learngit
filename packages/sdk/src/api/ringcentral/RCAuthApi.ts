@@ -16,14 +16,16 @@ import {
 } from 'foundation';
 import Api from '../api';
 import { RINGCENTRAL_API } from './constants';
-import { ITokenModel } from './types';
+import { ITokenModel, RCAuthCodeInfo } from './types';
 import { stringify } from 'qs';
+import { ApiConfiguration } from '../config';
 
 class RCAuthApi extends Api {
   static oauthTokenViaAuthCode(params: object, headers?: object) {
     const model = {
       ...params,
       grant_type: 'authorization_code',
+      client_id: ApiConfiguration.apiConfig.rc.clientId,
     };
 
     const query = {
@@ -60,6 +62,7 @@ class RCAuthApi extends Api {
       refresh_token: data.refresh_token,
       endpoint_id: data.endpoint_id,
       grant_type: 'refresh_token',
+      client_id: ApiConfiguration.apiConfig.rc.clientId,
     };
 
     const query = {
@@ -91,7 +94,6 @@ class RCAuthApi extends Api {
         query,
         NETWORK_VIA.HTTP,
       );
-      request.headers.Authorization = `Basic ${request.handlerType.basic()}`;
       request.callback = callbackFunc;
       request.data = stringify(request.data);
       const client = Api.rcNetworkClient.networkManager.clientManager.getApiClient(
@@ -132,6 +134,20 @@ class RCAuthApi extends Api {
     const request = Api.rcNetworkClient.getRequestByVia(query, query.via);
     request.callback = callbackFunc;
     Api.rcNetworkClient.networkManager.addApiRequest(request);
+  }
+
+  static generateRCCode(clientId: string, ttl: number) {
+    const model = {
+      clientId,
+      ttl,
+    };
+
+    return RCAuthApi.rcNetworkClient.http<RCAuthCodeInfo>({
+      path: RINGCENTRAL_API.API_GENERATE_CODE,
+      method: NETWORK_METHOD.POST,
+      via: NETWORK_VIA.HTTP,
+      data: model,
+    });
   }
 }
 

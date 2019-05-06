@@ -9,7 +9,6 @@ import {
   NETWORK_VIA,
   NETWORK_HANDLE_TYPE,
 } from 'foundation';
-import { ApiConfiguration } from '../config';
 import { IPlatformHandleDelegate } from './IPlatformHandleDelegate';
 
 const HandleByRingCentral = new class extends AbstractHandleType {
@@ -19,14 +18,6 @@ const HandleByRingCentral = new class extends AbstractHandleType {
   tokenExpirable = true;
   tokenRefreshable = true;
   platformHandleDelegate: IPlatformHandleDelegate;
-
-  basic() {
-    const str = `${ApiConfiguration.apiConfig.rc.clientId}:${
-      ApiConfiguration.apiConfig.rc.clientSecret
-    }`;
-
-    return this.btoa(str);
-  }
 
   requestDecoration(tokenHandler: ITokenHandler) {
     const handler = tokenHandler as OAuthTokenHandler;
@@ -40,13 +31,11 @@ const HandleByRingCentral = new class extends AbstractHandleType {
       if (!headers.Authorization) {
         if (request.needAuth() && handler.isOAuthTokenAvailable()) {
           headers.Authorization = `Bearer ${handler.accessToken()}`;
-        } else {
-          headers.Authorization = `Basic ${handler.getBasic()}`;
         }
       }
 
       const authorization = headers.Authorization;
-      if (authorization.startsWith('Basic')) {
+      if (!authorization) {
         request.data = stringify(request.data);
       }
       return request;

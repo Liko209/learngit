@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* version: 8.3.1 */
 var Module = (function() {
   var _scriptDir = typeof document !== 'undefined' && document.currentScript ? document.currentScript.src : undefined;
   return (
@@ -1570,7 +1571,6 @@ function createWasm(env) {
     });
   }
   // Prefer streaming instantiation if available.
-
   if (!Module['wasmBinary'] &&
       typeof WebAssembly.instantiateStreaming === 'function' &&
       !isDataURI(wasmBinaryFile) &&
@@ -1586,7 +1586,6 @@ function createWasm(env) {
   } else {
     instantiateArrayBuffer(receiveInstantiatedSource);
   }
-
   return {}; // no exports yet; we'll fill them in later
 }
 

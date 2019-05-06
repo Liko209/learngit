@@ -38,8 +38,12 @@ class HomeService {
     const subModuleConfig = this._homeStore.getSubModule(name);
     if (subModuleConfig && subModuleConfig.loader) {
       const { config } = await subModuleConfig.loader();
-      config.entry && this._jupiter.unRegisterModule(config.entry);
+      config.entry && this._jupiter.unRegisterModule(config);
     }
+  }
+
+  hasModules(modules: string[]) {
+    return modules.every(module => !!this._homeStore.getSubModule(module));
   }
 }
 

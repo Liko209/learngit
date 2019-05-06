@@ -57,24 +57,35 @@ function clearMocks() {
 }
 
 describe('fileUploadController', () => {
-  const itemDao = new ItemDao(null);
-  const partialModifyController = new PartialModifyController(
-    null,
-  ) as IPartialModifyController<Item>;
-  const fileRequestController = new RequestController(
-    null,
-  ) as RequestController<Item>;
-  let fileUploadController: FileUploadController;
-
-  const groupConfigService = new GroupConfigService();
-
-  const entitySourceController = new EntitySourceController(null, null, null);
+  let itemDao: ItemDao = null;
+  let partialModifyController: IPartialModifyController<Item> = null;
+  let fileUploadController: FileUploadController = null;
+  let groupConfigService: GroupConfigService = null;
+  let fileRequestController: RequestController<Item> = null;
+  let entitySourceController: EntitySourceController<Item> = null;
 
   function setup() {
     const userId = 2;
     const companyId = 3;
 
+    itemDao = new ItemDao(null);
+    groupConfigService = new GroupConfigService();
     daoManager.getDao = jest.fn().mockReturnValue(itemDao);
+
+    fileRequestController = new RequestController<Item>(null);
+    partialModifyController = new PartialModifyController<Item>(null);
+    entitySourceController = new EntitySourceController<Item>(
+      null,
+      null,
+      fileRequestController,
+      true,
+    );
+
+    fileRequestController.put = jest.fn().mockImplementation(() => {});
+
+    entitySourceController.getRequestController = jest
+      .fn()
+      .mockReturnValue(fileRequestController);
 
     AccountUserConfig.prototype.getCurrentCompanyId.mockReturnValue(companyId);
     AccountUserConfig.prototype.getGlipUserId.mockReturnValue(userId);
@@ -87,7 +98,6 @@ describe('fileUploadController', () => {
 
     fileUploadController = new FileUploadController(
       partialModifyController,
-      fileRequestController,
       entitySourceController,
     );
     partialModifyController.updatePartially = jest.fn();
@@ -1535,6 +1545,11 @@ describe('fileUploadController', () => {
     });
   });
   describe('_updateItem()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
     it('should combine versions', async () => {
       const existItem: ItemFile = { group_ids: [11], versions: [{ size: 10 }] };
       const preInsertItem: ItemFile = {

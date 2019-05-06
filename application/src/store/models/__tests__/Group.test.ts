@@ -3,18 +3,31 @@
  * @Date: 2018-11-26 21:33:16
  * Copyright © RingCentral. All rights reserved.
  */
+import { observable, when } from 'mobx';
 import GroupModel from '../Group';
 import { Group } from 'sdk/models';
 import { PERMISSION_ENUM } from 'sdk/service';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { AccountUserConfig } from 'sdk/module/account/config';
-import i18next from 'i18next';
 
 jest.mock('sdk/api');
 jest.mock('sdk/module/account/config');
 jest.mock('@/store/utils/entities');
 jest.mock('sdk/module/config');
+
+jest.mock('i18next', () => ({
+  languages: ['en'],
+  services: {
+    backendConnector: {
+      state: {
+        'en|translation': -1,
+      },
+    },
+  },
+  isInitialized: true,
+  t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
+}));
 
 describe('GroupModel', () => {
   const mockUserId = 1;
@@ -372,19 +385,31 @@ describe('GroupModel', () => {
       expect(gm.displayName).toBe('');
     });
 
-    it('should return userDisplayNameForGroupName if it is me conversation', () => {
-      const gm = GroupModel.fromJS({
-        members: [mockUserId],
-      } as Group);
-      (getEntity as jest.Mock).mockImplementation((name: string) => {
-        if (name === ENTITY_NAME.PERSON) {
-          return {
-            userDisplayNameForGroupName: 'Chris',
-          };
-        }
+    it('should return userDisplayNameForGroupName if it is me conversation',
+       async (done: jest.DoneCallback) => {
+        const gm = observable(
+          GroupModel.fromJS({
+            members: [mockUserId],
+          } as Group),
+        );
+        (getEntity as jest.Mock).mockImplementation((name: string) => {
+          if (name === ENTITY_NAME.PERSON) {
+            return {
+              userDisplayNameForGroupName: 'Chris',
+            };
+          }
+          return {};
+        });
+        expect(gm.displayName).toBe('Chris (message.meGroup)');
+        when(
+          () => gm.translation !== {},
+          () => {
+            process.nextTick(() => {
+              expect(gm.displayName).toBe('Chris (meGroup)');
+              done();
+            });
+          },
+        );
       });
-      jest.spyOn(i18next, 't').mockReturnValueOnce('me');
-      expect(gm.displayName).toBe('Chris (me)');
-    });
   });
 });

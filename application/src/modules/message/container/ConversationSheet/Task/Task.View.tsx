@@ -6,7 +6,6 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import i18next from 'i18next';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationItemCardHeader';
 import {
@@ -23,7 +22,6 @@ import {
 import { showImageViewer } from '@/containers/Viewer';
 
 import { AvatarName } from './AvatarName';
-import { getDurationTimeText } from '../helper';
 import { ViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
 import { Download } from '@/containers/common/Download';
@@ -33,7 +31,7 @@ type taskViewProps = WithTranslation & ViewProps;
 const FILE_COMPS = {
   [FileType.image]: (
     file: ExtendFileItem,
-    props: ViewProps,
+    props: taskViewProps,
     handleImageClick: (
       groupId: number,
       id: number,
@@ -43,7 +41,7 @@ const FILE_COMPS = {
     ) => (ev: React.MouseEvent, loaded: boolean) => void,
   ) => {
     const { item, previewUrl } = file;
-    const { groupId } = props;
+    const { groupId, t } = props;
     const {
       origHeight,
       id,
@@ -60,8 +58,8 @@ const FILE_COMPS = {
           key={id}
           previewUrl={previewUrl}
           fileName={name}
-          i18UnfoldLess={i18next.t('common.collapse')}
-          i18UnfoldMore={i18next.t('common.expand')}
+          i18UnfoldLess={t('common.collapse')}
+          i18UnfoldMore={t('common.expand')}
           handleImageClick={handleImageClick(
             groupId,
             id,
@@ -152,21 +150,12 @@ class Task extends React.Component<taskViewProps> {
       notes,
       section,
       effectiveIds,
+      timeText,
     } = this.props;
     const {
       text,
       complete,
-      repeat,
-      repeatEndingAfter,
-      repeatEnding,
-      repeatEndingOn,
     } = task;
-    const timeText = getDurationTimeText(
-      repeat,
-      repeatEndingAfter,
-      repeatEndingOn,
-      repeatEnding,
-    );
 
     return (
       <JuiConversationItemCard
@@ -176,10 +165,10 @@ class Task extends React.Component<taskViewProps> {
         Icon={
           <JuiTaskCheckbox customColor={color} checked={complete || false} />}
       >
-        {endTime && (
+        {endTime.get() && (
           <JuiLabelWithContent label={t('item.due')}>
             <JuiTimeMessage
-              time={`${startTime} ${hasTime ? '-' : ''} ${endTime} ${timeText}`}
+              time={`${startTime.get()} ${hasTime ? '-' : ''} ${endTime.get()} ${timeText.get()}`}
             />
           </JuiLabelWithContent>
         )}

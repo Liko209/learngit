@@ -4,6 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+/**
+ * Document for updating phone parser:
+ * https://drive.google.com/open?id=1ZRKs993kmBOkTtvYv6Ok1kQhZYY9c4J5Of8gGwqz-YQ
+ */
+
 type SettingsKey = any;
 
 type PhoneParserPath = any;

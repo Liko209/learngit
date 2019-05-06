@@ -44,6 +44,10 @@ class PostService extends EntityBaseService<Post> {
     });
   }
 
+  protected canSaveRemoteEntity(): boolean {
+    return false;
+  }
+
   protected buildNotificationController() {
     const userConfig = new AccountUserConfig();
     const currentUserId = userConfig.getGlipUserId();

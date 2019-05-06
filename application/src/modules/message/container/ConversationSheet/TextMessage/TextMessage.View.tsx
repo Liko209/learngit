@@ -8,8 +8,10 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { JuiConversationPostText } from 'jui/pattern/ConversationCard';
 import { TextMessageViewProps } from './types';
+import { withHighlight } from 'jui/hoc/withHighlight';
 
 @observer
+@withHighlight(['html'])
 class TextMessageView extends React.Component<TextMessageViewProps> {
   constructor(props: TextMessageViewProps) {
     super(props);

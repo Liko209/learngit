@@ -333,9 +333,14 @@ describe('PhoneParserUtility', () => {
     it('should return true when module is loaded', () => {
       PhoneParserUtility['_moduleLoaded'] = true;
       PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
-      PhoneParserUtility[ '_phoneParserModule'
-].SetStationLocation.mockImplementationOnce(() => {});
-      expect(PhoneParserUtility.setStationLocation('1', '650')).toBeTruthy();
+      // prettier-ignore
+      PhoneParserUtility['_phoneParserModule'].SetStationLocation.mockImplementationOnce(() => {});
+      expect(
+        PhoneParserUtility.setStationLocation({
+          szCountryCode: '1',
+          szAreaCode: '650',
+        }),
+      ).toBeTruthy();
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(0);
       expect(
         PhoneParserUtility['_phoneParserModule'].SetStationLocation,
@@ -396,6 +401,19 @@ describe('PhoneParserUtility', () => {
       expect(
         PhoneParserUtility['_phoneParserModule'].GetRegionalInfo,
       ).toBeCalledWith(1, '650');
+    });
+  });
+
+  describe('isAreaCodeValid', () => {
+    it('should return false when regionalInfo is invalid', async () => {
+      PhoneParserUtility.getRegionalInfo.mockReturnValueOnce(undefined);
+      expect(await PhoneParserUtility.isAreaCodeValid(1, '1')).toBeFalsy();
+    });
+    it('should return true when area code is valid', async () => {
+      PhoneParserUtility.getRegionalInfo.mockReturnValueOnce({
+        HasBan: jest.fn().mockReturnValue(false),
+      });
+      expect(await PhoneParserUtility.isAreaCodeValid(1, '1')).toBeTruthy();
     });
   });
 

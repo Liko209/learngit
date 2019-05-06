@@ -188,9 +188,7 @@ const JuiConversationListItem: IConversationListItem = memo(
         {...rest}
       >
         <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
-        <ItemText disableTooltip={true} style={{ fontWeight }}>
-          {title}
-        </ItemText>
+        <ItemText style={{ fontWeight }}>{title}</ItemText>
         {umi}
         <StyledRightWrapper>
           {indicator}

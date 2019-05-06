@@ -724,17 +724,19 @@ describe('GroupHandleDataController', () => {
   });
 
   describe('extractGroupCursor', () => {
-    it('should remove cursors in groups', () => {
+    it('should remove last_author_id and cursors in groups', () => {
       const groups = [
         {
           id: 1,
           post_cursor: 2,
           post_drp_cursor: 3,
+          last_author_id: 456,
         },
         {
           id: 2,
           post_cursor: 2,
           post_drp_cursor: 3,
+          last_author_id: 789,
         },
       ] as any;
       expect(groupHandleDataController.extractGroupCursor(groups)).toEqual([

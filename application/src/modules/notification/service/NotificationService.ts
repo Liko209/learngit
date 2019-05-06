@@ -51,8 +51,8 @@ class NotificationService implements INotificationService {
       titleFormatted = this.addEllipsis(title, this._maximumEdgeTxtLength);
     }
     if (!this._permission.isGranted) {
-      const permission = await this._permission.request();
-      if (permission) {
+      await this._permission.request();
+      if (this._permission.isGranted) {
         this._notificationDistributor.create(titleFormatted, opts);
       }
     } else {

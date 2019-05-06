@@ -13,9 +13,9 @@ export class NotificationStore<T> {
     const key = this.keyMap(scope, id);
     return this.items[key];
   }
-  add(scope: string, id: number, disposers: T[]) {
+  add(scope: string, id: number, disposer: T) {
     const key = this.keyMap(scope, id);
-    this._items[key] = disposers;
+    this._items[key] = disposer;
   }
   remove(scope: string, id: number) {
     const key = this.keyMap(scope, id);

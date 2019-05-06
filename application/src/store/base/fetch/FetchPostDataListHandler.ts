@@ -14,14 +14,19 @@ import { SortableListStore } from './SortableListStore';
 import { ENTITY, EVENT_TYPES } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { mainLogger } from 'sdk';
+import { ISortableModel } from './types';
 
 const LOG_TAG = 'FetchPostDataListHandler';
-class FetchPostDataListHandler extends FetchSortableDataListHandler<Post> {
+
+class FetchPostDataListHandler extends FetchSortableDataListHandler<
+  Post,
+  ISortableModel
+> {
   constructor(
     dataProvider: IFetchSortableDataProvider<Post>,
     options: IFetchSortableDataListHandlerOptions<Post>,
     groupId: number,
-    listStore: SortableListStore<Post> = new SortableListStore<Post>(
+    listStore: SortableListStore<ISortableModel> = new SortableListStore(
       options.sortFunc,
     ),
   ) {

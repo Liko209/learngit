@@ -16,21 +16,11 @@ import {
   JuiEventCollapse,
   JuiEventCollapseContent,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardFooter';
-import { getDurationTime } from '../helper';
 import { EventUpdateViewProps } from './types';
 
 type Props = WithTranslation & EventUpdateViewProps;
 @observer
 class EventUpdate extends React.Component<Props> {
-  private _getDurationTime = (value: any) => {
-    const { event } = this.props;
-    const { start, end } = event;
-    return getDurationTime(
-      !value.start ? start : value.start,
-      !value.end ? end : value.end,
-    );
-  }
-
   private _isShowTime = (value: any) => {
     return (
       value.start ||
@@ -46,6 +36,8 @@ class EventUpdate extends React.Component<Props> {
 
   render() {
     const {
+      oldTime,
+      newTime,
       event,
       activityData,
       oldTimeText,
@@ -56,11 +48,9 @@ class EventUpdate extends React.Component<Props> {
     const { text } = event;
     const { old_values, new_values } = activityData;
 
-    const oldTime = this._getDurationTime(old_values);
     const oldLocation = this._getLocation(old_values);
     const hasOldTime = this._isShowTime(old_values);
 
-    const newTime = this._getDurationTime(new_values);
     const newLocation = this._getLocation(new_values);
     const hasNewTime = this._isShowTime(new_values);
 
@@ -77,7 +67,7 @@ class EventUpdate extends React.Component<Props> {
               hideText={t('item.hideEventHistory')}
             >
               {hasOldTime && (
-                <JuiEventCollapseContent>{`${oldTime} ${oldTimeText}`}</JuiEventCollapseContent>
+                <JuiEventCollapseContent>{`${oldTime.get()} ${oldTimeText.get()}`}</JuiEventCollapseContent>
               )}
               {oldLocation && (
                 <JuiEventCollapseContent>{oldLocation}</JuiEventCollapseContent>
@@ -88,7 +78,7 @@ class EventUpdate extends React.Component<Props> {
       >
         {hasNewTime && (
           <JuiLabelWithContent label={t('item.due')}>
-            <JuiTimeMessage time={`${newTime} ${newTimeText}`} />
+            <JuiTimeMessage time={`${newTime.get()} ${newTimeText.get()}`} />
           </JuiLabelWithContent>
         )}
         {newLocation && (
