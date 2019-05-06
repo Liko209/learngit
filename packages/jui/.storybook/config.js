@@ -43,7 +43,7 @@ addHeadWarning('preview-head-not-loaded', 'Preview head not loaded');
 
 const ThemeDecorator = storyFn => {
   return (
-    <JuiThemeProvider themeName="light">
+    <JuiThemeProvider themeName='light'>
       <ThemeProvider theme={convert(themes.light)}>
         <Global styles={createReset} />
         <div style={{ padding: 20 }}>{storyFn()}</div>
@@ -170,7 +170,11 @@ function importAll(context) {
 }
 
 function loadStories() {
-  const req = require.context('../src', true, /\.story\.tsx?$/);
+  const req = require.context(
+    '../src/components/Tooltip',
+    true,
+    /\.story\.tsx?$/,
+  );
   importAll(req);
 }
 

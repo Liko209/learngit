@@ -14,6 +14,7 @@ import {
 import { JuiIconButton } from '../../../components/Buttons';
 import { JuiThumbnail } from '../../../components/Thumbnail';
 import { FileItemProps } from './types';
+import { ThemeProvider } from '../../../foundation/theme';
 
 class FileItem extends PureComponent<FileItemProps> {
   state = {
@@ -29,38 +30,40 @@ class FileItem extends PureComponent<FileItemProps> {
     const { disabled, icon, name, subtitle, action } = this.props;
     const { isHover } = this.state;
     return (
-      <JuiListItem
-        disabled={disabled}
-        onMouseEnter={this.handleMouseEnter}
-        onMouseLeave={this.handleMouseLeave}
-      >
-        <JuiListItemIcon>
-          {icon || <JuiThumbnail iconType="pdf" />}
-        </JuiListItemIcon>
-        <JuiListItemText primary={name} secondary={subtitle} />
-        {isHover ? (
-          <JuiListItemSecondaryAction>
-            <JuiListItemIcon>
-              <JuiIconButton
-                variant="plain"
-                tooltipTitle="Download"
-                disabled={disabled}
-                onClick={action}
-              >
-                download
-              </JuiIconButton>
-            </JuiListItemIcon>
-          </JuiListItemSecondaryAction>
-        ) : (
-          <JuiListItemSecondaryAction>
-            <JuiListItemIcon>
-              <JuiIconButton variant="plain" disabled={disabled}>
-                link
-              </JuiIconButton>
-            </JuiListItemIcon>
-          </JuiListItemSecondaryAction>
-        )}
-      </JuiListItem>
+      <ThemeProvider>
+        <JuiListItem
+          disabled={disabled}
+          onMouseEnter={this.handleMouseEnter}
+          onMouseLeave={this.handleMouseLeave}
+        >
+          <JuiListItemIcon>
+            {icon || <JuiThumbnail iconType="pdf" />}
+          </JuiListItemIcon>
+          <JuiListItemText primary={name} secondary={subtitle} />
+          {isHover ? (
+            <JuiListItemSecondaryAction>
+              <JuiListItemIcon>
+                <JuiIconButton
+                  variant="plain"
+                  tooltipTitle="Download"
+                  disabled={disabled}
+                  onClick={action}
+                >
+                  download
+                </JuiIconButton>
+              </JuiListItemIcon>
+            </JuiListItemSecondaryAction>
+          ) : (
+            <JuiListItemSecondaryAction>
+              <JuiListItemIcon>
+                <JuiIconButton variant="plain" disabled={disabled}>
+                  link
+                </JuiIconButton>
+              </JuiListItemIcon>
+            </JuiListItemSecondaryAction>
+          )}
+        </JuiListItem>
+      </ThemeProvider>
     );
   }
 }

@@ -9,6 +9,7 @@ import MuiTooltip from '@material-ui/core/Tooltip';
 import styled, {
   css,
   createGlobalStyle,
+  withTheme,
 } from '../../foundation/styled-components';
 import { Theme } from '../../foundation/styles';
 
@@ -17,6 +18,7 @@ type RuiTooltipProps = {
   show?: boolean;
   title: string;
   children: ReactElement;
+  theme: Theme;
 };
 
 const baseSize = 7;
@@ -109,7 +111,7 @@ const GlobalToolTipStyle = createGlobalStyle`
     ${left}
   }
 `;
-class RuiTooltip extends React.PureComponent<RuiTooltipProps> {
+class Tooltip extends React.PureComponent<RuiTooltipProps> {
   state = {
     arrowRef: null,
   };
@@ -121,7 +123,13 @@ class RuiTooltip extends React.PureComponent<RuiTooltipProps> {
   }
 
   render() {
-    const { title, children, placement = 'bottom', ...rest } = this.props;
+    const {
+      title,
+      children,
+      placement = 'bottom',
+      theme,
+      ...rest
+    } = this.props;
     const { arrowRef } = this.state;
     return (
       <React.Fragment>
@@ -151,10 +159,12 @@ class RuiTooltip extends React.PureComponent<RuiTooltipProps> {
         >
           {children}
         </MuiTooltip>
-        <GlobalToolTipStyle suppressMultiMountWarning={true} />
+        <GlobalToolTipStyle theme={theme} />
       </React.Fragment>
     );
   }
 }
+
+const RuiTooltip = withTheme(Tooltip);
 
 export { RuiTooltipProps, RuiTooltip };

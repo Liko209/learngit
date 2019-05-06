@@ -3,18 +3,18 @@ module.exports = {
   verbose: true,
   setupFiles: [
     '<rootDir>/config/jest/polyfills.js',
-    '<rootDir>/config/jest/enzymeTestAdapterSetup.js'
+    '<rootDir>/config/jest/enzymeTestAdapterSetup.js',
   ],
   setupFilesAfterEnv: ['<rootDir>/config/jest/setupTest.js'],
-  testPathIgnorePatterns: ['/node_modules/'],
+  testPathIgnorePatterns: ['/node_modules/', 'build'],
   snapshotSerializers: ['enzyme-to-json/serializer'],
   testURL: 'http://localhost',
   globals: {
     'ts-jest': {
-      tsConfig: './tsconfig.test.json'
-    }
+      tsConfig: './tsconfig.test.json',
+    },
   },
   transform: {
-    '\\.svg$': 'jest-raw-loader'
-  }
+    '\\.svg$': 'jest-raw-loader',
+  },
 };

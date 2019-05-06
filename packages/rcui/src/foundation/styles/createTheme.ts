@@ -15,9 +15,12 @@ import { Theme, ThemeOptions, PaletteOptions } from './theme.d';
 function createPalette(paletteOptions: PaletteOptions) {
   const { augmentColor } = createMuiPalette(paletteOptions);
   Object.keys(paletteOptions).forEach((key: keyof PaletteOptions) => {
-    augmentColor(palette[key]);
+    if (palette[key]) {
+      augmentColor(paletteOptions[key]);
+    }
   });
-  return palette;
+
+  return paletteOptions;
 }
 
 function createTheme(options: Partial<ThemeOptions> = {}) {
@@ -31,15 +34,18 @@ function createTheme(options: Partial<ThemeOptions> = {}) {
     breakpoints: breakpointsInput = {},
   } = options;
 
-  const theme = {
-    palette: createPalette(deepmerge(palette, paletteInput)),
-    typography: deepmerge(typography, typographyInput),
-    opacity: deepmerge(opacity, opacityInput),
-    radius: deepmerge(radius, radiusInput),
-    spacing: deepmerge(spacing, spacingInput),
-    zIndex: deepmerge(zIndex, zIndexInput),
-    breakpoints: deepmerge(breakpoints, breakpointsInput),
-  };
+  const theme = deepmerge(
+    {
+      palette: createPalette(deepmerge(palette, paletteInput)),
+      typography: deepmerge(typography, typographyInput),
+      opacity: deepmerge(opacity, opacityInput),
+      radius: deepmerge(radius, radiusInput),
+      spacing: deepmerge(spacing, spacingInput),
+      zIndex: deepmerge(zIndex, zIndexInput),
+      breakpoints: deepmerge(breakpoints, breakpointsInput),
+    },
+    options,
+  );
 
   return createMuiTheme(theme) as Theme;
 }

@@ -16,12 +16,12 @@ const TobBarSearch = styled(JuiOutlineTextField)`
   width: 100%;
   max-width: ${width(67)};
   background-color: ${({ theme }: { theme: Theme }) =>
-    fade(palette('common', 'white')({ theme }), opacity('p20')({ theme }))};
+    fade(palette('common', 'white')({ theme }), opacity('2')({ theme }))};
   border: 0;
   cursor: pointer;
   &:hover {
     background-color: ${({ theme }: { theme: Theme }) =>
-      fade(palette('common', 'white')({ theme }), opacity('p30')({ theme }))};
+      fade(palette('common', 'white')({ theme }), opacity('3')({ theme }))};
   }
   .topBar-input-root {
     pointer-events: none;

@@ -5,10 +5,6 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-// import { text } from '@storybook/addon-knobs';
-// import backgrounds from '@storybook/addon-backgrounds';
-// import { withInfoDecorator } from '../../../foundation/utils/decorators';
-
 import {
   JuiConversationInitialPostWrapper,
   JuiConversationInitialPostHeader,
@@ -19,6 +15,7 @@ import {
 import { JuiConversationPageInit } from '../../EmptyScreen';
 import { JuiButton } from '../../../components/Buttons';
 import image from './img/illustrator_2x.png';
+import { ThemeProvider } from '../../../foundation/theme';
 
 const Action1 = (
   <JuiButton variant="outlined" color="primary">
@@ -49,16 +46,18 @@ const ConversationInitialPostBody = () => {
 
 storiesOf('Pattern', module).add('ConversationInitialPost', () => {
   return (
-    <JuiConversationInitialPostWrapper>
-      <JuiConversationInitialPostHeader>
-        <StyledTitle>
-          {'Dan Abramov'}
-          <StyledSpan>&nbsp;create a team&nbsp;</StyledSpan>
-          <StyledTeamName>RingCentral</StyledTeamName>
-          <StyledSpan>&nbsp;on 2017/1/1</StyledSpan>
-        </StyledTitle>
-      </JuiConversationInitialPostHeader>
-      <ConversationInitialPostBody />
-    </JuiConversationInitialPostWrapper>
+    <ThemeProvider>
+      <JuiConversationInitialPostWrapper>
+        <JuiConversationInitialPostHeader>
+          <StyledTitle>
+            {'Dan Abramov'}
+            <StyledSpan>&nbsp;create a team&nbsp;</StyledSpan>
+            <StyledTeamName>RingCentral</StyledTeamName>
+            <StyledSpan>&nbsp;on 2017/1/1</StyledSpan>
+          </StyledTitle>
+        </JuiConversationInitialPostHeader>
+        <ConversationInitialPostBody />
+      </JuiConversationInitialPostWrapper>
+    </ThemeProvider>
   );
 });

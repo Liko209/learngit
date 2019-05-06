@@ -2,7 +2,7 @@ import * as styledComponents from 'styled-components';
 import {
   ThemedStyledComponentsModule,
   ThemeProps as StyledThemeProps,
-} from "styled-components"; // tslint:disable-line
+} from 'styled-components'; // tslint:disable-line
 
 import { Theme } from './styles';
 

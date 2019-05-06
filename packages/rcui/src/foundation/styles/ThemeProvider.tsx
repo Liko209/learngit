@@ -25,7 +25,7 @@ const jss = create({
 
 type ThemeProviderProps = {
   themeName?: string;
-  children: React.ReactChild;
+  children: React.ReactNode;
 };
 
 type ThemeProviderPropsState = {

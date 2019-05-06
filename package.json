@@ -11,7 +11,7 @@
   },
   "scripts": {
     "preinstall": "node scripts/check-pm.js",
-    "postinstall": "npm run bt",
+    "postinstall": "npm run bt && node scripts/jss-types-workaround",
     "start:ui": "cd packages/jui && npm run storybook",
     "start:app": "cd application && npm run start",
     "clean:build": "rm -rf ./packages/*/build ./packages/*/build-es",
@@ -93,8 +93,8 @@
     "terser": "3.16.1",
     "ts-jest": "23.1.4",
     "ts-node": "7.0.1",
-    "tslint": "5.11.0",
-    "tslint-config-airbnb": "5.11.0",
+    "tslint": "5.13.0",
+    "tslint-config-airbnb": "5.11.1",
     "tslint-react": "3.6.0",
     "typescript": "3.4.2"
   },
