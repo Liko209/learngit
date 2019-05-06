@@ -141,6 +141,45 @@ describe('PostFetchController()', () => {
       });
     });
 
+    it('should not remove posts if unique id in posts is undefined', async () => {
+      const mockPosts = [{ id: 1, version: 1 }, { id: 2, version: 2 }];
+      const mockItems = [{ id: 11 }, { id: 22 }];
+      const data = {
+        posts: [{ id: 3, version: 3 }, { id: 4, version: 4 }],
+        items: [{ id: 12 }, { id: 23 }],
+      };
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
+      postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+      jest
+        .spyOn(postFetchController, 'getRemotePostsByGroupId')
+        .mockResolvedValueOnce({
+          success: true,
+          hasMore: false,
+          ...data,
+        });
+      itemService.handleIncomingData = jest
+        .fn()
+        .mockResolvedValueOnce(data.items);
+
+      const result = await postFetchController.getPostsByGroupId({
+        groupId: 1,
+        limit: 20,
+      });
+
+      expect(result).toEqual({
+        hasMore: false,
+        items: [{ id: 11 }, { id: 22 }, { id: 12 }, { id: 23 }],
+        posts: [
+          { id: 1, version: 1 },
+          { id: 2, version: 2 },
+          { id: 3, version: 3 },
+          { id: 4, version: 4 },
+        ],
+        limit: 20,
+      });
+    });
+
     it('should return empty result when shouldSaveToDb===true & local remote is empty', async () => {
       const mockPosts = [];
       const mockItems = [];

@@ -102,6 +102,10 @@ class PostFetchController {
             result.posts,
             serverResult.posts,
           );
+          mainLogger.log(
+            LOG_FETCH_POST,
+            `after handled duplicate, resultSize:${result.posts.length}`,
+          );
           result.items.push(...serverResult.items);
           result.hasMore = serverResult.hasMore;
         }
@@ -255,13 +259,21 @@ class PostFetchController {
   }
 
   private _handleDuplicatePosts(localPosts: Post[], remotePosts: Post[]) {
-    mainLogger.info(LOG_FETCH_POST, '_handleDuplicatePosts()');
+    mainLogger.info(
+      LOG_FETCH_POST,
+      `_handleDuplicatePosts() localSize:${localPosts.length} remoteSize:${
+        remotePosts.length
+      }`,
+    );
     if (localPosts && localPosts.length > 0) {
       if (remotePosts && remotePosts.length > 0) {
         remotePosts.forEach((remotePost: Post) => {
-          const index = localPosts.findIndex(
-            (localPost: Post) => localPost.unique_id === remotePost.unique_id,
-          );
+          const index = localPosts.findIndex((localPost: Post) => {
+            return (
+              localPost.unique_id !== undefined &&
+              localPost.unique_id === remotePost.unique_id
+            );
+          });
           if (index !== -1) {
             localPosts.splice(index, 1);
           }
