@@ -27,11 +27,10 @@ class HomeService {
 
   private _registerSubModule(name: string, subModuleConfig: SubModuleConfig) {
     const config = _.cloneDeep(subModuleConfig);
-    this._homeStore.addSubModule(name, config);
-
     if (config.loader) {
       this._jupiter.registerModuleAsync(config.loader, config.afterBootstrap);
     }
+    this._homeStore.addSubModule(name, config);
   }
 
   async unRegisterModule(name: string) {
