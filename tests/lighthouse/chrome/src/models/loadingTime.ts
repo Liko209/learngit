@@ -98,6 +98,13 @@ class LoadingTimeSummaryDto extends Model<LoadingTimeSummaryDto> {
     type: DataType.DECIMAL(10, 2)
   })
   apiTop95Time: number;
+
+  @Column({
+    allowNull: false,
+    field: "api_handle_count",
+    type: DataType.DECIMAL(10, 2)
+  })
+  apiHandleCount: number;
 }
 
 @Table({ modelName: "t_loading_time_item" })
@@ -146,6 +153,13 @@ class LoadingTimeItemDto extends Model<LoadingTimeItemDto> {
     type: DataType.DECIMAL(10, 2)
   })
   costTime: number;
+
+  @Column({
+    allowNull: false,
+    field: "handle_count",
+    type: DataType.DECIMAL(10, 2)
+  })
+  handleCount: number;
 }
 
 export { LoadingTimeItemDto, LoadingTimeSummaryDto };
