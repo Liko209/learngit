@@ -107,11 +107,8 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then display the emojis in the conversation stream', async () => {
-    for (const emoji of emojis) {
-      await conversationPage.nthPostItem(-1).shouldHasEmojiByValue(emoji)
-    };
+    await conversationPage.nthPostItem(-1).emojisShouldBeInOrder(emojis);
   });
-
 });
 
 
@@ -287,7 +284,7 @@ test.meta(<ITestMeta>{
     await conversationPage.clickEmojiButton();
   });
 
-   await h(t).withLog('Then the emoji library should be open', async () => {
+  await h(t).withLog('Then the emoji library should be open', async () => {
     await emojiLibrary.ensureLoaded();
   });
 
@@ -298,5 +295,5 @@ test.meta(<ITestMeta>{
   await h(t).withLog('Then the emoji library should be dismiss', async () => {
     await emojiLibrary.ensureDismiss();
   });
-  
+
 });

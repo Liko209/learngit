@@ -70,7 +70,7 @@ export class BaseConversationPage extends BaseWebComponent {
   get posts() {
     return this.self.find('[data-name="conversation-card"]');
   }
-  
+
   get postSenders() {
     return this.self.find('[data-name="name"]');
   }
@@ -600,8 +600,15 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('.emoji');
   }
 
-  async shouldHasEmojiByValue(text:string) {
+  async shouldHasEmojiByValue(text: string) {
     await this.t.expect(this.emojis.withAttribute('title', `:${text}:`))
+  }
+
+  async emojisShouldBeInOrder(valueList: string[]) {
+    await this.t.expect(this.emojis.count).eql(valueList.length);
+    for (const n in valueList) {
+      await this.t.expect(this.emojis.nth(+n).withAttribute('title', `:${valueList[n]}:`));
+    }
   }
 
   get likeToggleOnActionBar() {
