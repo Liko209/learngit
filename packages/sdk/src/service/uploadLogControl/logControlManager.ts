@@ -140,12 +140,16 @@ export class LogControlManager implements IAccessor {
       const logUploadEnabled = await permissionService.hasPermission(
         UserPermissionType.JUPITER_CAN_UPLOAD_LOG,
       );
+      const zipLogAutoUpload = await permissionService.hasPermission(
+        UserPermissionType.ZIP_LOG_AUTO_UPLOAD_BETA,
+      );
       logManager.config({
         browser: {
           enabled: this._debugMode || logEnabled,
         },
       });
       configManager.mergeConfig({
+        zipLogAutoUpload,
         uploadEnabled: !this._debugMode && logUploadEnabled,
       });
     } catch (error) {

@@ -13,6 +13,7 @@ type LogControlConfig = {
   combineSizeThreshold: number;
   persistentLimit: number;
   memoryCacheSizeThreshold: number;
+  zipLogAutoUpload: boolean;
 };
 
 type ZipItem = {
@@ -26,4 +27,29 @@ interface IZipItemProvider {
   getZipItems(): Promise<ZipItem[]>;
 }
 
-export { IZipItemProvider, ZipItem, LogControlConfig };
+type LocalZip = {
+  index: number;
+  name: string;
+  blob: Blob;
+};
+
+type UploadedZip = {
+  index: number;
+  fileId: string;
+  url: string;
+};
+
+type Nullable<T> = T | null;
+
+interface IZipProducer {
+  produce(): Nullable<LocalZip>;
+}
+
+export {
+  IZipItemProvider,
+  ZipItem,
+  LogControlConfig,
+  LocalZip,
+  UploadedZip,
+  IZipProducer,
+};

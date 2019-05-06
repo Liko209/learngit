@@ -11,7 +11,6 @@ export class MemoryLogZipItemProvider implements IZipItemProvider {
 
   getZipItems = async () => {
     const logs = this.memoryCollector.getAll();
-    // const zipName = `RC_LOG_${logs[0].sessionId}`;
     const logContent = logs
       .map(log => {
         return log.message;
