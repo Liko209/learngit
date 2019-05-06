@@ -6,7 +6,7 @@
 import { observable, computed, action } from 'mobx';
 import { RouteProps } from 'react-router-dom';
 import { SubModuleConfig, NavConfig } from '../types';
-
+import { config } from '../home.config';
 class HomeStore {
   @observable private _subModuleConfigsMap = new Map<string, SubModuleConfig>();
   @observable private _defaultRouterPaths: string[];
@@ -52,9 +52,19 @@ class HomeStore {
       return !!config.nav;
     };
 
-    return this.subModuleConfigs
-      .filter(hasNav)
-      .map(config => config.nav!()) as Promise<NavConfig>[];
+    const { subModules } = config;
+    const resultConfigs: SubModuleConfig[] = [];
+
+    Object.keys(subModules).forEach(subModuleName => {
+      if (this._subModuleConfigsMap.has(subModuleName)) {
+        const subModule = this.getSubModule(subModuleName);
+        subModule && resultConfigs.push(subModule);
+      }
+    });
+
+    return resultConfigs.filter(hasNav).map(config => config.nav!()) as Promise<
+      NavConfig
+    >[];
   }
 
   getSubModule(name: string) {
