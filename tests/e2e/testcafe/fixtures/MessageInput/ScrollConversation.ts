@@ -32,20 +32,21 @@ test(formalName('JPT-60 Can scroll up/down when have more than 1 page posts.', [
     let postsId = [];
     let positionY;
 
-    let privateChat = <IGroup>{
-      type: "DirectMessage",
+    let team = <IGroup>{
+      type: "Team",
+      name: uuid(),
       owner: loginUser,
-      members: [loginUser, otherUser]
+      members: [loginUser, otherUser],
     };
 
     await h(t).withLog('Given I have an extension with 1 dm and I team', async () => {
-      await h(t).scenarioHelper.createTeamsOrChats([privateChat]);
+      await h(t).scenarioHelper.createTeamsOrChats([team]);
     });
 
 
     await h(t).withLog('And send 20 messages to conversation', async () => {
       for (let i of _.range(20)) {
-        postsId.push(await h(t).platform(otherUser).sendTextPost(i + ` post:${uuid()}`, privateChat.glipId));
+        postsId.push(await h(t).platform(otherUser).sentAndGetTextPostId(i + ` post:${uuid()}`, team.glipId));
       }
     });
 
@@ -57,7 +58,7 @@ test(formalName('JPT-60 Can scroll up/down when have more than 1 page posts.', [
     );
     const conversationPage = app.homePage.messageTab.conversationPage;
     await h(t).withLog('And Make sure current opened conversation isn\'t older team)', async () => {
-      await app.homePage.messageTab.directMessagesSection.conversationEntryById(privateChat.glipId).enter();
+      await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
       positionY = await conversationPage.getScrollHeight();
     });
 
@@ -75,7 +76,7 @@ test(formalName('JPT-60 Can scroll up/down when have more than 1 page posts.', [
     });
 
     await h(t).withLog('Then I see first post in \'C1\'', async () => {
-      await conversationPage.postByIdExpectVisible(postsId[0].data.id,true);
+      await conversationPage.postByIdExpectVisible(postsId[0],true);
     });
 
     await h(t).withLog('When I try to scroll up', async () => {
@@ -91,6 +92,6 @@ test(formalName('JPT-60 Can scroll up/down when have more than 1 page posts.', [
     });
 
     await h(t).withLog('Then I see post directly', async () => {
-      await conversationPage.postByIdExpectVisible(postsId[19].data.id,true);
+      await conversationPage.postByIdExpectVisible(postsId[19],true);
     });
   });
