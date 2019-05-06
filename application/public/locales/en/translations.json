@@ -307,7 +307,7 @@
     "pinnedMore": "and {{num}} more",
     "prompt": {
       "uploadFailedMessageThereIsAlreadyAFileBeingUploaded": "Your upload failed. There is already a file being uploaded. Please wait till it has completed.",
-      "fileNoLongerExists": "The file no longer exists.",
+      "fileNoLongerExists": "Sorry, we weren’t able to upload the file because it no longer exists.",
       "notAbleToCancelUpload": "Sorry, we weren't able to cancel the upload.",
       "notAbleToCancelUploadTryAgain": "Sorry, we weren't able to cancel the upload. Try again."
     }
