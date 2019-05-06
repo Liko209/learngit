@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { createRef } from 'react';
-import i18next from 'i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
 import { observer } from 'mobx-react';
@@ -38,13 +38,15 @@ const StyledTextWithLink = styled.div`
   }
 `;
 
+type Props = ViewProps & WithTranslation;
+
 @observer
-class NewMessageView extends React.Component<ViewProps, State> {
+class NewMessageComponent extends React.Component<Props, State> {
   static contextType = DialogContext;
   messageRef = createRef<HTMLInputElement>();
   focusTimer: NodeJS.Timeout;
 
-  constructor(props: ViewProps) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       message: '',
@@ -97,6 +99,7 @@ class NewMessageView extends React.Component<ViewProps, State> {
 
   render() {
     const {
+      t,
       emailError,
       emailErrorMsg,
       disabledOkBtn,
@@ -114,33 +117,33 @@ class NewMessageView extends React.Component<ViewProps, State> {
         open={true}
         size={'medium'}
         okBtnProps={{ disabled: disabledOkBtn }}
-        title={i18next.t('message.prompt.NewMessage')}
+        title={t('message.prompt.NewMessage')}
         onCancel={this.onClose}
         onOK={this.sendNewMessage}
-        okText={i18next.t('common.dialog.send')}
+        okText={t('common.dialog.send')}
         contentBefore={
           serverError && (
             <StyledSnackbarsContent type="error">
-              {i18next.t('message.prompt.NewMessageError')}
+              {t('message.prompt.NewMessageError')}
             </StyledSnackbarsContent>
           )
         }
-        cancelText={i18next.t('common.dialog.cancel')}
+        cancelText={t('common.dialog.cancel')}
       >
         <ContactSearch
           onSelectChange={handleSearchContactChange}
-          label={i18next.t('people.team.Members')}
-          placeholder={i18next.t('people.team.SearchContactPlaceholder')}
+          label={t('people.team.Members')}
+          placeholder={t('people.team.SearchContactPlaceholder')}
           error={emailError}
-          helperText={emailError ? i18next.t(emailErrorMsg) : ''}
+          helperText={emailError ? t(emailErrorMsg) : ''}
           errorEmail={errorEmail}
           messageRef={this.messageRef}
           multiple={true}
           autoSwitchEmail={true}
         />
         <JuiTextarea
-          id={i18next.t('message.action.typeNewMessage')}
-          label={i18next.t('message.action.typeNewMessage')}
+          id={t('message.action.typeNewMessage')}
+          label={t('message.action.typeNewMessage')}
           fullWidth={true}
           inputProps={{
             maxLength: 10000,
@@ -150,8 +153,8 @@ class NewMessageView extends React.Component<ViewProps, State> {
         />
         <StyledTextWithLink>
           <JuiTextWithLink
-            text={i18next.t('message.prompt.newMessageTip')}
-            linkText={i18next.t('message.prompt.newMessageTipLink')}
+            text={t('message.prompt.newMessageTip')}
+            linkText={t('message.prompt.newMessageTipLink')}
             onClick={this.openCreateTeam}
           />
         </StyledTextWithLink>
@@ -160,6 +163,8 @@ class NewMessageView extends React.Component<ViewProps, State> {
   }
 }
 
-const NewMessageComponent = NewMessageView;
+const NewMessageView = withTranslation('translations')(NewMessageComponent);
+
+// const NewMessageComponent = NewMessageView;
 
 export { NewMessageView, NewMessageComponent };

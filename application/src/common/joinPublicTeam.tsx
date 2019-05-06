@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-import i18next from 'i18next';
+import i18nT from '@/utils/i18nT';
 import { Trans } from 'react-i18next';
 import { goToConversationWithLoading } from '@/common/goToConversation';
 import { Dialog } from '@/containers/Dialog';
@@ -44,9 +44,9 @@ const joinHander = async (conversationId: number) => {
   }
 };
 
-const joinPublicTeam = (item: GroupModel) => {
+const joinPublicTeam = async (item: GroupModel) => {
   Dialog.confirm({
-    title: i18next.t('people.team.joinTeamTitle'),
+    title: await i18nT('people.team.joinTeamTitle'),
     content: (
       <JuiDialogContentText>
         <Trans
@@ -56,8 +56,8 @@ const joinPublicTeam = (item: GroupModel) => {
         />
       </JuiDialogContentText>
     ),
-    okText: i18next.t('people.team.joinTeamSubmit'),
-    cancelText: i18next.t('common.dialog.cancel'),
+    okText: await i18nT('people.team.joinTeamSubmit'),
+    cancelText: await i18nT('common.dialog.cancel'),
     onOK: () =>
       goToConversationWithLoading({
         id: item.id,
