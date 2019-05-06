@@ -18,7 +18,7 @@ const StyledRight = styled('div')`
 
   @media (max-width: 805px) {
     ${StyledSearchIconButton} {
-      display: block;
+      display: flex;
     }
   }
 `;
