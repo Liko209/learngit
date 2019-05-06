@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
-import i18next from 'i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { PinnedListViewProps, PinnedListProps } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
 
@@ -21,7 +21,7 @@ import {
   JuiRightRailLoadingMore,
 } from 'jui/pattern/RightShelf';
 import { PinnedCell } from './PinnedCell';
-import { emptyView } from '../ItemList/Empty';
+import { EmptyView } from '../ItemList/Empty';
 import { RIGHT_RAIL_ITEM_TYPE } from '../ItemList';
 import {
   LOAD_MORE_STRATEGY_CONFIG,
@@ -29,10 +29,10 @@ import {
   PINED_ITEM_HEIGHT,
 } from '../constants';
 
+type Props = PinnedListViewProps & PinnedListProps & WithTranslation;
+
 @observer
-class PinnedListView extends React.Component<
-  PinnedListViewProps & PinnedListProps
-> {
+class PinnedListComponent extends React.Component<Props> {
   private _loadMoreStrategy = new ThresholdStrategy(LOAD_MORE_STRATEGY_CONFIG);
   private _renderItems = () => {
     return this.props.ids.map((itemId: number) => (
@@ -41,7 +41,7 @@ class PinnedListView extends React.Component<
   }
 
   renderEmptyContent = () => {
-    return emptyView(RIGHT_RAIL_ITEM_TYPE.PIN_POSTS);
+    return <EmptyView type={RIGHT_RAIL_ITEM_TYPE.PIN_POSTS} />;
   }
 
   hasMore = (direction: string) => {
@@ -61,12 +61,12 @@ class PinnedListView extends React.Component<
   }
 
   render() {
-    const { totalCount, ids, height } = this.props;
+    const { totalCount, ids, height, t } = this.props;
     return (
       <JuiRightShelfContent>
         {totalCount > 0 && ids.length > 0 && (
           <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
-            {i18next.t('item.pinnedListSubheader')}
+            {t('item.pinnedListSubheader')}
           </JuiListSubheader>
         )}
         {totalCount === 0 && this.renderEmptyContent()}
@@ -90,5 +90,7 @@ class PinnedListView extends React.Component<
     );
   }
 }
+
+const PinnedListView = withTranslation('translations')(PinnedListComponent);
 
 export { PinnedListView };

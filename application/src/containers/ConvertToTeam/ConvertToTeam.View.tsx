@@ -6,7 +6,7 @@
 
 import React, { Component, createRef } from 'react';
 import { observer } from 'mobx-react';
-import i18next from 'i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ConvertToTeamViewProps } from './types';
 import { JuiModal } from 'jui/components/Dialog';
 import portalManager from '@/common/PortalManager';
@@ -59,12 +59,14 @@ type State = {
   // items: JuiListToggleItemProps[];
 };
 
+type Props = ConvertToTeamViewProps & WithTranslation;
+
 @observer
-class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
+class ConvertToTeam extends Component<Props, State> {
   teamNameRef = createRef<HTMLInputElement>();
   focusTimer: NodeJS.Timeout;
 
-  constructor(props: ConvertToTeamViewProps) {
+  constructor(props: Props) {
     super(props);
     // this.state = {
     //   items: [],
@@ -75,25 +77,25 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
   //   return [
   //     {
   //       type: 'isPublic',
-  //       text: i18next.t('people.team.SetAsPublicTeam'),
+  //       text: t('people.team.SetAsPublicTeam'),
   //       checked: false,
   //       automationId: 'ConvertToTeamIsPublic',
   //     },
   //     {
   //       type: 'canAddMember',
-  //       text: i18next.t('people.team.MembersMayAddOtherMembers'),
+  //       text: t('people.team.MembersMayAddOtherMembers'),
   //       checked: true,
   //       automationId: 'ConvertToTeamCanAddMember',
   //     },
   //     {
   //       type: 'canPost',
-  //       text: i18next.t('people.team.MembersMayPostMessages'),
+  //       text: t('people.team.MembersMayPostMessages'),
   //       checked: true,
   //       automationId: 'ConvertToTeamCanPost',
   //     },
   //     {
   //       type: 'canPin',
-  //       text: i18next.t('people.team.MembersMayPinPosts'),
+  //       text: t('people.team.MembersMayPinPosts'),
   //       checked: true,
   //       automationId: 'ConvertToTeamCanPinPost',
   //     },
@@ -192,6 +194,7 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
   render() {
     // const { items } = this.state;
     const {
+      t,
       name,
       nameErrorKey,
       handleNameChange,
@@ -203,11 +206,11 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
       <JuiModal
         open={true}
         size="medium"
-        title={i18next.t('people.team.convertToTeam')}
+        title={t('people.team.convertToTeam')}
         onCancel={this._handleClose}
         onOK={this._handleOk}
-        okText={i18next.t('people.team.convertToTeam')}
-        cancelText={i18next.t('common.dialog.cancel')}
+        okText={t('people.team.convertToTeam')}
+        cancelText={t('common.dialog.cancel')}
         okBtnProps={{
           disabled: disabledOkBtn,
           'data-test-automation-id': 'convertToTeamOkButton',
@@ -218,22 +221,22 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
       >
         <Loading loading={saving} alwaysComponentShow={true} delay={0}>
           <JuiTopText>
-            {i18next.t('people.team.convertToTeamPreviousMessageHandle')}
+            {t('people.team.convertToTeamPreviousMessageHandle')}
           </JuiTopText>
           <JuiTextField
             value={name}
-            id={i18next.t('people.team.teamName')}
-            label={i18next.t('people.team.teamName')}
+            id={t('people.team.teamName')}
+            label={t('people.team.teamName')}
             fullWidth={true}
             error={!!nameErrorKey}
             inputProps={NAME_INPUT_PROPS}
             inputRef={this.teamNameRef}
-            helperText={nameErrorKey && i18next.t(nameErrorKey)}
+            helperText={nameErrorKey && t(nameErrorKey)}
             onChange={handleNameChange}
           />
           {/* <JuiTextarea
-            id={i18next.t('people.team.teamDescription')}
-            label={i18next.t('people.team.teamDescription')}
+            id={t('people.team.teamDescription')}
+            label={t('people.team.teamDescription')}
             inputProps={DESCRIPTION_INPUT_PROPS}
             fullWidth={true}
             onChange={handleDescriptionChange}
@@ -248,5 +251,7 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
     );
   }
 }
+
+const ConvertToTeamView = withTranslation('translations')(ConvertToTeam);
 
 export { ConvertToTeamView };

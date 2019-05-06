@@ -3,7 +3,6 @@ const config: DeepPartial<ApiConfig> = {
   rc: {
     server: 'https://xmn02-i01-mck02.lab.nordigy.ru/jupiter/rc',
     clientId: 'YCWFuqW8T7-GtSTb6KBS6g',
-    clientSecret: 'vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA',
   },
   glip: {
     server: 'https://xmn02-i01-mck02.lab.nordigy.ru/jupiter/glip',
