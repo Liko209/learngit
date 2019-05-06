@@ -61,6 +61,7 @@ export class FetchSortableDataListHandler<
   private _sortFun?: ISortFunc<ISortableModel<T>>;
   private _sortableDataProvider?: IFetchSortableDataProvider<T>;
   protected _totalCountChangeCallback?: CountChangeCallback;
+  private _eventName: string;
 
   private _maintainMode: boolean = false;
 
@@ -78,6 +79,7 @@ export class FetchSortableDataListHandler<
     this._sortableDataProvider = dataProvider;
     this._entityName = options.entityName;
     this._sortFun = options.sortFunc;
+    this._eventName = options.eventName || '';
 
     if (options.eventName) {
       this.subscribeNotification(options.eventName, ({ type, body }) => {
@@ -127,17 +129,23 @@ export class FetchSortableDataListHandler<
     pageSize: number,
     anchor?: ISortableModel<T>,
   ) {
-    if (!this._sortableDataProvider) {
+    const dataProvider = this._sortableDataProvider;
+    if (!dataProvider) {
       mainLogger.warn(
         'FetchSortableDataListHandler: data fetcher should be defined ',
       );
       return [];
     }
-    const { data = [], hasMore } = await this._sortableDataProvider.fetchData(
-      direction,
-      pageSize,
-      anchor,
+    return this.fetchDataBy(direction, () =>
+      dataProvider.fetchData(direction, pageSize, anchor),
     );
+  }
+
+  async fetchDataBy(
+    direction: QUERY_DIRECTION,
+    dataLoader: () => Promise<{ data: T[]; hasMore: boolean }>,
+  ) {
+    const { data = [], hasMore } = await dataLoader();
     const sortableResult: ISortableModel<T>[] = [];
     data.forEach((element: T) => {
       sortableResult.push(this._transformFunc(element));
@@ -162,7 +170,6 @@ export class FetchSortableDataListHandler<
     });
     return data;
   }
-
   @action
   refreshData() {
     mainLogger.debug(
@@ -273,7 +280,15 @@ export class FetchSortableDataListHandler<
         const model = entities.get(key) as T;
         if (this._isMatchFunc(model)) {
           const sortModel = this._transformFunc(model);
-          if (this._isInRange(sortModel)) {
+          const isInRange = this._isInRange(sortModel);
+          this._eventName &&
+            this._eventName.startsWith('ENTITY.POST') &&
+            mainLogger.info(
+              `FetchSortableDataListHandler:${
+                this._eventName
+              }, key:${key}, isInRange:${isInRange}`,
+            );
+          if (isInRange) {
             matchedSortableModels.push(sortModel);
             matchedEntities.push(model);
           }

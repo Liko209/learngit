@@ -23,6 +23,8 @@ export enum PERFORMANCE_KEYS {
   GOTO_CONVERSATION_FETCH_POSTS = 'goto_conversation_fetch_posts',
   GOTO_CONVERSATION_FETCH_ITEMS = 'goto_conversation_fetch_items',
   CONVERSATION_FETCH_FROM_DB = 'conversation_fetch_from_db',
+  CONVERSATION_FETCH_UNREAD_POST = 'conversation_fetch_unread_post',
+  CONVERSATION_FETCH_INTERVAL_POST = 'conversation_fetch_interval_post',
   CONVERSATION_FETCH_FROM_SERVER = 'conversation_fetch_from_server',
   CONVERSATION_HANDLE_DATA_FROM_SERVER = 'conversation_handle_data_from_server',
   LOG_FETCH_FROM_DB = 'log_fetch_from_db',

@@ -16,9 +16,11 @@ import PostAPI from '../../../api/glip/post';
 import { DEFAULT_PAGE_SIZE, LOG_FETCH_POST } from '../constant';
 import _ from 'lodash';
 import { IGroupService } from '../../../module/group/service/IGroupService';
-import { IRemotePostRequest } from '../entity/Post';
+import { IRemotePostRequest, UnreadPostQuery } from '../entity/Post';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+
+const ADDITIONAL_UNREAD_POST_COUNT = 500;
 
 class PostFetchController {
   constructor(
@@ -76,7 +78,9 @@ class PostFetchController {
       );
       mainLogger.info(
         LOG_FETCH_POST,
-        `getPostsByGroupId() groupId: ${groupId} shouldSaveToDb:${shouldSaveToDb} shouldFetch:${shouldFetch}`,
+        `getPostsByGroupId() groupId: ${groupId} shouldSaveToDb:${shouldSaveToDb} shouldFetch:${shouldFetch} localSize:${
+          result.posts.length
+        }`,
       );
       if (!shouldSaveToDb || shouldFetch) {
         const validAnchorPostId = this._findValidAnchorPostId(
@@ -110,6 +114,60 @@ class PostFetchController {
       logId,
       result.posts && result.posts.length,
     );
+    return result;
+  }
+
+  async getUnreadPostsByGroupId({
+    groupId,
+    startPostId,
+    endPostId,
+    unreadCount = DEFAULT_PAGE_SIZE,
+  }: UnreadPostQuery): Promise<IPostResult> {
+    let result: IPostResult = {
+      limit: unreadCount,
+      posts: [],
+      items: [],
+      hasMore: true,
+    };
+    mainLogger.info(
+      LOG_FETCH_POST,
+      `getUnreadPosts() groupId: ${groupId} startPostId: ${startPostId} endPostId: ${endPostId}`,
+    );
+
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.CONVERSATION_FETCH_UNREAD_POST,
+      logId,
+    );
+    const isPostInDb = startPostId && (await this._isPostInDb(startPostId));
+    if (isPostInDb) {
+      mainLogger.info(LOG_FETCH_POST, 'getUnreadPosts() get from db');
+      result = await this._getIntervalPostsFromDb({
+        groupId,
+        startPostId,
+        endPostId,
+        unreadCount,
+      });
+    } else {
+      mainLogger.info(LOG_FETCH_POST, 'getUnreadPosts() get from server');
+      const serverResult = await this.getRemotePostsByGroupId({
+        groupId,
+        limit: unreadCount + ADDITIONAL_UNREAD_POST_COUNT,
+        postId: startPostId,
+        direction: QUERY_DIRECTION.NEWER,
+        shouldSaveToDb: false,
+      });
+      if (serverResult) {
+        result.posts = serverResult.posts;
+        result.items = serverResult.items;
+        result.hasMore = serverResult.hasMore;
+      }
+    }
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      logId,
+      result.posts && result.posts.length,
+    );
+
     return result;
   }
 
@@ -250,6 +308,7 @@ class PostFetchController {
       direction,
       limit,
     );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId, posts.length);
 
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
@@ -258,7 +317,36 @@ class PostFetchController {
     result.posts = posts;
     result.items =
       posts.length === 0 ? [] : await itemService.getByPosts(posts);
+    return result;
+  }
+
+  private async _getIntervalPostsFromDb(
+    unreadPostQuery: UnreadPostQuery,
+  ): Promise<IPostResult> {
+    const result: IPostResult = {
+      limit: unreadPostQuery.unreadCount,
+      posts: [],
+      items: [],
+      hasMore: true,
+    };
+
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.CONVERSATION_FETCH_INTERVAL_POST,
+      logId,
+    );
+    const postDao = daoManager.getDao(PostDao);
+    const posts: Post[] = await postDao.queryIntervalPostsByGroupId(
+      unreadPostQuery,
+    );
     PerformanceTracerHolder.getPerformanceTracer().end(logId, posts.length);
+
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
+    result.posts = posts;
+    result.items =
+      posts.length === 0 ? [] : await itemService.getByPosts(posts);
     return result;
   }
 

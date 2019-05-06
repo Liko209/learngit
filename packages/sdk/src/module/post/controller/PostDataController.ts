@@ -136,6 +136,12 @@ class PostDataController {
    * For bookmark/@mentions/pin post/reply
    */
   private async _handleModifiedDiscontinuousPosts(posts: Post[]) {
+    if (!posts || !posts.length) {
+      mainLogger.info(
+        '_handleModifiedDiscontinuousPosts() return directly due to not posts',
+      );
+      return;
+    }
     const postDiscontinuousDao = daoManager.getDao(PostDiscontinuousDao);
     const deactivatedPosts: Post[] = [];
     const normalPosts: Post[] = [];
@@ -370,9 +376,10 @@ class PostDataController {
               deletePostIds.concat(deletePosts.map((post: Post) => post.id));
             }
           }
+          const postIds = posts && posts.map(post => post._id);
           mainLogger.info(
             LOG_INDEX_DATA_POST,
-            `removeDiscontinuousPosts() remove groupId: ${groupId}, deletePostIds: ${deletePostIds}`,
+            `removeDiscontinuousPosts() remove groupId: ${groupId}, deletePostIds: ${deletePostIds}, postIds:${postIds}`,
           );
         }
       }),
