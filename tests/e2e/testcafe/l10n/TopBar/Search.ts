@@ -3,13 +3,8 @@ import { BrandTire, SITE_URL } from "../../config";
 import { formalName } from "../../libs/filter";
 import { h } from '../../v2/helpers';
 import { AppRoot } from "../../v2/page-models/AppRoot";
-import { AsyncCreatable } from "react-select";
-import { Header } from "../../v2/page-models/AppRoot/HomePage/header";
 import { IGroup } from "../../v2/models";
-import { sync } from "glob";
-import { Arr } from "tern";
 import {v4 as uuid} from "uuid"
-import { when } from "q";
 
 fixture('Search').beforeEach(setupCase(BrandTire.RCOFFICE)).afterEach(teardownCase())
 test(formalName('Check menu tip', ['P0', 'Search', 'Hank']), async (t) => {

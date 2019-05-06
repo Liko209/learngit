@@ -3,8 +3,6 @@ import { BrandTire, SITE_URL } from "../../config";
 import { formalName } from "../../libs/filter";
 import { h } from '../../v2/helpers';
 import { AppRoot } from "../../v2/page-models/AppRoot";
-import { AsyncCreatable } from "react-select";
-import { Header } from "../../v2/page-models/AppRoot/HomePage/header";
 import { IGroup } from "../../v2/models";
 
 
@@ -52,7 +50,7 @@ await h(t).withLog(`When I fill in "Team name" with an existing name` , async() 
 await createTeamModal.typeTeamName(team.name);
 await createTeamModal.clickCreateButton();
 });
-await h(t).withLog(`And I fill in "Members" with ${anotherUserName} and hover "remove" button`, async() =>{
+await h(t).withLog(`And I fill in "Members" with ${anotherUserName} and hover "Remove" button`, async() =>{
 await createTeamModal.memberInput.typeText(anotherUserName);
 await createTeamModal.memberInput.selectMemberByNth(0);
 await t.hover(createTeamModal.memberInput.selectedItems.nth(-1).find('button'));
