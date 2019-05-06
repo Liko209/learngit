@@ -1,18 +1,17 @@
 import * as _ from 'lodash';
-import * as assert from 'assert';
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
-import { h, H } from '../../v2/helpers';
+import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { IGroup, ITestMeta } from '../../v2/models';
+import { IGroup } from '../../v2/models';
 
 fixture('TeamMessage/TeamMessage')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Check menu tip',['P0','TeamMessage','V1.4','Sean']),async(t)=>{
+test(formalName('Check menu tip',['P2','TeamMessage','V1.4','Sean']),async(t)=>{
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
@@ -52,7 +51,6 @@ test(formalName('Check menu tip',['P0','TeamMessage','V1.4','Sean']),async(t)=>{
   });
 
   const teamSection = app.homePage.messageTab.teamsSection;
-  await t.debug;
   await h(t).withLog(`And I enter and rename the team`, async () => {
     await teamSection.conversationEntryById(publicTeam.glipId).enter();
   });
