@@ -12,6 +12,7 @@ const JuiFullSearch = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 0;
+  height: calc(100% - 48px);
 `;
 
 export { JuiFullSearch };

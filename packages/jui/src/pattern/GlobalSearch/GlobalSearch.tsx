@@ -17,8 +17,8 @@ const StyledGlobalSearch = styled(JuiDialog)`
       border-radius: ${radius('xl')};
       max-width: ${width(200)};
       max-height: calc(100% - ${height(10)});
-      /* should be <min-height in user story> - <margin>, which is (400 - 8 * 2) / 4 */
-      min-height: ${height(96)};
+      /* should be <min-height in user story>, which is 400 */
+      min-height: ${height(100)};
       min-width: ${width(120)};
       overflow: hidden;
     }
