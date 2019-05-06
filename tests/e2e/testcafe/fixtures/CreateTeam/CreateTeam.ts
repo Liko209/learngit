@@ -504,7 +504,7 @@ test(formalName('JPT-121 Check "Allow members to post messages" can be turn on o
       },
     );
 
-    await h(t).withLog('Then team member should no see input box in the team', async () => {
+    await h(t).withLog('Then team member should not see input box in the team', async () => {
         await t.expect(await app.homePage.messageTab.conversationPage.messageInputArea.exists).notOk();
       },
     );
