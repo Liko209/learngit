@@ -78,7 +78,12 @@ test.skip(formalName('Unread button will disappear when resizing window then ful
   });
 });
 
-test(formalName('Click the unread button (up) then jump to first unread post', ['JPT-211', 'P0', 'Wayne.Zhou', 'Stream']), async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P0'],
+  caseIds: ['JPT-211'],
+  maintainers: ['Wayne.Zhou'],
+  keywords: ['unreadButton']
+})('Click the unread button (up) then jump to first unread post', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
   const otherUser = users[5];
@@ -173,7 +178,12 @@ test(formalName('Click the unread button (up) then jump to first unread post', [
   });
 });
 
-test(formalName('The count of the unread button (up) should display correct', ['JPT-212', 'P1', 'Wayne.Zhou', 'JumpToUnreadButton']), async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-212'],
+  maintainers: ['Wayne.Zhou'],
+  keywords: ['unreadButton']
+})('The count of the unread button (up) should display correct', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
   const otherUser = users[5];
@@ -290,7 +300,12 @@ test.meta(<ITestMeta>{
   });
 })
 
-test(formalName('Unread button (up) will dismiss when back and open the conversation', ['JPT-234', 'P1', 'Wayne.Zhou', 'Stream']), async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-234'],
+  maintainers: ['Wayne.Zhou'],
+  keywords: ['unreadButton']
+})('Unread button (up) will dismiss when back and open the conversation', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
   const otherUser = users[5];
@@ -348,7 +363,12 @@ test(formalName('Unread button (up) will dismiss when back and open the conversa
   });
 })
 
-test(formalName(`The unread button (up) shouldn't dismiss when opening one conversation with more than 1 screen unread posts then send one post`, ['JPT-1212', 'P2', 'Mia.Cai', 'JumpToUnreadButton']), async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1212'],
+  maintainers: ['Mia.Cai'],
+  keywords: ['unreadButton']
+})(`The unread button (up) shouldn't dismiss when opening one conversation with more than 1 screen unread posts then send one post`, async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
@@ -408,7 +428,7 @@ test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-1893'],
   maintainers: ['Potar.He'],
-  keywords: ['UnreadButton']
+  keywords: ['UnreadButton', 'HighCost']
 })('Click the unread button (up) then jump to first unread post for some edge cases', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
@@ -434,7 +454,7 @@ test.meta(<ITestMeta>{
     }
     for (const i in unreadCounts) {
       for (const j of _.range(unreadCounts[i] - 1)) {
-        await h(t).scenarioHelper.sendTextPost(H.multilineString(), teams[i], otherUser);
+        await h(t).scenarioHelper.sendTextPost(uuid(), teams[i], otherUser);
       }
     }
   });
@@ -484,7 +504,7 @@ test.meta(<ITestMeta>{
     }
     for (const i in unreadCounts) {
       for (const j of _.range(unreadCounts[i] - 1)) {
-        await h(t).scenarioHelper.sendTextPost(H.multilineString(), teams[i], otherUser);
+        await h(t).scenarioHelper.sendTextPost(uuid(), teams[i], otherUser);
       }
     }
   });
