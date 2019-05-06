@@ -15,9 +15,20 @@ import { ExcludeList } from './excludeList';
 type Props = {
   handlerIcon: string;
   handleEmojiClick?: (emoji: any) => void;
-  spritImage: string;
   title: string;
+  imgRootPath?: string;
+  sheetSize: 16 | 20 | 32 | 64 | undefined;
+  set:
+    | 'apple'
+    | 'google'
+    | 'twitter'
+    | 'emojione'
+    | 'messenger'
+    | 'facebook'
+    | undefined;
 };
+
+const defaultPath = '';
 
 const Menu = styled(JuiMenu)`
   .menu-list-root {
@@ -41,7 +52,14 @@ class JuiEmoji extends React.PureComponent<Props> {
 
   render() {
     const { anchorEl } = this.state;
-    const { handleEmojiClick, handlerIcon, spritImage, title } = this.props;
+    const {
+      handleEmojiClick,
+      handlerIcon,
+      imgRootPath,
+      sheetSize,
+      set,
+      title,
+    } = this.props;
     const open = !!anchorEl;
     return (
       <Fragment>
@@ -75,14 +93,19 @@ class JuiEmoji extends React.PureComponent<Props> {
             <JuiMenuList>
               <ClickAwayListener onClickAway={this._hideMenu}>
                 <Picker
+                  sheetSize={sheetSize}
                   title={title}
                   emoji="point_up"
-                  set="emojione"
+                  set={set}
                   onClick={handleEmojiClick}
                   emojisToShowFilter={emoji => {
                     return ExcludeList.indexOf(emoji.id as string) < 0;
                   }}
-                  backgroundImageFn={(set, sheetSize) => spritImage}
+                  backgroundImageFn={(set, sheetSize) => {
+                    return imgRootPath
+                      ? `/${imgRootPath}/sheet_${set}_${sheetSize}.png`
+                      : `https://unpkg.com/emoji-datasource-${set}@4.0.4/img/${set}/sheets-256/${sheetSize}.png`;
+                  }}
                 />
               </ClickAwayListener>
             </JuiMenuList>

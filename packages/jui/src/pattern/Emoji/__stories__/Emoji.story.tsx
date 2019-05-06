@@ -12,7 +12,8 @@ storiesOf('Pattern/Emoji', module).add('Emoji Button', () => {
   return (
     <JuiEmoji
       title="Pick your emoji…"
-      spritImage={'/icon/sheet_emojione_64.png'}
+      set="emojione"
+      sheetSize={64}
       handlerIcon="emoji"
     />
   );
