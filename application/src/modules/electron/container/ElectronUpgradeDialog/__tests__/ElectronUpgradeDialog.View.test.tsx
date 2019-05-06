@@ -23,7 +23,7 @@ describe('ElectronUpgradeDialog.View', () => {
       ...baseProps,
       needUpgrade: true,
       type: UpgradeType.FORCE,
-      snoozed: false,
+      snooze: false,
       url: '',
     };
     const wrapper = mountWithTheme(
@@ -42,7 +42,7 @@ describe('ElectronUpgradeDialog.View', () => {
       ...baseProps,
       needUpgrade: true,
       type: UpgradeType.FORCE,
-      snoozed: false,
+      snooze: false,
       url: '',
     };
     const wrapper = mountWithTheme(
@@ -55,12 +55,12 @@ describe('ElectronUpgradeDialog.View', () => {
     expect(TopBannerViewModel.showBanner).toHaveBeenCalled();
   });
 
-  it('should render correctly (no ignore once button) after snoozed for force upgrade', () => {
+  it('should render correctly (no ignore once button) after snooze for force upgrade', () => {
     const props = {
       ...baseProps,
       needUpgrade: true,
       type: UpgradeType.FORCE,
-      snoozed: true,
+      snooze: true,
       url: '',
     };
     const wrapper = mountWithTheme(
@@ -77,7 +77,7 @@ describe('ElectronUpgradeDialog.View', () => {
       ...baseProps,
       needUpgrade: true,
       type: UpgradeType.SOFT,
-      snoozed: false,
+      snooze: false,
       url: '',
     };
     const wrapper = mountWithTheme(

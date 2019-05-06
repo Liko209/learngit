@@ -53,13 +53,7 @@ class ElectronUpgradeDialogComponent extends React.Component<
     this._close({ skip: true });
   }
   render() {
-    const {
-      t,
-      needUpgrade = true,
-      type = UpgradeType.FORCE,
-      snoozed = true,
-      url,
-    } = this.props;
+    const { t, needUpgrade, type, snooze, url } = this.props;
     const buttons = [];
     const IgnoreOnce = (
       <JuiButton
@@ -120,7 +114,7 @@ class ElectronUpgradeDialogComponent extends React.Component<
       </JuiButton>
     );
     if (needUpgrade) {
-      if (type === UpgradeType.FORCE && !snoozed) {
+      if (type === UpgradeType.FORCE && !snooze) {
         buttons.push(IgnoreOnce);
       } else if (type === UpgradeType.SOFT) {
         buttons.push(NotNow);

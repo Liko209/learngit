@@ -12,7 +12,7 @@ enum UpgradeType {
 type ElectronUpgradeDialogProps = {
   needUpgrade: boolean;
   type: UpgradeType;
-  snoozed: boolean;
+  snooze: boolean;
   url: string;
 };
 

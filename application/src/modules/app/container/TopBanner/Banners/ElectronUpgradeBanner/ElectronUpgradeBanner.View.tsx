@@ -18,12 +18,8 @@ import { withTranslation } from 'react-i18next';
 class ElectronUpgradeBannerViewComponent extends React.Component<
   ElectronUpgradeBannerViewProps
 > {
-  private _handleUpgradeClick = () => {
-    window.open(this.props.downloadUrl, '_blank');
-  }
-
   render() {
-    const { t } = this.props;
+    const { t, downloadUrl } = this.props;
     return (
       <JuiSnackbarContent
         type={ToastType.WARN}
@@ -33,7 +29,9 @@ class ElectronUpgradeBannerViewComponent extends React.Component<
         action={
           <JuiSnackbarAction
             aria-label={t('electron.upgrade.upgrade')}
-            onClick={this._handleUpgradeClick}
+            component="a"
+            download={true}
+            href={downloadUrl}
           >
             {t('electron.upgrade.upgrade')}
           </JuiSnackbarAction>
