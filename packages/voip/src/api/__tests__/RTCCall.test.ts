@@ -1589,6 +1589,24 @@ describe('RTC call', () => {
       });
     });
 
+    it('should enter connected state wheh hold call throw exception in holding state.', done => {
+      setup();
+      session.hold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      setImmediate(() => {
+        call._callSession.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.HOLD,
+        );
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('connected');
+          done();
+        });
+      });
+    });
+
     it('should enter unholding state when unhold call in holded state. [JPT-824]', done => {
       setup();
       session.hold.mockResolvedValue(null);
