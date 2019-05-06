@@ -237,3 +237,66 @@ test.meta(<ITestMeta>{
     await t.expect(emojiLibrary.searchResultSection.noResultLabel.textContent).eql(noResultLabel);
   });
 });
+
+test.meta(<ITestMeta>{
+  priority: ['P2'], caseIds: ['JPT-1757'], keywords: ['emoji'], maintainers: ['Potar.he']
+})('Check can close the emoji library', async (t) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const anotherUser = users[5];
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, users[1]]
+  }
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`Given I have a chat with ${anotherUser.extension}`, async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I enter a chat conversation', async () => {
+    await app.homePage.messageTab.directMessagesSection.expand();
+    await app.homePage.messageTab.directMessagesSection.nthConversationEntry(0).enter();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog('And I click Emoji button', async () => {
+    await conversationPage.clickEmojiButton();
+  });
+
+  const emojiLibrary = app.homePage.messageTab.emojiLibrary;
+  await h(t).withLog('Then the emoji library should be open', async () => {
+    await emojiLibrary.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I click out of the emoji library`, async () => {
+    await t.click(conversationPage.header);
+  });
+
+  await h(t).withLog('Then the emoji library should be dismiss', async () => {
+    await emojiLibrary.ensureDismiss();
+  });
+
+  await h(t).withLog('And I click Emoji button', async () => {
+    await conversationPage.clickEmojiButton();
+  });
+
+   await h(t).withLog('Then the emoji library should be open', async () => {
+    await emojiLibrary.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I press "esc" on the keyboard`, async () => {
+    await emojiLibrary.quitByPressEsc();
+  });
+
+  await h(t).withLog('Then the emoji library should be dismiss', async () => {
+    await emojiLibrary.ensureDismiss();
+  });
+  
+});
