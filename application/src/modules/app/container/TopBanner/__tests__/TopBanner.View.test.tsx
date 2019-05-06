@@ -6,12 +6,40 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { TopBannerView } from '../TopBanner.View';
+import { TopBannerViewModel } from '@/modules/app/container/TopBanner/TopBanner.ViewModel';
+import { ElectronUpgradeBanner } from '../Banners/ElectronUpgradeBanner/ElectronUpgradeBanner';
 
 describe('TopBannerView', () => {
   describe('render', () => {
     it('should not render networkBannerView', () => {
       const wrapper = shallow(<TopBannerView />);
-      expect(wrapper.find('NetworkBanner').length).toBe(0);
+      expect(wrapper.find(NetworkBanner).length).toBe(0);
+    });
+
+    it('should render banners defined in data', () => {
+      TopBannerViewModel.data = [
+        {
+          priority: 200,
+          Component: ElectronUpgradeBanner,
+          props: {},
+          isShow: true,
+        },
+      ];
+      const wrapper = shallow(<TopBannerView />);
+      expect(wrapper.find(ElectronUpgradeBanner).length).toBe(1);
+    });
+
+    it('should not render banners defined in data if isShow is false', () => {
+      TopBannerViewModel.data = [
+        {
+          priority: 200,
+          Component: ElectronUpgradeBanner,
+          props: {},
+          isShow: false,
+        },
+      ];
+      const wrapper = shallow(<TopBannerView />);
+      expect(wrapper.find(ElectronUpgradeBanner).length).toBe(0);
     });
   });
 });
