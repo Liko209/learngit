@@ -19,12 +19,14 @@ const StyledGlobalSearch = styled(JuiDialog)`
       max-height: calc(100% - ${height(10)});
       /* should be <min-height in user story> - <margin>, which is (400 - 8 * 2) / 4 */
       min-height: ${height(96)};
+      min-width: ${width(120)};
       overflow: hidden;
     }
   }
   .container {
     margin: ${spacing(2)};
     align-items: flex-start;
+    overflow-x: auto;
   }
 `;
 
