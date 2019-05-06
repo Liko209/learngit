@@ -93,6 +93,7 @@ module.exports = {
       path
         .relative(paths.appSrc, info.absoluteResourcePath)
         .replace(/\\/g, '/'),
+    globalObject: 'this',
   },
   optimization: {
     minimizer: [
@@ -334,7 +335,17 @@ module.exports = {
             exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
             use: [
               { loader: 'workerize-loader', options: { inline: false } },
-              'babel-loader',
+              {
+                loader: require.resolve('babel-loader'),
+                options: {
+                  cacheDirectory: true,
+                  // cacheCompression: isEnvProduction,
+                  // compact: isEnvProduction,
+                  babelrc: false,
+                  presets: [['react-app', { flow: false, typescript: true }]],
+                  plugins: [['@babel/plugin-syntax-dynamic-import']],
+                },
+              },
             ],
           },
 

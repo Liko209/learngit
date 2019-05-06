@@ -5,7 +5,6 @@
  */
 
 import { init } from 'filestack-js';
-// import JSZip from 'jszip';
 import { logger } from '../utils';
 import { LogControlManager } from 'sdk/service/uploadLogControl/logControlManager';
 import { FILE_STACK_API_KEY } from '../constants';

@@ -20,12 +20,14 @@ export class SessionManager {
 
   getSession() {
     if (!this.sessionId) {
-      this.sessionId = (window as any).jupiterElectron
-        ? (window as any).jupiterElectron.sessionId
-        : new DateFormatter().formatDate(
-            new Date(),
-            DATE_FORMATTER.DEFAULT_DATE_FORMAT,
-          );
+      this.sessionId =
+        (window as any).jupiterElectron &&
+        (window as any).jupiterElectron.sessionId
+          ? (window as any).jupiterElectron.sessionId
+          : new DateFormatter().formatDate(
+              new Date(),
+              DATE_FORMATTER.DEFAULT_DATE_FORMAT,
+            );
     }
     return this.sessionId;
   }
