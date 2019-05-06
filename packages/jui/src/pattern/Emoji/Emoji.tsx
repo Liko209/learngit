@@ -9,6 +9,7 @@ import React, { MouseEvent } from 'react';
 import { JuiIconButton } from '../../components/Buttons';
 import { ExcludeList } from './excludeList';
 import { JuiPopperMenu, AnchorProps } from '../../pattern/PopperMenu';
+import styled from '../../foundation/styled-components';
 
 type Props = {
   handlerIcon: string;
@@ -25,6 +26,17 @@ type Props = {
     | 'facebook'
     | undefined;
 };
+
+const StyledEmojiWrapper = styled.div`
+  && {
+    .emoji-mart-title-label {
+      font-size: 20px;
+    }
+    .emoji-mart-anchor:focus {
+      outline: none;
+    }
+  }
+`;
 
 class JuiEmoji extends React.PureComponent<Props> {
   state = {
@@ -61,21 +73,23 @@ class JuiEmoji extends React.PureComponent<Props> {
             Anchor={this._IconButton}
             noTranslation={true}
           >
-            <Picker
-              sheetSize={sheetSize}
-              title={title}
-              emoji="point_up"
-              set={set}
-              onClick={handleEmojiClick}
-              emojisToShowFilter={emoji => {
-                return ExcludeList.indexOf(emoji.id as string) < 0;
-              }}
-              backgroundImageFn={(set, sheetSize) => {
-                return imgRootPath
-                  ? `/${imgRootPath}/sheet_${set}_${sheetSize}.png`
-                  : `https://unpkg.com/emoji-datasource-${set}@4.0.4/img/${set}/sheets-256/${sheetSize}.png`;
-              }}
-            />
+            <StyledEmojiWrapper>
+              <Picker
+                sheetSize={sheetSize}
+                title={title}
+                emoji="point_up"
+                set={set}
+                onClick={handleEmojiClick}
+                emojisToShowFilter={emoji => {
+                  return ExcludeList.indexOf(emoji.id as string) < 0;
+                }}
+                backgroundImageFn={(set, sheetSize) => {
+                  return imgRootPath
+                    ? `/${imgRootPath}/sheet_${set}_${sheetSize}.png`
+                    : `https://unpkg.com/emoji-datasource-${set}@4.0.4/img/${set}/sheets-256/${sheetSize}.png`;
+                }}
+              />
+            </StyledEmojiWrapper>
           </JuiPopperMenu>
         }
       </>
