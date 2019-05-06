@@ -49,15 +49,15 @@ class Jupiter {
     }
   }
 
-  registerModuleAsync(
+  async registerModuleAsync(
     loader: () => Promise<{ config: ModuleConfig }>,
     afterBootstrap?: () => void,
   ) {
-    const promise = loader().then(m =>
-      this.registerModule(m.config, afterBootstrap),
-    );
+    const promise = loader().then(m => {
+      this.registerModule(m.config, afterBootstrap);
+    });
     this._asyncModulePromises.push(promise);
-    return promise;
+    return await promise;
   }
 
   async unRegisterModule(

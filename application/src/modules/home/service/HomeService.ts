@@ -25,10 +25,16 @@ class HomeService {
     this._homeStore.setDefaultRouterPaths(paths);
   }
 
-  private _registerSubModule(name: string, subModuleConfig: SubModuleConfig) {
+  private async _registerSubModule(
+    name: string,
+    subModuleConfig: SubModuleConfig,
+  ) {
     const config = _.cloneDeep(subModuleConfig);
     if (config.loader) {
-      this._jupiter.registerModuleAsync(config.loader, config.afterBootstrap);
+      await this._jupiter.registerModuleAsync(
+        config.loader,
+        config.afterBootstrap,
+      );
     }
     this._homeStore.addSubModule(name, config);
   }
