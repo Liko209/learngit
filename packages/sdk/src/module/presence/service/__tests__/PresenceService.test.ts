@@ -70,12 +70,15 @@ describe('Presence Controller', () => {
       ]);
       expect(
         presenceController.handlePresenceIncomingData,
-      ).toHaveBeenCalledWith([
-        {
-          personId: 1,
-          calculatedStatus: PRESENCE.AVAILABLE,
-        },
-      ]);
+      ).toHaveBeenCalledWith(
+        [
+          {
+            personId: 1,
+            calculatedStatus: PRESENCE.AVAILABLE,
+          },
+        ],
+        undefined,
+      );
     });
 
     it('should call handleStore with correct parameter', () => {

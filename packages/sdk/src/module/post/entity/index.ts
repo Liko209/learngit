@@ -10,5 +10,6 @@ export {
   IPostQuery,
   IPostResult,
   IRawPostResult,
+  UnreadPostQuery,
 } from './Post';
 export { PostItemData } from './PostItemData';

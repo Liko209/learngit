@@ -16,7 +16,7 @@ import { ProfileService } from '../../profile';
 import { Item } from '../../../module/item/entity';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SOCKET } from '../../../service/eventKey';
-import { IRemotePostRequest } from '../entity/Post';
+import { IRemotePostRequest, UnreadPostQuery } from '../entity/Post';
 import { Raw } from '../../../framework/model';
 import { ContentSearchParams } from '../../../api/glip/search';
 import { IGroupService } from '../../../module/group/service/IGroupService';
@@ -24,6 +24,7 @@ import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
 import { EntityNotificationController } from '../../../framework/controller/impl/EntityNotificationController';
 import { AccountUserConfig } from '../../account/config/AccountUserConfig';
+import { ChangeModel } from 'sdk/module/sync/types';
 
 class PostService extends EntityBaseService<Post> {
   postController: PostController;
@@ -111,6 +112,12 @@ class PostService extends EntityBaseService<Post> {
       .getPostsByIds(ids);
   }
 
+  async getUnreadPostsByGroupId(unreadPostQuery: UnreadPostQuery) {
+    return this.getPostController()
+      .getPostFetchController()
+      .getUnreadPostsByGroupId(unreadPostQuery);
+  }
+
   async bookmarkPost(postId: number, toBook: boolean) {
     // favorite_post_ids in profile
     const profileService = ServiceLoader.getInstance<ProfileService>(
@@ -149,10 +156,14 @@ class PostService extends EntityBaseService<Post> {
       .deletePostsByGroupIds(groupIds, shouldNotify);
   }
 
-  handleIndexData = async (data: Raw<Post>[], maxPostsExceed: boolean) => {
+  handleIndexData = async (
+    data: Raw<Post>[],
+    maxPostsExceed: boolean,
+    changeMap?: Map<string, ChangeModel>,
+  ) => {
     await this.getPostController()
       .getPostDataController()
-      .handleIndexPosts(data, maxPostsExceed);
+      .handleIndexPosts(data, maxPostsExceed, changeMap);
   }
 
   handleSexioData = async (data: Raw<Post>[]) => {

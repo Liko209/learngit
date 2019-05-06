@@ -9,6 +9,7 @@ import { SubscribeController } from './SubscribeController';
 import { PRESENCE } from '../constant';
 import notificationCenter from '../../../service/notificationCenter';
 import { ENTITY } from '../../../service/eventKey';
+import { ChangeModel } from '../../sync/types';
 
 class PresenceController {
   private _caches: Map<number, Presence> = new Map(); // <id, RawPresence['calculatedStatus']>
@@ -57,14 +58,21 @@ class PresenceController {
     };
   }
 
-  async handlePresenceIncomingData(presences: RawPresence[]) {
+  async handlePresenceIncomingData(
+    presences: RawPresence[],
+    changeMap?: Map<string, ChangeModel>,
+  ) {
     if (presences.length === 0) {
       return;
     }
     const transformedData = ([] as RawPresence[])
       .concat(presences)
       .map(item => this.transform(item)) as Presence[];
-    notificationCenter.emitEntityUpdate(ENTITY.PRESENCE, transformedData);
+    if (changeMap) {
+      changeMap.set(ENTITY.PRESENCE, { entities: transformedData });
+    } else {
+      notificationCenter.emitEntityUpdate(ENTITY.PRESENCE, transformedData);
+    }
     this.saveToMemory(transformedData);
   }
 
