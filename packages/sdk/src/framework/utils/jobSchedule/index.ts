@@ -10,4 +10,4 @@ const jobScheduler = new JobScheduler();
 
 export { jobScheduler };
 export { JobInfo } from './types';
-export { JOB_KEY, DailyJobIntervalSeconds } from './constants';
+export { JOB_KEY } from './constants';
