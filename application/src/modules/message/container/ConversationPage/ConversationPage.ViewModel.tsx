@@ -54,6 +54,7 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
         }
         this._readGroup(groupId);
       },
+      { fireImmediately: true },
     );
   }
 
