@@ -21,9 +21,7 @@ class TextMessageView extends React.Component<TextMessageViewProps> {
     const { html } = this.props;
     return (
       <React.Fragment>
-        <JuiConversationPostText>
-          <div dangerouslySetInnerHTML={{ __html: html }} data-name="text" />
-        </JuiConversationPostText>
+        <JuiConversationPostText data-name="text" html={html} />
       </React.Fragment>
     );
   }

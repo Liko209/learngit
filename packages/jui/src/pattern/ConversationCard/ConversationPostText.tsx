@@ -8,8 +8,10 @@ import {
   palette,
   typography,
 } from '../../foundation/utils/styles';
+import React, { memo } from 'react';
+import { withHighlight } from 'jui/hoc/withHighlight';
 
-const JuiConversationPostText = styled('div')`
+const JuiConversationPostTextWrapper = styled('div')`
   ${typography('body1')}
   overflow-wrap: break-word;
   color: ${grey('900')};
@@ -75,4 +77,27 @@ const JuiConversationPostText = styled('div')`
     }
   }
 `;
-export { JuiConversationPostText };
+
+type JuiConversationPostTextProps = {
+  key?: number;
+  url?: string;
+  title?: string;
+  html?: string;
+};
+
+const JuiConversationPostText = withHighlight(['title'])(
+  memo(({ key, url, title, html }: JuiConversationPostTextProps) => (
+    <JuiConversationPostTextWrapper>
+      {url ? (
+        <a
+          key={key}
+          href={url}
+          dangerouslySetInnerHTML={{ __html: title || '' }}
+        />
+      ) : (
+        <div dangerouslySetInnerHTML={{ __html: html || '' }} />
+      )}
+    </JuiConversationPostTextWrapper>
+  )),
+);
+export { JuiConversationPostText, JuiConversationPostTextProps };

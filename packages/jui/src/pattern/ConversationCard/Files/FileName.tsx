@@ -8,6 +8,7 @@ import styled from '../../../foundation/styled-components';
 import { ellipsis, palette, spacing } from '../../../foundation/utils/styles';
 import { getFileName } from '../../../foundation/utils/getFileName';
 import { Theme } from '../../../foundation/theme/theme';
+import { withHighlight } from 'jui/hoc/withHighlight';
 
 type FileNameProps = {
   filename: string;
@@ -41,14 +42,22 @@ const FileName = (Props: FileNameProps) => {
   const { filename, statusColor, opacity } = Props;
   const [left, right] = getFileName(filename);
 
+  const Children = withHighlight(['left', 'right'])(
+    ({ left, right }: { left: string; right: string }) => (
+      <>
+        <LeftName dangerouslySetInnerHTML={{ __html: left }} />
+        <span dangerouslySetInnerHTML={{ __html: right }} />
+      </>
+    ),
+  );
+
   return (
     <FileNameWrapper
       statusColor={statusColor}
       opacity={opacity}
       data-test-automation-id="file-name"
     >
-      <LeftName>{left}</LeftName>
-      <span>{right}</span>
+      <Children left={left} right={right} />
     </FileNameWrapper>
   );
 };

@@ -15,6 +15,7 @@ import {
   grey,
   typography,
 } from '../../foundation/utils/styles';
+import { withHighlight } from 'jui/hoc/withHighlight';
 
 const LinkItemsWrapper = styled(JuiCard)`
   display: flex;
@@ -70,6 +71,7 @@ type Props = {
   onLinkItemClose?: (e: React.MouseEvent<HTMLSpanElement>) => void;
 };
 
+@withHighlight(['title'])
 class JuiConversationCardVideoLink extends PureComponent<Props> {
   constructor(props: Props) {
     super(props);
@@ -85,9 +87,11 @@ class JuiConversationCardVideoLink extends PureComponent<Props> {
       <LinkItemsWrapper>
         <LinkItemContents>
           <Title>
-            <a href={url} target="_blank">
-              {title}
-            </a>
+            <a
+              href={url}
+              target="_blank"
+              dangerouslySetInnerHTML={{ __html: title }}
+            />
           </Title>
           <VideoWrapper
             dangerouslySetInnerHTML={{

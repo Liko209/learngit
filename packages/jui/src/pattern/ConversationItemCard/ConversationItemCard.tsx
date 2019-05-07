@@ -17,6 +17,7 @@ import {
 
 import { Palette } from '../../foundation/theme/theme';
 import { getAccentColor } from '../../foundation/utils';
+import { withHighlight } from 'jui/hoc/withHighlight';
 
 const ItemCardWrapper = styled(JuiCard)`
   word-break: break-word;
@@ -109,6 +110,7 @@ type JuiConversationItemCardProps = {
   showHeaderActions?: boolean;
 } & React.DOMAttributes<{}>;
 
+@withHighlight(['title'])
 class JuiConversationItemCard extends React.PureComponent<
   JuiConversationItemCardProps
 > {
@@ -147,7 +149,15 @@ class JuiConversationItemCard extends React.PureComponent<
           ) : (
             Icon
           )}
-          {title && <ItemTitle complete={complete}>{title}</ItemTitle>}
+          {title &&
+            (typeof title === 'string' ? (
+              <ItemTitle
+                complete={complete}
+                dangerouslySetInnerHTML={{ __html: title }}
+              />
+            ) : (
+              <ItemTitle complete={complete}>{title}</ItemTitle>
+            ))}
           {showHeaderActions && headerActions && (
             <HeaderActionsWrapper overlapSize={2}>
               {headerActions.map((headerAction: HeaderAction) => (

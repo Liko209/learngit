@@ -66,9 +66,8 @@ const StyledConversationCard = styled<
   }
 
   & .highlight-term {
-    font-weight: bold;
-    color: ${grey('900')};
-    ${typography('body2')};
+    color: ${palette('text', 'primary')};
+    background-color: ${palette('secondary', '100')};
   }
 `;
 const highlightBg = ({ theme }: any) =>

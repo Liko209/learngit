@@ -6,6 +6,7 @@
 import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import { typography, grey, spacing } from '../../../foundation/utils/styles';
+import { withHighlight } from 'jui/hoc/withHighlight';
 
 type Props = {
   description: string;
@@ -17,9 +18,11 @@ const StyledEventDescription = styled.div`
   color: ${grey('500')};
 `;
 
-const JuiEventDescription = memo((props: Props) => (
-  <StyledEventDescription>{props.description}</StyledEventDescription>
-));
+const JuiEventDescription = withHighlight(['description'])(
+  memo(({ description }: Props) => (
+    <StyledEventDescription dangerouslySetInnerHTML={{ __html: description }} />
+  )),
+);
 
 JuiEventDescription.displayName = 'JuiEventDescription';
 

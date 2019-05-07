@@ -15,6 +15,7 @@ import {
   typography,
 } from '../../foundation/utils/styles';
 import defaultLinkImage from './link_img@2x.png';
+import { withHighlight } from 'jui/hoc/withHighlight';
 
 const LinkItemsWrapper = styled(JuiCard)`
   margin-top: ${spacing(3)};
@@ -118,6 +119,7 @@ type Props = {
   favicon: string;
   faviconName: string;
 };
+@withHighlight(['title', 'summary'])
 class JuiConversationCardLinkItems extends PureComponent<Props> {
   constructor(props: Props) {
     super(props);
@@ -136,11 +138,13 @@ class JuiConversationCardLinkItems extends PureComponent<Props> {
           <TitleWithSummary>
             <TitleNSummaryWrapper>
               <LinkTitle>
-                <a href={url} target="_blank">
-                  {title}
-                </a>
+                <a
+                  href={url}
+                  target="_blank"
+                  dangerouslySetInnerHTML={{ __html: title }}
+                />
               </LinkTitle>
-              <LinkSummary>{summary}</LinkSummary>
+              <LinkSummary dangerouslySetInnerHTML={{ __html: summary }} />
             </TitleNSummaryWrapper>
             <FaviconWrapper>
               <Favicon favicon={favicon} />
