@@ -55,8 +55,10 @@ describe('PostDataController', () => {
   const deactivatedDao = new DeactivatedDao(null);
   const postDiscontinuousDao = new PostDiscontinuousDao(null);
   const preInsertController = new MockPreInsertController();
-  const mockEntitySourceController: EntitySourceController = new EntitySourceController(
-    {} as IEntityPersistentController,
+  const mockEntitySourceController: EntitySourceController<
+    Post
+  > = new EntitySourceController<Post>(
+    {} as IEntityPersistentController<Post>,
     {} as DeactivatedDao,
   );
   const groupService = new GroupService();

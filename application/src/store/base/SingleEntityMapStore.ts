@@ -5,22 +5,26 @@ import ModelProvider from './ModelProvider';
 import { Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
 import { EVENT_TYPES } from 'sdk/service';
-import { IdModel } from 'sdk/framework/model';
+import { IdModel, ModelIdType } from 'sdk/framework/model';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { EntityBaseService } from 'sdk/framework/service';
 
 const modelProvider = new ModelProvider();
 
 export default class SingleEntityMapStore<
-  T extends IdModel,
-  K extends Entity
+  T extends IdModel<IdType>,
+  K extends Entity<IdType>,
+  IdType extends ModelIdType = number
 > extends BaseStore {
   @observable
   data: ObservableMap = new ObservableMap<keyof Entity, any>();
   init: boolean;
   getService: Function;
-  service: EntityBaseService<T>;
-  constructor(entityName: ENTITY_NAME, { service, event }: EntitySetting<K>) {
+  service: EntityBaseService<T, IdType>;
+  constructor(
+    entityName: ENTITY_NAME,
+    { service, event }: EntitySetting<K, IdType>,
+  ) {
     super(entityName);
     this.init = false;
     this.getService = service as Function;
