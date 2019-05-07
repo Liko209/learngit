@@ -295,6 +295,9 @@ describe('NetworkRequestExecutor', () => {
 
   describe('_handle503XApiCompletionCallback()', () => {
     it('should do nothing when handle type is not ringcentral', () => {
+      networkExecutor.handlerType = {
+        name: NETWORK_HANDLE_TYPE.GLIP,
+      } as any;
       const response = {
         request: {
           handlerType: {
@@ -310,6 +313,9 @@ describe('NetworkRequestExecutor', () => {
     });
 
     it('should enter survival mode when is CMN-211 error', () => {
+      networkExecutor.handlerType = {
+        name: NETWORK_HANDLE_TYPE.RINGCENTRAL,
+      } as any;
       const response = {
         request: {
           handlerType: {

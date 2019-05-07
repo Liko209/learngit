@@ -30,6 +30,9 @@ import { HistoryHandler } from '../HistoryHandler';
 import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPostFocBuilder';
 import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDataListHandler';
 import { Post } from 'sdk/module/post/entity';
+import GroupStateModel from '@/store/models/GroupState';
+import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
+import { GroupState } from 'sdk/module/state/entity';
 
 jest.mock('sdk/module/item');
 jest.mock('sdk/module/post');
@@ -137,37 +140,50 @@ describe('StreamViewModel', () => {
 
   describe('getFirstUnreadPostByLoadAllUnread()', () => {
     function setupMock({
+      groupId,
       groupState,
       currentPosts,
       readThroughPost,
       postsNewerThanAnchor,
       postsOlderThanAnchor,
     }: any) {
-      const postService = ServiceLoader.getInstance<PostService>(
-        ServiceConfig.POST_SERVICE,
-      );
-      jest.spyOn(postService, 'getById').mockResolvedValue(readThroughPost);
-
-      const historyHandler = new HistoryHandler();
+      const store = storeManager.getEntityMapStore(
+        ENTITY_NAME.GROUP_STATE,
+      ) as MultiEntityMapStore<GroupState, GroupStateModel>;
+      store.set(groupState);
+      postService.getById.mockResolvedValue(readThroughPost);
+      postService.getUnreadPostsByGroupId.mockResolvedValue({
+        posts: postsNewerThanAnchor,
+        items: [],
+        hasMore: false,
+      });
+      postService.getPostsByGroupId.mockResolvedValue({
+        posts: postsOlderThanAnchor,
+        items: [],
+        hasMore: false,
+      });
       const dataProvider = { fetchData: jest.fn().mockName('fetchData()') };
-      dataProvider.fetchData
-        .mockResolvedValueOnce({ data: postsNewerThanAnchor, hasMore: true })
-        .mockResolvedValueOnce({ data: postsOlderThanAnchor, hasMore: false });
       const listHandler = new FetchSortableDataListHandler<Post>(dataProvider, {
         isMatchFunc: () => true,
         transformFunc: (post: Post) => {
           return { id: post.id, sortValue: post.created_at, data: post };
         },
       });
-      listHandler.upsert(currentPosts);
       listHandler.setHasMore(true, QUERY_DIRECTION.OLDER);
-      listHandler.setHasMore(true, QUERY_DIRECTION.NEWER);
+      listHandler.setHasMore(false, QUERY_DIRECTION.NEWER);
       jest.spyOn(listHandler, 'fetchDataByAnchor');
       jest
         .spyOn(ConversationPostFocBuilder, 'buildConversationPostFoc')
         .mockReturnValue(listHandler);
+
+      const historyHandler = new HistoryHandler();
       historyHandler.update(groupState, _.map(currentPosts, post => post.id));
-      const streamController = new StreamController(1, historyHandler, 1);
+
+      const streamController = new StreamController(groupId, historyHandler, 1);
+      streamController.disableNewMessageSep();
+      listHandler.upsert(currentPosts);
+      streamController.enableNewMessageSep();
+
       const vm = setup({
         _streamController: streamController,
         _historyHandler: historyHandler,
@@ -195,11 +211,11 @@ describe('StreamViewModel', () => {
         postsOlderThanAnchor,
         readThroughPost,
         groupState: { unreadCount: 4, readThrough: readThroughPost.id },
-        currentPosts: [{ id: 8, created_at: 108, creator_id: 1 }],
+        currentPosts: [{ id: 9, created_at: 109, creator_id: 1 }],
       });
       const firstUnreadPostId = await vm.getFirstUnreadPostByLoadAllUnread();
 
-      expect(vm.postIds).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+      expect(vm.postIds).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
       expect(firstUnreadPostId).toBe(5);
     });
 
@@ -207,8 +223,9 @@ describe('StreamViewModel', () => {
       const readThroughPost = { id: 4, created_at: 104, creator_id: 1 };
 
       const { vm, historyHandler } = setupMock({
+        groupId: 1,
         readThroughPost,
-        groupState: { unreadCount: 4, readThrough: readThroughPost.id },
+        groupState: { id: 1, unreadCount: 4, readThrough: readThroughPost.id },
         currentPosts: [
           { id: 1, created_at: 101, creator_id: 1 },
           { id: 2, created_at: 102, creator_id: 1 },
