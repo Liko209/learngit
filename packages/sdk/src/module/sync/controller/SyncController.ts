@@ -46,6 +46,9 @@ import { RawPresence } from '../../../module/presence/entity';
 import { Person } from '../../../module/person/entity';
 import { Post } from '../../../module/post/entity';
 import _ from 'lodash';
+import { TaskController } from 'sdk/framework/controller/impl/TaskController';
+import { ITaskStrategy } from 'sdk/framework/strategy/ITaskStrategy';
+import { IndexDataTaskStrategy } from '../strategy/IndexDataTaskStrategy';
 
 const LOG_TAG = 'SyncController';
 const INDEX_MAX_QUEUE = 2;
@@ -54,6 +57,7 @@ class SyncController {
   private _syncListener: SyncListener;
   private _processorHandler: SequenceProcessorHandler;
   private _progressBar: ProgressBar;
+  private _indexDataTaskController: TaskController;
 
   constructor() {
     this._progressBar = progressManager.newProgressBar();
@@ -232,11 +236,20 @@ class SyncController {
         mainLogger.log(LOG_INDEX_DATA, 'fetch index failed');
         syncConfig.updateIndexSucceed(false);
         await this._handleSyncIndexError(error);
+        throw new Error(error);
       }
       this._progressBar.stop();
     };
-    const processor = new IndexRequestProcessor(executeFunc);
-    this._processorHandler.addProcessor(processor);
+    const taskController = this._getIndexDataTaskController();
+    taskController.start(executeFunc);
+  }
+
+  private _getIndexDataTaskController() {
+    if (!this._indexDataTaskController) {
+      const taskStrategy: ITaskStrategy = new IndexDataTaskStrategy();
+      this._indexDataTaskController = new TaskController(taskStrategy);
+    }
+    return this._indexDataTaskController;
   }
 
   private async _handleSyncIndexError(result: any) {
