@@ -143,6 +143,7 @@ const JuiVirtualizedList: RefForwardingComponent<
         scrollPosition.index + rangeOffset,
         minIndex,
       );
+      scrollEffectTriggerRef.current++; // Trigger scroll after render
     }
 
     return { startIndex, stopIndex };
