@@ -102,7 +102,7 @@ class JuiEmoji extends React.PureComponent<Props> {
                   emoji="point_up"
                   set={set}
                   onClick={handleEmojiClick}
-                  emojisToShowFilter={emoji => {
+                  emojisToShowFilter={(emoji: any) => {
                     return this.isIndexOf(ExcludeList, emoji.short_names);
                   }}
                   backgroundImageFn={(set, sheetSize) => {
