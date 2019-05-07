@@ -11,7 +11,6 @@ import { ExcludeList } from './excludeList';
 import { JuiPopperMenu, AnchorProps } from '../../pattern/PopperMenu';
 import { HotKeys } from '../../hoc/HotKeys';
 import styled from '../../foundation/styled-components';
-import { ClickAwayListener } from '@material-ui/core';
 
 type Props = {
   handlerIcon: string;
@@ -36,6 +35,9 @@ const StyledEmojiWrapper = styled.div`
     .emoji-mart-anchor:focus {
       outline: none;
     }
+    .emoji-mart-emoji:focus {
+      outline: none;
+    }
   }
 `;
 
@@ -45,13 +47,19 @@ class JuiEmoji extends React.PureComponent<Props> {
   };
 
   handleClose = () => {
-    this.setState({
-      anchorEl: null,
-    });
+    setTimeout(() => {
+      this.setState({
+        anchorEl: null,
+      });
+    },         0);
   }
 
   private _handleClickEvent = (evt: MouseEvent) => {
-    this.setState({ anchorEl: this.state.anchorEl ? null : evt.currentTarget });
+    const { anchorEl } = this.state;
+    if (anchorEl) {
+      return;
+    }
+    this.setState({ anchorEl: evt.currentTarget });
   }
   private _IconButton = ({ tooltipForceHide }: AnchorProps) => {
     return (
@@ -89,27 +97,26 @@ class JuiEmoji extends React.PureComponent<Props> {
               esc: this.handleClose,
             }}
           >
-            <ClickAwayListener onClickAway={this.handleClose}>
-              <JuiPopperMenu
-                open={open}
-                placement="bottom-start"
-                Anchor={this._IconButton}
-                noTransition={true}
-              >
-                <StyledEmojiWrapper>
-                  <Picker
-                    sheetSize={sheetSize}
-                    title={title}
-                    emoji="point_up"
-                    set={set}
-                    onClick={handleEmojiClick}
-                    emojisToShowFilter={(emoji: any) => {
-                      return this.isIndexOf(ExcludeList, emoji.short_names);
-                    }}
-                  />
-                </StyledEmojiWrapper>
-              </JuiPopperMenu>
-            </ClickAwayListener>
+            <JuiPopperMenu
+              open={open}
+              placement="bottom-start"
+              Anchor={this._IconButton}
+              noTransition={true}
+              onClose={this.handleClose}
+            >
+              <StyledEmojiWrapper>
+                <Picker
+                  sheetSize={sheetSize}
+                  title={title}
+                  emoji="point_up"
+                  set={set}
+                  onClick={handleEmojiClick}
+                  emojisToShowFilter={(emoji: any) => {
+                    return this.isIndexOf(ExcludeList, emoji.short_names);
+                  }}
+                />
+              </StyledEmojiWrapper>
+            </JuiPopperMenu>
           </HotKeys>
         }
       </>

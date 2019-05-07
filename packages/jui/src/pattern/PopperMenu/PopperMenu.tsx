@@ -23,6 +23,7 @@ type JuiPopperMenuProps = {
   open: boolean;
   value?: number;
   noTransition?: boolean;
+  onClose?: any;
 };
 
 const StyledAnchorWrapper = styled.div`
@@ -51,6 +52,7 @@ class JuiPopperMenu extends React.PureComponent<
     this.setState({
       anchorEl: null,
     });
+    this.props.onClose();
   }
 
   render() {
