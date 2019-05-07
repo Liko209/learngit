@@ -7,7 +7,7 @@ import { Scene } from "./scene";
 import { SceneDto } from "../models";
 import { SceneConfigFactory } from "./config/sceneConfigFactory";
 import { IndexDataGatherer } from "../gatherers";
-import { MetricService } from "../services";
+import { MetricService, FileService } from "../services";
 
 class IndexDataScene extends Scene {
 
@@ -25,6 +25,13 @@ class IndexDataScene extends Scene {
     let sceneDto = await super.saveMetircsIntoDb();
     await MetricService.createLoadingTime(sceneDto, this, IndexDataGatherer.name);
     return sceneDto;
+  }
+
+  async saveMetircsIntoDisk() {
+    if (this.artifacts && !this.fpsMode) {
+      await FileService.saveTracesIntoDisk(this.artifacts, this.name());
+      await FileService.saveMemoryIntoDisk(this.artifacts, this.name());
+    }
   }
 
   supportDashboard(): boolean {

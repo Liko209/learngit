@@ -437,6 +437,7 @@ class DashboardService {
       return;
     }
     let memoryFileArray = gatherer['memoryFileArray'];
+    logger.info(`gatherer keys : ${JSON.stringify(Object.keys(gatherer))}`);
     logger.info(`memoryFileArray : ${JSON.stringify(memoryFileArray)}`);
     if (!memoryFileArray || memoryFileArray.length <= 1) {
       return;
