@@ -21,6 +21,7 @@ type ConversationCardViewProps = {
   hideText: boolean;
   creator: PersonModel;
   groupId: number;
+  toastMessage: string;
   name: string;
   customStatus?: string;
   createTime: PromisedComputedValue<string>;

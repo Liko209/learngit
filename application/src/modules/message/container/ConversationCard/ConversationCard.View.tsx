@@ -21,6 +21,12 @@ import {
 } from './EditMessageInput';
 import { Profile, PROFILE_TYPE } from '../Profile';
 import { jumpToPost } from '@/common/jumpToPost';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import i18nT from '@/utils/i18nT';
 
 @observer
 export class ConversationCard extends React.Component<
@@ -60,9 +66,23 @@ export class ConversationCard extends React.Component<
     });
   }
 
-  jumpToPost = () => {
-    const { id, groupId } = this.props;
-    jumpToPost({ id, groupId });
+  jumpToPost = (toastMessage: string) => () => {
+    if (toastMessage) {
+      this.flashToast(toastMessage);
+    } else {
+      const { id, groupId } = this.props;
+      jumpToPost({ id, groupId });
+    }
+  }
+
+  flashToast = async (message: string) => {
+    Notification.flashToast({
+      message: await i18nT(message),
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: false,
+    });
   }
 
   private _focusEditor() {
@@ -76,6 +96,7 @@ export class ConversationCard extends React.Component<
   render() {
     const {
       id,
+      toastMessage,
       creator,
       name,
       createTime,
@@ -107,7 +128,7 @@ export class ConversationCard extends React.Component<
     );
     const activity = <Activity id={id} />;
     const from = mode === 'navigation' ? <From id={post.groupId} /> : undefined;
-    const jumpToPost = mode ? this.jumpToPost : undefined;
+    const jumpToPost = mode ? this.jumpToPost(toastMessage) : undefined;
     return (
       <JuiConversationCard
         data-name="conversation-card"

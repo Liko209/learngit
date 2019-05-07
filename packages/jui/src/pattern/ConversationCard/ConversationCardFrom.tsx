@@ -19,9 +19,10 @@ type ConversationCardFromProps = {
   name: string;
   isTeam?: boolean;
   onClick: (e: React.MouseEvent) => any;
+  disabled?: boolean;
 };
-const StyledName = styled('div')`
-  color: ${primary('700')};
+const StyledName = styled('div')<{ disabled?: boolean }>`
+  color: ${props => (props.disabled ? grey('500') : primary('700'))};
   ${typography('caption1')};
   ${ellipsis()};
   box-sizing: border-box;
@@ -33,14 +34,18 @@ const StyledName = styled('div')`
     color: ${grey('900')};
   }
   .conversation-name {
-    cursor: pointer;
-    ${ellipsis()}
+    color: ${props => (props.disabled ? grey('600') : 'inherit')};
+    cursor: ${props => (props.disabled ? 'default' : 'pointer')}};
   }
 `;
 
 const JuiConversationCardFrom = React.memo(
-  ({ onClick, isTeam, name, ...rest }: ConversationCardFromProps) => (
-    <StyledName onClick={onClick} {...rest}>
+  ({ onClick, isTeam, name, disabled, ...rest }: ConversationCardFromProps) => (
+    <StyledName
+      onClick={disabled ? () => {} : onClick}
+      disabled={disabled}
+      {...rest}
+    >
       <span className="preposition">in</span>
       {isTeam ? <JuiIconography iconSize="small">team</JuiIconography> : null}
       <span className="conversation-name">{name}</span>

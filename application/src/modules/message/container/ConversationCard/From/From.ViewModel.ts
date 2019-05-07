@@ -20,10 +20,13 @@ class FromViewModel extends AbstractViewModel implements FromViewProps {
   private get _group() {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
   }
-
+  @computed
+  get isArchived() {
+    return this._group.isArchived;
+  }
   @computed
   get displayName(): string {
-    return this._group.displayName;
+    return this._group.displayName + (this.isArchived ? ' - Archived' : '');
   }
   @computed
   get isTeam(): boolean {
