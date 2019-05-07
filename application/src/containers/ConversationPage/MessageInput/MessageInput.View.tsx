@@ -108,7 +108,6 @@ class MessageInputViewComponent extends Component<
         />
         <Emoji
           handleEmojiClick={insertEmoji}
-          imgRootPath="icon"
           sheetSize={64}
           set="emojione"
           title={t('message.emoji.emojiDefaultTitle')}

@@ -16,7 +16,6 @@ type Props = {
   handlerIcon: string;
   handleEmojiClick?: (emoji: any) => void;
   title: string;
-  imgRootPath?: string;
   sheetSize: 16 | 20 | 32 | 64 | undefined;
   set:
     | 'apple'
@@ -79,7 +78,7 @@ class JuiEmoji extends React.PureComponent<Props> {
 
   render() {
     const { anchorEl } = this.state;
-    const { handleEmojiClick, imgRootPath, sheetSize, set, title } = this.props;
+    const { handleEmojiClick, sheetSize, set, title } = this.props;
     const open = !!anchorEl;
     return (
       <>
@@ -104,11 +103,6 @@ class JuiEmoji extends React.PureComponent<Props> {
                   onClick={handleEmojiClick}
                   emojisToShowFilter={(emoji: any) => {
                     return this.isIndexOf(ExcludeList, emoji.short_names);
-                  }}
-                  backgroundImageFn={(set, sheetSize) => {
-                    return imgRootPath
-                      ? `/${imgRootPath}/sheet_${set}_${sheetSize}.png`
-                      : `https://unpkg.com/emoji-datasource-${set}@4.0.4/img/${set}/sheets-256/${sheetSize}.png`;
                   }}
                 />
               </StyledEmojiWrapper>

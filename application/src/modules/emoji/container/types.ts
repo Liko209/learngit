@@ -6,7 +6,6 @@
 type EmojiProps = {
   handleEmojiClick?: any;
   title: string;
-  imgRootPath: string;
   sheetSize: 16 | 20 | 32 | 64 | undefined;
   set:
     | 'apple'
@@ -21,7 +20,6 @@ type EmojiProps = {
 type EmojiViewProps = {
   handleEmojiClick: any;
   title: string;
-  imgRootPath: string;
   sheetSize: 16 | 20 | 32 | 64 | undefined;
   set:
     | 'apple'
