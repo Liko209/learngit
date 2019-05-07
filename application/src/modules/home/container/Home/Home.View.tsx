@@ -17,12 +17,22 @@ import Wrapper from './Wrapper';
 import { dao, mainLogger } from 'sdk';
 import { AccountService } from 'sdk/module/account';
 import { ModalPortal } from '@/containers/Dialog';
-import { Dialer } from '@/modules/telephony';
 import { GlobalSearch } from '@/modules/GlobalSearch';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { lazyComponent } from '@/modules/common/util/lazyComponent';
+
+const LazyDialer = lazyComponent({
+  loader: () =>
+    import('@/modules/telephony/container/Dialer').then(({ Dialer }) => ({
+      default: Dialer,
+    })),
+});
 
 @observer
 class HomeView extends Component<HomeViewProps> {
+  constructor(props: HomeViewProps) {
+    super(props);
+  }
   componentDidMount() {
     window.addEventListener('storage', this._storageEventHandler);
     const accountService = ServiceLoader.getInstance<AccountService>(
@@ -54,7 +64,7 @@ class HomeView extends Component<HomeViewProps> {
   }
 
   render() {
-    const { showGlobalSearch } = this.props;
+    const { showGlobalSearch, canRenderDialer } = this.props;
 
     return (
       <>
@@ -66,8 +76,8 @@ class HomeView extends Component<HomeViewProps> {
             <HomeRouter />
           </Bottom>
           <ModalPortal />
-          <Dialer />
           {showGlobalSearch && <GlobalSearch />}
+          {canRenderDialer && <LazyDialer />}
         </Wrapper>
       </>
     );

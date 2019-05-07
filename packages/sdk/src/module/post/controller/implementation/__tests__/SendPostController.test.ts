@@ -21,7 +21,6 @@ import { PostDao } from '../../../dao/PostDao';
 import notificationCenter from '../../../../../service/notificationCenter';
 import { ExtendedBaseModel } from '../../../../models';
 import { PROGRESS_STATUS } from '../../../../progress';
-import { GlobalConfigService } from '../../../../../module/config';
 import { AccountUserConfig } from '../../../../../module/account/config';
 import { ServiceLoader } from '../../../../serviceLoader';
 

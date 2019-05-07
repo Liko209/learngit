@@ -36,7 +36,7 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
     this.thumbnailSrc = props.initialOptions.thumbnailSrc;
     this._initialWidth = props.initialOptions.initialWidth;
     this._initialHeight = props.initialOptions.initialHeight;
-    this.props.setOnItemSwitchCb(this._clearThumbnailInfo);
+    props.setOnItemSwitchCb(this._clearThumbnailInfo);
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
     );

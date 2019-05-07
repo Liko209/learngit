@@ -5,12 +5,12 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import i18next from 'i18next';
 import { DataList } from '@/modules/common/container/DataList';
 import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
 import { ThresholdStrategy } from 'jui/components/VirtualizedList';
-import { emptyView } from './Empty';
+import { withTranslation, WithTranslation } from 'react-i18next';
+import { EmptyView } from './Empty';
 import {
   JuiRightShelfContent,
   JuiRightRailContentLoading,
@@ -25,8 +25,10 @@ import {
   LOADING_DELAY,
 } from '../constants';
 
+type ItemListViewProps = Props & ViewProps & WithTranslation;
+
 @observer
-class ItemListView extends React.Component<ViewProps & Props> {
+class ItemListComponent extends React.Component<ItemListViewProps> {
   private _infiniteListProps = {
     minRowHeight: ITEM_HEIGHT,
     loadMoreStrategy: new ThresholdStrategy(LOAD_MORE_STRATEGY_CONFIG),
@@ -45,7 +47,7 @@ class ItemListView extends React.Component<ViewProps & Props> {
   }
 
   render() {
-    const { type, height, listHandler } = this.props;
+    const { type, height, listHandler, t } = this.props;
     const { size, total } = listHandler;
     const { subheader } = getTabConfig(type);
     const listHeight = Math.max(height - HEADER_HEIGHT, 0);
@@ -54,7 +56,7 @@ class ItemListView extends React.Component<ViewProps & Props> {
       <JuiRightShelfContent>
         {(total > 0 || size > 0) && (
           <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
-            {i18next.t(subheader)}
+            {t(subheader)}
           </JuiListSubheader>
         )}
         <DataList
@@ -62,7 +64,7 @@ class ItemListView extends React.Component<ViewProps & Props> {
           initialDataCount={INITIAL_DATA_COUNT}
           InfiniteListProps={Object.assign(this._infiniteListProps, {
             height: listHeight,
-            noRowsRenderer: emptyView(type),
+            noRowsRenderer: <EmptyView type={type} />,
           })}
         >
           {this._renderItems()}
@@ -71,5 +73,7 @@ class ItemListView extends React.Component<ViewProps & Props> {
     );
   }
 }
+
+const ItemListView = withTranslation('translations')(ItemListComponent);
 
 export { ItemListView };

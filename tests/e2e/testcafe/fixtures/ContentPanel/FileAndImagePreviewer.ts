@@ -25,7 +25,7 @@ test.meta(<ITestMeta>{
   maintainers: ['potar.he'],
   keywords: ['FileAndImagePriviewer']
 })('Can close a full-screen image previewer by clicking close button/ESC', async (t) => {
-  const filesPath = ['./sources/1.png', './sources/2.png'];
+  const filePaths = ['./sources/1.png', './sources/2.png'];
   const loginUser = h(t).rcData.mainCompany.users[4];
   const anotherUser = h(t).rcData.mainCompany.users[5];
   await h(t).glip(loginUser).init();
@@ -43,8 +43,12 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And I have a mention post (also bookmark it) with two image files in the team`, async () => {
-    await h(t).platform(anotherUser).init();
-    postId = await h(t).platform(anotherUser).createPostWithTextAndFilesThenGetPostId(`Hi, ![:Person](${loginUser.rcId})`, filesPath, team.glipId);
+    postId = await h(t).scenarioHelper.createPostWithTextAndFilesThenGetPostId({
+      filePaths,
+      group: team,
+      operator: anotherUser,
+      text: `Hi, ![:Person](${loginUser.rcId})`
+    });
     await h(t).glip(loginUser).bookmarkPosts(postId);
   });
 
@@ -173,7 +177,7 @@ test.meta(<ITestMeta>{
 
 
 test(formalName('Can close a full-screen image previewer by clicking close button/ESC', ['JPT-1347', 'P2', 'Potar.He', 'FileAndImagePriviewer']), async (t) => {
-  const filesPath = ['./sources/1.png', './sources/2.png'];
+  const filePaths = ['./sources/1.png', './sources/2.png'];
   const loginUser = h(t).rcData.mainCompany.users[4];
   const anotherUser = h(t).rcData.mainCompany.users[5];
   await h(t).glip(loginUser).init();
@@ -191,9 +195,13 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   });
 
   await h(t).withLog(`And I have a mention post (also bookmark it) with two image files in the team`, async () => {
-    await h(t).platform(anotherUser).init();
-    postId = await h(t).platform(anotherUser).createPostWithTextAndFilesThenGetPostId(`Hi, ![:Person](${loginUser.rcId})`, filesPath, team.glipId);
-    await h(t).glip(loginUser).bookmarkPosts(postId);
+    postId = await h(t).scenarioHelper.createPostWithTextAndFilesThenGetPostId({
+      filePaths,
+      group: team,
+      operator: anotherUser,
+      text: `Hi, ![:Person](${loginUser.rcId})`
+    });
+    await h(t).glip(loginUser).bookmarkPosts(postId);;
   });
 
   await h(t).withLog('And I send some text post to ensured the image is not on the bottom', async () => {

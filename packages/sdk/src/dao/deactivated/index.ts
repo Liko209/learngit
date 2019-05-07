@@ -5,8 +5,9 @@
  */
 import { BaseDao } from '../../framework/dao';
 import { IDatabase } from 'foundation';
+import { ModelIdType } from '../../framework/model';
 
-class DeactivatedDao extends BaseDao<any> {
+class DeactivatedDao extends BaseDao<any, ModelIdType> {
   static COLLECTION_NAME = 'deactivated';
   constructor(db: IDatabase) {
     super(DeactivatedDao.COLLECTION_NAME, db);

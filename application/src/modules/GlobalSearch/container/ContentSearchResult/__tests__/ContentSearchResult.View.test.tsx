@@ -9,7 +9,6 @@ import { JuiListSubheader } from 'jui/components/Lists';
 import { JuiTabPageEmptyScreen } from 'jui/pattern/GlobalSearch';
 import { ContentSearchResultView } from '@/modules/GlobalSearch/container/ContentSearchResult/ContentSearchResult.View';
 import jsonFile from '../../../../../../public/locales/en/translations.json';
-import { JuiListSubheader } from 'jui/components/Lists';
 
 const i18n = (key: string, { count }: { count?: number } = {}) => {
   const paths = key.split('.');

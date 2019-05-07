@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { shallow } from 'enzyme';
-import { CreateTeamComponent } from '../CreateTeam.View';
+import { CreateTeamView } from '../CreateTeam.View';
 import { Notification } from '@/containers/Notification';
 jest.mock('@/containers/Notification');
 
@@ -34,7 +34,7 @@ describe('CreateTeamView', () => {
         handleSearchContactChange: (items: any) => {},
       };
       Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
-      shallow(<CreateTeamComponent {...props} />);
+      shallow(<CreateTeamView {...props} />);
       expect(Notification.flashToast).toHaveBeenCalledTimes(0);
     });
   });
@@ -48,7 +48,7 @@ describe('CreateTeamView', () => {
         description: 'teamDescription',
         members: 'teamMember',
       };
-      const view = new CreateTeamComponent(props);
+      const view = new CreateTeamView(props);
       const items = [
         {
           type: 'isPublic',

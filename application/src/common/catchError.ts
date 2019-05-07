@@ -6,11 +6,13 @@
 
 import { ToastType, ToastMessageAlign } from '@/containers/ToastWrapper/Toast/types';
 import { Notification, ShowNotificationOptions } from '@/containers/Notification';
+import { generalErrorHandler } from '@/utils/error';
 import { errorHelper } from 'sdk/error';
 
 type ErrorActionConfig = string | Function;
 
 type NotifyErrorProps = {
+  doGeneral?: boolean;
   network?: ErrorActionConfig;
   server?: ErrorActionConfig;
   notificationOpts?: ShowNotificationOptions;
@@ -29,11 +31,14 @@ enum NOTIFICATION_TYPE {
   FLAG,
 }
 
+const AUTO_HIDE_AFTER_3_SECONDS = 3000;
+
 const defaultOptions = {
   type: ToastType.ERROR,
   messageAlign: ToastMessageAlign.LEFT,
   fullWidth: false,
   dismissible: false,
+  autoHideDuration: AUTO_HIDE_AFTER_3_SECONDS,
 };
 
 function notify(
@@ -83,13 +88,17 @@ function handleError(
     return perform(options, error, ctx);
   }
 
-  const { network, server, notificationOpts = defaultOptions } = options;
+  const { network, server, doGeneral, notificationOpts = defaultOptions } = options;
   if (network && errorHelper.isNetworkConnectionError(error)) {
     return notify(ctx, notificationType, network, notificationOpts, error);
   }
 
   if (server && errorHelper.isBackEndError(error)) {
     return notify(ctx, notificationType, server, notificationOpts, error);
+  }
+
+  if (doGeneral) {
+    return generalErrorHandler(error);
   }
 
   throw error;

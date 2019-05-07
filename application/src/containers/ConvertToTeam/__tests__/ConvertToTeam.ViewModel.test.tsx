@@ -124,6 +124,7 @@ describe('ConvertToTeamViewModel', () => {
       groupService.convertToTeam = jest.fn().mockRejectedValue(mockError);
       const result = await vm.save(options);
       expect(result).toBeNull();
+      expect(vm.nameErrorKey).toEqual('people.prompt.alreadyTaken');
     });
 
     it('should be convert to team save failure when service error [JPT-1394]', async () => {

@@ -2,7 +2,6 @@ import { RcConfig, GlipConfig, UploadConfig } from '../../types';
 
 const rc: RcConfig = {
   clientId: '',
-  clientSecret: '',
   redirectUri: '/',
 };
 

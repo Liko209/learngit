@@ -9,12 +9,18 @@ import { EntityBaseService } from '../../../../../framework/service';
 import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
 import { Item, SanitizedItem } from '../entity';
 import { SubItemDao } from '../dao';
+import { BaseDao } from 'sdk/framework/dao';
+import NetworkClient from 'sdk/api/NetworkClient';
 
 class BaseSubItemService<K extends Item, T extends SanitizedItem>
   extends EntityBaseService<K>
   implements ISubItemService {
-  constructor(private _subItemDao: SubItemDao<T>) {
-    super(false);
+  constructor(
+    private _subItemDao: SubItemDao<T>,
+    dao?: BaseDao<K>,
+    networkConfig?: { basePath: string; networkClient: NetworkClient },
+  ) {
+    super(false, dao, networkConfig);
   }
 
   async getSortedIds(options: ItemQueryOptions): Promise<number[]> {
