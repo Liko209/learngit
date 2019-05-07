@@ -51,9 +51,6 @@ class JuiEmoji extends React.PureComponent<Props> {
   }
 
   private _handleClickEvent = (evt: MouseEvent) => {
-    if (this.state.anchorEl) {
-      this.handleClose();
-    }
     this.setState({ anchorEl: this.state.anchorEl ? null : evt.currentTarget });
   }
   private _IconButton = ({ tooltipForceHide }: AnchorProps) => {
