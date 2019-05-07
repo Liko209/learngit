@@ -14,15 +14,12 @@ class HomeService {
 
   async registerSubModule(name: string) {
     const subModuleConfig = config.subModules[name];
-    return await this._registerSubModule(name, subModuleConfig);
+    return this._registerSubModule(name, subModuleConfig);
   }
 
   async registerSubModules(names: string[]) {
-    const promises: Promise<void>[] = [];
-    names.forEach(name => {
-      promises.push(this.registerSubModule(name));
-    });
-    return await Promise.all(promises);
+    const promises = names.map(name => this.registerSubModule(name));
+    return Promise.all(promises);
   }
 
   setDefaultRouterPaths(paths: string[]) {
