@@ -98,6 +98,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   }
 
   @catchError.flash({
+    doGeneral: true,
     network: 'people.prompt.leaveTeamNetworkErrorContent',
     server: 'people.prompt.leaveTeamServerErrorContent',
   })
@@ -110,6 +111,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   }
 
   @catchError.flash({
+    doGeneral: true,
     network: 'people.prompt.deleteTeamNetworkErrorContent',
     server: 'people.prompt.deleteTeamServerErrorContent',
   })
@@ -124,6 +126,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   }
 
   @catchError.flash({
+    doGeneral: true,
     network: 'people.prompt.archiveTeamNetworkErrorContent',
     server: 'people.prompt.archiveTeamServerErrorContent',
   })
