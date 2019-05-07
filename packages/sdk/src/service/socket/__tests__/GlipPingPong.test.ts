@@ -5,18 +5,7 @@
  */
 
 import { GlipPingPong } from '../GlipPingPong';
-import { HeartBeatCheck } from '../HeartBeatCheck';
 
-jest.mock('../HeartBeatCheck', () => {
-  const mockHeartBeat: HeartBeatCheck = {
-    cleanUp: () => {},
-  };
-  return {
-    HeartBeatCheck: () => {
-      return mockHeartBeat;
-    },
-  };
-});
 class MockSocket {
   emit() {}
   on() {}
@@ -48,7 +37,6 @@ describe('GlipPingPong', () => {
   describe('cleanup', () => {
     it('should clear all parameter ', () => {
       const glipPingPong = new GlipPingPong({});
-      expect(glipPingPong._heartBeatCheck).not.toBeUndefined();
       glipPingPong.cleanup();
       expect(glipPingPong._heartBeatCheck).toBeUndefined();
     });
