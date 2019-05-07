@@ -27,7 +27,6 @@ import { GroupService, Group } from '../../group';
 import { PostService } from '../../post';
 import { SyncListener } from '../service/SyncListener';
 import { SyncUserConfig } from '../config/SyncUserConfig';
-import { IndexRequestProcessor } from './IndexRequestProcessor';
 import {
   SequenceProcessorHandler,
   IProcessor,
@@ -55,28 +54,11 @@ const INDEX_MAX_QUEUE = 2;
 class SyncController {
   private _isFetchingRemaining: boolean;
   private _syncListener: SyncListener;
-  private _processorHandler: SequenceProcessorHandler;
   private _progressBar: ProgressBar;
   private _indexDataTaskController: TaskController;
 
   constructor() {
     this._progressBar = progressManager.newProgressBar();
-    this._processorHandler = new SequenceProcessorHandler(
-      'Index_SyncController',
-      undefined,
-      INDEX_MAX_QUEUE,
-      this._onExceedMaxSize,
-    );
-  }
-
-  private _onExceedMaxSize = (totalProcessors: IProcessor[]) => {
-    mainLogger.log(
-      `SequenceProcessorHandler-Index_SyncController over threshold:${INDEX_MAX_QUEUE}, remove the oldest one`,
-    );
-    const lastProcessor = totalProcessors.shift();
-    if (lastProcessor && lastProcessor.cancel) {
-      lastProcessor.cancel();
-    }
   }
 
   handleSocketConnectionStateChanged({ state }: { state: any }) {
