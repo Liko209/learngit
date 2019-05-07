@@ -14,10 +14,9 @@ import { Progress, PROGRESS_STATUS } from 'sdk/module/progress/entity';
 import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
 import { ENTITY_NAME } from '@/store';
-import { Notification } from '@/containers/Notification';
 import ProgressModel from '@/store/models/Progress';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { defaultNotificationOptions } from '@/common/catchError';
+import { catchError, NOTIFICATION_TYPE } from '@/common/catchError';
 
 class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
   implements ProgressActionsViewProps {
@@ -69,6 +68,11 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
     return PROGRESS_STATUS.SUCCESS;
   }
 
+  @catchError([{
+    condition: (error: Error) => !!error,
+    action: NOTIFICATION_TYPE.FLASH,
+    message: 'item.prompt.fileNoLongerExists',
+  }])
   resend = async () => {
     const canResend = await this._itemService.canResendFailedItems(
       this.post.itemIds,
@@ -76,10 +80,7 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
     if (canResend) {
       await this._postService.reSendPost(this.id);
     } else {
-      Notification.flashToast({
-        ...defaultNotificationOptions,
-        message: 'item.prompt.fileNoLongerExists',
-      });
+      throw new Error('file no longer exists');
     }
   }
 

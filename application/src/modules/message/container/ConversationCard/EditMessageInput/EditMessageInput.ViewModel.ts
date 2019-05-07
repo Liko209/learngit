@@ -139,7 +139,6 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   @catchError.flash({
     server: 'message.prompt.editPostFailedForServerIssue',
     network: 'message.prompt.editPostFailedForNetworkIssue',
-    doGeneral: true,
   })
   private _handleEditPost(content: string, ids: number[]) {
     return this._postService.editPost({

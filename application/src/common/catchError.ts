@@ -16,6 +16,12 @@ import {
 import { generalErrorHandler } from '@/utils/error';
 import { errorHelper } from 'sdk/error';
 
+enum NOTIFICATION_TYPE {
+  CUSTOM,
+  FLASH,
+  FLAG,
+}
+
 type ErrorActionConfig = string | Function;
 
 type NotifyErrorProps = {
@@ -26,18 +32,18 @@ type NotifyErrorProps = {
   isDebounce?: boolean;
 };
 
+type StrategyActionProps = NOTIFICATION_TYPE | Function;
+
 type StrategyProps = {
+  isDebounce?: boolean;
   condition: Function;
-  action: Function;
+  action: StrategyActionProps;
+  /* config below when action is NOTIFICATION_TYPE */
+  message?: string,
+  notificationOpts?: ShowNotificationOptions;
 };
 
 type CatchOptionsProps = NotifyErrorProps | StrategyProps[];
-
-enum NOTIFICATION_TYPE {
-  CUSTOM,
-  FLASH,
-  FLAG,
-}
 
 const AUTO_HIDE_AFTER_3_SECONDS = 3000;
 
@@ -89,10 +95,25 @@ const getDebounceNotify = (actionName: ErrorActionConfig) => {
   return debounceNotifyStore[actionName];
 };
 
+function notifyFunc(isDebounce: boolean, actionName: ErrorActionConfig) {
+  return isDebounce
+    ? getDebounceNotify(actionName)
+    : notify;
+}
+
+function performAction(option: StrategyProps, error: Error, ctx: any) {
+  const { action, message, isDebounce = false, notificationOpts = defaultNotificationOptions } = option;
+  if (typeof action === 'function') {
+    return action(error, ctx);
+  }
+
+  return notifyFunc(isDebounce, message || '')(ctx, action, message, notificationOpts, error);
+}
+
 function perform(options: StrategyProps[], error: Error, ctx: any) {
-  const result = options.some(({ condition, action }) => {
-    if (condition(error, ctx)) {
-      action(error, ctx);
+  const result = options.some((opt) => {
+    if (opt.condition(error, ctx)) {
+      performAction(opt, error, ctx);
       return true;
     }
     return false;
@@ -100,12 +121,6 @@ function perform(options: StrategyProps[], error: Error, ctx: any) {
   if (!result) {
     throw error;
   }
-}
-
-function notifyFunc(isDebounce: boolean, actionName: ErrorActionConfig) {
-  return isDebounce
-    ? getDebounceNotify(actionName)
-    : notify;
 }
 
 function handleError(

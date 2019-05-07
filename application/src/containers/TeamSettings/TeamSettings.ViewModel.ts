@@ -14,7 +14,6 @@ import { TeamSettingTypes } from './types';
 import { GroupService } from 'sdk/module/group';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { generalErrorHandler } from '@/utils/error';
-import { catchError } from '@/common/catchError';
 import {
   ErrorParserHolder,
   ERROR_TYPES,
