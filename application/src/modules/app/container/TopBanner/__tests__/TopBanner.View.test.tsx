@@ -8,6 +8,7 @@ import { shallow } from 'enzyme';
 import { TopBannerView } from '../TopBanner.View';
 import { TopBannerViewModel } from '@/modules/app/container/TopBanner/TopBanner.ViewModel';
 import { ElectronUpgradeBanner } from '../Banners/ElectronUpgradeBanner/ElectronUpgradeBanner';
+import { NetworkBanner } from '../Banners/NetworkBanner';
 
 describe('TopBannerView', () => {
   describe('render', () => {
