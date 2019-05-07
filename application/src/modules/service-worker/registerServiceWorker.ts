@@ -23,7 +23,8 @@ const isLocalhost = Boolean(
 
 export default function register(
   registeredHandler: (swURL: string) => void,
-  updateInstalledHandler: VoidFunction,
+  updateInstalledHandler: (inControl: boolean) => void,
+  logInfo: (text: string) => void,
 ) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
@@ -54,6 +55,7 @@ export default function register(
           swUrl,
           registeredHandler,
           updateInstalledHandler,
+          logInfo,
         );
 
         // Add some additional logging to localhost, pointing developers to the
@@ -66,7 +68,12 @@ export default function register(
         });
       } else {
         // Is not local host. Just register service worker
-        registerValidSW(swUrl, registeredHandler, updateInstalledHandler);
+        registerValidSW(
+          swUrl,
+          registeredHandler,
+          updateInstalledHandler,
+          logInfo,
+        );
       }
     };
 
@@ -94,47 +101,49 @@ export default function register(
 function registerValidSW(
   swUrl: string,
   registeredHandler: (swURL: string) => void,
-  updateInstalledHandler: VoidFunction,
+  updateInstalledHandler: (inControl: boolean) => void,
+  logInfo: (text: string) => void,
 ) {
   console.log(`${logTag}registerValidSW: ${swUrl}`);
   navigator.serviceWorker
     .register(swUrl)
     .then((registration: ServiceWorkerRegistration) => {
-      console.log(`${logTag}registered ${swUrl}`);
+      logInfo(`registered ${swUrl}`);
       const beforeunloadHandler = () => {
-        console.log(`${logTag}beforeunload, waiting ${!!registration.waiting}`);
+        logInfo(`beforeunload, waiting ${!!registration.waiting}`);
         registration.waiting &&
           registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       };
       window.addEventListener('beforeunload', beforeunloadHandler);
 
       registration.onupdatefound = () => {
-        console.log(`${logTag}onupdatefound`);
+        logInfo('onupdatefound');
         const installingWorker = registration.installing;
         if (installingWorker) {
           installingWorker.onstatechange = () => {
-            console.log(`${logTag}onstatechange: ${installingWorker.state}`);
+            logInfo(`onstatechange: ${installingWorker.state}`);
             if (installingWorker.state === 'installed') {
               if (navigator.serviceWorker.controller) {
                 // At this point, the old content will have been purged and
                 // the fresh content will have been added to the cache.
                 // It's the perfect time to display a 'New content is
                 // available; please refresh.' message in your web app.
-                console.log(
-                  `${logTag}New content is available; please refresh.`,
-                );
-
-                setTimeout(() => {
-                  updateInstalledHandler();
-                });
+                logInfo('New content is available; please refresh.');
               } else {
                 // At this point, everything has been precached.
                 // It's the perfect time to display a
                 // 'Content is cached for offline use.' message.
-                console.log(`${logTag}Content is cached for offline use.`);
+                logInfo('Content is cached for offline use.');
               }
+
+              const inControl = !!navigator.serviceWorker.controller;
+              setTimeout(() => {
+                updateInstalledHandler(inControl);
+              });
             }
           };
+        } else {
+          logInfo('no installingWorker');
         }
       };
 
@@ -151,7 +160,8 @@ function registerValidSW(
 function checkValidServiceWorker(
   swUrl: string,
   registeredHandler: (swURL: string) => void,
-  updateInstalledHandler: VoidFunction,
+  updateInstalledHandler: (inControl: boolean) => void,
+  logInfo: (text: string) => void,
 ) {
   // Check if the service worker can be found. If it can't reload the page.
   fetch(swUrl)
@@ -171,7 +181,12 @@ function checkValidServiceWorker(
         );
       } else {
         // Service worker found. Proceed as normal.
-        registerValidSW(swUrl, registeredHandler, updateInstalledHandler);
+        registerValidSW(
+          swUrl,
+          registeredHandler,
+          updateInstalledHandler,
+          logInfo,
+        );
       }
     })
     .catch(() => {

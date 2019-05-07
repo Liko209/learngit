@@ -9,11 +9,14 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { DetachOrAttachProps, DetachOrAttachViewProps } from './types';
 import { TelephonyStore } from '../../store';
 import { TelephonyService } from '../../service';
+import { TELEPHONY_SERVICE } from '../../interface/constant';
 
 class DetachOrAttachViewModel extends StoreViewModel<DetachOrAttachProps>
   implements DetachOrAttachViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
-  private _telephonyService: TelephonyService = container.get(TelephonyService);
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
 
   detachOrAttach = () => {
     this._telephonyService.handleWindow();

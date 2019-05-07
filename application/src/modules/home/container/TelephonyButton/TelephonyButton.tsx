@@ -4,15 +4,19 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import i18next from 'i18next';
 import { JuiIconButton } from 'jui/components/Buttons';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-const TelephonyButton = () => {
+type Props = WithTranslation;
+
+const TelephonyButtonComponent = (props: Props) => {
   return (
-    <JuiIconButton tooltipTitle={i18next.t('telephony.Phone')}>
+    <JuiIconButton tooltipTitle={props.t('telephony.Phone')}>
       phone
     </JuiIconButton>
   );
 };
+
+const TelephonyButton = withTranslation('translations')(TelephonyButtonComponent);
 
 export { TelephonyButton };

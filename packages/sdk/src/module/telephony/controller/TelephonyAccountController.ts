@@ -13,6 +13,8 @@ import {
   RTCCallInfo,
   RTC_STATUS_CODE,
   RTC_CALL_STATE,
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip';
 import { TelephonyCallController } from '../controller/TelephonyCallController';
 import { ITelephonyCallDelegate } from '../service/ITelephonyCallDelegate';
@@ -27,6 +29,7 @@ import { MakeCallController } from './MakeCallController';
 import { RCInfoService } from '../../rcInfo';
 import { ERCServiceFeaturePermission } from '../../rcInfo/types';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
   private _telephonyAccountDelegate: ITelephonyAccountDelegate;
@@ -76,7 +79,17 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return res;
   }
 
-  async makeCall(toNumber: string) {
+  getLastCalledNumber() {
+    const telephonyConfig = new TelephonyUserConfig();
+    return telephonyConfig.getLastCalledNumber();
+  }
+
+  setLastCalledNumber(num: string) {
+    const telephonyConfig = new TelephonyUserConfig();
+    telephonyConfig.setLastCalledNumber(num);
+  }
+
+  async makeCall(toNumber: string, fromNum: string) {
     let result = this._checkVoipStatus();
     if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
       return result;
@@ -84,6 +97,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     const e164ToNumber = await this._makeCallController.getE164PhoneNumber(
       toNumber,
     );
+    this.setLastCalledNumber(e164ToNumber);
     result = await this._makeCallController.tryMakeCall(e164ToNumber);
     if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
       return result;
@@ -95,10 +109,19 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       this._callDelegate,
     );
     this._telephonyCallDelegate.setCallStateCallback(this.callStateChanged);
-    const makeCallResult = this._rtcAccount.makeCall(
-      toNumber,
-      this._telephonyCallDelegate,
-    );
+    let makeCallResult: RTC_STATUS_CODE;
+    if (fromNum) {
+      makeCallResult = this._rtcAccount.makeCall(
+        toNumber,
+        this._telephonyCallDelegate,
+        { fromNumber: fromNum },
+      );
+    } else {
+      makeCallResult = this._rtcAccount.makeCall(
+        toNumber,
+        this._telephonyCallDelegate,
+      );
+    }
     switch (makeCallResult) {
       case RTC_STATUS_CODE.NUMBER_INVALID: {
         result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
@@ -161,6 +184,22 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this._telephonyCallDelegate.ignore();
   }
 
+  startReply(callId: string) {
+    this._telephonyCallDelegate.startReply();
+  }
+
+  replyWithMessage(callId: string, message: string) {
+    this._telephonyCallDelegate.replyWithMessage(message);
+  }
+
+  replyWithPattern(
+    callId: string,
+    pattern: RTC_REPLY_MSG_PATTERN,
+    time: number,
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+  ) {
+    this._telephonyCallDelegate.replyWithPattern(pattern, time, timeUnit);
+  }
   onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
     this._telephonyAccountDelegate.onAccountStateChanged(state);
   }

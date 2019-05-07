@@ -19,18 +19,16 @@ fixture('ContentPanel/FileAndImagePreviewer')
   .afterEach(teardownCase());
 
 
-
 test.meta(<ITestMeta>{
   priority: ['p1'],
   caseIds: ['JPT-1356'],
   maintainers: ['potar.he'],
   keywords: ['FileAndImagePriviewer']
 })('Can close a full-screen image previewer by clicking close button/ESC', async (t) => {
-  const filesPath = ['../../sources/1.png', '../../sources/2.png'];
+  const filePaths = ['./sources/1.png', './sources/2.png'];
   const loginUser = h(t).rcData.mainCompany.users[4];
   const anotherUser = h(t).rcData.mainCompany.users[5];
   await h(t).glip(loginUser).init();
-  const otherUserName = await h(t).glip(loginUser).getPersonPartialData('first_name', anotherUser.rcId);
 
   let team = <IGroup>{
     type: "Team",
@@ -39,8 +37,19 @@ test.meta(<ITestMeta>{
     members: [loginUser, anotherUser]
   }
 
+  let postId: string;
   await h(t).withLog(`Given I have a team named ${team.name} before login`, async () => {
     await h(t).scenarioHelper.createTeam(team);
+  });
+
+  await h(t).withLog(`And I have a mention post (also bookmark it) with two image files in the team`, async () => {
+    postId = await h(t).scenarioHelper.createPostWithTextAndFilesThenGetPostId({
+      filePaths,
+      group: team,
+      operator: anotherUser,
+      text: `Hi, ![:Person](${loginUser.rcId})`
+    });
+    await h(t).glip(loginUser).bookmarkPosts(postId);
   });
 
   const app = new AppRoot(t);
@@ -50,18 +59,8 @@ test.meta(<ITestMeta>{
     await app.homePage.ensureLoaded();
   });
 
-  let postId: string;
   await h(t).withLog('And I open a team and upload a image file with at mention otherUser', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
-    await conversationPage.uploadFilesToMessageAttachment(filesPath);
-    await conversationPage.typeAtMentionUserNameAndPressEnter(otherUserName);
-    await conversationPage.pressEnterWhenFocusOnMessageInputArea();
-    await conversationPage.nthPostItem(-1).waitForPostToSend(20e3);
-    postId = await conversationPage.nthPostItem(-1).postId;
-  });
-
-  await h(t).withLog('And I bookmark this post', async () => {
-    await conversationPage.nthPostItem(-1).clickBookmarkToggle();
   });
 
   // conversation entry point
@@ -114,6 +113,31 @@ test.meta(<ITestMeta>{
     await t.expect(previewer.exists).notOk();
   });
 
+  // at mention enter point
+  const atMentionPage = app.homePage.messageTab.mentionPage;
+  await h(t).withLog('When I enter atMentionPage and click the image on the post', async () => {
+    await app.homePage.messageTab.mentionsEntry.enter();
+    await atMentionPage.postItemById(postId).scrollIntoView();
+    await t.click(atMentionPage.postItemById(postId).img);
+  });
+
+  await h(t).withLog('Then the image previewer should be showed', async () => {
+    await previewer.ensureLoaded();
+    await previewer.shouldBeFullScreen();
+  });
+
+  await h(t).withLog('And the index of image should be (1/2)', async () => {
+    await await t.expect(previewer.positionIndex.textContent).match(/(1\/2)/);
+  });
+
+  await h(t).withLog(`When I press "esc" key on keyboard `, async () => {
+    await previewer.quitByPressEsc();
+  });
+
+  await h(t).withLog('Then The previewer dismissed ', async () => {
+    await t.expect(previewer.exists).notOk();
+  });
+
   // search content
   const searchDialog = app.homePage.searchDialog;
   await h(t).withLog('When I open the team and search file name 1.png in this conversation', async () => {
@@ -149,44 +173,14 @@ test.meta(<ITestMeta>{
     await t.expect(previewer.exists).notOk();
   });
 
-  // at mention enter point
-  const atMentionPage = app.homePage.messageTab.mentionPage;
-  await h(t).withLog(`When I login out then login with ${anotherUser.company.number}#${anotherUser.extension}`, async () => {
-    await searchDialog.clickCloseButton();
-    await app.homePage.logoutThenLoginWithUser(SITE_URL, anotherUser);
-  });
-
-  await h(t).withLog('And I enter atMentionPage and click the image on the post', async () => {
-    await app.homePage.messageTab.mentionsEntry.enter();
-    await atMentionPage.postItemById(postId).scrollIntoView();
-    await t.click(atMentionPage.postItemById(postId).img);
-  });
-
-  await h(t).withLog('Then the image previewer should be showed', async () => {
-    await previewer.ensureLoaded();
-    await previewer.shouldBeFullScreen();
-  });
-
-  await h(t).withLog('And the index of image should be (1/2)', async () => {
-    await await t.expect(previewer.positionIndex.textContent).match(/(1\/2)/);
-  });
-
-  await h(t).withLog(`When I press "esc" key on keyboard `, async () => {
-    await previewer.quitByPressEsc();
-  });
-
-  await h(t).withLog('Then The previewer dismissed ', async () => {
-    await t.expect(previewer.exists).notOk();
-  });
 });
 
 
 test(formalName('Can close a full-screen image previewer by clicking close button/ESC', ['JPT-1347', 'P2', 'Potar.He', 'FileAndImagePriviewer']), async (t) => {
-  const filesPath = ['../../sources/1.png', '../../sources/2.png'];
+  const filePaths = ['./sources/1.png', './sources/2.png'];
   const loginUser = h(t).rcData.mainCompany.users[4];
   const anotherUser = h(t).rcData.mainCompany.users[5];
   await h(t).glip(loginUser).init();
-  const otherUserName = await h(t).glip(loginUser).getPersonPartialData('first_name', anotherUser.rcId);
 
   let team = <IGroup>{
     type: "Team",
@@ -195,9 +189,26 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
     members: [loginUser, anotherUser]
   }
 
+  let postId: string;
   await h(t).withLog(`Given I have a team named ${team.name} before login`, async () => {
     await h(t).scenarioHelper.createTeam(team);
   });
+
+  await h(t).withLog(`And I have a mention post (also bookmark it) with two image files in the team`, async () => {
+    postId = await h(t).scenarioHelper.createPostWithTextAndFilesThenGetPostId({
+      filePaths,
+      group: team,
+      operator: anotherUser,
+      text: `Hi, ![:Person](${loginUser.rcId})`
+    });
+    await h(t).glip(loginUser).bookmarkPosts(postId);;
+  });
+
+  await h(t).withLog('And I send some text post to ensured the image is not on the bottom', async () => {
+    for (const i of _.range(3)) {
+      await h(t).scenarioHelper.sendTextPost(H.multilineString(), team, loginUser);
+    }
+  });;
 
   const app = new AppRoot(t);
   const conversationPage = app.homePage.messageTab.conversationPage;
@@ -206,31 +217,12 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
     await app.homePage.ensureLoaded();
   });
 
-  let postId: string;
-  await h(t).withLog('And I open a team and upload a image file with at mention otherUser', async () => {
+  // conversation entry point
+  await h(t).withLog('And I open a team', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
-    await conversationPage.uploadFilesToMessageAttachment(filesPath);
-    await conversationPage.typeAtMentionUserNameAndPressEnter(otherUserName);
-    await conversationPage.pressEnterWhenFocusOnMessageInputArea();
-    await conversationPage.nthPostItem(-1).waitForPostToSend(20e3);
-    postId = await conversationPage.nthPostItem(-1).postId;
-  });
-
-  await h(t).withLog('And I bookmark this post', async () => {
-    await conversationPage.nthPostItem(-1).clickBookmarkToggle();
-  });
-
-  await h(t).withLog('And I send some text post to ensured the image is not on the bottom', async () => {
-    for (const i of _.range(3)) {
-      await h(t).scenarioHelper.sendTextPost(H.multilineString(), team, loginUser);
-    }
-    await conversationPage.expectStreamScrollToBottom();
-    await t.expect(conversationPage.posts.count).eql(4);
   });
 
   let scrollTop: number;
-
-  // conversation entry point
   await h(t).withLog('When I scroll to the image post and click the first image on the post', async () => {
     await t.wait(1e3); // wait conversation stream stage.
     await conversationPage.postItemById(postId).scrollIntoView();
@@ -330,6 +322,56 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
     await bookmarkPage.expectStreamScrollToY(scrollTop);
   });
 
+  // at mention enter point
+  const atMentionPage = app.homePage.messageTab.mentionPage;
+  await h(t).withLog('When I enter atMentionPage and click the image on the post', async () => {
+    await app.homePage.messageTab.mentionsEntry.enter();
+    await atMentionPage.postItemById(postId).scrollIntoView();
+    await t.click(atMentionPage.postItemById(postId).img);
+  });
+
+  await h(t).withLog('Then the image previewer should be showed', async () => {
+    await previewer.ensureLoaded();
+    await previewer.shouldBeFullScreen();
+  });
+
+  await h(t).withLog('And the index of image should be (1/2)', async () => {
+    await await t.expect(previewer.positionIndex.textContent).match(/(1\/2)/);
+  });
+
+  await h(t).withLog(`When I press "esc" key on keyboard `, async () => {
+    await previewer.quitByPressEsc();
+  });
+
+  await h(t).withLog('Then The previewer dismissed ', async () => {
+    await t.expect(previewer.exists).notOk();
+  });
+
+
+  await h(t).withLog('And  Return to the conversation and stay where it was', async () => {
+    await atMentionPage.expectStreamScrollToY(scrollTop);
+  });
+
+  await h(t).withLog('When I click the image on the post', async () => {
+    await t.click(atMentionPage.postItemById(postId).img);
+  });
+
+  await h(t).withLog('Then the image previewer should be showed', async () => {
+    await previewer.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I press "esc" key on keyboard `, async () => {
+    await previewer.quitByPressEsc();
+  });
+
+  await h(t).withLog('Then The previewer dismissed ', async () => {
+    await t.expect(previewer.exists).notOk();
+  });
+
+  await h(t).withLog('And  Return to the conversation and stay where it was', async () => {
+    await atMentionPage.expectStreamScrollToY(scrollTop);
+  });
+
   // search content
   const searchDialog = app.homePage.searchDialog;
   await h(t).withLog('When I open the team and search file name 1.png in this conversation', async () => {
@@ -390,60 +432,6 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
     await searchDialog.fullSearchPage.messagesTab.expectStreamScrollToY(scrollTop);
   });
 
-  // at mention enter point
-  const atMentionPage = app.homePage.messageTab.mentionPage;
-  await h(t).withLog(`When I login out then login with ${anotherUser.company.number}#${anotherUser.extension}`, async () => {
-    await searchDialog.clickCloseButton();
-    await app.homePage.logoutThenLoginWithUser(SITE_URL, anotherUser);
-  });
-
-  await h(t).withLog('And I enter atMentionPage and click the image on the post', async () => {
-    await app.homePage.messageTab.mentionsEntry.enter();
-    await atMentionPage.postItemById(postId).scrollIntoView();
-    scrollTop = await atMentionPage.scrollDiv.scrollTop;
-    await t.click(atMentionPage.postItemById(postId).img);
-  });
-
-  await h(t).withLog('Then the image previewer should be showed', async () => {
-    await previewer.ensureLoaded();
-    await previewer.shouldBeFullScreen();
-  });
-
-  await h(t).withLog('And the index of image should be (1/2)', async () => {
-    await await t.expect(previewer.positionIndex.textContent).match(/(1\/2)/);
-  });
-
-  await h(t).withLog('When I click the close button', async () => {
-    await previewer.clickCloseButton();
-  });
-
-  await h(t).withLog('Then The previewer dismissed ', async () => {
-    await t.expect(previewer.exists).notOk();
-  });
-
-  await h(t).withLog('And  Return to the conversation and stay where it was', async () => {
-    await atMentionPage.expectStreamScrollToY(scrollTop);
-  });
-
-  await h(t).withLog('When I click the image on the post', async () => {
-    await t.click(atMentionPage.postItemById(postId).img);
-  });
-
-  await h(t).withLog('Then the image previewer should be showed', async () => {
-    await previewer.ensureLoaded();
-  });
-
-  await h(t).withLog(`When I press "esc" key on keyboard `, async () => {
-    await previewer.quitByPressEsc();
-  });
-
-  await h(t).withLog('Then The previewer dismissed ', async () => {
-    await t.expect(previewer.exists).notOk();
-  });
-
-  await h(t).withLog('And  Return to the conversation and stay where it was', async () => {
-    await atMentionPage.expectStreamScrollToY(scrollTop);
-  });
 });
 
 test(formalName('Should scroll to the bottom automatically when reveived new messages then close the dialog', ['JPT-1348', 'P2', 'Potar.He', 'FileAndImagePreviewer']), async (t) => {

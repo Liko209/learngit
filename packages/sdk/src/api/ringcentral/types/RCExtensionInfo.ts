@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RCRegionalSetting, RCStatusInfo } from './common';
+import { RCRegionalSetting, RCStatusInfo, RCServiceFeature } from './common';
 
 type RCContactAddress = {
   country?: string;
@@ -66,12 +66,6 @@ type RCProfileImageInfo = {
 type RCReferenceInfo = {
   ref?: string;
   type?: string;
-};
-
-type RCServiceFeature = {
-  enabled?: boolean;
-  featureName: string;
-  reason?: string;
 };
 
 type RCSite = {

@@ -21,6 +21,8 @@ import _ from 'lodash';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
 
+const MIN_DIALOG_HEIGHT = 400;
+const MIN_HEIGHT_FIX = 40;
 @observer
 class StreamViewComponent extends Component<Props> {
   listRef: React.RefObject<HTMLElement> = React.createRef();
@@ -54,7 +56,9 @@ class StreamViewComponent extends Component<Props> {
   state = { width: 0, height: 0 };
   handleSizeChanged = (size: Size) => {
     const { usedHeight } = this.props;
-    this.setState({ width: size.width, height: size.height - usedHeight });
+    let height = size.height - usedHeight;
+    height = size.height < MIN_DIALOG_HEIGHT ? height + MIN_HEIGHT_FIX : height;
+    this.setState({ height, width: size.width });
   }
   render() {
     const { ids, isShow = true } = this.props;

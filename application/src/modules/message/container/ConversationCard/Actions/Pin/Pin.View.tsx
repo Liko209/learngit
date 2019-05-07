@@ -6,7 +6,6 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import i18next from 'i18next';
 import { PinViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
@@ -36,20 +35,20 @@ class PinViewComponent extends Component<Props> {
     }
   }
   render() {
-    const { isPin, shouldShowPinOption, shouldDisablePinOption } = this.props;
+    const { isPin, shouldShowPinOption, shouldDisablePinOption, t } = this.props;
     return (
       shouldShowPinOption && (
         <JuiIconButton
           size="small"
           tooltipTitle={
             isPin
-              ? i18next.t('message.action.unpin')
-              : i18next.t('message.action.pin')
+              ? t('message.action.unpin')
+              : t('message.action.pin')
           }
           ariaLabel={
             isPin
-              ? i18next.t('message.action.unpin')
-              : i18next.t('message.action.pin')
+              ? t('message.action.unpin')
+              : t('message.action.pin')
           }
           color={isPin ? 'primary' : undefined}
           onClick={this._handlePinButton}
@@ -58,7 +57,7 @@ class PinViewComponent extends Component<Props> {
           variant="plain"
           data-name="actionBarPin"
         >
-          pin
+          {isPin ? 'pin' : 'unpin'}
         </JuiIconButton>
       )
     );

@@ -198,14 +198,15 @@ class MetricService {
     let sceneId = sceneDto.id;
     let artifacts = scene.getArtifacts();
     let gatherer = artifacts[name];
-    let apiTimes = [],
-      dtoArr = [];
+    let apiTimes, dtoArr;
 
     if (!gatherer) {
       return;
     }
 
     for (let key of Object.keys(gatherer)) {
+      dtoArr = [];
+      apiTimes = [];
       let item = gatherer[key];
       let summaryDto = {
         sceneId,
@@ -219,17 +220,19 @@ class MetricService {
         apiAvgTime: 0,
         apiMinTime: 0,
         apiTop90Time: 0,
-        apiTop95Time: 0
+        apiTop95Time: 0,
+        apiHandleCount: 0
       };
 
       if (item.api) {
         apiTimes = apiTimes.concat(item.api);
       }
 
-      let sum, arr, costTime, min, max;
+      let sum, arr, costTime, min, max, maxHanleCount;
       if (apiTimes.length > 0) {
         sum = 0;
         max = 0;
+        maxHanleCount = 0;
         min = 60000000;
         arr = [];
         for (let t of apiTimes) {
@@ -240,12 +243,18 @@ class MetricService {
           sum += costTime;
           min = costTime > min ? min : costTime;
           max = costTime > max ? costTime : max;
+          if (t.count) {
+            maxHanleCount = t.count > maxHanleCount ? t.count : maxHanleCount;
+          } else {
+            t.count = 0;
+          }
           arr.push(costTime);
           dtoArr.push({
             type: "API",
             startTime: t.startTime,
             endTime: t.endTime,
-            costTime: costTime
+            costTime: costTime,
+            handleCount: t.count
           });
         }
         arr.sort((a, b) => {
@@ -256,6 +265,7 @@ class MetricService {
         summaryDto.apiMinTime = min;
         summaryDto.apiTop90Time = arr[parseInt((0.9 * arr.length).toString())];
         summaryDto.apiTop95Time = arr[parseInt((0.95 * arr.length).toString())];
+        summaryDto.apiHandleCount = maxHanleCount;
       }
 
       let summary = await LoadingTimeSummaryDto.create(summaryDto);

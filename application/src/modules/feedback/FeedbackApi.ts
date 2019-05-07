@@ -1,9 +1,13 @@
 import { FeedbackData } from './types';
 import axios from 'axios';
 import { SENTRY_FEEDBACK_API_KEY } from './constants';
-import { isProductionVersion } from '@/common/envUtils';
-const PROJECT_NAME = 'web';
-const PROJECT_NAME_DEVELOPMENT = 'web-development';
+import { JUPITER_ENV } from '@/common/envUtils';
+
+const ENV_PROJECT_MAP = {
+  development: 'web-development',
+  production: 'web-acceptance',
+  public: 'web',
+};
 
 export class FeedbackApi {
   private static _getAuthHeader = () => {
@@ -15,9 +19,8 @@ export class FeedbackApi {
 
   static sendFeedback = async (data: FeedbackData) => {
     return await axios.post(
-      `/sentry/api/0/projects/jupiter-ct/${
-        isProductionVersion ? PROJECT_NAME : PROJECT_NAME_DEVELOPMENT
-      }/user-feedback/`,
+      `/sentry/api/0/projects/jupiter-ct/${ENV_PROJECT_MAP[JUPITER_ENV] ||
+        ENV_PROJECT_MAP['development']}/user-feedback/`,
       data,
       {
         headers: FeedbackApi._getAuthHeader(),

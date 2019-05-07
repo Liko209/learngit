@@ -21,8 +21,6 @@ import notificationCenter from '../../../../../service/notificationCenter';
 import { AccountUserConfig } from '../../../../../module/account/config';
 import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
 import { IEntitySourceController } from '../../../../../framework/controller/interface/IEntitySourceController';
-
-import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
 import { GroupConfigService } from '../../../../groupConfig';
 import { ItemNotification } from '../../../utils/ItemNotification';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
@@ -70,13 +68,12 @@ class FileUploadController {
   private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
   private _uploadingFiles: Map<number, ItemFile[]> = new Map();
   private _canceledUploadFileIds: Set<number> = new Set();
-  private _uploadItemQueue = new SequenceProcessorHandler(
-    'FileUploadController - upload item',
+  private _uploadFileQueue = new SequenceProcessorHandler(
+    'FileUploadController - upload file',
   );
 
   constructor(
     private _partialModifyController: IPartialModifyController<Item>,
-    private _fileRequestController: IRequestController<Item>,
     private _entitySourceController: IEntitySourceController<Item>,
   ) {}
 
@@ -93,7 +90,7 @@ class FileUploadController {
       });
       const itemFile = this._toItemFile(groupId, file, isUpdate);
       await this._preSaveItemFile(itemFile, file);
-      this._sendItemFile(itemFile, file);
+      this._sendItemFileInQueue(itemFile, file);
       return itemFile;
     }
     return null;
@@ -184,7 +181,7 @@ class FileUploadController {
         const item = itemStatus.itemFile;
         const file = itemStatus.file;
         if (this._hasValidStoredFile(item)) {
-          this._uploadItemInQueue(groupId, item, this._isUpdateItem(item));
+          this._uploadItem(groupId, item, this._isUpdateItem(item));
         } else if (file && file.size > 0) {
           needWaitItemIds.push(item.id);
         } else {
@@ -231,7 +228,7 @@ class FileUploadController {
         item &&
         this._hasValidStoredFile(item)
       ) {
-        this._uploadItemInQueue(groupId, item, this._isUpdateItem(item));
+        this._uploadItem(groupId, item, this._isUpdateItem(item));
       }
 
       if (uploadingItemFileIds.length === 0) {
@@ -280,11 +277,7 @@ class FileUploadController {
     if (itemInDB) {
       const groupId = itemInDB.group_ids[0];
       if (this._hasValidStoredFile(itemInDB)) {
-        await this._uploadItemInQueue(
-          groupId,
-          itemInDB,
-          this._isUpdateItem(itemInDB),
-        );
+        await this._uploadItem(groupId, itemInDB, this._isUpdateItem(itemInDB));
       } else {
         const cacheItem = this._progressCaches.get(itemId);
         if (groupId && cacheItem && cacheItem.file) {
@@ -592,26 +585,22 @@ class FileUploadController {
     await this._uploadFileToAmazonS3(file, preInsertItem, requestHolder);
   }
 
-  private async _uploadItemInQueue(
-    groupId: number,
-    preInsertItem: ItemFile,
-    isUpdate: boolean,
-  ) {
+  private async _sendItemFileInQueue(preInsertItem: ItemFile, file: File) {
     const processor = new UploadProcessor(
       this._generateProcessorName(preInsertItem.id),
       async () => {
-        await this._uploadItem(groupId, preInsertItem, isUpdate);
+        await this._sendItemFile(preInsertItem, file);
         mainLogger
           .tags(LOG_TAG)
           .log(
-            `_uploadItemInQueue, done for ${groupId}_${preInsertItem.id}_${
+            `_sendItemFileInQueue, done for ${preInsertItem.id}_${
               preInsertItem.name
             }`,
           );
       },
     );
 
-    this._uploadItemQueue.addProcessor(processor);
+    this._uploadFileQueue.addProcessor(processor);
   }
 
   private async _uploadItem(
@@ -871,7 +860,8 @@ class FileUploadController {
       versions: preInsertItem.versions,
       is_new: true,
     };
-    return await this._fileRequestController.post(fileItemOptions);
+    const requestController = this._entitySourceController.getRequestController();
+    return await requestController!.post(fileItemOptions);
   }
 
   private async _emitItemFileStatus(
@@ -902,7 +892,8 @@ class FileUploadController {
     updateModifiedAt && (existItem.modified_at = Date.now());
     existItem._id = existItem.id;
     delete existItem.id;
-    return await this._fileRequestController.put(existItem);
+    const requestController = this._entitySourceController.getRequestController();
+    return await requestController!.put(existItem);
   }
 
   private async _getOldestExistFile(
@@ -976,7 +967,7 @@ class FileUploadController {
 
   private _removeProcessor(itemId: number) {
     const name = this._generateProcessorName(itemId);
-    this._uploadItemQueue.removeProcessorByName(name);
+    this._uploadFileQueue.removeProcessorByName(name);
   }
 }
 

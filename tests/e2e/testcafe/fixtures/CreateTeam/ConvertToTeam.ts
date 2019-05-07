@@ -149,7 +149,7 @@ test(formalName('Covert group to team', ['P0', 'JPT-1396', 'Potar.He', 'ConvertT
   }, true);
 
   await h(t).withLog(`And type team name ${teamNames[1]} and click "convert to team" button`, async () => {
-    await convertToTeamDialog.typeTeamName(teamNames[1]);
+    await convertToTeamDialog.typeTeamName(teamNames[1], { paste: true, replace: true });
     await convertToTeamDialog.clickConvertToTeamButton();
   });
 
@@ -246,7 +246,7 @@ test(formalName('Check the default team name on “Convert to team” prompt', [
   });
 
   await h(t).withLog(`Given I ensured no team name "${teamName}" exists via Api`, async () => {
-    const teamId =  await h(t).glip(loginUser).getTeamIdByName(teamName);
+    const teamId = await h(t).glip(loginUser).getTeamIdByName(teamName);
     if (teamId) {
       await h(t).glip(loginUser).modifyGroupName(teamId, uuid());
     }

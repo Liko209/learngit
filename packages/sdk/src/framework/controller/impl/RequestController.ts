@@ -4,20 +4,22 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel, Raw } from '../../../framework/model';
+import { IdModel, Raw, ModelIdType } from '../../../framework/model';
 import { ErrorHandlingController } from './ErrorHandlingController';
 import { transform } from '../../../service/utils';
 import NetworkClient, { IBaseQuery } from '../../../api/NetworkClient';
 import { IRequestController } from '../interface/IRequestController';
 
-class RequestController<T extends IdModel = IdModel>
-  implements IRequestController<T> {
+class RequestController<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+> implements IRequestController<T, IdType> {
   constructor(
     public networkConfig: { basePath: string; networkClient: NetworkClient },
   ) {}
 
-  async get(id: number, options?: Partial<IBaseQuery>): Promise<T | null> {
-    if (id <= 0) {
+  async get(id: IdType, options?: Partial<IBaseQuery>): Promise<T | null> {
+    if (typeof id === typeof 0 && id <= 0) {
       const error = new ErrorHandlingController();
       error.throwInvalidParameterError('id', id);
     }
@@ -27,9 +29,9 @@ class RequestController<T extends IdModel = IdModel>
   }
 
   async put(data: Partial<T>, options?: Partial<IBaseQuery>) {
-    const id: number | undefined = this._validId(data);
+    const id: IdType | undefined = this._validId(data);
 
-    if (!id || id < 0) {
+    if (!id || (typeof id === typeof 0 && id < 0)) {
       const error = new ErrorHandlingController();
       error.throwInvalidParameterError('id', id);
     }
@@ -43,7 +45,7 @@ class RequestController<T extends IdModel = IdModel>
     return transform<T>(resultData);
   }
 
-  private async _get(id: number, options?: Partial<IBaseQuery>) {
+  private async _get(id: IdType, options?: Partial<IBaseQuery>) {
     return this.networkConfig.networkClient.get<Raw<T>>({
       path: `${this.networkConfig.basePath}/${id}`,
       ...options,
@@ -59,7 +61,7 @@ class RequestController<T extends IdModel = IdModel>
   }
 
   private async _put<T>(
-    id: number,
+    id: IdType,
     data: Partial<T>,
     options?: Partial<IBaseQuery>,
   ) {
@@ -71,7 +73,7 @@ class RequestController<T extends IdModel = IdModel>
   }
 
   private _validId(data: Partial<T>) {
-    let id: number | undefined = undefined;
+    let id: IdType | undefined = undefined;
     if (data.id) {
       id = data.id;
       delete data.id;

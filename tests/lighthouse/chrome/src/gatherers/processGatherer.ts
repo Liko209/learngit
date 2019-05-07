@@ -27,10 +27,14 @@ class ProcessGatherer extends Gatherer {
     const driver = passContext.driver;
     let ws = await driver.wsEndpoint();
     this.browser = await PptrUtils.connect(ws);
+    let hasBind = false;
 
     FunctionUtils.bindEvent(this.browser, "targetchanged", async target => {
       let page = await target.page();
       if (page) {
+        if (hasBind) {
+          return;
+        }
         FunctionUtils.bindEvent(page, "console", msg => {
           const str = msg._text;
           if (str.startsWith(EXTENSION_TAG)) {
@@ -48,6 +52,7 @@ class ProcessGatherer extends Gatherer {
             }
           }
         });
+        hasBind = true;
       }
     });
 
@@ -61,7 +66,13 @@ class ProcessGatherer extends Gatherer {
     }, 1000);
   }
   async afterPass(passContext) {
-    await bluebird.delay(5000);
+    const driver = passContext.driver;
+
+    await driver.sendCommand('HeapProfiler.enable');
+
+    await driver.sendCommand('HeapProfiler.collectGarbage');
+
+    await bluebird.delay(10000);
 
     clearInterval(this.intervalId);
 

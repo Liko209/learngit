@@ -168,11 +168,7 @@ class JuiMessageInput extends React.PureComponent<Props> {
     }
   }
 
-  onChange = (content: string, delta: Delta) => {
-    const { ops } = delta;
-    if (ops && ops[0].insert && ops[0].insert.mention) {
-      this.focusEditor();
-    }
+  onChange = (content: string) => {
     const { onChange } = this.props;
     if (onChange) {
       onChange(content);

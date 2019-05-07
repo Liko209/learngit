@@ -14,6 +14,8 @@ import {
   RTC_CALL_ACTION,
   RTC_CALL_STATE,
   RTCCallActionSuccessOptions,
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip';
 import { TelephonyAccountController } from '../../controller/TelephonyAccountController';
 import { ServiceLoader } from '../../../serviceLoader';
@@ -84,8 +86,8 @@ describe('TelephonyService', () => {
   });
   describe('makeCall', () => {
     it('should call account controller to make call', async () => {
-      await telephonyService.makeCall('123');
-      expect(accountController.makeCall).toHaveBeenCalledWith('123');
+      await telephonyService.makeCall('123', '456');
+      expect(accountController.makeCall).toHaveBeenCalledWith('123', '456');
     });
 
     it('should return error when account controller is not created', async () => {
@@ -171,6 +173,47 @@ describe('TelephonyService', () => {
     it('should call account controller to ignore', () => {
       telephonyService.ignore(callId);
       expect(accountController.ignore).toHaveBeenCalledWith(callId);
+    });
+  });
+
+  describe('startReply', () => {
+    it('should call account controller to startReply', () => {
+      telephonyService.startReply(callId);
+      expect(accountController.startReply).toHaveBeenCalledWith(callId);
+    });
+  });
+
+  describe('replyWithMessage', () => {
+    it('should call account controller to replyWithMessage', () => {
+      const message = 'test message';
+      telephonyService.replyWithMessage(callId, message);
+      expect(accountController.replyWithMessage).toHaveBeenCalledWith(
+        callId,
+        message,
+      );
+    });
+  });
+
+  describe('replyWithPattern', () => {
+    it('should call account controller to replyWithPattern', () => {
+      const pattern = RTC_REPLY_MSG_PATTERN.WILL_CALL_YOU_BACK_LATER;
+      const time = 13;
+      const timeUnit = RTC_REPLY_MSG_TIME_UNIT.MINUTE;
+      telephonyService.replyWithPattern(callId, pattern, time, timeUnit);
+      expect(accountController.replyWithPattern).toHaveBeenCalledWith(
+        callId,
+        pattern,
+        time,
+        timeUnit,
+      );
+    });
+  });
+
+  describe('getLastCalledNumber', () => {
+    it('should call account controller to get last called number', () => {
+      const spy = jest.spyOn(accountController, 'getLastCalledNumber');
+      telephonyService.getLastCalledNumber();
+      expect(spy).toBeCalled();
     });
   });
 });

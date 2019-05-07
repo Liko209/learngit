@@ -45,4 +45,13 @@ describe('Upgrade', () => {
     upgradeHandler.reloadIfAvailable('Test');
     expect(mockFn).toBeCalled();
   });
+
+  it('manual update', () => {
+    upgradeHandler = new Upgrade();
+    upgradeHandler.setServiceWorkerURL('/service-worker.js');
+    const mockFn = jest.fn();
+    jest.spyOn(upgradeHandler, 'logInfo').mockImplementation(mockFn);
+    upgradeHandler._queryIfHasNewVersion();
+    expect(upgradeHandler.logInfo).toBeCalled();
+  });
 });

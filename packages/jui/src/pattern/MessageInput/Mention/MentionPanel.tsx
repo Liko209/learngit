@@ -19,6 +19,7 @@ const Wrapper = styled.div<{
   overflow-y: auto;
   border-radius: ${shape('borderRadius')};
   background-color: ${palette('common', 'white')};
+  z-index: ${({ theme }) => theme.zIndex.ripple};
 `;
 
 type Props = {

@@ -14,7 +14,9 @@ import { Raw } from '../../../framework/model';
 class GroupConfigController {
   static serviceName = 'GroupConfigService';
 
-  constructor(public entitySourceController: IEntitySourceController) {}
+  constructor(
+    public entitySourceController: IEntitySourceController<GroupConfig>,
+  ) {}
 
   async updateGroupConfigPartialData(params: GroupConfig): Promise<boolean> {
     try {

@@ -4,14 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel } from '../../model';
+import { IdModel, ModelIdType } from '../../model';
 import { IDao } from '../../dao';
 
-interface IEntityPersistentController<T extends IdModel = IdModel>
-  extends IDao<T> {
+interface IEntityPersistentController<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+> extends IDao<T, IdType> {
   getEntityNotificationKey(): string;
 
   getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]>;
+
+  saveToMemory?: (entities: T[]) => void;
 }
 
 export { IEntityPersistentController };

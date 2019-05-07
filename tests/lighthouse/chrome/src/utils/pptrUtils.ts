@@ -217,7 +217,7 @@ class PptrUtils {
   /**
    * @description: get element text
    */
-  static async text(page: Page, selector: string, options = {}): Promise<boolean> {
+  static async text(page: Page, selector: string, options = {}): Promise<any> {
     if (!(await PptrUtils.waitForSelector(page, selector, options))) {
       return false;
     }
@@ -234,7 +234,7 @@ class PptrUtils {
   }
 
   static async launch(options = {}): Promise<Browser> {
-    let defaultArgs = ["--ignore-certificate-errors"];
+    let defaultArgs = ["--ignore-certificate-errors", "--disable-web-security"];
     if (options["args"]) {
       defaultArgs = defaultArgs.concat(options["args"]);
     }
@@ -340,7 +340,9 @@ class PptrUtils {
       .env(Config.jupiterEnv)
       .appKey(Config.jupiterAppKey)
       .appSecret(Config.jupiterAppSecret)
-      .useInitialCache(Config.useInitialCache);
+      .useInitialCache(Config.useInitialCache)
+      .record(false)
+      .replay(true);
 
     let requestId = await client.registerBrowser(initDto);
 

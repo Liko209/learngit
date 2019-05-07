@@ -21,7 +21,6 @@ import { rtcLogger } from '../../utils/RTCLoggerProxy';
 import { RTCMediaDeviceManager } from '../../api/RTCMediaDeviceManager';
 
 describe('RTC call', () => {
-
   afterEach(() => {
     RTCMediaDeviceManager.instance().removeAllListeners();
   });
@@ -363,6 +362,122 @@ describe('RTC call', () => {
           {},
         );
         done();
+      });
+    });
+
+    it('should report startRecord failed when FSM in connected state and previous startRecord is in progress', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const call = new RTCCall(false, '123', null, account, account);
+      const session = new MockSession();
+      call.setCallSession(session);
+      jest.spyOn(call._callSession, 'startRecord').mockImplementation(() => {});
+      call.onAccountReady();
+      session.mockSignal('accepted');
+      call.startRecord();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('connected');
+        expect(call._recordState).toBe('startRecordInProgress');
+        call.startRecord();
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('connected');
+          expect(call._recordState).toBe('startRecordInProgress');
+          expect(account.onCallActionFailed).toBeCalledWith(
+            RTC_CALL_ACTION.START_RECORD,
+          );
+          done();
+        });
+      });
+    });
+
+    it('should report startRecord failed when FSM in connected state and previous stopRecord is in progress', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const call = new RTCCall(false, '123', null, account, account);
+      const session = new MockSession();
+      call.setCallSession(session);
+      session.startRecord.mockResolvedValue(null);
+      jest.spyOn(call._callSession, 'stopRecord').mockImplementation(() => {});
+      call.onAccountReady();
+      session.mockSignal('accepted');
+      call.startRecord();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.START_RECORD,
+      );
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('connected');
+        expect(call._recordState).toBe('recording');
+        call.stopRecord();
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('connected');
+          expect(call._recordState).toBe('stopRecordInProgress');
+          call.startRecord();
+          setImmediate(() => {
+            expect(call._fsm.state()).toBe('connected');
+            expect(call._recordState).toBe('stopRecordInProgress');
+            expect(account.onCallActionFailed).toBeCalledWith(
+              RTC_CALL_ACTION.START_RECORD,
+            );
+            done();
+          });
+        });
+      });
+    });
+
+    it('should report stopRecord failed when FSM in connected state and previous start record is in progress', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const call = new RTCCall(false, '123', null, account, account);
+      const session = new MockSession();
+      call.setCallSession(session);
+      jest.spyOn(call._callSession, 'startRecord').mockImplementation(() => {});
+      call.onAccountReady();
+      session.mockSignal('accepted');
+      call.startRecord();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('connected');
+        expect(call._recordState).toBe('startRecordInProgress');
+        call.stopRecord();
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('connected');
+          expect(call._recordState).toBe('startRecordInProgress');
+          expect(account.onCallActionFailed).toBeCalledWith(
+            RTC_CALL_ACTION.STOP_RECORD,
+          );
+          done();
+        });
+      });
+    });
+
+    it('should report stopRecord failed when FSM in connected state and previous stop record is in progress', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const call = new RTCCall(false, '123', null, account, account);
+      const session = new MockSession();
+      call.setCallSession(session);
+      session.startRecord.mockResolvedValue(null);
+      jest.spyOn(call._callSession, 'stopRecord').mockImplementation(() => {});
+      call.onAccountReady();
+      session.mockSignal('accepted');
+      call.startRecord();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.START_RECORD,
+      );
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('connected');
+        expect(call._recordState).toBe('recording');
+        call.stopRecord();
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('connected');
+          expect(call._recordState).toBe('stopRecordInProgress');
+          call.stopRecord();
+          setImmediate(() => {
+            expect(call._fsm.state()).toBe('connected');
+            expect(call._recordState).toBe('stopRecordInProgress');
+            expect(account.onCallActionFailed).toBeCalledWith(
+              RTC_CALL_ACTION.STOP_RECORD,
+            );
+            done();
+          });
+        });
       });
     });
 
@@ -1590,6 +1705,24 @@ describe('RTC call', () => {
       });
     });
 
+    it('should enter connected state wheh hold call throw exception in holding state.', done => {
+      setup();
+      session.hold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      setImmediate(() => {
+        call._callSession.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.HOLD,
+        );
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('connected');
+          done();
+        });
+      });
+    });
+
     it('should enter unholding state when unhold call in holded state. [JPT-824]', done => {
       setup();
       session.hold.mockResolvedValue(null);
@@ -2078,7 +2211,7 @@ describe('RTC call', () => {
     });
   });
 
-  describe('forward()', () => {
+  describe('Forward call', () => {
     const forwardNumber = '10000';
     let account: VirturlAccountAndCallObserver;
     let call: RTCCall;
@@ -2099,6 +2232,30 @@ describe('RTC call', () => {
           RTC_CALL_ACTION.FORWARD,
         );
         done();
+      });
+    });
+
+    it("should call webphone's forward API when forward incoming call in idle state", done => {
+      setup();
+      call.forward(forwardNumber);
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('forwarding');
+        expect(session.forward).toBeCalled();
+        done();
+      });
+    });
+
+    it("should call state change to forwarding and call webphone's forward API when call forward in replying state. [JPT-1763]", done => {
+      setup();
+      call.startReply();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('replying');
+        call.forward(forwardNumber);
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('forwarding');
+          expect(session.forward).toBeCalled();
+          done();
+        });
       });
     });
 

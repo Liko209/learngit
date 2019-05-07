@@ -4,9 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AbstractModule, inject } from 'framework';
+import { AbstractModule, inject, Jupiter } from 'framework';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { TelephonyService } from '@/modules/telephony/service';
+import { TELEPHONY_SERVICE } from './interface/constant';
 import {
   LEAVE_BLOCKER_SERVICE,
   ILeaveBlockerService,
@@ -21,10 +22,11 @@ class TelephonyModule extends AbstractModule {
 
   @inject(FeaturesFlagsService)
   private _FeaturesFlagsService: FeaturesFlagsService;
-  @inject(TelephonyService) private _TelephonyService: TelephonyService;
+  @inject(TELEPHONY_SERVICE) private _TelephonyService: TelephonyService;
   @inject(LEAVE_BLOCKER_SERVICE) _leaveBlockerService: ILeaveBlockerService;
   @inject(TelephonyNotificationManager)
   private _telephonyNotificationManager: TelephonyNotificationManager;
+  @inject(Jupiter) _jupiter: Jupiter;
 
   initTelephony = () => {
     this._TelephonyService.init();
@@ -50,6 +52,8 @@ class TelephonyModule extends AbstractModule {
       SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
       this.onVoipCallingStateChanged,
     );
+
+    this._jupiter.emitModuleInitial(TELEPHONY_SERVICE);
   }
 
   dispose() {

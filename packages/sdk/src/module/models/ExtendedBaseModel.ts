@@ -4,9 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel } from '../../framework/model';
+import { IdModel, ModelIdType } from '../../framework/model';
 
-export type ExtendedBaseModel = IdModel & {
+export type ExtendedBaseModel<IdType extends ModelIdType = number> = IdModel<
+  IdType
+> & {
   created_at: number;
   modified_at: number;
   creator_id: number;

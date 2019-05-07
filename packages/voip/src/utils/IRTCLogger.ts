@@ -12,7 +12,6 @@ enum LOG_LEVEL {
   DEBUG = 10000,
   TRACE = 5000,
 }
-
 interface IRTCLogger {
   doLog(level: LOG_LEVEL, message: string): void;
 }

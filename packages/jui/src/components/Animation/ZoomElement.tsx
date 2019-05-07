@@ -52,89 +52,120 @@ class ZoomElementAnimation extends React.PureComponent<
     this.setState({ status: 'exited' });
   }
 
-  private _computePositionCssText(position: ClientRect | DOMRect) {
-    return `position: fixed;
-           top: ${position.top}px;
-           left: ${position.left}px;
-           width: ${position.width}px;
-           height: ${position.height}px;
+  private _computeCssTransform(
+    startPosition: ClientRect | DOMRect,
+    endPosition: ClientRect | DOMRect,
+    targetElement: HTMLElement,
+  ) {
+    const [
+      elementScale,
+      elementTranslateX,
+      elementTranslateY,
+    ] = this._getTransformInfo(targetElement);
+
+    const originalPosition = {
+      width: startPosition.width / elementScale,
+      height: startPosition.height / elementScale,
+      top:
+        startPosition.top -
+        elementTranslateY +
+        0.5 * startPosition.height -
+        0.5 * (startPosition.height / elementScale),
+      left:
+        startPosition.left -
+        elementTranslateX +
+        0.5 * startPosition.width -
+        0.5 * (startPosition.width / elementScale),
+    };
+
+    const tX =
+      endPosition.left +
+      endPosition.width / 2 -
+      (originalPosition.left + originalPosition.width / 2);
+    const tY =
+      endPosition.top +
+      endPosition.height / 2 -
+      (originalPosition.top + originalPosition.height / 2);
+
+    const sX = endPosition.width / originalPosition.width;
+    const sY = endPosition.height / originalPosition.height;
+    return `
+      transform: translate(${tX}px, ${tY}px) scale(${sX},${sY});
     `;
   }
 
+  private _getTransformInfo(targetElement: HTMLElement) {
+    const matrixStr = window.getComputedStyle(targetElement).transform;
+    if (!matrixStr) {
+      return [1, 0, 0];
+    }
+    const match = /matrix\((.+)\)/.exec(matrixStr);
+    if (match) {
+      const matrix = match[1].split(',').map(Number);
+      return [matrix[0], matrix[4], matrix[5]];
+    }
+    return [1, 0, 0];
+  }
+
   playEnterAnimation() {
-    const {
-      originalElement,
-      targetElement,
-      theme,
-      duration,
-      easing,
-    } = this.props;
+    const { originalElement, targetElement } = this.props;
 
     if (!originalElement) return;
     const startPosition = originalElement.getBoundingClientRect();
     const endPosition = targetElement.getBoundingClientRect();
+    const originalTransform = targetElement.style.transform;
     this.handleEntered();
     requestAnimationFrame(() => {
       originalElement.style.visibility = 'hidden';
-      targetElement.style.cssText = this._computePositionCssText(startPosition);
+      targetElement.style.cssText = this._computeCssTransform(
+        endPosition,
+        startPosition,
+        targetElement,
+      );
 
-      if (endPosition) {
-        return requestAnimationFrame(() => {
-          targetElement.style.cssText = `
-            ${this._computePositionCssText(endPosition)}
-            transition: all ${theme.transitions.duration[duration]}ms
-            ${theme.transitions.easing[easing]};
-            `;
-        });
-      }
       return requestAnimationFrame(() => {
         targetElement.style.cssText = `
-            opacity: 0;
-            transition: all
-            ${theme.transitions.duration[duration]}ms
-            ${theme.transitions.easing[easing]};
-            `;
+          ${originalTransform ? originalTransform : ''};
+          ${this._getTransition()}
+       `;
       });
     });
   }
 
   playExitAnimation() {
-    const {
-      originalElement,
-      targetElement,
-      theme,
-      duration,
-      easing,
-    } = this.props;
+    const { originalElement, targetElement } = this.props;
     const endPosition =
       originalElement && originalElement.getBoundingClientRect();
     const startPosition = targetElement.getBoundingClientRect();
 
     this.handleExited();
-    if (endPosition && startPosition) {
+    if (endPosition) {
       return requestAnimationFrame(() => {
         originalElement!.style.visibility = 'hidden';
-        targetElement.style.cssText = this._computePositionCssText(
-          startPosition,
-        );
-
-        requestAnimationFrame(() => {
-          targetElement.style.cssText = `
-          ${this._computePositionCssText(endPosition)}
-          transition: all ${theme.transitions.duration[duration]}ms
-          ${theme.transitions.easing[easing]};
-        `;
-        });
+        targetElement.style.cssText = `
+            ${this._computeCssTransform(
+              startPosition,
+              endPosition,
+              targetElement,
+            )};
+            ${this._getTransition()}
+         `;
       });
     }
     return requestAnimationFrame(() => {
       targetElement.style.cssText = `
         opacity: 0;
-          transition: all
-          ${theme.transitions.duration[duration]}ms
-          ${theme.transitions.easing[easing]};
-          `;
+        ${this._getTransition()}
+      `;
     });
+  }
+
+  private _getTransition() {
+    const { theme, easing, duration } = this.props;
+    return `
+            transition: all ${theme.transitions.duration[duration]}ms
+            ${theme.transitions.easing[easing]};
+    `;
   }
 
   componentDidMount() {

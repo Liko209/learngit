@@ -11,8 +11,9 @@ import { SubscribeController } from '../../base/controller/SubscribeController';
 import { PresenceController } from '../controller/PresenceController';
 import { AccountUserConfig } from '../../../module/account/config';
 import { PRESENCE } from '../constant/Presence';
+import { ChangeModel } from '../../sync/types';
 
-class PresenceService extends EntityBaseService {
+class PresenceService extends EntityBaseService<Presence> {
   private _presenceController: PresenceController;
 
   constructor(threshold: number = 29, interval: number = 200) {
@@ -50,8 +51,14 @@ class PresenceService extends EntityBaseService {
     this._presenceController.reset();
   }
 
-  presenceHandleData = async (presences: RawPresence[]) => {
-    await this._presenceController.handlePresenceIncomingData(presences);
+  presenceHandleData = async (
+    presences: RawPresence[],
+    changeMap?: Map<string, ChangeModel>,
+  ) => {
+    await this._presenceController.handlePresenceIncomingData(
+      presences,
+      changeMap,
+    );
   }
 
   handleSocketStateChange = ({ state }: { state: string }) => {

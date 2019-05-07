@@ -32,7 +32,9 @@ describe('SearchFilterViewModel', () => {
         searchOptions: {},
       } as any;
       searchFilterViewModel = new SearchFilterViewModel(props);
-      searchFilterViewModel.handleSearchTypeChange(ESearchContentTypes.ALL);
+      searchFilterViewModel.handleSearchTypeChange({
+        target: { value: ESearchContentTypes.ALL },
+      } as React.ChangeEvent<HTMLSelectElement>);
       expect(props.setSearchOptions).toHaveBeenCalledWith({
         type: ESearchContentTypes.ALL,
       });
@@ -44,7 +46,9 @@ describe('SearchFilterViewModel', () => {
         searchOptions: { type: ESearchContentTypes.ALL },
       } as any;
       searchFilterViewModel = new SearchFilterViewModel(props);
-      searchFilterViewModel.handleSearchTypeChange(ESearchContentTypes.ALL);
+      searchFilterViewModel.handleSearchTypeChange({
+        target: { value: ESearchContentTypes.ALL },
+      } as React.ChangeEvent<HTMLSelectElement>);
       expect(props.setSearchOptions).not.toHaveBeenCalledWith({
         type: ESearchContentTypes.ALL,
       });
@@ -61,9 +65,9 @@ describe('SearchFilterViewModel', () => {
       const TimeStamp = searchFilterViewModel.getTimeStamp(
         DATE_DICTIONARY.THIS_WEEK,
       );
-      searchFilterViewModel.handleSearchPostDateChange(
-        DATE_DICTIONARY.THIS_WEEK,
-      );
+      searchFilterViewModel.handleSearchPostDateChange({
+        target: { value: String(DATE_DICTIONARY.THIS_WEEK) },
+      } as React.ChangeEvent<HTMLSelectElement>);
       expect(props.setSearchOptions).toHaveBeenCalledWith({
         begin_time: TimeStamp,
       });
@@ -78,9 +82,9 @@ describe('SearchFilterViewModel', () => {
       const TimeStamp = searchFilterViewModel.getTimeStamp(
         DATE_DICTIONARY.ANY_TIME,
       );
-      searchFilterViewModel.handleSearchPostDateChange(
-        DATE_DICTIONARY.ANY_TIME,
-      );
+      searchFilterViewModel.handleSearchPostDateChange({
+        target: { value: String(DATE_DICTIONARY.ANY_TIME) },
+      } as React.ChangeEvent<HTMLSelectElement>);
       expect(props.setSearchOptions).not.toHaveBeenCalledWith({
         begin_time: TimeStamp,
       });
@@ -95,9 +99,9 @@ describe('SearchFilterViewModel', () => {
       const TimeStamp = searchFilterViewModel.getTimeStamp(
         DATE_DICTIONARY.ANY_TIME,
       );
-      searchFilterViewModel.handleSearchPostDateChange(
-        DATE_DICTIONARY.ANY_TIME,
-      );
+      searchFilterViewModel.handleSearchPostDateChange({
+        target: { value: String(DATE_DICTIONARY.ANY_TIME) },
+      } as React.ChangeEvent<HTMLSelectElement>);
       expect(props.setSearchOptions).not.toHaveBeenCalledWith({
         begin_time: TimeStamp,
       });

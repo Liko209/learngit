@@ -24,6 +24,7 @@ import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
 import { EntityNotificationController } from '../../../framework/controller/impl/EntityNotificationController';
 import { AccountUserConfig } from '../../account/config/AccountUserConfig';
+import { ChangeModel } from 'sdk/module/sync/types';
 
 class PostService extends EntityBaseService<Post> {
   postController: PostController;
@@ -43,11 +44,15 @@ class PostService extends EntityBaseService<Post> {
     });
   }
 
+  protected canSaveRemoteEntity(): boolean {
+    return false;
+  }
+
   protected buildNotificationController() {
     const userConfig = new AccountUserConfig();
     const currentUserId = userConfig.getGlipUserId();
     return new EntityNotificationController<Post>((post: Post) => {
-      return !post.deactivated && post.creator_id !== currentUserId;
+      return post.creator_id !== currentUserId;
     });
   }
 
@@ -149,10 +154,14 @@ class PostService extends EntityBaseService<Post> {
       .deletePostsByGroupIds(groupIds, shouldNotify);
   }
 
-  handleIndexData = async (data: Raw<Post>[], maxPostsExceed: boolean) => {
+  handleIndexData = async (
+    data: Raw<Post>[],
+    maxPostsExceed: boolean,
+    changeMap?: Map<string, ChangeModel>,
+  ) => {
     await this.getPostController()
       .getPostDataController()
-      .handleIndexPosts(data, maxPostsExceed);
+      .handleIndexPosts(data, maxPostsExceed, changeMap);
   }
 
   handleSexioData = async (data: Raw<Post>[]) => {
