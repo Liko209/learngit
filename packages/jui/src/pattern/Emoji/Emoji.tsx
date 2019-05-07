@@ -11,6 +11,7 @@ import { ExcludeList } from './excludeList';
 import { JuiPopperMenu, AnchorProps } from '../../pattern/PopperMenu';
 import { HotKeys } from '../../hoc/HotKeys';
 import styled from '../../foundation/styled-components';
+import { ClickAwayListener } from '@material-ui/core';
 
 type Props = {
   handlerIcon: string;
@@ -50,6 +51,9 @@ class JuiEmoji extends React.PureComponent<Props> {
   }
 
   private _handleClickEvent = (evt: MouseEvent) => {
+    if (this.state.anchorEl) {
+      this.handleClose();
+    }
     this.setState({ anchorEl: this.state.anchorEl ? null : evt.currentTarget });
   }
   private _IconButton = ({ tooltipForceHide }: AnchorProps) => {
@@ -88,25 +92,27 @@ class JuiEmoji extends React.PureComponent<Props> {
               esc: this.handleClose,
             }}
           >
-            <JuiPopperMenu
-              open={open}
-              placement="bottom-start"
-              Anchor={this._IconButton}
-              noTransition={true}
-            >
-              <StyledEmojiWrapper>
-                <Picker
-                  sheetSize={sheetSize}
-                  title={title}
-                  emoji="point_up"
-                  set={set}
-                  onClick={handleEmojiClick}
-                  emojisToShowFilter={(emoji: any) => {
-                    return this.isIndexOf(ExcludeList, emoji.short_names);
-                  }}
-                />
-              </StyledEmojiWrapper>
-            </JuiPopperMenu>
+            <ClickAwayListener onClickAway={this.handleClose}>
+              <JuiPopperMenu
+                open={open}
+                placement="bottom-start"
+                Anchor={this._IconButton}
+                noTransition={true}
+              >
+                <StyledEmojiWrapper>
+                  <Picker
+                    sheetSize={sheetSize}
+                    title={title}
+                    emoji="point_up"
+                    set={set}
+                    onClick={handleEmojiClick}
+                    emojisToShowFilter={(emoji: any) => {
+                      return this.isIndexOf(ExcludeList, emoji.short_names);
+                    }}
+                  />
+                </StyledEmojiWrapper>
+              </JuiPopperMenu>
+            </ClickAwayListener>
           </HotKeys>
         }
       </>
