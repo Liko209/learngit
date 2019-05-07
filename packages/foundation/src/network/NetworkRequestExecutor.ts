@@ -82,7 +82,7 @@ export class NetworkRequestExecutor
       return;
     }
 
-    if (this.canRetry(response) && this.retryCounter < this.retryCount) {
+    if (this.canRetry(response)) {
       this._retry();
     } else {
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
@@ -126,6 +126,9 @@ export class NetworkRequestExecutor
   }
 
   canRetry(response: IResponse) {
+    if (this.retryCounter >= this.retryCount) {
+      return false;
+    }
     if (response.status <= 0) {
       return response.status === RESPONSE_STATUS_CODE.NETWORK_ERROR;
     }

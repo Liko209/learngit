@@ -326,7 +326,7 @@ class NetworkRequestHandler
           return true;
         }
         if (!isViaReachable && task.via() === NETWORK_VIA.ALL) {
-          this._removeTaskVia(task, via);
+          this._switchTaskVia(task, via);
         }
         return false;
       });
@@ -363,9 +363,9 @@ class NetworkRequestHandler
     }
   }
 
-  private _removeTaskVia(task: RequestTask, via: NETWORK_VIA) {
+  private _switchTaskVia(task: RequestTask, excludeVia: NETWORK_VIA) {
     task.setVia(
-      via === NETWORK_VIA.HTTP ? NETWORK_VIA.SOCKET : NETWORK_VIA.HTTP,
+      excludeVia === NETWORK_VIA.HTTP ? NETWORK_VIA.SOCKET : NETWORK_VIA.HTTP,
     );
   }
 }
