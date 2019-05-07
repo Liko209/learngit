@@ -193,11 +193,7 @@ class StreamViewComponent extends Component<Props> {
     return cloneElement(ItemWrapper, {
       key: 'ConversationInitialPost',
       style: { flex: '1 1 auto' },
-      children: (
-        <div>
-          <ConversationInitialPost notEmpty={notEmpty} id={groupId} />
-        </div>
-      ),
+      children: <ConversationInitialPost notEmpty={notEmpty} id={groupId} />,
     });
   }
 

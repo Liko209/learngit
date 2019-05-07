@@ -156,10 +156,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   }: PartialScrollPosition) => {
     if (ref.current) {
       if (options === true) {
-        ref.current.scrollTop =
-          rowManager.getRowOffsetTop(index) +
-          rowManager.getRowHeight(index) +
-          offset;
+        ref.current.scrollTop = rowManager.getRowOffsetTop(index) + offset;
       } else {
         ref.current.scrollTop =
           rowManager.getRowOffsetTop(index + 1) - height - offset;
@@ -209,10 +206,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       const { scrollTop } = ref.current;
       const visibleRange = computeVisibleRange();
       const startIndex = visibleRange.startIndex;
-      const offset =
-        scrollTop -
-        rowManager.getRowOffsetTop(startIndex) -
-        rowManager.getRowHeight(startIndex);
+      const offset = scrollTop - rowManager.getRowOffsetTop(startIndex);
 
       const index = visibleRange.startIndex;
       rememberScrollPosition({
