@@ -4,19 +4,21 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel } from '../../model';
+import { IdModel, ModelIdType } from '../../model';
 import { IEntityPersistentController } from './IEntityPersistentController';
 import { IRequestController } from './IRequestController';
 
-interface IEntitySourceController<T extends IdModel = IdModel>
-  extends IEntityPersistentController<T> {
-  getEntityLocally(id: number): Promise<T | null>;
+interface IEntitySourceController<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+> extends IEntityPersistentController<T, IdType> {
+  getEntityLocally(id: IdType): Promise<T | null>;
 
-  getEntitiesLocally(ids: number[], includeDeactivated: boolean): Promise<T[]>;
+  getEntitiesLocally(ids: IdType[], includeDeactivated: boolean): Promise<T[]>;
 
   getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]>;
 
-  getRequestController(): IRequestController<T> | null;
+  getRequestController(): IRequestController<T, IdType> | null;
 }
 
 export { IEntitySourceController };

@@ -6,11 +6,7 @@
 
 import { RequestController } from '../impl/RequestController';
 import { IdModel } from '../../../framework/model';
-import {
-  BaseResponse,
-  JNetworkError,
-  ERROR_CODES_NETWORK,
-} from 'foundation/src';
+import { JNetworkError, ERROR_CODES_NETWORK } from 'foundation/src';
 import NetworkClient from '../../../api/NetworkClient';
 
 type TestEntity = IdModel & {
@@ -92,9 +88,12 @@ describe('RequestController', () => {
 
       const result = await requestController.put({ id: 1, name: 'jupiter' });
 
-      expect(networkConfig.networkClient.put).toBeCalledWith({path: '/basePath/1', data: {
-        _id: 1,
-        name: 'jupiter'},
+      expect(networkConfig.networkClient.put).toBeCalledWith({
+        path: '/basePath/1',
+        data: {
+          _id: 1,
+          name: 'jupiter',
+        },
       });
 
       expect(result).toEqual({ id: 1, name: 'jupiter' });

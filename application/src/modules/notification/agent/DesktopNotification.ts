@@ -3,21 +3,22 @@
  * @Date: 2019-04-01 15:16:45
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
-import { mainLogger } from 'sdk';
-import { AbstractNotification } from './AbstractNotification';
-import { NotificationOpts } from '../interface';
-import _ from 'lodash';
 import { container } from 'framework';
+import { isSafari } from '@/common/isUserAgent';
 import { CLIENT_SERVICE, IClientService } from '@/modules/common/interface';
-const logger = mainLogger.tags('DesktopNotification');
+import { NotificationOpts } from '../interface';
+import { AbstractNotification } from './AbstractNotification';
 
 export class DeskTopNotification extends AbstractNotification<Notification> {
+  constructor() {
+    super('DesktopNotification');
+  }
+
   isSupported() {
     return !!Notification;
   }
 
-  create(title: string, opts: NotificationOpts) {
-    logger.log(`creating notification for ${opts.tag}`);
+  showNotification(title: string, opts: NotificationOpts) {
     const { scope, id } = opts.data;
     const onClick = opts.onClick;
 
@@ -37,7 +38,21 @@ export class DeskTopNotification extends AbstractNotification<Notification> {
       this._store.remove(scope, id);
     };
 
-    this._store.add(scope, id, notification);
+    if (isSafari) {
+      Object.defineProperty(notification, 'data', {
+        writable: true,
+        value: opts.data,
+      });
+    }
+    return notification;
+  }
+
+  getNotifications() {
+    return Object.values(this._store.items);
+  }
+
+  checkNotificationValid() {
+    return true;
   }
 
   close(scope: string, id: number) {
