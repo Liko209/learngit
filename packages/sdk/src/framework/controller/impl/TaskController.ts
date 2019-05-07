@@ -38,7 +38,6 @@ class TaskController implements ITaskController {
       try {
         this._isExecuting = true;
         await this._executeFunc();
-        this._isExecuting = false;
         callback(true);
         this.reset();
       } catch (err) {
@@ -81,6 +80,7 @@ class TaskController implements ITaskController {
   }
 
   reset(): void {
+    this._isExecuting = false;
     this._strategy.reset();
     jobScheduler.cancelJob(JOB_KEY.INDEX_DATA);
   }

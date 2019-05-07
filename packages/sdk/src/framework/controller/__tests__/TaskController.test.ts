@@ -29,8 +29,8 @@ class MockStrategy implements ITaskStrategy {
     this._retryIndex = -1;
   }
 
-  getJobKey(): string {
-    return '';
+  getJobKey(): JOB_KEY {
+    return JOB_KEY.INDEX_DATA;
   }
 }
 
@@ -57,6 +57,8 @@ describe('TaskController', () => {
       jest.spyOn(strategy, 'canNext').mockReturnValue(true);
       const resetSpy = jest.spyOn(taskController, 'reset');
       taskController.start(executeFunc);
+      const isExecuting = taskController['_isExecuting'];
+      expect(isExecuting).toEqual(true);
       expect(resetSpy).toBeCalled();
       taskController.start(executeFunc);
       expect(resetSpy).toBeCalledTimes(1);
@@ -105,8 +107,10 @@ describe('TaskController', () => {
       taskController.start(executeFunc);
       setTimeout(() => {
         taskController.reset();
+        const isExecuting = taskController['_isExecuting'];
         const resetSpy = jest.spyOn(strategy, 'reset');
         const cancelJobSpy = jest.spyOn(jobScheduler, 'cancelJob');
+        expect(isExecuting).toEqual(false);
         expect(resetSpy).toHaveBeenCalled();
         expect(cancelJobSpy).toHaveBeenCalled();
       },         200);
