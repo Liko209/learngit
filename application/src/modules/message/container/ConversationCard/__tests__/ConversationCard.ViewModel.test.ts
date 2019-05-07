@@ -62,7 +62,9 @@ describe('ConversationCardViewModel', () => {
         createdAt: DATE_2019_1_4,
         creatorId: 107913219,
       });
-      expect(await conversationCardVM.createTime.fetch()).toBe('Fri, 1/4/2019 9:21 AM');
+      expect(await conversationCardVM.createTime.fetch()).toBe(
+        'Fri, 1/4/2019 9:21 AM',
+      );
       conversationCardVM.props.mode = undefined;
       done();
     });
@@ -90,7 +92,9 @@ describe('ConversationCardViewModel', () => {
         createdAt: DATE_2019_1_5,
         creatorId: 107913219,
       });
-      expect(await conversationCardVM.createTime.fetch()).toBe('Sat, 1/5/2019 9:21 AM');
+      expect(await conversationCardVM.createTime.fetch()).toBe(
+        'Sat, 1/5/2019 9:21 AM',
+      );
       done();
     });
     it.each`
@@ -142,5 +146,27 @@ describe('ConversationCardViewModel', () => {
       id: 1491222532,
     });
     expect(conversationCardVM.name).toBe(undefined);
+  });
+  it('isArchived()', () => {
+    (getEntity as jest.Mock).mockReturnValue({
+      isArchived: true,
+    });
+    expect(conversationCardVM.isArchived).toBe(true);
+  });
+  describe('toastMessage()', () => {
+    it('should return "" if isArchived is false', () => {
+      (getEntity as jest.Mock).mockReturnValue({
+        isArchived: false,
+      });
+      expect(conversationCardVM.toastMessage).toBe('');
+    });
+    it('should return "people.prompt.conversationArchived" if isArchived is true', () => {
+      (getEntity as jest.Mock).mockReturnValue({
+        isArchived: true,
+      });
+      expect(conversationCardVM.toastMessage).toBe(
+        'people.prompt.conversationArchived',
+      );
+    });
   });
 });
