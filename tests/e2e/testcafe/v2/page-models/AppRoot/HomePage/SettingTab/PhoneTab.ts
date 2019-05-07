@@ -35,8 +35,8 @@ export class PhoneTab extends BaseWebComponent{
         await this.t.click(this.regionUpdateButton);
     }
 
-    async callerIDDropDownListWithText(text:string, index:number){
-        await this.t.expect(this.callerIDDropDownList.nth(index).withText(text)).ok();
+    async callerIDDropDownListWithText(text:string){
+        await this.t.expect(this.callerIDDropDownList.withText(text)).ok();
     }
 
     async callerIDFieldWithText(text:string){
