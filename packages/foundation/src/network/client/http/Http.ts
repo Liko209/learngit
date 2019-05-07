@@ -20,6 +20,22 @@ function isAxiosError<T extends AxiosError>(error: Error): error is T {
   return !!error['config'];
 }
 
+function parseNoResponseErrorStatus(code: string | undefined, message: string) {
+  let status = RESPONSE_STATUS_CODE.DEFAULT;
+  if (code === 'ECONNABORTED') {
+    if (message === 'Request aborted') {
+      status = RESPONSE_STATUS_CODE.LOCAL_ABORTED;
+    } else if (message.startsWith('timeout')) {
+      status = RESPONSE_STATUS_CODE.LOCAL_TIME_OUT;
+    }
+  } else if (code === null) {
+    if (message === 'Network Error') {
+      status = RESPONSE_STATUS_CODE.NETWORK_ERROR;
+    }
+  }
+  return status;
+}
+
 class Http extends BaseClient {
   request(request: IRequest, listener: INetworkRequestExecutorListener): void {
     super.request(request, listener);
@@ -96,7 +112,7 @@ class Http extends BaseClient {
             }
           } else {
             networkLogger.info('local error, code: ', code);
-            status = this.parseNoResponseErrorStatus(code, message);
+            status = parseNoResponseErrorStatus(code, message);
             statusText = message;
           }
         } else if (err instanceof axios.Cancel) {
@@ -114,22 +130,6 @@ class Http extends BaseClient {
           .build();
         listener.onFailure(res);
       });
-  }
-
-  parseNoResponseErrorStatus(code: string | undefined, message: string) {
-    let status = RESPONSE_STATUS_CODE.DEFAULT;
-    if (code === 'ECONNABORTED') {
-      if (message === 'Request aborted') {
-        status = RESPONSE_STATUS_CODE.LOCAL_ABORTED;
-      } else if (message.startsWith('timeout')) {
-        status = RESPONSE_STATUS_CODE.LOCAL_TIME_OUT;
-      }
-    } else if (code === null) {
-      if (message === 'Network Error') {
-        status = RESPONSE_STATUS_CODE.NETWORK_ERROR;
-      }
-    }
-    return status;
   }
 }
 export default Http;
