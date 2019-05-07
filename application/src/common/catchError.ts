@@ -102,6 +102,12 @@ function perform(options: StrategyProps[], error: Error, ctx: any) {
   }
 }
 
+function notifyFunc(isDebounce: boolean, actionName: ErrorActionConfig) {
+  return isDebounce
+    ? getDebounceNotify(actionName)
+    : notify;
+}
+
 function handleError(
   notificationType: NOTIFICATION_TYPE,
   error: any,
@@ -117,23 +123,20 @@ function handleError(
     network,
     authentication,
     notificationOpts = defaultNotificationOptions,
-    isDebounce,
+    isDebounce = false,
   } = options;
 
-  const notifyFunc = isDebounce
-    ? getDebounceNotify(network || server || '')
-    : notify;
   if (network && errorHelper.isNetworkConnectionError(error)) {
-    notifyFunc(ctx, notificationType, network, notificationOpts, error);
+    notifyFunc(isDebounce, network)(ctx, notificationType, network, notificationOpts, error);
     return false;
   }
 
   if (authentication && errorHelper.isAuthenticationError(error)) {
-    return notify(ctx, notificationType, authentication, notificationOpts, error);
+    return notifyFunc(isDebounce, authentication)(ctx, notificationType, authentication, notificationOpts, error);
   }
 
   if (server && errorHelper.isBackEndError(error)) {
-    notifyFunc(ctx, notificationType, server, notificationOpts, error);
+    notifyFunc(isDebounce, server)(ctx, notificationType, server, notificationOpts, error);
     return false;
   }
 

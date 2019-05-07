@@ -312,9 +312,6 @@ describe.skip('i18next-en', () => {
     expect(i18next.t('notAbleToBookmarkThisMessageForServerIssue')).toEqual(
       "Sorry, something went wrong on our end and we weren't able to bookmark this message. Try again later.",
     );
-    expect(i18next.t('SorryWeWereNotAbleToLoadOlderMessages')).toEqual(
-      "Sorry, we weren't able to load older messages. Try again.",
-    );
     expect(i18next.t('SorryWeWereNotAbleToLoadNewerMessages')).toEqual(
       "Sorry, we weren't able to load newer messages. Try again.",
     );
