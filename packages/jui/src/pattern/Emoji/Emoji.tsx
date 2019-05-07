@@ -50,7 +50,7 @@ class JuiEmoji extends React.PureComponent<Props> {
   }
 
   private _handleClickEvent = (evt: MouseEvent) => {
-    this.setState({ anchorEl: evt.currentTarget });
+    this.setState({ anchorEl: this.state.anchorEl ? null : evt.currentTarget });
   }
   private _IconButton = ({ tooltipForceHide }: AnchorProps) => {
     return (
