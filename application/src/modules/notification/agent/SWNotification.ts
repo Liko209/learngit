@@ -83,7 +83,7 @@ export class SWNotification extends AbstractNotification<NotificationAction[]> {
 
   async close(scope: string, id: number) {
     this._store.remove(scope, id);
-    const notifications = this._notifications;
+    const notifications = await this.getNotifications();
     await Promise.all(
       notifications.map(
         async (i: Notification) => i.data.id === id && i.close(),

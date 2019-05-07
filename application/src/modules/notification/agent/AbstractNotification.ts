@@ -8,6 +8,12 @@ import { isElectron, isWindows, isEdge } from '@/common/isUserAgent';
 import { NotificationStore } from '../store/NotificationStore';
 import { NotificationOpts } from '../interface';
 
+const delay = (interval: number) => {
+  return new Promise(resolve => {
+    setTimeout(resolve, interval);
+  });
+};
+
 export abstract class AbstractNotification<T> {
   protected _store: NotificationStore<T>;
   protected _logger: ILogger;
@@ -17,7 +23,7 @@ export abstract class AbstractNotification<T> {
     this._store = new NotificationStore();
   }
 
-  protected handlePriority(
+  protected async handlePriority(
     notifications: Notification[],
     opts: NotificationOpts,
   ) {
@@ -31,14 +37,21 @@ export abstract class AbstractNotification<T> {
         return false;
       });
 
-      lowPriorityNotifications.forEach(notification => {
-        if (notification.data) {
-          const { scope, id } = notification.data;
-          this.close(scope, id);
-        } else {
-          notification.close();
-        }
-      });
+      await Promise.all(
+        lowPriorityNotifications.map(async notification => {
+          if (notification.data) {
+            const { scope, id } = notification.data;
+            await this.close(scope, id);
+          } else {
+            notification.close();
+          }
+        }),
+      );
+      const waiting =
+        lowPriorityNotifications.length > 10
+          ? 500
+          : lowPriorityNotifications.length * 50;
+      await delay(waiting);
     }
   }
 
@@ -46,7 +59,7 @@ export abstract class AbstractNotification<T> {
     const isValid = await this.checkNotificationValid(opts.data.id);
     this._logger.log(`check notification for ${opts.tag} is valid`, isValid);
     if (isValid) {
-      this.handlePriority(await this.getNotifications(), opts);
+      await this.handlePriority(await this.getNotifications(), opts);
       this._logger.log(`creating notification for ${opts.tag}`);
       const result = await this.showNotification(title, opts);
       this._store.add(opts.data.scope, opts.data.id, result);
