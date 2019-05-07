@@ -5,7 +5,7 @@
  */
 
 import { IEntityCacheController } from '../interface/IEntityCacheController';
-import { IdModel, Raw } from '../../model';
+import { IdModel, Raw, ModelIdType } from '../../model';
 import _ from 'lodash';
 
 enum CACHE_INITIAL_STATUS {
@@ -14,9 +14,11 @@ enum CACHE_INITIAL_STATUS {
   SUCCESS,
 }
 
-class EntityCacheController<T extends IdModel = IdModel>
-  implements IEntityCacheController<T> {
-  protected _entities: Map<number, T> = new Map(); // { [id: number]: T } = {};
+class EntityCacheController<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+> implements IEntityCacheController<T, IdType> {
+  protected _entities: Map<IdType, T> = new Map(); // { [id: IdType]: T } = {};
 
   private _initialStatus: CACHE_INITIAL_STATUS;
 
@@ -61,12 +63,12 @@ class EntityCacheController<T extends IdModel = IdModel>
     this._entities.clear();
   }
 
-  async delete(key: number): Promise<void> {
+  async delete(key: IdType): Promise<void> {
     this.deleteInternal(key);
   }
 
-  async bulkDelete(keys: number[]): Promise<void> {
-    keys.forEach((key: number) => {
+  async bulkDelete(keys: IdType[]): Promise<void> {
+    keys.forEach((key: IdType) => {
       this.deleteInternal(key);
     });
   }
@@ -79,19 +81,19 @@ class EntityCacheController<T extends IdModel = IdModel>
     this._updatePartially(array);
   }
 
-  async get(key: number): Promise<T | null> {
+  async get(key: IdType): Promise<T | null> {
     return this.getSynchronously(key);
   }
 
-  getSynchronously(key: number): T | null {
+  getSynchronously(key: IdType): T | null {
     const result = this._entities.get(key);
     return result ? result : null;
   }
 
-  async batchGet(ids: number[], order?: boolean): Promise<T[]> {
+  async batchGet(ids: IdType[], order?: boolean): Promise<T[]> {
     const entities: T[] = [];
 
-    ids.forEach((id: number) => {
+    ids.forEach((id: IdType) => {
       const entity = this.getSynchronously(id);
       if (entity) {
         entities.push(entity);
@@ -131,8 +133,8 @@ class EntityCacheController<T extends IdModel = IdModel>
     return values;
   }
 
-  async replace(ids: number[], entities: Map<number, T>) {
-    ids.forEach((id: number) => {
+  async replace(ids: IdType[], entities: Map<IdType, T>) {
+    ids.forEach((id: IdType) => {
       this.deleteInternal(id);
     });
 
@@ -142,17 +144,17 @@ class EntityCacheController<T extends IdModel = IdModel>
   }
 
   async updateEx(
-    entities: Map<number, T>,
-    partials?: Map<number, Partial<Raw<T>>>,
+    entities: Map<IdType, T>,
+    partials?: Map<IdType, Partial<Raw<T>>>,
   ) {
     if (partials) {
       partials.forEach((partialModel, id) => {
-        const oldEntity = this._entities[id];
+        const oldEntity = this._entities.get(id);
         if (oldEntity) {
           this.updatePartial(oldEntity, partialModel);
         } else {
           const partialObject: {} = partialModel;
-          this._entities[id] = partialObject as T;
+          this._entities.set(id, partialObject as T);
         }
       });
     } else {
@@ -162,7 +164,7 @@ class EntityCacheController<T extends IdModel = IdModel>
     }
   }
 
-  private _update(entity: T, id: number) {
+  private _update(entity: T, id: IdType) {
     const oldEntity = this._entities.get(id);
     if (oldEntity) {
       this.updatePartial(oldEntity, entity);
@@ -188,7 +190,7 @@ class EntityCacheController<T extends IdModel = IdModel>
     }
   }
 
-  protected deleteInternal(key: number) {
+  protected deleteInternal(key: IdType) {
     if (this._entities.has(key)) {
       this._entities.delete(key);
     }

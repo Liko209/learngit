@@ -25,7 +25,7 @@ const isIEOrEdge =
   typeof navigator !== 'undefined' &&
   /(MSIE|Trident|Edge)/.test(navigator.userAgent);
 
-const transform = <T extends { id: number }>(item: any): T => {
+const transform = <T extends { id: any }>(item: any): T => {
   if (isObject(item)) {
     /* eslint-disable no-underscore-dangle, no-param-reassign */
     item.id = item.id || item._id || 0;

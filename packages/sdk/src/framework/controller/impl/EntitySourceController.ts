@@ -4,19 +4,21 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel } from '../../model';
+import { IdModel, ModelIdType } from '../../model';
 import { IDao } from '../../../framework/dao';
 import _ from 'lodash';
 import { IRequestController } from '../interface/IRequestController';
 import { IEntitySourceController } from '../interface/IEntitySourceController';
 import { IEntityPersistentController } from '../interface/IEntityPersistentController';
 
-class EntitySourceController<T extends IdModel = IdModel>
-  implements IEntitySourceController<T> {
+class EntitySourceController<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+> implements IEntitySourceController<T, IdType> {
   constructor(
-    public entityPersistentController: IEntityPersistentController<T>,
-    public deactivatedDao: IDao<T>,
-    public requestController?: IRequestController<T>,
+    public entityPersistentController: IEntityPersistentController<T, IdType>,
+    public deactivatedDao: IDao<T, IdType>,
+    public requestController?: IRequestController<T, IdType>,
     public canSaveRemoteData?: boolean,
   ) {}
 
@@ -32,11 +34,11 @@ class EntitySourceController<T extends IdModel = IdModel>
     await this.entityPersistentController.clear();
   }
 
-  async delete(key: number): Promise<void> {
+  async delete(key: IdType): Promise<void> {
     await this.entityPersistentController.delete(key);
   }
 
-  async bulkDelete(keys: number[]): Promise<void> {
+  async bulkDelete(keys: IdType[]): Promise<void> {
     await this.entityPersistentController.bulkDelete(keys);
   }
 
@@ -48,7 +50,7 @@ class EntitySourceController<T extends IdModel = IdModel>
     await this.entityPersistentController.bulkUpdate(array);
   }
 
-  async get(key: number): Promise<T | null> {
+  async get(key: IdType): Promise<T | null> {
     let result = await this.getEntityLocally(key);
     if (!result && this.requestController) {
       result = await this._getEntityFromServer(key);
@@ -56,8 +58,8 @@ class EntitySourceController<T extends IdModel = IdModel>
     return result;
   }
 
-  async batchGet(ids: number[], order?: boolean): Promise<T[]> {
-    const idsSet = new Set<number>(ids);
+  async batchGet(ids: IdType[], order?: boolean): Promise<T[]> {
+    const idsSet = new Set<IdType>(ids);
     const nonDuplicatedIds = [...idsSet];
     const existsEntities = await this.entityPersistentController.batchGet(
       nonDuplicatedIds,
@@ -94,20 +96,20 @@ class EntitySourceController<T extends IdModel = IdModel>
     return resultEntities;
   }
 
-  private _getIds(entities: T[]): number[] {
+  private _getIds(entities: T[]): IdType[] {
     return entities.map((entity: T) => {
       return entity.id;
     });
   }
 
-  private _orderAsIds(ids: number[], entities: T[]) {
-    const entitiesMap: Map<number, T> = new Map();
+  private _orderAsIds(ids: IdType[], entities: T[]) {
+    const entitiesMap: Map<IdType, T> = new Map();
     entities.forEach((entity: T) => {
       entitiesMap.set(entity.id, entity);
     });
 
     const orderedEntities: T[] = [];
-    ids.forEach((id: number) => {
+    ids.forEach((id: IdType) => {
       const entity = entitiesMap.get(id);
       if (entity) {
         orderedEntities.push(entity);
@@ -117,7 +119,7 @@ class EntitySourceController<T extends IdModel = IdModel>
     return orderedEntities;
   }
 
-  private async _getEntityFromServer(key: number) {
+  private async _getEntityFromServer(key: IdType) {
     const result = await this.requestController!.get(key);
     if (this.canSaveRemoteData && result) {
       await this.put(result);
@@ -125,9 +127,9 @@ class EntitySourceController<T extends IdModel = IdModel>
     return result;
   }
 
-  private async _getEntitiesFromServer(remoteIds: number[]): Promise<T[]> {
+  private async _getEntitiesFromServer(remoteIds: IdType[]): Promise<T[]> {
     // TODO https://jira.ringcentral.com/browse/FIJI-3903
-    const promises = remoteIds.map(async (id: number) => {
+    const promises = remoteIds.map(async (id: IdType) => {
       if (this.requestController) {
         try {
           return this._getEntityFromServer(id);
@@ -170,13 +172,13 @@ class EntitySourceController<T extends IdModel = IdModel>
     return this.entityPersistentController.getEntityNotificationKey();
   }
 
-  async getEntityLocally(id: number): Promise<T | null> {
+  async getEntityLocally(id: IdType): Promise<T | null> {
     const result = await this.entityPersistentController.get(id);
     return result || (await this.deactivatedDao.get(id));
   }
 
   async getEntitiesLocally(
-    ids: number[],
+    ids: IdType[],
     includeDeactivated: boolean,
   ): Promise<T[]> {
     if (ids.length <= 0) {
@@ -192,7 +194,7 @@ class EntitySourceController<T extends IdModel = IdModel>
     return models;
   }
 
-  getRequestController(): IRequestController<T> | null {
+  getRequestController(): IRequestController<T, IdType> | null {
     return this.requestController ? this.requestController : null;
   }
 }

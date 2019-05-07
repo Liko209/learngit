@@ -19,13 +19,14 @@ jest.mock('../StateFetchDataController');
 jest.mock('../../../../../framework/controller/impl/EntitySourceController');
 jest.mock('../../../../group');
 
-class MockRequestController implements IRequestController {
+class MockRequestController implements IRequestController<GroupState> {
   get = jest.fn();
   put = jest.fn();
   post = jest.fn();
 }
 
-class MockPartialModifyController implements IPartialModifyController {
+class MockPartialModifyController
+  implements IPartialModifyController<GroupState> {
   constructor(public groupState: GroupState) {}
   updatePartially = jest.fn(
     async (
@@ -51,7 +52,7 @@ class MockPartialModifyController implements IPartialModifyController {
 describe('StateActionController', () => {
   let stateActionController: StateActionController;
   let mockRequestController: MockRequestController;
-  let mockEntitySourceController: EntitySourceController;
+  let mockEntitySourceController: EntitySourceController<GroupState>;
   let mockStateFetchDataController: StateFetchDataController;
   const mockGroupService = new GroupService();
   beforeEach(() => {
@@ -59,7 +60,7 @@ describe('StateActionController', () => {
     mockRequestController = new MockRequestController();
 
     mockEntitySourceController = new EntitySourceController<GroupState>(
-      {} as IEntityPersistentController,
+      {} as IEntityPersistentController<GroupState>,
       {} as DeactivatedDao,
     );
 

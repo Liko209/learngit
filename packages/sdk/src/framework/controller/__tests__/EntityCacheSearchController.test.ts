@@ -8,11 +8,10 @@ import {
   buildEntityCacheController,
   buildEntityCacheSearchController,
 } from '../';
-import { IdModel } from '../../model';
+import { IdModel, SortableModel } from '../../model';
 import { IEntityCacheController } from '../interface/IEntityCacheController';
 import {
   IEntityCacheSearchController,
-  SortableModel,
   Terms,
 } from '../interface/IEntityCacheSearchController';
 import { SearchUtils } from '../../utils/SearchUtils';
@@ -23,8 +22,8 @@ export type TestModel = IdModel & {
 };
 
 describe('Entity Cache Search Controller', () => {
-  let entityCacheController: IEntityCacheController;
-  let entityCacheSearchController: IEntityCacheSearchController;
+  let entityCacheController: IEntityCacheController<TestModel>;
+  let entityCacheSearchController: IEntityCacheSearchController<TestModel>;
 
   function sortEntitiesByName(
     groupA: SortableModel<TestModel>,
