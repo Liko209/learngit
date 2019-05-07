@@ -35,7 +35,7 @@ import {
 } from './utils';
 import { usePrevious } from './hooks/usePrevious';
 import { debounce, compact } from 'lodash';
-import { ItemWrapper, WRAPPER_IDENTIFIER } from './ItemWrapper';
+import { WRAPPER_IDENTIFIER } from './ItemWrapper';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
 type JuiVirtualizedListHandles = {
@@ -155,7 +155,6 @@ const JuiVirtualizedList: RefForwardingComponent<
   }: PartialScrollPosition) => {
     if (ref.current) {
       if (options === true) {
-        console.log('andy hu now scroll to', index, offset);
         ref.current.scrollTop =
           rowManager.getRowOffsetTop(index) +
           rowManager.getRowHeight(index) +
@@ -219,7 +218,6 @@ const JuiVirtualizedList: RefForwardingComponent<
         index,
         offset,
       });
-      console.log('andy hu set position', index, offset);
       // TODO Don't re-render if range not changed
       setVisibleRange(visibleRange);
     }
