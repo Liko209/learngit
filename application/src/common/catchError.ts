@@ -19,7 +19,6 @@ import { errorHelper } from 'sdk/error';
 type ErrorActionConfig = string | Function;
 
 type NotifyErrorProps = {
-  doGeneral?: boolean;
   network?: ErrorActionConfig;
   server?: ErrorActionConfig;
   notificationOpts?: ShowNotificationOptions;
@@ -117,7 +116,6 @@ function handleError(
     server,
     notificationOpts = defaultOptions,
     isDebounce,
-    doGeneral,
   } = options;
   const notifyFunc = isDebounce
     ? getDebounceNotify(network || server || '')
@@ -132,9 +130,7 @@ function handleError(
     return false;
   }
 
-  if (doGeneral) {
-    return generalErrorHandler(error);
-  }
+  generalErrorHandler(error);
   throw error;
 }
 
