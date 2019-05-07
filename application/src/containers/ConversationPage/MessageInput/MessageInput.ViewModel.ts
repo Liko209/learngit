@@ -133,7 +133,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   private _doToneTransfer = (colons: string) => {
     if (WhiteOnlyList.indexOf(colons.split('::')[0].replace(':', '')) > -1) {
-      return colons.replace(/:skin_tone-+\d+:/g, '');
+      return colons.replace(/:skin-tone-+\d+:/g, '');
     }
     let newString: string = colons;
     const index = Number((newString.match(/\d/g) || []).pop()) - 1;
@@ -141,21 +141,23 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       .replace('::skin-', '_')
       .replace('::skin', '')
       .replace(/\d+:/g, `${index.toString()}:`)
+      .replace('tone_', 'tone')
       .replace('tone-', 'tone');
     return newString;
   }
 
   private _doUnderscoreTransfer = (colons: string) => {
-    return colons.replace('-', '_');
+    return colons.split('-').join('_');
   }
 
   @action
   insertEmoji = (emoji: any) => {
     let colons = emoji.colons;
-    if (ConvertList.indexOf(colons)) {
+    if (ConvertList.indexOf(colons.split(':').join('')) > -1) {
       colons = this._doUnderscoreTransfer(colons);
     }
-    if (colons.indexOf('::skin-tone')) {
+
+    if (colons.indexOf('::skin') > -1) {
       colons = this._doToneTransfer(colons);
     }
     const query = '.conversation-page>div>div>.quill>.ql-container';
