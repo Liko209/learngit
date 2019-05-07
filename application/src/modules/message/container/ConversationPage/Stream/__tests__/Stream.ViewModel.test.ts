@@ -34,6 +34,7 @@ import { Post } from 'sdk/module/post/entity';
 jest.mock('sdk/module/item');
 jest.mock('sdk/module/post');
 jest.mock('sdk/module/group');
+jest.mock('@/containers/Notification');
 jest.mock('@/store/base/visibilityChangeEvent');
 
 function setup(obj?: any) {
@@ -435,13 +436,12 @@ describe('StreamViewModel', () => {
         },
       });
 
-      Notification.flashToast = jest.fn();
-
       await vm.loadPrevPosts();
 
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
         fullWidth: false,
+        autoHideDuration: 3000,
         message: 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages',
         messageAlign: ToastMessageAlign.LEFT,
         type: ToastType.ERROR,
@@ -460,7 +460,9 @@ describe('StreamViewModel', () => {
         },
       });
 
-      await vm.loadPrevPosts();
+      try {
+        await vm.loadPrevPosts();
+      } catch {}
 
       expect(errorUtil.generalErrorHandler).toHaveBeenCalled();
     });
@@ -519,13 +521,14 @@ describe('StreamViewModel', () => {
         },
       });
 
-      Notification.flashToast = jest.fn();
-
-      await vm.loadNextPosts();
+      try {
+        await vm.loadNextPosts();
+      } catch (error) {}
 
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
         fullWidth: false,
+        autoHideDuration: 3000,
         message: 'message.prompt.SorryWeWereNotAbleToLoadNewerMessages',
         messageAlign: ToastMessageAlign.LEFT,
         type: ToastType.ERROR,
@@ -550,14 +553,12 @@ describe('StreamViewModel', () => {
           fetchData,
         },
       });
-
-      Notification.flashToast = jest.fn();
-
-      await vm.loadNextPosts();
-      await vm.loadNextPosts();
-      await vm.loadNextPosts();
-
-      expect(Notification.flashToast).toHaveBeenCalledTimes(1);
+      setTimeout(async () => {
+        await vm.loadNextPosts();
+        await vm.loadNextPosts();
+        await vm.loadNextPosts();
+        expect(Notification.flashToast).toHaveBeenCalledTimes(1);
+      },         1000);
     });
   });
 

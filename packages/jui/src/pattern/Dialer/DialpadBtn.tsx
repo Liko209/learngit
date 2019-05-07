@@ -8,12 +8,10 @@ import { JuiFabButton } from '../../components/Buttons';
 import styled from '../../foundation/styled-components';
 import { spacing } from '../../foundation/utils';
 
-const StyledSearchIconButton = styled(JuiFabButton)`
+const JuiDialpadBtn = styled(JuiFabButton)`
   && {
     margin-right: ${spacing(3)};
   }
 `;
 
-StyledSearchIconButton.displayName = 'StyledSearchIconButton';
-
-export { StyledSearchIconButton };
+export { JuiDialpadBtn };

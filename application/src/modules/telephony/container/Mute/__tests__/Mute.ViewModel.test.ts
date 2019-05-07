@@ -5,8 +5,9 @@
  */
 
 import { container, Jupiter } from 'framework';
+import { TelephonyStore } from '../../../store';
 import { TelephonyService } from '../../../service/TelephonyService';
-import { EndViewModel } from '../End.ViewModel';
+import { MuteViewModel } from '../Mute.ViewModel';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import * as telephony from '@/modules/telephony/module.config';
 
@@ -15,19 +16,24 @@ jest.mock('../../../service/TelephonyService');
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 
-let endViewModel: EndViewModel;
+let muteViewModel: MuteViewModel;
 
 beforeAll(() => {
-  endViewModel = new EndViewModel();
-  endViewModel._telephonyService.hangUp = jest.fn();
+  muteViewModel = new MuteViewModel();
+  muteViewModel._telephonyService.muteOrUnmute = jest.fn();
 });
 
-describe('EndViewModel', () => {
-  it('should call hangUp function', () => {
-    endViewModel.end();
+describe('MuteViewModel', () => {
+  it('should return mute status', () => {
+    muteViewModel.muteOrUnmute();
+    const _telephonyStore: TelephonyStore = container.get(TelephonyStore);
+    expect(muteViewModel.isMute).toEqual(_telephonyStore.isMute);
+  });
+  it('should muteOrUnmute', () => {
+    muteViewModel.muteOrUnmute();
     const _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,
     );
-    expect(_telephonyService.hangUp).toBeCalled();
+    expect(_telephonyService.muteOrUnmute).toBeCalled();
   });
 });
