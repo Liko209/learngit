@@ -59,17 +59,16 @@ class JuiTopBar extends React.PureComponent<Props, States> {
               onClear={onClear}
               placeholder={searchPlaceholder}
             />
+          </StyledLeft>
+          <StyledRight>
             <StyledSearchIconButton
               onClick={openGlobalSearch}
               tooltipTitle={searchPlaceholder}
               size="medium"
               color="common.white"
               disableRipple={true}
-            >
-              search
-            </StyledSearchIconButton>
-          </StyledLeft>
-          <StyledRight>
+              iconName="search"
+            />
             <Dialpad />
             <NewActions />
             <AvatarActions />
