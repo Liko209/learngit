@@ -75,9 +75,10 @@ export class ConversationCard extends React.Component<
     }
   }
 
-  flashToast = async (message: string) => {
+  async flashToast(message: string) {
+    const translated = await i18nT(message);
     Notification.flashToast({
-      message: await i18nT(message),
+      message: translated,
       type: ToastType.ERROR,
       messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,

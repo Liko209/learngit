@@ -22,7 +22,7 @@ type ConversationCardFromProps = {
   disabled?: boolean;
 };
 const StyledName = styled('div')<{ disabled?: boolean }>`
-  color: ${props => (props.disabled ? grey('500') : primary('700'))};
+  color: ${({ disabled }) => (disabled ? grey('500') : primary('700'))};
   ${typography('caption1')};
   ${ellipsis()};
   box-sizing: border-box;
@@ -34,8 +34,8 @@ const StyledName = styled('div')<{ disabled?: boolean }>`
     color: ${grey('900')};
   }
   .conversation-name {
-    color: ${props => (props.disabled ? grey('600') : 'inherit')};
-    cursor: ${props => (props.disabled ? 'default' : 'pointer')}};
+    color: ${({ disabled }) => (disabled ? grey('600') : 'inherit')};
+    cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')}};
   }
 `;
 
@@ -44,6 +44,7 @@ const JuiConversationCardFrom = React.memo(
     <StyledName
       onClick={disabled ? () => {} : onClick}
       disabled={disabled}
+      data-disabled={disabled}
       {...rest}
     >
       <span className="preposition">in</span>
