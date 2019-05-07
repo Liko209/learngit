@@ -10,7 +10,7 @@ export * from './log';
 export * from './telephony';
 export * from './error';
 export * from './analysis';
-export * from './utils/BuildUtils';
+export * from './utils';
 
 export { default as Foundation } from './Foundation';
 export { config } from './config';
