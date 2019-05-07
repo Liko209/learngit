@@ -13,6 +13,6 @@ export type IResponseError = {
 };
 
 export type Raw<T> = Pick<T, Exclude<keyof T, 'id'>> & {
-  _id: number;
-  id?: number;
+  _id: any;
+  id?: any;
 } & IResponseError;

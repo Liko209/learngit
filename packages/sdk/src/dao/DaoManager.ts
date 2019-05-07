@@ -11,8 +11,11 @@ import { SyncUserConfig } from '../module/sync/config';
 import { JobSchedulerConfig } from '../framework/utils/jobSchedule/JobSchedulerConfig';
 import { AccountGlobalConfig } from '../module/account/config/AccountGlobalConfig';
 import { DaoGlobalConfig } from './config';
+import { IdModel, ModelIdType } from '../framework/model';
 
-class DaoManager extends Manager<BaseDao<any> | BaseKVDao | DBKVDao> {
+class DaoManager extends Manager<
+  BaseDao<IdModel<ModelIdType>, ModelIdType> | BaseKVDao | DBKVDao
+> {
   private kvStorageManager: KVStorageManager;
   private dbManager: DBManager;
 
@@ -87,7 +90,9 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao | DBKVDao> {
     return this.dbManager && this.dbManager.isDatabaseOpen();
   }
 
-  getDao<T extends BaseDao<any>>(DaoClass: INewable<T>): T {
+  getDao<T extends BaseDao<IdModel<ModelIdType>, ModelIdType>>(
+    DaoClass: INewable<T>,
+  ): T {
     const database = this.dbManager.getDatabase();
     return this.get(DaoClass, database);
   }

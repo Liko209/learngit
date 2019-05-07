@@ -22,6 +22,7 @@
     "log4js": "^3.0.6",
     "mock-client": "git+ssh://git@git.ringcentral.com:TA/tools/mock-client.git#master",
     "mysql2": "^1.6.4",
+    "plist": "^3.0.1",
     "puppeteer": "^1.14.0",
     "qs": "^6.6.0",
     "reflect-metadata": "^0.1.12",

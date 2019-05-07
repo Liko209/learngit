@@ -14,7 +14,7 @@ import notificationCenter from '../../../service/notificationCenter';
 import { EntityPersistentController } from '../impl/EntityPersistentController';
 
 describe('PartialModelController', () => {
-  let partialModifyController: PartialModifyController;
+  let partialModifyController: PartialModifyController<TestEntity>;
 
   let entitySourceController: EntitySourceController<TestEntity>;
   beforeEach(() => {

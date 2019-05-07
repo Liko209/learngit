@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { TeamSettingsViewModel } from '../TeamSettings.ViewModel';
-import { errorHelper } from 'sdk/error';
+import { errorHelper, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
 import * as utils from '@/utils/error';
 import { GroupService } from 'sdk/module/group';
 import { Notification } from '@/containers/Notification';
@@ -18,6 +18,10 @@ jest.mock('sdk/module/group', () => ({
   GroupService: jest.fn(),
 }));
 const groupService = new GroupService();
+
+function getNewJServerError(code: string, message: string = '') {
+  return new JServerError(code, message);
+}
 
 describe('TeamSettingsViewModel', () => {
   describe('save()', () => {
@@ -44,6 +48,23 @@ describe('TeamSettingsViewModel', () => {
         permissionFlags: expect.anything(),
       });
       expect(result).toBe(true);
+    });
+
+    it('Failed to update team name because the team name exists already. [JPT-1832]', async () => {
+      groupService.updateTeamSetting = jest
+        .fn()
+        .mockRejectedValueOnce(getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN));
+      const vm = new TeamSettingsViewModel();
+      vm.getDerivedProps({ id: 123 });
+      const result = await vm.save({
+        name: 'hello',
+        description: 'Dolor nostrud laboris veniam et duis.',
+        allowMemberAddMember: true,
+        allowMemberPost: true,
+        allowMemberPin: true,
+      });
+      expect(result).toBe(false);
+      expect(vm.nameErrorMsg).toEqual('people.prompt.alreadyTaken');
     });
 
     it('should be prompted error in flash toast (short=2s) when saving the settings failed due to network error [JPT-936]', async () => {

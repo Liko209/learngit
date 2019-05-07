@@ -19,7 +19,10 @@ import {
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
-import { NotificationOpts } from '../notification/interface';
+import {
+  NotificationOpts,
+  NOTIFICATION_PRIORITY,
+} from '../notification/interface';
 import i18nT from '@/utils/i18nT';
 import { PersonService } from 'sdk/module/person';
 import { replaceAtMention } from './container/ConversationSheet/TextMessage/utils/handleAtMentionName';
@@ -86,7 +89,11 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       body,
       renotify: false,
       icon: this.getIcon(person, members.length, isTeam),
-      data: { id: postId, scope: this._scope },
+      data: {
+        id: postId,
+        scope: this._scope,
+        priority: NOTIFICATION_PRIORITY.MESSAGE,
+      },
       onClick: this.onClickHandlerBuilder(postModel.groupId, postId),
     };
 

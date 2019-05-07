@@ -4,24 +4,26 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-interface IDao<T> {
+import { IdModel, ModelIdType } from '../../model';
+
+interface IDao<T extends IdModel<IdType>, IdType extends ModelIdType = number> {
   put(item: T | T[]): Promise<void>;
 
   bulkPut(array: T[]): Promise<void>;
 
   clear(): Promise<void>;
 
-  delete(key: number): Promise<void>;
+  delete(key: IdType): Promise<void>;
 
-  bulkDelete(keys: number[]): Promise<void>;
+  bulkDelete(keys: IdType[]): Promise<void>;
 
   update(item: Partial<T> | Partial<T>[], shouldDoPut?: boolean): Promise<void>;
 
   bulkUpdate(array: Partial<T>[], shouldDoPut?: boolean): Promise<void>;
 
-  get(key: number): Promise<T | null>;
+  get(key: IdType): Promise<T | null>;
 
-  batchGet(ids: number[], order?: boolean): Promise<T[]>;
+  batchGet(ids: IdType[], order?: boolean): Promise<T[]>;
 
   getAll(): Promise<T[]>;
 
