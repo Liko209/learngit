@@ -48,6 +48,7 @@ class DetachOrAttachViewModel extends StoreViewModel<DialerTitleBarProps>
     }
     if (!this._intervalId) {
       this._createInterval();
+      this._seconds = Number(`${Date.now() - activeCallTime}`.slice(0, -3));
     }
     return this._timing;
   }

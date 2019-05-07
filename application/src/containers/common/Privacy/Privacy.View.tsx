@@ -9,38 +9,19 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { PrivacyViewProps, PrivacyProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { Notification } from '@/containers/Notification';
-import { errorHelper } from 'sdk/error';
-import {
-  ToastType,
-  ToastMessageAlign,
-} from '@/containers/ToastWrapper/Toast/types';
+import { catchError } from '@/common/catchError';
 
 type Props = PrivacyViewProps & WithTranslation & PrivacyProps;
 
 @observer
 class PrivacyViewComponent extends Component<Props> {
-  flashToast = (message: string) => {
-    Notification.flashToast({
-      message,
-      type: ToastType.ERROR,
-      messageAlign: ToastMessageAlign.LEFT,
-      fullWidth: false,
-      dismissible: false,
-    });
-  }
-
+  @catchError.flash({
+    network: 'people.prompt.teamNetError',
+    server: 'people.prompt.markPrivateServerErrorForTeam',
+  })
   onClickPrivacy = async () => {
     const { handlePrivacy } = this.props;
-    try {
-      await handlePrivacy();
-    } catch (error) {
-      if (errorHelper.isNetworkConnectionError(error)) {
-        this.flashToast('people.prompt.teamNetError');
-      } else {
-        this.flashToast('people.prompt.markPrivateServerErrorForTeam');
-      }
-    }
+    await handlePrivacy();
   }
 
   getTipText = () => {
