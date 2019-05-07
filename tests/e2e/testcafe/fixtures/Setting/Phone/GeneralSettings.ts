@@ -4,10 +4,9 @@ import { h } from '../../../v2/helpers';
 import { setupCase, teardownCase } from '../../../init';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../../config';
-import { number } from 'prop-types';
 
 fixture('Phone/GeneralSettings')
-  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RC_WITH_DID))
   .afterEach(teardownCase());
 
 test(formalName(`Check the page content of the "General" section`, ['P2', 'JPT-1753', 'GeneralSettings', 'Mia.Cai']), async t => {
@@ -40,17 +39,31 @@ test(formalName(`Check the page content of the "General" section`, ['P2', 'JPT-1
 test(formalName(`Check the caller id drop down list shows available numbers for the user`, ['P2', 'JPT-1756', 'GeneralSettings', 'Mia.Cai']), async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
+  await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
+  let callerIDMapList = new Map();
+  let nickName ='';
 
-  await h(t).withLog(`Given I get login user info`, async () => {
+  await h(t).withLog(`Given I get login user display name`, async () => {
     const res = await h(t).glip(loginUser).getPerson();
-    console.log(res);
+    nickName = res.data.display_name;
   });
 
-  const callerIDDropDownList=[];
+  await h(t).withLog(`And I get login user phone number info`, async () => {
+    const res = await h(t).platform(loginUser).getExtensionPhoneNumberList();
+    const records= res.data.records;
+    for(let i in records){
+      callerIDMapList.set(records[i]['usageType'],records[i]['phoneNumber']);
+    }
+    callerIDMapList.set('Company number with nick name',loginUser.company.number + nickName);
+    callerIDMapList.set('Blocked','Blocked');
+    callerIDMapList.set('Company number',loginUser.company.number);
+  });
+  console.log(callerIDMapList);
+  return
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -67,8 +80,8 @@ test(formalName(`Check the caller id drop down list shows available numbers for 
 
   await h(t).withLog(`Then I can see the default of Caller ID in the 'General' section`, async () => {
     // TODO
-    for(let i in callerIDDropDownList){
-      await settingTab.phoneTab.callerIDDropDownListWithText(callerIDDropDownList[i], +i)
+    for(let value of callerIDMapList.values()){
+      await settingTab.phoneTab.callerIDDropDownListWithText(value)
     }
   });
 
@@ -95,9 +108,7 @@ test.skip(formalName(`Check if the caller id is implemented correctly`, ['P2', '
     await settingTab.phoneEntry.enter();
   });
 
-
 });
-
 
 // Region settings
 test(formalName(`Check if the content of region section is displayed correctly;`, ['P2', 'JPT-1788', 'GeneralSettings', 'Mia.Cai']), async t => {
