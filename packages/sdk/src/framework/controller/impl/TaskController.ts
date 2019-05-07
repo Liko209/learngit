@@ -36,13 +36,13 @@ class TaskController implements ITaskController {
     this._executeFunc = executeFunc;
     const taskFunc = async (callback: (successful: boolean) => void) => {
       try {
-        this._isExecuting = true;
+        this._setExecuting(true);
         await this._executeFunc();
         callback(true);
         this.reset();
       } catch (err) {
         mainLogger.tags(LOG_TAG).info('_execute failed:', err);
-        this._isExecuting = false;
+        this._setExecuting(false);
         callback(false);
       }
     };
@@ -80,9 +80,13 @@ class TaskController implements ITaskController {
   }
 
   reset(): void {
-    this._isExecuting = false;
+    this._setExecuting(false);
     this._strategy.reset();
     jobScheduler.cancelJob(JOB_KEY.INDEX_DATA);
+  }
+
+  private _setExecuting(isExecuting: boolean) {
+    this._isExecuting = isExecuting;
   }
 }
 
