@@ -6,6 +6,7 @@ import { ClientFunction } from 'testcafe';
 import { MentionPage, BookmarkPage, ConversationPage, DuplicatePromptPage } from "./ConversationPage";
 import { RightRail } from './RightRail';
 import { LeftRail } from './LeftRail';
+import { EmojiLibrary } from './EmojiLib';
 
 class Entry extends BaseWebComponent {
   async enter() {
@@ -385,6 +386,10 @@ export class MessageTab extends BaseWebComponent {
 
   get rightRail() {
     return this.getComponent(RightRail);
+  }
+
+  get emojiLibrary() {
+    return this.getComponent(EmojiLibrary);
   }
 
 }
