@@ -4,6 +4,8 @@ import { h } from '../../../v2/helpers';
 import { setupCase, teardownCase } from '../../../init';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../../config';
+import { IGroup } from "../../../v2/models";
+import { WebphoneSession } from '../../../v2/webphone/session';
 
 fixture('Phone/GeneralSettings')
   .beforeEach(setupCase(BrandTire.RC_WITH_DID))
@@ -90,10 +92,25 @@ test(formalName(`Check the caller id drop down list shows available numbers for 
 // TODO
 test.skip(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1759', 'GeneralSettings', 'Mia.Cai']), async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  const anotherUser = h(t).rcData.mainCompany.users[5];
   const app = new AppRoot(t);
 
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
+  let chat = <IGroup>{
+    type: 'DirectMessage',
+    owner: loginUser,
+    members: [loginUser, anotherUser]
+  }
+
+  await h(t).withLog('Given I have a 1:1 chat', async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  let session: WebphoneSession;
+  await h(t).withLog('And anpther user login webphone', async () => {
+    session = await h(t).newWebphoneSession(anotherUser);
+  });
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -106,6 +123,28 @@ test.skip(formalName(`Check if the caller id is implemented correctly`, ['P2', '
 
   await h(t).withLog(`And I click Phone tab`, async () => {
     await settingTab.phoneEntry.enter();
+  });
+
+  //TODO get the caller id from the setting
+
+  const chatEntry = app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId);
+  await h(t).withLog('When I open the 1:1 chat', async () => {
+    await chatEntry.enter();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog('Then the call button should display', async () => {
+    await t.expect(conversationPage.telephonyButton).ok();
+  });
+
+  const telephonyDialog = app.homePage.telephonyDialog;
+  await h(t).withLog('When I click the call button', async () => {
+    await conversationPage.clickTelephonyButton();
+    await telephonyDialog.ensureLoaded();
+  });
+
+  await h(t).withLog('And check the caller id from anotherUser', async () => {
+    // await session.answer();
   });
 
 });
