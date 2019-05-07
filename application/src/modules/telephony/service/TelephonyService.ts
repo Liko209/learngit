@@ -279,6 +279,10 @@ class TelephonyService {
     this._telephonyStore.closeDialer();
   }
 
+  maximize = () => {
+    this._telephonyStore.openDialer();
+  }
+
   handleWindow = () => {
     if (this._telephonyStore.isDetached) {
       this._telephonyStore.attachedWindow();
@@ -287,16 +291,18 @@ class TelephonyService {
     this._telephonyStore.detachedWindow();
   }
 
-  muteOrUnmute = (mute: boolean) => {
+  muteOrUnmute = () => {
     if (this._callId) {
+      this._telephonyStore.switchBetweenMuteAndUnmute();
+      const { isMute } = this._telephonyStore;
+      isMute
+        ? this._serverTelephonyService.mute(this._callId)
+        : this._serverTelephonyService.unmute(this._callId);
       mainLogger.info(
-        `${TelephonyService.TAG}${mute ? 'mute' : 'unmute'} call id=${
+        `${TelephonyService.TAG}${isMute ? 'mute' : 'unmute'} call id=${
           this._callId
         }`,
       );
-      mute
-        ? this._serverTelephonyService.mute(this._callId)
-        : this._serverTelephonyService.unmute(this._callId);
     }
   }
 

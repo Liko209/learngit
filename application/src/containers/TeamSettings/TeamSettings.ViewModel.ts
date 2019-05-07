@@ -14,6 +14,7 @@ import { TeamSettingTypes } from './types';
 import { GroupService } from 'sdk/module/group';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { generalErrorHandler } from '@/utils/error';
+import { catchError } from '@/common/catchError';
 import {
   ErrorParserHolder,
   ERROR_TYPES,
@@ -27,10 +28,6 @@ import {
 import { Notification } from '@/containers/Notification';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
-type ActionErrorOptions = {
-  backendErrorMessage: string;
-  networkErrorMessage: string;
-};
 class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   @observable
   nameErrorMsg?: string = '';
@@ -100,58 +97,44 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     return this._group.isCompanyTeam;
   }
 
+  @catchError.flash({
+    network: 'people.prompt.leaveTeamNetworkErrorContent',
+    server: 'people.prompt.leaveTeamServerErrorContent',
+  })
   leaveTeam = async () => {
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     );
     const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-
-    try {
-      await groupService.leaveTeam(userId, this.id);
-    } catch (e) {
-      this._onActionError(e, {
-        backendErrorMessage: 'people.prompt.leaveTeamServerErrorContent',
-        networkErrorMessage: 'people.prompt.leaveTeamNetworkErrorContent',
-      });
-    }
+    await groupService.leaveTeam(userId, this.id);
   }
 
+  @catchError.flash({
+    network: 'people.prompt.deleteTeamNetworkErrorContent',
+    server: 'people.prompt.deleteTeamServerErrorContent',
+  })
   @action
   deleteTeam = async () => {
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     );
-
-    try {
-      await groupService.deleteTeam(this.id);
-      this._onActionSuccess('people.team.deleteTeamSuccessMsg');
-      return true;
-    } catch (e) {
-      this._onActionError(e, {
-        backendErrorMessage: 'people.prompt.deleteTeamServerErrorContent',
-        networkErrorMessage: 'people.prompt.deleteTeamNetworkErrorContent',
-      });
-      return false;
-    }
+    await groupService.deleteTeam(this.id);
+    this._onActionSuccess('people.team.deleteTeamSuccessMsg');
+    return true;
   }
 
+  @catchError.flash({
+    network: 'people.prompt.archiveTeamNetworkErrorContent',
+    server: 'people.prompt.archiveTeamServerErrorContent',
+  })
   @action
   archiveTeam = async () => {
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     );
-
-    try {
-      await groupService.archiveTeam(this.id);
-      this._onActionSuccess('people.team.archiveTeamSuccessMsg');
-      return true;
-    } catch (e) {
-      this._onActionError(e, {
-        backendErrorMessage: 'people.prompt.archiveTeamServerErrorContent',
-        networkErrorMessage: 'people.prompt.archiveTeamNetworkErrorContent',
-      });
-      return false;
-    }
+    await groupService.archiveTeam(this.id);
+    this._onActionSuccess('people.team.archiveTeamSuccessMsg');
+    return true;
   }
 
   private _onActionSuccess = (message: string) => {
@@ -162,28 +145,6 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
       fullWidth: false,
       dismissible: false,
     });
-  }
-
-  private _onActionError = (e: Error, options: ActionErrorOptions) => {
-    const isBackEndError = errorHelper.isBackEndError(e);
-    const isNetworkError = errorHelper.isNetworkConnectionError(e);
-    let message = '';
-    if (isBackEndError) {
-      message = options.backendErrorMessage;
-    }
-    if (isNetworkError) {
-      message = options.networkErrorMessage;
-    }
-    if (message) {
-      return Notification.flashToast({
-        message,
-        type: ToastType.ERROR,
-        messageAlign: ToastMessageAlign.LEFT,
-        fullWidth: false,
-        dismissible: false,
-      });
-    }
-    return generalErrorHandler(e);
   }
 
   @action

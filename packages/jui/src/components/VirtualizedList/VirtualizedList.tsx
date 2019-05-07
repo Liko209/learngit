@@ -169,7 +169,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     setVisibleRange(
       createRange({
         startIndex: position.index,
-        size: renderedRangeSize,
+        size: visibleRangeSize,
         min: minIndex,
         max: maxIndex,
       }),
@@ -250,6 +250,10 @@ const JuiVirtualizedList: RefForwardingComponent<
   const ref: DivRefObject = useRef(null);
   const beforeRef: DivRefObject = useRef(null);
   const contentRef: DivRefObject = useRef(null);
+
+  const scrollEffectTriggerRef = useRef(0);
+  const prevAtBottomRef = useRef(false);
+
   //
   // State
   //
@@ -259,37 +263,36 @@ const JuiVirtualizedList: RefForwardingComponent<
     index: initialScrollToIndex,
     offset: 0,
   });
-  const renderedRangeSize = Math.ceil(
+
+  const visibleRangeSize = Math.ceil(
     height / rowManager.getEstimateRowHeight(),
   );
 
   const initialVisibleRange = createRange({
     startIndex: initialScrollToIndex,
-    size: renderedRangeSize,
+    size: visibleRangeSize,
     min: minIndex,
     max: maxIndex,
   });
-  const { range: visibleRange, setRange: setVisibleRange } = useRange(
+
+  const { range: unfixedVisibleRange, setRange: setVisibleRange } = useRange(
     initialVisibleRange,
   );
+  const visibleRange = fixIndexWhenChildrenChanged(
+    unfixedVisibleRange,
+    usePrevious(() => children.length),
+    usePrevious(() => visibleRange.startIndex),
+    usePrevious(() => children[visibleRange.startIndex] || null),
+  );
   const renderedRange = computeRenderedRange(visibleRange);
-
-  const prevAtBottomRef = useRef(false);
+  const { startIndex, stopIndex } = renderedRange;
 
   const shouldScrollToBottom = () => prevAtBottomRef.current && stickToBottom;
-
-  const scrollEffectTriggerRef = useRef(0);
 
   const prevVisibleRange = usePrevious(() => computeVisibleRange()) || {
     startIndex: 0,
     stopIndex: 0,
   };
-  const { startIndex, stopIndex } = fixIndexWhenChildrenChanged(
-    renderedRange,
-    usePrevious(() => children.length),
-    usePrevious(() => startIndex),
-    usePrevious(() => children[startIndex] || null),
-  );
 
   const { forceUpdate } = useForceUpdate();
   const useDebounceForceUpdate = useCallback(

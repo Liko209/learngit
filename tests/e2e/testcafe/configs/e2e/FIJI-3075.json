@@ -1,0 +1,8 @@
+{
+  "on_merge": {
+    "fixtures": ["./fixtures/ContentPanel/JumpToUnreadButton.ts"],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
