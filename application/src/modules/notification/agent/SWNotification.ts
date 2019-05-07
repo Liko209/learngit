@@ -36,7 +36,7 @@ export class SWNotification extends AbstractNotification<NotificationAction[]> {
   }
 
   private _subscribeWorkerMessage() {
-    navigator.serviceWorker.addEventListener('message', event => {
+    navigator.serviceWorker.addEventListener('message', (event) => {
       const data = JSON.parse(event.data) as SWCallbackArgs;
       if (!data.id) {
         return;
