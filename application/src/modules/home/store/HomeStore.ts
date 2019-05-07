@@ -48,23 +48,11 @@ class HomeStore {
 
   @computed
   get navConfigs() {
-    const hasNav = (config: SubModuleConfig) => {
-      return !!config.nav;
-    };
-
-    const { subModules } = config;
-    const resultConfigs: SubModuleConfig[] = [];
-
-    Object.keys(subModules).forEach(subModuleName => {
-      if (this._subModuleConfigsMap.has(subModuleName)) {
-        const subModule = this.getSubModule(subModuleName);
-        subModule && resultConfigs.push(subModule);
-      }
-    });
-
-    return resultConfigs.filter(hasNav).map(config => config.nav!()) as Promise<
-      NavConfig
-    >[];
+    return Object.keys(config.subModules)
+      .filter(moduleName => this._subModuleConfigsMap.has(moduleName))
+      .map(moduleName => this.getSubModule(moduleName))
+      .filter(config => !!config && !!config.nav)
+      .map(config => !!config && config.nav!()) as Promise<NavConfig>[];
   }
 
   getSubModule(name: string) {
