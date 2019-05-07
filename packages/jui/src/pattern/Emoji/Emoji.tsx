@@ -93,7 +93,7 @@ class JuiEmoji extends React.PureComponent<Props> {
               open={open}
               placement="bottom-start"
               Anchor={this._IconButton}
-              noTranslation={true}
+              noTransition={true}
             >
               <StyledEmojiWrapper>
                 <Picker
