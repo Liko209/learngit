@@ -33,6 +33,7 @@ const DEFAULT_RETRY_STRATEGY: RetryStrategy = (
 ) => {
   setTimeout(doRetry, 3000);
 };
+const LOG_TAG = 'NetworkRequestExecutor';
 
 export class NetworkRequestExecutor
   implements INetworkRequestExecutorListener, INetworkRequestExecutor {
@@ -76,9 +77,12 @@ export class NetworkRequestExecutor
   }
 
   onFailure(response: IResponse): void {
-    networkLogger.info('onFailure', ' executor status:', this.status);
+    networkLogger
+      .tags(LOG_TAG)
+      .info('onFailure', ' executor status:', this.status);
 
     if (this._isCompletion()) {
+      networkLogger.tags(LOG_TAG).info('onFailure() _isCompletion = true');
       return;
     }
 
@@ -137,7 +141,7 @@ export class NetworkRequestExecutor
   }
 
   private _performNetworkRequest() {
-    networkLogger.info('_performNetworkRequest()');
+    networkLogger.tags(LOG_TAG).info('_performNetworkRequest()');
     if (this._requestDecoration) {
       this._requestDecoration.decorate(this.request);
     }
@@ -153,11 +157,13 @@ export class NetworkRequestExecutor
 
   private _retry() {
     this.retryCounter += 1;
-    networkLogger.info(
-      '_retry()',
-      ' counter/total',
-      `${this.retryCounter}/${this.retryCount}`,
-    );
+    networkLogger
+      .tags(LOG_TAG)
+      .info(
+        '_retry()',
+        ' counter/total',
+        `${this.retryCounter}/${this.retryCount}`,
+      );
     this.retryStrategy(this.execute.bind(this), this.retryCounter);
   }
 
@@ -198,6 +204,10 @@ export class NetworkRequestExecutor
     if (callback) {
       this._notifyCompletion();
       callback(response);
+    } else {
+      networkLogger
+        .tags(LOG_TAG)
+        .info('_callXApiCompletionCallback() callback undefined');
     }
   }
 
@@ -219,7 +229,7 @@ export class NetworkRequestExecutor
   }
 
   private _handle503XApiCompletionCallback(response: IResponse) {
-    if (response.request.handlerType.name !== NETWORK_HANDLE_TYPE.RINGCENTRAL) {
+    if (this.handlerType.name !== NETWORK_HANDLE_TYPE.RINGCENTRAL) {
       return;
     }
     if (response.data && this._isCMN211Error(response.data)) {

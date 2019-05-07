@@ -86,7 +86,7 @@ class Sdk {
         notificationCenter.emitKVChange(SERVICE.LOGIN);
       }
     } else {
-      indexedDB.deleteDatabase('Glip');
+      window.indexedDB && window.indexedDB.deleteDatabase('Glip');
     }
     this._subscribeNotification();
     this._initDataAnalysis();
