@@ -12,13 +12,17 @@ class HomeService {
   @inject(Jupiter) private _jupiter: Jupiter;
   @inject(HomeStore) private _homeStore: HomeStore;
 
-  registerSubModule(name: string) {
+  async registerSubModule(name: string) {
     const subModuleConfig = config.subModules[name];
-    this._registerSubModule(name, subModuleConfig);
+    return await this._registerSubModule(name, subModuleConfig);
   }
 
-  registerSubModules(names: string[]) {
-    names.forEach(name => this.registerSubModule(name));
+  async registerSubModules(names: string[]) {
+    const promises: Promise<void>[] = [];
+    names.forEach(name => {
+      promises.push(this.registerSubModule(name));
+    });
+    return await Promise.all(promises);
   }
 
   setDefaultRouterPaths(paths: string[]) {

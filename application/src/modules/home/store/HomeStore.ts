@@ -9,7 +9,7 @@ import { SubModuleConfig, NavConfig } from '../types';
 import { config } from '../home.config';
 class HomeStore {
   @observable private _subModuleConfigsMap = new Map<string, SubModuleConfig>();
-  @observable private _defaultRouterPaths: string[];
+  @observable private _defaultRouterPaths: string[] = [];
 
   @computed
   get subModuleConfigs() {
