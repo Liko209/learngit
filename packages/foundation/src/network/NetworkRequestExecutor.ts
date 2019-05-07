@@ -95,7 +95,7 @@ export class NetworkRequestExecutor
     return this.request;
   }
 
-  execute() {
+  execute = () => {
     if (this.client.isNetworkReachable()) {
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.EXECUTING;
       this._performNetworkRequest();
