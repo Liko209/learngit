@@ -95,7 +95,7 @@ export class NetworkRequestExecutor
     return this.request;
   }
 
-  execute = () => {
+  execute() {
     if (this.client.isNetworkReachable()) {
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.EXECUTING;
       this._performNetworkRequest();
@@ -158,7 +158,7 @@ export class NetworkRequestExecutor
       ' counter/total',
       `${this.retryCounter}/${this.retryCount}`,
     );
-    this.retryStrategy(this.execute, this.retryCounter);
+    this.retryStrategy(this.execute.bind(this), this.retryCounter);
   }
 
   private _cancelClientRequest() {
