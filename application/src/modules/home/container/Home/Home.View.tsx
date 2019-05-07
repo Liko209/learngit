@@ -16,7 +16,6 @@ import Wrapper from './Wrapper';
 
 import { dao, mainLogger } from 'sdk';
 import { AccountService } from 'sdk/module/account';
-import { Dialer } from '@/modules/telephony';
 import { ModalPortal } from '@/containers/Dialog';
 import { GlobalSearch } from '@/modules/GlobalSearch';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
