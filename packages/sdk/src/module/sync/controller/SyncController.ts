@@ -27,10 +27,6 @@ import { GroupService, Group } from '../../group';
 import { PostService } from '../../post';
 import { SyncListener } from '../service/SyncListener';
 import { SyncUserConfig } from '../config/SyncUserConfig';
-import {
-  SequenceProcessorHandler,
-  IProcessor,
-} from '../../../framework/processor';
 import { SYNC_SOURCE, ChangeModel } from '../types';
 import { AccountGlobalConfig } from '../../../module/account/config';
 import { GroupConfigService } from '../../../module/groupConfig';
@@ -50,7 +46,6 @@ import { ITaskStrategy } from 'sdk/framework/strategy/ITaskStrategy';
 import { IndexDataTaskStrategy } from '../strategy/IndexDataTaskStrategy';
 
 const LOG_TAG = 'SyncController';
-const INDEX_MAX_QUEUE = 2;
 class SyncController {
   private _isFetchingRemaining: boolean;
   private _syncListener: SyncListener;
