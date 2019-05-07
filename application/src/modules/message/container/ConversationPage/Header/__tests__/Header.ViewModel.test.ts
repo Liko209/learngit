@@ -4,9 +4,30 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { getEntity, getGlobalValue } from '@/store/utils';
+import { CONVERSATION_TYPES } from '@/constants';
 import { HeaderViewModel } from '../Header.ViewModel';
+
 jest.mock('@/store/utils');
+jest.mock('i18next', () => ({
+  languages: ['en'],
+  services: {
+    backendConnector: {
+      state: {
+        'en|translation': -1,
+      },
+    },
+  },
+  isInitialized: true,
+  t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
+}));
+
 const vm = new HeaderViewModel();
+
+const mockGroup = {
+  members: [1, 2],
+  displayName: '1234 1234',
+  type: CONVERSATION_TYPES.SMS,
+};
 
 describe('ConversationPageHeaderViewModel', () => {
   beforeEach(() => {
@@ -107,5 +128,18 @@ describe('ConversationPageHeaderViewModel', () => {
     });
     (getGlobalValue as jest.Mock).mockReturnValue(1);
     expect(vm.customStatus).toBe(null);
+  });
+  describe('title', () => {
+    it('conversation types is sms', async () => {
+      (getEntity as jest.Mock).mockImplementation((type: string, id: number) => mockGroup);
+      expect(await vm.title.fetch()).toBe(`${mockGroup.displayName} (messageTypeNameSMS)`);
+    });
+    it('conversation types is not sms', async () => {
+      (getEntity as jest.Mock).mockImplementation((type: string, id: number) => ({
+        ...mockGroup,
+        type: CONVERSATION_TYPES.TEAM,
+      }));
+      expect(await vm.title.fetch()).toBe(mockGroup.displayName);
+    });
   });
 });

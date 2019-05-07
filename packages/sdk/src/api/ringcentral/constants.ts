@@ -12,11 +12,14 @@ const RINGCENTRAL_API = {
   API_Status: `/${API_VERSION}/status`,
   API_VERSION: '',
   API_CLIENT_INFO: `/${API_VERSION}/client-info`,
+
   API_ACCOUNT_INFO: `/${API_VERSION}/account/~`,
   API_EXTENSION_INFO: `/${API_VERSION}/account/~/extension/~`,
   API_ROLE_PERMISSIONS: `/${API_VERSION}/account/~/extension/~/authz-profile`,
   API_EXTENSION_PHONE_NUMBER: `/${API_VERSION}/account/~/extension/~/phone-number`,
+  API_SERVICE_INFO: `/${API_VERSION}/account/~/service-info`,
   API_DIALING_PLAN: `/${API_VERSION}/account/~/dialing-plan`,
+
   API_SPECIAL_SERVICE_NUMBER: `/${API_VERSION}/client-info/special-number-rule`,
   API_PHONE_PARSER_DATA: `/${API_VERSION}/number-parser/phonedata.xml`,
   API_PROFILE: '/glip/profile',

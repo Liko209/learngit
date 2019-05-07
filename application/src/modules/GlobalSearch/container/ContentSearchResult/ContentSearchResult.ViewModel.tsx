@@ -9,14 +9,8 @@ import { ContentSearchParams, ESearchContentTypes } from 'sdk/api/glip/search';
 import { PostService } from 'sdk/module/post';
 import { SearchedResultData } from 'sdk/module/post/controller/implementation/types';
 import { Post } from 'sdk/module/post/entity';
-import { errorHelper } from 'sdk/error';
-import {
-  ToastType,
-  ToastMessageAlign,
-} from '@/containers/ToastWrapper/Toast/types';
-import { Notification } from '@/containers/Notification';
-import { generalErrorHandler } from '@/utils/error';
 import { StoreViewModel } from '@/store/ViewModel';
+import { catchError } from '@/common/catchError';
 
 import { GlobalSearchStore } from '../../store';
 import { SEARCH_SCOPE } from '../../types';
@@ -130,8 +124,11 @@ class ContentSearchResultViewModel
     const isInitial = requestId === null;
 
     const fetchFn = isInitial ? this._onPostsInit : this._onPostsScroll;
+    const defaultResult =  { hasMore: true, posts: [], items: [] };
 
-    const { posts, items, hasMore } = await this._fetchHandleWrapper(fetchFn);
+    const result = (await this._fetchHandleWrapper(fetchFn)) || defaultResult;
+
+    const { posts, items, hasMore } = result;
 
     storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
 
@@ -200,42 +197,16 @@ class ContentSearchResultViewModel
     return result;
   }
 
+  @catchError.flash({
+    network: 'globalSearch.prompt.contentSearchNetworkError',
+    server: 'globalSearch.prompt.contentSearchServiceError',
+    doGeneral: true,
+  })
   private _fetchHandleWrapper = async (
     fetchFn: () => Promise<SearchedResultData>,
   ) => {
-    let result;
-
-    try {
-      result = await fetchFn();
-    } catch (error) {
-      this._fetchErrorHandler(error);
-
-      result = { hasMore: true, posts: [], items: [] };
-    }
-
+    const result = await fetchFn();
     return result;
-  }
-
-  private _fetchErrorHandler(error: Error) {
-    const isServiceError = errorHelper.isBackEndError(error);
-    const isNetworkError = errorHelper.isNetworkConnectionError(error);
-    const isResponseError = isServiceError || isNetworkError;
-
-    let message: string = 'globalSearch.prompt';
-
-    isServiceError && (message = `${message}.contentSearchServiceError`);
-
-    isNetworkError && (message = `${message}.contentSearchNetworkError`);
-
-    isResponseError
-      ? Notification.flashToast({
-          message,
-          type: ToastType.ERROR,
-          messageAlign: ToastMessageAlign.LEFT,
-          fullWidth: false,
-          dismissible: false,
-        })
-      : generalErrorHandler(error);
   }
 }
 

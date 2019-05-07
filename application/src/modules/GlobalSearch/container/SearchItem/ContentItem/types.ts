@@ -3,6 +3,7 @@
  * @Date: 2019-01-30 14:50:19
  * Copyright © RingCentral. All rights reserved.
  */
+import { PromisedComputedValue } from 'computed-async-mobx';
 import GroupModel from '@/store/models/Group';
 import { ISearchItemModel } from '../types';
 import { SEARCH_SCOPE, SEARCH_VIEW, TAB_TYPE } from '../../../types';
@@ -21,7 +22,7 @@ type ViewProps = {
   onClick: () => void;
   hovered: boolean;
   addRecentRecord: () => void;
-  contentText: string;
+  contentText: PromisedComputedValue<string>;
 };
 
 export {

@@ -71,6 +71,11 @@ enum RTC_STATUS_CODE {
   INVALID_STATE = 1002,
 }
 
+type RTCUserAgentInfo = {
+  endpointId?: string;
+  userAgent?: string;
+};
+
 enum RTC_REPLY_MSG_PATTERN {
   WILL_CALL_YOU_BACK_LATER = 'WillCallYouBackLater',
   IN_A_MEETING = 'InAMeeting',
@@ -93,6 +98,7 @@ enum RTC_MEDIA_ACTION {
 export {
   RTC_ACCOUNT_STATE,
   RTCCallInfo,
+  RTCUserAgentInfo,
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
   RTC_STATUS_CODE,

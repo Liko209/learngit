@@ -19,6 +19,7 @@ import notificationCenter from '../../service/notificationCenter';
 import { RC_INFO } from '../../service/eventKey';
 import { RCInfoService } from '../../module/rcInfo';
 import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
+import { StationSettingInfo } from './types';
 
 const MODULE_LOADING_TIME_OUT: number = 60000; // 1 minute
 const PhoneParserModule: ModuleClass = Module;
@@ -161,7 +162,7 @@ class PhoneParserUtility {
 
   static async getPhoneParser(
     phoneNumber: string,
-    useDefaultSettingsKey: boolean,
+    useDefaultSettingsKey = false,
   ): Promise<PhoneParserUtility | undefined> {
     if (!(await PhoneParserUtility.canGetPhoneParser())) {
       return undefined;
@@ -202,16 +203,17 @@ class PhoneParserUtility {
     return PhoneParserUtility._phoneParserModule.GetStationAreaCode();
   }
 
-  static setStationLocation(
-    szCountryCode: string,
-    szAreaCode: string,
-    brandId: number = 0,
-    maxShortLen: number = -1,
-    shortPstnPossible: boolean = false,
-    siteCode: string = '',
-    shortPinLen: number = 0,
-    outboundCallPrefix: string = '',
-  ): boolean {
+  static setStationLocation(info: StationSettingInfo): boolean {
+    const {
+      szCountryCode,
+      szAreaCode,
+      brandId = 0,
+      maxShortLen = -1,
+      shortPstnPossible = false,
+      siteCode = '',
+      shortPinLen = 0,
+      outboundCallPrefix = '',
+    } = info;
     if (!PhoneParserUtility._moduleLoaded) {
       PhoneParserUtility.loadModule();
       return false;

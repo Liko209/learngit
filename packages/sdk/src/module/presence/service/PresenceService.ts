@@ -13,7 +13,7 @@ import { AccountUserConfig } from '../../../module/account/config';
 import { PRESENCE } from '../constant/Presence';
 import { ChangeModel } from '../../sync/types';
 
-class PresenceService extends EntityBaseService {
+class PresenceService extends EntityBaseService<Presence> {
   private _presenceController: PresenceController;
 
   constructor(threshold: number = 29, interval: number = 200) {

@@ -4,15 +4,19 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import i18next from 'i18next';
 import { JuiIconButton } from 'jui/components/Buttons';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-const MeetingButton = () => {
+type Props = WithTranslation;
+
+const MeetingButtonComponent = (props: Props) => {
   return (
-    <JuiIconButton tooltipTitle={i18next.t('meeting.Meetings')}>
+    <JuiIconButton tooltipTitle={props.t('meeting.Meetings')}>
       meetings
     </JuiIconButton>
   );
 };
+
+const MeetingButton = withTranslation('translations')(MeetingButtonComponent);
 
 export { MeetingButton };

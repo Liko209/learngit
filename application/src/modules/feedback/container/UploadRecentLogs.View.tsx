@@ -5,7 +5,7 @@
  */
 
 import { DialogContext } from '@/containers/Dialog';
-import i18next from 'i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiModal } from 'jui/components/Dialog';
 import { observer } from 'mobx-react';
 import React, { createRef } from 'react';
@@ -32,19 +32,17 @@ const Loading = withLoading(
 );
 
 type State = {};
+
+type Props = UploadRecentLogsViewProps & UploadRecentLogsViewModelProps & WithTranslation;
+
 @observer
-class UploadRecentLogsView extends React.Component<
-  UploadRecentLogsViewProps & UploadRecentLogsViewModelProps,
-  State
-> {
+class UploadRecentLogsComponent extends React.Component<Props, State> {
   static contextType = DialogContext;
 
   focusInputRef = createRef<HTMLInputElement>();
   focusTimer: NodeJS.Timeout;
 
-  constructor(
-    props: UploadRecentLogsViewProps & UploadRecentLogsViewModelProps,
-  ) {
+  constructor(props: Props) {
     super(props);
     this.state = {};
     // turn on callback if want to block when loading.
@@ -52,11 +50,12 @@ class UploadRecentLogsView extends React.Component<
   }
 
   private _onSendFeedbackDoneCallback = (taskStatus: TaskStatus) => {
+    const { t } = this.props;
     const isSuccess = taskStatus === TaskStatus.SUCCESS;
     Notification.flashToast({
       message: isSuccess
-        ? i18next.t('feedback.sendFeedbackSuccess')
-        : i18next.t('feedback.sendFeedbackFailed'),
+        ? t('feedback.sendFeedbackSuccess')
+        : t('feedback.sendFeedbackFailed'),
       type: isSuccess ? ToastType.SUCCESS : ToastType.ERROR,
       messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
@@ -80,10 +79,12 @@ class UploadRecentLogsView extends React.Component<
   }
 
   handleSend = () => {
-    this.props.sendFeedback();
+    const { t, sendFeedback } = this.props;
+    sendFeedback();
+
     // sendingInBackground
     Notification.flashToast({
-      message: i18next.t('feedback.sendingInBackground'),
+      message: t('feedback.sendingInBackground'),
       type: ToastType.INFO,
       messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
@@ -95,22 +96,22 @@ class UploadRecentLogsView extends React.Component<
   onClose = () => this.context();
 
   render() {
-    const { handleTitleChange, handleDescChange, isLoading } = this.props;
+    const { handleTitleChange, handleDescChange, isLoading, t } = this.props;
     return (
       <JuiModal
         open={true}
         size={'medium'}
-        title={i18next.t('feedback.uploadRecentLogsDialogHeader')}
+        title={t('feedback.uploadRecentLogsDialogHeader')}
         onCancel={this.onClose}
         onOK={this.handleSend}
-        okText={i18next.t('feedback.submit')}
-        cancelText={i18next.t('common.dialog.cancel')}
+        okText={t('feedback.submit')}
+        cancelText={t('common.dialog.cancel')}
         loading={isLoading}
       >
         <Loading loading={isLoading} alwaysComponentShow={true} delay={0}>
           <JuiTextField
-            id={i18next.t('feedback.issueTitle')}
-            label={i18next.t('feedback.issueTitle')}
+            id={t('feedback.issueTitle')}
+            label={t('feedback.issueTitle')}
             fullWidth={true}
             inputProps={{
               maxLength: 200,
@@ -119,8 +120,8 @@ class UploadRecentLogsView extends React.Component<
             onChange={handleTitleChange}
           />
           <JuiTextarea
-            id={i18next.t('feedback.describeYourProblemHere')}
-            label={i18next.t('feedback.describeYourProblemHere')}
+            id={t('feedback.describeYourProblemHere')}
+            label={t('feedback.describeYourProblemHere')}
             inputProps={{
               maxLength: 1000,
             }}
@@ -133,6 +134,8 @@ class UploadRecentLogsView extends React.Component<
   }
 }
 
-const UploadRecentLogsComponent = UploadRecentLogsView;
+// const UploadRecentLogsComponent = UploadRecentLogsView;
+
+const UploadRecentLogsView = withTranslation('translations')(UploadRecentLogsComponent);
 
 export { UploadRecentLogsView, UploadRecentLogsComponent };

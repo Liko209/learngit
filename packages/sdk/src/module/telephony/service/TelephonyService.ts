@@ -14,8 +14,9 @@ import { ITelephonyAccountDelegate } from './ITelephonyAccountDelegate';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SERVICE } from '../../../service/eventKey';
 import { MAKE_CALL_ERROR_CODE } from '../types';
+import { IdModel } from '../../../framework/model';
 
-class TelephonyService extends EntityBaseService {
+class TelephonyService extends EntityBaseService<IdModel> {
   private _telephonyEngineController: TelephonyEngineController;
 
   constructor() {

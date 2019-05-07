@@ -71,6 +71,10 @@ class CompanyService extends EntityBaseService<Company> {
   async isUserCompanyTelephonyOn() {
     return await this.getCompanyController().isUserCompanyTelephonyOn();
   }
+
+  async getBrandType() {
+    return await this.getCompanyController().getBrandType();
+  }
 }
 
 export { CompanyService };

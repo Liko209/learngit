@@ -9,7 +9,11 @@ import { IRTCRegistrationFsmDependency } from './IRTCRegistrationFsmDependency';
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCUserAgent } from '../signaling/IRTCUserAgent';
 import { RTCSipUserAgent } from '../signaling/RTCSipUserAgent';
-import { RTC_ACCOUNT_STATE, RTCCallOptions } from '../api/types';
+import {
+  RTC_ACCOUNT_STATE,
+  RTCCallOptions,
+  RTCUserAgentInfo,
+} from '../api/types';
 import { UA_EVENT, ProvisionDataOptions } from '../signaling/types';
 import { IRTCCallDelegate } from '../api/IRTCCallDelegate';
 import {
@@ -21,6 +25,7 @@ import {
 } from './types';
 import async, { AsyncQueue } from 'async';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
+import _ from 'lodash';
 
 const LOG_TAG = 'RTCRegistrationManager';
 const registerRetryMinValue = 30;
@@ -32,6 +37,7 @@ class RTCRegistrationManager extends EventEmitter2
   private _userAgent: IRTCUserAgent;
   private _retryTimer: NodeJS.Timeout | null = null;
   private _retryInterval: number;
+  private _userAgentInfo: RTCUserAgentInfo;
 
   onNetworkChangeToOnlineAction(): void {
     this.reRegister();
@@ -61,8 +67,11 @@ class RTCRegistrationManager extends EventEmitter2
     this.emit(REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE, callSession);
   }
 
-  constructor() {
+  constructor(userAgentInfo: RTCUserAgentInfo) {
     super();
+    if (userAgentInfo) {
+      this._userAgentInfo = userAgentInfo;
+    }
     this._fsm = new RTCRegistrationFSM(this);
     this._userAgent = new RTCSipUserAgent();
     this._eventQueue = async.queue(
@@ -288,7 +297,22 @@ class RTCRegistrationManager extends EventEmitter2
     provisionData: RTCSipProvisionInfo,
     options: ProvisionDataOptions,
   ) {
-    this._userAgent.restartUA(provisionData, options);
+    const cloneOption = _.cloneDeep(options);
+    if (this._userAgentInfo) {
+      if (
+        this._userAgentInfo.endpointId &&
+        this._userAgentInfo.endpointId.length > 0
+      ) {
+        cloneOption.uuid = this._userAgentInfo.endpointId;
+      }
+      if (
+        this._userAgentInfo.userAgent &&
+        this._userAgentInfo.userAgent.length > 0
+      ) {
+        cloneOption.appName = this._userAgentInfo.userAgent;
+      }
+    }
+    this._userAgent.restartUA(provisionData, cloneOption);
   }
 }
 

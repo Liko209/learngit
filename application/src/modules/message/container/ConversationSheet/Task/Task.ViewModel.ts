@@ -3,7 +3,7 @@
  * @Date: 2018-11-08 19:18:07
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { promisedComputed } from 'computed-async-mobx';
 import { computed } from 'mobx';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
@@ -14,7 +14,7 @@ import FileItemModel from '@/store/models/FileItem';
 import { recentlyTwoDayAndOther } from '@/utils/date';
 import { Item } from 'sdk/module/item/entity';
 import { getFileType } from '@/common/getFileType';
-import { getDateAndTime } from '../helper';
+import { getDateAndTime, getDurationTimeText } from '../helper';
 import { accentColor } from '@/common/AccentColor';
 import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
@@ -106,17 +106,31 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
     return !!(start && due);
   }
 
-  @computed
-  get startTime() {
+  startTime = promisedComputed('', async () => {
     const startTime = this.task.start;
-    return startTime ? recentlyTwoDayAndOther(startTime) : '';
-  }
+    return startTime ? await recentlyTwoDayAndOther(startTime) : '';
+  });
 
-  @computed
-  get endTime() {
+  endTime = promisedComputed('', async () => {
     const endTime = this.task.due;
-    return endTime ? getDateAndTime(endTime) : '';
-  }
+    return endTime ? await getDateAndTime(endTime) : '';
+  });
+
+  timeText = promisedComputed('', async () => {
+    const {
+      repeat,
+      repeatEndingAfter,
+      repeatEnding,
+      repeatEndingOn,
+    } = this.task;
+
+    return await getDurationTimeText(
+      repeat,
+      repeatEndingAfter,
+      repeatEndingOn,
+      repeatEnding,
+    );
+  });
 
   @computed
   get attachmentIds() {

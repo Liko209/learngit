@@ -271,4 +271,28 @@ describe('CompanyController', () => {
       expect(res).toBe('TestType');
     });
   });
+
+  describe('getBrandType', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should return brand type of the company', async () => {
+      const company = {
+        id: 16385,
+        rc_brand: 'RC',
+      };
+      entitySourceController.get = jest.fn().mockReturnValue(company);
+      expect(await companyController.getBrandType()).toEqual(company.rc_brand);
+    });
+
+    it('should return undefined when company has no such data', async () => {
+      const company = {
+        id: 16385,
+      };
+      entitySourceController.get = jest.fn().mockReturnValue(company);
+      expect(await companyController.getBrandType()).toEqual(undefined);
+    });
+  });
 });

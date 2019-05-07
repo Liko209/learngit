@@ -4,34 +4,19 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RCCountryInfo, RCRegionalSetting, RCStatusInfo } from './common';
+import {
+  RCRegionalSetting,
+  RCStatusInfo,
+  RCServicePlanInfo,
+  RCBillingPlanInfo,
+  RCBrandInfo,
+} from './common';
 
 type RCNestExtensionInfo = {
   uri?: string;
   id?: number;
   extensionNumber?: string;
   partnerId?: string;
-};
-
-type RCBrandInfo = {
-  id?: string;
-  name?: string;
-  homeCountry?: RCCountryInfo;
-};
-
-type RCServicePlanInfo = {
-  id?: string;
-  name?: string;
-  edition?: string;
-};
-
-type RCBillingPlanInfo = {
-  id?: string;
-  name?: string;
-  durationUnit?: string;
-  duration?: number;
-  type?: string;
-  includedPhoneLines?: number;
 };
 
 type RCTargetServicePlanInfo = {

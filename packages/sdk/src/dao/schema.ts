@@ -28,7 +28,7 @@ const gen = (
 
 const schema: ISchema = {
   name: 'Glip',
-  version: 12, // Should update this number if all the old data in client db need to be deleted.
+  version: 13, // Should update this number if all the old data in client db need to be deleted.
   schema: {
     1: {
       person: gen(),

@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel } from '../../model/Model';
-interface IEntityChangeObserver<T extends IdModel = IdModel> {
+import { IdModel, ModelIdType } from '../../model/Model';
+interface IEntityChangeObserver<T extends IdModel<ModelIdType> = IdModel> {
   onEntitiesChanged(entities: T[]): void;
 }
 

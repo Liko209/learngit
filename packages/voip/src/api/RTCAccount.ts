@@ -21,6 +21,7 @@ import {
   RTCCallOptions,
   RTCSipFlags,
   RTC_STATUS_CODE,
+  RTCUserAgentInfo,
 } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
@@ -40,10 +41,10 @@ class RTCAccount implements IRTCAccount {
   private _callManager: RTCCallManager;
   private _networkListener: Listener;
 
-  constructor(listener: IRTCAccountDelegate) {
+  constructor(listener: IRTCAccountDelegate, userAgentInfo: RTCUserAgentInfo) {
     this._state = RTC_ACCOUNT_STATE.IDLE;
     this._delegate = listener;
-    this._regManager = new RTCRegistrationManager();
+    this._regManager = new RTCRegistrationManager(userAgentInfo);
     this._provManager = new RTCProvManager();
     this._callManager = new RTCCallManager();
     this._networkListener = (params: any) => {

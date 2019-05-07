@@ -1,0 +1,75 @@
+/*
+ * @Author: Conner (conner.kang@ringcentral.com)
+ * @Date: 2019-05-02 15:14:02
+ * Copyright © RingCentral. All rights reserved.
+ */
+import React, { ReactNode } from 'react';
+import MuiListSubheader, {
+  ListSubheaderProps as MuiListSubheaderProps,
+} from '@material-ui/core/ListSubheader';
+import {
+  JuiCard,
+  JuiCardContent,
+  JuiCardContentProps,
+} from '../../components/Cards';
+import styled from '../../foundation/styled-components';
+import {
+  spacing,
+  ellipsis,
+  grey,
+  typography,
+} from '../../foundation/utils/styles';
+
+type JuiSettingSectionProps = {
+  title?: ReactNode;
+};
+
+const TitleHeaderWrap = styled<MuiListSubheaderProps>(MuiListSubheader)`
+  && {
+    display: flex;
+    color: ${grey('700')};
+    ${typography('body1')}
+    padding: ${spacing(0, 0, 1, 0)};
+  }
+`;
+
+const TitleWrap = styled.span`
+  && {
+    ${ellipsis()};
+  }
+`;
+
+const ContentWrap = styled<JuiCardContentProps>(JuiCardContent)`
+  && {
+    padding: ${spacing(4)};
+    &:last-child {
+      padding-bottom: ${spacing(4)};
+    }
+  }
+`;
+
+const SettingSectionWrap = styled.div`
+  && {
+    margin-bottom: ${spacing(4)};
+  }
+`;
+
+class JuiSettingSection extends React.PureComponent<JuiSettingSectionProps> {
+  render() {
+    const { children, title } = this.props;
+    return (
+      <SettingSectionWrap className="setting-section">
+        <TitleHeaderWrap component="div">
+          <TitleWrap className="setting-section-title">{title}</TitleWrap>
+        </TitleHeaderWrap>
+        <JuiCard>
+          <ContentWrap className="setting-section-content">
+            {children}
+          </ContentWrap>
+        </JuiCard>
+      </SettingSectionWrap>
+    );
+  }
+}
+
+export { JuiSettingSection, JuiSettingSectionProps };

@@ -10,6 +10,19 @@ import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 let ViewModel: AvatarActionsViewModel;
 
+jest.mock('i18next', () => ({
+  languages: ['en'],
+  services: {
+    backendConnector: {
+      state: {
+        'en|translation': -1,
+      },
+    },
+  },
+  isInitialized: true,
+  t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
+}));
+
 describe('AvatarActionsVM', () => {
   beforeAll(() => {
     jest.resetAllMocks();
@@ -25,7 +38,7 @@ describe('AvatarActionsVM', () => {
   });
 
   describe('handleSignOut()', () => {
-    it('should call AccountService logout() [JPT-70]', async () => {
+    it('should call AccountService logout() [JPT-70]', async (done: jest.DoneCallback) => {
       const accountService = {
         logout: jest.fn(),
       };
@@ -33,6 +46,7 @@ describe('AvatarActionsVM', () => {
 
       await ViewModel.handleSignOut();
       expect(accountService.logout).toHaveBeenCalled();
+      done();
     });
   });
 });
