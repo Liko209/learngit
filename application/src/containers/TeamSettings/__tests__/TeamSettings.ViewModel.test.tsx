@@ -55,7 +55,9 @@ describe('TeamSettingsViewModel', () => {
     it('Failed to update team name because the team name exists already. [JPT-1832]', async () => {
       groupService.updateTeamSetting = jest
         .fn()
-        .mockRejectedValueOnce(getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN));
+        .mockRejectedValueOnce(
+          getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN),
+        );
       const vm = new TeamSettingsViewModel();
       vm.getDerivedProps({ id: 123 });
       const result = await vm.save({
@@ -156,6 +158,7 @@ describe('TeamSettingsViewModel', () => {
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
         dismissible: false,
+        autoHideDuration: 3000,
       };
     };
     it('should show leaveTeamServerErrorContent when server error occurs [JPT-931]', async () => {

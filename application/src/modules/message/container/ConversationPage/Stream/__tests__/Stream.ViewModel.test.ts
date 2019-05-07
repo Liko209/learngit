@@ -441,6 +441,7 @@ describe('StreamViewModel', () => {
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
         fullWidth: false,
+        autoHideDuration: 3000,
         message: 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages',
         messageAlign: ToastMessageAlign.LEFT,
         type: ToastType.ERROR,
@@ -527,6 +528,7 @@ describe('StreamViewModel', () => {
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
         fullWidth: false,
+        autoHideDuration: 3000,
         message: 'message.prompt.SorryWeWereNotAbleToLoadNewerMessages',
         messageAlign: ToastMessageAlign.LEFT,
         type: ToastType.ERROR,
