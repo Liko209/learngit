@@ -7,13 +7,10 @@ import { IZipItemProvider, ZipItem } from 'sdk/service/uploadLogControl/types';
 import { getAppContextInfo } from '@/utils/error';
 
 export class ContextInfoZipItemProvider implements IZipItemProvider {
-  constructor() {}
-
   getZipItems = async () => {
-    getAppContextInfo();
     const contextInfo = await getAppContextInfo();
     const contextContent = Object.keys(contextInfo)
-      .map(key => {
+      .map((key: string) => {
         return `${key}: ${contextInfo[key]}`;
       })
       .join('\n');
