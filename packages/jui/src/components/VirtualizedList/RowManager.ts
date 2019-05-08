@@ -59,8 +59,10 @@ class RowManager {
   }
 
   flushCache() {
-    this._heightMap = new Map([...this._heightMap, ...this._cacheMap]);
-    this._cacheMap = new Map();
+    this._cacheMap.forEach((val, key) => {
+      this._heightMap.set(key, val);
+    });
+    this._cacheMap.clear();
   }
   getRowsHeight(startIndex: number, stopIndex: number) {
     if (stopIndex < 0) {
