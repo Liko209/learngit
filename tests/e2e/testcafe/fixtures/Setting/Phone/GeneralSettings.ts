@@ -94,9 +94,14 @@ test.only(formalName(`Check if the caller id is implemented correctly`, ['P2', '
   const loginUser = h(t).rcData.mainCompany.users[0];
   const anotherUser = h(t).rcData.mainCompany.users[5];
   const app = new AppRoot(t);
+  await h(t).platform(anotherUser).init();
+  await h(t).glip(anotherUser).init();
 
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
+  const telephonyDialog = app.homePage.telephonyDialog;
+  const miniProfile = app.homePage.miniProfile;
+  const profileDialog = app.homePage.profileDialog;
   let chat = <IGroup>{
     type: 'DirectMessage',
     owner: loginUser,
@@ -106,6 +111,13 @@ test.only(formalName(`Check if the caller id is implemented correctly`, ['P2', '
   await h(t).withLog('Given I have a 1:1 chat', async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
+
+  let anotherUserName= '';
+  await h(t).withLog('And I get the display name of one user ', async () => {
+    anotherUserName = await h(t).glip(anotherUser).getPersonPartialData('display_name', anotherUser.rcId);
+  });
+
+  const otherUserPostId = await h(t).platform(anotherUser).sentAndGetTextPostId(`Other post ${uuid()}`, chat.glipId);
 
   let session: WebphoneSession;
   await h(t).withLog('And anpther user login webphone', async () => {
@@ -125,8 +137,9 @@ test.only(formalName(`Check if the caller id is implemented correctly`, ['P2', '
   //   await settingTab.phoneEntry.enter();
   // });
 
-  //TODO get the caller id from the setting
+  //TODO Change the caller id from the setting
 
+  // Entry1: 1:1conversation
   const chatEntry = app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId);
   await h(t).withLog('When I open the 1:1 chat', async () => {
     await chatEntry.enter();
@@ -137,14 +150,95 @@ test.only(formalName(`Check if the caller id is implemented correctly`, ['P2', '
     await t.expect(conversationPage.telephonyButton).ok();
   });
 
-  const telephonyDialog = app.homePage.telephonyDialog;
   await h(t).withLog('When I click the call button', async () => {
     await conversationPage.clickTelephonyButton();
     await telephonyDialog.ensureLoaded();
   });
 
-  await h(t).withLog('And check the caller id from anotherUser', async () => {
-    // await session.answer();
+  // todo need update
+  await h(t).withLog(`Then the caller id is ${loginUser.extension} from anotherUser`, async () => {
+    await session.waitForPhoneNumber(loginUser.extension);
+  });
+
+  // Entry2: mini profile
+  await h(t).withLog('Given I click hangup button', async () => {
+    await telephonyDialog.clickHangupButton();
+    await telephonyDialog.ensureDismiss();
+  });
+
+  await h(t).withLog('When I click the at-mention on the post',async() => {
+    const postItem = app.homePage.messageTab.conversationPage.postItemById(otherUserPostId);
+    await postItem.clickAvatar();
+  });
+
+  await h(t).withLog('Then show mini profile',async() => {
+    await miniProfile.shouldBePopUp();
+  });
+
+  await h(t).withLog('When I click call button on the mini profile',async() => {
+    await miniProfile.clickTelephonyButton();
+    await telephonyDialog.ensureLoaded();
+  });
+
+  // todo need update
+  await h(t).withLog(`Then the caller id is ${loginUser.extension} from anotherUser`, async () => {
+    await session.waitForPhoneNumber(loginUser.extension);
+  });
+
+  // Entry3: profile
+  await h(t).withLog('Given I click hangup button', async () => {
+    await telephonyDialog.clickHangupButton();
+    await telephonyDialog.ensureDismiss();
+  });
+
+  await h(t).withLog('When I click the avatar on the post',async() => {
+    const postItem = app.homePage.messageTab.conversationPage.postItemById(otherUserPostId);
+    await postItem.clickAvatar();
+    await miniProfile.ensureLoaded();
+  });
+
+  await h(t).withLog('And I click the Profile button on mini profile',async() => {
+    await miniProfile.openProfile();
+    await profileDialog.ensureLoaded();
+  });
+
+  await h(t).withLog('When I click call button on the profile',async() => {
+    await profileDialog.makeCall();
+    await telephonyDialog.ensureLoaded();
+  });
+
+  // todo need update
+  await h(t).withLog(`Then the caller id is ${loginUser.extension} from anotherUser`, async () => {
+    await session.waitForPhoneNumber(loginUser.extension);
+  });
+
+  // Entry4: search result
+  await h(t).withLog('Given I click hangup button', async () => {
+    await telephonyDialog.clickHangupButton();
+    await telephonyDialog.ensureDismiss();
+  });
+
+  const searchBar = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
+  const anotherUserRecord = searchDialog.instantPage.searchPeopleWithText(anotherUserName);
+  await h(t).withLog(`When I search the person ${anotherUserName}`,async() => {
+    await searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(anotherUserName);
+    await t.expect(anotherUserRecord.exists).ok();
+  });
+
+  await h(t).withLog('And I hover on the record',async() => {
+    await t.hover(anotherUserRecord.self);
+  });
+
+  await h(t).withLog('When I click call button on the record',async() => {
+    // todo
+    await anotherUserRecord.clickTelephonyButton();
+    await telephonyDialog.ensureLoaded();
+  });
+
+  // todo need update
+  await h(t).withLog(`Then the caller id is ${loginUser.extension} from anotherUser`, async () => {
     await session.waitForPhoneNumber(loginUser.extension);
   });
 
