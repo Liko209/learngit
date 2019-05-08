@@ -9,7 +9,7 @@ import { daoManager, DeactivatedDao } from '../../dao';
 import { IDao } from '../../framework/dao';
 import { RequestController } from './impl/RequestController';
 import { PartialModifyController } from './impl/PartialModifyController';
-import { IdModel } from '../model';
+import { IdModel, ModelIdType } from '../model';
 import NetworkClient from '../../api/NetworkClient';
 import { IEntitySourceController } from './interface/IEntitySourceController';
 import { IRequestController } from './interface/IRequestController';
@@ -21,57 +21,73 @@ import { EntityPersistentController } from './impl/EntityPersistentController';
 import { IEntityCacheSearchController } from './interface/IEntityCacheSearchController';
 import { EntityNotificationController } from './impl/EntityNotificationController';
 
-export function buildPartialModifyController<T extends IdModel = IdModel>(
-  entitySourceController: IEntitySourceController<T>,
-) {
-  return new PartialModifyController<T>(entitySourceController);
+export function buildPartialModifyController<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+>(entitySourceController: IEntitySourceController<T, IdType>) {
+  return new PartialModifyController<T, IdType>(entitySourceController);
 }
 
-export function buildEntitySourceController<T extends IdModel = IdModel>(
-  entityPersistentController: IEntityPersistentController<T>,
-  requestController?: IRequestController<T>,
+export function buildEntitySourceController<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+>(
+  entityPersistentController: IEntityPersistentController<T, IdType>,
+  requestController?: IRequestController<T, IdType>,
+  canSaveRemoteData?: boolean,
 ) {
-  return new EntitySourceController<T>(
+  return new EntitySourceController<T, IdType>(
     entityPersistentController,
     daoManager.getDao(DeactivatedDao),
     requestController,
+    canSaveRemoteData,
   );
 }
 
 export function buildRequestController<
-  T extends IdModel = IdModel
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
 >(networkConfig: {
   basePath: string;
   networkClient: NetworkClient;
-}): IRequestController<T> {
-  const requestController: IRequestController<T> = new RequestController<T>(
-    networkConfig,
-  );
+}): IRequestController<T, IdType> {
+  const requestController: IRequestController<
+    T,
+    IdType
+  > = new RequestController<T, IdType>(networkConfig);
   return requestController;
 }
 
-export function buildEntityCacheController<T extends IdModel = IdModel>() {
-  return new EntityCacheController<T>() as IEntityCacheController<T>;
+export function buildEntityCacheController<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+>() {
+  return new EntityCacheController<T, IdType>() as IEntityCacheController<
+    T,
+    IdType
+  >;
 }
 
-export function buildEntityCacheSearchController<T extends IdModel = IdModel>(
-  entityCacheController: IEntityCacheController<T>,
-) {
+export function buildEntityCacheSearchController<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+>(entityCacheController: IEntityCacheController<T, IdType>) {
   const cacheSearchController: IEntityCacheSearchController<
-    T
-  > = new EntityCacheSearchController<T>(entityCacheController);
+    T,
+    IdType
+  > = new EntityCacheSearchController<T, IdType>(entityCacheController);
   return cacheSearchController;
 }
 
-export function buildEntityPersistentController<T extends IdModel = IdModel>(
-  dao?: IDao<T>,
-  cacheController?: IEntityCacheController<T>,
-) {
-  return new EntityPersistentController<T>(dao, cacheController);
+export function buildEntityPersistentController<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+>(dao?: IDao<T, IdType>, cacheController?: IEntityCacheController<T, IdType>) {
+  return new EntityPersistentController<T, IdType>(dao, cacheController);
 }
 
 export function buildEntityNotificationController<
-  T extends IdModel = IdModel
+  T extends IdModel<ModelIdType>
 >() {
   return new EntityNotificationController<T>();
 }

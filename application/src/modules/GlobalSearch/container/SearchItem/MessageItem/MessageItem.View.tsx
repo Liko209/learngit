@@ -38,7 +38,7 @@ class MessageItemComponent extends React.Component<
           <JuiIconography iconSize="medium" iconColor={['grey', '500']}>
             history
           </JuiIconography>}
-        value={groupName}
+        value={groupName.get()}
         terms={terms}
         data-test-automation-id="search-message-item"
         data-id={groupId}

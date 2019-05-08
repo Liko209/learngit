@@ -3,6 +3,7 @@
  * @Date: 2018-10-29 10:00:00
  * Copyright © RingCentral. All rights reserved.
  */
+import { promisedComputed } from 'computed-async-mobx';
 import { computed, observable } from 'mobx';
 import { ConversationInitialPostViewProps } from './types';
 import { getEntity } from '@/store/utils';
@@ -67,11 +68,10 @@ class ConversationInitialPostViewModel extends StoreViewModel<
     return this._group.isTeam;
   }
 
-  @computed
-  get createTime() {
+  createTime = promisedComputed('', async () => {
     const { createdAt } = this._group;
-    return dateFormatter.dateAndTime(moment(createdAt));
-  }
+    return await dateFormatter.dateAndTime(moment(createdAt));
+  });
 }
 
 export { ConversationInitialPostViewModel };

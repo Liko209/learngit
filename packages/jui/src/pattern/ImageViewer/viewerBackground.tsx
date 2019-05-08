@@ -4,34 +4,35 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import * as React from 'react';
-import styled, { keyframes } from '../../foundation/styled-components';
+import React, { useState, useEffect } from 'react';
+import styled, { css } from '../../foundation/styled-components';
 import { grey } from '../../foundation/utils';
-import { JuiTransition } from '../../components/Animation';
 
 type JuiViewerBackgroundProps = {
   children: React.ReactNode;
   show: boolean;
 };
 
-const backgroundAnimation = keyframes`
-  from {
-    background: transparent;
-  }
-  to {
-  }
+const transition = css`
+  transition: ${({ theme }) => theme.transitions.duration['standard']}ms
+    ${({ theme }) => theme.transitions.easing['sharp']};
+  transition-delay: 15ms;
 `;
 
-const StyledViewerBackground = styled.div`
-  background: ${grey('100')};
+const StyledViewerBackground = styled.div<{ show: boolean }>`
   display: flex;
   flex-direction: column;
   height: inherit;
-`;
-
-const StyledTransition = styled(JuiTransition)`
-  height: 100%;
-  pointer-events: ${({ show }) => (show ? 'auto' : 'none')};
+  background: transparent;
+  ${transition};
+  ${({ show }) =>
+    show
+      ? css`
+          background: ${grey('100')};
+        `
+      : css`
+          background: transparent;
+        `}
 `;
 
 const JuiViewerBackground = ({
@@ -39,16 +40,14 @@ const JuiViewerBackground = ({
   show,
   ...rest
 }: JuiViewerBackgroundProps) => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  },        [show]);
   return (
-    <StyledTransition
-      show={show}
-      duration="standard"
-      easing="sharp"
-      appear={true}
-      animation={backgroundAnimation}
-    >
-      <StyledViewerBackground {...rest}>{children}</StyledViewerBackground>
-    </StyledTransition>
+    <StyledViewerBackground {...rest} show={show && mounted}>
+      {children}
+    </StyledViewerBackground>
   );
 };
 

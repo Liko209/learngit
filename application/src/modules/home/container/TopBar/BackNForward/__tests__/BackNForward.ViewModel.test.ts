@@ -42,7 +42,7 @@ describe('backNForward ViewModel', () => {
     expect(newCursor).toBe(oldCursor + 1);
   });
 
-  it('Should return back record', () => {
+  it('Should return back record', async (done: jest.DoneCallback) => {
     historyStack.push('text1');
     historyStack.push('text2');
     historyStack.push('text3');
@@ -65,7 +65,7 @@ describe('backNForward ViewModel', () => {
     historyStack.push('text20');
     historyStack.push('text21');
 
-    const backRecord = backNForwardViewModel.backRecord;
+    const backRecord = await backNForwardViewModel.backRecord.fetch();
     expect(backRecord).toEqual([
       {
         pathname: 'text11',
@@ -108,9 +108,10 @@ describe('backNForward ViewModel', () => {
         title: 'text20',
       },
     ]);
+    done();
   });
 
-  it('Should return forwardRecord record', () => {
+  it('Should return forwardRecord record', async (done: jest.DoneCallback) => {
     historyStack.push('text1');
     historyStack.push('text2');
     historyStack.push('text3');
@@ -134,7 +135,7 @@ describe('backNForward ViewModel', () => {
     historyStack.push('text21');
 
     historyStack.setCursor(3);
-    const forwardRecord = backNForwardViewModel.forwardRecord;
+    const forwardRecord = await backNForwardViewModel.forwardRecord.fetch();
     expect(forwardRecord).toEqual([
       {
         pathname: 'text15',
@@ -165,6 +166,7 @@ describe('backNForward ViewModel', () => {
         title: 'text21',
       },
     ]);
+    done();
   });
 
   it('Should return current status of back button', () => {
@@ -189,21 +191,22 @@ describe('backNForward ViewModel', () => {
     expect(disabledForward).toEqual(false);
   });
 
-  it('Can set cursor by go', () => {
+  it('Can set cursor by go', async (done: jest.DoneCallback) => {
     historyStack.push('text');
     historyStack.push('text1');
 
     backNForwardViewModel.go(OPERATION.BACK, 0);
-    let backRecord = backNForwardViewModel.backRecord;
-    let forwardRecord = backNForwardViewModel.forwardRecord;
+    let backRecord = await backNForwardViewModel.backRecord.fetch();
+    let forwardRecord = await backNForwardViewModel.forwardRecord.fetch();
 
     expect(backRecord.length).toBe(0);
     expect(forwardRecord.length).toBe(1);
 
     backNForwardViewModel.go(OPERATION.FORWARD, 0);
-    backRecord = backNForwardViewModel.backRecord;
-    forwardRecord = backNForwardViewModel.forwardRecord;
+    backRecord = await backNForwardViewModel.backRecord.fetch();
+    forwardRecord = await backNForwardViewModel.forwardRecord.fetch();
     expect(backRecord.length).toBe(1);
     expect(forwardRecord.length).toBe(0);
+    done();
   });
 });

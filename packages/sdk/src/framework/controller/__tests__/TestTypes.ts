@@ -3,12 +3,8 @@
  * @Date: 2018-12-19 14:06:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { IdModel } from '../../../framework/model';
-import {
-  IDatabaseCollection,
-  IDatabase,
-  DatabaseKeyType,
-} from 'foundation/src/db';
+import { IdModel, ModelIdType } from '../../../framework/model';
+import { IDatabaseCollection, IDatabase } from 'foundation/src/db';
 
 export type TestEntity = IdModel & {
   name: string;
@@ -27,13 +23,13 @@ export class TestDatabase implements IDatabase {
   close() {}
   async delete() {}
 
-  getCollection<T extends object, Key extends DatabaseKeyType>(name: string) {
+  getCollection<T extends object, Key extends ModelIdType>(name: string) {
     return { delete: () => {} } as any;
   }
 
   async getTransaction(
     mode: string | void,
-    collections: IDatabaseCollection<any, DatabaseKeyType>[] | void,
+    collections: IDatabaseCollection<any, ModelIdType>[] | void,
     callback: () => {},
   ) {}
 }

@@ -208,4 +208,12 @@ describe('TelephonyService', () => {
       );
     });
   });
+
+  describe('getLastCalledNumber', () => {
+    it('should call account controller to get last called number', () => {
+      const spy = jest.spyOn(accountController, 'getLastCalledNumber');
+      telephonyService.getLastCalledNumber();
+      expect(spy).toBeCalled();
+    });
+  });
 });

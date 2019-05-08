@@ -4,9 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AbstractModule, inject } from 'framework';
+import { AbstractModule, inject, Jupiter, container } from 'framework';
+import { HomeService } from '@/modules/home/service/HomeService';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { TelephonyService } from '@/modules/telephony/service';
+import { TELEPHONY_SERVICE } from './interface/constant';
 import {
   LEAVE_BLOCKER_SERVICE,
   ILeaveBlockerService,
@@ -15,16 +17,18 @@ import { mainLogger } from 'sdk';
 import { SERVICE } from 'sdk/service/eventKey';
 import { notificationCenter } from 'sdk/service';
 import { TelephonyNotificationManager } from './TelephonyNotificationManager';
+import { Dialer } from './container';
 
 class TelephonyModule extends AbstractModule {
   static TAG: string = '[UI TelephonyModule] ';
 
   @inject(FeaturesFlagsService)
   private _FeaturesFlagsService: FeaturesFlagsService;
-  @inject(TelephonyService) private _TelephonyService: TelephonyService;
+  @inject(TELEPHONY_SERVICE) private _TelephonyService: TelephonyService;
   @inject(LEAVE_BLOCKER_SERVICE) _leaveBlockerService: ILeaveBlockerService;
   @inject(TelephonyNotificationManager)
   private _telephonyNotificationManager: TelephonyNotificationManager;
+  @inject(Jupiter) _jupiter: Jupiter;
 
   initTelephony = () => {
     this._TelephonyService.init();
@@ -50,6 +54,10 @@ class TelephonyModule extends AbstractModule {
       SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
       this.onVoipCallingStateChanged,
     );
+
+    this._jupiter.emitModuleInitial(TELEPHONY_SERVICE);
+    const homeService = container.get(HomeService);
+    homeService.registerExtension(Dialer);
   }
 
   dispose() {

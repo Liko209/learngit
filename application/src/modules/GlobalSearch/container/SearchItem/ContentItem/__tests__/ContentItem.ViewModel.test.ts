@@ -87,14 +87,31 @@ describe('ContentItemViewModel', () => {
       });
       expect(contentItemViewModel.contentText).toBe('aa');
     });
-    it('if scope is global should be return search key ', () => {
+  });
+
+  describe('inThisConversation', () => {
+    it('if scope is global should be return search key ', async (done: jest.DoneCallback) => {
       (i18nT as jest.Mock).mockReturnValue('in this conversation');
-      const scope = SEARCH_SCOPE.CONVERSATION;
+      const scope = SEARCH_SCOPE.GLOBAL;
       contentItemViewModel = new ContentItemViewModel({
         searchScope: scope,
         displayName: 'aa',
       });
-      expect(contentItemViewModel.contentText).toBe('aa in this conversation');
+      expect(await contentItemViewModel.inThisConversation.fetch()).toBe('');
+      done();
+    });
+
+    it('if scope is global should be return search key ', async (done: jest.DoneCallback) => {
+      (i18nT as jest.Mock).mockReturnValue('in this conversation');
+      const scope = SEARCH_SCOPE.CONVERSATION;
+      contentItemViewModel = new ContentItemViewModel({
+        displayName: 'aa',
+        searchScope: scope,
+      });
+      expect(await contentItemViewModel.inThisConversation.fetch()).toBe(
+        ' in this conversation',
+      );
+      done();
     });
   });
 

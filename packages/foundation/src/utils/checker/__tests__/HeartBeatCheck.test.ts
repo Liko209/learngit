@@ -5,8 +5,8 @@
  */
 
 import { HeartBeatCheck } from '../HeartBeatCheck';
-import { getCurrentTime } from '../../../utils/jsUtils';
-jest.mock('../../../utils/jsUtils');
+import { getCurrentTime } from '../../jsUtils/jsUtils';
+jest.mock('../../jsUtils/jsUtils');
 
 describe('HeartBeatCheck', () => {
   beforeEach(() => {

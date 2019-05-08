@@ -16,6 +16,7 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
+const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
 
 const moduleRules = [
   {
@@ -30,8 +31,8 @@ const moduleRules = [
     enforce: 'pre',
   },
   {
-    test: /\.tsx?$/,
-    include: path.resolve(__dirname, '../src'),
+    test: /\.ts(x)?$/,
+    exclude: excludeNodeModulesExcept(['rcui']),
     use: [
       {
         loader: 'ts-loader',

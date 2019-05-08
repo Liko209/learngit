@@ -7,7 +7,6 @@ import { goToConversation } from '@/common/goToConversation';
 import { POST_TYPE } from './../../common/getPostType';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { Markdown } from 'glipdown';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { Post } from 'sdk/module/post/entity/Post';
@@ -19,7 +18,10 @@ import {
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
-import { NotificationOpts } from '../notification/interface';
+import {
+  NotificationOpts,
+  NOTIFICATION_PRIORITY,
+} from '../notification/interface';
 import i18nT from '@/utils/i18nT';
 import { PersonService } from 'sdk/module/person';
 import { replaceAtMention } from './container/ConversationSheet/TextMessage/utils/handleAtMentionName';
@@ -31,6 +33,11 @@ import { IEntityChangeObserver } from 'sdk/framework/controller/types';
 import { mainLogger } from 'sdk';
 import { isFirefox, isWindows } from '@/common/isUserAgent';
 import { throttle } from 'lodash';
+import { Emoji } from './container/ConversationSheet/TextMessage/Emoji';
+import { Company } from 'sdk/module/company/entity';
+import CompanyModel from '../../store/models/Company';
+import { Markdown } from 'glipdown';
+import { glipdown2Html } from './container/ConversationSheet/TextMessage/utils/glipdown2Html';
 const logger = mainLogger.tags('MessageNotificationManager');
 const NOTIFY_THROTTLE_FACTOR = 5000;
 export class MessageNotificationManager extends AbstractNotificationManager {
@@ -54,12 +61,17 @@ export class MessageNotificationManager extends AbstractNotificationManager {
   }
 
   handlePostEntityChanged = async (entities: Post[]) => {
-    const postId = entities[0].id;
+    const post = entities[0];
+    const postId = post.id;
     logger.info(`prepare notification for ${postId}`);
-    const result = await this.shouldEmitNotification(postId);
+
+    if (post.deactivated) {
+      this.handleDeletedPost(postId);
+    }
+
+    const result = await this.shouldEmitNotification(post);
 
     if (!result) {
-      logger.info(`notification for ${postId} is not permitted`);
       return;
     }
     const { postModel, groupModel } = result;
@@ -81,29 +93,56 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       body,
       renotify: false,
       icon: this.getIcon(person, members.length, isTeam),
-      data: { id: postId, scope: this._scope },
+      data: {
+        id: postId,
+        scope: this._scope,
+        priority: NOTIFICATION_PRIORITY.MESSAGE,
+      },
       onClick: this.onClickHandlerBuilder(postModel.groupId, postId),
     };
 
     this.show(title, opts);
   }
 
-  async shouldEmitNotification(postId: number) {
-    if (postId <= 0) {
+  handleDeletedPost(postId: number) {
+    this.close(postId);
+  }
+
+  async shouldEmitNotification(post: Post) {
+    if (post.id <= 0) {
+      logger.info(
+        `notification for ${
+          post.id
+        } is not permitted because post is from local instead of service`,
+      );
+      return false;
+    }
+    if (!post || post.deactivated) {
+      logger.info(
+        `notification for ${
+          post.id
+        } is not permitted because post does not exist or has been deleted`,
+      );
       return false;
     }
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-    const post = await ServiceLoader.getInstance<PostService>(
-      ServiceConfig.POST_SERVICE,
-    ).getById(postId);
-
-    if (!post || post.creator_id === currentUserId || post.deactivated) {
+    if (post.creator_id === currentUserId) {
+      logger.info(
+        `notification for ${
+          post.id
+        } is not permitted because post is created by current user`,
+      );
       return false;
     }
     const activityData = post.activity_data || {};
     const isPostType =
       !activityData.key || getPostType(activityData.key) === POST_TYPE.POST;
     if (!isPostType) {
+      logger.info(
+        `notification for ${
+          post.id
+        } is not permitted because post type is not message`,
+      );
       return false;
     }
 
@@ -112,6 +151,11 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     ).getById(post.group_id);
 
     if (!group) {
+      logger.info(
+        `notification for ${
+          post.id
+        } is not permitted because group of the post does not exist`,
+      );
       return false;
     }
 
@@ -119,6 +163,11 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     const groupModel = new GroupModel(group);
 
     if (groupModel.isTeam && !this.isMyselfAtMentioned(postModel)) {
+      logger.info(
+        `notification for ${
+          post.id
+        } is not permitted because in team conversation, only post mentioning current user will show notification`,
+      );
       return false;
     }
     return { postModel, groupModel };
@@ -134,20 +183,37 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     person: PersonModel,
     group: GroupModel,
   ) {
-    let body;
+    let body: string;
     let title = group.displayName;
     if (post.existItemIds.length || post.parentId) {
       const { key, parameter } = getActivity(post, getActivityData(post));
       body = `${person.userDisplayName} ${await i18nT(key, parameter)}`;
     } else {
-      body = replaceAtMention(Markdown(post.text), (_, id, name) => name);
       if (this.isMyselfAtMentioned(post)) {
         title = await i18nT('notification.mentioned');
         body = group.displayName;
+      } else {
+        body = replaceAtMention(Markdown(post.text), (_, id, name) => name);
+        body = glipdown2Html(this.handleEmoji(body));
       }
     }
     return { body, title };
   }
+  handleEmoji(body: string): string {
+    const staticServer = getGlobalValue(GLOBAL_KEYS.STATIC_HTTP_SERVER);
+    const currentCompanyId = getGlobalValue(GLOBAL_KEYS.CURRENT_COMPANY_ID);
+    if (currentCompanyId <= 0) {
+      return body;
+    }
+    const company =
+      getEntity<Company, CompanyModel>(ENTITY_NAME.COMPANY, currentCompanyId) ||
+      {};
+    const { text } = new Emoji(body, staticServer, company.customEmoji, {
+      unicodeOnly: true,
+    });
+    return text;
+  }
+
   isMyselfAtMentioned(post: PostModel) {
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     return (

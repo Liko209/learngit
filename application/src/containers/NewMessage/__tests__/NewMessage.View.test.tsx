@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { shallow } from 'enzyme';
-import { NewMessageComponent } from '../NewMessage.View';
+import { NewMessageView } from '../NewMessage.View';
 import { Notification } from '@/containers/Notification';
 jest.mock('@/containers/Notification');
 
@@ -31,7 +31,7 @@ describe('NewMessageView', () => {
         handleSearchContactChange: (items: any) => {},
       };
       Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
-      shallow(<NewMessageComponent {...props} />);
+      shallow(<NewMessageView {...props} />);
       expect(Notification.flashToast).toHaveBeenCalled();
     });
   });

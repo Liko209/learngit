@@ -13,6 +13,7 @@ class ConfigWrapper {
   public fileUpload: boolean;
   public sceneRepeatCount: number;
   public buildURL: string;
+  public runFps: boolean;
   /* basic config */
 
   /* mock config */
@@ -60,6 +61,7 @@ class ConfigWrapper {
     this.fileServerUrl = this.getValue("FILE_SERVER_URL", "http://xmn02-i01-mck01.lab.nordigy.ru:9000");
     this.sceneRepeatCount = parseInt(this.getValue("SCENE_REPEAT_COUNT", "100"));
     this.buildURL = this.getValue("BUILD_URL", "http://jenkins.lab.rcch.ringcentral.com/view/Jupiter/job/Jupiter-Performance-Daily/");
+    this.runFps = this.getValue("RUN_FPS", "true").toLowerCase() === 'true';
     /* basic config */
 
     /* mock config */

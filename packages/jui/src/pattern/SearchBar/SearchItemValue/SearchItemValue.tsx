@@ -21,12 +21,19 @@ const SearchItemValueWrapper = styled.div`
 type JuiSearchItemValueProps = {
   terms?: string[];
   value: string;
+  beforeValue?: string;
+  afterValue?: string;
 };
 
-function highlight(value: string, terms?: string[]) {
+function highlight(
+  value: string,
+  terms?: string[],
+  beforeValue?: string,
+  afterValue?: string,
+) {
   if (!terms || terms.length === 0) {
     return {
-      __html: value,
+      __html: `${beforeValue}${value}${afterValue}`,
     };
   }
 
@@ -38,13 +45,13 @@ function highlight(value: string, terms?: string[]) {
   });
 
   return {
-    __html: v,
+    __html: `${beforeValue}${v}${afterValue}`,
   };
 }
 
 const JuiSearchItemValue = memo((props: JuiSearchItemValueProps) => {
-  const { value, terms, ...rest } = props;
-  const highlightValue = highlight(value, terms);
+  const { value, terms, beforeValue = '', afterValue = '', ...rest } = props;
+  const highlightValue = highlight(value, terms, beforeValue, afterValue);
   return (
     <SearchItemValueWrapper
       {...rest}

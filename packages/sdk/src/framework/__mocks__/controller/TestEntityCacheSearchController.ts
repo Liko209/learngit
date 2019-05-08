@@ -12,13 +12,13 @@ const delegate = (
 ) => {
   return isAsync
     ? jest.fn().mockImplementation(async (...args) => {
-      const object = getObject();
-      return await object[methodName].call(object, ...args);
-    })
+        const object = getObject();
+        return await object[methodName].call(object, ...args);
+      })
     : jest.fn().mockImplementation((...args) => {
-      const object = getObject();
-      return object[methodName].call(object, ...args);
-    });
+        const object = getObject();
+        return object[methodName].call(object, ...args);
+      });
 };
 
 export class TestEntityCacheSearchController<T extends IdModel = IdModel>

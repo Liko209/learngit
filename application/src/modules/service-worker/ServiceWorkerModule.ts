@@ -8,11 +8,14 @@ class ServiceWorkerModule extends AbstractModule {
 
   async bootstrap() {
     registerServiceWorker(
-      (swURL: string) => {
-        this._upgradeHandler.setServiceWorkerURL(swURL);
+      (swURL: string, hasWaitingWorker: boolean) => {
+        this._upgradeHandler.setServiceWorkerURL(swURL, hasWaitingWorker);
       },
-      (isCurrentPageInControl: boolean) => {
-        this._upgradeHandler.onNewContentAvailable(isCurrentPageInControl);
+      (isCurrentPageInControl: boolean, isByWaitingWorker: boolean) => {
+        this._upgradeHandler.onNewContentAvailable(
+          isCurrentPageInControl,
+          isByWaitingWorker,
+        );
       },
       (text: string) => {
         this._upgradeHandler.logInfo(text);

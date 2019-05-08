@@ -9,32 +9,33 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { LikeViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { Notification } from '@/containers/Notification';
-import {
-  ToastType,
-  ToastMessageAlign,
-} from '@/containers/ToastWrapper/Toast/types';
+import { catchError } from '@/common/catchError';
+
 type Props = LikeViewProps & WithTranslation;
 
 @observer
 class LikeViewComponent extends Component<Props> {
-  private _handleLikeButton = async () => {
+  private _handleToggle = async () => {
     const { isLike, like } = this.props;
-    try {
-      await like(!isLike);
-    } catch (error) {
-      const message = !isLike
-        ? 'message.prompt.SorryWeWereNotAbleToLikeTheMessage'
-        : 'message.prompt.SorryWeWereNotAbleToUnlikeTheMessage';
-      Notification.flashToast({
-        message,
-        type: ToastType.ERROR,
-        messageAlign: ToastMessageAlign.LEFT,
-        fullWidth: false,
-        dismissible: false,
-      });
-    }
+    await like(!isLike);
   }
+
+  @catchError.flash({
+    network: 'message.prompt.notAbleToUnlikeForNetworkIssue',
+    server: 'message.prompt.notAbleToUnlikeForServerIssue',
+  })
+  private _handleUnlike = () => {
+    return this._handleToggle();
+  }
+
+  @catchError.flash({
+    network: 'message.prompt.notAbleToLikeThisMessageForNetworkIssue',
+    server: 'message.prompt.notAbleToLikeThisMessageForServerIssue',
+  })
+  private _handleLike = () => {
+    return this._handleToggle();
+  }
+
   render() {
     const { isLike, t } = this.props;
     return (
@@ -44,7 +45,7 @@ class LikeViewComponent extends Component<Props> {
           isLike ? t('message.action.unlike') : t('message.action.like')
         }
         color={isLike ? 'primary' : undefined}
-        onClick={this._handleLikeButton}
+        onClick={isLike ? this._handleUnlike : this._handleLike}
         variant="plain"
         data-name="actionBarLike"
       >
