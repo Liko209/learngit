@@ -8,7 +8,7 @@ const msgPath = process.env.HUSKY_GIT_PARAMS;
 const msg = require("fs")
   .readFileSync(msgPath, "utf-8")
   .trim();
-const commitRE = /^(feat|fix|docs|style|refactor|test|chore|revert)\(FIJI-\d+\):\s\[.+\]\s.+/;
+const commitRE = /^(feat|fix|docs|style|refactor|test|chore|revert)\((.+)-\d+\):\s\[.+\]\s.+/;
 const mergeRE = /^(Merge (.*?) into (.*?)|(Merge branch (.*?))(?:\r?\n)*$)/;
 
 if (!commitRE.test(msg) && !mergeRE.test(msg)) {
