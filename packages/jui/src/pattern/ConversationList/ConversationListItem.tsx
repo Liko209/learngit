@@ -27,6 +27,7 @@ const StyledRightWrapper = styled.div`
   align-items: center;
   justify-content: center;
   z-index: ${({ theme }) => theme.zIndex.elementOnRipple};
+  outline: none;
 `;
 const rippleEnter = (theme: Theme) => keyframes`
   from {
@@ -190,7 +191,7 @@ const JuiConversationListItem: IConversationListItem = memo(
         <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
         <ItemText style={{ fontWeight }}>{title}</ItemText>
         {umi}
-        <StyledRightWrapper>
+        <StyledRightWrapper tabIndex={-1}>
           {indicator}
           <StyledIconographyMore onClick={onMoreClick}>
             more_vert
