@@ -5,16 +5,17 @@
  */
 
 import { IdModel, ModelIdType } from '../../model';
+import { IBaseQuery } from '../../../api/NetworkClient';
 
 interface IRequestController<
   T extends IdModel<IdType>,
   IdType extends ModelIdType = number
 > {
-  get(id: IdType): Promise<T | null>;
+  get(id: IdType, options?: Partial<IBaseQuery>): Promise<T | null>;
 
-  put(data: Partial<T>): Promise<T>;
+  put(data: Partial<T>, options?: Partial<IBaseQuery>): Promise<T>;
 
-  post(data: Partial<T>): Promise<T>;
+  post(data: Partial<T>, options?: Partial<IBaseQuery>): Promise<T>;
 }
 
 export { IRequestController };

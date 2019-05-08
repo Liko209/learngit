@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { observable, computed } from 'mobx';
+import { observable, computed, comparer } from 'mobx';
+import i18nT from '@/utils/i18nT';
 import { AbstractViewModel } from '@/base';
 import { FromProps, FromViewProps } from './types';
 import { getEntity } from '@/store/utils';
@@ -15,15 +16,41 @@ import { Group } from 'sdk/module/group/entity';
 class FromViewModel extends AbstractViewModel implements FromViewProps {
   @observable
   id: number;
-
-  @computed
-  private get _group() {
-    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
+  @observable
+  displayName: string = '';
+  constructor() {
+    super();
+    this.reaction(
+      () => ({
+        displayName: this._group.displayName,
+        isArchived: this._group.isArchived,
+      }),
+      async ({
+        displayName,
+        isArchived,
+      }: {
+        displayName: string;
+        isArchived: boolean;
+      }) => {
+        const suffix = isArchived
+          ? await i18nT('people.team.archivedSuffix')
+          : '';
+        this.displayName = `${displayName}${suffix}`;
+      },
+      {
+        fireImmediately: true,
+        equals: comparer.structural,
+      },
+    );
   }
 
   @computed
-  get displayName(): string {
-    return this._group.displayName;
+  get _group() {
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
+  }
+  @computed
+  get disabled() {
+    return !!this._group.isArchived;
   }
   @computed
   get isTeam(): boolean {

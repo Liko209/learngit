@@ -5,6 +5,16 @@
  */
 'use strict';
 if (process.env.NODE_ENV === 'test') {
+  // Mobx UT setup
+  const mobx = require('mobx');
+  const _configure = mobx.configure;
+  mobx.configure = options =>
+    _configure(
+      Object.assign({}, options, {
+        computedRequiresReaction: false,
+      }),
+    );
+
   const moment = require('moment-timezone');
   moment.tz.setDefault('Asia/Shanghai');
   // In tests, polyfill requestAnimationFrame since jsdom doesn't provide it yet.

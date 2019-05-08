@@ -2,14 +2,12 @@
  * @Author: doyle.wu
  * @Date: 2018-12-12 12:56:30
  */
-const Gatherer = require("lighthouse/lighthouse-core/gather/gatherers/gatherer");
+import { BaseGatherer } from ".";
 import { SearchPage } from "../pages";
-import { LogUtils } from "../utils";
 import { Config } from "../config";
 
-class SearchGatherer extends Gatherer {
+class SearchGatherer extends BaseGatherer {
   private keywords: Array<string>;
-  private logger = LogUtils.getLogger(__filename);
 
   constructor(keywords: Array<string>) {
     super();
@@ -17,9 +15,9 @@ class SearchGatherer extends Gatherer {
     this.keywords = keywords;
   }
 
-  beforePass(passContext) {}
+  async _beforePass(passContext) {}
 
-  async pass(passContext) {
+  async _pass(passContext) {
     let searchPage = new SearchPage(passContext);
 
     // pre loaded
@@ -32,7 +30,7 @@ class SearchGatherer extends Gatherer {
     });
   }
 
-  async afterPass(passContext) {
+  async _afterPass(passContext) {
     let searchPage = new SearchPage(passContext);
 
     // switch conversation

@@ -3,13 +3,13 @@
  * @Date: 2019-04-19 17:04:24
  */
 
-const Gatherer = require("lighthouse/lighthouse-core/gather/gatherers/gatherer");
+import { BaseGatherer } from ".";
 import { GroupPage } from "../pages";
 import { JupiterUtils } from "../utils";
 import { Config } from "../config";
 import * as bluebird from 'bluebird';
 
-class IndexDataGatherer extends Gatherer {
+class IndexDataGatherer extends BaseGatherer {
   private artifacts: Map<string, Array<any>> = new Map();
   private metricKeys: Array<string> = [
     "handle_incoming_account",
@@ -33,9 +33,9 @@ class IndexDataGatherer extends Gatherer {
     }
   }
 
-  beforePass(passContext) { }
+  async _beforePass(passContext) { }
 
-  async pass(passContext) {
+  async _pass(passContext) {
     const driver = passContext.driver;
     const groupPage = new GroupPage(passContext);
     const { url } = passContext.settings;
@@ -79,7 +79,7 @@ class IndexDataGatherer extends Gatherer {
         await groupPage.close();
         page = undefined;
 
-        await driver.cleanBrowserCaches();
+        await driver.clearDataForOrigin(url);
       } catch (err) {
         if (page) {
           await page.close()
@@ -88,7 +88,7 @@ class IndexDataGatherer extends Gatherer {
     }
   }
 
-  afterPass(passContext) {
+  async _afterPass(passContext) {
     let result = {};
     for (let key of this.metricKeys) {
       result[key] = {

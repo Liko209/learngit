@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ConversationList/AccessArchivedTeam.ts"
+    ],
+    "include_tags": [
+      "JPT-1727"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

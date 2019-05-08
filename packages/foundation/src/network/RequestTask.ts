@@ -55,6 +55,10 @@ class RequestTask {
     return this.request.via;
   }
 
+  setVia(via: NETWORK_VIA) {
+    this.request.via = via;
+  }
+
   incrementTaskWeight() {
     this.weight = this.weight + 1;
   }

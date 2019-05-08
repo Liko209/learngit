@@ -23,7 +23,6 @@ import { RTCMediaElementManager } from '../utils/RTCMediaElementManager';
 import { RTCMediaElement } from '../utils/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCMediaDeviceManager } from '../api/RTCMediaDeviceManager';
-import { defaultAudioID } from '../account/constants';
 
 const {
   MediaStreams,
@@ -124,11 +123,13 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 
   private _initAudioDeviceChannel() {
-    if (this._mediaDeviceManager.hasDefaultInputAudioDeviceId()) {
-      this._setAudioInputDevice(defaultAudioID);
+    const inputDeviceId = this._mediaDeviceManager.getCurrentAudioInput();
+    if (inputDeviceId !== '') {
+      this._setAudioInputDevice(inputDeviceId);
     }
-    if (this._mediaDeviceManager.hasDefaultOutputAudioDeviceId()) {
-      this._setAudioOutputDevice(defaultAudioID);
+    const outputDeviceId = this._mediaDeviceManager.getCurrentAudioOutput();
+    if (outputDeviceId !== '') {
+      this._setAudioOutputDevice(outputDeviceId);
     }
   }
 
