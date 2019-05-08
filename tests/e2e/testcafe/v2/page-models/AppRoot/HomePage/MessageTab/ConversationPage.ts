@@ -152,6 +152,7 @@ export class BaseConversationPage extends BaseWebComponent {
       await this.t.wait(2e3);
       lastIndex = 0;
     }
+    assert(currentIndex == posts.length - 1, "retry scroll some times but all posts did not loaded");
   }
 
   postItemById(postId: string) {
