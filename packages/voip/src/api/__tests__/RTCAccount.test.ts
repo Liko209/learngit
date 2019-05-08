@@ -273,7 +273,7 @@ describe('RTCAccount', () => {
     });
   });
 
-  it("should do nothing when receive wake up from sleep mode and there's active call", done => {
+  it("should do nothing when receive wake up from sleep mode and there's active call. [JPT-1765]", done => {
     setupAccount();
     jest.spyOn(account._regManager, 'reRegister');
     const listener = new MockCallListener();
@@ -285,7 +285,7 @@ describe('RTCAccount', () => {
     });
   });
 
-  it('should transition from ready state to in progress state and trigger reregister when receive wakeupFromSleepMode event', done => {
+  it('should transition from ready state to in progress state and trigger reregister when receive wakeupFromSleepMode event. [JPT-1767]', done => {
     setupAccount();
     jest.spyOn(account._regManager, 'reRegister');
     jest.spyOn(account._regManager._userAgent, 'reRegister');
@@ -311,7 +311,7 @@ describe('RTCAccount', () => {
     });
   });
 
-  it('should transition from inprogress state to inprogress state and trigger reregister when receive wakeupFromSleepMode event', done => {
+  it('should transition from inprogress state to inprogress state and trigger reregister when receive wakeupFromSleepMode event. [JPT-1766]', done => {
     setupAccount();
     jest.spyOn(account._regManager, 'reRegister');
     jest.spyOn(account._regManager._userAgent, 'reRegister');
@@ -331,7 +331,7 @@ describe('RTCAccount', () => {
     });
   });
 
-  it('should transition from failed state to in progress state and trigger reregister when receive wakeupFromSleepMode event', done => {
+  it('should transition from failed state to in progress state and trigger reregister when receive wakeupFromSleepMode event. [JPT-1768]', done => {
     setupAccount();
     jest.spyOn(account._regManager._userAgent, 'reRegister');
     jest.spyOn(account._regManager, 'reRegister');
