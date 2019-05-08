@@ -5,7 +5,7 @@
  */
 /* eslint-disable */
 declare global {
-  interface Function extends jest.MockInstance<any> {}
+  interface Function extends jest.MockInstance<any, any> {}
 }
 
 // Just export something useless to make this file importable.

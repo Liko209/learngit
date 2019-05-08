@@ -11,7 +11,12 @@ import dataDispatcher from '../../component/DataDispatcher';
 import { GlipPingPong } from './GlipPingPong';
 const SOCKET_LOGGER = 'SOCKET';
 
-type StateHandler = (name: string, state: string) => any;
+type StateHandlerType = {
+  name: string;
+  state: string;
+  isManualStopped: boolean;
+};
+type StateHandler = (value: StateHandlerType) => any;
 type GlipPingPongStatusCallback = (isSuccess: boolean) => void;
 export class SocketFSM extends StateMachine {
   private static instanceID: number = 0;
@@ -73,8 +78,13 @@ export class SocketFSM extends StateMachine {
               this.isManualStopped
             }`,
           );
-          if (!this.isManualStopped && this.stateHandler) {
-            this.stateHandler(this.name, this.state);
+
+          if (this.stateHandler) {
+            this.stateHandler({
+              name: this.name,
+              state: this.state,
+              isManualStopped: this.isManualStopped,
+            });
           }
         },
 
@@ -194,8 +204,11 @@ export class SocketFSM extends StateMachine {
   }
 
   public doGlipPing() {
-    this.info('check if socket is connected');
-    this._glipPingPong &&
+    this.info(
+      `check if socket is connected, isStateConnected: ${this.isConnected()}`,
+    );
+    this.isConnected() &&
+      this._glipPingPong &&
       this._glipPingPong.ping((success: boolean) => {
         this.info('check socket and it is ping result is:', success);
       });
@@ -306,3 +319,5 @@ export class SocketFSM extends StateMachine {
     this.glipPingPongStatusCallback && this.glipPingPongStatusCallback(success);
   }
 }
+
+export { StateHandlerType };
