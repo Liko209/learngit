@@ -90,7 +90,7 @@ test(formalName(`Check the caller id drop down list shows available numbers for 
 });
 
 // TODO
-test.skip(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1759', 'GeneralSettings', 'Mia.Cai']), async t => {
+test.only(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1759', 'GeneralSettings', 'Mia.Cai']), async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const anotherUser = h(t).rcData.mainCompany.users[5];
   const app = new AppRoot(t);
@@ -117,13 +117,13 @@ test.skip(formalName(`Check if the caller id is implemented correctly`, ['P2', '
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog(`When I click Setting entry`, async () => {
-    await settingsEntry.enter();
-  });
+  // await h(t).withLog(`When I click Setting entry`, async () => {
+  //   await settingsEntry.enter();
+  // });
 
-  await h(t).withLog(`And I click Phone tab`, async () => {
-    await settingTab.phoneEntry.enter();
-  });
+  // await h(t).withLog(`And I click Phone tab`, async () => {
+  //   await settingTab.phoneEntry.enter();
+  // });
 
   //TODO get the caller id from the setting
 
@@ -145,6 +145,7 @@ test.skip(formalName(`Check if the caller id is implemented correctly`, ['P2', '
 
   await h(t).withLog('And check the caller id from anotherUser', async () => {
     // await session.answer();
+    await session.waitForPhoneNumber(loginUser.extension);
   });
 
 });
