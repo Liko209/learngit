@@ -18,8 +18,8 @@ class FromViewModel extends AbstractViewModel implements FromViewProps {
   id: number;
   @observable
   displayName: string = '';
-  constructor(props: FromViewProps) {
-    super(props);
+  constructor() {
+    super();
     this.reaction(
       () => ({
         displayName: this._group.displayName,
@@ -45,7 +45,7 @@ class FromViewModel extends AbstractViewModel implements FromViewProps {
   }
 
   @computed
-  private get _group() {
+  get _group() {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
   }
   @computed

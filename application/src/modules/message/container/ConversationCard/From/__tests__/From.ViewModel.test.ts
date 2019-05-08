@@ -7,36 +7,57 @@
 import { FromViewModel } from '../From.ViewModel';
 import { getEntity } from '@/store/utils';
 jest.mock('@/store/utils');
-jest.mock('@/utils/i18nT', () => (key: string) => key);
-
-let fromViewModel: FromViewModel;
-
-beforeAll(() => {
-  fromViewModel = new FromViewModel();
+jest.mock('@/utils/i18nT', () => (key: string) => {
+  const translation = {
+    'people.team.archivedSuffix': ' - Archived',
+  };
+  return translation[key] || '';
 });
 
+function setup({ group }: any) {
+  (getEntity as jest.Mock).mockReturnValue(group);
+  const vm = new FromViewModel();
+  return { vm };
+}
+
 describe('FromViewModel', () => {
-  it('isArchived()', () => {
-    (getEntity as jest.Mock).mockReturnValue({
-      isArchived: true,
-    });
-    expect(fromViewModel.disabled).toBe(true);
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
-  describe('displayName()', () => {
-    const teamName = 'randomName';
-    it('should just use displayName when isArchived is false', () => {
-      (getEntity as jest.Mock).mockReturnValue({
-        isArchived: false,
-        displayName: teamName,
+
+  describe('disabled', () => {
+    it('should be true when group was archived', () => {
+      const { vm } = setup({
+        group: {
+          isArchived: true,
+        },
       });
-      expect(fromViewModel.displayName).toBe(teamName);
+      expect(vm.disabled).toBeTruthy();
     });
-    it('should append " - Archived" when isArchived is true', () => {
-      (getEntity as jest.Mock).mockReturnValue({
-        isArchived: true,
-        displayName: teamName,
+  });
+
+  describe('displayName', () => {
+    it('should just use displayName when isArchived is false', () => {
+      const { vm } = setup({
+        group: {
+          isArchived: false,
+          displayName: 'group1',
+        },
       });
-      expect(fromViewModel.displayName).toBe(`${teamName} - Archived`);
+      expect(vm.displayName).toBe('group1');
+    });
+    it('should append " - Archived" when isArchived is true', (done: jest.DoneCallback) => {
+      const { vm } = setup({
+        group: {
+          isArchived: true,
+          displayName: 'group1',
+        },
+      });
+
+      setImmediate(() => {
+        expect(vm.displayName).toBe('group1 - Archived');
+        done();
+      });
     });
   });
 });
