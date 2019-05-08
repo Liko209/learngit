@@ -3,7 +3,7 @@
  * @Date: 2018-05-02 16:47:08
  * Copyright © RingCentral. All rights reserved.
  */
-import NetworkClient, { INetworkRequests } from './NetworkClient';
+import NetworkClient, { INetworkRequests, IBaseQuery } from './NetworkClient';
 import { ApiConfig, HttpConfigType, BaseConfig } from '../types';
 import { Raw } from '../framework/model';
 
@@ -115,23 +115,30 @@ class Api {
     return this.getCustomNetworkClient(host, HandleByCustom);
   }
 
-  static getDataById<T>(id: number) {
+  static getDataById<T>(id: number, baseQuery?: Partial<IBaseQuery>) {
     return this.glipNetworkClient.get<Raw<T>>({
       path: `${this.basePath}/${id}`,
+      ...baseQuery,
     });
   }
 
-  static postData<T>(data: Partial<T>) {
+  static postData<T>(data: Partial<T>, baseQuery?: Partial<IBaseQuery>) {
     return this.glipNetworkClient.post<Raw<T>>({
       data,
       path: `${this.basePath}`,
+      ...baseQuery,
     });
   }
 
-  static putDataById<T>(id: number, data: Partial<T>) {
+  static putDataById<T>(
+    id: number,
+    data: Partial<T>,
+    baseQuery?: Partial<IBaseQuery>,
+  ) {
     return this.glipNetworkClient.put<Raw<T>>({
       data,
       path: `${this.basePath}/${id}`,
+      ...baseQuery,
     });
   }
 }
