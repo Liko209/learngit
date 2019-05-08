@@ -15,6 +15,14 @@ type JuiLineSelectProps = TextFieldProps & {
   automationId?: string;
   menuProps?: Partial<MenuProps>;
   children: JSX.Element[];
+  renderValue?: (
+    value:
+      | Array<string | number | boolean | object>
+      | string
+      | number
+      | boolean
+      | object,
+  ) => React.ReactNode;
 };
 
 const StyledSelect = styled(JuiTextField)`
@@ -31,13 +39,21 @@ const StyledSelect = styled(JuiTextField)`
 ` as typeof MuiTextField;
 
 const JuiLineSelect = React.memo((props: JuiLineSelectProps) => {
-  const { children, automationId, label, menuProps, ...rest } = props;
+  const {
+    children,
+    automationId,
+    label,
+    menuProps,
+    renderValue,
+    ...rest
+  } = props;
   return (
     <StyledSelect
       label={label}
       data-test-automation-id={automationId}
       select={true}
       SelectProps={{
+        renderValue,
         MenuProps: menuProps,
         classes: { icon: 'icon', selectMenu: 'selectMenu' },
       }}

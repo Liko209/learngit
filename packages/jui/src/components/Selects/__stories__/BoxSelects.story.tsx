@@ -4,14 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
 import {
   withInfoDecorator,
   alignCenterDecorator,
 } from '../../../foundation/utils/decorators';
 import { boolean, select } from '@storybook/addon-knobs';
-import { JuiBoxSelect, JuiLineSelect } from '..';
+import { JuiBoxSelect } from '..';
 import { JuiMenuItem } from '../../../components/Menus';
 
 type Menu = {
@@ -96,29 +96,6 @@ class TestBoxSelect extends React.Component<TestBoxSelectProps> {
   }
 }
 
-const LineSelect = () => {
-  const [value, setValue] = useState('');
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { value } = event.target;
-    setValue(value);
-  };
-  return (
-    <JuiLineSelect
-      onChange={handleChange}
-      value={value}
-      label="select"
-      menuProps={MenuProps}
-      style={{ width: '200px', textAlign: 'left' }}
-    >
-      {menu.map((item: Menu) => (
-        <JuiMenuItem value={item.id} key={item.id}>
-          {item.value}
-        </JuiMenuItem>
-      ))}
-    </JuiLineSelect>
-  );
-};
-
 storiesOf('Components/Selects', module)
   .addDecorator(alignCenterDecorator)
   .addDecorator(withInfoDecorator(JuiBoxSelect, { inline: true }))
@@ -126,13 +103,6 @@ storiesOf('Components/Selects', module)
     return (
       <div style={{ padding: '0 30%' }}>
         <TestBoxSelect {...getKnobs()} />
-      </div>
-    );
-  })
-  .add('LineSelect', () => {
-    return (
-      <div style={{ padding: '0 30%' }}>
-        <LineSelect />
       </div>
     );
   });
