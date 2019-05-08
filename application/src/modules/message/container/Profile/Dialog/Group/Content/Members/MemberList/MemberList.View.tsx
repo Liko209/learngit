@@ -8,49 +8,43 @@ import React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiProfileDialogContentMemberList } from 'jui/pattern/Profile/Dialog';
 import { withDelay } from 'jui/hoc/withDelay';
-import {
-  JuiVirtualList,
-  IVirtualListDataSource,
-  JuiVirtualCellWrapper,
-  JuiVirtualCellProps,
-} from 'jui/pattern/VirtualList';
+// import {
+//   JuiVirtualList,
+//   IVirtualListDataSource,
+//   JuiVirtualCellWrapper,
+//   JuiVirtualCellProps,
+// } from 'jui/pattern/VirtualList';
+import { JuiVirtualizedList } from 'jui/components/VirtualizedList';
 import { JuiMemberListEmptyView } from 'jui/pattern/EmptyScreen';
 import empty from './noresult.svg';
 import { MemberListProps, MemberListViewProps } from './types';
 import { MemberListItem } from '../MemberListItem';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
-import { ITEM_HEIGHT, SHADOW_HEIGHT, EMPTY_HEIGHT } from '../constants';
+import { ITEM_HEIGHT, EMPTY_HEIGHT } from '../constants';
 
 const EmptyView = withDelay(JuiMemberListEmptyView);
-
 @observer
-class MemberList
-  extends React.Component<
-    WithTranslation & MemberListProps & MemberListViewProps
-  >
-  implements IVirtualListDataSource<number, number> {
+class MemberList extends React.Component<
+  WithTranslation & MemberListProps & MemberListViewProps
+> {
   componentWillUnmount() {
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW, false);
   }
 
-  get(index: number) {
-    return this.props.filteredMemberIds[index];
-  }
+  // get(index: number) {
+  //   return this.props.filteredMemberIds[index];
+  // }
 
-  size() {
-    const { filteredMemberIds } = this.props;
-    return filteredMemberIds.length;
-  }
+  // size() {
+  //   const { filteredMemberIds } = this.props;
+  //   return filteredMemberIds.length;
+  // }
 
-  rowRenderer = ({ style, item: memberId }: JuiVirtualCellProps<number>) => {
+  rowRenderer = (memberId: number) => {
     const { id } = this.props;
-    return (
-      <JuiVirtualCellWrapper key={memberId} style={style}>
-        <MemberListItem key={memberId} cid={id} pid={memberId} />
-      </JuiVirtualCellWrapper>
-    );
+    return <MemberListItem key={memberId} cid={id} pid={memberId} />;
   }
 
   onScroll = (event: { scrollTop: number }) => {
@@ -58,8 +52,8 @@ class MemberList
   }
 
   render() {
-    const { width, height, t, showEmpty } = this.props;
-    const size = this.size();
+    const { height, t, showEmpty, filteredMemberIds } = this.props;
+    // const size = this.size();
     const minHeight = showEmpty ? Math.max(EMPTY_HEIGHT, height) : height;
     return (
       <JuiProfileDialogContentMemberList
@@ -72,17 +66,27 @@ class MemberList
             delay={100}
           />
         )}
-        {size > 0 && (
-          <JuiVirtualList
-            dataSource={this}
-            overscan={5}
-            rowRenderer={this.rowRenderer}
-            width={width}
-            height={height - SHADOW_HEIGHT}
-            fixedCellHeight={ITEM_HEIGHT}
-            onScroll={this.onScroll}
-            data-test-automation-id="profileDialogMemberList"
-          />
+        {filteredMemberIds.length > 0 && (
+          // <JuiVirtualizedList
+          //   dataSource={this}
+          //   overscan={5}
+          //   rowRenderer={this.rowRenderer}
+          //   width={width}
+          //   height={height - SHADOW_HEIGHT}
+          //   fixedCellHeight={ITEM_HEIGHT}
+          //   onScroll={this.onScroll}
+          //   data-test-automation-id="profileDialogMemberList"
+          // />
+          <JuiVirtualizedList
+            height={height - 24}
+            minRowHeight={ITEM_HEIGHT}
+            // ref={this._listRef}
+            // onVisibleRangeChange={setRangeIndex}
+          >
+            {filteredMemberIds.map((id: number, index: number) => {
+              return this.rowRenderer(id);
+            })}
+          </JuiVirtualizedList>
         )}
       </JuiProfileDialogContentMemberList>
     );
