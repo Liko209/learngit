@@ -19,8 +19,12 @@ fixture('Scroll Conversation')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('JPT-60 Can scroll up/down when have more than 1 page posts.', ['JPT-60', 'P0', 'ali.naffaa']),
-  async (t: TestController) => {
+test.meta(<ITestMeta> {
+  priority: ['P0'],
+  caseIds: ['JPT-60'],
+  maintainers: ['ali.naffaa'],
+  keywords: ['Scroll Conversation'],
+})('Can scroll up/down when have more than 1 page posts.', async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[7];
