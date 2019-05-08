@@ -4,7 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Notification } from '@/containers/Notification';
-import { ERROR_CODES_NETWORK, JNetworkError, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
+import {
+  ERROR_CODES_NETWORK,
+  JNetworkError,
+  JServerError,
+  ERROR_CODES_SERVER,
+} from 'sdk/error';
 import { catchError } from '../catchError';
 
 jest.mock('@/containers/Notification');
@@ -42,6 +47,27 @@ class MockFunc {
     server: 'ServerIssue',
   })
   static async asyncFunc(type: functionResult) {
+    if (type === 'success') {
+      await Promise.resolve('success');
+      return true;
+    }
+    let error = new Error();
+    if (type === 'network') {
+      error = new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK');
+    }
+    if (type === 'server') {
+      error = new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
+    }
+    await Promise.reject(error);
+    return false;
+  }
+
+  @catchError.flash({
+    isDebounce: true,
+    network: 'networkIssue',
+    server: 'ServerIssue',
+  })
+  static async asyncDebounceFunc(type: functionResult) {
     if (type === 'success') {
       await Promise.resolve('success');
       return true;
@@ -143,6 +169,20 @@ describe('catchError.flash', () => {
       done();
     });
 
+    it('flash notification once when it is not debounce error handle', async (done: jest.DoneCallback) => {
+      await MockFunc.asyncFunc('server');
+      await MockFunc.asyncFunc('server');
+      expect(Notification.flashToast).toBeCalledTimes(2);
+      done();
+    });
+
+    it('flash notification once when it is debounce error handle', async (done: jest.DoneCallback) => {
+      await MockFunc.asyncDebounceFunc('server');
+      await MockFunc.asyncDebounceFunc('server');
+      expect(Notification.flashToast).toBeCalledTimes(1);
+      done();
+    });
+
     it('throw error when it has other kinds of issue(not network or server issue)', async (done: jest.DoneCallback) => {
       await expect(MockFunc.asyncFunc('other')).rejects.toThrow(new Error());
       done();
@@ -180,13 +220,17 @@ describe('catchError.flash', () => {
 
     it('throw error when it has other kinds of issue(not network or server issue)', async (done: jest.DoneCallback) => {
       const mockObj = new MockFunc();
-      await expect(mockObj.returnPromiseFunc('other')).rejects.toThrow(new Error());
+      await expect(mockObj.returnPromiseFunc('other')).rejects.toThrow(
+        new Error(),
+      );
       done();
     });
 
     it('success scenario', async (done: jest.DoneCallback) => {
       const mockObj = new MockFunc();
-      await expect(mockObj.returnPromiseFunc('success')).resolves.toBe('success');
+      await expect(mockObj.returnPromiseFunc('success')).resolves.toBe(
+        'success',
+      );
       done();
     });
   });
