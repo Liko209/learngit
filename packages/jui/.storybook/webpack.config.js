@@ -88,7 +88,7 @@ const plugins = [
   new SpriteLoaderPlugin(),
 ];
 
-const resolvePlugin = [
+const resolvePlugins = [
   new TsconfigPathsPlugin({
     configFile: path.resolve(__dirname, '../tsconfig.json'),
   }),
@@ -110,7 +110,8 @@ module.exports = async ({ config }) => {
     config.plugins.push(plugin);
   });
 
-  resolvePlugin.forEach(plugin => {
+  config.resolve.plugins = [];
+  resolvePlugins.forEach(plugin => {
     config.resolve.plugins.push(plugin);
   });
 

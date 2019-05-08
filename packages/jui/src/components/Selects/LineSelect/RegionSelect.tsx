@@ -47,23 +47,27 @@ const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
 
   const { label, selectStyle, regionList } = props;
 
-  const renderValue = (value: string) => {
-    const selectRegion = regionList.filter(
-      regionItem => regionItem.value === value,
-    )[0];
-    return (
-      <StyledRegionSelectWrap>
-        <MuiListItemIcon>
-          <JuiIconography
-            iconSize="large"
-            symbol={selectRegion.regionIcon}
-            desc={selectRegion.desc}
-          />
-        </MuiListItemIcon>
-        <JuiListItemText>{value}</JuiListItemText>
-      </StyledRegionSelectWrap>
-    );
-  };
+  const renderValue = useCallback(
+    (value: string) => {
+      const selectRegion = regionList.filter(
+        regionItem => regionItem.value === value,
+      )[0];
+      return (
+        <StyledRegionSelectWrap>
+          <MuiListItemIcon>
+            <JuiIconography
+              iconSize="large"
+              symbol={selectRegion.regionIcon}
+              desc={selectRegion.desc}
+            />
+          </MuiListItemIcon>
+          <JuiListItemText>{value}</JuiListItemText>
+        </StyledRegionSelectWrap>
+      );
+    },
+    [regionList],
+  );
+
   return (
     <JuiLineSelect
       onChange={handleChange}
