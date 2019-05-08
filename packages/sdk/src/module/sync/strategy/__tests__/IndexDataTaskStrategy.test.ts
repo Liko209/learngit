@@ -8,6 +8,17 @@ import { JOB_KEY } from '../../../../framework/utils/jobSchedule';
 
 describe('IndexDataTaskStrategy', () => {
   const strategy: IndexDataTaskStrategy = new IndexDataTaskStrategy();
+  const RETRY_AFTER_STRATEGY: number[] = [
+    3,
+    5,
+    10,
+    60,
+    3 * 60,
+    5 * 60,
+    10 * 60,
+    30 * 60,
+    60 * 60,
+  ];
   function clearMocks() {
     jest.clearAllMocks();
     jest.restoreAllMocks();
@@ -24,8 +35,7 @@ describe('IndexDataTaskStrategy', () => {
         strategy.getNext();
       }
       const retryIndex = strategy['_retryIndex'];
-      const retryStrategy = strategy['_retryStrategy'];
-      expect(retryStrategy[retryIndex]).toEqual(60 * 60);
+      expect(RETRY_AFTER_STRATEGY[retryIndex]).toEqual(60 * 60);
     });
 
     it('should set retry index to -1 if call reset api', () => {
@@ -33,8 +43,7 @@ describe('IndexDataTaskStrategy', () => {
         strategy.getNext();
       }
       const retryIndex1 = strategy['_retryIndex'];
-      const retryStrategy = strategy['_retryStrategy'];
-      expect(retryIndex1).toEqual(retryStrategy.length - 1);
+      expect(retryIndex1).toEqual(RETRY_AFTER_STRATEGY.length - 1);
       strategy.reset();
       const retryIndex2 = strategy['_retryIndex'];
       expect(retryIndex2).toEqual(-1);
@@ -51,8 +60,7 @@ describe('IndexDataTaskStrategy', () => {
         strategy.getNext();
       }
       const retryIndex1 = strategy['_retryIndex'];
-      const retryStrategy = strategy['_retryStrategy'];
-      expect(retryIndex1).toEqual(retryStrategy.length - 1);
+      expect(retryIndex1).toEqual(RETRY_AFTER_STRATEGY.length - 1);
       strategy.reset();
       const retryIndex2 = strategy['_retryIndex'];
       expect(retryIndex2).toEqual(-1);
