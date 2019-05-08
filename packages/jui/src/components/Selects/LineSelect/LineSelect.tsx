@@ -9,20 +9,14 @@ import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
 import { grey, typography } from '../../../foundation/utils';
 import styled from '../../../foundation/styled-components';
 import { MenuProps } from '@material-ui/core/Menu';
+import { SelectProps } from '@material-ui/core/Select';
 
 type JuiLineSelectProps = TextFieldProps & {
   label?: string;
   automationId?: string;
   menuProps?: Partial<MenuProps>;
   children: JSX.Element[];
-  renderValue?: (
-    value:
-      | Array<string | number | boolean | object>
-      | string
-      | number
-      | boolean
-      | object,
-  ) => React.ReactNode;
+  renderValue?: SelectProps['renderValue'];
 };
 
 const StyledSelect = styled(JuiTextField)`
