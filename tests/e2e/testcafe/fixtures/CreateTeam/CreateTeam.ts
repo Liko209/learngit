@@ -409,7 +409,12 @@ test(formalName('Check \"Allow members to add other members\" can be turn on/off
   });
 });
 
-test(formalName('JPT-121 Check "Allow members to post messages" can be turn on or off in the create new team.', ['JPT-121', 'P1', 'ali.naffaa']), async t => {
+test.meta(<ITestMeta> {
+  priority: ['P1'],
+  caseIds: ['JPT-121'],
+  maintainers: ['ali.naffaa'],
+  keywords: ['CreateTeam'],
+})('Allow members to post messages" can be turn on or off in the create new team.', async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
