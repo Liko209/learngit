@@ -8,7 +8,11 @@ import moize from 'moize';
 import { handleAtMentionName } from './utils/handleAtMentionName';
 import { CustomEmojiMap, AtMentions, FormatToHtmlParams } from './types';
 import { Emoji } from './Emoji';
-
+type FormatEmojiOptions = {
+  staticHttpServer: string;
+  customEmojiMap: CustomEmojiMap;
+  unicodeOnly?: boolean;
+};
 class FormatToHtml {
   text: string;
 
@@ -22,19 +26,15 @@ class FormatToHtml {
     currentUserId,
     staticHttpServer,
     customEmojiMap,
-    highlightTerms,
+    unicodeOnly,
   }: FormatToHtmlParams) {
-    const glipDownText = FormatToHtml.formatToGlipdown(
-      text,
-      atMentions,
-      currentUserId,
-    );
+    const glipDownText = this.formatToGlipdown(text, atMentions, currentUserId);
 
-    const glipDownTextWithEmoji = FormatToHtml.formatToEmoji(
-      glipDownText,
+    const glipDownTextWithEmoji = this.formatToEmoji(glipDownText, {
       staticHttpServer,
       customEmojiMap,
-    );
+      unicodeOnly,
+    });
 
     return glipDownTextWithEmoji;
   }
@@ -55,10 +55,9 @@ class FormatToHtml {
 
   static formatToEmoji(
     text: string,
-    staticHttpServer: string,
-    customEmojiMap: CustomEmojiMap,
+    { staticHttpServer, customEmojiMap, ...opts }: FormatEmojiOptions,
   ) {
-    return new Emoji(text, staticHttpServer, customEmojiMap).text;
+    return new Emoji(text, staticHttpServer, customEmojiMap, opts).text;
   }
 }
 
