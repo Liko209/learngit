@@ -1,17 +1,18 @@
-import { setupCase, teardownCase } from "../../../init";
-import { BrandTire, SITE_URL } from "../../../config";
-import { formalName } from "../../../libs/filter";
-import { AppRoot } from "../../../v2/page-models/AppRoot";
-import { h } from "../../../v2/helpers";
+import { setupCase, teardownCase } from "../../init";
+import { BrandTire, SITE_URL } from "../../config";
+import { formalName } from "../../libs/filter";
+import { AppRoot } from "../../v2/page-models/AppRoot";
+import { h } from "../../v2/helpers";
 import { v4 as uuid } from 'uuid';
-import { IGroup } from "../../../v2/models";
+import { IGroup } from "../../v2/models";
 
-fixture('Message/RightRail').beforeEach(setupCase(BrandTire.RCOFFICE)).afterEach(teardownCase());
-
-test(formalName('Files display on the right rail', ['P2', 'Messages', 'RightRail', 'Lorna']),async(t)=>{
+fixture('RightRail')
+.beforeEach(setupCase(BrandTire.RCOFFICE))
+.afterEach(teardownCase());
+test(formalName('Image files display on the right rail', ['P2', 'Messages', 'RightRail', 'V1.4', 'Lorna.Li']),async(t)=>{
   const loginUser = h(t).rcData.mainCompany.users[4];
   const message = uuid();
-  const filesPath = ['../../../sources/1.txt'];
+  const filesPath = ['../../sources/1.png'];
 
   let team = <IGroup>{
     name: uuid(),
@@ -33,18 +34,18 @@ test(formalName('Files display on the right rail', ['P2', 'Messages', 'RightRail
   const rightRail = app.homePage.messageTab.rightRail;
   const teamPage = app.homePage.messageTab.teamsSection;
   const conversationPage = app.homePage.messageTab.conversationPage;
-  const filesTab = rightRail.filesTab;
 
-  await h(t).withLog('When I open a team and click Files Tab', async () => {
+  await h(t).withLog('When I open a team and click Images Tab', async () => {
     await teamPage.conversationEntryById(team.glipId).enter();
-    await rightRail.filesEntry.enter();
-    await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_FilesEmpty'});
+    await rightRail.imagesEntry.enter();
+    await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_ImagesEmpty'});
   });
 
     await h(t).withLog('When I upload a text file', async()=>{
       await conversationPage.uploadFilesToMessageAttachment(filesPath[0]);
       await conversationPage.sendMessage(message);
       await conversationPage.nthPostItem(-1).waitForPostToSend();
-      await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_FilesList'});
+      await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_ImagesList'});
     })
 });
+

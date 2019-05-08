@@ -1,14 +1,15 @@
-import { setupCase, teardownCase } from "../../../init";
-import { BrandTire, SITE_URL } from "../../../config";
-import { formalName } from "../../../libs/filter";
-import { AppRoot } from "../../../v2/page-models/AppRoot";
-import { h } from "../../../v2/helpers";
+import { setupCase, teardownCase } from "../../init";
+import { BrandTire, SITE_URL } from "../../config";
+import { formalName } from "../../libs/filter";
+import { AppRoot } from "../../v2/page-models/AppRoot";
+import { h } from "../../v2/helpers";
 import { v4 as uuid } from 'uuid';
-import { IGroup } from "../../../v2/models";
+import { IGroup } from "../../v2/models";
 
-fixture('Message/RightRail').beforeEach(setupCase(BrandTire.RCOFFICE)).afterEach(teardownCase());
-
-test(formalName('Tasks display on the right rail', ['P2', 'Messages', 'RightRail', 'Lorna']),async(t)=>{
+fixture('RightRail')
+.beforeEach(setupCase(BrandTire.RCOFFICE))
+.afterEach(teardownCase());
+test(formalName('Tasks display on the right rail', ['P2', 'Messages', 'RightRail', 'V1.4', 'Lorna.Li']),async(t)=>{
   const loginUser = h(t).rcData.mainCompany.users[4];
   const taskTitle = uuid();
   await h(t).glip(loginUser).init();
