@@ -18,7 +18,7 @@ fixture('Telephony/MinimizeCall')
 
 test.meta(<ITestMeta>{
   priority: ['P0'],
-  caseIds: ['JPT-1746'],
+  caseIds: ['JPT-1746','JPT-1742'],
   maintainers: ['Zack.Zheng'],
   keywords: ['MinimizedCall']
 })('Can end the call in the minimized view', async (t) => {
