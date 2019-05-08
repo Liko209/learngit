@@ -3,7 +3,7 @@ import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ElectronZipItemProvider } from './ElectronZipItemProvider';
 import { LogControlManager } from 'sdk/service/uploadLogControl';
-import { logManager } from 'sdk/src';
+import { logManager } from 'sdk';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { ENTITY } from 'sdk/service/eventKey';
 import { PermissionService } from 'sdk/module/permission';
