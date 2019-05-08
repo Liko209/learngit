@@ -59,7 +59,6 @@ test.skip(formalName('Unread button will disappear when resizing window then ful
 
   await h(t).withLog('And I enter the conversation', async () => {
     const teamsSection = app.homePage.messageTab.teamsSection;
-    await teamsSection.expand();
     await teamsSection.conversationEntryById(team.glipId).enter();
     await teamsSection.ensureLoaded();
   });
@@ -134,7 +133,6 @@ test.meta(<ITestMeta>{
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog('And enter the chat conversation', async () => {
-    await directMessageSection.expand();
     await directMessageSection.conversationEntryById(chat.glipId).enter();
   });
 
@@ -157,7 +155,6 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I enter the new team conversation', async () => {
-    await teamsSection.expand();
     await teamsSection.conversationEntryById(team.glipId).enter();
   });
 
@@ -221,7 +218,6 @@ test.meta(<ITestMeta>{
   const teamsSection = app.homePage.messageTab.teamsSection;
   const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog('And enter the conversation', async () => {
-    await teamsSection.expand();
     await teamsSection.conversationEntryById(team.glipId).enter();
   });
 
@@ -273,7 +269,6 @@ test.meta(<ITestMeta>{
   const teamsSection = app.homePage.messageTab.teamsSection;
   const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog('And enter the team conversation', async () => {
-    await teamsSection.expand();
     await teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.waitUntilPostsBeLoaded();
   });
@@ -344,7 +339,6 @@ test.meta(<ITestMeta>{
 
   const teamsSection = app.homePage.messageTab.teamsSection;
   await h(t).withLog(`And I enter conversationA named ${teamA.name}`, async () => {
-    await teamsSection.expand();
     await teamsSection.conversationEntryById(teamA.glipId).enter();
   });
 
@@ -399,7 +393,6 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('And I enter the conversation', async () => {
     const teamsSection = app.homePage.messageTab.teamsSection;
-    await teamsSection.expand();
     await teamsSection.conversationEntryById(team.glipId).enter();
     await teamsSection.ensureLoaded();
   });
@@ -472,7 +465,6 @@ test.meta(<ITestMeta>{
 
   for (const i in teams) {
     await h(t).withLog('When I enter the new team conversation', async () => {
-      await teamsSection.expand();
       await teamsSection.conversationEntryById(teams[i].glipId).enter();
     });
 
@@ -511,7 +503,6 @@ test.meta(<ITestMeta>{
 
   for (const i in teams) {
     await h(t).withLog('When I enter the new team conversation', async () => {
-      await teamsSection.expand();
       await teamsSection.conversationEntryById(teams[i].glipId).enter();
     });
 
