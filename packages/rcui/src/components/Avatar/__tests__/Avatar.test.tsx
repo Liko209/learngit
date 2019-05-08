@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as renderer from 'react-test-renderer';
 import { RuiAvatar } from '../Avatar';
-import { ThemeProvider } from '../../../foundation/styles';
+import ThemeProvider from '../../../foundation/styles/ThemeProvider';
 
 describe('Avatar', () => {
   it('renders correctly', () => {
