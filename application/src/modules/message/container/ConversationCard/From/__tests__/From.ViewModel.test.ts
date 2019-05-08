@@ -7,6 +7,7 @@
 import { FromViewModel } from '../From.ViewModel';
 import { getEntity } from '@/store/utils';
 jest.mock('@/store/utils');
+jest.mock('@/utils/i18nT', () => (key: string) => key);
 
 let fromViewModel: FromViewModel;
 
@@ -19,7 +20,7 @@ describe('FromViewModel', () => {
     (getEntity as jest.Mock).mockReturnValue({
       isArchived: true,
     });
-    expect(fromViewModel.isArchived).toBe(true);
+    expect(fromViewModel.disabled).toBe(true);
   });
   describe('displayName()', () => {
     const teamName = 'randomName';

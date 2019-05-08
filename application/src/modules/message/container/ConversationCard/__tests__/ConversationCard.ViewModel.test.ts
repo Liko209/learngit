@@ -151,22 +151,20 @@ describe('ConversationCardViewModel', () => {
     (getEntity as jest.Mock).mockReturnValue({
       isArchived: true,
     });
-    expect(conversationCardVM.isArchived).toBe(true);
+    expect(conversationCardVM.isArchivedGroup).toBe(true);
   });
-  describe('toastMessage()', () => {
-    it('should return "" if isArchived is false', () => {
+  describe('showToast()', () => {
+    it('should return false if isArchived is false', () => {
       (getEntity as jest.Mock).mockReturnValue({
         isArchived: false,
       });
-      expect(conversationCardVM.toastMessage).toBe('');
+      expect(conversationCardVM.showToast).toBe(false);
     });
-    it('should return "people.prompt.conversationArchived" if isArchived is true', () => {
+    it('should return true if isArchived is true', () => {
       (getEntity as jest.Mock).mockReturnValue({
         isArchived: true,
       });
-      expect(conversationCardVM.toastMessage).toBe(
-        'people.prompt.conversationArchived',
-      );
+      expect(conversationCardVM.showToast).toBe(true);
     });
   });
 });

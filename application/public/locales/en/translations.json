@@ -392,7 +392,8 @@
       "convertToTeam": "Convert to team",
       "convertToTeamNamePrefix": "Team: ",
       "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content.",
-      "noMatchesFound": "No matches found"
+      "noMatchesFound": "No matches found",
+      "archivedSuffix": "- Archived"
     },
     "company": {},
     "prompt": {

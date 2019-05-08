@@ -64,13 +64,13 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   }
 
   @computed
-  get isArchived() {
-    return this.group.isArchived;
+  get isArchivedGroup() {
+    return !!this.group.isArchived;
   }
 
   @computed
-  get toastMessage() {
-    return this.isArchived ? 'people.prompt.conversationArchived' : '';
+  get showToast() {
+    return !!this.isArchivedGroup;
   }
 
   @computed

@@ -66,19 +66,25 @@ export class ConversationCard extends React.Component<
     });
   }
 
-  jumpToPost = (toastMessage: string) => () => {
-    if (toastMessage) {
-      this.flashToast(toastMessage);
+  getToastMessage = async () => {
+    const message = this.props.isArchivedGroup
+      ? 'people.prompt.conversationArchived'
+      : '';
+    return await i18nT(message);
+  }
+
+  handleJumpToPost = async () => {
+    if (this.props.showToast) {
+      this.flashToast(await this.getToastMessage());
     } else {
       const { id, groupId } = this.props;
       jumpToPost({ id, groupId });
     }
   }
 
-  async flashToast(message: string) {
-    const translated = await i18nT(message);
+  flashToast(message: string) {
     Notification.flashToast({
-      message: translated,
+      message,
       type: ToastType.ERROR,
       messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
@@ -97,7 +103,6 @@ export class ConversationCard extends React.Component<
   render() {
     const {
       id,
-      toastMessage,
       creator,
       name,
       createTime,
@@ -129,7 +134,7 @@ export class ConversationCard extends React.Component<
     );
     const activity = <Activity id={id} />;
     const from = mode === 'navigation' ? <From id={post.groupId} /> : undefined;
-    const jumpToPost = mode ? this.jumpToPost(toastMessage) : undefined;
+    const jumpToPost = mode ? this.handleJumpToPost : undefined;
     return (
       <JuiConversationCard
         data-name="conversation-card"
