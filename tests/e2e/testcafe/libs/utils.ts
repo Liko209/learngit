@@ -31,12 +31,8 @@ export class ConfigLoader {
     this.config = require(defaultConfigFile);
     if (fs.existsSync(configFile)) {
       logger.info(`load custom configuration from ${configFile}`);
-      _.mergeWith(this.config, require(configFile), (objValue, srcValue) => {
-        if (_.isArray(objValue)) {
-          return objValue.concat(srcValue);
-        }
-      });
-    };
+      _.assign(this.config, require(configFile));
+    }
   }
 
   constructor(
