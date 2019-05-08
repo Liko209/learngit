@@ -251,8 +251,12 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
   }
 );
 
-test(formalName('JPT-247 The Favorites section should display all the favorite conversations and should not be limited to 20 conversations.', ['JPT-247', 'P1', 'ali.naffaa']),
-  async (t: TestController) => {
+test.meta(<ITestMeta> {
+  priority: ['P1'],
+  caseIds: ['JPT-247'],
+  maintainers: ['ali.naffaa'],
+  keywords: ['ConversationList'],
+})('The Favorites section should display all the favorite conversations and should not be limited to 20 conversations', async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const loginUser= users[4];
