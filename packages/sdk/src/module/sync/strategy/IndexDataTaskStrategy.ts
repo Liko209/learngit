@@ -7,7 +7,7 @@ import { ITaskStrategy } from '../../../framework/strategy/ITaskStrategy';
 import { JOB_KEY } from 'sdk/framework/utils/jobSchedule';
 
 class IndexDataTaskStrategy implements ITaskStrategy {
-  private readonly _retryStrategy = [
+  private readonly _retryStrategy: number[] = [
     3,
     5,
     10,
