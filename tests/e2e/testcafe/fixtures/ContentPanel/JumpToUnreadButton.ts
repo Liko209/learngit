@@ -296,7 +296,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then the messages should be loaded', async () => {
-    await conversationPage.scrollDownToCheckPostInOrder(msgList);
+    await conversationPage.scrollDownToCheckPostInOrder(msgList, 20);
   });
 })
 

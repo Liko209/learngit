@@ -129,20 +129,17 @@ export class BaseConversationPage extends BaseWebComponent {
     }
   }
 
-  get body() {
+  get postCardBodies() {
     return this.self.find(`[data-name="body"]`);
   }
 
-  async scrollDownToCheckPostInOrder(posts: string[]) {
-    let remain = true
+  async scrollDownToCheckPostInOrder(posts: string[], maxTry: number = 10) {
     let lastIndex = 0;
     let currentIndex = 0;
-    let lastScrollTop = await this.scrollDiv.scrollTop;
-    let tryTime = 0;
-    while (remain) {
-      const count = await this.body.count;
+    for (const c of _.range(maxTry)) {
+      const count = await this.postCardBodies.count;
       for (const i of _.range(count)) {
-        const text = await this.body.nth(i).textContent
+        const text = await this.postCardBodies.nth(i).textContent
         currentIndex = posts.indexOf(text)
         assert(currentIndex >= 0, 'some post is not in postList')
         if (i > 0) {
@@ -150,17 +147,9 @@ export class BaseConversationPage extends BaseWebComponent {
         }
         lastIndex = currentIndex
       }
-      if (currentIndex == posts.length - 1) remain = false;
+      if (currentIndex == posts.length - 1) break;
       await this.scrollDownOnePage();
       await this.t.wait(2e3);
-      if (lastScrollTop == await this.scrollDiv.scrollTop) {
-        tryTime = tryTime + 1
-      }
-      if (tryTime == 3) {
-        remain = false;
-        assert(currentIndex == posts.length - 1, "retry some times but all posts did not loaded")
-      }
-      lastScrollTop = await this.scrollDiv.scrollTop;
       lastIndex = 0;
     }
   }
