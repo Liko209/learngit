@@ -69,13 +69,13 @@ const StyledNavListItem = styled(MuiListItem)`
 
   &&:hover {
     background-color: ${({ theme }) =>
-      fade(palette('grey', '700')({ theme }), theme.opacity.p05)};
+      fade(palette('grey', '700')({ theme }), theme.opacity['1'] / 2)};
   }
 
   &&.selected {
     &&:hover {
       background-color: ${({ theme }) =>
-        fade(palette('grey', '700')({ theme }), theme.opacity.p10)};
+        fade(palette('grey', '700')({ theme }), theme.opacity['1'])};
     }
 
     p {
@@ -122,7 +122,14 @@ const touchRippleClasses = {
 };
 
 const JuiListNavItemComponent = (props: JuiListNavItemProps) => {
-  return <StyledNavListItem TouchRippleProps={{ classes: touchRippleClasses }} {...props}>{props.children}</StyledNavListItem>;
+  return (
+    <StyledNavListItem
+      TouchRippleProps={{ classes: touchRippleClasses }}
+      {...props}
+    >
+      {props.children}
+    </StyledNavListItem>
+  );
 };
 
 JuiListNavItemComponent.defaultProps = {

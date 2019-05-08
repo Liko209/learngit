@@ -268,7 +268,7 @@ class RTCCallFsmTable extends StateMachine {
         },
         {
           name: CallFsmEvent.FORWARD,
-          from: CallFsmState.IDLE,
+          from: [CallFsmState.IDLE, CallFsmState.REPLYING],
           to: (target: string) => {
             dependency.onForwardAction(target);
             return CallFsmState.FORWARDING;

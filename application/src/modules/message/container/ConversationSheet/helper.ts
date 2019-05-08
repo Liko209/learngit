@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import moment from 'moment';
-import i18next from 'i18next';
+import i18nT from '@/utils/i18nT';
 
 import {
   dateFormatter,
@@ -12,15 +12,18 @@ import {
   getDateMessage,
 } from '@/utils/date';
 
-function getDateAndTime(timestamp: number) {
-  const getAMOrPM = dateFormatter.localTime(moment(timestamp));
-  const date = recentlyTwoDayAndOther(timestamp);
-  return `${date} ${i18next.t('common.time.at')} ${getAMOrPM}`;
+async function getDateAndTime(timestamp: number): Promise<string> {
+  const getAMOrPM: string = dateFormatter.localTime(moment(timestamp));
+  const date: string = await recentlyTwoDayAndOther(timestamp);
+  return `${date} ${await i18nT('common.time.at')} ${getAMOrPM}`;
 }
 
-function getDurationTime(startTimestamp: number, endTimestamp: number) {
-  const startTime = getDateAndTime(startTimestamp);
-  const endTime = getDateAndTime(endTimestamp);
+async function getDurationTime(
+  startTimestamp: number,
+  endTimestamp: number,
+): Promise<string> {
+  const startTime = await getDateAndTime(startTimestamp);
+  const endTime = await getDateAndTime(endTimestamp);
 
   const isSameDay = moment(startTimestamp).isSame(endTimestamp, 'day');
 
@@ -30,16 +33,17 @@ function getDurationTime(startTimestamp: number, endTimestamp: number) {
   return `${startTime} - ${endTime}`;
 }
 
-function getDurationDate(startTimestamp: number, endTimestamp: number) {
-  const startTime = recentlyTwoDayAndOther(startTimestamp);
-  const endTime = recentlyTwoDayAndOther(endTimestamp);
-  const isToday = startTime.split(' ')[0] === endTime.split(' ')[0];
-  const endTimeString = isToday ? '' : ` - ${endTime}`;
+async function getDurationDate(startTimestamp: number, endTimestamp: number): Promise<string> {
+  const startTime: string = await recentlyTwoDayAndOther(startTimestamp);
+  const endTime: string = await recentlyTwoDayAndOther(endTimestamp);
+  const isToday: boolean = startTime.split(' ')[0] === endTime.split(' ')[0];
+  const endTimeString: string = isToday ? '' : ` - ${endTime}`;
   return `${startTime}${endTimeString}`;
 }
 
-function getI18Text(type: string, count: number) {
-  return i18next.t(type, { count, postProcess: 'interval' });
+async function getI18Text(type: string, count: number): Promise<string> {
+  const timesText: string = await i18nT(type, { count, postProcess: 'interval' });
+  return timesText;
 }
 
 const REPEAT_TEXT = {
@@ -58,19 +62,21 @@ const TIMES_TEXT = {
   yearly: 'item.forYearlyTimes_interval',
 };
 
-function getDurationTimeText(
+async function getDurationTimeText(
   repeat: string,
   repeatEndingAfter: string,
   repeatEndingOn: number | null,
   repeatEnding: string,
-) {
-  const times =
-    (TIMES_TEXT[repeat] &&
-      getI18Text(TIMES_TEXT[repeat], Number(repeatEndingAfter))) ||
+): Promise<string> {
+  const times: string =
+    (
+      TIMES_TEXT[repeat] &&
+      await getI18Text(TIMES_TEXT[repeat], Number(repeatEndingAfter))
+    ) ||
     '';
 
-  const date = repeatEndingOn
-    ? dateFormatter.exactDate(moment(repeatEndingOn))
+  const date: string = repeatEndingOn
+    ? await dateFormatter.exactDate(moment(repeatEndingOn))
     : '';
   const hideUntil = (repeat: string, repeatEnding: string) =>
     repeat === '' || // task not set repeat will be ''
@@ -81,9 +87,9 @@ function getDurationTimeText(
   // if has repeat and is forever need hide times
   const hideTimes = (repeatEndingAfter: string, repeatEnding: string) =>
     repeatEnding === 'none' || repeatEnding === 'on';
-  const repeatText = ` ${i18next.t('item.until')} ${date}`;
+  const repeatText = ` ${await i18nT('item.until')} ${date}`;
 
-  return `${i18next.t(REPEAT_TEXT[repeat]) || ''} ${
+  return `${await i18nT(REPEAT_TEXT[repeat]) || ''} ${
     hideTimes(repeatEndingAfter, repeatEnding) ? '' : times
   } ${hideUntil(repeat, repeatEnding) ? '' : repeatText}`;
 }

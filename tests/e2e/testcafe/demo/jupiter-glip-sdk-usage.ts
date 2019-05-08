@@ -16,7 +16,6 @@ const chrisSandboxConfig = {
   rc: {
     server: 'https://api-glpdevxmn.lab.nordigy.ru',
     clientId: 'FVKGRbLRTxGxPempqg5f9g',
-    clientSecret: 'bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ',
   },
   glip: {
     server: 'https://aws13-g04-uds02.asialab.glip.net:11904',

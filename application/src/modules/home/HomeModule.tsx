@@ -24,8 +24,6 @@ class HomeModule extends AbstractModule {
   private _subModuleRegistered: boolean = false;
 
   async bootstrap() {
-    this._homeService.setDefaultRouterPaths(config.defaultRouterPaths);
-
     // load subModule
     const { notificationCenter, SERVICE } = service;
     notificationCenter.on(SERVICE.LOGIN, async () => {
@@ -46,7 +44,9 @@ class HomeModule extends AbstractModule {
       if (!this._subModuleRegistered) {
         const moduleNames = await this._featuresFlagsService.getSupportFeatureModules();
 
-        this._homeService.registerSubModules(moduleNames);
+        await this._homeService.registerSubModules(moduleNames);
+
+        this._homeService.setDefaultRouterPaths(config.defaultRouterPaths);
 
         this.addAsyncModuleOnInitializedListener();
 

@@ -9,7 +9,7 @@ import {
 } from './SocketRequest';
 import { SocketResponseBuilder } from './SocketResponseBuilder';
 import { EventEmitter2 } from 'eventemitter2';
-import { NETWORK_FAIL_TYPE } from '../../network';
+import { NETWORK_FAIL_TEXT, RESPONSE_STATUS_CODE } from '../../network';
 import { mainLogger } from '../../../log';
 import { SocketResponse } from './SocketResponse';
 
@@ -73,8 +73,8 @@ class SocketRequestHelper implements ISocketRequestManager {
   private _onRequestTimeout(requestId: string, reject: any) {
     mainLogger.info('[Socket]: request timeout');
     const response = new SocketResponseBuilder()
-      .setStatus(0)
-      .setStatusText(NETWORK_FAIL_TYPE.TIME_OUT)
+      .setStatus(RESPONSE_STATUS_CODE.LOCAL_TIME_OUT)
+      .setStatusText(NETWORK_FAIL_TEXT.TIME_OUT)
       .build();
     reject(response);
   }
@@ -85,8 +85,8 @@ class SocketRequestHelper implements ISocketRequestManager {
         `[Socket]: socket disconnect, return SOCKET_DISCONNECTED error for request id:${requestId}`,
       );
       const response = new SocketResponseBuilder()
-        .setStatus(0)
-        .setStatusText(NETWORK_FAIL_TYPE.SOCKET_DISCONNECTED)
+        .setStatus(RESPONSE_STATUS_CODE.LOCAL_NOT_NETWORK_CONNECTION)
+        .setStatusText(NETWORK_FAIL_TEXT.SOCKET_DISCONNECTED)
         .build();
       this._removeRequestTimer(requestId);
       this._handleRegisteredRequest(requestId, response);

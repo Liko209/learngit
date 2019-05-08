@@ -8,7 +8,7 @@ import BaseDao from '../BaseDao';
 import Query from '../Query';
 
 type RandomItem = {
-  id?: number;
+  id: number;
   name?: string;
   boolean?: boolean;
 };

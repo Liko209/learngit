@@ -21,6 +21,12 @@ import {
 } from './EditMessageInput';
 import { Profile, PROFILE_TYPE } from '../Profile';
 import { jumpToPost } from '@/common/jumpToPost';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import i18nT from '@/utils/i18nT';
 
 @observer
 export class ConversationCard extends React.Component<
@@ -60,9 +66,30 @@ export class ConversationCard extends React.Component<
     });
   }
 
-  jumpToPost = () => {
-    const { id, groupId } = this.props;
-    jumpToPost({ id, groupId });
+  getToastMessage = async () => {
+    const message = this.props.isArchivedGroup
+      ? 'people.prompt.conversationArchived'
+      : '';
+    return await i18nT(message);
+  }
+
+  handleJumpToPost = async () => {
+    if (this.props.showToast) {
+      this.flashToast(await this.getToastMessage());
+    } else {
+      const { id, groupId } = this.props;
+      jumpToPost({ id, groupId });
+    }
+  }
+
+  flashToast(message: string) {
+    Notification.flashToast({
+      message,
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: false,
+    });
   }
 
   private _focusEditor() {
@@ -107,7 +134,7 @@ export class ConversationCard extends React.Component<
     );
     const activity = <Activity id={id} />;
     const from = mode === 'navigation' ? <From id={post.groupId} /> : undefined;
-    const jumpToPost = mode ? this.jumpToPost : undefined;
+    const jumpToPost = mode ? this.handleJumpToPost : undefined;
     return (
       <JuiConversationCard
         data-name="conversation-card"
@@ -124,7 +151,7 @@ export class ConversationCard extends React.Component<
         <JuiConversationCardHeader
           data-name="header"
           name={name}
-          time={showProgressActions ? '' : createTime}
+          time={showProgressActions ? '' : createTime.get()}
           status={customStatus}
           from={from}
           notification={showActivityStatus && activity}

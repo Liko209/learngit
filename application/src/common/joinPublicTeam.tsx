@@ -4,49 +4,38 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-import i18next from 'i18next';
+import i18nT from '@/utils/i18nT';
 import { Trans } from 'react-i18next';
 import { goToConversationWithLoading } from '@/common/goToConversation';
 import { Dialog } from '@/containers/Dialog';
-import { errorHelper } from 'sdk/error';
 import { GroupService } from 'sdk/module/group';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
-import { Notification } from '@/containers/Notification';
 import GroupModel from '@/store/models/Group';
-import {
-  ToastMessageAlign,
-  ToastType,
-} from '@/containers/ToastWrapper/Toast/types';
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
-
+import { handleError, NOTIFICATION_TYPE } from '@/common/catchError';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const joinHander = async (conversationId: number) => {
-  const nGroupService = ServiceLoader.getInstance<GroupService>(
-    ServiceConfig.GROUP_SERVICE,
-  );
-  const useId = await getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   try {
+    const nGroupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
+    const useId = await getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     await nGroupService.joinTeam(useId, conversationId);
   } catch (error) {
-    const e = error;
-    if (errorHelper.isAuthenticationError(e)) {
-      Notification.flashToast({
-        message: 'people.prompt.JoinTeamNotAuthorizedError',
-        type: ToastType.ERROR,
-        messageAlign: ToastMessageAlign.LEFT,
-        fullWidth: false,
-        dismissible: false,
-      });
-    }
+    handleError(NOTIFICATION_TYPE.FLASH, error, null, {
+      network: 'people.prompt.JoinTeamErrorForNetworkIssue',
+      server: 'people.prompt.JoinTeamErrorForServerIssue',
+      authentication: 'people.prompt.JoinTeamErrorForAuthIssue',
+    });
     throw error;
   }
 };
 
-const joinPublicTeam = (item: GroupModel) => {
+const joinPublicTeam = async (item: GroupModel) => {
   Dialog.confirm({
-    title: i18next.t('people.team.joinTeamTitle'),
+    title: await i18nT('people.team.joinTeamTitle'),
     content: (
       <JuiDialogContentText>
         <Trans
@@ -56,8 +45,8 @@ const joinPublicTeam = (item: GroupModel) => {
         />
       </JuiDialogContentText>
     ),
-    okText: i18next.t('people.team.joinTeamSubmit'),
-    cancelText: i18next.t('common.dialog.cancel'),
+    okText: await i18nT('people.team.joinTeamSubmit'),
+    cancelText: await i18nT('common.dialog.cancel'),
     onOK: () =>
       goToConversationWithLoading({
         id: item.id,

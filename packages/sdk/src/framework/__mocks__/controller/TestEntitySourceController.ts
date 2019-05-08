@@ -7,7 +7,7 @@ import { IdModel } from '../../model';
 
 export class TestEntitySourceController<T extends IdModel = IdModel>
   implements IEntitySourceController<T> {
-  entityCache: EntityCacheController;
+  entityCache: EntityCacheController<T>;
 
   constructor(public factory: Factory<T>) {
     this.entityCache = new EntityCacheController();

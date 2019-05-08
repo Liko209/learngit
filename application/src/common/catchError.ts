@@ -4,24 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ToastType, ToastMessageAlign } from '@/containers/ToastWrapper/Toast/types';
-import { Notification, ShowNotificationOptions } from '@/containers/Notification';
+import _ from 'lodash';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import {
+  Notification,
+  ShowNotificationOptions,
+} from '@/containers/Notification';
+import { generalErrorHandler } from '@/utils/error';
 import { errorHelper } from 'sdk/error';
-
-type ErrorActionConfig = string | Function;
-
-type NotifyErrorProps = {
-  network?: ErrorActionConfig;
-  server?: ErrorActionConfig;
-  notificationOpts?: ShowNotificationOptions;
-};
-
-type StrategyProps = {
-  condition: Function;
-  action: Function;
-};
-
-type CatchOptionsProps = NotifyErrorProps | StrategyProps[];
 
 enum NOTIFICATION_TYPE {
   CUSTOM,
@@ -29,11 +22,37 @@ enum NOTIFICATION_TYPE {
   FLAG,
 }
 
-const defaultOptions = {
+type ErrorActionConfig = string | Function;
+
+type NotifyErrorProps = {
+  authentication?: ErrorActionConfig;
+  network?: ErrorActionConfig;
+  server?: ErrorActionConfig;
+  notificationOpts?: ShowNotificationOptions;
+  isDebounce?: boolean;
+};
+
+type StrategyActionProps = NOTIFICATION_TYPE | Function;
+
+type StrategyProps = {
+  isDebounce?: boolean;
+  condition: Function;
+  action: StrategyActionProps;
+  /* config below when action is NOTIFICATION_TYPE */
+  message?: string,
+  notificationOpts?: ShowNotificationOptions;
+};
+
+type CatchOptionsProps = NotifyErrorProps | StrategyProps[];
+
+const AUTO_HIDE_AFTER_3_SECONDS = 3000;
+
+const defaultNotificationOptions = {
   type: ToastType.ERROR,
   messageAlign: ToastMessageAlign.LEFT,
   fullWidth: false,
   dismissible: false,
+  autoHideDuration: AUTO_HIDE_AFTER_3_SECONDS,
 };
 
 function notify(
@@ -59,11 +78,42 @@ function notify(
     ...notificationOpts,
   });
 }
+let debounceNotifyStore = {};
+
+const getDebounceNotify = (actionName: ErrorActionConfig) => {
+  if (typeof actionName === 'function') {
+    return;
+  }
+  if (!debounceNotifyStore[actionName]) {
+    debounceNotifyStore = {
+      [actionName]: _.debounce(notify, 1000, {
+        trailing: false,
+        leading: true,
+      }),
+    };
+  }
+  return debounceNotifyStore[actionName];
+};
+
+function notifyFunc(isDebounce: boolean, actionName: ErrorActionConfig) {
+  return isDebounce
+    ? getDebounceNotify(actionName)
+    : notify;
+}
+
+function performAction(option: StrategyProps, error: Error, ctx: any) {
+  const { action, message, isDebounce = false, notificationOpts = defaultNotificationOptions } = option;
+  if (typeof action === 'function') {
+    return action(error, ctx);
+  }
+
+  return notifyFunc(isDebounce, message || '')(ctx, action, message, notificationOpts, error);
+}
 
 function perform(options: StrategyProps[], error: Error, ctx: any) {
-  const result = options.some(({ condition, action }) => {
-    if (condition(error, ctx)) {
-      action(error, ctx);
+  const result = options.some((opt) => {
+    if (opt.condition(error, ctx)) {
+      performAction(opt, error, ctx);
       return true;
     }
     return false;
@@ -83,15 +133,29 @@ function handleError(
     return perform(options, error, ctx);
   }
 
-  const { network, server, notificationOpts = defaultOptions } = options;
+  const {
+    server,
+    network,
+    authentication,
+    notificationOpts = defaultNotificationOptions,
+    isDebounce = false,
+  } = options;
+
   if (network && errorHelper.isNetworkConnectionError(error)) {
-    return notify(ctx, notificationType, network, notificationOpts, error);
+    notifyFunc(isDebounce, network)(ctx, notificationType, network, notificationOpts, error);
+    return false;
+  }
+
+  if (authentication && errorHelper.isAuthenticationError(error)) {
+    return notifyFunc(isDebounce, authentication)(ctx, notificationType, authentication, notificationOpts, error);
   }
 
   if (server && errorHelper.isBackEndError(error)) {
-    return notify(ctx, notificationType, server, notificationOpts, error);
+    notifyFunc(isDebounce, server)(ctx, notificationType, server, notificationOpts, error);
+    return false;
   }
 
+  generalErrorHandler(error);
   throw error;
 }
 
@@ -117,7 +181,10 @@ function wrapHandleError(
   };
 }
 
-function decorate(notificationType: NOTIFICATION_TYPE, options: CatchOptionsProps): any {
+function decorate(
+  notificationType: NOTIFICATION_TYPE,
+  options: CatchOptionsProps,
+): any {
   return function (target: any, propertyName: string, descriptor?: any) {
     // bound instance methods
     if (!descriptor) {
@@ -147,7 +214,11 @@ function decorate(notificationType: NOTIFICATION_TYPE, options: CatchOptionsProp
         writable: true,
         initializer() {
           // N.B: we can't immediately invoke initializer; this would be wrong
-          return wrapHandleError(descriptor.initializer!.call(this), notificationType, options);
+          return wrapHandleError(
+            descriptor.initializer!.call(this),
+            notificationType,
+            options,
+          );
         },
       };
     }
@@ -179,4 +250,4 @@ catchError.flag = function (options: NotifyErrorProps) {
   return decorate(NOTIFICATION_TYPE.FLAG, options);
 };
 
-export { catchError };
+export { catchError, defaultNotificationOptions, handleError, NOTIFICATION_TYPE };

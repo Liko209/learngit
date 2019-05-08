@@ -11,12 +11,13 @@ import { RCClientInfo } from './types/RCClientInfo';
 import { RCAccountInfo } from './types/RCAccountInfo';
 import { RCExtensionInfo } from './types/RCExtensionInfo';
 import { RCRolePermissions } from './types/RCRolePermissions';
+import { AccountServiceInfo } from './types/AccountServiceInfo';
 import {
   RCAPIVersion,
   ISpecialServiceRequest,
   ISpecialServiceNumber,
   IDialingPlanRequest,
-  IDialingPlan,
+  DialingPlan,
   IPhoneNumberRequest,
   IExtensionPhoneNumberList,
 } from './types/common';
@@ -105,7 +106,7 @@ class RCInfoApi extends Api {
     return RCInfoApi.rcNetworkClient.http<string>(query);
   }
 
-  static getAccountDialingPlan(request?: IDialingPlanRequest) {
+  static getDialingPlan(request?: IDialingPlanRequest) {
     const query = {
       path: RINGCENTRAL_API.API_DIALING_PLAN,
       method: NETWORK_METHOD.GET,
@@ -114,7 +115,7 @@ class RCInfoApi extends Api {
       params: request,
       HAPriority: HA_PRIORITY.HIGH,
     };
-    return RCInfoApi.rcNetworkClient.http<IDialingPlan>(query);
+    return RCInfoApi.rcNetworkClient.http<DialingPlan>(query);
   }
 
   static getExtensionPhoneNumberList(request?: IPhoneNumberRequest) {
@@ -127,6 +128,17 @@ class RCInfoApi extends Api {
       HAPriority: HA_PRIORITY.HIGH,
     };
     return RCInfoApi.rcNetworkClient.http<IExtensionPhoneNumberList>(query);
+  }
+
+  static getAccountServiceInfo() {
+    const query = {
+      path: RINGCENTRAL_API.API_SERVICE_INFO,
+      method: NETWORK_METHOD.GET,
+      authFree: false,
+      via: NETWORK_VIA.HTTP,
+      HAPriority: HA_PRIORITY.HIGH,
+    };
+    return RCInfoApi.rcNetworkClient.http<AccountServiceInfo>(query);
   }
 }
 

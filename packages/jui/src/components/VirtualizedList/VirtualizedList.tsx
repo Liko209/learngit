@@ -33,6 +33,22 @@ import {
 import { usePrevious } from './hooks/usePrevious';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
+type Props = {
+  height: number;
+  minRowHeight: number;
+  overscan: number;
+  initialScrollToIndex: number;
+  stickToBottom?: boolean;
+  onScroll: (event: React.UIEvent<HTMLElement>) => void;
+  onWheel: (event: React.WheelEvent<HTMLElement>) => void;
+  onVisibleRangeChange: (range: IndexRange) => void;
+  onRenderedRangeChange: (range: IndexRange) => void;
+  before?: React.ReactNode;
+  after?: React.ReactNode;
+  children: JSX.Element[];
+  contentStyle: React.CSSProperties;
+  stickToLastPosition?: boolean;
+};
 type JuiVirtualizedListHandles = {
   scrollToBottom: () => void;
   isAtBottom: () => boolean;
@@ -60,7 +76,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     stickToBottom,
     contentStyle,
     stickToLastPosition = true,
-  }: JuiVirtualizedListProps,
+  }: Props,
   forwardRef,
 ) => {
   // TODO use useCallback to optimize performance
@@ -174,7 +190,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     setVisibleRange(
       createRange({
         startIndex: position.index,
-        size: renderedRangeSize,
+        size: visibleRangeSize,
         min: minIndex,
         max: maxIndex,
       }),
@@ -273,6 +289,9 @@ const JuiVirtualizedList: RefForwardingComponent<
   const beforeRef: DivRefObject = useRef(null);
   const contentRef: DivRefObject = useRef(null);
 
+  const scrollEffectTriggerRef = useRef(0);
+  const prevAtBottomRef = useRef(false);
+
   //
   // State
   //
@@ -282,35 +301,36 @@ const JuiVirtualizedList: RefForwardingComponent<
     index: initialScrollToIndex,
     offset: 0,
   });
-  const renderedRangeSize = Math.ceil(
+
+  const visibleRangeSize = Math.ceil(
     height / rowManager.getEstimateRowHeight(),
   );
 
   const initialVisibleRange = createRange({
     startIndex: initialScrollToIndex,
-    size: renderedRangeSize,
+    size: visibleRangeSize,
     min: minIndex,
     max: maxIndex,
   });
-  const { range: visibleRange, setRange: setVisibleRange } = useRange(
+
+  const { range: unfixedVisibleRange, setRange: setVisibleRange } = useRange(
     initialVisibleRange,
   );
+  const visibleRange = fixIndexWhenChildrenChanged(
+    unfixedVisibleRange,
+    usePrevious(() => children.length),
+    usePrevious(() => visibleRange.startIndex),
+    usePrevious(() => children[visibleRange.startIndex] || null),
+  );
   const renderedRange = computeRenderedRange(visibleRange);
+  const { startIndex, stopIndex } = renderedRange;
 
-  const prevAtBottomRef = useRef(false);
   const shouldScrollToBottom = () => prevAtBottomRef.current && stickToBottom;
 
-  const scrollEffectTriggerRef = useRef(0);
   const prevVisibleRange = usePrevious(() => computeVisibleRange()) || {
     startIndex: 0,
     stopIndex: 0,
   };
-  const { startIndex, stopIndex } = fixIndexWhenChildrenChanged(
-    renderedRange,
-    usePrevious(() => children.length),
-    usePrevious(() => startIndex),
-    usePrevious(() => children[startIndex] || null),
-  );
 
   //
   // Update before content height when before content changed
@@ -485,22 +505,7 @@ const MemoList = memo(
   forwardRef(JuiVirtualizedList),
 ) as React.MemoExoticComponent<
   React.ForwardRefExoticComponent<
-    {
-      initialScrollToIndex?: number;
-      onScroll?: (event: React.UIEvent<HTMLElement>) => void;
-      onWheel?: (event: React.WheelEvent<HTMLElement>) => void;
-      onVisibleRangeChange?: (range: IndexRange) => void;
-      onRenderedRangeChange?: (range: IndexRange) => void;
-      before?: React.ReactNode;
-      after?: React.ReactNode;
-      height: number;
-      minRowHeight: number;
-      overscan?: number;
-      stickToBottom?: boolean;
-      children: JSX.Element[];
-      contentStyle?: React.CSSProperties;
-      stickToLastPosition?: boolean;
-    } & React.RefAttributes<JuiVirtualizedListHandles>
+    JuiVirtualizedListProps & React.RefAttributes<JuiVirtualizedListHandles>
   >
 >;
 

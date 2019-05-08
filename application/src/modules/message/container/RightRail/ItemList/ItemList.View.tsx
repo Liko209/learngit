@@ -5,14 +5,12 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import i18next from 'i18next';
+import { DataList } from '@/modules/common/container/DataList';
 import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
-import {
-  JuiInfiniteList,
-  ThresholdStrategy,
-} from 'jui/components/VirtualizedList';
-import { emptyView } from './Empty';
+import { ThresholdStrategy } from 'jui/components/VirtualizedList';
+import { withTranslation, WithTranslation } from 'react-i18next';
+import { EmptyView } from './Empty';
 import {
   JuiRightShelfContent,
   JuiRightRailContentLoading,
@@ -23,68 +21,59 @@ import {
   ITEM_HEIGHT,
   LOAD_MORE_STRATEGY_CONFIG,
   HEADER_HEIGHT,
+  INITIAL_DATA_COUNT,
+  LOADING_DELAY,
 } from '../constants';
 
-@observer
-class ItemListView extends React.Component<ViewProps & Props> {
-  private _loadMoreStrategy = new ThresholdStrategy(LOAD_MORE_STRATEGY_CONFIG);
+type ItemListViewProps = Props & ViewProps & WithTranslation;
 
-  private _renderItems = () => {
-    const { type, groupId } = this.props;
+@observer
+class ItemListComponent extends React.Component<ItemListViewProps> {
+  private _infiniteListProps = {
+    minRowHeight: ITEM_HEIGHT,
+    loadMoreStrategy: new ThresholdStrategy(LOAD_MORE_STRATEGY_CONFIG),
+    loadingRenderer: <JuiRightRailContentLoading delay={LOADING_DELAY} />,
+    loadingMoreRenderer: <JuiRightRailLoadingMore />,
+    stickToLastPosition: false,
+  };
+
+  private _renderItems() {
+    const { type, groupId, listHandler } = this.props;
     const tabConfig = getTabConfig(type);
     const Component: any = tabConfig.item;
-    return this.props.getIds.map((itemId: number) => (
+    return listHandler.sortableListStore.getIds.map((itemId: number) => (
       <Component id={itemId} key={itemId} groupId={groupId} />
     ));
   }
 
-  hasMore = (direction: string) => {
-    if (direction === 'up') {
-      return false;
-    }
-    const { size, total } = this.props;
-    return size !== total;
-  }
-
-  renderEmptyContent = () => {
-    const { type } = this.props;
-    return emptyView(type);
-  }
-
-  defaultLoading = () => {
-    return <JuiRightRailContentLoading delay={500} />;
-  }
-
-  defaultLoadingMore = () => <JuiRightRailLoadingMore />;
-
   render() {
-    const { type, height, size, total } = this.props;
+    const { type, height, listHandler, t } = this.props;
+    const { size, total } = listHandler;
     const { subheader } = getTabConfig(type);
-    const h = Math.max(height - HEADER_HEIGHT, 0);
+    const listHeight = Math.max(height - HEADER_HEIGHT, 0);
+
     return (
       <JuiRightShelfContent>
         {(total > 0 || size > 0) && (
           <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
-            {i18next.t(subheader)}
+            {t(subheader)}
           </JuiListSubheader>
         )}
-        <JuiInfiniteList
-          height={h}
-          minRowHeight={ITEM_HEIGHT}
-          loadInitialData={this.props.loadInitialData}
-          loadMore={this.props.loadMore}
-          loadMoreStrategy={this._loadMoreStrategy}
-          loadingRenderer={this.defaultLoading()}
-          hasMore={this.hasMore}
-          loadingMoreRenderer={this.defaultLoadingMore()}
-          noRowsRenderer={this.renderEmptyContent()}
-          stickToLastPosition={false}
+        <DataList
+          listHandler={listHandler}
+          initialDataCount={INITIAL_DATA_COUNT}
+          InfiniteListProps={Object.assign(this._infiniteListProps, {
+            height: listHeight,
+            noRowsRenderer: <EmptyView type={type} />,
+          })}
         >
           {this._renderItems()}
-        </JuiInfiniteList>
+        </DataList>
       </JuiRightShelfContent>
     );
   }
 }
+
+const ItemListView = withTranslation('translations')(ItemListComponent);
 
 export { ItemListView };

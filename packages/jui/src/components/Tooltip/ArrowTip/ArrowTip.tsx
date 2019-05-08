@@ -15,7 +15,6 @@ import { spacing } from '../../../foundation/utils';
 
 type JuiTooltipProps = {
   placement?: string;
-  show?: boolean;
   tooltipForceHide?: boolean;
 } & MuiTooltipProps;
 
@@ -141,14 +140,16 @@ export class JuiArrowTip extends React.PureComponent<JuiTooltipProps> {
       children,
       placement = 'bottom',
       tooltipForceHide,
+      open: propOpen,
       ...rest
     } = this.props;
-    const { arrowRef } = this.state;
+    const { arrowRef, open: stateOpen } = this.state;
+    const open = propOpen !== undefined ? propOpen : stateOpen;
     return (
       <React.Fragment>
         <MuiTooltip
           {...rest}
-          open={this.state.open}
+          open={open}
           onClose={this.handleTooltipClose}
           onOpen={this.handleTooltipOpen}
           disableFocusListener={true}

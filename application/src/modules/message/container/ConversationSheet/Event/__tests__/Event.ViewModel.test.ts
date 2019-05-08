@@ -8,7 +8,28 @@ import { EventViewModel } from '../Event.ViewModel';
 
 jest.mock('@/store/utils');
 
-const mockData = {};
+const DATE_2019_1_4 = 1546564919703;
+const mockData = {
+  end: DATE_2019_1_4,
+  repeat: 'none',
+  repeatEnding: 'none',
+  repeatEndingAfter: '1',
+  repeatEndingOn: null,
+  start: DATE_2019_1_4,
+};
+
+jest.mock('i18next', () => ({
+  languages: ['en'],
+  services: {
+    backendConnector: {
+      state: {
+        'en|translation': -1,
+      },
+    },
+  },
+  isInitialized: true,
+  t: (text: string) => text,
+}));
 
 const eventViewModel = new EventViewModel({ ids: [1] });
 
@@ -20,5 +41,26 @@ describe('eventViewModel', () => {
   it('computed event', () => {
     (getEntity as jest.Mock).mockReturnValue(mockData);
     expect(eventViewModel.event).toBe(mockData);
+  });
+
+  describe('timeContent', () => {
+    it('is all day', async (done: jest.DoneCallback) => {
+      (getEntity as jest.Mock).mockReturnValue({
+        ...mockData,
+        allDay: false,
+      });
+      expect((await eventViewModel.timeContent.fetch()).trim()).toBe(
+        'com, 1/4/2019 common.time.at 9:21 AM - 9:21 AM',
+      );
+      done();
+    });
+    it('is all day', async (done: jest.DoneCallback) => {
+      (getEntity as jest.Mock).mockReturnValue({
+        ...mockData,
+        allDay: true,
+      });
+      expect((await eventViewModel.timeContent.fetch()).trim()).toBe('com, 1/4/2019');
+      done();
+    });
   });
 });

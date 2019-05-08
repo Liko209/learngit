@@ -6,53 +6,53 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import i18next from 'i18next';
 import { PinViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { Notification } from '@/containers/Notification';
-import {
-  ToastType,
-  ToastMessageAlign,
-} from '@/containers/ToastWrapper/Toast/types';
+import { catchError } from '@/common/catchError';
+
 type Props = PinViewProps & WithTranslation;
 
 @observer
 class PinViewComponent extends Component<Props> {
-  private _handlePinButton = async () => {
+  private _handleTogglePin = async () => {
     const { isPin, pin } = this.props;
-    try {
-      await pin(!isPin);
-    } catch (error) {
-      const message = !isPin
-        ? 'message.prompt.SorryWeWereNotAbleToPinTheMessage'
-        : 'message.prompt.SorryWeWereNotAbleToUnpinTheMessage';
-      Notification.flashToast({
-        message,
-        type: ToastType.ERROR,
-        messageAlign: ToastMessageAlign.LEFT,
-        fullWidth: false,
-        dismissible: false,
-      });
-    }
+    await pin(!isPin);
   }
+
+  @catchError.flash({
+    network: 'message.prompt.notAbleToUnpinForNetworkIssue',
+    server: 'message.prompt.notAbleToUnpinForServerIssue',
+  })
+  private _handleUnpin = () => {
+    return this._handleTogglePin();
+  }
+
+  @catchError.flash({
+    network: 'message.prompt.notAbleToPinForNetworkIssue',
+    server: 'message.prompt.notAbleToPinForServerIssue',
+  })
+  private _handlePin = () => {
+    return this._handleTogglePin();
+  }
+
   render() {
-    const { isPin, shouldShowPinOption, shouldDisablePinOption } = this.props;
+    const { isPin, shouldShowPinOption, shouldDisablePinOption, t } = this.props;
     return (
       shouldShowPinOption && (
         <JuiIconButton
           size="small"
           tooltipTitle={
             isPin
-              ? i18next.t('message.action.unpin')
-              : i18next.t('message.action.pin')
+              ? t('message.action.unpin')
+              : t('message.action.pin')
           }
           ariaLabel={
             isPin
-              ? i18next.t('message.action.unpin')
-              : i18next.t('message.action.pin')
+              ? t('message.action.unpin')
+              : t('message.action.pin')
           }
           color={isPin ? 'primary' : undefined}
-          onClick={this._handlePinButton}
+          onClick={isPin ? this._handleUnpin : this._handlePin}
           disabled={shouldDisablePinOption}
           disableToolTip={shouldDisablePinOption}
           variant="plain"

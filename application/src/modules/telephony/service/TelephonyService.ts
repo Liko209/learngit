@@ -16,7 +16,7 @@ import {
   MAKE_CALL_ERROR_CODE,
   TelephonyCallInfo,
 } from 'sdk/module/telephony/types';
-import { PersonService, ContactType } from 'sdk/module/person';
+import { PersonService } from 'sdk/module/person';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
 import { mainLogger } from 'sdk';
 import { TelephonyStore, CALL_TYPE } from '../store';
@@ -55,7 +55,11 @@ class TelephonyService {
     this._callId = callId;
     this._telephonyStore.callType = CALL_TYPE.INBOUND;
     this._telephonyStore.callerName = fromName;
-    this._telephonyStore.phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
+    const phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
+    if (phoneNumber !== this._telephonyStore.phoneNumber) {
+      this._telephonyStore.isContactMatched = false;
+      this._telephonyStore.phoneNumber = phoneNumber;
+    }
     this._telephonyStore.callId = callId;
     this._telephonyStore.incomingCall();
     mainLogger.info(
@@ -275,6 +279,10 @@ class TelephonyService {
     this._telephonyStore.closeDialer();
   }
 
+  maximize = () => {
+    this._telephonyStore.openDialer();
+  }
+
   handleWindow = () => {
     if (this._telephonyStore.isDetached) {
       this._telephonyStore.attachedWindow();
@@ -283,28 +291,19 @@ class TelephonyService {
     this._telephonyStore.detachedWindow();
   }
 
-  muteOrUnmute = (mute: boolean) => {
+  muteOrUnmute = () => {
     if (this._callId) {
+      this._telephonyStore.switchBetweenMuteAndUnmute();
+      const { isMute } = this._telephonyStore;
+      isMute
+        ? this._serverTelephonyService.mute(this._callId)
+        : this._serverTelephonyService.unmute(this._callId);
       mainLogger.info(
-        `${TelephonyService.TAG}${mute ? 'mute' : 'unmute'} call id=${
+        `${TelephonyService.TAG}${isMute ? 'mute' : 'unmute'} call id=${
           this._callId
         }`,
       );
-      mute
-        ? this._serverTelephonyService.mute(this._callId)
-        : this._serverTelephonyService.unmute(this._callId);
     }
-  }
-
-  matchContactByPhoneNumber = async (phone: string) => {
-    const personService = ServiceLoader.getInstance<PersonService>(
-      ServiceConfig.PERSON_SERVICE,
-    );
-
-    return await personService.matchContactByPhoneNumber(
-      phone,
-      ContactType.GLIP_CONTACT,
-    );
   }
 
   getAllCallCount = () => {

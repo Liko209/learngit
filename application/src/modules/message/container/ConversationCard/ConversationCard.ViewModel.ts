@@ -3,6 +3,7 @@
  * @Date: 2018-10-08 16:29:08
  * Copyright © RingCentral. All rights reserved.
  */
+import { promisedComputed } from 'computed-async-mobx';
 import PostModel from '@/store/models/Post';
 import { ConversationCardProps } from '@/modules/message/container/ConversationCard/types';
 import moment from 'moment';
@@ -11,10 +12,12 @@ import { getEntity, getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Post } from 'sdk/module/post/entity';
 import { Person } from 'sdk/module/person/entity';
+import { Group } from 'sdk/module/group';
 import { Progress, PROGRESS_STATUS } from 'sdk/module/progress/entity';
 import { ENTITY_NAME } from '@/store';
 import { postTimestamp, dateFormatter } from '@/utils/date';
 import PersonModel from '@/store/models/Person';
+import GroupModel from '@/store/models/Group';
 import { StoreViewModel } from '@/store/ViewModel';
 import ProgressModel from '@/store/models/Progress';
 import { container } from 'framework';
@@ -56,6 +59,21 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   }
 
   @computed
+  get group() {
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.groupId);
+  }
+
+  @computed
+  get isArchivedGroup() {
+    return !!this.group.isArchived;
+  }
+
+  @computed
+  get showToast() {
+    return !!this.isArchivedGroup;
+  }
+
+  @computed
   get itemTypeIds() {
     return this.post.itemTypeIds;
   }
@@ -85,14 +103,13 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
     return this.creator.awayStatus;
   }
 
-  @computed
-  get createTime() {
+  createTime = promisedComputed('', async () => {
     const { createdAt } = this.post;
     if (this.props.mode === 'navigation') {
-      return dateFormatter.dateAndTime(moment(this.post.createdAt));
+      return await dateFormatter.dateAndTime(moment(this.post.createdAt));
     }
-    return postTimestamp(createdAt);
-  }
+    return await postTimestamp(createdAt);
+  });
 
   @computed
   get isEditMode() {

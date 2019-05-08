@@ -13,7 +13,7 @@ import { JuiTimeNodeDivider } from 'jui/pattern/ConversationPage/TimeNodeDivider
 class TimeNodeDividerView extends Component<TimeNodeDividerViewProps> {
   render() {
     const { text } = this.props;
-    return <JuiTimeNodeDivider text={text} />;
+    return <JuiTimeNodeDivider text={text.get()} />;
   }
 }
 

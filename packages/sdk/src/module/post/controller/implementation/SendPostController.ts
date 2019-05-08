@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { mainLogger } from 'foundation';
+import { mainLogger, DEFAULT_RETRY_COUNT } from 'foundation';
 import { daoManager } from '../../../../dao';
 import { PostDao } from '../../dao';
 import { Post } from '../../entity';
@@ -163,6 +163,9 @@ class SendPostController implements ISendPostController {
     try {
       const result = await this.postActionController.requestController.post(
         sendPost,
+        {
+          retryCount: DEFAULT_RETRY_COUNT,
+        },
       );
       return await this.handleSendPostSuccess(result, post);
     } catch (e) {

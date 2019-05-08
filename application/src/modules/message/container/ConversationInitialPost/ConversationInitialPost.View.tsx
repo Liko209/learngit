@@ -72,7 +72,7 @@ class ConversationInitialPost extends React.Component<
           </StyledSpan>
           <StyledTeamName>{displayName}</StyledTeamName>
           <StyledSpan>
-            &nbsp;{t('message.initialPost.on')} {createTime}
+            &nbsp;{t('message.initialPost.on')} {createTime.get()}
           </StyledSpan>
         </StyledTitle>
       );

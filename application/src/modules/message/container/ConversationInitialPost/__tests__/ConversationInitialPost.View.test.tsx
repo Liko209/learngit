@@ -24,7 +24,9 @@ describe('ConversationInitialPostView', () => {
       creator: {} as PersonModel,
       tReady: {},
       isTeam: false,
-      createTime: 1531726169129,
+      createTime: {
+        get: () => 1531726169129,
+      },
       isCompanyTeam: false,
     };
     it('should not render initialPostBody when notEmpty is true [JPT-478]', () => {
@@ -52,7 +54,9 @@ describe('ConversationInitialPostView', () => {
     const baseProps = {
       creator,
       displayName,
-      createTime,
+      createTime: {
+        get: () => createTime,
+      },
       id: 1,
       groupType: CONVERSATION_TYPES.ME,
       groupDescription: 'text',
