@@ -3,6 +3,7 @@
  * @Date: 2019-01-17 10:03:23
  * Copyright © RingCentral. All rights reserved.
  */
+import { ReactNode } from 'react';
 import _ from 'lodash';
 import { inject, Jupiter } from 'framework';
 import { HomeStore, SubModuleConfig } from '../store';
@@ -50,6 +51,10 @@ class HomeService {
 
   hasModules(modules: string[]) {
     return modules.every(module => !!this._homeStore.getSubModule(module));
+  }
+
+  registerExtension(extension: ReactNode) {
+    this._homeStore.addExtensions(extension);
   }
 }
 

@@ -3,6 +3,8 @@
  * @Date: 2019-01-08 12:41:10
  * Copyright © RingCentral. All rights reserved.
  */
+
+import { ReactNode } from 'react';
 import { observable, computed, action } from 'mobx';
 import { RouteProps } from 'react-router-dom';
 import { SubModuleConfig, NavConfig } from '../types';
@@ -62,6 +64,12 @@ class HomeStore {
   @action
   addSubModule(name: string, config: SubModuleConfig) {
     this._subModuleConfigsMap.set(name, config);
+  }
+
+  @observable extensions: ReactNode[] = [];
+
+  addExtensions(extension: ReactNode) {
+    this.extensions.push(extension);
   }
 }
 

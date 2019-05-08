@@ -37,7 +37,7 @@ import copy from 'copy-to-clipboard';
 import { PhoneNumberInfo } from 'sdk/module/person/entity';
 import { JuiIconButton } from 'jui/components/Buttons';
 import portalManager from '@/common/PortalManager';
-import { Call } from '@/modules/telephony';
+import { Call } from '@/modules/telephony/container';
 
 @observer
 class ProfileDialogPersonContentViewComponent extends Component<
