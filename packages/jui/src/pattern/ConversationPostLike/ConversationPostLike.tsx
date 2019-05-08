@@ -8,7 +8,7 @@ import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { spacing, shape, grey, palette } from '../../foundation/utils';
 import { JuiConversationPostLikeProps } from './types';
-import { JuiArrowTip } from '../../components';
+import { RuiTooltip } from 'rcui/components/Tooltip';
 import { JuiIconButton } from '../../components/Buttons';
 
 const StyleConversationPostLike = styled.div`
@@ -73,7 +73,7 @@ class JuiConversationPostLike extends PureComponent<
 
     if (!title) return elEntity;
 
-    return <JuiArrowTip title={title}>{elEntity}</JuiArrowTip>;
+    return <RuiTooltip title={title}>{elEntity}</RuiTooltip>;
   }
 }
 

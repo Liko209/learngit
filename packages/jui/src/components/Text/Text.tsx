@@ -7,11 +7,7 @@ import React, { CSSProperties, PureComponent } from 'react';
 import ReactDOM from 'react-dom';
 
 import MuiTypography, { TypographyProps } from '@material-ui/core/Typography';
-import {
-  JuiArrowTip,
-  JuiTooltipProps,
-} from '../../components/Tooltip/ArrowTip';
-
+import { RuiTooltip, RuiTooltipProps } from 'rcui/components/Tooltip';
 import styled from '../../foundation/styled-components';
 import { isTextOverflow } from '../../foundation/utils';
 
@@ -34,7 +30,7 @@ const StyledTypography = styled(MuiTypography)`
 type JuiTextProps = {
   style?: CSSProperties;
   disableTooltip?: boolean;
-  tooltipProps?: JuiTooltipProps;
+  tooltipProps?: RuiTooltipProps;
   tooltipTitle?: React.ReactNode;
 } & TypographyProps;
 
@@ -67,7 +63,7 @@ class JuiText extends PureComponent<JuiTextProps, TextStates> {
     return disableTooltip ? (
       <StyledTypography {...rest}>{children}</StyledTypography>
     ) : (
-      <JuiArrowTip
+      <RuiTooltip
         title={tooltipTitle || children}
         disableFocusListener={false}
         disableHoverListener={false}
@@ -83,7 +79,7 @@ class JuiText extends PureComponent<JuiTextProps, TextStates> {
         >
           {children}
         </StyledTypography>
-      </JuiArrowTip>
+      </RuiTooltip>
     );
   }
 

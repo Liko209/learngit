@@ -13,7 +13,7 @@ import {
 } from '../../../foundation/Iconography';
 import tinycolor from 'tinycolor2';
 import styled, { keyframes } from '../../../foundation/styled-components';
-import { JuiArrowTip } from '../../Tooltip/ArrowTip';
+import { RuiTooltip } from 'rcui/components/Tooltip';
 import { palette, grey, width } from '../../../foundation/utils/styles';
 import { Theme, Palette } from '../../../foundation/theme/theme';
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
@@ -230,9 +230,9 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
   }
   if (!disableToolTip) {
     return (
-      <JuiArrowTip title={tooltipTitle} tooltipForceHide={tooltipForceHide}>
+      <RuiTooltip title={tooltipTitle} tooltipForceHide={tooltipForceHide}>
         {renderToolTipWrapper()}
-      </JuiArrowTip>
+      </RuiTooltip>
     );
   }
   return renderToolTipWrapper();

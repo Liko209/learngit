@@ -1,25 +1,27 @@
 /*
- * @Author: Wayne Zhou (wayne.zhou@ringcentral.com)
- * @Date: 2019-03-21 22:54:15
+ * @Author: wayne.zhou
+ * @Date: 2019-05-08 13:50:59
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { ReactElement } from 'react';
-import MuiTooltip from '@material-ui/core/Tooltip';
+import React from 'react';
+import MuiTooltip, {
+  TooltipProps as MuiTooltipProps,
+} from '@material-ui/core/Tooltip';
 import styled, {
   css,
   createGlobalStyle,
-  withTheme,
 } from '../../foundation/styled-components';
-import { Theme } from '../../foundation/styles';
+
+const placementTopMargin = '16px 0';
+const placementBottomMargin = '12px 0';
+const placementLeftMargin = '0 2px';
+const placementRightMargin = '0 2px';
 
 type RuiTooltipProps = {
-  placement?: 'top' | 'bottom' | 'left' | 'right';
-  show?: boolean;
-  title: string;
-  children: ReactElement;
-  theme: Theme;
-};
+  placement?: string;
+  tooltipForceHide?: boolean;
+} & MuiTooltipProps;
 
 const baseSize = 7;
 
@@ -29,6 +31,7 @@ const TooltipArrow = styled.span`
   height: ${3 * baseSize}px;
   &::before {
     content: '';
+    color: transparent;
     margin: auto;
     display: block;
     width: 0;
@@ -37,8 +40,7 @@ const TooltipArrow = styled.span`
   }
 `;
 
-const tooltipColor = ({ theme }: { theme: Theme }) =>
-  theme.palette['tooltip']['main'];
+const tooltipColor = ({ theme }: any) => theme.palette['tooltip']['dark'];
 
 const bottom = css`
   top: 0;
@@ -92,28 +94,29 @@ const left = css`
 
 const GlobalToolTipStyle = createGlobalStyle`
   .popper[x-placement='right'] ${TooltipArrow}{
-    margin: 0 2px;
+    margin: ${placementRightMargin};
     ${right}
   }
 
   .popper[x-placement='top'] ${TooltipArrow}{
-    margin: 16px 0;
+    margin: ${placementTopMargin};
     ${top}
   }
 
   .popper[x-placement='bottom'] ${TooltipArrow}{
-    margin: 12px 0;
+    margin: ${placementBottomMargin};
     ${bottom}
   }
 
   .popper[x-placement='left'] ${TooltipArrow}{
-    margin: 0 2px;
+    margin: ${placementLeftMargin};
     ${left}
   }
 `;
-class Tooltip extends React.PureComponent<RuiTooltipProps> {
+export class RuiTooltip extends React.PureComponent<RuiTooltipProps> {
   state = {
     arrowRef: null,
+    open: false,
   };
 
   handleArrowRef = (node: any) => {
@@ -122,19 +125,38 @@ class Tooltip extends React.PureComponent<RuiTooltipProps> {
     });
   }
 
+  handleTooltipClose = () => {
+    this.setState({ open: false });
+  }
+
+  handleTooltipOpen = () => {
+    this.setState({ open: true });
+  }
+
+  componentDidUpdate() {
+    if (this.props.tooltipForceHide === true) {
+      this.setState({ open: !this.props.tooltipForceHide });
+    }
+  }
+
   render() {
     const {
       title,
       children,
       placement = 'bottom',
-      theme,
+      tooltipForceHide,
+      open: propOpen,
       ...rest
     } = this.props;
-    const { arrowRef } = this.state;
+    const { arrowRef, open: stateOpen } = this.state;
+    const open = propOpen !== undefined ? propOpen : stateOpen;
     return (
       <React.Fragment>
         <MuiTooltip
           {...rest}
+          open={open}
+          onClose={this.handleTooltipClose}
+          onOpen={this.handleTooltipOpen}
           disableFocusListener={true}
           placement={placement}
           title={
@@ -159,12 +181,10 @@ class Tooltip extends React.PureComponent<RuiTooltipProps> {
         >
           {children}
         </MuiTooltip>
-        <GlobalToolTipStyle theme={theme} />
+        <GlobalToolTipStyle suppressMultiMountWarning={true} />
       </React.Fragment>
     );
   }
 }
 
-const RuiTooltip = withTheme(Tooltip);
-
-export { RuiTooltipProps, RuiTooltip };
+export { RuiTooltipProps };
