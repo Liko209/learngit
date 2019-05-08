@@ -30,7 +30,7 @@ type Props = {
 const StyledEmojiWrapper = styled.div`
   && {
     .emoji-mart-title-label {
-      font-size: 20px;
+      font-size: ${({ theme }) => theme.typography.title1.fontSize};
     }
     .emoji-mart-anchor:focus {
       outline: none;
