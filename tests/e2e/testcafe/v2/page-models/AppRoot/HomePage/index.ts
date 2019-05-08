@@ -18,7 +18,7 @@ import { DeleteTeamDialog } from './DeleteTeamDialog';
 import { ArchiveTeamDialog } from './ArchiveTeamDialog';
 import { AlertDialog } from "./AlertDialog";
 import { IUser } from '../../../models';
-import { TelephonyDialog } from './TelephonyDialog';
+import { TelephonyDialog, TelephonyMinimizeWindow } from './TelephonyDialog';
 import { FileAndImagePreviewer } from './ImagePreviewer';
 import { ViewerDialog } from './ViewerDialog';
 import { SearchDialog, JoinTeamDialog } from './SearchDialog';
@@ -81,7 +81,7 @@ export class HomePage extends BaseWebComponent {
   get convertToTeamModal() {
     return this.getComponent(ConvertToTeamDialog);
   }
-  
+
   get sendNewMessageModal() {
     return this.getComponent(SendNewMessageModal);
   }
@@ -143,6 +143,10 @@ export class HomePage extends BaseWebComponent {
 
   get telephonyDialog() {
     return this.getComponent(TelephonyDialog);
+  }
+
+  get minimizeCallWindow() {
+    return this.getComponent(TelephonyMinimizeWindow);
   }
 
   get fileAndImagePreviewer() {
