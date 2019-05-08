@@ -3,6 +3,8 @@
  * @Date: 2018-10-11 09:40:36
  * Copyright © RingCentral. All rights reserved.
  */
+import { container } from 'framework';
+import { HomeStore } from '@/modules/home/store';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { ToastWrapper } from '@/containers/ToastWrapper';
@@ -34,6 +36,7 @@ class HomeView extends Component<HomeViewProps> {
   constructor(props: HomeViewProps) {
     super(props);
   }
+  private _homeStore: HomeStore = container.get(HomeStore);
   componentDidMount() {
     window.addEventListener('storage', this._storageEventHandler);
     const accountService = ServiceLoader.getInstance<AccountService>(
@@ -70,6 +73,7 @@ class HomeView extends Component<HomeViewProps> {
   render() {
     const { showGlobalSearch, canRenderDialer } = this.props;
 
+    const { extensions } = this._homeStore;
     return (
       <>
         <ToastWrapper />
@@ -81,6 +85,9 @@ class HomeView extends Component<HomeViewProps> {
           </Bottom>
           <ModalPortal />
           <AboutView />
+          {extensions.map((Extension: React.ComponentType, i: number) => (
+            <Extension key={`HOME_EXTENSION_${i}`} />
+          ))}
           {showGlobalSearch && <GlobalSearch />}
           {canRenderDialer && <LazyDialer />}
         </Wrapper>

@@ -6,3 +6,4 @@
 
 export * from './Dialer';
 export * from './Call';
+export * from './Dialpad';

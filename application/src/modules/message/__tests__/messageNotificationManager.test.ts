@@ -3,10 +3,9 @@
  * @Date: 2019-01-17 15:16:45
  * Copyright Â© RingCentral. All rights reserved.
  */
-import { ServiceConfig } from 'sdk/module/serviceLoader';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import * as utils from '@/store/utils';
 import { MessageNotificationManager } from '../MessageNotificationManager';
-import { ServiceLoader } from 'sdk/module/serviceLoader';
 describe('messageNotificationManager', () => {
   let notificationManager: MessageNotificationManager;
   const currentUserId = 110;

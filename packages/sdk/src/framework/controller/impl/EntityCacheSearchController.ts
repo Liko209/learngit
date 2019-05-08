@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel, SortableModel } from '../../../framework/model';
+import { IdModel, SortableModel, ModelIdType } from '../../../framework/model';
 import {
   IEntityCacheSearchController,
   Terms,
@@ -14,16 +14,20 @@ import { IEntityCacheController } from '../interface/IEntityCacheController';
 import { SearchUtils } from '../../utils/SearchUtils';
 const soundex = require('soundex-code');
 
-class EntityCacheSearchController<T extends IdModel = IdModel>
-  implements IEntityCacheSearchController<T> {
-  constructor(public entityCacheController: IEntityCacheController<T>) {}
+class EntityCacheSearchController<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+> implements IEntityCacheSearchController<T, IdType> {
+  constructor(
+    public entityCacheController: IEntityCacheController<T, IdType>,
+  ) {}
 
-  async getEntity(id: number): Promise<T | null> {
+  async getEntity(id: IdType): Promise<T | null> {
     return await this.entityCacheController.get(id);
   }
 
   async getMultiEntities(
-    ids: number[],
+    ids: IdType[],
     filterFunc?: (entity: T) => boolean,
   ): Promise<T[]> {
     const entities = await this.entityCacheController.batchGet(ids);
@@ -47,7 +51,7 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
   async searchEntities(
     genSortableModelFunc: (entity: T, terms: Terms) => SortableModel<T> | null,
     searchKey?: string,
-    arrangeIds?: number[],
+    arrangeIds?: IdType[],
     sortFunc?: (entityA: SortableModel<T>, entityB: SortableModel<T>) => number,
   ): Promise<{
     terms: string[];

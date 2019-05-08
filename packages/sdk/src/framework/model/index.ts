@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel } from './Model';
+import { IdModel, ModelIdType } from './Model';
 import { Raw } from './Raw';
 import { IPagination } from './IPagination';
 import { SortableModel } from './SortableModel';
 
-export { IdModel, Raw, IPagination, SortableModel };
+export { IdModel, ModelIdType, Raw, IPagination, SortableModel };

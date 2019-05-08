@@ -3,7 +3,7 @@
  * @Date: 2019-03-14 21:01:17
  * Copyright © RingCentral. All rights reserved.
  */
-import { getCurrentTime } from '../../utils/jsUtils';
+import { getCurrentTime } from '../jsUtils/jsUtils';
 
 class HeartBeatCheck {
   private _lastTick: number = 0;

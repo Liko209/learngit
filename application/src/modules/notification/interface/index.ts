@@ -22,7 +22,7 @@ export type NotificationAction = {
 };
 
 export type NotificationOpts = Omit<NotificationOptions, 'actions'> & {
-  data: { id: NotificationId; scope: string };
+  data: { id: NotificationId; scope: string; priority: NOTIFICATION_PRIORITY };
   actions?: NotificationAction[];
   onClick?: NotificationActionHandler;
 };
@@ -31,3 +31,8 @@ export type Global = {
   Notification: Notification;
   navigator: Navigator;
 };
+
+export enum NOTIFICATION_PRIORITY {
+  INCOMING_CALL = 1,
+  MESSAGE,
+}

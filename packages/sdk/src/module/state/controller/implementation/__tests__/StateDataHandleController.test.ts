@@ -30,14 +30,14 @@ type DataHandleTask = StateHandleTask | GroupCursorHandleTask;
 
 describe('StateDataHandleController', () => {
   let stateDataHandleController: StateDataHandleController;
-  let mockEntitySourceController: EntitySourceController;
+  let mockEntitySourceController: EntitySourceController<GroupState>;
   let mockStateFetchDataController: StateFetchDataController;
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     jest.restoreAllMocks();
     mockEntitySourceController = new EntitySourceController<GroupState>(
-      {} as IEntityPersistentController,
+      {} as IEntityPersistentController<GroupState>,
       {} as DeactivatedDao,
     );
     mockStateFetchDataController = new StateFetchDataController(
