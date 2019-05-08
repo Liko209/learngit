@@ -151,7 +151,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   @action
-  insertEmoji = (emoji: any) => {
+  insertEmoji = (emoji: any, cb: Function) => {
     let colons = emoji.colons;
     if (ConvertList.indexOf(colons.split(':').join('')) > -1) {
       colons = this._doUnderscoreTransfer(colons);
@@ -170,6 +170,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       quill.focus();
       quill.setSelection(index + colons.length, 0);
     },         0);
+    cb && cb();
   }
 
   @action

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import 'emoji-mart/css/emoji-mart.css';
-import { Picker } from 'emoji-mart';
+import { Picker, EmojiData } from 'emoji-mart';
 import React, { MouseEvent } from 'react';
 import { JuiIconButton } from '../../components/Buttons';
 import { ExcludeList } from './excludeList';
@@ -14,7 +14,7 @@ import styled from '../../foundation/styled-components';
 
 type Props = {
   handlerIcon: string;
-  handleEmojiClick?: (emoji: any) => void;
+  handleEmojiClick: (emoji: EmojiData, cb?: Function) => void;
   title: string;
   sheetSize: 16 | 20 | 32 | 64 | undefined;
   set:
@@ -87,10 +87,15 @@ class JuiEmoji extends React.PureComponent<Props, State> {
     });
     return isIndex;
   }
-
+  handleClick = (emoji: EmojiData) => {
+    const { handleEmojiClick } = this.props;
+    handleEmojiClick(emoji, () => {
+      this.handleClose();
+    });
+  }
   render() {
     const { anchorEl, open } = this.state;
-    const { handleEmojiClick, sheetSize, set, title } = this.props;
+    const { sheetSize, set, title } = this.props;
     return (
       <HotKeys
         keyMap={{
@@ -112,7 +117,7 @@ class JuiEmoji extends React.PureComponent<Props, State> {
               title={title}
               emoji="point_up"
               set={set}
-              onClick={handleEmojiClick}
+              onClick={this.handleClick}
               emojisToShowFilter={(emoji: any) => {
                 return this.isIndexOf(ExcludeList, emoji.short_names);
               }}
