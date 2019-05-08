@@ -22,7 +22,8 @@ type ViewProps = {
   onClick: () => void;
   hovered: boolean;
   addRecentRecord: () => void;
-  contentText: PromisedComputedValue<string>;
+  contentText: string;
+  inThisConversation: PromisedComputedValue<string>;
 };
 
 export {
