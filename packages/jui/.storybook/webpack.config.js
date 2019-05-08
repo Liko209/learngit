@@ -15,6 +15,7 @@ const path = require('path');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
 
 module.exports = async ({ config }) => ({
   ...config,
@@ -30,12 +31,12 @@ module.exports = async ({ config }) => ({
             options: { parser: 'typescript' },
           },
         ],
-        include: path.resolve(__dirname, '../src'),
+        include: [path.resolve(__dirname, '../src')],
         enforce: 'pre',
       },
       {
-        test: /\.tsx?$/,
-        include: path.resolve(__dirname, '../src'),
+        test: /\.ts(x)?$/,
+        exclude: excludeNodeModulesExcept(['rcui']),
         use: [
           {
             loader: 'ts-loader',

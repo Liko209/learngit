@@ -47,7 +47,7 @@ const getRadius = (
   const type: InputRadius = {
     rectangle: radius.zero,
     rounded: radius.lg,
-    circle: `${box.height * OUTLINE_TEXT_HEIGHT[size] * radius.round}px`,
+    circle: `${box.height * OUTLINE_TEXT_HEIGHT[size] * 0.5}px`,
   };
   return type[radiusType];
 };
