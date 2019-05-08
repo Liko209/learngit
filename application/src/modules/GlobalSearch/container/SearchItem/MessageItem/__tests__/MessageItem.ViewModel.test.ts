@@ -8,15 +8,15 @@
 import { container, Jupiter } from 'framework';
 import { config } from '../../../../module.config';
 import { GlobalSearchStore } from '../../../../store';
-jest.mock('../../../../../../utils/i18nT');
-
-import i18nT from '../../../../../../utils/i18nT';
+import i18nT from '@/utils/i18nT';
 import { SEARCH_SCOPE, SEARCH_VIEW, TAB_TYPE } from '../types';
 import { MessageItemViewModel } from '../MessageItem.ViewModel';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { SearchService } from 'sdk/module/search';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
 import { getGlobalValue, getEntity } from '@/store/utils';
+
+jest.mock('@/utils/i18nT');
 jest.mock('@/store/utils');
 
 const jupiter = container.get(Jupiter);
@@ -79,7 +79,7 @@ describe('GroupItemViewModel', () => {
   });
 
   describe('groupName', () => {
-    it('if current conversation id === group id should be display in this conversation', () => {
+    it('if current conversation id === group id should be display in this conversation', async (done: jest.DoneCallback) => {
       const id = 1;
       const conversationId = 1;
       const displayName = 'aa';
@@ -92,12 +92,10 @@ describe('GroupItemViewModel', () => {
         displayName,
         params,
       });
-
-      expect(messageItemViewModel.groupName).toBe(
-        `${displayName} in this conversation`,
-      );
+      expect(await messageItemViewModel.groupName.fetch()).toBe(`${displayName} in this conversation`);
+      done();
     });
-    it('if current conversation id !== group id should be display in group name', () => {
+    it('if current conversation id !== group id should be display in group name', async (done: jest.DoneCallback) => {
       const id = 1;
       const conversationId = 2;
       const displayName = 'aa';
@@ -111,19 +109,17 @@ describe('GroupItemViewModel', () => {
         displayName,
         params,
       });
-
-      expect(messageItemViewModel.groupName).toBe(
-        `${displayName} in ${groupName}`,
-      );
+      expect(await messageItemViewModel.groupName.fetch()).toBe(`${displayName} in ${groupName}`);
+      done();
     });
-    it('if not group should be show display name', () => {
+    it('if not group should be show display name', async (done: jest.DoneCallback) => {
       const displayName = 'aa';
 
       messageItemViewModel = new MessageItemViewModel({
         displayName,
       });
-
-      expect(messageItemViewModel.groupName).toBe(displayName);
+      expect(await messageItemViewModel.groupName.fetch()).toBe(displayName);
+      done();
     });
   });
 

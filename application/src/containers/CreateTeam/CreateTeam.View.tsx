@@ -5,7 +5,7 @@
  */
 
 import React, { createRef } from 'react';
-import i18next from 'i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
 import { observer } from 'mobx-react';
@@ -47,43 +47,48 @@ const Loading = withLoading(
   (props: any) => <>{props.children}</>,
   createTeamLoading,
 );
+
+type Props = ViewProps & WithTranslation;
+
 @observer
-class CreateTeamView extends React.Component<ViewProps, State> {
+class CreateTeamComponent extends React.Component<Props, State> {
   static contextType = DialogContext;
 
   teamNameRef = createRef<HTMLInputElement>();
   focusTimer: NodeJS.Timeout;
 
-  constructor(props: ViewProps) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       items: [],
     };
   }
 
-  static get initItems() {
+  static initItems = (props: any) => {
+    const { t } = props;
+
     return [
       {
         type: 'isPublic',
-        text: i18next.t('people.team.SetAsPublicTeam'),
+        text: t('people.team.SetAsPublicTeam'),
         checked: false,
         automationId: 'CreateTeamIsPublic',
       },
       {
         type: 'canAddMember',
-        text: i18next.t('people.team.MembersMayAddOtherMembers'),
+        text: t('people.team.MembersMayAddOtherMembers'),
         checked: true,
         automationId: 'CreateTeamCanAddMember',
       },
       {
         type: 'canPost',
-        text: i18next.t('people.team.MembersMayPostMessages'),
+        text: t('people.team.MembersMayPostMessages'),
         checked: true,
         automationId: 'CreateTeamCanPost',
       },
       {
         type: 'canPin',
-        text: i18next.t('people.team.MembersMayPinPosts'),
+        text: t('people.team.MembersMayPinPosts'),
         checked: true,
         automationId: 'CreateTeamCanPinPost',
       },
@@ -91,7 +96,7 @@ class CreateTeamView extends React.Component<ViewProps, State> {
   }
 
   static getDerivedStateFromProps(props: any, state: any) {
-    let items = CreateTeamView.initItems;
+    let items = CreateTeamComponent.initItems(props);
 
     if (state.items.length) {
       items = state.items;
@@ -101,6 +106,7 @@ class CreateTeamView extends React.Component<ViewProps, State> {
       items,
     };
   }
+
   componentDidMount() {
     // because of modal is dynamic append body
     // so must be delay focus
@@ -201,24 +207,25 @@ class CreateTeamView extends React.Component<ViewProps, State> {
       serverError,
       errorEmail,
       loading,
+      t,
     } = this.props;
     return (
       <JuiModal
         modalProps={{ scroll: 'body' }}
         open={true}
         size={'medium'}
-        title={i18next.t('people.team.CreateTeam')}
+        title={t('people.team.CreateTeam')}
         onCancel={this.onClose}
         onOK={this.createTeam}
-        okText={i18next.t('people.team.Create')}
+        okText={t('people.team.Create')}
         contentBefore={
           serverError && (
             <StyledSnackbarsContent type="error">
-              {i18next.t('people.prompt.CreateTeamError')}
+              {t('people.prompt.CreateTeamError')}
             </StyledSnackbarsContent>
           )
         }
-        cancelText={i18next.t('common.dialog.cancel')}
+        cancelText={t('common.dialog.cancel')}
         okBtnProps={{
           disabled: disabledOkBtn,
           'data-test-automation-id': 'createTeamOkButton',
@@ -229,9 +236,9 @@ class CreateTeamView extends React.Component<ViewProps, State> {
       >
         <Loading loading={loading} alwaysComponentShow={true} delay={0}>
           <JuiTextField
-            id={i18next.t('people.team.teamName')}
-            label={i18next.t('people.team.teamName')}
-            placeholder={i18next.t('people.team.teamNamePlaceholder')}
+            id={t('people.team.teamName')}
+            label={t('people.team.teamName')}
+            placeholder={t('people.team.teamNamePlaceholder')}
             fullWidth={true}
             error={nameError}
             inputProps={{
@@ -239,23 +246,23 @@ class CreateTeamView extends React.Component<ViewProps, State> {
               'data-test-automation-id': 'CreateTeamName',
             }}
             inputRef={this.teamNameRef}
-            helperText={nameError && i18next.t(errorMsg)}
+            helperText={nameError && t(errorMsg)}
             onChange={handleNameChange}
           />
           <ContactSearch
             onSelectChange={handleSearchContactChange}
-            label={i18next.t('people.team.Members')}
-            placeholder={i18next.t('people.team.SearchContactPlaceholder')}
+            label={t('people.team.Members')}
+            placeholder={t('people.team.SearchContactPlaceholder')}
             error={emailError}
-            helperText={emailError ? i18next.t(emailErrorMsg) : ''}
+            helperText={emailError ? t(emailErrorMsg) : ''}
             errorEmail={errorEmail}
             isExcludeMe={true}
             multiple={true}
             autoSwitchEmail={true}
           />
           <JuiTextarea
-            id={i18next.t('people.team.teamDescription')}
-            label={i18next.t('people.team.teamDescription')}
+            id={t('people.team.teamDescription')}
+            label={t('people.team.teamDescription')}
             inputProps={{
               'data-test-automation-id': 'CreateTeamDescription',
               maxLength: 1000,
@@ -282,6 +289,8 @@ class CreateTeamView extends React.Component<ViewProps, State> {
   }
 }
 
-const CreateTeamComponent = CreateTeamView;
+const CreateTeamView = withTranslation('translations')(CreateTeamComponent);
+
+// const CreateTeamComponent = CreateTeamView;
 
 export { CreateTeamView, CreateTeamComponent };

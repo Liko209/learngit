@@ -13,19 +13,21 @@ import {
 } from 'foundation';
 import { errorHandler } from '../errors/handler';
 import { IQueryOpt } from '../interface/IQueryOpt';
+import { IdModel, ModelIdType } from '../../model';
 
-class Query<T> implements IQueryOpt<T> {
+class Query<T extends IdModel<IdType>, IdType extends ModelIdType = number>
+  implements IQueryOpt<T, IdType> {
   criteria: IQueryCriteria<T>[] = [];
   parallel?: IQuery<T>[];
 
   constructor(
-    public collection: IDatabaseCollection<T, number>,
+    public collection: IDatabaseCollection<T, IdType>,
     public db: IDatabase,
   ) {
     this.reset();
   }
 
-  reset(): Query<T> {
+  reset(): Query<T, IdType> {
     this.criteria = [];
     this.parallel = [];
     return this;
@@ -36,7 +38,7 @@ class Query<T> implements IQueryOpt<T> {
    * @param {String} key search key
    * @param {Boolean} desc is desc
    */
-  orderBy(key: string, desc: boolean = false): Query<T> {
+  orderBy(key: string, desc: boolean = false): Query<T, IdType> {
     this.criteria.push({
       key,
       desc,
@@ -45,20 +47,24 @@ class Query<T> implements IQueryOpt<T> {
     return this;
   }
 
-  reverse(): Query<T> {
+  reverse(): Query<T, IdType> {
     this.criteria.push({
       name: 'reverse',
     });
     return this;
   }
 
-  or(query: Query<T>): Query<T> {
+  or(query: Query<T, IdType>): Query<T, IdType> {
     this.parallel = this.parallel || [];
     this.parallel.push(query);
     return this;
   }
 
-  equal(key: string, value: any, ignoreCase: boolean = false): Query<T> {
+  equal(
+    key: string,
+    value: any,
+    ignoreCase: boolean = false,
+  ): Query<T, IdType> {
     this.criteria.push({
       key,
       value,
@@ -68,7 +74,7 @@ class Query<T> implements IQueryOpt<T> {
     return this;
   }
 
-  notEqual(key: string, value: any): Query<T> {
+  notEqual(key: string, value: any): Query<T, IdType> {
     this.criteria.push({
       key,
       value,
@@ -83,7 +89,7 @@ class Query<T> implements IQueryOpt<T> {
     upperBound: any,
     includeLower: any,
     includeUpper: any,
-  ): Query<T> {
+  ): Query<T, IdType> {
     this.criteria.push({
       key,
       lowerBound,
@@ -95,7 +101,7 @@ class Query<T> implements IQueryOpt<T> {
     return this;
   }
 
-  greaterThan(key: string, value: any): Query<T> {
+  greaterThan(key: string, value: any): Query<T, IdType> {
     this.criteria.push({
       key,
       value,
@@ -104,7 +110,7 @@ class Query<T> implements IQueryOpt<T> {
     return this;
   }
 
-  greaterThanOrEqual(key: string, value: any): Query<T> {
+  greaterThanOrEqual(key: string, value: any): Query<T, IdType> {
     this.criteria.push({
       key,
       value,
@@ -113,7 +119,7 @@ class Query<T> implements IQueryOpt<T> {
     return this;
   }
 
-  lessThan(key: string, value: any): Query<T> {
+  lessThan(key: string, value: any): Query<T, IdType> {
     this.criteria.push({
       key,
       value,
@@ -122,7 +128,7 @@ class Query<T> implements IQueryOpt<T> {
     return this;
   }
 
-  lessThanOrEqual(key: string, value: any): Query<T> {
+  lessThanOrEqual(key: string, value: any): Query<T, IdType> {
     this.criteria.push({
       key,
       value,
@@ -131,7 +137,11 @@ class Query<T> implements IQueryOpt<T> {
     return this;
   }
 
-  anyOf(key: string, array: any[], ignoreCase: boolean = false): Query<T> {
+  anyOf(
+    key: string,
+    array: any[],
+    ignoreCase: boolean = false,
+  ): Query<T, IdType> {
     this.criteria.push({
       key,
       array,
@@ -145,7 +155,7 @@ class Query<T> implements IQueryOpt<T> {
     key: string,
     value: string,
     ignoreCase: boolean = false,
-  ): Query<T> {
+  ): Query<T, IdType> {
     this.criteria.push({
       key,
       value,
@@ -155,7 +165,7 @@ class Query<T> implements IQueryOpt<T> {
     return this;
   }
 
-  contain(key: string, value: any): Query<T> {
+  contain(key: string, value: any): Query<T, IdType> {
     this.criteria.push({
       key,
       value,
@@ -164,7 +174,7 @@ class Query<T> implements IQueryOpt<T> {
     return this;
   }
 
-  filter(filter: IFilter<T>): Query<T> {
+  filter(filter: IFilter<T>): Query<T, IdType> {
     this.criteria.push({
       filter,
       name: 'filter',
@@ -172,7 +182,7 @@ class Query<T> implements IQueryOpt<T> {
     return this;
   }
 
-  offset(n: number): Query<T> {
+  offset(n: number): Query<T, IdType> {
     this.criteria.push({
       name: 'offset',
       amount: n,
@@ -180,7 +190,7 @@ class Query<T> implements IQueryOpt<T> {
     return this;
   }
 
-  limit(n: number): Query<T> {
+  limit(n: number): Query<T, IdType> {
     this.criteria.push({
       name: 'limit',
       amount: n,
@@ -205,7 +215,7 @@ class Query<T> implements IQueryOpt<T> {
     }
   }
 
-  async primaryKeys(): Promise<number[]> {
+  async primaryKeys(): Promise<IdType[]> {
     try {
       await this.db.ensureDBOpened();
       const result = await this.collection.primaryKeys(this);

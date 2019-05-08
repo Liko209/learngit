@@ -3,6 +3,7 @@
  * @Date: 2018-10-27 17:47:11
  * Copyright © RingCentral. All rights reserved.
  */
+import { PromisedComputedValue } from 'computed-async-mobx';
 import { CONVERSATION_TYPES } from '@/constants';
 import PersonModel from '@/store/models/Person';
 import { WithTranslation } from 'react-i18next';
@@ -18,7 +19,7 @@ type ConversationInitialPostViewProps = WithTranslation & {
   groupDescription: string;
   creator: PersonModel;
   isTeam: boolean;
-  createTime: number;
+  createTime: PromisedComputedValue<string>;
   isCompanyTeam: boolean;
 } & ConversationInitialPostProps;
 

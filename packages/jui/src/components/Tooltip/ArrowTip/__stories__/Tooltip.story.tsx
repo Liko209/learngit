@@ -24,12 +24,7 @@ storiesOf('Components/Tooltip', module)
     );
     return (
       <div>
-        <JuiArrowTip
-          title=" I am arrow tip"
-          placement={placement}
-          show={true}
-          // leaveDelay={999999}
-        >
+        <JuiArrowTip title=" I am arrow tip" placement={placement}>
           <button style={{ marginLeft: 120 }}>
             Arrow tool tip and some test
           </button>

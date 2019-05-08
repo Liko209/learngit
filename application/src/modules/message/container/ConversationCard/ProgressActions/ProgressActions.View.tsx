@@ -11,7 +11,6 @@ import { ProgressActionsViewProps } from './types';
 import { JuiActions } from 'jui/pattern/ConversationCard/Actions';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { JuiCircularProgress } from 'jui/components/Progress/CircularProgress';
-import i18next from 'i18next';
 import { PROGRESS_STATUS } from 'sdk/module/progress';
 import { Dialog } from '@/containers/Dialog';
 import { mainLogger } from 'sdk';
@@ -21,13 +20,13 @@ type Props = ProgressActionsViewProps & WithTranslation;
 @observer
 class ProgressActionsViewComponent extends Component<Props> {
   private _deletePost = () => {
-    const { deletePost } = this.props;
+    const { deletePost, t } = this.props;
     Dialog.confirm({
-      title: i18next.t('message.prompt.deletePostTitle'),
-      content: i18next.t('message.prompt.deletePostContent'),
-      okText: i18next.t('common.dialog.delete'),
+      title: t('message.prompt.deletePostTitle'),
+      content: t('message.prompt.deletePostContent'),
+      okText: t('common.dialog.delete'),
       okType: 'negative',
-      cancelText: i18next.t('common.dialog.cancel'),
+      cancelText: t('common.dialog.cancel'),
       async onOK() {
         try {
           await deletePost();

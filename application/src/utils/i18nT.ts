@@ -33,4 +33,6 @@ function i18nT(key: string, options?: i18next.TOptions | string) {
   });
 }
 
+export type i18nTValueProps = string | Promise<string>;
+
 export default i18nT;

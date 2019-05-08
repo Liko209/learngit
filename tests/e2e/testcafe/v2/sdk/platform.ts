@@ -184,9 +184,10 @@ export class RcPlatformSdk {
     });
   }
 
-  async uploadFile(path: string, name: string, groupId?: string) {
+  async uploadFile(filePath: string, name?: string, groupId?: string) {
     const url = `restapi/v1.0/glip/files`;
-    const content = fs.readFileSync(path);
+    const content = fs.readFileSync(filePath);
+    if (!name) name = path.basename(filePath);
     const params = _.pickBy({ groupId, name }, _.identity);
     return await this.retryRequestOnException(async () => {
       return await this.sdk.post(url, content, {
@@ -196,21 +197,20 @@ export class RcPlatformSdk {
     });
   }
 
-  async createPostWithTextAndFiles(text: string, filePaths: string | string[], groupId: string) {
+  async createPostWithTextAndFiles(groupId: string, filePaths: string | string[], text?: string) {
     filePaths = [].concat(filePaths);
     let attachments = [];
     for (const filePath of filePaths) {
-      const fileName = path.basename(filePath)
-      const fileData = await this.uploadFile(filePath, fileName).then(res => res.data);
-      const file = _.merge(fileData[0], { type: "File" })
+      const fileData = await this.uploadFile(filePath).then(res => res.data); // return array(length =1)
+      const file = _.merge(fileData[0], { type: "File" });
       attachments.push(file);
     }
-    const data = { text, attachments };
+    const data = _.pickBy({ text, attachments }, _.identity);
     return await this.createPost(data, groupId);
   }
 
-  async createPostWithTextAndFilesThenGetPostId(text: string, filePaths: string | string[], groupId: string) {
-    return await this.createPostWithTextAndFiles(text, filePaths, groupId).then(res => res.data.id);
+  async createPostWithTextAndFilesThenGetPostId(groupId: string, filePaths: string | string[], text?: string) {
+    return await this.createPostWithTextAndFiles(groupId, filePaths, text).then(res => res.data.id);
   }
 
   // deprecated

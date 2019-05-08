@@ -31,7 +31,7 @@ class RTCNetworkNotificationCenter extends EventEmitter2 {
 
   private constructor() {
     super();
-    this._listenEvevt();
+    this._listenEvent();
   }
 
   private _onOnline() {
@@ -48,7 +48,7 @@ class RTCNetworkNotificationCenter extends EventEmitter2 {
     });
   }
 
-  private _listenEvevt() {
+  private _listenEvent() {
     window.addEventListener('online', () => {
       this._onOnline();
     });

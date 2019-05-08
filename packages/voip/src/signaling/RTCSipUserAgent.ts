@@ -110,6 +110,9 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     if (this._webphone.userAgent.transport) {
       this._webphone.userAgent.transport.removeAllListeners();
     }
+    if (this._webphone.userAgent.registerContext) {
+      this._webphone.userAgent.registerContext.onTransportDisconnected();
+    }
     this._webphone.userAgent.transport = new this._webphone.userAgent.configuration.transportConstructor(
       this._webphone.userAgent.getLogger('sip.transport'),
       this._webphone.userAgent.configuration.transportOptions,

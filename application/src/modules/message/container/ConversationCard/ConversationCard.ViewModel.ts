@@ -3,6 +3,7 @@
  * @Date: 2018-10-08 16:29:08
  * Copyright © RingCentral. All rights reserved.
  */
+import { promisedComputed } from 'computed-async-mobx';
 import PostModel from '@/store/models/Post';
 import { ConversationCardProps } from '@/modules/message/container/ConversationCard/types';
 import moment from 'moment';
@@ -85,14 +86,13 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
     return this.creator.awayStatus;
   }
 
-  @computed
-  get createTime() {
+  createTime = promisedComputed('', async () => {
     const { createdAt } = this.post;
     if (this.props.mode === 'navigation') {
-      return dateFormatter.dateAndTime(moment(this.post.createdAt));
+      return await dateFormatter.dateAndTime(moment(this.post.createdAt));
     }
-    return postTimestamp(createdAt);
-  }
+    return await postTimestamp(createdAt);
+  });
 
   @computed
   get isEditMode() {

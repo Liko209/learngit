@@ -15,7 +15,6 @@ import { PartialModifyController } from '../../../../framework/controller/impl/P
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { Item } from '../../entity';
 import { RequestController } from '../../../../framework/controller/impl/RequestController';
-import { Api } from '../../../../api';
 import { ItemDao } from '../../dao';
 import { daoManager } from '../../../../dao';
 import { ServiceLoader } from '../../../serviceLoader';
@@ -38,7 +37,11 @@ describe('ItemActionController', () => {
   const itemDao = new ItemDao(null);
   const requestController = new RequestController<Item>(null);
   const partialUpdateController = new PartialModifyController<Item>(null);
-  const entitySourceController = new EntitySourceController(null, null, null);
+  const entitySourceController = new EntitySourceController<Item>(
+    null,
+    null,
+    null,
+  );
   const itemActionController = new ItemActionController(
     partialUpdateController,
     entitySourceController,
