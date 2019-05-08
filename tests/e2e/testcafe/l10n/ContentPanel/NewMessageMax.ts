@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
-import { formalName } from '../../../libs/filter';
-import { h } from '../../../v2/helpers';
-import { setupCase, teardownCase } from '../../../init';
-import { AppRoot } from '../../../v2/page-models/AppRoot';
-import { SITE_URL, BrandTire } from '../../../config';
+import { formalName } from '../../libs/filter';
+import { h } from '../../v2/helpers';
+import { setupCase, teardownCase } from '../../init';
+import { AppRoot } from '../../v2/page-models/AppRoot';
+import { SITE_URL, BrandTire } from '../../config';
 
 fixture('ContentPanel')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
