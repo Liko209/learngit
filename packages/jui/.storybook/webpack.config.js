@@ -81,14 +81,17 @@ const plugins = [
   new ForkTsCheckerWebpackPlugin({
     checkSyntacticErrors: true,
   }),
-  new TsconfigPathsPlugin({
-    configFile: path.resolve(__dirname, '../tsconfig.json'),
-  }),
   new webpack.ProvidePlugin({
     'window.Quill': 'quill/dist/quill.js',
     Quill: 'quill/dist/quill.js',
   }),
   new SpriteLoaderPlugin(),
+];
+
+const resolvePlugin = [
+  new TsconfigPathsPlugin({
+    configFile: path.resolve(__dirname, '../tsconfig.json'),
+  }),
 ];
 
 const resolveExtensions = ['.ts', '.tsx'];
@@ -105,6 +108,10 @@ module.exports = async ({ config }) => {
 
   plugins.forEach(plugin => {
     config.plugins.push(plugin);
+  });
+
+  resolvePlugin.forEach(plugin => {
+    config.resolve.plugins.push(plugin);
   });
 
   resolveExtensions.forEach(ext => {

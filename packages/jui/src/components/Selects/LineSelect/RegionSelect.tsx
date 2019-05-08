@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { JuiIconography } from '../../../foundation/Iconography';
 import { JuiLineSelect } from '../../Selects/LineSelect';
 import { JuiMenuItem } from '../../Menus';
@@ -37,10 +37,13 @@ const StyledRegionSelectWrap = styled('div')`
 const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
   const [value, setValue] = useState(props.initialRegionValue);
 
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { value } = event.target;
-    setValue(value);
-  };
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const { value } = event.target;
+      setValue(value);
+    },
+    [],
+  );
 
   const { label, selectStyle, regionList } = props;
 
