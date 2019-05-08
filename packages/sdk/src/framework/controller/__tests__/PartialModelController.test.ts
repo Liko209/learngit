@@ -169,7 +169,6 @@ describe('PartialModelController', () => {
         originalEntity,
       );
 
-      console.log('rollbackModel=', JSON.stringify(rollbackEntity));
       expect(rollbackEntity).toEqual(targetEntity);
     });
   });
@@ -189,8 +188,6 @@ describe('PartialModelController', () => {
         partialEntity,
         originalEntity,
       );
-
-      console.log('mergedModel=', JSON.stringify(mergedEntity));
 
       expect(mergedEntity).toEqual(targetEntity);
     });
