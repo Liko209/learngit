@@ -11,12 +11,10 @@ fixture('ContentPanel')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Receive new sms messages', ['P1', 'Messages', 'ContentPanel', 'V1.4', 'Jenny.Cai']), async (t) => {
+test(formalName('Receive new sms messages', ['P2', 'Messages', 'ContentPanel', 'V1.4', 'Jenny.Cai']), async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
   const app = new AppRoot(t);
-  const ConversationPage = app.homePage.messageTab.conversationPage;
-  const teamsSection = app.homePage.messageTab.teamsSection;
 
   let teamA = <IGroup>{
     name: uuid(),
@@ -46,6 +44,7 @@ test(formalName('Receive new sms messages', ['P1', 'Messages', 'ContentPanel', '
     await app.homePage.ensureLoaded();
   });
 
+  const teamsSection = app.homePage.messageTab.teamsSection;
   await h(t).withLog('And enter conversationA', async () => {
     await teamsSection.expand();
     await teamsSection.conversationEntryById(teamA.glipId).enter();
@@ -67,6 +66,7 @@ test(formalName('Receive new sms messages', ['P1', 'Messages', 'ContentPanel', '
     await teamsSection.ensureLoaded();
   });
 
+  const ConversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog(`Then I can see New Message line`, async () => {
     await t.expect(ConversationPage.newMessageDeadLine.exists).ok();
   });
