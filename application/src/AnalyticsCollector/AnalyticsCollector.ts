@@ -6,9 +6,10 @@
 import { dataAnalysis } from 'sdk';
 import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
+import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 
 class AnalyticsCollector {
-  identify() {
+  async identify() {
     const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     if (!userId) {
       return { userId };
@@ -23,6 +24,7 @@ class AnalyticsCollector {
     }
     const { email, companyId, inviterId, displayName } = user;
     const { name, rcAccountId } = company;
+    const version = await fetchVersionInfo();
     const properties = {
       email,
       companyId,
@@ -32,8 +34,8 @@ class AnalyticsCollector {
       id: userId,
       signupType: inviterId ? 'viral' : 'organic',
       accountType: rcAccountId ? 'rc' : 'non-rc',
+      appVersion: version.deployedVersion,
     };
-
     dataAnalysis.identify(userId, properties);
     return;
   }
