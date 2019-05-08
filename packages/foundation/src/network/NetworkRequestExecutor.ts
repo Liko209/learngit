@@ -25,6 +25,9 @@ import {
 import { SERVER_ERROR_CODE, DEFAULT_RETRY_COUNT } from './Constants';
 import { doResponseLog, doRequestLog } from './log';
 import { networkLogger } from '../log';
+
+const LOG_TAG = 'NetworkRequestExecutor';
+
 export class NetworkRequestExecutor
   implements INetworkRequestExecutorListener, INetworkRequestExecutor {
   request: IRequest;
@@ -65,6 +68,7 @@ export class NetworkRequestExecutor
 
   onFailure(response: IResponse): void {
     if (this._isCompletion()) {
+      networkLogger.tags(LOG_TAG).info('onFailure() _isCompletion = true');
       return;
     }
 
@@ -110,7 +114,7 @@ export class NetworkRequestExecutor
   }
 
   private _performNetworkRequest() {
-    networkLogger.info('_performNetworkRequest()');
+    networkLogger.tags(LOG_TAG).info('_performNetworkRequest()');
     if (this._requestDecoration) {
       this._requestDecoration.decorate(this.request);
     }
@@ -172,6 +176,10 @@ export class NetworkRequestExecutor
     if (callback) {
       this._notifyCompletion();
       callback(response);
+    } else {
+      networkLogger
+        .tags(LOG_TAG)
+        .info('_callXApiCompletionCallback() callback undefined');
     }
   }
 
@@ -193,7 +201,7 @@ export class NetworkRequestExecutor
   }
 
   private _handle503XApiCompletionCallback(response: IResponse) {
-    if (response.request.handlerType.name !== NETWORK_HANDLE_TYPE.RINGCENTRAL) {
+    if (this.handlerType.name !== NETWORK_HANDLE_TYPE.RINGCENTRAL) {
       return;
     }
     if (response.data && this._isCMN211Error(response.data)) {

@@ -4,13 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, decorate, injectable } from 'framework';
-import { TelephonyStore } from '../../../store';
+import { container, Jupiter } from 'framework';
 import { RecordViewModel } from '../Record.ViewModel';
-import { TelephonyService } from '../../../service';
+import * as telephony from '@/modules/telephony/module.config';
 
-[TelephonyService, TelephonyStore].forEach(kls => decorate(injectable(), kls));
-[TelephonyService, TelephonyStore].forEach(kls => container.bind(kls).to(kls));
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(telephony.config);
 
 let recordViewModel: RecordViewModel;
 

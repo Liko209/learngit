@@ -5,8 +5,12 @@
  */
 import { IDao } from '../../framework/dao';
 import { JSdkError } from '../../error/sdk/JSdkError';
+import { IdModel, ModelIdType } from '../model';
 class ControllerUtils {
-  static getEntityNotificationKey<T>(dao: IDao<T>) {
+  static getEntityNotificationKey<
+    T extends IdModel<IdType>,
+    IdType extends ModelIdType = number
+  >(dao: IDao<T, IdType>) {
     if (dao) {
       const modelName = dao.getEntityName().toUpperCase();
       const eventKey: string = `ENTITY.${modelName}`;

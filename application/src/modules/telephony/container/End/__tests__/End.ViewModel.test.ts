@@ -4,18 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, decorate, injectable } from 'framework';
-import { TelephonyStore } from '../../../store';
+import { container, Jupiter } from 'framework';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { EndViewModel } from '../End.ViewModel';
+import { TELEPHONY_SERVICE } from '../../../interface/constant';
+import * as telephony from '@/modules/telephony/module.config';
 
 jest.mock('../../../service/TelephonyService');
 
-decorate(injectable(), TelephonyStore);
-decorate(injectable(), TelephonyService);
-
-container.bind(TelephonyService).to(TelephonyService);
-container.bind(TelephonyStore).to(TelephonyStore);
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(telephony.config);
 
 let endViewModel: EndViewModel;
 
@@ -27,7 +25,9 @@ beforeAll(() => {
 describe('EndViewModel', () => {
   it('should call hangUp function', () => {
     endViewModel.end();
-    const _telephonyService: TelephonyService = container.get(TelephonyService);
+    const _telephonyService: TelephonyService = container.get(
+      TELEPHONY_SERVICE,
+    );
     expect(_telephonyService.hangUp).toBeCalled();
   });
 });

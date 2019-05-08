@@ -5,7 +5,13 @@
  */
 
 // import featureFlag from './component/featureFlag';
-import { Foundation, NetworkManager, Token, dataAnalysis } from 'foundation';
+import {
+  Foundation,
+  NetworkManager,
+  Token,
+  dataAnalysis,
+  sleepModeDetector,
+} from 'foundation';
 import merge from 'lodash/merge';
 import './service/windowEventListener'; // to initial window events listener
 
@@ -34,6 +40,7 @@ const defaultDBConfig: DBConfig = {
 class Sdk {
   private _glipToken: string;
   private _sdkConfig: ISdkConfig;
+  private _sleepModeKey: string = 'SDK_SLEEP_MODE_DETECT';
 
   constructor(
     public daoManager: DaoManager,
@@ -79,8 +86,9 @@ class Sdk {
         notificationCenter.emitKVChange(SERVICE.LOGIN);
       }
     } else {
-      indexedDB.deleteDatabase('Glip');
+      window.indexedDB && window.indexedDB.deleteDatabase('Glip');
     }
+    this._subscribeNotification();
     this._initDataAnalysis();
   }
 
@@ -188,6 +196,12 @@ class Sdk {
     } else {
       this.serviceManager.stopServices(services);
     }
+  }
+
+  private _subscribeNotification() {
+    sleepModeDetector.subScribe(this._sleepModeKey, (interval: number) => {
+      notificationCenter.emit(SERVICE.WAKE_UP_FROM_SLEEP, interval);
+    });
   }
 
   private _initDataAnalysis() {

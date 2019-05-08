@@ -9,6 +9,15 @@ import { ConversationCardViewModel } from '../ConversationCard.ViewModel';
 import { config } from '@/modules/GlobalSearch/module.config';
 
 jest.mock('i18next', () => ({
+  languages: ['en'],
+  services: {
+    backendConnector: {
+      state: {
+        'en|translation': -1,
+      },
+    },
+  },
+  isInitialized: true,
   t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
 }));
 
@@ -46,39 +55,43 @@ describe('ConversationCardViewModel', () => {
     });
   });
   describe('createTime()', () => {
-    it('should be timeAndDate format when mode is navigation [JPT-705]', () => {
+    it('should be timeAndDate format when mode is navigation [JPT-705]', async (done: jest.DoneCallback) => {
       global.Date.now = jest.fn(() => DATE_2019_1_4);
       conversationCardVM.props.mode = 'navigation';
       (getEntity as jest.Mock).mockReturnValue({
         createdAt: DATE_2019_1_4,
         creatorId: 107913219,
       });
-      expect(conversationCardVM.createTime).toBe('Fri, 1/4/2019 9:21 AM');
+      expect(await conversationCardVM.createTime.fetch()).toBe('Fri, 1/4/2019 9:21 AM');
       conversationCardVM.props.mode = undefined;
+      done();
     });
-    it('should be time format when createdAt is 2019/1/4 [JPT-701]', () => {
+    it('should be time format when createdAt is 2019/1/4 [JPT-701]', async (done: jest.DoneCallback) => {
       global.Date.now = jest.fn(() => DATE_2019_1_4);
       (getEntity as jest.Mock).mockReturnValue({
         createdAt: DATE_2019_1_4,
         creatorId: 107913219,
       });
-      expect(conversationCardVM.createTime).toBe('9:21 AM');
+      expect(await conversationCardVM.createTime.fetch()).toBe('9:21 AM');
+      done();
     });
-    it('should be weekdayAndTime format when createdAt is 2019/1/3 [JPT-701]', () => {
+    it('should be weekdayAndTime format when createdAt is 2019/1/3 [JPT-701]', async (done: jest.DoneCallback) => {
       global.Date.now = jest.fn(() => DATE_2019_1_4);
       (getEntity as jest.Mock).mockReturnValue({
         createdAt: DATE_2019_1_3,
         creatorId: 107913219,
       });
-      expect(conversationCardVM.createTime).toBe('Thu, 9:21 AM');
+      expect(await conversationCardVM.createTime.fetch()).toBe('Thu, 9:21 AM');
+      done();
     });
-    it('should be dateAndTime format when createdAt is 2019/1/5 [JPT-701]', () => {
+    it('should be dateAndTime format when createdAt is 2019/1/5 [JPT-701]', async (done: jest.DoneCallback) => {
       global.Date.now = jest.fn(() => DATE_2019_1_4);
       (getEntity as jest.Mock).mockReturnValue({
         createdAt: DATE_2019_1_5,
         creatorId: 107913219,
       });
-      expect(conversationCardVM.createTime).toBe('Sat, 1/5/2019 9:21 AM');
+      expect(await conversationCardVM.createTime.fetch()).toBe('Sat, 1/5/2019 9:21 AM');
+      done();
     });
     it.each`
       data               | expected
@@ -88,13 +101,13 @@ describe('ConversationCardViewModel', () => {
       ${DATE_2018_12_29} | ${'Sat, 9:21 AM'}
     `(
       'should be Weekday format when createdAt is ${data}. [JPT-701]',
-      ({ data, expected }) => {
+      async ({ data, expected }) => {
         global.Date.now = jest.fn(() => DATE_2019_1_4);
         (getEntity as jest.Mock).mockReturnValue({
           createdAt: data,
           creatorId: 107913219,
         });
-        expect(conversationCardVM.createTime).toBe(expected);
+        expect(await conversationCardVM.createTime.fetch()).toBe(expected);
       },
     );
     it.each`
@@ -103,13 +116,13 @@ describe('ConversationCardViewModel', () => {
       ${DATE_2018_12_28} | ${'Fri, 9:21 AM'}
     `(
       'should not Weekday format when createdAt is ${data}. [JPT-701]',
-      ({ data, expected }) => {
+      async ({ data, expected }) => {
         global.Date.now = jest.fn(() => DATE_2019_1_4);
         (getEntity as jest.Mock).mockReturnValue({
           createdAt: data,
           creatorId: 107913219,
         });
-        expect(conversationCardVM.createTime).not.toBe(expected);
+        expect(await conversationCardVM.createTime.fetch()).not.toBe(expected);
       },
     );
   });

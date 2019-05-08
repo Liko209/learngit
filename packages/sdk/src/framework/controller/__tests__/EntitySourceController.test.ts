@@ -15,18 +15,56 @@ describe('RequestController', () => {
   let deactivatedDao: DeactivatedDao;
   let requestController: RequestController<TestEntity>;
   let entitySourceController: EntitySourceController<TestEntity>;
+  let entityPersistentController: EntityPersistentController<TestEntity>;
   beforeEach(() => {
     dao = new BaseDao('TestEntity', new TestDatabase());
     deactivatedDao = new DeactivatedDao(new TestDatabase());
     requestController = new RequestController<TestEntity>(undefined);
-    const entityPersistentController: EntityPersistentController<
-      TestEntity
-    > = new EntityPersistentController(dao);
+    entityPersistentController = new EntityPersistentController(dao);
     entitySourceController = new EntitySourceController<TestEntity>(
       entityPersistentController,
       deactivatedDao,
       requestController,
     );
+  });
+
+  describe('get()', () => {
+    it('should save entity if it is fetched from remote when enable save', async () => {
+      entitySourceController = new EntitySourceController<TestEntity>(
+        entityPersistentController,
+        deactivatedDao,
+        requestController,
+        true,
+      );
+      jest
+        .spyOn(entitySourceController, 'getEntityLocally')
+        .mockResolvedValueOnce(null);
+      jest
+        .spyOn(requestController, 'get')
+        .mockResolvedValueOnce({ id: 1, name: 'jupiter' });
+      dao.put = jest.fn();
+      const daoPutSpyOn = jest.spyOn(dao, 'put');
+      await entitySourceController.get(1);
+      expect(daoPutSpyOn).toBeCalledWith({ id: 1, name: 'jupiter' });
+    });
+    it('should not save entity if it is fetched from remote when disable save', async () => {
+      entitySourceController = new EntitySourceController<TestEntity>(
+        entityPersistentController,
+        deactivatedDao,
+        requestController,
+        false,
+      );
+      jest
+        .spyOn(entitySourceController, 'getEntityLocally')
+        .mockResolvedValueOnce(null);
+      jest
+        .spyOn(requestController, 'get')
+        .mockResolvedValueOnce({ id: 1, name: 'jupiter' });
+      dao.put = jest.fn();
+      const daoPutSpyOn = jest.spyOn(dao, 'put');
+      await entitySourceController.get(1);
+      expect(daoPutSpyOn).not.toBeCalled();
+    });
   });
 
   describe('getEntity()', () => {
@@ -35,7 +73,9 @@ describe('RequestController', () => {
         .spyOn(entitySourceController, 'getEntityLocally')
         .mockResolvedValueOnce({ id: 1, name: 'jupiter' });
 
-      jest.spyOn(requestController, 'get').mockImplementation(() => {});
+      jest
+        .spyOn(requestController, 'get')
+        .mockImplementation((id: number) => {});
 
       const result = await entitySourceController.get(1);
       expect(result.id).toBe(1);

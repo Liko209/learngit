@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import i18next from 'i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { GroupSettingsProps, GroupSettingsViewProps } from './types';
 import { toTitleCase } from '@/utils/string';
 import { JuiModal } from 'jui/components/Dialog';
@@ -19,10 +19,10 @@ import {
 import { ConvertToTeam } from '@/containers/ConvertToTeam';
 import { JuiDivider } from 'jui/components/Divider';
 
+type Props = GroupSettingsProps & GroupSettingsViewProps & WithTranslation;
+
 @observer
-class GroupSettingsView extends Component<
-  GroupSettingsProps & GroupSettingsViewProps
-> {
+class GroupSettingsComponent extends Component<Props> {
   private _handleClose = () => {
     portalManager.dismissLast();
   }
@@ -38,16 +38,18 @@ class GroupSettingsView extends Component<
   }
 
   render() {
+    const { t } = this.props;
+
     return (
       <JuiModal
         fillContent={true}
         open={true}
         size={'medium'}
-        title={i18next.t('setting.teamSettings')}
+        title={t('setting.teamSettings')}
         onCancel={this._handleClose}
         onOK={this._handleOk}
-        okText={toTitleCase(i18next.t('common.dialog.save'))}
-        cancelText={toTitleCase(i18next.t('common.dialog.cancel'))}
+        okText={toTitleCase(t('common.dialog.save'))}
+        cancelText={toTitleCase(t('common.dialog.cancel'))}
       >
         <ButtonList>
           <JuiDivider />
@@ -57,7 +59,7 @@ class GroupSettingsView extends Component<
             onClick={this._openConvertToTeam}
           >
             <ButtonListItemText color="primary">
-              {i18next.t('people.team.convertToTeam')}
+              {t('people.team.convertToTeam')}
             </ButtonListItemText>
           </ButtonListItem>
           <JuiDivider />
@@ -66,5 +68,7 @@ class GroupSettingsView extends Component<
     );
   }
 }
+
+const GroupSettingsView = withTranslation('translations')(GroupSettingsComponent);
 
 export { GroupSettingsView };

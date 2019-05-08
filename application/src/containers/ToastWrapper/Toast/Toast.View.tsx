@@ -13,11 +13,13 @@ import {
 import { observer } from 'mobx-react';
 import { ToastViewProps } from './types';
 import Slide from '@material-ui/core/Slide';
-import i18next from 'i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
+
+type Props = ToastViewProps & WithTranslation;
 
 @observer
-class ToastView extends React.Component<ToastViewProps> {
-  constructor(props: ToastViewProps) {
+class ToastComponent extends React.Component<Props> {
+  constructor(props: Props) {
     super(props);
     this._onClose = this._onClose.bind(this);
   }
@@ -36,6 +38,7 @@ class ToastView extends React.Component<ToastViewProps> {
       dismissible,
       message,
       dismiss,
+      t,
       ...rest
     } = this.props;
     const action = [];
@@ -54,7 +57,7 @@ class ToastView extends React.Component<ToastViewProps> {
     }
     let ms = message;
     if (typeof message === 'string') {
-      ms = i18next.t(message);
+      ms = t(message);
     }
     const config = { ...rest, action, message: ms };
     return (
@@ -71,5 +74,7 @@ class ToastView extends React.Component<ToastViewProps> {
     );
   }
 }
+
+const ToastView = withTranslation('translations')(ToastComponent);
 
 export { ToastView };

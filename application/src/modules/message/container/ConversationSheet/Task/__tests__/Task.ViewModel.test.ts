@@ -6,7 +6,6 @@
 import { getEntity } from '@/store/utils';
 import { TaskViewModel } from '../Task.ViewModel';
 import * as date from '../../../../../../utils/date';
-import { getDateAndTime } from '../../helper';
 jest.mock('@/store/utils');
 jest.mock('../../helper');
 jest.mock('@/utils/date');
@@ -15,7 +14,10 @@ const mockData = {
   attachmentIds: [123],
 };
 
-const taskViewModel = new TaskViewModel({ ids: [1] });
+const taskViewModel = new TaskViewModel({
+  postId: 1,
+  ids: [1],
+});
 
 describe('taskUpdateViewModel', () => {
   beforeEach(() => {
@@ -58,30 +60,35 @@ describe('taskUpdateViewModel', () => {
     expect(taskViewModel.hasTime).toBeTruthy();
   });
 
-  it('Should be empty string if start not existed', () => {
+  it('Should be empty string if start not existed', async (done: jest.DoneCallback) => {
     (getEntity as jest.Mock).mockReturnValue({
       start: null,
     });
-    expect(taskViewModel.startTime).toBe('');
+    expect(await taskViewModel.startTime.fetch()).toBe('');
+    done();
   });
-  it('Should be date if start existed', () => {
+  it('Should be date if start existed', async (done: jest.DoneCallback) => {
     (getEntity as jest.Mock).mockReturnValue({
       start: 1547003419176,
     });
     jest.spyOn(date, 'recentlyTwoDayAndOther').mockReturnValue('Mon 8:58 AM');
-    expect(taskViewModel.startTime).not.toBe('');
+    expect(await taskViewModel.startTime.fetch()).not.toBe('');
+    done();
   });
 
-  it('Should be empty string if due not existed', () => {
+  it('Should be empty string if due not existed', async (done: jest.DoneCallback) => {
     (getEntity as jest.Mock).mockReturnValue({
       due: null,
     });
-    expect(taskViewModel.endTime).toBe('');
+    expect(await taskViewModel.endTime.fetch()).toBe('');
+    done();
   });
-  it('Should be date if due existed', () => {
+
+  it('Should be date if due existed', async (done: jest.DoneCallback) => {
     (getEntity as jest.Mock).mockReturnValue({
       due: 1547003419176,
     });
-    expect(taskViewModel.endTime).not.toBe('');
+    expect(await taskViewModel.endTime.fetch()).not.toBe('');
+    done();
   });
 });

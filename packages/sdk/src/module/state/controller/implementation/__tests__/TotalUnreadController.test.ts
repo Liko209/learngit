@@ -43,16 +43,16 @@ type DataHandleTask =
 
 describe('TotalUnreadController', () => {
   let totalUnreadController: TotalUnreadController;
-  let mockEntitySourceController: EntitySourceController;
-  let mockEntityPersistentController: EntityPersistentController;
+  let mockEntitySourceController: EntitySourceController<GroupState>;
+  let mockEntityPersistentController: EntityPersistentController<GroupState>;
   const mockGroupService = new GroupService();
   beforeEach(() => {
     jest.clearAllMocks();
-    mockEntityPersistentController = new EntityPersistentController(
+    mockEntityPersistentController = new EntityPersistentController<GroupState>(
       new GroupStateDao(new TestDatabase()),
     );
     mockEntitySourceController = new EntitySourceController<GroupState>(
-      mockEntityPersistentController as IEntityPersistentController,
+      mockEntityPersistentController as IEntityPersistentController<GroupState>,
       {} as DeactivatedDao,
     );
     totalUnreadController = new TotalUnreadController(

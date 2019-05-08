@@ -16,7 +16,7 @@ import { ProfileService } from '../../profile';
 import { Item } from '../../../module/item/entity';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SOCKET } from '../../../service/eventKey';
-import { IRemotePostRequest } from '../entity/Post';
+import { IRemotePostRequest, UnreadPostQuery } from '../entity/Post';
 import { Raw } from '../../../framework/model';
 import { ContentSearchParams } from '../../../api/glip/search';
 import { IGroupService } from '../../../module/group/service/IGroupService';
@@ -42,6 +42,10 @@ class PostService extends EntityBaseService<Post> {
     this.setCheckTypeFunc((id: number) => {
       return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_POST);
     });
+  }
+
+  protected canSaveRemoteEntity(): boolean {
+    return false;
   }
 
   protected buildNotificationController() {
@@ -110,6 +114,12 @@ class PostService extends EntityBaseService<Post> {
     return this.getPostController()
       .getDiscontinuousPostFetchController()
       .getPostsByIds(ids);
+  }
+
+  async getUnreadPostsByGroupId(unreadPostQuery: UnreadPostQuery) {
+    return this.getPostController()
+      .getPostFetchController()
+      .getUnreadPostsByGroupId(unreadPostQuery);
   }
 
   async bookmarkPost(postId: number, toBook: boolean) {

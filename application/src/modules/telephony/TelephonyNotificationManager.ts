@@ -5,17 +5,19 @@
  */
 
 import { inject } from 'framework';
-import { reaction } from 'mobx';
+import { reaction, comparer } from 'mobx';
 import { Disposer } from 'mobx-react';
 import { AbstractNotificationManager } from '@/modules/notification/manager';
+import { NOTIFICATION_PRIORITY } from '@/modules/notification/interface';
 import i18nT from '@/utils/i18nT';
 import { TelephonyStore } from './store';
 import { TelephonyService } from './service';
+import { TELEPHONY_SERVICE } from './interface/constant';
 import { CALL_STATE } from './FSM';
 
 class TelephonyNotificationManager extends AbstractNotificationManager {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
-  @inject(TelephonyService) private _telephonyService: TelephonyService;
+  @inject(TELEPHONY_SERVICE) private _telephonyService: TelephonyService;
   private _disposer: Disposer;
   constructor() {
     super('telephony');
@@ -23,9 +25,18 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
 
   init() {
     this._disposer = reaction(
-      () => this._telephonyStore.callState,
-      (callState: CALL_STATE) => {
-        if (callState === CALL_STATE.INCOMING) {
+      () => ({
+        callState: this._telephonyStore.callState,
+        isContactMatched: this._telephonyStore.isContactMatched,
+      }),
+      ({
+        callState,
+        isContactMatched,
+      }: {
+        callState: CALL_STATE;
+        isContactMatched: boolean;
+      }) => {
+        if (callState === CALL_STATE.INCOMING && isContactMatched) {
           this._showNotification();
         } else {
           const shouldCloseNotification = [
@@ -39,16 +50,17 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
           }
         }
       },
+      {
+        equals: comparer.structural,
+      },
     );
   }
 
   private async _showNotification() {
-    const { phoneNumber, callId } = this._telephonyStore;
+    const { phoneNumber, callId, displayName } = this._telephonyStore;
     let { callerName } = this._telephonyStore;
-    if (!callerName || callerName === phoneNumber || !phoneNumber) {
-      callerName =
-        (await i18nT('telephony.notification.unknownCaller')) ||
-        'Unknown Caller';
+    if (!displayName) {
+      callerName = await i18nT('telephony.notification.unknownCaller');
     }
     const title = await i18nT('telephony.notification.incomingCall');
     this.show(title, {
@@ -67,8 +79,9 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
       data: {
         id: callId,
         scope: this._scope,
+        priority: NOTIFICATION_PRIORITY.INCOMING_CALL,
       },
-      body: `${callerName} ${phoneNumber}`,
+      body: `${displayName || callerName} ${phoneNumber}`,
       icon: '/icon/incomingCall.png',
     });
   }

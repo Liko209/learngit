@@ -124,7 +124,7 @@ export class ConversationCard extends React.Component<
         <JuiConversationCardHeader
           data-name="header"
           name={name}
-          time={showProgressActions ? '' : createTime}
+          time={showProgressActions ? '' : createTime.get()}
           status={customStatus}
           from={from}
           notification={showActivityStatus && activity}

@@ -22,8 +22,11 @@ const isLocalhost = Boolean(
 );
 
 export default function register(
-  registeredHandler: (swURL: string) => void,
-  updateInstalledHandler: (inControl: boolean) => void,
+  registeredHandler: (swURL: string, hasWaitingWorker: boolean) => void,
+  updateInstalledHandler: (
+    inControl: boolean,
+    byWaitingWorker: boolean,
+  ) => void,
   logInfo: (text: string) => void,
 ) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
@@ -100,8 +103,11 @@ export default function register(
 
 function registerValidSW(
   swUrl: string,
-  registeredHandler: (swURL: string) => void,
-  updateInstalledHandler: (inControl: boolean) => void,
+  registeredHandler: (swURL: string, hasWaitingWorker: boolean) => void,
+  updateInstalledHandler: (
+    inControl: boolean,
+    byWaitingWorker: boolean,
+  ) => void,
   logInfo: (text: string) => void,
 ) {
   console.log(`${logTag}registerValidSW: ${swUrl}`);
@@ -120,34 +126,39 @@ function registerValidSW(
         logInfo('onupdatefound');
         const installingWorker = registration.installing;
         if (installingWorker) {
-          installingWorker.onstatechange = () => {
-            logInfo(`onstatechange: ${installingWorker.state}`);
-            if (installingWorker.state === 'installed') {
-              if (navigator.serviceWorker.controller) {
-                // At this point, the old content will have been purged and
-                // the fresh content will have been added to the cache.
-                // It's the perfect time to display a 'New content is
-                // available; please refresh.' message in your web app.
-                logInfo('New content is available; please refresh.');
-              } else {
-                // At this point, everything has been precached.
-                // It's the perfect time to display a
-                // 'Content is cached for offline use.' message.
-                logInfo('Content is cached for offline use.');
-              }
-
-              const inControl = !!navigator.serviceWorker.controller;
-              setTimeout(() => {
-                updateInstalledHandler(inControl);
-              });
-            }
-          };
+          registerInstallingEvent(
+            installingWorker,
+            updateInstalledHandler,
+            logInfo,
+          );
         } else {
-          logInfo('no installingWorker');
+          logInfo('no installingWorker when onupdatefound');
         }
       };
 
-      registeredHandler(swUrl);
+      registeredHandler(swUrl, hasWaitingWorker(registration));
+
+      // In case there is installing worker before registering get onupdatefound event.
+      const installingWorker = registration.installing;
+      if (installingWorker) {
+        logInfo(
+          `has installing worker before register state event: ${
+            installingWorker.state
+          }`,
+        );
+        registerInstallingEvent(
+          installingWorker,
+          updateInstalledHandler,
+          logInfo,
+        );
+      }
+
+      // In case there is waiting worker before registering get onupdatefound event
+      const waitingWorker = registration.waiting;
+      if (waitingWorker) {
+        logInfo('has waiting worker before register state event');
+        handleNewContentAvailable(true, updateInstalledHandler, logInfo);
+      }
     })
     .catch((error: any) => {
       console.error(
@@ -157,10 +168,69 @@ function registerValidSW(
     });
 }
 
+function hasWaitingWorker(registration: ServiceWorkerRegistration) {
+  return (
+    (registration.installing &&
+      registration.installing.state === 'installed') ||
+    !!registration.waiting
+  );
+}
+
+function registerInstallingEvent(
+  installingWorker: ServiceWorker,
+  updateInstalledHandler: (
+    inControl: boolean,
+    byWaitingWorker: boolean,
+  ) => void,
+  logInfo: (text: string) => void,
+) {
+  if (installingWorker.state === 'installed') {
+    logInfo('installed before register state event');
+    handleNewContentAvailable(true, updateInstalledHandler, logInfo);
+  } else {
+    installingWorker.onstatechange = () => {
+      logInfo(`onstatechange: ${installingWorker.state}`);
+      if (installingWorker.state === 'installed') {
+        handleNewContentAvailable(false, updateInstalledHandler, logInfo);
+      }
+    };
+  }
+}
+
+function handleNewContentAvailable(
+  byWaitingWorker: boolean,
+  updateInstalledHandler: (
+    inControl: boolean,
+    byWaitingWorker: boolean,
+  ) => void,
+  logInfo: (text: string) => void,
+) {
+  if (navigator.serviceWorker.controller) {
+    // At this point, the old content will have been purged and
+    // the fresh content will have been added to the cache.
+    // It's the perfect time to display a 'New content is
+    // available; please refresh.' message in your web app.
+    logInfo('New content is available; please refresh.');
+  } else {
+    // At this point, everything has been precached.
+    // It's the perfect time to display a
+    // 'Content is cached for offline use.' message.
+    logInfo('Content is cached for offline use.');
+  }
+
+  const inControl = !!navigator.serviceWorker.controller;
+  setTimeout(() => {
+    updateInstalledHandler(inControl, byWaitingWorker);
+  },         5000);
+}
+
 function checkValidServiceWorker(
   swUrl: string,
-  registeredHandler: (swURL: string) => void,
-  updateInstalledHandler: (inControl: boolean) => void,
+  registeredHandler: (swURL: string, hasWaitingWorker: boolean) => void,
+  updateInstalledHandler: (
+    inControl: boolean,
+    byWaitingWorker: boolean,
+  ) => void,
   logInfo: (text: string) => void,
 ) {
   // Check if the service worker can be found. If it can't reload the page.

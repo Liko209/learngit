@@ -3,6 +3,7 @@
  * @Date: 2018-11-08 19:18:07
  * Copyright © RingCentral. All rights reserved.
  */
+import { PromisedComputedValue } from 'computed-async-mobx';
 import TaskItemModel from '@/store/models/TaskItem';
 import { FileType, ExtendFileItem } from '@/store/models/FileItem';
 import { Palette } from 'jui/foundation/theme/theme';
@@ -23,8 +24,9 @@ type ViewProps = {
   section: string;
   notes: string;
   files: ExtendFileItem[];
-  startTime: string;
-  endTime: string;
+  startTime: PromisedComputedValue<string>;
+  endTime: PromisedComputedValue<string>;
+  timeText: PromisedComputedValue<string>;
   hasTime: boolean;
   color?: [keyof Palette, string];
   groupId: number;
