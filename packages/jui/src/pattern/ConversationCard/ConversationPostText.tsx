@@ -86,8 +86,8 @@ type JuiConversationPostTextProps = {
 };
 
 const JuiConversationPostText = withHighlight(['title'])(
-  memo(({ key, url, title, html }: JuiConversationPostTextProps) => (
-    <JuiConversationPostTextWrapper>
+  memo(({ key, url, title, html, ...rest }: JuiConversationPostTextProps) => (
+    <JuiConversationPostTextWrapper {...rest}>
       {url ? (
         <a
           key={key}
