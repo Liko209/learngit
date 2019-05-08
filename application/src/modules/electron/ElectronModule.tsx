@@ -1,6 +1,13 @@
 import { AbstractModule } from 'framework';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { ElectronZipItemProvider } from './ElectronZipItemProvider';
+import { LogControlManager } from 'sdk/service/uploadLogControl';
+import { logManager } from 'sdk/src';
+import notificationCenter from 'sdk/service/notificationCenter';
+import { ENTITY } from 'sdk/service/eventKey';
+import { PermissionService } from 'sdk/module/permission';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class ElectronModule extends AbstractModule {
   async bootstrap() {
@@ -8,11 +15,23 @@ class ElectronModule extends AbstractModule {
       window.jupiterElectron &&
       window.jupiterElectron.getElectronVersionInfo
     ) {
-      const versionInfo = window.jupiterElectron.getElectronVersionInfo();
-      this.setElectronVersionInfo(
-        versionInfo.electronAppVersion,
-        versionInfo.electronVersion,
+      if (window.jupiterElectron.getElectronVersionInfo) {
+        const versionInfo = window.jupiterElectron.getElectronVersionInfo();
+        this.setElectronVersionInfo(
+          versionInfo.electronAppVersion,
+          versionInfo.electronVersion,
+        );
+      }
+      LogControlManager.instance().registerZipProvider(
+        new ElectronZipItemProvider(),
       );
+      window.jupiterElectron.setLogger &&
+        window.jupiterElectron.setLogger(logManager.getLogger('electron'));
+
+      window.jupiterElectron.setPermission &&
+        notificationCenter.on(ENTITY.USER_PERMISSION, () => {
+          this.updatePermission();
+        });
     }
   }
 
@@ -23,6 +42,15 @@ class ElectronModule extends AbstractModule {
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.ELECTRON_APP_VERSION, electronAppVersion || '');
     globalStore.set(GLOBAL_KEYS.ELECTRON_VERSION, electronVersion || '');
+  }
+
+  async updatePermission() {
+    const permissionService = ServiceLoader.getInstance<PermissionService>(
+      ServiceConfig.PERMISSION_SERVICE,
+    );
+    const userPermission = await permissionService.getUserPermission();
+    window.jupiterElectron.setPermission &&
+      window.jupiterElectron.setPermission(userPermission.permissions);
   }
 }
 
