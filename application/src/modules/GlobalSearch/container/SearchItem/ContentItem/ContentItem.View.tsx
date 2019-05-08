@@ -24,6 +24,7 @@ class ContentItemComponent extends React.Component<ContentItemProps> {
       contentText,
       onClick,
       automationId,
+      inThisConversation,
     } = this.props;
 
     return (
@@ -36,7 +37,8 @@ class ContentItemComponent extends React.Component<ContentItemProps> {
           <JuiIconography iconSize="medium" iconColor={['grey', '500']}>
             search
           </JuiIconography>}
-        value={contentText.get()}
+        value={contentText}
+        afterValue={inThisConversation.get()}
         terms={terms}
         data-test-automation-id={automationId}
       />
