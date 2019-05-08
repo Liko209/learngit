@@ -741,3 +741,70 @@ test(formalName('Should be unread when closed conversation received new unread',
     await directMessagesSection.conversationEntryById(chat.glipId).umi.shouldBeNumber(1);
   });
 });
+
+test.meta(<ITestMeta> {
+  priority: ['P1'],
+  caseIds: ['JPT-126'],
+  maintainers: ['ali.naffaa'],
+  keywords: ['UMI'],
+})('UMI should sync', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  await h(t).platform(loginUser).init();
+  const chatsId = [];
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
+
+  await h(t).withLog('Given user has F1(2) F2(3) T1(2) T2(3) DM1(2) DM2(3)', async () => {
+    for (let chatIndex = 0; chatIndex < 6; chatIndex++) {
+      let post, team;
+      if (chatIndex > 2) { // DM
+        post = ` post:${uuid()}`;
+        team = <IGroup>{ type: 'DirectMessage', owner: loginUser, members: [loginUser, users[chatIndex - 3]] };
+      } else { // TM
+        post = `![:Person](${loginUser.rcId}), ${uuid()}`; // mention for team
+        team = <IGroup>{ type: 'Team', name: uuid(), owner: loginUser, members: [loginUser, users[5]] };
+      }
+      await h(t).scenarioHelper.createTeamsOrChats([team]).then(() => chatsId.push(team.glipId));
+      const umiCount = chatIndex % 2 ? 2 : 3;
+      for (const i of _.range(umiCount)) { // 3,2,3,2,3,2
+        await h(t).scenarioHelper.sendTextPost(post + i, team, team.members[1]);
+      }
+    }
+    await h(t).glip(loginUser).favoriteGroups([chatsId[0], chatsId[3]]);
+  });
+
+  await h(t).withLog('When I Tap conversation \'F1/DM1/T1\' in other clients', async () => {
+    await h(t).glip(loginUser).markAsRead([chatsId[1]]);
+    await h(t).glip(loginUser).markAsRead([chatsId[3]]);
+    await h(t).glip(loginUser).markAsRead([chatsId[5]]);
+  });
+
+  await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    },
+  );
+
+  const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+  const teamsSection = app.homePage.messageTab.teamsSection;
+  const favoritesSection = app.homePage.messageTab.favoritesSection;
+
+  await h(t).withLog('Then No UMI in conversation \'F1/DM1/T1\' ', async () => {
+    await favoritesSection.conversationEntryById(chatsId[3]).umi.shouldBeNumber(0);
+    await directMessagesSection.conversationEntryById(chatsId[5]).umi.shouldBeNumber(0);
+    await teamsSection.conversationEntryById(chatsId[1]).umi.shouldBeNumber(0);
+  });
+
+  await h(t).withLog('When I Collapsed Fav/DM/Teams section in Jupiter app', async () => {
+    await t.click(directMessagesSection.toggleButton);
+    await t.click(teamsSection.toggleButton);
+    await t.click(favoritesSection.toggleButton);
+  });
+
+  await h(t).withLog('And check UMI in Fav/DM/Teams section in Jupiter app', async () => {
+    await favoritesSection.headerUmi.shouldBeNumber(3);
+    await directMessagesSection.headerUmi.shouldBeNumber(3);
+    await teamsSection.headerUmi.shouldBeNumber(3);
+  });
+});
