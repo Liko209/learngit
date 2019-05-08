@@ -256,4 +256,151 @@ describe('PostViewDao', () => {
       expect(_.last(result).created_at).toBe(3);
     });
   });
+
+  describe('queryIntervalPostsByGroupId()', () => {
+    beforeAll(async () => {
+      await postDao.clear();
+      await postDao.bulkPut(posts);
+    });
+
+    beforeEach(() => {
+      jest.restoreAllMocks();
+      jest.resetAllMocks();
+      jest.spyOn(daoManager, 'getDao').mockReturnValue(postDao);
+      fetchPostsFunc = async (ids: number[]) => {
+        const posts = await postDao.batchGet(ids);
+        return _.orderBy(posts, 'created_at', 'asc');
+      };
+    });
+
+    it('should return [] if start post id is 0', async () => {
+      const result = await postViewDao.queryIntervalPostsByGroupId(
+        fetchPostsFunc,
+        { groupId: 9163628546, startPostId: 0, endPostId: 0, limit: 500 },
+      );
+      const spy = jest.spyOn(postViewDao, 'queryPostIdsByGroupId');
+      expect(result).toHaveLength(0);
+      expect(spy).not.toBeCalled();
+    });
+
+    it('should return [] if start post id is 0 but end post is in db', async () => {
+      const result = await postViewDao.queryIntervalPostsByGroupId(
+        fetchPostsFunc,
+        {
+          groupId: 9163628546,
+          startPostId: 0,
+          endPostId: 1151236554700,
+          limit: 500,
+        },
+      );
+      const spy = jest.spyOn(postViewDao, 'queryPostIdsByGroupId');
+      expect(result).toHaveLength(0);
+      expect(spy).not.toBeCalled();
+    });
+
+    it('should return [] if start post not in db', async () => {
+      const result = await postViewDao.queryIntervalPostsByGroupId(
+        fetchPostsFunc,
+        {
+          groupId: 9163628546,
+          startPostId: 5752569593860,
+          endPostId: 0,
+          limit: 500,
+        },
+      );
+      const spy = jest.spyOn(postViewDao, 'queryPostIdsByGroupId');
+      expect(result).toHaveLength(0);
+      expect(spy).not.toBeCalled();
+    });
+
+    it('should return [] if start post not in db but end post is in db', async () => {
+      const result = await postViewDao.queryIntervalPostsByGroupId(
+        fetchPostsFunc,
+        {
+          groupId: 9163628546,
+          startPostId: 5752569593860,
+          endPostId: 1151236554701,
+          limit: 500,
+        },
+      );
+      const spy = jest.spyOn(postViewDao, 'queryPostIdsByGroupId');
+      expect(result).toHaveLength(0);
+      expect(spy).not.toBeCalled();
+    });
+
+    it('should return all newer than start post if start post in db and end post id is 0', async () => {
+      const result = await postViewDao.queryIntervalPostsByGroupId(
+        fetchPostsFunc,
+        {
+          groupId: 9163628546,
+          startPostId: 3752569536516,
+          endPostId: 0,
+          limit: 500,
+        },
+      );
+      expect(result).toHaveLength(4);
+      expect(_.first(result).created_at).toBe(3);
+      expect(_.last(result).created_at).toBe(6);
+    });
+
+    it('should return all newer than start post if start post in db and end post is not in db', async () => {
+      const result = await postViewDao.queryIntervalPostsByGroupId(
+        fetchPostsFunc,
+        {
+          groupId: 9163628546,
+          startPostId: 1151236554756,
+          endPostId: 6752569536516,
+          limit: 500,
+        },
+      );
+      expect(result).toHaveLength(5);
+      expect(_.first(result).created_at).toBe(2);
+      expect(_.last(result).created_at).toBe(6);
+    });
+
+    it('should return interval posts if start post is in db and end post is in db', async () => {
+      const result = await postViewDao.queryIntervalPostsByGroupId(
+        fetchPostsFunc,
+        {
+          groupId: 9163628546,
+          startPostId: 1151236554756,
+          endPostId: 1151236554700,
+          limit: 500,
+        },
+      );
+      expect(result).toHaveLength(3);
+      expect(_.first(result).created_at).toBe(2);
+      expect(_.last(result).created_at).toBe(4);
+    });
+
+    it('should return [] if start post is in db and end post is in db, but start post created_at > end post created_at', async () => {
+      const result = await postViewDao.queryIntervalPostsByGroupId(
+        fetchPostsFunc,
+        {
+          groupId: 9163628546,
+          startPostId: 1151236554701,
+          endPostId: 3752569593860,
+          limit: 500,
+        },
+      );
+      const spy = jest.spyOn(postViewDao, 'queryPostIdsByGroupId');
+      expect(result).toHaveLength(0);
+      expect(spy).not.toBeCalled();
+    });
+
+    it('should return [] if start post is in db and end post is in db, but start post created_at === end post created_at', async () => {
+      const result = await postViewDao.queryIntervalPostsByGroupId(
+        fetchPostsFunc,
+        {
+          groupId: 9163628546,
+          startPostId: 1151236554701,
+          endPostId: 1151236554701,
+          limit: 500,
+        },
+      );
+      const spy = jest.spyOn(postViewDao, 'queryPostIdsByGroupId');
+      expect(result).toHaveLength(0);
+      expect(spy).not.toBeCalled();
+    });
+  });
 });

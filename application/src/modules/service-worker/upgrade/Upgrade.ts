@@ -14,6 +14,7 @@ const logTag = '[Upgrade]';
 const DEFAULT_UPDATE_INTERVAL = 60 * 60 * 1000;
 const ONLINE_UPDATE_THRESHOLD = 20 * 60 * 1000;
 const FOREGROUND_RELOAD_THRESHOLD = 60 * 60 * 1000;
+const WAITING_WORKER_FLAG = 'upgrade.waiting_worker_flag';
 
 class Upgrade {
   private _hasNewVersion: boolean = false;
@@ -41,15 +42,36 @@ class Upgrade {
     mainLogger.info(`${logTag}${text}`);
   }
 
-  public setServiceWorkerURL(swURL: string) {
-    mainLogger.info(`${logTag}setServiceWorkerURL: ${swURL}`);
+  public setServiceWorkerURL(swURL: string, hasWaitingWorker: boolean) {
+    mainLogger.info(
+      `${logTag}setServiceWorkerURL: ${swURL}, hasWaitingWorker: ${hasWaitingWorker}`,
+    );
     this._swURL = swURL;
+
+    if (!hasWaitingWorker) {
+      this._removeWorkingWorkerFlag();
+    }
   }
 
-  public onNewContentAvailable(isCurrentPageInControl: boolean) {
+  public onNewContentAvailable(
+    isCurrentPageInControl: boolean,
+    isByWaitingWorker: boolean,
+  ) {
     mainLogger.info(
-      `${logTag}New content available. hasFocus: ${document.hasFocus()}, control: ${isCurrentPageInControl}`,
+      `${logTag}onNewContentAvailable. hasFocus: ${document.hasFocus()}, control: ${isCurrentPageInControl}, byWaitingWorker: ${isByWaitingWorker}`,
     );
+    if (isByWaitingWorker) {
+      const workingWorkerFlag = this._getWorkingWorkerFlag();
+      if (!!workingWorkerFlag) {
+        mainLogger.info(
+          `${logTag} Ignore upgrade due to there's waiting worker flag: ${workingWorkerFlag}`,
+        );
+        return;
+      }
+
+      this._setWorkingWorkerFlag();
+    }
+
     this._hasNewVersion = true;
 
     if (document.hasFocus()) {
@@ -72,6 +94,19 @@ class Upgrade {
 
       this._reloadApp();
     }
+  }
+
+  private _getWorkingWorkerFlag() {
+    return window.sessionStorage.getItem(WAITING_WORKER_FLAG);
+  }
+  private _setWorkingWorkerFlag() {
+    window.sessionStorage.setItem(
+      WAITING_WORKER_FLAG,
+      new Date().toISOString(),
+    );
+  }
+  private _removeWorkingWorkerFlag() {
+    window.sessionStorage.removeItem(WAITING_WORKER_FLAG);
   }
 
   private _queryIfHasNewVersion() {
@@ -97,7 +132,7 @@ class Upgrade {
               !!installingWorker ? installingWorker.state : ''
             }, waiting[${!!waitingWorker}]${
               !!waitingWorker ? waitingWorker.state : ''
-            }, }`,
+            }`,
           );
 
           registration
