@@ -38,29 +38,32 @@ const StyledEmojiWrapper = styled.div`
     .emoji-mart-emoji:focus {
       outline: none;
     }
+    .emoji-mart {
+      white-space: normal;
+    }
   }
 `;
-
-class JuiEmoji extends React.PureComponent<Props> {
+type State = { open: boolean; anchorEl: EventTarget & Element | null };
+class JuiEmoji extends React.PureComponent<Props, State> {
   state = {
     anchorEl: null,
+    open: false,
   };
 
   handleClose = () => {
-    setTimeout(() => {
-      this.setState({
-        anchorEl: null,
-      });
-    },         0);
+    this.setState({
+      open: false,
+    });
   }
 
   private _handleClickEvent = (evt: MouseEvent) => {
-    const { anchorEl } = this.state;
-    if (anchorEl) {
-      return;
-    }
-    this.setState({ anchorEl: evt.currentTarget });
+    const { currentTarget } = evt;
+    this.setState(state => ({
+      anchorEl: currentTarget,
+      open: !state.open,
+    }));
   }
+
   private _IconButton = ({ tooltipForceHide }: AnchorProps) => {
     return (
       <JuiIconButton
@@ -86,40 +89,36 @@ class JuiEmoji extends React.PureComponent<Props> {
   }
 
   render() {
-    const { anchorEl } = this.state;
+    const { anchorEl, open } = this.state;
     const { handleEmojiClick, sheetSize, set, title } = this.props;
-    const open = !!anchorEl;
     return (
-      <>
-        {
-          <HotKeys
-            keyMap={{
-              esc: this.handleClose,
-            }}
-          >
-            <JuiPopperMenu
-              open={open}
-              placement="bottom-start"
-              Anchor={this._IconButton}
-              noTransition={true}
-              onClose={this.handleClose}
-            >
-              <StyledEmojiWrapper>
-                <Picker
-                  sheetSize={sheetSize}
-                  title={title}
-                  emoji="point_up"
-                  set={set}
-                  onClick={handleEmojiClick}
-                  emojisToShowFilter={(emoji: any) => {
-                    return this.isIndexOf(ExcludeList, emoji.short_names);
-                  }}
-                />
-              </StyledEmojiWrapper>
-            </JuiPopperMenu>
-          </HotKeys>
-        }
-      </>
+      <HotKeys
+        keyMap={{
+          esc: this.handleClose,
+        }}
+      >
+        <JuiPopperMenu
+          open={open}
+          anchorEl={anchorEl}
+          onClose={this.handleClose}
+          Anchor={this._IconButton}
+          placement="bottom-start"
+          noTransition={true}
+        >
+          <StyledEmojiWrapper>
+            <Picker
+              sheetSize={sheetSize}
+              title={title}
+              emoji="point_up"
+              set={set}
+              onClick={handleEmojiClick}
+              emojisToShowFilter={(emoji: any) => {
+                return this.isIndexOf(ExcludeList, emoji.short_names);
+              }}
+            />
+          </StyledEmojiWrapper>
+        </JuiPopperMenu>
+      </HotKeys>
     );
   }
 }

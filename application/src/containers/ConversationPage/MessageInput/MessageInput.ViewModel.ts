@@ -152,6 +152,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   @action
   insertEmoji = (emoji: any) => {
+    console.log('nye insert emoji');
     let colons = emoji.colons;
     if (ConvertList.indexOf(colons.split(':').join('')) > -1) {
       colons = this._doUnderscoreTransfer(colons);
