@@ -4,12 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel, Raw } from '../../../framework/model';
+import { IdModel, Raw, ModelIdType } from '../../../framework/model';
 import { IEntityPersistentController } from './IEntityPersistentController';
 
-interface IEntityCacheController<T extends IdModel = IdModel>
-  extends IEntityPersistentController<T> {
-  getSynchronously(key: number): T | null;
+interface IEntityCacheController<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+> extends IEntityPersistentController<T, IdType> {
+  getSynchronously(key: IdType): T | null;
 
   initialize(entities: T[]): void;
 
@@ -19,11 +21,11 @@ interface IEntityCacheController<T extends IdModel = IdModel>
 
   getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]>;
 
-  replace(ids: number[], entities: Map<number, T>): Promise<void>;
+  replace(ids: IdType[], entities: Map<IdType, T>): Promise<void>;
 
   updateEx(
-    entities: Map<number, T>,
-    partials?: Map<number, Partial<Raw<T>>>,
+    entities: Map<IdType, T>,
+    partials?: Map<IdType, Partial<Raw<T>>>,
   ): Promise<void>;
 }
 

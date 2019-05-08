@@ -14,11 +14,11 @@ jest.mock('../../../../../framework/controller/impl/EntitySourceController');
 
 describe('StateFetchDataController', () => {
   let stateFetchDataController: StateFetchDataController;
-  let mockEntitySourceController: EntitySourceController;
+  let mockEntitySourceController: EntitySourceController<GroupState>;
   beforeEach(() => {
     jest.clearAllMocks();
     mockEntitySourceController = new EntitySourceController<GroupState>(
-      {} as IEntityPersistentController,
+      {} as IEntityPersistentController<GroupState>,
       {} as DeactivatedDao,
     );
     stateFetchDataController = new StateFetchDataController(

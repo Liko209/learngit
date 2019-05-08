@@ -17,6 +17,7 @@ import PersonModel from '@/store/models/Person';
 import { computed, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { catchError } from '@/common/catchError';
 
 function withPostLike<P>(
   Component: ComponentType<P & WithPostLikeComponentProps>,
@@ -51,7 +52,7 @@ function withPostLike<P>(
     }
 
     @action
-    onToggleLike = async (): Promise<void> => {
+    _handleToggle = async (): Promise<void> => {
       const postService = ServiceLoader.getInstance<PostService>(
         ServiceConfig.POST_SERVICE,
       );
@@ -63,6 +64,22 @@ function withPostLike<P>(
       );
     }
 
+    @catchError.flash({
+      network: 'message.prompt.notAbleToUnlikeForNetworkIssue',
+      server: 'message.prompt.notAbleToUnlikeForServerIssue',
+    })
+    private handleUnlike = () => {
+      return this._handleToggle();
+    }
+
+    @catchError.flash({
+      network: 'message.prompt.notAbleToLikeThisMessageForNetworkIssue',
+      server: 'message.prompt.notAbleToLikeThisMessageForServerIssue',
+    })
+    private handleLike = () => {
+      return this._handleToggle();
+    }
+
     render() {
       const { postId, ...rest } = this.props;
 
@@ -70,7 +87,7 @@ function withPostLike<P>(
         <Component
           iLiked={this.iLiked}
           likedUsers={this.likedUsers}
-          onToggleLike={this.onToggleLike}
+          onToggleLike={this.iLiked ? this.handleUnlike : this.handleLike}
           {...rest as P}
         />
       );

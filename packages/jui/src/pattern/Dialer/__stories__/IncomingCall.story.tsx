@@ -35,6 +35,8 @@ const VoiceMail = () => (
   />
 );
 
+VoiceMail.displayName = 'VoiceMail';
+
 const Answer = () => (
   <JuiFabButton
     color="semantic.positive"
@@ -46,6 +48,8 @@ const Answer = () => (
   />
 );
 
+Answer.displayName = 'Answer';
+
 const More = () => (
   <JuiFabButton
     color="grey.200"
@@ -56,6 +60,8 @@ const More = () => (
     tooltipTitle="More"
   />
 );
+
+More.displayName = 'More';
 
 const Actions = [VoiceMail, Answer, More];
 

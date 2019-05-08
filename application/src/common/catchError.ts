@@ -4,18 +4,25 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ToastType, ToastMessageAlign } from '@/containers/ToastWrapper/Toast/types';
-import { Notification, ShowNotificationOptions } from '@/containers/Notification';
+import _ from 'lodash';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import {
+  Notification,
+  ShowNotificationOptions,
+} from '@/containers/Notification';
 import { generalErrorHandler } from '@/utils/error';
 import { errorHelper } from 'sdk/error';
 
 type ErrorActionConfig = string | Function;
 
 type NotifyErrorProps = {
-  doGeneral?: boolean;
   network?: ErrorActionConfig;
   server?: ErrorActionConfig;
   notificationOpts?: ShowNotificationOptions;
+  isDebounce?: boolean;
 };
 
 type StrategyProps = {
@@ -64,6 +71,22 @@ function notify(
     ...notificationOpts,
   });
 }
+let debounceNotifyStore = {};
+
+const getDebounceNotify = (actionName: ErrorActionConfig) => {
+  if (typeof actionName === 'function') {
+    return;
+  }
+  if (!debounceNotifyStore[actionName]) {
+    debounceNotifyStore = {
+      [actionName]: _.debounce(notify, 1000, {
+        trailing: false,
+        leading: true,
+      }),
+    };
+  }
+  return debounceNotifyStore[actionName];
+};
 
 function perform(options: StrategyProps[], error: Error, ctx: any) {
   const result = options.some(({ condition, action }) => {
@@ -88,19 +111,26 @@ function handleError(
     return perform(options, error, ctx);
   }
 
-  const { network, server, doGeneral, notificationOpts = defaultOptions } = options;
+  const {
+    network,
+    server,
+    notificationOpts = defaultOptions,
+    isDebounce,
+  } = options;
+  const notifyFunc = isDebounce
+    ? getDebounceNotify(network || server || '')
+    : notify;
   if (network && errorHelper.isNetworkConnectionError(error)) {
-    return notify(ctx, notificationType, network, notificationOpts, error);
+    notifyFunc(ctx, notificationType, network, notificationOpts, error);
+    return false;
   }
 
   if (server && errorHelper.isBackEndError(error)) {
-    return notify(ctx, notificationType, server, notificationOpts, error);
+    notifyFunc(ctx, notificationType, server, notificationOpts, error);
+    return false;
   }
 
-  if (doGeneral) {
-    return generalErrorHandler(error);
-  }
-
+  generalErrorHandler(error);
   throw error;
 }
 
@@ -126,7 +156,10 @@ function wrapHandleError(
   };
 }
 
-function decorate(notificationType: NOTIFICATION_TYPE, options: CatchOptionsProps): any {
+function decorate(
+  notificationType: NOTIFICATION_TYPE,
+  options: CatchOptionsProps,
+): any {
   return function (target: any, propertyName: string, descriptor?: any) {
     // bound instance methods
     if (!descriptor) {
@@ -156,7 +189,11 @@ function decorate(notificationType: NOTIFICATION_TYPE, options: CatchOptionsProp
         writable: true,
         initializer() {
           // N.B: we can't immediately invoke initializer; this would be wrong
-          return wrapHandleError(descriptor.initializer!.call(this), notificationType, options);
+          return wrapHandleError(
+            descriptor.initializer!.call(this),
+            notificationType,
+            options,
+          );
         },
       };
     }

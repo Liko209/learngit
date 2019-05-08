@@ -11,7 +11,7 @@ import { JuiLogo, JuiTopBar } from 'jui/pattern/TopBar';
 import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
 import { AvatarActions } from './AvatarActions';
 import { NewActions } from './NewActions';
-import { Dialpad } from './Dialpad';
+import { Dialpad } from '@/modules/telephony/container';
 import { BackNForward } from './BackNForward';
 
 type TopBarProps = WithTranslation & {

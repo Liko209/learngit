@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel, Raw } from '../../model';
+import { IdModel, Raw, ModelIdType } from '../../model';
 import { mainLogger } from 'foundation';
 import _ from 'lodash';
 import { IEntitySourceController } from '../interface/IEntitySourceController';
@@ -12,12 +12,16 @@ import notificationCenter from '../../../service/notificationCenter';
 import { IPartialModifyController } from '../interface/IPartialModifyController';
 import { transform } from '../../../service/utils';
 
-class PartialModifyController<T extends IdModel = IdModel>
-  implements IPartialModifyController<T> {
-  constructor(public entitySourceController: IEntitySourceController<T>) {}
+class PartialModifyController<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+> implements IPartialModifyController<T, IdType> {
+  constructor(
+    public entitySourceController: IEntitySourceController<T, IdType>,
+  ) {}
 
   async updatePartially(
-    entityId: number,
+    entityId: IdType,
     preHandlePartialEntity?: (
       partialEntity: Partial<Raw<T>>,
       originalEntity: T,
@@ -29,7 +33,7 @@ class PartialModifyController<T extends IdModel = IdModel>
       partialEntities: Partial<Raw<T>>[],
     ) => void,
   ): Promise<T | null> {
-    const id: number = entityId;
+    const id: IdType = entityId;
     let result: T | null = null;
 
     do {
@@ -98,7 +102,7 @@ class PartialModifyController<T extends IdModel = IdModel>
     const eventKey: string = this.entitySourceController.getEntityNotificationKey();
     if (eventKey.length > 0) {
       mainLogger.info(`_doDefaultPartialNotify: eventKey= ${eventKey}`);
-      notificationCenter.emitEntityUpdate(
+      notificationCenter.emitEntityUpdate<T, IdType>(
         eventKey,
         updatedEntities,
         partialEntities,

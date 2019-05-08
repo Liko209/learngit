@@ -7,6 +7,7 @@ import { DBManager, IDatabase } from 'foundation';
 import Query from '../Query';
 import BaseDao from '../BaseDao';
 import { randomItems } from './dummy';
+import { IdModel } from '../../../model';
 
 const faker = require('faker');
 type NameObject = {
@@ -23,7 +24,10 @@ type RandomItem = {
   teams: number[];
 };
 
-class Dao<RandomItem> extends BaseDao<RandomItem> {
+class Dao<RandomItem extends IdModel<string>> extends BaseDao<
+  RandomItem,
+  string
+> {
   constructor(db: IDatabase) {
     super('mock', db);
   }
@@ -38,8 +42,14 @@ const schema = {
       mock: {
         unique: 'id',
         indices: [
-          'index', 'name', 'pet', '[index+name]',
-          '[name+index]', '[id+index]', '[index+id]', '*teams',
+          'index',
+          'name',
+          'pet',
+          '[index+name]',
+          '[name+index]',
+          '[id+index]',
+          '[index+id]',
+          '*teams',
         ],
       },
     },
@@ -55,8 +65,8 @@ function isDescending(arr: any[]) {
 }
 
 describe('Query', () => {
-  let dao: BaseDao<RandomItem>;
-  let query: Query<RandomItem>;
+  let dao: BaseDao<RandomItem, string>;
+  let query: Query<RandomItem, string>;
 
   beforeAll(async () => {
     dbManager.initDatabase(schema);
@@ -120,7 +130,13 @@ describe('Query', () => {
         randomItems(20, () => ({
           id: faker.random.uuid(),
           index: faker.random.number(100),
-          name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian']),
+          name: faker.random.arrayElement([
+            'David',
+            'Eve',
+            'Ryan',
+            'Steve',
+            'Ian',
+          ]),
         })),
       );
     });
@@ -162,14 +178,19 @@ describe('Query', () => {
   });
 
   describe('equals', () => {
-
     beforeEach(async () => {
       await dao.bulkPut(
         randomItems(10, () => ({
           id: faker.random.uuid(),
           index: faker.random.arrayElement([
-            'one', 'two', 'three', 'three',
-            'three', 'three', 'four', 'five',
+            'one',
+            'two',
+            'three',
+            'three',
+            'three',
+            'three',
+            'four',
+            'five',
           ]),
           name: faker.random.arrayElement(['David', 'Eve']),
         })),
@@ -191,7 +212,9 @@ describe('Query', () => {
         .equal('index', 'three')
         .equal('name', 'David')
         .toArray();
-      expect(result.every(item => item.index === 'three' && item.name === 'David')).toBe(true);
+      expect(
+        result.every(item => item.index === 'three' && item.name === 'David'),
+      ).toBe(true);
     });
 
     it('chained ignoreCase', async () => {
@@ -199,7 +222,9 @@ describe('Query', () => {
         .equal('index', 'THREE', true)
         .equal('name', 'David')
         .toArray();
-      expect(result.every(item => item.index === 'three' && item.name === 'David')).toBe(true);
+      expect(
+        result.every(item => item.index === 'three' && item.name === 'David'),
+      ).toBe(true);
     });
 
     it('after order', async () => {
@@ -226,7 +251,13 @@ describe('Query', () => {
       await dao.bulkPut(
         randomItems(30, () => ({
           id: faker.random.uuid(),
-          index: faker.random.arrayElement(['one', 'two', 'three', 'four', 'five']),
+          index: faker.random.arrayElement([
+            'one',
+            'two',
+            'three',
+            'four',
+            'five',
+          ]),
           name: faker.random.arrayElement(['David', 'Eve']),
           pet: faker.random.arrayElement(['dog', 'cat']),
         })),
@@ -245,11 +276,7 @@ describe('Query', () => {
         .toArray();
 
       expect(
-        result
-          .every(item =>
-            item.index !== 'three' &&
-            item.name !== 'Eve',
-        ),
+        result.every(item => item.index !== 'three' && item.name !== 'Eve'),
       ).toBe(true);
     });
 
@@ -260,11 +287,7 @@ describe('Query', () => {
         .toArray();
 
       expect(
-        result.every(
-          item =>
-            item.index === 'three' &&
-            item.name !== 'David',
-        ),
+        result.every(item => item.index === 'three' && item.name !== 'David'),
       ).toBe(true);
     });
 
@@ -278,9 +301,7 @@ describe('Query', () => {
       expect(
         result.every(
           item =>
-            item.pet === 'dog' &&
-            item.index !== 'one' &&
-            item.name !== 'David',
+            item.pet === 'dog' && item.index !== 'one' && item.name !== 'David',
         ),
       ).toBe(true);
     });
@@ -298,13 +319,19 @@ describe('Query', () => {
     });
 
     it('between', async () => {
-      const result = await query.between('index', 20, 50, false, false).toArray();
-      expect(result.every(item => item.index > 20 && item.index < 50)).toBe(true);
+      const result = await query
+        .between('index', 20, 50, false, false)
+        .toArray();
+      expect(result.every(item => item.index > 20 && item.index < 50)).toBe(
+        true,
+      );
     });
 
     it('between include bounds', async () => {
       const result = await query.between('index', 20, 50, true, true).toArray();
-      expect(result.every(item => item.index >= 20 && item.index <= 50)).toBe(true);
+      expect(result.every(item => item.index >= 20 && item.index <= 50)).toBe(
+        true,
+      );
     });
 
     it('chained between', async () => {
@@ -312,12 +339,9 @@ describe('Query', () => {
         .equal('name', 'David')
         .between('index', 20, 50, false, false)
         .toArray();
-      expect(
-        result.every(
-          item =>
-            item.index > 20 && item.index < 50,
-        ),
-      ).toBe(true);
+      expect(result.every(item => item.index > 20 && item.index < 50)).toBe(
+        true,
+      );
 
       query.reset();
       result = await query
@@ -327,9 +351,7 @@ describe('Query', () => {
 
       expect(
         result.every(
-          item =>
-            item.index > 20 && item.index < 50 &&
-            item.name === 'David',
+          item => item.index > 20 && item.index < 50 && item.name === 'David',
         ),
       ).toBe(true);
 
@@ -342,9 +364,7 @@ describe('Query', () => {
 
       expect(
         result.every(
-          item =>
-            item.index > 20 && item.index < 50 &&
-            item.name === 'David',
+          item => item.index > 20 && item.index < 50 && item.name === 'David',
         ),
       ).toBe(true);
 
@@ -356,9 +376,7 @@ describe('Query', () => {
 
       expect(
         result.every(
-          item =>
-            item.index > 20 && item.index < 50 &&
-            item.name === 'David',
+          item => item.index > 20 && item.index < 50 && item.name === 'David',
         ),
       ).toBe(true);
 
@@ -370,9 +388,7 @@ describe('Query', () => {
 
       expect(
         result.every(
-          item =>
-            item.index > 20 && item.index < 50
-            && item.name === 'David',
+          item => item.index > 20 && item.index < 50 && item.name === 'David',
         ),
       ).toBe(true);
 
@@ -384,9 +400,7 @@ describe('Query', () => {
 
       expect(
         result.every(
-          item =>
-            item.index > 20 && item.index < 50 &&
-            item.name === 'David',
+          item => item.index > 20 && item.index < 50 && item.name === 'David',
         ),
       ).toBe(true);
     });
@@ -419,21 +433,27 @@ describe('Query', () => {
         .equal('name', 'David')
         .greaterThan('index', 20)
         .toArray();
-      expect(result.every(item => item.index > 20 && item.name === 'David')).toBe(true);
+      expect(
+        result.every(item => item.index > 20 && item.name === 'David'),
+      ).toBe(true);
 
       query.reset();
       result = await query
         .greaterThan('index', 20)
         .equal('name', 'David')
         .toArray();
-      expect(result.every(item => item.index > 20 && item.name === 'David')).toBe(true);
+      expect(
+        result.every(item => item.index > 20 && item.name === 'David'),
+      ).toBe(true);
 
       query.reset();
       result = await query
         .greaterThan('index', 20)
         .between('name', 'D', 'E', false, false)
         .toArray();
-      expect(result.every(item => item.index > 20 && item.name === 'David')).toBe(true);
+      expect(
+        result.every(item => item.index > 20 && item.name === 'David'),
+      ).toBe(true);
 
       query.reset();
       const pastDay = faker.date.past();
@@ -446,9 +466,7 @@ describe('Query', () => {
       expect(
         result.every(
           ({ index, name, birthday }) =>
-            index > 20 &&
-            name < 'E' && name > 'D' &&
-            birthday > pastDay,
+            index > 20 && name < 'E' && name > 'D' && birthday > pastDay,
         ),
       ).toBe(true);
     });
@@ -480,21 +498,27 @@ describe('Query', () => {
         .equal('name', 'David')
         .lessThan('index', 50)
         .toArray();
-      expect(result.every(item => item.index < 50 && item.name === 'David')).toBe(true);
+      expect(
+        result.every(item => item.index < 50 && item.name === 'David'),
+      ).toBe(true);
 
       query.reset();
       result = await query
         .lessThan('index', 50)
         .equal('name', 'David')
         .toArray();
-      expect(result.every(item => item.index < 50 && item.name === 'David')).toBe(true);
+      expect(
+        result.every(item => item.index < 50 && item.name === 'David'),
+      ).toBe(true);
 
       query.reset();
       result = await query
         .lessThan('index', 50)
         .between('name', 'D', 'E', false, false)
         .toArray();
-      expect(result.every(item => item.index < 50 && item.name === 'David')).toBe(true);
+      expect(
+        result.every(item => item.index < 50 && item.name === 'David'),
+      ).toBe(true);
     });
   });
 
@@ -509,33 +533,39 @@ describe('Query', () => {
     });
 
     it('anyOf', async () => {
-      const result = await query.anyOf('name', ['David', 'Eve', 'Ryan']).toArray();
+      const result = await query
+        .anyOf('name', ['David', 'Eve', 'Ryan'])
+        .toArray();
 
       expect(result.length).toEqual(
-        allData
-          .filter(item => ['David', 'Eve', 'Ryan']
-            .includes(item.name))
+        allData.filter(item => ['David', 'Eve', 'Ryan'].includes(item.name))
           .length,
       );
-      expect(result.every(item => ['David', 'Eve', 'Ryan'].includes(item.name))).toBe(true);
+      expect(
+        result.every(item => ['David', 'Eve', 'Ryan'].includes(item.name)),
+      ).toBe(true);
     });
 
     it('anyOf should be case-sensitive by default', async () => {
-      const result = await query.anyOf('name', ['david', 'eve', 'ryan', 'steve', 'ian']).toArray();
+      const result = await query
+        .anyOf('name', ['david', 'eve', 'ryan', 'steve', 'ian'])
+        .toArray();
       expect(result.length).toBe(0);
     });
 
     it('anyOf ignore case', async () => {
-      const result = await query.anyOf('name', ['david', 'eve', 'ryan'], true).toArray();
+      const result = await query
+        .anyOf('name', ['david', 'eve', 'ryan'], true)
+        .toArray();
 
       expect(result.length).toEqual(
-        allData
-          .filter(item => ['David', 'Eve', 'Ryan']
-            .includes(item.name))
+        allData.filter(item => ['David', 'Eve', 'Ryan'].includes(item.name))
           .length,
       );
 
-      expect(result.every(item => ['David', 'Eve', 'Ryan'].includes(item.name))).toBe(true);
+      expect(
+        result.every(item => ['David', 'Eve', 'Ryan'].includes(item.name)),
+      ).toBe(true);
     });
 
     it('chained anyOf', async () => {
@@ -583,7 +613,13 @@ describe('Query', () => {
         randomItems(20, () => ({
           id: faker.random.uuid(),
           index: faker.random.number(100),
-          name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian']),
+          name: faker.random.arrayElement([
+            'David',
+            'Eve',
+            'Ryan',
+            'Steve',
+            'Ian',
+          ]),
         })),
       );
     });
@@ -596,9 +632,11 @@ describe('Query', () => {
 
       query.reset();
 
-      result = await query.anyOf('name', ['David', 'Eve', 'Ryan', 'Steve', 'Ian']).toArray({
-        sortBy: 'index',
-      });
+      result = await query
+        .anyOf('name', ['David', 'Eve', 'Ryan', 'Steve', 'Ian'])
+        .toArray({
+          sortBy: 'index',
+        });
       expect(isAscending(result.map(item => item.index))).toBe(true);
     });
 
@@ -611,10 +649,12 @@ describe('Query', () => {
 
       query.reset();
 
-      result = await query.anyOf('name', ['David', 'Eve', 'Ryan', 'Steve', 'Ian']).toArray({
-        sortBy: 'index',
-        desc: true,
-      });
+      result = await query
+        .anyOf('name', ['David', 'Eve', 'Ryan', 'Steve', 'Ian'])
+        .toArray({
+          sortBy: 'index',
+          desc: true,
+        });
 
       expect(isDescending(result.map(item => item.index))).toBe(true);
     });
@@ -660,7 +700,13 @@ describe('Query', () => {
         randomItems(20, () => ({
           id: faker.random.uuid(),
           index: faker.random.number(100),
-          name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian']),
+          name: faker.random.arrayElement([
+            'David',
+            'Eve',
+            'Ryan',
+            'Steve',
+            'Ian',
+          ]),
         })),
       );
     });
@@ -668,13 +714,13 @@ describe('Query', () => {
     it('should get first element', async () => {
       const result = await query.first();
       const all = await query.toArray();
-      expect(all[0].id).toEqual(result.id);
+      expect(all[0].id).toEqual(result!.id);
     });
 
     it('should get last element', async () => {
       const result = await query.last();
       const all = await query.toArray();
-      expect(all[all.length - 1].id).toEqual(result.id);
+      expect(all[all.length - 1].id).toEqual(result!.id);
     });
   });
 
@@ -684,7 +730,13 @@ describe('Query', () => {
         randomItems(20, () => ({
           id: faker.random.uuid(),
           index: faker.random.number(100),
-          name: faker.random.arrayElement(['David', 'Devin', 'Ryan', 'Steve', 'Ian']),
+          name: faker.random.arrayElement([
+            'David',
+            'Devin',
+            'Ryan',
+            'Steve',
+            'Ian',
+          ]),
         })),
       );
     });
@@ -723,7 +775,13 @@ describe('Query', () => {
         randomItems(20, () => ({
           id: faker.random.uuid(),
           index: faker.random.number(100),
-          name: faker.random.arrayElement(['David', 'Devin', 'Ryan', 'Steve', 'Ian']),
+          name: faker.random.arrayElement([
+            'David',
+            'Devin',
+            'Ryan',
+            'Steve',
+            'Ian',
+          ]),
         })),
       );
     });
@@ -737,10 +795,7 @@ describe('Query', () => {
 
       expect(
         result.every(
-          ({ name }) =>
-            name === 'David' ||
-            name === 'Devin' ||
-            name === 'Ryan',
+          ({ name }) => name === 'David' || name === 'Devin' || name === 'Ryan',
         ),
       ).toBe(true);
     });

@@ -8,6 +8,7 @@ import { inject } from 'framework';
 import { reaction, comparer } from 'mobx';
 import { Disposer } from 'mobx-react';
 import { AbstractNotificationManager } from '@/modules/notification/manager';
+import { NOTIFICATION_PRIORITY } from '@/modules/notification/interface';
 import i18nT from '@/utils/i18nT';
 import { TelephonyStore } from './store';
 import { TelephonyService } from './service';
@@ -78,6 +79,7 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
       data: {
         id: callId,
         scope: this._scope,
+        priority: NOTIFICATION_PRIORITY.INCOMING_CALL,
       },
       body: `${displayName || callerName} ${phoneNumber}`,
       icon: '/icon/incomingCall.png',

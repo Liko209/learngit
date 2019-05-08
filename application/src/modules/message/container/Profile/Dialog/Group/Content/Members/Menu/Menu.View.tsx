@@ -12,12 +12,7 @@ import { JuiMenuList, JuiMenuItem } from 'jui/components';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import { MenuViewProps } from './types';
 import { JuiIconography } from 'jui/foundation/Iconography';
-import { Notification } from '@/containers/Notification';
-import { errorHelper } from 'sdk/error';
-import {
-  ToastType,
-  ToastMessageAlign,
-} from '@/containers/ToastWrapper/Toast/types';
+import { catchError } from '@/common/catchError';
 
 type Props = MenuViewProps & RouteComponentProps & WithTranslation;
 type State = {
@@ -31,60 +26,42 @@ class MenuViewComponent extends Component<Props, State> {
   @observable
   menuAnchorEl: HTMLElement | null = null;
 
-  private _renderFlashToast = (message: string) => {
-    Notification.flashToast({
-      message,
-      type: ToastType.ERROR,
-      messageAlign: ToastMessageAlign.LEFT,
-      fullWidth: false,
-      dismissible: false,
-    });
-  }
-
-  private _containErrorHander = async (
-    serviceFunction: Function,
-    [networkError, backendError]: string[],
-  ) => {
-    try {
-      await serviceFunction();
-      return true;
-    } catch (error) {
-      if (errorHelper.isNetworkConnectionError(error)) {
-        this._renderFlashToast(networkError);
-        return false;
-      }
-      if (errorHelper.isBackEndError(error)) {
-        this._renderFlashToast(backendError);
-        return false;
-      }
-      throw error;
-    }
-  }
-
+  @catchError.flash({
+    network: 'people.prompt.removeMemberNetworkError',
+    server: 'people.prompt.removeMemberBackendError',
+  })
   private _handleRemoveFromTeam = async (event: MouseEvent<HTMLElement>) => {
     event && event.stopPropagation();
     const { onMenuClose, removeFromTeam } = this.props;
     onMenuClose();
-    this._containErrorHander(removeFromTeam, [
-      'people.prompt.removeMemberNetworkError',
-      'people.prompt.removeMemberBackendError',
-    ]);
+    await removeFromTeam();
   }
 
-  private _toggleTeamAdmin = (event: MouseEvent<HTMLElement>) => {
+  @catchError.flash({
+    network: 'people.prompt.revokeTeamAdminNetworkError',
+    server: 'people.prompt.revokeTeamAdminBackendError',
+  })
+  private _revokeTeamAdminHandle = async () => {
+    const { toggleTeamAdmin } = this.props;
+    await toggleTeamAdmin();
+  }
+
+  @catchError.flash({
+    network: 'people.prompt.makeTeamAdminNetworkError',
+    server: 'people.prompt.makeTeamAdminBackendError',
+  })
+  private _makeTeamAdminHandle = async () => {
+    const { toggleTeamAdmin } = this.props;
+    await toggleTeamAdmin();
+  }
+
+  private _toggleTeamAdmin = async (event: MouseEvent<HTMLElement>) => {
     event && event.stopPropagation();
-    const { onMenuClose, toggleTeamAdmin, isThePersonAdmin } = this.props;
+    const { onMenuClose, isThePersonAdmin } = this.props;
     onMenuClose();
-    const errorList = isThePersonAdmin
-      ? [
-        'people.prompt.revokeTeamAdminNetworkError',
-        'people.prompt.revokeTeamAdminBackendError',
-      ]
-      : [
-        'people.prompt.makeTeamAdminNetworkError',
-        'people.prompt.makeTeamAdminBackendError',
-      ];
-    this._containErrorHander(toggleTeamAdmin, errorList);
+    await (isThePersonAdmin
+      ? this._revokeTeamAdminHandle()
+      : this._makeTeamAdminHandle());
   }
 
   private _Anchor = () => {

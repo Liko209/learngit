@@ -12,7 +12,9 @@ import { ERCServiceFeaturePermission, ERCWebSettingUri } from '../types';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { AccountUserConfig } from '../../../module/account/config';
 import { mainLogger } from 'foundation';
-class RCInfoService extends EntityBaseService {
+import { IdModel } from '../../../framework/model';
+
+class RCInfoService extends EntityBaseService<IdModel> {
   private _rcInfoController: RCInfoController;
 
   constructor() {

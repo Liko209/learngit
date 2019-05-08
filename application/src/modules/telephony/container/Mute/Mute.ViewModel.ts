@@ -6,23 +6,25 @@
 
 import { StoreViewModel } from '@/store/ViewModel';
 import { TelephonyService } from '../../service';
+import { TelephonyStore } from '../../store';
 import { MuteProps, MuteViewProps } from './types';
 import { container } from 'framework';
-import { observable, action } from 'mobx';
+import { computed } from 'mobx';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 
 class MuteViewModel extends StoreViewModel<MuteProps> implements MuteViewProps {
   private _telephonyService: TelephonyService = container.get(
     TELEPHONY_SERVICE,
   );
+  private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
 
-  @observable
-  isMute = false;
+  @computed
+  get isMute() {
+    return this._telephonyStore.isMute;
+  }
 
-  @action
   muteOrUnmute = () => {
-    this.isMute = !this.isMute;
-    this._telephonyService.muteOrUnmute(this.isMute);
+    this._telephonyService.muteOrUnmute();
   }
 }
 

@@ -12,7 +12,7 @@ import { Raw } from '../../../framework/model';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 
 interface IItemService {
-  getEntitySource(): IEntitySourceController;
+  getEntitySource(): IEntitySourceController<Item>;
 
   getItems(options: ItemQueryOptions): Promise<Item[]>;
 

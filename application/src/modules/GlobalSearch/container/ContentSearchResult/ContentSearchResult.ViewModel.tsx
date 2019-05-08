@@ -124,7 +124,7 @@ class ContentSearchResultViewModel
     const isInitial = requestId === null;
 
     const fetchFn = isInitial ? this._onPostsInit : this._onPostsScroll;
-    const defaultResult =  { hasMore: true, posts: [], items: [] };
+    const defaultResult = { hasMore: true, posts: [], items: [] };
 
     const result = (await this._fetchHandleWrapper(fetchFn)) || defaultResult;
 
@@ -200,7 +200,6 @@ class ContentSearchResultViewModel
   @catchError.flash({
     network: 'globalSearch.prompt.contentSearchNetworkError',
     server: 'globalSearch.prompt.contentSearchServiceError',
-    doGeneral: true,
   })
   private _fetchHandleWrapper = async (
     fetchFn: () => Promise<SearchedResultData>,

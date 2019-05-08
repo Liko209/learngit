@@ -16,7 +16,7 @@ import { JuiIconButton, JuiLinkButton } from 'jui/components/Buttons';
 import { goToConversationWithLoading } from '@/common/goToConversation';
 import portalManager from '@/common/PortalManager';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
-import { Call } from '@/modules/telephony';
+import { Call } from '@/modules/telephony/container';
 
 @observer
 class ProfileMiniCardPersonFooter extends Component<
