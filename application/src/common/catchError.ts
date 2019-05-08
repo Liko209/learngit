@@ -16,31 +16,38 @@ import {
 import { generalErrorHandler } from '@/utils/error';
 import { errorHelper } from 'sdk/error';
 
-type ErrorActionConfig = string | Function;
-
-type NotifyErrorProps = {
-  network?: ErrorActionConfig;
-  server?: ErrorActionConfig;
-  notificationOpts?: ShowNotificationOptions;
-  isDebounce?: boolean;
-};
-
-type StrategyProps = {
-  condition: Function;
-  action: Function;
-};
-
-type CatchOptionsProps = NotifyErrorProps | StrategyProps[];
-
 enum NOTIFICATION_TYPE {
   CUSTOM,
   FLASH,
   FLAG,
 }
 
+type ErrorActionConfig = string | Function;
+
+type NotifyErrorProps = {
+  authentication?: ErrorActionConfig;
+  network?: ErrorActionConfig;
+  server?: ErrorActionConfig;
+  notificationOpts?: ShowNotificationOptions;
+  isDebounce?: boolean;
+};
+
+type StrategyActionProps = NOTIFICATION_TYPE | Function;
+
+type StrategyProps = {
+  isDebounce?: boolean;
+  condition: Function;
+  action: StrategyActionProps;
+  /* config below when action is NOTIFICATION_TYPE */
+  message?: string,
+  notificationOpts?: ShowNotificationOptions;
+};
+
+type CatchOptionsProps = NotifyErrorProps | StrategyProps[];
+
 const AUTO_HIDE_AFTER_3_SECONDS = 3000;
 
-const defaultOptions = {
+const defaultNotificationOptions = {
   type: ToastType.ERROR,
   messageAlign: ToastMessageAlign.LEFT,
   fullWidth: false,
@@ -88,10 +95,25 @@ const getDebounceNotify = (actionName: ErrorActionConfig) => {
   return debounceNotifyStore[actionName];
 };
 
+function notifyFunc(isDebounce: boolean, actionName: ErrorActionConfig) {
+  return isDebounce
+    ? getDebounceNotify(actionName)
+    : notify;
+}
+
+function performAction(option: StrategyProps, error: Error, ctx: any) {
+  const { action, message, isDebounce = false, notificationOpts = defaultNotificationOptions } = option;
+  if (typeof action === 'function') {
+    return action(error, ctx);
+  }
+
+  return notifyFunc(isDebounce, message || '')(ctx, action, message, notificationOpts, error);
+}
+
 function perform(options: StrategyProps[], error: Error, ctx: any) {
-  const result = options.some(({ condition, action }) => {
-    if (condition(error, ctx)) {
-      action(error, ctx);
+  const result = options.some((opt) => {
+    if (opt.condition(error, ctx)) {
+      performAction(opt, error, ctx);
       return true;
     }
     return false;
@@ -112,21 +134,24 @@ function handleError(
   }
 
   const {
-    network,
     server,
-    notificationOpts = defaultOptions,
-    isDebounce,
+    network,
+    authentication,
+    notificationOpts = defaultNotificationOptions,
+    isDebounce = false,
   } = options;
-  const notifyFunc = isDebounce
-    ? getDebounceNotify(network || server || '')
-    : notify;
+
   if (network && errorHelper.isNetworkConnectionError(error)) {
-    notifyFunc(ctx, notificationType, network, notificationOpts, error);
+    notifyFunc(isDebounce, network)(ctx, notificationType, network, notificationOpts, error);
     return false;
   }
 
+  if (authentication && errorHelper.isAuthenticationError(error)) {
+    return notifyFunc(isDebounce, authentication)(ctx, notificationType, authentication, notificationOpts, error);
+  }
+
   if (server && errorHelper.isBackEndError(error)) {
-    notifyFunc(ctx, notificationType, server, notificationOpts, error);
+    notifyFunc(isDebounce, server)(ctx, notificationType, server, notificationOpts, error);
     return false;
   }
 
@@ -225,4 +250,4 @@ catchError.flag = function (options: NotifyErrorProps) {
   return decorate(NOTIFICATION_TYPE.FLAG, options);
 };
 
-export { catchError };
+export { catchError, defaultNotificationOptions, handleError, NOTIFICATION_TYPE };
