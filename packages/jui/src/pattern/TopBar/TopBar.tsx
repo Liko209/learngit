@@ -18,7 +18,7 @@ type Props = {
   Logo: ComponentType;
   AvatarActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   NewActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
-  Dialpad: ComponentType<any>; // ComponentType<MenuListCompositionProps>
+  Dialpad?: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   BackNForward: ComponentType<any>;
   openGlobalSearch: (event: React.MouseEvent<HTMLElement>) => void;
   searchKey: string;
@@ -69,7 +69,7 @@ class JuiTopBar extends React.PureComponent<Props, States> {
               disableRipple={true}
               iconName="search"
             />
-            <Dialpad />
+            {Dialpad && <Dialpad />}
             <NewActions />
             <AvatarActions />
           </StyledRight>

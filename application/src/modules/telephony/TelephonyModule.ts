@@ -17,7 +17,7 @@ import { mainLogger } from 'sdk';
 import { SERVICE } from 'sdk/service/eventKey';
 import { notificationCenter } from 'sdk/service';
 import { TelephonyNotificationManager } from './TelephonyNotificationManager';
-import { Dialer } from './container';
+import { Dialer, Dialpad } from './container';
 
 class TelephonyModule extends AbstractModule {
   static TAG: string = '[UI TelephonyModule] ';
@@ -57,7 +57,8 @@ class TelephonyModule extends AbstractModule {
 
     this._jupiter.emitModuleInitial(TELEPHONY_SERVICE);
     const homeService = container.get(HomeService);
-    homeService.registerExtension(Dialer);
+    homeService.registerExtension('root', Dialer);
+    homeService.registerExtension('topBar', Dialpad);
   }
 
   dispose() {
