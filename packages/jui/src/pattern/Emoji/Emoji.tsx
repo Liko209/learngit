@@ -104,6 +104,7 @@ class JuiEmoji extends React.PureComponent<Props, State> {
           Anchor={this._IconButton}
           placement="bottom-start"
           noTransition={true}
+          disablePortal={true}
         >
           <StyledEmojiWrapper>
             <Picker
