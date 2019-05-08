@@ -273,6 +273,90 @@ describe('RTCAccount', () => {
     });
   });
 
+  it("should do nothing when receive wake up from sleep mode and there's active call", done => {
+    setupAccount();
+    jest.spyOn(account._regManager, 'reRegister');
+    const listener = new MockCallListener();
+    account.makeCall('123', listener);
+    account._onWakeUpFromSleepMode();
+    setImmediate(() => {
+      expect(account._regManager.reRegister).not.toBeCalled();
+      done();
+    });
+  });
+
+  it('should transition from ready state to in progress state and trigger reregister when receive wakeupFromSleepMode event', done => {
+    setupAccount();
+    jest.spyOn(account._regManager, 'reRegister');
+    jest.spyOn(account._regManager._userAgent, 'reRegister');
+    setImmediate(() => {
+      expect(account._regManager._fsm.state).toBe(
+        REGISTRATION_FSM_STATE.IN_PROGRESS,
+      );
+      ua.mockSignal(UA_EVENT.REG_SUCCESS);
+      setImmediate(() => {
+        expect(account._regManager._fsm.state).toBe(
+          REGISTRATION_FSM_STATE.READY,
+        );
+        account._onWakeUpFromSleepMode();
+        setImmediate(() => {
+          expect(account._regManager.reRegister).toBeCalled();
+          expect(account._regManager._fsm.state).toBe(
+            REGISTRATION_FSM_STATE.IN_PROGRESS,
+          );
+          expect(account._regManager._userAgent.reRegister).toBeCalled();
+          done();
+        });
+      });
+    });
+  });
+
+  it('should transition from inprogress state to inprogress state and trigger reregister when receive wakeupFromSleepMode event', done => {
+    setupAccount();
+    jest.spyOn(account._regManager, 'reRegister');
+    jest.spyOn(account._regManager._userAgent, 'reRegister');
+    setImmediate(() => {
+      expect(account._regManager._fsm.state).toBe(
+        REGISTRATION_FSM_STATE.IN_PROGRESS,
+      );
+      account._onWakeUpFromSleepMode();
+      setImmediate(() => {
+        expect(account._regManager.reRegister).toBeCalled();
+        expect(account._regManager._fsm.state).toBe(
+          REGISTRATION_FSM_STATE.IN_PROGRESS,
+        );
+        expect(account._regManager._userAgent.reRegister).toBeCalled();
+        done();
+      });
+    });
+  });
+
+  it('should transition from failed state to in progress state and trigger reregister when receive wakeupFromSleepMode event', done => {
+    setupAccount();
+    jest.spyOn(account._regManager._userAgent, 'reRegister');
+    jest.spyOn(account._regManager, 'reRegister');
+    setImmediate(() => {
+      expect(account._regManager._fsm.state).toBe(
+        REGISTRATION_FSM_STATE.IN_PROGRESS,
+      );
+      ua.mockSignal(UA_EVENT.REG_FAILED);
+      setImmediate(() => {
+        expect(account._regManager._fsm.state).toBe(
+          REGISTRATION_FSM_STATE.FAILURE,
+        );
+        account._onWakeUpFromSleepMode();
+        setImmediate(() => {
+          expect(account._regManager.reRegister).toBeCalled();
+          expect(account._regManager._fsm.state).toBe(
+            REGISTRATION_FSM_STATE.IN_PROGRESS,
+          );
+          expect(account._regManager._userAgent.reRegister).toBeCalled();
+          done();
+        });
+      });
+    });
+  });
+
   it('Should call count set to 1 and return call when outbound call is allowed. [JPT-806]', done => {
     setupAccount();
     const listener = new MockCallListener();
