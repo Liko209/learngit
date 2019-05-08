@@ -17,7 +17,7 @@ import {
 
 import { Palette } from '../../foundation/theme/theme';
 import { getAccentColor } from '../../foundation/utils';
-import { withHighlight } from 'jui/hoc/withHighlight';
+import { withHighlight } from '../../hoc/withHighlight';
 
 const ItemCardWrapper = styled(JuiCard)`
   word-break: break-word;

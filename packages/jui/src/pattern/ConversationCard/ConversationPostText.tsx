@@ -9,7 +9,7 @@ import {
   typography,
 } from '../../foundation/utils/styles';
 import React, { memo } from 'react';
-import { withHighlight } from 'jui/hoc/withHighlight';
+import { withHighlight } from '../../hoc/withHighlight';
 
 const JuiConversationPostTextWrapper = styled('div')`
   ${typography('body1')}

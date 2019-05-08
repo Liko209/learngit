@@ -15,7 +15,7 @@ import {
   typography,
 } from '../../foundation/utils/styles';
 import defaultLinkImage from './link_img@2x.png';
-import { withHighlight } from 'jui/hoc/withHighlight';
+import { withHighlight } from '../../hoc/withHighlight';
 
 const LinkItemsWrapper = styled(JuiCard)`
   margin-top: ${spacing(3)};

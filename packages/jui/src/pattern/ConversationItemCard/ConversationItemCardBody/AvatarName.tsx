@@ -7,7 +7,7 @@
 import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import { spacing, ellipsis, width } from '../../../foundation/utils/styles';
-import { withHighlight } from 'jui/hoc/withHighlight';
+import { withHighlight } from '../../../hoc/withHighlight';
 
 type Props = {
   Avatar: JSX.Element;

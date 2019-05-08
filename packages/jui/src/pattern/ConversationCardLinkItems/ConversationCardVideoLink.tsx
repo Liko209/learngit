@@ -15,7 +15,7 @@ import {
   grey,
   typography,
 } from '../../foundation/utils/styles';
-import { withHighlight } from 'jui/hoc/withHighlight';
+import { withHighlight } from '../../hoc/withHighlight';
 
 const LinkItemsWrapper = styled(JuiCard)`
   display: flex;

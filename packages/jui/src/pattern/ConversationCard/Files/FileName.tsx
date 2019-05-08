@@ -8,7 +8,7 @@ import styled from '../../../foundation/styled-components';
 import { ellipsis, palette, spacing } from '../../../foundation/utils/styles';
 import { getFileName } from '../../../foundation/utils/getFileName';
 import { Theme } from '../../../foundation/theme/theme';
-import { withHighlight } from 'jui/hoc/withHighlight';
+import { withHighlight } from '../../../hoc/withHighlight';
 
 type FileNameProps = {
   filename: string;
