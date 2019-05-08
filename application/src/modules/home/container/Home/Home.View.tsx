@@ -20,6 +20,7 @@ import { ModalPortal } from '@/containers/Dialog';
 import { GlobalSearch } from '@/modules/GlobalSearch';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { lazyComponent } from '@/modules/common/util/lazyComponent';
+import { AboutView } from '@/containers/About';
 
 const LazyDialer = lazyComponent({
   loader: () =>
@@ -79,6 +80,7 @@ class HomeView extends Component<HomeViewProps> {
             <HomeRouter />
           </Bottom>
           <ModalPortal />
+          <AboutView />
           {showGlobalSearch && <GlobalSearch />}
           {canRenderDialer && <LazyDialer />}
         </Wrapper>

@@ -18,6 +18,8 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
 import config from '@/config';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { ModalPortal } from '@/containers/Dialog';
+import { AboutView } from '@/containers/About';
 
 const Form = styled.form`
   width: 300px;
@@ -140,6 +142,8 @@ class UnifiedLogin extends React.Component<Props, IStates> {
         </Form>
         <LoginVersionStatus />
         <Download />
+        <ModalPortal />
+        <AboutView />
       </div>
     );
   }

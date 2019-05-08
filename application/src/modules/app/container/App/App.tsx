@@ -10,14 +10,12 @@ import { hot } from 'react-hot-loader/root';
 import { container } from 'framework';
 import { JuiContentLoader } from 'jui/pattern/ContentLoader';
 import ThemeProvider from '@/containers/ThemeProvider';
-import { AboutView } from '@/containers/About';
 import { generalErrorHandler, errorReporter } from '@/utils/error';
 import { Router } from '@/modules/router';
 import { TopBanner } from '../TopBanner';
 import { AppStore } from '../../store';
 import { Title } from './Title';
 import { ElectronBadgeWithAppUmi } from './ElectronBadgeWithAppUmi';
-import { ModalPortal } from '@/containers/Dialog';
 
 @observer
 class App extends React.Component {
@@ -41,8 +39,6 @@ class App extends React.Component {
             <Title />
             <TopBanner />
             <Router />
-            <ModalPortal />
-            <AboutView />
             {window.jupiterElectron && <ElectronBadgeWithAppUmi />}
           </>
         )}
