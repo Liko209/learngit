@@ -11,6 +11,7 @@ import { JuiEmoji } from '..';
 storiesOf('Pattern/Emoji', module).add('Emoji Button', () => {
   return (
     <JuiEmoji
+      handleEmojiClick={() => {}}
       title="Pick your emoji"
       set="emojione"
       sheetSize={64}
