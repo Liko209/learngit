@@ -83,14 +83,6 @@ class RCInfoUserConfig extends UserDBConfig {
     return await this.get(RC_INFO_KEYS.DIALING_PLAN);
   }
 
-  async getStationLocation() {
-    return await this.get(RC_INFO_KEYS.STATION_LOCATION);
-  }
-
-  async setStationLocation(value: any) {
-    await this.put(RC_INFO_KEYS.STATION_LOCATION, value);
-  }
-
   async getAccountServiceInfo() {
     return await this.get(RC_INFO_KEYS.ACCOUNT_SERVICE_INFO);
   }
