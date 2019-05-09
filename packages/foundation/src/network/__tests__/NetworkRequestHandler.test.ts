@@ -8,6 +8,7 @@ import {
   getFakeSurvivalMode,
 } from './utils';
 import { NETWORK_VIA, REQUEST_PRIORITY, SURVIVAL_MODE } from '../network';
+import RequestTask from '../RequestTask';
 
 let handler: NetworkRequestHandler;
 const consumer = getFakeConsumer();
@@ -141,13 +142,38 @@ describe('NetworkRequestHandler', () => {
       expect(spy).toBeCalled();
     });
   });
+  describe('hasImmediateTask', () => {
+    it('should return false when pendingTasks has no immediate task', () => {
+      handler.pendingTasks.get = jest.fn().mockReturnValue([]);
+      const result = handler.hasImmediateTask(NETWORK_VIA.HTTP);
+      expect(result).toBeFalsy();
+    });
+    it('should return true when pendingTasks has immediate task and via is the same', () => {
+      const request = getFakeRequest();
+      request.setVia(NETWORK_VIA.HTTP);
+      const task = new RequestTask(request);
+      handler.pendingTasks.get = jest.fn().mockReturnValue([task]);
+      const result = handler.hasImmediateTask(NETWORK_VIA.HTTP);
+      expect(result).toBeTruthy();
+    });
+    it('should return true when pendingTasks has immediate task and via is all', () => {
+      const request = getFakeRequest();
+      request.setVia(NETWORK_VIA.ALL);
+      const task = new RequestTask(request);
+      handler.pendingTasks.get = jest.fn().mockReturnValue([task]);
+      const result = handler.hasImmediateTask(NETWORK_VIA.HTTP);
+      expect(result).toBeTruthy();
+    });
+  });
 
   describe('canProduceRequest', () => {
-    it('should produce specific priority', () => {
-      expect(handler.canProduceRequest(REQUEST_PRIORITY.SPECIFIC)).toBeTruthy();
+    it('should produce immediate priority', () => {
+      expect(
+        handler.canProduceRequest(REQUEST_PRIORITY.IMMEDIATE),
+      ).toBeTruthy();
     });
 
-    it('should produce unspecific priority when pause', () => {
+    it('should produce unimmediate priority when pause', () => {
       handler.isPause = true;
       expect(handler.canProduceRequest(REQUEST_PRIORITY.LOW)).toBeFalsy();
     });

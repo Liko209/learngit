@@ -59,7 +59,7 @@ interface INetworkRequestConsumerListener {
 }
 interface INetworkRequestProducer {
   produceRequest: (via: NETWORK_VIA) => IRequest | undefined;
-  hasSpecificRequest: (via: NETWORK_VIA) => boolean;
+  hasImmediateTask: (via: NETWORK_VIA) => boolean;
 }
 
 interface IResponseListener {
@@ -133,7 +133,7 @@ enum NETWORK_METHOD {
 }
 
 enum REQUEST_PRIORITY {
-  SPECIFIC,
+  IMMEDIATE,
   HIGH,
   NORMAL,
   LOW,

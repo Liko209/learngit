@@ -74,7 +74,7 @@ abstract class AbstractConsumer implements INetworkRequestConsumerListener {
   private _consume() {
     if (
       !this.canHandleRequest() &&
-      !this._producer.hasSpecificRequest(this._via)
+      !this._producer.hasImmediateTask(this._via)
     ) {
       return;
     }

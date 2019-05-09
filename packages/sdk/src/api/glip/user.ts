@@ -154,7 +154,7 @@ function canConnect(
   requestConfig = {},
   headers = {},
 ) {
-  const priority = REQUEST_PRIORITY.SPECIFIC;
+  const priority = REQUEST_PRIORITY.IMMEDIATE;
   return Api.glipNetworkClient.get<CanConnectModel>({
     params,
     requestConfig,
