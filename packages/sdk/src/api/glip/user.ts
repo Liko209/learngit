@@ -104,7 +104,7 @@ function indexData(params: object, requestConfig = {}, headers = {}) {
     priority,
     path: '/index',
     via: NETWORK_VIA.HTTP,
-    retryCount: DEFAULT_RETRY_COUNT,
+    retryCount: 0,
     HAPriority: HA_PRIORITY.BASIC,
     timeout: TEN_MINUTE_TIMEOUT,
   });

@@ -2,12 +2,12 @@
  * @Author: doyle.wu
  * @Date: 2018-12-12 12:56:30
  */
-const Gatherer = require("lighthouse/lighthouse-core/gather/gatherers/gatherer");
+import { BaseGatherer } from ".";
 import { JupiterUtils } from "../utils";
 import { HomePage } from "../pages";
 
-class LoginGatherer extends Gatherer {
-  async beforePass(passContext) {
+class LoginGatherer extends BaseGatherer {
+  async _beforePass(passContext) {
     let { url } = passContext.settings;
 
     let homePage = new HomePage(passContext);
@@ -24,11 +24,11 @@ class LoginGatherer extends Gatherer {
     await homePage.close();
   }
 
-  afterPass(passContext) {
+  async _afterPass(passContext) {
     return {};
   }
 
-  pass(passContext) { }
+  async _pass(passContext) { }
 }
 
 export { LoginGatherer };

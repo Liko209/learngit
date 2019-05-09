@@ -141,6 +141,32 @@ describe('NetworkRequestHandler', () => {
       expect(request).toEqual(task.request);
       expect(spy).toBeCalled();
     });
+    it('should handle NETWORK_VIA.ALL when via isViaReachable', () => {
+      const task = getFakeTask();
+      task.setVia(NETWORK_VIA.ALL);
+      const tasks = [task];
+      handler['_nextTaskInQueue'](NETWORK_VIA.SOCKET, tasks, true);
+      expect(tasks.length).toEqual(0);
+    });
+
+    it('should modify task via when via !isViaReachable', () => {
+      const task = getFakeTask();
+      task.setVia(NETWORK_VIA.SOCKET);
+      const tasks = [task];
+      handler['_nextTaskInQueue'](NETWORK_VIA.SOCKET, tasks, false);
+      expect(tasks.length).toEqual(0);
+    });
+
+    it('should modify task via when via !isViaReachable', () => {
+      const task = getFakeTask();
+      task.setVia(NETWORK_VIA.ALL);
+      const tasks = [task];
+      handler.isInSurvivalMode = jest.fn().mockReturnValue(false);
+      handler['_nextTaskInQueue'](NETWORK_VIA.SOCKET, tasks, false);
+      expect(task.via()).toEqual(NETWORK_VIA.HTTP);
+      handler['_nextTaskInQueue'](NETWORK_VIA.HTTP, tasks, false);
+      expect(tasks.length).toEqual(0);
+    });
   });
   describe('hasImmediateTask', () => {
     it('should return false when pendingTasks has no immediate task', () => {

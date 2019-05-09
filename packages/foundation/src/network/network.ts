@@ -58,8 +58,11 @@ interface INetworkRequestConsumerListener {
   onTokenRefreshed: () => void;
 }
 interface INetworkRequestProducer {
-  produceRequest: (via: NETWORK_VIA) => IRequest | undefined;
   hasImmediateTask: (via: NETWORK_VIA) => boolean;
+  produceRequest: (
+    via: NETWORK_VIA,
+    isViaReachable: boolean,
+  ) => IRequest | undefined;
 }
 
 interface IResponseListener {
@@ -73,7 +76,7 @@ interface INetworkRequestExecutorListener {
 
 interface IResponse {
   readonly data: any;
-  readonly status: HTTP_STATUS_CODE;
+  readonly status: RESPONSE_STATUS_CODE;
   readonly statusText: string;
   readonly headers: object;
   readonly retryAfter: number;
@@ -84,6 +87,8 @@ type Header = {
   Authorization?: string;
   'X-RC-Access-Token-Data'?: string;
 };
+
+type RetryStrategy = (doRetry: () => void, retryCounter: number) => void;
 
 interface IRequest {
   readonly id: string;
@@ -104,6 +109,9 @@ interface IRequest {
 
   callback?: (response: IResponse) => void;
   needAuth(): boolean;
+
+  cancel?: (reason?: string) => void;
+  retryStrategy?: RetryStrategy;
 }
 
 interface IClient {
@@ -112,7 +120,12 @@ interface IClient {
   isNetworkReachable(): boolean;
 }
 
-enum HTTP_STATUS_CODE {
+enum RESPONSE_STATUS_CODE {
+  NETWORK_ERROR = -5,
+  LOCAL_NOT_NETWORK_CONNECTION = -4,
+  LOCAL_ABORTED = -3,
+  LOCAL_CANCELLED = -2,
+  LOCAL_TIME_OUT = -1,
   DEFAULT = 0,
   UNAUTHORIZED = 401,
   FORBIDDEN = 403,
@@ -160,7 +173,7 @@ enum REQUEST_WEIGHT {
   NORMAL = 10,
 }
 
-enum NETWORK_FAIL_TYPE {
+enum NETWORK_FAIL_TEXT {
   CANCELLED = 'CANCELLED',
   SERVER_ERROR = 'SERVER ERROR',
   TIME_OUT = 'TIME OUT',
@@ -196,14 +209,14 @@ enum NETWORK_HANDLE_TYPE {
 export {
   NETWORK_REQUEST_EXECUTOR_STATUS,
   SURVIVAL_MODE,
-  NETWORK_FAIL_TYPE,
+  NETWORK_FAIL_TEXT,
   REQUEST_WEIGHT,
   CONSUMER_MAX_QUEUE_COUNT,
   NETWORK_VIA,
   REQUEST_PRIORITY,
   HA_PRIORITY,
   NETWORK_METHOD,
-  HTTP_STATUS_CODE,
+  RESPONSE_STATUS_CODE,
   IToken,
   IClient,
   Header,
@@ -219,4 +232,5 @@ export {
   ITokenRefreshListener,
   IHandleType,
   NETWORK_HANDLE_TYPE,
+  RetryStrategy,
 };

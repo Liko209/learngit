@@ -226,9 +226,7 @@ export default class NetworkClient {
    */
   post<T>(baseQuery: IBaseQuery) {
     return this.request<T>({
-      path: baseQuery.path,
-      headers: baseQuery.headers || {},
-      timeout: baseQuery.timeout,
+      ...baseQuery,
       data: omitLocalProperties(baseQuery.data || {}),
       method: NETWORK_METHOD.POST,
     });
@@ -243,9 +241,7 @@ export default class NetworkClient {
    */
   put<T>(baseQuery: IBaseQuery) {
     return this.http<T>({
-      path: baseQuery.path,
-      headers: baseQuery.headers || {},
-      timeout: baseQuery.timeout,
+      ...baseQuery,
       data: omitLocalProperties(baseQuery.data || {}),
       method: NETWORK_METHOD.PUT,
     });

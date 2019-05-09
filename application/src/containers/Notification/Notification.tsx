@@ -53,7 +53,7 @@ class Notification extends AbstractViewModel {
     const config = {
       messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
-      autoHideDuration: 2000,
+      autoHideDuration: 3000,
       ...props,
     };
     return Notification._showNotification(config);
