@@ -14,6 +14,7 @@ import {
 } from './types';
 import { TopBannerViewModel } from '@/modules/app/container/TopBanner/TopBanner.ViewModel';
 import { ElectronUpgradeBanner } from '@/modules/app/container/TopBanner/Banners/ElectronUpgradeBanner';
+import { iframeDownloader } from '@/utils/download';
 
 type Ref = {
   dismiss: (afterDismiss?: (() => void) | undefined) => void;
@@ -45,6 +46,7 @@ class ElectronUpgradeDialogComponent extends React.Component<
     this._close();
   }
   handleUpgrade = () => {
+    iframeDownloader('downloadInstaller', this.props.url);
     this._close();
   }
   handleIgnoreOnce = () => {
@@ -60,7 +62,7 @@ class ElectronUpgradeDialogComponent extends React.Component<
     this._close({ skip: true });
   }
   render() {
-    const { t, needUpgrade, type, snooze, url } = this.props;
+    const { t, needUpgrade, type, snooze } = this.props;
     const buttons = [];
     const IgnoreOnce = (
       <JuiButton
@@ -78,9 +80,6 @@ class ElectronUpgradeDialogComponent extends React.Component<
         onClick={this.handleUpgrade}
         color="primary"
         autoFocus={false}
-        component="a"
-        download={true}
-        href={url}
         key="upgrade"
         aria-label={t('electron.upgrade.upgrade')}
       >

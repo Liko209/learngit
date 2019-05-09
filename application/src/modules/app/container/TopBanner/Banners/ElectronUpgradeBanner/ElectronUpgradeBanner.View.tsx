@@ -13,13 +13,17 @@ import { observer } from 'mobx-react';
 import { ToastType } from '@/containers/ToastWrapper/Toast/types';
 import { ElectronUpgradeBannerViewProps } from './types';
 import { withTranslation } from 'react-i18next';
+import { iframeDownloader } from '@/utils/download';
 
 @observer
 class ElectronUpgradeBannerViewComponent extends React.Component<
   ElectronUpgradeBannerViewProps
 > {
+  handleDownloadClick = () => {
+    iframeDownloader('downloadInstaller', this.props.downloadUrl);
+  }
   render() {
-    const { t, downloadUrl } = this.props;
+    const { t } = this.props;
     return (
       <JuiSnackbarContent
         type={ToastType.WARN}
@@ -29,9 +33,7 @@ class ElectronUpgradeBannerViewComponent extends React.Component<
         action={
           <JuiSnackbarAction
             aria-label={t('electron.upgrade.upgrade')}
-            component="a"
-            download={true}
-            href={downloadUrl}
+            onClick={this.handleDownloadClick}
           >
             {t('electron.upgrade.upgrade')}
           </JuiSnackbarAction>
