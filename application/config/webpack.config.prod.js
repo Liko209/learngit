@@ -242,7 +242,12 @@ module.exports = {
           // Compile .tsx?
           {
             test: /\.(js|jsx|ts|tsx)$/,
-            exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
+            exclude: excludeNodeModulesExcept([
+              'jui',
+              'sdk',
+              'foundation',
+              'ringcentral-web-phone.+ts$',
+            ]),
             use: {
               loader: 'babel-loader',
               options: {
