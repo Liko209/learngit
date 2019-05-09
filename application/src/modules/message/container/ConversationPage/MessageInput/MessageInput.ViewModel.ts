@@ -30,6 +30,7 @@ import { saveBlob } from '@/common/blobUtils';
 import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
+import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
 
 const DEBUG_COMMAND_MAP = {
   '/debug': () => UploadRecentLogs.show(),
@@ -130,18 +131,46 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     return re.test(commentText);
   }
 
+  private _doToneTransfer = (colons: string) => {
+    if (WhiteOnlyList.indexOf(colons.split('::')[0].replace(':', '')) > -1) {
+      return colons.replace(/:skin-tone-+\d+:/g, '');
+    }
+    let newString: string = colons;
+    const index = Number((newString.match(/\d/g) || []).pop()) - 1;
+    newString = newString
+      .replace('::skin-', '_')
+      .replace('::skin', '')
+      .replace(/\d+:/g, `${index.toString()}:`)
+      .replace('tone_', 'tone')
+      .replace('tone-', 'tone');
+    return newString;
+  }
+
+  private _doUnderscoreTransfer = (colons: string) => {
+    return colons.split('-').join('_');
+  }
+
   @action
-  insertEmoji = (emoji: any) => {
+  insertEmoji = (emoji: any, cb: Function) => {
+    let colons = emoji.colons;
+    if (ConvertList.indexOf(colons.split(':').join('')) > -1) {
+      colons = this._doUnderscoreTransfer(colons);
+    }
+
+    if (colons.indexOf('::skin') > -1) {
+      colons = this._doToneTransfer(colons);
+    }
     const query = '.conversation-page>div>div>.quill>.ql-container';
     const quill = (document.querySelector(query) as any).__quill;
     quill.focus();
     const index = quill.getSelection().index;
 
-    quill.insertText(index, emoji.colons);
+    quill.insertText(index, colons);
     setTimeout(() => {
       quill.focus();
-      quill.setSelection(index + emoji.colons.length, 0);
+      quill.setSelection(index + colons.length, 0);
     },         0);
+    cb && cb();
   }
 
   @action

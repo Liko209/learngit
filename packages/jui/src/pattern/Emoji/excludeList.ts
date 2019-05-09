@@ -249,12 +249,25 @@ const ExcludeList = [
   'flag-england',
   'flag-scotland',
   'flag-wales',
+  'eye_in-speech-bubble',
+  'e-mail',
+  'eye-in-speech-bubble',
+  'non-potable_water',
 ];
 
 const ConvertList = [
-  'left-facing_fist',
   'right-facing_fist',
-  'eye-in-speech-bubble',
+  'left-facing_fist',
+  'left-facing_fistskin-tone-6',
+  'left-facing_fistskin-tone-5',
+  'left-facing_fistskin-tone-4',
+  'left-facing_fistskin-tone-3',
+  'left-facing_fistskin-tone-2',
+  'right-facing_fistskin-tone-6',
+  'right-facing_fistskin-tone-5',
+  'right-facing_fistskin-tone-4',
+  'right-facing_fistskin-tone-3',
+  'right-facing_fistskin-tone-2',
   'flag-ac',
   'flag-ad',
   'flag-ae',
@@ -504,5 +517,11 @@ const ConvertList = [
   'flag-zm',
   'flag-za',
 ];
+const WhiteOnlyList = [
+  'sleeping_accommodation',
+  'man_in_business_suit_levitating',
+  'golfer',
+  'snowboarder',
+];
 
-export { ExcludeList, ConvertList };
+export { ExcludeList, ConvertList, WhiteOnlyList };

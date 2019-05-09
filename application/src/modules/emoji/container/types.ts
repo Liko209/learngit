@@ -6,13 +6,29 @@
 type EmojiProps = {
   handleEmojiClick?: any;
   title: string;
-  spritImage: string;
+  sheetSize: 16 | 20 | 32 | 64 | undefined;
+  set:
+    | 'apple'
+    | 'google'
+    | 'twitter'
+    | 'emojione'
+    | 'messenger'
+    | 'facebook'
+    | undefined;
 };
 
 type EmojiViewProps = {
   handleEmojiClick: any;
   title: string;
-  spritImage: string;
+  sheetSize: 16 | 20 | 32 | 64 | undefined;
+  set:
+    | 'apple'
+    | 'google'
+    | 'twitter'
+    | 'emojione'
+    | 'messenger'
+    | 'facebook'
+    | undefined;
 };
 
 export { EmojiProps, EmojiViewProps };
