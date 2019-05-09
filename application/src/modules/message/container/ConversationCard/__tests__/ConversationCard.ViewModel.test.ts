@@ -54,6 +54,7 @@ describe('ConversationCardViewModel', () => {
       ...mockPostValue,
     });
   });
+
   describe('createTime()', () => {
     it('should be timeAndDate format when mode is navigation [JPT-705]', async (done: jest.DoneCallback) => {
       global.Date.now = jest.fn(() => DATE_2019_1_4);
@@ -62,7 +63,9 @@ describe('ConversationCardViewModel', () => {
         createdAt: DATE_2019_1_4,
         creatorId: 107913219,
       });
-      expect(await conversationCardVM.createTime.fetch()).toBe('Fri, 1/4/2019 9:21 AM');
+      expect(await conversationCardVM.createTime.fetch()).toBe(
+        'Fri, 1/4/2019 9:21 AM',
+      );
       conversationCardVM.props.mode = undefined;
       done();
     });
@@ -90,7 +93,9 @@ describe('ConversationCardViewModel', () => {
         createdAt: DATE_2019_1_5,
         creatorId: 107913219,
       });
-      expect(await conversationCardVM.createTime.fetch()).toBe('Sat, 1/5/2019 9:21 AM');
+      expect(await conversationCardVM.createTime.fetch()).toBe(
+        'Sat, 1/5/2019 9:21 AM',
+      );
       done();
     });
     it.each`
