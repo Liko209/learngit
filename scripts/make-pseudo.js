@@ -94,8 +94,6 @@ function reservePlaceHolders(src, holders) {
     }
   } while (m);
 
-  if (!allMatch.length) return dest;
-
   for (let index = 0; index < allMatch.length; index++) {
     const key = `10086123456789-${index}`;
     const value = allMatch[index];
