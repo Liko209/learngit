@@ -12,6 +12,7 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 import { IGroup } from '../../v2/models';
+import * as faker from 'faker/locale/en';
 
 fixture('CreateTeam')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -519,7 +520,7 @@ test.meta(<ITestMeta> {
   priority: ['P2'],
   caseIds: ['JPT-104'],
   maintainers: ['ali.naffaa'],
-  keywords: ['Message'],
+  keywords: ['CreateTeam'],
 })('Check any characters can be enter into input box of Team Name', async (t: TestController) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
