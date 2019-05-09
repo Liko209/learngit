@@ -5,11 +5,25 @@
 import { SceneConfig } from "./sceneConfig";
 import {
   ProcessGatherer, ProcessGatherer2,
-  MemoryGatherer, FpsGatherer, LoginGatherer
+  FpsGatherer, LoginGatherer
 } from "../../gatherers";
 import { ProcessAudit } from "../../audits";
 
 class SceneConfigFactory {
+  static getConfig(): SceneConfig {
+    let config = new SceneConfig();
+
+    SceneConfigFactory.removeGatherer(config, "script-elements");
+    SceneConfigFactory.removeGatherer(config, "dobetterweb/response-compression");
+
+    SceneConfigFactory.removeAudit(config, "byte-efficiency/unminified-javascript");
+    SceneConfigFactory.removeAudit(config, "byte-efficiency/uses-text-compression");
+
+    SceneConfigFactory.removeCategory(config, "performance", "unminified-javascript");
+    SceneConfigFactory.removeCategory(config, "performance", "uses-text-compression");
+
+    return config;
+  }
   static getSimplifyConfig(options: { fpsMode: boolean }): SceneConfig {
     let config = new SceneConfig();
 
@@ -79,7 +93,7 @@ class SceneConfigFactory {
 
   static getOfflineConfig(): SceneConfig {
     let config = new SceneConfig();
-    SceneConfigFactory.removeGatherer(config, "scripts");
+    SceneConfigFactory.removeGatherer(config, "script-elements");
     SceneConfigFactory.removeAudit(config, "byte-efficiency/unminified-javascript");
     SceneConfigFactory.removeAudit(config, "byte-efficiency/total-byte-weight");
     SceneConfigFactory.removeCategory(config, "performance", "unminified-javascript");

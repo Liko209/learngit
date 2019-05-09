@@ -57,6 +57,9 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
 
   @computed
   get shouldShowShortName() {
+    if (this.props.icon) {
+      return false;
+    }
     if (this._person) {
       return !this._person.hasHeadShot && !!this._person.shortName;
     }
@@ -65,6 +68,9 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
 
   @computed
   get headShotUrl() {
+    if (this.props.icon) {
+      return this.props.icon;
+    }
     if (!(this._person && this._person.hasHeadShot) || !this.props.uid) {
       return '';
     }

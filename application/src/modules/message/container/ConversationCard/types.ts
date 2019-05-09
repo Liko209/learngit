@@ -8,6 +8,7 @@ import PostModel from '@/store/models/Post';
 import PersonModel from '@/store/models/Person';
 import { RefObject } from 'react';
 import JuiConversationCard from 'jui/pattern/ConversationCard';
+
 type ConversationCardProps = {
   id: number; // post id
   mode?: 'navigation';
@@ -21,9 +22,9 @@ type ConversationCardViewProps = {
   hideText: boolean;
   creator: PersonModel;
   groupId: number;
+  name: PromisedComputedValue<string>;
   isArchivedGroup: boolean;
   showToast: boolean;
-  name: string;
   customStatus?: string;
   createTime: PromisedComputedValue<string>;
   itemTypeIds?: {

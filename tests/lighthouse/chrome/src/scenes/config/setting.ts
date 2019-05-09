@@ -24,6 +24,46 @@ class Setting {
   public onlyCategories: string[] | null = null;
   public skipAudits: string[] | null = null;
   public url?: string;
+  public budgets?= [
+    {
+      "resourceSizes": [
+        {
+          "resourceType": "script",
+          "budget": 4000
+        },
+        {
+          "resourceType": "image",
+          "budget": 6000
+        },
+        {
+          "resourceType": "third-party",
+          "budget": 7000
+        },
+        {
+          "resourceType": "other",
+          "budget": 3000
+        },
+        {
+          "resourceType": "total",
+          "budget": 12000
+        }
+      ],
+      "resourceCounts": [
+        {
+          "resourceType": "third-party",
+          "budget": 25
+        },
+        {
+          "resourceType": "other",
+          "budget": 30
+        },
+        {
+          "resourceType": "total",
+          "budget": 60
+        }
+      ]
+    }
+  ];
 }
 
 export { Setting };

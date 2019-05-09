@@ -36,6 +36,8 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { Pal } from 'sdk/pal';
 import { isProductionVersion } from '@/common/envUtils';
+import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
+import { IApplicationInfo } from 'sdk/pal/applicationInfo';
 
 /**
  * The root module, we call it AppModule,
@@ -59,7 +61,7 @@ class AppModule extends AbstractModule {
   }
 
   private async _init() {
-    this._logControlManager.setDebugMode(isProductionVersion);
+    this._logControlManager.setDebugMode(!isProductionVersion);
     const { search } = window.location;
     const { state } = parse(search, { ignoreQueryPrefix: true });
     if (state && state.length) {
@@ -83,6 +85,11 @@ class AppModule extends AbstractModule {
         event.error instanceof Error ? event.error : new Error(event.message),
       );
     });
+
+    const { deployedVersion } = await fetchVersionInfo();
+    Pal.instance.setApplicationInfo({
+      appVersion: deployedVersion,
+    } as IApplicationInfo);
 
     const {
       notificationCenter,

@@ -129,6 +129,7 @@
     "emoji": {
       "emojiDefaultTitle": "Pick your emoji"
     },
+    "sharedItems": "shared items",
     "initialPost": {
       "directMessageDescription": "This is the beginning of your direct message history with {{displayName}}",
       "createATeam": "created a team",

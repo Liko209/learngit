@@ -290,12 +290,9 @@ export class ProfileDialog extends BaseWebComponent {
     await this.t.expect(this.memberNames.count).eql(n);
   }
 
-  get memberList() {
-    return this.self.find('*[role="rowgroup"]');
-  }
 
   get visualList() {
-    return this.self.find('.ReactVirtualized__List');
+    return this.getSelectorByAutomationId('virtualized-list', this.self);
   }
 
   get memberNames() {
@@ -303,11 +300,11 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   nthMemberEntry(n: number) {
-    return this.getComponent(Member, this.memberList.find('*').withAttribute('data-id').nth(n));
+    return this.getComponent(Member, this.visualList.find('[data-id]').nth(n));
   }
 
   memberEntryById(id: string) {
-    return this.getComponent(Member, this.memberList.find(`[data-id="${id}"]`));
+    return this.getComponent(Member, this.visualList.find(`[data-id="${id}"]`));
   }
 
   memberEntryByName(name: string) {
