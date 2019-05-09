@@ -213,7 +213,7 @@ module.exports = {
               'jui',
               'sdk',
               'foundation',
-              'ringcentral-web-phone',
+              'ringcentral-web-phone.+ts$',
             ]),
             use: {
               loader: require.resolve('babel-loader'),
