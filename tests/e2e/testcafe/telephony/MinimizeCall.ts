@@ -174,7 +174,6 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then the keys history should be "##"', async () => {
-    await t.debug();
     await telephonyDialog.keysRecordShouldBe('##')
   });
 
