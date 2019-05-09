@@ -33,6 +33,7 @@ type JuiVirtualizedListProps = {
   children: JSX.Element[];
   contentStyle?: React.CSSProperties;
   stickToLastPosition?: boolean;
+  fixedWrapper?: boolean;
 };
 
 export {
