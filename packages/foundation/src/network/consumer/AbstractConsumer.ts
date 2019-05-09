@@ -72,10 +72,9 @@ abstract class AbstractConsumer implements INetworkRequestConsumerListener {
   }
 
   private _consume() {
-    if (
-      !this.canHandleRequest() &&
-      !this._producer.hasImmediateTask(this._via)
-    ) {
+    const canConsume =
+      this.canHandleRequest() || this._producer.hasImmediateTask(this._via);
+    if (!canConsume) {
       return;
     }
 
