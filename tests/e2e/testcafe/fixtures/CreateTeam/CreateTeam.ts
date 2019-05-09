@@ -514,3 +514,68 @@ test.meta(<ITestMeta> {
       },
     );
   });
+
+test.meta(<ITestMeta> {
+  priority: ['P2'],
+  caseIds: ['JPT-104'],
+  maintainers: ['ali.naffaa'],
+  keywords: ['Message'],
+})('Check any characters can be enter into input box of Team Name', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  await h(t).platform(loginUser).init();
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
+  const createTeamModal = app.homePage.createTeamModal;
+
+  const enterSymbols = async (text: string) => {
+    await createTeamModal.ensureLoaded();
+    await createTeamModal.typeTeamName(text);
+    await createTeamModal.memberInput.typeText(text, { replace: true });
+    await createTeamModal.typeTeamDescription(text);
+  };
+
+  const checkResult = async (text: string) => {
+    await t.expect(createTeamModal.teamNameInput.value).eql(text);
+    await t.expect(createTeamModal.memberInput.InputArea.value).eql(text);
+    await t.expect(createTeamModal.teamDescriptionInput.value).eql(text);
+  };
+
+  await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    },
+  );
+
+  await h(t).withLog('When I click "Create Team" button on top bar', async () => {
+    await app.homePage.openAddActionMenu();
+    await app.homePage.addActionMenu.createTeamEntry.enter();
+  });
+
+  const specialSymbols = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
+  const alphanumeric = faker.random.alphaNumeric(15);
+  const asianSymbols = '\u2e80\u2e81\u2ee7\u2f87\u3028\u3226\u3359\u3400\u3598\u3D18\u4027\u4618\u4808\u4CB9';
+  await h(t).withLog(`When enter alphanumeric ${alphanumeric} characters into the fields`, async () => {
+    await enterSymbols(alphanumeric);
+  });
+
+  await h(t).withLog('Then they can be input into fields', async () => {
+    await checkResult(alphanumeric);
+  });
+
+  await h(t).withLog(`When enter asian ${asianSymbols} characters into the fields`, async () => {
+    await enterSymbols(asianSymbols);
+  });
+
+  await h(t).withLog('Then they can be input into fields', async () => {
+    await checkResult(asianSymbols);
+  });
+
+  await h(t).withLog(`When enter specific ${specialSymbols} characters into the fields`, async () => {
+    await enterSymbols(specialSymbols);
+  });
+
+  await h(t).withLog('Then they can be input into fields', async () => {
+    await checkResult(specialSymbols);
+  });
+});
