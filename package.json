@@ -43,7 +43,8 @@
     "terser": "3.14.1",
     "fixed:version": "ts-node fixedVersion.ts",
     "update-icon": "node application/scripts/update-icon.js",
-    "postupdate-icon": "npm run test application/src/__tests__/icons.test.ts"
+    "postupdate-icon": "npm run test application/src/__tests__/icons.test.ts",
+    "make-pseudo": "node ./scripts/make-pseudo.js"
   },
   "devDependencies": {
     "@jest-runner/electron": "1.1.1",
