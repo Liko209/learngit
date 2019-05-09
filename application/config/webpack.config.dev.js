@@ -209,7 +209,12 @@ module.exports = {
           // Compile .tsx?
           {
             test: /\.(js|jsx|ts|tsx)$/,
-            exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
+            exclude: excludeNodeModulesExcept([
+              'jui',
+              'sdk',
+              'foundation',
+              'ringcentral-web-phone',
+            ]),
             use: {
               loader: require.resolve('babel-loader'),
               options: {
