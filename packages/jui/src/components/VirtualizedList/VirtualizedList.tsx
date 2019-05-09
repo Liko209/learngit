@@ -37,6 +37,22 @@ import { debounce, compact } from 'lodash';
 import { WRAPPER_IDENTIFIER } from './ItemWrapper';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
+type Props = {
+  height: number;
+  minRowHeight: number;
+  overscan: number;
+  initialScrollToIndex: number;
+  stickToBottom?: boolean;
+  onScroll: (event: React.UIEvent<HTMLElement>) => void;
+  onWheel: (event: React.WheelEvent<HTMLElement>) => void;
+  onVisibleRangeChange: (range: IndexRange) => void;
+  onRenderedRangeChange: (range: IndexRange) => void;
+  before?: React.ReactNode;
+  after?: React.ReactNode;
+  children: JSX.Element[];
+  contentStyle: React.CSSProperties;
+  stickToLastPosition?: boolean;
+};
 type JuiVirtualizedListHandles = {
   scrollToBottom: () => void;
   isAtBottom: () => boolean;
@@ -65,7 +81,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     contentStyle,
     stickToLastPosition = true,
     fixedWrapper,
-  }: JuiVirtualizedListProps,
+  }: Props,
   forwardRef,
 ) => {
   const shouldUseNativeImplementation =
@@ -517,23 +533,7 @@ const MemoList = memo(
   forwardRef(JuiVirtualizedList),
 ) as React.MemoExoticComponent<
   React.ForwardRefExoticComponent<
-    {
-      initialScrollToIndex?: number;
-      onScroll?: (event: React.UIEvent<HTMLElement>) => void;
-      onWheel?: (event: React.WheelEvent<HTMLElement>) => void;
-      onVisibleRangeChange?: (range: IndexRange) => void;
-      onRenderedRangeChange?: (range: IndexRange) => void;
-      before?: React.ReactNode;
-      after?: React.ReactNode;
-      height: number;
-      minRowHeight: number;
-      overscan?: number;
-      stickToBottom?: boolean;
-      children: JSX.Element[];
-      contentStyle?: React.CSSProperties;
-      stickToLastPosition?: boolean;
-      fixedWrapper?: boolean;
-    } & React.RefAttributes<JuiVirtualizedListHandles>
+    JuiVirtualizedListProps & React.RefAttributes<JuiVirtualizedListHandles>
   >
 >;
 

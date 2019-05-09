@@ -76,8 +76,10 @@ abstract class AbstractConsumer implements INetworkRequestConsumerListener {
       return;
     }
 
-    const request = this._producer.produceRequest(this._via);
-
+    const request = this._producer.produceRequest(
+      this._via,
+      this.client.isNetworkReachable(),
+    );
     if (!request) {
       return;
     }

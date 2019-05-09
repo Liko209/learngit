@@ -3,19 +3,20 @@
  * @Date: 2018-10-06 19:39:12
  * Copyright © RingCentral. All rights reserved.
  */
-import { TDelta, ISortableModel } from './types';
-import { ListStore } from './ListStore';
 import { ENTITY_NAME } from '@/store/constants';
 import storeManager from '@/store';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import { TDelta, ISortableModel } from './types';
+import { ListStore } from './ListStore';
+import { DEFAULT_PAGE_SIZE } from './constant';
 
-const PAGE_SIZE = 20;
 export type DeltaDataHandler = <
   SortableModel extends ISortableModel = ISortableModel
 >(
   delta: TDelta<SortableModel>,
 ) => any;
+
 export interface IFetchDataListHandlerOptions {
   pageSize?: number;
   hasMoreUp?: boolean;
@@ -48,7 +49,7 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
     this._fetchDataProvider = dataProvider;
     this._listStore = listStore;
     const {
-      pageSize = PAGE_SIZE,
+      pageSize = DEFAULT_PAGE_SIZE,
       hasMoreDown = false,
       hasMoreUp = false,
       entityName,

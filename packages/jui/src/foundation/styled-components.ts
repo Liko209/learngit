@@ -3,9 +3,11 @@
  * @Date: 2018-10-30 10:30:07
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
-import * as styledComponents from 'styled-components';
-import { ThemedStyledComponentsModule } from "styled-components"; // tslint:disable-line
+import * as styledComponents from 'rcui/foundation/styled-components';
+import {
+  ThemedStyledComponentsModule,
+  ThemeProps as StyledThemeProps,
+} from 'styled-components'; // tslint:disable-line
 
 import { Theme } from './theme/theme';
 
@@ -22,6 +24,7 @@ const {
 type Dependencies = {
   dependencies?: (React.ComponentType | ((props: any) => JSX.Element))[];
 };
+type ThemeProps = StyledThemeProps<Theme>;
 
 export {
   css,
@@ -30,6 +33,8 @@ export {
   ThemeProvider,
   withTheme,
   ThemeConsumer,
+  ThemeProps,
   Dependencies,
 };
+
 export default styled;

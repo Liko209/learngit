@@ -27,6 +27,7 @@ const StyledRightWrapper = styled.div`
   align-items: center;
   justify-content: center;
   z-index: ${({ theme }) => theme.zIndex.elementOnRipple};
+  outline: none;
 `;
 const rippleEnter = (theme: Theme) => keyframes`
   from {
@@ -47,7 +48,7 @@ const WrapperListItem = ({
 
 const hoverStyle = css`
   background-color: ${({ theme }) =>
-    fade(grey('700')({ theme }), theme.opacity.p05)};
+    fade(grey('700')({ theme }), theme.opacity['1'] / 2)};
   ${StyledIconographyMore} {
     display: inline-flex;
   }
@@ -105,7 +106,7 @@ const StyledListItem = styled(WrapperListItem)`
 
   &&.selected {
     background-color: ${({ theme }) =>
-      fade(grey('700')({ theme }), theme.opacity.p10)};
+      fade(grey('700')({ theme }), theme.opacity['1'])};
     p {
       color: ${palette('primary', 'main')};
     }
@@ -190,7 +191,7 @@ const JuiConversationListItem: IConversationListItem = memo(
         <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
         <ItemText style={{ fontWeight }}>{title}</ItemText>
         {umi}
-        <StyledRightWrapper>
+        <StyledRightWrapper tabIndex={-1}>
           {indicator}
           <StyledIconographyMore onClick={onMoreClick}>
             more_vert
