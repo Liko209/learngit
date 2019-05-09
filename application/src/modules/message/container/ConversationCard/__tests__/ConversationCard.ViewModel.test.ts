@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { container, Jupiter } from 'framework';
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { ConversationCardViewModel } from '../ConversationCard.ViewModel';
 import { config } from '@/modules/GlobalSearch/module.config';
 
@@ -141,13 +141,6 @@ describe('ConversationCardViewModel', () => {
       id: 1491222532,
     });
   });
-  it('name()', () => {
-    (getEntity as jest.Mock).mockReturnValue({
-      displayName: 'alvin',
-      id: 1491222532,
-    });
-    expect(conversationCardVM.name).toBe(undefined);
-  });
   it('isArchived()', () => {
     (getEntity as jest.Mock).mockReturnValue({
       isArchived: true,
@@ -167,5 +160,36 @@ describe('ConversationCardViewModel', () => {
       });
       expect(conversationCardVM.showToast).toBe(true);
     });
+  });
+  describe('hideText()', () => {
+    it('should hideText be false when no activity', () => {
+      (getEntity as jest.Mock).mockReturnValueOnce({
+        activityData: null,
+      });
+      expect(conversationCardVM.hideText).toBeFalsy();
+    });
+    it('should hideText be true when activity have object_id or key', () => {
+      (getEntity as jest.Mock).mockReturnValueOnce({
+        activityData: { object_id: 1 },
+      });
+      expect(conversationCardVM.hideText).toBeTruthy();
+      (getEntity as jest.Mock).mockReturnValueOnce({
+        activityData: { key: 1 },
+      });
+      expect(conversationCardVM.hideText).toBeTruthy();
+    });
+  });
+  it('itemTypeIds', () => {
+    (getEntity as jest.Mock).mockReturnValueOnce({
+      itemTypeIds: [1],
+    });
+    expect(conversationCardVM.itemTypeIds).toEqual([1]);
+  });
+  it('isEditMode', () => {
+    const vm = new ConversationCardViewModel({ id: 1 });
+    (getGlobalValue as jest.Mock).mockReturnValueOnce([1]);
+    expect(vm.isEditMode).toBe(true);
+    (getGlobalValue as jest.Mock).mockReturnValueOnce([2]);
+    expect(vm.isEditMode).toBe(false);
   });
 });
