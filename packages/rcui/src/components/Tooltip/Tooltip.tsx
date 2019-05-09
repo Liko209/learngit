@@ -12,6 +12,7 @@ import styled, {
   css,
   createGlobalStyle,
 } from '../../foundation/styled-components';
+import { Palette } from '../../foundation/styles/';
 
 const placementTopMargin = '16px 0';
 const placementBottomMargin = '12px 0';
@@ -21,6 +22,7 @@ const placementRightMargin = '0 2px';
 type RuiTooltipProps = {
   placement?: string;
   tooltipForceHide?: boolean;
+  color?: Palette['tooltip'];
 } & MuiTooltipProps;
 
 const baseSize = 7;
@@ -40,7 +42,7 @@ const TooltipArrow = styled.span`
   }
 `;
 
-const tooltipColor = ({ theme }: any) => theme.palette['tooltip']['dark'];
+const tooltipColor = ({ theme, color }: any) => theme.palette['tooltip'][color];
 
 const bottom = css`
   top: 0;
@@ -93,6 +95,11 @@ const left = css`
 `;
 
 const GlobalToolTipStyle = createGlobalStyle`
+
+  .popper.popper > *{
+    background-color: ${({ theme, color }) => theme.palette.tooltip[color]};
+  }
+
   .popper[x-placement='right'] ${TooltipArrow}{
     margin: ${placementRightMargin};
     ${right}
@@ -144,6 +151,7 @@ export class RuiTooltip extends React.PureComponent<RuiTooltipProps> {
       title,
       children,
       placement = 'bottom',
+      color = 'dark',
       tooltipForceHide,
       open: propOpen,
       ...rest
@@ -181,7 +189,7 @@ export class RuiTooltip extends React.PureComponent<RuiTooltipProps> {
         >
           {children}
         </MuiTooltip>
-        <GlobalToolTipStyle suppressMultiMountWarning={true} />
+        <GlobalToolTipStyle color={color} suppressMultiMountWarning={true} />
       </React.Fragment>
     );
   }

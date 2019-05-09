@@ -239,7 +239,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                 targetElement={this._imageRef.current}
                 show={value.show}
                 duration="standard"
-                easing="openCloseDialog"
+                easing="sharp"
                 onEntered={value.onTransitionEntered}
                 onExited={value.onTransitionExited}
               />
