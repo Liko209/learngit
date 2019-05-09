@@ -157,7 +157,7 @@ class Scene {
         }
 
         static audit(artifacts) {
-          return { rawValue: true };
+          return { rawValue: true, score: 1 };
         }
       }
     });
