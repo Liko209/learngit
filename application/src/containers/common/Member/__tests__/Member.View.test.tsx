@@ -1,13 +1,8 @@
 import React from 'react';
-import { mount } from 'enzyme';
 import { StyledConversationPageMember } from 'jui/pattern/ConversationPageMember';
 import { MemberView } from '../Member.View';
-import { ThemeProvider } from 'styled-components';
-import { theme } from '../../../../__tests__/utils';
-import { OpenProfile } from '../../../../common/OpenProfile';
-
-const mountWithTheme = (content: React.ReactNode) =>
-  mount(<ThemeProvider theme={theme}>{content}</ThemeProvider>);
+import { mountWithTheme } from '@/__tests__/utils';
+import { OpenProfile } from '@/common/OpenProfile';
 
 const vPropsFactory = (showMembersCount: boolean, membersCount: number) => ({
   showMembersCount,

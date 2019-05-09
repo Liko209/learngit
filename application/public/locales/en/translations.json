@@ -126,6 +126,7 @@
     "directGroups": "direct messages",
     "teamGroups": "teams",
     "messageTypeNameSMS": "text",
+    "sharedItems": "shared items",
     "initialPost": {
       "directMessageDescription": "This is the beginning of your direct message history with {{displayName}}",
       "createATeam": "created a team",

@@ -3,6 +3,10 @@
  * @Date: 2019-02-01 17:53:18
  * Copyright © RingCentral. All rights reserved.
  */
+import React from 'react';
+import { mount } from 'enzyme';
+import { ThemeProvider } from 'styled-components';
+
 const theme = {
   breakpoints: {
     keys: ['xs', 'sm', 'md', 'lg', 'xl'],
@@ -338,4 +342,7 @@ const theme = {
   },
   maxHeight: { dialog: '72vh' },
 };
-export { theme };
+
+const mountWithTheme = (content: React.ReactNode) =>
+  mount(<ThemeProvider theme={theme}>{content}</ThemeProvider>);
+export { theme, mountWithTheme };
