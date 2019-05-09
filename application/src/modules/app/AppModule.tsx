@@ -61,7 +61,7 @@ class AppModule extends AbstractModule {
   }
 
   private async _init() {
-    this._logControlManager.setDebugMode(isProductionVersion);
+    this._logControlManager.setDebugMode(!isProductionVersion);
     const { search } = window.location;
     const { state } = parse(search, { ignoreQueryPrefix: true });
     if (state && state.length) {
