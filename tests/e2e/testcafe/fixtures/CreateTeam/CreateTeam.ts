@@ -580,3 +580,68 @@ test.meta(<ITestMeta> {
     await checkResult(specialSymbols);
   });
 });
+
+test.meta(<ITestMeta> {
+  priority: ['P2'],
+  caseIds: ['JPT-115'],
+  maintainers: ['ali.naffaa'],
+  keywords: ['CreateTeam'],
+})('Check "Invite Type" can be chosen and save in the create new team', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const otherUser = users[5];
+  const workerUser = users[1];
+  await h(t).platform(loginUser).init();
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
+  await h(t).scenarioHelper.resetProfileAndState(workerUser);
+  const otherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', otherUser.rcId);
+  const createTeamModal = app.homePage.createTeamModal;
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    },
+  );
+
+  await h(t).withLog('And I click "Create Team" button on top bar', async () => {
+    await app.homePage.openAddActionMenu();
+    await app.homePage.addActionMenu.createTeamEntry.enter();
+  });
+
+  await h(t).withLog('Then Toggle is OFF, Private (invite only) is the default option', async () => {
+    await createTeamModal.ensureLoaded();
+    await t.expect(createTeamModal.isPublicToggle.checked).notOk();
+  });
+
+  await h(t).withLog('When I turn on "Public Team (visible to any co-worker)". ', async () => {
+    await createTeamModal.turnOnIsPublic();
+  });
+
+  await h(t).withLog('Then toggle "Public Team (visible to any co-worker)" can be turn on', async () => {
+    await t.expect(createTeamModal.isPublicToggle.checked).ok();
+  });
+  const teamName = uuid();
+  await h(t).withLog(`When I save team ${teamName}`, async () => {
+    await createTeamModal.turnOnIsPublic();
+    await createTeamModal.typeTeamName(teamName);
+    await createTeamModal.memberInput.typeText(otherUserName);
+    await createTeamModal.clickCreateButton();
+  });
+
+  await h(t).withLog(`And I logout and then login Jupiter with ${workerUser.company.number}#${workerUser.extension}`, async () => {
+    await app.homePage.openSettingMenu();
+    await app.homePage.settingMenu.clickLogout();
+    await h(t).directLoginWithUser(SITE_URL, workerUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I type team name ${teamName} in search input area`, async () => {
+    await app.homePage.header.searchBar.clickSelf();
+    await app.homePage.searchDialog.typeSearchKeyword(teamName);
+  });
+
+  await h(t).withLog(`Then I should find ${teamName} team (visible to any co-worker)`, async () => {
+    await t.expect(app.homePage.searchDialog.instantPage.teams.withText(teamName).exists).ok();
+  });
+});
