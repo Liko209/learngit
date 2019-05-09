@@ -162,13 +162,10 @@ class NetworkRequestHandler
   }
 
   hasImmediateTask(via: NETWORK_VIA): boolean {
-    const immediateQueue =
-      this.pendingTasks.get(REQUEST_PRIORITY.IMMEDIATE) || [];
-    const task = immediateQueue[0];
-    if (task && (task.via() === via || task.via() === NETWORK_VIA.ALL)) {
-      return true;
-    }
-    return false;
+    const [task] =
+      this.pendingTasks.get(REQUEST_PRIORITY.IMMEDIATE) ||
+      ([] as RequestTask[]);
+    return task && (task.via() === via || task.via() === NETWORK_VIA.ALL);
   }
 
   canProduceRequest(priority: REQUEST_PRIORITY) {
