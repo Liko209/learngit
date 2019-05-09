@@ -3,7 +3,7 @@
  * @Date: 2018-12-09 21:01:04
  */
 import { Scene } from './scene';
-import { SceneConfig } from './config/sceneConfig';
+import { SceneConfigFactory } from './config/sceneConfigFactory';
 import { JupiterUtils } from '../utils';
 import { HomePageGatherer } from '../gatherers';
 
@@ -11,7 +11,7 @@ class LoginScene extends Scene {
   private _finallyUrl: string;
 
   async preHandle() {
-    this.config = new SceneConfig();
+    this.config = SceneConfigFactory.getConfig();
 
     this.config.passes[0].gatherers.push({
       instance: new HomePageGatherer()
