@@ -59,6 +59,7 @@ interface INetworkRequestConsumerListener {
 }
 interface INetworkRequestProducer {
   produceRequest: (via: NETWORK_VIA) => IRequest | undefined;
+  hasSpecificRequest: (via: NETWORK_VIA) => boolean;
 }
 
 interface IResponseListener {

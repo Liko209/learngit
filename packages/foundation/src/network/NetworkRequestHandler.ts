@@ -145,6 +145,16 @@ class NetworkRequestHandler
     return undefined;
   }
 
+  hasSpecificRequest(via: NETWORK_VIA): boolean {
+    const specificQueue =
+      this.pendingTasks.get(REQUEST_PRIORITY.SPECIFIC) || [];
+    const task = specificQueue[0];
+    if (task && (task.via() === via || task.via() === NETWORK_VIA.ALL)) {
+      return true;
+    }
+    return false;
+  }
+
   canProduceRequest(priority: REQUEST_PRIORITY) {
     return !this.isPause || priority === REQUEST_PRIORITY.SPECIFIC;
   }
