@@ -52,6 +52,7 @@ type Props = {
   children: JSX.Element[];
   contentStyle: React.CSSProperties;
   stickToLastPosition?: boolean;
+  fixedWrapper?: boolean;
 };
 type JuiVirtualizedListHandles = {
   scrollToBottom: () => void;
@@ -85,7 +86,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   forwardRef,
 ) => {
   const shouldUseNativeImplementation =
-    'resizeObserver' in window || !fixedWrapper;
+    'ResizeObserver' in window || !fixedWrapper;
   // TODO use useCallback to optimize performance
   const computeVisibleRange = () => {
     let result: IndexRange;
