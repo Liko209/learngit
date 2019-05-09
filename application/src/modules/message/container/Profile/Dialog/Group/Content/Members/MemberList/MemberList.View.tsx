@@ -55,6 +55,7 @@ class MemberList extends React.Component<
             height={height - SHADOW_HEIGHT}
             minRowHeight={ITEM_HEIGHT}
             onScroll={this.onScroll}
+            data-test-automation-id="profileDialogMemberList"
           >
             {filteredMemberIds.map((id: number, index: number) => {
               return this.rowRenderer(id);
