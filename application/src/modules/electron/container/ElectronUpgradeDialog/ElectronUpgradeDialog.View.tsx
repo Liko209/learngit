@@ -40,7 +40,6 @@ class ElectronUpgradeDialogComponent extends React.Component<
     ElectronUpgradeDialogComponent._portalRef &&
       ElectronUpgradeDialogComponent._portalRef.dismiss();
     ElectronUpgradeDialogComponent._portalRef = null;
-    // this._iframe && document.body.removeChild(this._iframe);
   }
 
   handleOk = () => {
