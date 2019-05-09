@@ -7,6 +7,8 @@ export {
   DialingPlan,
   DialingPlanCountryRecord,
   DialingCountryInfo,
+  IExtensionPhoneNumberList,
+  IPhoneNumberRecord,
 } from './common';
 export { RCAccountInfo } from './RCAccountInfo';
 export { RCClientInfo } from './RCClientInfo';

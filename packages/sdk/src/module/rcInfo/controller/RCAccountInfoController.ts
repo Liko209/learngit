@@ -39,7 +39,7 @@ class RCAccountInfoController {
   async getOutboundCallPrefix() {
     const accountInfo = await this._getAccountInfo();
     const prefix = (accountInfo && accountInfo.outboundCallPrefix) || 0;
-    return prefix >= 2 && prefix <= 9 ? prefix.toString() : '0';
+    return prefix >= 2 && prefix <= 9 ? prefix.toString() : '\0';
   }
 
   async getAccountMainNumber() {
