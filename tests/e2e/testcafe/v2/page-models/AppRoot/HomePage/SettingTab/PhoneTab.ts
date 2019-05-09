@@ -15,11 +15,23 @@ export class PhoneTab extends BaseWebComponent{
         return this.getSelectorByAutomationId('xxxxxxx');
     }
 
+    get callerIDDescription(){
+        return this.getSelectorByAutomationId('xxxxxxx');
+    }
+
     get regionField(){
         return this.getSelectorByAutomationId('xxxxxxx');
     }
 
+    get regionDescription(){
+        return this.getSelectorByAutomationId('xxxxxxx');
+    }
+
     get extensionSettingsField(){
+        return this.getSelectorByAutomationId('xxxxxxx');
+    }
+
+    get extensionSettingsDescription(){
         return this.getSelectorByAutomationId('xxxxxxx');
     }
 
@@ -39,8 +51,21 @@ export class PhoneTab extends BaseWebComponent{
         await this.t.expect(this.callerIDDropDownList.withText(text)).ok();
     }
 
-    async callerIDFieldWithText(text:string){
-        await this.t.expect(this.callerIDField.withText(text)).ok();
+    async selectCallerID(text: string){
+        await this.t.click(this.callerIDDropDownList.withText(text));
+    }
+
+    async callerIDFieldExist(text:string){
+        await this.t.expect(this.callerIDField).ok();
+    }
+
+    async getCallerIDList(){
+        let callerIDList = [];
+        const length = this.callerIDDropDownList.length;
+        for(let i = 0; i< length; i++){
+          callerIDList.push(this.callerIDDropDownList.nth(i).innerText);
+        }
+        return callerIDList;
     }
 
     async regionFieldWithText(text:string){

@@ -1,4 +1,5 @@
 import { v4 as uuid } from 'uuid';
+import * as _ from 'lodash'; 
 import { formalName } from '../../../libs/filter';
 import { h } from '../../../v2/helpers';
 import { setupCase, teardownCase } from '../../../init';
@@ -17,6 +18,11 @@ test(formalName(`Check the page content of the "General" section`, ['P2', 'JPT-1
 
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
+  const regionLabel = 'Region';
+  const callerIDLabel = 'Caller ID';
+  const callerIDDesc = 'Choose your default Caller ID for making RingCentral phone calls';
+  const extensionSettingsLabel = 'Extension settings';
+  const extensionDesc = ' Customize your RingCentral extension settings (call routing, voicemail greetings and more)';
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -65,7 +71,6 @@ test(formalName(`Check the caller id drop down list shows available numbers for 
     callerIDMapList.set('Company number',loginUser.company.number);
   });
   console.log(callerIDMapList);
-  return
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -90,7 +95,7 @@ test(formalName(`Check the caller id drop down list shows available numbers for 
 });
 
 // TODO
-test.only(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1759', 'GeneralSettings', 'Mia.Cai']), async t => {
+test(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1759', 'GeneralSettings', 'Mia.Cai']), async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const anotherUser = h(t).rcData.mainCompany.users[5];
   const app = new AppRoot(t);
@@ -99,6 +104,7 @@ test.only(formalName(`Check if the caller id is implemented correctly`, ['P2', '
 
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
+  const phoneTab = settingTab.phoneTab;
   const telephonyDialog = app.homePage.telephonyDialog;
   const miniProfile = app.homePage.miniProfile;
   const profileDialog = app.homePage.profileDialog;
@@ -129,19 +135,33 @@ test.only(formalName(`Check if the caller id is implemented correctly`, ['P2', '
     await app.homePage.ensureLoaded();
   });
 
-  // await h(t).withLog(`When I click Setting entry`, async () => {
-  //   await settingsEntry.enter();
-  // });
-
-  // await h(t).withLog(`And I click Phone tab`, async () => {
-  //   await settingTab.phoneEntry.enter();
-  // });
-
-  //TODO Change the caller id from the setting
-
+  let callerIDList = [];
+  await h(t).withLog('Given I get the caller id list from the setting', async () => {
+    callerIDList = await phoneTab.getCallerIDList();
+    for(let i = 0; i < callerIDList.length; i++){
+      if(callerIDList[i] == 'Blocked'){
+        callerIDList[i]='Unknown Caller';
+      }
+    }
+  });
+  
   // Entry1: 1:1conversation
+  // Change the caller id from the setting
+  await h(t).withLog(`When I click Setting entry`, async () => {
+    await settingsEntry.enter();
+  });
+
+  await h(t).withLog(`And I click Phone tab`, async () => {
+    await settingTab.phoneEntry.enter();
+  });
+
+  let randomCallerID = _.sample(callerIDList);
+  await h(t).withLog(`When I change the caller id from the setting`, async () => {
+    await phoneTab.selectCallerID(randomCallerID);
+  });
+
   const chatEntry = app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId);
-  await h(t).withLog('When I open the 1:1 chat', async () => {
+  await h(t).withLog('And I open the 1:1 chat', async () => {
     await chatEntry.enter();
   });
 
@@ -155,12 +175,26 @@ test.only(formalName(`Check if the caller id is implemented correctly`, ['P2', '
     await telephonyDialog.ensureLoaded();
   });
 
-  // todo need update
-  await h(t).withLog(`Then the caller id is ${loginUser.extension} from anotherUser`, async () => {
-    await session.waitForPhoneNumber(loginUser.extension);
+  await h(t).withLog(`Then the caller id is ${randomCallerID} from anotherUser`, async () => {
+    await session.waitForPhoneNumber(randomCallerID);
   });
 
   // Entry2: mini profile
+
+  // Change the caller id from the setting
+  await h(t).withLog(`When I click Setting entry`, async () => {
+    await settingsEntry.enter();
+  });
+
+  await h(t).withLog(`And I click Phone tab`, async () => {
+    await settingTab.phoneEntry.enter();
+  });
+
+  randomCallerID = _.sample(callerIDList);
+  await h(t).withLog(`When I change the caller id from the setting`, async () => {
+    await phoneTab.selectCallerID(randomCallerID);
+  });
+
   await h(t).withLog('Given I click hangup button', async () => {
     await telephonyDialog.clickHangupButton();
     await telephonyDialog.ensureDismiss();
@@ -180,12 +214,25 @@ test.only(formalName(`Check if the caller id is implemented correctly`, ['P2', '
     await telephonyDialog.ensureLoaded();
   });
 
-  // todo need update
-  await h(t).withLog(`Then the caller id is ${loginUser.extension} from anotherUser`, async () => {
-    await session.waitForPhoneNumber(loginUser.extension);
+  await h(t).withLog(`Then the caller id is ${randomCallerID} from anotherUser`, async () => {
+    await session.waitForPhoneNumber(randomCallerID);
   });
 
   // Entry3: profile
+  
+  // Change the caller id from the setting
+  await h(t).withLog(`When I click Setting entry`, async () => {
+    await settingsEntry.enter();
+  });
+
+  await h(t).withLog(`And I click Phone tab`, async () => {
+    await settingTab.phoneEntry.enter();
+  });
+
+  randomCallerID = _.sample(callerIDList);
+  await h(t).withLog(`When I change the caller id from the setting`, async () => {
+    await phoneTab.selectCallerID(randomCallerID);
+  });
   await h(t).withLog('Given I click hangup button', async () => {
     await telephonyDialog.clickHangupButton();
     await telephonyDialog.ensureDismiss();
@@ -207,12 +254,26 @@ test.only(formalName(`Check if the caller id is implemented correctly`, ['P2', '
     await telephonyDialog.ensureLoaded();
   });
 
-  // todo need update
-  await h(t).withLog(`Then the caller id is ${loginUser.extension} from anotherUser`, async () => {
-    await session.waitForPhoneNumber(loginUser.extension);
+  await h(t).withLog(`Then the caller id is ${randomCallerID} from anotherUser`, async () => {
+    await session.waitForPhoneNumber(randomCallerID);
   });
 
   // Entry4: search result
+
+  // Change the caller id from the setting
+  await h(t).withLog(`When I click Setting entry`, async () => {
+    await settingsEntry.enter();
+  });
+
+  await h(t).withLog(`And I click Phone tab`, async () => {
+    await settingTab.phoneEntry.enter();
+  });
+
+  randomCallerID = _.sample(callerIDList);
+  await h(t).withLog(`When I change the caller id from the setting`, async () => {
+    await phoneTab.selectCallerID(randomCallerID);
+  });
+
   await h(t).withLog('Given I click hangup button', async () => {
     await telephonyDialog.clickHangupButton();
     await telephonyDialog.ensureDismiss();
@@ -232,14 +293,12 @@ test.only(formalName(`Check if the caller id is implemented correctly`, ['P2', '
   });
 
   await h(t).withLog('When I click call button on the record',async() => {
-    // todo
     await anotherUserRecord.clickTelephonyButton();
     await telephonyDialog.ensureLoaded();
   });
 
-  // todo need update
-  await h(t).withLog(`Then the caller id is ${loginUser.extension} from anotherUser`, async () => {
-    await session.waitForPhoneNumber(loginUser.extension);
+  await h(t).withLog(`Then the caller id is ${randomCallerID} from anotherUser`, async () => {
+    await session.waitForPhoneNumber(randomCallerID);
   });
 
 });
@@ -295,8 +354,8 @@ test(formalName(`Check when the area code is displayed`, ['P2','JPT-1790', 'Gene
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
   const updateRegionDialog =settingTab.phoneTab.updateRegionDialog;
-  const countryList = ['US','CA','Puerto Ricco'];
-  const otherCountry='China';
+  const countryList = ['US','CA','Puerto Ricco','China','Mexico','Australia'];
+  const otherCountry='Korea';
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -333,7 +392,7 @@ test(formalName(`Check when the area code is displayed`, ['P2','JPT-1790', 'Gene
     });
   }
 
-  await h(t).withLog(`When Selected a country not US/CA/Puerto Ricco`, async () => {
+  await h(t).withLog(`When Selected a country not US/CA/Puerto Rico/China/Mexico/Australia`, async () => {
     // TODO
     await updateRegionDialog.selectCountry(otherCountry);
   });
@@ -390,17 +449,9 @@ test(formalName(`Check the dialog status when user save/cancel changes made on d
     await updateRegionDialog.noUpdateRegionDialog();
   });
 
-  await h(t).withLog(`And I click Update button in the Region`, async () => {
-    await settingTab.phoneTab.clickRegionUpdateButton();
-  });
-
-  await h(t).withLog(`Then the update region popup shows`, async () => {
-    await updateRegionDialog.showUpdateRegionDialog();
-  });
   
   await h(t).withLog(`And the the default change should keep the same`, async () => {
-    const country = await updateRegionDialog.countryDropDown.nth(0).innerText;
-    await t.expect(country).eql(defaultCountry);
+      await t.expect(settingTab.phoneTab.regionFieldWithText(defaultCountry)).ok();
   });
  
   let areaCode;
@@ -428,13 +479,9 @@ test(formalName(`Check the dialog status when user save/cancel changes made on d
     await updateRegionDialog.checkSuccessToast(toast);
   });
 
-  await h(t).withLog(`When I click Update button again in the Region`, async () => {
-    await settingTab.phoneTab.clickRegionUpdateButton();
-  });
-
   await h(t).withLog(`Then I can see the changes`, async () => {
-    await t.expect(updateRegionDialog.countryDropDown.nth(0).innerText).eql(country);
-    await t.expect(updateRegionDialog.areaCode.nth(1).innerText).eql(areaCode);
+    await t.expect(settingTab.phoneTab.regionDescription.withText(country)).ok();
+    await t.expect(settingTab.phoneTab.regionDescription.withText(areaCode)).ok();
   });
 
 });
