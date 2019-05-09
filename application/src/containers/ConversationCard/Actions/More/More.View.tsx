@@ -3,7 +3,7 @@
  * @Date: 2018-12-06 13:29:53
  * Copyright © RingCentral. All rights reserved.
  */
-import * as React from 'react';
+import React, { MouseEvent } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ViewProps, MENU_LIST_ITEM_TYPE } from './types';
@@ -15,6 +15,7 @@ import { Delete } from '../Delete';
 import { Edit } from '../Edit';
 
 type MoreViewProps = ViewProps & WithTranslation;
+type State = { open: boolean; anchorEl: EventTarget & Element | null };
 
 const menuItems = {
   [MENU_LIST_ITEM_TYPE.QUOTE]: Quote,
@@ -23,9 +24,10 @@ const menuItems = {
 };
 
 @observer
-class More extends React.Component<MoreViewProps, { open: boolean }> {
+class More extends React.Component<MoreViewProps, State> {
   state = {
     open: false,
+    anchorEl: null,
   };
   private _Anchor = ({ tooltipForceHide }: AnchorProps) => {
     const { t } = this.props;
@@ -42,18 +44,23 @@ class More extends React.Component<MoreViewProps, { open: boolean }> {
       </JuiIconButton>
     );
   }
+
+  openPopper = (evt: MouseEvent) => {
+    const { currentTarget } = evt;
+    this.setState(state => ({
+      anchorEl: currentTarget,
+      open: !state.open,
+    }));
+  }
+
   closePopper = () => {
     this.setState({
       open: false,
     });
   }
-  openPopper = () => {
-    this.setState({
-      open: true,
-    });
-  }
 
   render() {
+    const { anchorEl, open } = this.state;
     const { id, permissionsMap, showMoreAction } = this.props;
 
     if (!showMoreAction) {
@@ -62,9 +69,11 @@ class More extends React.Component<MoreViewProps, { open: boolean }> {
 
     return (
       <JuiPopperMenu
+        open={open}
+        anchorEl={anchorEl}
         Anchor={this._Anchor}
         placement="bottom-start"
-        open={this.state.open}
+        onClose={this.closePopper}
       >
         <JuiMenuList onClick={this.closePopper}>
           {Object.keys(menuItems).map((key: string) => {

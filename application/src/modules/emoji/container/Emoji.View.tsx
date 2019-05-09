@@ -11,10 +11,11 @@ import { JuiEmoji } from 'jui/pattern/Emoji';
 @observer
 class EmojiView extends Component<EmojiViewProps> {
   render() {
-    const { handleEmojiClick, spritImage, title } = this.props;
+    const { handleEmojiClick, set, sheetSize, title } = this.props;
     return (
       <JuiEmoji
-        spritImage={spritImage}
+        set={set}
+        sheetSize={sheetSize}
         title={title}
         handlerIcon="emoji"
         handleEmojiClick={handleEmojiClick}

@@ -30,6 +30,7 @@ type States = {
   indexMenus: number[]; // menu tab index, when length > 0, then it has more tab
   indexLazyLoadComponents: number[]; // lazy load container component index
   remeasure: boolean;
+  anchorEl: EventTarget & Element | null;
 };
 
 type Props = {
@@ -99,6 +100,7 @@ class JuiTabs extends PureComponent<Props, States> {
       indexTabs: [],
       indexMenus: [],
       remeasure: false,
+      anchorEl: null,
     };
   }
 
@@ -189,10 +191,12 @@ class JuiTabs extends PureComponent<Props, States> {
     this._setSelectedTabIndex(indexSelected);
   }
 
-  private _showMenuList = () => {
-    this.setState({
-      openMenu: true,
-    });
+  private _showMenuList = (evt: MouseEvent) => {
+    const { currentTarget } = evt;
+    this.setState(state => ({
+      anchorEl: currentTarget,
+      openMenu: !state.openMenu,
+    }));
   }
 
   private _hideMenuList = () => {
@@ -233,7 +237,7 @@ class JuiTabs extends PureComponent<Props, States> {
   }
 
   private _renderMoreAndMenu = () => {
-    const { indexMenus, openMenu } = this.state;
+    const { indexMenus, openMenu, anchorEl } = this.state;
     if (indexMenus.length === 0) {
       return null; // no more tab
     }
@@ -244,6 +248,8 @@ class JuiTabs extends PureComponent<Props, States> {
         open={openMenu}
         value={MORE}
         key={MORE}
+        onClose={this._hideMenuList}
+        anchorEl={anchorEl}
       >
         <JuiMenuList onClick={this._hideMenuList}>
           {indexMenus.map((item: number) => {
