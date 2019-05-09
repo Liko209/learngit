@@ -241,3 +241,40 @@ test(formalName('JPT-293 The Send button is disabled when user create new messag
 
   },
 );
+
+test.meta(<ITestMeta> {
+  priority: ['P2'],
+  caseIds: ['JPT-289'],
+  maintainers: ['ali.naffaa'],
+  keywords: ['SendNewMessage'],
+})('Check just only plain text can be enter into input box of "Type new message"', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  await h(t).platform(loginUser).init();
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
+
+  await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    },
+  );
+
+  await h(t).withLog('When I click "Send New Message" on AddActionMenu', async () => {
+    await app.homePage.openAddActionMenu();
+    await app.homePage.addActionMenu.sendNewMessageEntry.enter();
+  });
+
+  const sendNewMessageModal = app.homePage.sendNewMessageModal;
+  const specialSymbols = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
+  await h(t).withLog(`And enter text or special symbols ${specialSymbols} into the fields `, async () => {
+    await sendNewMessageModal.ensureLoaded();
+    await sendNewMessageModal.memberInput.typeText(specialSymbols);
+    await sendNewMessageModal.setNewMessage(specialSymbols);
+  });
+
+  await h(t).withLog('Then they can be input into fields', async () => {
+    await t.expect(sendNewMessageModal.memberInput.InputArea.value).eql(specialSymbols);
+    await t.expect(sendNewMessageModal.newMessageTextarea.value).eql(specialSymbols);
+  });
+});
