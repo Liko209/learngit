@@ -26,12 +26,12 @@ class RCInfoService extends EntityBaseService<IdModel> {
     );
   }
 
-  protected onStarted() {
-    super.onStarted();
-
-    this.getRCInfoController()
-      .getRegionInfoController()
-      .loadRegionInfo();
+  protected onStopped() {
+    if (this._rcInfoController) {
+      this._rcInfoController.dispose();
+      delete this._rcInfoController;
+    }
+    super.onStopped();
   }
 
   protected getRCInfoController(): RCInfoController {
@@ -163,6 +163,12 @@ class RCInfoService extends EntityBaseService<IdModel> {
 
   async isAreaCodeValid(areaCode: string) {
     return await this.regionInfoController.isAreaCodeValid(areaCode);
+  }
+
+  async loadRegionInfo() {
+    await this.getRCInfoController()
+      .getRegionInfoController()
+      .loadRegionInfo();
   }
 }
 
