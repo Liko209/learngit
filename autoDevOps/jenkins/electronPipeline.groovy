@@ -26,7 +26,6 @@ class JobTemplate {
     Context context
 
     String suffix() {''}
-    String buildCommand() {''}
 
     String formatPath(String p) {
         try {
@@ -75,9 +74,7 @@ class JobTemplate {
         }
     }
 
-    void buildStage() {
-        script.sh buildCommand()
-    }
+    void buildStage() { }
 
     void deployStage() {
         // keep both name with version and without version
@@ -114,14 +111,27 @@ class JobTemplate {
 
 class MacJob extends JobTemplate {
     String suffix() { 'dmg' }
-    String buildCommand() { 'npm run pack:mac' }
+    void buildStage() {
+        script.sh 'npm run pack:mac'
+    }
 }
 
 class WinJob extends JobTemplate {
     String suffix() { 'exe' }
-    String buildCommand() { 'npm run pack:win' }
-}
 
+    String winCscFileId
+    String winCscKeyPasswordId
+
+    void buildStage() {
+        script.withCredentials([
+            script.file(credentialsId: winCscFileId, variable: 'CSC_LINK'),
+            script.string(credentialsId: winCscKeyPasswordId, variable: 'CSC_KEY_PASSWORD'),
+        ]) {
+            script.sh 'env'
+            script.sh 'npm run pack:win'
+        }
+    }
+}
 
 // Initiate default context variable by user data
 Context context = new Context(
@@ -148,10 +158,21 @@ context.gitTargetNamespace = env.gitlabTargetNamespace ?: context.gitSourceNames
 // Create jobs
 def jobs = []
 if (params.WIN_BUILD_NODE)
-    jobs.push(new WinJob(context: context, nodeLabel: params.WIN_BUILD_NODE, script: this))
+    jobs.push(
+        new WinJob(
+            winCscFileId: params.WIN_CSC_FILE,
+            winCscKeyPasswordId: params.WIN_CSC_PASSWORD,
+            nodeLabel: params.WIN_BUILD_NODE,
+            context: context,
+            script: this)
+    )
 if (params.MAC_BUILD_NODE)
-    jobs.push(new MacJob(context: context, nodeLabel: params.MAC_BUILD_NODE, script: this))
-
+    jobs.push(
+        new MacJob(
+            nodeLabel: params.MAC_BUILD_NODE,
+            context: context,
+            script: this)
+    )
 
 // Get started
 parallel jobs.collectEntries { job -> [job.nodeLabel, {
