@@ -3,7 +3,7 @@
  * @Date: 2018-12-12 12:56:30
  */
 import { PptrUtils, FunctionUtils } from "../utils";
-const Gatherer = require("lighthouse/lighthouse-core/gather/gatherers/gatherer");
+import { BaseGatherer } from ".";
 import * as bluebird from "bluebird";
 
 const EXTENSION_ID = "ijjcejlmgpmagghhloglnenalapepejo";
@@ -18,23 +18,19 @@ class PerformanceMetric {
   public type: string;
 }
 
-class ProcessGatherer extends Gatherer {
+class ProcessGatherer extends BaseGatherer {
   private intervalId;
   private browser;
   private metrics: Array<PerformanceMetric> = new Array();
 
-  async beforePass(passContext) {
+  async _beforePass(passContext) {
     const driver = passContext.driver;
     let ws = await driver.wsEndpoint();
     this.browser = await PptrUtils.connect(ws);
-    let hasBind = false;
 
     FunctionUtils.bindEvent(this.browser, "targetchanged", async target => {
       let page = await target.page();
       if (page) {
-        if (hasBind) {
-          return;
-        }
         FunctionUtils.bindEvent(page, "console", msg => {
           const str = msg._text;
           if (str.startsWith(EXTENSION_TAG)) {
@@ -52,7 +48,6 @@ class ProcessGatherer extends Gatherer {
             }
           }
         });
-        hasBind = true;
       }
     });
 
@@ -65,12 +60,10 @@ class ProcessGatherer extends Gatherer {
             })()`);
     }, 1000);
   }
-  async afterPass(passContext) {
+  async _afterPass(passContext) {
     const driver = passContext.driver;
 
-    await driver.sendCommand('HeapProfiler.enable');
-
-    await driver.sendCommand('HeapProfiler.collectGarbage');
+    await PptrUtils.collectGarbage(driver);
 
     await bluebird.delay(10000);
 
@@ -79,7 +72,7 @@ class ProcessGatherer extends Gatherer {
     return { metrics: this.metrics };
   }
 
-  pass(passContext) { }
+  async _pass(passContext) { }
 }
 
 export { ProcessGatherer, PerformanceMetric };

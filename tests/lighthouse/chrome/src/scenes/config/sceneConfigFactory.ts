@@ -3,7 +3,10 @@
  * @Date: 2018-12-27 10:01:32
  */
 import { SceneConfig } from "./sceneConfig";
-import { ProcessGatherer, MemoryGatherer, FpsGatherer } from "../../gatherers";
+import {
+  ProcessGatherer, ProcessGatherer2,
+  MemoryGatherer, FpsGatherer, LoginGatherer
+} from "../../gatherers";
 import { ProcessAudit } from "../../audits";
 
 class SceneConfigFactory {
@@ -22,9 +25,6 @@ class SceneConfigFactory {
     gatherers.push(
       {
         instance: new ProcessGatherer()
-      },
-      {
-        instance: new MemoryGatherer()
       }
     );
 
@@ -37,6 +37,38 @@ class SceneConfigFactory {
     config.categories["performance"]["auditRefs"] = [
       { id: "process-performance-metrics", weight: 0, group: "diagnostics" }
     ];
+    config.categories["pwa"]["auditRefs"] = [];
+    config.categories["accessibility"]["auditRefs"] = [];
+    config.categories["best-practices"]["auditRefs"] = [];
+    config.categories["seo"]["auditRefs"] = [];
+
+    return config;
+  }
+
+  static getCommonLoginConfig(options: { fpsMode: boolean }): SceneConfig {
+    let config = new SceneConfig();
+
+    config.passes = config.passes.splice(0, 1);
+    let gatherers = [];
+
+    if (options.fpsMode) {
+      gatherers.push({
+        instance: new FpsGatherer()
+      });
+    }
+
+    gatherers.push(
+      {
+        instance: new ProcessGatherer2()
+      },
+      {
+        instance: new LoginGatherer()
+      }
+    );
+
+    config.passes[0].gatherers = gatherers;
+    config.audits = [];
+    config.categories["performance"]["auditRefs"] = [];
     config.categories["pwa"]["auditRefs"] = [];
     config.categories["accessibility"]["auditRefs"] = [];
     config.categories["best-practices"]["auditRefs"] = [];

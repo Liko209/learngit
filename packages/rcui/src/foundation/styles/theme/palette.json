@@ -1,0 +1,24 @@
+{
+  "primary": {
+    "main": "#0684DB"
+  },
+  "secondary": {
+    "main": "#FF8800"
+  },
+  "error": {
+    "main": "#F44336"
+  },
+  "success": {
+    "main": "#26A304"
+  },
+  "info": {
+    "main": "#F6AD16"
+  },
+  "warning": {
+    "main": "#8C8C8C"
+  },
+  "tooltip": {
+    "main": "#616161",
+    "dark": "#616161"
+  }
+}

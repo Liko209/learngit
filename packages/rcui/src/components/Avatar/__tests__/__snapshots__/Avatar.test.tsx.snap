@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Avatar renders correctly 1`] = `
+.c0.c0 {
+  background-color: #69A3EB;
+  width: 40px;
+  height: 40px;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.c0.c0:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.c0.c0:active {
+  opacity: 0.6;
+}
+
+<div
+  className="MuiAvatar-root-1 MuiAvatar-colorDefault-2 c0"
+  color="lake"
+  size="md"
+>
+  SH
+</div>
+`;

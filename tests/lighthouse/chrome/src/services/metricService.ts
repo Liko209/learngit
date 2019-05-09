@@ -141,10 +141,12 @@ class MetricService {
     let dtoArr = new Array();
     let sceneId = sceneDto.id;
     let artifacts = scene.getArtifacts();
-    let { ProcessGatherer } = artifacts;
+    let { ProcessGatherer, ProcessGatherer2 } = artifacts;
     let metrics: Array<PerformanceMetric>;
     if (ProcessGatherer) {
       metrics = ProcessGatherer.metrics;
+    } else if (ProcessGatherer2) {
+      metrics = ProcessGatherer2.metrics;
     }
 
     if (!metrics || metrics.length == 0) {
@@ -221,7 +223,7 @@ class MetricService {
         apiMinTime: 0,
         apiTop90Time: 0,
         apiTop95Time: 0,
-        apiHandleCount: 0
+        apiHandleCount: -1
       };
 
       if (item.api) {
@@ -232,7 +234,7 @@ class MetricService {
       if (apiTimes.length > 0) {
         sum = 0;
         max = 0;
-        maxHanleCount = 0;
+        maxHanleCount = -1;
         min = 60000000;
         arr = [];
         for (let t of apiTimes) {
@@ -243,10 +245,10 @@ class MetricService {
           sum += costTime;
           min = costTime > min ? min : costTime;
           max = costTime > max ? costTime : max;
-          if (t.count) {
+          if (t.count >= 0) {
             maxHanleCount = t.count > maxHanleCount ? t.count : maxHanleCount;
           } else {
-            t.count = 0;
+            t.count = -1;
           }
           arr.push(costTime);
           dtoArr.push({
@@ -268,9 +270,9 @@ class MetricService {
         summaryDto.apiHandleCount = maxHanleCount;
       }
 
-      let summary = await LoadingTimeSummaryDto.create(summaryDto);
-
       if (dtoArr.length > 0) {
+        let summary = await LoadingTimeSummaryDto.create(summaryDto);
+
         for (let dto of dtoArr) {
           dto["summaryId"] = summary.id;
         }
