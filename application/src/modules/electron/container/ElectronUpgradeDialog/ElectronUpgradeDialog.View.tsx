@@ -14,6 +14,7 @@ import {
 } from './types';
 import { TopBannerViewModel } from '@/modules/app/container/TopBanner/TopBanner.ViewModel';
 import { ElectronUpgradeBanner } from '@/modules/app/container/TopBanner/Banners/ElectronUpgradeBanner';
+import { iframeDownloader } from '@/utils/download';
 
 type Ref = {
   dismiss: (afterDismiss?: (() => void) | undefined) => void;
@@ -23,7 +24,6 @@ class ElectronUpgradeDialogComponent extends React.Component<
   ElectronUpgradeDialogViewProps
 > {
   static _portalRef: null | Ref = null;
-  _iframe: null | HTMLIFrameElement;
 
   static setPortalRef(ref: Ref) {
     ElectronUpgradeDialogComponent._portalRef = ref;
@@ -46,16 +46,7 @@ class ElectronUpgradeDialogComponent extends React.Component<
     this._close();
   }
   handleUpgrade = () => {
-    // workaround for prevent triggering "onbeforeunload" event when download file.
-    // Solution: https://stackoverflow.com/questions/2452110/download-binary-without-triggering-onbeforeunload
-    this._iframe = document.querySelector('#downloadInstaller');
-    if (!this._iframe) {
-      this._iframe = document.createElement('iframe');
-      this._iframe.id = 'downloadInstaller';
-      this._iframe.style.display = 'none';
-      document.body.appendChild(this._iframe);
-    }
-    this._iframe.src = this.props.url;
+    iframeDownloader('downloadInstaller', this.props.url);
     this._close();
   }
   handleIgnoreOnce = () => {
