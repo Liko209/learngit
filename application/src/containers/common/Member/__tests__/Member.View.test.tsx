@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyledConversationPageMember } from 'jui/pattern/ConversationPageMember';
 import { MemberView } from '../Member.View';
-import { mountWithTheme } from '@/__tests__/utils';
 import { OpenProfile } from '@/common/OpenProfile';
+import { TypeDictionary, GlipTypeUtil } from 'sdk/utils';
+import { mountWithTheme } from '@/__tests__/utils';
 
 const vPropsFactory = (showMembersCount: boolean, membersCount: number) => ({
   showMembersCount,
@@ -20,18 +20,18 @@ describe('MemberView', () => {
   });
 
   it('should profile be open when member icon clicked [JPT-1368]', () => {
-    jest.spyOn(OpenProfile, 'show');
+    const spyOpenProfile = jest.spyOn(OpenProfile, 'show');
+
+    GlipTypeUtil.extractTypeId = jest
+      .fn()
+      .mockReturnValue(TypeDictionary.TYPE_ID_TEAM);
 
     const wrapper = mountWithTheme(
       <MemberView {...vPropsFactory(true, 100)} />,
     );
 
-    wrapper
-      .find(StyledConversationPageMember)
-      .simulate('mouseenter')
-      .find('button > button')
-      .simulate('click');
+    wrapper.find('button').simulate('click');
 
-    expect(OpenProfile.show).toHaveBeenCalled();
+    expect(spyOpenProfile).toHaveBeenCalled();
   });
 });
