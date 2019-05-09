@@ -52,7 +52,7 @@ test(formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']), async
   });
 
   await h(t).withLog('Then I click the header of Favorite section', async () => {
-    await t.click(favoritesSection.toggleButton);
+    await t.click(favoritesSection.header);
   });
 
   await h(t).withLog('I can find favorite section collapsed', async () => {
@@ -62,7 +62,7 @@ test(formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']), async
   });
 
   await h(t).withLog('Then I click the header of Favorite section', async () => {
-    await t.click(favoritesSection.toggleButton);
+    await t.click(favoritesSection.header);
   });
 
   await h(t).withLog('I can find favorite section expanded', async () => {
