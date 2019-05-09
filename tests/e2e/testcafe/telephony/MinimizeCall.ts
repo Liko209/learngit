@@ -96,11 +96,9 @@ test.meta(<ITestMeta>{
   });
 
   //Reserve for check end call status from log
-  await h(t).withLog(`Then the call should be ended`, async () => {
-  });
-
-  await h(t).withLog(`And minimized window should dismissed`, async () => {
+  await h(t).withLog(`Then the call should be ended and minimized window should dismissed`, async () => {
     await minimizeCallWindow.ensureDismiss();
+    await session.waitForStatus('terminated');
   });
 });
 
