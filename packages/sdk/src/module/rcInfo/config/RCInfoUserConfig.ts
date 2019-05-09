@@ -43,11 +43,11 @@ class RCInfoUserConfig extends UserDBConfig {
     return await this.get(RC_INFO_KEYS.ROLE_PERMISSIONS);
   }
 
-  async setSpecialNumberRule(value: any) {
+  async setSpecialNumberRules(value: any) {
     await this.put(RC_INFO_KEYS.SPECIAL_NUMBER_RULE, value);
   }
 
-  async getSpecialNumberRule() {
+  async getSpecialNumberRules() {
     return await this.get(RC_INFO_KEYS.SPECIAL_NUMBER_RULE);
   }
 
@@ -65,6 +65,30 @@ class RCInfoUserConfig extends UserDBConfig {
 
   async getPhoneDataVersion() {
     return await this.get(RC_INFO_KEYS.PHONE_DATA_VERSION);
+  }
+
+  async getExtensionPhoneNumberList() {
+    return await this.get(RC_INFO_KEYS.EXTENSION_PHONE_NUMBER_LIST);
+  }
+
+  async setExtensionPhoneNumberList(value: any) {
+    return await this.put(RC_INFO_KEYS.EXTENSION_PHONE_NUMBER_LIST, value);
+  }
+
+  async setDialingPlan(value: any) {
+    await this.put(RC_INFO_KEYS.DIALING_PLAN, value);
+  }
+
+  async getDialingPlan() {
+    return await this.get(RC_INFO_KEYS.DIALING_PLAN);
+  }
+
+  async getAccountServiceInfo() {
+    return await this.get(RC_INFO_KEYS.ACCOUNT_SERVICE_INFO);
+  }
+
+  async setAccountServiceInfo(value: any) {
+    return await this.put(RC_INFO_KEYS.ACCOUNT_SERVICE_INFO, value);
   }
 }
 

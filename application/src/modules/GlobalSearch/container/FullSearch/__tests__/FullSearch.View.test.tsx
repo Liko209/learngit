@@ -8,7 +8,7 @@ import { TAB_TYPE } from '../../ItemList/types';
 import { shallow } from 'enzyme';
 import { FullSearchView } from '../FullSearch.View';
 import history from '@/history';
-jest.mock('@/containers/ConversationSheet', () => ({}));
+jest.mock('@/modules/message/container/ConversationSheet', () => ({}));
 
 describe('FullSearch.View', () => {
   it('should call jumpToConversationCallback when jump to conversation', () => {
@@ -16,6 +16,7 @@ describe('FullSearch.View', () => {
       currentTab: TAB_TYPE.CONTENT,
       setCurrentTab: jest.fn(),
       jumpToConversationCallback: jest.fn(),
+      resetSearchScope: jest.fn(),
     };
     shallow(<FullSearchView {...props} />);
     history.push('/messages/123');
@@ -28,5 +29,22 @@ describe('FullSearch.View', () => {
     props.jumpToConversationCallback.mockClear();
     history.push('/phone');
     expect(props.jumpToConversationCallback).not.toHaveBeenCalled();
+  });
+});
+
+describe('FullSearch.view fix(FIJI-5518)', () => {
+  it('should search scope be reset when view unmount', () => {
+    const props = {
+      currentTab: TAB_TYPE.CONTENT,
+      setCurrentTab: jest.fn(),
+      jumpToConversationCallback: jest.fn(),
+      resetSearchScope: jest.fn(),
+    };
+
+    const view = shallow(<FullSearchView {...props} />);
+
+    view.unmount();
+
+    expect(props.resetSearchScope).toHaveBeenCalled();
   });
 });

@@ -5,7 +5,7 @@
 require("dotenv").config();
 import { Config } from './config';
 import { initModel, closeDB } from "./models";
-import { FileService, MetricService } from "./services";
+import { FileService, MetricService, DashboardService } from "./services";
 import { LogUtils, PptrUtils } from "./utils";
 import * as scenes from "./scenes";
 
@@ -50,21 +50,23 @@ const logger = LogUtils.getLogger(__filename);
 
     let result = true, scene;
     while (sceneArray.length > 0) {
-      scene = sceneArray.shift();
-      result = (await scene.run()) && result;
-      scene.clearReportCache();
-      if (scene.supportFps()) {
-        scene.openFpsMode();
+      try {
+        scene = sceneArray.shift();
         result = (await scene.run()) && result;
         scene.clearReportCache();
+        if (Config.runFps && scene.supportFps()) {
+          scene.openFpsMode();
+          result = (await scene.run()) && result;
+          scene.clearReportCache();
+        }
+      } catch (err) {
+        logger.error(err);
       }
     }
 
     if (result) {
       exitCode = 0;
     }
-    // generate report index.html
-    await FileService.generateReportIndex();
 
     let endTime = Date.now();
 
@@ -75,8 +77,12 @@ const logger = LogUtils.getLogger(__filename);
   } catch (err) {
     logger.error(err);
   } finally {
+    await DashboardService.buildReport();
+    // generate report index.html
+    await FileService.generateReportIndex();
+
     // release resources
-    await closeDB;
+    await closeDB();
     await PptrUtils.closeAll();
 
     process.exitCode = exitCode;

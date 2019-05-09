@@ -8,12 +8,13 @@ import { SERVICE } from '../../../service/eventKey';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { RCInfoController } from '../controller/RCInfoController';
-import { ERCServiceFeaturePermission } from '../types';
+import { ERCServiceFeaturePermission, ERCWebSettingUri } from '../types';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { AccountUserConfig } from '../../../module/account/config';
 import { mainLogger } from 'foundation';
+import { IdModel } from '../../../framework/model';
 
-class RCInfoService extends EntityBaseService {
+class RCInfoService extends EntityBaseService<IdModel> {
   private _rcInfoController: RCInfoController;
 
   constructor() {
@@ -23,6 +24,14 @@ class RCInfoService extends EntityBaseService {
         [SERVICE.LOGIN]: this.requestRCInfo,
       }),
     );
+  }
+
+  protected onStopped() {
+    if (this._rcInfoController) {
+      this._rcInfoController.dispose();
+      delete this._rcInfoController;
+    }
+    super.onStopped();
   }
 
   protected getRCInfoController(): RCInfoController {
@@ -111,6 +120,55 @@ class RCInfoService extends EntityBaseService {
     return this.getRCInfoController()
       .getRCPermissionController()
       .isRCFeaturePermissionEnabled(featurePermission);
+  }
+
+  async getCallerIdList() {
+    return await this.getRCInfoController()
+      .getRCCallerIdController()
+      .getCallerIdList();
+  }
+  async generateWebSettingUri(type: ERCWebSettingUri) {
+    return this.getRCInfoController()
+      .getRcWebSettingInfoController()
+      .generateRCAuthCodeUri(type);
+  }
+
+  private get regionInfoController() {
+    return this.getRCInfoController().getRegionInfoController();
+  }
+
+  async getCountryList() {
+    return await this.regionInfoController.getCountryList();
+  }
+
+  async getCurrentCountry() {
+    return await this.regionInfoController.getCurrentCountry();
+  }
+
+  async setDefaultCountry(isoCode: string) {
+    return await this.regionInfoController.setDefaultCountry(isoCode);
+  }
+
+  async setAreaCode(areaCode: string) {
+    return await this.regionInfoController.setAreaCode(areaCode);
+  }
+
+  async getAreaCode() {
+    return await this.regionInfoController.getAreaCode();
+  }
+
+  hasAreaCode(countryCallingCode: string) {
+    return this.regionInfoController.hasAreaCode(countryCallingCode);
+  }
+
+  async isAreaCodeValid(areaCode: string) {
+    return await this.regionInfoController.isAreaCodeValid(areaCode);
+  }
+
+  async loadRegionInfo() {
+    await this.getRCInfoController()
+      .getRegionInfoController()
+      .loadRegionInfo();
   }
 }
 

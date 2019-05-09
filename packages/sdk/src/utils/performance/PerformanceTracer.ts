@@ -32,7 +32,7 @@ class PerformanceTracer {
         const endTime = performance.now();
         const key = this.keys.get(id);
         if (key) {
-          this.tracePerformance(key, { startTime, endTime });
+          this.tracePerformance(key, { startTime, endTime, count });
           mainLogger.info(
             key,
             ':',

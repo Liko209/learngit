@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-import i18next from 'i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { ViewProps } from './types';
 import { JuiMenuList, JuiMenuItem } from 'jui/components';
@@ -14,9 +14,11 @@ import { Presence } from '@/containers/Presence';
 import { isElectron } from '@/common/isUserAgent';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 
+type Props = ViewProps & WithTranslation;
+
 @observer
-class AvatarActionsView extends React.Component<ViewProps> {
-  constructor(props: ViewProps) {
+class AvatarActionsComponent extends React.Component<Props> {
+  constructor(props: Props) {
     super(props);
 
     if (window.jupiterElectron) {
@@ -47,7 +49,7 @@ class AvatarActionsView extends React.Component<ViewProps> {
   handleAboutPage = () => this.props.toggleAboutPage();
 
   render() {
-    const { handleSignOut, currentUserId } = this.props;
+    const { handleSignOut, currentUserId, t } = this.props;
 
     return (
       <JuiAvatarActions
@@ -64,32 +66,34 @@ class AvatarActionsView extends React.Component<ViewProps> {
         <JuiMenuList data-test-automation-id="avatarMenu">
           <OpenProfileDialog id={currentUserId}>
             <JuiMenuItem
-              aria-label={i18next.t('home.viewYourProfile')}
+              aria-label={t('home.viewYourProfile')}
               data-test-automation-id="viewYourProfile"
             >
-              {i18next.t('people.team.profile')}
+              {t('people.team.profile')}
             </JuiMenuItem>
           </OpenProfileDialog>
           {!isElectron && (
             <JuiMenuItem
               onClick={this.handleAboutPage}
-              aria-label={i18next.t('home.aboutRingCentral')}
+              aria-label={t('home.aboutRingCentral')}
               data-test-automation-id="aboutPage"
             >
-              {i18next.t('home.aboutRingCentral')}
+              {t('home.aboutRingCentral')}
             </JuiMenuItem>
           )}
           <JuiMenuItem
             onClick={handleSignOut}
-            aria-label={i18next.t('auth.signOut')}
+            aria-label={t('auth.signOut')}
             data-test-automation-id="signOut"
           >
-            {i18next.t('auth.signOut')}
+            {t('auth.signOut')}
           </JuiMenuItem>
         </JuiMenuList>
       </JuiAvatarActions>
     );
   }
 }
+
+const AvatarActionsView = withTranslation('translations')(AvatarActionsComponent);
 
 export { AvatarActionsView };

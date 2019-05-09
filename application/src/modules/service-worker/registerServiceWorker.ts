@@ -22,8 +22,12 @@ const isLocalhost = Boolean(
 );
 
 export default function register(
-  registeredHandler: (swURL: string) => void,
-  updateInstalledHandler: VoidFunction,
+  registeredHandler: (swURL: string, hasWaitingWorker: boolean) => void,
+  updateInstalledHandler: (
+    inControl: boolean,
+    byWaitingWorker: boolean,
+  ) => void,
+  logInfo: (text: string) => void,
 ) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
@@ -54,6 +58,7 @@ export default function register(
           swUrl,
           registeredHandler,
           updateInstalledHandler,
+          logInfo,
         );
 
         // Add some additional logging to localhost, pointing developers to the
@@ -66,7 +71,12 @@ export default function register(
         });
       } else {
         // Is not local host. Just register service worker
-        registerValidSW(swUrl, registeredHandler, updateInstalledHandler);
+        registerValidSW(
+          swUrl,
+          registeredHandler,
+          updateInstalledHandler,
+          logInfo,
+        );
       }
     };
 
@@ -93,65 +103,132 @@ export default function register(
 
 function registerValidSW(
   swUrl: string,
-  registeredHandler: (swURL: string) => void,
-  updateInstalledHandler: VoidFunction,
+  registeredHandler: (swURL: string, hasWaitingWorker: boolean) => void,
+  updateInstalledHandler: (
+    inControl: boolean,
+    byWaitingWorker: boolean,
+  ) => void,
+  logInfo: (text: string) => void,
 ) {
   console.log(`${logTag}registerValidSW: ${swUrl}`);
   navigator.serviceWorker
     .register(swUrl)
     .then((registration: ServiceWorkerRegistration) => {
-      console.log(`${logTag}registered ${swUrl}`);
+      logInfo(`registered ${swUrl}`);
       const beforeunloadHandler = () => {
-        console.log(`${logTag}beforeunload, waiting ${!!registration.waiting}`);
+        logInfo(`beforeunload, waiting ${!!registration.waiting}`);
         registration.waiting &&
           registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       };
       window.addEventListener('beforeunload', beforeunloadHandler);
 
       registration.onupdatefound = () => {
-        console.log(`${logTag}onupdatefound`);
+        logInfo('onupdatefound');
         const installingWorker = registration.installing;
         if (installingWorker) {
-          installingWorker.onstatechange = () => {
-            console.log(`${logTag}onstatechange: ${installingWorker.state}`);
-            if (installingWorker.state === 'installed') {
-              if (navigator.serviceWorker.controller) {
-                // At this point, the old content will have been purged and
-                // the fresh content will have been added to the cache.
-                // It's the perfect time to display a 'New content is
-                // available; please refresh.' message in your web app.
-                console.log(
-                  `${logTag}New content is available; please refresh.`,
-                );
-
-                setTimeout(() => {
-                  updateInstalledHandler();
-                });
-              } else {
-                // At this point, everything has been precached.
-                // It's the perfect time to display a
-                // 'Content is cached for offline use.' message.
-                console.log(`${logTag}Content is cached for offline use.`);
-              }
-            }
-          };
+          registerInstallingEvent(
+            installingWorker,
+            updateInstalledHandler,
+            logInfo,
+          );
+        } else {
+          logInfo('no installingWorker when onupdatefound');
         }
       };
 
-      registeredHandler(swUrl);
+      registeredHandler(swUrl, hasWaitingWorker(registration));
+
+      // In case there is installing worker before registering get onupdatefound event.
+      const installingWorker = registration.installing;
+      if (installingWorker) {
+        logInfo(
+          `has installing worker before register state event: ${
+            installingWorker.state
+          }`,
+        );
+        registerInstallingEvent(
+          installingWorker,
+          updateInstalledHandler,
+          logInfo,
+        );
+      }
+
+      // In case there is waiting worker before registering get onupdatefound event
+      const waitingWorker = registration.waiting;
+      if (waitingWorker) {
+        logInfo('has waiting worker before register state event');
+        handleNewContentAvailable(true, updateInstalledHandler, logInfo);
+      }
     })
     .catch((error: any) => {
-      console.error(
-        `${logTag}Error during service worker registration:`,
-        error,
-      );
+      logInfo(`${logTag}Error during service worker registration: ${error}`);
     });
+}
+
+function hasWaitingWorker(registration: ServiceWorkerRegistration) {
+  return (
+    (registration.installing &&
+      registration.installing.state === 'installed') ||
+    !!registration.waiting
+  );
+}
+
+function registerInstallingEvent(
+  installingWorker: ServiceWorker,
+  updateInstalledHandler: (
+    inControl: boolean,
+    byWaitingWorker: boolean,
+  ) => void,
+  logInfo: (text: string) => void,
+) {
+  if (installingWorker.state === 'installed') {
+    logInfo('installed before register state event');
+    handleNewContentAvailable(true, updateInstalledHandler, logInfo);
+  } else {
+    installingWorker.onstatechange = () => {
+      logInfo(`onstatechange: ${installingWorker.state}`);
+      if (installingWorker.state === 'installed') {
+        handleNewContentAvailable(false, updateInstalledHandler, logInfo);
+      }
+    };
+  }
+}
+
+function handleNewContentAvailable(
+  byWaitingWorker: boolean,
+  updateInstalledHandler: (
+    inControl: boolean,
+    byWaitingWorker: boolean,
+  ) => void,
+  logInfo: (text: string) => void,
+) {
+  if (navigator.serviceWorker.controller) {
+    // At this point, the old content will have been purged and
+    // the fresh content will have been added to the cache.
+    // It's the perfect time to display a 'New content is
+    // available; please refresh.' message in your web app.
+    logInfo('New content is available; please refresh.');
+  } else {
+    // At this point, everything has been precached.
+    // It's the perfect time to display a
+    // 'Content is cached for offline use.' message.
+    logInfo('Content is cached for offline use.');
+  }
+
+  const inControl = !!navigator.serviceWorker.controller;
+  setTimeout(() => {
+    updateInstalledHandler(inControl, byWaitingWorker);
+  },         5000);
 }
 
 function checkValidServiceWorker(
   swUrl: string,
-  registeredHandler: (swURL: string) => void,
-  updateInstalledHandler: VoidFunction,
+  registeredHandler: (swURL: string, hasWaitingWorker: boolean) => void,
+  updateInstalledHandler: (
+    inControl: boolean,
+    byWaitingWorker: boolean,
+  ) => void,
+  logInfo: (text: string) => void,
 ) {
   // Check if the service worker can be found. If it can't reload the page.
   fetch(swUrl)
@@ -171,7 +248,12 @@ function checkValidServiceWorker(
         );
       } else {
         // Service worker found. Proceed as normal.
-        registerValidSW(swUrl, registeredHandler, updateInstalledHandler);
+        registerValidSW(
+          swUrl,
+          registeredHandler,
+          updateInstalledHandler,
+          logInfo,
+        );
       }
     })
     .catch(() => {

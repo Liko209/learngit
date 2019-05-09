@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel } from '../../model';
+import { IdModel, ModelIdType } from '../../model';
 import { IEntityPersistentController } from '../interface/IEntityPersistentController';
 import { IDao } from '../../../framework/dao';
 import notificationCenter, {
@@ -12,11 +12,13 @@ import notificationCenter, {
 } from '../../../service/notificationCenter';
 import { EVENT_TYPES } from '../../../service/constants';
 import { IEntityCacheController } from '../interface/IEntityCacheController';
-class EntityPersistentController<T extends IdModel = IdModel>
-  implements IEntityPersistentController<T> {
+class EntityPersistentController<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+> implements IEntityPersistentController<T, IdType> {
   constructor(
-    public dao?: IDao<T>,
-    public entityCacheController?: IEntityCacheController<T>,
+    public dao?: IDao<T, IdType>,
+    public entityCacheController?: IEntityCacheController<T, IdType>,
   ) {
     this._subscribeEntityChange();
   }
@@ -49,7 +51,7 @@ class EntityPersistentController<T extends IdModel = IdModel>
     }
   }
 
-  async delete(key: number): Promise<void> {
+  async delete(key: IdType): Promise<void> {
     if (this.dao) {
       await this.dao.delete(key);
     }
@@ -58,7 +60,7 @@ class EntityPersistentController<T extends IdModel = IdModel>
     }
   }
 
-  async bulkDelete(keys: number[]): Promise<void> {
+  async bulkDelete(keys: IdType[]): Promise<void> {
     if (this.dao) {
       await this.dao.bulkDelete(keys);
     }
@@ -85,7 +87,13 @@ class EntityPersistentController<T extends IdModel = IdModel>
     }
   }
 
-  async get(key: number): Promise<T | null> {
+  saveToMemory(entities: T[]): void {
+    if (this.entityCacheController) {
+      this.entityCacheController.bulkPut(entities);
+    }
+  }
+
+  async get(key: IdType): Promise<T | null> {
     let item: T | null = null;
     if (this.entityCacheController) {
       item = await this.entityCacheController.get(key);
@@ -97,7 +105,7 @@ class EntityPersistentController<T extends IdModel = IdModel>
     return item;
   }
 
-  async batchGet(ids: number[], order?: boolean): Promise<T[]> {
+  async batchGet(ids: IdType[], order?: boolean): Promise<T[]> {
     let items: T[] = [];
     if (this.entityCacheController) {
       items = await this.entityCacheController.batchGet(ids, order);
@@ -105,6 +113,9 @@ class EntityPersistentController<T extends IdModel = IdModel>
 
     if (items.length !== ids.length && this.dao) {
       items = await this.dao.batchGet(ids, order);
+      if (items && items.length && this.entityCacheController) {
+        await this.entityCacheController.bulkPut(items);
+      }
     }
 
     return items;
@@ -118,6 +129,9 @@ class EntityPersistentController<T extends IdModel = IdModel>
 
     if (items.length === 0 && this.dao) {
       items = await this.dao.getAll();
+      if (items && items.length && this.entityCacheController) {
+        await this.entityCacheController.bulkPut(items);
+      }
     }
 
     return items;
@@ -170,14 +184,16 @@ class EntityPersistentController<T extends IdModel = IdModel>
       const eventKey: string = this.getEntityNotificationKey();
       notificationCenter.on(
         eventKey,
-        (payload: NotificationEntityPayload<T>) => {
+        (payload: NotificationEntityPayload<T, IdType>) => {
           this._onCacheEntitiesChange(payload);
         },
       );
     }
   }
 
-  private async _onCacheEntitiesChange(payload: NotificationEntityPayload<T>) {
+  private async _onCacheEntitiesChange(
+    payload: NotificationEntityPayload<T, IdType>,
+  ) {
     if (!this.entityCacheController) {
       return;
     }

@@ -23,6 +23,11 @@ test.meta(<ITestMeta>{
   maintainers: ['Aaron Huo'],
   keywords: ['ProfileScreen'],
 })('Check the height adaptive of the profile dialog', async (t) => {
+  if (await H.isElectron() || await H.isEdge()) {
+    await h(t).log('This case (resize) is not working on Electron or Edge!');
+    return;
+  }
+  
   const company = h(t).rcData.mainCompany;
   const [loginUser, ...rest] = company.users;
   const otherUsers = rest.map(({ rcId: id }) => ({ id }));

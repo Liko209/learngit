@@ -20,7 +20,6 @@ import { App } from './container';
 
 import { RouterService } from '@/modules/router';
 import { config as appConfig } from './app.config';
-import { HomeService } from '@/modules/home';
 
 import './index.css';
 import {
@@ -36,6 +35,7 @@ import { SyncGlobalConfig } from 'sdk/module/sync/config';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { Pal } from 'sdk/pal';
+import { isProductionVersion } from '@/common/envUtils';
 
 /**
  * The root module, we call it AppModule,
@@ -43,9 +43,7 @@ import { Pal } from 'sdk/pal';
  */
 class AppModule extends AbstractModule {
   @inject(RouterService) private _routerService: RouterService;
-  @inject(HomeService) private _homeService: HomeService;
   @inject(AppStore) private _appStore: AppStore;
-  private _subModuleRegistered: boolean = false;
   private _umiEventKeyMap: Map<UMI_SECTION_TYPE, GLOBAL_KEYS>;
   private _logControlManager: LogControlManager = LogControlManager.instance();
 
@@ -61,9 +59,7 @@ class AppModule extends AbstractModule {
   }
 
   private async _init() {
-    this._logControlManager.setDebugMode(
-      process.env.NODE_ENV === 'development',
-    );
+    this._logControlManager.setDebugMode(isProductionVersion);
     const { search } = window.location;
     const { state } = parse(search, { ignoreQueryPrefix: true });
     if (state && state.length) {
@@ -129,28 +125,8 @@ class AppModule extends AbstractModule {
             window.jupiterElectron.setContextInfo(contextInfo);
           errorReporter.setUserContextInfo(contextInfo);
         });
-
-        if (!this._subModuleRegistered) {
-          // load phone parser module
-          PhoneParserUtility.loadModule();
-
-          // TODO register subModule according to account profile
-          this._homeService.registerSubModules([
-            'dashboard',
-            'message',
-            'telephony',
-            'meeting',
-            'contact',
-            'calendar',
-            'task',
-            'note',
-            'file',
-            'setting',
-          ]);
-
-          // Avoid duplicate register
-          this._subModuleRegistered = true;
-        }
+        // load phone parser module
+        PhoneParserUtility.loadModule();
       }
     };
 

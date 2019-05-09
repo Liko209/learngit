@@ -141,10 +141,12 @@ class MetricService {
     let dtoArr = new Array();
     let sceneId = sceneDto.id;
     let artifacts = scene.getArtifacts();
-    let { ProcessGatherer } = artifacts;
+    let { ProcessGatherer, ProcessGatherer2 } = artifacts;
     let metrics: Array<PerformanceMetric>;
     if (ProcessGatherer) {
       metrics = ProcessGatherer.metrics;
+    } else if (ProcessGatherer2) {
+      metrics = ProcessGatherer2.metrics;
     }
 
     if (!metrics || metrics.length == 0) {
@@ -198,14 +200,15 @@ class MetricService {
     let sceneId = sceneDto.id;
     let artifacts = scene.getArtifacts();
     let gatherer = artifacts[name];
-    let apiTimes = [],
-      dtoArr = [];
+    let apiTimes, dtoArr;
 
     if (!gatherer) {
       return;
     }
 
     for (let key of Object.keys(gatherer)) {
+      dtoArr = [];
+      apiTimes = [];
       let item = gatherer[key];
       let summaryDto = {
         sceneId,
@@ -219,17 +222,19 @@ class MetricService {
         apiAvgTime: 0,
         apiMinTime: 0,
         apiTop90Time: 0,
-        apiTop95Time: 0
+        apiTop95Time: 0,
+        apiHandleCount: -1
       };
 
       if (item.api) {
         apiTimes = apiTimes.concat(item.api);
       }
 
-      let sum, arr, costTime, min, max;
+      let sum, arr, costTime, min, max, maxHanleCount;
       if (apiTimes.length > 0) {
         sum = 0;
         max = 0;
+        maxHanleCount = -1;
         min = 60000000;
         arr = [];
         for (let t of apiTimes) {
@@ -240,12 +245,18 @@ class MetricService {
           sum += costTime;
           min = costTime > min ? min : costTime;
           max = costTime > max ? costTime : max;
+          if (t.count >= 0) {
+            maxHanleCount = t.count > maxHanleCount ? t.count : maxHanleCount;
+          } else {
+            t.count = -1;
+          }
           arr.push(costTime);
           dtoArr.push({
             type: "API",
             startTime: t.startTime,
             endTime: t.endTime,
-            costTime: costTime
+            costTime: costTime,
+            handleCount: t.count
           });
         }
         arr.sort((a, b) => {
@@ -256,11 +267,12 @@ class MetricService {
         summaryDto.apiMinTime = min;
         summaryDto.apiTop90Time = arr[parseInt((0.9 * arr.length).toString())];
         summaryDto.apiTop95Time = arr[parseInt((0.95 * arr.length).toString())];
+        summaryDto.apiHandleCount = maxHanleCount;
       }
 
-      let summary = await LoadingTimeSummaryDto.create(summaryDto);
-
       if (dtoArr.length > 0) {
+        let summary = await LoadingTimeSummaryDto.create(summaryDto);
+
         for (let dto of dtoArr) {
           dto["summaryId"] = summary.id;
         }

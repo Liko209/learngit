@@ -11,9 +11,9 @@ class ConversationPage extends Page {
     'div[data-test-automation-id="jui-stream-wrapper"] div[role="progressbar"]';
 
   private card: string =
-    'div[data-test-automation-id="jui-stream"] section div[data-name="conversation-card"]';
+    'div[data-test-automation-id="virtualized-list"] div div[data-name="conversation-card"]';
 
-  private panel = 'div[data-test-automation-id="jui-stream-wrapper"] > div';
+  private panel = 'div[data-test-automation-id="virtualized-list"]';
 
   async swichConversationById(id: string) {
     let conversation = `li[data-group-id="${id}"]`;
@@ -27,7 +27,7 @@ class ConversationPage extends Page {
 
     await PptrUtils.scrollBy(page, this.panel, 0, -1000);
     await PptrUtils.scrollBy(page, this.panel, 0, -1000);
-
+    
     await bluebird.delay(200);
   }
 }

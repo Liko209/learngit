@@ -1,4 +1,4 @@
-import { Delta, DeltaOperation, StringMap } from 'quill';
+import { DeltaStatic, DeltaOperation, StringMap } from 'quill';
 
 const _preInline = {
   link: (attr: StringMap, insert: any) => {
@@ -39,15 +39,17 @@ const _block = {
 
 const getLastLine = (lines: string[]) => (lines.length > 0 ? lines.pop() : '');
 
-function markdownFromDelta(delta: Delta) {
+function markdownFromDelta(delta: DeltaStatic) {
   let block = false;
   const lines: string[] = [];
   const extra: { ordered: number } = { ordered: 0 };
   const mentionIds: number[] = [];
-  delta.forEach((op: DeltaOperation) => {
+  const ops = delta && delta.ops || [];
+  ops.forEach((op: DeltaOperation, index: number, ops: DeltaOperation[]) => {
     const attr = op.attributes;
     let insert = op.insert;
-    if (typeof insert === 'string') {
+    const lastElement: number = ops.length - 1;
+    if (lastElement === index) {
       insert = insert.replace(/[\n\r]$/, '');
     }
     if (insert.image) {

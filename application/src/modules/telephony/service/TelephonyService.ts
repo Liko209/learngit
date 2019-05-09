@@ -16,13 +16,16 @@ import {
   MAKE_CALL_ERROR_CODE,
   TelephonyCallInfo,
 } from 'sdk/module/telephony/types';
-import { PersonService, ContactType } from 'sdk/module/person';
+import { PersonService } from 'sdk/module/person';
+import { PhoneNumberModel } from 'sdk/module/person/entity';
 import { mainLogger } from 'sdk';
 import { TelephonyStore, CALL_TYPE } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { AccountUserConfig } from 'sdk/module/account/config';
 
 const ANONYMOUS = 'anonymous';
+const DIRECT_NUMBER = 'DirectNumber';
 class TelephonyService {
   static TAG: string = '[UI TelephonyService] ';
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
@@ -52,7 +55,11 @@ class TelephonyService {
     this._callId = callId;
     this._telephonyStore.callType = CALL_TYPE.INBOUND;
     this._telephonyStore.callerName = fromName;
-    this._telephonyStore.phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
+    const phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
+    if (phoneNumber !== this._telephonyStore.phoneNumber) {
+      this._telephonyStore.isContactMatched = false;
+      this._telephonyStore.phoneNumber = phoneNumber;
+    }
     this._telephonyStore.callId = callId;
     this._telephonyStore.incomingCall();
     mainLogger.info(
@@ -181,8 +188,29 @@ class TelephonyService {
     );
   }
 
+  getDefaultCallerId = () => {
+    const userConfig = new AccountUserConfig();
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
+    const person = personService.getSynchronously(userConfig.getGlipUserId());
+    if (person && person.rc_phone_numbers) {
+      const res = person.rc_phone_numbers.find(
+        (phoneNumber: PhoneNumberModel) => {
+          return phoneNumber.usageType === DIRECT_NUMBER;
+        },
+      );
+      if (res) {
+        return res.phoneNumber;
+      }
+      return '';
+    }
+    return '';
+  }
+
   makeCall = async (toNumber: string) => {
-    const rv = await this._serverTelephonyService.makeCall(toNumber);
+    const callerId = this.getDefaultCallerId();
+    const rv = await this._serverTelephonyService.makeCall(toNumber, callerId);
 
     switch (true) {
       case MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION === rv: {
@@ -251,6 +279,10 @@ class TelephonyService {
     this._telephonyStore.closeDialer();
   }
 
+  maximize = () => {
+    this._telephonyStore.openDialer();
+  }
+
   handleWindow = () => {
     if (this._telephonyStore.isDetached) {
       this._telephonyStore.attachedWindow();
@@ -259,28 +291,19 @@ class TelephonyService {
     this._telephonyStore.detachedWindow();
   }
 
-  muteOrUnmute = (mute: boolean) => {
+  muteOrUnmute = () => {
     if (this._callId) {
+      this._telephonyStore.switchBetweenMuteAndUnmute();
+      const { isMute } = this._telephonyStore;
+      isMute
+        ? this._serverTelephonyService.mute(this._callId)
+        : this._serverTelephonyService.unmute(this._callId);
       mainLogger.info(
-        `${TelephonyService.TAG}${mute ? 'mute' : 'unmute'} call id=${
+        `${TelephonyService.TAG}${isMute ? 'mute' : 'unmute'} call id=${
           this._callId
         }`,
       );
-      mute
-        ? this._serverTelephonyService.mute(this._callId)
-        : this._serverTelephonyService.unmute(this._callId);
     }
-  }
-
-  matchContactByPhoneNumber = async (phone: string) => {
-    const personService = ServiceLoader.getInstance<PersonService>(
-      ServiceConfig.PERSON_SERVICE,
-    );
-
-    return await personService.matchContactByPhoneNumber(
-      phone,
-      ContactType.GLIP_CONTACT,
-    );
   }
 
   getAllCallCount = () => {
@@ -339,6 +362,8 @@ class TelephonyService {
     this._telephonyStore.inputKey(digits);
     return this._serverTelephonyService.dtmf(this._callId as string, digits);
   }
+
+  callComponent = () => import('../container/Call');
 }
 
 export { TelephonyService };

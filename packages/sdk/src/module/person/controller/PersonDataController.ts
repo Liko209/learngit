@@ -12,13 +12,16 @@ import { transform } from '../../../service/utils';
 import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE, ENTITY } from '../../../service/eventKey';
-import { SYNC_SOURCE } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 
 class PersonDataController {
   constructor(public entitySourceController: IEntitySourceController<Person>) {}
 
-  handleTeamRemovedIds = async (people: any[]) => {
+  handleTeamRemovedIds = async (
+    people: any[],
+    changeMap?: Map<string, ChangeModel>,
+  ) => {
     const userConfig = new AccountUserConfig();
     const userId: Number = userConfig.getGlipUserId();
     if (userId) {
@@ -35,32 +38,60 @@ class PersonDataController {
         }
         return false;
       });
-      ids.length &&
-        notificationCenter.emit(SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FROM, ids);
+      if (ids.length) {
+        if (changeMap) {
+          changeMap.set(SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FROM, {
+            entities: ids,
+          });
+        } else {
+          notificationCenter.emit(
+            SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FROM,
+            ids,
+          );
+        }
+      }
     }
   }
 
-  handleIncomingData = async (persons: Raw<Person>[], source: SYNC_SOURCE) => {
+  handleIncomingData = async (
+    persons: Raw<Person>[],
+    source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
+  ) => {
     if (persons.length === 0) {
       return;
     }
     const transformedData: Person[] = persons.map((item: Raw<Person>) =>
       transform(item),
     );
-    this.handleTeamRemovedIds(transformedData);
-    this._saveDataAndDoNotification(transformedData, source);
+    this.handleTeamRemovedIds(transformedData, changeMap);
+    this._saveDataAndDoNotification(transformedData, source, changeMap);
   }
 
-  private _saveDataAndDoNotification(persons: Person[], source: SYNC_SOURCE) {
-    const deactivatedData = persons.filter(
-      (item: any) => item.deactivated === true,
-    );
-
-    const normalData = persons.filter((item: any) => item.deactivated !== true);
+  private _saveDataAndDoNotification(
+    persons: Person[],
+    source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
+  ) {
+    const deactivatedData: Person[] = [];
+    const normalData: Person[] = [];
+    persons.forEach((person: Person) => {
+      if (person) {
+        if (person.deactivated) {
+          deactivatedData.push(person);
+        } else {
+          normalData.push(person);
+        }
+      }
+    });
 
     this._saveData(deactivatedData, normalData);
     if (shouldEmitNotification(source)) {
-      notificationCenter.emitEntityUpdate(ENTITY.PERSON, persons);
+      if (changeMap) {
+        changeMap.set(ENTITY.PERSON, { entities: persons });
+      } else {
+        notificationCenter.emitEntityUpdate(ENTITY.PERSON, persons);
+      }
     }
   }
 

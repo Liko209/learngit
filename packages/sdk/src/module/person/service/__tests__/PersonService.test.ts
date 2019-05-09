@@ -47,6 +47,7 @@ describe('PersonService', () => {
       expect(personController.handleIncomingData).toBeCalledWith(
         persons,
         SYNC_SOURCE.INDEX,
+        undefined,
       );
     });
   });

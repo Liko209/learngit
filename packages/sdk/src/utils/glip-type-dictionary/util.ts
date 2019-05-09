@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-// http://git.ringcentral.com:8888/Glip/glip-type-dictionary
+// http://git.ringcentral.com/Glip/glip-type-dictionary
 
 const INTEGRATION_LOWER_ID = 7000;
 const TYPE_ID_MASK = 0x1fff;

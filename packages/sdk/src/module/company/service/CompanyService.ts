@@ -14,7 +14,7 @@ import { daoManager } from '../../../dao';
 import Api from '../../../api/api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { Raw } from '../../../framework/model';
-import { SYNC_SOURCE } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 
 class CompanyService extends EntityBaseService<Company> {
@@ -45,8 +45,16 @@ class CompanyService extends EntityBaseService<Company> {
     return await this.getCompanyController().getCompanyEmailDomain(id);
   }
 
-  async handleIncomingData(companies: Raw<Company>[], source: SYNC_SOURCE) {
-    await this.getCompanyController().handleCompanyData(companies, source);
+  async handleIncomingData(
+    companies: Raw<Company>[],
+    source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
+  ) {
+    await this.getCompanyController().handleCompanyData(
+      companies,
+      source,
+      changeMap,
+    );
   }
 
   protected getCompanyController() {
@@ -62,6 +70,10 @@ class CompanyService extends EntityBaseService<Company> {
 
   async isUserCompanyTelephonyOn() {
     return await this.getCompanyController().isUserCompanyTelephonyOn();
+  }
+
+  async getBrandType() {
+    return await this.getCompanyController().getBrandType();
   }
 }
 

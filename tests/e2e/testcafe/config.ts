@@ -67,6 +67,7 @@ const REPORTER = process.env.REPORTER || 'spec';
 const SCREENSHOTS_PATH = path.join(process.env.SCREENSHOTS_PATH || '/tmp', LANGUAGE_CODE);
 const SCREENSHOT_ON_FAIL = !(process.env.SCREENSHOT_ON_FAIL === 'false');
 const SCREENSHOT_WEBP_QUALITY = Number(process.env.SCREENSHOT_WEBP_QUALITY);
+const SCREENSHOT_WEBP_SCALE = Number(process.env.SCREENSHOT_WEBP_SCALE) <= 1 ? Number(process.env.SCREENSHOT_WEBP_SCALE) : 0.5;
 const CONCURRENCY = Number(process.env.CONCURRENCY || '1');
 const SHUFFLE_FIXTURES = process.env.SHUFFLE_FIXTURES === 'true';
 const FIXTURES = flattenGlobs(process.env.FIXTURES ? parseArgs(process.env.FIXTURES) : configLoader.fixtures, SHUFFLE_FIXTURES);
@@ -82,12 +83,14 @@ const SKIP_CONSOLE_WARN = !(process.env.SKIP_CONSOLE_WARN === 'false');
 const ENABLE_SSL = process.env.ENABLE_SSL === 'true';
 const SELENIUM_CAPABILITIES = process.env.SELENIUM_CAPABILITIES || 'capabilities.json' // ref: https://github.com/link89/testcafe-browser-provider-selenium/tree/customize-chrome-option
 const DISABLE_SCREENSHOT = process.env.DISABLE_SCREENSHOT === 'true';
+const ENABLE_NOTIFICATION = process.env.ENABLE_NOTIFICATION === 'true';
 
 const RUNNER_OPTS = {
   REPORTER,
   SCREENSHOT_ON_FAIL,
   SCREENSHOTS_PATH,
   SCREENSHOT_WEBP_QUALITY,
+  SCREENSHOT_WEBP_SCALE,
   CONCURRENCY,
   FIXTURES,
   BROWSERS,
@@ -143,4 +146,5 @@ export {
   MOCK_SERVER_URL,
   MOCK_ENV,
   MOCK_AUTH_URL,
+  ENABLE_NOTIFICATION
 };

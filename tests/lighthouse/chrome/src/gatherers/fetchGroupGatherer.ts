@@ -2,61 +2,107 @@
  * @Author: doyle.wu
  * @Date: 2018-12-12 12:56:30
  */
-const Gatherer = require("lighthouse/lighthouse-core/gather/gatherers/gatherer");
+import { BaseGatherer } from ".";
 import { GroupPage } from "../pages";
+import { JupiterUtils } from "../utils";
+import { Config } from "../config";
+import * as bluebird from 'bluebird';
 
-class FetchGroupGatherer extends Gatherer {
+class FetchGroupGatherer extends BaseGatherer {
   private artifacts: Map<string, Array<any>> = new Map();
+  private metricKeys: Array<string> = [
+    "group_section_fetch_teams",
+    "group_section_fetch_favorites",
+    "group_section_fetch_direct_messages"
+  ];
 
-  beforePass(passContext) { }
-
-  async pass(passContext) {
-    let groupPage = new GroupPage(passContext);
-
-    let page = await groupPage.page();
-    let keys = [
-      "group_section_fetch_teams",
-      "group_section_fetch_favorites",
-      "group_section_fetch_direct_messages"
-    ];
-    for (let k of keys) {
-      this.artifacts.set(k, []);
-    }
-
-    for (let i = 0; i < 40; i++) {
-      try {
-        await page.reload({ waitUntil: "networkidle2" });
-
-        await groupPage.waitForCompleted();
-
-        let metrics = await page.evaluate(() => {
-          return performance["jupiter"];
-        });
-
-        for (let k of keys) {
-          if (metrics[k] && metrics[k].length > 0) {
-            this.artifacts.set(k, this.artifacts.get(k).concat(metrics[k]));
-          }
-        }
-      } catch (err) { }
+  constructor() {
+    super();
+    for (let key of this.metricKeys) {
+      this.artifacts.set(key, []);
     }
   }
 
-  async afterPass(passContext) {
-    return {
-      group_section_fetch_teams: {
-        api: this.artifacts.get("group_section_fetch_teams"),
-        ui: []
-      },
-      group_section_fetch_favorites: {
-        api: this.artifacts.get("group_section_fetch_favorites"),
-        ui: []
-      },
-      group_section_fetch_direct_messages: {
-        api: this.artifacts.get("group_section_fetch_direct_messages"),
-        ui: []
+  async _beforePass(passContext) { }
+
+  async _pass(passContext) {
+  }
+
+  async _afterPass(passContext) {
+    const driver = passContext.driver;
+    let groupPage = new GroupPage(passContext);
+    const { url } = passContext.settings;
+    const browser = await groupPage.browser();
+
+    let authUrl, page, item, cnt, flag;
+    for (let i = 0; i < Config.sceneRepeatCount; i++) {
+      try {
+        cnt = 10;
+
+        await driver.clearDataForOrigin(url);
+
+        authUrl = await JupiterUtils.getAuthUrl(url, browser);
+
+        page = await groupPage.newPage();
+
+        await page.goto(authUrl);
+
+        // while (cnt-- > 0 && !(await groupPage.waitForCompleted())) {
+        //   await bluebird.delay(2000);
+        // }
+
+        cnt = 10;
+        while (cnt-- > 0) {
+          flag = true;
+
+          let metric = await page.evaluate(() => {
+            const m = performance["jupiter"];
+            return m;
+          });
+
+          if (!metric) {
+            await bluebird.delay(2000);
+            continue;
+          }
+
+          for (let k of this.metricKeys) {
+            if (!metric[k] || metric[k].length === 0) {
+              flag = false;
+              break;
+            }
+          }
+
+          if (!flag) {
+            await bluebird.delay(2000);
+            continue;
+          }
+
+          for (let k of this.metricKeys) {
+            if (metric[k] && metric[k].length > 0) {
+              item = metric[k].reduce((a, b) => { return (a.endTime - a.startTime) > (b.endTime - b.startTime) ? a : b });
+              this.artifacts.get(k).push(item);
+            }
+          }
+          break;
+        }
+
+        await groupPage.close();
+        page = undefined;
+      } catch (err) {
+        if (page) {
+          await page.close()
+        }
       }
-    };
+    }
+
+    let result = {};
+    for (let key of this.metricKeys) {
+      result[key] = {
+        api: this.artifacts.get(key),
+        ui: []
+      };
+    }
+    return result;
   }
 }
 

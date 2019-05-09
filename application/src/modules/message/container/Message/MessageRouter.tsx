@@ -11,7 +11,7 @@ import {
   Switch,
   withRouter,
 } from 'react-router-dom';
-import i18next from 'i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiResponsiveLayout,
   VISUAL_MODE,
@@ -22,11 +22,11 @@ import {
   goToConversationWithLoading,
   GoToConversationParams,
 } from '@/common/goToConversation';
-import { ConversationPage } from '@/containers/ConversationPage';
-import { LeftRail } from '@/containers/LeftRail';
-import { PostListPage } from '@/containers/PostListPage';
-import { POST_LIST_TYPE } from '@/containers/PostListPage/types';
-import { RightRail, TriggerButton } from '@/containers/RightRail';
+import { ConversationPage } from '../ConversationPage';
+import { LeftRail } from '../LeftRail';
+import { PostListPage } from '../PostListPage';
+import { POST_LIST_TYPE } from '../PostListPage/types';
+import { RightRail, TriggerButton } from '../RightRail';
 import { MessageRouterChangeHelper } from './helper';
 
 const LeftRailResponsive = withResponsive(LeftRail, {
@@ -64,8 +64,10 @@ type State = {
 
 type MessagesWrapperPops = RouteComponentProps<{ subPath: string }>;
 
+type Props = MessagesWrapperPops & WithTranslation;
+
 @observer
-class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
+class MessageRouterComponent extends Component<Props, State> {
   state = {
     messageError: false,
     retryParams: null,
@@ -81,7 +83,7 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
       : MessageRouterChangeHelper.goToLastOpenedGroup();
   }
 
-  componentDidUpdate(prevProps: MessagesWrapperPops) {
+  componentDidUpdate(prevProps: Props) {
     const subPath = this.props.match.params.subPath;
     const prevSubPath = prevProps.match.params.subPath;
     if (subPath !== prevSubPath) {
@@ -89,7 +91,7 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
     }
   }
 
-  componentWillReceiveProps(props: MessagesWrapperPops) {
+  componentWillReceiveProps(props: Props) {
     const { location } = props;
     const { state } = location;
 
@@ -108,7 +110,7 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
   }
 
   render() {
-    const { match } = this.props;
+    const { match, t } = this.props;
     const { messageError } = this.state;
 
     return (
@@ -120,21 +122,21 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
             render={() => (
               <JuiConversationLoading
                 showTip={messageError}
-                tip={i18next.t('message.prompt.MessageLoadingErrorTip')}
-                linkText={i18next.t('common.prompt.tryAgain')}
+                tip={t('message.prompt.MessageLoadingErrorTip')}
+                linkText={t('common.prompt.tryAgain')}
                 onClick={this.retryMessage}
               />
             )}
           />
           <Route
             path={`/messages/${POST_LIST_TYPE.mentions}`}
-            render={(props: MessagesWrapperPops) => (
+            render={(props: Props) => (
               <PostListPage {...props} type={POST_LIST_TYPE.mentions} />
             )}
           />
           <Route
             path={`/messages/${POST_LIST_TYPE.bookmarks}`}
-            render={(props: MessagesWrapperPops) => (
+            render={(props: Props) => (
               <PostListPage {...props} type={POST_LIST_TYPE.bookmarks} />
             )}
           />
@@ -156,6 +158,6 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
   }
 }
 
-const MessageRouter = withRouter(MessageRouterComponent);
+const MessageRouter = withRouter(withTranslation('translations')(MessageRouterComponent));
 
 export { MessageRouter };

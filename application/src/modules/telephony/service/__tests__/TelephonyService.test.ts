@@ -27,7 +27,6 @@ let telephonyService: TelephonyService | null;
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
 jest.mock('../ToastCallError');
-jest.mock('sdk/module/serviceLoader');
 
 const sleep = (time: number): Promise<void> => {
   return new Promise<void>((res, rej) => {
@@ -116,19 +115,28 @@ describe('TelephonyService', () => {
           telephonyService = mockedServerTelephonyService;
           return mockedServerTelephonyService as ServerTelephonyService;
         case ServiceConfig.PERSON_SERVICE:
+          return {
+            getSynchronously: jest.fn(),
+            matchContactByPhoneNumber: jest.fn(),
+          };
+        case ServiceConfig.GLOBAL_CONFIG_SERVICE:
+          return { get: jest.fn() };
+        case ServiceConfig.USER_CONFIG_SERVICE:
+          return { get: jest.fn() };
         default:
           return {} as PersonService;
       }
     });
     container.bind(TelephonyStore).to(TelephonyStore);
     container.bind(TelephonyService).to(TelephonyService);
-
     telephonyService = container.get(TelephonyService);
     (telephonyService as TelephonyService).init();
   });
 
   afterEach(() => {
+    jest.clearAllMocks();
     jest.resetAllMocks();
+    jest.restoreAllMocks();
     container.unbindAll();
     count += 1;
   });
@@ -419,18 +427,31 @@ describe('TelephonyService', () => {
 
     it('should call muteOrUnmute', () => {
       const callId = 'id_4';
-      telephonyService.muteOrUnmute(false);
+      telephonyService.muteOrUnmute();
       expect(mockedServerTelephonyService.mute).not.toBeCalled();
       expect(mockedServerTelephonyService.unmute).not.toBeCalled();
       telephonyService._callId = callId;
-      telephonyService.muteOrUnmute(false);
-      expect(mockedServerTelephonyService.mute).not.toBeCalled();
-      expect(mockedServerTelephonyService.unmute).toBeCalled();
-      jest.resetAllMocks();
-      telephonyService.muteOrUnmute(true);
+      telephonyService.muteOrUnmute();
       expect(mockedServerTelephonyService.mute).toBeCalled();
       expect(mockedServerTelephonyService.unmute).not.toBeCalled();
+      jest.resetAllMocks();
+      telephonyService.muteOrUnmute();
+      expect(mockedServerTelephonyService.mute).not.toBeCalled();
+      expect(mockedServerTelephonyService.unmute).toBeCalled();
       telephonyService._callId = undefined;
+    });
+
+    it('should maximize and minimize', () => {
+      const telephonyStore = telephonyService._telephonyStore;
+      telephonyService._telephonyStore = {
+        closeDialer: jest.fn(),
+        openDialer: jest.fn(),
+      };
+      telephonyService.maximize();
+      expect(telephonyService._telephonyStore.openDialer).toBeCalled();
+      telephonyService.minimize();
+      expect(telephonyService._telephonyStore.closeDialer).toBeCalled();
+      telephonyService._telephonyStore = telephonyStore;
     });
   });
 

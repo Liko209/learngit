@@ -9,9 +9,9 @@ import { AbstractModule } from './AbstractModule';
 
 type Provide<T> =
   | {
-    name: string | interfaces.Newable<T>;
-    value: interfaces.Newable<T>;
-  }
+      name: string | interfaces.Newable<T>;
+      value: interfaces.Newable<T>;
+    }
   | interfaces.Newable<T>;
 
 type ModuleConfig = {

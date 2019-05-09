@@ -10,7 +10,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 import i18nT from '@/utils/i18nT';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-
+import { promisedComputed } from 'computed-async-mobx';
 import { ContentProps, ISearchItemModel, SEARCH_SCOPE } from './types';
 import { SearchViewModel } from '../../common/Search.ViewModel';
 import { toSearchContent } from '../../common/toSearchContent';
@@ -26,14 +26,19 @@ class ContentItemViewModel extends SearchViewModel<ContentProps>
 
   @computed
   get contentText() {
-    const { searchScope, displayName } = this.props;
-
-    if (searchScope === SEARCH_SCOPE.CONVERSATION) {
-      const defaultTip = i18nT('globalSearch.inThisConversation');
-      return `${displayName} ${defaultTip}`;
-    }
+    const { displayName } = this.props;
     return displayName;
   }
+
+  inThisConversation = promisedComputed('', async () => {
+    const { searchScope } = this.props;
+
+    if (searchScope === SEARCH_SCOPE.CONVERSATION) {
+      const defaultTip = await i18nT('globalSearch.inThisConversation');
+      return ` ${defaultTip}`;
+    }
+    return '';
+  });
 
   addRecentRecord = () => {
     const { displayName, searchScope } = this.props;

@@ -14,12 +14,13 @@ import {
   REQUEST_PRIORITY,
   IResponseListener,
   IHandleType,
-  NETWORK_FAIL_TYPE,
+  NETWORK_FAIL_TEXT,
   IRequest,
   NETWORK_VIA,
   REQUEST_WEIGHT,
   SURVIVAL_MODE,
   HA_PRIORITY,
+  RESPONSE_STATUS_CODE,
 } from './network';
 import { networkLogger } from '../log';
 import { NetworkRequestBuilder } from './client';
@@ -59,7 +60,11 @@ class NetworkRequestHandler
         this.isInSurvivalMode() &&
         !this.canHandleInSurvivalMode(request.HAPriority)
       ) {
-        this._callXApiResponseCallback(NETWORK_FAIL_TYPE.SERVER_ERROR, request);
+        this._callXApiResponseCallback(
+          RESPONSE_STATUS_CODE.DEFAULT,
+          NETWORK_FAIL_TEXT.SERVER_ERROR,
+          request,
+        );
         return;
       }
     }
@@ -94,7 +99,11 @@ class NetworkRequestHandler
   cancelRequest(request: IRequest) {
     if (this.isRequestInPending(request)) {
       this.deletePendingRequest(request);
-      this._callXApiResponseCallback(NETWORK_FAIL_TYPE.CANCELLED, request);
+      this._callXApiResponseCallback(
+        RESPONSE_STATUS_CODE.LOCAL_CANCELLED,
+        NETWORK_FAIL_TEXT.CANCELLED,
+        request,
+      );
     } else {
       const consumer = this.consumers.get(request.via);
       if (consumer) {
@@ -109,14 +118,21 @@ class NetworkRequestHandler
     });
   }
 
-  produceRequest(via: NETWORK_VIA): IRequest | undefined {
+  produceRequest(
+    via: NETWORK_VIA,
+    isViaReachable: boolean,
+  ): IRequest | undefined {
     let task;
     Object.keys(REQUEST_PRIORITY).some((index: string) => {
       const priority = REQUEST_PRIORITY[index];
       if (!this.canProduceRequest(priority)) {
         return false;
       }
-      task = this._nextTaskInQueue(via, this.pendingTasks.get(priority));
+      task = this._nextTaskInQueue(
+        via,
+        this.pendingTasks.get(priority),
+        isViaReachable,
+      );
 
       if (task) {
         return true;
@@ -202,7 +218,8 @@ class NetworkRequestHandler
     this.pendingTasks.forEach((queue: RequestTask[]) => {
       queue.forEach((task: RequestTask) => {
         this._callXApiResponseCallback(
-          NETWORK_FAIL_TYPE.CANCELLED,
+          RESPONSE_STATUS_CODE.LOCAL_CANCELLED,
+          NETWORK_FAIL_TEXT.CANCELLED,
           task.request,
         );
       });
@@ -278,11 +295,13 @@ class NetworkRequestHandler
   }
 
   private _callXApiResponseCallback(
-    type: NETWORK_FAIL_TYPE,
+    status: RESPONSE_STATUS_CODE,
+    type: NETWORK_FAIL_TEXT,
     request: IRequest,
   ) {
     const response = HttpResponseBuilder.builder
       .setRequest(request)
+      .setStatus(status)
       .setStatusText(type)
       .build();
     if (request.callback) {
@@ -293,14 +312,21 @@ class NetworkRequestHandler
   private _nextTaskInQueue(
     via: NETWORK_VIA,
     queue?: RequestTask[],
+    isViaReachable?: boolean,
   ): RequestTask | undefined {
     let result;
     if (queue) {
       queue.some((task, index) => {
-        if (task.via() === via || task.via() === NETWORK_VIA.ALL) {
+        if (
+          task.via() === via ||
+          (isViaReachable && task.via() === NETWORK_VIA.ALL)
+        ) {
           result = task;
           queue.splice(index, 1);
           return true;
+        }
+        if (!isViaReachable && task.via() === NETWORK_VIA.ALL) {
+          this._switchTaskVia(task, via);
         }
         return false;
       });
@@ -335,6 +361,12 @@ class NetworkRequestHandler
       source.splice(taskIndex, 1);
       target.push(findTask);
     }
+  }
+
+  private _switchTaskVia(task: RequestTask, excludeVia: NETWORK_VIA) {
+    task.setVia(
+      excludeVia === NETWORK_VIA.HTTP ? NETWORK_VIA.SOCKET : NETWORK_VIA.HTTP,
+    );
   }
 }
 

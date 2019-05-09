@@ -14,6 +14,7 @@ const logTag = '[Upgrade]';
 const DEFAULT_UPDATE_INTERVAL = 60 * 60 * 1000;
 const ONLINE_UPDATE_THRESHOLD = 20 * 60 * 1000;
 const FOREGROUND_RELOAD_THRESHOLD = 60 * 60 * 1000;
+const WAITING_WORKER_FLAG = 'upgrade.waiting_worker_flag';
 
 class Upgrade {
   private _hasNewVersion: boolean = false;
@@ -37,15 +38,40 @@ class Upgrade {
     });
   }
 
-  public setServiceWorkerURL(swURL: string) {
-    mainLogger.info(`${logTag}setServiceWorkerURL: ${swURL}`);
-    this._swURL = swURL;
+  public logInfo(text: string) {
+    mainLogger.info(`${logTag}${text}`);
   }
 
-  public onNewContentAvailable() {
+  public setServiceWorkerURL(swURL: string, hasWaitingWorker: boolean) {
     mainLogger.info(
-      `${logTag}New content available. hasFocus: ${document.hasFocus()}`,
+      `${logTag}setServiceWorkerURL: ${swURL}, hasWaitingWorker: ${hasWaitingWorker}`,
     );
+    this._swURL = swURL;
+
+    if (!hasWaitingWorker) {
+      this._removeWorkingWorkerFlag();
+    }
+  }
+
+  public onNewContentAvailable(
+    isCurrentPageInControl: boolean,
+    isByWaitingWorker: boolean,
+  ) {
+    mainLogger.info(
+      `${logTag}onNewContentAvailable. hasFocus: ${document.hasFocus()}, control: ${isCurrentPageInControl}, byWaitingWorker: ${isByWaitingWorker}`,
+    );
+    if (isByWaitingWorker) {
+      const workingWorkerFlag = this._getWorkingWorkerFlag();
+      if (!!workingWorkerFlag) {
+        mainLogger.info(
+          `${logTag} Ignore upgrade due to there's waiting worker flag: ${workingWorkerFlag}`,
+        );
+        return;
+      }
+
+      this._setWorkingWorkerFlag();
+    }
+
     this._hasNewVersion = true;
 
     if (document.hasFocus()) {
@@ -70,18 +96,44 @@ class Upgrade {
     }
   }
 
+  private _getWorkingWorkerFlag() {
+    return window.sessionStorage.getItem(WAITING_WORKER_FLAG);
+  }
+  private _setWorkingWorkerFlag() {
+    window.sessionStorage.setItem(
+      WAITING_WORKER_FLAG,
+      new Date().toISOString(),
+    );
+  }
+  private _removeWorkingWorkerFlag() {
+    window.sessionStorage.removeItem(WAITING_WORKER_FLAG);
+  }
+
   private _queryIfHasNewVersion() {
     if (!window.navigator.onLine) {
-      mainLogger.info(`${logTag}Ignore update due to offline`);
+      this.logInfo('Ignore update due to offline');
       return;
     }
 
     if (this._swURL && navigator.serviceWorker) {
-      mainLogger.info(`${logTag}Will check new version`);
+      this.logInfo('Will check new version');
       navigator.serviceWorker
         .getRegistration(this._swURL)
         .then((registration: ServiceWorkerRegistration) => {
           this._lastCheckTime = new Date();
+
+          const activeWorker = registration.active;
+          const installingWorker = registration.installing;
+          const waitingWorker = registration.waiting;
+          mainLogger.info(
+            `${logTag}active[${!!activeWorker}]${
+              !!activeWorker ? activeWorker.state : ''
+            }, installing[${!!installingWorker}]${
+              !!installingWorker ? installingWorker.state : ''
+            }, waiting[${!!waitingWorker}]${
+              !!waitingWorker ? waitingWorker.state : ''
+            }`,
+          );
 
           registration
             .update()
@@ -97,6 +149,11 @@ class Upgrade {
             });
           mainLogger.info(`${logTag}Checking new version`);
         });
+    } else {
+      this.logInfo(
+        `Query no started. _swURL ${!!this
+          ._swURL}, ${!!navigator.serviceWorker}`,
+      );
     }
   }
 

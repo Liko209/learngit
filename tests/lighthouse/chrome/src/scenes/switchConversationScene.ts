@@ -13,11 +13,8 @@ class SwitchConversationScene extends Scene {
   private convrsationIds: Array<string> = Config.switchConversationIds;
 
   async preHandle() {
-    this.config = SceneConfigFactory.getSimplifyConfig({ fpsMode: this.fpsMode });
+    this.config = SceneConfigFactory.getCommonLoginConfig({ fpsMode: this.fpsMode });
 
-    this.config.passes[0].gatherers.unshift({
-      instance: new LoginGatherer()
-    });
     this.config.passes[0].gatherers.unshift({
       instance: new SwitchConversationGatherer(this.convrsationIds)
     });
@@ -41,6 +38,10 @@ class SwitchConversationScene extends Scene {
   }
 
   supportFps(): boolean {
+    return true;
+  }
+
+  supportDashboard(): boolean {
     return true;
   }
 }

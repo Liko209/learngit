@@ -24,6 +24,8 @@ import { IGroupService } from '../../group/service/IGroupService';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 import { SortUtils } from '../../../framework/utils';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { ChangeModel } from '../../sync/types';
+import GroupService from '../../group';
 
 class PostDataController {
   constructor(
@@ -63,7 +65,11 @@ class PostDataController {
    * 3, handlePreInsert
    * 4, filterAndSavePosts
    */
-  async handleIndexPosts(data: Raw<Post>[], maxPostsExceed: boolean) {
+  async handleIndexPosts(
+    data: Raw<Post>[],
+    maxPostsExceed: boolean,
+    changeMap?: Map<string, ChangeModel>,
+  ) {
     if (data.length) {
       let posts = this.transformData(data);
       this._handleModifiedDiscontinuousPosts(
@@ -76,7 +82,7 @@ class PostDataController {
         LOG_INDEX_DATA_POST,
         `filterAndSavePosts() before posts.length: ${posts && posts.length}`,
       );
-      posts = await this.filterAndSavePosts(posts, true);
+      posts = await this.filterAndSavePosts(posts, true, changeMap);
       mainLogger.info(
         LOG_INDEX_DATA_POST,
         `filterAndSavePosts() after posts.length: ${posts && posts.length}`,
@@ -84,7 +90,11 @@ class PostDataController {
       if (result && result.deleteMap.size > 0) {
         result.deleteMap.forEach((value: number[], key: number) => {
           this._groupService.updateHasMore(key, QUERY_DIRECTION.OLDER, true);
-          notificationCenter.emit(`${ENTITY.FOC_RELOAD}.${key}`, value);
+          if (changeMap) {
+            changeMap.set(`${ENTITY.FOC_RELOAD}.${key}`, { entities: value });
+          } else {
+            notificationCenter.emit(`${ENTITY.FOC_RELOAD}.${key}`, value);
+          }
         });
       }
       return posts;
@@ -126,6 +136,12 @@ class PostDataController {
    * For bookmark/@mentions/pin post/reply
    */
   private async _handleModifiedDiscontinuousPosts(posts: Post[]) {
+    if (!posts || !posts.length) {
+      mainLogger.info(
+        '_handleModifiedDiscontinuousPosts() return directly due to not posts',
+      );
+      return;
+    }
     const postDiscontinuousDao = daoManager.getDao(PostDiscontinuousDao);
     const deactivatedPosts: Post[] = [];
     const normalPosts: Post[] = [];
@@ -274,28 +290,27 @@ class PostDataController {
     return Array.from(postGroupMap.values());
   }
 
-  async filterAndSavePosts(posts: Post[], save: boolean): Promise<Post[]> {
+  async filterAndSavePosts(
+    posts: Post[],
+    save: boolean,
+    changeMap?: Map<string, ChangeModel>,
+  ): Promise<Post[]> {
     if (!posts || !posts.length) {
       return posts;
     }
-    const groups = _.groupBy(posts, 'group_id');
+
     const postDao = daoManager.getDao(PostDao);
-    const normalPosts = _.flatten(
-      await Promise.all(
-        Object.values(groups).map(async (posts: Post[]) => {
-          const normalPosts = await baseHandleData(
-            {
-              data: posts,
-              dao: postDao,
-              eventKey: ENTITY.POST,
-              noSavingToDB: !save,
-            },
-            this.filterFunc,
-          );
-          return normalPosts;
-        }),
-      ),
+    const normalPosts = await baseHandleData(
+      {
+        changeMap,
+        data: posts,
+        dao: postDao,
+        eventKey: ENTITY.POST,
+        noSavingToDB: !save,
+      },
+      this.filterFunc,
     );
+
     // check if post's owner group exist in local or not
     // seems we only need check normal posts, don't need to check deactivated data
     await this._ensureGroupExist(normalPosts);
@@ -327,7 +342,7 @@ class PostDataController {
       groupIds.map(async (groupId: string) => {
         const posts: Post[] = groupPosts[groupId];
         if (this._isGroupPostsDiscontinuous(posts)) {
-          const oldestPost = await postDao.queryOldestPostByGroupId(
+          const oldestPost = await postDao.queryOldestPostCreationTimeByGroupId(
             Number(groupId),
           );
           let editedNewestPostCreationTime = -1;
@@ -361,9 +376,10 @@ class PostDataController {
               deletePostIds.concat(deletePosts.map((post: Post) => post.id));
             }
           }
+          const postIds = posts && posts.map(post => post._id);
           mainLogger.info(
             LOG_INDEX_DATA_POST,
-            `removeDiscontinuousPosts() remove groupId: ${groupId}, deletePostIds: ${deletePostIds}`,
+            `removeDiscontinuousPosts() remove groupId: ${groupId}, deletePostIds: ${deletePostIds}, postIds:${postIds}`,
           );
         }
       }),
@@ -375,6 +391,7 @@ class PostDataController {
         [...deleteGroupIdSet],
         QUERY_DIRECTION.OLDER,
       );
+
       return deletePostIds;
     }
     return [];
@@ -394,15 +411,30 @@ class PostDataController {
 
   private async _ensureGroupExist(posts: Post[]): Promise<void> {
     if (posts.length) {
-      posts.forEach(async (post: Post) => {
+      const notExistedGroups: number[] = [];
+      const groupService = this._groupService as GroupService;
+      posts.forEach((post: Post) => {
+        const group = groupService.getSynchronously(post.group_id);
+        if (!group) {
+          notExistedGroups.push(post.group_id);
+        }
+      });
+
+      if (notExistedGroups.length) {
+        mainLogger.info(
+          LOG_INDEX_DATA_POST,
+          `_ensureGroupExist() notExistedGroups.length: ${
+            notExistedGroups.length
+          }`,
+        );
         try {
-          await this._groupService.getById(post.group_id);
+          await groupService.batchGet(notExistedGroups);
         } catch (error) {
           mainLogger
             .tags('PostDataController')
-            .info(`get group ${post.group_id} fail`, error);
+            .info('get group error =', error);
         }
-      });
+      }
     }
   }
 

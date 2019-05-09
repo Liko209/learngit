@@ -13,9 +13,6 @@ class FetchGroupScene extends Scene {
     this.config = SceneConfigFactory.getSimplifyConfig({ fpsMode: this.fpsMode });
 
     this.config.passes[0].gatherers.unshift({
-      instance: new LoginGatherer()
-    });
-    this.config.passes[0].gatherers.unshift({
       instance: new FetchGroupGatherer()
     });
   }
@@ -35,9 +32,14 @@ class FetchGroupScene extends Scene {
       await FileService.saveTracesIntoDisk(this.artifacts, this.name());
       await FileService.saveMemoryIntoDisk(this.artifacts, this.name());
     }
+    this.artifacts['MemoryGatherer'] = {};
   }
 
   supportFps(): boolean {
+    return true;
+  }
+
+  supportDashboard(): boolean {
     return true;
   }
 }

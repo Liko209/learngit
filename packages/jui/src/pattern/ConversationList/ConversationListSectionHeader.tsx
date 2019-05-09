@@ -61,7 +61,7 @@ const JuiConversationListSectionHeader = memo(
         <JuiListNavItemIconographyLeft iconSize="small">
           {icon}
         </JuiListNavItemIconographyLeft>
-        <ItemText disableTooltip={true}>{title}</ItemText>
+        <ItemText>{title}</ItemText>
         <StyledRightWrapper>
           {!expanded ? umi : null}
           {!hideArrow ? (

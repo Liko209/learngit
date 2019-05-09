@@ -9,7 +9,17 @@ import { NETWORK_VIA, HA_PRIORITY } from 'foundation';
 
 jest.mock('../../api');
 
+function clearMocks() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
+
 describe('RCInfoApi', () => {
+  beforeEach(() => {
+    clearMocks();
+  });
+
   describe('requestRCAPIVersion()', () => {
     it('should be called with correct params', () => {
       RCInfoApi.requestRCAPIVersion();
@@ -106,15 +116,32 @@ describe('RCInfoApi', () => {
     });
   });
 
-  describe('getAccountDialingPlan()', () => {
+  describe('getDialingPlan()', () => {
     it('should be called with correct params', () => {
-      RCInfoApi.getAccountDialingPlan('mockRequest' as any);
+      RCInfoApi.getDialingPlan('mockRequest' as any);
       expect(RCInfoApi.rcNetworkClient.http).toBeCalledWith({
         path: '/v1.0/account/~/dialing-plan',
         method: 'get',
         authFree: false,
         via: NETWORK_VIA.HTTP,
         params: 'mockRequest',
+        HAPriority: HA_PRIORITY.HIGH,
+      });
+    });
+  });
+
+  describe('getAccountServiceInfo', () => {
+    beforeEach(() => {
+      clearMocks();
+    });
+
+    it('should be called with correct params', async () => {
+      await RCInfoApi.getAccountServiceInfo();
+      expect(RCInfoApi.rcNetworkClient.http).toBeCalledWith({
+        path: '/v1.0/account/~/service-info',
+        method: 'get',
+        authFree: false,
+        via: NETWORK_VIA.HTTP,
         HAPriority: HA_PRIORITY.HIGH,
       });
     });

@@ -15,14 +15,7 @@ import {
 } from 'sdk/service/notificationCenter';
 import { EVENT_TYPES } from 'sdk/service';
 import { transform2Map } from '@/store/utils';
-
-import {
-  ISortableModel,
-  IMatchFunc,
-  ITransformFunc,
-  ISortFunc,
-  TReplacedData,
-} from './types';
+import { ISortableModel, IMatchFunc, ITransformFunc, ISortFunc } from './types';
 import {
   FetchDataListHandler,
   IFetchDataListHandlerOptions,
@@ -33,41 +26,53 @@ import { mainLogger } from 'sdk';
 
 type CountChangeCallback = (count: number) => void;
 
-export interface IFetchSortableDataListHandlerOptions<T>
-  extends IFetchDataListHandlerOptions {
-  isMatchFunc: IMatchFunc<T>;
-  transformFunc: ITransformFunc<T>;
-  sortFunc?: ISortFunc<ISortableModel<T>>;
+export interface IFetchSortableDataListHandlerOptions<
+  Model,
+  SortableModel extends ISortableModel = ISortableModel
+> extends IFetchDataListHandlerOptions {
+  isMatchFunc: IMatchFunc<Model>;
+  transformFunc: ITransformFunc<Model, SortableModel>;
+  sortFunc?: ISortFunc<SortableModel>;
   eventName?: string;
+  limit?: number;
 }
-export interface IFetchSortableDataProvider<T> {
+export interface IFetchSortableDataProvider<
+  Model,
+  SortableModel extends ISortableModel = ISortableModel
+> {
   fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor?: ISortableModel<T>,
-  ): Promise<{ data: T[]; hasMore: boolean }>;
+    anchor?: SortableModel,
+  ): Promise<{ data: Model[]; hasMore: boolean }>;
 
   totalCount?(): number;
   fetchTotalCount?(): Promise<number>;
 }
 
 export class FetchSortableDataListHandler<
-  T extends IdModel
-> extends FetchDataListHandler<ISortableModel<T>> {
-  private _isMatchFunc: IMatchFunc<T | TReplacedData<T>>;
+  Model extends IdModel,
+  SortableModel extends ISortableModel = ISortableModel
+> extends FetchDataListHandler<SortableModel> {
+  private _isMatchFunc: IMatchFunc<Model>;
 
-  private _transformFunc: ITransformFunc<T>;
-  private _sortFun?: ISortFunc<ISortableModel<T>>;
-  private _sortableDataProvider?: IFetchSortableDataProvider<T>;
+  private _transformFunc: ITransformFunc<Model, SortableModel>;
+  private _sortFun?: ISortFunc<SortableModel>;
+  private _sortableDataProvider?: IFetchSortableDataProvider<
+    Model,
+    SortableModel
+  >;
   protected _totalCountChangeCallback?: CountChangeCallback;
+  private _eventName: string;
 
   private _maintainMode: boolean = false;
 
   constructor(
-    dataProvider: IFetchSortableDataProvider<T> | undefined,
-    options: IFetchSortableDataListHandlerOptions<T>,
-    listStore: SortableListStore<T> = new SortableListStore<T>(
+    dataProvider: IFetchSortableDataProvider<Model, SortableModel> | undefined,
+    options: IFetchSortableDataListHandlerOptions<Model, SortableModel>,
+    listStore: SortableListStore<SortableModel> = new SortableListStore(
       options.sortFunc,
+      options.limit,
     ),
   ) {
     super(null, options, listStore);
@@ -76,6 +81,7 @@ export class FetchSortableDataListHandler<
     this._sortableDataProvider = dataProvider;
     this._entityName = options.entityName;
     this._sortFun = options.sortFunc;
+    this._eventName = options.eventName || '';
 
     if (options.eventName) {
       this.subscribeNotification(options.eventName, ({ type, body }) => {
@@ -89,7 +95,7 @@ export class FetchSortableDataListHandler<
   }
 
   get sortableListStore() {
-    return this.listStore as SortableListStore<T>;
+    return this.listStore as SortableListStore<SortableModel>;
   }
 
   set maintainMode(mode: boolean) {
@@ -109,7 +115,7 @@ export class FetchSortableDataListHandler<
   async fetchDataByAnchor(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor?: ISortableModel<T>,
+    anchor?: SortableModel,
   ) {
     return this.fetchDataInternal(direction, pageSize, anchor);
   }
@@ -123,21 +129,27 @@ export class FetchSortableDataListHandler<
   protected async fetchDataInternal(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor?: ISortableModel<T>,
+    anchor?: SortableModel,
   ) {
-    if (!this._sortableDataProvider) {
+    const dataProvider = this._sortableDataProvider;
+    if (!dataProvider) {
       mainLogger.warn(
         'FetchSortableDataListHandler: data fetcher should be defined ',
       );
       return [];
     }
-    const { data = [], hasMore } = await this._sortableDataProvider.fetchData(
-      direction,
-      pageSize,
-      anchor,
+    return this.fetchDataBy(direction, () =>
+      dataProvider.fetchData(direction, pageSize, anchor),
     );
-    const sortableResult: ISortableModel<T>[] = [];
-    data.forEach((element: T) => {
+  }
+
+  async fetchDataBy(
+    direction: QUERY_DIRECTION,
+    dataLoader: () => Promise<{ data: Model[]; hasMore: boolean }>,
+  ) {
+    const { data = [], hasMore } = await dataLoader();
+    const sortableResult: SortableModel[] = [];
+    data.forEach((element: Model) => {
       sortableResult.push(this._transformFunc(element));
     });
     transaction(() => {
@@ -160,14 +172,13 @@ export class FetchSortableDataListHandler<
     });
     return data;
   }
-
   @action
   refreshData() {
     mainLogger.debug(
       `FetchSortableDataListHandler: refreshData: ${this.listStore.items
         .length - this._pageSize}`,
     );
-    let sortableResult: ISortableModel<T>[];
+    let sortableResult: SortableModel[];
     if (this.listStore.items.length > this._pageSize) {
       sortableResult = this.listStore.items.slice(
         this.listStore.items.length - this._pageSize,
@@ -218,24 +229,24 @@ export class FetchSortableDataListHandler<
   @action
   handleDataUpdateReplace = (
     payload:
-      | NotificationEntityUpdatePayload<T>
-      | NotificationEntityReplacePayload<T>,
+      | NotificationEntityUpdatePayload<Model>
+      | NotificationEntityReplacePayload<Model>,
   ) => {
-    let originalSortableModels: ISortableModel[] = [];
+    let originalSortableModels: SortableModel[] = [];
     let deletedSortableModelIds: number[] = [];
-    let addedSortableModels: ISortableModel[] = [];
-    let updatedSortableModels: ISortableModel[] = [];
+    let addedSortableModels: SortableModel[] = [];
+    let updatedSortableModels: SortableModel[] = [];
 
     const entities = payload.body.entities;
     const keys = Array.from(payload.body.ids);
 
     const existKeys = this.sortableListStore.getIds;
     let matchedKeys: number[] = _.intersection(keys, existKeys);
-    const matchedSortableModels: ISortableModel<T>[] = [];
-    const matchedEntities: T[] = [];
+    const matchedSortableModels: SortableModel[] = [];
+    const matchedEntities: Model[] = [];
     const isReplaceAll =
       payload.type === EVENT_TYPES.REPLACE && payload.body.isReplaceAll;
-    const toReplaceEntities: Map<number, T> = new Map();
+    const toReplaceEntities: Map<number, Model> = new Map();
 
     if (payload.type === EVENT_TYPES.REPLACE) {
       if (payload.body.isReplaceAll) {
@@ -243,7 +254,7 @@ export class FetchSortableDataListHandler<
       }
     }
     matchedKeys.forEach((key: number) => {
-      const model = entities.get(key) as T;
+      const model = entities.get(key) as Model;
       if (this._isMatchFunc(model)) {
         const sortableModel = this._transformFunc(model);
         if (
@@ -268,10 +279,18 @@ export class FetchSortableDataListHandler<
     } else {
       const differentKeys: number[] = _.difference(keys, existKeys);
       differentKeys.forEach((key: number) => {
-        const model = entities.get(key) as T;
+        const model = entities.get(key) as Model;
         if (this._isMatchFunc(model)) {
           const sortModel = this._transformFunc(model);
-          if (this._isInRange(sortModel)) {
+          const isInRange = this._isInRange(sortModel);
+          this._eventName &&
+            this._eventName.startsWith('ENTITY.POST') &&
+            mainLogger.info(
+              `FetchSortableDataListHandler:${
+                this._eventName
+              }, key:${key}, isInRange:${isInRange}`,
+            );
+          if (isInRange) {
             matchedSortableModels.push(sortModel);
             matchedEntities.push(model);
           }
@@ -302,13 +321,13 @@ export class FetchSortableDataListHandler<
         addedSortableModels = _.differenceBy(
           matchedSortableModels,
           originalSortableModels,
-          (item: ISortableModel<T>) => item.id,
+          (item: SortableModel) => item.id,
         );
 
         updatedSortableModels = _.intersectionBy(
           matchedSortableModels,
           originalSortableModels,
-          (item: ISortableModel<T>) => item.id,
+          (item: SortableModel) => item.id,
         );
       }
     }
@@ -339,7 +358,7 @@ export class FetchSortableDataListHandler<
     }
   }
 
-  onDataChanged(payload: NotificationEntityPayload<T>) {
+  onDataChanged(payload: NotificationEntityPayload<Model>) {
     switch (payload.type) {
       case EVENT_TYPES.DELETE:
         this.handleDataDeleted(payload);
@@ -355,35 +374,46 @@ export class FetchSortableDataListHandler<
     return this.maintainMode || this._dataChangeCallBacks.length;
   }
 
-  private _isInRange(newData: ISortableModel<T>) {
+  getOldest() {
+    return this.sortableListStore.last();
+  }
+
+  getNewest() {
+    return this.sortableListStore.first();
+  }
+
+  private _isInRange(newData: SortableModel) {
     let inRange = false;
     const idArray = this.sortableListStore.items;
     if (idArray && idArray.length > 0) {
-      const first = idArray[0];
-      const last = idArray[idArray.length - 1];
-      if (this._sortFun) {
-        inRange =
-          this._sortFun(newData, first) >= 0 &&
-          this._sortFun(newData, last) <= 0;
-      } else {
-        inRange =
-          newData.sortValue >= first.sortValue &&
-          newData.sortValue <= last.sortValue;
-      }
+      const first = this.getNewest();
+      const last = this.getOldest();
 
-      if (!inRange) {
+      if (first && last) {
         if (this._sortFun) {
           inRange =
-            (this._sortFun(newData, first) < 0 &&
-              !this.hasMore(QUERY_DIRECTION.OLDER)) ||
-            (this._sortFun(newData, last) > 0 &&
-              !this.hasMore(QUERY_DIRECTION.NEWER));
+            this._sortFun(newData, first) >= 0 &&
+            this._sortFun(newData, last) <= 0;
         } else {
           inRange =
-            (newData.sortValue < first.sortValue &&
-              !this.hasMore(QUERY_DIRECTION.OLDER)) ||
-            (newData.sortValue > last.sortValue &&
-              !this.hasMore(QUERY_DIRECTION.NEWER));
+            newData.sortValue >= first.sortValue &&
+            newData.sortValue <= last.sortValue;
+        }
+
+        if (!inRange) {
+          if (this._sortFun) {
+            inRange =
+              (this._sortFun(newData, first) < 0 &&
+                !this.hasMore(QUERY_DIRECTION.OLDER)) ||
+              (this._sortFun(newData, last) > 0 &&
+                !this.hasMore(QUERY_DIRECTION.NEWER));
+          } else {
+            inRange =
+              (newData.sortValue < first.sortValue &&
+                !this.hasMore(QUERY_DIRECTION.OLDER)) ||
+              (newData.sortValue > last.sortValue &&
+                !this.hasMore(QUERY_DIRECTION.NEWER));
+          }
         }
       }
     } else {
@@ -395,17 +425,17 @@ export class FetchSortableDataListHandler<
     return inRange;
   }
 
-  private _isPosChanged(newModel: ISortableModel<T>) {
+  private _isPosChanged(newModel: SortableModel) {
     let isPosChanged = false;
 
     const oldModel = this.sortableListStore.getById(
       newModel.id,
-    ) as ISortableModel;
+    ) as SortableModel;
     isPosChanged = newModel.sortValue !== oldModel.sortValue;
 
     if (!isPosChanged && this._sortFun) {
       const currentAllItems = this.sortableListStore.items;
-      const pos = currentAllItems.findIndex((value: ISortableModel<T>) => {
+      const pos = currentAllItems.findIndex((value: SortableModel) => {
         return value.id === newModel.id;
       });
 
@@ -432,7 +462,7 @@ export class FetchSortableDataListHandler<
     this.sortableListStore.setHasMore(hasMore, inFront);
   }
 
-  protected handlePageData(result: ISortableModel[]) {
+  protected handlePageData(result: SortableModel[]) {
     if (result.length > 0) {
       this.sortableListStore.upsert(result);
     }
@@ -447,7 +477,7 @@ export class FetchSortableDataListHandler<
     });
   }
 
-  upsert(models: T[]) {
+  upsert(models: Model[]) {
     const entityMap = transform2Map(models);
     const notificationBody = {
       ids: Array.from(entityMap.keys()),
@@ -460,7 +490,7 @@ export class FetchSortableDataListHandler<
     });
   }
 
-  replaceAll(models: T[]) {
+  replaceAll(models: Model[]) {
     const entityMap = transform2Map(models);
     const notificationBody = {
       ids: Array.from(entityMap.keys()),
@@ -474,7 +504,7 @@ export class FetchSortableDataListHandler<
     });
   }
 
-  transform2SortableModel(originalModel: T) {
+  transform2SortableModel(originalModel: Model) {
     return this._transformFunc(originalModel);
   }
 

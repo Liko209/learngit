@@ -5,7 +5,7 @@
  */
 
 import { computed, observable, action, Reaction } from 'mobx';
-import i18next from 'i18next';
+import i18nT from '@/utils/i18nT';
 import { AbstractViewModel } from '@/base';
 import { ConvertToTeamProps, ConvertToTeamViewProps } from './types';
 import { getEntity } from '@/store/utils';
@@ -30,10 +30,9 @@ class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
     super(props);
     this.reaction(
       () => this.group.displayName,
-      (displayName: string, reaction: Reaction) => {
-        this.name = `${i18next.t(
-          'people.team.convertToTeamNamePrefix',
-        )}${displayName}`;
+      async (displayName: string, reaction: Reaction) => {
+        const prefix = await i18nT('people.team.convertToTeamNamePrefix');
+        this.name = `${prefix}${displayName}`;
         reaction.dispose();
       },
       {

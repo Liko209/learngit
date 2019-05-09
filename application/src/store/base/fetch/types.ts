@@ -5,56 +5,66 @@
  */
 import { SortableListStore } from './SortableListStore';
 
-export interface ISortableModel<T = any> {
+export interface ISortableModel {
   id: number;
   sortValue: number;
+}
+
+export interface ISortableModelWithData<T> extends ISortableModel {
   data?: T;
 }
 
-export interface ISortFunc<T> {
-  (first: T, second: T): number;
+export interface IMatchFunc<Model> {
+  (model: Model): Boolean;
 }
 
-export interface IMatchFunc<T> {
-  (model: T): Boolean;
-}
-export interface ITransformFunc<T> {
-  (model: T): ISortableModel<T>;
-}
-
-export interface ISortFunc<T> {
-  (first: T, second: T): number;
+export interface ITransformFunc<
+  Model,
+  SortableModel extends ISortableModel = ISortableModel
+> {
+  (model: Model): SortableModel;
 }
 
-export type TDelta = {
-  added: ISortableModel[];
-  updated: ISortableModel[];
+export interface ISortFunc<
+  SortableModel extends ISortableModel = ISortableModel
+> {
+  (first: SortableModel, second: SortableModel): number;
+}
+
+export type TDelta<SortableModel extends ISortableModel = ISortableModel> = {
+  added: SortableModel[];
+  updated: SortableModel[];
   deleted: number[];
 };
 
-export type TChangeHandler<T> = (
+export type TChangeHandler<
+  Model,
+  SortableModel extends ISortableModel = ISortableModel
+> = (
   keys: number[],
-  entities?: Map<number, T>,
+  entities?: Map<number, Model>,
   transformFunc?: Function,
-  store?: SortableListStore,
+  store?: SortableListStore<SortableModel>,
 ) => {
   deleted: number[];
   updated: TUpdated;
-  updateEntity: T[];
-  added: ISortableModel[];
+  updateEntity: Model[];
+  added: SortableModel[];
 };
 
-export type TUpdated = {
-  value: ISortableModel;
+export type TUpdated<SortableModel extends ISortableModel = ISortableModel> = {
+  value: SortableModel;
   index: number;
-  oldValue?: ISortableModel;
+  oldValue?: SortableModel;
 }[];
 
-export type TReplacedData<T> = {
+export type TReplacedData<
+  SortableModel extends ISortableModel = ISortableModel
+> = {
   id: number;
-  data: T;
+  data: SortableModel;
 };
 
-export interface IEntityDataProvider<T> {
-  getByIds(ids: number[]): Promise<T[]>;
+export interface IEntityDataProvider<Model> {
+  getByIds(ids: number[]): Promise<Model[]>;
 }

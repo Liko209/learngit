@@ -261,8 +261,6 @@ describe('NetworkClient', () => {
       rcNetworkClient.post({ path: '/' });
 
       expect(rcNetworkClient.request).toHaveBeenCalledWith({
-        headers: {},
-        timeout: undefined,
         data: {},
         method: 'post',
         path: '/',
@@ -289,8 +287,6 @@ describe('NetworkClient', () => {
         },
         method: 'post',
         path: '/',
-        headers: {},
-        timeout: undefined,
       });
     });
   });
@@ -313,7 +309,6 @@ describe('NetworkClient', () => {
           _id: 123,
           a: true,
         },
-        headers: {},
         method: 'put',
         path: '/',
       });
@@ -327,7 +322,6 @@ describe('NetworkClient', () => {
 
       expect(rcNetworkClient.http).toHaveBeenCalledWith({
         data: {},
-        headers: {},
         method: 'put',
         path: '/',
       });

@@ -158,6 +158,8 @@ export function setupCase(accountType: string) {
 
     await h(t).logHelper.setup();
 
+    await h(t).notificationHelper.setup();
+
     // FIXME: refactoring needed
     if (mockClient) {
       h(t).mockClient = mockClient;

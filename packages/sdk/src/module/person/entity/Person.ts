@@ -20,10 +20,10 @@ export type SanitizedExtensionModel = {
 export type HeadShotModel =
   | string
   | {
-    url: string;
-    stored_file_id?: string;
-    thumbs?: { key: string; value: string }[];
-  };
+      url: string;
+      stored_file_id?: string;
+      thumbs?: { key: string; value: string }[];
+    };
 
 export type Person = ExtendedBaseModel & {
   company_id: number;

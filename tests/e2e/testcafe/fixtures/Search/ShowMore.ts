@@ -2,7 +2,7 @@
  * @Author: Potar.He 
  * @Date: 2019-04-10 12:58:57 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-10 14:38:33
+ * @Last Modified time: 2019-04-26 19:25:54
  */
 import { h, H } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
@@ -75,8 +75,7 @@ test.meta(<ITestMeta>{
   });
 })
 
-// skip by https://jira.ringcentral.com/browse/FIJI-5161
-test.skip.meta(<ITestMeta>{
+test.meta(<ITestMeta>{
   priority: ['P0'],
   caseIds: ['JPT-1562'],
   maintainers: ['potar.he'],
@@ -159,6 +158,10 @@ test.skip.meta(<ITestMeta>{
     await t.expect(messagesTab.posts.count).eql(3);
   });
 
+  await h(t).withLog(`And search result order is older in the bottom and newest in the top`, async () => {
+    await messagesTab.timeOfPostsShouldOrderByDesc();
+  });
+
   // Filter
   await h(t).withLog(`When I set filter post by ${loginUserName}`, async () => {
     await messagesTab.postByField.typeText(loginUserName);
@@ -174,7 +177,11 @@ test.skip.meta(<ITestMeta>{
   }, true);
 
   await h(t).withLog(`Then should display 3 posts`, async () => {
-    await t.expect(searchDialog.fullSearchPage.messagesTab.posts.count).eql(3, { timeout: 20e3 });
+    await t.expect(messagesTab.posts.count).eql(3, { timeout: 20e3 });
+  });
+
+  await h(t).withLog(`And search result order is older in the bottom and newest in the top`, async () => {
+    await messagesTab.timeOfPostsShouldOrderByDesc();
   });
 
   await h(t).withLog(`When I clear post in filed`, async () => {
@@ -182,7 +189,11 @@ test.skip.meta(<ITestMeta>{
   }, true);
 
   await h(t).withLog(`Then should display 4 posts`, async () => {
-    await t.expect(searchDialog.fullSearchPage.messagesTab.posts.count).eql(4, { timeout: 30e3 });
+    await t.expect(messagesTab.posts.count).eql(4, { timeout: 30e3 });
+  });
+
+  await h(t).withLog(`And search result order is older in the bottom and newest in the top`, async () => {
+    await messagesTab.timeOfPostsShouldOrderByDesc();
   });
 
   await h(t).withLog(`When I select type option of links `, async () => {
@@ -235,7 +246,7 @@ test.skip.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And display search result count at least 1`, async () => {
-    await t.expect(searchDialog.fullSearchPage.messagesTab.posts.count).gte(1);
+    await t.expect(messagesTab.posts.count).gte(1);
     await t.expect(searchDialog.fullSearchPage.searchResultsCount.exists).ok();
     await searchDialog.fullSearchPage.countOnHeaderGreaterThanOrEqual(1);
   });

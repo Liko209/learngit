@@ -75,6 +75,10 @@ export class BaseConversationPage extends BaseWebComponent {
     return this.self.find('[data-name="name"]');
   }
 
+  get postTimes() {
+    return this.self.find('[data-name="time"]');
+  }
+
   get header() {
     return this.getSelectorByAutomationId('conversation-page-header');
   }
@@ -85,6 +89,30 @@ export class BaseConversationPage extends BaseWebComponent {
 
   get title() {
     return this.getSelectorByAutomationId('conversation-page-header-title');
+  }
+
+  async timeOfPostsShouldOrderByAsc() {
+    const count = await this.postTimes.count;
+    let lastTime: number;
+    for (const i of _.range(count)) {
+      const currentTime = H.convertPostTimeToTimestamp(await this.postTimes.nth(i).textContent);
+      if (lastTime) {
+        assert.ok(lastTime <= currentTime, 'the posts not order By ASC');
+      }
+      lastTime = currentTime;
+    }
+  }
+
+  async timeOfPostsShouldOrderByDesc() {
+    const count = await this.postTimes.count;
+    let lastTime: number;
+    for (const i of _.range(count)) {
+      const currentTime = H.convertPostTimeToTimestamp(await this.postTimes.nth(i).textContent);
+      if (lastTime) {
+        assert.ok(lastTime >= currentTime, 'the posts not order by Desc');
+      }
+      lastTime = currentTime;
+    }
   }
 
   nthPostItem(nth: number) {
@@ -99,6 +127,32 @@ export class BaseConversationPage extends BaseWebComponent {
     for (const i of _.range(posts.length)) {
       await this.t.expect(this.nthPostItem(-1 - i).body.withText(posts[posts.length - 1 - i]).exists).ok();
     }
+  }
+
+  get postCardBodies() {
+    return this.self.find(`[data-name="body"]`);
+  }
+
+  async scrollDownToCheckPostInOrder(posts: string[], maxTry: number = 10) {
+    let lastIndex = 0;
+    let currentIndex = 0;
+    for (const c of _.range(maxTry)) {
+      const count = await this.postCardBodies.count;
+      for (const i of _.range(count)) {
+        const text = await this.postCardBodies.nth(i).textContent
+        currentIndex = posts.indexOf(text)
+        assert(currentIndex >= 0, 'some post is not in postList')
+        if (i > 0) {
+          assert(currentIndex == lastIndex + 1);
+        }
+        lastIndex = currentIndex
+      }
+      if (currentIndex == posts.length - 1) break;
+      await this.scrollDownOnePage();
+      await this.t.wait(2e3);
+      lastIndex = 0;
+    }
+    assert(currentIndex == posts.length - 1, "retry scroll some times but all posts did not loaded");
   }
 
   postItemById(postId: string) {
@@ -169,13 +223,13 @@ export class BaseConversationPage extends BaseWebComponent {
     }
   }
 
-  async scrollToCurrentFirstPost() {
-    const scrollTop = await this.posts.nth(0).scrollTop;
+  async scrollUpOnePage() {
+    const scrollTop = await this.scrollDiv.scrollTop - await this.scrollDiv.clientHeight;
     await this.scrollToY(scrollTop);
   }
 
-  async scrollToCurrentLastPost() {
-    const scrollTop = await this.posts.nth(-1).scrollTop;
+  async scrollDownOnePage() {
+    const scrollTop = await this.scrollDiv.scrollTop + await this.scrollDiv.clientHeight;
     await this.scrollToY(scrollTop);
   }
 
@@ -186,7 +240,7 @@ export class BaseConversationPage extends BaseWebComponent {
         await postItem.scrollIntoView()
         break
       } else {
-        await this.scrollToCurrentFirstPost();
+        await this.scrollUpOnePage();
         await this.t.wait(1e3);
       }
     }
@@ -200,7 +254,7 @@ export class BaseConversationPage extends BaseWebComponent {
         await postItem.scrollIntoView()
         break
       } else {
-        await this.scrollToCurrentLastPost();
+        await this.scrollDownOnePage();
         await this.t.wait(1e3);
       }
     }
@@ -387,14 +441,12 @@ export class ConversationPage extends BaseConversationPage {
     return this.getSelectorByIcon('lock_open', this.privacyToggle);
   }
 
-
-
   async groupIdShouldBe(id: string | number) {
     await this.t.expect(this.currentGroupId).eql(id.toString());
   }
 
   async titleShouldBe(title: string) {
-    await this.t.expect(this.title.withExactText(title).exists).ok();
+    await this.t.expect(this.title.textContent).eql(title);
   }
 
   get messageFilesArea() {

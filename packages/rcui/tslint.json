@@ -1,0 +1,31 @@
+{
+  "extends": ["tslint-config-airbnb", "tslint-react"],
+  "linterOptions": {
+    "exclude": ["**/*.json"]
+  },
+  "rules": {
+    "import-name": false,
+    "variable-name": [
+      true,
+      "ban-keywords",
+      "check-format",
+      "allow-leading-underscore",
+      "allow-trailing-underscore",
+      "allow-pascal-case",
+      "allow-snake-case"
+    ],
+    "no-increment-decrement": true,
+    "max-line-length": [true, 200],
+    "function-name": [
+      true,
+      {
+        "private-method-regex": "^_[a-zA-Z0-9]+$",
+        "static-method-regex": "^[a-z][\\w\\d]+$"
+      }
+    ],
+    "interface-name": [true, "always-prefix"],
+    "jsx-no-multiline-js": [false],
+    "jsx-no-lambda": false
+  },
+  "jsRules": {}
+}
