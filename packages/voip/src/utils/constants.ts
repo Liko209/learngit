@@ -5,3 +5,4 @@
  */
 
 export const kProvisioningInfoKey = 'sip-info';
+export const kSleepModeDetectorKey = 'RTCVoipSleepModeDetector';
