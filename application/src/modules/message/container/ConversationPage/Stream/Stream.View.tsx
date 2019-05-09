@@ -402,6 +402,7 @@ class StreamViewComponent extends Component<Props> {
                   <>
                     {this._renderJumpToFirstUnreadButton()}
                     <JuiInfiniteList
+                      fixedWrapper={true}
                       contentStyle={this._contentStyleGen(height)}
                       ref={this._listRef}
                       height={height}

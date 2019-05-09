@@ -31,7 +31,6 @@ import {
   getChildren,
   isRangeIn,
   isRangeEqual,
-  shouldUseNativeImplementation,
 } from './utils';
 import { usePrevious } from './hooks/usePrevious';
 import { debounce, compact } from 'lodash';
@@ -65,9 +64,12 @@ const JuiVirtualizedList: RefForwardingComponent<
     stickToBottom,
     contentStyle,
     stickToLastPosition = true,
+    fixedWrapper,
   }: JuiVirtualizedListProps,
   forwardRef,
 ) => {
+  const shouldUseNativeImplementation =
+    'resizeObserver' in window || !fixedWrapper;
   // TODO use useCallback to optimize performance
   const computeVisibleRange = () => {
     let result: IndexRange;
@@ -530,6 +532,7 @@ const MemoList = memo(
       children: JSX.Element[];
       contentStyle?: React.CSSProperties;
       stickToLastPosition?: boolean;
+      fixedWrapper?: boolean;
     } & React.RefAttributes<JuiVirtualizedListHandles>
   >
 >;
