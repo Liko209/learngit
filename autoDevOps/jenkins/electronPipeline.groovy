@@ -111,8 +111,17 @@ class JobTemplate {
 
 class MacJob extends JobTemplate {
     String suffix() { 'dmg' }
+
+    String macCscFileId
+    String macCscKeyPasswordId
+
     void buildStage() {
-        script.sh 'npm run pack:mac'
+        script.withCredentials([
+            script.file(credentialsId: macCscFileId, variable: 'CSC_LINK'),
+            script.string(credentialsId: macCscKeyPasswordId, variable: 'CSC_KEY_PASSWORD'),
+        ]) {
+            script.sh 'npm run pack:mac'
+        }
     }
 }
 
@@ -127,7 +136,6 @@ class WinJob extends JobTemplate {
             script.file(credentialsId: winCscFileId, variable: 'CSC_LINK'),
             script.string(credentialsId: winCscKeyPasswordId, variable: 'CSC_KEY_PASSWORD'),
         ]) {
-            script.sh 'env'
             script.sh 'npm run pack:win'
         }
     }
@@ -169,6 +177,8 @@ if (params.WIN_BUILD_NODE)
 if (params.MAC_BUILD_NODE)
     jobs.push(
         new MacJob(
+            macCscFileId: params.MAC_CSC_FILE,
+            macCscKeyPasswordId: params.MAC_CSC_PASSWORD,
             nodeLabel: params.MAC_BUILD_NODE,
             context: context,
             script: this)
