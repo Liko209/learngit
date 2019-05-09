@@ -37,6 +37,8 @@ import { analyticsCollector } from '@/AnalyticsCollector';
 import { Pal } from 'sdk/pal';
 import { isProductionVersion } from '@/common/envUtils';
 import { showUpgradeDialog } from '@/modules/electron';
+import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
+import { IApplicationInfo } from 'sdk/pal/applicationInfo';
 
 /**
  * The root module, we call it AppModule,
@@ -84,6 +86,11 @@ class AppModule extends AbstractModule {
         event.error instanceof Error ? event.error : new Error(event.message),
       );
     });
+
+    const { deployedVersion } = await fetchVersionInfo();
+    Pal.instance.setApplicationInfo({
+      appVersion: deployedVersion,
+    } as IApplicationInfo);
 
     const {
       notificationCenter,

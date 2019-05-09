@@ -54,6 +54,7 @@ describe('ConversationCardViewModel', () => {
       ...mockPostValue,
     });
   });
+
   describe('createTime()', () => {
     it('should be timeAndDate format when mode is navigation [JPT-705]', async (done: jest.DoneCallback) => {
       global.Date.now = jest.fn(() => DATE_2019_1_4);

@@ -6,6 +6,7 @@
 
 import { container, Jupiter } from 'framework';
 import { DialerContainerViewModel } from '../DialerContainer.ViewModel';
+jest.mock('sdk/module/telephony');
 
 import * as telephony from '@/modules/telephony/module.config';
 
