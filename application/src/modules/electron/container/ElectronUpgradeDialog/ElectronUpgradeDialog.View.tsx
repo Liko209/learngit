@@ -23,6 +23,7 @@ class ElectronUpgradeDialogComponent extends React.Component<
   ElectronUpgradeDialogViewProps
 > {
   static _portalRef: null | Ref = null;
+  _iframe: null | HTMLIFrameElement;
 
   static setPortalRef(ref: Ref) {
     ElectronUpgradeDialogComponent._portalRef = ref;
@@ -39,12 +40,23 @@ class ElectronUpgradeDialogComponent extends React.Component<
     ElectronUpgradeDialogComponent._portalRef &&
       ElectronUpgradeDialogComponent._portalRef.dismiss();
     ElectronUpgradeDialogComponent._portalRef = null;
+    // this._iframe && document.body.removeChild(this._iframe);
   }
 
   handleOk = () => {
     this._close();
   }
   handleUpgrade = () => {
+    // workaround for prevent triggering "onbeforeunload" event when download file.
+    // Solution: https://stackoverflow.com/questions/2452110/download-binary-without-triggering-onbeforeunload
+    this._iframe = document.querySelector('#downloadInstaller');
+    if (!this._iframe) {
+      this._iframe = document.createElement('iframe');
+      this._iframe.id = 'downloadInstaller';
+      this._iframe.style.display = 'none';
+      document.body.appendChild(this._iframe);
+    }
+    this._iframe.src = this.props.url;
     this._close();
   }
   handleIgnoreOnce = () => {
@@ -60,7 +72,7 @@ class ElectronUpgradeDialogComponent extends React.Component<
     this._close({ skip: true });
   }
   render() {
-    const { t, needUpgrade, type, snooze, url } = this.props;
+    const { t, needUpgrade, type, snooze } = this.props;
     const buttons = [];
     const IgnoreOnce = (
       <JuiButton
@@ -78,9 +90,6 @@ class ElectronUpgradeDialogComponent extends React.Component<
         onClick={this.handleUpgrade}
         color="primary"
         autoFocus={false}
-        component="a"
-        download={true}
-        href={url}
         key="upgrade"
         aria-label={t('electron.upgrade.upgrade')}
       >
