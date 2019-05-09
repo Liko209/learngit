@@ -28,9 +28,9 @@ export class ZipConsumer {
     ) {
       return;
     }
-    this.count += 1;
     const localZip = zip || this.zipProducer.produce();
     if (localZip) {
+      this.count += 1;
       this.uploadMap.set(localZip.index, localZip);
       try {
         const result: {
