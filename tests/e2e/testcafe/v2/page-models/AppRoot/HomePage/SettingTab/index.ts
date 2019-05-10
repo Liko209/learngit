@@ -1,5 +1,6 @@
 import { BaseWebComponent } from "../../../BaseWebComponent";
 import { LeftRail } from './LeftRail';
+import { PhonePage } from "./PhonePage";
 
 class Entry extends BaseWebComponent {
   async enter() {
@@ -7,7 +8,7 @@ class Entry extends BaseWebComponent {
   }
 
   async shouldBeOpened() {
-    await this.t.expect(this.self.hasClass('selected')).ok();
+    await this.t.expect(this.self.hasClass('g')).ok();
   }
 
   get name() {
@@ -56,4 +57,8 @@ export class SettingTab extends BaseWebComponent {
     return this.getSubEntry('entry-calendar');
   }
 
+  // every sub-setting page
+  get phonePage() {
+    return this.getComponent(PhonePage);
+  }
 }
