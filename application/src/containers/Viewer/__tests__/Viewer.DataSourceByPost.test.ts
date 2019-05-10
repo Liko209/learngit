@@ -20,15 +20,6 @@ import { ServiceLoader } from 'sdk/module/serviceLoader';
 jest.mock('@/store/utils');
 jest.mock('sdk/module/item/module/file/utils');
 jest.mock('../Utils');
-jest.mock('sdk/module/item/service', () => {
-  const mockItemService = {
-    getById: jest.fn(),
-    batchGet: jest.fn(),
-  };
-  return {
-    ItemService: () => mockItemService,
-  };
-});
 jest.mock('sdk/framework/service/EntityBaseService');
 
 describe('Viewer.DataSource', () => {
@@ -39,8 +30,12 @@ describe('Viewer.DataSource', () => {
   };
   beforeEach(() => {
     jest.resetAllMocks();
-    ServiceLoader.getInstance = jest.fn().mockReturnValue(new ItemService());
-    (getEntity as jest.Mock).mockRejectedValue({ itemIds: [] });
+    const itemService = {
+      getById: jest.fn(),
+      batchGet: jest.fn(),
+    };
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
+    (getEntity as jest.Mock).mockReturnValue({ itemIds: [] });
     (getFilterFunc as jest.Mock).mockImplementation(() => () => {
       return true;
     });
@@ -60,7 +55,7 @@ describe('Viewer.DataSource', () => {
     it('should return correct data when call fetchData ', async () => {
       const dataSource = new ItemListDataSourceByPost(props);
       const data = [{ id: 1 }, { id: 2 }];
-      ServiceLoader.getInstance('').batchGet.mockResolvedValue(data);
+      ServiceLoader.getInstance<ItemService>('').batchGet.mockResolvedValue(data);
       const result = await dataSource.fetchData();
       dataSource.dispose();
       expect(result.data).toEqual(data);
@@ -70,7 +65,7 @@ describe('Viewer.DataSource', () => {
     it('should return correct data when call loadInitialData', async () => {
       const dataSource = new ItemListDataSourceByPost(props);
       const data = [{ id: 1 }, { id: 2 }];
-      ServiceLoader.getInstance('').batchGet.mockResolvedValue(data);
+      ServiceLoader.getInstance<ItemService>('').batchGet.mockResolvedValue(data);
 
       const result = await dataSource.loadInitialData(1, 20);
       dataSource.dispose();
@@ -90,7 +85,7 @@ describe('Viewer.DataSource', () => {
     it('should return correct index and totalCount when call fetchIndexInfo', async () => {
       const dataSource = new ItemListDataSourceByPost(props);
       const data = [{ id: 1 }, { id: 2 }];
-      ServiceLoader.getInstance('').batchGet.mockResolvedValue(data);
+      ServiceLoader.getInstance<ItemService>('').batchGet.mockResolvedValue(data);
       const result = await dataSource.fetchIndexInfo(2);
       dataSource.dispose();
       expect(result).toEqual({
