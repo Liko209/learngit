@@ -12,6 +12,7 @@ type IndicatorViewProps = {
   id: number;
   hasDraft: boolean;
   sendFailurePostIds: number[];
+  canPost: boolean;
 };
 
 export { IndicatorProps, IndicatorViewProps };
