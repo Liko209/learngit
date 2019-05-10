@@ -103,6 +103,7 @@ class JuiEmoji extends React.PureComponent<Props, State> {
         }}
       >
         <JuiPopperMenu
+          automationId="conversation-chatbar-emoji-menu"
           open={open}
           anchorEl={anchorEl}
           onClose={this.handleClose}
