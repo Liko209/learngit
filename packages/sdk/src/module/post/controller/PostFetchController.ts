@@ -17,7 +17,7 @@ import { DEFAULT_PAGE_SIZE, LOG_FETCH_POST } from '../constant';
 import _ from 'lodash';
 import { IGroupService } from '../../../module/group/service/IGroupService';
 import { IRemotePostRequest, UnreadPostQuery } from '../entity/Post';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { PerformanceTracer, PERFORMANCE_KEYS } from '../../../utils';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 const ADDITIONAL_UNREAD_POST_COUNT = 500;
@@ -50,12 +50,7 @@ class PostFetchController {
       items: [],
       hasMore: true,
     };
-
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_POSTS,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
     const shouldSaveToDb = postId === 0 || (await this._isPostInDb(postId));
     mainLogger.info(
       LOG_FETCH_POST,
@@ -114,10 +109,10 @@ class PostFetchController {
       }
     }
     result.limit = limit;
-    PerformanceTracerHolder.getPerformanceTracer().end(
-      logId,
-      result.posts && result.posts.length,
-    );
+    performanceTracer.end({
+      key: PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_POSTS,
+      count: result.posts && result.posts.length,
+    });
     return result;
   }
 
@@ -137,12 +132,7 @@ class PostFetchController {
       LOG_FETCH_POST,
       `getUnreadPosts() groupId: ${groupId} startPostId: ${startPostId} endPostId: ${endPostId}`,
     );
-
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.CONVERSATION_FETCH_UNREAD_POST,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
     const isPostInDb = startPostId && (await this._isPostInDb(startPostId));
     if (isPostInDb) {
       mainLogger.info(LOG_FETCH_POST, 'getUnreadPosts() get from db');
@@ -167,11 +157,10 @@ class PostFetchController {
         result.hasMore = serverResult.hasMore;
       }
     }
-    PerformanceTracerHolder.getPerformanceTracer().end(
-      logId,
-      result.posts && result.posts.length,
-    );
-
+    performanceTracer.end({
+      key: PERFORMANCE_KEYS.CONVERSATION_FETCH_UNREAD_POST,
+      count: result.posts && result.posts.length,
+    });
     return result;
   }
 
@@ -181,11 +170,7 @@ class PostFetchController {
     limit,
     direction,
   }: IPostQuery): Promise<IRawPostResult | null> {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.CONVERSATION_FETCH_FROM_SERVER,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
     const result: IRawPostResult = {
       posts: [],
       items: [],
@@ -210,10 +195,10 @@ class PostFetchController {
       result.items = data.items;
       result.hasMore = result.posts.length === limit;
     }
-    PerformanceTracerHolder.getPerformanceTracer().end(
-      logId,
-      result.posts.length,
-    );
+    performanceTracer.end({
+      key: PERFORMANCE_KEYS.CONVERSATION_FETCH_FROM_SERVER,
+      count: result.posts.length,
+    });
     return result;
   }
 
@@ -308,11 +293,7 @@ class PostFetchController {
       );
       return result;
     }
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.CONVERSATION_FETCH_FROM_DB,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
     const postDao = daoManager.getDao(PostDao);
     const posts: Post[] = await postDao.queryPostsByGroupId(
       groupId,
@@ -320,7 +301,10 @@ class PostFetchController {
       direction,
       limit,
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId, posts.length);
+    performanceTracer.end({
+      key: PERFORMANCE_KEYS.CONVERSATION_FETCH_FROM_DB,
+      count: posts.length,
+    });
 
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
@@ -341,17 +325,15 @@ class PostFetchController {
       items: [],
       hasMore: true,
     };
-
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.CONVERSATION_FETCH_INTERVAL_POST,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
     const postDao = daoManager.getDao(PostDao);
     const posts: Post[] = await postDao.queryIntervalPostsByGroupId(
       unreadPostQuery,
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId, posts.length);
+    performanceTracer.end({
+      key: PERFORMANCE_KEYS.CONVERSATION_FETCH_INTERVAL_POST,
+      count: posts.length,
+    });
 
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,

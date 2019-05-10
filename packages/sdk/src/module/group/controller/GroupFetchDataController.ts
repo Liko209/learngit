@@ -27,7 +27,7 @@ import {
 import { transform } from '../../../service/utils';
 import {
   PERFORMANCE_KEYS,
-  PerformanceTracerHolder,
+  PerformanceTracer,
   uniqueArray,
 } from '../../../utils';
 import TypeDictionary from '../../../utils/glip-type-dictionary/types';
@@ -183,11 +183,7 @@ export class GroupFetchDataController {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.SEARCH_ALL_GROUP,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
       this._getTransformAllGroupFunc(fetchAllIfSearchKeyEmpty, myGroupsOnly),
@@ -210,7 +206,7 @@ export class GroupFetchDataController {
         return 0;
       },
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_ALL_GROUP });
     return result;
   }
 
@@ -262,11 +258,7 @@ export class GroupFetchDataController {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.SEARCH_GROUP,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
       this._getTransformGroupFunc(fetchAllIfSearchKeyEmpty),
@@ -282,7 +274,7 @@ export class GroupFetchDataController {
         return 0;
       },
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_GROUP });
     return result;
   }
 
@@ -467,11 +459,7 @@ export class GroupFetchDataController {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.SEARCH_TEAM,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
       this._getTransformTeamsFunc(fetchAllIfSearchKeyEmpty),
@@ -494,7 +482,7 @@ export class GroupFetchDataController {
         return 0;
       },
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_TEAM });
     return result;
   }
 
