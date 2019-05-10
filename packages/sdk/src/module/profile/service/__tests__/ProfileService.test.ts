@@ -9,6 +9,7 @@ import { ProfileActionController } from '../../controller/ProfileActionControlle
 import { ProfileDataController } from '../../controller/ProfileDataController';
 import { SettingsActionController } from '../../controller/SettingsActionController';
 
+jest.mock('sdk/dao');
 jest.mock('../../../../api');
 jest.mock('../../controller/ProfileActionController');
 jest.mock('../../controller/ProfileDataController');
