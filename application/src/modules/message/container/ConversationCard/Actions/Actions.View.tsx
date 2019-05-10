@@ -12,20 +12,20 @@ import { Like } from '@/modules/message/container/ConversationCard/Actions/Like'
 import { Bookmark } from '@/modules/message/container/ConversationCard/Actions/Bookmark';
 import { More } from '@/modules/message/container/ConversationCard/Actions/More';
 import { Pin } from '@/modules/message/container/ConversationCard/Actions/Pin';
-import { ActionsProps } from './types';
+import { ActionsViewProps } from './types';
 import { ConversationPageContext } from '../../ConversationPage/types';
 
-type Props = ActionsProps & WithTranslation;
+type Props = ActionsViewProps & WithTranslation;
 
 @observer
 class ActionsViewComponent extends Component<Props> {
   render() {
-    const { postId, groupId } = this.props;
+    const { postId, groupId, isIntegration } = this.props;
     const { disableMoreAction } = this.context;
     const props = {
       Like: <Like id={postId} />,
       Bookmark: <Bookmark id={postId} />,
-      Pin: <Pin postId={postId} groupId={groupId} />,
+      Pin: !isIntegration && <Pin postId={postId} groupId={groupId} />,
       More: !disableMoreAction && <More id={postId} />,
     };
     return <JuiConversationActionBar {...props} />;

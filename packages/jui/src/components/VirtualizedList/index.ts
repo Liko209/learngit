@@ -8,3 +8,5 @@ export * from './LoadMoreStrategy';
 export * from './DataLoader';
 export * from './InfiniteList';
 export * from './types';
+export * from './ItemWrapper';
+export * from './utils';

@@ -17,25 +17,22 @@ import {
 import { CustomEmojiMap } from '../types';
 import { mapUnicodeToShort } from './mapUnicodeToShort';
 
+type EmojiOptions = {
+  unicodeOnly?: boolean;
+};
 class Emoji {
-  text: string;
-  private _staticHttpServer: string;
-  private _customEmojiMap: CustomEmojiMap;
   private _regExpCustom: RegExp;
-
   constructor(
-    text: string,
-    staticHttpServer: string,
-    customEmojiMap: CustomEmojiMap,
+    public text: string,
+    private _staticHttpServer: string,
+    private _customEmojiMap: CustomEmojiMap,
+    private _options: EmojiOptions = {},
   ) {
     // Note: about text value.
     // 1. Cannot be dissected with Glipdown, otherwise it will result in an XXS attack.
     // 2. The original value (Glipdown) cannot be changed through regular expression, otherwise the regular mismatch will be caused.
-    this.text = text;
-    this._staticHttpServer = staticHttpServer;
-    this._customEmojiMap = customEmojiMap;
     this._regExpCustom = new RegExp(
-      `:${Object.keys(customEmojiMap).join(':|:')}:`,
+      `:${Object.keys(_customEmojiMap).join(':|:')}:`,
       'g',
     );
     // Notice we can't change the order
@@ -51,6 +48,9 @@ class Emoji {
       const obj = mapEmojiOne[match]; // :smile:
       if (obj instanceof Object) {
         const unicode = obj.fname;
+        if (this._options.unicodeOnly) {
+          return this._getAlt(unicode);
+        }
         return this._getImg(match, unicode);
       }
       return match;
@@ -62,7 +62,7 @@ class Emoji {
     this.text = this.text.replace(this._regExpCustom, (match: string) => {
       // console.log(match); // :rc:
       const obj = this._customEmojiMap[match.slice(1, -1)]; // rc
-      if (obj instanceof Object) {
+      if (!this._options.unicodeOnly && obj instanceof Object) {
         return `<img class="${this._getClassName(match)}" src="${obj.data}" />`;
       }
       return match;
@@ -80,7 +80,6 @@ class Emoji {
 
   formatExactMatch(regExp: RegExp, mapData: Object) {
     this.text = this.text.replace(regExp, (match: string) => {
-      // console.log(match); // <3 🇭🇰 ⛹️
       // Note: Glipdown does not convert regular expression special characters
       const key = match
         .trim()
@@ -90,6 +89,9 @@ class Emoji {
       const shortName = mapUnicodeToShort[unicode];
       if (shortName) {
         unicode = mapEmojiOne[shortName].fname; // The actual unicode
+      }
+      if (this._options.unicodeOnly) {
+        return this._getAlt(unicode);
       }
       return this._getImg(match, unicode);
     });

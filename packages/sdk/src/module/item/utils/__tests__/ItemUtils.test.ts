@@ -3,10 +3,8 @@
  * @Date: 2019-01-14 10:41:04
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { Item } from '../../module/base/entity';
-import { FileItem } from '../../module/file/entity';
 import { ItemUtils } from '../ItemUtils';
+import { SanitizedEventItem } from '../../module/event/entity';
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -19,7 +17,7 @@ describe('ItemUtils', () => {
     clearMocks();
   });
 
-  describe('isValidItem', () => {
+  describe('isValidItem()', () => {
     beforeEach(() => {
       clearMocks();
     });
@@ -27,7 +25,7 @@ describe('ItemUtils', () => {
     const item1 = {
       id: 10,
       group_ids: [11, 222, 33],
-    } as Item;
+    };
 
     it('should return true when item is valid', () => {
       expect(ItemUtils.isValidItem(11, item1)).toBeTruthy();
@@ -38,42 +36,56 @@ describe('ItemUtils', () => {
     });
   });
 
-  describe('fileFilter', () => {
+  describe('fileFilter()', () => {
     const item1 = {
       id: 10,
       group_ids: [11, 222, 33],
       type: 'JPG',
-    } as FileItem;
+    };
 
     const item2 = {
       id: 10,
       group_ids: [11, 222, 33],
       type: 'doc',
-    } as FileItem;
-
-    it('should return true when item is image type', () => {
-      expect(ItemUtils.fileFilter(11, true)(item1)).toBeTruthy();
-    });
-
-    it('should return false when item is not image', () => {
-      expect(ItemUtils.fileFilter(11, true)(item2)).toBeFalsy();
-    });
+    };
 
     it('should return false when item is not image when want non image file', () => {
-      expect(ItemUtils.fileFilter(11, false)(item1)).toBeFalsy();
+      expect(ItemUtils.fileFilter(11)(item1)).toBeFalsy();
     });
 
     it('should return true when item is not image when want non image file', () => {
-      expect(ItemUtils.fileFilter(11, false)(item2)).toBeTruthy();
+      expect(ItemUtils.fileFilter(11)(item2)).toBeTruthy();
+    });
+  });
+
+  describe('imageFilter()', () => {
+    const item1 = {
+      id: 10,
+      group_ids: [11, 222, 33],
+      type: 'JPG',
+    };
+
+    const item2 = {
+      id: 10,
+      group_ids: [11, 222, 33],
+      type: 'doc',
+    };
+
+    it('should return true when item is image type', () => {
+      expect(ItemUtils.imageFilter(11)(item1)).toBeTruthy();
+    });
+
+    it('should return false when item is not image', () => {
+      expect(ItemUtils.imageFilter(11)(item2)).toBeFalsy();
     });
 
     it('should return false when item is not file', () => {
       item1.id = 111;
-      expect(ItemUtils.fileFilter(11, true)(item1)).toBeFalsy();
+      expect(ItemUtils.imageFilter(11)(item1)).toBeFalsy();
     });
   });
 
-  describe('eventFilter', () => {
+  describe('eventFilter()', () => {
     beforeEach(() => {
       clearMocks();
     });
@@ -86,14 +98,14 @@ describe('ItemUtils', () => {
       effective_end: 3333,
       created_at: 111,
       modified_at: 111,
-    };
+    } as SanitizedEventItem;
 
     const item2 = {
       id: 111,
       group_ids: [11, 222, 33],
       created_at: 111,
       modified_at: 111,
-    };
+    } as SanitizedEventItem;
 
     const item3 = {
       id: 14,
@@ -103,7 +115,7 @@ describe('ItemUtils', () => {
       effective_end: 9007199254740992,
       created_at: 111,
       modified_at: 111,
-    };
+    } as SanitizedEventItem;
 
     const item4 = {
       id: 14,
@@ -113,7 +125,7 @@ describe('ItemUtils', () => {
       effective_end: 9007199254740,
       created_at: 111,
       modified_at: 111,
-    };
+    } as SanitizedEventItem;
 
     it('should return false when is not event', () => {
       expect(ItemUtils.eventFilter(11)(item2)).toBeFalsy();
@@ -132,7 +144,7 @@ describe('ItemUtils', () => {
     });
   });
 
-  describe('taskFilter', () => {
+  describe('taskFilter()', () => {
     it('should return true when want to show completed tasks', () => {
       const task = {
         id: 9,

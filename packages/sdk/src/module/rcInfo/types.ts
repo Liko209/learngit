@@ -65,12 +65,12 @@ enum RCServiceFeatureName {
   VIDEO_CONFERENCING = 'VideoConferencing',
 }
 enum PhoneNumberType {
-  DirectNumber,
-  MainCompanyNumber,
-  Blocked,
-  NickName,
-  CompanyNumber,
-  CompanyFaxNumber,
+  DirectNumber = 'DirectNumber',
+  MainCompanyNumber = 'MainCompanyNumber',
+  Blocked = 'Blocked',
+  NickName = 'NickName',
+  CompanyNumber = 'CompanyNumber',
+  CompanyFaxNumber = 'CompanyFaxNumber',
 }
 
 enum RCBrandType {
@@ -92,6 +92,10 @@ type StationLocationSetting = {
   countryByManual: boolean;
 };
 
+type GlobalStationLocationSetting = {
+  [userId: number]: StationLocationSetting;
+};
+
 enum ERCWebSettingUri {
   BILLING_URI,
   PHONE_SYSTEM_URI,
@@ -108,4 +112,5 @@ export {
   SpecialNumberRuleModel,
   StationLocationSetting,
   ERCWebSettingUri,
+  GlobalStationLocationSetting,
 };

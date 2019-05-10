@@ -40,7 +40,6 @@
     "tsc": "tsc -v && concurrently \"./node_modules/.bin/tsc -p application/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/sdk/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/jui/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/voip/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/foundation/tsconfig.dev.json\"",
     "version": "npx lerna version --no-git-tag-version --exact --yes",
     "webpack": "cd application && npm run webpack",
-    "terser": "3.14.1",
     "fixed:version": "ts-node fixedVersion.ts",
     "update-icon": "node application/scripts/update-icon.js",
     "postupdate-icon": "npm run test application/src/__tests__/icons.test.ts"

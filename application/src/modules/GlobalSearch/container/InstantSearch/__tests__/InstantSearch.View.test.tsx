@@ -5,18 +5,13 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
-import { ThemeProvider } from 'styled-components';
 import { JuiTypography } from 'jui/foundation/Typography';
 
 import { TAB_TYPE } from '@/modules/GlobalSearch/container/InstantSearch/types';
 import { InstantSearchView } from '@/modules/GlobalSearch/container/InstantSearch/InstantSearch.View';
 import { JuiSearchTitle } from 'jui/pattern/GlobalSearch';
-import { theme } from '../../../../../__tests__/utils';
+import { mountWithTheme } from '@/__tests__/utils';
 import { SearchItemTypes } from '../types';
-
-const mountWithTheme = (content: React.ReactNode) =>
-  mount(<ThemeProvider theme={theme}>{content}</ThemeProvider>);
 
 jest.mock('sdk/api');
 jest.mock('sdk/dao');

@@ -125,6 +125,7 @@ module.exports = {
     // Point sourcemap entries to original disk location (format as URL on Windows)
     devtoolModuleFilenameTemplate: info =>
       path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
+    globalObject: 'this',
   },
   optimization: {
     // Automatically split vendor and commons
@@ -209,7 +210,12 @@ module.exports = {
           // Compile .tsx?
           {
             test: /\.(js|jsx|ts|tsx)$/,
-            exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
+            exclude: excludeNodeModulesExcept([
+              'jui',
+              'sdk',
+              'foundation',
+              'ringcentral-web-phone.+ts$',
+            ]),
             use: {
               loader: require.resolve('babel-loader'),
               options: {
@@ -284,6 +290,26 @@ module.exports = {
           },
         ],
       },
+      {
+        test: /\.worker\.ts$/,
+        // include: paths.appSrc,
+        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
+        use: [
+          { loader: 'workerize-loader', options: { inline: false } },
+          {
+            loader: require.resolve('babel-loader'),
+            options: {
+              cacheDirectory: true,
+              // cacheCompression: isEnvProduction,
+              // compact: isEnvProduction,
+              babelrc: false,
+              presets: [['react-app', { flow: false, typescript: true }]],
+              plugins: [['@babel/plugin-syntax-dynamic-import']],
+            },
+          },
+        ],
+      },
+
       // ** STOP ** Are you adding a new loader?
       // Make sure to add the new loader(s) before the "file" loader.
     ],

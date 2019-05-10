@@ -50,13 +50,17 @@ const logger = LogUtils.getLogger(__filename);
 
     let result = true, scene;
     while (sceneArray.length > 0) {
-      scene = sceneArray.shift();
-      result = (await scene.run()) && result;
-      scene.clearReportCache();
-      if (Config.runFps && scene.supportFps()) {
-        scene.openFpsMode();
+      try {
+        scene = sceneArray.shift();
         result = (await scene.run()) && result;
         scene.clearReportCache();
+        if (Config.runFps && scene.supportFps()) {
+          scene.openFpsMode();
+          result = (await scene.run()) && result;
+          scene.clearReportCache();
+        }
+      } catch (err) {
+        logger.error(err);
       }
     }
 
@@ -78,7 +82,7 @@ const logger = LogUtils.getLogger(__filename);
     await FileService.generateReportIndex();
 
     // release resources
-    await closeDB;
+    await closeDB();
     await PptrUtils.closeAll();
 
     process.exitCode = exitCode;

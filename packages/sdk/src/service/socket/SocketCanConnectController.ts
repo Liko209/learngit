@@ -21,17 +21,24 @@ class SocketCanConnectController {
   private _canConnectTimeOutId?: NodeJS.Timeout;
 
   private _managerId: number = 0;
+  private _isDoingCanConnect: boolean = false;
   constructor(id: number) {
     this._managerId = id;
   }
 
   async doCanConnectApi(callback: (id: number) => void, forceOnline: boolean) {
     this._reconnectIntervalTime = NEXT_RECONNECT_TIME;
+    this._isDoingCanConnect = true;
     mainLogger.log(TAG, ' start checkCanConnectToServer');
     await this._doCanConnectApi(callback, forceOnline);
   }
 
+  isDoingCanConnect() {
+    return this._isDoingCanConnect;
+  }
+
   cleanup() {
+    this._isDoingCanConnect = false;
     this._clearCanConnectTimeOutId();
     mainLogger.log(TAG, 'clean up');
   }
@@ -72,6 +79,7 @@ class SocketCanConnectController {
       await this._tryToCheckCanConnectAfterTime(callback, forceOnline, time);
     } else {
       callback(this._managerId);
+      this._isDoingCanConnect = false;
     }
   }
 

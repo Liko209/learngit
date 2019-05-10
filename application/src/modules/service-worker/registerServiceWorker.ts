@@ -161,10 +161,7 @@ function registerValidSW(
       }
     })
     .catch((error: any) => {
-      console.error(
-        `${logTag}Error during service worker registration:`,
-        error,
-      );
+      logInfo(`${logTag}Error during service worker registration: ${error}`);
     });
 }
 

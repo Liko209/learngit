@@ -1,3 +1,8 @@
+/*
+ * @Author: Aaron Huo (aaron.huo@ringcentral.com)
+ * @Date: 2019-05-09 09:53:22
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiConversationPageMemberProps } from './types';
@@ -23,13 +28,10 @@ const StyledConversationPageMember = styled.button<MemberProps>`
     width(iconSizes[size] * 2)({ theme })};
   background: none;
   color: ${grey('500')};
+  cursor: pointer;
 
   &&& {
     margin-left: ${width(1)};
-  }
-
-  > span {
-    ${typography('body1')};
   }
 
   :active {
@@ -42,21 +44,10 @@ const StyledConversationPageMember = styled.button<MemberProps>`
         palette: { tonalOffset, grey },
       },
     }) => darken(grey['500'], tonalOffset)};
-
-    > button {
-      display: block;
-    }
   }
 
-  > button {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    opacity: 0;
-    cursor: pointer;
+  > span {
+    ${typography('body1')};
   }
 `;
 
@@ -68,9 +59,12 @@ class JuiConversationPageMember extends React.Component<
 
     return (
       <RuiTooltip title={title}>
-        <StyledConversationPageMember aria-label={ariaLabel} size={size}>
+        <StyledConversationPageMember
+          aria-label={ariaLabel}
+          onClick={onClick}
+          size={size}
+        >
           <JuiIconography iconSize="medium">member_count</JuiIconography>
-          <button onClick={onClick} />
           {children}
         </StyledConversationPageMember>
       </RuiTooltip>

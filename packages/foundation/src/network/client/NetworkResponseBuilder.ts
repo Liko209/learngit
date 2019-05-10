@@ -3,14 +3,14 @@
  * @Date: 2018-06-04 15:44:05
  * Copyright © RingCentral. All rights reserved.
  */
-import { IRequest, IResponse, HTTP_STATUS_CODE } from '../../network';
+import { IRequest, IResponse, RESPONSE_STATUS_CODE } from '../../network';
 
 abstract class NetworkResponseBuilder {
   data: any = {};
   statusText: string = '';
   headers: object = {};
   request: IRequest;
-  status: HTTP_STATUS_CODE;
+  status: RESPONSE_STATUS_CODE;
   retryAfter: number = 6000;
 
   /**
@@ -33,9 +33,9 @@ abstract class NetworkResponseBuilder {
 
   /**
    * Setter status
-   * @param {HTTP_STATUS_CODE} value
+   * @param {RESPONSE_STATUS_CODE} value
    */
-  public setStatus(value: HTTP_STATUS_CODE) {
+  public setStatus(value: RESPONSE_STATUS_CODE) {
     this.status = value;
     return this;
   }
