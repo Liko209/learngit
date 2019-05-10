@@ -656,10 +656,10 @@ export class PostItem extends BaseWebComponent {
     await this.t.expect(this.emojis.withAttribute('title', `:${text}:`))
   }
 
-  async emojisShouldBeInOrder(valueList: string[]) {
-    await this.t.expect(this.emojis.count).eql(valueList.length);
+  async emojisShouldBeInOrder(valueList: string[], timeout: number = 5e3) {
+    await this.t.expect(this.emojis.count).eql(valueList.length, { timeout });
     for (const n in valueList) {
-      await this.t.expect(this.emojis.nth(+n).withAttribute('title', `:${valueList[n]}:`));
+      await this.t.expect(this.emojis.nth(+n).withAttribute('title', `:${valueList[n]}:`)).ok({ timeout });
     }
   }
 
