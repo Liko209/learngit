@@ -46,6 +46,12 @@ jest.mock('sdk/module/post');
 jest.mock('sdk/module/group');
 jest.mock('@/containers/Notification');
 jest.mock('@/store/base/visibilityChangeEvent');
+jest.mock('@store/utils/getSingleEntity');
+jest.mock('@/store/utils', () => {
+  return {
+    getSingleEntity: jest.fn(),
+  };
+});
 
 function streamProps(obj: any = {}): StreamProps {
   return {
@@ -119,10 +125,7 @@ describe('StreamViewModel', () => {
   });
 
   describe('loadInitialPosts()', () => {
-    function setupMock({
-      props,
-      getPostsByGroupIdData,
-    }: any) {
+    function setupMock({ props, getPostsByGroupIdData }: any) {
       const vm = new StreamViewModel(props);
       jest.spyOn(vm, 'markAsRead').mockImplementation(() => {});
       postService.getPostsByGroupId.mockResolvedValue(getPostsByGroupIdData);

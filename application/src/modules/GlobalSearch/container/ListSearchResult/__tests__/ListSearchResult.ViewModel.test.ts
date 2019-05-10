@@ -14,6 +14,7 @@ import { TAB_TYPE } from '../types';
 jest.mock('sdk/api');
 jest.mock('sdk/dao');
 jest.mock('sdk/module/search');
+jest.mock('sdk/module/config');
 
 import { ListSearchResultViewModel } from '../ListSearchResult.ViewModel';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
