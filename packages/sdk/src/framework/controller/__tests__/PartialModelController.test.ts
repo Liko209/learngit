@@ -148,7 +148,7 @@ describe('PartialModelController', () => {
           preHandlePartialFunc,
           doUpdateFunc,
         ),
-      ).resolves.toThrow();
+      ).rejects.toThrow();
     });
   });
 
