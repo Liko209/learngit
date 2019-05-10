@@ -10,8 +10,7 @@ type ActionsProps = {
 };
 
 type ActionsViewProps = {
-  postId: number;
-  groupId: number;
-};
+  isIntegration: boolean;
+} & ActionsProps;
 
 export { ActionsProps, ActionsViewProps };

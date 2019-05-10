@@ -1,0 +1,205 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Button /> should render with arrow 1`] = `
+.c2 {
+  border: 4px solid transparent;
+  border-top-color: white;
+  top: 2px;
+  position: relative;
+  margin: 4px 4px 4px 8px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.c0 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 20px;
+  padding: 8px 20px;
+  height: 32px;
+  line-height: 0;
+  border-radius: 32px;
+  border: none;
+  background-color: #616161;
+  color: #fff;
+  box-shadow: 0px 4px 5px -2px rgba(0,0,0,0.2),0px 7px 10px 1px rgba(0,0,0,0.14),0px 2px 16px 1px rgba(0,0,0,0.12);
+  cursor: pointer;
+  outline: none;
+}
+
+.c0:hover {
+  background-color: #212121;
+}
+
+.c0.lozengeButtonLoading {
+  pointer-events: none;
+}
+
+.c0.lozengeButtonLoading .c3 {
+  margin-left: 4px;
+}
+
+.c0.lozengeButtonLoading .c1,
+.c0.lozengeButtonWithArrow .c1,
+.c0.lozengeButtonLoading .c3,
+.c0.lozengeButtonWithArrow .c3,
+.c0.lozengeButtonLoading span,
+.c0.lozengeButtonWithArrow span {
+  vertical-align: middle;
+}
+
+<button
+  className="undefined lozengeButtonWithArrow c0"
+>
+  <span>
+     
+    Button
+     
+  </span>
+  <span
+    className="c1 c2"
+    direction="down"
+  />
+</button>
+`;
+
+exports[`<Button /> should render with loading 1`] = `
+.c2.c2 {
+  color: white;
+}
+
+.c0 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 20px;
+  padding: 8px 20px;
+  height: 32px;
+  line-height: 0;
+  border-radius: 32px;
+  border: none;
+  background-color: #616161;
+  color: #fff;
+  box-shadow: 0px 4px 5px -2px rgba(0,0,0,0.2),0px 7px 10px 1px rgba(0,0,0,0.14),0px 2px 16px 1px rgba(0,0,0,0.12);
+  cursor: pointer;
+  outline: none;
+}
+
+.c0:hover {
+  background-color: #212121;
+}
+
+.c0.lozengeButtonLoading {
+  pointer-events: none;
+}
+
+.c0.lozengeButtonLoading .c1 {
+  margin-left: 4px;
+}
+
+.c0.lozengeButtonLoading .c3,
+.c0.lozengeButtonWithArrow .c3,
+.c0.lozengeButtonLoading .c1,
+.c0.lozengeButtonWithArrow .c1,
+.c0.lozengeButtonLoading span,
+.c0.lozengeButtonWithArrow span {
+  vertical-align: middle;
+}
+
+<button
+  className="undefined lozengeButtonLoading lozengeButtonWithArrow c0"
+>
+  <span>
+     
+    Button
+     
+  </span>
+  <div
+    className="MuiCircularProgress-root-1 MuiCircularProgress-indeterminate-3 c1 c2"
+    role="progressbar"
+    style={
+      Object {
+        "height": 16,
+        "width": 16,
+      }
+    }
+  >
+    <svg
+      className="MuiCircularProgress-svg-6"
+      viewBox="22 22 44 44"
+    >
+      <circle
+        className="MuiCircularProgress-circle-7 MuiCircularProgress-circleIndeterminate-9"
+        cx={44}
+        cy={44}
+        fill="none"
+        r={20.2}
+        strokeWidth={3.6}
+        style={Object {}}
+      />
+    </svg>
+  </div>
+</button>
+`;
+
+exports[`<Button /> should render without loading 1`] = `
+.c2 {
+  border: 4px solid transparent;
+  border-top-color: white;
+  top: 2px;
+  position: relative;
+  margin: 4px 4px 4px 8px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.c0 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 20px;
+  padding: 8px 20px;
+  height: 32px;
+  line-height: 0;
+  border-radius: 32px;
+  border: none;
+  background-color: #616161;
+  color: #fff;
+  box-shadow: 0px 4px 5px -2px rgba(0,0,0,0.2),0px 7px 10px 1px rgba(0,0,0,0.14),0px 2px 16px 1px rgba(0,0,0,0.12);
+  cursor: pointer;
+  outline: none;
+}
+
+.c0:hover {
+  background-color: #212121;
+}
+
+.c0.lozengeButtonLoading {
+  pointer-events: none;
+}
+
+.c0.lozengeButtonLoading .c3 {
+  margin-left: 4px;
+}
+
+.c0.lozengeButtonLoading .c1,
+.c0.lozengeButtonWithArrow .c1,
+.c0.lozengeButtonLoading .c3,
+.c0.lozengeButtonWithArrow .c3,
+.c0.lozengeButtonLoading span,
+.c0.lozengeButtonWithArrow span {
+  vertical-align: middle;
+}
+
+<button
+  className="undefined lozengeButtonWithArrow c0"
+>
+  <span>
+     
+    Button
+     
+  </span>
+  <span
+    className="c1 c2"
+    direction="down"
+  />
+</button>
+`;

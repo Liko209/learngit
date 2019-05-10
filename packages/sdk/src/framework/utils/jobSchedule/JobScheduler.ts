@@ -231,6 +231,9 @@ class JobScheduler {
           }
         }
       }
+      if (info.callback) {
+        info.callback(successful);
+      }
     };
 
     info.isExecuting = true;

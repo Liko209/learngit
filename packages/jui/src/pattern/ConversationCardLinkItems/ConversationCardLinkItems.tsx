@@ -14,11 +14,13 @@ import {
   grey,
   typography,
 } from '../../foundation/utils/styles';
+import { Theme } from '../../foundation/theme/theme';
 import defaultLinkImage from './link_img@2x.png';
 
 const LinkItemsWrapper = styled(JuiCard)`
   margin-top: ${spacing(3)};
-  background-color: ${({ theme }) => theme.palette.common.white};
+  background-color: ${({ theme }: { theme: Theme }) =>
+    theme.palette.common.white};
   width: 100%;
   border-radius: ${({ theme }) => theme.shape.borderRadius}px;
   overflow: hidden;
@@ -31,7 +33,7 @@ const LinkItemsWrapper = styled(JuiCard)`
 const LinkItemContents = styled.div`
   display: flex;
   & > span {
-    color: ${({ theme }) => theme.palette.accent.ash};
+    color: ${({ theme }: { theme: Theme }) => theme.palette.accent.ash};
     width: ${width(5)};
     height: ${height(5)};
     cursor: pointer;

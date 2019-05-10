@@ -1,0 +1,494 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Button /> should render contained type button 1`] = `
+.c0.c0 {
+  padding-right: 16px;
+  padding-left: 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 16px;
+  color: #0684DB;
+  height: 36px;
+}
+
+.c0.c0 > span[class*="label"] {
+  min-width: 64px;
+}
+
+.c0.c0.root {
+  text-transform: none;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.c0.c0.containedButtonStyle {
+  color: white;
+  background-color: #0684DB;
+  box-shadow: unset;
+}
+
+.c0.c0.containedButtonStyle:hover {
+  opacity: 0.92;
+}
+
+.c0.c0.containedButtonStyle:disabled {
+  color: white;
+  box-shadow: none;
+  background-color: rgba(0,0,0,0.12);
+}
+
+.c0.c0.textButtonStyle {
+  color: #0684DB;
+}
+
+.c0.c0.textButtonStyle.disabled {
+  color: #BFBFBF;
+}
+
+.c0.c0.textButtonStyle:hover {
+  background-color: rgba(6,132,219,0.08);
+}
+
+.c0.c0.outlineButtonStyle {
+  border-color: #0684DB;
+  background-color: #fff;
+  color: #0684DB;
+}
+
+.c0.c0.outlineButtonStyle.disabled {
+  color: rgba(0,0,0,0.26);
+  background-color: #fff;
+  border-color: rgba(0,0,0,0.12);
+}
+
+.c0.c0.outlineButtonStyle:hover {
+  background-color: rgba(6,132,219,0.08);
+}
+
+.c0.c0.roundButtonStyle {
+  height: 36px;
+  border-radius: 28px;
+  padding: 0 17px;
+  background-color: #fff;
+  color: #0684DB;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 16px;
+  min-height: unset;
+  width: inherit;
+  box-shadow: 0px 1px 8px 0px rgba(0,0,0,0.2),0px 3px 4px 0px rgba(0,0,0,0.14),0px 3px 3px -2px rgba(0,0,0,0.12);
+}
+
+.c0.c0.roundButtonStyle:hover {
+  background-color: #fafafa;
+}
+
+.c0.c0.roundButtonStyle:hover:active {
+  background-color: #f5f5f5;
+}
+
+.c0.c0.roundButtonStyle .rippleVisible {
+  opacity: 0.16;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: YZiwH;
+  animation-name: YZiwH;
+}
+
+<button
+  className="MuiButtonBase-root-27 MuiButton-root-1 root MuiButton-contained-12 containedButtonStyle MuiButton-containedPrimary-13 MuiButton-raised-15 MuiButton-raisedPrimary-16 MuiButton-sizeLarge-25 c0"
+  disabled={false}
+  onBlur={[Function]}
+  onContextMenu={[Function]}
+  onFocus={[Function]}
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
+  onMouseDown={[Function]}
+  onMouseLeave={[Function]}
+  onMouseUp={[Function]}
+  onTouchEnd={[Function]}
+  onTouchMove={[Function]}
+  onTouchStart={[Function]}
+  tabIndex="0"
+  type="button"
+>
+  <span
+    className="MuiButton-label-2 label"
+  >
+    Button
+  </span>
+  <span
+    className="MuiTouchRipple-root-30"
+  />
+</button>
+`;
+
+exports[`<Button /> should render outlined type button 1`] = `
+.c0.c0 {
+  padding-right: 16px;
+  padding-left: 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 16px;
+  color: #0684DB;
+  height: 36px;
+}
+
+.c0.c0 > span[class*="label"] {
+  min-width: 64px;
+}
+
+.c0.c0.root {
+  text-transform: none;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.c0.c0.containedButtonStyle {
+  color: white;
+  background-color: #0684DB;
+  box-shadow: unset;
+}
+
+.c0.c0.containedButtonStyle:hover {
+  opacity: 0.92;
+}
+
+.c0.c0.containedButtonStyle:disabled {
+  color: white;
+  box-shadow: none;
+  background-color: rgba(0,0,0,0.12);
+}
+
+.c0.c0.textButtonStyle {
+  color: #0684DB;
+}
+
+.c0.c0.textButtonStyle.disabled {
+  color: #BFBFBF;
+}
+
+.c0.c0.textButtonStyle:hover {
+  background-color: rgba(6,132,219,0.08);
+}
+
+.c0.c0.outlineButtonStyle {
+  border-color: #0684DB;
+  background-color: #fff;
+  color: #0684DB;
+}
+
+.c0.c0.outlineButtonStyle.disabled {
+  color: rgba(0,0,0,0.26);
+  background-color: #fff;
+  border-color: rgba(0,0,0,0.12);
+}
+
+.c0.c0.outlineButtonStyle:hover {
+  background-color: rgba(6,132,219,0.08);
+}
+
+.c0.c0.roundButtonStyle {
+  height: 36px;
+  border-radius: 28px;
+  padding: 0 17px;
+  background-color: #fff;
+  color: #0684DB;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 16px;
+  min-height: unset;
+  width: inherit;
+  box-shadow: 0px 1px 8px 0px rgba(0,0,0,0.2),0px 3px 4px 0px rgba(0,0,0,0.14),0px 3px 3px -2px rgba(0,0,0,0.12);
+}
+
+.c0.c0.roundButtonStyle:hover {
+  background-color: #fafafa;
+}
+
+.c0.c0.roundButtonStyle:hover:active {
+  background-color: #f5f5f5;
+}
+
+.c0.c0.roundButtonStyle .rippleVisible {
+  opacity: 0.16;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: YZiwH;
+  animation-name: YZiwH;
+}
+
+<button
+  className="MuiButtonBase-root-27 MuiButton-root-1 root MuiButton-outlined-9 outlineButtonStyle MuiButton-outlinedPrimary-10 MuiButton-sizeLarge-25 c0"
+  disabled={false}
+  onBlur={[Function]}
+  onContextMenu={[Function]}
+  onFocus={[Function]}
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
+  onMouseDown={[Function]}
+  onMouseLeave={[Function]}
+  onMouseUp={[Function]}
+  onTouchEnd={[Function]}
+  onTouchMove={[Function]}
+  onTouchStart={[Function]}
+  tabIndex="0"
+  type="button"
+>
+  <span
+    className="MuiButton-label-2 label"
+  >
+    Button
+  </span>
+  <span
+    className="MuiTouchRipple-root-30"
+  />
+</button>
+`;
+
+exports[`<Button /> should render round type button 1`] = `
+.c0.c0 {
+  padding-right: 16px;
+  padding-left: 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 16px;
+  color: #0684DB;
+  height: 36px;
+}
+
+.c0.c0 > span[class*="label"] {
+  min-width: 64px;
+}
+
+.c0.c0.root {
+  text-transform: none;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.c0.c0.containedButtonStyle {
+  color: white;
+  background-color: #0684DB;
+  box-shadow: unset;
+}
+
+.c0.c0.containedButtonStyle:hover {
+  opacity: 0.92;
+}
+
+.c0.c0.containedButtonStyle:disabled {
+  color: white;
+  box-shadow: none;
+  background-color: rgba(0,0,0,0.12);
+}
+
+.c0.c0.textButtonStyle {
+  color: #0684DB;
+}
+
+.c0.c0.textButtonStyle.disabled {
+  color: #BFBFBF;
+}
+
+.c0.c0.textButtonStyle:hover {
+  background-color: rgba(6,132,219,0.08);
+}
+
+.c0.c0.outlineButtonStyle {
+  border-color: #0684DB;
+  background-color: #fff;
+  color: #0684DB;
+}
+
+.c0.c0.outlineButtonStyle.disabled {
+  color: rgba(0,0,0,0.26);
+  background-color: #fff;
+  border-color: rgba(0,0,0,0.12);
+}
+
+.c0.c0.outlineButtonStyle:hover {
+  background-color: rgba(6,132,219,0.08);
+}
+
+.c0.c0.roundButtonStyle {
+  height: 36px;
+  border-radius: 28px;
+  padding: 0 17px;
+  background-color: #fff;
+  color: #0684DB;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 16px;
+  min-height: unset;
+  width: inherit;
+  box-shadow: 0px 1px 8px 0px rgba(0,0,0,0.2),0px 3px 4px 0px rgba(0,0,0,0.14),0px 3px 3px -2px rgba(0,0,0,0.12);
+}
+
+.c0.c0.roundButtonStyle:hover {
+  background-color: #fafafa;
+}
+
+.c0.c0.roundButtonStyle:hover:active {
+  background-color: #f5f5f5;
+}
+
+.c0.c0.roundButtonStyle .rippleVisible {
+  opacity: 0.16;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: YZiwH;
+  animation-name: YZiwH;
+}
+
+<button
+  className="MuiButtonBase-root-27 MuiButton-root-1 root MuiButton-fab-18 roundButtonStyle MuiButton-contained-12 containedButtonStyle MuiButton-containedPrimary-13 MuiButton-raised-15 MuiButton-raisedPrimary-16 MuiButton-sizeLarge-25 c0"
+  disabled={false}
+  onBlur={[Function]}
+  onContextMenu={[Function]}
+  onFocus={[Function]}
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
+  onMouseDown={[Function]}
+  onMouseLeave={[Function]}
+  onMouseUp={[Function]}
+  onTouchEnd={[Function]}
+  onTouchMove={[Function]}
+  onTouchStart={[Function]}
+  tabIndex="0"
+  type="button"
+>
+  <span
+    className="MuiButton-label-2 label"
+  >
+    Button
+  </span>
+</button>
+`;
+
+exports[`<Button /> should render text type button 1`] = `
+.c0.c0 {
+  padding-right: 16px;
+  padding-left: 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 16px;
+  color: #0684DB;
+  height: 36px;
+}
+
+.c0.c0 > span[class*="label"] {
+  min-width: 64px;
+}
+
+.c0.c0.root {
+  text-transform: none;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.c0.c0.containedButtonStyle {
+  color: white;
+  background-color: #0684DB;
+  box-shadow: unset;
+}
+
+.c0.c0.containedButtonStyle:hover {
+  opacity: 0.92;
+}
+
+.c0.c0.containedButtonStyle:disabled {
+  color: white;
+  box-shadow: none;
+  background-color: rgba(0,0,0,0.12);
+}
+
+.c0.c0.textButtonStyle {
+  color: #0684DB;
+}
+
+.c0.c0.textButtonStyle.disabled {
+  color: #BFBFBF;
+}
+
+.c0.c0.textButtonStyle:hover {
+  background-color: rgba(6,132,219,0.08);
+}
+
+.c0.c0.outlineButtonStyle {
+  border-color: #0684DB;
+  background-color: #fff;
+  color: #0684DB;
+}
+
+.c0.c0.outlineButtonStyle.disabled {
+  color: rgba(0,0,0,0.26);
+  background-color: #fff;
+  border-color: rgba(0,0,0,0.12);
+}
+
+.c0.c0.outlineButtonStyle:hover {
+  background-color: rgba(6,132,219,0.08);
+}
+
+.c0.c0.roundButtonStyle {
+  height: 36px;
+  border-radius: 28px;
+  padding: 0 17px;
+  background-color: #fff;
+  color: #0684DB;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 16px;
+  min-height: unset;
+  width: inherit;
+  box-shadow: 0px 1px 8px 0px rgba(0,0,0,0.2),0px 3px 4px 0px rgba(0,0,0,0.14),0px 3px 3px -2px rgba(0,0,0,0.12);
+}
+
+.c0.c0.roundButtonStyle:hover {
+  background-color: #fafafa;
+}
+
+.c0.c0.roundButtonStyle:hover:active {
+  background-color: #f5f5f5;
+}
+
+.c0.c0.roundButtonStyle .rippleVisible {
+  opacity: 0.16;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: YZiwH;
+  animation-name: YZiwH;
+}
+
+<button
+  className="MuiButtonBase-root-27 MuiButton-root-1 root MuiButton-text-3 textButtonStyle MuiButton-textPrimary-4 MuiButton-flat-6 MuiButton-flatPrimary-7 MuiButton-sizeLarge-25 c0"
+  disabled={false}
+  onBlur={[Function]}
+  onContextMenu={[Function]}
+  onFocus={[Function]}
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
+  onMouseDown={[Function]}
+  onMouseLeave={[Function]}
+  onMouseUp={[Function]}
+  onTouchEnd={[Function]}
+  onTouchMove={[Function]}
+  onTouchStart={[Function]}
+  tabIndex="0"
+  type="button"
+>
+  <span
+    className="MuiButton-label-2 label"
+  >
+    Button
+  </span>
+  <span
+    className="MuiTouchRipple-root-30"
+  />
+</button>
+`;

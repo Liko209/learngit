@@ -29,7 +29,7 @@ const StyledMinimizedCall = styled('div')`
   box-sizing: border-box;
   background-color: ${({ theme }) =>
     tinycolor(palette('common', 'black')({ theme }))
-      .setAlpha(opacity('p30')({ theme }))
+      .setAlpha(opacity('3')({ theme }))
       .toRgbString()};
   padding: ${spacing(0, 4)};
   width: ${width(60)};

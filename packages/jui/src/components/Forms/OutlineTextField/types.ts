@@ -8,7 +8,7 @@ type IconPosition = 'left' | 'right' | 'both';
 type InputRadius = {
   circle: string; // half of height
   rounded: string; // 4px
-  rectangle: number; // 0px
+  rectangle: string; // 0px
 };
 
 type InputRadiusKeys = keyof InputRadius;
