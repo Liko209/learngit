@@ -27,11 +27,6 @@ import { GroupService, Group } from '../../group';
 import { PostService } from '../../post';
 import { SyncListener } from '../service/SyncListener';
 import { SyncUserConfig } from '../config/SyncUserConfig';
-import { IndexRequestProcessor } from './IndexRequestProcessor';
-import {
-  SequenceProcessorHandler,
-  IProcessor,
-} from '../../../framework/processor';
 import { SYNC_SOURCE, ChangeModel } from '../types';
 import { AccountGlobalConfig } from '../../../module/account/config';
 import { GroupConfigService } from '../../../module/groupConfig';
@@ -46,33 +41,19 @@ import { RawPresence } from '../../../module/presence/entity';
 import { Person } from '../../../module/person/entity';
 import { Post } from '../../../module/post/entity';
 import _ from 'lodash';
+import { TaskController } from 'sdk/framework/controller/impl/TaskController';
+import { ITaskStrategy } from 'sdk/framework/strategy/ITaskStrategy';
+import { IndexDataTaskStrategy } from '../strategy/IndexDataTaskStrategy';
 
 const LOG_TAG = 'SyncController';
-const INDEX_MAX_QUEUE = 2;
 class SyncController {
   private _isFetchingRemaining: boolean;
   private _syncListener: SyncListener;
-  private _processorHandler: SequenceProcessorHandler;
   private _progressBar: ProgressBar;
+  private _indexDataTaskController: TaskController;
 
   constructor() {
     this._progressBar = progressManager.newProgressBar();
-    this._processorHandler = new SequenceProcessorHandler(
-      'Index_SyncController',
-      undefined,
-      INDEX_MAX_QUEUE,
-      this._onExceedMaxSize,
-    );
-  }
-
-  private _onExceedMaxSize = (totalProcessors: IProcessor[]) => {
-    mainLogger.log(
-      `SequenceProcessorHandler-Index_SyncController over threshold:${INDEX_MAX_QUEUE}, remove the oldest one`,
-    );
-    const lastProcessor = totalProcessors.shift();
-    if (lastProcessor && lastProcessor.cancel) {
-      lastProcessor.cancel();
-    }
   }
 
   handleSocketConnectionStateChanged({ state }: { state: any }) {
@@ -232,11 +213,20 @@ class SyncController {
         mainLogger.log(LOG_INDEX_DATA, 'fetch index failed');
         syncConfig.updateIndexSucceed(false);
         await this._handleSyncIndexError(error);
+        throw new Error(error);
       }
       this._progressBar.stop();
     };
-    const processor = new IndexRequestProcessor(executeFunc);
-    this._processorHandler.addProcessor(processor);
+    const taskController = this._getIndexDataTaskController();
+    taskController.start(executeFunc);
+  }
+
+  private _getIndexDataTaskController() {
+    if (!this._indexDataTaskController) {
+      const taskStrategy: ITaskStrategy = new IndexDataTaskStrategy();
+      this._indexDataTaskController = new TaskController(taskStrategy);
+    }
+    return this._indexDataTaskController;
   }
 
   private async _handleSyncIndexError(result: any) {

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ReactNode } from 'react';
+import { ComponentType } from 'react';
 import { observable, computed, action } from 'mobx';
 import { RouteProps } from 'react-router-dom';
 import { SubModuleConfig, NavConfig } from '../types';
@@ -66,10 +66,14 @@ class HomeStore {
     this._subModuleConfigsMap.set(name, config);
   }
 
-  @observable extensions: ReactNode[] = [];
+  @observable extensions: { [key: string]: Set<ComponentType> } = {};
 
-  addExtensions(extension: ReactNode) {
-    this.extensions.push(extension);
+  addExtensions(key: string, extension: ComponentType) {
+    if (this.extensions[key]) {
+      this.extensions[key].add(extension);
+      return;
+    }
+    this.extensions[key] = new Set([extension]);
   }
 }
 

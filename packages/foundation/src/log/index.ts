@@ -10,3 +10,4 @@ const telephonyLogger: ILogger = logManager.getTelephonyLogger();
 export { LOG_LEVEL } from './constants';
 export { logManager, mainLogger, networkLogger, telephonyLogger };
 export * from './types';
+export * from './SessionManager';

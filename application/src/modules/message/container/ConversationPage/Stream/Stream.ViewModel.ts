@@ -203,8 +203,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @catchError.flash({
     isDebounce: true,
-    network: 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages',
-    server: 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages',
+    network: 'message.prompt.notAbleToLoadOlderMessagesForNetworkIssue',
+    server: 'message.prompt.notAbleToLoadOlderMessagesForServerIssue',
   })
   @action
   async loadPrevPosts(count: number) {
@@ -296,8 +296,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @catchError.flash({
     isDebounce: true,
-    network: 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages',
-    server: 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages',
+    network: 'message.prompt.notAbleToLoadOlderMessagesForNetworkIssue',
+    server: 'message.prompt.notAbleToLoadOlderMessagesForServerIssue',
   })
   @action
   getFirstUnreadPostByLoadAllUnread = async () => {

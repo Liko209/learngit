@@ -11,7 +11,7 @@ export function parseArgs(argsString: string) {
   return argsString.split(',').filter(Boolean).map(s => s.trim());
 }
 
-export function flattenGlobs(globs: string[], needShuffle: Boolean = false): string[] {
+export function flattenGlobs(globs: string[], needShuffle: Boolean = false) {
   let newArray = _(globs).flatMap(g => G.sync(g)).uniq().value();
   if (needShuffle) {
     return _.shuffle(newArray);

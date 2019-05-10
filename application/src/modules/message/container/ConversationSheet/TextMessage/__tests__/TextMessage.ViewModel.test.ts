@@ -6,7 +6,6 @@
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { TextMessageViewModel } from '../TextMessage.ViewModel';
-import { FormatToHtml } from '../FormatToHtml';
 
 jest.mock('@/store/utils');
 

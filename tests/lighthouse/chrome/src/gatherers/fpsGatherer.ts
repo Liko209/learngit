@@ -2,7 +2,7 @@
  * @Author: doyle.wu
  * @Date: 2018-12-12 12:56:30
  */
-const Gatherer = require("lighthouse/lighthouse-core/gather/gatherers/gatherer");
+import { BaseGatherer } from ".";
 import { Page } from "../pages";
 import { FunctionUtils } from "../utils";
 
@@ -13,7 +13,7 @@ class FpsItem {
   fps: number;
 }
 
-class FpsGatherer extends Gatherer {
+class FpsGatherer extends BaseGatherer {
   private lines: Array<FpsItem> = new Array();
   private needLog: boolean = false;
   private listen: Function = (chunk) => {
@@ -32,7 +32,7 @@ class FpsGatherer extends Gatherer {
     }
   };
 
-  async beforePass(passContext) {
+  async _beforePass(passContext) {
     const p = new Page(passContext);
     const browser = await p.browser();
 
@@ -56,10 +56,10 @@ class FpsGatherer extends Gatherer {
     }
   }
 
-  async pass(passContext) {
+  async _pass(passContext) {
   }
 
-  async afterPass(passContext) {
+  async _afterPass(passContext) {
     let p = new Page(passContext);
 
     let browser = await p.browser();
