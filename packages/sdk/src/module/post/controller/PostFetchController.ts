@@ -112,6 +112,7 @@ class PostFetchController {
     performanceTracer.end({
       key: PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_POSTS,
       count: result.posts && result.posts.length,
+      infos: { groupId },
     });
     return result;
   }
