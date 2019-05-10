@@ -8,7 +8,7 @@ class Entry extends BaseWebComponent {
   }
 
   async shouldBeOpened() {
-    await this.t.expect(this.self.hasClass('g')).ok();
+    await this.t.expect(this.self.hasClass('selected')).ok();
   }
 
   get name() {
