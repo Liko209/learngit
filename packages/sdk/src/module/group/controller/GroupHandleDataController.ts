@@ -258,11 +258,6 @@ class GroupHandleDataController {
 
     // handle deactivated data and normal data
     await this.saveDataAndDoNotification(data, source, changeMap);
-    // check all group members exist in local or not if not, should get from remote
-    // seems we only need check normal groups, don't need to check deactivated data
-    // if (shouldCheckIncompleteMembers) {
-    //   await checkIncompleteGroupsMembers(normalGroups);
-    // }
   }
 
   doFavoriteGroupsNotification = async (favIds: number[]) => {

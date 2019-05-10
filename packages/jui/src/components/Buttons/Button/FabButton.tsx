@@ -17,7 +17,7 @@ import {
   rippleEnter,
   height,
 } from '../../../foundation/utils/styles';
-import { JuiArrowTip } from '../../Tooltip/ArrowTip';
+import { RuiTooltip } from 'rcui/components/Tooltip';
 import { Omit } from '../../../foundation/utils/typeHelper';
 import {
   ICON_NAME,
@@ -177,7 +177,7 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
 
   if (!disabled && !disableToolTip && tooltipTitle) {
     return (
-      <JuiArrowTip title={tooltipTitle} placement={tooltipPlacement}>
+      <RuiTooltip title={tooltipTitle} placement={tooltipPlacement}>
         {
           <StyledFabButton
             colorScope={colorScope}
@@ -190,7 +190,7 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
             </JuiIconography>
           </StyledFabButton>
         }
-      </JuiArrowTip>
+      </RuiTooltip>
     );
   }
   return (

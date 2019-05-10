@@ -19,6 +19,7 @@ import { AppRoot } from '../page-models/AppRoot';
 import { SITE_URL, SITE_ENV } from '../../config';
 import { WebphoneHelper } from './webphone-helper';
 import { NotificationHelper } from './notification';
+import { UpgradeHelper } from './upgrade';
 import { WebphoneSession } from '../webphone/session';
 
 const logger = getLogger(__filename);
@@ -85,6 +86,13 @@ class Helper {
       this.t.ctx.__notificationHelper = new NotificationHelper(this.t);
     }
     return this.t.ctx.__notificationHelper;
+  }
+
+  get upgradeHelper(): UpgradeHelper {
+    if (!this.t.ctx.__upgradeHelper) {
+      this.t.ctx.__upgradeHelper = new UpgradeHelper(this.t);
+    }
+    return this.t.ctx.__upgradeHelper;
   }
 
   /* delegate following method */
