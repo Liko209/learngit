@@ -72,6 +72,7 @@ test(formalName('JPT-60 Can scroll up/down when have more than 1 page posts.', [
     });
 
     await h(t).withLog('When I scroll up to the first post in \'C1\'', async () => {
+      await conversationPage.scrollUpToViewPostById(postsId[0]);
       await conversationPage.scrollToTop();
     });
 
