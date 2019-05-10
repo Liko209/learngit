@@ -8,7 +8,7 @@ import { number } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import styled from '../../../foundation/styled-components';
 import { spacing } from '../../../foundation/utils';
-import { JuiCircularProgress } from '../../Progress';
+import { RuiCircularProgress } from 'rcui/components/Progress';
 import { JuiInfiniteList } from '../InfiniteList';
 import {
   JuiVirtualizedList,
@@ -44,7 +44,7 @@ const ListWrapper = styled.div`
 
 const LoadingMore = () => (
   <StyledLoadingMore>
-    <JuiCircularProgress />
+    <RuiCircularProgress />
   </StyledLoadingMore>
 );
 const DebugTableRow = ({

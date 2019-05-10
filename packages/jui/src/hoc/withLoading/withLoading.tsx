@@ -5,7 +5,7 @@
  */
 import React, { ComponentType } from 'react';
 import styled from '../../foundation/styled-components';
-import { JuiCircularProgress } from '../../components/Progress';
+import { RuiCircularProgress } from 'rcui/components/Progress';
 import { withDelay } from '../withDelay';
 import { palette } from '../../foundation/utils';
 type WithLoadingProps = {
@@ -38,7 +38,7 @@ const DefaultLoadingWithDelay = withDelay(
   ({ backgroundType, size }: LoaderProps) => {
     return (
       <StyledLoadingPage backgroundType={backgroundType}>
-        <JuiCircularProgress size={size} />
+        <RuiCircularProgress size={size} />
       </StyledLoadingPage>
     );
   },
