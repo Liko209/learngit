@@ -7,15 +7,15 @@
 import { container, Jupiter } from 'framework';
 import { HoldViewModel } from '../Hold.ViewModel';
 import * as telephony from '@/modules/telephony/module.config';
-
+jest.mock('sdk/module/telephony');
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 
 let holdViewModel: HoldViewModel;
-
 beforeAll(() => {
   holdViewModel = new HoldViewModel();
 });
+
 describe('HoldViewModel', () => {
   it('Should be disabled', async () => {
     expect(holdViewModel.disabled).toBe(true);

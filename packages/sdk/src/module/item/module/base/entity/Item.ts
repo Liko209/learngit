@@ -36,7 +36,7 @@ export type Item = ExtendedBaseModel & {
   company_id: number;
   is_document?: boolean;
   name: string; // file name
-  type_id: number; // file type
+  type_id: number; // glip-type-dictionary id
   type: string; // file type .jpg .exe
   versions: ItemVersions[];
   summary?: string;

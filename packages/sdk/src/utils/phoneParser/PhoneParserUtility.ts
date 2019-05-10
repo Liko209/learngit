@@ -142,14 +142,15 @@ class PhoneParserUtility {
       phoneData,
     );
 
+    PhoneParserUtility._initialized = result;
+    mainLogger.debug('PhoneParserUtility: init result => ', result);
+
     if (result) {
       await rcInfoService.setPhoneDataVersion(
         PhoneParserUtility._phoneParserModule.GetPhoneDataFileVersion(),
       );
+      await rcInfoService.loadRegionInfo();
     }
-
-    PhoneParserUtility._initialized = result;
-    mainLogger.debug('PhoneParserUtility: init result => ', result);
     return result;
   }
 

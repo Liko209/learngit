@@ -12,7 +12,13 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import storeManager from '@/store';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import _ from 'lodash';
-import { JError, ERROR_TYPES, ERROR_CODES_SERVER } from 'sdk/error';
+import {
+  JError,
+  ERROR_TYPES,
+  ERROR_CODES_SERVER,
+  JNetworkError,
+  ERROR_CODES_NETWORK,
+} from 'sdk/error';
 import { Notification } from '@/containers/Notification';
 import * as errorUtil from '@/utils/error';
 
@@ -434,7 +440,7 @@ describe('StreamViewModel', () => {
       expect(posts).toEqual(data);
     });
 
-    it('should show error toast when server throw error while scroll up [JPT-695]', async () => {
+    it('User manually loading older messages (by scrolling down) in Conversation page failed due to unexpected backend error [JPT-1803]', async () => {
       const fetchData = jest.fn(() =>
         Promise.reject(
           new JError(
@@ -459,7 +465,34 @@ describe('StreamViewModel', () => {
         dismissible: false,
         fullWidth: false,
         autoHideDuration: 3000,
-        message: 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages',
+        message: 'message.prompt.notAbleToLoadOlderMessagesForServerIssue',
+        messageAlign: ToastMessageAlign.LEFT,
+        type: ToastType.ERROR,
+      });
+    });
+
+    it('User manually loading older messages (by scrolling down) in Conversation page failed due to network disconnection [JPT-1804]', async () => {
+      const fetchData = jest.fn(() =>
+        Promise.reject(
+          new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK'),
+        ),
+      );
+      const hasMore = jest.fn(() => true);
+
+      const vm = setup({
+        _streamController: {
+          hasMore,
+          fetchData,
+        },
+      });
+
+      await vm.loadPrevPosts();
+
+      expect(Notification.flashToast).toHaveBeenCalledWith({
+        dismissible: false,
+        fullWidth: false,
+        autoHideDuration: 3000,
+        message: 'message.prompt.notAbleToLoadOlderMessagesForNetworkIssue',
         messageAlign: ToastMessageAlign.LEFT,
         type: ToastType.ERROR,
       });

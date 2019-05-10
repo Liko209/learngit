@@ -38,9 +38,9 @@ describe('RCInfoFetchController', () => {
           records: [
             { usageType: 'MainCompanyNumber' },
             { usageType: 'CompanyFaxNumber' },
-            { usageType: 'CompanyNumber', label: 'nickname' },
             { usageType: 'DirectNumber' },
             { usageType: 'CompanyNumber' },
+            { usageType: 'CompanyNumber', label: 'nickname' },
           ],
         });
       const result = await rcCallerIdController.getCallerIdList();

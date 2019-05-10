@@ -6,7 +6,7 @@ import Api from '../api';
 import { Raw } from '../../framework/model';
 import { Post } from '../../module/post/entity';
 import { Item } from '../../module/item/entity';
-
+import { DEFAULT_RETRY_COUNT } from 'foundation';
 export interface IPostsModel {
   posts: Raw<Post>[];
   items: Raw<Item>[];
@@ -32,7 +32,9 @@ class PostAPI extends Api {
    *  /api/post
    */
   static sendPost(data: object) {
-    return this.postData<Post>(data);
+    return this.postData<Post>(data, {
+      retryCount: DEFAULT_RETRY_COUNT,
+    });
   }
 
   static requestById(id: number) {
@@ -40,7 +42,9 @@ class PostAPI extends Api {
   }
 
   static editPost(id: number, data: object) {
-    return this.putDataById<Post>(id, data);
+    return this.putDataById<Post>(id, data, {
+      retryCount: DEFAULT_RETRY_COUNT,
+    });
   }
 
   static requestByIds(ids: number[]) {
