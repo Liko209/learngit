@@ -15,6 +15,16 @@ import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import {
+  ERROR_CODES_NETWORK,
+  JNetworkError,
+  JServerError,
+  ERROR_CODES_SERVER,
+} from 'sdk/error';
+import { Notification } from '@/containers/Notification';
+
+jest.mock('@/containers/Notification');
+Notification.flashToast = jest.fn();
 
 const mockPostEntityData = {
   id: 1,
@@ -141,7 +151,6 @@ describe('EditMessageInputViewModel', () => {
       expect(editMessageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_LENGTH);
       expect(postService.editPost).not.toBeCalled();
     });
-
     it('should edit post failure when service error', () => {
       postService.editPost = jest
         .fn()
@@ -151,6 +160,52 @@ describe('EditMessageInputViewModel', () => {
       const handler = enterHandler.bind(that);
       const result = handler();
       expect(result).toBeUndefined();
+    });
+    it('Failed to edit post due to network disconnection. [JPT-1824]', async () => {
+      postService.editPost = jest
+        .fn()
+        .mockImplementationOnce(() => {
+          throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK');
+        });
+
+      const markdownFromDeltaRes = {
+        content: 'text',
+        mentionsIds: [],
+      };
+      const that = mockThis(markdownFromDeltaRes);
+      // @ts-ignore
+      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
+      const handler = enterHandler.bind(that);
+      await handler();
+      expect(postService.editPost).toBeCalled();
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'message.prompt.editPostFailedForNetworkIssue',
+        }),
+      );
+    });
+    it('Failed to edit post due to unexpected backend issue. [JPT-1823]', async () => {
+      postService.editPost = jest
+        .fn()
+        .mockImplementationOnce(() => {
+          throw new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
+        });
+
+      const markdownFromDeltaRes = {
+        content: 'text',
+        mentionsIds: [],
+      };
+      const that = mockThis(markdownFromDeltaRes);
+      // @ts-ignore
+      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
+      const handler = enterHandler.bind(that);
+      await handler();
+      expect(postService.editPost).toBeCalled();
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'message.prompt.editPostFailedForServerIssue',
+        }),
+      );
     });
   });
 

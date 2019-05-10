@@ -6,17 +6,20 @@
 
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { ActionsProps, ActionsViewProps } from './types';
-
-class ActionsViewModel extends StoreViewModel<ActionsProps>
-  implements ActionsViewProps {
+import { ActionsProps } from './types';
+import { getEntity } from '@/store/utils';
+import { Post } from 'sdk/module/post/entity';
+import { ENTITY_NAME } from '@/store';
+import PostModel from '@/store/models/Post';
+class ActionsViewModel extends StoreViewModel<ActionsProps> {
   @computed
-  get postId() {
-    return this.props.postId;
+  get post() {
+    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.props.postId);
   }
+
   @computed
-  get groupId() {
-    return this.props.groupId;
+  get isIntegration() {
+    return !!this.post.icon;
   }
 }
 

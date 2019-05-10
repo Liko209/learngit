@@ -169,11 +169,6 @@
       "lineHeight": "16px"
     }
   },
-  "transitions": {
-    "easing": {
-      "openCloseDialog": "cubic-bezier(0.25, 0.1, 0.25, 1)"
-    }
-  },
   "opacity": {
     "p05": 0.05,
     "p10": 0.1,

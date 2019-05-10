@@ -13,9 +13,6 @@ class FetchGroupScene extends Scene {
     this.config = SceneConfigFactory.getSimplifyConfig({ fpsMode: this.fpsMode });
 
     this.config.passes[0].gatherers.unshift({
-      instance: new LoginGatherer()
-    });
-    this.config.passes[0].gatherers.unshift({
       instance: new FetchGroupGatherer()
     });
   }

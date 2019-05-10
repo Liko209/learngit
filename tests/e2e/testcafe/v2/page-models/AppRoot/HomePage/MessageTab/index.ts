@@ -79,11 +79,11 @@ class MoreMenu extends Entry {
   }
 
   get profile() {
-    return this.getEntry('Profile');
+    return this.getToggler('profileEntry');
   }
 
   get close() {
-    return this.getComponent(MenuItem, this.self.find('li').withText('Close'));
+    return this.getToggler('closeConversation');
   }
 
   async openProfile() {
@@ -182,12 +182,8 @@ class ConversationEntry extends BaseWebComponent {
 }
 
 class ConversationSection extends BaseWebComponent {
-  get toggleButton() {
-    return this.self.find('[role="button"]');
-  }
-
   get header() {
-    return this.self.find('.conversation-list-section-header');
+    return this.getSelectorByAutomationId('conversation-list-section-header',this.self);
   }
 
   get collapse() {
@@ -212,14 +208,13 @@ class ConversationSection extends BaseWebComponent {
   }
 
   get isExpand() {
-    this.warnFlakySelector();
-    return this.self.child().find('.arrow_up').exists;
+    return this.getSelectorByIcon('arrow_up', this.self).exists;
   }
 
   private async toggle(expand: boolean) {
     const isExpand = await this.isExpand;
     if (isExpand != expand) {
-      await this.t.click(this.toggleButton);
+      await this.t.click(this.header);
     }
   }
 

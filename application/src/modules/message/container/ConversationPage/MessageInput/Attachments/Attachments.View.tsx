@@ -57,10 +57,10 @@ class AttachmentsViewComponent extends Component<
   private _resolveIcon = (item: ItemInfo) => getFileIcon(item.name);
 
   render() {
-    const { files, cancelUploadFile } = this.props;
+    const { files, cancelUploadFile, canPost } = this.props;
     return (
       <>
-        {files.length > 0 ? (
+        {canPost && files.length > 0 ? (
           <AttachmentList
             iconResolver={this._resolveIcon}
             files={files}

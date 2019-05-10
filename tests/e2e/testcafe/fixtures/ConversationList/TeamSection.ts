@@ -170,7 +170,7 @@ test(formalName('Can expand and collapse the team section by clicking the sectio
       await t.expect(teamSection.isExpand).ok();
     });
 
-    const teamSectionName = teamSection.toggleButton.child().withExactText('Teams');
+    const teamSectionName = teamSection.header.find('p')
     await h(t).withLog('When I click the team section name', async () => {
       await t.click(teamSectionName);
     });
