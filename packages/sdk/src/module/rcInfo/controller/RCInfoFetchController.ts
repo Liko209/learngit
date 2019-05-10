@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { RCInfoUserConfig } from '../config';
+import { RCInfoUserConfig, RCInfoGlobalConfig } from '../config';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import {
   RCInfoApi,
@@ -14,13 +14,16 @@ import {
   RCRolePermissions,
   ISpecialServiceNumber,
   AccountServiceInfo,
+  IExtensionPhoneNumberList,
 } from '../../../api/ringcentral';
 import { jobScheduler, JOB_KEY } from '../../../framework/utils/jobSchedule';
 import { mainLogger } from 'foundation';
 import notificationCenter from '../../../service/notificationCenter';
 import { RC_INFO } from '../../../service/eventKey';
 import { AccountUserConfig } from '../../../module/account/config';
-import { SpecialNumberRuleModel, StationLocationSetting } from '../types';
+import { SpecialNumberRuleModel } from '../types';
+
+const OLD_EXIST_SPECIAL_NUMBER_COUNTRY = 1; // in old version, we only store US special number
 
 class RCInfoFetchController {
   private _rcInfoUserConfig: RCInfoUserConfig;
@@ -154,7 +157,10 @@ class RCInfoFetchController {
   }
 
   private async _getCurrentCountryId() {
-    const stationLocation = await this.getStationLocation();
+    const userId = new AccountUserConfig().getGlipUserId() as number;
+    const stationLocations = RCInfoGlobalConfig.getStationLocation();
+    const stationLocation =
+      stationLocations && stationLocations[userId.toString()];
     const strId =
       stationLocation &&
       stationLocation.countryInfo &&
@@ -216,20 +222,35 @@ class RCInfoFetchController {
     return (await this.rcInfoUserConfig.getRolePermissions()) || undefined;
   }
 
+  // this for DB special number compatibility, we can remove it after all user updated to 1.4
+  private _isISpecialServiceNumber(arg: any): arg is ISpecialServiceNumber {
+    return arg.uri && arg.records && arg.paging && arg.navigation;
+  }
+
   async getSpecialNumberRule(): Promise<ISpecialServiceNumber | undefined> {
-    const countryId = await this._getCurrentCountryId();
     const allNumbers = await this._getAllSpecialNumberRules();
+    // for DB object compatibility
+    if (this._isISpecialServiceNumber(allNumbers)) {
+      return allNumbers;
+    }
+    const countryId = await this._getCurrentCountryId();
     return allNumbers && allNumbers[countryId];
   }
 
   private async _getAllSpecialNumberRules(): Promise<
-    SpecialNumberRuleModel | undefined
+    SpecialNumberRuleModel | ISpecialServiceNumber | undefined
   > {
     return (await this.rcInfoUserConfig.getSpecialNumberRules()) || undefined;
   }
 
   async getSpecialNumberRuleByCountryId(countryId: number) {
     const specialNumbers = await this._getAllSpecialNumberRules();
+    if (
+      this._isISpecialServiceNumber(specialNumbers) &&
+      countryId === OLD_EXIST_SPECIAL_NUMBER_COUNTRY
+    ) {
+      return specialNumbers;
+    }
     return (specialNumbers && specialNumbers[countryId]) || undefined;
   }
 
@@ -249,21 +270,15 @@ class RCInfoFetchController {
     await this.rcInfoUserConfig.setPhoneDataVersion(version);
   }
 
-  async getExtensionPhoneNumberList() {
+  async getExtensionPhoneNumberList(): Promise<
+    IExtensionPhoneNumberList | undefined
+  > {
     return (
       (await this.rcInfoUserConfig.getExtensionPhoneNumberList()) || undefined
     );
   }
   async getDialingPlan() {
     return (await this.rcInfoUserConfig.getDialingPlan()) || undefined;
-  }
-
-  async getStationLocation(): Promise<StationLocationSetting | undefined> {
-    return (await this.rcInfoUserConfig.getStationLocation()) || undefined;
-  }
-
-  async setStationLocation(setting: StationLocationSetting) {
-    return await this.rcInfoUserConfig.setStationLocation(setting);
   }
 
   async getAccountServiceInfo(): Promise<AccountServiceInfo | undefined> {

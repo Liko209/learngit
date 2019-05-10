@@ -25,6 +25,17 @@ function getNewJServerError(code: string, message: string = '') {
   return new JServerError(code, message);
 }
 
+function toastParamsBuilder(message: string) {
+  return {
+    message,
+    type: ToastType.ERROR,
+    messageAlign: ToastMessageAlign.LEFT,
+    fullWidth: false,
+    dismissible: false,
+    autoHideDuration: 3000,
+  };
+}
+
 describe('TeamSettingsViewModel', () => {
   describe('save()', () => {
     beforeEach(() => {
@@ -71,7 +82,7 @@ describe('TeamSettingsViewModel', () => {
       expect(vm.nameErrorMsg).toEqual('people.prompt.alreadyTaken');
     });
 
-    it('should be prompted error in flash toast (short=2s) when saving the settings failed due to network error [JPT-936]', async () => {
+    it('Failed to update team information/settings due to network disconnection. [JPT-1821]', async () => {
       groupService.updateTeamSetting = jest
         .fn()
         .mockRejectedValueOnce(new Error());
@@ -93,17 +104,13 @@ describe('TeamSettingsViewModel', () => {
         description: 'Dolor nostrud laboris veniam et duis.',
         permissionFlags: expect.anything(),
       });
-      expect(Notification.flashToast).toHaveBeenCalledWith({
-        dismissible: false,
-        fullWidth: false,
-        message: 'people.prompt.SorryWeWereNotAbleToSaveTheUpdate',
-        messageAlign: ToastMessageAlign.LEFT,
-        type: ToastType.ERROR,
-      });
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        toastParamsBuilder('people.prompt.SorryWeWereNotAbleToSaveTheUpdate'),
+      );
       expect(result).toBe(false);
     });
 
-    it('Should be prompted error in flash toast (short=2s) when saving the settings failed due to backend error [JPT-939]', async () => {
+    it('Failed to update team information/settings due to unexpected backend issue. [JPT-1818]', async () => {
       groupService.updateTeamSetting = jest
         .fn()
         .mockRejectedValueOnce(new Error());
@@ -123,13 +130,9 @@ describe('TeamSettingsViewModel', () => {
         description: 'Dolor nostrud laboris veniam et duis.',
         permissionFlags: expect.anything(),
       });
-      expect(Notification.flashToast).toHaveBeenCalledWith({
-        dismissible: false,
-        fullWidth: false,
-        message: 'people.prompt.SorryWeWereNotAbleToSaveTheUpdateTryAgain',
-        messageAlign: ToastMessageAlign.LEFT,
-        type: ToastType.ERROR,
-      });
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        toastParamsBuilder('people.prompt.SorryWeWereNotAbleToSaveTheUpdateTryAgain'),
+      );
       expect(result).toBe(false);
     });
   });

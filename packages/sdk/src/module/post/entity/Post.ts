@@ -37,6 +37,7 @@ export type Post = ExtendedBaseModel & {
     anno_id?: string;
     page?: number; // page and anno_id is for document only
   };
+  icon?: string; // for integration
 };
 
 export type PostView = IdModel & {

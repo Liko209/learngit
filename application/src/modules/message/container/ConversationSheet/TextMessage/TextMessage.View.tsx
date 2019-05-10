@@ -13,17 +13,16 @@ import { withHighlight } from 'jui/hoc/withHighlight';
 @observer
 @withHighlight(['html'])
 class TextMessageView extends React.Component<TextMessageViewProps> {
-  constructor(props: TextMessageViewProps) {
-    super(props);
-  }
-
   render() {
     const { html } = this.props;
-    return (
-      <React.Fragment>
-        <JuiConversationPostText data-name="text" html={html} />
-      </React.Fragment>
-    );
+    if (html) {
+      return (
+        <React.Fragment>
+          <JuiConversationPostText data-name="text" html={html} />
+        </React.Fragment>
+      );
+    }
+    return null;
   }
 }
 export { TextMessageView };

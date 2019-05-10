@@ -76,6 +76,14 @@ const JuiConversationPostTextWrapper = styled('div')`
       content: '';
     }
   }
+
+  pre {
+    overflow-x: auto;
+  }
+
+  pre::-webkit-scrollbar {
+    background-color: transparent;
+  }
 `;
 
 type JuiConversationPostTextProps = {

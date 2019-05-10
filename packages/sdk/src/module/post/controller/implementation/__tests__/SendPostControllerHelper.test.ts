@@ -60,6 +60,7 @@ describe('PostActionControllerHelper', () => {
         page: params.annotation.page,
       });
       expect(result['parent_id']).toEqual(params.parentId);
+      expect(result['source']).toEqual('Jupiter');
     });
     it('should not build activity_data for post if there is not activity [FIJI-2740]', async () => {
       const ret = helper.buildRawPostInfo({

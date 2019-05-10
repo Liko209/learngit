@@ -30,7 +30,7 @@ describe('MemberListViewModel', () => {
   describe('onScrollEvent()', () => {
     it('should be true when scrollTop is greater than 20', () => {
       const vm = new MemberListViewModel();
-      vm.onScrollEvent({ scrollTop: 40 });
+      vm.onScrollEvent({ currentTarget: { scrollTop: 40 } });
       expect(
         getGlobalValue(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW),
       ).toBe(true);
@@ -38,7 +38,7 @@ describe('MemberListViewModel', () => {
 
     it('should be true when scrollTop is less than 20', () => {
       const vm = new MemberListViewModel();
-      vm.onScrollEvent({ scrollTop: 10 });
+      vm.onScrollEvent({ currentTarget: { scrollTop: 10 } });
       expect(
         getGlobalValue(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW),
       ).toBe(false);

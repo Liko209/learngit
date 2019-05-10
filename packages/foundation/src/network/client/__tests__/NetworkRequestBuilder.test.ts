@@ -1,4 +1,4 @@
-import { NETWORK_VIA } from '../../network';
+import { NETWORK_VIA, IRequest, NETWORK_METHOD } from '../../network';
 import NetworkManager from '../../NetworkManager';
 import { HttpRequest } from '../http';
 import { SocketRequest } from '../socket';
@@ -32,5 +32,22 @@ describe('NetworkRequestBuilder', () => {
       .mockReturnValueOnce(NETWORK_VIA.HTTP);
     const request = builder.setVia(NETWORK_VIA.ALL).build();
     expect(request).toBeInstanceOf(HttpRequest);
+  });
+  describe('options()', () => {
+    const request: IRequest = {
+      host: 'host',
+      path: '/',
+      method: NETWORK_METHOD.GET,
+      data: {},
+      headers: {},
+      authFree: true,
+    };
+    builder.options(request);
+    expect(builder.host).toEqual(request.host);
+    expect(builder.path).toEqual(request.path);
+    expect(builder.method).toEqual(request.method);
+    expect(builder.data).toEqual(request.data);
+    expect(builder.headers).toEqual(request.headers);
+    expect(builder.authFree).toEqual(request.authFree);
   });
 });

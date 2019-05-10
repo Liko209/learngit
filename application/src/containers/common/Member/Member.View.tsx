@@ -13,7 +13,9 @@ import { OpenProfile } from '@/common/OpenProfile';
 @observer
 class Member extends React.Component<MemberViewProps & WithTranslation> {
   openProfile = () => {
-    OpenProfile.show(this.props.groupId);
+    OpenProfile.show(this.props.groupId, null, null, {
+      disableRestoreFocus: true,
+    });
   }
 
   render() {

@@ -36,6 +36,9 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { Pal } from 'sdk/pal';
 import { isProductionVersion } from '@/common/envUtils';
+import { showUpgradeDialog } from '@/modules/electron';
+import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
+import { IApplicationInfo } from 'sdk/pal/applicationInfo';
 
 /**
  * The root module, we call it AppModule,
@@ -59,7 +62,7 @@ class AppModule extends AbstractModule {
   }
 
   private async _init() {
-    this._logControlManager.setDebugMode(isProductionVersion);
+    this._logControlManager.setDebugMode(!isProductionVersion);
     const { search } = window.location;
     const { state } = parse(search, { ignoreQueryPrefix: true });
     if (state && state.length) {
@@ -84,6 +87,11 @@ class AppModule extends AbstractModule {
       );
     });
 
+    const { deployedVersion } = await fetchVersionInfo();
+    Pal.instance.setApplicationInfo({
+      appVersion: deployedVersion,
+    } as IApplicationInfo);
+
     const {
       notificationCenter,
       socketManager,
@@ -96,6 +104,7 @@ class AppModule extends AbstractModule {
       window.jupiterElectron.onPowerMonitorEvent = (actionName: string) => {
         socketManager.onPowerMonitorEvent(actionName);
       };
+      window.jupiterElectron.onUpgradeEvent = showUpgradeDialog;
     }
 
     // subscribe service notification to global store
