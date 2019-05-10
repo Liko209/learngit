@@ -33,6 +33,7 @@ jest.mock('../../../profile');
 jest.mock('../../../../module/account');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../state');
+jest.mock('sdk/framework/service/EntityBaseService');
 jest.mock('../../../../dao', () => {
   const dao = {
     getEntityName: jest.fn().mockReturnValue('test'),
