@@ -23,9 +23,11 @@ describe('AbstractNotification', () => {
       jest.clearAllMocks();
       AbstractNotification.prototype.close = jest.fn();
     });
-    it('should close low priority notification when there is a high priority notification going to show', () => {
-      AbstractNotification.prototype.handlePriority(
-        [mockedNotificationLow],
+    it('should close low priority notification when there is a high priority notification going to show', async () => {
+      AbstractNotification.prototype.getNotifications = jest
+        .fn()
+        .mockReturnValue([mockedNotificationLow]);
+      await AbstractNotification.prototype.handlePriority(
         mockedNotificationHigh,
       );
       expect(AbstractNotification.prototype.close).toBeCalledWith(
@@ -33,9 +35,11 @@ describe('AbstractNotification', () => {
         123,
       );
     });
-    it('should not close high priority notification when there is a low priority notification going to show', () => {
-      AbstractNotification.prototype.handlePriority(
-        [mockedNotificationHigh],
+    it('should not close high priority notification when there is a low priority notification going to show', async () => {
+      AbstractNotification.prototype.getNotifications = jest
+        .fn()
+        .mockReturnValue([mockedNotificationHigh]);
+      await AbstractNotification.prototype.handlePriority(
         mockedNotificationLow,
       );
       expect(AbstractNotification.prototype.close).not.toBeCalled();
