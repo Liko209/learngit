@@ -7,20 +7,23 @@
 
 import { v4 as uuid } from 'uuid';
 
-import {formalName} from '../../libs/filter';
 import { h } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { SITE_URL, BrandTire } from '../../config';
-import {IGroup} from "../../v2/models";
+import {IGroup, ITestMeta} from "../../v2/models";
 import * as _ from "lodash";
 
 fixture('Scroll Conversation')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('JPT-60 Can scroll up/down when have more than 1 page posts.', ['JPT-60', 'P0', 'ali.naffaa']),
-  async (t: TestController) => {
+test.meta(<ITestMeta> {
+  priority: ['P0'],
+  caseIds: ['JPT-60'],
+  maintainers: ['ali.naffaa'],
+  keywords: ['Scroll Conversation'],
+})('Can scroll up/down when have more than 1 page posts.', async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[7];
