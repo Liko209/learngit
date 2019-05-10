@@ -33,6 +33,7 @@ jest.mock('../../../profile');
 jest.mock('../../../../module/account');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../state');
+
 jest.mock('../../../../dao', () => {
   const dao = {
     getEntityName: jest.fn().mockReturnValue('test'),
@@ -124,7 +125,6 @@ beforeEach(() => {
       if (serviceName === ServiceConfig.PERSON_SERVICE) {
         return personService;
       }
-
       if (serviceName === ServiceConfig.PROFILE_SERVICE) {
         return profileService;
       }

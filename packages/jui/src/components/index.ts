@@ -12,7 +12,6 @@ export * from './Lists';
 export * from './Menus';
 export * from './Paper';
 export * from './Progress';
-export * from './Tooltip';
 export * from './Umi';
 export * from './Popover';
 export * from './Popper';

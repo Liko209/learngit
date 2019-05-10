@@ -21,6 +21,7 @@ import { AccountService } from 'sdk/module/account';
 import { ModalPortal } from '@/containers/Dialog';
 import { GlobalSearch } from '@/modules/GlobalSearch';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { AboutView } from '@/containers/About';
 
 @observer
 class HomeView extends Component<HomeViewProps> {
@@ -34,6 +35,9 @@ class HomeView extends Component<HomeViewProps> {
       ServiceConfig.ACCOUNT_SERVICE,
     );
     accountService.makeSureUserInWhitelist();
+    if (window.jupiterElectron && window.jupiterElectron.handleUpgradeCheck) {
+      window.jupiterElectron.handleUpgradeCheck();
+    }
   }
 
   componentWillUnmount() {
@@ -72,6 +76,7 @@ class HomeView extends Component<HomeViewProps> {
             <HomeRouter />
           </Bottom>
           <ModalPortal />
+          <AboutView />
           {extensions['root'] &&
             [...extensions['root']].map((Extension: React.ComponentType) => (
               <Extension key={`HOME_EXTENSION_${Extension.displayName}`} />

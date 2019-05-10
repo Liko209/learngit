@@ -5,22 +5,18 @@
  */
 import React from 'react';
 import { shallow } from 'enzyme';
-import i18next from 'i18next';
-import { BannerType } from '../types';
 import { NetworkBannerView } from '../NetworkBanner.View';
 
 const baseProps = {
   t: (): any => 'a',
-  i18n: {} as i18next.i18n,
-  tReady: true,
 };
 
 describe('NetworkBannerView', () => {
   describe('render()', () => {
-    it('should not render view if online [JPT-470] 2', () => {
+    it('should not render view if isShow is false [JPT-470] 2', () => {
       const props = {
         ...baseProps,
-        banner: null,
+        isShow: false,
       };
       const wrapper = shallow(<NetworkBannerView {...props} />);
       expect(wrapper.find('JuiSnackbarContent').length).toBe(0);
@@ -29,7 +25,7 @@ describe('NetworkBannerView', () => {
     it('should render view if offline [JPT-470] 1', () => {
       const props = {
         ...baseProps,
-        banner: { message: 'You are offline', type: 'error' } as BannerType,
+        isShow: true,
       };
       const wrapper = shallow(<NetworkBannerView {...props} />);
       expect(wrapper.find('JuiSnackbarContent').length).toBe(1);

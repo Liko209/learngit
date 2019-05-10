@@ -28,6 +28,7 @@ type AttachmentsViewProps = {
   files: ItemInfo[];
   duplicateFiles: File[];
   showDuplicateFiles: boolean;
+  canPost: boolean;
   autoUploadFiles: (
     files: File[],
     checkDuplicate?: boolean,
