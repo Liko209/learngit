@@ -21,6 +21,7 @@ import {
 } from './EditMessageInput';
 import { Profile, PROFILE_TYPE } from '../Profile';
 import { jumpToPost } from '@/common/jumpToPost';
+import { noop } from 'jui/foundation/utils';
 import { Notification } from '@/containers/Notification';
 import {
   ToastType,
@@ -126,10 +127,11 @@ export class ConversationCard extends React.Component<
     }
     const avatar = (
       <Avatar
+        icon={post.icon}
         uid={creator.id}
         size="medium"
         data-name="avatar"
-        onClick={this.onClickAvatar}
+        onClick={post.icon ? noop : this.onClickAvatar}
       />
     );
     const activity = <Activity id={id} />;
@@ -150,7 +152,7 @@ export class ConversationCard extends React.Component<
       >
         <JuiConversationCardHeader
           data-name="header"
-          name={name}
+          name={name.get()}
           time={showProgressActions ? '' : createTime.get()}
           status={customStatus}
           from={from}

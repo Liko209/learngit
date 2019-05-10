@@ -11,7 +11,8 @@ const TYPE_ID_MASK = 0x1fff;
 const MAX_PSEUDO_ID = 0x3ffff;
 
 export default class GlipTypeUtil {
-  static isIntegrationType(typeId: number): boolean {
+  static isIntegrationType(objectId: number): boolean {
+    const typeId = GlipTypeUtil.extractTypeId(objectId);
     return typeId >= INTEGRATION_LOWER_ID;
   }
   static extractTypeId(objectId: number): number {

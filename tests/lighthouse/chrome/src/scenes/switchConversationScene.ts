@@ -6,7 +6,7 @@ import { Scene } from "./scene";
 import { Config } from "../config";
 import { SceneDto } from "../models";
 import { SceneConfigFactory } from "./config/sceneConfigFactory";
-import { LoginGatherer, SwitchConversationGatherer } from "../gatherers";
+import { SwitchConversationGatherer } from "../gatherers";
 import { MetricService, FileService } from "../services";
 
 class SwitchConversationScene extends Scene {

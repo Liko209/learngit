@@ -17,6 +17,12 @@ import { FileItem } from '../module/file/entity';
 import { NoteItem } from '../module/note/entity';
 import { LinkItem } from '../module/link/entity';
 import { CodeItem } from '../module/code/entity';
+import { IntegrationItem } from '../module/integration/entity';
+import {
+  InteractiveMessageItem,
+  InteractiveMessageItemAttachment,
+  InteractiveMessageItemAttachmentField,
+} from '../module/interactiveMessage/entity';
 export * from '../module/conference/entity';
 
 type ItemFile = FileItem;
@@ -32,4 +38,8 @@ export {
   LinkItem,
   StoredFile,
   CodeItem,
+  IntegrationItem,
+  InteractiveMessageItem,
+  InteractiveMessageItemAttachment,
+  InteractiveMessageItemAttachmentField,
 };
