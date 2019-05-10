@@ -154,10 +154,12 @@ function canConnect(
   requestConfig = {},
   headers = {},
 ) {
+  const priority = REQUEST_PRIORITY.IMMEDIATE;
   return Api.glipNetworkClient.get<CanConnectModel>({
     params,
     requestConfig,
     headers,
+    priority,
     path: '/can-reconnect-v2',
     via: NETWORK_VIA.HTTP,
   });

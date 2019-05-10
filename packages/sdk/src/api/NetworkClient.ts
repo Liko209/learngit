@@ -172,7 +172,7 @@ export default class NetworkClient {
       authFree,
       requestConfig,
       retryCount,
-      priority,
+      priority = REQUEST_PRIORITY.NORMAL,
       HAPriority,
       timeout,
       pathPrefix,
@@ -197,7 +197,7 @@ export default class NetworkClient {
       .setTimeout(timeout || DEFAULT_TIMEOUT_INTERVAL)
       .setVia(via)
       .setNetworkManager(this.networkManager)
-      .setPriority(priority ? priority : REQUEST_PRIORITY.NORMAL)
+      .setPriority(priority)
       .setHAPriority(HAPriority ? HAPriority : HA_PRIORITY.BASIC);
   }
 
