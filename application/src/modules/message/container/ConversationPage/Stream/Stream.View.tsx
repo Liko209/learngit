@@ -166,10 +166,12 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _renderDateDivider(streamItem: StreamItem) {
+    const today = new Date().getDate();
     return (
       <TimeNodeDivider
         key={`TimeNodeDividerDateDivider${streamItem.id}`}
         value={streamItem.id}
+        today={today}
       />
     );
   }
