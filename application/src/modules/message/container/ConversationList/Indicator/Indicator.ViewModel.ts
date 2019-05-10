@@ -12,6 +12,8 @@ import { ENTITY_NAME } from '@/store';
 
 import { GroupConfig } from 'sdk/models';
 import GroupConfigModel from '@/store/models/GroupConfig';
+import { Group } from 'sdk/module/group';
+import GroupModel from '@/store/models/Group';
 
 class IndicatorViewModel extends AbstractViewModel
   implements IndicatorViewProps {
@@ -30,6 +32,12 @@ class IndicatorViewModel extends AbstractViewModel
       ENTITY_NAME.GROUP_CONFIG,
       this.id,
     );
+  }
+
+  @computed
+  get canPost() {
+    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
+    return group.canPost;
   }
 
   @computed
