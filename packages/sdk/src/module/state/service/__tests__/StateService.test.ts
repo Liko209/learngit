@@ -12,6 +12,7 @@ import { NotificationEntityPayload } from '../../../../service/notificationCente
 import { SYNC_SOURCE } from '../../../../module/sync';
 import { GroupService } from '../../../group/service';
 
+jest.mock('sdk/dao');
 jest.mock('../../../group/service');
 
 describe('StateService', () => {
