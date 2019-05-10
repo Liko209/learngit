@@ -48,8 +48,6 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   switchExpandHandler = (collapsed: boolean) => {
-    // @ts-ignore
-    window.gg = TaskViewModel._isCollapseMap;
     TaskViewModel._isCollapseMap.set(this._postId, collapsed);
   }
 
