@@ -36,7 +36,7 @@ class MockStrategy implements ITaskStrategy {
 
 describe('TaskController', () => {
   const strategy: MockStrategy = new MockStrategy();
-  const taskController: TaskController = new TaskController(strategy);
+  let taskController: TaskController;
   function clearMocks() {
     jest.clearAllMocks();
     jest.restoreAllMocks();
@@ -54,13 +54,13 @@ describe('TaskController', () => {
           strategy.reset();
         },         200);
       };
-      jest.spyOn(strategy, 'canNext').mockReturnValue(true);
+      taskController = new TaskController(strategy, executeFunc);
       const resetSpy = jest.spyOn(taskController, 'reset');
-      taskController.start(executeFunc);
+      taskController.start();
       const isExecuting = taskController['_isExecuting'];
       expect(isExecuting).toEqual(true);
       expect(resetSpy).toBeCalled();
-      taskController.start(executeFunc);
+      taskController.start();
       expect(resetSpy).toBeCalledTimes(1);
     });
 
@@ -68,22 +68,14 @@ describe('TaskController', () => {
       const executeFunc = () => {
         throw new Error();
       };
-      const scheduleJobSpy = jest.spyOn(jobScheduler, 'scheduleJob');
+      taskController = new TaskController(strategy, executeFunc);
       const scheduleAndIgnoreFirstTimeSpy = jest.spyOn(
         jobScheduler,
         'scheduleAndIgnoreFirstTime',
       );
-      taskController.start(executeFunc);
+      taskController.start();
       setTimeout(() => {
-        expect(scheduleJobSpy).toBeCalledTimes(1);
         expect(scheduleAndIgnoreFirstTimeSpy).toBeCalledTimes(5);
-        expect(scheduleJobSpy).toBeCalledWith({
-          executeFunc,
-          key: JOB_KEY.INDEX_DATA,
-          needNetwork: false,
-          intervalSeconds: 0,
-          periodic: false,
-        });
         expect(scheduleAndIgnoreFirstTimeSpy).toHaveBeenLastCalledWith({
           executeFunc,
           key: JOB_KEY.INDEX_DATA,
@@ -104,7 +96,8 @@ describe('TaskController', () => {
       const executeFunc = () => {
         throw new Error();
       };
-      taskController.start(executeFunc);
+      taskController = new TaskController(strategy, executeFunc);
+      taskController.start();
       setTimeout(() => {
         taskController.reset();
         const isExecuting = taskController['_isExecuting'];
