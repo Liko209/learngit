@@ -125,7 +125,6 @@ beforeEach(() => {
       if (serviceName === ServiceConfig.PERSON_SERVICE) {
         return personService;
       }
-
       if (serviceName === ServiceConfig.PROFILE_SERVICE) {
         return profileService;
       }

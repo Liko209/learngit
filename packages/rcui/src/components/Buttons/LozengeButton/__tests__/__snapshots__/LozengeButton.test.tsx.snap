@@ -64,10 +64,6 @@ exports[`<Button /> should render with arrow 1`] = `
 `;
 
 exports[`<Button /> should render with loading 1`] = `
-.c2.c2 {
-  color: white;
-}
-
 .c0 {
   font-size: 0.875rem;
   font-weight: 400;
@@ -96,8 +92,8 @@ exports[`<Button /> should render with loading 1`] = `
   margin-left: 4px;
 }
 
-.c0.lozengeButtonLoading .c3,
-.c0.lozengeButtonWithArrow .c3,
+.c0.lozengeButtonLoading .c2,
+.c0.lozengeButtonWithArrow .c2,
 .c0.lozengeButtonLoading .c1,
 .c0.lozengeButtonWithArrow .c1,
 .c0.lozengeButtonLoading span,
@@ -114,7 +110,7 @@ exports[`<Button /> should render with loading 1`] = `
      
   </span>
   <div
-    className="MuiCircularProgress-root-1 MuiCircularProgress-indeterminate-3 c1 c2"
+    className="MuiCircularProgress-root-1 MuiCircularProgress-indeterminate-3 c1 "
     role="progressbar"
     style={
       Object {
