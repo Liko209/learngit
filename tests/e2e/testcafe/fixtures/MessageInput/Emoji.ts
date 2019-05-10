@@ -1,11 +1,11 @@
 /*
- * @Author: Devin Lin (devin.lin@ringcentral.com)
- * @Date: 2018-10-12 13:23:57
- * Copyright © RingCentral. All rights reserved.
+ * @Author: Potar.He 
+ * @Date: 2019-05-09 10:51:18 
+ * @Last Modified by: Potar.He
+ * @Last Modified time: 2019-05-09 11:07:20
  */
 
 
-import * as faker from 'faker/locale/en';
 import { v4 as uuid } from 'uuid';
 
 import { h } from '../../v2/helpers'
@@ -13,6 +13,7 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { SITE_URL, BrandTire } from '../../config';
 import { ITestMeta, IGroup } from '../../v2/models';
+import { ClientFunction } from 'testcafe';
 
 fixture('Send Messages')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -58,43 +59,48 @@ test.meta(<ITestMeta>{
   let emojiValue: string
   let emojis = [];
   await h(t).withLog('When I click a first emoji in "Smileys & People"', async () => {
-    await emojiLibrary.smileysAndPeopleSection.clickEmojiByNth(0);
     emojiValue = await emojiLibrary.smileysAndPeopleSection.nthEmojiItem(0).getValue();
+    await emojiLibrary.smileysAndPeopleSection.clickEmojiByNth(0);
     emojis.push(emojiValue);
   });
 
-  await h(t).withLog('Then the emoji library should keep open', async () => {
-    await emojiLibrary.ensureLoaded();
+  await h(t).withLog('Then the emoji library should dismiss', async () => {
+    await emojiLibrary.ensureDismiss();
   });
 
   await h(t).withLog(`And display emoji's key ":${emojiValue}:" in the input box`, async () => {
     await t.expect(conversationPage.messageInputArea.withAttribute(`:${emojiValue}:`)).ok();
   });
 
-  await h(t).withLog(`And the selected emoji display in the "frequently used" tab `, async () => {
-    await emojiLibrary.frequentlyUsedSection.emojiItemByValue(emojiValue).ensureLoaded();
-  });
 
   await h(t).withLog(`And focus on the input box`, async () => {
     await conversationPage.shouldFocusOnMessageInputArea();
   });
 
-  await h(t).withLog('When I click a second emoji in "Smileys & People"', async () => {
-    await emojiLibrary.smileysAndPeopleSection.clickEmojiByNth(1);
-    emojiValue = await emojiLibrary.smileysAndPeopleSection.nthEmojiItem(1).getValue();
-    emojis.push(emojiValue);
+  await h(t).withLog('When I click Emoji button', async () => {
+    await conversationPage.clickEmojiButton();
   });
 
-  await h(t).withLog('Then the emoji library should keep open', async () => {
+  await h(t).withLog('Then the emoji library should be open', async () => {
     await emojiLibrary.ensureLoaded();
-  });
-
-  await h(t).withLog(`And display emoji's key ":${emojiValue}:" in the input box`, async () => {
-    await t.expect(conversationPage.messageInputArea.withAttribute(`:${emojiValue}:`)).ok();
   });
 
   await h(t).withLog(`And the selected emoji display in the "frequently used" tab `, async () => {
     await emojiLibrary.frequentlyUsedSection.emojiItemByValue(emojiValue).ensureLoaded();
+  });
+
+  await h(t).withLog('When I click a second emoji in "Smileys & People"', async () => {
+    emojiValue = await emojiLibrary.smileysAndPeopleSection.nthEmojiItem(1).getValue();
+    await emojiLibrary.smileysAndPeopleSection.clickEmojiByNth(1);
+    emojis.push(emojiValue);
+  });
+
+  await h(t).withLog('Then the emoji library should dismiss', async () => {
+    await emojiLibrary.ensureDismiss();
+  });
+
+  await h(t).withLog(`And display emoji's key ":${emojiValue}:" in the input box`, async () => {
+    await t.expect(conversationPage.messageInputArea.withAttribute(`:${emojiValue}:`)).ok();
   });
 
   await h(t).withLog(`And focus on the input box`, async () => {
@@ -164,6 +170,12 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I scroll to type "Animals & Nature"', async () => {
     await emojiLibrary.animalsAndNatureSection.scrollIntoView();
+    const scrollDiv = emojiLibrary.scrollDiv;
+    // need scroll down 1 px more.
+    await ClientFunction((scrollDiv) => {
+      const currentHeight = scrollDiv().scrollTop;
+      scrollDiv().scrollTop = currentHeight + 1;
+    })(scrollDiv);
   });
 
   await h(t).withLog('Then this tab should be selected', async () => {

@@ -101,6 +101,10 @@ export class EmojiLibrary extends BaseWebComponent {
     return this.previewArea.find('.emoji-mart-preview-shortname');
   }
 
+  get scrollDiv() {
+    return this.self.find('.emoji-mart-scroll');
+  }
+
   /* section */
   getSection(category: string) {
     return this.getComponent(EmojiSection, this.self.find(`.emoji-mart-category[aria-label="${category}"]`));
