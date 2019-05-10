@@ -9,10 +9,7 @@ import React from 'react';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { observer } from 'mobx-react';
 import { DownloadViewProps } from './types';
-
-const formatUrl = (url: string) =>
-  url &&
-  url.replace(/s3[\w\d-]*\.amazonaws\.com/, 's3-accelerate.amazonaws.com');
+import { accelerateURL } from '@/common/accelerateURL';
 
 const Download = observer(
   ({ url, variant = 'plain', t }: DownloadViewProps & WithTranslation) => {
@@ -20,7 +17,7 @@ const Download = observer(
       <JuiIconButton
         component="a"
         download={true}
-        href={formatUrl(url)}
+        href={accelerateURL(url)}
         variant={variant}
         aria-label={t('common.download')}
         tooltipTitle={t('common.download')}
