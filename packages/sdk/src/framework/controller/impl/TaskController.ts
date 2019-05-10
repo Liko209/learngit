@@ -25,40 +25,39 @@ class TaskController implements ITaskController {
     this._executeFunc = executeFunc;
   }
 
-  start() {
+  async start() {
     if (this._isExecuting) {
       mainLogger.tags(LOG_TAG).info('start() task is in executing');
       return;
     }
-    this.reset();
-    this._execute();
-  }
 
-  private _createTaskFunc() {
-    this._taskFunc = async (callback: (successful: boolean) => void) => {
-      try {
-        this._setExecuting(true);
-        await this._executeFunc();
-        callback(true);
-        this.reset();
-      } catch (err) {
-        mainLogger.tags(LOG_TAG).info('_retry failed:', err);
-        this._setExecuting(false);
-        callback(false);
-      }
-    };
-  }
-
-  private async _execute() {
     try {
-      this._setExecuting(true);
-      await this._executeFunc();
-      this._setExecuting(false);
+      this._strategy.reset();
+      jobScheduler.cancelJob(JOB_KEY.INDEX_DATA);
+      await this._doExecuting();
     } catch (err) {
       mainLogger.tags(LOG_TAG).info('_execute failed:', err);
       this._setExecuting(false);
       this._retry();
     }
+  }
+
+  private _createTaskFunc() {
+    this._taskFunc = async (callback: (successful: boolean) => void) => {
+      try {
+        await this._doExecuting();
+        callback(true);
+      } catch (err) {
+        mainLogger.tags(LOG_TAG).info('_retry failed:', err);
+        callback(false);
+      }
+    };
+  }
+
+  private async _doExecuting() {
+    this._setExecuting(true);
+    await this._executeFunc();
+    this._setExecuting(false);
   }
 
   private _retry() {
@@ -77,6 +76,7 @@ class TaskController implements ITaskController {
   }
 
   private _taskCallback = (successful: boolean) => {
+    this._setExecuting(false);
     if (!successful) {
       if (this._canNext()) {
         mainLogger.tags(LOG_TAG).info('_taskCallback continue the next task');
@@ -84,20 +84,13 @@ class TaskController implements ITaskController {
       } else {
         mainLogger
           .tags(LOG_TAG)
-          .info('_taskCallback can not continue the next task, reset it');
-        this.reset();
+          .info('_taskCallback can not continue the next task');
       }
     }
   }
 
   private _canNext() {
     return this._strategy && this._strategy.canNext();
-  }
-
-  reset(): void {
-    this._setExecuting(false);
-    this._strategy.reset();
-    jobScheduler.cancelJob(JOB_KEY.INDEX_DATA);
   }
 
   private _setExecuting(isExecuting: boolean) {
