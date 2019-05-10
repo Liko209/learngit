@@ -14,10 +14,10 @@ import {
   grey,
 } from '../../foundation/utils';
 import { JuiTypography } from '../../foundation/Typography';
-import { JuiCircularProgress } from '../../components/Progress';
+import { RuiCircularProgress } from 'rcui/components/Progress';
 import { JuiLink } from '../../components/Link';
 
-const Progress = styled(JuiCircularProgress)`
+const Progress = styled(RuiCircularProgress)`
   && {
     width: ${width(11)} !important;
     height: ${height(11)} !important;

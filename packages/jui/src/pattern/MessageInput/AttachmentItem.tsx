@@ -14,8 +14,7 @@ import {
   palette,
   spacing,
 } from '../../foundation/utils/styles';
-// import { JuiIconography } from '../../foundation/Iconography';
-import { JuiCircularProgress } from '../../components/Progress';
+import { RuiCircularProgress } from 'rcui/components/Progress';
 import { JuiIconButton } from '../../components/Buttons';
 import { JuiFileWithExpand } from '../ConversationCard/Files/FileWithExpand';
 
@@ -97,7 +96,7 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = memo(
       {typeof props.value !== 'undefined' &&
         props.status === ITEM_STATUS.LOADING && (
           <ProgressWrapper>
-            <JuiCircularProgress
+            <RuiCircularProgress
               variant="static"
               size={24}
               value={props.value}
