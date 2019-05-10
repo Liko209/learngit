@@ -37,8 +37,8 @@ const StyledDialogContent = styled(MuiDialogContent)<
 `;
 
 const JuiDialogContentWithFill = memo(
-  (props: JuiDialogContentWithFillProps) => {
-    return <StyledDialogContent {...props} />;
+  ({ noPaddingFix, ...rest }: JuiDialogContentWithFillProps) => {
+    return <StyledDialogContent {...rest} />;
   },
 );
 

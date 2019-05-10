@@ -550,5 +550,19 @@
     "issueTitle": "Summary",
     "issueDescription": "What happened?",
     "sendingInBackground": "Sending feedback..."
+  },
+  "electron": {
+    "upgrade": {
+      "dialogTitle": "Your desktop app is out-of-date",
+      "dialogMessage": " In order to have the best user experience, upgrade to the newest version. Before you upgrade, some features may not be working as expected.",
+      "ignoreOnce": "Ignore Once",
+      "upgrade": "Upgrade",
+      "notNow": "Not Now",
+      "ignore": "Ignore",
+      "noUpgradeDialogTitle": "No Upgrade Needed",
+      "noUpgradeDialogMessage": "Your desktop app is up-to-date.",
+      "noUpgradeDialogOk": "OK",
+      "topBannerWarning": "Your desktop app is out-of-date. Please upgrade immediately."
+    }
   }
 }
