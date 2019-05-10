@@ -10,6 +10,7 @@ import { AvatarViewProps } from './types';
 import { PreloadImg } from '../common/PreloadImg';
 import defaultAvatar from './defaultAvatar.svg';
 import defaultCoverAvatar from './defaultCoverAvatar.svg';
+import { accelerateURL } from '@/common/accelerateURL';
 
 @observer
 class AvatarView extends React.Component<AvatarViewProps> {
@@ -55,12 +56,12 @@ class AvatarView extends React.Component<AvatarViewProps> {
 
     return !shouldShowShortName ? (
       <PreloadImg
-        url={headShotUrl}
+        url={accelerateURL(headShotUrl)}
         placeholder={AvatarWithName}
         animationForLoad={true}
       >
         <JuiAvatar
-          src={headShotUrl}
+          src={accelerateURL(headShotUrl)}
           data-test-automation-id={automationId}
           color=""
           presence={presence}

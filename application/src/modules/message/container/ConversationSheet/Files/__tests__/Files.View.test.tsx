@@ -33,7 +33,7 @@ describe('FilesView', () => {
       [],
       [],
     ],
-    urlMap: { get: () => 1 },
+    urlMap: { get: () => '1' },
     isRecentlyUploaded: () => false,
     getCropImage: () => null,
     getShowDialogPermission: () => true,
