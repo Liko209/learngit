@@ -12,6 +12,7 @@ const soundex = require('soundex-code');
 
 jest.mock('../../../../module/account/config');
 jest.mock('../../../../api');
+jest.mock('sdk/dao');
 
 function clearMocks() {
   jest.clearAllMocks();
