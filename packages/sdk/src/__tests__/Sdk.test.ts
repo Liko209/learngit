@@ -34,6 +34,10 @@ describe('Sdk', () => {
   let serviceManager: ServiceManager;
   let networkManager: NetworkManager;
   let syncService: SyncService;
+  const mockAccountService = {
+    reLoginGlip: jest.fn(),
+    scheduleReLoginGlipJob: jest.fn(),
+  };
 
   beforeEach(() => {
     accountManager = new AccountManager(null);
@@ -54,6 +58,7 @@ describe('Sdk', () => {
   });
 
   describe('init()', () => {
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(mockAccountService);
     it('should check login status', async () => {
       accountManager.syncLogin.mockReturnValueOnce({
         isRCOnlyMode: false,
@@ -70,38 +75,30 @@ describe('Sdk', () => {
         isRCOnlyMode: true,
         success: true,
       });
-      const mockReLogin = jest.fn();
-
-      const mockAccountService = {
-        reLoginGlip: mockReLogin,
-      };
-
-      ServiceLoader.getInstance = jest.fn().mockReturnValue(mockAccountService);
 
       await sdk.init({ api: {}, db: {} });
       expect(DataMigration.migrateKVStorage).toBeCalled();
-      expect(mockReLogin).toBeCalled();
+      expect(mockAccountService.reLoginGlip).toBeCalled();
       expect(accountManager.updateSupportedServices).toBeCalled();
       expect(notificationCenter.emitKVChange).not.toBeCalledWith(SERVICE.LOGIN);
     });
   });
 
   describe('onStartLogin()', () => {
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(mockAccountService);
     it('should init all module', async () => {
-      ServiceLoader.getInstance = jest.fn().mockReturnValue('accountService');
       sdk['_sdkConfig'] = { api: {}, db: {} };
       await sdk.onStartLogin();
       expect(Foundation.init).toBeCalled();
       expect(Api.init).toBeCalled();
       expect(daoManager.initDatabase).toBeCalled();
       expect(serviceManager.startService).toBeCalled();
-      expect(HandleByRingCentral.platformHandleDelegate).toEqual(
-        'accountService',
-      );
+      expect(HandleByRingCentral.platformHandleDelegate).toEqual(mockAccountService);
     });
   });
 
   describe('onAuthSuccess()', () => {
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(mockAccountService);
     beforeEach(() => {
       AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValueOnce(1);
       jest.spyOn(sdk, 'updateNetworkToken').mockImplementation(() => {});
