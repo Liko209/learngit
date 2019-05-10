@@ -8,6 +8,8 @@ import { PhoneParserUtility } from '../PhoneParserUtility';
 import notificationCenter from '../../../service/notificationCenter';
 import { ServiceLoader } from '../../../module/serviceLoader';
 
+jest.mock('foundation');
+
 describe('PhoneParserUtility', () => {
   let phoneParserUtility: PhoneParserUtility;
   const mockPhoneParser = {
@@ -330,7 +332,13 @@ describe('PhoneParserUtility', () => {
     it('should return false when module is not loaded', () => {
       PhoneParserUtility['_moduleLoaded'] = false;
       PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
-      expect(PhoneParserUtility.setStationLocation('1', '650')).toBeFalsy();
+      PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
+      expect(
+        PhoneParserUtility.setStationLocation({
+          szCountryCode: '1',
+          szAreaCode: '650',
+        }),
+      ).toBeFalsy();
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
       expect(
         PhoneParserUtility['_phoneParserModule'].SetStationLocation,
