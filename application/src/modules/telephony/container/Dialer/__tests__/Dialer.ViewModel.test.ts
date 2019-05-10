@@ -7,6 +7,7 @@
 import { container, decorate, injectable } from 'framework';
 import { TelephonyStore } from '../../../store';
 import { CALL_STATE } from '../../../FSM';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 import { DialerViewModel } from '../Dialer.ViewModel';
 
@@ -17,6 +18,9 @@ container.bind(TelephonyStore).to(TelephonyStore);
 let dialerViewModel: DialerViewModel;
 
 beforeAll(() => {
+  jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
+    matchContactByPhoneNumber: jest.fn(),
+  });
   dialerViewModel = new DialerViewModel();
 });
 

@@ -11,8 +11,14 @@ import * as notification from '@/modules/notification/module.config';
 import { NOTIFICATION_PRIORITY } from '@/modules/notification/interface';
 import { TelephonyStore } from '../store';
 import { getEntity } from '@/store/utils';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
+
 jest.mock('@/store/utils');
 jest.mock('sdk/module/telephony');
+
+jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
+  matchContactByPhoneNumber: jest.fn().mockResolvedValue({}),
+});
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
