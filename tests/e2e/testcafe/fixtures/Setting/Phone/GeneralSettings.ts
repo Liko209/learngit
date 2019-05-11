@@ -4,7 +4,7 @@ import { formalName } from '../../../libs/filter';
 import { h } from '../../../v2/helpers';
 import { setupCase, teardownCase } from '../../../init';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
-import { SITE_URL, BrandTire } from '../../../config';
+import { SITE_URL, BrandTire, SITE_ENV } from '../../../config';
 import { IGroup } from "../../../v2/models";
 import { WebphoneSession } from '../../../v2/webphone/session';
 
@@ -12,17 +12,20 @@ fixture('Phone/GeneralSettings')
   .beforeEach(setupCase(BrandTire.RC_WITH_DID))
   .afterEach(teardownCase());
 
+// case done but need caller id feature implement
 test(formalName(`Check the page content of the "General" section`, ['P2', 'JPT-1753', 'GeneralSettings', 'Mia.Cai']), async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
 
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
+  const phoneTab = settingTab.phoneTab;
+  const generalLabel = 'General';
   const regionLabel = 'Region';
   const callerIDLabel = 'Caller ID';
-  const callerIDDesc = 'Choose your default Caller ID for making RingCentral phone calls';
+  const callerIDDescription = 'Choose your default Caller ID for making RingCentral phone calls';
   const extensionSettingsLabel = 'Extension settings';
-  const extensionDesc = ' Customize your RingCentral extension settings (call routing, voicemail greetings and more)';
+  const extensionSettingsDescription = ' Customize your RingCentral extension settings (call routing, voicemail greetings and more)';
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -37,13 +40,29 @@ test(formalName(`Check the page content of the "General" section`, ['P2', 'JPT-1
     await settingTab.phoneEntry.enter();
   });
 
-  await h(t).withLog(`Then I can see Caller ID/Region/Extension settings in the 'General' section`, async () => {
-    // TODO
-    // todo
+  await h(t).withLog(`Then I can see '${generalLabel}' in the 'General' section`, async () => {
+    await phoneTab.existsGeneralLabel(generalLabel);
+  });
+
+  await h(t).withLog(`Then I can see '${regionLabel}' in the 'General' section`, async () => {
+    await phoneTab.existRegionLabel(regionLabel);
+  });
+
+  await h(t).withLog(`Then I can see extension label/extension description/Update button in the 'General' section`, async () => {
+    await phoneTab.existExtensionSettingsDescription(extensionSettingsLabel);
+    await phoneTab.existExtensionSettingsDescription(extensionSettingsDescription);
+    await phoneTab.existExtensionUpdateButton();
+  });
+
+  await h(t).withLog(`Then I can see Caller ID/Caller ID description in the 'General' section`, async () => {
+    await phoneTab.existCallerIDLabel(callerIDLabel);
+    await phoneTab.existCallerIDDescription(callerIDDescription);
+    await phoneTab.existCallerIDDropDown();
   });
 
 });
 
+//TODO 
 test(formalName(`Check the caller id drop down list shows available numbers for the user`, ['P2', 'JPT-1756', 'GeneralSettings', 'Mia.Cai']), async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
@@ -52,6 +71,7 @@ test(formalName(`Check the caller id drop down list shows available numbers for 
 
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
+  const phoneTab = settingTab.phoneTab;
   let callerIDMapList = new Map();
   let nickName ='';
 
@@ -85,10 +105,11 @@ test(formalName(`Check the caller id drop down list shows available numbers for 
     await settingTab.phoneEntry.enter();
   });
 
-  await h(t).withLog(`Then I can see the default of Caller ID in the 'General' section`, async () => {
+  await h(t).withLog(`Then I can see the Caller ID list in the 'General' section`, async () => {
     // TODO
+    await phoneTab.clickCallerIDDropDown();
     for(let value of callerIDMapList.values()){
-      await settingTab.phoneTab.callerIDDropDownListWithText(value)
+      await phoneTab.callerIDDropDownListWithText(value)
     }
   });
 
@@ -144,7 +165,7 @@ test(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1
       }
     }
   });
-  
+
   // Entry1: 1:1conversation
   // Change the caller id from the setting
   await h(t).withLog(`When I click Setting entry`, async () => {
@@ -157,6 +178,7 @@ test(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1
 
   let randomCallerID = _.sample(callerIDList);
   await h(t).withLog(`When I change the caller id from the setting`, async () => {
+    await phoneTab.clickCallerIDDropDown();
     await phoneTab.selectCallerID(randomCallerID);
   });
 
@@ -192,6 +214,7 @@ test(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1
 
   randomCallerID = _.sample(callerIDList);
   await h(t).withLog(`When I change the caller id from the setting`, async () => {
+    await phoneTab.clickCallerIDDropDown();
     await phoneTab.selectCallerID(randomCallerID);
   });
 
@@ -231,6 +254,7 @@ test(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1
 
   randomCallerID = _.sample(callerIDList);
   await h(t).withLog(`When I change the caller id from the setting`, async () => {
+    await phoneTab.clickCallerIDDropDown();
     await phoneTab.selectCallerID(randomCallerID);
   });
   await h(t).withLog('Given I click hangup button', async () => {
@@ -271,6 +295,7 @@ test(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1
 
   randomCallerID = _.sample(callerIDList);
   await h(t).withLog(`When I change the caller id from the setting`, async () => {
+    await phoneTab.clickCallerIDDropDown();
     await phoneTab.selectCallerID(randomCallerID);
   });
 
@@ -304,6 +329,7 @@ test(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1
 });
 
 // Region settings
+//case done
 test(formalName(`Check if the content of region section is displayed correctly;`, ['P2', 'JPT-1788', 'GeneralSettings', 'Mia.Cai']), async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
@@ -315,6 +341,8 @@ test(formalName(`Check if the content of region section is displayed correctly;`
   const statement = 'Set the country and area code for your region. This will be used for local and emergency dialing and phone number formatting.';
   const saveButton = 'Save';
   const cancelButton = 'Cancel';
+  const countryLabel = 'Country';
+  const areaCodeLabel = 'Area Code';
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -342,11 +370,14 @@ test(formalName(`Check if the content of region section is displayed correctly;`
     await updateRegionDialog.checkStatement(statement);
     await updateRegionDialog.checkSaveButton(saveButton);
     await updateRegionDialog.checkCancelButton(cancelButton);
+    await updateRegionDialog.existCountryLabel(countryLabel);
+    await updateRegionDialog.existAreaCodeLabel(areaCodeLabel);
   });
   
 
 });
 
+//case done but need account support (6 countries with areacode and no areacode country )
 test(formalName(`Check when the area code is displayed`, ['P2','JPT-1790', 'GeneralSettings', 'Mia.Cai']), async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
@@ -354,8 +385,20 @@ test(formalName(`Check when the area code is displayed`, ['P2','JPT-1790', 'Gene
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
   const updateRegionDialog =settingTab.phoneTab.updateRegionDialog;
-  const countryList = ['US','CA','Puerto Ricco','China','Mexico','Australia'];
-  const otherCountry='Korea';
+  // const countryListWithAreaCode = ['United States','CA','Puerto Ricco','China','Mexico','Australia'];
+  const countryListWithAreaCode = ['United States','China','Mexico','Australia'];
+  const otherCountryWithoutAreaCode='France';
+
+  // todo
+  if(SITE_ENV == 'XMN-UP'){
+    loginUser.company.number = '2053800966';
+    loginUser.extension = '98001222';
+    loginUser.password = 'Test!123';
+  }else if(SITE_ENV == 'GLP-CI1-XMN'){
+    //todo need one account
+  }else{
+    // todo
+  }
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -382,10 +425,11 @@ test(formalName(`Check when the area code is displayed`, ['P2','JPT-1790', 'Gene
     await updateRegionDialog.showCountryDropDown();
   });
 
-  for(let i in countryList){
-    await h(t).withLog(`When select the country as "${countryList[i]}"`, async () => {
+  for(let i in countryListWithAreaCode){
+    await h(t).withLog(`When select the country as "${countryListWithAreaCode[i]}"`, async () => {
       // TODO
-      await updateRegionDialog.selectCountry(countryList[i]);
+      await updateRegionDialog.clickCountryDropDown();
+      await updateRegionDialog.selectCountryWithText(countryListWithAreaCode[i]);
     });
     await h(t).withLog(`Then Area code input box shows`, async () => {
       await updateRegionDialog.showAreaCode();
@@ -393,8 +437,8 @@ test(formalName(`Check when the area code is displayed`, ['P2','JPT-1790', 'Gene
   }
 
   await h(t).withLog(`When Selected a country not US/CA/Puerto Rico/China/Mexico/Australia`, async () => {
-    // TODO
-    await updateRegionDialog.selectCountry(otherCountry);
+    await updateRegionDialog.clickCountryDropDown();
+    await updateRegionDialog.selectCountryWithText(otherCountryWithoutAreaCode);
   });
 
   await h(t).withLog(`Then no Area code input box shows`, async () => {
@@ -403,15 +447,30 @@ test(formalName(`Check when the area code is displayed`, ['P2','JPT-1790', 'Gene
 
 });
 
-test(formalName(`Check the dialog status when user save/cancel changes made on dialog`, ['P2', 'JPT-1798', 'GeneralSettings', 'Mia.Cai']), async t => {
+//case done but need add toast id/ need add account
+test(formalName(`Check if the region is implemented when user save/cancel changes on dialog`, ['P2', 'JPT-1798', 'GeneralSettings', 'Mia.Cai']), async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
 
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
+  const phoneTab = settingTab.phoneTab;
   const updateRegionDialog =settingTab.phoneTab.updateRegionDialog;
-  const country = 'US';
+  const country1 = 'France';
+  const country2 = 'China';
+  const areaCodeForCountry2 = '10';
   const toast = 'Your region is updated successfully';
+
+  // 
+  if(SITE_ENV == 'XMN-UP'){
+    loginUser.company.number = '2053800966';
+    loginUser.extension = '98001222';
+    loginUser.password = 'Test!123';
+  }else if(SITE_ENV == 'GLP-CI1-XMN'){
+    //todo need one account
+  }else{
+    // todo
+  }
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -426,19 +485,18 @@ test(formalName(`Check the dialog status when user save/cancel changes made on d
     await settingTab.phoneEntry.enter();
   });
 
+ const regionDescriptionDefault = await phoneTab.regionDescription.innerText;
   await h(t).withLog(`And I click Update button in the Region`, async () => {
-    await settingTab.phoneTab.clickRegionUpdateButton();
+    await phoneTab.clickRegionUpdateButton();
   });
 
   await h(t).withLog(`Then the update region popup shows`, async () => {
     await updateRegionDialog.showUpdateRegionDialog();
   });
 
-  // get the default country
-  const defaultCountry = await updateRegionDialog.countryDropDown.nth(0).innerText;
   await h(t).withLog(`When I change the dial plan/area`, async () => {
-    // TODO
-    await updateRegionDialog.selectCountryByIndex(1);
+    await updateRegionDialog.clickCountryDropDown();
+    await updateRegionDialog.selectCountryWithText(country1);
   });
 
   await h(t).withLog(`And I click cancel button`, async () => {
@@ -449,22 +507,27 @@ test(formalName(`Check the dialog status when user save/cancel changes made on d
     await updateRegionDialog.noUpdateRegionDialog();
   });
 
-  
   await h(t).withLog(`And the the default change should keep the same`, async () => {
-      await t.expect(settingTab.phoneTab.regionFieldWithText(defaultCountry)).ok();
+    await phoneTab.regionDescriptionWithText(regionDescriptionDefault);
+  });
+
+  await h(t).withLog(`When I click Update button in the Region`, async () => {
+    await phoneTab.clickRegionUpdateButton();
+  });
+
+  await h(t).withLog(`Then the update region popup shows`, async () => {
+    await updateRegionDialog.showUpdateRegionDialog();
   });
  
-  let areaCode;
   await h(t).withLog(`When I change the dial plan/area`, async () => {
-    // TODO
-    await updateRegionDialog.selectCountry(country);
-    await updateRegionDialog.selectAreaCodeByIndex(1);
-    areaCode = updateRegionDialog.areaCode.nth(1).innerText;
+    await updateRegionDialog.clickCountryDropDown();
+    await updateRegionDialog.selectCountryWithText(country2);
+    await updateRegionDialog.setAreaCode(areaCodeForCountry2);
   });
 
   await h(t).withLog(`Then I can see the changes`, async () => {
-    await t.expect(updateRegionDialog.countryDropDown.nth(0).innerText).eql(country);
-    await t.expect(updateRegionDialog.areaCode.nth(1).innerText).eql(areaCode);
+    await updateRegionDialog.countrySelectedWithText(country2);
+    await updateRegionDialog.existAreaCodeWithText(areaCodeForCountry2);
   });
 
   await h(t).withLog(`When I click save button`, async () => {
@@ -480,8 +543,8 @@ test(formalName(`Check the dialog status when user save/cancel changes made on d
   });
 
   await h(t).withLog(`Then I can see the changes`, async () => {
-    await t.expect(settingTab.phoneTab.regionDescription.withText(country)).ok();
-    await t.expect(settingTab.phoneTab.regionDescription.withText(areaCode)).ok();
+    await t.expect(phoneTab.regionDescription.innerText).contains(country2);
+    await t.expect(phoneTab.regionDescription.innerText).contains(areaCodeForCountry2);
   });
 
 });
