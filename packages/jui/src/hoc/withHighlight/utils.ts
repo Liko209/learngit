@@ -51,4 +51,41 @@ const highlightFormatter = (terms: string[], value: string) => {
   return _wrapMatchedWord(value, reg);
 };
 
-export { highlightFormatter };
+const cascadingGet = (obj: Object, key: string) => {
+  const hierarchyKeys = key.split('.').filter(k => !!k);
+  let currentRef = obj;
+  while (hierarchyKeys.length > 1) {
+    const currentLevel = hierarchyKeys.shift();
+    if (currentLevel) {
+      currentRef = { ...currentRef[currentLevel] };
+    }
+  }
+  const lastLevel = hierarchyKeys.shift();
+  if (lastLevel) {
+    return currentRef[lastLevel];
+  }
+  return null;
+};
+
+const cascadingCreate = (key: string, value: any) => {
+  const hierarchyKeys = key.split('.').filter(k => !!k);
+  const newObj = {};
+  let currentRef = newObj;
+  while (hierarchyKeys.length > 1) {
+    const currentLevel = hierarchyKeys.shift();
+    if (currentLevel) {
+      currentRef[currentLevel] =
+        typeof currentRef[currentLevel] === 'object'
+          ? currentRef[currentLevel]
+          : {};
+      currentRef = currentRef[currentLevel];
+    }
+  }
+  const lastLevel = hierarchyKeys.shift();
+  if (lastLevel) {
+    currentRef[lastLevel] = value;
+  }
+  return { ...newObj };
+};
+
+export { highlightFormatter, cascadingGet, cascadingCreate };

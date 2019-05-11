@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { highlightFormatter } from '../utils';
+import { highlightFormatter, cascadingCreate, cascadingGet } from '../utils';
 describe('highlightForamtter', () => {
   it('should format correctly non-HTML text', () => {
     expect(highlightFormatter(['abc'], 'tttabcttt')).toBe(
@@ -78,5 +78,46 @@ describe('highlightForamtter', () => {
     ).toBe(
       '<div class="jss74 jss83 sc-iomxrj csAIRQ sc-eIHaNI cOOlkC"><div data-test-automation-id="file-name" class="sc-cBdUnI cGhMVG"><span class="sc-exkUMo fyTiJZ">photo-1<span class="highlight-term">5</span>29946890443-82ca0ff80</span><span>d<span class="highlight-term">5</span>d.jpeg</span></div></div>',
     );
+  });
+});
+
+describe('cascadingGet', () => {
+  it('should work', () => {
+    expect(cascadingGet({ a: { b: 123 } }, 'a.b')).toEqual(123);
+    expect(cascadingGet({ a: { b: 123 }, c: 2 }, 'a.b')).toEqual(123);
+    expect(
+      cascadingGet(
+        {
+          a: { b: 123 },
+          c: 2,
+        },
+        'a.b',
+      ),
+    ).toEqual(123);
+
+    expect(cascadingGet({ a: { b: { c: 123 } } }, 'a.b.c')).toEqual(123);
+    expect(
+      cascadingGet(
+        {
+          a: { b: { __somekey: 123 } },
+        },
+        'a.b.__somekey',
+      ),
+    ).toEqual(123);
+    expect(cascadingGet({ a: 123 }, 'a')).toEqual(123);
+    expect(cascadingGet({ a: 123 }, 'a.')).toEqual(123);
+  });
+});
+
+describe('cascadingCreate', () => {
+  it('should work', () => {
+    expect(cascadingCreate('a.b', 123)).toEqual({ a: { b: 123 } });
+
+    expect(cascadingCreate('a.b.c', 123)).toEqual({ a: { b: { c: 123 } } });
+    expect(cascadingCreate('a.b.__somekey', 123)).toEqual({
+      a: { b: { __somekey: 123 } },
+    });
+    expect(cascadingCreate('a', 123)).toEqual({ a: 123 });
+    expect(cascadingCreate('a.', 123)).toEqual({ a: 123 });
   });
 });

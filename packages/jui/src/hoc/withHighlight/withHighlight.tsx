@@ -5,7 +5,7 @@
  */
 
 import React, { ComponentType, createContext } from 'react';
-import { highlightFormatter } from './utils';
+import { highlightFormatter, cascadingCreate, cascadingGet } from './utils';
 import _ from 'lodash';
 
 type HighlightProps = string[];
@@ -27,26 +27,12 @@ const withHighlight = (highlightProps: HighlightProps) => (
       const newProps = {};
       if (this.context.terms && this.context.terms.length) {
         highlightProps.forEach(propName => {
-          let thisPropsRef = this.props;
-          let newPropsRef = newProps;
-          let realPropName = propName;
-          if (propName.indexOf('.') > 0) {
-            const keys = propName.split('.');
-            keys.forEach((key, index) => {
-              if (index === keys.length - 1) {
-                realPropName = key;
-              } else {
-                thisPropsRef = thisPropsRef[key] || {};
-                newPropsRef = newPropsRef[key] || {};
-              }
-            });
+          const value = cascadingGet(this.props, propName);
+          if (value) {
+            const formatStr = highlightFormatter(this.context.terms, value);
+            const newPropObj = cascadingCreate(propName, formatStr);
+            Object.assign(newProps, newPropObj);
           }
-          const value = thisPropsRef[propName];
-          value &&
-            (newPropsRef[realPropName] = highlightFormatter(
-              this.context.terms,
-              value,
-            ));
         });
       }
       return <Component {...this.props} {...newProps} />;

@@ -13,6 +13,7 @@ import {
   typography,
 } from '../../../foundation/utils';
 import { Markdown } from 'glipdown';
+import { withHighlight } from '../../../hoc/withHighlight';
 
 const ImageWithSize = (size: number) => styled.img`
   border-radius: 50%;
@@ -20,19 +21,21 @@ const ImageWithSize = (size: number) => styled.img`
   height: ${height(size)};
 `;
 
-const Span = styled.span`
+const Span = withHighlight(['dangerouslySetInnerHTML.__html'])(styled.span`
   margin-left: ${spacing(2.5)};
   ${ellipsis()}
-`;
+`);
 
 type MarkDownViewProps = {
   content?: string;
 };
 
-const MarkdownWrapper = styled.div`
+const MarkdownWrapper = withHighlight([
+  'dangerouslySetInnerHTML.__html',
+])(styled.div`
   ${typography('caption1')};
   ${ellipsis()}
-`;
+`);
 
 const MarkDownView = (props: MarkDownViewProps) => {
   const { content } = props;
