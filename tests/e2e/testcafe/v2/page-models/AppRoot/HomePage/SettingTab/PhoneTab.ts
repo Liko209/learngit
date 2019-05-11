@@ -1,8 +1,5 @@
 import { BaseWebComponent } from '../../../BaseWebComponent';
-import { string } from 'prop-types';
-
 export class PhoneTab extends BaseWebComponent{
-
     // todo need have automation id
     get self(){
         return this.getSelectorByAutomationId('SettingContainer');
@@ -166,6 +163,14 @@ export class UpdateRegionDialog extends BaseWebComponent{
         return this.getSelectorByAutomationId('saveRegionSettingCancelButton');
     }
 
+    async showUpdateRegionDialog(){
+        await this.t.expect(this.self.exists).ok();
+    }
+
+    async noUpdateRegionDialog(){
+        await this.t.expect(this.self.exists).notOk();
+    }
+
     async clickSaveButton(){
         await this.t.click(this.saveButton);
     }
@@ -190,16 +195,24 @@ export class UpdateRegionDialog extends BaseWebComponent{
         await this.t.typeText(this.areaCode, text);
     }
 
-    async showUpdateRegionDialog(){
-        await this.t.expect(this.self.exists).ok();
-    }
-
-    async noUpdateRegionDialog(){
-        await this.t.expect(this.self.exists).notOk();
+    async existAreaCodeWithText(text:string){
+        await this.t.expect(this.areaCode.withText(text)).ok();
     }
 
     async showCountryDropDown(){
         await this.t.expect(this.countryDropDown.exists).ok();
+    }
+
+    async clickCountryDropDown(){
+        await this.t.click(this.countryDropDown);
+    }
+
+    async selectCountryWithText(text:string){
+        await this.t.click(this.countryDropDownList.withText(text));
+    }
+
+    async countrySelectedWithText(text:string){
+        await this.t.expect(this.countryDropDown.withText(text)).ok();
     }
 
     async checkTitle(text:string){
@@ -220,22 +233,6 @@ export class UpdateRegionDialog extends BaseWebComponent{
 
     async checkCancelButton(text:string){
         await this.t.expect(this.cancelButton.withText(text)).ok();
-    }
-
-    async clickCountryDropDown(){
-        await this.t.click(this.countryDropDown);
-    }
-
-    async selectCountryWithText(text:string){
-        await this.t.click(this.countryDropDownList.withText(text));
-    }
-
-    async countrySelectedWithText(text:string){
-        await this.t.expect(this.countryDropDown.withText(text)).ok();
-    }
-
-    async existAreaCodeWithText(text:string){
-        await this.t.expect(this.areaCode.withText(text)).ok();
     }
 
     async checkSuccessToast(text:string){
