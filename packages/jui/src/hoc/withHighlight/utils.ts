@@ -14,11 +14,19 @@ const _isHTML = (str: string) => {
   return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
 };
 
-const highlightFormatter = (terms: string[], value: string) => {
-  const reg = new RegExp(
+const getRegexpFromKeyword = (keyword: string) => {
+  const terms = keyword
+    .replace(/[^a-zA-Z0-9]+/g, ' ')
+    .split(/\s/)
+    .filter(str => str.trim());
+  return new RegExp(
     terms.join('|').replace(/([.?*+^$[\]\\(){}-])/g, '\\$1'),
     'gi',
   );
+};
+
+const highlightFormatter = (keyword: string, value: string) => {
+  const reg = getRegexpFromKeyword(keyword);
   if (_isHTML(value)) {
     const container = document.createElement('div');
     container.innerHTML = value;
@@ -88,4 +96,9 @@ const cascadingCreate = (key: string, value: any) => {
   return { ...newObj };
 };
 
-export { highlightFormatter, cascadingGet, cascadingCreate };
+export {
+  getRegexpFromKeyword,
+  highlightFormatter,
+  cascadingGet,
+  cascadingCreate,
+};

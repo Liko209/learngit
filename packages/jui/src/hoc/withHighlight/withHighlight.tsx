@@ -11,25 +11,26 @@ import _ from 'lodash';
 type HighlightProps = string[];
 
 type HighlightContextInfo = {
-  terms: string[];
+  keyword: string;
 };
 
-const SearchHighlightContext = createContext({
-  terms: [],
-} as HighlightContextInfo);
+const SearchHighlightContext = createContext<HighlightContextInfo>({
+  keyword: '',
+});
 
-const withHighlight = (highlightProps: HighlightProps) => (
-  Component: ComponentType<any> | React.SFC<any>,
+const withHighlight = (highlightProps: HighlightProps) => <T extends object>(
+  Component: ComponentType<T> | React.SFC<T>,
 ) => {
-  class ComponentWithHighlight extends React.Component {
+  class ComponentWithHighlight extends React.Component<T, {}> {
     static contextType = SearchHighlightContext;
+    context: HighlightContextInfo;
     render() {
       const newProps = {};
-      if (this.context.terms && this.context.terms.length) {
+      if (this.context.keyword && this.context.keyword.length) {
         highlightProps.forEach(propName => {
           const value = cascadingGet(this.props, propName);
           if (value) {
-            const formatStr = highlightFormatter(this.context.terms, value);
+            const formatStr = highlightFormatter(this.context.keyword, value);
             const newPropObj = cascadingCreate(propName, formatStr);
             Object.assign(newProps, newPropObj);
           }
