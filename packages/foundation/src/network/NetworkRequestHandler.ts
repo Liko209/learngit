@@ -48,7 +48,7 @@ class NetworkRequestHandler
   }
 
   initPendingTasks() {
-    this.pendingTasks.set(REQUEST_PRIORITY.SPECIFIC, []);
+    this.pendingTasks.set(REQUEST_PRIORITY.IMMEDIATE, []);
     this.pendingTasks.set(REQUEST_PRIORITY.HIGH, []);
     this.pendingTasks.set(REQUEST_PRIORITY.NORMAL, []);
     this.pendingTasks.set(REQUEST_PRIORITY.LOW, []);
@@ -161,8 +161,15 @@ class NetworkRequestHandler
     return undefined;
   }
 
+  hasImmediateTask(via: NETWORK_VIA): boolean {
+    const [task] =
+      this.pendingTasks.get(REQUEST_PRIORITY.IMMEDIATE) ||
+      ([] as RequestTask[]);
+    return task && (task.via() === via || task.via() === NETWORK_VIA.ALL);
+  }
+
   canProduceRequest(priority: REQUEST_PRIORITY) {
-    return !this.isPause || priority === REQUEST_PRIORITY.SPECIFIC;
+    return !this.isPause || priority === REQUEST_PRIORITY.IMMEDIATE;
   }
 
   addRequestConsumer(via: NETWORK_VIA, consumer: AbstractConsumer) {

@@ -56,7 +56,7 @@ class Test extends React.Component {
           <JuiSlide
             show={this.state.show}
             duration="standard"
-            easing="openCloseDialog"
+            easing="sharp"
             onExited={this.hide}
             appear={true}
             transformProperties="height"

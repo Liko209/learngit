@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { RuiButton } from '../Button';
-import { ThemeProvider } from '../../../../foundation/styles';
+import ThemeProvider from '../../../../foundation/styles/ThemeProvider';
 import * as renderer from 'react-test-renderer';
 
 describe('<Button />', () => {

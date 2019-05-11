@@ -11,7 +11,6 @@ import MuiAppBar, {
   AppBarProps as MuiAppBarProps,
 } from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
-import { JuiArrowTip } from '../../components/Tooltip/ArrowTip';
 import { JuiText, JuiTextProps } from '../../components/Text/Text';
 
 import {
@@ -90,7 +89,7 @@ type IJuiConversationPageHeader = React.PureComponent<
 class JuiConversationPageHeader
   extends React.PureComponent<JuiConversationPageHeaderProps>
   implements IJuiConversationPageHeader {
-  static dependencies = [MuiAppBar, MuiToolbar, JuiArrowTip, Typography];
+  static dependencies = [MuiAppBar, MuiToolbar, Typography];
   static defaultProps = {
     title: '',
   };

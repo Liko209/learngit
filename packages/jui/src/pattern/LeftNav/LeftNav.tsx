@@ -10,7 +10,7 @@ import MuiListItemText from '@material-ui/core/ListItemText';
 import MuiListItemIcon from '@material-ui/core/ListItemIcon';
 import MuiDrawer, { DrawerProps } from '@material-ui/core/Drawer/index';
 import styled from '../../foundation/styled-components';
-import { JuiArrowTip } from '../../components/index';
+import { RuiTooltip } from 'rcui/components/Tooltip';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import {
   height,
@@ -121,7 +121,7 @@ const StyledListItemText = styled(MuiListItemText)`
     padding: 0;
     span {
       color: ${palette('accent', 'ash')}; // Aah
-      ${typography('body1')};
+      ${typography('body1')}
     }
   }
 `;
@@ -233,14 +233,14 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
               </StyledListItem>
             );
             return !expand ? (
-              <JuiArrowTip
+              <RuiTooltip
                 title={item.title}
                 key={index}
                 enterDelay={400}
                 placement="right"
               >
                 {NavItem}
-              </JuiArrowTip>
+              </RuiTooltip>
             ) : (
               NavItem
             );

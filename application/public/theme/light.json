@@ -244,10 +244,5 @@
   },
   "maxHeight": {
     "dialog": "72vh"
-  },
-  "transitions": {
-    "easing": {
-      "openCloseDialog": "cubic-bezier(0.25, 0.1, 0.25, 1)"
-    }
   }
 }
