@@ -20,12 +20,13 @@ import { AvatarName } from './AvatarName';
 import { TaskUpdateViewProps } from './types';
 
 @observer
-class TaskUpdate extends React.Component<TaskUpdateViewProps & WithTranslation> {
+class TaskUpdate extends React.Component<
+  TaskUpdateViewProps & WithTranslation
+> {
   private _getTaskAvatarNames = (assignedIds: number[]) =>
-    assignedIds
-      .map((assignedId: number) => (
-        <AvatarName key={assignedId} id={assignedId} />
-      ))
+    assignedIds.map((assignedId: number) => (
+      <AvatarName key={assignedId} id={assignedId} />
+    ))
 
   private _getTitleText(text: string) {
     const { activityData, effectiveIds } = this.props;
@@ -60,12 +61,11 @@ class TaskUpdate extends React.Component<TaskUpdateViewProps & WithTranslation> 
               hideText={t('item.hideEventHistory')}
             >
               {
-                <JuiEventCollapseContent>
+                <JuiEventCollapseContent noHighlight={true}>
                   <JuiTaskAvatarNames>
                     {this._getTaskAvatarNames(old_value)}
                   </JuiTaskAvatarNames>
-                </JuiEventCollapseContent>
-              }
+                </JuiEventCollapseContent>}
             </JuiEventCollapse>
           ) : null
         }

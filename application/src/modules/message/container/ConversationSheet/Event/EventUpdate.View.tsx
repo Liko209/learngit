@@ -67,7 +67,9 @@ class EventUpdate extends React.Component<Props> {
               hideText={t('item.hideEventHistory')}
             >
               {hasOldTime && (
-                <JuiEventCollapseContent>{`${oldTime.get()} ${oldTimeText.get()}`}</JuiEventCollapseContent>
+                <JuiEventCollapseContent noHighlight={true}>
+                  {`${oldTime.get()} ${oldTimeText.get()}`}
+                </JuiEventCollapseContent>
               )}
               {oldLocation && (
                 <JuiEventCollapseContent>{oldLocation}</JuiEventCollapseContent>

@@ -14,18 +14,27 @@ type HighlightContextInfo = {
   terms: string[];
 };
 
+type withHighlightProps = {
+  noHighlight?: boolean;
+};
+
 const SearchHighlightContext = createContext({
   terms: [],
 } as HighlightContextInfo);
 
-const withHighlight = (highlightProps: HighlightProps) => (
-  Component: ComponentType<any> | React.SFC<any>,
+const withHighlight = (highlightProps: HighlightProps) => <T extends object>(
+  Component: ComponentType<T> | React.SFC<T>,
 ) => {
-  class ComponentWithHighlight extends React.Component {
+  type Props = T & withHighlightProps;
+  class ComponentWithHighlight extends React.Component<Props> {
     static contextType = SearchHighlightContext;
     render() {
       const newProps = {};
-      if (this.context.terms && this.context.terms.length) {
+      if (
+        !this.props.noHighlight &&
+        this.context.terms &&
+        this.context.terms.length
+      ) {
         highlightProps.forEach(propName => {
           let thisPropsRef = this.props;
           let newPropsRef = newProps;
@@ -53,7 +62,7 @@ const withHighlight = (highlightProps: HighlightProps) => (
     }
   }
 
-  return ComponentWithHighlight as any;
+  return ComponentWithHighlight;
 };
 
 export { withHighlight, SearchHighlightContext, HighlightProps };

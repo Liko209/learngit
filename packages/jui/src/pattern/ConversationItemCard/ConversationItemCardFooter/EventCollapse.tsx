@@ -11,6 +11,7 @@ import {
   primary,
   spacing,
 } from '../../../foundation/utils/styles';
+import { withHighlight } from '../../../hoc/withHighlight';
 
 type Props = {
   children?: React.ReactNode;
@@ -62,6 +63,8 @@ class JuiEventCollapse extends React.PureComponent<Props, States> {
   }
 }
 
-const JuiEventCollapseContent = StyledContent;
+const JuiEventCollapseContent = withHighlight(['children'])(props => {
+  return <StyledContent {...props} />;
+});
 
 export { JuiEventCollapse, JuiEventCollapseContent };
