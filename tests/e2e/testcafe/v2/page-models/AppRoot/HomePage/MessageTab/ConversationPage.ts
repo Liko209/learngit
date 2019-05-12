@@ -514,6 +514,14 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.expect(this.readOnlyDiv.exists).ok();
   }
 
+  get emojiButton() {
+    return this.getSelectorByAutomationId('conversation-chatbar-emoji-button');
+  }
+
+  async clickEmojiButton() {
+    await this.t.click(this.emojiButton);
+  }
+
   /* 1:1 */
   get telephonyButton() {
     return this.telephonyIcon.parent('button'); //TODO: add automationId
@@ -660,8 +668,19 @@ export class PostItem extends BaseWebComponent {
     return this.mentions.filter((el) => el.textContent === name);
   }
 
-  emojiTitle(text) {
-    return this.text.find("img").withAttribute("title", text);
+  get emojis() {
+    return this.self.find('.emoji');
+  }
+
+  async shouldHasEmojiByValue(text: string) {
+    await this.t.expect(this.emojis.withAttribute('title', `:${text}:`))
+  }
+
+  async emojisShouldBeInOrder(valueList: string[], timeout: number = 5e3) {
+    await this.t.expect(this.emojis.count).eql(valueList.length, { timeout });
+    for (const n in valueList) {
+      await this.t.expect(this.emojis.nth(+n).withAttribute('title', `:${valueList[n]}:`)).ok({ timeout });
+    }
   }
 
   get likeToggleOnActionBar() {
