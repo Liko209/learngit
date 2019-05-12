@@ -3,6 +3,7 @@
  * @Date: 2019-04-25 12:06:05
  * Copyright © RingCentral. All rights reserved.
  */
+import objectPath from 'object-path';
 
 const _wrapMatchedWord = (fullText: string, reg: RegExp) =>
   fullText.replace(reg, (match: string) => {
@@ -51,41 +52,14 @@ const highlightFormatter = (terms: string[], value: string) => {
   return _wrapMatchedWord(value, reg);
 };
 
-const cascadingGet = (obj: Object, key: string) => {
-  const hierarchyKeys = key.split('.').filter(k => !!k);
-  let currentRef = obj;
-  while (hierarchyKeys.length > 1) {
-    const currentLevel = hierarchyKeys.shift();
-    if (currentLevel) {
-      currentRef = { ...currentRef[currentLevel] };
-    }
-  }
-  const lastLevel = hierarchyKeys.shift();
-  if (lastLevel) {
-    return currentRef[lastLevel];
-  }
-  return null;
+const cascadingGet = (obj: Object, path: string) => {
+  return objectPath.get(obj, path);
 };
 
-const cascadingCreate = (key: string, value: any) => {
-  const hierarchyKeys = key.split('.').filter(k => !!k);
+const cascadingCreate = (path: string, value: any) => {
   const newObj = {};
-  let currentRef = newObj;
-  while (hierarchyKeys.length > 1) {
-    const currentLevel = hierarchyKeys.shift();
-    if (currentLevel) {
-      currentRef[currentLevel] =
-        typeof currentRef[currentLevel] === 'object'
-          ? currentRef[currentLevel]
-          : {};
-      currentRef = currentRef[currentLevel];
-    }
-  }
-  const lastLevel = hierarchyKeys.shift();
-  if (lastLevel) {
-    currentRef[lastLevel] = value;
-  }
-  return { ...newObj };
+  objectPath.set(newObj, path, value);
+  return newObj;
 };
 
 export { highlightFormatter, cascadingGet, cascadingCreate };

@@ -105,7 +105,6 @@ describe('cascadingGet', () => {
       ),
     ).toEqual(123);
     expect(cascadingGet({ a: 123 }, 'a')).toEqual(123);
-    expect(cascadingGet({ a: 123 }, 'a.')).toEqual(123);
   });
 });
 
@@ -118,6 +117,5 @@ describe('cascadingCreate', () => {
       a: { b: { __somekey: 123 } },
     });
     expect(cascadingCreate('a', 123)).toEqual({ a: 123 });
-    expect(cascadingCreate('a.', 123)).toEqual({ a: 123 });
   });
 });
