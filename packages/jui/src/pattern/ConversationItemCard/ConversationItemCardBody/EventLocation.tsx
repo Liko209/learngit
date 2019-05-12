@@ -17,12 +17,14 @@ const StyledEventLocation = styled.div`
   color: ${grey('900')};
 `;
 
-const JuiEventLocation = withHighlight(['location'])(
-  memo(({ location }: Props) => (
-    <StyledEventLocation dangerouslySetInnerHTML={{ __html: location }} />
-  )),
+const JuiEventLocationComponent = ({ location }: Props) => (
+  <StyledEventLocation dangerouslySetInnerHTML={{ __html: location }} />
 );
 
-JuiEventLocation.displayName = 'JuiEventLocation';
+JuiEventLocationComponent.displayName = 'JuiEventLocation';
+
+const JuiEventLocation = withHighlight(['location'])(
+  memo(JuiEventLocationComponent),
+);
 
 export { JuiEventLocation };

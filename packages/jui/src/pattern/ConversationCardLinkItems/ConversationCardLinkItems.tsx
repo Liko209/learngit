@@ -121,8 +121,7 @@ type Props = {
   favicon: string;
   faviconName: string;
 };
-@withHighlight(['title', 'summary'])
-class JuiConversationCardLinkItems extends PureComponent<Props> {
+class JuiConversationCardLinkItemsComponent extends PureComponent<Props> {
   constructor(props: Props) {
     super(props);
   }
@@ -165,4 +164,8 @@ class JuiConversationCardLinkItems extends PureComponent<Props> {
     );
   }
 }
+
+const JuiConversationCardLinkItems = withHighlight(['title', 'summary'])(
+  JuiConversationCardLinkItemsComponent,
+);
 export { JuiConversationCardLinkItems };

@@ -22,11 +22,10 @@ const SearchHighlightContext = createContext({
   terms: [],
 } as HighlightContextInfo);
 
-const withHighlight = (highlightProps: HighlightProps) => <T extends object>(
-  Component: ComponentType<T> | React.SFC<T>,
+const withHighlight = (highlightProps: HighlightProps) => <P extends object>(
+  Component: ComponentType<P> | React.FunctionComponent<P>,
 ) => {
-  type Props = T & withHighlightProps;
-  class ComponentWithHighlight extends React.Component<Props> {
+  class ComponentWithHighlight extends React.Component<P & withHighlightProps> {
     static contextType = SearchHighlightContext;
     render() {
       const newProps = {};

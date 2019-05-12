@@ -17,14 +17,15 @@ const StyledTaskSectionOrDescription = styled.div`
   color: ${grey('500')};
 `;
 
-const JuiTaskSectionOrDescription = withHighlight(['text'])(
-  memo(({ text }: Props) => (
-    <StyledTaskSectionOrDescription
-      dangerouslySetInnerHTML={{ __html: text }}
-    />
-  )),
+const JuiTaskSectionOrDescriptionComponent = ({ text }: Props) => (
+  <StyledTaskSectionOrDescription dangerouslySetInnerHTML={{ __html: text }} />
 );
 
-JuiTaskSectionOrDescription.displayName = 'JuiTaskSectionOrDescription';
+JuiTaskSectionOrDescriptionComponent.displayName =
+  'JuiTaskSectionOrDescription';
+
+const JuiTaskSectionOrDescription = withHighlight(['text'])(
+  memo(JuiTaskSectionOrDescriptionComponent),
+);
 
 export { JuiTaskSectionOrDescription };
