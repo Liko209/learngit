@@ -36,6 +36,7 @@ import { SearchService } from './module/search';
 import { RCInfoService } from './module/rcInfo';
 import { GlobalConfigService, UserConfigService } from './module/config';
 import { ServiceConfig } from './module/serviceLoader';
+import { PhoneNumberService } from './module/phoneNumber';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -83,6 +84,7 @@ const registerConfigs = {
     { name: ServiceConfig.TELEPHONY_SERVICE, value: TelephonyService },
     { name: ServiceConfig.GROUP_CONFIG_SERVICE, value: GroupConfigService },
     { name: ServiceConfig.SEARCH_SERVICE, value: SearchService },
+    { name: ServiceConfig.PHONE_NUMBER_SERVICE, value: PhoneNumberService },
 
     // Manager
     {
