@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 
-export function hasLoadedNamespace() {
+function hasLoadedNamespace() {
   const lng = i18next.languages[0];
   const fallbackLng = i18next.options ? i18next.options.fallbackLng : false;
   const lastLng = i18next.languages[i18next.languages.length - 1];
@@ -12,7 +12,10 @@ export function hasLoadedNamespace() {
   };
 
   // failed loading ns - but at least fallback is not pending -> SEMI SUCCESS
-  if (loadNotPending(lng, ns) && (!fallbackLng || loadNotPending(lastLng, ns))) {
+  if (
+    loadNotPending(lng, ns) &&
+    (!fallbackLng || loadNotPending(lastLng, ns))
+  ) {
     return true;
   }
 

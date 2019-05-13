@@ -11,7 +11,9 @@ const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
   const letters = ['a', 'e', 'i', 'o', 'u', 'h'];
   const lastDotChar = value.lastIndexOf('.');
   const actualValue =
-    lastDotChar > 0 && lastDotChar !== value.length - 1 ? value.substring(lastDotChar + 1) : value;
+    lastDotChar > 0 && lastDotChar !== value.length - 1
+      ? value.substring(lastDotChar + 1)
+      : value;
   const firstLetter = actualValue.substring(0, 1);
   let correctWordForm = '';
   if (
