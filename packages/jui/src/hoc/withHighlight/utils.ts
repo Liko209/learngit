@@ -5,14 +5,40 @@
  */
 import objectPath from 'object-path';
 
-const _wrapMatchedWord = (fullText: string, reg: RegExp) =>
-  fullText.replace(reg, (match: string) => {
+const _wrapMatchedWord = (fullText: string, reg: RegExp) => {
+  const matchedInEntityRegex = new RegExp(
+    `(?<=&\\w*)${reg.source}(?=\\w*;)`,
+    reg.flags,
+  );
+  const indexesOfMatchedInEntity: number[] = [];
+  let result = matchedInEntityRegex.exec(fullText);
+  while (result) {
+    indexesOfMatchedInEntity.push(result.index);
+    result = matchedInEntityRegex.exec(fullText);
+  }
+  return fullText.replace(reg, (match: string, ...args: any[]) => {
+    if (
+      typeof args[0] === 'number' &&
+      indexesOfMatchedInEntity.includes(args[0])
+    ) {
+      return match;
+    }
     return `<span class="highlight-term">${match}</span>`;
   });
+};
 
 const _isHTML = (str: string) => {
   const doc = new DOMParser().parseFromString(str, 'text/html');
   return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
+};
+
+const _HTMLescape = (html: string) => {
+  if (!html) {
+    return html;
+  }
+  return document
+    .createElement('div')
+    .appendChild(document.createTextNode(html)).parentElement!.innerHTML;
 };
 
 const getRegexpFromKeyword = (keyword: string) => {
@@ -35,7 +61,7 @@ const highlightFormatter = (keyword: string, value: string) => {
     let textNode = nodes.nextNode();
     const originalTextNodes = [];
     while (textNode) {
-      const fullTextContent = textNode.textContent || '';
+      const fullTextContent = _HTMLescape(textNode.textContent || '');
       if (fullTextContent.search(reg) >= 0) {
         const html = _wrapMatchedWord(fullTextContent, reg);
         const span = document.createElement('span');

@@ -80,6 +80,14 @@ describe('highlightForamtter', () => {
     ).toBe(
       '<div class="jss74 jss83 sc-iomxrj csAIRQ sc-eIHaNI cOOlkC"><div data-test-automation-id="file-name" class="sc-cBdUnI cGhMVG"><span class="sc-exkUMo fyTiJZ">photo-1<span class="highlight-term">5</span>29946890443-82ca0ff80</span><span>d<span class="highlight-term">5</span>d.jpeg</span></div></div>',
     );
+    expect(
+      highlightFormatter(
+        't',
+        '&lt;a href="https://service.sumologic.com/ui/index.html" target="_blank" rel="noreferrer"&gt;SearchQueryUrl&lt;/a&gt;',
+      ),
+    ).toBe(
+      '&lt;a href="h<span class="highlight-term">t</span><span class="highlight-term">t</span>ps://service.sumologic.com/ui/index.h<span class="highlight-term">t</span>ml" <span class="highlight-term">t</span>arge<span class="highlight-term">t</span>="_blank" rel="noreferrer"&gt;SearchQueryUrl&lt;/a&gt;',
+    );
   });
 });
 
