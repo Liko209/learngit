@@ -7,7 +7,7 @@ import { SITE_URL, BrandTire } from '../../config';
 import { IGroup } from '../../v2/models';
 import { v4 as uuid } from 'uuid';
 
-fixture('ContentPanel')
+fixture('ContentPanel/ReceiveNewMessages')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
@@ -39,13 +39,13 @@ test(formalName('Receive new sms messages', ['P2', 'Messages', 'ContentPanel', '
     await h(t).scenarioHelper.sentAndGetTextPostId(historyMsg, teamA, otherUser);
   });
 
-  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
   const teamsSection = app.homePage.messageTab.teamsSection;
-  await h(t).withLog('And enter conversationA', async () => {
+  await h(t).withLog('When I enter conversationA', async () => {
     await teamsSection.expand();
     await teamsSection.conversationEntryById(teamA.glipId).enter();
     await teamsSection.ensureLoaded();

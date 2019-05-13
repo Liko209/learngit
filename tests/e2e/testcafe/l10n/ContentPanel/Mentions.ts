@@ -6,7 +6,7 @@ import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 import { IGroup } from '../../v2/models';
 
-fixture('ContentPanel')
+fixture('ContentPanel/Mentions')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
@@ -40,7 +40,7 @@ test(formalName('Open mentions list and hover on a post', ['P2', 'Messages', 'Co
   });
 
   await h(t).withLog('And hover on the post', async () => {
-    // await t.expect(mentionPage.postItemById(postId).exists).ok();
+    await t.expect(mentionPage.postItemById(postId).exists).ok();
     await mentionPage.postItemById(postId).hoverPost();
   });
 

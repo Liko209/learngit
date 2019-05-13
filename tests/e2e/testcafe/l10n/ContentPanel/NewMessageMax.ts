@@ -4,8 +4,10 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { IGroup } from '../../v2/models';
+import { v4 as uuid } from 'uuid';
 
-fixture('ContentPanel')
+fixture('ContentPanel/NewMessageMax')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
@@ -18,19 +20,31 @@ test(formalName('Send a message with more than 10000 characters', ['P2', 'Messag
     postContent += '1234567890';
   }
 
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  let team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  await h(t).withLog(`Given have an extension with a team`, async () => {
+    await h(t).scenarioHelper.createTeamsOrChats([team]);
+  });
+
+  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
+  const teamsSection = app.homePage.messageTab.teamsSection;
   await h(t).withLog(`When I enter a conversation`, async () => {
-    await app.homePage.messageTab.teamsSection.expand();
-    await app.homePage.messageTab.teamsSection.nthConversationEntry(0).enter();
+    await teamsSection.expand();
+    await teamsSection.conversationEntryById(team.glipId).enter();
   });
 
-  const ConversationPage = app.homePage.messageTab.conversationPage;
+  const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog(`And send a message with more than 10000 characters`, async () => {
-    await ConversationPage.sendMessage(postContent, { paste: true });
+    await conversationPage.sendMessage(postContent, { paste: true });
   });
 
   await h(t).withLog(`Then I can see alert message`, async () => {
