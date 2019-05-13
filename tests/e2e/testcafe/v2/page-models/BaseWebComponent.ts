@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 import 'testcafe';
-import { Selector } from 'testcafe';
+import { Selector, ClientFunction } from 'testcafe';
 
 import * as assert from 'assert';
 import { H } from '../helpers'
@@ -165,5 +165,12 @@ export abstract class BaseWebComponent {
   // hover some selector will show
   async showTooltip(text: string) {
     await this.t.expect(this.getSelector('[role="tooltip"]').withExactText(text).exists).ok();
+  }
+
+  async scrollIntoView() {
+    await ClientFunction((_self) => {
+      const ele: any = _self()
+      ele.scrollIntoView()
+    })(this.self)
   }
 }

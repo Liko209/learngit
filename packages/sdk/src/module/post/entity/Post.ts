@@ -37,6 +37,7 @@ export type Post = ExtendedBaseModel & {
     anno_id?: string;
     page?: number; // page and anno_id is for document only
   };
+  icon?: string; // for integration
 };
 
 export type PostView = IdModel & {
@@ -49,6 +50,13 @@ export type IPostQuery = {
   limit?: number;
   postId?: number;
   direction?: QUERY_DIRECTION;
+};
+
+export type UnreadPostQuery = {
+  groupId: number;
+  startPostId: number;
+  endPostId: number;
+  unreadCount: number;
 };
 
 export type IPostResult = {

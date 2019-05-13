@@ -10,6 +10,7 @@ import {
   IImageDownloadedListener,
 } from 'sdk/pal';
 import { mainLogger, ILogger } from 'sdk';
+import { accelerateURL } from './accelerateURL';
 
 const logTag = 'ImageDownloader';
 
@@ -37,18 +38,15 @@ class ImageDownloader implements IImageDownloader {
       downloadListener && downloadListener.onFailure(itemInfo, 0);
       return;
     }
-
-    this._logger.info(
-      'start',
-      `itemId: ${itemInfo.id}`,
-      `url: ${itemInfo.url}`,
-    );
+    const url = accelerateURL(itemInfo.url);
+    itemInfo.url = url;
+    this._logger.info('start', `itemId: ${itemInfo.id}`, `url: ${url}`);
 
     this.cancelLoadingImage();
 
     this._itemInfo = itemInfo;
     this._downloadListener = downloadListener;
-    this._imgElement.setAttribute('src', itemInfo!.url);
+    this._imgElement.setAttribute('src', url!);
   }
 
   public cancelLoadingImage() {

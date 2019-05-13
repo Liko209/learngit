@@ -5,6 +5,16 @@
  */
 'use strict';
 if (process.env.NODE_ENV === 'test') {
+  // Mobx UT setup
+  const mobx = require('mobx');
+  const _configure = mobx.configure;
+  mobx.configure = options =>
+    _configure(
+      Object.assign({}, options, {
+        computedRequiresReaction: false,
+      }),
+    );
+
   const moment = require('moment-timezone');
   moment.tz.setDefault('Asia/Shanghai');
   // In tests, polyfill requestAnimationFrame since jsdom doesn't provide it yet.
@@ -47,4 +57,26 @@ if (process.env.NODE_ENV === 'test') {
   Object.defineProperty(window, 'sessionStorage', {
     value: new FakeStorage(),
   });
+
+  // mock console for jest
+  global.console = {
+    assert: jest.fn(),
+    clear: jest.fn(),
+    context: jest.fn(),
+    count: jest.fn(),
+    countReset: jest.fn(),
+    debug: jest.fn(),
+    error: jest.fn(),
+    group: jest.fn(),
+    groupCollapsed: jest.fn(),
+    groupEnd: jest.fn(),
+    info: jest.fn(),
+    log: jest.fn(),
+    time: jest.fn(),
+    timeEnd: jest.fn(),
+    timeLog: jest.fn(),
+    timeStamp: jest.fn(),
+    trace: jest.fn(),
+    warn: jest.fn(),
+  }
 }

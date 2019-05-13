@@ -31,30 +31,30 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
 
   constructor(props: ConversationPageProps) {
     super(props);
-    this.reaction(
-      () => this.props.groupId,
-      async (groupId: number) => {
-        let group;
-        try {
-          group = await this._groupService.getById(groupId);
-        } catch (error) {
-          group = null;
-          mainLogger
-            .tags('ConversationPageViewModel')
-            .info(`get group ${groupId} fail:`, error);
-        }
-        if (!group || !this._groupService.isValid(group!)) {
-          history.replace('/messages/loading', {
-            error: true,
-            params: {
-              id: groupId,
-            },
-          });
-          return;
-        }
-        this._readGroup(groupId);
-      },
-    );
+    this.reaction(() => this.props.groupId, this._syncLastGroupId, {
+      fireImmediately: true,
+    });
+  }
+  private _syncLastGroupId = async (groupId: number) => {
+    let group;
+    try {
+      group = await this._groupService.getById(groupId);
+    } catch (error) {
+      group = null;
+      mainLogger
+        .tags('ConversationPageViewModel')
+        .info(`get group ${groupId} fail:`, error);
+    }
+    if (!group || !this._groupService.isValid(group!)) {
+      history.replace('/messages/loading', {
+        error: true,
+        params: {
+          id: groupId,
+        },
+      });
+      return;
+    }
+    this._readGroup(groupId);
   }
 
   private _throttledUpdateLastGroup = _.wrap(

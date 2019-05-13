@@ -13,7 +13,7 @@ import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { dateFormatter } from '@/utils/date';
 import { LinkItemProps, LinkItemViewProps } from './types';
-
+import { accelerateURL } from '@/common/accelerateURL';
 class LinkItemViewModel extends AbstractViewModel<LinkItemProps>
   implements LinkItemViewProps {
   @computed
@@ -52,7 +52,7 @@ class LinkItemViewModel extends AbstractViewModel<LinkItemProps>
     if (!/^http/.test(url)) {
       url = `http://${url}`;
     }
-    return url;
+    return accelerateURL(url) || url;
   }
 }
 

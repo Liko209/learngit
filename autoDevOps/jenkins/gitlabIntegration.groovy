@@ -1,3 +1,4 @@
+
 import jenkins.model.*
 import java.net.URI
 import com.dabsquared.gitlabjenkins.cause.GitLabWebHookCause
@@ -72,6 +73,16 @@ def rsyncFolderToRemote(String sourceDir, String remoteUri, String remoteDir) {
     sshCmd(remoteUri, "chmod -R 755 ${remoteDir}".toString())
 }
 
+def rsyncFolderRemoteToRemote(String fromRemoteUri, String fromRemoteDir, String toRemoteUri, String toRemoteDir) {
+    URI fromUri = new URI(fromRemoteUri)
+
+    String from = "${fromUri.getUserInfo()}@${fromUri.getHost()}:${fromRemoteDir}".toString()
+
+    sshCmd(toRemoteUri, "scp -r -P ${fromUri.getPort()} ${from} ${toRemoteDir}")
+
+    sshCmd(toRemoteUri, "chmod -R 755 ${toRemoteDir}".toString())
+}
+
 def doesRemoteDirectoryExist(String remoteUri, String remoteDir) {
     // the reason to use stdout instead of return code is,
     // by return code we can not tell the error of ssh itself or dir not exists
@@ -79,13 +90,21 @@ def doesRemoteDirectoryExist(String remoteUri, String remoteDir) {
 }
 
 def updateRemoteCopy(String remoteUri, String linkSource, String linkTarget) {
+    updateRemoteCopy(remoteUri, linkSource, linkTarget, true)
+}
+
+def updateRemoteCopy(String remoteUri, String linkSource, String linkTarget, Boolean delete) {
     assert '/' != linkTarget, 'What the hell are you doing?'
-    // remove link if exists
-    println sshCmd(remoteUri, "[ -L ${linkTarget} ] && unlink ${linkTarget} || true")
-    // remote directory if exists
-    println sshCmd(remoteUri, "[ -d ${linkTarget} ] && rm -rf ${linkTarget} || true")
+    if (delete) {
+        // remove link if exists
+        println sshCmd(remoteUri, "[ -L ${linkTarget} ] && unlink ${linkTarget} || true")
+        // remote directory if exists
+        println sshCmd(remoteUri, "[ -d ${linkTarget} ] && rm -rf ${linkTarget} || true")
+    }
+    // ensure target directory existed
+    println sshCmd(remoteUri, "mkdir -p ${linkTarget}")
     // create copy to new target
-    println sshCmd(remoteUri, "cp -r ${linkSource} ${linkTarget}")
+    println sshCmd(remoteUri, "cp -rf ${linkSource}/* ${linkTarget}/")
 }
 
 def updateVersionInfo(String remoteUri, String appDir, String sha, long timestamp) {
@@ -206,7 +225,9 @@ String deployUri = params.DEPLOY_URI
 String deployCredentialId = params.DEPLOY_CREDENTIAL
 String deployBaseDir = params.DEPLOY_BASE_DIR
 String rcCredentialId = params.E2E_RC_CREDENTIAL
-
+String dockerDeployUri = params.DOCKER_DEPLOY_URI
+String dockerDeployCredentialId = params.DOCKER_DEPLOY_CREDENTIAL
+String dockerDeployBaseDir = params.DOCKER_DEPLOY_BASE_DIR
 String releaseBranch = 'master'
 String integrationBranch = 'develop'
 
@@ -314,7 +335,7 @@ node(buildNode) {
 
             // clean npm cache when its size exceed 10G, the unit of default du command is K, so we need to right-shift 20 to get G
             long npmCacheSize = Long.valueOf(sh(returnStdout: true, script: 'du -s $(npm config get cache) | cut -f1').trim()) >> 20
-            if (npmCacheSize > 10) {
+            if (npmCacheSize > 6) {
                 sh 'npm cache clean --force'
             }
         }
@@ -348,7 +369,8 @@ node(buildNode) {
                 ]
             ])
             // keep node_modules to speed up build process
-            sh 'git clean -xdf -e node_modules'
+            sh 'git clean -xdf'
+            // sh 'git clean -xdf -e node_modules'
             // get head sha
             headSha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
             // change in tests and autoDevOps directory should not trigger application build
@@ -383,6 +405,27 @@ node(buildNode) {
                 skipBuildApp = doesRemoteDirectoryExist(deployUri, appHeadShaDir)
                 skipBuildJui = doesRemoteDirectoryExist(deployUri, juiHeadShaDir)
             }
+
+            if (!skipBuildApp && !skipBuildJui) {
+                String dockerAppHeadShaDir = "${dockerDeployBaseDir}/app-${buildRelease ? 'release-' : ''}${appHeadSha}".toString()
+                String dockerJuiHeadShaDir = "${dockerDeployBaseDir}/jui-${juiHeadSha}".toString()
+
+                sshagent(credentials: [dockerDeployCredentialId]) {
+                    // we should always build release version
+                    skipBuildApp = doesRemoteDirectoryExist(dockerDeployUri, dockerAppHeadShaDir)
+                    skipBuildJui = doesRemoteDirectoryExist(dockerDeployUri, dockerJuiHeadShaDir)
+                }
+
+                sshagent(credentials: [deployCredentialId]) {
+                    if (skipBuildApp) {
+                        rsyncFolderRemoteToRemote(dockerDeployUri, dockerAppHeadShaDir, deployUri, appHeadShaDir)
+                    }
+                    if (skipBuildJui) {
+                        rsyncFolderRemoteToRemote(dockerDeployUri, dockerJuiHeadShaDir, deployUri, juiHeadShaDir)
+                    }
+                }
+            }
+
             // since SA and UT must be passed before we build and deploy app and jui
             // that means if app and jui have already been built,
             // SA and UT must have already passed, we can just skip them to save more resources
@@ -403,13 +446,9 @@ node(buildNode) {
             } catch (e) { }
             sh "echo 'registry=${npmRegistry}' > .npmrc"
             sshagent (credentials: [scmCredentialId]) {
-                // work around
-                sh 'npm install @sentry/cli@1.40.0'
-                sh 'npm install @babel/parser@7.3.4'
-                sh 'npm install --only=dev --ignore-scripts'
-                sh 'npm install --ignore-scripts'
-                // sh 'npm install'
-                sh 'npx lerna bootstrap --hoist --no-ci --ignore-scripts'
+                // sh 'npm install @sentry/cli@1.40.0'
+                // sh 'npm install @babel/parser@7.3.4'
+                sh 'npm install --unsafe-perm'
             }
             try {
                 sh 'npm run fixed:version check'
@@ -457,7 +496,7 @@ node(buildNode) {
                         sshagent (credentials: [scmCredentialId]) {
                             sh "git fetch -f ${gitlabSourceNamespace} refs/notes/*:refs/notes/*"
                             sh "git notes add -f -F coverage/coverage-summary.json ${appHeadSha}"
-                            sh "git push -f ${gitlabSourceNamespace} refs/notes/*"
+                            sh "git push -f ${gitlabSourceNamespace} refs/notes/* --no-verify"
                         }
                     }
                     if (isMerge && integrationBranch == gitlabTargetBranch && fileExists('scripts/coverage-diff.js')) {
@@ -489,7 +528,7 @@ node(buildNode) {
                             report.coverageDiff = exitCode ? FAILURE_EMOJI : SUCCESS_EMOJI;
                             report.coverageDiff += sh(returnStdout: true, script: 'cat coverage-diff').trim()
                             if (exitCode > 0) {
-                                throw new Exception('coverage drop is detected!')
+                                sh 'echo "coverage drop!" && false'
                             }
                         }
                     }
@@ -522,7 +561,7 @@ node(buildNode) {
                     sh 'mv commitInfo.ts application/src/containers/VersionInfo/'
                     try {
                         // fix FIJI-4534
-                        long timestamp = System.currentTimeMillis();
+                        long timestamp = System.currentTimeMillis()
                         sh "sed 's/{{buildCommit}}/${headSha.substring(0, 9)}/;s/{{buildTime}}/${timestamp}/' application/src/containers/VersionInfo/versionInfo.json > versionInfo.json"
                         sh 'mv versionInfo.json application/src/containers/VersionInfo/versionInfo.json'
                     } catch (e) {}
@@ -540,8 +579,8 @@ node(buildNode) {
                     sshagent(credentials: [deployCredentialId]) {
                         // copy to dir name with head sha when dir is not exists
                         skipBuildApp || rsyncFolderToRemote(sourceDir, deployUri, appHeadShaDir)
-                        // and create copy to branch name based folder
-                        updateRemoteCopy(deployUri, appHeadShaDir, appLinkDir)
+                        // and create copy to branch name based folder, for release build, use replace instead of delete
+                        updateRemoteCopy(deployUri, appHeadShaDir, appLinkDir, !buildRelease)
                         // and update version info
                         long ts = System.currentTimeMillis()
                         updateVersionInfo(deployUri, appLinkDir, headSha, ts)
@@ -551,6 +590,7 @@ node(buildNode) {
                     }
                 }
                 report.appUrl = appUrl
+                safeMail(reportChannels, "Build Success: ${appUrl}", "Build Success: ${appUrl}")
             }
         )
 
@@ -565,7 +605,7 @@ node(buildNode) {
             } catch (e) {}
         }
 
-        condStage (name: 'E2E Automation', timeout: 3600, enable: !skipEndToEnd) {
+        condStage (name: 'E2E Automation', timeout: 900, enable: !skipEndToEnd) {
             String hostname =  sh(returnStdout: true, script: 'hostname -f').trim()
             String startTime = sh(returnStdout: true, script: "TZ=UTC-8 date +'%F %T'").trim()
             withEnv([
@@ -599,8 +639,7 @@ node(buildNode) {
 
                 // following configuration file is use for tuning chrome, in order to use use-data-dir and disk-cache-dir
                 // you need to ensure target dirs exist in selenium-node, and use ramdisk for better performance
-                sh '''echo '{"chromeOptions":{"args":["headless"]}}' > chrome-opts.json'''
-
+                sh '''echo '{"chrome":{"goog:chromeOptions":{"args":["headless", "--disable-web-security"]}}}' > capabilities.json'''
                 sh "mkdir -p screenshots tmp"
                 sh "echo 'registry=${npmRegistry}' > .npmrc"
                 sshagent (credentials: [scmCredentialId]) {

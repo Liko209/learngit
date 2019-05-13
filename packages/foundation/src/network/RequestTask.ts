@@ -17,7 +17,7 @@ class RequestTask {
     const REQUEST_PRIORITY_WEIGHT = {
       [REQUEST_PRIORITY.NORMAL]: REQUEST_WEIGHT.NORMAL,
       [REQUEST_PRIORITY.HIGH]: REQUEST_WEIGHT.HIGH,
-      [REQUEST_PRIORITY.SPECIFIC]: REQUEST_WEIGHT.HIGH,
+      [REQUEST_PRIORITY.IMMEDIATE]: REQUEST_WEIGHT.HIGH,
     };
     this.request = request;
     this.weight = REQUEST_PRIORITY_WEIGHT[this.request.priority];
@@ -41,7 +41,7 @@ class RequestTask {
           this.weight = REQUEST_WEIGHT.HIGH;
         }
         break;
-      case REQUEST_PRIORITY.SPECIFIC:
+      case REQUEST_PRIORITY.IMMEDIATE:
         if (this.weight < REQUEST_WEIGHT.HIGH) {
           this.weight = REQUEST_WEIGHT.HIGH;
         }
@@ -53,6 +53,10 @@ class RequestTask {
 
   via(): NETWORK_VIA {
     return this.request.via;
+  }
+
+  setVia(via: NETWORK_VIA) {
+    this.request.via = via;
   }
 
   incrementTaskWeight() {

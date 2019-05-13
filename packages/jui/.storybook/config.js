@@ -27,23 +27,9 @@ import { withInfo } from '@storybook/addon-info';
 import { ThemeProvider as JuiThemeProvider } from '../src/foundation/theme/index';
 import './index.css';
 
-import addHeadWarning from './head-warning';
-
-if (process.env.NODE_ENV === 'development') {
-  if (!process.env.STORYBOOK_DISPLAY_WARNING) {
-    addHeadWarning('env-glob', 'Global storybook env var not loaded');
-  }
-
-  if (process.env.DISPLAY_WARNING) {
-    addHeadWarning('env-extra', 'Global non-storybook env var loaded');
-  }
-}
-
-addHeadWarning('preview-head-not-loaded', 'Preview head not loaded');
-
 const ThemeDecorator = storyFn => {
   return (
-    <JuiThemeProvider themeName="light">
+    <JuiThemeProvider themeName='light'>
       <ThemeProvider theme={convert(themes.light)}>
         <Global styles={createReset} />
         <div style={{ padding: 20 }}>{storyFn()}</div>

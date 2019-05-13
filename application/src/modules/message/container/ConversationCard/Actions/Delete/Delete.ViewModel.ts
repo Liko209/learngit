@@ -13,6 +13,8 @@ import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
 import { Props, ViewProps } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { catchError } from '@/common/catchError';
+
 class DeleteViewModel extends StoreViewModel<Props> implements ViewProps {
   private _postService: PostService;
 
@@ -38,6 +40,10 @@ class DeleteViewModel extends StoreViewModel<Props> implements ViewProps {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.id);
   }
 
+  @catchError.flash({
+    server: 'message.prompt.deletePostFailedForServerIssue',
+    network: 'message.prompt.deletePostFailedForNetworkIssue',
+  })
   deletePost = async () => {
     await this._postService.deletePost(this.id);
   }

@@ -16,6 +16,7 @@ abstract class BaseClient implements IClient {
   }
 
   cancelRequest(request: IRequest): void {
+    request.cancel && request.cancel();
     this.tasks.delete(request.id);
   }
 

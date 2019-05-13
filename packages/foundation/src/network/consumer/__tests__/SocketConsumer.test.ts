@@ -42,9 +42,9 @@ describe('SocketConsumer', () => {
       expect(consumer['canHandleRequest']()).toBeTruthy();
     });
 
-    it('should return false when can handle request', () => {
+    it('should return false when can handle request no matter isNetworkReachable', () => {
       mockClient.isNetworkReachable.mockReturnValue(false);
-      consumer['isRequestExceeded'] = jest.fn().mockReturnValue(false);
+      consumer['isRequestExceeded'] = jest.fn().mockReturnValue(true);
       expect(consumer['canHandleRequest']()).toBeFalsy();
 
       mockClient.isNetworkReachable.mockReturnValue(true);

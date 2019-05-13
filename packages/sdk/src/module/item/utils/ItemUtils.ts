@@ -9,94 +9,65 @@ import { SanitizedEventItem } from '../module/event/entity';
 import { EventUtils } from '../module/event/utils';
 import moment from 'moment';
 
+const { TYPE_ID_TASK, TYPE_ID_FILE, TYPE_ID_EVENT } = TypeDictionary;
+
+type ItemLike = { id: number; group_ids: number[] };
+type TaskLike = ItemLike & { complete: boolean };
+type FileLike = ItemLike & { type: string };
+type EventLike = SanitizedEventItem;
+
 class ItemUtils {
-  static isValidItem<T extends { id: number; group_ids: number[] }>(
-    groupId: number,
-    item: T,
-  ) {
+  static taskFilter<T extends TaskLike>(groupId: number, showAll: boolean) {
+    return (task: T) =>
+      this._isValidExpectedType(groupId, task, TYPE_ID_TASK) &&
+      (showAll || !task.complete);
+  }
+
+  static fileFilter<T extends FileLike>(groupId: number) {
+    return (file: T) =>
+      this._isValidExpectedType(groupId, file, TYPE_ID_FILE) &&
+      !this._isPic(file);
+  }
+
+  static imageFilter<T extends FileLike>(groupId: number) {
+    return (file: T) =>
+      this._isValidExpectedType(groupId, file, TYPE_ID_FILE) &&
+      this._isPic(file);
+  }
+
+  static eventFilter<T extends EventLike>(groupId: number) {
+    return (event: T) =>
+      this._isValidExpectedType(groupId, event, TYPE_ID_EVENT) &&
+      this._isTodayOrAfter(event);
+  }
+
+  static isValidItem<T extends ItemLike>(groupId: number, item: T) {
     return item.id > 0 && item.group_ids.includes(groupId);
   }
 
-  static taskFilter<
-    T extends { id: number; group_ids: number[]; complete: boolean }
-  >(groupId: number, showCompleted: boolean) {
-    return (task: T) => {
-      let result = false;
-      do {
-        if (!ItemUtils.isValidItem(groupId, task)) {
-          result = false;
-        }
-
-        if (
-          GlipTypeUtil.extractTypeId(task.id) !== TypeDictionary.TYPE_ID_TASK
-        ) {
-          break;
-        }
-
-        result = showCompleted || !task.complete;
-      } while (false);
-      return result;
-    };
+  private static _isValidExpectedType<T extends ItemLike>(
+    groupId: number,
+    item: T,
+    typeId: number,
+  ) {
+    return (
+      this.isValidItem(groupId, item) &&
+      GlipTypeUtil.isExpectedType(item.id, typeId)
+    );
   }
 
-  static fileFilter<
-    T extends { id: number; group_ids: number[]; type: string }
-  >(groupId: number, showImage: boolean) {
-    return (file: T): boolean => {
-      let result = false;
-      do {
-        if (!ItemUtils.isValidItem(groupId, file)) {
-          break;
-        }
-
-        if (
-          GlipTypeUtil.extractTypeId(file.id) !== TypeDictionary.TYPE_ID_FILE
-        ) {
-          break;
-        }
-        // show images only or non image file only
-        const isPic =
-          FileItemUtils.isImageItem(file) || FileItemUtils.isGifItem(file);
-        const isExpectedType = showImage ? isPic : !isPic;
-        if (!isExpectedType) {
-          break;
-        }
-        result = true;
-      } while (false);
-
-      return result;
-    };
+  private static _isPic<T extends FileLike>(item: T) {
+    return FileItemUtils.isImageItem(item) || FileItemUtils.isGifItem(item);
   }
 
-  static eventFilter<T extends SanitizedEventItem>(groupId: number) {
-    return (event: T) => {
-      let result = false;
-      do {
-        if (!ItemUtils.isValidItem(groupId, event)) {
-          break;
-        }
-
-        if (
-          GlipTypeUtil.extractTypeId(event.id) !== TypeDictionary.TYPE_ID_EVENT
-        ) {
-          break;
-        }
-
-        const effectEnd = EventUtils.getEffectiveEnd(event);
-        if (effectEnd < Number.MAX_SAFE_INTEGER) {
-          const endDate = new Date(effectEnd).toLocaleDateString();
-          const today = new Date(Date.now()).toLocaleDateString();
-
-          if (!moment(endDate).isSameOrAfter(today)) {
-            break;
-          }
-        }
-
-        result = true;
-      } while (false);
-
-      return result;
-    };
+  private static _isTodayOrAfter<T extends EventLike>(event: T) {
+    const effectEnd = EventUtils.getEffectiveEnd(event);
+    const endDate = new Date(effectEnd).toLocaleDateString();
+    const today = new Date(Date.now()).toLocaleDateString();
+    return (
+      effectEnd >= Number.MAX_SAFE_INTEGER ||
+      moment(endDate).isSameOrAfter(today)
+    );
   }
 }
 

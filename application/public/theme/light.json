@@ -87,8 +87,7 @@
   },
   "radius": {
     "circle": "50%",
-    "round": 0.5,
-    "zero": 0,
+    "zero": "0px",
     "sm": "2px",
     "md": "3px",
     "lg": "4px",
@@ -128,9 +127,6 @@
     "0px 11px 14px -7px rgba(0, 0, 0, 0.2),0px 23px 36px 3px rgba(0, 0, 0, 0.14),0px 9px 44px 8px rgba(0, 0, 0, 0.12)",
     "0px 11px 15px -7px rgba(0, 0, 0, 0.2),0px 24px 38px 3px rgba(0, 0, 0, 0.14),0px 9px 46px 8px rgba(0, 0, 0, 0.12)"
   ],
-  "spacing": {
-    "unit": 4
-  },
   "zIndex": {
     "ripple": 1,
     "elementOnRipple": 2,
@@ -248,22 +244,5 @@
   },
   "maxHeight": {
     "dialog": "72vh"
-  },
-  "transitions": {
-    "easing": {
-      "openCloseDialog": "cubic-bezier(0.25, 0.1, 0.25, 1)"
-    }
-  },
-  "opacity": {
-    "p05": 0.05,
-    "p10": 0.1,
-    "p20": 0.2,
-    "p30": 0.3,
-    "p40": 0.4,
-    "p50": 0.5,
-    "p60": 0.6,
-    "p70": 0.7,
-    "p80": 0.8,
-    "p90": 0.9
   }
 }

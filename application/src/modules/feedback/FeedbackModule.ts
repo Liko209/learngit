@@ -5,9 +5,15 @@
  */
 
 import { AbstractModule } from 'framework';
+import { ContextInfoZipItemProvider } from './ContextInfoZipItemProvider';
+import { LogControlManager } from 'sdk';
 
 class FeedbackModule extends AbstractModule {
-  async bootstrap() {}
+  async bootstrap() {
+    LogControlManager.instance().registerZipProvider(
+      new ContextInfoZipItemProvider(),
+    );
+  }
 }
 
 export { FeedbackModule };
