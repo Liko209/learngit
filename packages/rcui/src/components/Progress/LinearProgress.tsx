@@ -11,11 +11,11 @@ import MuiLinearProgress, {
 import styled from '../../foundation/styled-components';
 import { Omit } from '../../foundation/utils/typeHelper';
 
-type JuiLinearProgressProps = Omit<MuiLinearProgressProps, 'innerRef'> &
+type RuiLinearProgressProps = Omit<MuiLinearProgressProps, 'innerRef'> &
   React.HTMLAttributes<HTMLHRElement>;
 
-const JuiLinearProgress = styled(MuiLinearProgress)``;
+const RuiLinearProgress = styled(MuiLinearProgress)``;
 
-JuiLinearProgress.displayName = 'JuiLinearProgress';
+RuiLinearProgress.displayName = 'RuiLinearProgress';
 
-export { JuiLinearProgress, JuiLinearProgressProps };
+export { RuiLinearProgress, RuiLinearProgressProps };

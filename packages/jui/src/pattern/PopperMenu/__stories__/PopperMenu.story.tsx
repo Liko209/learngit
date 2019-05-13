@@ -33,22 +33,28 @@ const knobs = {
       'bottom',
     ),
 };
-
-class PopperMenu extends React.PureComponent {
+type State = { open: boolean; anchorEl: EventTarget & Element | null };
+class PopperMenu extends React.PureComponent<{}, State> {
   state = {
     open: false,
+    anchorEl: null,
   };
   private _Anchor = () => {
-    return (
-      <JuiButton
-        onClick={() => {
-          this.setState({ open: true });
-        }}
-      >
-        Open Popper
-      </JuiButton>
-    );
+    return <JuiButton onClick={this.openPopper}>Open Popper</JuiButton>;
   }
+  openPopper = (event: any) => {
+    const { currentTarget } = event;
+    this.setState(state => ({
+      anchorEl: currentTarget,
+      open: !state.open,
+    }));
+  }
+  closePopper = () => {
+    this.setState({
+      open: false,
+    });
+  }
+
   render() {
     return (
       <>
@@ -56,6 +62,8 @@ class PopperMenu extends React.PureComponent {
           open={this.state.open}
           Anchor={this._Anchor}
           placement={knobs.placement()}
+          onClose={this.closePopper}
+          anchorEl={this.state.anchorEl}
         >
           <JuiMenuList>
             <JuiMenuItem onClick={action('onClick Profile')}>
