@@ -143,55 +143,55 @@ class TelephonyAccountController implements IRTCAccountDelegate {
 
   hangUp(callId: string) {
     // So far only need to support one call. By design, we should get call controller according callID.
-    this._telephonyCallDelegate.hangUp();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.hangUp();
   }
 
   mute(callId: string) {
-    this._telephonyCallDelegate.mute();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.mute();
   }
 
   unmute(callId: string) {
-    this._telephonyCallDelegate.unmute();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.unmute();
   }
 
   hold(callId: string) {
-    this._telephonyCallDelegate.hold();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.hold();
   }
 
   unhold(callId: string) {
-    this._telephonyCallDelegate.unhold();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.unhold();
   }
 
   startRecord(callId: string) {
-    this._telephonyCallDelegate.startRecord();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.startRecord();
   }
 
   stopRecord(callId: string) {
-    this._telephonyCallDelegate.stopRecord();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.stopRecord();
   }
 
   dtmf(callId: string, digits: string) {
-    this._telephonyCallDelegate.dtmf(digits);
+    this._telephonyCallDelegate && this._telephonyCallDelegate.dtmf(digits);
   }
 
   answer(callId: string) {
-    this._telephonyCallDelegate.answer();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.answer();
   }
 
   sendToVoiceMail(callId: string) {
-    this._telephonyCallDelegate.sendToVoiceMail();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.sendToVoiceMail();
   }
 
   ignore(callId: string) {
-    this._telephonyCallDelegate.ignore();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.ignore();
   }
 
   startReply(callId: string) {
-    this._telephonyCallDelegate.startReply();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.startReply();
   }
 
   replyWithMessage(callId: string, message: string) {
-    this._telephonyCallDelegate.replyWithMessage(message);
+    this._telephonyCallDelegate && this._telephonyCallDelegate.replyWithMessage(message);
   }
 
   replyWithPattern(
@@ -200,7 +200,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     time: number,
     timeUnit: RTC_REPLY_MSG_TIME_UNIT,
   ) {
-    this._telephonyCallDelegate.replyWithPattern(pattern, time, timeUnit);
+    this._telephonyCallDelegate && this._telephonyCallDelegate.replyWithPattern(pattern, time, timeUnit);
   }
   onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
     this._telephonyAccountDelegate.onAccountStateChanged(state);
