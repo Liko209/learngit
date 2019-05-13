@@ -124,7 +124,7 @@ const JuiProfileDialogContentMemberListItemGuest = styled(
 
 const JuiProfileDialogContentMemberShadow = styled('div')`
   background: white;
-  border-radius: ${spacing(1)};
+  border-radius: ${spacing(0, 0, 1, 1)};
   box-shadow: ${props => props.theme.shadows[2]};
   height: ${height(6)};
   z-index: ${({ theme }) => theme.zIndex.loading};
