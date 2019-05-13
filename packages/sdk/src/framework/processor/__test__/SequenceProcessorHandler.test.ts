@@ -10,7 +10,11 @@ import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE } from '../../../service/eventKey';
 
 class MockProcessor implements IProcessor {
-  process = jest.fn();
+  process = jest.fn().mockImplementationOnce(() => {
+    return new Promise((resolve, reject) => {
+      resolve('');
+    });
+  });
   canContinue = jest.fn();
   name = jest.fn();
 }
