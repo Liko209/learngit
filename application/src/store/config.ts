@@ -15,8 +15,10 @@ import { CompanyService } from 'sdk/module/company';
 import { ModelCreator } from './utils/ModelCreator';
 import { IdModel } from 'sdk/framework/model';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
 
 const CACHE_COUNT = 1000;
+const PHONE_NUMBER_CACHE_COUNT = 100;
 
 const ENTITY_SETTING = {
   [ENTITY_NAME.GROUP]: {
@@ -142,6 +144,15 @@ const ENTITY_SETTING = {
       ),
     type: HANDLER_TYPE.SINGLE_ENTITY,
     cacheCount: CACHE_COUNT,
+  },
+  [ENTITY_NAME.PHONE_NUMBER]: {
+    event: [ENTITY.PHONE_NUMBER],
+    service: () =>
+      ServiceLoader.getInstance<PhoneNumberService>(
+        ServiceConfig.PHONE_NUMBER_SERVICE,
+      ),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: PHONE_NUMBER_CACHE_COUNT,
   },
 };
 

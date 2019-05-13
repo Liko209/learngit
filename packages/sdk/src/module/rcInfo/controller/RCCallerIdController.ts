@@ -1,6 +1,6 @@
 import { RCInfoFetchController } from './RCInfoFetchController';
 import { IPhoneNumberRecord } from '../../../api/ringcentral/types/common';
-import { PhoneNumberType } from '../types';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/types';
 
 const CALLER_ID_ORDER = {
   [PhoneNumberType.DirectNumber]: 0,
