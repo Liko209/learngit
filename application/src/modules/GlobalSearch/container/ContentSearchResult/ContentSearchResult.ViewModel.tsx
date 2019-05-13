@@ -178,9 +178,7 @@ class ContentSearchResultViewModel
       asyncPosts,
     ]);
 
-    contentsCount[TYPE_ALL] = _.sum(
-      Object.values(_.pick(contentsCount, ...TYPE_MAP.map(({ id }) => id))),
-    );
+    contentsCount[TYPE_ALL] = _.sum(Object.values(contentsCount));
 
     this._setSearchState({ contentsCount, requestId: result.requestId });
 
