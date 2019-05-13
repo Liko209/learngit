@@ -105,11 +105,9 @@ class RCInfoService extends EntityBaseService<IdModel> {
     const userConfig = new AccountUserConfig();
     const result =
       userConfig.getAccountType() === ACCOUNT_TYPE_ENUM.RC &&
-      (await this.getRCInfoController()
-        .getRCPermissionController()
-        .isRCFeaturePermissionEnabled(
-          ERCServiceFeaturePermission.VOIP_CALLING,
-        ));
+      (await this.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.VOIP_CALLING,
+      ));
     mainLogger.debug(`isVoipCallingAvailable: ${result}`);
     return result;
   }
