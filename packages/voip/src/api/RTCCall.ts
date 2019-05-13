@@ -39,7 +39,8 @@ enum SDH_DIRECTION {
 enum RECORD_STATE {
   IDLE = 'idle',
   RECORDING = 'recording',
-  RECORD_IN_PROGRESS = 'recordInProgress',
+  START_RECORD_IN_PROGRESS = 'startRecordInProgress',
+  STOP_RECORD_IN_PROGRESS = 'stopRecordInProgress',
 }
 
 class RTCCall {
@@ -589,20 +590,24 @@ class RTCCall {
   }
 
   private _onStartRecordAction() {
-    if (RECORD_STATE.RECORDING === this._recordState) {
-      this._onCallActionSuccess(RTC_CALL_ACTION.START_RECORD);
+    if (RECORD_STATE.RECORDING === this._recordState && this._delegate) {
+      this._delegate.onCallActionSuccess(RTC_CALL_ACTION.START_RECORD, {});
     } else if (RECORD_STATE.IDLE === this._recordState) {
-      this._recordState = RECORD_STATE.RECORD_IN_PROGRESS;
+      this._recordState = RECORD_STATE.START_RECORD_IN_PROGRESS;
       this._callSession.startRecord();
+    } else if (this._delegate) {
+      this._delegate.onCallActionFailed(RTC_CALL_ACTION.START_RECORD);
     }
   }
 
   private _onStopRecordAction() {
     if (RECORD_STATE.RECORDING === this._recordState) {
-      this._recordState = RECORD_STATE.RECORD_IN_PROGRESS;
+      this._recordState = RECORD_STATE.STOP_RECORD_IN_PROGRESS;
       this._callSession.stopRecord();
-    } else if (RECORD_STATE.IDLE === this._recordState) {
-      this._onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD);
+    } else if (RECORD_STATE.IDLE === this._recordState && this._delegate) {
+      this._delegate.onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD, {});
+    } else if (this._delegate) {
+      this._delegate.onCallActionFailed(RTC_CALL_ACTION.STOP_RECORD);
     }
   }
 

@@ -24,12 +24,21 @@ import {
   LinkItem,
   EventItem,
   ConferenceItem,
+  IntegrationItem,
+  InteractiveMessageItem,
 } from 'sdk/module/item/entity';
+import IntegrationItemModel from '../models/IntegrationItem';
+import InteractiveMessageItemModel from '../models/InteractiveMessageItem';
 
 class ModelCreator {
   static createItemModel(model: IdModel): ItemModel {
+    const isIntegration = GlipTypeUtil.isIntegrationType(model.id);
+    if (isIntegration) {
+      return new IntegrationItemModel(model as IntegrationItem);
+    }
     let itemModel: ItemModel;
     const type = GlipTypeUtil.extractTypeId(model.id);
+
     switch (type) {
       case TypeDictionary.TYPE_ID_FILE:
         itemModel = new FileItemModel(model as Item);
@@ -51,6 +60,11 @@ class ModelCreator {
         break;
       case TypeDictionary.TYPE_ID_CONFERENCE:
         itemModel = new ConferenceItemModel(model as ConferenceItem);
+        break;
+      case TypeDictionary.TYPE_ID_INTERACTIVE_MESSAGE_ITEM:
+        itemModel = new InteractiveMessageItemModel(
+          model as InteractiveMessageItem,
+        );
         break;
       default:
         itemModel = new ItemModel(model as Item);

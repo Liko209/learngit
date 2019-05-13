@@ -2,17 +2,18 @@
  * @Author: doyle.wu
  * @Date: 2018-12-12 12:56:30
  */
-const Gatherer = require("lighthouse/lighthouse-core/gather/gatherers/gatherer");
+import { BaseGatherer } from ".";
 import { GroupPage } from "../pages";
+import { JupiterUtils } from "../utils";
 import { Config } from "../config";
 import * as bluebird from 'bluebird';
 
-class FetchGroupGatherer extends Gatherer {
+class FetchGroupGatherer extends BaseGatherer {
   private artifacts: Map<string, Array<any>> = new Map();
   private metricKeys: Array<string> = [
     "group_section_fetch_teams",
     "group_section_fetch_favorites",
-    // "group_section_fetch_direct_messages"
+    "group_section_fetch_direct_messages"
   ];
 
   constructor() {
@@ -22,25 +23,33 @@ class FetchGroupGatherer extends Gatherer {
     }
   }
 
-  beforePass(passContext) { }
+  async _beforePass(passContext) { }
 
-  async pass(passContext) {
+  async _pass(passContext) {
   }
 
-  async afterPass(passContext) {
+  async _afterPass(passContext) {
+    const driver = passContext.driver;
     let groupPage = new GroupPage(passContext);
+    const { url } = passContext.settings;
+    const browser = await groupPage.browser();
 
-    let page = await groupPage.page();
-    let item, cnt, flag;
+    let authUrl, page, item, cnt, flag;
     for (let i = 0; i < Config.sceneRepeatCount; i++) {
       try {
         cnt = 10;
 
-        await page.reload({ waitUntil: "load" });
+        await driver.clearDataForOrigin(url);
 
-        while (cnt-- > 0 && !(await groupPage.waitForCompleted())) {
-          await bluebird.delay(2000);
-        }
+        authUrl = await JupiterUtils.getAuthUrl(url, browser);
+
+        page = await groupPage.newPage();
+
+        await page.goto(authUrl);
+
+        // while (cnt-- > 0 && !(await groupPage.waitForCompleted())) {
+        //   await bluebird.delay(2000);
+        // }
 
         cnt = 10;
         while (cnt-- > 0) {
@@ -50,6 +59,11 @@ class FetchGroupGatherer extends Gatherer {
             const m = performance["jupiter"];
             return m;
           });
+
+          if (!metric) {
+            await bluebird.delay(2000);
+            continue;
+          }
 
           for (let k of this.metricKeys) {
             if (!metric[k] || metric[k].length === 0) {
@@ -71,7 +85,14 @@ class FetchGroupGatherer extends Gatherer {
           }
           break;
         }
-      } catch (err) { }
+
+        await groupPage.close();
+        page = undefined;
+      } catch (err) {
+        if (page) {
+          await page.close()
+        }
+      }
     }
 
     let result = {};

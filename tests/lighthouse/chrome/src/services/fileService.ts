@@ -203,9 +203,14 @@ class FileService {
   * @description: save dashboard into disk
   */
   static async saveHeapIntoDisk(heap: string): Promise<string> {
-    let heapPath = path.join(HEAP_DIR_PATH, `${uuid()}.heapsnapshot`);
-    fs.writeFileSync(heapPath, heap);
-    return heapPath;
+    if (Config.takeHeapSnapshot) {
+      let heapPath = path.join(HEAP_DIR_PATH, `${uuid()}.heapsnapshot`);
+      fs.writeFileSync(heapPath, heap);
+      logger.info(`heap has saved.[${heapPath}]`);
+      return heapPath;
+    } else {
+      return '';
+    }
   }
 }
 

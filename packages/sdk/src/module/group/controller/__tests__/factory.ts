@@ -37,3 +37,40 @@ export const groupFactory = Factory.makeFactory<Group>({
   ...base,
   ...group,
 });
+
+export const fullTeam = {
+  id: 23732230,
+  _id: 23732230,
+  created_at: 1551941477640,
+  creator_id: 229379,
+  version: 1653252888199168,
+  model_size: 0,
+  is_new: false,
+  members: [32771, 40963, 221187, 229379, 270339, 458755],
+  is_team: true,
+  is_public: false,
+  privacy: 'private',
+  set_abbreviation:
+    'TEAM: Maye Stamm New, Mia Cai, William Ye, Yilia Hong and Zack Zheng',
+  converted_from_group: { group_id: 262512642, at: 1551941477628 },
+  guest_user_company_ids: [],
+  company_id: 16385,
+  email_friendly_abbreviation:
+    'team__maye_stamm_new__mia_cai__william_ye__yilia_hong_and_zack_zheng',
+  permissions: {
+    admin: { uids: [229379], level: 63 },
+    user: { uids: [32771, 40963, 221187, 458755], level: 1 },
+  },
+  most_recent_content_modified_at: 1552633160165,
+  modified_at: 1552633160165,
+  deactivated: false,
+  most_recent_post_id: 2340757508,
+  most_recent_post_created_at: 1552633143174,
+  post_cursor: 13,
+  description: '',
+  model_id: '23732230',
+  new_version: 3911648588176614,
+  _changed: ['new_version', 'deltas', 'permissions', 'privacy'],
+  request_id: 302,
+  _csrf: null,
+};

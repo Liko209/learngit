@@ -11,8 +11,9 @@ import { JuiLogo, JuiTopBar } from 'jui/pattern/TopBar';
 import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
 import { AvatarActions } from './AvatarActions';
 import { NewActions } from './NewActions';
-import { Dialpad } from './Dialpad';
 import { BackNForward } from './BackNForward';
+import { container } from 'framework';
+import { HomeStore } from '@/modules/home/store';
 
 type TopBarProps = WithTranslation & {
   updateLeftNavState: (event: React.MouseEvent<HTMLElement>) => void;
@@ -25,6 +26,8 @@ type TopBarProps = WithTranslation & {
 
 @observer
 class TopBar extends React.Component<TopBarProps> {
+  private _homeStore: HomeStore = container.get(HomeStore);
+
   constructor(props: TopBarProps) {
     super(props);
     this._MainMenu = this._MainMenu.bind(this);
@@ -66,7 +69,11 @@ class TopBar extends React.Component<TopBarProps> {
         searchKey={searchKey}
         searchPlaceholder={t('globalSearch.search')}
         onClear={onClear}
-        Dialpad={Dialpad}
+        Dialpad={
+          this._homeStore.extensions.topBar
+            ? [...this._homeStore.extensions.topBar][0]
+            : undefined
+        }
       />
     );
   }

@@ -4,16 +4,19 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel, SortableModel } from '../../model';
+import { IdModel, SortableModel, ModelIdType } from '../../model';
 type Terms = {
   searchKeyTerms: string[];
   searchKeyTermsToSoundex: string[];
 };
-interface IEntityCacheSearchController<T extends IdModel = IdModel> {
-  getEntity(id: number): Promise<T | null>;
+interface IEntityCacheSearchController<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+> {
+  getEntity(id: IdType): Promise<T | null>;
 
   getMultiEntities(
-    ids: number[],
+    ids: IdType[],
     filterFunc?: (entity: T) => boolean,
   ): Promise<T[]>;
 
@@ -22,7 +25,7 @@ interface IEntityCacheSearchController<T extends IdModel = IdModel> {
   searchEntities(
     genSortableModelFunc: (entity: T, terms: Terms) => SortableModel<T> | null,
     searchKey?: string,
-    arrangeIds?: number[],
+    arrangeIds?: IdType[],
     sortFunc?: (entityA: SortableModel<T>, entityB: SortableModel<T>) => number,
   ): Promise<{
     terms: string[];

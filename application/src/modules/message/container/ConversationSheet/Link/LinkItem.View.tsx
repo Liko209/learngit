@@ -12,7 +12,7 @@ import {
   JuiConversationCardVideoLink,
 } from 'jui/pattern/ConversationCardLinkItems';
 import { LinkItemModel, LinkItemViewProps } from './types';
-
+import { accelerateURL } from '@/common/accelerateURL';
 @observer
 class LinkItemView extends React.Component<LinkItemViewProps> {
   onLinkItemClose = (id: number) => () => {
@@ -26,11 +26,14 @@ class LinkItemView extends React.Component<LinkItemViewProps> {
     // hard code in order to show the current image
     const stamp = '&key=4527f263d6e64d7a8251b007b1ba9972';
 
-    return url && `${url}${stamp}`;
+    return accelerateURL(url && `${url}${stamp}`) || url;
   }
 
   formatLinkProtocol = (url: string) => {
-    return url.match('http://|https://') ? url : `http://${url}`;
+    return (
+      accelerateURL(url.match('http://|https://') ? url : `http://${url}`) ||
+      url
+    );
   }
 
   renderLinkCard = (item: LinkItemModel) => {

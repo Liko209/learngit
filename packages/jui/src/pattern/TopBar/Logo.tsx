@@ -13,11 +13,11 @@ const JuiLogo = styled(JuiTypography)`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: white;
+    box-sizing: border-box;
     ${typography('headline')};
     font-weight: bold;
-    margin-left: ${spacing(4)};
-    margin-right: ${spacing(9)};
-    width: ${width(41)};
+    padding-left: ${spacing(6)};
+    width: ${width(47.5)};
   }
 `;
 

@@ -18,6 +18,7 @@ interface ILogConsumer {
 interface ILogCollection {
   push(logEntity: LogEntity): void;
   pop(limit?: number): LogEntity[];
+  popAll(): LogEntity[];
   get(limit?: number): LogEntity[];
   size(): number;
 }

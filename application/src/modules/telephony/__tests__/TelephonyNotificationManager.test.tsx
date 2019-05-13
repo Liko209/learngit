@@ -8,9 +8,11 @@ import { TelephonyNotificationManager } from '../TelephonyNotificationManager';
 import * as i18nT from '@/utils/i18nT';
 import * as telephony from '@/modules/telephony/module.config';
 import * as notification from '@/modules/notification/module.config';
+import { NOTIFICATION_PRIORITY } from '@/modules/notification/interface';
 import { TelephonyStore } from '../store';
 import { getEntity } from '@/store/utils';
 jest.mock('@/store/utils');
+jest.mock('sdk/module/telephony');
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
@@ -62,6 +64,7 @@ describe('TelephonyNotificationManager', () => {
           data: {
             id: '1',
             scope: 'telephony',
+            priority: NOTIFICATION_PRIORITY.INCOMING_CALL,
           },
           body: 'alex 123',
           icon: '/icon/incomingCall.png',
@@ -81,6 +84,7 @@ describe('TelephonyNotificationManager', () => {
           data: {
             id: '1',
             scope: 'telephony',
+            priority: NOTIFICATION_PRIORITY.INCOMING_CALL,
           },
           body: 'Unknown Caller 123',
           icon: '/icon/incomingCall.png',

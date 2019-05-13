@@ -12,14 +12,20 @@ import { getEntity, getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Post } from 'sdk/module/post/entity';
 import { Person } from 'sdk/module/person/entity';
+import { Group } from 'sdk/module/group';
 import { Progress, PROGRESS_STATUS } from 'sdk/module/progress/entity';
 import { ENTITY_NAME } from '@/store';
 import { postTimestamp, dateFormatter } from '@/utils/date';
 import PersonModel from '@/store/models/Person';
+import GroupModel from '@/store/models/Group';
 import { StoreViewModel } from '@/store/ViewModel';
 import ProgressModel from '@/store/models/Progress';
 import { container } from 'framework';
 import { GlobalSearchStore } from '@/modules/GlobalSearch/store';
+import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
+import { IntegrationItem } from 'sdk/module/item/entity';
+import IntegrationItemModel from '@/store/models/IntegrationItem';
+import i18nT from '@/utils/i18nT';
 
 class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   private _globalSearchStore = container.get(GlobalSearchStore);
@@ -57,6 +63,21 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   }
 
   @computed
+  get group() {
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.groupId);
+  }
+
+  @computed
+  get isArchivedGroup() {
+    return !!this.group.isArchived;
+  }
+
+  @computed
+  get showToast() {
+    return !!this.isArchivedGroup;
+  }
+
+  @computed
   get itemTypeIds() {
     return this.post.itemTypeIds;
   }
@@ -77,9 +98,34 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   }
 
   @computed
-  get name() {
-    return this.creator.userDisplayName;
+  get integrationItems() {
+    if (this.post.itemIds) {
+      return this.post.itemIds.filter((id: number) =>
+        GlipTypeUtil.isIntegrationType(id),
+      );
+    }
+    return [];
   }
+
+  name = promisedComputed('', async () => {
+    // get name from items if this post is integration post
+    // post -> itemIds -> isIntegration -> integrationItem.activity
+    const integrationItems = this.integrationItems;
+    if (integrationItems.length > 0) {
+      if (this.post.itemIds.length === 1) {
+        const integrationItemID = integrationItems[0];
+        const item = getEntity<IntegrationItem, IntegrationItemModel>(
+          ENTITY_NAME.ITEM,
+          integrationItemID as number,
+        );
+        return item.activity;
+      }
+      return `${this.creator.userDisplayName} ${await i18nT(
+        'message.sharedItems',
+      )}`;
+    }
+    return this.creator.userDisplayName;
+  });
 
   @computed
   get customStatus() {

@@ -17,7 +17,9 @@ import styled from '../../foundation/styled-components';
 import { JuiButton, JuiButtonProps, JuiButtonColor } from '../Buttons/Button';
 
 const StyledActions = styled<DialogActionsProps>(JuiDialogActions)`
-  & button {
+  & button,
+  & a {
+    display: inline-block;
     margin-left: ${spacing(2)};
   }
 `;

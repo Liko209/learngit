@@ -427,18 +427,31 @@ describe('TelephonyService', () => {
 
     it('should call muteOrUnmute', () => {
       const callId = 'id_4';
-      telephonyService.muteOrUnmute(false);
+      telephonyService.muteOrUnmute();
       expect(mockedServerTelephonyService.mute).not.toBeCalled();
       expect(mockedServerTelephonyService.unmute).not.toBeCalled();
       telephonyService._callId = callId;
-      telephonyService.muteOrUnmute(false);
-      expect(mockedServerTelephonyService.mute).not.toBeCalled();
-      expect(mockedServerTelephonyService.unmute).toBeCalled();
-      jest.resetAllMocks();
-      telephonyService.muteOrUnmute(true);
+      telephonyService.muteOrUnmute();
       expect(mockedServerTelephonyService.mute).toBeCalled();
       expect(mockedServerTelephonyService.unmute).not.toBeCalled();
+      jest.resetAllMocks();
+      telephonyService.muteOrUnmute();
+      expect(mockedServerTelephonyService.mute).not.toBeCalled();
+      expect(mockedServerTelephonyService.unmute).toBeCalled();
       telephonyService._callId = undefined;
+    });
+
+    it('should maximize and minimize', () => {
+      const telephonyStore = telephonyService._telephonyStore;
+      telephonyService._telephonyStore = {
+        closeDialer: jest.fn(),
+        openDialer: jest.fn(),
+      };
+      telephonyService.maximize();
+      expect(telephonyService._telephonyStore.openDialer).toBeCalled();
+      telephonyService.minimize();
+      expect(telephonyService._telephonyStore.closeDialer).toBeCalled();
+      telephonyService._telephonyStore = telephonyStore;
     });
   });
 

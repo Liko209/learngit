@@ -51,70 +51,28 @@ describe('RCAuthApi', () => {
       });
     });
   });
-
   describe('refreshToken()', () => {
-    const handlerType = {
-      basic: jest.fn().mockReturnValue('basic'),
-    };
-
-    const networkManager: any = {
-      clientManager: { getApiClient: jest.fn() },
-    };
-
-    const token: any = {
-      refresh_token: 'refresh_token',
-      access_token: 'access_token',
-      endpoint_id: 'endpoint_id',
-      test_field: 'test_field',
-    };
-
-    const retRequest: any = {
-      handlerType,
-      callback: undefined,
-      headers: { Authorization: undefined },
-    };
-
-    beforeEach(() => {
-      clearMocks();
-      RCAuthApi.rcNetworkClient.networkManager = networkManager;
-      RCAuthApi.rcNetworkClient.getRequestByVia.mockReturnValue(retRequest);
-    });
-
-    it('should throw when get wrong error', async () => {
-      const response = { status: '401', statusText: 'erroroooo' };
-      const promise = RCAuthApi.refreshToken(token);
-      setTimeout(() => {
-        retRequest.callback(response);
-      },         10);
-      await expect(promise).rejects.toEqual('401');
-    });
-
-    it('should call right path and return token data ', async () => {
-      const promise = RCAuthApi.refreshToken(token);
-      const response = { status: 200, data: '123123' };
-      setTimeout(() => {
-        retRequest.callback(response);
-      },         10);
-      const retVal = await promise;
-      expect(retVal).toEqual(response.data);
-      expect(
-        RCAuthApi.rcNetworkClient.networkManager.clientManager.getApiClient,
-      ).toBeCalled();
-      expect(RCAuthApi.rcNetworkClient.getRequestByVia).toHaveBeenCalledWith(
-        {
-          authFree: true,
-          data: {
-            grant_type: 'refresh_token',
-            refresh_token: 'refresh_token',
-            endpoint_id: 'endpoint_id',
-            client_id: '',
-          },
-          method: 'post',
-          via: NETWORK_VIA.HTTP,
-          path: '/oauth/token',
+    it('should be called with specific path', () => {
+      const token: any = {
+        refresh_token: 'refresh_token',
+        access_token: 'access_token',
+        endpoint_id: 'endpoint_id',
+        test_field: 'test_field',
+      };
+      RCAuthApi.refreshToken(token);
+      expect(RCAuthApi.rcNetworkClient.http).toHaveBeenCalledWith({
+        authFree: true,
+        data: {
+          refresh_token: token.refresh_token,
+          endpoint_id: token.endpoint_id,
+          grant_type: 'refresh_token',
+          client_id: ApiConfiguration.apiConfig.rc.clientId,
         },
-        NETWORK_VIA.HTTP,
-      );
+        method: 'post',
+        path: '/oauth/token',
+        via: NETWORK_VIA.HTTP,
+        priority: 0,
+      });
     });
   });
 

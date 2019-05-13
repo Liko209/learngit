@@ -36,6 +36,8 @@ const MinimizeAction = () => (
   </JuiIconButton>
 );
 
+MinimizeAction.displayName = 'MinimizeAction';
+
 const DetachOrAttachAction = () => (
   <JuiIconButton
     size="small"
@@ -46,6 +48,8 @@ const DetachOrAttachAction = () => (
     tear_off
   </JuiIconButton>
 );
+
+DetachOrAttachAction.displayName = 'DetachOrAttachAction';
 
 const Actions = [DetachOrAttachAction, MinimizeAction];
 
@@ -97,6 +101,8 @@ const MuteAction = () => (
   </JuiKeypadAction>
 );
 
+MuteAction.displayName = 'MuteAction';
+
 const KeypadAction = () => (
   <JuiKeypadAction>
     <JuiIconButton color="grey.900" disableToolTip={true} size="xxlarge">
@@ -105,6 +111,8 @@ const KeypadAction = () => (
     <span>Keypad</span>
   </JuiKeypadAction>
 );
+
+KeypadAction.displayName = 'KeypadAction';
 
 const HoldAction = () => (
   <JuiKeypadAction>
@@ -115,6 +123,8 @@ const HoldAction = () => (
   </JuiKeypadAction>
 );
 
+HoldAction.displayName = 'HoldAction';
+
 const AddAction = () => (
   <JuiKeypadAction>
     <JuiIconButton color="grey.900" disableToolTip={true} size="xxlarge">
@@ -123,6 +133,8 @@ const AddAction = () => (
     <span>Add</span>
   </JuiKeypadAction>
 );
+
+AddAction.displayName = 'AddAction';
 
 const RecordAction = () => (
   <JuiKeypadAction>
@@ -133,6 +145,8 @@ const RecordAction = () => (
   </JuiKeypadAction>
 );
 
+RecordAction.displayName = 'RecordAction';
+
 const CallActionsAction = () => (
   <JuiKeypadAction>
     <JuiIconButton color="grey.900" disableToolTip={true} size="xxlarge">
@@ -141,6 +155,8 @@ const CallActionsAction = () => (
     <span>Call Actions</span>
   </JuiKeypadAction>
 );
+
+CallActionsAction.displayName = 'CallActionsAction';
 
 const KeypadActions = [
   MuteAction,

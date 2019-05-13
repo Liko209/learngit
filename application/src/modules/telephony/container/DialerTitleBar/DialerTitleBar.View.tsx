@@ -8,15 +8,15 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { JuiTitleBar } from 'jui/pattern/Dialer';
 import { DialerTitleBarViewProps } from './types';
-// import { Minimize } from '../Minimize';
+import { Minimize } from '../Minimize';
 // import { DetachOrAttach } from '../DetachOrAttach';
 
-// const Actions = [DetachOrAttach, Minimize];
+const Actions = [Minimize];
 @observer
 class DialerTitleBarView extends React.Component<DialerTitleBarViewProps> {
   render() {
     const { timing } = this.props;
-    return <JuiTitleBar label={timing} />;
+    return <JuiTitleBar Actions={Actions} label={timing} />;
   }
 }
 

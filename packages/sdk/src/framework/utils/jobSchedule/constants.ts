@@ -16,6 +16,8 @@ enum JOB_KEY {
   FETCH_RC_ACCOUNT_SERVICE_INFO = 'FETCH_RC_ACCOUNT_SERVICE_INFO',
 
   RE_LOGIN_GLIP = 'RE_LOGIN_GLIP',
+  // TODO: should refactor job key to support dynamic key
+  INDEX_DATA = 'INDEX_DATA',
 }
 
 const DailyJobIntervalSeconds: number = 86400;

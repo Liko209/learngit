@@ -1,0 +1,29 @@
+{
+  "fileheader.tpl": "/*\r\n * @Author: {author}\r\n * @Date: {createTime}\r\n * Copyright © RingCentral. All rights reserved.\r\n */\r\n",
+  "prettier.tslintIntegration": true,
+  "editor.formatOnSave": true,
+  "typescript.surveys.enabled": false,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "[handlebars]": {
+    "editor.formatOnSave": false
+  },
+  "cSpell.words": [
+    "bpmr",
+    "clsx",
+    "deepmerge",
+    "docgen",
+    "dropdown",
+    "jira",
+    "loadcss",
+    "nprogress",
+    "prestorybook",
+    "prismjs",
+    "rcui",
+    "snackbar",
+    "stylelint",
+    "swipeable",
+    "unmount",
+    "xxxl",
+    "xxxs"
+  ]
+}
