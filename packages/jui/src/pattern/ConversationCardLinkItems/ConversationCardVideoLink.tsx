@@ -71,8 +71,7 @@ type Props = {
   onLinkItemClose?: (e: React.MouseEvent<HTMLSpanElement>) => void;
 };
 
-@withHighlight(['title'])
-class JuiConversationCardVideoLink extends PureComponent<Props> {
+class JuiConversationCardVideoLinkComponent extends PureComponent<Props> {
   constructor(props: Props) {
     super(props);
   }
@@ -110,4 +109,9 @@ class JuiConversationCardVideoLink extends PureComponent<Props> {
     );
   }
 }
+
+const JuiConversationCardVideoLink = withHighlight(['title'])(
+  JuiConversationCardVideoLinkComponent,
+);
+
 export { JuiConversationCardVideoLink };

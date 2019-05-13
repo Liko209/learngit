@@ -18,12 +18,14 @@ const StyledText = styled.div`
   color: ${grey('500')};
 `;
 
-const JuiNoteContent = withHighlight(['children'])(
-  memo(({ children }: Props) => (
-    <StyledText dangerouslySetInnerHTML={{ __html: children }} />
-  )),
+const JuiNoteContentComponent = ({ children }: Props) => (
+  <StyledText dangerouslySetInnerHTML={{ __html: children }} />
 );
 
-JuiNoteContent.displayName = 'JuiNoteContent';
+JuiNoteContentComponent.displayName = 'JuiNoteContent';
+
+const JuiNoteContent = withHighlight(['children'])(
+  memo(JuiNoteContentComponent),
+);
 
 export { JuiNoteContent };

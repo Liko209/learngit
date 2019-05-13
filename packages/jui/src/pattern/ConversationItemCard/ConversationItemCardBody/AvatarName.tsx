@@ -28,16 +28,14 @@ const StyledName = styled.span`
   margin-left: ${spacing(1)};
 `;
 
-const JuiAvatarNameComponent = withHighlight(['name'])(
-  ({ name, Avatar }: Props) => (
-    <StyledAvatarName>
-      {Avatar} <StyledName dangerouslySetInnerHTML={{ __html: name }} />
-    </StyledAvatarName>
-  ),
+const JuiAvatarNameComponent = ({ name, Avatar }: Props) => (
+  <StyledAvatarName>
+    {Avatar} <StyledName dangerouslySetInnerHTML={{ __html: name }} />
+  </StyledAvatarName>
 );
 
 JuiAvatarNameComponent.displayName = 'JuiAvatarName';
 
-const JuiAvatarName = memo(JuiAvatarNameComponent);
+const JuiAvatarName = withHighlight(['name'])(memo(JuiAvatarNameComponent));
 
 export { JuiAvatarName };
