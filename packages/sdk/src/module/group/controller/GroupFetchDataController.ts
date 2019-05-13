@@ -15,7 +15,7 @@ import {
 } from '../../../framework/controller/interface/IEntityCacheSearchController';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
-import { SortableModel } from '../../../framework/model';
+import { SortableModel, ModelIdType } from '../../../framework/model';
 import { AccountUserConfig } from '../../../module/account/config';
 import { CompanyService } from '../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
@@ -40,6 +40,10 @@ import { Group, TeamPermission } from '../entity';
 import { IGroupService } from '../service/IGroupService';
 import { GroupHandleDataController } from './GroupHandleDataController';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { GroupConfigService } from '../../groupConfig';
+import { SearchService } from '../../search';
+import { RecentSearchTypes, RecentSearchModel } from '../../search/entity';
+import { MY_LAST_POST_VALID_PERIOD } from '../../search/constants';
 
 function buildNewGroupInfo(members: number[]) {
   const userConfig = new AccountUserConfig();
@@ -179,6 +183,7 @@ export class GroupFetchDataController {
     searchKey: string,
     fetchAllIfSearchKeyEmpty?: boolean,
     myGroupsOnly?: boolean,
+    recentFirst?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
@@ -186,7 +191,11 @@ export class GroupFetchDataController {
     const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
-      this._getTransformAllGroupFunc(fetchAllIfSearchKeyEmpty, myGroupsOnly),
+      this._getTransformAllGroupFunc(
+        fetchAllIfSearchKeyEmpty,
+        myGroupsOnly,
+        recentFirst,
+      ),
       searchKey,
       undefined,
       (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
@@ -215,7 +224,36 @@ export class GroupFetchDataController {
     return userConfig.getGlipUserId();
   }
 
-  private _getTransformGroupFunc(fetchAllIfSearchKeyEmpty?: boolean) {
+  private _getMostRecentViewTime(
+    groupId: number,
+    groupConfigService: GroupConfigService,
+    recentSearchedGroups: Map<ModelIdType, RecentSearchModel>,
+  ) {
+    const now = Date.now();
+    const record = recentSearchedGroups!.get(groupId);
+    const config = groupConfigService.getSynchronously(groupId);
+    const lastSearchTime = (record && record.time_stamp) || 0;
+    let lastPostTime = (config && config.my_last_post_time) || 0;
+    lastPostTime =
+      now - lastPostTime > MY_LAST_POST_VALID_PERIOD ? 0 : lastPostTime;
+    return Math.max(lastPostTime, lastSearchTime);
+  }
+
+  private get _groupConfigService() {
+    return ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
+  }
+
+  private _getTransformGroupFunc(
+    fetchAllIfSearchKeyEmpty?: boolean,
+    recentFirst?: boolean,
+  ) {
+    const groupConfigService = this._groupConfigService;
+    const recentSearchedGroups = recentFirst
+      ? this._getRecentSearchGroups([RecentSearchTypes.GROUP])
+      : undefined;
+
     return (group: Group, terms: Terms) => {
       if (this._isValidGroup(group) && group.members.length > 2) {
         const allPersons = this.getAllPersonOfGroup(
@@ -239,10 +277,18 @@ export class GroupFetchDataController {
           (searchKeyTerms.length > 0 && isFuzzyMatched) ||
           (fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0)
         ) {
+          const firstSortKey = recentFirst
+            ? this._getMostRecentViewTime(
+                group.id,
+                groupConfigService,
+                recentSearchedGroups!,
+              )
+            : 0;
           return {
+            firstSortKey,
             id: group.id,
             displayName: groupName,
-            firstSortKey: lowerCaseGroupName,
+            secondSortKey: lowerCaseGroupName,
             entity: group,
           };
         }
@@ -254,6 +300,7 @@ export class GroupFetchDataController {
   async doFuzzySearchGroups(
     searchKey: string,
     fetchAllIfSearchKeyEmpty?: boolean,
+    recentFirst?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
@@ -261,14 +308,21 @@ export class GroupFetchDataController {
     const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
-      this._getTransformGroupFunc(fetchAllIfSearchKeyEmpty),
+      this._getTransformGroupFunc(fetchAllIfSearchKeyEmpty, recentFirst),
       searchKey,
       undefined,
       (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
-        if (groupA.firstSortKey < groupB.firstSortKey) {
+        if (groupA.firstSortKey > groupB.firstSortKey) {
           return -1;
         }
-        if (groupA.firstSortKey > groupB.firstSortKey) {
+        if (groupA.firstSortKey < groupB.firstSortKey) {
+          return 1;
+        }
+
+        if (groupA.secondSortKey < groupB.secondSortKey) {
+          return -1;
+        }
+        if (groupA.secondSortKey > groupB.secondSortKey) {
           return 1;
         }
         return 0;
@@ -278,10 +332,33 @@ export class GroupFetchDataController {
     return result;
   }
 
+  private _getRecentSearchGroups(types: RecentSearchTypes[]) {
+    const searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    );
+
+    let result: Map<ModelIdType, RecentSearchModel> = new Map();
+    for (const iterator of types) {
+      const recentGroups = searchService.getRecentSearchRecordsByType(iterator);
+      result = new Map([...result].concat([...recentGroups]));
+    }
+    return result;
+  }
+
   private _getTransformAllGroupFunc(
     fetchAllIfSearchKeyEmpty?: boolean,
     myGroupsOnly?: boolean,
+    recentFirst?: boolean,
   ) {
+    const groupConfigService = this._groupConfigService;
+
+    const recentSearchedGroups = recentFirst
+      ? this._getRecentSearchGroups([
+          RecentSearchTypes.GROUP,
+          RecentSearchTypes.TEAM,
+        ])
+      : undefined;
+
     let groupName: string = '';
     let lowerCaseName: string = '';
     const currentUserId = this._currentUserId;
@@ -349,15 +426,24 @@ export class GroupFetchDataController {
         isMatched = true;
       } while (false);
 
-      return isMatched
-        ? {
-            id: group.id,
-            displayName: groupName,
-            firstSortKey: sortValue,
-            secondSortKey: lowerCaseName,
-            entity: group,
-          }
-        : null;
+      if (isMatched) {
+        const firstSortKey = recentFirst
+          ? this._getMostRecentViewTime(
+              group.id,
+              groupConfigService,
+              recentSearchedGroups!,
+            )
+          : 0;
+        return {
+          firstSortKey,
+          id: group.id,
+          displayName: groupName,
+          secondSortKey: sortValue,
+          thirdSortKey: lowerCaseName,
+          entity: group,
+        };
+      }
+      return null;
     };
   }
 
@@ -392,7 +478,15 @@ export class GroupFetchDataController {
     return sortValue;
   }
 
-  private _getTransformTeamsFunc(fetchAllIfSearchKeyEmpty?: boolean) {
+  private _getTransformTeamsFunc(
+    fetchAllIfSearchKeyEmpty?: boolean,
+    recentFirst?: boolean,
+  ) {
+    const groupConfigService = this._groupConfigService;
+    const recentSearchedTeams = recentFirst
+      ? this._getRecentSearchGroups([RecentSearchTypes.TEAM])
+      : undefined;
+
     const currentUserId = this._currentUserId;
     return (team: Group, terms: Terms) => {
       let isMatched: boolean = false;
@@ -440,21 +534,31 @@ export class GroupFetchDataController {
         isMatched = true;
       } while (false);
 
-      return isMatched
-        ? {
-            id: team.id,
-            displayName: team.set_abbreviation,
-            firstSortKey: sortValue,
-            secondSortKey: team.set_abbreviation.toLowerCase(),
-            entity: team,
-          }
-        : null;
+      if (isMatched) {
+        const firstSortKey = recentFirst
+          ? this._getMostRecentViewTime(
+              team.id,
+              groupConfigService,
+              recentSearchedTeams!,
+            )
+          : 0;
+        return {
+          firstSortKey,
+          secondSortKey: sortValue,
+          thirdSortKey: team.set_abbreviation.toLowerCase(),
+          id: team.id,
+          displayName: team.set_abbreviation,
+          entity: team,
+        };
+      }
+      return null;
     };
   }
 
   async doFuzzySearchTeams(
     searchKey?: string,
     fetchAllIfSearchKeyEmpty?: boolean,
+    recentFirst?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
@@ -462,7 +566,7 @@ export class GroupFetchDataController {
     const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
-      this._getTransformTeamsFunc(fetchAllIfSearchKeyEmpty),
+      this._getTransformTeamsFunc(fetchAllIfSearchKeyEmpty, recentFirst),
       searchKey,
       undefined,
       (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
@@ -473,12 +577,20 @@ export class GroupFetchDataController {
           return 1;
         }
 
+        if (groupA.secondSortKey > groupB.secondSortKey) {
+          return -1;
+        }
         if (groupA.secondSortKey < groupB.secondSortKey) {
+          return 1;
+        }
+
+        if (groupA.thirdSortKey < groupB.thirdSortKey) {
           return -1;
         }
         if (groupA.secondSortKey > groupB.secondSortKey) {
           return 1;
         }
+
         return 0;
       },
     );
