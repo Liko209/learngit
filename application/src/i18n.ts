@@ -52,6 +52,7 @@ const config = {
   defaultNS: 'translations',
   debug: true,
   react: { wait: true, useSuspense: false },
+  whitelist: ['en', 'zh'],
 };
 
 const ready = () => {

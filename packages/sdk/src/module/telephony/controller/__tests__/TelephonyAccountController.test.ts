@@ -18,12 +18,14 @@ import { MakeCallController } from '../../controller/MakeCallController';
 import { ServiceLoader } from '../../../serviceLoader';
 import { TelephonyUserConfig } from '../../config/TelephonyUserConfig';
 import { GlobalConfigService } from '../../../config';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
 
 jest.mock('../TelephonyCallController');
 jest.mock('voip/src');
 jest.mock('../../controller/MakeCallController');
-jest.mock('../../../rcInfo/service/RCInfoService');
+jest.mock('sdk/module/rcInfo/service/RCInfoService');
 jest.mock('../../../config');
+jest.mock('sdk/module/phoneNumber');
 
 describe('TelephonyAccountController', () => {
   class MockAccount implements ITelephonyAccountDelegate {
@@ -69,6 +71,11 @@ describe('TelephonyAccountController', () => {
   });
 
   describe('makeCall', () => {
+    beforeAll(() => {
+      ServiceLoader.getInstance = jest.fn().mockReturnValue({
+        getE164PhoneNumber: jest.fn(),
+      });
+    });
     it('should return error when there is no sip prov', async () => {
       rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce(null);
       const res = await accountController.makeCall(toNum);

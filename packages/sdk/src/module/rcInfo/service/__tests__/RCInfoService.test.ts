@@ -1,6 +1,6 @@
 /*
- * @Author: Vicky Zhu(vicky.zhu@ringcentral.com)
- * @Date: 2019-05-13 18:12:05
+ * @Author: Thomas Yang(thomas.yang@ringcentral.com)
+ * @Date: 2019-05-13 13:33:37
  * Copyright © RingCentral. All rights reserved.
  */
 
@@ -14,6 +14,7 @@ jest.mock('../../controller/RCCallerIdController');
 jest.mock('../../controller/RCPermissionController');
 jest.mock('../../controller/RegionInfoController');
 jest.mock('../../../../module/account/config');
+
 function clearMocks() {
   jest.clearAllMocks();
   jest.resetAllMocks();
@@ -216,12 +217,31 @@ describe('RCInfoService', () => {
       );
     });
   });
-  describe('loadRegionInfo()', () => {
-    it('should call controller with correct parameter', () => {
-      rcInfoService.loadRegionInfo();
-      expect(
-        rcInfoController.getRegionInfoController().loadRegionInfo,
-      ).toBeCalled();
+
+  describe('loadRegionInfo', () => {
+    const regionInfoController = {
+      loadRegionInfo: jest.fn(),
+    };
+
+    beforeEach(() => {
+      clearMocks();
+      rcInfoController.getRegionInfoController = jest
+        .fn()
+        .mockReturnValue(regionInfoController);
+    });
+
+    it('should call load region info when has voip permission', async () => {
+      rcInfoService.isVoipCallingAvailable = jest.fn().mockResolvedValue(true);
+      await rcInfoService.loadRegionInfo();
+      expect(regionInfoController.loadRegionInfo).toHaveBeenCalled();
+      expect(rcInfoService.isVoipCallingAvailable).toHaveBeenCalled();
+    });
+
+    it('should not call load region info when does not have voip permission', async () => {
+      rcInfoService.isVoipCallingAvailable = jest.fn().mockResolvedValue(false);
+      await rcInfoService.loadRegionInfo();
+      expect(regionInfoController.loadRegionInfo).not.toHaveBeenCalled();
+      expect(rcInfoService.isVoipCallingAvailable).toHaveBeenCalled();
     });
   });
 });

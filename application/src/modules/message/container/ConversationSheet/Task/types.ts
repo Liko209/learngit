@@ -32,6 +32,8 @@ type ViewProps = {
   groupId: number;
   effectiveIds: (number | null)[];
   getShowDialogPermission: () => Promise<boolean>;
+  switchExpandHandler: (isExpanded: boolean) => void;
+  initialExpansionStatus?: boolean;
 };
 
 type TaskUpdateViewProps = {

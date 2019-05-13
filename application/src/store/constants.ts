@@ -13,6 +13,7 @@ enum ENTITY_NAME {
   'GLOBAL' = 'global',
   'PROGRESS' = 'progress',
   'USER_PERMISSION' = 'userPermission',
+  'PHONE_NUMBER' = 'phoneNumber',
 }
 
 enum HANDLER_TYPE {

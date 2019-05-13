@@ -1,6 +1,13 @@
+/*
+ * @Author: Vicky Zhu(vicky.zhu@ringcentral.com)
+ * @Date: 2019-05-10 13:32:59
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { RCInfoFetchController } from './RCInfoFetchController';
-import { IPhoneNumberRecord } from '../../../api/ringcentral/types/common';
-import { PhoneNumberType } from '../types';
+import { AccountService } from 'sdk/module/account';
+import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
+import { PhoneNumberModel } from 'sdk/module/person/entity';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/types';
 
 const CALLER_ID_ORDER = {
   [PhoneNumberType.DirectNumber]: 0,
@@ -15,35 +22,50 @@ class RCCallerIdController {
   constructor(private _rcInfoFetchController: RCInfoFetchController) {}
 
   async getCallerIdList() {
-    let { records = [] } =
+    let result: PhoneNumberModel[] = [];
+    const { records = [] } =
       (await this._rcInfoFetchController.getExtensionPhoneNumberList()) || {};
     if (!records.length) {
-      const rcAccountInfo = await this._rcInfoFetchController.getRCAccountInfo();
-      records = this._addDefaultNumber(records, {
-        usageType: PhoneNumberType.MainCompanyNumber,
-        phoneNumber: rcAccountInfo && rcAccountInfo.mainNumber,
+      result = await this._getNumberFromUserInfo();
+    } else {
+      result = records.map(item => {
+        const { id, phoneNumber, usageType, label } = item;
+        return {
+          id,
+          phoneNumber,
+          usageType,
+          label,
+        };
       });
     }
-    records = this._addDefaultNumber(records, {
-      usageType: PhoneNumberType.Blocked,
-      phoneNumber: PhoneNumberType.Blocked,
-    });
-    return records.sort(this._recordsSortFn.bind(this));
+    result = this._addBlockedNumber(result);
+    return result.sort(this._recordsSortFn.bind(this));
   }
 
-  private _addDefaultNumber(
-    callerIdList: IPhoneNumberRecord[],
-    defaultNumber: { usageType: string; phoneNumber: any },
-  ) {
-    callerIdList.push(defaultNumber as IPhoneNumberRecord);
-    return callerIdList;
+  private _addBlockedNumber(callerIdList: PhoneNumberModel[]) {
+    return [
+      ...callerIdList,
+      {
+        id: 0,
+        usageType: PhoneNumberType.Blocked,
+        phoneNumber: PhoneNumberType.Blocked,
+      },
+    ];
+  }
+  private async _getNumberFromUserInfo() {
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
+    const { rc_phone_numbers = [] } =
+      (await accountService.getCurrentUserInfo()) || {};
+    return rc_phone_numbers;
   }
 
-  private _recordsSortFn(a: IPhoneNumberRecord, b: IPhoneNumberRecord) {
+  private _recordsSortFn(a: PhoneNumberModel, b: PhoneNumberModel) {
     return this._getSortValue(a) - this._getSortValue(b);
   }
 
-  private _getSortValue(item: IPhoneNumberRecord): number {
+  private _getSortValue(item: PhoneNumberModel): number {
     let value = CALLER_ID_ORDER[item.usageType] as number;
     if (item.label && item.usageType === PhoneNumberType.CompanyNumber) {
       value = CALLER_ID_ORDER[PhoneNumberType.NickName];

@@ -22,7 +22,7 @@ import {
   GlipTypeUtil,
   TypeDictionary,
   PERFORMANCE_KEYS,
-  PerformanceTracerHolder,
+  PerformanceTracer,
 } from '../../../../utils';
 import { mainLogger } from 'foundation';
 import {
@@ -72,11 +72,7 @@ class PostSearchController {
   private async _searchPosts(
     options: ContentSearchParams,
   ): Promise<SearchedResultData> {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.SEARCH_POST,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
 
     let results = await this._requestSearchPosts(options);
     if (
@@ -95,8 +91,7 @@ class PostSearchController {
         );
       results = await this._searchUntilMeetSize(results, options.scroll_size);
     }
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
-
+    performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_POST });
     mainLogger.tags(LOG_TAG).log('searchPosts, return result = ', {
       options,
       postLen: results.posts.length,
@@ -177,11 +172,7 @@ class PostSearchController {
   private async _scrollSearchPosts(
     requestId: number,
   ): Promise<SearchedResultData> {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.SCROLL_SEARCH_POST,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
 
     let result = await this._requestScrollSearchPosts(requestId);
     const info = this._queryInfos.get(requestId);
@@ -198,7 +189,7 @@ class PostSearchController {
         );
       result = await this._searchUntilMeetSize(result, info.scrollSize);
     }
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    performanceTracer.end({ key: PERFORMANCE_KEYS.SCROLL_SEARCH_POST });
 
     mainLogger.tags(LOG_TAG).log('scrollSearchPosts, return result = ', {
       postLen: result.posts.length,
@@ -262,11 +253,11 @@ class PostSearchController {
 
   async endPostSearch() {
     mainLogger
-    .tags(LOG_TAG)
-    .log(
-      'endPostSearch, exist request ids:',
-      Array.from(this._queryInfos.keys()),
-    );
+      .tags(LOG_TAG)
+      .log(
+        'endPostSearch, exist request ids:',
+        Array.from(this._queryInfos.keys()),
+      );
     this._endListenSocketSearchChange();
     this._clearSearchTimeout();
     this._clearSearchData();
