@@ -24,6 +24,10 @@ const logger = LogUtils.getLogger(__filename);
     // check report dir
     await FileService.checkReportPath();
 
+    const versionInfo = await DashboardService.getVersionInfo();
+
+    await MetricService.createVersion(versionInfo.jupiterVersion);
+
     // run scenes
     const sceneNames = Object.keys(scenes).filter(name => {
       const _name = name.toLowerCase();
@@ -45,7 +49,7 @@ const logger = LogUtils.getLogger(__filename);
 
     const sceneArray = [];
     for (let name of sceneNames) {
-      sceneArray.push(new scenes[name](taskDto));
+      sceneArray.push(new scenes[name](taskDto, versionInfo.jupiterVersion));
     }
 
     let result = true, scene;
