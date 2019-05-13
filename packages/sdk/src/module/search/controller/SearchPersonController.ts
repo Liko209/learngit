@@ -11,7 +11,7 @@ import { PersonService } from '../../person';
 import { Person } from '../../person/entity';
 import { SortableModel } from '../../../framework/model';
 import {
-  PerformanceTracerHolder,
+  PerformanceTracer,
   PERFORMANCE_KEYS,
 } from '../../../utils/performance';
 import { AccountUserConfig } from '../../../module/account/config';
@@ -41,11 +41,7 @@ class SearchPersonController {
       recentFirst,
     } = options;
 
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.SEARCH_PERSON,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
 
     const sortFunc =
       !asIdsOrder || recentFirst ? this._sortByKeyFunc : undefined;
@@ -65,7 +61,7 @@ class SearchPersonController {
       sortFunc,
     );
 
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_PERSON });
     return result;
   }
 

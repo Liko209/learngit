@@ -38,7 +38,7 @@ import {
   NotificationEntityReplaceBody,
   NotificationEntityReplacePayload,
 } from 'sdk/service/notificationCenter';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
+import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
 import { TDelta } from '../base/fetch/types';
 import preFetchConversationDataHandler from './PreFetchConversationDataHandler';
 
@@ -549,11 +549,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   async fetchGroups(sectionType: SECTION_TYPE, direction: QUERY_DIRECTION) {
     if (this._handlersMap[sectionType]) {
       const performanceKey = this._getPerformanceKey(sectionType);
-      const logId = Date.now();
-      PerformanceTracerHolder.getPerformanceTracer().start(
-        performanceKey,
-        logId,
-      );
+      const performanceTracer = PerformanceTracer.initial();
       const groups =
         (await this._handlersMap[sectionType].fetchData(direction)) || [];
       if (sectionType === SECTION_TYPE.FAVORITE) {
@@ -581,7 +577,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           }
         });
       }
-      PerformanceTracerHolder.getPerformanceTracer().end(logId, groups.length);
+      performanceTracer.end({ key: performanceKey, count: groups.length });
     }
   }
 
