@@ -5,37 +5,25 @@
  */
 
 import styled from '../../foundation/styled-components';
-import { width } from '../../foundation/utils';
-import { StyledSearchIconButton } from './StyledSearchIconButton';
 import { JuiLogo } from './Logo';
+import { MenuListCompositionWrapper } from '../HistoryOperation';
 
 const StyledLeft = styled('div')`
   display: flex;
   align-items: center;
-  @media (min-width: 1280px) {
-    flex: 1;
-  }
-  @media (min-width: 1100px) and (max-width: 1280px) {
-    width: ${width(234)};
-  }
-  @media (max-width: 1100px) {
-    flex: 1;
-  }
-  @media (max-width: 600px) {
-    justify-content: space-between;
+  flex: 1;
+  @media (max-width: 805px) {
     .topBar-search-bar {
       display: none;
     }
-    ${StyledSearchIconButton} {
-      display: block;
-    }
-    ${JuiLogo} {
-      display: block;
-      width: ${width(24)};
+  }
+  @media (max-width: 730px) {
+    ${MenuListCompositionWrapper} {
+      display: none;
     }
   }
-  @media (min-width: 601px) {
-    ${StyledSearchIconButton} {
+  @media (max-width: 650px) {
+    ${JuiLogo} {
       display: none;
     }
   }

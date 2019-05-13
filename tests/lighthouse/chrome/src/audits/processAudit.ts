@@ -50,6 +50,7 @@ class ProcessAudit extends Audit {
         }
         return {
             rawValue: items.length > 0,
+            score: 1,
             details: {
                 type: "table",
                 headings: [

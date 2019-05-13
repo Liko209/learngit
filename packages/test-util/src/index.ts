@@ -4,3 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './electron';
+export * from './registerModule';
+export * from './mountWithTheme';

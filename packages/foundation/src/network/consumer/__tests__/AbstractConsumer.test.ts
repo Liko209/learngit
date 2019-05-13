@@ -37,7 +37,10 @@ class TestConsumer extends AbstractConsumer {
 describe('AbstractConsumer', () => {
   let consumer: TestConsumer;
   const mockHandler = new NetworkRequestHandler({} as any, {} as any);
-  const mockClient = { mockName: 'client' } as any;
+  const mockClient = {
+    mockName: 'client',
+    isNetworkReachable: jest.fn(),
+  } as any;
   const mockDecorator = new NetworkRequestDecorator({} as any);
 
   beforeEach(() => {
@@ -46,7 +49,7 @@ describe('AbstractConsumer', () => {
       mockHandler,
       mockClient,
       mockDecorator,
-      NETWORK_VIA.ALL,
+      NETWORK_VIA.SOCKET,
     );
   });
 
@@ -112,34 +115,54 @@ describe('AbstractConsumer', () => {
   });
 
   describe('_consume()', () => {
-    it('should do nothing when can not handle request', () => {
+    it('should do nothing when can not handle request and has no immediate task', () => {
       consumer.canHandleRequest = jest.fn().mockReturnValue(false);
       NetworkRequestHandler.prototype.produceRequest = jest
         .fn()
         .mockReturnValue(undefined);
+      mockHandler.hasImmediateTask = jest.fn().mockReturnValue(false);
       consumer['_consume']();
       expect(NetworkRequestHandler.prototype.produceRequest).not.toBeCalled();
     });
 
+    it('should do nothing when can not handle request and has immediate task', () => {
+      consumer.canHandleRequest = jest.fn().mockReturnValue(false);
+      NetworkRequestHandler.prototype.produceRequest = jest
+        .fn()
+        .mockReturnValue(undefined);
+      mockHandler.hasImmediateTask = jest.fn().mockReturnValue(true);
+      consumer['_consume']();
+      expect(NetworkRequestHandler.prototype.produceRequest).toBeCalled();
+    });
+
     it('should do nothing when can not get request', () => {
       consumer.canHandleRequest = jest.fn().mockReturnValue(true);
+      mockClient.isNetworkReachable.mockReturnValue(true);
       NetworkRequestHandler.prototype.produceRequest = jest
         .fn()
         .mockReturnValue(undefined);
       consumer['_addExecutor'] = jest.fn();
       consumer['_consume']();
-      expect(NetworkRequestHandler.prototype.produceRequest).toBeCalled();
+      expect(NetworkRequestHandler.prototype.produceRequest).toBeCalledWith(
+        consumer['_via'],
+        true,
+      );
       expect(consumer['_addExecutor']).not.toBeCalled();
     });
 
     it('should create executor', () => {
       consumer.canHandleRequest = jest.fn().mockReturnValue(true);
+      mockClient.isNetworkReachable.mockReturnValue(true);
       NetworkRequestHandler.prototype.produceRequest = jest
         .fn()
         .mockReturnValue('mockRequest');
       consumer['_addExecutor'] = jest.fn();
       consumer['_consume']();
-      expect(NetworkRequestHandler.prototype.produceRequest).toBeCalled();
+      // expect(NetworkRequestHandler.prototype.produceRequest).toBeCalled();
+      expect(NetworkRequestHandler.prototype.produceRequest).toBeCalledWith(
+        consumer['_via'],
+        true,
+      );
       expect(consumer['_addExecutor']).toBeCalled();
       expect(NetworkRequestExecutor.prototype.execute).toBeCalled();
     });

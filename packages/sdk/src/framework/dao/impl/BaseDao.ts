@@ -16,17 +16,18 @@ import { Throw } from '../../../utils';
 import { errorHandler } from '../errors/handler';
 import { ERROR_CODES_DB } from '../../../error';
 import { IDao } from '../interface/IDao';
-import { IdModel } from '../../model';
+import { IdModel, ModelIdType } from '../../model';
 
-class BaseDao<T extends IdModel> implements IDao<T> {
+class BaseDao<T extends IdModel<IdType>, IdType extends ModelIdType = number>
+  implements IDao<T, IdType> {
   static COLLECTION_NAME: string = '';
-  private collection: IDatabaseCollection<T, number>;
+  private collection: IDatabaseCollection<T, IdType>;
   private db: IDatabase;
   private _modelName: string;
   constructor(modelName: string, db: IDatabase) {
     this.db = db;
     if (db) {
-      this.collection = db.getCollection<T, number>(modelName);
+      this.collection = db.getCollection<T, IdType>(modelName);
     }
 
     this._modelName = modelName;
@@ -71,7 +72,7 @@ class BaseDao<T extends IdModel> implements IDao<T> {
     }
   }
 
-  async get(key: number): Promise<T | null> {
+  async get(key: IdType): Promise<T | null> {
     try {
       this._validateKey(key);
       await this.db.ensureDBOpened();
@@ -82,7 +83,7 @@ class BaseDao<T extends IdModel> implements IDao<T> {
     }
   }
 
-  async batchGet(ids: number[], order?: boolean): Promise<T[]> {
+  async batchGet(ids: IdType[], order?: boolean): Promise<T[]> {
     try {
       await this.db.ensureDBOpened();
       const query = this.createQuery();
@@ -90,12 +91,12 @@ class BaseDao<T extends IdModel> implements IDao<T> {
       let entities: T[] = await query.anyOf('id', ids).toArray();
 
       if (order) {
-        const entitiesMap = new Map<number, T>();
+        const entitiesMap = new Map<IdType, T>();
         entities.forEach((entity: T) => {
           entitiesMap.set(entity.id, entity);
         });
         entities = [];
-        ids.forEach((id: number) => {
+        ids.forEach((id: IdType) => {
           entities.push(entitiesMap.get(id)!);
         });
       }
@@ -107,7 +108,7 @@ class BaseDao<T extends IdModel> implements IDao<T> {
     }
   }
 
-  async primaryKeys(ids: number[]): Promise<number[]> {
+  async primaryKeys(ids: IdType[]): Promise<IdType[]> {
     try {
       await this.db.ensureDBOpened();
       const query = this.createQuery();
@@ -131,7 +132,7 @@ class BaseDao<T extends IdModel> implements IDao<T> {
    * @param {*} primaryKey
    * return undefined no matter if a record was deleted or not
    */
-  async delete(key: number): Promise<void> {
+  async delete(key: IdType): Promise<void> {
     try {
       this._validateKey(key);
       await this.db.ensureDBOpened();
@@ -141,7 +142,7 @@ class BaseDao<T extends IdModel> implements IDao<T> {
     }
   }
 
-  async bulkDelete(keys: number[]): Promise<void> {
+  async bulkDelete(keys: IdType[]): Promise<void> {
     try {
       keys.forEach(key => this._validateKey(key));
       await this.db.ensureDBOpened();
@@ -205,8 +206,8 @@ class BaseDao<T extends IdModel> implements IDao<T> {
               array.map(item => this._update(item, primaryKeyName)),
             );
           } else if (exists) {
-            const idsSet = new Set<number>();
-            exists.forEach((item: number) => {
+            const idsSet = new Set<IdType>();
+            exists.forEach((item: IdType) => {
               idsSet.add(item);
             });
 
@@ -272,7 +273,7 @@ class BaseDao<T extends IdModel> implements IDao<T> {
   }
 
   createQuery() {
-    return new Query<T>(this.collection, this.db);
+    return new Query<T, IdType>(this.collection, this.db);
   }
 
   createEmptyQuery() {
@@ -298,7 +299,7 @@ class BaseDao<T extends IdModel> implements IDao<T> {
     return true;
   }
 
-  private _validateKey(key: number) {
+  private _validateKey(key: IdType) {
     if (!_.isInteger(key)) {
       Throw(
         ERROR_CODES_DB.INVALID_USAGE_ERROR,

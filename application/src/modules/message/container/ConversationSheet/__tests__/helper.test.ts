@@ -3,7 +3,12 @@
  * @Date: 2018-11-09 13:12:42
  * Copyright © RingCentral. All rights reserved.
  */
-import { getDurationTime, getDateAndTime, getDurationDate } from '../helper';
+import {
+  filterIDsByType,
+  getDurationTime,
+  getDateAndTime,
+  getDurationDate,
+} from '../helper';
 
 jest.mock('i18next', () => ({
   languages: ['en'],
@@ -105,6 +110,24 @@ describe('Conversation sheet helpers', () => {
       );
       expect(result).toBe('Thu, 1/24/2019 at 2:00 PM - 2:30 PM');
       done();
+    });
+  });
+  describe('filterIDsByType()', () => {
+    it('should filter ids by number type', () => {
+      const sheets = {
+        1: [1, 2, 3],
+        2: [2],
+      };
+      expect(filterIDsByType(sheets, 1)).toEqual([1, 2, 3]);
+      expect(filterIDsByType(sheets, 2)).toEqual([2]);
+    });
+
+    it('should filter ids by function type', () => {
+      const sheets = {
+        1: [1, 2, 3],
+        2: [2],
+      };
+      expect(filterIDsByType(sheets, (type: number) => type > 1)).toEqual([2]);
     });
   });
 });

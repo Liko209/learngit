@@ -1,2 +1,3 @@
 import { RUNNER_OPTS } from '../config';
-console.log(RUNNER_OPTS.FIXTURES.join('\n'));
+const fixtures = Array.prototype.join.call(RUNNER_OPTS.FIXTURES, '\n');
+console.log(fixtures);

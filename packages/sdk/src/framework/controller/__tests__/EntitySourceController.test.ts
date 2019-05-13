@@ -10,7 +10,7 @@ import { BaseDao, DeactivatedDao } from '../../../dao';
 import { TestEntity, TestDatabase } from './TestTypes';
 import { EntityPersistentController } from '../impl/EntityPersistentController';
 
-describe('RequestController', () => {
+describe('EntitySourceController', () => {
   let dao: BaseDao<TestEntity>;
   let deactivatedDao: DeactivatedDao;
   let requestController: RequestController<TestEntity>;

@@ -3,7 +3,7 @@
  * @Date: 2018-12-26 15:21:56
  * Copyright © RingCentral. All rights reserved.
  */
-import DateFormatter from './DateFormatter';
+import { DateFormatter } from './DateFormatter';
 import { DATE_FORMATTER, LOG_LEVEL } from '../constants';
 import { ILogEntityDecorator, LogEntity } from '../types';
 import _ from 'lodash';

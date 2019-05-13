@@ -16,10 +16,10 @@ import { HttpRequest } from 'foundation/src/network/client/http';
 import NetworkRequestBuilder from 'foundation/src/network/client/NetworkRequestBuilder';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import {
-  kRTCProvRequestErrorRertyTimerMin,
+  kRTCProvRequestErrorRetryTimerMin,
   kRTCProvFreshTimer,
-  kRTCProvParamsErrorRertyTimer,
-  kRTCProvRequestErrorRertyTimerMax,
+  kRTCProvParamsErrorRetryTimer,
+  kRTCProvRequestErrorRetryTimerMax,
   kRTCProvRefreshByRegFailedInterval,
 } from './constants';
 import { isNotEmptyString } from '../utils/utils';
@@ -36,7 +36,7 @@ const LOG_TAG = 'RTCProvManager';
 
 class RTCProvManager extends EventEmitter2 {
   private _sipProvisionInfo: RTCSipProvisionInfo | null = null;
-  private _requestErrorRetryInterval: number = kRTCProvRequestErrorRertyTimerMin; // seconds
+  private _requestErrorRetryInterval: number = kRTCProvRequestErrorRetryTimerMin; // seconds
   private _reFreshInterval: number = kRTCProvFreshTimer; // seconds
   private _reFreshTimerId: NodeJS.Timeout | null = null;
   private _canAcquireSipProv: boolean = true;
@@ -160,7 +160,7 @@ class RTCProvManager extends EventEmitter2 {
     }
 
     this._resetFreshTimer();
-    this._requestErrorRetryInterval = kRTCProvRequestErrorRertyTimerMin;
+    this._requestErrorRetryInterval = kRTCProvRequestErrorRetryTimerMin;
 
     if (
       !this._sipProvisionInfo ||
@@ -199,13 +199,13 @@ class RTCProvManager extends EventEmitter2 {
 
         this._requestErrorRetryInterval = Math.min(
           this._requestErrorRetryInterval * 2,
-          kRTCProvRequestErrorRertyTimerMax,
+          kRTCProvRequestErrorRetryTimerMax,
         );
         break;
       case ERROR_TYPE.PARAMS_ERROR:
         interval = !!retryAfter
-          ? Math.max(kRTCProvParamsErrorRertyTimer, retryAfter)
-          : kRTCProvParamsErrorRertyTimer;
+          ? Math.max(kRTCProvParamsErrorRetryTimer, retryAfter)
+          : kRTCProvParamsErrorRetryTimer;
         this._retryRequestForError(interval);
         break;
       default:

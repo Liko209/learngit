@@ -9,7 +9,7 @@ import { storiesOf } from '@storybook/react';
 
 import { JuiTextWithLink } from '../TextWithLink';
 
-storiesOf('Components', module).add('TextWithLink', () => {
+storiesOf('Components/Text', module).add('TextWithLink', () => {
   return (
     <JuiTextWithLink
       text="You are an admin to this team."

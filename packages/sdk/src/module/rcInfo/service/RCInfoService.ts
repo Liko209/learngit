@@ -12,7 +12,9 @@ import { ERCServiceFeaturePermission, ERCWebSettingUri } from '../types';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { AccountUserConfig } from '../../../module/account/config';
 import { mainLogger } from 'foundation';
-class RCInfoService extends EntityBaseService {
+import { IdModel } from '../../../framework/model';
+
+class RCInfoService extends EntityBaseService<IdModel> {
   private _rcInfoController: RCInfoController;
 
   constructor() {
@@ -24,12 +26,12 @@ class RCInfoService extends EntityBaseService {
     );
   }
 
-  protected onStarted() {
-    super.onStarted();
-
-    this.getRCInfoController()
-      .getRegionInfoController()
-      .loadRegionInfo();
+  protected onStopped() {
+    if (this._rcInfoController) {
+      this._rcInfoController.dispose();
+      delete this._rcInfoController;
+    }
+    super.onStopped();
   }
 
   protected getRCInfoController(): RCInfoController {
@@ -161,6 +163,12 @@ class RCInfoService extends EntityBaseService {
 
   async isAreaCodeValid(areaCode: string) {
     return await this.regionInfoController.isAreaCodeValid(areaCode);
+  }
+
+  async loadRegionInfo() {
+    await this.getRCInfoController()
+      .getRegionInfoController()
+      .loadRegionInfo();
   }
 }
 

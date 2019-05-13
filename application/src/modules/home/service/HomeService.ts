@@ -3,6 +3,7 @@
  * @Date: 2019-01-17 10:03:23
  * Copyright © RingCentral. All rights reserved.
  */
+import { ComponentType } from 'react';
 import _ from 'lodash';
 import { inject, Jupiter } from 'framework';
 import { HomeStore, SubModuleConfig } from '../store';
@@ -12,26 +13,32 @@ class HomeService {
   @inject(Jupiter) private _jupiter: Jupiter;
   @inject(HomeStore) private _homeStore: HomeStore;
 
-  registerSubModule(name: string) {
+  async registerSubModule(name: string) {
     const subModuleConfig = config.subModules[name];
-    this._registerSubModule(name, subModuleConfig);
+    return this._registerSubModule(name, subModuleConfig);
   }
 
-  registerSubModules(names: string[]) {
-    names.forEach(name => this.registerSubModule(name));
+  async registerSubModules(names: string[]) {
+    const promises = names.map(name => this.registerSubModule(name));
+    return Promise.all(promises);
   }
 
   setDefaultRouterPaths(paths: string[]) {
     this._homeStore.setDefaultRouterPaths(paths);
   }
 
-  private _registerSubModule(name: string, subModuleConfig: SubModuleConfig) {
+  private async _registerSubModule(
+    name: string,
+    subModuleConfig: SubModuleConfig,
+  ) {
     const config = _.cloneDeep(subModuleConfig);
-    this._homeStore.addSubModule(name, config);
-
     if (config.loader) {
-      this._jupiter.registerModuleAsync(config.loader, config.afterBootstrap);
+      await this._jupiter.registerModuleAsync(
+        config.loader,
+        config.afterBootstrap,
+      );
     }
+    this._homeStore.addSubModule(name, config);
   }
 
   async unRegisterModule(name: string) {
@@ -44,6 +51,10 @@ class HomeService {
 
   hasModules(modules: string[]) {
     return modules.every(module => !!this._homeStore.getSubModule(module));
+  }
+
+  registerExtension(key: string, extension: ComponentType) {
+    this._homeStore.addExtensions(key, extension);
   }
 }
 

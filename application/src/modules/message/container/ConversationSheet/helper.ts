@@ -12,6 +12,8 @@ import {
   getDateMessage,
 } from '@/utils/date';
 
+type SheetsType = { [type: string]: number[] };
+
 async function getDateAndTime(timestamp: number): Promise<string> {
   const getAMOrPM: string = dateFormatter.localTime(moment(timestamp));
   const date: string = await recentlyTwoDayAndOther(timestamp);
@@ -33,7 +35,10 @@ async function getDurationTime(
   return `${startTime} - ${endTime}`;
 }
 
-async function getDurationDate(startTimestamp: number, endTimestamp: number): Promise<string> {
+async function getDurationDate(
+  startTimestamp: number,
+  endTimestamp: number,
+): Promise<string> {
   const startTime: string = await recentlyTwoDayAndOther(startTimestamp);
   const endTime: string = await recentlyTwoDayAndOther(endTimestamp);
   const isToday: boolean = startTime.split(' ')[0] === endTime.split(' ')[0];
@@ -42,7 +47,10 @@ async function getDurationDate(startTimestamp: number, endTimestamp: number): Pr
 }
 
 async function getI18Text(type: string, count: number): Promise<string> {
-  const timesText: string = await i18nT(type, { count, postProcess: 'interval' });
+  const timesText: string = await i18nT(type, {
+    count,
+    postProcess: 'interval',
+  });
   return timesText;
 }
 
@@ -69,10 +77,8 @@ async function getDurationTimeText(
   repeatEnding: string,
 ): Promise<string> {
   const times: string =
-    (
-      TIMES_TEXT[repeat] &&
-      await getI18Text(TIMES_TEXT[repeat], Number(repeatEndingAfter))
-    ) ||
+    (TIMES_TEXT[repeat] &&
+      (await getI18Text(TIMES_TEXT[repeat], Number(repeatEndingAfter)))) ||
     '';
 
   const date: string = repeatEndingOn
@@ -89,9 +95,22 @@ async function getDurationTimeText(
     repeatEnding === 'none' || repeatEnding === 'on';
   const repeatText = ` ${await i18nT('item.until')} ${date}`;
 
-  return `${await i18nT(REPEAT_TEXT[repeat]) || ''} ${
+  return `${(await i18nT(REPEAT_TEXT[repeat])) || ''} ${
     hideTimes(repeatEndingAfter, repeatEnding) ? '' : times
   } ${hideUntil(repeat, repeatEnding) ? '' : repeatText}`;
+}
+
+function filterIDsByType(sheets: SheetsType, type: any) {
+  let ids: number[] = [];
+  if (typeof type === 'function') {
+    Object.keys(sheets).forEach((key: string) => {
+      if (type(key)) {
+        ids = ids.concat(sheets[key]);
+      }
+    });
+    return ids;
+  }
+  return sheets[type] || [];
 }
 
 export {
@@ -100,4 +119,6 @@ export {
   getDurationTime,
   getDurationDate,
   getDurationTimeText,
+  filterIDsByType,
+  SheetsType,
 };

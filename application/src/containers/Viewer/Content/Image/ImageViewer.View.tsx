@@ -26,6 +26,7 @@ import { JuiZoomElement, ZoomElementAnimation } from 'jui/components/Animation';
 import ViewerContext from '../../ViewerContext';
 import { JuiImageView } from 'jui/components/ImageView';
 import { memoizeColor } from '@/common/memoizeFunction';
+import { accelerateURL } from '@/common/accelerateURL';
 
 type ImageViewerProps = WithTranslation & ImageViewerViewProps & ThemeProps;
 
@@ -196,7 +197,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                         data-test-automation-id={'previewerCanvas'}
                         key={`image-${currentItemId}`}
                         imageRef={this._imageRef}
-                        src={imageUrl}
+                        src={accelerateURL(imageUrl)}
                         width={fitWidth || imageWidth}
                         height={fitHeight || imageHeight}
                         style={imageStyle}
@@ -239,7 +240,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                 targetElement={this._imageRef.current}
                 show={value.show}
                 duration="standard"
-                easing="openCloseDialog"
+                easing="sharp"
                 onEntered={value.onTransitionEntered}
                 onExited={value.onTransitionExited}
               />

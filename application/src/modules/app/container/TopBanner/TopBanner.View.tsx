@@ -6,17 +6,18 @@
 
 import React from 'react';
 import { JuiTopBannerContainer } from 'jui/pattern/TopBanner';
-import { config, ConfigType } from './register';
 import _ from 'lodash';
 import { observer } from 'mobx-react';
+import { TopBannerViewProps } from './types';
+import { TopBannerViewModel } from './TopBanner.ViewModel';
 
 @observer
-class TopBannerView extends React.Component {
+class TopBannerView extends React.Component<TopBannerViewProps> {
   render() {
-    const children = _(config)
+    const children = _(TopBannerViewModel.data)
       .orderBy('priority', 'desc')
-      .map(({ priority, Component }: ConfigType) => {
-        return <Component key={priority} />;
+      .map(({ priority, Component, props, isShow }) => {
+        return isShow ? <Component key={priority} {...props} /> : null;
       })
       .value();
     return <JuiTopBannerContainer>{children}</JuiTopBannerContainer>;

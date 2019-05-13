@@ -32,8 +32,16 @@ export type IconSize =
 type JuiIconographyProps = {
   iconColor?: IconColor;
   iconSize?: IconSize;
-  children: string;
+  children?: string;
+  symbol?: svgSymbol;
+  desc?: string;
 } & React.HTMLAttributes<HTMLElement>;
+
+type svgSymbol = {
+  id: string;
+  url: string;
+  viewBox: string;
+};
 
 const StyledSpan = styled('span')`
   display: inline-flex;
@@ -64,13 +72,23 @@ const StyledSvg = styled('svg')<{ iconColor?: IconColor; size?: IconSize }>`
 const JuiIconographyComponent: React.SFC<JuiIconographyProps> = (
   props: JuiIconographyProps,
 ) => {
-  const { children, className, iconColor, iconSize, ...rest } = props;
+  const {
+    children,
+    className,
+    iconColor,
+    iconSize,
+    symbol,
+    desc,
+    ...rest
+  } = props;
   const iconName = name2icon[children as string];
-  const _className = `${className || ''} ${children} icon`;
+  const useHref = symbol ? symbol.url : `#icon-${iconName}`;
+  const _className = `${className || ''} ${children || ''} icon`;
   return (
     <StyledSpan className={_className} {...rest}>
-      <StyledSvg iconColor={iconColor} size={iconSize}>
-        <use xlinkHref={`#icon-${iconName}`} href={`#icon-${iconName}`} />
+      <StyledSvg role="img" iconColor={iconColor} size={iconSize}>
+        {!!desc && <title>{desc}</title>}
+        <use xlinkHref={useHref} href={useHref} />
       </StyledSvg>
     </StyledSpan>
   );

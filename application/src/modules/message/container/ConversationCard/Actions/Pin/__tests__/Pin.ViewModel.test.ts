@@ -7,6 +7,7 @@
 import { getEntity } from '@/store/utils';
 import { PinViewModel } from '../Pin.ViewModel';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { ENTITY_NAME } from '@/store';
 
 const mockGroupService = {
   pinPost: jest.fn(),
@@ -21,8 +22,19 @@ const mockGroupEntityData: {
   pinnedPostIds?: number[];
 } = {};
 
+const mockPost: {
+  itemTypeIds: number[];
+} = {
+  itemTypeIds: [],
+};
+
 beforeAll(() => {
-  (getEntity as jest.Mock).mockReturnValue(mockGroupEntityData);
+  (getEntity as jest.Mock).mockImplementation((name: string, id: number) => {
+    if (name === ENTITY_NAME.GROUP) {
+      return mockGroupEntityData;
+    }
+    return mockPost;
+  });
 
   pinViewModel = new PinViewModel({ postId: 1, groupId: 2 });
 });
@@ -55,6 +67,24 @@ describe('likeViewModel', () => {
       mockGroupService.pinPost.mockRejectedValueOnce({});
       await expect(pinViewModel.pin(true)).rejects.toEqual({});
       expect(mockGroupService.pinPost).toBeCalledWith(1, 2, true);
+    });
+  });
+
+  describe('shouldDisablePinOption()', () => {
+    it('should canPin', () => {
+      (getEntity as jest.Mock).mockReturnValueOnce({ canPin: true });
+      expect(pinViewModel.shouldDisablePinOption).toBe(false);
+    });
+
+    it('should not canPin', () => {
+      (getEntity as jest.Mock).mockReturnValueOnce({ canPin: false });
+      expect(pinViewModel.shouldDisablePinOption).toBe(true);
+    });
+  });
+
+  describe('shouldShowPinOption()', () => {
+    it('should show pin option', () => {
+      expect(pinViewModel.shouldShowPinOption).toBe(true);
     });
   });
 });
