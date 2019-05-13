@@ -8,6 +8,7 @@ import {
   JuiVirtualizedList,
   JuiVirtualizedListHandles,
 } from 'jui/components/VirtualizedList';
+import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { HotKeys } from 'jui/hoc/HotKeys';
 import React, { Component } from 'react';
@@ -16,6 +17,7 @@ import { observer } from 'mobx-react';
 import { ItemListProps, ItemListViewProps } from './types';
 import { SearchSectionsConfig } from '../config';
 import { cacheEventFn } from '../types';
+import { LIST_OUTTER_HEIGHT } from '../ContentSearchResult/ContentSearchResult.View';
 
 const MAX_COUNT = 12;
 const ITEM_HEIGHT = 40;
@@ -24,13 +26,20 @@ type Props = ItemListProps &
   ItemListViewProps &
   WithTranslation & { terms: string[] };
 
+type State = {
+  width?: number;
+  height?: number;
+};
+
 @observer
-class ItemListViewComponent extends Component<Props> {
+class ItemListViewComponent extends Component<Props, State> {
   private [cacheEventFn._selectChangeMap]: Map<string, Function> = new Map();
   private [cacheEventFn._hoverHighlightMap]: Map<string, Function> = new Map();
   private _listRef: React.RefObject<
     JuiVirtualizedListHandles
   > = React.createRef();
+
+  state: State = { width: 0, height: ITEM_HEIGHT * MAX_COUNT };
 
   private _cacheIndexPathFn = (type: cacheEventFn, index: number) => {
     const fnKey = `${index}`;
@@ -41,11 +50,6 @@ class ItemListViewComponent extends Component<Props> {
       });
     }
     return fnMap.get(fnKey);
-  }
-
-  get height() {
-    const { list } = this.props;
-    return Math.min(list.length, MAX_COUNT) * ITEM_HEIGHT;
   }
 
   hoverHighlight = (index: number) => {
@@ -113,6 +117,20 @@ class ItemListViewComponent extends Component<Props> {
     );
   }
 
+  private _handleSizeUpdate = (size: Size) => {
+    const width = size.width;
+    let height = size.height;
+    if (size.width < 640) {
+      height = size.height - LIST_OUTTER_HEIGHT;
+    } else {
+      height = Math.min(
+        ITEM_HEIGHT * Math.min(MAX_COUNT, this.props.list.length),
+        size.height - LIST_OUTTER_HEIGHT,
+      );
+    }
+    this.setState({ height, width });
+  }
+
   render() {
     const { type, setRangeIndex, list } = this.props;
 
@@ -128,8 +146,9 @@ class ItemListViewComponent extends Component<Props> {
           enter: this.onEnter,
         }}
       >
+        <JuiSizeDetector handleSizeChanged={this._handleSizeUpdate} />
         <JuiVirtualizedList
-          height={this.height}
+          height={this.state.height as number}
           minRowHeight={ITEM_HEIGHT}
           ref={this._listRef}
           onVisibleRangeChange={setRangeIndex}

@@ -24,7 +24,8 @@ type Props = ContentSearchResultViewProps &
   WithTranslation & { isShow: boolean };
 
 // Section Header + Tabs Height + Search Input + Margin
-const USED_HEIGHT = 36 + 40 + 48 + 56;
+const LIST_OUTTER_HEIGHT = 40 + 48 + 56;
+const USED_HEIGHT = 36 + LIST_OUTTER_HEIGHT;
 
 @observer
 class ContentSearchResultViewComponent extends Component<Props> {
@@ -89,4 +90,4 @@ const ContentSearchResultView = withTranslation('translations')(
   ContentSearchResultViewComponent,
 );
 
-export { ContentSearchResultView };
+export { ContentSearchResultView, LIST_OUTTER_HEIGHT };
