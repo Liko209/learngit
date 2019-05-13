@@ -20,6 +20,7 @@ type JuiDownshiftTextFieldStates = {
   showPlaceholder: boolean;
 };
 
+// https://github.com/downshift-js/downshift#customizing-handlers
 type JuiDownshiftTextFieldKeyDownEvent = React.KeyboardEvent & {
   nativeEvent: { preventDownshiftDefault: boolean };
 };
