@@ -123,8 +123,8 @@ class TelephonyService extends EntityBaseService<IdModel> {
   replyWithPattern = (
     callId: string,
     pattern: RTC_REPLY_MSG_PATTERN,
-    time: number,
-    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+    time?: number,
+    timeUnit?: RTC_REPLY_MSG_TIME_UNIT,
   ) => {
     this.telephonyController
       .getAccountController()

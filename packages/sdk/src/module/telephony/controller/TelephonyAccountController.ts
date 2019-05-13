@@ -197,8 +197,8 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   replyWithPattern(
     callId: string,
     pattern: RTC_REPLY_MSG_PATTERN,
-    time: number,
-    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+    time?: number,
+    timeUnit?: RTC_REPLY_MSG_TIME_UNIT,
   ) {
     this._telephonyCallDelegate.replyWithPattern(pattern, time, timeUnit);
   }
