@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { ComponentType } from 'react';
 import { inject } from 'framework';
 import { GlobalSearchStore } from '../store';
 import { SEARCH_VIEW } from '../types';
@@ -20,8 +21,13 @@ class GlobalSearchService {
     store.setCurrentView(currentView);
     this._globalSearchStore.setOpen(true);
   }
+
   closeGlobalSearch() {
     this._globalSearchStore.setOpen(false);
+  }
+
+  registerExtension(key: string, extension: ComponentType) {
+    this._globalSearchStore.addExtensions(key, extension);
   }
 }
 
