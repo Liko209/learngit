@@ -18,11 +18,14 @@ import { GroupService } from '../../../group';
 import { SearchUtils } from '../../../../framework/utils/SearchUtils';
 import { PersonEntityCacheController } from '../../../person/controller/PersonEntityCacheController';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { GroupConfigService } from '../../../groupConfig';
+import { switchCase } from '@babel/types';
 
 jest.mock('../../../../module/account/config');
 jest.mock('../../../../api');
 jest.mock('../../../../dao/DaoManager');
 jest.mock('../../../group');
+jest.mock('../../../groupConfig');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -38,7 +41,9 @@ describe('SearchPersonController', () => {
   let entityCacheController: IEntityCacheController<Person>;
   let cacheSearchController: IEntityCacheSearchController<Person>;
   let groupService: GroupService;
+  let groupConfigService: GroupConfigService;
   function setUp() {
+    groupConfigService = new GroupConfigService();
     groupService = new GroupService();
 
     AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(1);
@@ -523,6 +528,7 @@ describe('SearchPersonController', () => {
         [20003, { id: 20003, time_stamp: time - 1 }],
         [20005, { id: 20005, time_stamp: time - 2 }],
       ]);
+      groupService.getIndividualGroups = jest.fn().mockReturnValue(new Map());
       searchService.getRecentSearchRecordsByType = jest
         .fn()
         .mockReturnValue(records);
@@ -540,13 +546,25 @@ describe('SearchPersonController', () => {
 
     it('search persons,  with name matched, recent contacted will be on top of result', async () => {
       const time = Date.now();
+      const groupConfigs = new Map([
+        [20002, { id: 20002, my_last_post_time: time }],
+        [20003, { id: 20003, my_last_post_time: time - 1 }],
+        [20005, { id: 20005, my_last_post_time: time - 2 }],
+      ]);
       const groups = new Map([
-        [20002, { id: 20002, most_recent_post_created_at: time }],
-        [20003, { id: 20003, most_recent_post_created_at: time - 1 }],
-        [20005, { id: 20005, most_recent_post_created_at: time - 2 }],
+        [20002, { id: 20002 }],
+        [20003, { id: 20003 }],
+        [20005, { id: 20005 }],
       ]);
       groupService.getIndividualGroups = jest.fn().mockReturnValue(groups);
-
+      searchService.getRecentSearchRecordsByType = jest
+        .fn()
+        .mockReturnValue(new Map());
+      groupConfigService.getSynchronously = jest
+        .fn()
+        .mockImplementation((id: number) => {
+          return groupConfigs.get(id);
+        });
       const result = (await searchPersonController.doFuzzySearchPersons({
         searchKey: 'monkey',
         recentFirst: true,
@@ -560,10 +578,21 @@ describe('SearchPersonController', () => {
 
     it('search persons,  will order by recent searched and contacted both', async () => {
       const time = Date.now();
+      const groupConfigs = new Map([
+        [20002, { id: 20002, my_last_post_time: time }],
+        [20003, { id: 20003, my_last_post_time: time - 1 }],
+        [20005, { id: 20005, my_last_post_time: time - 2 }],
+      ]);
+      groupConfigService.getSynchronously = jest
+        .fn()
+        .mockImplementation((id: number) => {
+          return groupConfigs.get(id);
+        });
+
       const groups = new Map([
-        [20002, { id: 20002, most_recent_post_created_at: time }],
-        [20003, { id: 20003, most_recent_post_created_at: time - 1 }],
-        [20005, { id: 20005, most_recent_post_created_at: time - 2 }],
+        [20002, { id: 20002 }],
+        [20003, { id: 20003 }],
+        [20005, { id: 20005 }],
       ]);
       groupService.getIndividualGroups = jest.fn().mockReturnValue(groups);
 

@@ -5,20 +5,13 @@
  */
 
 import { GroupConfigService } from '../GroupConfigService';
+import { GroupConfigController } from '../../controller/GroupConfigController';
 
-const groupConfigController = {
-  updateGroupConfigPartialData: jest.fn(),
-  updateDraft: jest.fn(),
-  getDraft: jest.fn(),
-  getDraftAttachmentItemIds: jest.fn(),
-  getGroupSendFailurePostIds: jest.fn(),
-  updateGroupSendFailurePostIds: jest.fn(),
-  saveAndDoNotify: jest.fn(),
-};
+jest.mock('../../controller/GroupConfigController');
 
 describe('GroupConfigService', () => {
   const groupConfigService: GroupConfigService = new GroupConfigService();
-
+  const groupConfigController = new GroupConfigController(null as any);
   beforeEach(() => {
     jest.clearAllMocks();
     Object.assign(groupConfigService, {
@@ -102,6 +95,16 @@ describe('GroupConfigService', () => {
         id: 1,
         draft: '',
       });
+    });
+  });
+
+  describe('recordMyLastPostTime', () => {
+    it('should call with correct parameter', async () => {
+      await groupConfigService.recordMyLastPostTime(1, 1111);
+      expect(groupConfigController.recordMyLastPostTime).toBeCalledWith(
+        1,
+        1111,
+      );
     });
   });
 });
