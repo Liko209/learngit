@@ -43,7 +43,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
       isEmpty,
       isShow,
       showResult,
-      searchTerms,
+      searchKey,
     } = this.props;
     return (
       <ConversationPageContext.Provider value={{ disableMoreAction: true }}>
@@ -60,7 +60,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
               <JuiFullSearchResultStreamWrapper>
                 {showResult && (
                   <SearchHighlightContext.Provider
-                    value={{ terms: searchTerms }}
+                    value={{ keyword: searchKey }}
                   >
                     <PostListStream
                       isShow={isShow}
