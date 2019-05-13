@@ -1,10 +1,12 @@
 /*
- * @Author: Rito.Xiao (rito.xiao@ringcentral.com)
- * @Date: 2019-02-19 17:35:35
+ * @Author: Vicky Zhu(vicky.zhu@ringcentral.com)
+ * @Date: 2019-05-13 11:20:40
  * Copyright © RingCentral. All rights reserved.
  */
 
 import { RCCallerIdController } from '../RCCallerIdController';
+import { AccountService } from 'sdk/module/account';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -12,12 +14,12 @@ function clearMocks() {
   jest.restoreAllMocks();
 }
 const expectResult = [
-  { usageType: 'DirectNumber' },
-  { usageType: 'MainCompanyNumber' },
-  { usageType: 'Blocked', phoneNumber: 'Blocked' },
-  { usageType: 'CompanyNumber', label: 'nickname' },
-  { usageType: 'CompanyNumber' },
-  { usageType: 'CompanyFaxNumber' },
+  { id: 1, usageType: 'DirectNumber', phoneNumber: '1' },
+  { id: 2, usageType: 'MainCompanyNumber', phoneNumber: '1' },
+  { id: 0, usageType: 'Blocked', phoneNumber: 'Blocked' },
+  { id: 3, usageType: 'CompanyNumber', phoneNumber: '1', label: 'nickname' },
+  { id: 4, usageType: 'CompanyNumber', phoneNumber: '1' },
+  { id: 5, usageType: 'CompanyFaxNumber', phoneNumber: '1' },
 ];
 describe('RCInfoFetchController', () => {
   let rcCallerIdController: RCCallerIdController;
@@ -36,11 +38,16 @@ describe('RCInfoFetchController', () => {
         .fn()
         .mockResolvedValue({
           records: [
-            { usageType: 'MainCompanyNumber' },
-            { usageType: 'CompanyFaxNumber' },
-            { usageType: 'DirectNumber' },
-            { usageType: 'CompanyNumber' },
-            { usageType: 'CompanyNumber', label: 'nickname' },
+            { id: 2, usageType: 'MainCompanyNumber', phoneNumber: '1' },
+            { id: 5, usageType: 'CompanyFaxNumber', phoneNumber: '1' },
+            {
+              id: 3,
+              usageType: 'CompanyNumber',
+              phoneNumber: '1',
+              label: 'nickname',
+            },
+            { id: 1, usageType: 'DirectNumber', phoneNumber: '1' },
+            { id: 4, usageType: 'CompanyNumber', phoneNumber: '1' },
           ],
         });
       const result = await rcCallerIdController.getCallerIdList();
@@ -53,15 +60,19 @@ describe('RCInfoFetchController', () => {
         .mockResolvedValue({
           records: [],
         });
-      rcCallerIdController._rcInfoFetchController.getRCAccountInfo = jest
-        .fn()
-        .mockResolvedValue({
-          mainNumber: '1',
-        });
+      const accountService: AccountService = new AccountService(null);
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(accountService);
+      accountService.getCurrentUserInfo = jest.fn().mockReturnValue({
+        rc_phone_numbers: [
+          { id: 1, usageType: 'MainCompanyNumber', phoneNumber: '1' },
+          { id: 2, usageType: 'DirectNumber', phoneNumber: '1' },
+        ],
+      });
       const result = await rcCallerIdController.getCallerIdList();
       expect(result).toEqual([
-        { usageType: 'MainCompanyNumber', phoneNumber: '1' },
-        { usageType: 'Blocked', phoneNumber: 'Blocked' },
+        { id: 2, usageType: 'DirectNumber', phoneNumber: '1' },
+        { id: 1, usageType: 'MainCompanyNumber', phoneNumber: '1' },
+        { id: 0, usageType: 'Blocked', phoneNumber: 'Blocked' },
       ]);
     });
   });

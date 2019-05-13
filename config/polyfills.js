@@ -80,4 +80,6 @@ if (process.env.NODE_ENV === 'test') {
     trace: jest.fn(),
     warn: jest.fn(),
   };
+
+  global.fetch = require("jest-fetch-mock");
 }

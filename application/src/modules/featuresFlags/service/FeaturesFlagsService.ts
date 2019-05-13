@@ -63,13 +63,7 @@ class FeaturesFlagsService {
       defaultSupportFeatures.push(feature.featureName);
     });
 
-    let supportFeature: string[] = defaultSupportFeatures;
-
-    if (!(await this.canUseTelephony())) {
-      supportFeature = supportFeature.filter(i => i !== 'Telephony');
-    }
-
-    return supportFeature;
+    return defaultSupportFeatures;
   }
 }
 

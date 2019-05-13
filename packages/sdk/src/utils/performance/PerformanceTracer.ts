@@ -3,58 +3,43 @@
  * @Date: 2019-01-03 20:45:04
  * Copyright © RingCentral. All rights reserved.
  */
-import { PerformanceItem } from './types';
 import { mainLogger } from 'foundation';
+import { PerformanceInfo } from './types';
 
+const LOG_TAG = '[PerformanceTracer]';
 class PerformanceTracer {
-  PERFORMANCE_KEY = 'jupiter';
-  scenarios: Map<number, number>;
-  keys: Map<number, string>;
+  private _performanceInfos: PerformanceInfo[] = [];
+  private _timeLine: number[] = [];
 
-  constructor() {
-    this.scenarios = new Map<number, number>();
-    this.keys = new Map<number, string>();
+  static initial(): PerformanceTracer {
+    const performanceTracer = new PerformanceTracer();
+    performanceTracer.start();
+    return performanceTracer;
   }
 
-  start(key: string, id: number) {
-    if (this.scenarios.has(id)) {
-      mainLogger.info(`performanceStart already has key ${key}`);
-    } else {
-      this.scenarios.set(id, performance.now());
-      this.keys.set(id, key);
-    }
+  start() {
+    this._updateTimeLine();
   }
 
-  end(id: number, count?: number) {
-    if (this.scenarios.has(id)) {
-      const startTime = this.scenarios.get(id);
-      if (startTime) {
-        const endTime = performance.now();
-        const key = this.keys.get(id);
-        if (key) {
-          this.tracePerformance(key, { startTime, endTime, count });
-          mainLogger.info(
-            key,
-            ':',
-            String(endTime - startTime),
-            ', count:',
-            count,
-          );
-        }
-      }
-      this.scenarios.delete(id);
-      this.keys.delete(id);
-    }
+  trace(performanceInfo: PerformanceInfo) {
+    const length = this._timeLine.length;
+    const start = this._timeLine[length - 1];
+    const trace = performance.now();
+    this._updateTimeLine(trace);
+    performanceInfo.time = trace - start;
+    this._performanceInfos.push(performanceInfo);
   }
 
-  tracePerformance(key: string, item: PerformanceItem) {
-    if (!performance[this.PERFORMANCE_KEY]) {
-      performance[this.PERFORMANCE_KEY] = {};
-    }
-    if (!performance[this.PERFORMANCE_KEY][key]) {
-      performance[this.PERFORMANCE_KEY][key] = [];
-    }
-    performance[this.PERFORMANCE_KEY][key].push(item);
+  end(performanceInfo: PerformanceInfo) {
+    const end = performance.now();
+    const start = this._timeLine[0];
+    performanceInfo.time = end - start;
+    this._performanceInfos.unshift(performanceInfo);
+    mainLogger.tags(LOG_TAG).info(JSON.stringify(this._performanceInfos));
+  }
+
+  private _updateTimeLine(time?: number) {
+    this._timeLine.push(time || performance.now());
   }
 }
 

@@ -80,7 +80,7 @@ class JuiConversationCardVideoLink extends PureComponent<Props> {
     onLinkItemClose && onLinkItemClose(event);
   }
   render() {
-    const { html, title, url } = this.props;
+    const { html, title, url, onLinkItemClose } = this.props;
     return (
       <LinkItemsWrapper>
         <LinkItemContents>
@@ -95,13 +95,15 @@ class JuiConversationCardVideoLink extends PureComponent<Props> {
             }}
           />
         </LinkItemContents>
-        <JuiIconButton
-          disableToolTip={true}
-          variant="plain"
-          onClick={this.onLinkItemClose}
-        >
-          close
-        </JuiIconButton>
+        {onLinkItemClose && (
+          <JuiIconButton
+            disableToolTip={true}
+            variant="plain"
+            onClick={this.onLinkItemClose}
+          >
+            close
+          </JuiIconButton>
+        )}
       </LinkItemsWrapper>
     );
   }
