@@ -3,6 +3,7 @@
  * @Date: 2019-04-25 12:06:05
  * Copyright © RingCentral. All rights reserved.
  */
+import objectPath from 'object-path';
 
 const _wrapMatchedWord = (fullText: string, reg: RegExp) =>
   fullText.replace(reg, (match: string) => {
@@ -14,11 +15,19 @@ const _isHTML = (str: string) => {
   return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
 };
 
-const highlightFormatter = (terms: string[], value: string) => {
-  const reg = new RegExp(
+const getRegexpFromKeyword = (keyword: string) => {
+  const terms = keyword
+    .replace(/[^a-zA-Z0-9]+/g, ' ')
+    .split(/\s/)
+    .filter(str => str.trim());
+  return new RegExp(
     terms.join('|').replace(/([.?*+^$[\]\\(){}-])/g, '\\$1'),
     'gi',
   );
+};
+
+const highlightFormatter = (keyword: string, value: string) => {
+  const reg = getRegexpFromKeyword(keyword);
   if (_isHTML(value)) {
     const container = document.createElement('div');
     container.innerHTML = value;
@@ -51,4 +60,19 @@ const highlightFormatter = (terms: string[], value: string) => {
   return _wrapMatchedWord(value, reg);
 };
 
-export { highlightFormatter };
+const cascadingGet = (obj: Object, path: string) => {
+  return objectPath.get(obj, path);
+};
+
+const cascadingCreate = (path: string, value: any) => {
+  const newObj = {};
+  objectPath.set(newObj, path, value);
+  return newObj;
+};
+
+export {
+  getRegexpFromKeyword,
+  highlightFormatter,
+  cascadingGet,
+  cascadingCreate,
+};

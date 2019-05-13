@@ -9,6 +9,7 @@ import { JuiThumbnail } from 'jui/components/Thumbnail';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { PreloadImg } from '@/containers/common';
 import { ViewProps, Props } from './types';
+import { accelerateURL } from '@/common/accelerateURL';
 
 @observer
 class ThumbnailView extends React.Component<ViewProps & Props> {
@@ -20,9 +21,10 @@ class ThumbnailView extends React.Component<ViewProps & Props> {
     if (!thumbsUrlWithSize) {
       return imagePreview;
     }
+    const url = accelerateURL(thumbsUrlWithSize) || thumbsUrlWithSize;
     return (
-      <PreloadImg url={thumbsUrlWithSize} placeholder={imagePreview}>
-        <JuiThumbnail url={thumbsUrlWithSize} onClick={onClick} />
+      <PreloadImg url={url} placeholder={imagePreview}>
+        <JuiThumbnail url={url} onClick={onClick} />
       </PreloadImg>
     );
   }

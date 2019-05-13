@@ -221,7 +221,7 @@ exports[`<Button /> should render outlined type button 1`] = `
 }
 
 <button
-  className="MuiButtonBase-root-27 MuiButton-root-1 root MuiButton-outlined-9 outlineButtonStyle MuiButton-outlinedPrimary-10 MuiButton-sizeLarge-25 c0"
+  className="MuiButtonBase-root-63 MuiButton-root-37 root MuiButton-outlined-45 outlineButtonStyle MuiButton-outlinedPrimary-46 MuiButton-sizeLarge-61 c0"
   disabled={false}
   onBlur={[Function]}
   onContextMenu={[Function]}
@@ -238,12 +238,12 @@ exports[`<Button /> should render outlined type button 1`] = `
   type="button"
 >
   <span
-    className="MuiButton-label-2 label"
+    className="MuiButton-label-38 label"
   >
     Button
   </span>
   <span
-    className="MuiTouchRipple-root-30"
+    className="MuiTouchRipple-root-66"
   />
 </button>
 `;
@@ -345,7 +345,7 @@ exports[`<Button /> should render round type button 1`] = `
 }
 
 <button
-  className="MuiButtonBase-root-27 MuiButton-root-1 root MuiButton-fab-18 roundButtonStyle MuiButton-contained-12 containedButtonStyle MuiButton-containedPrimary-13 MuiButton-raised-15 MuiButton-raisedPrimary-16 MuiButton-sizeLarge-25 c0"
+  className="MuiButtonBase-root-135 MuiButton-root-109 root MuiButton-fab-126 roundButtonStyle MuiButton-contained-120 containedButtonStyle MuiButton-containedPrimary-121 MuiButton-raised-123 MuiButton-raisedPrimary-124 MuiButton-sizeLarge-133 c0"
   disabled={false}
   onBlur={[Function]}
   onContextMenu={[Function]}
@@ -362,7 +362,7 @@ exports[`<Button /> should render round type button 1`] = `
   type="button"
 >
   <span
-    className="MuiButton-label-2 label"
+    className="MuiButton-label-110 label"
   >
     Button
   </span>
@@ -466,7 +466,7 @@ exports[`<Button /> should render text type button 1`] = `
 }
 
 <button
-  className="MuiButtonBase-root-27 MuiButton-root-1 root MuiButton-text-3 textButtonStyle MuiButton-textPrimary-4 MuiButton-flat-6 MuiButton-flatPrimary-7 MuiButton-sizeLarge-25 c0"
+  className="MuiButtonBase-root-99 MuiButton-root-73 root MuiButton-text-75 textButtonStyle MuiButton-textPrimary-76 MuiButton-flat-78 MuiButton-flatPrimary-79 MuiButton-sizeLarge-97 c0"
   disabled={false}
   onBlur={[Function]}
   onContextMenu={[Function]}
@@ -483,12 +483,12 @@ exports[`<Button /> should render text type button 1`] = `
   type="button"
 >
   <span
-    className="MuiButton-label-2 label"
+    className="MuiButton-label-74 label"
   >
     Button
   </span>
   <span
-    className="MuiTouchRipple-root-30"
+    className="MuiTouchRipple-root-102"
   />
 </button>
 `;
