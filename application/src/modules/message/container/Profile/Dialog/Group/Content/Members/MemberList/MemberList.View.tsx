@@ -15,7 +15,7 @@ import { MemberListProps, MemberListViewProps } from './types';
 import { MemberListItem } from '../MemberListItem';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
-import { ITEM_HEIGHT, SHADOW_HEIGHT, EMPTY_HEIGHT } from '../constants';
+import { ITEM_HEIGHT, EMPTY_HEIGHT } from '../constants';
 
 const EmptyView = withDelay(JuiMemberListEmptyView);
 @observer
@@ -52,7 +52,7 @@ class MemberList extends React.Component<
         )}
         {filteredMemberIds.length > 0 && (
           <JuiVirtualizedList
-            height={height - SHADOW_HEIGHT}
+            height={height}
             minRowHeight={ITEM_HEIGHT}
             onScroll={this.onScroll}
             data-test-automation-id="profileDialogMemberList"

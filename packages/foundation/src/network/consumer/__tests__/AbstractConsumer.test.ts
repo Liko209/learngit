@@ -115,13 +115,24 @@ describe('AbstractConsumer', () => {
   });
 
   describe('_consume()', () => {
-    it('should do nothing when can not handle request', () => {
+    it('should do nothing when can not handle request and has no immediate task', () => {
       consumer.canHandleRequest = jest.fn().mockReturnValue(false);
       NetworkRequestHandler.prototype.produceRequest = jest
         .fn()
         .mockReturnValue(undefined);
+      mockHandler.hasImmediateTask = jest.fn().mockReturnValue(false);
       consumer['_consume']();
       expect(NetworkRequestHandler.prototype.produceRequest).not.toBeCalled();
+    });
+
+    it('should do nothing when can not handle request and has immediate task', () => {
+      consumer.canHandleRequest = jest.fn().mockReturnValue(false);
+      NetworkRequestHandler.prototype.produceRequest = jest
+        .fn()
+        .mockReturnValue(undefined);
+      mockHandler.hasImmediateTask = jest.fn().mockReturnValue(true);
+      consumer['_consume']();
+      expect(NetworkRequestHandler.prototype.produceRequest).toBeCalled();
     });
 
     it('should do nothing when can not get request', () => {

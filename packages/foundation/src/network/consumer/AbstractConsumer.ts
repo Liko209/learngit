@@ -72,7 +72,9 @@ abstract class AbstractConsumer implements INetworkRequestConsumerListener {
   }
 
   private _consume() {
-    if (!this.canHandleRequest()) {
+    const canConsume =
+      this.canHandleRequest() || this._producer.hasImmediateTask(this._via);
+    if (!canConsume) {
       return;
     }
 
@@ -90,6 +92,7 @@ abstract class AbstractConsumer implements INetworkRequestConsumerListener {
     );
     executor.responseListener = this._responseListener;
     executor.listener = this;
+
     this._addExecutor(executor);
     executor.execute();
   }

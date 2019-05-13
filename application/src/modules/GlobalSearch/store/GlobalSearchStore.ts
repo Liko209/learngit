@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { ComponentType } from 'react';
 import { observable, action } from 'mobx';
 import { TAB_TYPE, SEARCH_VIEW, SEARCH_SCOPE } from '../types';
 
@@ -50,6 +51,16 @@ class GlobalSearchStore {
   clearSearchKey() {
     this.searchKey = '';
     this.currentView = SEARCH_VIEW.RECENT_SEARCH;
+  }
+
+  @observable extensions: { [key: string]: Set<ComponentType> } = {};
+
+  addExtensions(key: string, extension: ComponentType) {
+    if (this.extensions[key]) {
+      this.extensions[key].add(extension);
+      return;
+    }
+    this.extensions[key] = new Set([extension]);
   }
 }
 

@@ -233,6 +233,26 @@ export class BaseConversationPage extends BaseWebComponent {
     await this.scrollToY(scrollTop);
   }
 
+  async isPossibleToScrollBottom() {
+    const scrollHeight = await this.scrollDiv.scrollHeight;
+    await this.scrollToBottom();
+    return scrollHeight !== await this.scrollDiv.scrollHeight
+  }
+
+  async isPossibleToScrollUp() {
+    const scrollHeight = await this.scrollDiv.scrollHeight;
+    await this.scrollToTop();
+    return scrollHeight !== await this.scrollDiv.scrollHeight;
+  }
+
+  async scrollToTop() {
+    await this.scrollToY(0);
+  }
+
+  async getScrollHeight() {
+    return await this.scrollDiv.scrollHeight;
+  }
+
   async scrollUpToViewPostById(postId: string) {
     const postItem = this.postItemById(postId)
     for (const i of _.range(10)) {
@@ -494,6 +514,14 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.expect(this.readOnlyDiv.exists).ok();
   }
 
+  get emojiButton() {
+    return this.getSelectorByAutomationId('conversation-chatbar-emoji-button');
+  }
+
+  async clickEmojiButton() {
+    await this.t.click(this.emojiButton);
+  }
+
   /* 1:1 */
   get telephonyButton() {
     return this.telephonyIcon.parent('button'); //TODO: add automationId
@@ -640,8 +668,19 @@ export class PostItem extends BaseWebComponent {
     return this.mentions.filter((el) => el.textContent === name);
   }
 
-  emojiTitle(text) {
-    return this.text.find("img").withAttribute("title", text);
+  get emojis() {
+    return this.self.find('.emoji');
+  }
+
+  async shouldHasEmojiByValue(text: string) {
+    await this.t.expect(this.emojis.withAttribute('title', `:${text}:`))
+  }
+
+  async emojisShouldBeInOrder(valueList: string[], timeout: number = 5e3) {
+    await this.t.expect(this.emojis.count).eql(valueList.length, { timeout });
+    for (const n in valueList) {
+      await this.t.expect(this.emojis.nth(+n).withAttribute('title', `:${valueList[n]}:`)).ok({ timeout });
+    }
   }
 
   get likeToggleOnActionBar() {

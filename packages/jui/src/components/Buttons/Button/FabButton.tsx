@@ -7,7 +7,8 @@ import * as React from 'react';
 import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
 import Fab, { FabProps as MuiFabProps } from '@material-ui/core/Fab';
 import { TooltipProps } from '@material-ui/core/Tooltip';
-import { JuiCircularProgress } from '../../Progress';
+import { RuiCircularProgress } from 'rcui/components/Progress';
+
 import styled from '../../../foundation/styled-components';
 import { Palette } from '../../../foundation/theme/theme';
 import {
@@ -102,7 +103,7 @@ const WrappedMuiFab = (props: StyledFabButtonProps) => {
       TouchRippleProps={{ classes: touchRippleClasses }}
       {...restProps}
     >
-      {loading ? <JuiCircularProgress size={20} /> : children}
+      {loading ? <RuiCircularProgress size={20} /> : children}
     </StyledMuiFab>
   );
 };
