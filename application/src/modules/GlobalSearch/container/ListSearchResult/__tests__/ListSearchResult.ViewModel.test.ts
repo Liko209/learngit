@@ -11,6 +11,8 @@ import { SearchService } from 'sdk/module/search';
 import { ENTITY_NAME } from '@/store/constants';
 import { TAB_TYPE } from '../types';
 
+require.context = jest.fn();
+
 jest.mock('sdk/api');
 jest.mock('sdk/dao');
 jest.mock('sdk/module/search');
