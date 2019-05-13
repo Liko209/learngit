@@ -10,19 +10,19 @@ export class PhoneTab extends BaseWebComponent{
     }
 
     get callerIDLabel(){
-        return this.getSelectorByAutomationId('xxxxxxx');
+        return this.getSelectorByAutomationId('SettingSectionItemLabel-callerID');
     }
 
     get callerIDDescription(){
-        return this.getSelectorByAutomationId('xxxxxxx');
+        return this.getSelectorByAutomationId('SettingSectionItemDescription-callerID');
     }
 
     get callerIDDropDown(){
         return this.getSelectorByAutomationId('SettingSelectBox');
     }
 
-    get callerIDDropDownList(){
-        return this.getSelectorByAutomationId('xxxxxxx');
+    get callerIDDropDownItem(){
+        return this.getSelectorByAutomationId('SettingSelectItem');
     }
 
     get updateRegionDialog(){
@@ -42,11 +42,11 @@ export class PhoneTab extends BaseWebComponent{
     } 
 
     get extensionSettingsLabel(){
-        return this.getSelectorByAutomationId('SettingItemLabel');
+        return this.getSelectorByAutomationId('SettingSectionItemLabel-extensions');
     }
 
     get extensionSettingsDescription(){
-        return this.getSelectorByAutomationId('SettingItemDescription');
+        return this.getSelectorByAutomationId('SettingSectionItemDescription-extensions');
     }
 
     get extensionUpdateButton(){
@@ -80,30 +80,38 @@ export class PhoneTab extends BaseWebComponent{
     }
 
     async existCallerIDDropDown(){
-        await this.t.expect(this.callerIDDropDownList.exists).ok();
+        await this.t.expect(this.callerIDDropDown.exists).ok();
     }
 
-    async callerIDDropDownListWithText(text:string){
-        await this.t.expect(this.callerIDDropDownList.withText(text).exists).ok();
+    async checkCallerIDItemCount(count:number){
+       await this.t.expect(this.callerIDDropDownItem.count).eql(count);
+    }
+
+    async callerIDDropDownItemWithText(text:string){
+        const value = await this.callerIDDropDownItem.innerText;
+        text = value.replace('/\(|\)/g','');
+        await this.t.expect(this.callerIDDropDownItem.withText(text).exists).ok();
+    }
+
+    async selectCallerID(text: string){
+        await this.t.click(this.callerIDDropDownItem.withText(text));
     }
 
     async clickCallerIDDropDown(){
         await this.t.click(this.callerIDDropDown);
     }
 
-    async selectCallerID(text: string){
-        await this.t.click(this.callerIDDropDownList.withText(text));
-    }
-
     async getCallerIDList(){
         let callerIDList = [];
-        const length = this.callerIDDropDownList.length;
-        for(let i = 0; i< length; i++){
-          callerIDList.push(this.callerIDDropDownList.nth(i).innerText);
+        const count = await this.callerIDDropDownItem.count;
+        for(let i = 0; i< count; i++){
+            let item = await this.callerIDDropDownItem.nth(i).innerText
+            callerIDList.push(item);
         }
         return callerIDList;
     }
 
+    
     // Extension setting
     async existExtensionSettingsLabel(text:string){
         await this.t.expect(this.extensionSettingsLabel.withText(text).exists).ok();
@@ -121,10 +129,6 @@ export class PhoneTab extends BaseWebComponent{
 export class UpdateRegionDialog extends BaseWebComponent{
     get self(){
         return this.getSelectorByAutomationId('regionSettingDialogHeader');
-    }
-
-    get successToast(){
-        return this.getSelectorByAutomationId('xxxxxxx');
     }
 
     get title(){
@@ -151,8 +155,16 @@ export class UpdateRegionDialog extends BaseWebComponent{
         return this.getSelectorByAutomationId('areaCodeTextField');
     }
 
+    get areaCodeInput(){
+        return this.getSelectorByAutomationId('areaCodeInput');
+    }
+
     get areaCodeLabel(){
         return this.areaCode.find('label');
+    }
+
+    get invalidAreaCodeLabel(){
+        return this.areaCode.find('p');
     }
 
     get saveButton(){
@@ -184,7 +196,7 @@ export class UpdateRegionDialog extends BaseWebComponent{
     }
 
     async existAreaCodeLabel(text:string){
-        await this.t.expect(this.areaCodeLabel.withText(text)).ok();
+        await this.t.expect(this.areaCodeLabel.withText(text).exists).ok();
     }
 
     async noAreaCode(){
@@ -195,8 +207,16 @@ export class UpdateRegionDialog extends BaseWebComponent{
         await this.t.typeText(this.areaCode, text);
     }
 
-    async existAreaCodeWithText(text:string){
-        await this.t.expect(this.areaCode.withText(text)).ok();
+    async clearInputByKey(){
+        await this.t.click(this.areaCodeInput).selectText(this.areaCodeInput).pressKey('delete');
+    }
+
+    async showAreaCodeWithText(text:string){
+        await this.t.expect(this.areaCodeInput.value).eql(text);
+    }
+
+    async existInvalidAreaCodeLabel(text:string){
+        await this.t.expect(this.invalidAreaCodeLabel.withText(text).exists).ok();
     }
 
     async showCountryDropDown(){
@@ -211,31 +231,27 @@ export class UpdateRegionDialog extends BaseWebComponent{
         await this.t.click(this.countryDropDownList.withText(text));
     }
 
-    async countrySelectedWithText(text:string){
-        await this.t.expect(this.countryDropDown.withText(text)).ok();
+    async showCountrySelectedWithText(text:string){
+        await this.t.expect(this.countryDropDown.withText(text).exists).ok();
     }
 
     async checkTitle(text:string){
-        await this.t.expect(this.title.withText(text)).ok();
+        await this.t.expect(this.title.withText(text).exists).ok();
     }
 
     async checkStatement(text:string){
-        await this.t.expect(this.statement.withText(text)).ok();
+        await this.t.expect(this.statement.withText(text).exists).ok();
     }
 
     async existCountryLabel(text:string){
-        await this.t.expect(this.countryLabel.withText(text)).ok();
+        await this.t.expect(this.countryLabel.withText(text).exists).ok();
     }
 
     async checkSaveButton(text:string){
-        await this.t.expect(this.saveButton.withText(text)).ok();
+        await this.t.expect(this.saveButton.withText(text).exists).ok();
     }
 
     async checkCancelButton(text:string){
-        await this.t.expect(this.cancelButton.withText(text)).ok();
-    }
-
-    async checkSuccessToast(text:string){
-        await this.t.expect(this.successToast.withText(text)).ok();
+        await this.t.expect(this.cancelButton.withText(text).exists).ok();
     }
 }

@@ -12,7 +12,6 @@ fixture('Phone/GeneralSettings')
   .beforeEach(setupCase(BrandTire.RC_WITH_DID))
   .afterEach(teardownCase());
 
-// case done but need caller id feature implement
 test(formalName(`Check the page content of the "General" section`, ['P2', 'JPT-1753', 'GeneralSettings', 'Mia.Cai']), async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
@@ -25,7 +24,7 @@ test(formalName(`Check the page content of the "General" section`, ['P2', 'JPT-1
   const callerIDLabel = 'Caller ID';
   const callerIDDescription = 'Choose your default Caller ID for making RingCentral phone calls';
   const extensionSettingsLabel = 'Extension settings';
-  const extensionSettingsDescription = ' Customize your RingCentral extension settings (call routing, voicemail greetings and more)';
+  const extensionSettingsDescription = 'Customize your RingCentral extension settings (call routing, voicemail greetings and more)';
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -48,22 +47,22 @@ test(formalName(`Check the page content of the "General" section`, ['P2', 'JPT-1
     await phoneTab.existRegionLabel(regionLabel);
   });
 
-  await h(t).withLog(`Then I can see extension label/extension description/Update button in the 'General' section`, async () => {
-    await phoneTab.existExtensionSettingsDescription(extensionSettingsLabel);
-    await phoneTab.existExtensionSettingsDescription(extensionSettingsDescription);
-    await phoneTab.existExtensionUpdateButton();
-  });
-
-  await h(t).withLog(`Then I can see Caller ID/Caller ID description in the 'General' section`, async () => {
+  await h(t).withLog(`Then I can see Caller ID label/Caller ID description/DropDown select box in the 'General' section`, async () => {
     await phoneTab.existCallerIDLabel(callerIDLabel);
     await phoneTab.existCallerIDDescription(callerIDDescription);
     await phoneTab.existCallerIDDropDown();
   });
 
+  await h(t).withLog(`Then I can see extension label/extension description/Update button in the 'General' section`, async () => {
+    await phoneTab.existExtensionSettingsLabel(extensionSettingsLabel);
+    await phoneTab.existExtensionSettingsDescription(extensionSettingsDescription);
+    await phoneTab.existExtensionUpdateButton();
+  });
+
 });
 
-//TODO 
-test(formalName(`Check the caller id drop down list shows available numbers for the user`, ['P2', 'JPT-1756', 'GeneralSettings', 'Mia.Cai']), async t => {
+// todo caller id list count bug and wait for caller id format feature
+test.skip(formalName(`Check the caller id drop down list shows available numbers for the user`, ['P2', 'JPT-1756', 'GeneralSettings', 'Mia.Cai']), async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
   await h(t).platform(loginUser).init();
@@ -72,25 +71,16 @@ test(formalName(`Check the caller id drop down list shows available numbers for 
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
   const phoneTab = settingTab.phoneTab;
-  let callerIDMapList = new Map();
-  let nickName ='';
+  let callerIDList =[];
 
-  await h(t).withLog(`Given I get login user display name`, async () => {
-    const res = await h(t).glip(loginUser).getPerson();
-    nickName = res.data.display_name;
-  });
-
-  await h(t).withLog(`And I get login user phone number info`, async () => {
+  await h(t).withLog(`Given I get login user phone number info`, async () => {
     const res = await h(t).platform(loginUser).getExtensionPhoneNumberList();
     const records= res.data.records;
     for(let i in records){
-      callerIDMapList.set(records[i]['usageType'],records[i]['phoneNumber']);
+      callerIDList.push(records[i]['phoneNumber']);
     }
-    callerIDMapList.set('Company number with nick name',loginUser.company.number + nickName);
-    callerIDMapList.set('Blocked','Blocked');
-    callerIDMapList.set('Company number',loginUser.company.number);
+    callerIDList.push('Blocked');
   });
-  console.log(callerIDMapList);
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -105,18 +95,20 @@ test(formalName(`Check the caller id drop down list shows available numbers for 
     await settingTab.phoneEntry.enter();
   });
 
-  await h(t).withLog(`Then I can see the Caller ID list in the 'General' section`, async () => {
-    // TODO
+  await h(t).withLog(`And I click caller id DropDown`, async () => {
     await phoneTab.clickCallerIDDropDown();
-    for(let value of callerIDMapList.values()){
-      await phoneTab.callerIDDropDownListWithText(value)
+  });
+
+  await h(t).withLog(`Then I can see the Caller IDs in the list`, async () => {
+    for(let values of callerIDList){
+      await phoneTab.callerIDDropDownItemWithText(values);
     }
+    await phoneTab.checkCallerIDItemCount(callerIDList.length);
   });
 
 });
 
-// TODO
-test(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1759', 'GeneralSettings', 'Mia.Cai']), async t => {
+test(formalName(`Should show the extension number when caller enables the "Display my extension number for internal calls"`, ['P2', 'JPT-934', 'GeneralSettings', 'Mia.Cai']), async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const anotherUser = h(t).rcData.mainCompany.users[5];
   const app = new AppRoot(t);
@@ -124,6 +116,7 @@ test(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1
   await h(t).glip(anotherUser).init();
 
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
+  const messagesEntry = app.homePage.leftPanel.messagesEntry;
   const settingTab = app.homePage.settingTab;
   const phoneTab = settingTab.phoneTab;
   const telephonyDialog = app.homePage.telephonyDialog;
@@ -156,18 +149,7 @@ test(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1
     await app.homePage.ensureLoaded();
   });
 
-  let callerIDList = [];
-  await h(t).withLog('Given I get the caller id list from the setting', async () => {
-    callerIDList = await phoneTab.getCallerIDList();
-    for(let i = 0; i < callerIDList.length; i++){
-      if(callerIDList[i] == 'Blocked'){
-        callerIDList[i]='Unknown Caller';
-      }
-    }
-  });
-
   // Entry1: 1:1conversation
-  // Change the caller id from the setting
   await h(t).withLog(`When I click Setting entry`, async () => {
     await settingsEntry.enter();
   });
@@ -176,14 +158,23 @@ test(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1
     await settingTab.phoneEntry.enter();
   });
 
+  await h(t).withLog(`And I click the caller id`, async () => {
+    await phoneTab.clickCallerIDDropDown();
+  });
+
+  let callerIDList = [];
+  await h(t).withLog('And I get the caller id list from the setting', async () => {
+    callerIDList = await phoneTab.getCallerIDList();
+  });
+
   let randomCallerID = _.sample(callerIDList);
   await h(t).withLog(`When I change the caller id from the setting`, async () => {
-    await phoneTab.clickCallerIDDropDown();
     await phoneTab.selectCallerID(randomCallerID);
   });
 
   const chatEntry = app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId);
-  await h(t).withLog('And I open the 1:1 chat', async () => {
+  await h(t).withLog('And I open the 1:1 chat in the messages tab', async () => {
+    await messagesEntry.enter();
     await chatEntry.enter();
   });
 
@@ -197,13 +188,16 @@ test(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1
     await telephonyDialog.ensureLoaded();
   });
 
-  await h(t).withLog(`Then the caller id is ${randomCallerID} from anotherUser`, async () => {
-    await session.waitForPhoneNumber(randomCallerID);
+  await h(t).withLog(`Then the caller id is ${loginUser.extension} from anotherUser`, async () => {
+    await session.waitForPhoneNumber(loginUser.extension);
+  });
+
+  await h(t).withLog('Given I click hangup button', async () => {
+    await telephonyDialog.clickHangupButton();
+    await telephonyDialog.ensureDismiss();
   });
 
   // Entry2: mini profile
-
-  // Change the caller id from the setting
   await h(t).withLog(`When I click Setting entry`, async () => {
     await settingsEntry.enter();
   });
@@ -218,12 +212,8 @@ test(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1
     await phoneTab.selectCallerID(randomCallerID);
   });
 
-  await h(t).withLog('Given I click hangup button', async () => {
-    await telephonyDialog.clickHangupButton();
-    await telephonyDialog.ensureDismiss();
-  });
-
   await h(t).withLog('When I click the at-mention on the post',async() => {
+    await messagesEntry.enter();
     const postItem = app.homePage.messageTab.conversationPage.postItemById(otherUserPostId);
     await postItem.clickAvatar();
   });
@@ -237,13 +227,16 @@ test(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1
     await telephonyDialog.ensureLoaded();
   });
 
-  await h(t).withLog(`Then the caller id is ${randomCallerID} from anotherUser`, async () => {
-    await session.waitForPhoneNumber(randomCallerID);
+  await h(t).withLog(`Then the caller id is ${loginUser.extension} from anotherUser`, async () => {
+    await session.waitForPhoneNumber(loginUser.extension);
+  });
+
+  await h(t).withLog('Given I click hangup button', async () => {
+    await telephonyDialog.clickHangupButton();
+    await telephonyDialog.ensureDismiss();
   });
 
   // Entry3: profile
-  
-  // Change the caller id from the setting
   await h(t).withLog(`When I click Setting entry`, async () => {
     await settingsEntry.enter();
   });
@@ -257,12 +250,9 @@ test(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1
     await phoneTab.clickCallerIDDropDown();
     await phoneTab.selectCallerID(randomCallerID);
   });
-  await h(t).withLog('Given I click hangup button', async () => {
-    await telephonyDialog.clickHangupButton();
-    await telephonyDialog.ensureDismiss();
-  });
 
   await h(t).withLog('When I click the avatar on the post',async() => {
+    await messagesEntry.enter();
     const postItem = app.homePage.messageTab.conversationPage.postItemById(otherUserPostId);
     await postItem.clickAvatar();
     await miniProfile.ensureLoaded();
@@ -278,13 +268,16 @@ test(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1
     await telephonyDialog.ensureLoaded();
   });
 
-  await h(t).withLog(`Then the caller id is ${randomCallerID} from anotherUser`, async () => {
-    await session.waitForPhoneNumber(randomCallerID);
+  await h(t).withLog(`Then the caller id is ${loginUser.extension} from anotherUser`, async () => {
+    await session.waitForPhoneNumber(loginUser.extension);
+  });
+
+  await h(t).withLog('Given I click hangup button', async () => {
+    await telephonyDialog.clickHangupButton();
+    await telephonyDialog.ensureDismiss();
   });
 
   // Entry4: search result
-
-  // Change the caller id from the setting
   await h(t).withLog(`When I click Setting entry`, async () => {
     await settingsEntry.enter();
   });
@@ -299,15 +292,11 @@ test(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1
     await phoneTab.selectCallerID(randomCallerID);
   });
 
-  await h(t).withLog('Given I click hangup button', async () => {
-    await telephonyDialog.clickHangupButton();
-    await telephonyDialog.ensureDismiss();
-  });
-
   const searchBar = app.homePage.header.searchBar;
   const searchDialog = app.homePage.searchDialog;
   const anotherUserRecord = searchDialog.instantPage.searchPeopleWithText(anotherUserName);
   await h(t).withLog(`When I search the person ${anotherUserName}`,async() => {
+    await messagesEntry.enter();
     await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(anotherUserName);
     await t.expect(anotherUserRecord.exists).ok();
@@ -322,14 +311,12 @@ test(formalName(`Check if the caller id is implemented correctly`, ['P2', 'JPT-1
     await telephonyDialog.ensureLoaded();
   });
 
-  await h(t).withLog(`Then the caller id is ${randomCallerID} from anotherUser`, async () => {
-    await session.waitForPhoneNumber(randomCallerID);
+  await h(t).withLog(`Then the caller id is ${loginUser.extension} from anotherUser`, async () => {
+    await session.waitForPhoneNumber(loginUser.extension);
   });
-
 });
 
 // Region settings
-//case done
 test(formalName(`Check if the content of region section is displayed correctly;`, ['P2', 'JPT-1788', 'GeneralSettings', 'Mia.Cai']), async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
@@ -377,7 +364,8 @@ test(formalName(`Check if the content of region section is displayed correctly;`
 
 });
 
-//case done but need account support (6 countries with areacode and no areacode country )
+//Need account pool support 
+//For now, use fixed account to run this case
 test(formalName(`Check when the area code is displayed`, ['P2','JPT-1790', 'GeneralSettings', 'Mia.Cai']), async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
@@ -385,19 +373,18 @@ test(formalName(`Check when the area code is displayed`, ['P2','JPT-1790', 'Gene
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
   const updateRegionDialog =settingTab.phoneTab.updateRegionDialog;
-  // const countryListWithAreaCode = ['United States','CA','Puerto Ricco','China','Mexico','Australia'];
-  const countryListWithAreaCode = ['United States','China','Mexico','Australia'];
+  const countryListWithAreaCode = ['United States','China','Mexico'];
   const otherCountryWithoutAreaCode='France';
 
-  // todo
   if(SITE_ENV == 'XMN-UP'){
     loginUser.company.number = '2053800966';
     loginUser.extension = '98001222';
     loginUser.password = 'Test!123';
-  }else if(SITE_ENV == 'GLP-CI1-XMN'){
-    //todo need one account
   }else{
-    // todo
+    //GLP-CI1-XMN
+    loginUser.company.number = '(207) 464-2517';
+    loginUser.extension = '101';
+    loginUser.password = 'Test!123';
   }
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -447,7 +434,8 @@ test(formalName(`Check when the area code is displayed`, ['P2','JPT-1790', 'Gene
 
 });
 
-//case done but need add toast id/ need add account
+//Need account pool support 
+//For now, use fixed account to run this case
 test(formalName(`Check if the region is implemented when user save/cancel changes on dialog`, ['P2', 'JPT-1798', 'GeneralSettings', 'Mia.Cai']), async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
@@ -459,17 +447,17 @@ test(formalName(`Check if the region is implemented when user save/cancel change
   const country1 = 'France';
   const country2 = 'China';
   const areaCodeForCountry2 = '10';
-  const toast = 'Your region is updated successfully';
-
-  // 
+  const toast = 'Your region is updated successfully.'; 
+ 
   if(SITE_ENV == 'XMN-UP'){
     loginUser.company.number = '2053800966';
     loginUser.extension = '98001222';
     loginUser.password = 'Test!123';
-  }else if(SITE_ENV == 'GLP-CI1-XMN'){
-    //todo need one account
   }else{
-    // todo
+    //GLP-CI1-XMN
+    loginUser.company.number = '(207) 464-2517';
+    loginUser.extension = '101';
+    loginUser.password = 'Test!123';
   }
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -519,15 +507,19 @@ test(formalName(`Check if the region is implemented when user save/cancel change
     await updateRegionDialog.showUpdateRegionDialog();
   });
  
-  await h(t).withLog(`When I change the dial plan/area`, async () => {
+  await h(t).withLog(`When I change the dial plan`, async () => {
     await updateRegionDialog.clickCountryDropDown();
     await updateRegionDialog.selectCountryWithText(country2);
+  });
+
+  await h(t).withLog(`When I set valid area code`, async () => {
+    await updateRegionDialog.clearInputByKey();
     await updateRegionDialog.setAreaCode(areaCodeForCountry2);
   });
 
   await h(t).withLog(`Then I can see the changes`, async () => {
-    await updateRegionDialog.countrySelectedWithText(country2);
-    await updateRegionDialog.existAreaCodeWithText(areaCodeForCountry2);
+    await updateRegionDialog.showCountrySelectedWithText(country2);
+    await updateRegionDialog.showAreaCodeWithText(areaCodeForCountry2);
   });
 
   await h(t).withLog(`When I click save button`, async () => {
@@ -539,7 +531,8 @@ test(formalName(`Check if the region is implemented when user save/cancel change
   });
 
   await h(t).withLog(`And show a success flash toast "${toast}"`, async () => {
-    await updateRegionDialog.checkSuccessToast(toast);
+    // await updateRegionDialog.checkSuccessToast(toast);
+    await app.homePage.alertDialog.shouldBeShowMessage(toast);
   });
 
   await h(t).withLog(`Then I can see the changes`, async () => {
