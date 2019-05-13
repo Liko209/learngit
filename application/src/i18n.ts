@@ -5,7 +5,7 @@ import intervalPlural from 'i18next-intervalplural-postprocessor';
 import moment from 'moment';
 import { initReactI18next } from 'react-i18next';
 import { toTitleCase } from '@/utils/string';
-import enLngJson from './translations.json';
+import enLngJson from '../public/locales/en/translations.json';
 
 const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
   const letters = ['a', 'e', 'i', 'o', 'u', 'h'];
