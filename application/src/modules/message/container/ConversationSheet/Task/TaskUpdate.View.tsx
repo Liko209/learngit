@@ -61,11 +61,12 @@ class TaskUpdate extends React.Component<
               hideText={t('item.hideEventHistory')}
             >
               {
-                <JuiEventCollapseContent noHighlight={true}>
+                <JuiEventCollapseContent>
                   <JuiTaskAvatarNames>
                     {this._getTaskAvatarNames(old_value)}
                   </JuiTaskAvatarNames>
-                </JuiEventCollapseContent>}
+                </JuiEventCollapseContent>
+              }
             </JuiEventCollapse>
           ) : null
         }

@@ -23,11 +23,13 @@ type States = {
   isShow: boolean;
 };
 
-const StyledContent = styled.div`
+const JuiEventCollapseContent = withHighlight([
+  'dangerouslySetInnerHTML.__html',
+])(styled.div`
   ${typography('body1')};
   color: ${grey('500')};
   margin-bottom: ${spacing(1)};
-`;
+`);
 
 const StyledToggle = styled.div`
   display: inline-block;
@@ -62,9 +64,5 @@ class JuiEventCollapse extends React.PureComponent<Props, States> {
     );
   }
 }
-
-const JuiEventCollapseContent = withHighlight(['children'])(props => {
-  return <StyledContent {...props} />;
-});
 
 export { JuiEventCollapse, JuiEventCollapseContent };
