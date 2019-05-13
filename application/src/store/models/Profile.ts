@@ -27,7 +27,7 @@ export default class ProfileModel extends Base<Profile> {
   callOption: CALLING_OPTIONS;
 
   @observable
-  defaultNumberId: number;
+  defaultNumberId: number | undefined;
 
   @observable
   mobileDMNotification: boolean;
@@ -95,7 +95,7 @@ export default class ProfileModel extends Base<Profile> {
 
     // settings
     this.callOption = data.calling_option || CALLING_OPTIONS.GLIP;
-    this.defaultNumberId = data.default_number || 0;
+    this.defaultNumberId = data.default_number;
     this.mobileDMNotification =
       data.want_push_people === NOTIFICATION_OPTIONS.ON;
     this.mobileTeamNotification =
