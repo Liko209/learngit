@@ -15,8 +15,6 @@ import { TAB_TYPE } from '@/modules/GlobalSearch/container/ListSearchResult/type
 import { ItemList } from '@/modules/GlobalSearch/container/ItemList';
 import jsonFile from '../../../../../../public/locales/en/translations.json';
 
-require.context = jest.fn();
-
 const i18n = (key: string, { count }: { count?: number } = {}) => {
   const paths = key.split('.');
   const result = paths.reduce((res, current) => res[current], jsonFile);

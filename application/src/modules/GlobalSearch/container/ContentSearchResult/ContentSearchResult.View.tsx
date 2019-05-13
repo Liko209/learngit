@@ -19,13 +19,10 @@ import { Stream as PostListStream } from '@/modules/message/container/PostListPa
 import { SearchFilter } from '@/modules/GlobalSearch/container/SearchFilter';
 import { ConversationPageContext } from '@/modules/message/container/ConversationPage/types';
 import { SearchHighlightContext } from 'jui/hoc/withHighlight';
+import { USED_HEIGHT } from './constants';
 
 type Props = ContentSearchResultViewProps &
   WithTranslation & { isShow: boolean };
-
-// Section Header + Tabs Height + Search Input + Margin
-const LIST_OUTTER_HEIGHT = 40 + 48 + 56;
-const USED_HEIGHT = 36 + LIST_OUTTER_HEIGHT;
 
 @observer
 class ContentSearchResultViewComponent extends Component<Props> {
@@ -90,4 +87,4 @@ const ContentSearchResultView = withTranslation('translations')(
   ContentSearchResultViewComponent,
 );
 
-export { ContentSearchResultView, LIST_OUTTER_HEIGHT };
+export { ContentSearchResultView };

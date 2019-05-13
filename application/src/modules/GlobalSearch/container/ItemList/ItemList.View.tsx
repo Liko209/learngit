@@ -17,7 +17,7 @@ import { observer } from 'mobx-react';
 import { ItemListProps, ItemListViewProps } from './types';
 import { SearchSectionsConfig } from '../config';
 import { cacheEventFn } from '../types';
-import { LIST_OUTTER_HEIGHT } from '../ContentSearchResult/ContentSearchResult.View';
+import { LIST_OUTTER_HEIGHT } from '../ContentSearchResult/constants';
 
 const MAX_COUNT = 12;
 const ITEM_HEIGHT = 40;
