@@ -64,14 +64,6 @@ enum RCServiceFeatureName {
   FAX = 'Fax',
   VIDEO_CONFERENCING = 'VideoConferencing',
 }
-enum PhoneNumberType {
-  DirectNumber = 'DirectNumber',
-  MainCompanyNumber = 'MainCompanyNumber',
-  Blocked = 'Blocked',
-  NickName = 'NickName',
-  CompanyNumber = 'CompanyNumber',
-  CompanyFaxNumber = 'CompanyFaxNumber',
-}
 
 enum RCBrandType {
   RINGCENTRAL,
@@ -96,6 +88,11 @@ type GlobalStationLocationSetting = {
   [userId: number]: StationLocationSetting;
 };
 
+type RegionInfo = {
+  countryCode: string;
+  areaCode: string;
+};
+
 enum ERCWebSettingUri {
   BILLING_URI,
   PHONE_SYSTEM_URI,
@@ -107,10 +104,10 @@ export {
   RCServiceFeatureName,
   PermissionId,
   ERCServiceFeaturePermission,
-  PhoneNumberType,
   RCBrandType,
   SpecialNumberRuleModel,
   StationLocationSetting,
   ERCWebSettingUri,
   GlobalStationLocationSetting,
+  RegionInfo,
 };
