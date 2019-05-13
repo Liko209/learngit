@@ -126,6 +126,9 @@
     "directGroups": "direct messages",
     "teamGroups": "teams",
     "messageTypeNameSMS": "text",
+    "emoji": {
+      "emojiDefaultTitle": "Pick your emoji"
+    },
     "sharedItems": "shared items",
     "initialPost": {
       "directMessageDescription": "This is the beginning of your direct message history with {{displayName}}",
