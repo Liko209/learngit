@@ -110,8 +110,7 @@ type JuiConversationItemCardProps = {
   showHeaderActions?: boolean;
 } & React.DOMAttributes<{}>;
 
-@withHighlight(['title'])
-class JuiConversationItemCard extends React.PureComponent<
+class JuiConversationItemCardComponent extends React.PureComponent<
   JuiConversationItemCardProps
 > {
   titleHandle = (e: React.MouseEvent<HTMLElement>) => {
@@ -185,5 +184,9 @@ class JuiConversationItemCard extends React.PureComponent<
     );
   }
 }
+
+const JuiConversationItemCard = withHighlight(['title'])(
+  JuiConversationItemCardComponent,
+);
 
 export { JuiConversationItemCard };

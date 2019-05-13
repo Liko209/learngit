@@ -14,19 +14,26 @@ type HighlightContextInfo = {
   keyword: string;
 };
 
+type withHighlightProps = {
+  noHighlight?: boolean;
+};
 const SearchHighlightContext = createContext<HighlightContextInfo>({
   keyword: '',
 });
 
-const withHighlight = (highlightProps: HighlightProps) => <T extends object>(
-  Component: ComponentType<T> | React.SFC<T>,
+const withHighlight = (highlightProps: HighlightProps) => <P extends object>(
+  Component: ComponentType<P> | React.FunctionComponent<P>,
 ) => {
-  class ComponentWithHighlight extends React.Component<T, {}> {
+  class ComponentWithHighlight extends React.Component<P & withHighlightProps> {
     static contextType = SearchHighlightContext;
     context: HighlightContextInfo;
     render() {
       const newProps = {};
-      if (this.context.keyword && this.context.keyword.length) {
+      if (
+        !this.props.noHighlight &&
+        this.context.keyword &&
+        this.context.keyword.length
+      ) {
         highlightProps.forEach(propName => {
           const value = cascadingGet(this.props, propName);
           if (value) {
@@ -40,7 +47,7 @@ const withHighlight = (highlightProps: HighlightProps) => <T extends object>(
     }
   }
 
-  return ComponentWithHighlight as any;
+  return ComponentWithHighlight;
 };
 
 export { withHighlight, SearchHighlightContext, HighlightProps };

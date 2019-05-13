@@ -18,12 +18,14 @@ const StyledEventDescription = styled.div`
   color: ${grey('500')};
 `;
 
-const JuiEventDescription = withHighlight(['description'])(
-  memo(({ description }: Props) => (
-    <StyledEventDescription dangerouslySetInnerHTML={{ __html: description }} />
-  )),
+const JuiEventDescriptionComponent = ({ description }: Props) => (
+  <StyledEventDescription dangerouslySetInnerHTML={{ __html: description }} />
 );
 
-JuiEventDescription.displayName = 'JuiEventDescription';
+JuiEventDescriptionComponent.displayName = 'JuiEventDescription';
+
+const JuiEventDescription = withHighlight(['description'])(
+  memo(JuiEventDescriptionComponent),
+);
 
 export { JuiEventDescription };
