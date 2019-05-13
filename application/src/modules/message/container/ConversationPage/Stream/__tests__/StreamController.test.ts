@@ -63,7 +63,7 @@ describe('StreamController', () => {
       jest.spyOn(postService, 'getPostsByGroupId').mockResolvedValueOnce({
         posts: postsOlderThanAnchor,
         items: [],
-        hasMore: false,
+        hasMore: true,
       });
       const listHandler = new FetchSortableDataListHandler<Post>(dataProvider, {
         isMatchFunc: () => true,
@@ -183,6 +183,13 @@ describe('StreamController', () => {
         { id: 108, type: StreamItemType.POST, value: [8], timeStart: 108 },
         { id: 109, type: StreamItemType.POST, value: [9], timeStart: 109 },
       ]);
+
+      //
+      // FIJI-5662
+      // https://jira.ringcentral.com/browse/FIJI-5662
+      // should be the newer direction's hasMore value
+      //
+      expect(streamController.hasMore(QUERY_DIRECTION.NEWER)).toBeFalsy();
     });
   });
 });
