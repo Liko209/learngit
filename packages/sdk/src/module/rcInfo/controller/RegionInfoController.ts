@@ -41,6 +41,7 @@ const DefaultCountryInfo = {
   isoCode: 'US',
   callingCode: '1',
 };
+const DefaultBrandId = '1210';
 
 class RegionInfoController {
   private _currentCountryInfo: DialingCountryInfo;
@@ -232,7 +233,9 @@ class RegionInfoController {
     }
 
     let countryInfo = _.cloneDeep(newCountryInfo);
-    const brandId = await this._rcAccountInfoController.getAccountBrandId();
+    const brandId =
+      (await this._rcAccountInfoController.getAccountBrandId()) ||
+      DefaultBrandId;
     const isATT =
       (await this._rcAccountInfoController.getBrandID2Type(brandId)) ===
       RCBrandType.ATT;

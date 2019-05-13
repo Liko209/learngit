@@ -10,7 +10,7 @@ import { EntityBaseService } from '../../../framework/service/EntityBaseService'
 import { RCInfoController } from '../controller/RCInfoController';
 import { ERCServiceFeaturePermission, ERCWebSettingUri } from '../types';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
-import { AccountUserConfig } from '../../../module/account/config';
+import { AccountUserConfig } from '../../account/config';
 import { mainLogger } from 'foundation';
 import { IdModel } from '../../../framework/model';
 
@@ -166,9 +166,10 @@ class RCInfoService extends EntityBaseService<IdModel> {
   }
 
   async loadRegionInfo() {
-    await this.getRCInfoController()
-      .getRegionInfoController()
-      .loadRegionInfo();
+    (await this.isVoipCallingAvailable()) &&
+      (await this.getRCInfoController()
+        .getRegionInfoController()
+        .loadRegionInfo());
   }
 }
 
