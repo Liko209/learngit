@@ -247,6 +247,7 @@ describe('GroupFetchDataController', () => {
       [ServiceConfig.COMPANY_SERVICE, companyService as any],
       [ServiceConfig.GROUP_CONFIG_SERVICE, groupConfigService as any],
       [ServiceConfig.SEARCH_SERVICE, searchService as any],
+      [ServiceConfig.ACCOUNT_SERVICE, { userConfig: AccountUserConfig.prototype } as any],
     ]);
 
     ServiceLoader.getInstance = jest

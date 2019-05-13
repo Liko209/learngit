@@ -8,6 +8,8 @@ import { GroupEntityCacheController } from '../GroupEntityCacheController';
 import { AccountUserConfig } from '../../../../module/account/config';
 import { Group } from '../../entity';
 import { GroupService } from '../../service/GroupService';
+import { service } from 'sdk/';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 const soundex = require('soundex-code');
 
 jest.mock('../../../../module/account/config');
@@ -43,6 +45,13 @@ describe('GroupEntityCacheController', () => {
   function setUp() {
     const groupService: any = new GroupService();
     groupEntityCacheController = new GroupEntityCacheController(groupService);
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: AccountUserConfig.prototype };
+        }
+      });
     AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(1);
   }
 

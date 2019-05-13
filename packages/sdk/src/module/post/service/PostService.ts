@@ -23,7 +23,7 @@ import { IGroupService } from '../../../module/group/service/IGroupService';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
 import { EntityNotificationController } from '../../../framework/controller/impl/EntityNotificationController';
-import { AccountUserConfig } from '../../account/config/AccountUserConfig';
+import { AccountService } from '../../account/service';
 import { ChangeModel } from 'sdk/module/sync/types';
 
 class PostService extends EntityBaseService<Post> {
@@ -49,7 +49,9 @@ class PostService extends EntityBaseService<Post> {
   }
 
   protected buildNotificationController() {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
     return new EntityNotificationController<Post>((post: Post) => {
       return post.creator_id !== currentUserId;

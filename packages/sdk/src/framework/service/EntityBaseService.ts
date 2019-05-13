@@ -23,11 +23,15 @@ import { mainLogger } from 'foundation';
 import { IEntityCacheController } from '../controller/interface/IEntityCacheController';
 import { IEntityCacheSearchController } from '../controller/interface/IEntityCacheSearchController';
 import { IEntityNotificationController } from '../controller/interface/IEntityNotificationController';
+import { IConfigHistory } from '../config/IConfigHistory';
+import { configMigrator } from '../config';
+import { Nullable } from 'sdk/types';
+import { ConfigChangeHistory } from '../config/types';
 
 class EntityBaseService<
   T extends IdModel<IdType>,
   IdType extends ModelIdType = number
-> extends AbstractService {
+> extends AbstractService implements IConfigHistory {
   private _subscribeController: ISubscribeController;
   private _entitySourceController: IEntitySourceController<T, IdType>;
   private _entityCacheController: IEntityCacheController<T, IdType>;
@@ -40,7 +44,12 @@ class EntityBaseService<
     public networkConfig?: { basePath: string; networkClient: NetworkClient },
   ) {
     super();
+    configMigrator.addHistory(this);
     this._initControllers();
+  }
+
+  getHistoryDetail(): Nullable<ConfigChangeHistory> {
+    return null;
   }
 
   getEntitySource() {

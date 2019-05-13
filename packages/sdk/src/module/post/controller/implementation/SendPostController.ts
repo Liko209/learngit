@@ -22,7 +22,7 @@ import { IPostItemController } from '../interface/IPostItemController';
 import { ISendPostController } from '../interface/ISendPostController';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 import { Raw } from '../../../../framework/model';
-import { AccountUserConfig } from '../../../../module/account/config';
+import { AccountService } from '../../../account/service';
 import { PostControllerUtils } from './PostControllerUtils';
 import { PROGRESS_STATUS } from '../../../progress';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
@@ -55,7 +55,9 @@ class SendPostController implements ISendPostController {
 
   async sendPost(params: SendPostType) {
     this._recordMyLastPost(params.groupId, Date.now());
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const userId: number = userConfig.getGlipUserId();
     const companyId: number = userConfig.getCurrentCompanyId();
     const paramsInfo = {

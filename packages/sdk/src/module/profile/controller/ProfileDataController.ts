@@ -5,7 +5,8 @@
  */
 
 import { Profile } from '../entity';
-import { AccountUserConfig } from '../../../module/account/config';
+import { AccountService } from '../../account/service';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { JSdkError } from '../../../error/sdk/JSdkError';
 import { ERROR_CODES_SDK } from '../../../error/sdk/types';
@@ -40,7 +41,9 @@ class ProfileDataController {
   }
 
   getCurrentProfileId(): number {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     return userConfig.getCurrentUserProfileId();
   }
 

@@ -10,6 +10,7 @@ import { PostService } from '../PostService';
 import { PostDataController } from '../../controller/PostDataController';
 import { ProfileService } from '../../../profile';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { AccountService } from '../../../account/service';
 
 jest.mock('../../../account/config/AccountUserConfig', () => {
   const xx = {
@@ -23,6 +24,7 @@ jest.mock('../../../account/config/AccountUserConfig', () => {
     },
   };
 });
+const profileService = new ProfileService();
 jest.mock('../../controller/PostDataController');
 jest.mock('../../controller/PostController');
 jest.mock('../../controller/implementation/PostSearchController');
@@ -39,9 +41,21 @@ function clearMocks() {
 describe('PostService', () => {
   let postService: PostService;
   let postController: PostController;
+  let accountService: AccountService;
   function setUp() {
     postController = new PostController();
     postService = new PostService();
+    accountService = new AccountService();
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.PROFILE_SERVICE) {
+          return profileService;
+        }
+        if (serviceName === ServiceConfig.ACCOUNT_SERVICE) {
+          return accountService;
+        }
+      });
   }
 
   beforeEach(() => {
@@ -167,14 +181,6 @@ describe('PostService', () => {
 
   describe('bookmarkPost', () => {
     it('bookmarkPost', async () => {
-      const profileService = new ProfileService();
-      ServiceLoader.getInstance = jest
-        .fn()
-        .mockImplementation((serviceName: string) => {
-          if (serviceName === ServiceConfig.PROFILE_SERVICE) {
-            return profileService;
-          }
-        });
       await postService.bookmarkPost(1, true);
       expect(profileService.putFavoritePost).toBeCalledWith(1, true);
     });

@@ -11,6 +11,7 @@ import { ProfileActionController } from '../ProfileActionController';
 import { AccountUserConfig } from '../../../../module/account/config';
 import { PersonDao } from '../../../person/dao/PersonDao';
 import { daoManager } from '../../../../dao';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('../ProfileDataController');
 jest.mock('../../../../module/account/config');
@@ -43,6 +44,12 @@ class TestPartialModifyController implements IPartialModifyController<Profile> {
 const profileDataController = new ProfileDataController(null);
 const testPartialModifyController = new TestPartialModifyController();
 describe('ProfileActionController', () => {
+  beforeEach(() => {
+    ServiceLoader.getInstance = jest.fn().mockImplementation(() => {
+      return { userConfig: AccountUserConfig.prototype };
+    });
+  });
+
   function getActionController() {
     profileDataController.getCurrentProfileId.mockReturnValue(1);
     return new ProfileActionController(
