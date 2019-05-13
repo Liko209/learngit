@@ -51,7 +51,7 @@ class BackNForwardViewModel extends StoreViewModel {
     }));
   }
 
-  backRecord = promisedComputed([], async () => {
+  backRecord = promisedComputed(this.rawBackRecord, async () => {
     const backRecord = historyStack.backRecord;
     const promiseRecord = backRecord.map(async (pathname: string) => ({
       pathname,
@@ -60,7 +60,7 @@ class BackNForwardViewModel extends StoreViewModel {
     return await Promise.all(promiseRecord);
   });
 
-  forwardRecord = promisedComputed([], async () => {
+  forwardRecord = promisedComputed(this.rawForwardRecord, async () => {
     const forwardRecord = historyStack.forwardRecord;
     const promiseRecord = forwardRecord.map(async (pathname: string) => ({
       pathname,
