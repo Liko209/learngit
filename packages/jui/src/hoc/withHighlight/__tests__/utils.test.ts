@@ -88,6 +88,14 @@ describe('highlightForamtter', () => {
     ).toBe(
       '&lt;a href="h<span class="highlight-term">t</span><span class="highlight-term">t</span>ps://service.sumologic.com/ui/index.h<span class="highlight-term">t</span>ml" <span class="highlight-term">t</span>arge<span class="highlight-term">t</span>="_blank" rel="noreferrer"&gt;SearchQueryUrl&lt;/a&gt;',
     );
+    expect(
+      highlightFormatter(
+        'skye.wang@ringcentral.com',
+        '<a href="mailto:skye.wang@ringcentral.com" target="_blank" rel="noreferrer">skye.wang@ringcentral.com</a>',
+      ),
+    ).toBe(
+      '<a href="mailto:skye.wang@ringcentral.com" target="_blank" rel="noreferrer"><span class="highlight-term">skye</span>.<span class="highlight-term">wang</span>@<span class="highlight-term">ringcentral</span>.<span class="highlight-term">com</span></a>',
+    );
   });
 });
 
