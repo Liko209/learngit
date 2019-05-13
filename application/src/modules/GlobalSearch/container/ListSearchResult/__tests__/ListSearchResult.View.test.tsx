@@ -15,6 +15,8 @@ import { TAB_TYPE } from '@/modules/GlobalSearch/container/ListSearchResult/type
 import { ItemList } from '@/modules/GlobalSearch/container/ItemList';
 import jsonFile from '../../../../../../public/locales/en/translations.json';
 
+require.context = jest.fn();
+
 const i18n = (key: string, { count }: { count?: number } = {}) => {
   const paths = key.split('.');
   const result = paths.reduce((res, current) => res[current], jsonFile);
@@ -47,7 +49,9 @@ describe('ListSearchResult', () => {
     wrapper.instance().setState({ searchResult: [] });
     wrapper.update();
     expect(wrapper.find(JuiListSubheader).text()).toEqual('Results (0)');
-    expect(wrapper.find(JuiTabPageEmptyScreen).props().text).toEqual('No matches found');
+    expect(wrapper.find(JuiTabPageEmptyScreen).props().text).toEqual(
+      'No matches found',
+    );
   });
 
   it('component\'s title should be "Results" with the count of the matching records displayed', () => {
