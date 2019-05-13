@@ -6,11 +6,9 @@
 import { IAuthResponse, ISyncAuthenticator } from '../framework';
 import { ACCOUNT_TYPE_ENUM } from './constants';
 import { RCAccount, GlipAccount } from '../account';
-import {
-  AccountGlobalConfig,
-  AccountUserConfig,
-  AuthUserConfig,
-} from '../module/account/config';
+import { AccountGlobalConfig } from '../module/account/config';
+import { AccountService } from '../module/account/service';
+import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
 
 class AutoAuthenticator implements ISyncAuthenticator {
   private _accountTypeHandleMap: Map<string, any>;
@@ -30,7 +28,9 @@ class AutoAuthenticator implements ISyncAuthenticator {
   authenticate(): IAuthResponse {
     let type: string = '';
     if (AccountGlobalConfig.getUserDictionary()) {
-      const userConfig = new AccountUserConfig();
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
       type = userConfig.getAccountType();
     }
     const func = this._accountTypeHandleMap.get(type);
@@ -43,7 +43,9 @@ class AutoAuthenticator implements ISyncAuthenticator {
   }
 
   private _authGlipLogin(): IAuthResponse {
-    const authConfig = new AuthUserConfig();
+    const authConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).authUserConfig;
     const glipToken: string = authConfig.getGlipToken();
 
     if (glipToken) {
@@ -62,7 +64,9 @@ class AutoAuthenticator implements ISyncAuthenticator {
   }
 
   private _authRCLogin(): IAuthResponse {
-    const authConfig = new AuthUserConfig();
+    const authConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).authUserConfig;
     const rcToken: string = authConfig.getRCToken();
     if (!rcToken) {
       return { success: false };

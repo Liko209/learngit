@@ -12,6 +12,7 @@ import {
   AccountGlobalConfig,
   AuthUserConfig,
 } from '../../module/account/config';
+import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
 
 jest.mock('../../module/config');
 jest.mock('../../module/account/config');
@@ -24,6 +25,16 @@ describe('AutoAuthenticator', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValue('12');
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return {
+            userConfig: AccountUserConfig.prototype,
+            authUserConfig: AuthUserConfig.prototype,
+          };
+        }
+      });
   });
 
   describe('user has not loggin', () => {

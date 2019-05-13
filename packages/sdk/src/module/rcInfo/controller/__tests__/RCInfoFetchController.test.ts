@@ -11,6 +11,7 @@ import { jobScheduler, JOB_KEY } from '../../../../framework/utils/jobSchedule';
 import notificationCenter from '../../../../service/notificationCenter';
 import { RC_INFO } from '../../../../service/eventKey';
 import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 jest.mock('../../../permission');
 jest.mock('../../../account/config/AccountUserConfig');
@@ -26,6 +27,17 @@ describe('RCInfoFetchController', () => {
   beforeEach(() => {
     clearMocks();
     rcInfoFetchController = new RCInfoFetchController();
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: AccountUserConfig.prototype };
+        }
+        if (config === ServiceConfig.RC_INFO_SERVICE) {
+          return { DBConfig: RCInfoUserConfig.prototype };
+        }
+        return;
+      });
   });
 
   describe('requestRCInfo()', () => {

@@ -36,9 +36,8 @@ import { ProfileService } from '../../profile';
 import { Profile } from '../../profile/entity';
 import { StateService } from '../../state';
 import { SyncGlobalConfig } from '../config';
-import { SyncUserConfig } from '../config/SyncUserConfig';
 import { LOG_INDEX_DATA } from '../constant';
-import { SyncListener } from '../service/SyncListener';
+import { SyncListener, SyncService } from '../service';
 import { IndexDataTaskStrategy } from '../strategy/IndexDataTaskStrategy';
 import { ChangeModel, SYNC_SOURCE } from '../types';
 
@@ -73,7 +72,9 @@ class SyncController {
 
   getIndexTimestamp() {
     if (AccountGlobalConfig.getUserDictionary()) {
-      const syncConfig = new SyncUserConfig();
+      const syncConfig = ServiceLoader.getInstance<SyncService>(
+        ServiceConfig.SYNC_SERVICE,
+      ).userConfig;
       return syncConfig.getLastIndexTimestamp();
     }
     return null;
@@ -138,7 +139,9 @@ class SyncController {
   }
 
   private async _checkFetchedRemaining(time: number) {
-    const syncConfig = new SyncUserConfig();
+    const syncConfig = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    ).userConfig;
     if (!syncConfig.getFetchedRemaining()) {
       try {
         if (this._isFetchingRemaining) {
@@ -167,7 +170,9 @@ class SyncController {
 
     onRemainingHandled && (await onRemainingHandled());
     mainLogger.log('fetch remaining data and handle success');
-    const syncConfig = new SyncUserConfig();
+    const syncConfig = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    ).userConfig;
     syncConfig.setFetchedRemaining(true);
   }
 
@@ -177,7 +182,9 @@ class SyncController {
       mainLogger.log(LOG_TAG, `start fetching index:${timeStamp}`);
       this._progressBar.start();
       const { onIndexLoaded, onIndexHandled } = this._syncListener;
-      const syncConfig = new SyncUserConfig();
+      const syncConfig = ServiceLoader.getInstance<SyncService>(
+        ServiceConfig.SYNC_SERVICE,
+      ).userConfig;
       // 5 minutes ago to ensure data is correct
       try {
         const result = await this.fetchIndexData(String(timeStamp - 300000));
@@ -230,7 +237,9 @@ class SyncController {
 
   private async _handle504GateWayError() {
     // clear data
-    const syncConfig = new SyncUserConfig();
+    const syncConfig = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    ).userConfig;
     syncConfig.setLastIndexTimestamp('');
 
     await Promise.all([
@@ -559,7 +568,9 @@ class SyncController {
   }
 
   private _updateIndexSocketAddress(scoreboard: string) {
-    const socketUserConfig = new SyncUserConfig();
+    const socketUserConfig = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    ).userConfig;
     const oldValue = socketUserConfig.getIndexSocketServerHost();
     if (oldValue !== scoreboard) {
       socketUserConfig.setIndexSocketServerHost(scoreboard);
@@ -579,7 +590,9 @@ class SyncController {
       ServiceConfig.ACCOUNT_SERVICE,
     );
     if (accountService.isGlipLogin()) {
-      const socketUserConfig = new SyncUserConfig();
+      const socketUserConfig = ServiceLoader.getInstance<SyncService>(
+        ServiceConfig.SYNC_SERVICE,
+      ).userConfig;
       const succeed = socketUserConfig.getIndexSucceed();
 
       if (!succeed) {
@@ -599,7 +612,9 @@ class SyncController {
   // index/initial ==> forceUpdate ==> true
   // socket ==> forceUpdate ==> false
   updateIndexTimestamp(time: number, forceUpdate: boolean) {
-    const syncConfig = new SyncUserConfig();
+    const syncConfig = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    ).userConfig;
     if (forceUpdate) {
       mainLogger.log(
         LOG_TAG,
@@ -616,7 +631,9 @@ class SyncController {
   }
 
   canUpdateIndexTimeStamp() {
-    const syncConfig = new SyncUserConfig();
+    const syncConfig = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    ).userConfig;
     const socketTime = syncConfig.getSocketConnectedLocalTime();
     const indexTime = syncConfig.getIndexStartLocalTime();
     return socketTime && indexTime > socketTime;
@@ -638,7 +655,9 @@ class SyncController {
   }
 
   private _updateSocketConnectedLocalTime(time: number) {
-    const syncUserConfig = new SyncUserConfig();
+    const syncUserConfig = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    ).userConfig;
     syncUserConfig.setSocketConnectedLocalTime(time);
   }
 }

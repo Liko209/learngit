@@ -18,6 +18,7 @@ import { TelephonyStore } from '../../store/TelephonyStore';
 import { ToastCallError } from '../ToastCallError';
 import { container, injectable, decorate } from 'framework';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { AccountUserConfig } from 'sdk/module/account/config';
 
 const testProcedureWaitingTime = 20;
 const mockedDelay = 10;
@@ -128,6 +129,8 @@ describe('TelephonyService', () => {
           return { get: jest.fn() };
         case ServiceConfig.USER_CONFIG_SERVICE:
           return { get: jest.fn() };
+        case ServiceConfig.ACCOUNT_SERVICE:
+          return { userConfig: { getGlipUserId: jest.fn() } };
         default:
           return {} as PersonService;
       }

@@ -15,7 +15,7 @@ import {
 import { TelephonyCallInfo, MAKE_CALL_ERROR_CODE } from '../../types';
 import { TelephonyCallController } from '../TelephonyCallController';
 import { MakeCallController } from '../../controller/MakeCallController';
-import { ServiceLoader } from '../../../serviceLoader';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { TelephonyUserConfig } from '../../config/TelephonyUserConfig';
 import { GlobalConfigService } from '../../../config';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
@@ -63,6 +63,18 @@ describe('TelephonyAccountController', () => {
     Object.assign(accountController, {
       _telephonyCallDelegate: callController,
     });
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.TELEPHONY_SERVICE) {
+          return { userConfig: TelephonyUserConfig.prototype };
+        }
+        if (config === ServiceConfig.PHONE_NUMBER_SERVICE) {
+          return {
+            getE164PhoneNumber: jest.fn(),
+          };
+        }
+      });
   }
 
   beforeEach(() => {
@@ -71,11 +83,6 @@ describe('TelephonyAccountController', () => {
   });
 
   describe('makeCall', () => {
-    beforeAll(() => {
-      ServiceLoader.getInstance = jest.fn().mockReturnValue({
-        getE164PhoneNumber: jest.fn(),
-      });
-    });
     it('should return error when there is no sip prov', async () => {
       rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce(null);
       const res = await accountController.makeCall(toNum);

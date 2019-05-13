@@ -11,12 +11,16 @@ import { Profile } from '../../../profile/entity';
 import { NotificationEntityPayload } from '../../../../service/notificationCenter';
 import { SYNC_SOURCE } from '../../../../module/sync';
 import { GroupService } from '../../../group/service';
+import { StateController } from '../../controller/StateController';
+import { MyStateConfig } from '../../config';
 
 jest.mock('../../../group/service');
+jest.mock('../../controller/StateController');
+jest.mock('../../config');
 
 describe('StateService', () => {
   const mockGroupService = new GroupService();
-  const stateService = new StateService(mockGroupService);
+  let stateService: StateService;
   const mockUpdateReadStatus = jest.fn();
   const mockUpdateLastGroup = jest.fn();
   const mockGetAllGroupStatesFromLocal = jest.fn();
@@ -29,33 +33,50 @@ describe('StateService', () => {
   const mockHandleGroupState = jest.fn();
   const mockHandleProfile = jest.fn();
   const mockGetSingleUnreadInfo = jest.fn();
+  const mockStateActionController = jest.fn().mockReturnValue({
+    updateReadStatus: mockUpdateReadStatus,
+    updateLastGroup: mockUpdateLastGroup,
+  });
+  const mockStateDataHandleController = jest.fn().mockReturnValue({
+    handleState: mockHandleState,
+    handleGroupCursor: mockHandleGroupCursor,
+  });
+  const mockStateFetchDataController = jest.fn().mockReturnValue({
+    getAllGroupStatesFromLocal: mockGetAllGroupStatesFromLocal,
+    getGroupStatesFromLocalWithUnread: mockGetGroupStatesFromLocalWithUnread,
+    getMyState: mockGetMyState,
+    getMyStateId: mockGetMyStateId,
+  });
+  const mockTotalUnreadController = jest.fn().mockReturnValue({
+    handleGroup: mockHandleGroup,
+    handleGroupState: mockHandleGroupState,
+    handleProfile: mockHandleProfile,
+    getSingleUnreadInfo: mockGetSingleUnreadInfo,
+  });
+  const mockStateController = {
+    getStateActionController: mockStateActionController,
+    getStateDataHandleController: mockStateDataHandleController,
+    getStateFetchDataController: mockStateFetchDataController,
+    getTotalUnreadController: mockTotalUnreadController,
+  };
 
-  beforeAll(() => {
-    const mockStateActionController = jest.fn().mockReturnValue({
-      updateReadStatus: mockUpdateReadStatus,
-      updateLastGroup: mockUpdateLastGroup,
+  beforeEach(() => {
+    stateService = new StateService(mockGroupService);
+    stateService['_stateController'] = mockStateController as any;
+  });
+
+  describe('getStateController()', () => {
+    it('should create state controller', () => {
+      stateService['_stateController'] = undefined as any;
+      stateService['getStateController']();
+      expect(StateController).toBeCalled();
     });
-    const mockStateDataHandleController = jest.fn().mockReturnValue({
-      handleState: mockHandleState,
-      handleGroupCursor: mockHandleGroupCursor,
-    });
-    const mockStateFetchDataController = jest.fn().mockReturnValue({
-      getAllGroupStatesFromLocal: mockGetAllGroupStatesFromLocal,
-      getGroupStatesFromLocalWithUnread: mockGetGroupStatesFromLocalWithUnread,
-      getMyState: mockGetMyState,
-      getMyStateId: mockGetMyStateId,
-    });
-    const mockTotalUnreadController = jest.fn().mockReturnValue({
-      handleGroup: mockHandleGroup,
-      handleGroupState: mockHandleGroupState,
-      handleProfile: mockHandleProfile,
-      getSingleUnreadInfo: mockGetSingleUnreadInfo,
-    });
-    stateService['getStateController'] = jest.fn().mockReturnValue({
-      getStateActionController: mockStateActionController,
-      getStateDataHandleController: mockStateDataHandleController,
-      getStateFetchDataController: mockStateFetchDataController,
-      getTotalUnreadController: mockTotalUnreadController,
+  });
+
+  describe('myStateConfig', () => {
+    it('should create my state config', () => {
+      stateService.myStateConfig;
+      expect(MyStateConfig).toBeCalled();
     });
   });
 

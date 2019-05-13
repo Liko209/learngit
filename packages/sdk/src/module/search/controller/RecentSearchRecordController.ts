@@ -5,9 +5,10 @@
  */
 
 import _ from 'lodash';
-import { SearchUserConfig } from '../config';
+import { SearchService } from '../service';
 import { RecentSearchModel, RecentSearchTypes } from '../entity';
 import { serializeUrlParams } from '../../../utils';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const MAX_RECENT_LIMIT = 10;
 class RecentSearchRecordController {
@@ -49,7 +50,9 @@ class RecentSearchRecordController {
   }
 
   getRecentSearchRecords(): RecentSearchModel[] {
-    const searchConfig = new SearchUserConfig();
+    const searchConfig = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    ).userConfig;
     const records = searchConfig.getRecentSearchRecords();
     return records || [];
   }
@@ -65,7 +68,9 @@ class RecentSearchRecordController {
   getRecentSearchRecordsByType(
     type: RecentSearchTypes,
   ): Map<number | string, RecentSearchModel> {
-    const searchConfig = new SearchUserConfig();
+    const searchConfig = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    ).userConfig;
     const records = searchConfig.getRecentSearchRecords();
     const result = new Map<number | string, RecentSearchModel>();
     records &&
@@ -78,7 +83,9 @@ class RecentSearchRecordController {
   }
 
   private _updateRecentRecords(records: RecentSearchModel[]) {
-    const searchConfig = new SearchUserConfig();
+    const searchConfig = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    ).userConfig;
     searchConfig.setRecentSearchRecords(records);
   }
 }

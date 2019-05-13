@@ -29,7 +29,7 @@ import _ from 'lodash';
 import { autorun, computed, observable, reaction } from 'mobx';
 import { mainLogger } from 'sdk';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { AccountUserConfig } from 'sdk/module/account/config';
+import { AccountService } from 'sdk/module/account';
 import { ProfileService } from 'sdk/module/profile';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { StateService } from 'sdk/module/state';
@@ -757,7 +757,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       ServiceConfig.PROFILE_SERVICE,
     );
 
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const currentProfileId = userConfig.getCurrentUserProfileId();
 
     let count = DEFAULT_LEFT_RAIL_GROUP;

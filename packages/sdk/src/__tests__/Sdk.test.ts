@@ -9,11 +9,14 @@ import Sdk from '../Sdk';
 import { Api, HandleByRingCentral } from '../api';
 import { daoManager } from '../dao';
 import { AccountManager, ServiceManager } from '../framework';
-import { DataMigration } from '../module/config';
 import notificationCenter from '../service/notificationCenter';
 import { SERVICE } from '../service';
 import { SyncService } from '../module/sync';
-import { AccountGlobalConfig } from '../module/account/config';
+import {
+  AccountGlobalConfig,
+  AccountUserConfig,
+  AuthUserConfig,
+} from '../module/account/config';
 import { ServiceLoader } from '../module/serviceLoader';
 
 jest.mock('../module/config');
@@ -61,7 +64,6 @@ describe('Sdk', () => {
       });
 
       await sdk.init({ api: {}, db: {} });
-      expect(DataMigration.migrateKVStorage).toBeCalled();
       expect(accountManager.updateSupportedServices).toBeCalled();
       expect(notificationCenter.emitKVChange).toBeCalledWith(SERVICE.LOGIN);
     });
@@ -79,7 +81,6 @@ describe('Sdk', () => {
       ServiceLoader.getInstance = jest.fn().mockReturnValue(mockAccountService);
 
       await sdk.init({ api: {}, db: {} });
-      expect(DataMigration.migrateKVStorage).toBeCalled();
       expect(mockReLogin).toBeCalled();
       expect(accountManager.updateSupportedServices).toBeCalled();
       expect(notificationCenter.emitKVChange).not.toBeCalledWith(SERVICE.LOGIN);
@@ -108,12 +109,20 @@ describe('Sdk', () => {
     });
     afterEach(() => jest.restoreAllMocks());
     it('should init networkManager and sync data', () => {
+      ServiceLoader.getInstance = jest.fn().mockReturnValue({
+        userConfig: AccountUserConfig.prototype,
+        authUserConfig: AuthUserConfig.prototype,
+      });
       sdk.onAuthSuccess(false);
       expect(sdk.updateNetworkToken).toBeCalled();
       expect(syncService.syncData).toBeCalled();
       expect(notificationCenter.emitKVChange).not.toBeCalled();
     });
     it('should not sync data when in rc only mode', () => {
+      ServiceLoader.getInstance = jest.fn().mockReturnValue({
+        userConfig: AccountUserConfig.prototype,
+        authUserConfig: AuthUserConfig.prototype,
+      });
       sdk.onAuthSuccess(true);
       expect(sdk.updateNetworkToken).toBeCalled();
       expect(syncService.syncData).not.toBeCalled();

@@ -15,9 +15,11 @@ import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SERVICE } from '../../../service/eventKey';
 import { MAKE_CALL_ERROR_CODE } from '../types';
 import { IdModel } from '../../../framework/model';
+import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 
 class TelephonyService extends EntityBaseService<IdModel> {
   private _telephonyEngineController: TelephonyEngineController;
+  private _userConfig: TelephonyUserConfig;
 
   constructor() {
     super(false);
@@ -42,6 +44,13 @@ class TelephonyService extends EntityBaseService<IdModel> {
 
   private _init() {
     this.telephonyController.initEngine();
+  }
+
+  get userConfig() {
+    if (!this._userConfig) {
+      this._userConfig = new TelephonyUserConfig();
+    }
+    return this._userConfig;
   }
 
   createAccount = (

@@ -15,8 +15,8 @@ import {
 } from '../../../framework/controller/interface/IEntityCacheSearchController';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
+import { AccountService } from '../../account/service';
 import { SortableModel, ModelIdType } from '../../../framework/model';
-import { AccountUserConfig } from '../../../module/account/config';
 import { CompanyService } from '../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { versionHash } from '../../../utils/mathUtils';
@@ -46,7 +46,9 @@ import { RecentSearchTypes, RecentSearchModel } from '../../search/entity';
 import { MY_LAST_POST_VALID_PERIOD } from '../../search/constants';
 
 function buildNewGroupInfo(members: number[]) {
-  const userConfig = new AccountUserConfig();
+  const userConfig = ServiceLoader.getInstance<AccountService>(
+    ServiceConfig.ACCOUNT_SERVICE,
+  ).userConfig;
   const userId = userConfig.getGlipUserId();
   return {
     members,
@@ -90,7 +92,9 @@ export class GroupFetchDataController {
         ? await extractHiddenGroupIdsWithoutUnread(profile)
         : [];
       const excludeIds = favoriteGroupIds.concat(hiddenIds);
-      const userConfig = new AccountUserConfig();
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
       const userId = userConfig.getGlipUserId();
       const isTeam = groupType === GROUP_QUERY_TYPE.TEAM;
       result = await this.entitySourceController.getEntities(
@@ -220,7 +224,9 @@ export class GroupFetchDataController {
   }
 
   private get _currentUserId() {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     return userConfig.getGlipUserId();
   }
 
@@ -715,7 +721,9 @@ export class GroupFetchDataController {
   }
 
   private _addCurrentUserToMemList(ids: number[]) {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const userId = userConfig.getGlipUserId();
     if (userId) {
       ids.push(userId);
@@ -775,7 +783,9 @@ export class GroupFetchDataController {
         favoriteGroupIds,
         true,
       );
-      const userConfig = new AccountUserConfig();
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
       const currentUserId = userConfig.getGlipUserId();
 
       return groups.filter(

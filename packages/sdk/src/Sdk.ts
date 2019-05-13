@@ -26,10 +26,11 @@ import notificationCenter from './service/notificationCenter';
 import { SyncService } from './module/sync';
 import { ApiConfig, DBConfig, ISdkConfig } from './types';
 import { AccountService } from './module/account';
-import { DataMigration, UserConfigService } from './module/config';
+import { UserConfigService } from './module/config';
 import { setGlipToken } from './authenticator/utils';
-import { AuthUserConfig, AccountGlobalConfig } from './module/account/config';
+import { AccountGlobalConfig } from './module/account/config';
 import { ServiceConfig, ServiceLoader } from './module/serviceLoader';
+import { configMigrator } from './framework/config';
 
 const AM = AccountManager;
 
@@ -52,7 +53,6 @@ class Sdk {
 
   async init(config: ISdkConfig) {
     this._sdkConfig = config;
-    DataMigration.migrateKVStorage();
 
     notificationCenter.on(
       SHOULD_UPDATE_NETWORK_TOKEN,
@@ -119,12 +119,15 @@ class Sdk {
   async onAuthSuccess(isRCOnlyMode: boolean) {
     // need to set token if it's not first login
     if (AccountGlobalConfig.getUserDictionary()) {
-      const authConfig = new AuthUserConfig();
+      const authConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).authUserConfig;
       this.updateNetworkToken({
         rcToken: authConfig.getRCToken(),
         glipToken: authConfig.getGlipToken(),
       });
     }
+    configMigrator.init();
 
     if (isRCOnlyMode) {
       this.accountManager.updateSupportedServices();
@@ -207,6 +210,7 @@ class Sdk {
   private _initDataAnalysis() {
     dataAnalysis.init();
   }
+
   private _resetDataAnalysis() {
     dataAnalysis.reset();
   }

@@ -81,7 +81,7 @@ describe('SearchPersonController', () => {
             result = itemService;
             break;
           case ServiceConfig.ACCOUNT_SERVICE:
-            result = accountService;
+            result = { userConfig: AccountUserConfig.prototype };
             break;
           case ServiceConfig.GLOBAL_CONFIG_SERVICE:
             result = {

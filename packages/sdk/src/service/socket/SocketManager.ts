@@ -7,10 +7,12 @@ import { SocketFSM, StateHandlerType } from './SocketFSM';
 import notificationCenter from '../../service/notificationCenter';
 import { CONFIG, SOCKET, SERVICE } from '../../service/eventKey';
 import { mainLogger } from 'foundation';
-import { AuthUserConfig } from '../../module/account/config';
+import { AccountService } from '../../module/account/service';
 import { SocketCanConnectController } from './SocketCanConnectController';
 import { getCurrentTime } from '../../utils/jsUtils';
-import { SyncUserConfig } from '../../module/sync/config/SyncUserConfig';
+import { SyncService } from '../../module/sync/service';
+import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
+
 const SOCKET_LOGGER = 'SOCKET';
 export class SocketManager {
   private static instance: SocketManager;
@@ -141,7 +143,9 @@ export class SocketManager {
   }
 
   private _onLogin() {
-    const synConfig = new SyncUserConfig();
+    const synConfig = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    ).userConfig;
     const timeStamp = synConfig.getLastIndexTimestamp();
     this.info('onLogin', timeStamp);
     if (!timeStamp) {
@@ -199,7 +203,9 @@ export class SocketManager {
     if (!serverUrl) {
       return;
     }
-    const socketUserConfig = new SyncUserConfig();
+    const socketUserConfig = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    ).userConfig;
     socketUserConfig.setReconnectSocketServerHost(serverUrl);
     if (serverUrl === runningUrl) {
       return;
@@ -326,7 +332,9 @@ export class SocketManager {
   private _startRealFSM() {
     // TO-DO: 1. jitter 2. ignore for same serverURL when activeFSM is connected?
     const serverHost = this._getServerHost();
-    const authConfig = new AuthUserConfig();
+    const authConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).authUserConfig;
     const glipToken = authConfig.getGlipToken();
     this.info('starting FSM with host:', serverHost);
     if (serverHost) {
@@ -359,7 +367,9 @@ export class SocketManager {
   private _clearReconnectSocketHost() {
     this.info('start clearing reconnect socket address');
     const runningUrl = this._getRunningFSMUrl();
-    const socketUserConfig = new SyncUserConfig();
+    const socketUserConfig = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    ).userConfig;
     if (runningUrl === socketUserConfig.getReconnectSocketServerHost()) {
       this.info('clearing reconnect socket address', runningUrl);
       socketUserConfig.setReconnectSocketServerHost('');
@@ -421,7 +431,9 @@ export class SocketManager {
   }
 
   private _getServerHost() {
-    const socketUserConfig = new SyncUserConfig();
+    const socketUserConfig = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    ).userConfig;
     const reconnectAddress = socketUserConfig.getReconnectSocketServerHost();
     return reconnectAddress || socketUserConfig.getIndexSocketServerHost();
   }

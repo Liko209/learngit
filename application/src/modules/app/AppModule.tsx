@@ -27,7 +27,6 @@ import {
   errorReporter,
   getAppContextInfo,
 } from '@/utils/error';
-import { AccountUserConfig } from 'sdk/module/account/config';
 import { AccountService } from 'sdk/module/account';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { AppEnvSetting } from 'sdk/module/env';
@@ -116,7 +115,7 @@ class AppModule extends AbstractModule {
       );
 
       if (accountService.isAccountReady()) {
-        const accountUserConfig = new AccountUserConfig();
+        const accountUserConfig = accountService.userConfig;
         const currentUserId = accountUserConfig.getGlipUserId();
         const currentCompanyId = accountUserConfig.getCurrentCompanyId();
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
