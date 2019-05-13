@@ -119,6 +119,34 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-call-actions-btn');
   }
 
+  get moreOptionsMenu() {
+    return this.getSelectorByAutomationId('telephony-more-option-menu');
+  }
+
+  get replyActionMenuItem() {
+    return this.getSelectorByAutomationId('telephony-reply-menu-item');
+  }
+
+  get replyWithInMeeting() {
+    return this.getSelectorByAutomationId('reply-with-in-meeting');
+  }
+
+  get replyWithWillCallBackEntry() {
+    return this.getSelectorByAutomationId('reply-with-will-call-back');
+  }
+
+  get replyWithWillCallBack5Min() {
+    return this.getSelectorByAutomationId('reply-with-0-type-time');
+  }
+
+  get replyWithCustomMessage() {
+    return this.getSelectorByAutomationId('reply-with-custom-message');
+  }
+
+  get replyBackActionButton() {
+    return this.getSelectorByAutomationId('reply-back-button');
+  }
+
   async clickActionsButton() {
     await this.t.click(this.actionsButton);
   }
@@ -191,4 +219,39 @@ export class TelephonyDialog extends BaseWebComponent {
     await this.t.hover(this.sendToVoiceMailButton);
   }
 
+  async hoverMoreOptionsButton() {
+    await this.t.hover(this.actionsButton);
+  }
+
+  async clickMoreOptionsButton() {
+    await this.t.click(this.actionsButton);
+  }
+
+  async clickReplyActionButton() {
+    await this.t.click(this.replyActionMenuItem);
+  }
+
+  async clickReplyInMeetingButton() {
+    await this.t.click(this.replyWithInMeeting);
+  }
+
+  async clickReplyWithWillCallBackEntryButton() {
+    await this.t.click(this.replyWithWillCallBackEntry);
+  }
+
+  async clickReplyWithWillCallBack5MinButton() {
+    await this.t.click(this.replyWithWillCallBack5Min);
+  }
+
+  async hoverReplyBackActionButton() {
+    await this.t.hover(this.replyBackActionButton);
+  }
+
+  async typeCustomReplyMessage(message: string) {
+    await this.clickAndTypeText(this.replyWithCustomMessage, message);
+  }
+
+  async sendCustomReplyMessage() {
+    await this.t.click(this.replyWithCustomMessage).pressKey('enter');
+  }
 }

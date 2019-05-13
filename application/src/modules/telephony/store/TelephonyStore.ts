@@ -40,7 +40,13 @@ enum CALL_TYPE {
   OUTBOUND,
 }
 
+enum INCOMING_STATE {
+  IDLE,
+  REPLY,
+}
+
 const logTag = '[TelephonyStore_View]';
+const INITIAL_REPLY_COUNTDOWN_TIME = 55;
 
 class TelephonyStore {
   private _callFSM = new CallFSM();
@@ -48,6 +54,7 @@ class TelephonyStore {
   private _holdFSM = new HoldFSM();
   private _recordFSM = new RecordFSM();
   private _recordDisableFSM = new RecordDisableFSM();
+  private _intervalReplyId?: NodeJS.Timeout;
 
   @observable
   callWindowState: CALL_WINDOW_STATUS = this._callWindowFSM.state;
@@ -76,9 +83,15 @@ class TelephonyStore {
   @observable
   activeCallTime?: number;
   @observable
+  replyCountdownTime?: number = INITIAL_REPLY_COUNTDOWN_TIME;
+  @observable
   keypadEntered: boolean = false;
   @observable
   enteredKeys: string = '';
+  @observable
+  customReplyMessage: string = '';
+  @observable
+  shiftKeyDown = false;
   @observable
   isMute = false;
 
@@ -86,6 +99,9 @@ class TelephonyStore {
   pendingForHold: boolean = false;
   @observable
   pendingForRecord: boolean = false;
+
+  @observable
+  incomingState: INCOMING_STATE = INCOMING_STATE.IDLE;
 
   constructor() {
     type FSM = '_callWindowFSM' | '_recordFSM' | '_recordDisableFSM';
@@ -131,6 +147,7 @@ class TelephonyStore {
           break;
         case CALL_STATE.IDLE:
           this._restoreButtonStates();
+          this.resetReply();
           break;
         case CALL_STATE.CONNECTING:
           this.activeCallTime = undefined;
@@ -248,6 +265,14 @@ class TelephonyStore {
 
   inputKey = (key: string) => {
     this.enteredKeys += key;
+  }
+
+  inputCustomReplyMessage = (msg: string) => {
+    this.customReplyMessage = msg.trimLeft();
+  }
+
+  setShiftKeyDown = (down: boolean) => {
+    this.shiftKeyDown = down;
   }
 
   openDialer = () => {
@@ -413,10 +438,39 @@ class TelephonyStore {
     return this.recordDisabledState === RECORD_DISABLED_STATE.DISABLED;
   }
 
+  directReply = () => {
+    this.incomingState = INCOMING_STATE.REPLY;
+    if (!this._intervalReplyId) {
+      this._createReplyInterval();
+    }
+  }
+
+  quitReply = () => {
+    this.incomingState = INCOMING_STATE.IDLE;
+  }
+
+  resetReply = () => {
+    this.replyCountdownTime = undefined;
+    this.customReplyMessage = '';
+    this._intervalReplyId && clearInterval(this._intervalReplyId);
+    this._intervalReplyId = undefined;
+  }
+
+  @action.bound
+  private _createReplyInterval() {
+    this.replyCountdownTime = INITIAL_REPLY_COUNTDOWN_TIME;
+    this._intervalReplyId = setInterval(() => {
+      this.replyCountdownTime && --this.replyCountdownTime;
+      if (!this.replyCountdownTime) {
+        this._intervalReplyId && clearInterval(this._intervalReplyId);
+      }
+    },                                  1000);
+  }
+
   @action
   switchBetweenMuteAndUnmute = () => {
     this.isMute = !this.isMute;
   }
 }
 
-export { TelephonyStore, CALL_TYPE };
+export { TelephonyStore, CALL_TYPE, INCOMING_STATE };

@@ -11,6 +11,8 @@ import {
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
   RTCCallActionSuccessOptions,
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
 } from 'sdk/module/telephony';
 import {
   MAKE_CALL_ERROR_CODE,
@@ -364,6 +366,39 @@ class TelephonyService {
   }
 
   callComponent = () => import('../container/Call');
+
+  startReply = () => {
+    if (!this._callId) {
+      return;
+    }
+    return this._serverTelephonyService.startReply(this._callId as string);
+  }
+
+  replyWithMessage = (message: string) => {
+    if (!this._callId) {
+      return;
+    }
+    return this._serverTelephonyService.replyWithMessage(
+      this._callId as string,
+      message,
+    );
+  }
+
+  replyWithPattern = (
+    pattern: RTC_REPLY_MSG_PATTERN,
+    time?: number,
+    timeUnit?: RTC_REPLY_MSG_TIME_UNIT,
+  ) => {
+    if (!this._callId) {
+      return;
+    }
+    return this._serverTelephonyService.replyWithPattern(
+      this._callId as string,
+      pattern,
+      time,
+      timeUnit,
+    );
+  }
 }
 
 export { TelephonyService };

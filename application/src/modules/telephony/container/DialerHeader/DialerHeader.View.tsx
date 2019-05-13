@@ -24,12 +24,13 @@ class DialerHeaderViewComponent extends React.Component<
   }
 
   render() {
-    const { name, phone, isExt, t } = this.props;
+    const { name, phone, isExt, Back, t } = this.props;
     return (
       <JuiHeader
         Avatar={this._Avatar}
         name={name}
         phone={isExt ? `${t('telephony.Ext')} ${phone}` : phone}
+        Back={Back}
       />
     );
   }

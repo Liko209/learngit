@@ -15,7 +15,7 @@ import {
 type Props = {
   Actions?: React.ComponentType[];
   Status?: React.ComponentType;
-  label: string;
+  label?: string;
 };
 
 const StyledTitleBar = styled('div')`
@@ -56,7 +56,7 @@ class JuiTitleBar extends PureComponent<Props> {
       <StyledTitleBar data-test-automation-id="telephony-dialer-title">
         <StyledLeft data-test-automation-id="telephony-dialer-title-left">
           {Status && <Status />}
-          {label}
+          {label && label}
         </StyledLeft>
         <StyledRight>
           {Actions &&

@@ -8,6 +8,7 @@ import { GlobalSearchStore } from '../../store/GlobalSearchStore';
 import { GlobalSearchService } from '../GlobalSearchService';
 import { config } from '../../module.config';
 import { SEARCH_VIEW } from '../../types';
+import { Dialer } from '../../../telephony/container';
 // jest.mock('../../store/GlobalSearchStore');
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(config);
@@ -41,6 +42,12 @@ describe('GlobalSearchService', () => {
     it('global search store open should be false', () => {
       globalSearchService.closeGlobalSearch();
       expect(globalSearchStore.open).toBeFalsy();
+    });
+  });
+  describe('registerExtension()', () => {
+    it('should call global search store addExtensions()', () => {
+      globalSearchService.registerExtension('Dialer', Dialer);
+      expect(globalSearchStore.extensions['Dialer'].has(Dialer)).toBeTruthy();
     });
   });
 });
