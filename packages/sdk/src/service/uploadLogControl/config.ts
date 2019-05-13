@@ -15,6 +15,7 @@ const DEFAULT_CONFIG: LogControlConfig = {
   autoFlushTimeCycle: 60 * 1000,
   persistentLimit: 10 * 1024 * 1024,
   memoryCacheSizeThreshold: 10 * 1024 * 1024,
+  zipLogAutoUpload: false,
 };
 
 class ConfigManager {

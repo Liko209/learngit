@@ -56,7 +56,7 @@ class Test extends React.Component {
           <JuiFade
             show={this.state.show}
             duration="standard"
-            easing="openCloseDialog"
+            easing="sharp"
             onExited={this.hide}
             appear={true}
           >

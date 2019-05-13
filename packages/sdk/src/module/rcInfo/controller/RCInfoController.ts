@@ -83,7 +83,9 @@ class RCInfoController {
         this.getRCInfoFetchController(),
         this.getRCAccountInfoController(),
         this.getAccountServiceInfoController(),
+        this.getRCCallerIdController(),
       );
+      this._regionInfoController.init();
     }
     return this._regionInfoController;
   }
@@ -95,6 +97,13 @@ class RCInfoController {
       );
     }
     return this._webSettingInfoController;
+  }
+
+  dispose() {
+    if (this._regionInfoController) {
+      this._regionInfoController.dispose();
+      delete this._regionInfoController;
+    }
   }
 }
 

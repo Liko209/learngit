@@ -50,7 +50,7 @@ const LabelWrap = styled<TypographyProps>(Typography)`
     margin-bottom: ${spacing(1)};
 
     &.disabled {
-      opacity: ${({ theme }) => theme.opacity.p50};
+      opacity: ${({ theme }) => theme.opacity['5']};
     }
   }
 `;
@@ -62,7 +62,7 @@ const DescriptionWrap = styled<TypographyProps>(Typography)`
     ${lineClamp(3, 15)}
 
     &.disabled {
-      opacity: ${({ theme }) => theme.opacity.p50};
+      opacity: ${({ theme }) => theme.opacity['5']};
     }
   }
 `;

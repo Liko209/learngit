@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RIGHT_RAIL_ITEM_TYPE } from './constants';
+import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDataListHandler';
+import { Item } from 'sdk/module/item/entity';
 
 type LoadStatus = {
   firstLoaded: boolean;
@@ -15,6 +17,10 @@ const InitLoadStatus: LoadStatus = {
   loading: false,
 };
 
+interface IGroupItemListHandler extends FetchSortableDataListHandler<Item> {
+  total: number;
+}
+
 type Props = {
   groupId: number;
   type: RIGHT_RAIL_ITEM_TYPE;
@@ -24,12 +30,7 @@ type Props = {
 };
 
 type ViewProps = {
-  size: number;
-  total: number;
-  getIds: number[];
-  isLoadingContent: () => boolean;
-  loadMore: (direction: 'up' | 'down', count: number) => Promise<void>;
-  loadInitialData: () => Promise<void>;
+  listHandler: IGroupItemListHandler;
 };
 
-export { Props, ViewProps, LoadStatus, InitLoadStatus };
+export { Props, ViewProps, LoadStatus, InitLoadStatus, IGroupItemListHandler };

@@ -14,11 +14,13 @@ import {
 
 const IndicatorView = observer((props: IndicatorViewProps) => {
   let tag;
-  if (props.hasDraft) {
-    tag = <JuiIndicatorDraft />; // '[Draft]'
-  }
-  if (props.sendFailurePostIds.length > 0) {
-    tag = <JuiIndicatorFailure />; // '[Failure]'; // only show one
+  if (props.canPost) {
+    if (props.hasDraft) {
+      tag = <JuiIndicatorDraft />; // '[Draft]'
+    }
+    if (props.sendFailurePostIds.length > 0) {
+      tag = <JuiIndicatorFailure />; // '[Failure]'; // only show one
+    }
   }
   if (!tag) {
     return null;

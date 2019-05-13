@@ -28,6 +28,7 @@ type FormatToHtmlParams = {
   staticHttpServer: string;
   customEmojiMap: CustomEmojiMap;
   highlightTerms?: string[];
+  unicodeOnly?: boolean;
 };
 
 export {

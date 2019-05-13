@@ -7,6 +7,7 @@ import { PromisedComputedValue } from 'computed-async-mobx';
 
 type TimeNodeDividerProps = {
   value: string | number;
+  today?: number;
 };
 
 type TimeNodeDividerViewProps = {

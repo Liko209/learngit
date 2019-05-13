@@ -21,7 +21,7 @@ import { StyledWrapper } from './StyledWrapper';
 import { JuiTabProps } from './Tab';
 import { JuiPopperMenu, AnchorProps } from '../../pattern/PopperMenu';
 import { JuiMenuList, JuiMenuItem } from '../Menus';
-import { JuiArrowTip } from '../Tooltip/ArrowTip';
+import { RuiTooltip } from 'rcui/components/Tooltip';
 
 type States = {
   openMenu: boolean;
@@ -112,12 +112,9 @@ class JuiTabs extends PureComponent<Props, States> {
   componentWillReceiveProps(nextProps: Props) {
     const { children } = nextProps;
     const newTabTitles: (string | JSX.Element)[] = [];
-    Children.map(
-      children,
-      (child: ReactElement<JuiTabProps>) => {
-        return newTabTitles.push(child.props.title);
-      },
-    );
+    Children.map(children, (child: ReactElement<JuiTabProps>) => {
+      return newTabTitles.push(child.props.title);
+    });
     // force update after i18n ready
     if (difference(newTabTitles, this._tabTitles).length !== 0) {
       this._moreWidth = 0;
@@ -284,9 +281,9 @@ class JuiTabs extends PureComponent<Props, States> {
     return this._renderStyledTab({
       value: MORE,
       icon: (
-        <JuiArrowTip title={moreText} tooltipForceHide={tooltipForceHide}>
+        <RuiTooltip title={moreText} tooltipForceHide={tooltipForceHide}>
           <MoreHoriz />
-        </JuiArrowTip>
+        </RuiTooltip>
       ),
       onClick: this._showMenuList,
       style: STYLE,
