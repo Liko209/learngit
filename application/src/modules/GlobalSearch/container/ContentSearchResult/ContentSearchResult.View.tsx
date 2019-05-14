@@ -19,11 +19,8 @@ import { Stream as PostListStream } from '@/modules/message/container/PostListPa
 import { SearchFilter } from '@/modules/GlobalSearch/container/SearchFilter';
 import { ConversationPageContext } from '@/modules/message/container/ConversationPage/types';
 import { SearchHighlightContext } from 'jui/hoc/withHighlight';
-import { USED_HEIGHT } from './constants';
+import { USED_HEIGHT, MIN_DIALOG_HEIGHT, MIN_HEIGHT_FIX } from './constants';
 import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
-
-const MIN_DIALOG_HEIGHT = 400 + 16;
-const MIN_HEIGHT_FIX = 276;
 
 type Props = ContentSearchResultViewProps &
   WithTranslation & { isShow: boolean };

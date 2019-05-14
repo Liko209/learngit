@@ -21,6 +21,7 @@ import { LIST_OUTTER_HEIGHT } from '../ContentSearchResult/constants';
 
 const MAX_COUNT = 12;
 const ITEM_HEIGHT = 40;
+const FULLSCREEN_WIDTH = 640;
 
 type Props = ItemListProps &
   ItemListViewProps &
@@ -120,7 +121,7 @@ class ItemListViewComponent extends Component<Props, State> {
   private _handleSizeUpdate = (size: Size) => {
     const width = size.width;
     let height = size.height;
-    if (size.width < 640) {
+    if (size.width < FULLSCREEN_WIDTH) {
       height = size.height - LIST_OUTTER_HEIGHT;
     } else {
       height = Math.min(
