@@ -861,6 +861,11 @@ export class PostItem extends BaseWebComponent {
   }
 
   async hoverPostAndClickJumpToConversationButton() {
+    await this.hoverPost();
+    await this.t.click(this.jumpToConversationButton);
+  }
+
+  async hoverPost() {
     const buttonElement = this.jumpToConversationButton;
     const displayJumpButton = ClientFunction(() => {
       buttonElement().style["opacity"] = "1";
@@ -868,9 +873,8 @@ export class PostItem extends BaseWebComponent {
         dependencies: { buttonElement }
       }
     );
-    await this.t.hover(this.self)
+    await this.t.hover(this.self);
     await displayJumpButton();
-    await this.t.click(this.jumpToConversationButton);
   }
 
   // audio conference
