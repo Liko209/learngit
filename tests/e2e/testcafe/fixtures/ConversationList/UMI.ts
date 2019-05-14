@@ -4,12 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { v4 as uuid } from 'uuid';
+import * as _ from 'lodash';
 import { formalName } from '../../libs/filter';
 import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { IGroup } from '../../v2/models';
+import { IGroup, IUser, ITestMeta } from '../../v2/models';
 
 fixture('ConversationStream/ConversationStream')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -742,7 +743,7 @@ test(formalName('Should be unread when closed conversation received new unread',
   });
 });
 
-test.meta(<ITestMeta> {
+test.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-126'],
   maintainers: ['ali.naffaa'],
@@ -754,9 +755,9 @@ test.meta(<ITestMeta> {
   await h(t).platform(loginUser).init();
   await h(t).scenarioHelper.resetProfileAndState(loginUser);
   const chats = [
-    { name:'F1', umi:2, type: 'DirectMessage' }, { name:'F2', umi:3, type: 'DirectMessage' },
-    { name:'DM1', umi:2, type: 'DirectMessage' }, { name:'DM2', umi:3, type: 'DirectMessage' },
-    { name:'TM1', umi:2, type: 'Team' }, { name:'TM2', umi:3, type: 'Team' },
+    { name: 'F1', umi: 2, type: 'DirectMessage' }, { name: 'F2', umi: 3, type: 'DirectMessage' },
+    { name: 'DM1', umi: 2, type: 'DirectMessage' }, { name: 'DM2', umi: 3, type: 'DirectMessage' },
+    { name: 'TM1', umi: 2, type: 'Team' }, { name: 'TM2', umi: 3, type: 'Team' },
   ];
 
   await h(t).withLog('Given user has F1(2) F2(3) T1(2) T2(3) DM1(2) DM2(3)', async () => {
@@ -768,9 +769,9 @@ test.meta(<ITestMeta> {
   });
 
   await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    },
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  },
   );
 
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
@@ -796,7 +797,7 @@ test.meta(<ITestMeta> {
   });
 });
 
-test.meta(<ITestMeta> {
+test.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-161'],
   maintainers: ['ali.naffaa'],
@@ -808,9 +809,9 @@ test.meta(<ITestMeta> {
   await h(t).platform(loginUser).init();
   await h(t).scenarioHelper.resetProfileAndState(loginUser);
   const chats = [
-    { name:'F1', umi:1, type: 'DirectMessage' }, { name:'F2', umi:1, type: 'DirectMessage' },
-    { name:'DM1', umi:1, type: 'DirectMessage' }, { name:'DM2', umi:2, type: 'DirectMessage' },
-    { name:'TM1', umi:1, type: 'Team' }, { name:'TM2', umi:3, type: 'Team' },
+    { name: 'F1', umi: 1, type: 'DirectMessage' }, { name: 'F2', umi: 1, type: 'DirectMessage' },
+    { name: 'DM1', umi: 1, type: 'DirectMessage' }, { name: 'DM2', umi: 2, type: 'DirectMessage' },
+    { name: 'TM1', umi: 1, type: 'Team' }, { name: 'TM2', umi: 3, type: 'Team' },
   ];
 
   await h(t).withLog('Given user has F1(1) F2(1) T1(1) T2(3) DM1(1) DM2(2)', async () => {
@@ -818,9 +819,9 @@ test.meta(<ITestMeta> {
   });
 
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    },
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  },
   );
 
   await h(t).withLog('Then check UMI in Messages UMI=2+3+4=9 ', async () => {
@@ -848,6 +849,6 @@ const createChats = async (t: TestController, chats: any, loginUser: IUser) => {
   await h(t).glip(loginUser).favoriteGroups(favoriteChats.map(chat => chat.id));
 };
 
-const getChatByName = (chats: any, name :string) => {
+const getChatByName = (chats: any, name: string) => {
   return chats.filter(chat => chat.name === name)[0];
 };
