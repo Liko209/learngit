@@ -103,7 +103,6 @@ export class PhoneSettingPage extends BaseWebComponent {
 
   async callerIDDropDownItemContains(callerIds: string[]) {
     const count = await this.callerIDDropDownItem.count;
-    
     for (let i = 0; i < count; i++) {
       const text = await this.callerIDDropDownItem.nth(i).innerText;
       const numberOnly = text.replace(/[^\d]/g, "");
@@ -111,19 +110,13 @@ export class PhoneSettingPage extends BaseWebComponent {
       let result = false;
       for (const i in callerIds) {
         if (reg.test(callerIds[i])) {
-          result = true
+          result = true;
         }
       }
       assert.ok(result, `${text} does not apply ${callerIds}`);
     }
   }
 
-  existsInList(reg: RegExp, list) {
-    for (const i in list) {
-      if (reg.test(list[i])) return true
-    }
-    return false
-  }
 
   async selectCallerID(text: string) {
     await this.t.click(this.callerIDDropDownItem.withText(text));
