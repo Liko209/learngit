@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>Romania</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Romania" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="rou" transform="translate(0.000000, 5.000000)">
+            <polygon id="Fill-2" fill="#0045E6" points="0 0 7.99881394 0 7.99881394 13.5652174 0 13.5652174"></polygon>
+            <polygon id="Fill-3" fill="#FFE60D" points="7.99881394 0 15.999407 0 15.999407 13.5652174 7.99881394 13.5652174"></polygon>
+            <polygon id="Fill-4" fill="#F21830" points="15.999407 0 24 0 24 13.5652174 15.999407 13.5652174"></polygon>
+        </g>
+    </g>
+</svg>

@@ -34,6 +34,7 @@ import { PermissionService } from './module/permission';
 import { GroupService } from './module/group';
 import { SearchService } from './module/search';
 import { RCInfoService } from './module/rcInfo';
+import { SettingService } from './module/setting';
 import {
   GlobalConfigService,
   UserConfigService,
@@ -89,6 +90,7 @@ const registerConfigs = {
     { name: ServiceConfig.TELEPHONY_SERVICE, value: TelephonyService },
     { name: ServiceConfig.GROUP_CONFIG_SERVICE, value: GroupConfigService },
     { name: ServiceConfig.SEARCH_SERVICE, value: SearchService },
+    { name: ServiceConfig.SETTING_SERVICE, value: SettingService },
     { name: ServiceConfig.PHONE_NUMBER_SERVICE, value: PhoneNumberService },
 
     // Manager

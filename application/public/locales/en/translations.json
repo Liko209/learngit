@@ -539,9 +539,34 @@
     "general": "General",
     "notificationAndSounds": "Notification and Sounds",
     "messages": "Messages",
-    "phone": "Phone",
     "meetings": "Meetings",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "update": "Update",
+    "phone": {
+      "title": "Phone",
+      "general": {
+        "title": "General",
+        "callerID": {
+          "label": "Caller ID",
+          "description": "Choose your default Caller ID for making RingCentral phone calls",
+          "errorText": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later."
+        },
+        "extensions": {
+          "label": "Extension settings",
+          "description": "Customize your RingCentral extension settings (call routing, voicemail greetings and more)",
+          "errorText": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later"
+        },
+        "regionSetting": {
+          "label": "Region",
+          "region": "Region",
+          "country": "Country",
+          "areaCode": "Area Code",
+          "areaCodeErrorText": "Invalid area code",
+          "saveSuccessText": "Your region is updated successfully.",
+          "regionChangeDesc": "Set the country and area code for your region. This will be used for local and emergency dialing and phone number formatting."
+        }
+      }
+    }
   },
   "viewer": {
     "ZoomIn": "Scale file up",

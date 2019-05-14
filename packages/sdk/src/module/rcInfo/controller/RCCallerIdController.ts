@@ -18,6 +18,8 @@ const CALLER_ID_ORDER = {
   [PhoneNumberType.CompanyFaxNumber]: 5,
 };
 
+const BLOCKED_NUMBER_CALLER_ID = 0;
+
 class RCCallerIdController {
   constructor(private _rcInfoFetchController: RCInfoFetchController) {}
 
@@ -38,15 +40,45 @@ class RCCallerIdController {
         };
       });
     }
+
     result = this._addBlockedNumber(result);
     return result.sort(this._recordsSortFn.bind(this));
+  }
+
+  async getCallerById(id: number) {
+    const callerIds = await this.getCallerIdList();
+    const index = callerIds.findIndex(caller => caller.id === id);
+    return index !== -1 ? callerIds[index] : undefined;
+  }
+
+  async getFirstDidCaller() {
+    const callerIds = await this.getCallerIdList();
+    for (const callerId of callerIds) {
+      if (callerId && callerId.usageType === PhoneNumberType.DirectNumber) {
+        return callerId;
+      }
+    }
+    return undefined;
+  }
+
+  async getCompanyMainCaller() {
+    const callers = await this.getCallerIdList();
+    for (const callerId of callers) {
+      if (
+        callerId &&
+        callerId.usageType === PhoneNumberType.MainCompanyNumber
+      ) {
+        return callerId;
+      }
+    }
+    return undefined;
   }
 
   private _addBlockedNumber(callerIdList: PhoneNumberModel[]) {
     return [
       ...callerIdList,
       {
-        id: 0,
+        id: BLOCKED_NUMBER_CALLER_ID,
         usageType: PhoneNumberType.Blocked,
         phoneNumber: PhoneNumberType.Blocked,
       },

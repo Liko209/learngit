@@ -23,6 +23,7 @@ import { mainLogger } from 'foundation';
 import { IEntityCacheController } from '../controller/interface/IEntityCacheController';
 import { IEntityCacheSearchController } from '../controller/interface/IEntityCacheSearchController';
 import { IEntityNotificationController } from '../controller/interface/IEntityNotificationController';
+import { BaseSettingEntity } from '../model/setting';
 import { IConfigHistory } from '../config/IConfigHistory';
 import { configMigrator } from '../config';
 import { Nullable } from 'sdk/types';
@@ -188,6 +189,16 @@ class EntityBaseService<
       this._entityNotificationController = this.buildNotificationController();
     }
     return this._entityNotificationController;
+  }
+
+  async getSettingsByParentId(settingId: number): Promise<BaseSettingEntity[]> {
+    return [];
+  }
+
+  async getSettingItemById(
+    settingId: number,
+  ): Promise<BaseSettingEntity | undefined> {
+    return undefined;
   }
 }
 
