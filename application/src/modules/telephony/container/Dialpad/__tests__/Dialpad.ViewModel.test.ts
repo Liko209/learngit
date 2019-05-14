@@ -57,4 +57,7 @@ describe('DialpadViewModel', () => {
     );
     expect(_telephonyService.maximize).toBeCalled();
   });
+  it('should initialize without fade animation', () => {
+    expect(dialpadViewModel.shouldAnimationStart).toBe(false);
+  });
 });

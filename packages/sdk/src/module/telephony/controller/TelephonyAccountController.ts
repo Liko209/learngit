@@ -84,7 +84,8 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     const telephonyConfig = ServiceLoader.getInstance<TelephonyService>(
       ServiceConfig.TELEPHONY_SERVICE,
     ).userConfig;
-    return telephonyConfig.getLastCalledNumber();
+    const res = telephonyConfig.getLastCalledNumber();
+    return res ? res : '';
   }
 
   setLastCalledNumber(num: string) {
@@ -94,54 +95,87 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     telephonyConfig.setLastCalledNumber(num);
   }
 
+  isValidNumber(toNumber: string) {
+    return new RegExp('^[0-9+*# ()]+$').test(toNumber.trim());
+  }
+
   async makeCall(toNumber: string, fromNum: string) {
-    let result = this._checkVoipStatus();
-    if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
-      return result;
+    if (!this.isValidNumber(toNumber)) {
+      this._callDelegate &&
+        this._callDelegate.onCallStateChange('', RTC_CALL_STATE.DISCONNECTED);
+      return MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
     }
     const phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
       ServiceConfig.PHONE_NUMBER_SERVICE,
     );
+
     const e164ToNumber = await phoneNumberService.getE164PhoneNumber(toNumber);
-    this.setLastCalledNumber(e164ToNumber);
-    result = await this._makeCallController.tryMakeCall(e164ToNumber);
-    if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
-      return result;
+
+    if (!e164ToNumber) {
+      this._callDelegate &&
+        this._callDelegate.onCallStateChange('', RTC_CALL_STATE.DISCONNECTED);
+      return MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
     }
-    if (this._telephonyCallDelegate) {
-      return MAKE_CALL_ERROR_CODE.MAX_CALLS_REACHED;
-    }
-    this._telephonyCallDelegate = new TelephonyCallController(
-      this._callDelegate,
-    );
-    this._telephonyCallDelegate.setCallStateCallback(this.callStateChanged);
-    let makeCallResult: RTC_STATUS_CODE;
-    if (fromNum) {
-      makeCallResult = this._rtcAccount.makeCall(
-        toNumber,
-        this._telephonyCallDelegate,
-        { fromNumber: fromNum },
+    this.setLastCalledNumber(toNumber);
+
+    let result: MAKE_CALL_ERROR_CODE = MAKE_CALL_ERROR_CODE.NO_ERROR;
+    do {
+      result = this._checkVoipStatus();
+      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
+        break;
+      }
+
+      result = await this._makeCallController.tryMakeCall(e164ToNumber);
+      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
+        break;
+      }
+
+      if (this._telephonyCallDelegate) {
+        return MAKE_CALL_ERROR_CODE.MAX_CALLS_REACHED;
+      }
+      this._telephonyCallDelegate = new TelephonyCallController(
+        this._callDelegate,
       );
-    } else {
-      makeCallResult = this._rtcAccount.makeCall(
-        toNumber,
-        this._telephonyCallDelegate,
-      );
-    }
-    switch (makeCallResult) {
-      case RTC_STATUS_CODE.NUMBER_INVALID: {
+      this._telephonyCallDelegate.setCallStateCallback(this.callStateChanged);
+
+      let makeCallResult: RTC_STATUS_CODE;
+      if (fromNum) {
+        makeCallResult = this._rtcAccount.makeCall(
+          toNumber,
+          this._telephonyCallDelegate,
+          { fromNumber: fromNum },
+        );
+      } else {
+        makeCallResult = this._rtcAccount.makeCall(
+          toNumber,
+          this._telephonyCallDelegate,
+        );
+      }
+
+      if (
+        makeCallResult !== RTC_STATUS_CODE.OK &&
+        this._telephonyCallDelegate
+      ) {
+        delete this._telephonyCallDelegate;
+      }
+
+      if (makeCallResult === RTC_STATUS_CODE.NUMBER_INVALID) {
         result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
         break;
-      }
-      case RTC_STATUS_CODE.MAX_CALLS_REACHED: {
+      } else if (makeCallResult === RTC_STATUS_CODE.MAX_CALLS_REACHED) {
         result = MAKE_CALL_ERROR_CODE.MAX_CALLS_REACHED;
         break;
-      }
-      case RTC_STATUS_CODE.INVALID_STATE: {
+      } else if (makeCallResult === RTC_STATUS_CODE.INVALID_STATE) {
         result = MAKE_CALL_ERROR_CODE.INVALID_STATE;
         break;
       }
+    } while (false);
+
+    if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
+      this._callDelegate &&
+        this._callDelegate.onCallStateChange('', RTC_CALL_STATE.DISCONNECTED);
     }
+
     return result;
   }
 

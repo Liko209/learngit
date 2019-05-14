@@ -9,7 +9,7 @@ import { ISettingService, SETTING_SERVICE } from '@/modules/setting/interface';
 import { buildSettingItem } from '@/modules/setting/container/SettingItemBuild';
 import { SETTING_ITEM_ID } from './constants';
 import { ExtensionsSettingItem } from './Extensions';
-import { SelectsView } from '@/modules/setting/container/SettingItems';
+import { CallerIdSettingItem } from './CallerIdSettingItem';
 import i18nT from '@/utils/i18nT';
 import { RegionSettingItem } from './RegionSettingItem';
 
@@ -33,7 +33,7 @@ class TelephonySettingManager {
         label: await i18nT(CallerIDLabel),
         automationKey: CallerIDAutomationKey,
         description: await i18nT(CallerIDDescription),
-        Right: SelectsView,
+        Right: CallerIdSettingItem,
       }),
       [id]: buildSettingItem({
         automationKey,

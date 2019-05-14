@@ -6,6 +6,7 @@
 import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import { typography, grey } from '../../../foundation/utils/styles';
+import { withHighlight } from '../../../hoc/withHighlight';
 
 type Props = {
   text: string;
@@ -16,10 +17,15 @@ const StyledTaskSectionOrDescription = styled.div`
   color: ${grey('500')};
 `;
 
-const JuiTaskSectionOrDescription = memo((props: Props) => (
-  <StyledTaskSectionOrDescription>{props.text}</StyledTaskSectionOrDescription>
-));
+const JuiTaskSectionOrDescriptionComponent = ({ text }: Props) => (
+  <StyledTaskSectionOrDescription dangerouslySetInnerHTML={{ __html: text }} />
+);
 
-JuiTaskSectionOrDescription.displayName = 'JuiTaskSectionOrDescription';
+JuiTaskSectionOrDescriptionComponent.displayName =
+  'JuiTaskSectionOrDescription';
+
+const JuiTaskSectionOrDescription = withHighlight(['text'])(
+  memo(JuiTaskSectionOrDescriptionComponent),
+);
 
 export { JuiTaskSectionOrDescription };
