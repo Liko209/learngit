@@ -6,7 +6,7 @@ import { AppRoot } from "../../v2/page-models/AppRoot";
 
 
 
-fixture('TopBar').beforeEach(setupCase(BrandTire.RCOFFICE)).afterEach(teardownCase())
+fixture('TopBar/Profile').beforeEach(setupCase(BrandTire.RCOFFICE)).afterEach(teardownCase())
 test(formalName('Check menu tip', ['P0', 'Profile', 'Hank.Huang']), async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[5];

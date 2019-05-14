@@ -6,7 +6,7 @@ import { AppRoot } from "../../v2/page-models/AppRoot";
 
 
 
-fixture('TopBar')
+fixture('TopBar/BackNForward')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase());
 test(formalName('Check menu tip', ['P0', 'BackNForward', 'Hank.Huang']), async (t) => {

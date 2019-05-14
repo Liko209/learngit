@@ -6,7 +6,7 @@ import { AppRoot } from "../../v2/page-models/AppRoot";
 import { IGroup } from "../../v2/models";
 import { v4 as uuid } from "uuid"
 
-fixture('TopBar')
+fixture('TopBar/Search')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase())
 test(formalName('Check menu tip', ['P0', 'Search', 'Hank.Huang']), async (t) => {

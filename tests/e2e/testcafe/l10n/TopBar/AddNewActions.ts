@@ -6,7 +6,7 @@ import { AppRoot } from "../../v2/page-models/AppRoot";
 import { IGroup } from "../../v2/models";
 import { v4 as uuid } from 'uuid';
 
-fixture('TopBar')
+fixture('TopBar/AddNewAction')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase())
 test(formalName('Check menu tip', ['P0', 'AddNewActions', 'Hank.Huang']), async (t) => {
@@ -54,13 +54,14 @@ test(formalName('Check menu tip', ['P0', 'AddNewActions', 'Hank.Huang']), async 
     const toggleList = app.homePage.createTeamModal.toggleList;
     await t.expect(toggleList.exists).ok();
   });
-  await h(t).log(`And I take screenshot ` , {screenshotPath: `Jupiter_TopBar_CreateTeam01`});
+  await h(t).log(`And I take screenshot ` , {screenshotPath: `Jupiter_TopBar_CreateTeamPopup`});
   await h(t).withLog(`When I fill in "Team name" with an existing name` , async() => {
     const createTeamModal = app.homePage.createTeamModal;
     await createTeamModal.typeTeamName(publicTeamWithMe.name);
     await createTeamModal.clickCreateButton();
   });
-  await h(t).withLog(`And I fill in "Members" with ${otherUserExtension} and hover "Remove" button`, async() =>{
+  await h(t).log(`Then I take screenshot` , {screenshotPath: `Jupiter_TopBar_CreateTeamErrorMsg`});
+  await h(t).withLog(`When I fill in "Members" with ${otherUserExtension} and hover "Remove" button`, async() =>{
     const createTeamModal = app.homePage.createTeamModal;
     await createTeamModal.memberInput.typeText(otherUserExtension);
     await createTeamModal.memberInput.selectMemberByNth(0);
