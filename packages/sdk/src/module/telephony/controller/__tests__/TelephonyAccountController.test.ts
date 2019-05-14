@@ -11,6 +11,8 @@ import {
   RTCCall,
   RTCCallInfo,
   RTC_CALL_STATE,
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip/src';
 import { TelephonyCallInfo, MAKE_CALL_ERROR_CODE } from '../../types';
 import { TelephonyCallController } from '../TelephonyCallController';
@@ -244,6 +246,43 @@ describe('TelephonyAccountController', () => {
       jest.spyOn(callController, 'ignore');
       accountController.ignore(callId);
       expect(callController.ignore).toBeCalled();
+    });
+  });
+
+  describe('startReply', () => {
+    it('should call controller to startReply', () => {
+      jest.spyOn(callController, 'startReply');
+      accountController.startReply(callId);
+      expect(callController.startReply).toBeCalled();
+    });
+  });
+
+  describe('ignore', () => {
+    it('should call controller to ignore call', () => {
+      jest.spyOn(callController, 'ignore');
+      accountController.ignore(callId);
+      expect(callController.ignore).toBeCalled();
+    });
+  });
+
+  describe('replyWithMessage', () => {
+    it('should call controller to reply with message', () => {
+      jest.spyOn(callController, 'replyWithMessage');
+      accountController.replyWithMessage('', '');
+      expect(callController.replyWithMessage).toBeCalled();
+    });
+  });
+
+  describe('replyWithPattern', () => {
+    it('should call controller to reply with pattern', () => {
+      jest.spyOn(callController, 'replyWithPattern');
+      accountController.replyWithPattern(
+        callId,
+        RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER,
+        0,
+        RTC_REPLY_MSG_TIME_UNIT.DAY,
+      );
+      expect(callController.replyWithPattern).toBeCalled();
     });
   });
 
