@@ -24,6 +24,20 @@ describe('EntityNotificationController', () => {
     setUp();
   });
 
+  describe('setFilterFunc', () => {
+    beforeEach(() => {
+      clearMocks();
+    });
+
+    it('should set new filter func to it self', () => {
+      const filter = () => {
+        return true;
+      };
+      entityNotificationController.setFilterFunc(filter);
+      expect(entityNotificationController['_filterFunc']).toEqual(filter);
+    });
+  });
+
   describe('onReceivedNotification', () => {
     const observer = new class implements IEntityChangeObserver {
       onEntitiesChanged(entities: IdModel[]) {}
