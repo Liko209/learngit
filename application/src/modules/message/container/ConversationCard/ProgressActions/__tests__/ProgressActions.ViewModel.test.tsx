@@ -91,6 +91,12 @@ describe('ProgressActionsViewModel', () => {
       expect(postService.reSendPost).toBeCalled();
     });
 
+    it('should not call Notification when reSendPost failed JPT-617', async () => {
+      postService.reSendPost.mockRejectedValueOnce(new Error());
+      expect(nvm.resend()).rejects.toThrow();
+      expect(Notification.flashToast).not.toBeCalled();
+    });
+
     it('should not call resend when has failed items JPT-617', async () => {
       (itemService.canResendFailedItems as jest.Mock).mockReturnValueOnce(
         false,

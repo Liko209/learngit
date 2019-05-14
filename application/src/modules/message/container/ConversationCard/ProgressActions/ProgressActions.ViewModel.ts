@@ -68,11 +68,13 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
     return PROGRESS_STATUS.SUCCESS;
   }
 
-  @catchError([{
-    condition: (error: Error) => !!error,
-    action: NOTIFICATION_TYPE.FLASH,
-    message: 'item.prompt.fileNoLongerExists',
-  }])
+  @catchError([
+    {
+      condition: (error: Error) => error.message === 'file no longer exists',
+      action: NOTIFICATION_TYPE.FLASH,
+      message: 'item.prompt.fileNoLongerExists',
+    },
+  ])
   resend = async () => {
     const canResend = await this._itemService.canResendFailedItems(
       this.post.itemIds,
