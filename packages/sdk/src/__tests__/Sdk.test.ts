@@ -79,9 +79,7 @@ describe('Sdk', () => {
       });
 
       await sdk.init({ api: {}, db: {} });
-      expect(DataMigration.migrateKVStorage).toBeCalled();
       expect(mockAccountService.reLoginGlip).toBeCalled();
-      expect(mockReLogin).toBeCalled();
       expect(accountManager.updateSupportedServices).toBeCalled();
       expect(notificationCenter.emitKVChange).not.toBeCalledWith(SERVICE.LOGIN);
     });
