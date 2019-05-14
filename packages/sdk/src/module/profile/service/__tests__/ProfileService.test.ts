@@ -8,11 +8,23 @@ import { ProfileService } from '../ProfileService';
 import { ProfileActionController } from '../../controller/ProfileActionController';
 import { ProfileDataController } from '../../controller/ProfileDataController';
 import { SettingsActionController } from '../../controller/SettingsActionController';
+import { ProfileSetting } from '../../setting/ProfileSetting';
 
 jest.mock('../../../../api');
 jest.mock('../../controller/ProfileActionController');
 jest.mock('../../controller/ProfileDataController');
 jest.mock('../../controller/SettingsActionController');
+jest.mock('../../setting/ProfileSetting', () => {
+  const xx = {
+    getSettingsByParentId: jest.fn(),
+    getSettingById: jest.fn(),
+  };
+  return {
+    ProfileSetting: () => {
+      return xx;
+    },
+  };
+});
 
 describe('ProfileService', () => {
   let profileService: ProfileService;
@@ -27,8 +39,9 @@ describe('ProfileService', () => {
     {} as any,
     {} as any,
   );
-
+  let mockProfileSetting: ProfileSetting;
   beforeEach(() => {
+    mockProfileSetting = new ProfileSetting({} as any);
     profileService = new ProfileService();
     profileService['profileController'] = {
       getProfileDataController: jest
@@ -147,12 +160,42 @@ describe('ProfileService', () => {
   });
 
   describe('getById', () => {
-    it('shoule receive error when id is not correct profile id', async () => {
+    it('should receive error when id is not correct profile id', async () => {
       try {
         await profileService.getById(1);
       } catch (e) {
         expect(e).toBeNull();
       }
+    });
+  });
+
+  describe('getDefaultCallId', () => {
+    it('should call profile data controller', async () => {
+      await profileService.getDefaultCaller();
+      expect(mockProfileDataController.getDefaultCaller).toBeCalled();
+    });
+  });
+
+  describe('onStop', () => {
+    it('should call unsubscribe of profile setting', () => {
+      profileService['_profileSetting'] = mockProfileSetting;
+      mockProfileSetting.unsubscribe = jest.fn();
+      profileService['onStopped']();
+      expect(mockProfileSetting.unsubscribe).toBeCalled();
+    });
+  });
+
+  describe('profileSettings', () => {
+    it('getSettingsByParentId', async () => {
+      mockProfileSetting.getSettingsByParentId = jest.fn();
+      await profileService.getSettingsByParentId(1);
+      expect(mockProfileSetting.getSettingsByParentId).toBeCalledWith(1);
+    });
+
+    it('getSettingItemById', async () => {
+      mockProfileSetting.getSettingById = jest.fn();
+      await profileService.getSettingItemById(1);
+      expect(mockProfileSetting.getSettingById).toBeCalledWith(1);
     });
   });
 });

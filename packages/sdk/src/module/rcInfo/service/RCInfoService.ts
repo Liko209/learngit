@@ -13,12 +13,16 @@ import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { AccountService } from '../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { mainLogger } from 'foundation';
+import { IRCInfoService } from './IRCInfoService';
+import { RcInfoSettings } from '../setting';
 import { IdModel } from '../../../framework/model';
 import { RCInfoUserConfig } from '../config';
 import { RC_INFO_HISTORY } from '../config/constants';
 
-class RCInfoService extends EntityBaseService<IdModel> {
+class RCInfoService extends EntityBaseService<IdModel>
+  implements IRCInfoService {
   private _rcInfoController: RCInfoController;
+  private _rcInfoSettings: RcInfoSettings;
   private _DBConfig: RCInfoUserConfig;
 
   constructor() {
@@ -39,6 +43,12 @@ class RCInfoService extends EntityBaseService<IdModel> {
       this._rcInfoController.dispose();
       delete this._rcInfoController;
     }
+
+    if (this._rcInfoSettings) {
+      this._rcInfoSettings.unsubscribe();
+      delete this._rcInfoSettings;
+    }
+
     super.onStopped();
   }
 
@@ -47,6 +57,21 @@ class RCInfoService extends EntityBaseService<IdModel> {
       this._rcInfoController = new RCInfoController();
     }
     return this._rcInfoController;
+  }
+
+  async getSettingsByParentId(settingId: number) {
+    return this.rcInfoSettings.getSettingsByParentId(settingId);
+  }
+
+  async getSettingItemById(settingId: number) {
+    return this.rcInfoSettings.getSettingById(settingId);
+  }
+
+  private get rcInfoSettings() {
+    if (!this._rcInfoSettings) {
+      this._rcInfoSettings = new RcInfoSettings(this);
+    }
+    return this._rcInfoSettings;
   }
 
   get DBConfig() {
@@ -144,6 +169,7 @@ class RCInfoService extends EntityBaseService<IdModel> {
       .getRCCallerIdController()
       .getCallerIdList();
   }
+
   async generateWebSettingUri(type: ERCWebSettingUri) {
     return this.getRCInfoController()
       .getRcWebSettingInfoController()
@@ -187,6 +213,24 @@ class RCInfoService extends EntityBaseService<IdModel> {
       (await this.getRCInfoController()
         .getRegionInfoController()
         .loadRegionInfo());
+  }
+
+  async getCallerById(callerId: number) {
+    return this.getRCInfoController()
+      .getRCCallerIdController()
+      .getCallerById(callerId);
+  }
+
+  async getFirstDidCaller() {
+    return this.getRCInfoController()
+      .getRCCallerIdController()
+      .getFirstDidCaller();
+  }
+
+  async getCompanyMainCaller() {
+    return this.getRCInfoController()
+      .getRCCallerIdController()
+      .getCompanyMainCaller();
   }
 }
 

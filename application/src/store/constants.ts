@@ -13,6 +13,7 @@ enum ENTITY_NAME {
   'GLOBAL' = 'global',
   'PROGRESS' = 'progress',
   'USER_PERMISSION' = 'userPermission',
+  'USER_SETTING' = 'userSetting',
   'PHONE_NUMBER' = 'phoneNumber',
 }
 

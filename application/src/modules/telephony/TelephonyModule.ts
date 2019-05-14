@@ -18,6 +18,7 @@ import { mainLogger } from 'sdk';
 import { SERVICE } from 'sdk/service/eventKey';
 import { notificationCenter } from 'sdk/service';
 import { TelephonyNotificationManager } from './TelephonyNotificationManager';
+import { TelephonySettingManager } from './TelephonySettingManager/TelephonySettingManager';
 import { Dialer, Dialpad, Call } from './container';
 
 class TelephonyModule extends AbstractModule {
@@ -29,6 +30,8 @@ class TelephonyModule extends AbstractModule {
   @inject(LEAVE_BLOCKER_SERVICE) _leaveBlockerService: ILeaveBlockerService;
   @inject(TelephonyNotificationManager)
   private _telephonyNotificationManager: TelephonyNotificationManager;
+  @inject(TelephonySettingManager)
+  private _telephonySettingManager: TelephonySettingManager;
   @inject(Jupiter) _jupiter: Jupiter;
 
   @inject(HomeService) _homeService: HomeService;
@@ -37,6 +40,7 @@ class TelephonyModule extends AbstractModule {
   initTelephony = () => {
     this._TelephonyService.init();
     this._telephonyNotificationManager.init();
+    this._telephonySettingManager.init();
     this._leaveBlockerService.onLeave(this.handleLeave);
   }
 

@@ -433,7 +433,7 @@ describe('RegionInfoController', () => {
       expect(regionInfoController['_setStationLocation']).toBeCalledWith({
         newCountryInfo: DefaultCountryInfo,
         areaCode: '',
-        updateSpecialNumber: false,
+        updateSpecialNumber: true,
         areaCodeByManual: false,
         countryByManual: false,
       });
@@ -456,11 +456,11 @@ describe('RegionInfoController', () => {
       regionInfoController['_setStationLocation'] = jest.fn();
       await regionInfoController.loadRegionInfo();
       expect(regionInfoController['_setStationLocation']).toBeCalledWith({
-        newCountryInfo: setting['1'].countryInfo,
-        areaCode: '',
-        updateSpecialNumber: false,
+        areaCode: '123',
         areaCodeByManual: false,
-        countryByManual: false,
+        countryByManual: true,
+        newCountryInfo: { id: 10 },
+        updateSpecialNumber: true,
       });
       expect(regionInfoController['_currentCountryInfo']).toEqual(
         setting['1'].countryInfo,

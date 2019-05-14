@@ -79,10 +79,12 @@ class RegionInfoController {
     this._updateCurrentCountryId(countryInfo);
     await this._setStationLocation({
       newCountryInfo: countryInfo,
-      areaCode: '',
-      updateSpecialNumber: false,
-      areaCodeByManual: false,
-      countryByManual: false,
+      areaCode: (stationSetting && stationSetting.areaCode) || '',
+      updateSpecialNumber: true,
+      areaCodeByManual:
+        (stationSetting && stationSetting.areaCodeByManual) || false,
+      countryByManual:
+        (stationSetting && stationSetting.countryByManual) || false,
     });
   }
 
@@ -134,7 +136,7 @@ class RegionInfoController {
   }
 
   async getAreaCode() {
-    return PhoneParserUtility.getStationAreaCode();
+    return PhoneParserUtility.getStationAreaCode() || '';
   }
 
   hasAreaCode(countryCallingCode: string) {
@@ -280,6 +282,8 @@ class RegionInfoController {
         maxShortLen: maxExtLen,
         shortPinLen: shortExtLen,
       });
+
+      notificationCenter.emit(RC_INFO.RC_REGION_INFO);
     } catch (error) {
       mainLogger
         .tags(LOG_TAG)

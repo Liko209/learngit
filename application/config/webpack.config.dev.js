@@ -28,6 +28,8 @@ const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
 const paths = require('./paths');
 const appPackage = require(paths.appPackageJson);
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
+const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
+
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
 const publicPath = '/';
@@ -273,6 +275,31 @@ module.exports = {
               },
             ],
           },
+          // country flag svg loader
+          {
+            test: /jui\/src\/assets\/country-flag\/(.+)\.svg$/,
+            use: [
+              {
+                loader: 'svg-sprite-loader',
+                options: {
+                  extract: true,
+                  spriteFilename: 'static/media/country-flag.[hash:6].svg',
+                  symbolId: 'country-flag-[name]',
+                },
+              },
+              {
+                loader: 'svgo-loader',
+                options: {
+                  plugins: [
+                    { removeTitle: true },
+                    { convertColors: { shorthex: false } },
+                    { convertPathDtata: true },
+                    { reusePaths: true },
+                  ],
+                },
+              },
+            ],
+          },
           // "file" loader makes sure those assets get served by WebpackDevServer.
           // When you `import` an asset, you get its (virtual) filename.
           // In production, they would get copied to the `build` folder.
@@ -396,6 +423,8 @@ module.exports = {
       fileName: 'asset-manifest.json',
       publicPath: publicPath,
     }),
+    // svg sprite loader plugin
+    new SpriteLoaderPlugin(),
     // add dll.js to html
     ...(dllPlugin
       ? glob.sync(`${dllPlugin.defaults.path}/*.dll.js`).map(
