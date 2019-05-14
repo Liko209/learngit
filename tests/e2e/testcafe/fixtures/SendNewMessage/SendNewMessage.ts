@@ -7,6 +7,7 @@ import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
+import { ITestMeta } from '../../v2/models';
 import { SITE_URL, BrandTire } from '../../config';
 
 fixture('SendNewMessage')
@@ -242,7 +243,7 @@ test(formalName('JPT-293 The Send button is disabled when user create new messag
   },
 );
 
-test.meta(<ITestMeta> {
+test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-289'],
   maintainers: ['ali.naffaa'],
@@ -255,9 +256,9 @@ test.meta(<ITestMeta> {
   await h(t).scenarioHelper.resetProfileAndState(loginUser);
 
   await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    },
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  },
   );
 
   await h(t).withLog('When I click "Send New Message" on AddActionMenu', async () => {
