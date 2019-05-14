@@ -10,6 +10,7 @@ import { PostService } from '../PostService';
 import { PostDataController } from '../../controller/PostDataController';
 import { ProfileService } from '../../../profile';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { GroupService } from '../../../group';
 import { AccountService } from '../../../account/service';
 
 jest.mock('../../../account/config/AccountUserConfig', () => {
@@ -24,7 +25,8 @@ jest.mock('../../../account/config/AccountUserConfig', () => {
     },
   };
 });
-const profileService = new ProfileService();
+
+jest.mock('../../../group');
 jest.mock('../../controller/PostDataController');
 jest.mock('../../controller/PostController');
 jest.mock('../../controller/implementation/PostSearchController');
@@ -39,12 +41,22 @@ function clearMocks() {
 }
 
 describe('PostService', () => {
+  let profileService: ProfileService;
   let postService: PostService;
   let postController: PostController;
+  let groupService: GroupService;
   let accountService: AccountService;
   function setUp() {
+    profileService = new ProfileService();
+    groupService = new GroupService();
     postController = new PostController();
     postService = new PostService();
+
+    const serviceMap = new Map([[ServiceConfig.GROUP_SERVICE, groupService]]);
+
+    ServiceLoader.getInstance = jest.fn().mockImplementation(name => {
+      return serviceMap.get(name);
+    });
     accountService = new AccountService();
     ServiceLoader.getInstance = jest
       .fn()
@@ -116,27 +128,6 @@ describe('PostService', () => {
         true,
         undefined,
       );
-    });
-
-    it('should not filter deactivated post', async () => {
-      const rawPost = [
-        { _id: 1, creator_id: 2 },
-        { _id: 2, deactivated: false, creator_id: 2 },
-        { _id: 3, deactivated: true, creator_id: 2 },
-        { _id: 4, deactivated: true, creator_id: 1 },
-      ] as any;
-      postDataController.transformData = jest.fn().mockReturnValue(rawPost);
-      const observer = new class {
-        onEntitiesChanged = jest.fn();
-      }();
-      postService.addEntityNotificationObserver(observer);
-      await postService.handleSexioData(rawPost);
-
-      expect(observer.onEntitiesChanged).toBeCalledWith([
-        rawPost[0],
-        rawPost[1],
-        rawPost[2],
-      ]);
     });
   });
   describe('PostSearchController', () => {
