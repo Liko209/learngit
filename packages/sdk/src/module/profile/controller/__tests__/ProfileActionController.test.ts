@@ -66,7 +66,11 @@ describe('ProfileActionController', () => {
         favorite_group_ids: [1, 2, 3],
       } as Profile;
       const controller = getActionController();
-      const result = await controller.reorderFavoriteGroups(1, 0);
+      const result = await controller.reorderFavoriteGroups(
+        testPartialModifyController.originalEntity.favorite_group_ids,
+        1,
+        0,
+      );
       expect(result).toEqual({
         _id: 2,
         favorite_group_ids: [2, 1, 3],
@@ -79,7 +83,11 @@ describe('ProfileActionController', () => {
         favorite_group_ids: [1, 2, 3],
       } as Profile;
       const controller = getActionController();
-      const result = await controller.reorderFavoriteGroups(0, 2);
+      const result = await controller.reorderFavoriteGroups(
+        testPartialModifyController.originalEntity.favorite_group_ids,
+        0,
+        2,
+      );
       expect(result).toEqual({
         _id: 2,
         favorite_group_ids: [2, 3, 1],
