@@ -8,12 +8,12 @@ import { JuiSettingSectionItem } from 'jui/pattern/SettingSectionItem';
 import { ESettingValueType } from 'sdk/module/setting/entity';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 
-type SettingItemProps = {
+type SettingItemProps<T = any> = {
   id: number;
-  onChange: <T>(item: T) => void;
+  onChange: (item: T) => void;
   valueType: ESettingValueType;
-  source?: any[];
-  value?: any;
+  source: T[];
+  value?: T;
   state: ESettingItemState;
 };
 
