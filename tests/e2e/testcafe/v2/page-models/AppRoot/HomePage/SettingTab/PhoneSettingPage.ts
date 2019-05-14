@@ -1,4 +1,7 @@
 import { BaseWebComponent } from '../../../BaseWebComponent';
+import * as assert from 'assert';
+
+
 export class PhoneSettingPage extends BaseWebComponent {
   get self() {
     return this.getSelectorByAutomationId('SettingContainer');
@@ -94,10 +97,27 @@ export class PhoneSettingPage extends BaseWebComponent {
     await this.t.expect(this.callerIDDropDownItem.count).eql(count);
   }
 
-  async callerIDDropDownItemWithText(text: string) {
-    const value = await this.callerIDDropDownItem.innerText;
-    text = value.replace('/\(|\)/g', '');
-    await this.t.expect(this.callerIDDropDownItem.withText(text).exists).ok();
+  async callerIDDropDownItemContains(callerIds: string[]) {
+    const count = await this.callerIDDropDownItem.count;
+    for (let i = 0; i < count; i++) {
+      const text = await this.callerIDDropDownItem.nth(i).innerText;
+      const numberOnly = text.replace(/[^\d]/g, "");
+      const reg = new RegExp(`${numberOnly}$`);
+      let result = false;
+      for (const i in callerIds) {
+        if (reg.test(callerIds[i])) {
+          result = true
+        }
+      }
+      assert.ok(result, `${text} does not apply ${callerIds}`);
+    }
+  }
+
+  existsInList(reg: RegExp, list) {
+    for (const i in list) {
+      if (reg.test(list[i])) return true
+    }
+    return false
   }
 
   async selectCallerID(text: string) {

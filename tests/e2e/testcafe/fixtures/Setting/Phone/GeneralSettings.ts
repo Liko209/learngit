@@ -106,9 +106,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then I can see the Caller IDs in the list`, async () => {
-    for (let values of callerIDList) {
-      await phoneSettingPage.callerIDDropDownItemWithText(values);
-    }
+    await phoneSettingPage.callerIDDropDownItemContains(callerIDList);
     await phoneSettingPage.checkCallerIDItemCount(callerIDList.length);
   });
 
@@ -393,24 +391,24 @@ fixture('Setting/Phone')
 
 
 test.meta(<ITestMeta>{
-    priority: ['P2'],
-    caseIds: ['JPT-1736'],
-    maintainers: ['William.Ye'],
-    keywords: ['Phone']
-  })('Check the "Phone" settings when the user has not call permission', async (t) => {
-    const loginUser = h(t).rcData.mainCompany.users[0];
-    const app = new AppRoot(t);
+  priority: ['P2'],
+  caseIds: ['JPT-1736'],
+  maintainers: ['William.Ye'],
+  keywords: ['Phone']
+})('Check the "Phone" settings when the user has not call permission', async (t) => {
+  const loginUser = h(t).rcData.mainCompany.users[0];
+  const app = new AppRoot(t);
 
-    await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    });
-    const settingsEntry = app.homePage.leftPanel.settingsEntry;
-    await h(t).withLog(`And I click Setting entry`, async () => {
-      await settingsEntry.enter();
-    });
-    await h(t).withLog(`The Phone entry is hidden`, async () => {
-      await t.expect(app.homePage.settingTab.phoneEntry.exists).notOk();
-    });
-    
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+  const settingsEntry = app.homePage.leftPanel.settingsEntry;
+  await h(t).withLog(`And I click Setting entry`, async () => {
+    await settingsEntry.enter();
+  });
+  await h(t).withLog(`The Phone entry is hidden`, async () => {
+    await t.expect(app.homePage.settingTab.phoneEntry.exists).notOk();
+  });
+
 })
