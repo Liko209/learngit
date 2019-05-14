@@ -71,8 +71,16 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-hold-btn');
   }
 
+  get minimizeWindow() {
+    return this.getSelectorByAutomationId('telephony-minimized-view');
+  }
+
   get holdButton() {
     return this.holdToggle.withAttribute('aria-label', 'Hold the call');
+  }
+
+  get minimizeMuteButton() {
+    return this.minimizeWindow.withAttribute('aria-label', 'Mute');
   }
 
   async clickHoldButton() {
@@ -207,8 +215,16 @@ export class TelephonyDialog extends BaseWebComponent {
     await this.t.click(this.answerButton);
   }
 
+  get minimizeButton() {
+    return this.buttonOfIcon('minimize')
+  }
+
   get ignoreButton() {
     return this.buttonOfIcon('close')
+  }
+
+  async clickMinimizeButton() {
+    await this.t.click(this.minimizeButton);
   }
 
   async clickIgnoreButton() {
@@ -254,4 +270,41 @@ export class TelephonyDialog extends BaseWebComponent {
   async sendCustomReplyMessage() {
     await this.t.click(this.replyWithCustomMessage).pressKey('enter');
   }
+}
+
+export class TelephonyMinimizeWindow extends BaseWebComponent{
+
+  get self() {
+    return this.getSelectorByAutomationId('telephony-minimized-view');
+  }
+
+  get minimizeMuteToggle() {
+    return this.getSelectorByAutomationId('telephony-mute-btn');
+  }
+
+  get muteButton() {
+    return this.buttonOfIcon('mic');
+  }
+
+  async clickMuteButton() {
+    await this.t.click(this.muteButton);
+  }
+
+  get unMuteButton() {
+    return this.buttonOfIcon('mic_off');
+  }
+
+  async clickUnMuteButton() {
+    return this.t.click(this.unMuteButton);
+  }
+
+
+  get hangupButton() {
+    return this.buttonOfIcon('hand_up');
+  }
+
+  async clickHangupButton() {
+    await this.t.click(this.hangupButton);
+  }
+
 }
