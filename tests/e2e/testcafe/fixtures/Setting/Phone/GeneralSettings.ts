@@ -14,7 +14,7 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-1753'],
   maintainers: ['Mia.cai'],
   keywords: ['GeneralSettings']
-})(`Check the page content of the "General" section`, async t => {
+})(`Check the page content of the "General" section`, async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
 
@@ -68,7 +68,7 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-1756'],
   maintainers: ['Mia.cai'],
   keywords: ['GeneralSettings']
-})(`Check the caller id drop down list shows available numbers for the user`, async t => {
+})(`Check the caller id drop down list shows available numbers for the user`, async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
   await h(t).platform(loginUser).init();
@@ -118,7 +118,7 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-1788'],
   maintainers: ['Mia.Cai'],
   keywords: ['GeneralSettings']
-})(`Check if the content of region section is displayed correctly;`, async t => {
+})(`Check if the content of region section is displayed correctly;`, async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
 
@@ -170,7 +170,7 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-1790'],
   maintainers: ['Mia.Cai'],
   keywords: ['GeneralSettings']
-})(`Check when the area code is displayed`, async t => {
+})(`Check when the area code is displayed`, async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
 
@@ -245,7 +245,7 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-1798'],
   maintainers: ['Mia.Cai'],
   keywords: ['GeneralSettings']
-})(`Check if the region is implemented when user save/cancel changes on dialog`, async t => {
+})(`Check if the region is implemented when user save/cancel changes on dialog`, async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
 
