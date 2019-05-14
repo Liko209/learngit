@@ -37,7 +37,7 @@ class MessageItemViewModel extends SearchViewModel<ContentProps>
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, id);
   }
 
-  groupName = promisedComputed(this.props && this.props.displayName, async () => {
+  groupName = promisedComputed('', async () => {
     const group = this.group;
     const { displayName } = this.props;
     if (!group) {

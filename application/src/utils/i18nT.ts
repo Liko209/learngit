@@ -21,6 +21,7 @@ function hasLoadedNamespace() {
 
   return false;
 }
+
 function i18nT(key: string, options?: i18next.TOptions | string) {
   if (i18next.isInitialized && hasLoadedNamespace()) {
     return i18next.t(key, options);
