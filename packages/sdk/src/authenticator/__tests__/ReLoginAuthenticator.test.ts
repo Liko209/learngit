@@ -54,6 +54,7 @@ describe('ReLoginAuthenticator', () => {
       });
       expect(await reLoginAuthenticator.authenticate({})).toEqual({
         success: true,
+        isFirstLogin: false,
         accountInfos: [
           {
             type: 'GlipAccount',

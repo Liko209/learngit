@@ -89,7 +89,7 @@ class AuthController {
   }
 
   scheduleReLoginGlipJob() {
-    jobScheduler.scheduleAndIgnoreFirstTime({
+    jobScheduler.scheduleJob({
       key: JOB_KEY.RE_LOGIN_GLIP,
       intervalSeconds: 3600,
       periodic: false,

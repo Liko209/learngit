@@ -2,7 +2,13 @@
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-02-28 00:00:57
  */
-import { DBManager, KVStorageManager, DexieDB, DatabaseType } from 'foundation';
+import {
+  DBManager,
+  KVStorageManager,
+  DexieDB,
+  DatabaseType,
+  mainLogger,
+} from 'foundation';
 import { BaseDao, BaseKVDao, DBKVDao } from '../framework/dao';
 import schema from './schema';
 import Manager from '../Manager';
@@ -14,6 +20,8 @@ import { DaoGlobalConfig } from './config';
 import { IdModel, ModelIdType } from '../framework/model';
 import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
 import { IDBObserver } from './IDBObserver';
+
+const LOG_TAG = 'DaoManager';
 
 class DaoManager extends Manager<
   BaseDao<IdModel<ModelIdType>, ModelIdType> | BaseKVDao | DBKVDao
@@ -38,6 +46,9 @@ class DaoManager extends Manager<
     this.dbManager.initDatabase(schema, dbType);
 
     if (!this._isSchemaCompatible()) {
+      mainLogger
+        .tags(LOG_TAG)
+        .info('schema changed, start delete current database');
       try {
         await this.dbManager.deleteDatabase();
       } catch (error) {
@@ -49,9 +60,7 @@ class DaoManager extends Manager<
         const synConfig = ServiceLoader.getInstance<SyncService>(
           ServiceConfig.SYNC_SERVICE,
         ).userConfig;
-        synConfig.removeLastIndexTimestamp();
-        synConfig.removeFetchRemaining();
-        synConfig.removeSocketConnectedLocalTime();
+        synConfig.clearSyncConfigsForDBUpgrade();
         jobScheduler.userConfig.clearFetchDataConfigs();
       }
     }

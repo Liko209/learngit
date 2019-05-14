@@ -40,6 +40,7 @@ class RCPasswordAuthenticator implements IAuthenticator {
 
     return {
       success: true,
+      isFirstLogin: true,
       accountInfos: [
         {
           type: RCAccount.name,

@@ -28,7 +28,6 @@ import {
   getAppContextInfo,
 } from '@/utils/error';
 import { AccountService } from 'sdk/module/account';
-import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { AppEnvSetting } from 'sdk/module/env';
 import { SyncGlobalConfig } from 'sdk/module/sync/config';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -133,8 +132,6 @@ class AppModule extends AbstractModule {
             window.jupiterElectron.setContextInfo(contextInfo);
           errorReporter.setUserContextInfo(contextInfo);
         });
-        // load phone parser module
-        PhoneParserUtility.loadModule();
       }
     };
 
@@ -191,6 +188,14 @@ class AppModule extends AbstractModule {
       });
     };
     notificationCenter.on(SERVICE.TOTAL_UNREAD, setTotalUnread);
+
+    notificationCenter.on(SERVICE.START_LOADING, () => {
+      this._appStore.setGlobalLoading(true);
+    });
+
+    notificationCenter.on(SERVICE.STOP_LOADING, () => {
+      this._appStore.setGlobalLoading(false);
+    });
 
     notificationCenter.on(SERVICE.SYNC_SERVICE.START_CLEAR_DATA, () => {
       // 1. show loading

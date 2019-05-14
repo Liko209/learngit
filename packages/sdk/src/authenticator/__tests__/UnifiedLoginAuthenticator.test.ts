@@ -14,11 +14,13 @@ import {
   HttpResponseBuilder,
   HttpResponse,
 } from 'foundation';
+import { setRCToken } from '../utils';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
+jest.mock('sdk/service/notificationCenter');
 jest.mock('../../module/config');
 jest.mock('../../api/ringcentral/RCAuthApi');
 jest.mock('../../api/glip/user', () => ({
@@ -41,7 +43,10 @@ describe('UnifiedLoginAuthenticator', () => {
   });
   it('UnifiedLoginAuthenticator invalid tokens', async () => {
     const resp = await unified.authenticate({});
-    expect(resp.success).toBe(false);
+    expect(resp).toEqual({
+      success: false,
+      error: new Error('invalid tokens'),
+    });
   });
   it('UnifiedLoginAuthenticator rc account', async () => {
     const oauthTokenResult = {
@@ -60,10 +65,22 @@ describe('UnifiedLoginAuthenticator', () => {
     jest
       .spyOn(unified, '_requestRCAccountRelativeInfo')
       .mockImplementationOnce(() => {});
+    setRCToken = jest.fn();
 
     const resp = await unified.authenticate({ code: '123' });
-    expect(resp.success).toBe(true);
-    expect(resp.accountInfos!.length).toBe(2);
+    expect(resp).toEqual({
+      success: true,
+      isFirstLogin: true,
+      isRCOnlyMode: false,
+      accountInfos: [
+        {
+          data: { access_token: 113123 },
+          type: 'RCAccount',
+        },
+        { data: 'glip_token', type: 'GlipAccount' },
+      ],
+    });
+    expect(resp.accountInfos!.length).toEqual(2);
     expect(unified['_requestRCAccountRelativeInfo']).toBeCalled();
   });
   it('UnifiedLoginAuthenticator rc account and glip failed', async () => {
@@ -83,6 +100,10 @@ describe('UnifiedLoginAuthenticator', () => {
   });
   it('UnifiedLoginAuthenticator glip account', async () => {
     const resp = await unified.authenticate({ token: '123' });
-    expect(resp.success).toBe(true);
+    expect(resp).toEqual({
+      success: true,
+      isFirstLogin: true,
+      accountInfos: [{ data: '123', type: 'GlipAccount' }],
+    });
   });
 });
