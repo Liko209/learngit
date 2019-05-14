@@ -67,7 +67,7 @@ test(formalName('Receive new sms messages', ['P2', 'Messages', 'ContentPanel', '
   });
 
   const ConversationPage = app.homePage.messageTab.conversationPage;
-  await h(t).withLog(`Then I can see New Message line`, async () => {
+  await h(t).withLog('Then I can see New Message line', async () => {
     await t.expect(ConversationPage.newMessageDeadLine.exists).ok();
   });
 
@@ -78,7 +78,7 @@ test(formalName('Receive new sms messages', ['P2', 'Messages', 'ContentPanel', '
     await teamsSection.ensureLoaded();
   });
 
-  await h(t).withLog('And ConversationA has more than 1 screen unread messages', async() => {
+  await h(t).withLog('And conversationA has more than 1 screen unread messages', async() => {
     const msgList = _.range(5).map(i => H.multilineString(10, `No. ${i}`, uuid()));
     for(const msg of msgList){
       await h(t).scenarioHelper.sentAndGetTextPostId(msg, teamA, otherUser);
