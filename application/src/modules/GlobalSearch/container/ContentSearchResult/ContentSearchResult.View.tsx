@@ -20,6 +20,10 @@ import { SearchFilter } from '@/modules/GlobalSearch/container/SearchFilter';
 import { ConversationPageContext } from '@/modules/message/container/ConversationPage/types';
 import { SearchHighlightContext } from 'jui/hoc/withHighlight';
 import { USED_HEIGHT } from './constants';
+import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
+
+const MIN_DIALOG_HEIGHT = 400 + 16;
+const MIN_HEIGHT_FIX = 276;
 
 type Props = ContentSearchResultViewProps &
   WithTranslation & { isShow: boolean };
@@ -29,7 +33,12 @@ class ContentSearchResultViewComponent extends Component<Props> {
   componentWillUnmount() {
     this.props.onSearchEnd();
   }
-
+  state = { width: 0, height: 0 };
+  handleSizeChanged = (size: Size) => {
+    let height = size.height - USED_HEIGHT;
+    height = size.height < MIN_DIALOG_HEIGHT ? MIN_HEIGHT_FIX : height;
+    this.setState({ height, width: size.width });
+  }
   render() {
     const {
       t,
@@ -43,9 +52,13 @@ class ContentSearchResultViewComponent extends Component<Props> {
       showResult,
       searchTerms,
     } = this.props;
+    const { height } = this.state;
     return (
-      <ConversationPageContext.Provider value={{ disableMoreAction: true }}>
+      <ConversationPageContext.Provider
+        value={{ height, disableMoreAction: true }}
+      >
         <JuiFullSearchWrapper>
+          <JuiSizeDetector handleSizeChanged={this.handleSizeChanged} />
           <JuiFullSearchResultWrapper>
             {showResult && searchState.requestId ? (
               <JuiListSubheader data-test-automation-id="searchResultsCount">
@@ -55,7 +68,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
             {isEmpty ? (
               <JuiTabPageEmptyScreen text={t('globalSearch.NoMatchesFound')} />
             ) : (
-              <JuiFullSearchResultStreamWrapper>
+              <JuiFullSearchResultStreamWrapper height={height}>
                 {showResult && (
                   <SearchHighlightContext.Provider
                     value={{ terms: searchTerms }}
