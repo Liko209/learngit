@@ -7,7 +7,7 @@ import objectPath from 'object-path';
 
 const _wrapMatchedWord = (fullText: string, reg: RegExp) => {
   const matchedInEntityRegex = new RegExp(
-    `(?<=&\\w*)${reg.source}(?=\\w*;)`,
+    `(?<=&\\w*)(${reg.source})(?=\\w*;)`,
     reg.flags,
   );
   const indexesOfMatchedInEntity: number[] = [];
