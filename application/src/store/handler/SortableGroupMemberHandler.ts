@@ -95,6 +95,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   private async _sortGroupMembers() {
     let sortedIds: number[] = [];
     if (this._group && this._group.members && this._group.members.length) {
+      this._cacheAdmins();
       const groupMembers = await this.personService.getPersonsByIds(
         this._group.members,
       );
@@ -114,9 +115,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
 
     if (group) {
       this._group = group;
-
       await this._sortGroupMembers();
-      this._updateAdminIds();
       this._subscribeGroupChange();
     }
   }
@@ -219,7 +218,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
     }
   }
 
-  private _updateAdminIds() {
+  private _cacheAdmins() {
     if (
       this._group.is_team &&
       this._group.permissions &&

@@ -182,7 +182,7 @@ describe('SortableGroupMemberHandler', () => {
         id: groupId,
         is_team: true,
         members: [1, 2, 3, 4, 5, 6, 7],
-        permissions: { admin: { uids: [1, 2, 3] } },
+        permissions: { admin: { uids: [4, 5] } },
       };
       const persons = [
         { id: 4, email: 'j@a.com' },
@@ -194,7 +194,7 @@ describe('SortableGroupMemberHandler', () => {
         { id: 3, email: 'a@a.com' },
       ];
 
-      const expectRes = [3, 2, 1, 7, 6, 5, 4];
+      const expectRes = [5, 4, 3, 2, 1, 7, 6];
 
       groupService.getById = jest.fn().mockResolvedValue(group);
       personService.getPersonsByIds = jest.fn().mockResolvedValue(persons);
