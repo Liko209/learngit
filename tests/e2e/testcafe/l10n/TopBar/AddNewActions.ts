@@ -9,7 +9,7 @@ import { v4 as uuid } from 'uuid';
 fixture('TopBar/AddNewAction')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase())
-test(formalName('Check menu tip', ['P0', 'AddNewActions', 'Hank.Huang']), async (t) => {
+test(formalName('Check menu tip', ['P2', 'AddNewActions', 'Hank.Huang']), async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[5];
   const otherUser = h(t).rcData.mainCompany.users[6];
@@ -71,7 +71,7 @@ test(formalName('Check menu tip', ['P0', 'AddNewActions', 'Hank.Huang']), async 
     const createTeamModal = app.homePage.createTeamModal;
     await t.expect(createTeamModal.memberInput.selectedItems.nth(-1).find('button').exists).ok();
   });
-  await h(t).log(`And I take screenshot` , {screenshotPath: `Jupiter_TopBar_CreateTeam02`});
+  await h(t).log(`And I take screenshot` , {screenshotPath: `Jupiter_TopBar_CreateTeamRemoveButton`});
   await h(t).withLog(`When I open "Send New Message" in "News actions"`, async() => {
     const createTeamModal = app.homePage.createTeamModal;
     await createTeamModal.clickCancelButton();

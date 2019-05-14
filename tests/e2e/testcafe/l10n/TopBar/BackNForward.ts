@@ -9,7 +9,7 @@ import { AppRoot } from "../../v2/page-models/AppRoot";
 fixture('TopBar/BackNForward')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase());
-test(formalName('Check menu tip', ['P0', 'BackNForward', 'Hank.Huang']), async (t) => {
+test(formalName('Check menu tip', ['P2', 'BackNForward', 'Hank.Huang']), async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[5];
 

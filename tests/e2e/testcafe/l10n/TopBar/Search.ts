@@ -9,7 +9,7 @@ import { v4 as uuid } from "uuid"
 fixture('TopBar/Search')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase())
-test(formalName('Check menu tip', ['P0', 'Search', 'Hank.Huang']), async (t) => {
+test(formalName('Check menu tip', ['P2', 'Search', 'Hank.Huang']), async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[6];
   const otherUser = h(t).rcData.mainCompany.users[5];
@@ -128,7 +128,8 @@ test(formalName('Check menu tip', ['P0', 'Search', 'Hank.Huang']), async (t) => 
     await searchDialog.typeSearchKeyword("@!#$");
     await searchDialog.instantPage.clickContentSearchGlobalEntry();
   });
-  await h(t).withLog(`And I set filter post by ${anotherUserExtension} and hover "Remove" button`, async () => {
+  await h(t).log(`Then I take screenshot `, { screenshotPath: `Jupiter_TopBar_ContentSearch` });
+  await h(t).withLog(`When I set filter post by ${anotherUserExtension} and hover "Remove" button`, async () => {
     const messagesTab = searchDialog.fullSearchPage.messagesTab;
     await messagesTab.postByField.typeText(anotherUserExtension);
     await messagesTab.postByField.selectMemberByNth(0);
@@ -138,7 +139,7 @@ test(formalName('Check menu tip', ['P0', 'Search', 'Hank.Huang']), async (t) => 
     const messagesTab = searchDialog.fullSearchPage.messagesTab;
     await t.expect(messagesTab.postByField.selectedItems.nth(-1).find('button').exists).ok();
   });
-  await h(t).log(`And I take screenshot `, { screenshotPath: `Jupiter_TopBar_ContentSearch` });
+  await h(t).log(`And I take screenshot `, { screenshotPath: `Jupiter_TopBar_ContentSearchRemoveButton` });
   await h(t).withLog(`When I click "Type" selector`, async () => {
     const messagesTab = searchDialog.fullSearchPage.messagesTab;
     await messagesTab.openTypeOptions();
