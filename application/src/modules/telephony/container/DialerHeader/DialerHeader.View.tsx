@@ -17,10 +17,14 @@ class DialerHeaderViewComponent extends React.Component<
 > {
   private _Avatar = () => {
     const { uid } = this.props;
-    if (uid) {
-      return <Avatar uid={uid} size="large" />;
-    }
-    return null;
+    return (
+      <Avatar
+        uid={uid}
+        showDefaultAvatar={!uid}
+        imgProps={{ draggable: false }}
+        size="large"
+      />
+    );
   }
 
   render() {
@@ -28,7 +32,7 @@ class DialerHeaderViewComponent extends React.Component<
     return (
       <JuiHeader
         Avatar={this._Avatar}
-        name={name}
+        name={name ? name : t('telephony.unknownCaller')}
         phone={isExt ? `${t('telephony.Ext')} ${phone}` : phone}
         Back={Back}
       />
