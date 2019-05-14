@@ -98,6 +98,10 @@ export class HomePage extends BaseWebComponent {
     return this.getSelectorByAutomationId('topBarAvatar');
   }
 
+  get dialpadButton() {
+    return this.getSelectorByAutomationId('telephony-dialpad-btn');
+  }
+
   get settingMenu() {
     return this.getComponent(SettingMenu);
   }
@@ -116,6 +120,14 @@ export class HomePage extends BaseWebComponent {
 
   async openSettingMenu() {
     await this.t.click(this.topBarAvatar);
+  }
+
+  async openDialer() {
+    await this.t.hover('html').click(this.dialpadButton);
+  }
+
+  async hoverDialpadButton() {
+    await this.t.hover(this.dialpadButton);
   }
 
   get joinTeamDialog() {
@@ -164,5 +176,4 @@ export class HomePage extends BaseWebComponent {
   get logoutDialog() {
     return this.getComponent(LogoutDialog);
   }
-
 }

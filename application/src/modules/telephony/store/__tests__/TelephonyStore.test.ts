@@ -184,4 +184,22 @@ describe('Telephony store', () => {
     store.switchBetweenMuteAndUnmute();
     expect(store.isMute).toBe(false);
   });
+
+  it('switch animation', () => {
+    const store = createStore();
+    expect(store.shouldAnimationStart).toBe(false);
+    store.startAnimation();
+    expect(store.shouldAnimationStart).toBe(true);
+    store.stopAnimation();
+    expect(store.shouldAnimationStart).toBe(false);
+  });
+
+  it('switch dialer focus', () => {
+    const store = createStore();
+    expect(store.dialerInputFocused).toBe(false);
+    store.onDialerInputFocus();
+    expect(store.dialerInputFocused).toBe(true);
+    store.onDialerInputBlur();
+    expect(store.dialerInputFocused).toBe(false);
+  });
 });
