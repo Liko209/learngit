@@ -455,6 +455,42 @@ describe('GroupHandleDataController', () => {
       });
       expect(notificationCenter.emit).toHaveBeenCalledTimes(0);
     });
+    it('should not update most_recent_post_id when post is pre-insert', async () => {
+      daoManager
+        .getDao(GroupDao)
+        .doInTransaction.mockImplementation(async (fn: Function) => {
+          await fn();
+        });
+      const group = {
+        id: 2,
+        members: [],
+        most_recent_post_created_at: 88,
+        most_recent_post_id: 10,
+      };
+      daoManager.getDao(GroupDao).get.mockResolvedValueOnce(group);
+      entitySourceController.get.mockResolvedValueOnce(group);
+      post['id'] = -1;
+      map.clear();
+
+      map.set(-1, post);
+      jest
+        .spyOn(groupHandleDataController, 'handlePartialData')
+        .mockResolvedValueOnce();
+      await groupHandleDataController.handleGroupMostRecentPostChanged({
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          entities: map,
+        },
+      });
+      expect(groupHandleDataController.handlePartialData).toHaveBeenCalledWith([
+        {
+          _id: 2,
+          most_recent_content_modified_at: 100,
+          most_recent_post_created_at: 100,
+        },
+      ]);
+      expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('filterGroups()', () => {

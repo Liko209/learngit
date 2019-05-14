@@ -122,6 +122,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private async _init() {
+    mainLogger.tags(LOG_TAG).info('start init SectionGroupHandler');
     await this._initHandlerMap();
     this._lastGroupId = storeManager
       .getGlobalStore()
@@ -348,7 +349,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (checkLimit) {
       limit = await this._getMaxLeftRailGroup();
     }
-    mainLogger.info(LOG_TAG, `_remove limit: ${limit}`);
+    mainLogger.tags(LOG_TAG).info(`_remove limit: ${limit}`);
     const directIdsShouldBeRemoved: number[] = [];
     const teamIdsShouldBeRemoved: number[] = [];
     const directIds = this.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE);
@@ -657,10 +658,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     const lastGroupId = this._lastGroupId;
     const limit = await this._getMaxLeftRailGroup();
-    mainLogger.info(
-      LOG_TAG,
-      `removeOverLimitGroupByChangingCurrentGroupId limit: ${limit}`,
-    );
+    mainLogger
+      .tags(LOG_TAG)
+      .info(`removeOverLimitGroupByChangingCurrentGroupId limit: ${limit}`);
     if (currentId !== lastGroupId) {
       await this._removeOverLimitGroupByChangingCurrentGroupId(
         SECTION_TYPE.DIRECT_MESSAGE,
@@ -708,10 +708,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     const directIds = this.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE);
     const teamIds = this.getGroupIdsByType(SECTION_TYPE.TEAM);
     const limit = await this._getMaxLeftRailGroup();
-    mainLogger.info(
-      LOG_TAG,
-      `removeOverLimitGroupByChangingIds limit: ${limit}`,
-    );
+    mainLogger
+      .tags(LOG_TAG)
+      .info(`removeOverLimitGroupByChangingIds limit: ${limit}`);
     await this._removeOverLimitGroupByChangingIds(
       SECTION_TYPE.DIRECT_MESSAGE,
       directIds,

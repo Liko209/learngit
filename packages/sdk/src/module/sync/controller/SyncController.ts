@@ -116,8 +116,7 @@ class SyncController {
       mainLogger.info(LOG_TAG, 'fetch initial data success');
       notificationCenter.emitKVChange(SERVICE.LOGIN);
     } catch (e) {
-      mainLogger.error(LOG_TAG, 'fetch initial data error');
-      // actually, should only do sign out when initial failed
+      mainLogger.error(LOG_TAG, 'fetch initial data error, force logout');
       notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
     }
     this._checkFetchedRemaining(currentTime);
