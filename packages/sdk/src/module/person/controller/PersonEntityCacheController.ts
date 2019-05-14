@@ -99,9 +99,6 @@ class PersonEntityCacheController extends EntityCacheController<Person> {
   }
 
   protected putInternal(person: Person) {
-    if (!this._personService.isCacheValid(person)) {
-      return;
-    }
     super.putInternal(person);
     this._setSoundexValue(person);
     this._addPhoneNumbers(person);

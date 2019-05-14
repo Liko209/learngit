@@ -412,5 +412,51 @@ describe('GroupModel', () => {
           },
         );
       });
+
+
+    it('should filter out when we have deacitvated users', () => {
+      const gm = GroupModel.fromJS({
+        members: [11, 22, 33],
+      } as Group);
+      (getEntity as jest.Mock).mockImplementation(
+        (name: string, id: number) => {
+          if (name === ENTITY_NAME.PERSON) {
+            if (id === 22) {
+              return {
+                deactivated: true,
+                firstName: `${id}`,
+              };
+            }
+            return {
+              firstName: `${id}`,
+            };
+          }
+        },
+      );
+      expect(gm.displayName).toBe('11, 33');
+    });
+
+    it('should filter out when users have deacitvated flags', () => {
+      const gm = GroupModel.fromJS({
+        members: [11, 22, 33],
+      } as Group);
+      (getEntity as jest.Mock).mockImplementation(
+        (name: string, id: number) => {
+          if (name === ENTITY_NAME.PERSON) {
+            if (id === 22) {
+              return {
+                firstName: `${id}`,
+                flags: 130,
+              };
+            }
+            return {
+              firstName: `${id}`,
+            };
+          }
+        },
+      );
+      expect(gm.displayName).toBe('11, 33');
+    });
+
   });
 });

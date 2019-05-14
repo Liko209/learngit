@@ -994,4 +994,161 @@ describe('GroupFetchDataController', () => {
       expect(result.terms.length).toBe(0);
     });
   });
+
+  describe('getGroupNameByMultiMembers', () => {
+    beforeEach(() => {
+      personService.getName = jest.fn().mockImplementation((person: Person) => {
+        if (person.id === 1) {
+          return '1';
+        }
+        if (person.id === 2) {
+          return '2';
+        }
+      });
+    });
+    it('should return name when members are specified', async () => {
+      const person1: Person = {
+        id: 1,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+      };
+
+      const person2: Person = {
+        id: 2,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+      };
+
+      const res = await groupFetchDataController.getGroupNameByMultiMembers([
+        person1,
+        person2,
+      ]);
+      expect(res).toBe('1, 2');
+    });
+    it('should filter out when members are deactivated', async () => {
+      const person1: Person = {
+        id: 1,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+      };
+
+      const person2: Person = {
+        id: 2,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: true,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+      };
+
+      const res = await groupFetchDataController.getGroupNameByMultiMembers([
+        person1,
+        person2,
+      ]);
+      expect(res).toBe('1');
+    });
+
+    it('should filter out when members flag are deactivated', async () => {
+      const person1: Person = {
+        id: 1,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+        flags: 2,
+      };
+
+      const person2: Person = {
+        id: 2,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+      };
+
+      const res = await groupFetchDataController.getGroupNameByMultiMembers([
+        person1,
+        person2,
+      ]);
+      expect(res).toBe('2');
+    });
+  });
+
+  describe('_hasInvalidPerson', () => {
+    beforeEach(() => {
+      ServiceLoader.getInstance = jest
+        .fn()
+        .mockImplementation((serviceName: string) => {
+          if (serviceName === ServiceConfig.PERSON_SERVICE) {
+            return {
+              isValidPerson: jest.fn().mockImplementation(person => {
+                return person === 2 || person === 3;
+              }),
+            };
+          }
+        });
+    });
+    it('should return false if no member is invalid', () => {
+      const res = groupFetchDataController._hasInvalidPerson([2, 3]);
+      expect(res).toBeFalsy();
+    });
+
+    it('should return true if any member is invalid', () => {
+      const res = groupFetchDataController._hasInvalidPerson([1, 4, 5]);
+      expect(res).toBeTruthy();
+    });
+  });
 });

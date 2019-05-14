@@ -251,6 +251,18 @@ export class GroupFetchDataController {
     );
   }
 
+  private _hasInvalidPerson(allPersons: Person[]) {
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
+
+    const find = allPersons.find((person: Person) => {
+      return !personService.isValidPerson(person);
+    });
+
+    return find ? true : false;
+  }
+
   private _getTransformGroupFunc(
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
@@ -266,6 +278,9 @@ export class GroupFetchDataController {
           group.members,
           this._currentUserId,
         );
+        if (this._hasInvalidPerson(allPersons)) {
+          return null;
+        }
         const groupName = this.getGroupNameByMultiMembers(allPersons);
         const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
         const lowerCaseGroupName = groupName.toLowerCase();
@@ -410,6 +425,9 @@ export class GroupFetchDataController {
             group.members,
             currentUserId,
           );
+          if (this._hasInvalidPerson(allPerson)) {
+            break;
+          }
           groupName = this.getGroupNameByMultiMembers(allPerson);
           lowerCaseName = groupName.toLowerCase();
           isFuzzy =
