@@ -4,21 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ILogEntityDecorator, LogEntity } from '../types';
-import { DATE_FORMATTER } from '../constants';
-import DateFormatter from './DateFormatter';
+import { SessionManager } from '../SessionManager';
 
 export class SessionDecorator implements ILogEntityDecorator {
   options: object;
   private _sessionId: string;
   private _sessionIndex: number;
-  private _dateFormatter: DateFormatter;
   constructor() {
-    this._dateFormatter = new DateFormatter();
     this.newSession();
   }
 
   newSession() {
-    this._sessionId = this._dateFormatter.formatDate(new Date(), DATE_FORMATTER.DEFAULT_DATE_FORMAT);
+    this._sessionId = SessionManager.getInstance().getSession();
     this._sessionIndex = 0;
   }
 

@@ -16,6 +16,7 @@ import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import Keys from 'jui/pattern/MessageInput/keys';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { catchError } from '@/common/catchError';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -135,19 +136,22 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     this.removeDraft();
   }
 
+  @catchError.flash({
+    server: 'message.prompt.editPostFailedForServerIssue',
+    network: 'message.prompt.editPostFailedForNetworkIssue',
+  })
+  private _handleEditPost(content: string, ids: number[]) {
+    return this._postService.editPost({
+      text: content,
+      groupId: this.gid,
+      postId: this.id,
+      mentionNonItemIds: ids,
+    });
+  }
+
   private async _editPost(content: string, ids: number[]) {
-    try {
-      await this._postService.editPost({
-        text: content,
-        groupId: this.gid,
-        postId: this.id,
-        mentionNonItemIds: ids,
-      });
-      this._exitEditMode();
-    } catch (e) {
-      this._exitEditMode();
-      // You do not need to handle the error because the message will display a resend
-    }
+    await this._handleEditPost(content, ids);
+    this._exitEditMode();
   }
 }
 

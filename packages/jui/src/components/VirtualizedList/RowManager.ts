@@ -10,6 +10,7 @@ class RowManager {
   private _heightMap = new Map<React.Key, number>();
   private _beforeHeight: number = 0;
   private _minRowHeight: number;
+  private _cacheMap = new Map<React.Key, number>();
   private _keyMapper: KeyMapper = (index: number) => index;
 
   constructor({ minRowHeight }: { minRowHeight: number }) {
@@ -34,15 +35,21 @@ class RowManager {
 
   hasRowHeight(index: number) {
     const key = this._keyMapper(index);
-    return this._heightMap.has(key);
+    return this._cacheMap.has(key) || this._heightMap.has(key);
+  }
+  computeDiff(index: number, newHeight: number) {
+    const oldHeight = this.getRowHeight(index);
+    return newHeight - oldHeight;
   }
 
   setRowHeight(index: number, newHeight: number) {
-    const oldHeight = this.getRowHeight(index);
-    const diff = newHeight - oldHeight;
     const key = this._keyMapper(index);
     this._heightMap.set(key, newHeight);
-    return { newHeight, oldHeight, diff };
+  }
+
+  cacheRowHeight(index: number, newHeight: number) {
+    const key = this._keyMapper(index);
+    this._cacheMap.set(key, newHeight);
   }
 
   getRowHeight(index: number) {
@@ -51,7 +58,16 @@ class RowManager {
     return typeof height === 'number' ? height : this.getEstimateRowHeight();
   }
 
+  flushCache() {
+    this._cacheMap.forEach((val, key) => {
+      this._heightMap.set(key, val);
+    });
+    this._cacheMap.clear();
+  }
   getRowsHeight(startIndex: number, stopIndex: number) {
+    if (stopIndex < 0) {
+      return 0;
+    }
     let heightBeforeIndex = 0;
     for (let i = startIndex; i <= stopIndex; i++) {
       const rowHeight = this.getRowHeight(i);

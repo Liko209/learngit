@@ -16,8 +16,8 @@ describe('RequestTask', () => {
       expect(task.weight).toEqual(REQUEST_WEIGHT.HIGH);
 
       task.weight = REQUEST_WEIGHT.NORMAL;
-      task.setRequestPriority(REQUEST_PRIORITY.SPECIFIC);
-      expect(task.priority()).toEqual(REQUEST_PRIORITY.SPECIFIC);
+      task.setRequestPriority(REQUEST_PRIORITY.IMMEDIATE);
+      expect(task.priority()).toEqual(REQUEST_PRIORITY.IMMEDIATE);
       expect(task.weight).toEqual(REQUEST_WEIGHT.HIGH);
     });
   });

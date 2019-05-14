@@ -6,6 +6,7 @@
 import { JuiAvatarProps } from 'jui/components/Avatar';
 
 type AvatarProps = JuiAvatarProps & {
+  icon?: string;
   uid?: number;
   showDefaultAvatar?: boolean;
   automationId?: string;

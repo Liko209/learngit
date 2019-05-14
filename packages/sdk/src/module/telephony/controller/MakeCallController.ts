@@ -103,7 +103,7 @@ class MakeCallController {
     let res = MAKE_CALL_ERROR_CODE.NO_ERROR;
     const phoneParserUtility = await PhoneParserUtility.getPhoneParser(
       phoneNumber,
-      true,
+      false,
     );
     if (phoneParserUtility && phoneParserUtility.isShortNumber()) {
       do {
@@ -126,7 +126,7 @@ class MakeCallController {
   private async _checkInternationalCallsPermission(phoneNumber: string) {
     const phoneParserUtility = await PhoneParserUtility.getPhoneParser(
       phoneNumber,
-      true,
+      false,
     );
 
     if (
@@ -142,17 +142,6 @@ class MakeCallController {
       }
     }
     return MAKE_CALL_ERROR_CODE.NO_ERROR;
-  }
-
-  async getE164PhoneNumber(phoneNumber: string) {
-    const phoneParserUtility = await PhoneParserUtility.getPhoneParser(
-      phoneNumber,
-      true,
-    );
-    const e164PhoneNumber = phoneParserUtility
-      ? phoneParserUtility.getE164()
-      : phoneNumber;
-    return e164PhoneNumber;
   }
 
   async tryMakeCall(e164PhoneNumber: string): Promise<MAKE_CALL_ERROR_CODE> {

@@ -23,6 +23,7 @@ const ServiceConfig = {
   SYNC_SERVICE: 'SyncService',
   TELEPHONY_SERVICE: 'TelephonyService',
   ITEM_SERVICE: 'ItemService',
+  PHONE_NUMBER_SERVICE: 'PhoneNumberService',
 };
 
 export { ServiceConfig };

@@ -172,7 +172,7 @@ export default class NetworkClient {
       authFree,
       requestConfig,
       retryCount,
-      priority,
+      priority = REQUEST_PRIORITY.NORMAL,
       HAPriority,
       timeout,
       pathPrefix,
@@ -197,7 +197,7 @@ export default class NetworkClient {
       .setTimeout(timeout || DEFAULT_TIMEOUT_INTERVAL)
       .setVia(via)
       .setNetworkManager(this.networkManager)
-      .setPriority(priority ? priority : REQUEST_PRIORITY.NORMAL)
+      .setPriority(priority)
       .setHAPriority(HAPriority ? HAPriority : HA_PRIORITY.BASIC);
   }
 
@@ -226,9 +226,7 @@ export default class NetworkClient {
    */
   post<T>(baseQuery: IBaseQuery) {
     return this.request<T>({
-      path: baseQuery.path,
-      headers: baseQuery.headers || {},
-      timeout: baseQuery.timeout,
+      ...baseQuery,
       data: omitLocalProperties(baseQuery.data || {}),
       method: NETWORK_METHOD.POST,
     });
@@ -243,9 +241,7 @@ export default class NetworkClient {
    */
   put<T>(baseQuery: IBaseQuery) {
     return this.http<T>({
-      path: baseQuery.path,
-      headers: baseQuery.headers || {},
-      timeout: baseQuery.timeout,
+      ...baseQuery,
       data: omitLocalProperties(baseQuery.data || {}),
       method: NETWORK_METHOD.PUT,
     });

@@ -9,8 +9,9 @@ import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SERVICE, SOCKET, WINDOW } from '../../../service/eventKey';
 import { SyncListener } from './SyncListener';
 import { SyncController } from '../controller/SyncController';
+import { IdModel } from '../../../framework/model';
 
-class SyncService extends EntityBaseService {
+class SyncService extends EntityBaseService<IdModel> {
   private _syncController: SyncController;
   constructor() {
     super(false);

@@ -51,7 +51,7 @@ describe('GroupFetchDataController', () => {
   let groupFetchDataController: GroupFetchDataController;
   let testPartialModifyController: IPartialModifyController<Group>;
 
-  let entityCacheController: EntityCacheController;
+  let entityCacheController: EntityCacheController<Group>;
   let testEntityCacheSearchController: IEntityCacheSearchController<Group>;
   let groupService: GroupService;
 

@@ -687,6 +687,7 @@ describe('sip call session', () => {
 
   describe('set default audio input/output device', () => {
     function initDefaultAudioDevice(flag: boolean) {
+      RTCMediaDeviceManager.instance().destroy();
       let deviceInfos: MediaDeviceInfo[];
       if (flag) {
         deviceInfos = [
@@ -745,44 +746,6 @@ describe('sip call session', () => {
       }
       RTCMediaDeviceManager.instance()._gotMediaDevices(deviceInfos);
     }
-
-    it('should set hasDefaultAudioDevice false if deviceManager has not "default" id when add/remove audio device [JPT-1454]', () => {
-      initDefaultAudioDevice(false);
-      const hasDefaultInputDevice = RTCMediaDeviceManager.instance().hasDefaultInputAudioDeviceId();
-      const hasDefaultOutputDevice = RTCMediaDeviceManager.instance().hasDefaultOutputAudioDeviceId();
-      expect(hasDefaultInputDevice).not.toBeTruthy();
-      expect(hasDefaultOutputDevice).not.toBeTruthy();
-    });
-
-    it('should set hasDefaultAudioDevice true if deviceManager has "default" id when add/remove audio device [JPT-1511]', () => {
-      initDefaultAudioDevice(true);
-      const hasDefaultInputDevice = RTCMediaDeviceManager.instance().hasDefaultInputAudioDeviceId();
-      const hasDefaultOutputDevice = RTCMediaDeviceManager.instance().hasDefaultOutputAudioDeviceId();
-      expect(hasDefaultInputDevice).toBeTruthy();
-      expect(hasDefaultOutputDevice).toBeTruthy();
-    });
-
-    it('should set default audio device to session if deviceManager has "default" id when session enter connected[JPT-1455]', done => {
-      initDefaultAudioDevice(true);
-      initSession();
-      jest.spyOn(sipCallSession, '_setAudioOutputDevice').mockImplementation();
-      jest.spyOn(sipCallSession, '_setAudioInputDevice').mockImplementation();
-      mockSession.emitSessionAccepted();
-      setImmediate(() => {
-        expect(sipCallSession._setAudioOutputDevice).toHaveBeenCalled();
-        expect(sipCallSession._setAudioInputDevice).toHaveBeenCalled();
-        done();
-      });
-    });
-
-    it('should do nothing if hasDefaultAudioDevice equals true when session has not connected [JPT-1456]', () => {
-      initDefaultAudioDevice(true);
-      initSession();
-      jest.spyOn(sipCallSession, '_setAudioOutputDevice').mockImplementation();
-      jest.spyOn(sipCallSession, '_setAudioInputDevice').mockImplementation();
-      expect(sipCallSession._setAudioOutputDevice).not.toHaveBeenCalled();
-      expect(sipCallSession._setAudioInputDevice).not.toHaveBeenCalled();
-    });
 
     it('should do nothing if hasDefaultAudioDevice equals false when outbound call received session accept event [JPT-1457]', done => {
       initDefaultAudioDevice(false);

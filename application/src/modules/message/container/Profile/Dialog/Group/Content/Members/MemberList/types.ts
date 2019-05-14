@@ -17,7 +17,7 @@ type MemberListProps = {
 };
 
 type MemberListViewProps = {
-  onScrollEvent: (event: { scrollTop: number }) => void;
+  onScrollEvent: (event: React.UIEvent<HTMLElement>) => void;
   showEmpty: boolean;
 };
 

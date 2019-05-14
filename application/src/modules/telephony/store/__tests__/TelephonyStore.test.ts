@@ -5,7 +5,7 @@
  */
 
 import { TelephonyStore } from '../TelephonyStore';
-import { CALL_STATE, CALL_WINDOW_STATUS, HOLD_STATE, RECORD_DISABLED_STATE } from '../../FSM';
+import { CALL_STATE, CALL_WINDOW_STATUS, HOLD_STATE } from '../../FSM';
 
 function createStore() {
   return new TelephonyStore();
@@ -142,5 +142,14 @@ describe('Telephony store', () => {
     store.directCall();
     store.connected();
     expect(store.recordDisabled).toBe(false);
+  });
+
+  it('switch between mute and unmute', () => {
+    const store = createStore();
+    expect(store.isMute).toBe(false);
+    store.switchBetweenMuteAndUnmute();
+    expect(store.isMute).toBe(true);
+    store.switchBetweenMuteAndUnmute();
+    expect(store.isMute).toBe(false);
   });
 });

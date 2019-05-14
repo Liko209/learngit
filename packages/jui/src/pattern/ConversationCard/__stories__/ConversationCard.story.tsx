@@ -25,11 +25,13 @@ storiesOf('Pattern', module)
     const activity = text('activity', 'shared 22 files');
     const status = text('status', '🏃 in the meeting');
     const mode = boolean('navigation', false) ? 'navigation' : undefined;
+    const disabled = boolean('Team name disabled', false);
     const from = mode && (
       <JuiConversationCardFrom
         name={groupName}
         isTeam={true}
         onClick={() => {}}
+        disabled={disabled}
       />
     );
     const card = (

@@ -1,0 +1,21 @@
+{
+  "default": 1,
+  "banner": 9500,
+  "snackbar": 10000,
+  "dialog": 6000,
+  "mask": 5000,
+  "popup": 3000,
+  "spinner": 9050,
+  "model": 9000,
+  "dropdown": 7000,
+  "ripple": 1,
+  "elementOnRipple": 2,
+  "loading": 1000,
+  "dragging": 2000,
+  "moreMenu": 999,
+  "memberListHeader": 100,
+  "toast": 3000,
+  "floatButton": 10,
+  "codeEditor": 0,
+  "makeZIndexStackingContext": 1
+}

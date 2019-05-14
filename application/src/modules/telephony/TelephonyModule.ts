@@ -5,6 +5,8 @@
  */
 
 import { AbstractModule, inject, Jupiter } from 'framework';
+import { HomeService } from '@/modules/home/service/HomeService';
+import { GlobalSearchService } from '@/modules/GlobalSearch/service/GlobalSearchService';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { TelephonyService } from '@/modules/telephony/service';
 import { TELEPHONY_SERVICE } from './interface/constant';
@@ -16,6 +18,7 @@ import { mainLogger } from 'sdk';
 import { SERVICE } from 'sdk/service/eventKey';
 import { notificationCenter } from 'sdk/service';
 import { TelephonyNotificationManager } from './TelephonyNotificationManager';
+import { Dialer, Dialpad, Call } from './container';
 
 class TelephonyModule extends AbstractModule {
   static TAG: string = '[UI TelephonyModule] ';
@@ -27,6 +30,9 @@ class TelephonyModule extends AbstractModule {
   @inject(TelephonyNotificationManager)
   private _telephonyNotificationManager: TelephonyNotificationManager;
   @inject(Jupiter) _jupiter: Jupiter;
+
+  @inject(HomeService) _homeService: HomeService;
+  @inject(GlobalSearchService) _globalSearchService: GlobalSearchService;
 
   initTelephony = () => {
     this._TelephonyService.init();
@@ -54,6 +60,9 @@ class TelephonyModule extends AbstractModule {
     );
 
     this._jupiter.emitModuleInitial(TELEPHONY_SERVICE);
+    this._homeService.registerExtension('root', Dialer);
+    this._homeService.registerExtension('topBar', Dialpad);
+    this._globalSearchService.registerExtension('searchItem', Call);
   }
 
   dispose() {

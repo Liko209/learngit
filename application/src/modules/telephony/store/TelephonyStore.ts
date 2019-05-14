@@ -5,7 +5,7 @@
  */
 
 import { LifeCycle } from 'ts-javascript-state-machine';
-import { observable, computed, reaction } from 'mobx';
+import { observable, computed, action, reaction } from 'mobx';
 import { PersonService, ContactType } from 'sdk/module/person';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { mainLogger } from 'sdk';
@@ -79,6 +79,8 @@ class TelephonyStore {
   keypadEntered: boolean = false;
   @observable
   enteredKeys: string = '';
+  @observable
+  isMute = false;
 
   @observable
   pendingForHold: boolean = false;
@@ -117,7 +119,10 @@ class TelephonyStore {
     });
 
     this._callFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
-      const { to } = lifecycle;
+      const { to, from } = lifecycle;
+      if (to === from) {
+        return;
+      }
       this.callState = to as CALL_STATE;
       switch (this.callState) {
         case CALL_STATE.CONNECTED:
@@ -176,7 +181,7 @@ class TelephonyStore {
         phoneNumber: this.phoneNumber,
       });
     }
-    return true;
+    return false;
   }
 
   private _matchContactByPhoneNumber = async (phone: string) => {
@@ -406,6 +411,11 @@ class TelephonyStore {
   @computed
   get recordDisabled() {
     return this.recordDisabledState === RECORD_DISABLED_STATE.DISABLED;
+  }
+
+  @action
+  switchBetweenMuteAndUnmute = () => {
+    this.isMute = !this.isMute;
   }
 }
 
