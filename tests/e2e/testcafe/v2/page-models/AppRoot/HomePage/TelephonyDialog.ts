@@ -7,6 +7,10 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelector('[role="document"]');
   }
 
+  get container() {
+    return this.getSelectorByAutomationId('dialer-move-animation-container');
+  }
+
   get title() {
     return this.getSelectorByAutomationId('telephony-dialer-title');
   }
@@ -171,6 +175,35 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.hideKeypadPageButton.nextSibling('div'); // todo: automation id
   }
 
+  get minimizeButton() {
+    return this.getSelectorByAutomationId('telephony-minimize-btn');
+  }
+
+  get ignoreButton() {
+    return this.buttonOfIcon('close');
+  }
+
+  get deleteButton() {
+    return this.buttonOfIcon('deletenumber');
+  }
+
+  // inbound call
+  get sendToVoiceMailButton() {
+    return this.getSelectorByAutomationId('telephony-voice-mail-btn');
+  }
+
+  get dialerInput(){
+    return this.getSelectorByAutomationId('telephony-dialer-header').find('input[type="text"]');
+  }
+
+  get answerButton() {
+    return this.getSelectorByAutomationId('telephony-answer-btn');
+  }
+
+  get dialButton() {
+    return this.getSelectorByAutomationId('telephony-end-btn');
+  }
+
   async keysRecordShouldBe(text: string) {
     await this.t.expect(this.keysRecordArea.textContent).eql(text);
   }
@@ -198,29 +231,12 @@ export class TelephonyDialog extends BaseWebComponent {
     }
   }
 
-  // inbound call
-  get sendToVoiceMailButton() {
-    return this.getSelectorByAutomationId('telephony-voice-mail-btn');
-  }
-
   async clickSendToVoiceMailButton() {
     await this.t.click(this.sendToVoiceMailButton);
   }
 
-  get answerButton() {
-    return this.getSelectorByAutomationId('telephony-answer-btn');
-  }
-
   async clickAnswerButton() {
     await this.t.click(this.answerButton);
-  }
-
-  get minimizeButton() {
-    return this.buttonOfIcon('minimize')
-  }
-
-  get ignoreButton() {
-    return this.buttonOfIcon('close')
   }
 
   async clickMinimizeButton() {
@@ -233,6 +249,26 @@ export class TelephonyDialog extends BaseWebComponent {
 
   async hoverSendToVoiceMailButton() {
     await this.t.hover(this.sendToVoiceMailButton);
+  }
+
+  async hoverMinimizeButton(){
+    await this.t.hover(this.minimizeButton);
+  }
+
+  async hoverDeleteButton(){
+    await this.t.hover(this.deleteButton);
+  }
+
+  async clickDeleteButton(){
+    await this.t.click(this.deleteButton);
+  }
+
+  async typeTextInDialer(text: string, options?) {
+    await this.t.typeText(this.dialerInput, text, options)
+  }
+
+  async clickDialButton() {
+    await this.t.click(this.dialButton);
   }
 
   async hoverMoreOptionsButton() {

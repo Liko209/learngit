@@ -18,7 +18,6 @@ import { TelephonyStore } from '../../store/TelephonyStore';
 import { ToastCallError } from '../ToastCallError';
 import { container, injectable, decorate } from 'framework';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-import { AccountUserConfig } from 'sdk/module/account/config';
 
 const testProcedureWaitingTime = 20;
 const mockedDelay = 10;
@@ -38,6 +37,13 @@ const sleep = (time: number): Promise<void> => {
 };
 
 let mockedServerTelephonyService: any;
+
+function initializeCallerId() {
+  telephonyService._telephonyStore.chosenCallerPhoneNumber = '123';
+  telephonyService._telephonyStore.callerPhoneNumberList = [
+    { id: '123', phoneNumber: '123', usageType: 'companyNumber' },
+  ];
+}
 
 describe('TelephonyService', () => {
   beforeEach(() => {
@@ -110,12 +116,13 @@ describe('TelephonyService', () => {
       mute: jest.fn(),
       unmute: jest.fn(),
       dtmf: jest.fn(),
+      getLastCalledNumber: jest.fn(),
       startReply: jest.fn(),
       replyWithMessage: jest.fn(),
       replyWithPattern: jest.fn(),
     };
 
-    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
+    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation((conf) => {
       switch (conf) {
         case ServiceConfig.TELEPHONY_SERVICE:
           telephonyService = mockedServerTelephonyService;
@@ -129,6 +136,8 @@ describe('TelephonyService', () => {
           return { get: jest.fn() };
         case ServiceConfig.USER_CONFIG_SERVICE:
           return { get: jest.fn() };
+        case ServiceConfig.RC_INFO_SERVICE:
+          return { get: jest.fn(), getCallerIdList: jest.fn() };
         case ServiceConfig.ACCOUNT_SERVICE:
           return { userConfig: { getGlipUserId: jest.fn() } };
         default:
@@ -151,6 +160,7 @@ describe('TelephonyService', () => {
 
   describe('The "hold" button status tests', () => {
     it('The "hold" button should be disabled when an outbound call is not connected [JPT-1545]', async () => {
+      initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       (telephonyService as TelephonyService).holdOrUnhold();
 
@@ -166,6 +176,7 @@ describe('TelephonyService', () => {
     });
 
     it('User should be able to hold a call [JPT-1541]', async () => {
+      initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
 
@@ -187,6 +198,7 @@ describe('TelephonyService', () => {
     });
 
     it('User should be able to unhold a call [JPT-1544]', async () => {
+      initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
       (telephonyService as TelephonyService).holdOrUnhold();
@@ -215,6 +227,7 @@ describe('TelephonyService', () => {
     });
 
     it('Hold button should be changed once with unexpected error [JPT-1574]', async () => {
+      initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
       (telephonyService as TelephonyService).holdOrUnhold();
@@ -239,6 +252,7 @@ describe('TelephonyService', () => {
     });
 
     it('Unhold button should not be changed once with unexpected error', async () => {
+      initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
       (telephonyService as TelephonyService).holdOrUnhold();
@@ -267,6 +281,7 @@ describe('TelephonyService', () => {
 
   describe('The "record" button status tests', () => {
     it('The "record" button should be disabled when an outbound call is not connected [JPT-1604]', async () => {
+      initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       (telephonyService as TelephonyService).startOrStopRecording();
 
@@ -283,6 +298,7 @@ describe('TelephonyService', () => {
     });
 
     it('Start recording if the call is connected [JPT-1600]', async () => {
+      initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
 
@@ -304,6 +320,7 @@ describe('TelephonyService', () => {
     });
 
     it('Stop recording should work when call is under recording [JPT-1603]', async () => {
+      initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
       (telephonyService as TelephonyService).startOrStopRecording();
@@ -332,6 +349,7 @@ describe('TelephonyService', () => {
     });
 
     it("Record shouldn't work when a call being holded [JPT-1608]", async () => {
+      initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
 
@@ -356,6 +374,7 @@ describe('TelephonyService', () => {
     });
 
     it('Should restore recording state when unhold [JPT-1608]', async () => {
+      initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
 
@@ -511,5 +530,89 @@ describe('TelephonyService', () => {
       );
       telephonyService._callId = undefined;
     });
+  });
+
+  it('should limit string length to 30', () => {
+    const original = Array(50)
+      .fill(1)
+      .join('');
+    telephonyService.updateInputString(original);
+    expect(telephonyService._telephonyStore.inputString.length).toBe(30);
+  });
+
+  it('can not input once hit length limitation', () => {
+    const original = Array(30)
+      .fill(1)
+      .join('');
+    telephonyService.updateInputString(original);
+    telephonyService.concatInputString('2');
+    expect(telephonyService._telephonyStore.inputString).toBe(original);
+  });
+
+  it('should clear the input field after make call', async () => {
+    telephonyService._telephonyStore.inputString = '1234';
+    initializeCallerId();
+    await (telephonyService as TelephonyService).makeCall(
+      telephonyService._telephonyStore.inputString,
+    );
+    telephonyService._telephonyStore.dialerCall();
+    expect(
+      (telephonyService as TelephonyService)._telephonyStore.inputString,
+    ).toBe('');
+  });
+
+  it('should restore the input field after interruption of an incoming call', async () => {
+    telephonyService.maximize();
+    const inputString = '1234';
+    telephonyService._telephonyStore.inputString = inputString;
+    initializeCallerId();
+    const incomingId = v4();
+    telephonyService._onReceiveIncomingCall({
+      fromName: 'test',
+      fromNum: '456',
+      callId: incomingId,
+    });
+    telephonyService._onCallStateChange(
+      incomingId,
+      RTC_CALL_STATE.DISCONNECTED,
+    );
+    expect(
+      (telephonyService as TelephonyService)._telephonyStore.inputString,
+    ).toBe(inputString);
+  });
+
+  it('should call getLastCalledNumber() on SDK', () => {
+    telephonyService.lastCalledNumber;
+    expect(mockedServerTelephonyService.getLastCalledNumber).toHaveBeenCalled();
+  });
+
+  it('should increase the string length on the input field', () => {
+    telephonyService.maximize();
+    const inputString = '1234';
+    telephonyService._telephonyStore.inputString = inputString;
+    telephonyService.concatInputString('5');
+    expect(
+      (telephonyService as TelephonyService)._telephonyStore.inputString,
+    ).toBe('12345');
+  });
+
+  it('should decrease the string length on the input field', () => {
+    telephonyService.maximize();
+    const inputString = '1234';
+    telephonyService._telephonyStore.inputString = inputString;
+    telephonyService.deleteInputString();
+    expect(
+      (telephonyService as TelephonyService)._telephonyStore.inputString,
+    ).toBe('123');
+  });
+
+  it('should clear all the string length on the input field', () => {
+    telephonyService.maximize();
+    const inputString = '1234';
+    telephonyService._telephonyStore.inputString = inputString;
+    telephonyService.deleteInputString(true);
+    expect(
+      (telephonyService as TelephonyService)._telephonyStore.inputString,
+    ).toBe('');
   });
 });

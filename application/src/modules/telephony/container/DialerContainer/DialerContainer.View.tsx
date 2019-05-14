@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
-import { JuiContainer } from 'jui/pattern/Dialer';
-import { JuiIconButton } from 'jui/components/Buttons';
+import { JuiContainer, DialPad, CallerIdSelector } from 'jui/pattern/Dialer';
+import { RuiTooltip } from 'rcui/components/Tooltip';
 import _ from 'lodash';
-import { DialerContainerViewProps } from './types';
+import { DialerContainerViewProps, DialerContainerViewState } from './types';
 import { Mute } from '../Mute';
 import { Keypad } from '../Keypad';
 import { Hold } from '../Hold';
@@ -17,97 +17,147 @@ import { Add } from '../Add';
 import { Record } from '../Record';
 import { CallActions } from '../CallActions';
 import { End } from '../End';
+import { DialBtn } from '../DialBtn';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
 const KEYPAD_ACTIONS = [Mute, Keypad, Hold, Add, Record, CallActions];
-const KEY_2_ICON_MAP = {
-  one: '1',
-  two: '2',
-  three: '3',
-  four: '4',
-  five: '5',
-  six: '6',
-  seven: '7',
-  eight: '8',
-  nine: '9',
-  asterisk: '*',
-  zero: '0',
-  hash: '#',
-};
-const ACCEPTABLE_KEYS = Object.values(KEY_2_ICON_MAP);
-const KEY_UP = 'keyup';
 
-const throttledHandler = (f: any) =>
-  _.throttle(f, 30, {
-    trailing: true,
-    leading: false,
+type Props = DialerContainerViewProps & WithTranslation;
+
+function sleep(timeout: number) {
+  let timer: any;
+  const promise = new Promise((resolve) => {
+    timer = setTimeout(resolve, timeout);
   });
+  return {
+    timer,
+    promise,
+  };
+}
 
 @observer
-class DialerContainerView extends React.Component<DialerContainerViewProps> {
-  private _keypadKeys: React.ComponentType[];
-  private _onKeyup: (e: KeyboardEvent) => void;
+class DialerContainerViewComponent extends React.Component<
+  Props,
+  DialerContainerViewState
+> {
+  private _keypadKeys: JSX.Element;
+  private _timer: NodeJS.Timeout;
+  private _waitForAnimationEndTimer: NodeJS.Timeout;
+  private _tooltipRef: RefObject<RuiTooltip> = createRef();
 
-  constructor(props: DialerContainerViewProps) {
+  constructor(props: Props) {
     super(props);
-
-    this._onKeyup = throttledHandler(({ key }: KeyboardEvent) => {
-      const { keypadEntered, dtmf } = this.props;
-      if (ACCEPTABLE_KEYS.includes(key) && keypadEntered) {
-        dtmf(key);
-      }
-    });
-
-    // Since we know that the dtmf() method for a view-model instance won't change during the runtime, then we can cache the buttons
-    this._keypadKeys = [
-      'one',
-      'two',
-      'three',
-      'four',
-      'five',
-      'six',
-      'seven',
-      'eight',
-      'nine',
-      'asterisk',
-      'zero',
-      'hash',
-    ].map((str) => {
-      const res = () => (
-        <JuiIconButton
-          disableToolTip={true}
-          disableRipple={true}
-          onClick={throttledHandler(() => props.dtmf(KEY_2_ICON_MAP[str]))}
-          size="xxlarge"
-          key={str}
-          color="grey.900"
-          stretchIcon={true}
-        >
-          {str}
-        </JuiIconButton>
-      );
-      res.displayName = str;
-      return res;
-    });
+    this._keypadKeys = (
+      <DialPad makeMouseEffect={props.dtmf} makeKeyboardEffect={props.dtmf} />
+    );
+    // do not sync this state with `hasDialerOpened`, since once opened, `hasDialerOpened` would be set to `true` immediately
+    this.state = {
+      shouldShowToolTip: !props.hasDialerOpened,
+    };
   }
 
-  componentDidMount() {
-    window.addEventListener(KEY_UP, this._onKeyup);
+  _onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = event.target;
+    this.props.setCallerPhoneNumber(value);
+  }
+
+  _toggleToolTip = (open: boolean) => {
+    if (!this._tooltipRef.current) {
+      return;
+    }
+    this._tooltipRef.current.setState({ open });
+  }
+
+  async componentDidMount() {
+    if (this.state.shouldShowToolTip) {
+      const { timer, promise } = sleep(1000);
+      this._waitForAnimationEndTimer = timer;
+      await promise;
+      this._toggleToolTip(true);
+      const toggler = sleep(5000);
+      this._timer = toggler.timer;
+      await toggler.promise;
+      this._toggleToolTip(false);
+      this.setState({
+        shouldShowToolTip: false,
+      });
+
+      delete this._waitForAnimationEndTimer;
+      delete this._timer;
+    }
+
+    this.props.onAfterDialerOpen();
   }
 
   componentWillUnmount() {
-    window.removeEventListener(KEY_UP, this._onKeyup);
+    if (this._timer) {
+      clearTimeout(this._timer);
+    }
+    if (this._waitForAnimationEndTimer) {
+      clearTimeout(this._waitForAnimationEndTimer);
+    }
   }
 
   render() {
+    const {
+      keypadEntered,
+      isDialer,
+      typeString,
+      playAudio,
+      dialerInputFocused,
+      callerPhoneNumberList,
+      chosenCallerPhoneNumber,
+      t,
+    } = this.props;
+    let keypadActions;
+    let callAction = End;
+
+    // TODO: change caller id
+    const callerIdProps = {
+      value: chosenCallerPhoneNumber,
+      menu: callerPhoneNumberList,
+      label: t('telephony.callFrom'),
+      disabled: false,
+      heightSize: 'default',
+      onChange: this._onChange,
+    };
+
+    if (isDialer) {
+      callAction = DialBtn;
+      const callerIdSelector = <CallerIdSelector {...callerIdProps} />;
+      keypadActions = (
+        <>
+          {this.state.shouldShowToolTip ? (
+            <RuiTooltip
+              title={t('telephony.callerIdSelector.tooltip')}
+              placement="bottom"
+              ref={this._tooltipRef}
+            >
+              {callerIdSelector}
+            </RuiTooltip>
+          ) : (
+            callerIdSelector
+          )}
+          <DialPad
+            makeMouseEffect={typeString}
+            makeKeyboardEffect={playAudio}
+            shouldHandleKeyboardEvts={dialerInputFocused}
+          />
+        </>
+      );
+    } else if (keypadEntered) {
+      keypadActions = this._keypadKeys;
+    } else {
+      keypadActions = KEYPAD_ACTIONS;
+    }
     return (
-      <JuiContainer
-        End={End}
-        KeypadActions={
-          this.props.keypadEntered ? this._keypadKeys : KEYPAD_ACTIONS
-        }
-      />
+      <JuiContainer CallAction={callAction} KeypadActions={keypadActions} />
     );
   }
 }
 
-export { DialerContainerView };
+const DialerContainerView = withTranslation('translations')(
+  DialerContainerViewComponent,
+);
+
+export { DialerContainerView, DialPad };
