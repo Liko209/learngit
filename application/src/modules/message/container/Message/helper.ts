@@ -22,6 +22,9 @@ import { GROUP_CAN_NOT_SHOWN_REASON } from 'sdk/module/group/constants';
 import i18nT from '@/utils/i18nT';
 import { getGlobalValue } from '@/store/utils/entities';
 import _ from 'lodash';
+
+const logger = mainLogger.tags('messageRouter Helper');
+
 class GroupHandler {
   static accessGroup(id: number) {
     const accessTime: number = +new Date();
@@ -76,15 +79,18 @@ export class MessageRouterChangeHelper {
     if (state && state.last_group_id) {
       const isHidden = await GroupHandler.isGroupHidden(state.last_group_id);
       if (isHidden) {
+        logger.log(`getLastGroupId, group ${state.last_group_id} is Hidden`);
         return '';
       }
       return this.verifyGroup(state.last_group_id);
     }
+    logger.log('getLastGroupId, lastGroup in state is undefined');
     return '';
   }
 
   static async goToLastOpenedGroup() {
     const lastGroupId = await this.getLastGroupId();
+    logger.log(`LastGroupId is ${lastGroupId}, doing redirection`);
     this._doRouterRedirection(lastGroupId, 'REPLACE');
     this.updateCurrentConversationId(lastGroupId);
   }
@@ -144,9 +150,11 @@ export class MessageRouterChangeHelper {
       ServiceConfig.GROUP_SERVICE,
     );
     const { canBeShown, reason } = await groupService.isGroupCanBeShown(id);
+    logger.log(`Verifying group ${id}`);
     if (canBeShown) {
       return String(id);
     }
+    logger.log(`Group ${id} cannot be shown for ${reason}`);
     const toastOpts = {
       type: ToastType.ERROR,
       messageAlign: ToastMessageAlign.LEFT,
