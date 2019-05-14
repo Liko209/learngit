@@ -29,7 +29,8 @@ import { MakeCallController } from './MakeCallController';
 import { RCInfoService } from '../../rcInfo';
 import { ERCServiceFeaturePermission } from '../../rcInfo/types';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
-import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
+import { TelephonyService } from '../service';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
   private _telephonyAccountDelegate: ITelephonyAccountDelegate;
@@ -80,12 +81,16 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   }
 
   getLastCalledNumber() {
-    const telephonyConfig = new TelephonyUserConfig();
+    const telephonyConfig = ServiceLoader.getInstance<TelephonyService>(
+      ServiceConfig.TELEPHONY_SERVICE,
+    ).userConfig;
     return telephonyConfig.getLastCalledNumber();
   }
 
   setLastCalledNumber(num: string) {
-    const telephonyConfig = new TelephonyUserConfig();
+    const telephonyConfig = ServiceLoader.getInstance<TelephonyService>(
+      ServiceConfig.TELEPHONY_SERVICE,
+    ).userConfig;
     telephonyConfig.setLastCalledNumber(num);
   }
 
@@ -94,9 +99,10 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
       return result;
     }
-    const e164ToNumber = await this._makeCallController.getE164PhoneNumber(
-      toNumber,
+    const phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
+      ServiceConfig.PHONE_NUMBER_SERVICE,
     );
+    const e164ToNumber = await phoneNumberService.getE164PhoneNumber(toNumber);
     this.setLastCalledNumber(e164ToNumber);
     result = await this._makeCallController.tryMakeCall(e164ToNumber);
     if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
@@ -195,8 +201,8 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   replyWithPattern(
     callId: string,
     pattern: RTC_REPLY_MSG_PATTERN,
-    time: number,
-    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+    time?: number,
+    timeUnit?: RTC_REPLY_MSG_TIME_UNIT,
   ) {
     this._telephonyCallDelegate.replyWithPattern(pattern, time, timeUnit);
   }

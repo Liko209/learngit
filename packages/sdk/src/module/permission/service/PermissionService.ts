@@ -8,7 +8,8 @@ import { IPermissionService } from './IPermissionService';
 import { EntityBaseService } from '../../../framework';
 import { PermissionController } from '../controller/PermissionController';
 import UserPermissionType from '../types';
-import { AccountUserConfig } from '../../../module/account/config';
+import { AccountService } from '../../account/service';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 type UserPermission = {
   id: number;
@@ -25,7 +26,9 @@ class PermissionService extends EntityBaseService<UserPermission>
   }
 
   async getUserPermission() {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const id = userConfig.getGlipUserId();
     return this.getById(id);
   }

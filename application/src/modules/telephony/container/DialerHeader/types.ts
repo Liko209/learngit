@@ -4,13 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type DialerHeaderProps = {};
+type DialerHeaderProps = {
+  Back?: React.ComponentType<any>;
+};
 
 type DialerHeaderViewProps = {
   isExt: boolean;
   name: string;
   phone?: string;
   uid?: number;
-};
+} & DialerHeaderProps;
 
 export { DialerHeaderProps, DialerHeaderViewProps };

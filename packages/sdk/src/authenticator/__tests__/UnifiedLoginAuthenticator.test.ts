@@ -14,7 +14,8 @@ import {
   HttpResponseBuilder,
   HttpResponse,
 } from 'foundation';
-import { GlobalConfigService } from '../../module/config';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { AccountService } from 'sdk/module/account';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -32,6 +33,12 @@ function createResponse(obj: any) {
 
 describe('UnifiedLoginAuthenticator', () => {
   const unified = new UnifiedLoginAuthenticator();
+  const accoutService = new AccountService();
+  ServiceLoader.getInstance = jest.fn().mockImplementation((config: string) => {
+    if (config === ServiceConfig.ACCOUNT_SERVICE) {
+      return accoutService;
+    }
+  });
   it('UnifiedLoginAuthenticator invalid tokens', async () => {
     const resp = await unified.authenticate({});
     expect(resp.success).toBe(false);

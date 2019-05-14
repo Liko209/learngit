@@ -4,7 +4,8 @@
  */
 
 import { BETA_CONFIG_KEYS } from '../constant';
-import { AccountUserConfig } from '../config';
+import { AccountService } from '../service';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 enum EBETA_FLAG {
   BETA_LOG,
@@ -69,7 +70,9 @@ function isInBetaEmailList(flagName: string): boolean {
   const list: string = getFlagValue(flagName);
   if (list !== '') {
     const emailsList: string[] = list.split(',');
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const userId: number = userConfig.getGlipUserId();
     if (userId) {
       return emailsList.indexOf(userId.toString()) !== -1;
@@ -82,7 +85,9 @@ function isInBetaDomainList(flagName: string): boolean {
   const list: string = getFlagValue(flagName);
   if (list !== '') {
     const emailsList: string[] = list.split(',');
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const companyId: number = userConfig.getCurrentCompanyId();
     if (companyId) {
       return emailsList.indexOf(companyId.toString()) !== -1;
@@ -92,7 +97,9 @@ function isInBetaDomainList(flagName: string): boolean {
 }
 
 function getFlagValue(flagName: string): string {
-  const userConfig = new AccountUserConfig();
+  const userConfig = ServiceLoader.getInstance<AccountService>(
+    ServiceConfig.ACCOUNT_SERVICE,
+  ).userConfig;
   const clientConfig = userConfig.getClientConfig();
   if (clientConfig && clientConfig[flagName]) {
     return clientConfig[flagName];

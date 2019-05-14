@@ -6,7 +6,13 @@ import {
   Table, Column, Model, DataType
 } from 'sequelize-typescript';
 
-@Table({ modelName: 't_performance' })
+@Table({
+  modelName: 't_performance',
+  indexes: [{
+    unique: false,
+    fields: ['scene_id']
+  }]
+})
 class PerformanceDto extends Model<PerformanceDto> {
 
   @Column({
@@ -68,7 +74,13 @@ class PerformanceDto extends Model<PerformanceDto> {
   estimatedInputLatency: number;
 }
 
-@Table({ modelName: 't_performance_item' })
+@Table({
+  modelName: 't_performance_item',
+  indexes: [{
+    unique: false,
+    fields: ['scene_id']
+  }]
+})
 class PerformanceItemDto extends Model<PerformanceItemDto> {
 
   @Column({

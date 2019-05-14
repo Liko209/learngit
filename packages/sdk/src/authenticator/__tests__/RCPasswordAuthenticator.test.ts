@@ -6,6 +6,8 @@
 import { HttpResponseBuilder, HttpResponse } from 'foundation';
 import { loginGlip, ITokenModel, RCAuthApi } from '../../api';
 import { RCPasswordAuthenticator } from '..';
+import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
+import { AccountUserConfig, AuthUserConfig } from '../../module/account/config';
 jest.mock('../../module/config');
 
 jest.mock('../../api');
@@ -17,6 +19,19 @@ function createResponse(obj: any) {
 }
 
 describe('RCPasswordAuthenticator', () => {
+  beforeEach(() => {
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return {
+            userConfig: AccountUserConfig.prototype,
+            authUserConfig: AuthUserConfig.prototype,
+          };
+        }
+      });
+  });
+
   it('should login success', async () => {
     const loginRCResult: ITokenModel = {
       access_token: 'rc_token',

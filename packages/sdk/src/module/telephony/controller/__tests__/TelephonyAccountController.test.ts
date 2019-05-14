@@ -15,15 +15,17 @@ import {
 import { TelephonyCallInfo, MAKE_CALL_ERROR_CODE } from '../../types';
 import { TelephonyCallController } from '../TelephonyCallController';
 import { MakeCallController } from '../../controller/MakeCallController';
-import { ServiceLoader } from '../../../serviceLoader';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { TelephonyUserConfig } from '../../config/TelephonyUserConfig';
 import { GlobalConfigService } from '../../../config';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
 
 jest.mock('../TelephonyCallController');
 jest.mock('voip/src');
 jest.mock('../../controller/MakeCallController');
-jest.mock('../../../rcInfo/service/RCInfoService');
+jest.mock('sdk/module/rcInfo/service/RCInfoService');
 jest.mock('../../../config');
+jest.mock('sdk/module/phoneNumber');
 
 describe('TelephonyAccountController', () => {
   class MockAccount implements ITelephonyAccountDelegate {
@@ -61,6 +63,18 @@ describe('TelephonyAccountController', () => {
     Object.assign(accountController, {
       _telephonyCallDelegate: callController,
     });
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.TELEPHONY_SERVICE) {
+          return { userConfig: TelephonyUserConfig.prototype };
+        }
+        if (config === ServiceConfig.PHONE_NUMBER_SERVICE) {
+          return {
+            getE164PhoneNumber: jest.fn(),
+          };
+        }
+      });
   }
 
   beforeEach(() => {

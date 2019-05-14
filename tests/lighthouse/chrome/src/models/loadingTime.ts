@@ -4,7 +4,13 @@
  */
 import { Table, Column, Model, DataType } from "sequelize-typescript";
 
-@Table({ modelName: "t_loading_time_summary" })
+@Table({
+  modelName: "t_loading_time_summary",
+  indexes: [{
+    unique: false,
+    fields: ['scene_id']
+  }]
+})
 class LoadingTimeSummaryDto extends Model<LoadingTimeSummaryDto> {
   @Column({
     primaryKey: true,
@@ -107,7 +113,13 @@ class LoadingTimeSummaryDto extends Model<LoadingTimeSummaryDto> {
   apiHandleCount: number;
 }
 
-@Table({ modelName: "t_loading_time_item" })
+@Table({
+  modelName: "t_loading_time_item",
+  indexes: [{
+    unique: false,
+    fields: ['summary_id']
+  }]
+})
 class LoadingTimeItemDto extends Model<LoadingTimeItemDto> {
   @Column({
     primaryKey: true,

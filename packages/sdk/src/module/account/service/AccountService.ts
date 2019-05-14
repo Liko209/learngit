@@ -34,6 +34,8 @@ class AccountService extends AbstractService
   static _instance: AccountService;
 
   private _authController: AuthController;
+  private _userConfig: AccountUserConfig;
+  private _authUserConfig: AuthUserConfig;
 
   constructor(private _accountManager: AccountManager) {
     super();
@@ -41,6 +43,20 @@ class AccountService extends AbstractService
 
   protected onStarted() {}
   protected onStopped() {}
+
+  get userConfig() {
+    if (!this._userConfig) {
+      this._userConfig = new AccountUserConfig();
+    }
+    return this._userConfig;
+  }
+
+  get authUserConfig() {
+    if (!this._authUserConfig) {
+      this._authUserConfig = new AuthUserConfig();
+    }
+    return this._authUserConfig;
+  }
 
   getAuthController() {
     if (!this._authController) {
@@ -50,8 +66,7 @@ class AccountService extends AbstractService
   }
 
   isAccountReady(): boolean {
-    const userConfig = new AccountUserConfig();
-    return userConfig.getGlipUserId() ? true : false;
+    return this.userConfig.getGlipUserId() ? true : false;
   }
 
   async getCurrentUserInfo(): Promise<Nullable<Person>> {
@@ -61,8 +76,7 @@ class AccountService extends AbstractService
     if (!this.isAccountReady()) {
       return null;
     }
-    const userConfig = new AccountUserConfig();
-    const userId = userConfig.getGlipUserId();
+    const userId = this.userConfig.getGlipUserId();
     try {
       return await personService.getById(userId);
     } catch (error) {
@@ -77,19 +91,17 @@ class AccountService extends AbstractService
   }
 
   getClientId(): string {
-    const userConfig = new AccountUserConfig();
-    let id = userConfig.getClientId();
+    let id = this.userConfig.getClientId();
     if (id) {
       return id;
     }
     id = generateUUID();
-    userConfig.setClientId(id);
+    this.userConfig.setClientId(id);
     return id;
   }
 
   async refreshRCToken(): Promise<ITokenModel | null> {
-    const authConfig = new AuthUserConfig();
-    const oldRcToken = authConfig.getRCToken();
+    const oldRcToken = this.authUserConfig.getRCToken();
     const newRcToken = (await RCAuthApi.refreshToken(
       oldRcToken,
     )) as ITokenModel;
@@ -109,13 +121,13 @@ class AccountService extends AbstractService
   }
 
   getUnreadToggleSetting() {
-    const userConfig = new AccountUserConfig();
-    return userConfig.getUnreadToggleSetting() || DEFAULT_UNREAD_TOGGLE_SETTING;
+    return (
+      this.userConfig.getUnreadToggleSetting() || DEFAULT_UNREAD_TOGGLE_SETTING
+    );
   }
 
   setUnreadToggleSetting(value: boolean) {
-    const userConfig = new AccountUserConfig();
-    userConfig.setUnreadToggleSetting(value);
+    this.userConfig.setUnreadToggleSetting(value);
   }
 
   checkServerStatus(callback: (success: boolean, retryAfter: number) => void) {
@@ -133,8 +145,7 @@ class AccountService extends AbstractService
     if (!userDict) {
       return false;
     }
-    const userConfig = new AccountUserConfig();
-    return userConfig && userConfig.getGlipUserId() !== null;
+    return this.userConfig && !!this.userConfig.getGlipUserId();
   }
 
   async unifiedLogin({ code, token }: IUnifiedLogin) {

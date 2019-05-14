@@ -86,7 +86,7 @@ class ConfigWrapper {
     /* jupiter config */
 
     /* db connecttion config */
-    this.dbName = this.getValue("DB_NAME", "jupiter_performance");
+    this.dbName = this.getValue("DB_NAME", "performance_tesing");
     this.dbUser = this.getValue("DB_USER", "root");
     this.dbPassword = this.getValue("DB_PASSWORD", "123456");
     this.dbHost = this.getValue("DB_HOST", "127.0.0.1");

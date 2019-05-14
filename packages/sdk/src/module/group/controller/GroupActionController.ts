@@ -31,7 +31,7 @@ import {
 } from '../types';
 import { TeamPermissionController } from './TeamPermissionController';
 import { GROUP_CAN_NOT_SHOWN_REASON } from '../constants';
-import { AccountUserConfig } from '../../../module/account/config';
+import { AccountService } from '../../account/service';
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 
 export class GroupActionController {
@@ -280,7 +280,9 @@ export class GroupActionController {
     memberIds: number[],
     teamSetting: TeamSetting = {},
   ): Promise<Group> {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
     const team: Partial<GroupApiType> = this._generateTeamParameters(
       currentUserId,
@@ -432,7 +434,9 @@ export class GroupActionController {
     }
 
     isValid = this.groupService.isValid(group);
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
     isIncludeSelf = group.members.includes(currentUserId);
 

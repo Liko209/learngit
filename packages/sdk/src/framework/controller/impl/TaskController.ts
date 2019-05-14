@@ -11,78 +11,86 @@ import {
   JOB_KEY,
   JobInfo,
 } from 'sdk/framework/utils/jobSchedule';
-import { mainLogger } from 'foundation/src';
+import { mainLogger } from 'foundation';
 
 const LOG_TAG = '[TaskController]';
 class TaskController implements ITaskController {
   private _strategy: ITaskStrategy;
   private _isExecuting: boolean = false;
   private _executeFunc: () => any;
+  private _taskFunc: (callback: (successful: boolean) => void) => any;
 
-  constructor(strategy: ITaskStrategy) {
+  constructor(strategy: ITaskStrategy, executeFunc: () => any) {
     this._strategy = strategy;
+    this._executeFunc = executeFunc;
   }
 
-  start(executeFunc: () => any) {
+  async start() {
     if (this._isExecuting) {
       mainLogger.tags(LOG_TAG).info('start() task is in executing');
       return;
     }
-    this.reset();
-    this._execute(executeFunc, false);
-  }
 
-  private _execute(executeFunc: () => any, isRetry: boolean) {
-    this._executeFunc = executeFunc;
-    const taskFunc = async (callback: (successful: boolean) => void) => {
-      try {
-        this._setExecuting(true);
-        await this._executeFunc();
-        callback(true);
-        this.reset();
-      } catch (err) {
-        mainLogger.tags(LOG_TAG).info('_execute failed:', err);
-        this._setExecuting(false);
-        callback(false);
-      }
-    };
-    const info: JobInfo = {
-      key: this._strategy.getJobKey(),
-      executeFunc: taskFunc,
-      callback: this._taskCallback,
-      needNetwork: false,
-      intervalSeconds: isRetry ? this._strategy.getNext() : 0,
-      periodic: false,
-    };
-    if (isRetry) {
-      jobScheduler.scheduleAndIgnoreFirstTime(info);
-    } else {
-      jobScheduler.scheduleJob(info);
+    try {
+      this._strategy.reset();
+      jobScheduler.cancelJob(JOB_KEY.INDEX_DATA);
+      await this._doExecuting();
+    } catch (err) {
+      mainLogger.tags(LOG_TAG).info('_execute failed:', err);
+      this._setExecuting(false);
+      this._retry();
     }
   }
 
+  private _createTaskFunc() {
+    this._taskFunc = async (callback: (successful: boolean) => void) => {
+      try {
+        await this._doExecuting();
+        callback(true);
+      } catch (err) {
+        mainLogger.tags(LOG_TAG).info('_retry failed:', err);
+        callback(false);
+      }
+    };
+  }
+
+  private async _doExecuting() {
+    this._setExecuting(true);
+    await this._executeFunc();
+    this._setExecuting(false);
+  }
+
+  private _retry() {
+    if (!this._taskFunc) {
+      this._createTaskFunc();
+    }
+    const info: JobInfo = {
+      key: this._strategy.getJobKey(),
+      executeFunc: this._taskFunc,
+      callback: this._taskCallback,
+      needNetwork: false,
+      intervalSeconds: this._strategy.getNext(),
+      periodic: false,
+    };
+    jobScheduler.scheduleAndIgnoreFirstTime(info);
+  }
+
   private _taskCallback = (successful: boolean) => {
+    this._setExecuting(false);
     if (!successful) {
       if (this._canNext()) {
         mainLogger.tags(LOG_TAG).info('_taskCallback continue the next task');
-        this._execute(this._executeFunc, true);
+        this._retry();
       } else {
         mainLogger
           .tags(LOG_TAG)
-          .info('_taskCallback can not continue the next task, reset it');
-        this.reset();
+          .info('_taskCallback can not continue the next task');
       }
     }
   }
 
   private _canNext() {
     return this._strategy && this._strategy.canNext();
-  }
-
-  reset(): void {
-    this._setExecuting(false);
-    this._strategy.reset();
-    jobScheduler.cancelJob(JOB_KEY.INDEX_DATA);
   }
 
   private _setExecuting(isExecuting: boolean) {

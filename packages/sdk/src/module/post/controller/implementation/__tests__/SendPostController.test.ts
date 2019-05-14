@@ -22,7 +22,7 @@ import notificationCenter from '../../../../../service/notificationCenter';
 import { ExtendedBaseModel } from '../../../../models';
 import { PROGRESS_STATUS } from '../../../../progress';
 import { AccountUserConfig } from '../../../../../module/account/config';
-import { ServiceLoader } from '../../../../serviceLoader';
+import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
 
 jest.mock('../../../../../module/config');
 jest.mock('../../../../../module/account/config/AccountUserConfig');
@@ -66,7 +66,16 @@ describe('SendPostController', () => {
   beforeEach(() => {
     const actionController = new PostActionController(null, null);
     const preInsertController = new MockPreInsertController<Post>();
-    ServiceLoader.getInstance = jest.fn().mockReturnValue(groupConfigService);
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.GROUP_CONFIG_SERVICE) {
+          return groupConfigService;
+        }
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: AccountUserConfig.prototype };
+        }
+      });
     sendPostController = new SendPostController(
       actionController,
       preInsertController,

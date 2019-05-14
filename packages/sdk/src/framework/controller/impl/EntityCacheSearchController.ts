@@ -112,7 +112,7 @@ class EntityCacheSearchController<
   }
 
   getTermsFromSearchKey(searchKey: string) {
-    return searchKey.split(/[\s,]+/);
+    return SearchUtils.getTermsFromText(searchKey);
   }
 
   isInitialized(): boolean {

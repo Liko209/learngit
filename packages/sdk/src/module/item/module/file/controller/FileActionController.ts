@@ -9,7 +9,8 @@ import { Item } from '../../../entity';
 import { FileItemUtils } from '../utils';
 import { Api } from '../../../../../api';
 import { FileItem } from '../entity';
-import { AuthUserConfig } from '../../../../account/config';
+import { AccountService } from '../../../../account/service';
+import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
 
 class FileActionController {
   constructor(private _sourceController: IEntitySourceController<Item>) {}
@@ -40,7 +41,9 @@ class FileActionController {
       if (storageId === 0) {
         break;
       }
-      const authConfig = new AuthUserConfig();
+      const authConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).authUserConfig;
       const glipAccessToken = authConfig.getGlipToken();
       if (!glipAccessToken) {
         break;

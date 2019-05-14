@@ -11,6 +11,7 @@ import { IdModel } from '../../framework/model';
 import { DaoGlobalConfig } from '../config';
 import { AccountGlobalConfig } from '../../module/account/config';
 import { SyncUserConfig } from '../../module/sync/config';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('../../module/env/index');
 
@@ -63,6 +64,13 @@ describe('DaoManager', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.SYNC_SERVICE) {
+          return { userConfig: SyncUserConfig.prototype };
+        }
+      });
     daoManager = new DaoManager();
   });
 

@@ -29,7 +29,7 @@ import _ from 'lodash';
 import { autorun, computed, observable, reaction } from 'mobx';
 import { mainLogger } from 'sdk';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { AccountUserConfig } from 'sdk/module/account/config';
+import { AccountService } from 'sdk/module/account';
 import { ProfileService } from 'sdk/module/profile';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { StateService } from 'sdk/module/state';
@@ -38,7 +38,7 @@ import {
   NotificationEntityReplaceBody,
   NotificationEntityReplacePayload,
 } from 'sdk/service/notificationCenter';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
+import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
 import { TDelta } from '../base/fetch/types';
 import preFetchConversationDataHandler from './PreFetchConversationDataHandler';
 
@@ -549,11 +549,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   async fetchGroups(sectionType: SECTION_TYPE, direction: QUERY_DIRECTION) {
     if (this._handlersMap[sectionType]) {
       const performanceKey = this._getPerformanceKey(sectionType);
-      const logId = Date.now();
-      PerformanceTracerHolder.getPerformanceTracer().start(
-        performanceKey,
-        logId,
-      );
+      const performanceTracer = PerformanceTracer.initial();
       const groups =
         (await this._handlersMap[sectionType].fetchData(direction)) || [];
       if (sectionType === SECTION_TYPE.FAVORITE) {
@@ -581,7 +577,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           }
         });
       }
-      PerformanceTracerHolder.getPerformanceTracer().end(logId, groups.length);
+      performanceTracer.end({ key: performanceKey, count: groups.length });
     }
   }
 
@@ -761,7 +757,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       ServiceConfig.PROFILE_SERVICE,
     );
 
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const currentProfileId = userConfig.getCurrentUserProfileId();
 
     let count = DEFAULT_LEFT_RAIL_GROUP;

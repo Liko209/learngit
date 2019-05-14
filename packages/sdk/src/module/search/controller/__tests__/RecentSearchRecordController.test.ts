@@ -8,6 +8,7 @@ import _ from 'lodash';
 import { RecentSearchRecordController } from '../RecentSearchRecordController';
 import { SearchUserConfig } from '../../config';
 import { RecentSearchTypes } from '../../entity';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('../../config', () => {
   const xx = {
@@ -32,6 +33,13 @@ describe('RecentSearchRecordController', () => {
   let threeRecords = [buildRecord(1), buildRecord(2), buildRecord(3)];
   let searchUserConfig: SearchUserConfig;
   function setUp() {
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.SEARCH_SERVICE) {
+          return { userConfig: searchUserConfig };
+        }
+      });
     searchUserConfig = new SearchUserConfig();
     controller = new RecentSearchRecordController();
     threeRecords = [buildRecord(1), buildRecord(2), buildRecord(3)];

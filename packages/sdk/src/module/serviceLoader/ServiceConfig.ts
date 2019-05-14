@@ -9,6 +9,7 @@ const ServiceConfig = {
   COMPANY_SERVICE: 'CompanyService',
   GROUP_SERVICE: 'GroupService',
   USER_CONFIG_SERVICE: 'UserConfigService',
+  DB_CONFIG_SERVICE: 'DBConfigService',
   GLOBAL_CONFIG_SERVICE: 'GlobalConfigService',
   GROUP_CONFIG_SERVICE: 'GroupConfigService',
   PERMISSION_SERVICE: 'PermissionService',
@@ -23,6 +24,7 @@ const ServiceConfig = {
   SYNC_SERVICE: 'SyncService',
   TELEPHONY_SERVICE: 'TelephonyService',
   ITEM_SERVICE: 'ItemService',
+  PHONE_NUMBER_SERVICE: 'PhoneNumberService',
 };
 
 export { ServiceConfig };

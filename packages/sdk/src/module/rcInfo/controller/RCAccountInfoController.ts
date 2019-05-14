@@ -18,7 +18,7 @@ class RCAccountInfoController {
     return type !== undefined ? type : RCBrandType.OTHER;
   }
 
-  async getAccountBrandId(): Promise<string> {
+  async getAccountBrandId(): Promise<string | undefined> {
     const accountInfo = await this._getAccountInfo();
     if (
       accountInfo &&
