@@ -8,27 +8,31 @@ export class PhoneSettingPage extends BaseWebComponent {
   };
 
   get header() {
+    return this.getSelectorByAutomationId('SettingPageHeader');
+  }
+
+  get headerTitle() {
     return this.getSelectorByAutomationId("conversation-page-header-title");
   }
 
   get generalSection() {
-    return this.getSelectorByAutomationId("SettingPageHeader");
+    return this.self.find('.setting-section');
   }
 
   get generalLabel() {
-    return this.getSelectorByAutomationId('SettingSectionHeader').find('.setting-section-title');
+    return this.getSelectorByAutomationId('SettingSectionHeader', this.generalSection).find('.setting-section-title');
   }
 
   get callerIDLabel() {
-    return this.getSelectorByAutomationId('SettingSectionItemLabel-callerID');
+    return this.getSelectorByAutomationId('SettingSectionItemLabel-callerID', this.generalSection);
   }
 
   get callerIDDescription() {
-    return this.getSelectorByAutomationId('SettingSectionItemDescription-callerID');
+    return this.getSelectorByAutomationId('SettingSectionItemDescription-callerID', this.generalSection);
   }
 
   get callerIDDropDown() {
-    return this.getSelectorByAutomationId('SettingSelectBox');
+    return this.getSelectorByAutomationId('SettingSelectBox', this.generalSection);
   }
 
   get callerIDDropDownItem() {
@@ -40,27 +44,27 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get regionLabel() {
-    return this.getSelectorByAutomationId('SettingSectionItemLabel-regionSetting');
+    return this.getSelectorByAutomationId('SettingSectionItemLabel-regionSetting', this.generalSection);
   }
 
   get regionDescription() {
-    return this.getSelectorByAutomationId('SettingSectionItemDescription-regionSetting');
+    return this.getSelectorByAutomationId('SettingSectionItemDescription-regionSetting', this.generalSection);
   }
 
   get regionUpdateButton() {
-    return this.getSelectorByAutomationId('regionSettingDialogOpenButton');
+    return this.getSelectorByAutomationId('regionSettingDialogOpenButton', this.generalSection);
   }
 
   get extensionSettingsLabel() {
-    return this.getSelectorByAutomationId('SettingSectionItemLabel-extensions');
+    return this.getSelectorByAutomationId('SettingSectionItemLabel-extensions', this.generalSection);
   }
 
   get extensionSettingsDescription() {
-    return this.getSelectorByAutomationId('SettingSectionItemDescription-extensions');
+    return this.getSelectorByAutomationId('SettingSectionItemDescription-extensions', this.generalSection);
   }
 
   get extensionUpdateButton() {
-    return this.getSelectorByAutomationId('settingPhoneGeneralExtensionSetting');
+    return this.getSelectorByAutomationId('settingPhoneGeneralExtensionSetting', this.generalSection);
   }
 
   async existsGeneralLabel(text: string) {
@@ -99,6 +103,7 @@ export class PhoneSettingPage extends BaseWebComponent {
 
   async callerIDDropDownItemContains(callerIds: string[]) {
     const count = await this.callerIDDropDownItem.count;
+    
     for (let i = 0; i < count; i++) {
       const text = await this.callerIDDropDownItem.nth(i).innerText;
       const numberOnly = text.replace(/[^\d]/g, "");
@@ -155,7 +160,11 @@ export class PhoneSettingPage extends BaseWebComponent {
 
 export class UpdateRegionDialog extends BaseWebComponent {
   get self() {
-    return this.getSelectorByAutomationId('regionSettingDialogHeader');
+    return this.getSelector('[role="document"]'); // todo: dialog identity
+  }
+
+  get exists() {
+    return this.title.exists;
   }
 
   get title() {

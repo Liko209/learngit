@@ -106,8 +106,8 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then I can see the Caller IDs in the list`, async () => {
-    await phoneSettingPage.callerIDDropDownItemContains(callerIDList);
     await phoneSettingPage.checkCallerIDItemCount(callerIDList.length);
+    await phoneSettingPage.callerIDDropDownItemContains(callerIDList);
   });
 
 });
@@ -363,24 +363,32 @@ test.meta(<ITestMeta>{
 })('Check the "Phone" settings when the user has call permission', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
-
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension} which has extension has call permission:`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
+
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
-  await h(t).withLog(`And I click Setting entry`, async () => {
+  await h(t).withLog(`When I click Setting entry`, async () => {
     await settingsEntry.enter();
   });
-  await h(t).withLog(`And I click Phone entry`, async () => {
+
+  await h(t).withLog(`Then sub-setting Phone entry exist`, async () => {
+    await app.homePage.settingTab.phoneEntry.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I click Phone entry`, async () => {
     await app.homePage.settingTab.phoneEntry.enter();
   });
-  const phonePage = app.homePage.settingTab.phoneSettingPage;
-  await h(t).withLog(`Check if Phone header display`, async () => {
-    await t.expect(phonePage.header.exists).ok();
+
+  const phoneSettingPage = app.homePage.settingTab.phoneSettingPage;
+  await h(t).withLog(`Then the setting page header text should be 'Phone'`, async () => {
+    await t.expect(phoneSettingPage.headerTitle.withExactText('Phone').exists).ok();
   });
-  await h(t).withLog(`Check if General section display`, async () => {
-    await t.expect(phonePage.generalSection.exists).ok()
+
+  await h(t).withLog(`And General section should display`, async () => {
+    await t.expect(phoneSettingPage.generalSection.exists).ok()
   });
 })
 
