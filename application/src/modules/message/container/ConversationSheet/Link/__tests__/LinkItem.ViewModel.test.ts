@@ -5,10 +5,12 @@
  */
 import { getEntity } from '@/store/utils';
 import { LinkItemViewModel } from '../LinkItem.ViewModel';
+import { LinkItemProps } from '../types';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 const itemService = {
   deleteItem: jest.fn(),
+  doNotRenderItem: jest.fn(),
 };
 ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
 
@@ -16,7 +18,7 @@ jest.mock('@/store/utils');
 
 const linkItemVM = new LinkItemViewModel({
   ids: [123, 456, 678],
-});
+} as LinkItemProps);
 const mockItemValue = {
   deactivated: false,
   id: 24936465,
@@ -27,12 +29,10 @@ const mockItemValue = {
 };
 describe('LinkItemViewModel', () => {
   beforeEach(() => {
+    jest.resetAllMocks();
     (getEntity as jest.Mock).mockReturnValue({
       ...mockItemValue,
     });
-  });
-  afterEach(() => {
-    jest.resetAllMocks();
   });
   it('should return postItems if item ids provide', () => {
     expect(linkItemVM.postItems).toMatchObject([

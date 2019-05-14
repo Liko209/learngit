@@ -14,6 +14,7 @@ import { GroupService } from '../../../group/service';
 import { StateController } from '../../controller/StateController';
 import { MyStateConfig } from '../../config';
 
+jest.mock('sdk/dao');
 jest.mock('../../../group/service');
 jest.mock('../../controller/StateController');
 jest.mock('../../config');

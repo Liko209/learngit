@@ -6,7 +6,11 @@
 
 import { TelephonyStore, INCOMING_STATE } from '../TelephonyStore';
 import { CALL_STATE, CALL_WINDOW_STATUS, HOLD_STATE } from '../../FSM';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
+jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
+  matchContactByPhoneNumber: jest.fn(),
+});
 function createStore() {
   return new TelephonyStore();
 }

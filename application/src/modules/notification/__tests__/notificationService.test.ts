@@ -41,7 +41,7 @@ describe('NotificationService', () => {
       await service.show('', { data: { id: 0, scope: '' } });
       expect(service._notificationDistributor.create).not.toBeCalled();
     });
-    describe('when permission is not granted', async () => {
+    describe('when permission is not granted', () => {
       it('should not create notification when permission is still not granted after request', async () => {
         jest.spyOn(document, 'hasFocus').mockReturnValue(false);
         permissionAfterRequest = 'denied';

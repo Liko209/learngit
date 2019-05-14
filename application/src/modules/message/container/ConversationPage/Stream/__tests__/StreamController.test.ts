@@ -21,6 +21,8 @@ import GroupStateModel from '@/store/models/GroupState';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import { GroupState } from 'sdk/module/state/entity';
 
+jest.mock('sdk/dao');
+
 describe('StreamController', () => {
   afterEach(() => {
     jest.resetAllMocks();

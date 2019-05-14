@@ -11,6 +11,8 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import { PinnedPostListHandler } from '../../PinnedPostListHandler';
 
 jest.mock('sdk/api');
+jest.mock('sdk/dao');
+jest.mock('sdk/module/account/config');
 jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
 
 function clearMocks() {

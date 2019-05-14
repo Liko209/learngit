@@ -7,6 +7,7 @@
 import { container, decorate, injectable } from 'framework';
 import { TelephonyStore } from '../../../store';
 import { DialerKeypadHeaderViewModel } from '../DialerKeypadHeader.ViewModel';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 decorate(injectable(), TelephonyStore);
 
@@ -15,6 +16,9 @@ container.bind(TelephonyStore).to(TelephonyStore);
 let dialerKeypadHeader: DialerKeypadHeaderViewModel;
 
 beforeAll(() => {
+  jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
+    matchContactByPhoneNumber: jest.fn(),
+  });
   dialerKeypadHeader = new DialerKeypadHeaderViewModel();
 });
 
