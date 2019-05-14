@@ -6,6 +6,7 @@
 import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import { typography, grey } from '../../../foundation/utils/styles';
+import { withHighlight } from '../../../hoc/withHighlight';
 
 type Props = {
   location: string;
@@ -16,10 +17,14 @@ const StyledEventLocation = styled.div`
   color: ${grey('900')};
 `;
 
-const JuiEventLocation = memo((props: Props) => (
-  <StyledEventLocation>{props.location}</StyledEventLocation>
-));
+const JuiEventLocationComponent = ({ location }: Props) => (
+  <StyledEventLocation dangerouslySetInnerHTML={{ __html: location }} />
+);
 
-JuiEventLocation.displayName = 'JuiEventLocation';
+JuiEventLocationComponent.displayName = 'JuiEventLocation';
+
+const JuiEventLocation = withHighlight(['location'])(
+  memo(JuiEventLocationComponent),
+);
 
 export { JuiEventLocation };
