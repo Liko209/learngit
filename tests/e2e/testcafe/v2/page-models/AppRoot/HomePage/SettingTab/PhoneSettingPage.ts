@@ -1,8 +1,16 @@
 import { BaseWebComponent } from '../../../BaseWebComponent';
-export class PhoneTab extends BaseWebComponent {
+export class PhoneSettingPage extends BaseWebComponent {
   get self() {
     return this.getSelectorByAutomationId('SettingContainer');
   };
+
+  get header() {
+    return this.getSelectorByAutomationId("conversation-page-header-title");
+  }
+
+  get generalSection() {
+    return this.getSelectorByAutomationId("SettingPageHeader");
+  }
 
   get generalLabel() {
     return this.getSelectorByAutomationId('SettingSectionHeader').find('.setting-section-title');

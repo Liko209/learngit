@@ -27,7 +27,7 @@ test.meta(<ITestMeta>{
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const messagesEntry = app.homePage.leftPanel.messagesEntry;
   const settingTab = app.homePage.settingTab;
-  const phoneTab = settingTab.phoneTab;
+  const phoneTab = settingTab.phoneSettingPage;
   const telephonyDialog = app.homePage.telephonyDialog;
   const miniProfile = app.homePage.miniProfile;
   const profileDialog = app.homePage.profileDialog;
@@ -241,7 +241,7 @@ test.skip.meta(<ITestMeta>{
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const messagesEntry = app.homePage.leftPanel.messagesEntry;
   const settingTab = app.homePage.settingTab;
-  const phoneTab = settingTab.phoneTab;
+  const phoneTab = settingTab.phoneSettingPage;
   const telephonyDialog = app.homePage.telephonyDialog;
   const miniProfile = app.homePage.miniProfile;
   const profileDialog = app.homePage.profileDialog;

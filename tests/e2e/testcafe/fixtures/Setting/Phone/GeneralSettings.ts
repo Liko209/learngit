@@ -20,7 +20,7 @@ test.meta(<ITestMeta>{
 
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
-  const phoneTab = settingTab.phoneTab;
+  const phoneSettingPage = settingTab.phoneSettingPage;
   const generalLabel = 'General';
   const regionLabel = 'Region';
   const callerIDLabel = 'Caller ID';
@@ -42,23 +42,23 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then I can see '${generalLabel}' in the 'General' section`, async () => {
-    await phoneTab.existsGeneralLabel(generalLabel);
+    await phoneSettingPage.existsGeneralLabel(generalLabel);
   });
 
   await h(t).withLog(`And I can see '${regionLabel}' in the 'General' section`, async () => {
-    await phoneTab.existRegionLabel(regionLabel);
+    await phoneSettingPage.existRegionLabel(regionLabel);
   });
 
   await h(t).withLog(`And I can see Caller ID label/Caller ID description/DropDown select box in the 'General' section`, async () => {
-    await phoneTab.existCallerIDLabel(callerIDLabel);
-    await phoneTab.existCallerIDDescription(callerIDDescription);
-    await phoneTab.existCallerIDDropDown();
+    await phoneSettingPage.existCallerIDLabel(callerIDLabel);
+    await phoneSettingPage.existCallerIDDescription(callerIDDescription);
+    await phoneSettingPage.existCallerIDDropDown();
   });
 
   await h(t).withLog(`And I can see extension label/extension description/Update button in the 'General' section`, async () => {
-    await phoneTab.existExtensionSettingsLabel(extensionSettingsLabel);
-    await phoneTab.existExtensionSettingsDescription(extensionSettingsDescription);
-    await phoneTab.existExtensionUpdateButton();
+    await phoneSettingPage.existExtensionSettingsLabel(extensionSettingsLabel);
+    await phoneSettingPage.existExtensionSettingsDescription(extensionSettingsDescription);
+    await phoneSettingPage.existExtensionUpdateButton();
   });
 
 });
@@ -76,7 +76,7 @@ test.meta(<ITestMeta>{
 
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
-  const phoneTab = settingTab.phoneTab;
+  const phoneSettingPage = settingTab.phoneSettingPage;
   let callerIDList = [];
 
   await h(t).withLog(`Given I get login user phone number info`, async () => {
@@ -102,14 +102,14 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And I click caller id DropDown`, async () => {
-    await phoneTab.clickCallerIDDropDown();
+    await phoneSettingPage.clickCallerIDDropDown();
   });
 
   await h(t).withLog(`Then I can see the Caller IDs in the list`, async () => {
     for (let values of callerIDList) {
-      await phoneTab.callerIDDropDownItemWithText(values);
+      await phoneSettingPage.callerIDDropDownItemWithText(values);
     }
-    await phoneTab.checkCallerIDItemCount(callerIDList.length);
+    await phoneSettingPage.checkCallerIDItemCount(callerIDList.length);
   });
 
 });
@@ -126,7 +126,7 @@ test.meta(<ITestMeta>{
 
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
-  const updateRegionDialog = settingTab.phoneTab.updateRegionDialog;
+  const updateRegionDialog = settingTab.phoneSettingPage.updateRegionDialog;
   const title = 'Region';
   const statement = 'Set the country and area code for your region. This will be used for local and emergency dialing and phone number formatting.';
   const saveButton = 'Save';
@@ -148,7 +148,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And I click Update button in the Region`, async () => {
-    await settingTab.phoneTab.clickRegionUpdateButton();
+    await settingTab.phoneSettingPage.clickRegionUpdateButton();
   });
 
   await h(t).withLog(`Then the update region popup shows`, async () => {
@@ -178,7 +178,7 @@ test.meta(<ITestMeta>{
 
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
-  const updateRegionDialog = settingTab.phoneTab.updateRegionDialog;
+  const updateRegionDialog = settingTab.phoneSettingPage.updateRegionDialog;
   const countryListWithAreaCode = ['United States', 'China', 'Mexico'];
   const otherCountryWithoutAreaCode = 'France';
 
@@ -207,7 +207,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And I click Update button in the Region`, async () => {
-    await settingTab.phoneTab.clickRegionUpdateButton();
+    await settingTab.phoneSettingPage.clickRegionUpdateButton();
   });
 
   await h(t).withLog(`Then the update region popup shows`, async () => {
@@ -253,8 +253,8 @@ test.meta(<ITestMeta>{
 
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
-  const phoneTab = settingTab.phoneTab;
-  const updateRegionDialog = settingTab.phoneTab.updateRegionDialog;
+  const phoneSettingPage = settingTab.phoneSettingPage;
+  const updateRegionDialog = settingTab.phoneSettingPage.updateRegionDialog;
   const country1 = 'France';
   const country2 = 'China';
   const areaCodeForCountry2 = '10';
@@ -284,9 +284,9 @@ test.meta(<ITestMeta>{
     await settingTab.phoneEntry.enter();
   });
 
-  const regionDescriptionDefault = await phoneTab.regionDescription.innerText;
+  const regionDescriptionDefault = await phoneSettingPage.regionDescription.innerText;
   await h(t).withLog(`And I click Update button in the Region section`, async () => {
-    await phoneTab.clickRegionUpdateButton();
+    await phoneSettingPage.clickRegionUpdateButton();
   });
 
   await h(t).withLog(`Then the update region popup shows`, async () => {
@@ -307,11 +307,11 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And the the default change should keep the same`, async () => {
-    await phoneTab.regionDescriptionWithText(regionDescriptionDefault);
+    await phoneSettingPage.regionDescriptionWithText(regionDescriptionDefault);
   });
 
   await h(t).withLog(`When I click Update button in the Region section`, async () => {
-    await phoneTab.clickRegionUpdateButton();
+    await phoneSettingPage.clickRegionUpdateButton();
   });
 
   await h(t).withLog(`Then the update region popup shows`, async () => {
@@ -346,8 +346,71 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And I can see the changes`, async () => {
-    await t.expect(phoneTab.regionDescription.innerText).contains(country2);
-    await t.expect(phoneTab.regionDescription.innerText).contains(areaCodeForCountry2);
+    await t.expect(phoneSettingPage.regionDescription.innerText).contains(country2);
+    await t.expect(phoneSettingPage.regionDescription.innerText).contains(areaCodeForCountry2);
   });
 
 });
+
+
+fixture('Setting/Phone')
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .afterEach(teardownCase());
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1735'],
+  maintainers: ['William.Ye'],
+  keywords: ['Phone']
+})('Check the "Phone" settings when the user has call permission', async (t) => {
+  const loginUser = h(t).rcData.mainCompany.users[0];
+  const app = new AppRoot(t);
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+  const settingsEntry = app.homePage.leftPanel.settingsEntry;
+  await h(t).withLog(`And I click Setting entry`, async () => {
+    await settingsEntry.enter();
+  });
+  await h(t).withLog(`And I click Phone entry`, async () => {
+    await app.homePage.settingTab.phoneEntry.enter();
+  });
+  const phonePage = app.homePage.settingTab.phoneSettingPage;
+  await h(t).withLog(`Check if Phone header display`, async () => {
+    await t.expect(phonePage.header.exists).ok();
+  });
+  await h(t).withLog(`Check if General section display`, async () => {
+    await t.expect(phonePage.generalSection.exists).ok()
+  });
+})
+
+
+fixture('Setting/Phone')
+  .beforeEach(setupCase(BrandTire.RC_VOIP_DISABLE))
+  .afterEach(teardownCase());
+
+
+test.meta(<ITestMeta>{
+    priority: ['P2'],
+    caseIds: ['JPT-1736'],
+    maintainers: ['William.Ye'],
+    keywords: ['Phone']
+  })('Check the "Phone" settings when the user has not call permission', async (t) => {
+    const loginUser = h(t).rcData.mainCompany.users[0];
+    const app = new AppRoot(t);
+
+    await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    });
+    const settingsEntry = app.homePage.leftPanel.settingsEntry;
+    await h(t).withLog(`And I click Setting entry`, async () => {
+      await settingsEntry.enter();
+    });
+    await h(t).withLog(`The Phone entry is hidden`, async () => {
+      await t.expect(app.homePage.settingTab.phoneEntry.exists).notOk();
+    });
+    
+})

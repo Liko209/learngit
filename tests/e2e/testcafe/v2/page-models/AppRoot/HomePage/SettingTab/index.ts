@@ -1,6 +1,6 @@
 import { BaseWebComponent } from "../../../BaseWebComponent";
 import { LeftRail } from './LeftRail';
-import { PhoneTab} from './PhoneTab';
+import { PhoneSettingPage } from './PhoneSettingPage';
 
 class Entry extends BaseWebComponent {
   async enter() {
@@ -29,11 +29,6 @@ export class SettingTab extends BaseWebComponent {
     return this.getComponent(LeftRail);
   }
 
-  // phone setting
-  get phoneTab(){
-    return this.getComponent(PhoneTab);
-  }
-
   getSubEntry(automationId: string) {
     return this.getComponent(Entry, this.getSelectorByAutomationId(automationId));
   }
@@ -60,6 +55,11 @@ export class SettingTab extends BaseWebComponent {
 
   get calendarEntry() {
     return this.getSubEntry('entry-calendar');
+  }
+
+  // phone setting
+  get phoneSettingPage() {
+    return this.getComponent(PhoneSettingPage);
   }
 
 }
