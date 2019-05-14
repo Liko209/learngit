@@ -79,12 +79,9 @@ describe('Sdk', () => {
       });
 
       await sdk.init({ api: {}, db: {} });
-<<<<<<< HEAD
       expect(DataMigration.migrateKVStorage).toBeCalled();
       expect(mockAccountService.reLoginGlip).toBeCalled();
-=======
       expect(mockReLogin).toBeCalled();
->>>>>>> develop
       expect(accountManager.updateSupportedServices).toBeCalled();
       expect(notificationCenter.emitKVChange).not.toBeCalledWith(SERVICE.LOGIN);
     });
@@ -99,7 +96,9 @@ describe('Sdk', () => {
       expect(Api.init).toBeCalled();
       expect(daoManager.initDatabase).toBeCalled();
       expect(serviceManager.startService).toBeCalled();
-      expect(HandleByRingCentral.platformHandleDelegate).toEqual(mockAccountService);
+      expect(HandleByRingCentral.platformHandleDelegate).toEqual(
+        mockAccountService,
+      );
     });
   });
 

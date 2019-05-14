@@ -7,7 +7,6 @@
 import { RCInfoService } from '../RCInfoService';
 import { RCInfoController } from '../../controller/RCInfoController';
 import { AccountUserConfig } from '../../../../module/account/config';
-import { ACCOUNT_TYPE_ENUM } from '../../../../authenticator/constants';
 
 jest.mock('../../controller/RCInfoFetchController');
 jest.mock('../../controller/RCCallerIdController');
@@ -120,28 +119,6 @@ describe('RCInfoService', () => {
       expect(
         rcInfoController.getRCInfoFetchController().setPhoneDataVersion,
       ).toBeCalledWith('1');
-    });
-  });
-
-  describe('isVoipCallingAvailable()', () => {
-    beforeEach(() => {
-      clearMocks();
-      userConfig = new AccountUserConfig();
-    });
-    it('should call controller when account type is not RC', async () => {
-      userConfig.getAccountType = jest.fn().mockReturnValue('');
-      const result = await rcInfoService.isVoipCallingAvailable();
-      expect(result).toBeFalsy();
-    });
-    it('should call controller when account type is RC but isRCFeaturePermissionEnabled is false', async () => {
-      userConfig.getAccountType = jest
-        .fn()
-        .mockReturnValue(ACCOUNT_TYPE_ENUM.RC);
-      rcInfoService.isRCFeaturePermissionEnabled = jest
-        .fn()
-        .mockReturnValue(false);
-      const result = await rcInfoService.isVoipCallingAvailable();
-      expect(result).toBeFalsy();
     });
   });
 
