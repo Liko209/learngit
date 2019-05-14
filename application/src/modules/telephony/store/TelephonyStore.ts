@@ -146,14 +146,14 @@ class TelephonyStore {
           this.enableHold();
           break;
         case CALL_STATE.IDLE:
-          this._restoreButtonStates();
           this.resetReply();
+          this.quitKeypad();
+          this._restoreButtonStates();
+          this._clearEnteredKeys();
+          this.phoneNumber = undefined;
           break;
         case CALL_STATE.CONNECTING:
           this.activeCallTime = undefined;
-        case CALL_STATE.IDLE:
-          this.quitKeypad();
-          this._clearEnteredKeys();
           break;
         default:
           setTimeout(() => {
@@ -166,9 +166,11 @@ class TelephonyStore {
     reaction(
       () => this.phoneNumber,
       async (phoneNumber: string) => {
-        const contact = await this._matchContactByPhoneNumber(phoneNumber);
-        if (contact) {
-          this.uid = contact.id;
+        if (phoneNumber) {
+          const contact = await this._matchContactByPhoneNumber(phoneNumber);
+          this.uid = contact ? contact.id : undefined;
+        } else {
+          this.uid = undefined;
         }
         this.isContactMatched = true;
       },
