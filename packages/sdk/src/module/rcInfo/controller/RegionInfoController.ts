@@ -17,12 +17,13 @@ import { SELLING_COUNTRY_LIST, SUPPORT_AREA_CODE_COUNTRIES } from './constants';
 import {
   RCBrandType,
   StationLocationSetting,
-  PhoneNumberType,
   GlobalStationLocationSetting,
+  RegionInfo,
 } from '../types';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/types';
 import { AccountServiceInfoController } from './AccountServiceInfoController';
 import { mainLogger } from 'foundation';
-import { notificationCenter, RC_INFO } from 'sdk/service';
+import { notificationCenter, RC_INFO, SERVICE } from 'sdk/service';
 import { RCInfoGlobalConfig } from '../config';
 import { AccountUserConfig } from 'sdk/module/account/config';
 
@@ -283,6 +284,13 @@ class RegionInfoController {
 
     updateSpecialNumber &&
       (await this._updateSpecialNumberIfNeed(_.toInteger(newCountryInfo.id)));
+
+    const regionInfo: RegionInfo = {
+      areaCode,
+      countryCode: countryInfo.callingCode,
+    };
+
+    notificationCenter.emit(SERVICE.RC_INFO_SERVICE.REGION_UPDATED, regionInfo);
   }
 
   private _getStationLocation(): StationLocationSetting {

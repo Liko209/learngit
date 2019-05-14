@@ -45,16 +45,15 @@ class MembersView extends Component<MembersViewProps & MembersProps> {
     let preferHeight = 0;
     if (width > FULLSCREEN_WIDTH) {
       fix += DIALOG_MARGIN * 2;
-      preferHeight =
-        Math.max(
-          Math.min(
-            Math.min(MAX_HEIGHT, filteredMemberIds.length * ITEM_HEIGHT),
-            height - fix,
-          ),
-          MIN_HEIGHT,
-        ) + SHADOW_HEIGHT;
+      preferHeight = Math.max(
+        Math.min(
+          Math.min(MAX_HEIGHT, filteredMemberIds.length * ITEM_HEIGHT),
+          height - fix - SHADOW_HEIGHT,
+        ),
+        MIN_HEIGHT,
+      );
     } else {
-      preferHeight = Math.max(height - fix, MIN_HEIGHT);
+      preferHeight = Math.max(height - fix - SHADOW_HEIGHT, MIN_HEIGHT);
     }
     const headerSize = sizeManager.getSize('profileDialogMemberHeader');
     const totalHeight = showEmpty

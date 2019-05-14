@@ -30,6 +30,7 @@ import { RCInfoService } from '../../rcInfo';
 import { ERCServiceFeaturePermission } from '../../rcInfo/types';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
   private _telephonyAccountDelegate: ITelephonyAccountDelegate;
@@ -94,9 +95,10 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
       return result;
     }
-    const e164ToNumber = await this._makeCallController.getE164PhoneNumber(
-      toNumber,
+    const phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
+      ServiceConfig.PHONE_NUMBER_SERVICE,
     );
+    const e164ToNumber = await phoneNumberService.getE164PhoneNumber(toNumber);
     this.setLastCalledNumber(e164ToNumber);
     result = await this._makeCallController.tryMakeCall(e164ToNumber);
     if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
