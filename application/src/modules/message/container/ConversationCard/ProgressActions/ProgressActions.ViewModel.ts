@@ -17,6 +17,7 @@ import { ENTITY_NAME } from '@/store';
 import ProgressModel from '@/store/models/Progress';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { catchError, NOTIFICATION_TYPE } from '@/common/catchError';
+import { RESENT_ERROR_FILE_NO_EXISTS } from './constant';
 
 class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
   implements ProgressActionsViewProps {
@@ -70,7 +71,7 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
 
   @catchError([
     {
-      condition: (error: Error) => error.message === 'file no longer exists',
+      condition: (error: Error) => error.message === RESENT_ERROR_FILE_NO_EXISTS,
       action: NOTIFICATION_TYPE.FLASH,
       message: 'item.prompt.fileNoLongerExists',
     },
@@ -82,7 +83,7 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
     if (canResend) {
       await this._postService.reSendPost(this.id);
     } else {
-      throw new Error('file no longer exists');
+      throw new Error(RESENT_ERROR_FILE_NO_EXISTS);
     }
   }
 
