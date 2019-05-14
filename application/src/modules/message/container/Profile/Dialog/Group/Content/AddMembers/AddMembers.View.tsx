@@ -46,6 +46,7 @@ class AddMembers extends React.Component<ViewProps> {
           classes: {
             paper: 'overflow-y',
           },
+          scroll: 'body',
         }}
       >
         <ContactSearch
