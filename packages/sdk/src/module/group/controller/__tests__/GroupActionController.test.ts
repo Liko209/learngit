@@ -30,7 +30,8 @@ import { TeamPermissionController } from '../TeamPermissionController';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { DEFAULT_ADMIN_PERMISSION_LEVEL } from '../../constants';
 import { PERMISSION_ENUM } from '../../../../service';
-import { ServiceLoader } from '../../../serviceLoader';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { AccountService } from '../../../account';
 
 jest.mock('../GroupHandleDataController');
 jest.mock('../../../../dao');
@@ -93,6 +94,10 @@ describe('GroupFetchDataController', () => {
 
         if (serviceName === ServiceConfig.PROFILE_SERVICE) {
           return profileService;
+        }
+
+        if (serviceName === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: AccountUserConfig.prototype };
         }
       });
 

@@ -474,11 +474,30 @@
       "record": "Record",
       "stopRecord": "Stop",
       "callActions": "Call Actions",
+      "reply": "Reply",
       "end": "End call",
-      "Answer": "Answer"
+      "Answer": "Answer",
+      "back": "Back"
     },
+    "customReplyMessagePlaceholder": "Type a custom message",
+    "customReplyLabel": "Custom message",
+    "predefinedMessage": {
+      "inMeeting": "In a meeting",
+      "onMyWay": "On my way",
+      "callMeBack": "Call me back in...",
+      "willCallBack": "Will call you back in..."
+    },
+    "predefinedTime": {
+      "5min": "5 min",
+      "10min": "10 min",
+      "30min": "30 min",
+      "1hour": "1 hour"
+    },
+    "countText": "Reply in ",
+    "countdownUnit": "s",
     "ignoreTheCall": "Ignore the call",
     "sendToVoicemail": "Send to voicemail",
+    "moreOptions": "More options",
     "answerTheCall": "Answer the call",
     "unknownCaller": "Unknown Caller",
     "prompt": {
@@ -494,7 +513,9 @@
       "FailedToStopRecording": "Sorry, we weren't able to stop recording the call. Try again later.",
       "LackOfRecordingPermission": "Sorry, your account does not have the feature to record a call. To enable the feature, contact your account administrator.",
       "RecordOnServiceWeb": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
-      "RecordAutomatically": "Cannot start call recording."
+      "RecordAutomatically": "Cannot start call recording.",
+      "ReplyCustomMessageEmpty": "Sorry, you cannot send an empty message.",
+      "ReplyMessageSuccess": "Your voice message was sent successfully."
     },
     "notification": {
       "incomingCall": "Incoming Call",

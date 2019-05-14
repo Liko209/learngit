@@ -86,12 +86,20 @@ class ListSearchResultViewModel extends StoreViewModel<ListSearchResultProps>
     }
 
     if (tab === TAB_TYPE.GROUPS) {
-      const result = await groupService.doFuzzySearchGroups(searchKey);
+      const result = await groupService.doFuzzySearchGroups(
+        searchKey,
+        undefined,
+        true,
+      );
       return this.getSection<Group>(result);
     }
 
     if (tab === TAB_TYPE.TEAM) {
-      const result = await groupService.doFuzzySearchTeams(searchKey);
+      const result = await groupService.doFuzzySearchTeams(
+        searchKey,
+        undefined,
+        true,
+      );
       return this.getSection<Group>(result);
     }
 

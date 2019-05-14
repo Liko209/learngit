@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-interface IGlobalConfigService {
+interface IConfigService {
   get(module: string, key: string): any;
   put(module: string, key: string, value: any): void;
   remove(module: string, key: string): void;
   clear(): void;
-  on(module: string, key: string): void;
-  off(module: string, key: string): void;
+  on(module: string, key: string, listener: any): void;
+  off(module: string, key: string, listener: any): void;
 }
 
-export { IGlobalConfigService };
+export { IConfigService };

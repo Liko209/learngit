@@ -25,7 +25,7 @@ import { Profile } from '../../profile/entity';
 import { StateService } from '../../state';
 import { Group } from '../entity';
 import { IGroupService } from '../service/IGroupService';
-import { AccountUserConfig } from '../../../module/account/config';
+import { AccountService } from '../../account/service';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
@@ -137,7 +137,9 @@ class GroupHandleDataController {
         }
         /* eslint-enable no-underscore-dangle */
         const transformed: Group = transform<Group>(finalItem);
-        const userConfig = new AccountUserConfig();
+        const userConfig = ServiceLoader.getInstance<AccountService>(
+          ServiceConfig.ACCOUNT_SERVICE,
+        ).userConfig;
         const beRemovedAsGuest =
           transformed.removed_guest_user_ids &&
           transformed.removed_guest_user_ids.includes(
@@ -459,7 +461,9 @@ class GroupHandleDataController {
    */
   filterGroups = async (groups: Group[], limit: number) => {
     let sortedGroups = groups;
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
     sortedGroups = groups.filter((model: Group) => {
       if (model.is_team) {

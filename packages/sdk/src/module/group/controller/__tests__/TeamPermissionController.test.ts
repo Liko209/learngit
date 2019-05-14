@@ -11,6 +11,7 @@ import {
 import { TeamPermission, TeamPermissionParams } from '../../entity';
 import { TeamPermissionController } from '../TeamPermissionController';
 import { AccountUserConfig } from '../../../../module/account/config';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('../../../../module/config/service/GlobalConfigService');
 jest.mock('../../../../module/account/config');
@@ -27,6 +28,13 @@ describe('TeamPermissionController', () => {
 
   describe('isCurrentUserGuest()', () => {
     beforeAll(() => {
+      ServiceLoader.getInstance = jest
+        .fn()
+        .mockImplementation((config: string) => {
+          if (config === ServiceConfig.ACCOUNT_SERVICE) {
+            return { userConfig: AccountUserConfig.prototype };
+          }
+        });
       AccountUserConfig.prototype.getGlipUserId = jest
         .fn()
         .mockReturnValue(mockCurrentUserId);

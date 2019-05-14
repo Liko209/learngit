@@ -29,7 +29,7 @@ import { MakeCallController } from './MakeCallController';
 import { RCInfoService } from '../../rcInfo';
 import { ERCServiceFeaturePermission } from '../../rcInfo/types';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
-import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
+import { TelephonyService } from '../service';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
@@ -81,12 +81,16 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   }
 
   getLastCalledNumber() {
-    const telephonyConfig = new TelephonyUserConfig();
+    const telephonyConfig = ServiceLoader.getInstance<TelephonyService>(
+      ServiceConfig.TELEPHONY_SERVICE,
+    ).userConfig;
     return telephonyConfig.getLastCalledNumber();
   }
 
   setLastCalledNumber(num: string) {
-    const telephonyConfig = new TelephonyUserConfig();
+    const telephonyConfig = ServiceLoader.getInstance<TelephonyService>(
+      ServiceConfig.TELEPHONY_SERVICE,
+    ).userConfig;
     telephonyConfig.setLastCalledNumber(num);
   }
 
@@ -197,8 +201,8 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   replyWithPattern(
     callId: string,
     pattern: RTC_REPLY_MSG_PATTERN,
-    time: number,
-    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+    time?: number,
+    timeUnit?: RTC_REPLY_MSG_TIME_UNIT,
   ) {
     this._telephonyCallDelegate.replyWithPattern(pattern, time, timeUnit);
   }

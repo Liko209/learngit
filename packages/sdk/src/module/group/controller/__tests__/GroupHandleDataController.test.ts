@@ -47,6 +47,7 @@ jest.mock('../../../../dao', () => {
     daoManager: {
       getDao: () => dao,
       getKVDao: () => dao,
+      observeDBInitialize: jest.fn(),
     },
   };
 });
@@ -122,11 +123,16 @@ beforeEach(() => {
       if (serviceName === ServiceConfig.STATE_SERVICE) {
         return stateService;
       }
+
       if (serviceName === ServiceConfig.PERSON_SERVICE) {
         return personService;
       }
       if (serviceName === ServiceConfig.PROFILE_SERVICE) {
         return profileService;
+      }
+
+      if (serviceName === ServiceConfig.ACCOUNT_SERVICE) {
+        return { userConfig: AccountUserConfig.prototype };
       }
       return null;
     });

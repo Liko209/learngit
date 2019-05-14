@@ -6,7 +6,6 @@
 
 import { indexData, initialData, remainingData } from '../../../../api';
 import { SyncUserConfig } from '../../config/SyncUserConfig';
-import { GlobalConfigService } from '../../../config';
 import { SyncController } from '../SyncController';
 import { AccountGlobalConfig } from '../../../../module/account/config';
 import { JNetworkError, ERROR_CODES_NETWORK } from '../../../../error';
@@ -17,6 +16,8 @@ import { PostService } from '../../../post';
 import { ItemService } from '../../../item/service';
 import { AccountService } from '../../../../module/account';
 import { ServiceLoader, ServiceConfig } from '../../../../module/serviceLoader';
+import { notificationCenter, SERVICE } from 'sdk/service';
+import { SYNC_SOURCE } from '../../types';
 
 jest.mock('../../config/SyncUserConfig');
 
@@ -29,6 +30,7 @@ jest.mock('../../../post');
 jest.mock('../../../item/service');
 jest.mock('../../../../module/account/config');
 jest.mock('../../../../module/account');
+jest.mock('../../../../module/account/service');
 
 let groupConfigService: GroupConfigService;
 let personService: PersonService;
@@ -88,6 +90,9 @@ describe('SyncController ', () => {
             break;
           case ServiceConfig.GROUP_CONFIG_SERVICE:
             result = groupConfigService;
+            break;
+          case ServiceConfig.SYNC_SERVICE:
+            result = { userConfig: SyncUserConfig.prototype };
             break;
           default:
             break;
@@ -375,12 +380,14 @@ describe('SyncController ', () => {
         SyncUserConfig.prototype.setSocketConnectedLocalTime = jest
           .fn()
           .mockImplementationOnce(() => {});
+        syncController.syncData = jest.fn();
         syncController.handleSocketConnectionStateChanged({
           state: 'connected',
         });
         expect(
           SyncUserConfig.prototype.setSocketConnectedLocalTime,
         ).toHaveBeenCalled();
+        expect(syncController.syncData).toBeCalled();
       });
     });
     describe('disconnected', () => {
@@ -412,6 +419,20 @@ describe('SyncController ', () => {
           SyncUserConfig.prototype.setSocketConnectedLocalTime,
         ).toHaveBeenCalledWith(0);
       });
+      it('should call syncData when state is refresh', () => {
+        syncController.syncData = jest.fn();
+        syncController.handleSocketConnectionStateChanged({
+          state: 'refresh',
+        });
+        expect(syncController.syncData).toBeCalled();
+      });
+      it('should start progressBar when state is connecting', () => {
+        syncController['_progressBar'].start = jest.fn();
+        syncController.handleSocketConnectionStateChanged({
+          state: 'connecting',
+        });
+        expect(syncController['_progressBar'].start).toBeCalled();
+      });
     });
   });
   describe('handleStoppingSocketEvent', () => {
@@ -440,6 +461,96 @@ describe('SyncController ', () => {
       expect(
         SyncUserConfig.prototype.setSocketConnectedLocalTime,
       ).toHaveBeenCalledWith(0);
+    });
+  });
+
+  describe('handleWakeUpFromSleep', () => {
+    it('should call _resetSocketConnectedLocalTime', () => {
+      syncController['_resetSocketConnectedLocalTime'] = jest.fn();
+      syncController.handleWakeUpFromSleep();
+      expect(syncController['_resetSocketConnectedLocalTime']).toBeCalled();
+    });
+  });
+
+  describe('_firstLogin', () => {
+    it('should notify to sign out when crash in fetch initial', async () => {
+      syncController['_fetchInitial'] = jest.fn().mockImplementation(() => {
+        throw 'error';
+      });
+      syncController['_checkFetchedRemaining'] = jest.fn();
+      notificationCenter.emitKVChange = jest.fn();
+      await syncController['_firstLogin']();
+      expect(notificationCenter.emitKVChange).toBeCalledWith(
+        SERVICE.DO_SIGN_OUT,
+      );
+      expect(syncController['_checkFetchedRemaining']).toBeCalled();
+    });
+  });
+
+  describe('_fetchInitial', () => {
+    it('should notify initial loaded and handled', async () => {
+      syncController['_syncListener'] = {
+        onInitialLoaded: jest.fn(),
+        onInitialHandled: jest.fn(),
+      };
+      syncController.fetchInitialData = jest.fn();
+      syncController['_handleIncomingData'] = jest.fn();
+      await syncController['_fetchInitial'](1);
+      expect(syncController['_syncListener'].onInitialLoaded).toBeCalled();
+      expect(syncController['_syncListener'].onInitialHandled).toBeCalled();
+    });
+  });
+
+  describe('_checkFetchedRemaining', () => {
+    it('should set _isFetchingRemaining false when crash', async () => {
+      SyncUserConfig.prototype.getFetchedRemaining.mockReturnValue(false);
+      syncController['_isFetchingRemaining'] = false;
+      syncController['_fetchRemaining'] = jest.fn().mockImplementation(() => {
+        throw 'error';
+      });
+      await syncController['_checkFetchedRemaining'](1);
+      expect(syncController['_fetchRemaining']).toBeCalled();
+      expect(syncController['_isFetchingRemaining']).toBeFalsy();
+    });
+  });
+
+  describe('_fetchRemaining', () => {
+    it('should notify remaining loaded and handled', async () => {
+      syncController['_syncListener'] = {
+        onRemainingLoaded: jest.fn(),
+        onRemainingHandled: jest.fn(),
+      };
+      syncController.fetchRemainingData = jest.fn();
+      syncController['_handleIncomingData'] = jest.fn();
+      await syncController['_fetchRemaining'](1);
+      expect(syncController['_syncListener'].onRemainingLoaded).toBeCalled();
+      expect(syncController['_syncListener'].onRemainingHandled).toBeCalled();
+    });
+  });
+
+  describe('_dispatchIncomingData', () => {
+    it('should handle all type data', async () => {
+      syncController['_handleIncomingCompany'] = jest.fn();
+      syncController['_handleIncomingItem'] = jest.fn();
+      syncController['_handleIncomingPresence'] = jest.fn();
+      syncController['_handleIncomingState'] = jest.fn();
+      syncController['_handleIncomingProfile'] = jest.fn();
+      syncController['_handleIncomingPerson'] = jest.fn();
+      syncController['_handleIncomingGroup'] = jest.fn();
+      syncController['_handleIncomingPost'] = jest.fn();
+      notificationCenter.emitEntityUpdate = jest.fn();
+      await syncController['_dispatchIncomingData'](
+        { user_id: 123, company_id: 456 } as any,
+        SYNC_SOURCE.INDEX,
+      );
+      expect(syncController['_handleIncomingCompany']).toBeCalled();
+      expect(syncController['_handleIncomingItem']).toBeCalled();
+      expect(syncController['_handleIncomingPresence']).toBeCalled();
+      expect(syncController['_handleIncomingState']).toBeCalled();
+      expect(syncController['_handleIncomingProfile']).toBeCalled();
+      expect(syncController['_handleIncomingPerson']).toBeCalled();
+      expect(syncController['_handleIncomingGroup']).toBeCalled();
+      expect(syncController['_handleIncomingPost']).toBeCalled();
     });
   });
 });

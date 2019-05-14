@@ -25,7 +25,8 @@ import { AccountServiceInfoController } from './AccountServiceInfoController';
 import { mainLogger } from 'foundation';
 import { notificationCenter, RC_INFO, SERVICE } from 'sdk/service';
 import { RCInfoGlobalConfig } from '../config';
-import { AccountUserConfig } from 'sdk/module/account/config';
+import { AccountService } from '../../account/service';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 type StationSetting = {
   newCountryInfo: DialingCountryInfo;
@@ -297,7 +298,9 @@ class RegionInfoController {
   }
 
   private _getStationLocation(): StationLocationSetting {
-    const userId = new AccountUserConfig().getGlipUserId() as number;
+    const userId = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig.getGlipUserId() as number;
     const currentInfo =
       RCInfoGlobalConfig.getStationLocation() ||
       ({} as GlobalStationLocationSetting);
@@ -305,7 +308,9 @@ class RegionInfoController {
   }
 
   private _updateStationLocation(newRegionInfo: StationLocationSetting) {
-    const userId = new AccountUserConfig().getGlipUserId() as number;
+    const userId = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig.getGlipUserId() as number;
     const currentInfo =
       RCInfoGlobalConfig.getStationLocation() ||
       ({} as GlobalStationLocationSetting);

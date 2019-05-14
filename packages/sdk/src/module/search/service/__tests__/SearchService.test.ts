@@ -7,7 +7,9 @@ import { SearchService } from '../SearchService';
 import { RecentSearchRecordController } from '../../controller/RecentSearchRecordController';
 import { SearchServiceController } from '../../controller/SearchServiceController';
 import { RecentSearchTypes } from '../../entity';
+import { SearchUserConfig } from '../../config';
 
+jest.mock('../../config');
 jest.mock('../../controller/SearchServiceController');
 jest.mock('../../controller/RecentSearchRecordController');
 
@@ -27,6 +29,13 @@ describe('SearchService', () => {
   beforeEach(() => {
     clearMocks();
     setUp();
+  });
+
+  describe('userConfig', () => {
+    it('should create userConfig', () => {
+      searchService.userConfig;
+      expect(SearchUserConfig).toBeCalled();
+    });
   });
 
   describe('RecentSearchRecordController', () => {

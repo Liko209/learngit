@@ -111,7 +111,15 @@ describe('ListSearchResultViewModel', () => {
     it('search groups: returns ids and update store', async (done: jest.DoneCallback) => {
       const store = storeManager.getEntityMapStore(ENTITY_NAME.GROUP);
       jest.spyOn(store, 'batchSet');
+      groupService.doFuzzySearchGroups = jest
+        .fn()
+        .mockResolvedValue({ terms: [], sortableModels: [mockGroupEntity] });
       const result = await listSearchResultViewModel.search(TAB_TYPE.GROUPS);
+      expect(groupService.doFuzzySearchGroups).toBeCalledWith(
+        '',
+        undefined,
+        true,
+      );
       expect(result).toContain(mockGroupEntity.id);
       expect(store.batchSet).toHaveBeenCalledWith(
         [mockGroupEntity.entity],
@@ -123,7 +131,15 @@ describe('ListSearchResultViewModel', () => {
     it('search teams: returns ids and update store', async (done: jest.DoneCallback) => {
       const store = storeManager.getEntityMapStore(ENTITY_NAME.GROUP);
       jest.spyOn(store, 'batchSet');
+      groupService.doFuzzySearchTeams = jest
+        .fn()
+        .mockResolvedValue({ terms: [], sortableModels: [mockTeamsEntity] });
       const result = await listSearchResultViewModel.search(TAB_TYPE.TEAM);
+      expect(groupService.doFuzzySearchTeams).toBeCalledWith(
+        '',
+        undefined,
+        true,
+      );
       expect(result).toContain(mockTeamsEntity.id);
       expect(store.batchSet).toHaveBeenCalledWith(
         [mockTeamsEntity.entity],

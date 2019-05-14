@@ -10,6 +10,8 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { CallActionsViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { JuiKeypadAction } from 'jui/pattern/Dialer';
+import { JuiMenuItem, JuiMenuList } from 'jui/components/Menus';
+import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 
 type Props = CallActionsViewProps & WithTranslation;
 
@@ -17,29 +19,60 @@ type Props = CallActionsViewProps & WithTranslation;
 class CallActionsViewComponent extends Component<Props> {
   static defaultProps = { showLabel: true };
 
-  private _handleCallActions = async () => {
-    const { callActions } = this.props;
-    callActions();
+  private _Anchor = () => {
+    const { t, shouldPersistBg } = this.props;
+    return (
+      <JuiIconButton
+        color="grey.900"
+        shouldPersistBg={shouldPersistBg}
+        tooltipPlacement="top"
+        tooltipTitle={t('telephony.moreOptions')}
+        aria-label={t('telephony.moreOptions')}
+        size={shouldPersistBg ? 'xlarge' : 'xxlarge'}
+        data-test-automation-id="telephony-call-actions-btn"
+      >
+        call_more
+      </JuiIconButton>
+    );
+  }
+
+  private _RenderReplyCall() {
+    const { t } = this.props;
+    return (
+      <JuiMenuItem
+        onClick={this._handleReplyActions}
+        data-test-automation-id="telephony-reply-menu-item"
+      >
+        {t('telephony.action.reply')}
+      </JuiMenuItem>
+    );
+  }
+
+  private _handleReplyActions = () => {
+    const { directReply } = this.props;
+    directReply();
   }
 
   render() {
-    const { t, showLabel, shouldPersistBg } = this.props;
+    const { t, showLabel } = this.props;
     return (
       <JuiKeypadAction>
-        <JuiIconButton
-          color="grey.900"
-          shouldPersistBg={shouldPersistBg}
-          disableToolTip={true}
-          onClick={this._handleCallActions}
-          size={shouldPersistBg ? 'xlarge' : 'xxlarge'}
-          disabled={true}
-          data-test-automation-id="telephony-call-actions-btn"
+        <JuiPopoverMenu
+          Anchor={this._Anchor}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
+          transformOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
         >
-          call_more
-        </JuiIconButton>
-        {showLabel && (
-          <span className="disabled">{t('telephony.action.callActions')}</span>
-        )}
+          <JuiMenuList data-test-automation-id="telephony-more-option-menu">
+            {this._RenderReplyCall()}
+          </JuiMenuList>
+        </JuiPopoverMenu>
+        {showLabel && <span>{t('telephony.action.callActions')}</span>}
       </JuiKeypadAction>
     );
   }

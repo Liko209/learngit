@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { TelephonyStore } from '../TelephonyStore';
+import { TelephonyStore, INCOMING_STATE } from '../TelephonyStore';
 import { CALL_STATE, CALL_WINDOW_STATUS, HOLD_STATE } from '../../FSM';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 
@@ -146,6 +146,34 @@ describe('Telephony store', () => {
     store.directCall();
     store.connected();
     expect(store.recordDisabled).toBe(false);
+  });
+
+  it('directReply()', () => {
+    const store = createStore();
+    store.directReply();
+    expect(store.incomingState).toBe(INCOMING_STATE.REPLY);
+  });
+
+  it('quitReply()', () => {
+    const store = createStore();
+    store.quitReply();
+    expect(store.incomingState).toBe(INCOMING_STATE.IDLE);
+  });
+
+  it('resetReply()', () => {
+    const store = createStore();
+    store.resetReply();
+    expect(store.replyCountdownTime).toBe(undefined);
+    expect(store._intervalReplyId).toBe(undefined);
+  });
+
+  it('_createReplyInterval()', () => {
+    const store = createStore();
+    const time = 55;
+    jest.useFakeTimers();
+    store._createReplyInterval(time);
+    jest.advanceTimersByTime(1000);
+    expect(store.replyCountdownTime).toBe(time - 1);
   });
 
   it('switch between mute and unmute', () => {

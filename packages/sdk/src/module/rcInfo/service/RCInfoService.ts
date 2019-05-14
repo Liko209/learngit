@@ -10,12 +10,16 @@ import { EntityBaseService } from '../../../framework/service/EntityBaseService'
 import { RCInfoController } from '../controller/RCInfoController';
 import { ERCServiceFeaturePermission, ERCWebSettingUri } from '../types';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
-import { AccountUserConfig } from '../../account/config';
+import { AccountService } from '../../account/service';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { mainLogger } from 'foundation';
 import { IdModel } from '../../../framework/model';
+import { RCInfoUserConfig } from '../config';
+import { RC_INFO_HISTORY } from '../config/constants';
 
 class RCInfoService extends EntityBaseService<IdModel> {
   private _rcInfoController: RCInfoController;
+  private _DBConfig: RCInfoUserConfig;
 
   constructor() {
     super(false);
@@ -24,6 +28,10 @@ class RCInfoService extends EntityBaseService<IdModel> {
         [SERVICE.LOGIN]: this.requestRCInfo,
       }),
     );
+  }
+
+  getHistoryDetail() {
+    return RC_INFO_HISTORY;
   }
 
   protected onStopped() {
@@ -39,6 +47,13 @@ class RCInfoService extends EntityBaseService<IdModel> {
       this._rcInfoController = new RCInfoController();
     }
     return this._rcInfoController;
+  }
+
+  get DBConfig() {
+    if (!this._DBConfig) {
+      this._DBConfig = new RCInfoUserConfig();
+    }
+    return this._DBConfig;
   }
 
   requestRCInfo = () => {
@@ -102,7 +117,9 @@ class RCInfoService extends EntityBaseService<IdModel> {
   }
 
   async isVoipCallingAvailable(): Promise<boolean> {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const result =
       userConfig.getAccountType() === ACCOUNT_TYPE_ENUM.RC &&
       (await this.isRCFeaturePermissionEnabled(

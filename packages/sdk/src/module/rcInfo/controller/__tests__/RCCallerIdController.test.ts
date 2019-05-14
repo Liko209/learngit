@@ -54,7 +54,7 @@ describe('RCInfoFetchController', () => {
       expect(result).toEqual(expectResult);
     });
 
-    it('should return default number when can not get caller id list', async () => {
+    it('should return default number when get caller id list is empty', async () => {
       rcCallerIdController._rcInfoFetchController.getExtensionPhoneNumberList = jest
         .fn()
         .mockResolvedValue({
@@ -73,6 +73,43 @@ describe('RCInfoFetchController', () => {
         { id: 2, usageType: 'DirectNumber', phoneNumber: '1' },
         { id: 1, usageType: 'MainCompanyNumber', phoneNumber: '1' },
         { id: 0, usageType: 'Blocked', phoneNumber: 'Blocked' },
+      ]);
+    });
+
+    it('should return default number when can not get caller id list', async () => {
+      rcCallerIdController._rcInfoFetchController.getExtensionPhoneNumberList = jest
+        .fn()
+        .mockResolvedValue(undefined);
+      const accountService: AccountService = new AccountService(null);
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(accountService);
+      accountService.getCurrentUserInfo = jest.fn().mockReturnValue({
+        rc_phone_numbers: [
+          { id: 1, usageType: 'MainCompanyNumber', phoneNumber: '1' },
+          { id: 2, usageType: 'DirectNumber', phoneNumber: '1' },
+        ],
+      });
+      const result = await rcCallerIdController.getCallerIdList();
+      expect(result).toEqual([
+        { id: 2, usageType: 'DirectNumber', phoneNumber: '1' },
+        { id: 1, usageType: 'MainCompanyNumber', phoneNumber: '1' },
+        { id: 0, usageType: 'Blocked', phoneNumber: 'Blocked' },
+      ]);
+    });
+
+    it('should return default number when can not getCurrentUserInfo', async () => {
+      rcCallerIdController._rcInfoFetchController.getExtensionPhoneNumberList = jest
+        .fn()
+        .mockResolvedValue(undefined);
+      const accountService: AccountService = new AccountService(null);
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(accountService);
+      accountService.getCurrentUserInfo = jest.fn().mockReturnValue(undefined);
+      const result = await rcCallerIdController.getCallerIdList();
+      expect(result).toEqual([
+        {
+          id: 0,
+          usageType: 'Blocked',
+          phoneNumber: 'Blocked',
+        },
       ]);
     });
   });

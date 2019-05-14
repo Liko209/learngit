@@ -6,8 +6,7 @@
 import { TelephonyService } from '../TelephonyService';
 import { TelephonyEngineController } from '../../controller/TelephonyEngineController';
 import { ITelephonyAccountDelegate } from '../ITelephonyAccountDelegate';
-import { TELEPHONY_ACCOUNT_STATE, MAKE_CALL_ERROR_CODE } from '../../types';
-import { GlobalConfigService } from '../../../config';
+import { MAKE_CALL_ERROR_CODE } from '../../types';
 import { MakeCallController } from '../../controller/MakeCallController';
 import { ITelephonyCallDelegate } from '../ITelephonyCallDelegate';
 import {
@@ -19,6 +18,7 @@ import {
 } from 'voip';
 import { TelephonyAccountController } from '../../controller/TelephonyAccountController';
 import { ServiceLoader } from '../../../serviceLoader';
+import { TelephonyUserConfig } from '../../config/TelephonyUserConfig';
 
 jest.mock('../../controller/TelephonyEngineController');
 jest.mock('../../controller/TelephonyAccountController');
@@ -71,6 +71,37 @@ describe('TelephonyService', () => {
   beforeEach(() => {
     clearMocks();
     setup();
+  });
+
+  describe('handleLogOut', () => {
+    it('should call logout', () => {
+      engineController.logout = jest.fn();
+      telephonyService.handleLogOut();
+      expect(engineController.logout).toBeCalled();
+    });
+  });
+
+  describe('telephonyController', () => {
+    it('should create telephonyController', () => {
+      telephonyService['_telephonyEngineController'] = undefined as any;
+      telephonyService['telephonyController'];
+      expect(TelephonyEngineController).toBeCalled();
+    });
+  });
+
+  describe('_init', () => {
+    it('should call initEngine', () => {
+      engineController.initEngine = jest.fn();
+      telephonyService['_init']();
+      expect(engineController.initEngine).toBeCalled();
+    });
+  });
+
+  describe('userConfig', () => {
+    it('should create userConfig', () => {
+      telephonyService.userConfig;
+      expect(TelephonyUserConfig).toBeCalled();
+    });
   });
 
   describe('createAccount', () => {

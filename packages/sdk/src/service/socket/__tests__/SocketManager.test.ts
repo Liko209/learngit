@@ -13,14 +13,12 @@ import { SocketClient } from 'foundation';
 import { SocketCanConnectController } from '../SocketCanConnectController';
 import { getCurrentTime } from '../../../utils/jsUtils';
 import { SyncUserConfig } from '../../../module/sync/config/SyncUserConfig';
-import { ServiceLoader } from '../../../module/serviceLoader';
+import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
+import { AuthUserConfig } from 'sdk/module/account/config';
 
 jest.mock('../../../module/config');
 jest.mock('../SocketCanConnectController');
 jest.mock('../../../utils/jsUtils');
-
-ServiceLoader.getInstance = jest.fn();
-
 jest.mock('foundation/src/network/client/socket');
 jest.mock('../../../dao');
 const mockedSetReconnection = jest.fn((bOn: boolean) => {});
@@ -76,6 +74,16 @@ describe('Socket Manager', () => {
   }
 
   function setUp() {
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { authUserConfig: AuthUserConfig.prototype };
+        }
+        if (config === ServiceConfig.SYNC_SERVICE) {
+          return { userConfig: syncUserConfig };
+        }
+      });
     getCurrentTime.mockReturnValue(1);
     syncUserConfig = new SyncUserConfig();
     mockedSetReconnection.mockRestore();

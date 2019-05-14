@@ -13,6 +13,7 @@ import { RCBrandType } from '../../types';
 import { notificationCenter } from 'sdk/service';
 import { RCInfoGlobalConfig } from '../../config';
 import { AccountUserConfig } from '../../../account/config';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('../../config');
 jest.mock('../../../account/config');
@@ -68,6 +69,14 @@ describe('RegionInfoController', () => {
     _rcCallerIdController.getCallerIdList = jest.fn().mockResolvedValue([]);
   }
   function setUp() {
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: AccountUserConfig.prototype };
+        }
+        return;
+      });
     AccountUserConfig.prototype.getGlipUserId.mockReturnValue(1);
     _rcInfoFetchController = new RCInfoFetchController();
     _rcCallerIdController = new RCCallerIdController(_rcInfoFetchController);
@@ -580,11 +589,9 @@ describe('RegionInfoController', () => {
       clearMocks();
       setUp();
       RCInfoGlobalConfig.setStationLocation = jest.fn();
-      RCInfoGlobalConfig.getStationLocation = jest
-        .fn()
-        .mockReturnValue({
-          1: { areaCodeByManual: false, countryByManual: false },
-        });
+      RCInfoGlobalConfig.getStationLocation = jest.fn().mockReturnValue({
+        1: { areaCodeByManual: false, countryByManual: false },
+      });
       _rcAccountInfoController.getOutboundCallPrefix = jest
         .fn()
         .mockReturnValueOnce('9');

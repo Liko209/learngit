@@ -34,7 +34,11 @@ import { PermissionService } from './module/permission';
 import { GroupService } from './module/group';
 import { SearchService } from './module/search';
 import { RCInfoService } from './module/rcInfo';
-import { GlobalConfigService, UserConfigService } from './module/config';
+import {
+  GlobalConfigService,
+  UserConfigService,
+  DBConfigService,
+} from './module/config';
 import { ServiceConfig } from './module/serviceLoader';
 import { PhoneNumberService } from './module/phoneNumber';
 
@@ -44,6 +48,7 @@ const registerConfigs = {
   classes: [
     { name: 'GlobalConfigService', value: GlobalConfigService },
     { name: 'UserConfigService', value: UserConfigService },
+    { name: 'DBConfigService', value: DBConfigService },
     // Authenticator
     { name: RCPasswordAuthenticator.name, value: RCPasswordAuthenticator },
     { name: AutoAuthenticator.name, value: AutoAuthenticator },

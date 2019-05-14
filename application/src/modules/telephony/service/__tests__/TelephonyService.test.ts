@@ -9,6 +9,8 @@ import {
   TelephonyService as ServerTelephonyService,
   RTC_CALL_ACTION,
   RTC_CALL_STATE,
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
 } from 'sdk/module/telephony';
 import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
 import { PersonService } from 'sdk/module/person';
@@ -16,6 +18,7 @@ import { TelephonyStore } from '../../store/TelephonyStore';
 import { ToastCallError } from '../ToastCallError';
 import { container, injectable, decorate } from 'framework';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { AccountUserConfig } from 'sdk/module/account/config';
 
 const testProcedureWaitingTime = 20;
 const mockedDelay = 10;
@@ -107,6 +110,9 @@ describe('TelephonyService', () => {
       mute: jest.fn(),
       unmute: jest.fn(),
       dtmf: jest.fn(),
+      startReply: jest.fn(),
+      replyWithMessage: jest.fn(),
+      replyWithPattern: jest.fn(),
     };
 
     jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
@@ -123,6 +129,8 @@ describe('TelephonyService', () => {
           return { get: jest.fn() };
         case ServiceConfig.USER_CONFIG_SERVICE:
           return { get: jest.fn() };
+        case ServiceConfig.ACCOUNT_SERVICE:
+          return { userConfig: { getGlipUserId: jest.fn() } };
         default:
           return {} as PersonService;
       }
@@ -453,13 +461,55 @@ describe('TelephonyService', () => {
       expect(telephonyService._telephonyStore.closeDialer).toBeCalled();
       telephonyService._telephonyStore = telephonyStore;
     });
-  });
 
-  it('should call dtmf', () => {
-    const callId = 'id_5';
-    const dtmf = `${Math.ceil(Math.random() * 10)}`;
-    telephonyService._callId = callId;
-    telephonyService.dtmf(dtmf);
-    expect(mockedServerTelephonyService.dtmf).toBeCalledWith(callId, dtmf);
+    it('should call dtmf', () => {
+      const callId = 'id_5';
+      const dtmf = `${Math.ceil(Math.random() * 10)}`;
+      telephonyService._callId = callId;
+      telephonyService.dtmf(dtmf);
+      expect(mockedServerTelephonyService.dtmf).toBeCalledWith(callId, dtmf);
+    });
+
+    it('should call startReply', () => {
+      const callId = 'id_0';
+      telephonyService.startReply();
+      expect(mockedServerTelephonyService.startReply).not.toBeCalled();
+      telephonyService._callId = callId;
+      telephonyService.startReply();
+      expect(mockedServerTelephonyService.startReply).toBeCalledWith(callId);
+      telephonyService._callId = undefined;
+    });
+
+    it('should call replyWithMessage', () => {
+      const callId = 'id_0';
+      const message = 'test';
+      telephonyService.replyWithMessage(message);
+      expect(mockedServerTelephonyService.replyWithMessage).not.toBeCalled();
+      telephonyService._callId = callId;
+      telephonyService.replyWithMessage(message);
+      expect(mockedServerTelephonyService.replyWithMessage).toBeCalledWith(
+        callId,
+        message,
+      );
+      telephonyService._callId = undefined;
+    });
+
+    it('should call replyWithPattern', () => {
+      const callId = 'id_0';
+      const pattern = RTC_REPLY_MSG_PATTERN.IN_A_MEETING;
+      const time = 5;
+      const timeUnit = RTC_REPLY_MSG_TIME_UNIT.MINUTE;
+      telephonyService.replyWithPattern(pattern, time, timeUnit);
+      expect(mockedServerTelephonyService.replyWithPattern).not.toBeCalled();
+      telephonyService._callId = callId;
+      telephonyService.replyWithPattern(pattern, time, timeUnit);
+      expect(mockedServerTelephonyService.replyWithPattern).toBeCalledWith(
+        callId,
+        pattern,
+        time,
+        timeUnit,
+      );
+      telephonyService._callId = undefined;
+    });
   });
 });
