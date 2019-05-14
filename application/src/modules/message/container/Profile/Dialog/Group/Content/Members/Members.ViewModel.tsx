@@ -50,9 +50,7 @@ class MembersViewModel extends ProfileDialogGroupViewModel
 
   createSortableHandler = async () => {
     // This handler need observable
-    this._sortableGroupMemberHandler = await SortableGroupMemberHandler.createSortableGroupMemberHandler(
-      this.id,
-    );
+    this._sortableGroupMemberHandler = new SortableGroupMemberHandler(this.id);
   }
 
   @computed
