@@ -5,6 +5,10 @@
  */
 
 import { GroupConfigController } from '../GroupConfigController';
+import { AccountService } from '../../../account';
+import { ServiceConfig, ServiceLoader } from '../../../serviceLoader';
+
+jest.mock('../../../account');
 
 const entitySourceController = {
   get: jest.fn(),
@@ -14,13 +18,38 @@ const entitySourceController = {
 };
 
 describe('GroupConfigService', () => {
-  const groupConfigController: GroupConfigController = new GroupConfigController(
-    undefined,
-  );
+  let groupConfigController: GroupConfigController;
+  let accountService: AccountService;
+  const g_UserId = 100;
+
+  function setUp() {
+    accountService = new AccountService(undefined as any);
+    Object.defineProperty(accountService, 'userConfig', {
+      writable: true,
+      value: {
+        getGlipUserId: () => {
+          return g_UserId;
+        },
+      },
+    });
+
+    const serviceMap = new Map([
+      [ServiceConfig.ACCOUNT_SERVICE, accountService],
+    ]);
+    ServiceLoader.getInstance = jest.fn().mockImplementation((name: string) => {
+      return serviceMap.get(name);
+    });
+
+    groupConfigController = new GroupConfigController(
+      entitySourceController as any,
+    );
+  }
+
   beforeEach(() => {
     jest.clearAllMocks();
-    Object.assign(groupConfigController, { entitySourceController });
+    setUp();
   });
+
   describe('updateGroupConfigPartialData', () => {
     it('should call not entity update', async () => {
       const mock = {
@@ -125,7 +154,7 @@ describe('GroupConfigService', () => {
   describe('updateGroupSendFailurePostIds', () => {
     it('should call updateGroupConfigPartialData when there has local groupConfig', async () => {
       entitySourceController.get.mockResolvedValue({ id: 2 });
-
+      groupConfigController.updateGroupConfigPartialData = jest.fn();
       await groupConfigController.updateGroupSendFailurePostIds({
         id: 2,
         send_failure_post_ids: [],
@@ -149,24 +178,63 @@ describe('GroupConfigService', () => {
     });
   });
 
-  describe('recordMyLastPostTime', () => {
+  describe('updateMyLastPostTime', () => {
+    const groupId = 123;
+    const groupConfig = {
+      id: groupId,
+      my_last_post_time: 1,
+    };
+
     it('should call update to set last post time', async () => {
       entitySourceController.update = jest.fn();
-      await groupConfigController.recordMyLastPostTime(1, 1111);
-      expect(entitySourceController.update).toBeCalledWith({
+      entitySourceController.get = jest.fn().mockReturnValue(groupConfig);
+      await groupConfigController.updateMyLastPostTime(groupId, {
         id: 1,
+        created_at: 1111,
+        creator_id: g_UserId,
+      } as any);
+      expect(entitySourceController.update).toBeCalledWith({
+        id: groupId,
         my_last_post_time: 1111,
       });
+    });
+
+    it('should not update last post time when is not my post', async () => {
+      entitySourceController.update = jest.fn();
+      entitySourceController.get = jest.fn().mockReturnValue(groupConfig);
+      await groupConfigController.updateMyLastPostTime(groupId, {
+        id: 1,
+        created_at: 1111,
+        creator_id: g_UserId + 1,
+      } as any);
+      expect(entitySourceController.update).not.toHaveBeenCalled();
+    });
+
+    it('should not update last post time when is post is not newer', async () => {
+      entitySourceController.update = jest.fn();
+      entitySourceController.get = jest.fn().mockReturnValue(groupConfig);
+      await groupConfigController.updateMyLastPostTime(groupId, {
+        id: 1,
+        created_at: 1111,
+        creator_id: g_UserId + 1,
+      } as any);
+      expect(entitySourceController.update).not.toHaveBeenCalled();
     });
 
     it('should not throw error when error happened', async () => {
       entitySourceController.update = jest.fn().mockImplementation(() => {
         throw new Error();
       });
+      entitySourceController.get = jest.fn().mockReturnValue(groupConfig);
+
       expect(
-        groupConfigController.recordMyLastPostTime(1, 1111),
+        groupConfigController.updateMyLastPostTime(1, {
+          id: 1,
+          created_at: 1111,
+          creator_id: g_UserId,
+        } as any),
       ).resolves.not.toThrow();
-      expect(entitySourceController.update).toHaveBeenCalled();
+      expect(entitySourceController.update).not.toHaveBeenCalled();
     });
   });
 });

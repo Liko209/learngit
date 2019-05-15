@@ -46,15 +46,7 @@ class SendPostController implements ISendPostController {
     );
   }
 
-  private async _recordMyLastPost(groupId: number, postTime: number) {
-    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
-      ServiceConfig.GROUP_CONFIG_SERVICE,
-    );
-    await groupConfigService.recordMyLastPostTime(groupId, postTime);
-  }
-
   async sendPost(params: SendPostType) {
-    this._recordMyLastPost(params.groupId, Date.now());
     const userConfig = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
     ).userConfig;

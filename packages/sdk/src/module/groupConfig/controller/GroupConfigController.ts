@@ -12,6 +12,9 @@ import { IEntitySourceController } from '../../../framework/controller/interface
 import { buildPartialModifyController } from '../../../framework/controller';
 import { Raw } from '../../../framework/model';
 import { mainLogger } from 'foundation';
+import { Post } from 'sdk/module/post/entity';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { AccountService } from 'sdk/module/account';
 
 const LOG_TAG = 'GroupConfigController';
 class GroupConfigController {
@@ -126,7 +129,7 @@ class GroupConfigController {
     });
   }
 
-  async recordMyLastPostTime(groupId: number, timeStamp: number) {
+  private async _recordMyLastPostTime(groupId: number, timeStamp: number) {
     const updateData = {
       id: groupId,
       my_last_post_time: timeStamp,
@@ -135,6 +138,25 @@ class GroupConfigController {
       await this.entitySourceController.update(updateData);
     } catch (error) {
       mainLogger.tags(LOG_TAG).log('recordMyLastPostTime failed', updateData);
+    }
+  }
+
+  private _getCurrentUserId() {
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    return userConfig.getGlipUserId();
+  }
+
+  async updateMyLastPostTime(groupId: number, post: Post) {
+    if (post.creator_id !== this._getCurrentUserId()) {
+      return;
+    }
+
+    const groupConfig = await this.entitySourceController.get(groupId);
+    const lastPostTime = (groupConfig && groupConfig.my_last_post_time) || 0;
+    if (post.created_at > lastPostTime) {
+      await this._recordMyLastPostTime(groupId, post.created_at);
     }
   }
 }

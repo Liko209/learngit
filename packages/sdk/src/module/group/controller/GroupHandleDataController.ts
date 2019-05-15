@@ -29,7 +29,7 @@ import { AccountService } from '../../account/service';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
-
+import { GroupConfigService } from 'sdk/module/groupConfig';
 class GroupHandleDataController {
   constructor(
     public groupService: IGroupService,
@@ -419,6 +419,7 @@ class GroupHandleDataController {
               if (post.id > 0) {
                 pg['most_recent_post_id'] = post.id;
               }
+              await this._updateMyLastPostTime(group.id, post);
               return pg;
             }
           } catch (error) {
@@ -524,6 +525,13 @@ class GroupHandleDataController {
       groups,
     );
     await this.doNotification([], transformData);
+  }
+
+  private async _updateMyLastPostTime(groupId: number, post: Post) {
+    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
+    await groupConfigService.updateMyLastPostTime(groupId, post);
   }
 }
 
