@@ -9,7 +9,6 @@ import { Config } from "../config";
 import * as bluebird from 'bluebird';
 
 class FetchGroupGatherer extends BaseGatherer {
-  private artifacts: Map<string, Array<any>> = new Map();
   private metricKeys: Array<string> = [
     "group_section_fetch_teams",
     "group_section_fetch_favorites",
@@ -18,12 +17,11 @@ class FetchGroupGatherer extends BaseGatherer {
 
   constructor() {
     super();
-    for (let key of this.metricKeys) {
-      this.artifacts.set(key, []);
-    }
   }
 
-  async _beforePass(passContext) { }
+  async _beforePass(passContext) {
+    await this.gathererConsole(this.metricKeys, passContext);
+  }
 
   async _pass(passContext) {
   }
@@ -34,10 +32,16 @@ class FetchGroupGatherer extends BaseGatherer {
     const { url } = passContext.settings;
     const browser = await groupPage.browser();
 
+    this.beginGathererConsole();
     let authUrl, page, item, cnt, flag;
+    let lengthMap = {};
     for (let i = 0; i < Config.sceneRepeatCount; i++) {
       try {
         cnt = 10;
+
+        for (let k of this.metricKeys) {
+          lengthMap[k] = this.consoleMetrics[k].length;
+        }
 
         await driver.clearDataForOrigin(url);
 
@@ -47,26 +51,12 @@ class FetchGroupGatherer extends BaseGatherer {
 
         await page.goto(authUrl);
 
-        // while (cnt-- > 0 && !(await groupPage.waitForCompleted())) {
-        //   await bluebird.delay(2000);
-        // }
-
         cnt = 10;
         while (cnt-- > 0) {
           flag = true;
 
-          let metric = await page.evaluate(() => {
-            const m = performance["jupiter"];
-            return m;
-          });
-
-          if (!metric) {
-            await bluebird.delay(2000);
-            continue;
-          }
-
           for (let k of this.metricKeys) {
-            if (!metric[k] || metric[k].length === 0) {
+            if (lengthMap[k] >= this.consoleMetrics[k].length) {
               flag = false;
               break;
             }
@@ -77,12 +67,6 @@ class FetchGroupGatherer extends BaseGatherer {
             continue;
           }
 
-          for (let k of this.metricKeys) {
-            if (metric[k] && metric[k].length > 0) {
-              item = metric[k].reduce((a, b) => { return (a.endTime - a.startTime) > (b.endTime - b.startTime) ? a : b });
-              this.artifacts.get(k).push(item);
-            }
-          }
           break;
         }
 
@@ -95,10 +79,12 @@ class FetchGroupGatherer extends BaseGatherer {
       }
     }
 
+    this.endGathererConsole()
+
     let result = {};
     for (let key of this.metricKeys) {
       result[key] = {
-        api: this.artifacts.get(key),
+        api: this.consoleMetrics[key],
         ui: []
       };
     }
