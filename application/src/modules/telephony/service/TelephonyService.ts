@@ -431,17 +431,39 @@ class TelephonyService {
 
   makeCall = async (toNumber: string) => {
     // FIXME: move this logic to SDK and always using callerID
-    const phoneNumber = this._telephonyStore.callerPhoneNumberList.find(
-      (phone) =>
-        phone.phoneNumber === this._telephonyStore.chosenCallerPhoneNumber,
-    );
+    const phoneNumber = this._telephonyStore.callerPhoneNumberList
+      .map((phone) => {
+        if (phone.id === 0) {
+          // parse the `block` to `anonymous`
+          return Object.assign({}, phone, {
+            phoneNumber: 'anonymous',
+          });
+        }
+        return phone;
+      })
+      .find(
+        (phone) =>
+          phone.phoneNumber === this._telephonyStore.chosenCallerPhoneNumber,
+      );
+    if (!phoneNumber) {
+      return mainLogger.error(
+        `${TelephonyService.TAG} can't Make call with: ${
+          this._telephonyStore.chosenCallerPhoneNumber
+        }, because can't find corresponding phone number from ${this._telephonyStore.callerPhoneNumberList.join(
+          ',',
+        )}`,
+      );
+    }
+    const fromNumber = phoneNumber.phoneNumber;
     mainLogger.info(
-      `${TelephonyService.TAG}Make call with: ${
+      `${TelephonyService.TAG}Make call with fromNumber: ${
         this._telephonyStore.chosenCallerPhoneNumber
-      }`,
+      }， and toNumber: ${toNumber}`,
     );
-    const id = `${(phoneNumber && phoneNumber.id) || 'anonymous'}`;
-    const rv = await this._serverTelephonyService.makeCall(toNumber, id);
+    const rv = await this._serverTelephonyService.makeCall(
+      toNumber,
+      fromNumber,
+    );
 
     switch (true) {
       case MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION === rv: {
