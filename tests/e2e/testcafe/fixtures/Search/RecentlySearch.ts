@@ -589,3 +589,97 @@ test.meta(<ITestMeta> {
     await t.expect(searchDialog.recentPage.conversationByName(team.name).exists).notOk();
   });
 });
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1237'],
+  maintainers: ['alexander.zaverukha'],
+  keywords: ['search'],
+})('Check the sort of the recently searched list', async (t) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const groupUser = users[2];
+  await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).resetProfileAndState();
+  const groupName =  await h(t).glip(loginUser).getPersonPartialData('display_name', groupUser.rcId);
+  const searchedUserName =  await h(t).glip(loginUser).getPersonPartialData('display_name',  users[3].rcId);
+
+  const team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser , users[1]],
+  };
+
+
+  const team2 = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser , users[2]],
+  };
+
+
+  const group = <IGroup>{
+    type: 'Group',
+    owner: loginUser,
+    members: [loginUser, loginUser],
+  };
+
+  await h(t).withLog(`Given I login Jupiter : ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    },
+  );
+
+  const searchDialog = app.homePage.searchDialog;
+  const itemsInSearchOrder = [];
+  await h(t).withLog(`And there are some records on recently searched list`, async () => {
+    await h(t).scenarioHelper.createTeamsOrChats([team, group]);
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(groupName);
+    await t.click(searchDialog.instantPage.peoples.withText(groupName));
+    itemsInSearchOrder.push(groupName);
+
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(team.name);
+    await t.click(searchDialog.instantPage.teams.withText(team.name));
+    itemsInSearchOrder.push(team.name);
+
+    const userName = await h(t).glip(loginUser).getPersonPartialData('display_name', users[1].rcId);
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(userName);
+    await t.click(searchDialog.instantPage.peoples.withText(userName));
+    itemsInSearchOrder.push(userName);
+  });
+
+  await h(t).withLog('When I tab or mouse in the global search box', async () => {
+    await app.homePage.header.searchBar.clickSelf();
+  });
+
+  await h(t).withLog(`Add a record to the recent search list: ${searchedUserName}`, async () => {
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(searchedUserName);
+    await t.click(searchDialog.instantPage.peoples.withText(searchedUserName));
+    itemsInSearchOrder.push(searchedUserName);
+  });
+
+  await h(t).withLog('And I tab or mouse in the global search box and check the recently searched list', async () => {
+    await app.homePage.header.searchBar.clickSelf();
+  });
+
+
+  await h(t).withLog(`Then I the items should be sorted in the reverse chronological order, with the most recently searched item on the top of the list`, async () => {
+    const searchedUserNameCurrent = [];
+    const count = await searchDialog.recentPage.itemsNames.count;
+
+    for (let i = 0; i < count; i++){
+      searchedUserNameCurrent.push(await searchDialog.recentPage.itemsNames.nth(i).textContent);
+    }
+
+    await t.expect(itemsInSearchOrder.reverse()).eql(searchedUserNameCurrent);
+  });
+});
+
