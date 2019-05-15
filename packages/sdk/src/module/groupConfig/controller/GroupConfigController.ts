@@ -137,7 +137,9 @@ class GroupConfigController {
     try {
       await this.entitySourceController.update(updateData);
     } catch (error) {
-      mainLogger.tags(LOG_TAG).log('recordMyLastPostTime failed', updateData);
+      mainLogger
+        .tags(LOG_TAG)
+        .log('recordMyLastPostTime failed', updateData, error);
     }
   }
 

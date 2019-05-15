@@ -419,7 +419,6 @@ class GroupHandleDataController {
               if (post.id > 0) {
                 pg['most_recent_post_id'] = post.id;
               }
-              await this._updateMyLastPostTime(group.id, post);
               return pg;
             }
           } catch (error) {
@@ -433,6 +432,7 @@ class GroupHandleDataController {
       >[];
     });
     await this.handlePartialData(validGroups);
+    await this._updateMyLastPostTime(uniqMaxPosts);
     ids.length &&
       notificationCenter.emit(SERVICE.POST_SERVICE.NEW_POST_TO_GROUP, ids);
   }
@@ -527,11 +527,16 @@ class GroupHandleDataController {
     await this.doNotification([], transformData);
   }
 
-  private async _updateMyLastPostTime(groupId: number, post: Post) {
+  private async _updateMyLastPostTime(uniqMaxPosts: Post[]) {
     const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
       ServiceConfig.GROUP_CONFIG_SERVICE,
     );
-    await groupConfigService.updateMyLastPostTime(groupId, post);
+
+    await Promise.all(
+      uniqMaxPosts.map((post: Post) => {
+        return groupConfigService.updateMyLastPostTime(post.group_id, post);
+      }),
+    );
   }
 }
 
