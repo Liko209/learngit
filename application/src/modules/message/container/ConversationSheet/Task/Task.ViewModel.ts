@@ -24,6 +24,9 @@ import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 
 class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
+  private static _isCollapseMap = new Map<number, boolean>();
+  initialExpansionStatus = TaskViewModel._isCollapseMap.get(this._postId);
+
   @computed
   private get _id() {
     return this.props.ids[0];
@@ -44,6 +47,10 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
     return getEntity<Item, TaskItemModel>(ENTITY_NAME.ITEM, this._id);
   }
 
+  switchExpandHandler = (collapsed: boolean) => {
+    TaskViewModel._isCollapseMap.set(this._postId, collapsed);
+  }
+
   @computed
   get effectiveIds() {
     const { assignedToIds } = this.task;
@@ -53,13 +60,16 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
 
     return assignedToIds
       .map((assignedId: number) => {
-        const person = getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, assignedId);
+        const person = getEntity<Person, PersonModel>(
+          ENTITY_NAME.PERSON,
+          assignedId,
+        );
         if (person.isMocked) {
           return null;
         }
         return assignedId;
       })
-      .filter(item => item !== null);
+      .filter((item) => item !== null);
   }
 
   @computed
@@ -71,7 +81,9 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
     const permissionService = ServiceLoader.getInstance<PermissionService>(
       ServiceConfig.PERMISSION_SERVICE,
     );
-    return await permissionService.hasPermission(UserPermissionType.JUPITER_CAN_SHOW_IMAGE_DIALOG);
+    return await permissionService.hasPermission(
+      UserPermissionType.JUPITER_CAN_SHOW_IMAGE_DIALOG,
+    );
   }
 
   truncateNotesOrSection = (text: string, subLength: number) => {

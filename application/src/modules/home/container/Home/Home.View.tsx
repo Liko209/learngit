@@ -21,14 +21,7 @@ import { AccountService } from 'sdk/module/account';
 import { ModalPortal } from '@/containers/Dialog';
 import { GlobalSearch } from '@/modules/GlobalSearch';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { lazyComponent } from '@/modules/common/util/lazyComponent';
-
-const LazyDialer = lazyComponent({
-  loader: () =>
-    import('@/modules/telephony/container/Dialer').then(({ Dialer }) => ({
-      default: Dialer,
-    })),
-});
+import { AboutView } from '@/containers/About';
 
 @observer
 class HomeView extends Component<HomeViewProps> {
@@ -42,6 +35,9 @@ class HomeView extends Component<HomeViewProps> {
       ServiceConfig.ACCOUNT_SERVICE,
     );
     accountService.makeSureUserInWhitelist();
+    if (window.jupiterElectron && window.jupiterElectron.handleUpgradeCheck) {
+      window.jupiterElectron.handleUpgradeCheck();
+    }
   }
 
   componentWillUnmount() {
@@ -67,7 +63,7 @@ class HomeView extends Component<HomeViewProps> {
   }
 
   render() {
-    const { showGlobalSearch, canRenderDialer } = this.props;
+    const { showGlobalSearch } = this.props;
 
     const { extensions } = this._homeStore;
     return (
@@ -80,11 +76,12 @@ class HomeView extends Component<HomeViewProps> {
             <HomeRouter />
           </Bottom>
           <ModalPortal />
-          {extensions.map((Extension: React.ComponentType, i: number) => (
-            <Extension key={`HOME_EXTENSION_${i}`} />
-          ))}
+          <AboutView />
+          {extensions['root'] &&
+            [...extensions['root']].map((Extension: React.ComponentType) => (
+              <Extension key={`HOME_EXTENSION_${Extension.displayName}`} />
+            ))}
           {showGlobalSearch && <GlobalSearch />}
-          {canRenderDialer && <LazyDialer />}
         </Wrapper>
       </>
     );

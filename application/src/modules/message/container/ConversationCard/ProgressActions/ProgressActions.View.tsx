@@ -10,7 +10,7 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { ProgressActionsViewProps } from './types';
 import { JuiActions } from 'jui/pattern/ConversationCard/Actions';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
-import { JuiCircularProgress } from 'jui/components/Progress/CircularProgress';
+import { RuiCircularProgress } from 'rcui/components/Progress';
 import { PROGRESS_STATUS } from 'sdk/module/progress';
 import { Dialog } from '@/containers/Dialog';
 import { mainLogger } from 'sdk';
@@ -46,7 +46,7 @@ class ProgressActionsViewComponent extends Component<Props> {
   private _renderLoading = () => {
     const { postStatus } = this.props;
     if (postStatus === PROGRESS_STATUS.INPROGRESS) {
-      return <JuiCircularProgress size={12} />;
+      return <RuiCircularProgress size={12} />;
     }
     return null;
   }

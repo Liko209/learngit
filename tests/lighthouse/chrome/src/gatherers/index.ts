@@ -2,19 +2,22 @@
  * @Author: doyle.wu
  * @Date: 2019-03-05 13:44:31
  */
+import { BaseGatherer } from './baseGatherer';
 import { ProcessGatherer, PerformanceMetric } from './processGatherer';
+import { ProcessGatherer2 } from './processGatherer2';
 import { FetchGroupGatherer } from './fetchGroupGatherer';
 import { HomePageGatherer } from './homePageGatherer';
 import { LoginGatherer } from './loginGatherer';
 import { OfflineGatherer } from './offlineGatherer';
 import { SearchGatherer } from './searchGatherer';
 import { SwitchConversationGatherer } from './switchConversationGatherer';
-import { MemoryGatherer } from './memoryGatherer';
 import { FpsGatherer } from './fpsGatherer';
 import { IndexDataGatherer } from './indexDataGatherer';
 
 export {
+  BaseGatherer,
   ProcessGatherer,
+  ProcessGatherer2,
   PerformanceMetric,
   FetchGroupGatherer,
   HomePageGatherer,
@@ -22,7 +25,6 @@ export {
   OfflineGatherer,
   SearchGatherer,
   SwitchConversationGatherer,
-  MemoryGatherer,
   FpsGatherer,
   IndexDataGatherer
 }

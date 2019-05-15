@@ -90,6 +90,15 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   @computed
+  get canPost() {
+    const group = getEntity<Group, GroupModel>(
+      ENTITY_NAME.GROUP,
+      this.props.id,
+    );
+    return group.canPost;
+  }
+
+  @computed
   get files() {
     const values: AttachmentItem[] = Array.from(this.items.values());
     return values.map(

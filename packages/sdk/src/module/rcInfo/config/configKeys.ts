@@ -12,10 +12,13 @@ const RC_INFO_KEYS = {
   SPECIAL_NUMBER_RULE: 'special_number_rule',
   PHONE_DATA: 'PHONE_DATA',
   PHONE_DATA_VERSION: 'PHONE_DATA_VERSION',
-  EXTENSION_PHONE_NUMBER_LIST: 'EXTENSION_PHONE_NUMBER_LIST',
+  EXTENSION_PHONE_NUMBER_LIST: 'extension_phone_number_list',
   DIALING_PLAN: 'dialing_plan',
-  STATION_LOCATION: 'station_location',
   ACCOUNT_SERVICE_INFO: 'account_service_info',
 };
 
-export { RC_INFO_KEYS };
+const RC_INFO_GLOBAL_KEYS = {
+  STATION_LOCATION: 'station_location',
+};
+
+export { RC_INFO_KEYS, RC_INFO_GLOBAL_KEYS };

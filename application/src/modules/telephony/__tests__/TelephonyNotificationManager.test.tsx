@@ -12,6 +12,7 @@ import { NOTIFICATION_PRIORITY } from '@/modules/notification/interface';
 import { TelephonyStore } from '../store';
 import { getEntity } from '@/store/utils';
 jest.mock('@/store/utils');
+jest.mock('sdk/module/telephony');
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);

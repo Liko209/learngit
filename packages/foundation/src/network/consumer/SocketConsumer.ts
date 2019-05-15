@@ -33,7 +33,7 @@ class SocketConsumer extends AbstractConsumer {
   }
 
   protected canHandleRequest() {
-    return this.client.isNetworkReachable() && !this.isRequestExceeded();
+    return !this.isRequestExceeded();
   }
 }
 

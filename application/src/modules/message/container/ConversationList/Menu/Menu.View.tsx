@@ -155,23 +155,17 @@ class MenuViewComponent extends Component<Props> {
     this._closeConversation(true);
   }
 
+  @catchError.flash({
+    network: 'people.prompt.notAbleToCloseTheConversationForNetworkIssue',
+    server: 'people.prompt.notAbleToCloseTheConversationForServerIssue',
+  })
   private async _closeConversation(shouldSkipCloseConfirmation: boolean) {
-    try {
-      await this.props.closeConversation(shouldSkipCloseConfirmation);
-      // jump to section
-      const match = /messages\/(\d+)/.exec(window.location.href);
-      if (match && this.props.groupId === Number(match[1])) {
-        const { history } = this.props;
-        history.replace('/messages');
-      }
-    } catch {
-      Notification.flashToast({
-        message: 'people.prompt.SorryWeWereNotAbleToCloseTheConversation',
-        type: ToastType.ERROR,
-        messageAlign: ToastMessageAlign.LEFT,
-        fullWidth: false,
-        dismissible: false,
-      });
+    await this.props.closeConversation(shouldSkipCloseConfirmation);
+    // jump to section
+    const match = /messages\/(\d+)/.exec(window.location.href);
+    if (match && this.props.groupId === Number(match[1])) {
+      const { history } = this.props;
+      history.replace('/messages');
     }
   }
 

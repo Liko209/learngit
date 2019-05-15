@@ -10,6 +10,7 @@ import { TaskDto, SceneDto } from "../models";
 import { FileService, MetricService, DashboardService } from "../services";
 import * as reportGenerater from "lighthouse/lighthouse-core/report/report-generator";
 import { Config } from "../config";
+import { globals } from "../globals";
 
 const EXTENSION_PATH = `${process.cwd()}/extension`;
 type Timing = { startTime: Date; endTime: Date; total: number };
@@ -42,6 +43,8 @@ class Scene {
       try {
         const startTime = new Date();
 
+        await this.clearGlobals();
+
         await this.launchBrowser();
 
         await this.preHandle();
@@ -56,24 +59,30 @@ class Scene {
           endTime,
           total: endTime.getTime() - startTime.getTime()
         };
+
+
+        if (this.isSuccess()) {
+          await this.saveMetircsIntoDisk();
+
+          let sceneDto = await this.saveMetircsIntoDb();
+
+          await this.afterSaveMetrics(sceneDto);
+
+          return true;
+        }
       } catch (err) {
         this.logger.error(err);
-      }
-
-      if (this.isSuccess()) {
-        await this.saveMetircsIntoDisk();
-
-        let sceneDto = await this.saveMetircsIntoDb();
-
-        await this.afterSaveMetrics(sceneDto);
-
-        return true;
       }
     }
 
     // save last failure report, and not save result into db.
     await this.saveMetircsIntoDisk();
     return false;
+  }
+
+  async clearGlobals() {
+    globals.clearMemoryFiles();
+    globals.stopCollectProcessInfo();
   }
 
   async launchBrowser() {
@@ -87,6 +96,9 @@ class Scene {
       args.push("--show-fps-counter",
         "--enable-logging=stderr",
         "--vmodule=heads_up_display_layer_*=1");
+    }
+    if (this.browser) {
+      await PptrUtils.close(this.browser);
     }
     this.browser = await PptrUtils.launch({ args });
   }
@@ -145,7 +157,7 @@ class Scene {
         }
 
         static audit(artifacts) {
-          return { rawValue: true };
+          return { rawValue: true, score: 1 };
         }
       }
     });
@@ -175,9 +187,10 @@ class Scene {
       this.report = reportGenerater.generateReport(lhr, "html");
       this.artifacts = artifacts;
     } catch (err) {
-      this.logger.error(err);
+      throw err;
     } finally {
       await PptrUtils.close(this.browser);
+      this.browser = undefined;
     }
   }
 
@@ -204,7 +217,7 @@ class Scene {
     }
 
     if (this.supportDashboard() && !this.fpsMode) {
-      await DashboardService.addItem(this.taskDto, sceneDto, this.artifacts);
+      await DashboardService.addItem(this.taskDto, sceneDto);
     }
   }
 

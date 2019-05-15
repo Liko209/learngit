@@ -10,7 +10,7 @@ import { JuiIconography } from '../../../foundation/Iconography';
 import { palette, grey, width } from '../../../foundation/utils/styles';
 import tinycolor from 'tinycolor2';
 import { Theme, Palette } from '../../../foundation/theme/theme';
-import { JuiArrowTip } from '../../../components/Tooltip/ArrowTip';
+import { RuiTooltip } from 'rcui/components/Tooltip';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type CheckboxButtonProps = {
@@ -138,7 +138,7 @@ class JuiCheckboxButton extends React.PureComponent<JuiCheckboxButtonProps> {
     iconName: 'check_box_outline_blank',
     checkedIconName: 'check_box',
   };
-  static dependencies = [MuiCheckbox, JuiIconography, JuiArrowTip];
+  static dependencies = [MuiCheckbox, JuiIconography, RuiTooltip];
   state = {
     checked: false,
   };
@@ -177,7 +177,7 @@ class JuiCheckboxButton extends React.PureComponent<JuiCheckboxButtonProps> {
     }
 
     return (
-      <JuiArrowTip title={tooltipTitle}>
+      <RuiTooltip title={tooltipTitle}>
         <WrapperForTooltip className={className} {...rest}>
           <StyledCheckboxButton
             onChange={this.changeHandler}
@@ -189,7 +189,7 @@ class JuiCheckboxButton extends React.PureComponent<JuiCheckboxButtonProps> {
             {...rest}
           />
         </WrapperForTooltip>
-      </JuiArrowTip>
+      </RuiTooltip>
     );
   }
 }
