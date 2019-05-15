@@ -267,11 +267,13 @@ export class GroupFetchDataController {
           this._currentUserId,
         );
 
-        if (persons.inVisiblePersons.length) {
+        if (persons.invisiblePersons.length) {
           return null;
         }
 
-        const groupName = this.getGroupNameByMultiMembers(persons.allPersons);
+        const groupName = this.getGroupNameByMultiMembers(
+          persons.visiblePersons,
+        );
         const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
         const lowerCaseGroupName = groupName.toLowerCase();
         const isFuzzyMatched =
@@ -281,7 +283,7 @@ export class GroupFetchDataController {
           ) ||
           (searchKeyTermsToSoundex.length &&
             this.entityCacheSearchController.isSoundexMatched(
-              this.getSoundexValueOfGroup(persons.allPersons),
+              this.getSoundexValueOfGroup(persons.visiblePersons),
               searchKeyTermsToSoundex,
             ));
         if (
@@ -415,10 +417,10 @@ export class GroupFetchDataController {
             group.members,
             currentUserId,
           );
-          if (persons.inVisiblePersons.length) {
+          if (persons.invisiblePersons.length) {
             break;
           }
-          groupName = this.getGroupNameByMultiMembers(persons.allPersons);
+          groupName = this.getGroupNameByMultiMembers(persons.visiblePersons);
           lowerCaseName = groupName.toLowerCase();
           isFuzzy =
             this.entityCacheSearchController.isFuzzyMatched(
@@ -427,7 +429,7 @@ export class GroupFetchDataController {
             ) ||
             (searchKeyTermsToSoundex.length > 0 &&
               this.entityCacheSearchController.isSoundexMatched(
-                this.getSoundexValueOfGroup(persons.allPersons),
+                this.getSoundexValueOfGroup(persons.visiblePersons),
                 searchKeyTermsToSoundex,
               ));
         }
@@ -613,8 +615,8 @@ export class GroupFetchDataController {
   }
 
   getAllPersonOfGroup(members: number[], currentUserId: number) {
-    const allPersons: Person[] = [];
-    const inVisiblePersons: Person[] = [];
+    const visiblePersons: Person[] = [];
+    const invisiblePersons: Person[] = [];
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
@@ -625,13 +627,13 @@ export class GroupFetchDataController {
       const person = personService.getSynchronously(id);
       if (person) {
         if (personService.isVisiblePerson(person)) {
-          allPersons.push(person);
+          visiblePersons.push(person);
         } else {
-          inVisiblePersons.push(person);
+          invisiblePersons.push(person);
         }
       }
     });
-    return { inVisiblePersons, allPersons };
+    return { invisiblePersons, visiblePersons };
   }
   getSoundexValueOfGroup(allPersons: Person[]): string[] {
     const personService = ServiceLoader.getInstance<PersonService>(

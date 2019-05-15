@@ -200,7 +200,8 @@
       "disabledText": "This team is read-only"
     },
     "Messages": "Messages",
-    "message": "Message"
+    "message": "Message",
+    "deactivatedUsers": "Deactivated users"
   },
   "item": {
     "activity": {

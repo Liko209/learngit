@@ -1149,8 +1149,8 @@ describe('GroupFetchDataController', () => {
     it('should return all person if no one is invalid', () => {
       mockIsVisiblePerson = jest.fn().mockReturnValue(true);
       const res = groupFetchDataController.getAllPersonOfGroup([1, 2, 3], 1);
-      expect(res.allPersons.length).toBe(2);
-      expect(res.inVisiblePersons.length).toBe(0);
+      expect(res.visiblePersons.length).toBe(2);
+      expect(res.invisiblePersons.length).toBe(0);
     });
 
     it('should return deactivated person if there is any', () => {
@@ -1158,9 +1158,9 @@ describe('GroupFetchDataController', () => {
         return person !== 3;
       });
       const res = groupFetchDataController.getAllPersonOfGroup([1, 2, 3, 4], 2);
-      expect(res.allPersons.length).toBe(2);
-      expect(res.inVisiblePersons.length).toBe(1);
-      expect(res.inVisiblePersons[0]).toBe(3);
+      expect(res.visiblePersons.length).toBe(2);
+      expect(res.invisiblePersons.length).toBe(1);
+      expect(res.invisiblePersons[0]).toBe(3);
     });
   });
 });

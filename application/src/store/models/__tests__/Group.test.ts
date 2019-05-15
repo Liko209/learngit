@@ -436,7 +436,7 @@ describe('GroupModel', () => {
       expect(gm.displayName).toBe('11, 33');
     });
 
-    it('should return default name when no one is activated', () => {
+    it('should return default name when no one is activated', async (done: jest.DoneCallback) => {
       const gm = GroupModel.fromJS({
         members: [11, 22, 33],
       } as Group);
@@ -450,7 +450,16 @@ describe('GroupModel', () => {
           }
         },
       );
-      expect(gm.displayName).toBe('Deactivated Users');
+      expect(gm.displayName).toBe('message.deactivatedUsers');
+      when(
+        () => gm.translation !== {},
+        () => {
+          process.nextTick(() => {
+            expect(gm.displayName).toBe('deactivatedUsers');
+            done();
+          });
+        },
+      );
     });
   });
 });

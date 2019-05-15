@@ -14,7 +14,8 @@
     "Dashboard": "仪表盘"
   },
   "message": {
-    "Messages": "消息"
+    "Messages": "消息",
+    "deactivatedUsers": "无效用户"
   },
   "telephony": {
     "Phone": "电话"

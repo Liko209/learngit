@@ -20,7 +20,6 @@ import { AccountService } from 'sdk/module/account';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import PersonModel from './Person';
 
-const DeactivatedGroupName = 'Deactivated Users';
 export default class GroupModel extends Base<Group> {
   @observable
   isTeam?: boolean;
@@ -100,6 +99,9 @@ export default class GroupModel extends Base<Group> {
       () => this.type,
       async () => {
         this.translation['message.meGroup'] = await i18nT('message.meGroup');
+        this.translation['message.deactivatedUsers'] = await i18nT(
+          'message.deactivatedUsers',
+        );
       },
       {
         fireImmediately: true,
@@ -156,25 +158,35 @@ export default class GroupModel extends Base<Group> {
     if (this.type === CONVERSATION_TYPES.NORMAL_GROUP) {
       const names: string[] = [];
       const emails: string[] = [];
-      diffMembers
-        .map(id => getEntity(ENTITY_NAME.PERSON, id))
-        .forEach((personModel: PersonModel) => {
-          if (personModel && personModel.isVisible()) {
-            if (!personModel.firstName && !personModel.lastName) {
-              emails.push(personModel.email);
-            } else if (personModel.firstName) {
-              names.push(personModel.firstName);
-            } else if (personModel.lastName) {
-              names.push(personModel.lastName);
-            }
+      const personModels = diffMembers.map(id =>
+        getEntity(ENTITY_NAME.PERSON, id),
+      );
+      let invisibleCount = 0;
+      personModels.forEach((personModel: PersonModel) => {
+        if (personModel) {
+          if (!personModel.isVisible()) {
+            invisibleCount++;
+            return;
           }
-        });
-      return names.length
-        ? names
-            .sort(compareName)
-            .concat(emails.sort(compareName))
-            .join(', ')
-        : DeactivatedGroupName;
+          if (!personModel.firstName && !personModel.lastName) {
+            emails.push(personModel.email);
+          } else if (personModel.firstName) {
+            names.push(personModel.firstName);
+          } else if (personModel.lastName) {
+            names.push(personModel.lastName);
+          }
+        }
+      });
+      if (personModels.length === invisibleCount) {
+        return (
+          this.translation['message.deactivatedUsers'] ||
+          'message.deactivatedUsers'
+        );
+      }
+      return names
+        .sort(compareName)
+        .concat(emails.sort(compareName))
+        .join(', ');
     }
 
     return '';
