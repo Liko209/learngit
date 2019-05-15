@@ -24,6 +24,7 @@ import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { RCInfoService } from '../service';
 import { AccountService } from '../../account/service';
 import { SpecialNumberRuleModel } from '../types';
+import { AccountGlobalConfig } from 'sdk/module/account/config';
 
 const OLD_EXIST_SPECIAL_NUMBER_COUNTRY = 1; // in old version, we only store US special number
 
@@ -159,9 +160,7 @@ class RCInfoFetchController {
   }
 
   private async _getCurrentCountryId() {
-    const userId = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig.getGlipUserId() as number;
+    const userId = AccountGlobalConfig.getUserDictionary() as number;
     const stationLocations = RCInfoGlobalConfig.getStationLocation();
     const stationLocation =
       stationLocations && stationLocations[userId.toString()];
