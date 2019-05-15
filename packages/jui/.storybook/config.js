@@ -32,68 +32,79 @@ const ThemeDecorator = storyFn => {
     <JuiThemeProvider themeName='light'>
       <ThemeProvider theme={convert(themes.light)}>
         <Global styles={createReset} />
-        <div style={{ padding: 20 }}>{storyFn()}</div>
+        <div style={{ padding: '20px' }}>
+          <div
+            id='component'
+            style={{ maxWidth: 'fit-content', maxHeight: 'fit-content' }}
+          >
+            {storyFn()}
+          </div>
+        </div>
       </ThemeProvider>
     </JuiThemeProvider>
   );
 };
 
-addDecorator(
-  withInfo({
-    styles: {
-      header: {
-        h1: {
-          marginRight: '20px',
-          fontSize: '25px',
-          display: 'inline',
+if (process.env.NODE_ENV !== 'test') {
+  addDecorator(
+    withInfo({
+      styles: {
+        header: {
+          h1: {
+            marginRight: '20px',
+            fontSize: '25px',
+            display: 'inline',
+          },
+          body: {
+            paddingTop: 0,
+            paddingBottom: 0,
+            marginBottom: 0,
+          },
+          h2: {
+            display: 'inline',
+            color: '#999',
+          },
         },
-        body: {
-          paddingTop: 0,
-          paddingBottom: 0,
-          marginBottom: 0,
-        },
-        h2: {
-          display: 'inline',
-          color: '#999',
+        infoBody: {
+          backgroundColor: '#eee',
+          padding: '0px 5px',
+          lineHeight: '2',
         },
       },
-      infoBody: {
-        backgroundColor: '#eee',
-        padding: '0px 5px',
-        lineHeight: '2',
-      },
-    },
-    inline: false,
-    source: false,
-  }),
-);
+      inline: false,
+      source: false,
+    }),
+  );
+  addDecorator(withA11y);
+  addDecorator(withNotes);
+  addDecorator(withKnobs);
+}
 
-addDecorator(withA11y);
-addDecorator(withNotes);
-addDecorator(withKnobs);
 addDecorator(ThemeDecorator);
 
-addParameters({
-  a11y: {
-    configure: {},
-    options: {
-      checks: { 'color-contrast': { options: { noScroll: true } } },
-      restoreScroll: true,
+if (process.env.NODE_ENV !== 'test') {
+  addParameters({
+    a11y: {
+      configure: {},
+      options: {
+        checks: { 'color-contrast': { options: { noScroll: true } } },
+        restoreScroll: true,
+      },
     },
-  },
-  options: {
-    theme: create({
-      colorPrimary: 'hotpink',
-      colorSecondary: 'orangered',
-      brandTitle: 'Jupiter!',
-    }),
-  },
-  backgrounds: [
-    { name: 'storybook app', value: themes.light.appBg, default: true },
-    { name: 'light', value: '#eeeeee' },
-    { name: 'dark', value: '#222222' },
-  ],
-});
+    options: {
+      theme: create({
+        colorPrimary: 'hotpink',
+        colorSecondary: 'orangered',
+        brandTitle: 'Jupiter!',
+      }),
+    },
+    backgrounds: [
+      { name: 'storybook app', value: themes.light.appBg, default: true },
+      { name: 'light', value: '#eeeeee' },
+      { name: 'dark', value: '#222222' },
+    ],
+  });
+}
 
 let previousExports = {};
 if (module && module.hot && module.hot.dispose) {
