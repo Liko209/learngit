@@ -436,7 +436,7 @@ class TelephonyService {
         if (phone.id === 0) {
           // parse the `block` to `anonymous`
           return Object.assign({}, phone, {
-            phoneNumber: 'anonymous',
+            phoneNumber: ANONYMOUS,
           });
         }
         return phone;
