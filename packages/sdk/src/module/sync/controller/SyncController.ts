@@ -16,7 +16,6 @@ import { AccountService } from '../../../module/account';
 import { AccountGlobalConfig } from '../../../module/account/config';
 import { accountHandleData } from '../../../module/account/service';
 import { Company } from '../../../module/company/entity';
-import { GroupConfigService } from '../../../module/groupConfig';
 import { Item } from '../../../module/item/entity';
 import { Person } from '../../../module/person/entity';
 import { Post } from '../../../module/post/entity';
@@ -40,6 +39,7 @@ import { LOG_INDEX_DATA } from '../constant';
 import { SyncListener, SyncService } from '../service';
 import { IndexDataTaskStrategy } from '../strategy/IndexDataTaskStrategy';
 import { ChangeModel, SYNC_SOURCE } from '../types';
+import { DaoGlobalConfig } from 'sdk/dao/config';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
@@ -228,38 +228,14 @@ class SyncController {
         codes: [ERROR_CODES_NETWORK.GATEWAY_TIMEOUT],
       })
     ) {
-      notificationCenter.emitKVChange(SERVICE.SYNC_SERVICE.START_CLEAR_DATA);
       await this._handle504GateWayError();
-      notificationCenter.emitKVChange(SERVICE.SYNC_SERVICE.END_CLEAR_DATA);
+      notificationCenter.emitKVChange(SERVICE.RELOAD);
     }
   }
 
   private async _handle504GateWayError() {
-    // clear data
-    const syncConfig = ServiceLoader.getInstance<SyncService>(
-      ServiceConfig.SYNC_SERVICE,
-    ).userConfig;
-    syncConfig.setLastIndexTimestamp('');
-
-    await Promise.all([
-      ServiceLoader.getInstance<ItemService>(
-        ServiceConfig.ITEM_SERVICE,
-      ).clear(),
-      ServiceLoader.getInstance<PostService>(
-        ServiceConfig.POST_SERVICE,
-      ).clear(),
-      ServiceLoader.getInstance<GroupConfigService>(
-        ServiceConfig.GROUP_CONFIG_SERVICE,
-      ).clear(),
-      ServiceLoader.getInstance<GroupService>(
-        ServiceConfig.GROUP_SERVICE,
-      ).clear(),
-      ServiceLoader.getInstance<PersonService>(
-        ServiceConfig.PERSON_SERVICE,
-      ).clear(),
-    ]);
-
-    await this._firstLogin();
+    // remove DB version
+    DaoGlobalConfig.removeDBSchemaVersion();
   }
 
   /* fetch initial/remaining/indexData apis */
