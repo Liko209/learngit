@@ -22,7 +22,9 @@ import { AccountUserConfig } from '../../../../module/account/config';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { SYNC_SOURCE } from '../../../../module/sync';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { GroupConfigService } from 'sdk/module/groupConfig';
 
+jest.mock('sdk/module/groupConfig');
 jest.mock('../../../../module/config');
 jest.mock('../../../../module/account/config');
 
@@ -104,48 +106,75 @@ function generateFakeGroups(
   return groups;
 }
 
-const entitySourceController = new EntitySourceController<Group>(null, null);
-const stateService: StateService = new StateService();
-const personService = new PersonService();
-const profileService = new ProfileService();
-const groupService = {
-  getGroupsByIds: jest.fn(),
-  isValid: jest.fn(),
-};
-
-beforeEach(() => {
+function clearMocks() {
   jest.clearAllMocks();
-  GroupAPI.requestGroupById.mockResolvedValue(requestGroupByIdResult);
-
-  ServiceLoader.getInstance = jest
-    .fn()
-    .mockImplementation((serviceName: string) => {
-      if (serviceName === ServiceConfig.STATE_SERVICE) {
-        return stateService;
-      }
-
-      if (serviceName === ServiceConfig.PERSON_SERVICE) {
-        return personService;
-      }
-      if (serviceName === ServiceConfig.PROFILE_SERVICE) {
-        return profileService;
-      }
-
-      if (serviceName === ServiceConfig.ACCOUNT_SERVICE) {
-        return { userConfig: AccountUserConfig.prototype };
-      }
-      return null;
-    });
-});
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
 
 describe('GroupHandleDataController', () => {
+  let entitySourceController: EntitySourceController<any>;
+  let stateService: StateService;
+  let personService: PersonService;
+  let profileService: ProfileService;
+  let groupConfigService: GroupConfigService;
+  let groupService = {
+    getGroupsByIds: jest.fn(),
+    isValid: jest.fn(),
+  };
   let groupHandleDataController: GroupHandleDataController;
-  beforeEach(() => {
+
+  function setUp() {
+    entitySourceController = new EntitySourceController<Group>(
+      null as any,
+      null as any,
+    );
+    stateService = new StateService(null as any);
+    personService = new PersonService();
+    profileService = new ProfileService();
+    groupConfigService = new GroupConfigService();
+    groupService = {
+      getGroupsByIds: jest.fn(),
+      isValid: jest.fn(),
+    };
+
+    GroupAPI.requestGroupById.mockResolvedValue(requestGroupByIdResult);
+
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.STATE_SERVICE) {
+          return stateService;
+        }
+
+        if (serviceName === ServiceConfig.PERSON_SERVICE) {
+          return personService;
+        }
+        if (serviceName === ServiceConfig.PROFILE_SERVICE) {
+          return profileService;
+        }
+
+        if (serviceName === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: AccountUserConfig.prototype };
+        }
+
+        if (serviceName === ServiceConfig.GROUP_CONFIG_SERVICE) {
+          return groupConfigService;
+        }
+        return null;
+      });
+
     groupHandleDataController = new GroupHandleDataController(
-      groupService,
+      groupService as any,
       entitySourceController,
     );
+  }
+
+  beforeEach(() => {
+    clearMocks();
+    setUp();
   });
+
   describe('handleData()', () => {
     it('should emit notification when passing an array from index', async () => {
       const result = await groupHandleDataController.handleData(
@@ -276,7 +305,8 @@ describe('GroupHandleDataController', () => {
 
   describe('handlePartialData', () => {
     beforeEach(() => {
-      jest.clearAllMocks();
+      clearMocks();
+      setUp();
     });
 
     it('should save directly if find partial in DB', async () => {
@@ -312,10 +342,13 @@ describe('GroupHandleDataController', () => {
       expect(entitySourceController.get).toHaveBeenCalledTimes(1);
     });
   });
+
   describe('handleFavoriteGroupsChanged()', () => {
     beforeEach(() => {
-      jest.clearAllMocks();
+      clearMocks();
+      setUp();
     });
+
     it('params', async () => {
       groupService.isValid.mockResolvedValue(true);
       groupService.getGroupsByIds.mockResolvedValue([{ id: 1, is_team: true }]);
@@ -362,9 +395,8 @@ describe('GroupHandleDataController', () => {
 
   describe('handleGroupMostRecentPostChanged()', () => {
     beforeEach(() => {
-      jest.clearAllMocks();
-      jest.resetAllMocks();
-      jest.restoreAllMocks();
+      clearMocks();
+      setUp();
     });
 
     const post = {
@@ -409,6 +441,7 @@ describe('GroupHandleDataController', () => {
       });
       expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     });
+
     it('group has not most_recent_post_created_at should update group recent modified time', async () => {
       daoManager
         .getDao(GroupDao)
@@ -429,8 +462,16 @@ describe('GroupHandleDataController', () => {
           entities: map,
         },
       });
+      expect(groupConfigService.updateMyLastPostTime).toBeCalledWith(2, {
+        created_at: 100,
+        group_id: 2,
+        id: 1,
+        is_team: true,
+        modified_at: 100,
+      });
       expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     });
+
     it('group has most_recent_post_created_at and greater then post created_at should not update group recent modified time', async () => {
       daoManager
         .getDao(GroupDao)
@@ -455,6 +496,7 @@ describe('GroupHandleDataController', () => {
       });
       expect(notificationCenter.emit).toHaveBeenCalledTimes(0);
     });
+
     it('should not update most_recent_post_id when post is pre-insert', async () => {
       daoManager
         .getDao(GroupDao)
