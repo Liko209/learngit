@@ -2,6 +2,7 @@
  * @Author: doyle.wu
  * @Date: 2018-12-11 12:00:41
  */
+import { Sequelize } from 'sequelize-typescript';
 import { Scene } from "../scenes";
 import { Config } from '../config';
 import { PerformanceMetric } from "../gatherers";
@@ -13,7 +14,9 @@ import {
   LoadingTimeSummaryDto,
   LoadingTimeItemDto,
   FpsDto,
-  VersionDto
+  VersionDto,
+  LoadingTimeDevelopSummaryDto,
+  LoadingTimeReleaseSummaryDto
 } from "../models";
 
 class MetricService {
@@ -38,10 +41,12 @@ class MetricService {
     });
   }
 
-  static async createTask(): Promise<TaskDto> {
+  static async createTask(version: string): Promise<TaskDto> {
     return await TaskDto.create({
       host: Config.jupiterHost,
       status: "0",
+      appVersion: version,
+      isRelease: Config.jupiterHost === Config.jupiterReleaseHost,
       startTime: new Date()
     });
   }
@@ -100,7 +105,8 @@ class MetricService {
       pwa,
       startTime,
       endTime,
-      appVersion
+      appVersion,
+      isRelease: Config.jupiterHost === Config.jupiterReleaseHost,
     });
   }
 
@@ -265,7 +271,7 @@ class MetricService {
           if (!t) {
             continue;
           }
-          costTime = t.endTime - t.startTime;
+          costTime = t.time;
           sum += costTime;
           min = costTime > min ? min : costTime;
           max = costTime > max ? costTime : max;
@@ -277,10 +283,9 @@ class MetricService {
           arr.push(costTime);
           dtoArr.push({
             type: "API",
-            startTime: t.startTime,
-            endTime: t.endTime,
             costTime: costTime,
-            handleCount: t.count
+            handleCount: t.count,
+            infos: JSON.stringify(t.infos)
           });
         }
         arr.sort((a, b) => {
@@ -300,8 +305,92 @@ class MetricService {
         for (let dto of dtoArr) {
           dto["summaryId"] = summary.id;
         }
+
         await LoadingTimeItemDto.bulkCreate(dtoArr);
+
+        await MetricService.summaryLoadingTimeForVersion(sceneDto, summary);
       }
+    }
+  }
+
+  static async summaryLoadingTimeForVersion(sceneDto: SceneDto, summary: LoadingTimeSummaryDto): Promise<void> {
+    const isRelease = Config.jupiterHost === Config.jupiterReleaseHost;
+
+    let version = await VersionDto.findOne({ where: { name: sceneDto.appVersion } });
+    if (!version) {
+      return;
+    }
+
+    let release = isRelease ? 1 : 0;
+    let dtos = await LoadingTimeItemDto.sequelize.query("select * from t_loading_time_item where summary_id in (select summary.id from t_scene scene join t_loading_time_summary summary on scene.id=summary.scene_id where summary.name=? and scene.name=? and scene.app_version=? and scene.is_release=?)",
+      {
+        replacements: [summary.name, sceneDto.name, sceneDto.appVersion, release],
+        raw: true,
+        type: Sequelize.QueryTypes.SELECT
+      });
+
+    if (!dtos || dtos.length === 0) {
+      console.log('111', dtos, [summary.name, sceneDto.name, sceneDto.appVersion, release]);
+      return;
+    }
+
+    let sum = 0, min = 60000000,
+      max = 0, maxHanleCount = -1,
+      arr = [], costTime, cnt;
+
+    for (let dto of dtos) {
+      if (!dto) {
+        continue;
+      }
+
+      cnt = parseInt(dto['handle_count']);
+      costTime = parseFloat(dto['cost_time']);
+      arr.push(costTime);
+      sum += costTime;
+      min = costTime > min ? min : costTime;
+      max = costTime > max ? costTime : max;
+      if (cnt >= 0) {
+        maxHanleCount = cnt > maxHanleCount ? cnt : maxHanleCount;
+      } else {
+        cnt = 0;
+      }
+    }
+
+    arr.sort((a, b) => {
+      return a === b ? 0 : (a > b ? 1 : -1);
+    });
+
+    let versionSummary = {
+      versionId: version.id,
+      version: version.name,
+      name: summary.name,
+      uiMaxTime: 0,
+      uiAvgTime: 0,
+      uiMinTime: 0,
+      uiTop90Time: 0,
+      uiTop95Time: 0,
+      apiMaxTime: max,
+      apiAvgTime: sum / arr.length,
+      apiMinTime: min,
+      apiTop90Time: arr[parseInt((0.9 * arr.length).toString())],
+      apiTop95Time: arr[parseInt((0.95 * arr.length).toString())],
+      apiHandleCount: cnt
+    }
+
+    await LoadingTimeDevelopSummaryDto.destroy({
+      where: {
+        name: summary.name, version: version.name
+      }
+    });
+    await LoadingTimeDevelopSummaryDto.create(versionSummary);
+
+    if (isRelease) {
+      await LoadingTimeReleaseSummaryDto.destroy({
+        where: {
+          name: summary.name, version: version.name
+        }
+      });
+      await LoadingTimeReleaseSummaryDto.create(versionSummary);
     }
   }
 }
