@@ -12,8 +12,8 @@ import {
   AccountGlobalConfig,
 } from '../../../account/config';
 import { ServiceLoader } from '../../../serviceLoader';
+import { setRCToken } from '../../../../authenticator/utils';
 
-// jest.mock('../../../../dao');
 jest.mock('../../../serviceLoader');
 jest.mock('../../../person');
 jest.mock('../../../../api');
@@ -27,6 +27,7 @@ describe('AccountService', () => {
     personService = new PersonService();
     ServiceLoader.getInstance.mockReturnValue(personService);
     accountService = new AccountService(null);
+    setRCToken = jest.fn();
   });
 
   describe('getCurrentUserInfo()', () => {
