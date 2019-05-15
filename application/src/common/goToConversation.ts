@@ -10,6 +10,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { MessageRouterChangeHelper } from '../modules/message/container/Message/helper';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { getErrorType } from '@/common/catchError';
 
 type BaseGoToConversationParams = {
   conversationId: number;
@@ -92,6 +93,7 @@ async function goToConversationWithLoading(params: GoToConversationParams) {
     history.replace('/messages/loading', {
       params,
       error: true,
+      errorType: getErrorType(err),
     });
     return false;
   }
