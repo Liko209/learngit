@@ -25,7 +25,7 @@ class Emoji {
   constructor(
     public text: string,
     private _staticHttpServer: string,
-    private _customEmojiMap: CustomEmojiMap,
+    private _customEmojiMap: CustomEmojiMap = {},
     private _options: EmojiOptions = {},
   ) {
     // Note: about text value.
