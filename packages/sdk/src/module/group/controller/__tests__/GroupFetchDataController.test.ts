@@ -247,7 +247,10 @@ describe('GroupFetchDataController', () => {
       [ServiceConfig.COMPANY_SERVICE, companyService as any],
       [ServiceConfig.GROUP_CONFIG_SERVICE, groupConfigService as any],
       [ServiceConfig.SEARCH_SERVICE, searchService as any],
-      [ServiceConfig.ACCOUNT_SERVICE, { userConfig: AccountUserConfig.prototype } as any],
+      [
+        ServiceConfig.ACCOUNT_SERVICE,
+        { userConfig: AccountUserConfig.prototype } as any,
+      ],
     ]);
 
     ServiceLoader.getInstance = jest
@@ -1127,28 +1130,37 @@ describe('GroupFetchDataController', () => {
     });
   });
 
-  describe('_hasInvalidPerson', () => {
+  describe('getAllPersonOfGroup', () => {
+    let mockIsVisiblePerson = jest.fn();
     beforeEach(() => {
       ServiceLoader.getInstance = jest
         .fn()
         .mockImplementation((serviceName: string) => {
           if (serviceName === ServiceConfig.PERSON_SERVICE) {
             return {
-              isValidPerson: jest.fn().mockImplementation(person => {
-                return person === 2 || person === 3;
+              isVisiblePerson: mockIsVisiblePerson,
+              getSynchronously: jest.fn().mockImplementation(id => {
+                return id;
               }),
             };
           }
         });
     });
-    it('should return false if no member is invalid', () => {
-      const res = groupFetchDataController._hasInvalidPerson([2, 3]);
-      expect(res).toBeFalsy();
+    it('should return all person if no one is invalid', () => {
+      mockIsVisiblePerson = jest.fn().mockReturnValue(true);
+      const res = groupFetchDataController.getAllPersonOfGroup([1, 2, 3], 1);
+      expect(res.allPersons.length).toBe(2);
+      expect(res.inVisiblePersons.length).toBe(0);
     });
 
-    it('should return true if any member is invalid', () => {
-      const res = groupFetchDataController._hasInvalidPerson([1, 4, 5]);
-      expect(res).toBeTruthy();
+    it('should return deactivated person if there is any', () => {
+      mockIsVisiblePerson = jest.fn().mockImplementation(person => {
+        return person !== 3;
+      });
+      const res = groupFetchDataController.getAllPersonOfGroup([1, 2, 3, 4], 2);
+      expect(res.allPersons.length).toBe(2);
+      expect(res.inVisiblePersons.length).toBe(1);
+      expect(res.inVisiblePersons[0]).toBe(3);
     });
   });
 });

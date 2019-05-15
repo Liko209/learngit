@@ -251,18 +251,6 @@ export class GroupFetchDataController {
     );
   }
 
-  private _hasInvalidPerson(allPersons: Person[]) {
-    const personService = ServiceLoader.getInstance<PersonService>(
-      ServiceConfig.PERSON_SERVICE,
-    );
-
-    const find = allPersons.find((person: Person) => {
-      return !personService.isValidPerson(person);
-    });
-
-    return find ? true : false;
-  }
-
   private _getTransformGroupFunc(
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
@@ -274,14 +262,16 @@ export class GroupFetchDataController {
 
     return (group: Group, terms: Terms) => {
       if (this._isValidGroup(group) && group.members.length > 2) {
-        const allPersons = this.getAllPersonOfGroup(
+        const persons = this.getAllPersonOfGroup(
           group.members,
           this._currentUserId,
         );
-        if (this._hasInvalidPerson(allPersons)) {
+
+        if (persons.inVisiblePersons.length) {
           return null;
         }
-        const groupName = this.getGroupNameByMultiMembers(allPersons);
+
+        const groupName = this.getGroupNameByMultiMembers(persons.allPersons);
         const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
         const lowerCaseGroupName = groupName.toLowerCase();
         const isFuzzyMatched =
@@ -291,7 +281,7 @@ export class GroupFetchDataController {
           ) ||
           (searchKeyTermsToSoundex.length &&
             this.entityCacheSearchController.isSoundexMatched(
-              this.getSoundexValueOfGroup(allPersons),
+              this.getSoundexValueOfGroup(persons.allPersons),
               searchKeyTermsToSoundex,
             ));
         if (
@@ -421,14 +411,14 @@ export class GroupFetchDataController {
                 searchKeyTermsToSoundex,
               ));
         } else {
-          const allPerson = this.getAllPersonOfGroup(
+          const persons = this.getAllPersonOfGroup(
             group.members,
             currentUserId,
           );
-          if (this._hasInvalidPerson(allPerson)) {
+          if (persons.inVisiblePersons.length) {
             break;
           }
-          groupName = this.getGroupNameByMultiMembers(allPerson);
+          groupName = this.getGroupNameByMultiMembers(persons.allPersons);
           lowerCaseName = groupName.toLowerCase();
           isFuzzy =
             this.entityCacheSearchController.isFuzzyMatched(
@@ -437,7 +427,7 @@ export class GroupFetchDataController {
             ) ||
             (searchKeyTermsToSoundex.length > 0 &&
               this.entityCacheSearchController.isSoundexMatched(
-                this.getSoundexValueOfGroup(allPerson),
+                this.getSoundexValueOfGroup(persons.allPersons),
                 searchKeyTermsToSoundex,
               ));
         }
@@ -624,6 +614,7 @@ export class GroupFetchDataController {
 
   getAllPersonOfGroup(members: number[], currentUserId: number) {
     const allPersons: Person[] = [];
+    const inVisiblePersons: Person[] = [];
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
@@ -633,10 +624,14 @@ export class GroupFetchDataController {
       }
       const person = personService.getSynchronously(id);
       if (person) {
-        allPersons.push(person);
+        if (personService.isVisiblePerson(person)) {
+          allPersons.push(person);
+        } else {
+          inVisiblePersons.push(person);
+        }
       }
     });
-    return allPersons;
+    return { inVisiblePersons, allPersons };
   }
   getSoundexValueOfGroup(allPersons: Person[]): string[] {
     const personService = ServiceLoader.getInstance<PersonService>(
@@ -656,7 +651,7 @@ export class GroupFetchDataController {
       ServiceConfig.PERSON_SERVICE,
     );
     allPersons.forEach((person: Person) => {
-      if (person && personService.isValidPerson(person)) {
+      if (person && personService.isVisiblePerson(person)) {
         const name = personService.getName(person);
         if (name.length) {
           names.push(name);

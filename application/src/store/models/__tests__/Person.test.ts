@@ -158,4 +158,32 @@ describe('PersonModel', () => {
       );
     });
   });
+
+  describe('isActivated', () => {
+    it('should return true when user is activated', () => {
+      const pm = PersonModel.fromJS({
+        id: 12,
+      } as Person);
+      const result = pm.isActivated();
+      expect(result).toBeTruthy();
+    });
+
+    it('should return false when user is deactivated', () => {
+      const pm = PersonModel.fromJS({
+        id: 12,
+        deactivated: true,
+      } as Person);
+      const result = pm.isActivated();
+      expect(result).toBeFalsy();
+    });
+
+    it('should return false when user flag is deactivated', () => {
+      const pm = PersonModel.fromJS({
+        id: 12,
+        flags: 2,
+      } as Person);
+      const result = pm.isActivated();
+      expect(result).toBeFalsy();
+    });
+  });
 });

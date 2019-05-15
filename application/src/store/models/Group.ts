@@ -20,7 +20,7 @@ import { AccountService } from 'sdk/module/account';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import PersonModel from './Person';
 
-const PersonFlagsDeactivated = 2;
+const DeactivatedGroupName = 'Deactivated Users';
 export default class GroupModel extends Base<Group> {
   @observable
   isTeam?: boolean;
@@ -159,17 +159,7 @@ export default class GroupModel extends Base<Group> {
       diffMembers
         .map(id => getEntity(ENTITY_NAME.PERSON, id))
         .forEach((personModel: PersonModel) => {
-
-          if (
-            personModel &&
-            !(
-              personModel.deactivated ||
-              (personModel.flags &&
-                (personModel.flags & PersonFlagsDeactivated) ===
-                  PersonFlagsDeactivated)
-            )
-          ) {
-
+          if (personModel && personModel.isActivated()) {
             if (!personModel.firstName && !personModel.lastName) {
               emails.push(personModel.email);
             } else if (personModel.firstName) {
@@ -179,10 +169,12 @@ export default class GroupModel extends Base<Group> {
             }
           }
         });
-      return names
-        .sort(compareName)
-        .concat(emails.sort(compareName))
-        .join(', ');
+      return names.length
+        ? names
+            .sort(compareName)
+            .concat(emails.sort(compareName))
+            .join(', ')
+        : DeactivatedGroupName;
     }
 
     return '';

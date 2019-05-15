@@ -18,6 +18,7 @@ import {
 import { PersonService } from 'sdk/module/person';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
+const PersonFlagsDeactivated = 2;
 export default class PersonModel extends Base<Person> {
   @observable
   companyId: number;
@@ -209,6 +210,14 @@ export default class PersonModel extends Base<Person> {
       this.companyId,
       this.rcPhoneNumbers,
       this.sanitizedRcExtension,
+    );
+  }
+
+  isActivated() {
+    return !(
+      this.deactivated ||
+      (this.flags &&
+        (this.flags & PersonFlagsDeactivated) === PersonFlagsDeactivated)
     );
   }
 }

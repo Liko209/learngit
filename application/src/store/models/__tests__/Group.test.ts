@@ -386,33 +386,31 @@ describe('GroupModel', () => {
       expect(gm.displayName).toBe('');
     });
 
-    it('should return userDisplayNameForGroupName if it is me conversation',
-       async (done: jest.DoneCallback) => {
-        const gm = observable(
-          GroupModel.fromJS({
-            members: [mockUserId],
-          } as Group),
-        );
-        (getEntity as jest.Mock).mockImplementation((name: string) => {
-          if (name === ENTITY_NAME.PERSON) {
-            return {
-              userDisplayNameForGroupName: 'Chris',
-            };
-          }
-          return {};
-        });
-        expect(gm.displayName).toBe('Chris (message.meGroup)');
-        when(
-          () => gm.translation !== {},
-          () => {
-            process.nextTick(() => {
-              expect(gm.displayName).toBe('Chris (meGroup)');
-              done();
-            });
-          },
-        );
+    it('should return userDisplayNameForGroupName if it is me conversation', async (done: jest.DoneCallback) => {
+      const gm = observable(
+        GroupModel.fromJS({
+          members: [mockUserId],
+        } as Group),
+      );
+      (getEntity as jest.Mock).mockImplementation((name: string) => {
+        if (name === ENTITY_NAME.PERSON) {
+          return {
+            userDisplayNameForGroupName: 'Chris',
+          };
+        }
+        return {};
       });
-
+      expect(gm.displayName).toBe('Chris (message.meGroup)');
+      when(
+        () => gm.translation !== {},
+        () => {
+          process.nextTick(() => {
+            expect(gm.displayName).toBe('Chris (meGroup)');
+            done();
+          });
+        },
+      );
+    });
 
     it('should filter out when we have deacitvated users', () => {
       const gm = GroupModel.fromJS({
@@ -425,10 +423,12 @@ describe('GroupModel', () => {
               return {
                 deactivated: true,
                 firstName: `${id}`,
+                isActivated: jest.fn().mockReturnValue(false),
               };
             }
             return {
               firstName: `${id}`,
+              isActivated: jest.fn().mockReturnValue(true),
             };
           }
         },
@@ -436,27 +436,21 @@ describe('GroupModel', () => {
       expect(gm.displayName).toBe('11, 33');
     });
 
-    it('should filter out when users have deacitvated flags', () => {
+    it('should return default name when no one is activated', () => {
       const gm = GroupModel.fromJS({
         members: [11, 22, 33],
       } as Group);
       (getEntity as jest.Mock).mockImplementation(
         (name: string, id: number) => {
           if (name === ENTITY_NAME.PERSON) {
-            if (id === 22) {
-              return {
-                firstName: `${id}`,
-                flags: 130,
-              };
-            }
             return {
               firstName: `${id}`,
+              isActivated: jest.fn().mockReturnValue(false),
             };
           }
         },
       );
-      expect(gm.displayName).toBe('11, 33');
+      expect(gm.displayName).toBe('Deactivated Users');
     });
-
   });
 });
