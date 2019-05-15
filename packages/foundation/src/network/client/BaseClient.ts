@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { IClient, IRequest, INetworkRequestExecutorListener } from '../..';
+import { isOnline } from '../../utils';
 
 abstract class BaseClient implements IClient {
   tasks: Map<string, IRequest>;
@@ -21,10 +22,7 @@ abstract class BaseClient implements IClient {
   }
 
   isNetworkReachable(): boolean {
-    if (typeof navigator === 'undefined') {
-      return true;
-    }
-    return navigator.onLine;
+    return isOnline();
   }
 }
 export default BaseClient;
