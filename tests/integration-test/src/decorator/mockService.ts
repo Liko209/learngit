@@ -2,6 +2,8 @@ import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { registerConfigs } from 'sdk/registerConfigs';
 import { descriptorAOP } from './utils';
 
+jest.mock('sdk/dao');
+
 const mockServiceCache = new Map();
 type MockMethod = { method: string; data: any; type?: 'resolve' | 'reject' };
 type MockMethodType = string | MockMethod[];

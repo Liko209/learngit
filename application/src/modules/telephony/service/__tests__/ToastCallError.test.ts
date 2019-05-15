@@ -5,15 +5,16 @@
  */
 import { ToastCallError } from '../ToastCallError';
 import { Notification } from '@/containers/Notification';
+import i18next from 'i18next';
 
 describe('ToastCallError', () => {
-  it('should display call error: unknow_error', () => {
+  it('should display call error: unknown_error', () => {
     Notification.flagToast = jest.fn();
-    const msg = 'unknow_error';
+    const msg = 'unknown_error';
     ToastCallError.toast(msg, 2000);
     expect(Notification.flagToast).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: msg,
+        message: i18next.t(msg),
         autoHideDuration: 2000,
       }),
     );
@@ -66,5 +67,33 @@ describe('ToastCallError', () => {
     const i18nkey = 'telephony.prompt.FailedToStopRecording';
     ToastCallError.toastFailedToStopRecording();
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
+  });
+
+  it('should display lack of recording permission', () => {
+    ToastCallError.toast = jest.fn();
+    const i18nkey = 'telephony.prompt.LackOfRecordingPermission';
+    ToastCallError.toastLackOfRecordingPermission();
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
+  });
+
+  it('should display record on service web', () => {
+    ToastCallError.toast = jest.fn();
+    const i18nkey = 'telephony.prompt.RecordOnServiceWeb';
+    ToastCallError.toastRecordOnServiceWeb();
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
+  });
+
+  it('should display recorded automatically', () => {
+    ToastCallError.toast = jest.fn();
+    const i18nkey = 'telephony.prompt.RecordAutomatically';
+    ToastCallError.toastRecordAutomatically();
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
+  });
+
+  it('should display empty reply message error', () => {
+    ToastCallError.toast = jest.fn();
+    const i18nkey = 'telephony.prompt.ReplyCustomMessageEmpty';
+    ToastCallError.toastEmptyReplyMessage();
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
   });
 });

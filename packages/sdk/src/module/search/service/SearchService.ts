@@ -14,11 +14,13 @@ import { SearchServiceController } from '../controller/SearchServiceController';
 import { container } from '../../../container';
 import { Person } from '../../person/entity';
 import { SortableModel } from '../../../framework/model';
+import { SearchUserConfig } from '../config';
 
 class SearchService extends AbstractService implements ISearchService {
   private _searchServiceController: SearchServiceController = new SearchServiceController(
     this,
   );
+  private _userConfig: SearchUserConfig;
 
   constructor() {
     super();
@@ -32,6 +34,13 @@ class SearchService extends AbstractService implements ISearchService {
 
   private get searchPersonController() {
     return this._searchServiceController.searchPersonController;
+  }
+
+  get userConfig() {
+    if (!this._userConfig) {
+      this._userConfig = new SearchUserConfig();
+    }
+    return this._userConfig;
   }
 
   addRecentSearchRecord(

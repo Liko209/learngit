@@ -5,7 +5,6 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 
 import { AccountService } from '..';
-import { daoManager } from '../../../../dao';
 import { PersonService } from '../../../person';
 import { RCAuthApi } from '../../../../api';
 import {
@@ -24,7 +23,7 @@ describe('AccountService', () => {
   let accountService: AccountService;
   let personService: PersonService;
 
-  beforeAll(() => {
+  beforeEach(() => {
     personService = new PersonService();
     ServiceLoader.getInstance.mockReturnValue(personService);
     accountService = new AccountService(null);

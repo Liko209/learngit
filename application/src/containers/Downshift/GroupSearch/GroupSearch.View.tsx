@@ -5,7 +5,10 @@
  */
 import React, { createRef } from 'react';
 import { observer } from 'mobx-react';
-import { JuiDownshift } from 'jui/components/Downshift';
+import {
+  JuiDownshift,
+  JuiDownshiftKeyDownEvent,
+} from 'jui/components/Downshift';
 
 import { Chip } from '@/containers/Chip';
 import { GroupSearchItem } from './GroupSearchItem';
@@ -15,7 +18,11 @@ import { ViewProps } from './types';
 @observer
 class GroupSearchView extends React.Component<ViewProps> {
   inputRef = createRef<HTMLInputElement>();
-
+  onKeyDown = (event: JuiDownshiftKeyDownEvent) => {
+    if (event.key === 'Escape') {
+      event.nativeEvent.preventDownshiftDefault = true;
+    }
+  }
   componentDidMount() {
     const node = this.inputRef.current;
     const { autoFocusInput } = this.props;
@@ -53,6 +60,7 @@ class GroupSearchView extends React.Component<ViewProps> {
         minRowHeight={44}
         multiple={multiple}
         maxLength={maxLength}
+        onKeyDown={this.onKeyDown}
       />
     );
   }

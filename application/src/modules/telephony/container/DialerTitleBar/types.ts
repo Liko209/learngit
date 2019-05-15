@@ -8,6 +8,7 @@ type DialerTitleBarProps = {};
 
 type DialerTitleBarViewProps = {
   timing: string;
+  isDialer: boolean;
 };
 
 export { DialerTitleBarProps, DialerTitleBarViewProps };

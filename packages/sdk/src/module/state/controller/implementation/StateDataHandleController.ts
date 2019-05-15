@@ -16,10 +16,11 @@ import notificationCenter from '../../../../service/notificationCenter';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { StateFetchDataController } from './StateFetchDataController';
 import { mainLogger } from 'foundation';
-import { AccountUserConfig } from '../../../../module/account/config';
-import { MyStateConfig } from '../../../state/config';
+import { AccountService } from '../../../account/service';
+import { StateService } from '../../service';
 import { SYNC_SOURCE, ChangeModel } from '../../../../module/sync/types';
 import { shouldEmitNotification } from '../../../../utils/notificationUtils';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 type DataHandleTask = StateHandleTask | GroupCursorHandleTask;
 const LOG_TAG = 'StateDataHandleController';
@@ -111,7 +112,9 @@ class StateDataHandleController {
           switch (key) {
             case '__trigger_ids': {
               const triggerIds = group[key];
-              const userConfig = new AccountUserConfig();
+              const userConfig = ServiceLoader.getInstance<AccountService>(
+                ServiceConfig.ACCOUNT_SERVICE,
+              ).userConfig;
               const currentUserId: number = userConfig.getGlipUserId();
               if (
                 triggerIds &&
@@ -216,7 +219,9 @@ class StateDataHandleController {
         (await this._stateFetchDataController.getAllGroupStatesFromLocal(
           ids,
         )) || [];
-      const userConfig = new AccountUserConfig();
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
       const currentUserId: number = userConfig.getGlipUserId();
       updatedState.groupStates = _.compact(
         groupStates.map((groupState: GroupState) => {
@@ -453,7 +458,9 @@ class StateDataHandleController {
       const myState = transformedState.myState;
       try {
         await daoManager.getDao(StateDao).update(myState);
-        const config = new MyStateConfig();
+        const config = ServiceLoader.getInstance<StateService>(
+          ServiceConfig.STATE_SERVICE,
+        ).myStateConfig;
         await config.setMyStateId(myState.id);
       } catch (err) {
         mainLogger.error(`StateDataHandleController, my state error, ${err}`);

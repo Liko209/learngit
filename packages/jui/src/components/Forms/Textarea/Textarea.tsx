@@ -18,7 +18,11 @@ import {
 
 type JuiTextFieldProps = TextFieldProps;
 
-const Textarea = styled<JuiTextFieldProps>(MuiTextField)`
+const WrappedMuiTextField = ({ ...textFieldRest }: JuiTextFieldProps) => (
+  <MuiTextField {...textFieldRest} />
+);
+
+const Textarea = styled<JuiTextFieldProps>(WrappedMuiTextField)`
   && {
     textarea {
       height: ${height(18)};
@@ -49,9 +53,9 @@ const Textarea = styled<JuiTextFieldProps>(MuiTextField)`
       color: ${palette('primary', 'main')};
     }
   }
-` as typeof MuiTextField;
+` as React.ComponentType<JuiTextFieldProps>;
 
-class JuiTextarea extends React.PureComponent<TextFieldProps> {
+class JuiTextarea extends React.PureComponent<JuiTextFieldProps> {
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.props.onChange && this.props.onChange(e);
   }
@@ -73,10 +77,12 @@ class JuiTextarea extends React.PureComponent<TextFieldProps> {
       };
 
   render() {
-    const { rows, ...textFieldRest } = this.props;
+    const { ...juiTextareaRest } = this.props;
+    const { rows, ...textFieldRest } = juiTextareaRest;
     const { onChange, ...rest } = textFieldRest;
     return (
       <Textarea
+        {...rest}
         multiline={true}
         onKeyDown={this.handleKeyDown}
         InputProps={this.InputProps}
@@ -89,7 +95,6 @@ class JuiTextarea extends React.PureComponent<TextFieldProps> {
         }}
         rows={rows || 3}
         onChange={this.handleChange}
-        {...rest}
       />
     );
   }

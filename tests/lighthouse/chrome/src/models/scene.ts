@@ -5,7 +5,13 @@
 import {
   Table, Column, Model, DataType
 } from 'sequelize-typescript';
-@Table({ modelName: 't_scene' })
+@Table({
+  modelName: 't_scene',
+  indexes: [{
+    unique: false,
+    fields: ['task_id']
+  }]
+})
 class SceneDto extends Model<SceneDto> {
 
   @Column({
@@ -100,6 +106,13 @@ class SceneDto extends Model<SceneDto> {
     field: 'end_time',
   })
   endTime?: Date;
+
+  @Column({
+    allowNull: false,
+    type: DataType.STRING,
+    field: 'app_version'
+  })
+  appVersion: string;
 }
 
 export {

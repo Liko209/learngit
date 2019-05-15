@@ -27,9 +27,7 @@ import {
   errorReporter,
   getAppContextInfo,
 } from '@/utils/error';
-import { AccountUserConfig } from 'sdk/module/account/config';
 import { AccountService } from 'sdk/module/account';
-import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { AppEnvSetting } from 'sdk/module/env';
 import { SyncGlobalConfig } from 'sdk/module/sync/config';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -116,7 +114,7 @@ class AppModule extends AbstractModule {
       );
 
       if (accountService.isAccountReady()) {
-        const accountUserConfig = new AccountUserConfig();
+        const accountUserConfig = accountService.userConfig;
         const currentUserId = accountUserConfig.getGlipUserId();
         const currentCompanyId = accountUserConfig.getCurrentCompanyId();
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
@@ -134,8 +132,6 @@ class AppModule extends AbstractModule {
             window.jupiterElectron.setContextInfo(contextInfo);
           errorReporter.setUserContextInfo(contextInfo);
         });
-        // load phone parser module
-        PhoneParserUtility.loadModule();
       }
     };
 
@@ -192,6 +188,14 @@ class AppModule extends AbstractModule {
       });
     };
     notificationCenter.on(SERVICE.TOTAL_UNREAD, setTotalUnread);
+
+    notificationCenter.on(SERVICE.START_LOADING, () => {
+      this._appStore.setGlobalLoading(true);
+    });
+
+    notificationCenter.on(SERVICE.STOP_LOADING, () => {
+      this._appStore.setGlobalLoading(false);
+    });
 
     notificationCenter.on(SERVICE.SYNC_SERVICE.START_CLEAR_DATA, () => {
       // 1. show loading

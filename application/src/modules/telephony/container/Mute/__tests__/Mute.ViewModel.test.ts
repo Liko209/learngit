@@ -10,6 +10,7 @@ import { TelephonyService } from '../../../service/TelephonyService';
 import { MuteViewModel } from '../Mute.ViewModel';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import * as telephony from '@/modules/telephony/module.config';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('../../../service/TelephonyService');
 
@@ -19,6 +20,9 @@ jupiter.registerModule(telephony.config);
 let muteViewModel: MuteViewModel;
 
 beforeAll(() => {
+  jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
+    matchContactByPhoneNumber: jest.fn().mockResolvedValue({}),
+  });
   muteViewModel = new MuteViewModel();
   muteViewModel._telephonyService.muteOrUnmute = jest.fn();
 });

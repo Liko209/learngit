@@ -11,7 +11,7 @@ import {
   JuiListNavItemText,
   JuiListNavItemIconographyLeft,
 } from 'jui/components';
-import { SettingLeftRailViewProps, SETTING_LIST_TYPE } from './types';
+import { SettingLeftRailViewProps } from './types';
 import {
   JuiLeftRail,
   JuiLeftRailStickyTop,
@@ -20,6 +20,7 @@ import styled from 'jui/foundation/styled-components';
 import history from '@/history';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { toTitleCase } from '@/utils/string';
+import { SETTING_ITEM } from '../constants';
 import { observer } from 'mobx-react';
 import { spacing } from 'jui/foundation/utils';
 
@@ -35,33 +36,35 @@ const StyledList = styled(JuiList)`
 class SettingLeftRailViewComponent extends Component<
   SettingLeftRailViewProps & WithTranslation
 > {
-  onEntryClick = (type: SETTING_LIST_TYPE) => {
+  onEntryClick = (type: string) => {
     history.push(`/settings/${type}`);
   }
 
   renderItems() {
-    const { t, entries, currentSettingListType } = this.props;
+    const { t, leftRailItemIds, currentSettingListType, onClick } = this.props;
     return (
       <React.Fragment>
-        {entries.map((entry, index) => (
-          <JuiListNavItem
-            data-name="sub-setting"
-            data-test-automation-id={entry.testId}
-            selected={entry.type === currentSettingListType}
-            classes={{ selected: 'selected' }}
-            onClick={() => {
-              this.onEntryClick(entry.type);
-            }}
-            key={entry.type}
-          >
-            <JuiListNavItemIconographyLeft iconSize="small">
-              {entry.icon}
-            </JuiListNavItemIconographyLeft>
-            <JuiListNavItemText>
-              {toTitleCase(t(entry.title))}
-            </JuiListNavItemText>
-          </JuiListNavItem>
-        ))}
+        {leftRailItemIds.map((id, index) => {
+          const { testId, type, icon, title } = SETTING_ITEM[id];
+          return (
+            <JuiListNavItem
+              data-name="sub-setting"
+              data-test-automation-id={testId}
+              selected={type === currentSettingListType}
+              classes={{ selected: 'selected' }}
+              onClick={() => {
+                onClick(id);
+                this.onEntryClick(type);
+              }}
+              key={type}
+            >
+              <JuiListNavItemIconographyLeft iconSize="small">
+                {icon}
+              </JuiListNavItemIconographyLeft>
+              <JuiListNavItemText>{toTitleCase(t(title))}</JuiListNavItemText>
+            </JuiListNavItem>
+          );
+        })}
       </React.Fragment>
     );
   }

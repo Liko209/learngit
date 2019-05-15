@@ -13,12 +13,25 @@ const jupiter = container.get(Jupiter);
 jupiter.registerModule(LeaveBlockerConfig);
 jupiter.registerModule(config);
 
+jest.mock('../agent/SWNotification', () => ({
+  SWNotification: () => ({
+    isSupported: () => true,
+    create: jest.fn(),
+  }),
+}));
+jest.mock('../agent/DesktopNotification', () => ({
+  DeskTopNotification: () => ({
+    isSupported: () => true,
+    create: jest.fn(),
+  }),
+}));
+
 describe('NotificationModule', () => {
   let module: NotificationModule;
   let leaveBlockerService: ILeaveBlockerService;
   let notificationService: INotificationService;
 
-  beforeEach(() => {
+  beforeAll(() => {
     module = jupiter.get(NotificationModule);
     leaveBlockerService = jupiter.get(LEAVE_BLOCKER_SERVICE);
     notificationService = jupiter.get(NOTIFICATION_SERVICE);
@@ -28,17 +41,19 @@ describe('NotificationModule', () => {
     jupiter.bootstrap();
   });
 
+  afterEach(() => {
+    module.dispose();
+  });
+
   it('should add leave hooker when bootstrapped', async () => {
     expect(leaveBlockerService.onLeave).toBeCalledWith(module.onLeaveHook);
   });
 
   describe('dispose()', () => {
     it('should clear all the notification when disposed (logout or close tab)', () => {
-      module.dispose();
       expect(notificationService.clear).toBeCalled();
     });
     it('should dismantle leaveBlock service when disposed', () => {
-      module.dispose();
       expect(leaveBlockerService.offLeave).toBeCalledWith(module.onLeaveHook);
     });
   });

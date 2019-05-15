@@ -4,19 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed } from 'mobx';
+import { observable, computed } from 'mobx';
 import { container } from 'framework';
 import { TelephonyStore } from '../../store';
 import { StoreViewModel } from '@/store/ViewModel';
 import { IncomingProps, IncomingViewProps } from './types';
-
-const ringTone = require('./sounds/Ringtone.mp3');
+import _ from 'lodash';
 
 class IncomingViewModel extends StoreViewModel<IncomingProps>
   implements IncomingViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
-  private _audio: HTMLAudioElement | null;
-  private _frameId?: number;
 
   @computed
   get phone() {
@@ -37,41 +34,14 @@ class IncomingViewModel extends StoreViewModel<IncomingProps>
     return this._telephonyStore.isExt;
   }
 
+  @observable
+  didHitAutoPolicy: boolean = false;
+
+  @observable
+  windowActivated?: boolean;
+
   constructor(props: IncomingProps) {
     super(props);
-    if (typeof document !== 'undefined' && document.createElement) {
-      this._audio = document.createElement('audio');
-      this._audio.loop = true;
-    }
-    this._frameId = requestAnimationFrame(() => {
-      this._playAudio();
-      delete this._frameId;
-    });
-  }
-
-  private _playAudio = () => {
-    if (this._audio && this._audio.canPlayType('audio/mp3') !== '') {
-      this._pauseAudio();
-      this._audio.src = ringTone;
-      this._audio.currentTime = 0;
-      this._audio.play();
-    }
-  }
-
-  private _pauseAudio = () => {
-    if (this._audio && !this._audio.paused) {
-      this._audio.pause();
-    }
-  }
-
-  dispose = () => {
-    if (this._audio) {
-      this._pauseAudio();
-      this._audio = null;
-    }
-    if (this._frameId) {
-      cancelAnimationFrame(this._frameId);
-    }
   }
 }
 

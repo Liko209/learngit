@@ -17,4 +17,5 @@ export type GroupConfig = {
   last_index_of_events?: number;
   last_index_of_notes?: number;
   last_index_of_links?: number;
+  my_last_post_time?: number;
 };

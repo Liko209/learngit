@@ -10,9 +10,12 @@ import { SERVICE, SOCKET, WINDOW } from '../../../service/eventKey';
 import { SyncListener } from './SyncListener';
 import { SyncController } from '../controller/SyncController';
 import { IdModel } from '../../../framework/model';
+import { SyncUserConfig } from '../config';
 
 class SyncService extends EntityBaseService<IdModel> {
   private _syncController: SyncController;
+  private _userConfig: SyncUserConfig;
+
   constructor() {
     super(false);
     this.setSubscriptionController(
@@ -26,6 +29,13 @@ class SyncService extends EntityBaseService<IdModel> {
         [WINDOW.FOCUS]: this._handleWindowFocused.bind(this),
       }),
     );
+  }
+
+  get userConfig() {
+    if (!this._userConfig) {
+      this._userConfig = new SyncUserConfig();
+    }
+    return this._userConfig;
   }
 
   updateIndexTimestamp(time: number) {

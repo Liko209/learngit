@@ -5,14 +5,14 @@
  */
 
 import { RCInfoGlobalConfig } from '../RCInfoGlobalConfig';
-import { RC_INFO_GLOBAL_KEYS } from '../configKeys';
+import { RC_INFO_GLOBAL_KEYS } from '../constants';
 import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../../../config/service/GlobalConfigService');
 
 describe('RCInfoGlobalConfig', () => {
   let mockGlobalConfigService;
-  const MODULE = 'rc_info';
+  const MODULE = 'rcInfo';
   beforeAll(() => {
     mockGlobalConfigService = {
       get: jest.fn(),

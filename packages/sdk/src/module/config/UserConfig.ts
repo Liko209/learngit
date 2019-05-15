@@ -7,6 +7,7 @@
 import { IUserConfigService } from './service/IUserConfigService';
 import { UserConfigService } from './service/UserConfigService';
 import { ServiceConfig, ServiceLoader } from '../serviceLoader';
+import { Listener } from 'eventemitter2';
 
 class UserConfig {
   private _configService: IUserConfigService;
@@ -33,6 +34,14 @@ class UserConfig {
 
   protected remove(key: string) {
     this._configService.remove(this._moduleName, key);
+  }
+
+  on(key: string, listener: Listener) {
+    this._configService.on(this._moduleName, key, listener);
+  }
+
+  off(key: string, listener: Listener) {
+    this._configService.off(this._moduleName, key, listener);
   }
 }
 

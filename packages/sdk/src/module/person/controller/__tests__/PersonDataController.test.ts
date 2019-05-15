@@ -19,6 +19,7 @@ jest.mock('../../../../module/account/config');
 jest.mock('../../../../dao', () => ({
   daoManager: {
     getDao: jest.fn(),
+    observeDBInitialize: jest.fn(),
   },
 }));
 
