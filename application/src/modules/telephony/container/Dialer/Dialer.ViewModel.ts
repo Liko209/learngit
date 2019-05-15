@@ -73,12 +73,12 @@ class DialerViewModel extends StoreViewModel<DialerProps>
 
   @computed
   get xScale() {
-    return `calc(${RADIUS} / ${this._telephonyStore.dialerWidth})`;
+    return `${RADIUS / this._telephonyStore.dialerWidth}`;
   }
 
   @computed
   get yScale() {
-    return `calc(${RADIUS} / ${this._telephonyStore.dialerHeight})`;
+    return `${RADIUS / this._telephonyStore.dialerHeight}`;
   }
 }
 
