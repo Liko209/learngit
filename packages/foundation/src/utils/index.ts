@@ -8,7 +8,6 @@ import { BuildUtils } from './BuildUtils';
 import { uniqueArray, getCurrentTime } from './jsUtils/jsUtils';
 import { HeartBeatCheck } from './checker/HeartBeatCheck';
 import { sleepModeDetector } from './checker/SleepModeDetector';
-import { isOnline } from './networkUtils';
 
 export {
   BuildUtils,
@@ -16,5 +15,4 @@ export {
   getCurrentTime,
   HeartBeatCheck,
   sleepModeDetector,
-  isOnline,
 };
