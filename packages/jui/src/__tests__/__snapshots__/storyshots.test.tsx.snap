@@ -1,0 +1,135 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Components/Avatar Image 1`] = `
+.c0.c0 {
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  background-color: #f5f6fb;
+}
+
+.c0.c0:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c0.c0:active {
+  opacity: 0.76;
+}
+
+<div
+  className="MuiAvatar-root-1 c0"
+  size="medium"
+>
+  <img
+    className="MuiAvatar-img-3"
+    src="test-file-stub"
+  />
+</div>
+`;
+
+exports[`Storyshots Components/Avatar Name 1`] = `
+.c0.c0 {
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  background-color: #6FAFEB;
+}
+
+.c0.c0:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c0.c0:active {
+  opacity: 0.76;
+}
+
+<div
+  className="MuiAvatar-root-4 MuiAvatar-colorDefault-5 c0"
+  color="lake"
+  size="medium"
+>
+  SH
+</div>
+`;
+
+exports[`Storyshots Components/Avatar With presence 1`] = `
+.c0 {
+  width: 32px;
+  height: 32px;
+  position: relative;
+}
+
+.c1.c1 {
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  background-color: #6FAFEB;
+}
+
+.c1.c1:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c1.c1:active {
+  opacity: 0.76;
+}
+
+.c2 {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.c3 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: 8px;
+  height: 8px;
+  border: 2px solid #fff;
+  background: #26a304;
+  border-radius: 50%;
+}
+
+<div
+  className="c0"
+  size="medium"
+>
+  <div
+    className="MuiAvatar-root-7 MuiAvatar-colorDefault-8 c1"
+    color="lake"
+    size="medium"
+  >
+    SH
+  </div>
+  <div
+    className="c2"
+  >
+    <div
+      className="c3"
+      size="medium"
+    />
+  </div>
+</div>
+`;

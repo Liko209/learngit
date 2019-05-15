@@ -46,3 +46,5 @@ v8-compile-cache*
 
 # ts cache
 .tsc_cache*
+packages/jui/package-lock.json
+packages/rcui/package-lock.json

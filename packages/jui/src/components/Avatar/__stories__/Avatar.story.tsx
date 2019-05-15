@@ -53,7 +53,6 @@ const knobs = {
     ),
 };
 storiesOf('Components/Avatar', module)
-  .addDecorator(withInfoDecorator(JuiAvatar, { inline: true }))
   .add('Image', () => {
     return <JuiAvatar size={knobs.size()} src={avatar} />;
   })

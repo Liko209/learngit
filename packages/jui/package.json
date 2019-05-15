@@ -4,7 +4,8 @@
   "main": "src",
   "scripts": {
     "storybook": "STORYBOOK_DISPLAY_WARNING=true DISPLAY_WARNING=true start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "test": "jest"
   },
   "dependencies": {
     "@material-ui/core": "3.9.3",
@@ -31,6 +32,13 @@
     "typeface-roboto": "0.0.54"
   },
   "devDependencies": {
+    "react-test-renderer": "16.8.3",
+    "@types/react-test-renderer": "16.8.1",
+    "jest-raw-loader": "1.0.1",
+    "babel-plugin-require-context-hook": "1.0.0",
+    "babel-plugin-macros": "2.5.1",
+    "require-context.macro": "1.0.4",
+    "enzyme-to-json": "3.3.5",
     "@storybook/addon-a11y": "5.0.10",
     "@storybook/addon-actions": "5.0.10",
     "@storybook/addon-backgrounds": "5.0.10",
@@ -41,6 +49,7 @@
     "@storybook/addons": "5.0.10",
     "@storybook/react": "5.0.10",
     "@storybook/theming": "5.0.10",
+    "@types/storybook__addon-storyshots": "4.0.0",
     "@types/codemirror": "0.0.71",
     "@types/emoji-mart": "^2.8.4",
     "@types/mousetrap": "1.6.0",
@@ -59,6 +68,10 @@
     "@types/storybook__react": "4.0.1",
     "@types/styled-components": "4.0.3",
     "@types/tinycolor2": "1.4.1",
+    "jest": "24.3.1",
+    "jest-styled-components": "6.3.1",
+    "ts-jest": "24.0.2",
+    "@types/jest": "24.0.11",
     "copy-webpack-plugin": "5.0.2",
     "fork-ts-checker-webpack-plugin": "1.2.0",
     "global": "4.3.2",
