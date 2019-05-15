@@ -3,12 +3,7 @@
  * @Date: 2018-09-20 14:56:18
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  testable,
-  test,
-  mockService,
-  mockGlobalValue,
-} from 'tests/integration-test';
+import { testable, test, mockService, mockGlobalValue } from 'shield';
 import { GroupService, TeamSetting } from 'sdk/module/group';
 import {
   ERROR_CODES_NETWORK,
