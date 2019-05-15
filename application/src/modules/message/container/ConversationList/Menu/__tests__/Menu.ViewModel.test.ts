@@ -9,7 +9,7 @@ import {
   mockEntity,
   mockService,
   testable,
-} from 'tests/integration-test';
+} from 'shield';
 import { MenuViewModel } from '../Menu.ViewModel';
 import * as utils from '@/store/utils';
 import storeManager from '@/store/base/StoreManager';

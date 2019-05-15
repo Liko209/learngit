@@ -9,7 +9,7 @@ import {
   mockEntity,
   mockGlobalValue,
   testable,
-} from 'tests/integration-test';
+} from 'shield';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import { ServiceConfig } from 'sdk/module/serviceLoader';
 import { FavoriteViewModel } from '../Favorite.ViewModel';
