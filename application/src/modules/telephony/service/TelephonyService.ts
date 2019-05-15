@@ -26,7 +26,6 @@ import { mainLogger } from 'sdk';
 import { TelephonyStore, CALL_TYPE } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-import { AccountUserConfig } from 'sdk/module/account/config';
 import { reaction, IReactionDisposer, runInAction, action } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { Profile } from 'sdk/module/profile/entity';
@@ -34,6 +33,7 @@ import ProfileModel from '@/store/models/Profile';
 import { getSingleEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import { CALL_WINDOW_STATUS } from '../FSM';
+import { AccountService } from 'sdk/module/account';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -281,8 +281,9 @@ class TelephonyService {
   }
 
   private _getGlipUserId = () => {
-    // FIXME: register this on service loader
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     return userConfig.getGlipUserId();
   }
 

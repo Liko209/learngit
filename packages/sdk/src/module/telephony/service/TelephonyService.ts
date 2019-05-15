@@ -37,7 +37,9 @@ class TelephonyService extends EntityBaseService<IdModel> {
 
   protected get telephonyController() {
     if (!this._telephonyEngineController) {
-      this._telephonyEngineController = new TelephonyEngineController();
+      this._telephonyEngineController = new TelephonyEngineController(
+        this.userConfig,
+      );
     }
     return this._telephonyEngineController;
   }

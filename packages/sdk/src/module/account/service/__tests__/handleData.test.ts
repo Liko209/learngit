@@ -8,10 +8,10 @@ import notificationCenter from '../../../../service/notificationCenter';
 // import AccountDao from 'dao/account';
 import { accountHandleData } from '../handleData';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { AccountUserConfig } from '../../config';
+import { AccountUserConfig } from '../../config/AccountUserConfig';
 
 jest.mock('../../../config');
-jest.mock('../../config');
+jest.mock('../../config/AccountUserConfig');
 jest.mock('../../../../service/notificationCenter', () => ({
   emitKVChange: jest.fn(),
 }));
