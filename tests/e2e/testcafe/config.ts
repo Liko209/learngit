@@ -123,7 +123,9 @@ enum BrandTire {
   "RCOFFICE" = "kamino(Fiji,Jupiter,1210,4488)",
   "RC_PROFESSIONAL_TIER" = "kamino(Fiji,Jupiter,1210,4442)",
   "RC_FIJI_GUEST" = "kamino(Fiji-with-guest,Jupiter,1210,4488)",
-  "RC_USERS_20" = "kamino(FIJI-Users-20,Jupiter,1210,4488)"
+  "RC_USERS_20" = "kamino(FIJI-Users-20,Jupiter,1210,4488)",
+  "RC_WITH_DID" = "kamino(FIJI-With-2-DirectNumber,Jupiter,1210,4488)",
+  "RC_VOIP_DISABLE" = "kamino(RC_VOIP_DISABLE,Jupiter,1210,4488)",
 };
 
 const WebphoneConfig = {
