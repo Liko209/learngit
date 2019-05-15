@@ -33,7 +33,7 @@ export class RcPlatformSdk {
 
   constructor(key, secret, url, private credential: ICredential) {
     this.sdk = new Ringcentral(key, secret, url);
-    MiscUtils.addDebugLog(this.sdk, 'rc');
+    MiscUtils.addDebugLog(this.sdk._axios, 'rc');
   }
 
   get token() {

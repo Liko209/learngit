@@ -80,22 +80,33 @@ export class MiscUtils {
       error: function (debug, error) {
         // Read https://www.npmjs.com/package/axios#handling-errors for more info
         if (error.response) {
-          debug(error.response.data);
-          debug(error.response.status);
-          debug(error.response.headers);
+          const responseError = {
+            data: error.response.data,
+            status: error.response.status,
+          }
+          debug("response error");
+          debug(responseError);
         } else if (error.request) {
-          debug(error.request);
+          debug("request error")
+          debug("request", error.request);
         } else {
           debug('Error', error.message);
         }
-        debug(error.config);
+        const configs = {
+          url: error.config.url,
+          method: error.config.method,
+          data: error.config.data,
+          header: error.config.headers,
+        }
+        debug("request configs")
+        debug(configs)
       }
     });
+    require('debug').enable(process.env.DEBUG);
   }
 
   static addDebugLog(sdk: AxiosInstance, Indentifier: string) {
     const rcLogger = require('debug')(Indentifier)
-    axiosDebug.enable(process.env.DEBUG);
     axiosDebug.addLogger(sdk, rcLogger);
   }
 }
