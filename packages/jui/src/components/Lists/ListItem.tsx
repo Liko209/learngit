@@ -12,10 +12,13 @@ import { spacing } from '../../foundation/utils';
 
 type JuiListItemProps = MuiListItemProps & {
   singleLine?: boolean;
+  disableButton?: boolean;
 };
 
 const WrappedListItem = React.memo(
-  ({ singleLine, ...rests }: JuiListItemProps) => <MuiListItem {...rests} />,
+  ({ singleLine, disableButton, ...rests }: JuiListItemProps) => (
+    <MuiListItem {...rests} />
+  ),
 );
 
 const StyledListItem = styled<JuiListItemProps>(WrappedListItem)`
@@ -27,7 +30,7 @@ const StyledListItem = styled<JuiListItemProps>(WrappedListItem)`
 
 const JuiListItemComponent = (props: JuiListItemProps) => {
   return (
-    <StyledListItem button={true} {...props}>
+    <StyledListItem button={!props.disableButton && true} {...props}>
       {props.children}
     </StyledListItem>
   );

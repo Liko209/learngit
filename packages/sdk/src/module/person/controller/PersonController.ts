@@ -16,7 +16,7 @@ import {
 import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 import { Raw } from 'sdk/framework/model';
 import PersonAPI from 'sdk/api/glip/person';
-import { AccountUserConfig, AuthUserConfig } from 'sdk/module/account/config';
+import { AccountService } from 'sdk/module/account/service';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../group/entity';
 import { IEntityCacheSearchController } from 'sdk/framework/controller/interface/IEntityCacheSearchController';
 import { PersonDataController } from './PersonDataController';
@@ -100,7 +100,9 @@ class PersonController {
     headShotVersion: string,
     size: number,
   ) {
-    const auth = new AuthUserConfig();
+    const auth = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).authUserConfig;
     const token = auth.getGlipToken();
     const glipToken = token && token.replace(/\"/g, '');
     if (headShotVersion) {
@@ -285,7 +287,9 @@ class PersonController {
     extensionData?: SanitizedExtensionModel,
   ) {
     const availNumbers: PhoneNumberInfo[] = [];
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const isCoWorker = userConfig.getCurrentCompanyId() === companyId;
     if (isCoWorker && extensionData) {
       availNumbers.push({
@@ -335,8 +339,10 @@ class PersonController {
 
     const result: Person[] = [];
 
-    const companyId =
-      isShortNumber && new AccountUserConfig().getCurrentCompanyId();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    const companyId = userConfig.getCurrentCompanyId();
 
     numberList &&
       numberList.forEach((item: string) => {

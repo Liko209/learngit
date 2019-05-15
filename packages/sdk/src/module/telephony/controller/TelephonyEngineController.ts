@@ -132,10 +132,6 @@ class TelephonyEngineController {
     this.rtcEngine = RTCEngine.getInstance();
     this.rtcEngine.setNetworkDelegate(this.voipNetworkDelegate);
     this.rtcEngine.setTelephonyDaoDelegate(this.voipDaoDelegate);
-    this.rtcEngine.setUserAgentInfo({
-      endpointId: this.getEndpointId(),
-      userAgent: PlatformUtils.getRCUserAgent(),
-    });
   }
 
   createAccount(
@@ -144,6 +140,10 @@ class TelephonyEngineController {
   ) {
     // Engine can hold multiple accounts for multiple calls
     this._preCallingPermission = true;
+    this.rtcEngine.setUserAgentInfo({
+      endpointId: this.getEndpointId(),
+      userAgent: PlatformUtils.getRCUserAgent(),
+    });
     this._accountController = new TelephonyAccountController(
       this.rtcEngine,
       accountDelegate,

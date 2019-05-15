@@ -27,6 +27,8 @@ type SettingLeftRailProps = {
 };
 
 type SettingLeftRailViewProps = {
+  onClick: (id: number) => void;
+  leftRailItemIds: number[];
   entries: SettingLeftRailEntry[];
   currentSettingListType: SETTING_LIST_TYPE;
 };

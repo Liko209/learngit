@@ -14,6 +14,7 @@ if (process.env.NODE_ENV === 'test') {
         computedRequiresReaction: false,
       }),
     );
+  mobx.configure();
 
   const moment = require('moment-timezone');
   moment.tz.setDefault('Asia/Shanghai');
@@ -78,5 +79,7 @@ if (process.env.NODE_ENV === 'test') {
     timeStamp: jest.fn(),
     trace: jest.fn(),
     warn: jest.fn(),
-  }
+  };
+
+  global.fetch = require("jest-fetch-mock");
 }

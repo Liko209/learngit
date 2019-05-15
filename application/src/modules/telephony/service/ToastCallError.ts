@@ -9,9 +9,11 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import { mainLogger } from 'sdk';
+import i18next from 'i18next';
 
 class ToastCallError {
-  static toast(message: string, duration: number): void {
+  static toast(msg: string, duration: number): void {
+    const message = i18next.t(msg);
     Notification.flagToast({
       message,
       type: ToastType.ERROR,
@@ -42,7 +44,7 @@ class ToastCallError {
   }
   static toastFailedToResume(): void {
     ToastCallError.toast('telephony.prompt.FailedToResume', 2000);
-    mainLogger.info('Call error: Call timeout');
+    mainLogger.info('Call error: Call FailedToHold');
   }
 
   static toastFailedToRecord(): void {
@@ -52,21 +54,33 @@ class ToastCallError {
 
   static toastFailedToStopRecording(): void {
     ToastCallError.toast('telephony.prompt.FailedToStopRecording', 2000);
-    mainLogger.info('Call error: Call timeout');
+    mainLogger.info('Call error: Call FailedToRecord');
   }
 
   static toastLackOfRecordingPermission(): void {
     ToastCallError.toast('telephony.prompt.LackOfRecordingPermission', 2000);
-    mainLogger.info('Call error: Call timeout');
+    mainLogger.info('Call error: Call LackOfRecordingPermission');
   }
 
   static toastRecordOnServiceWeb(): void {
     ToastCallError.toast('telephony.prompt.RecordOnServiceWeb', 2000);
-    mainLogger.info('Call error: Call timeout');
+    mainLogger.info('Call error: Call RecordOnServiceWeb');
   }
 
   static toastRecordAutomatically(): void {
     ToastCallError.toast('telephony.prompt.RecordAutomatically', 2000);
+    mainLogger.info('Call error: Call RecordAutomatically');
+  }
+
+  static toastEmptyReplyMessage(): void {
+    ToastCallError.toast('telephony.prompt.ReplyCustomMessageEmpty', 3000);
+    mainLogger.info(
+      'Call error: incoming call reply with custom message is empty',
+    );
+  }
+
+  static toastInvalidNumber(): void {
+    ToastCallError.toast('telephony.prompt.InvalidNumber', 2000);
     mainLogger.info('Call error: Call timeout');
   }
 }

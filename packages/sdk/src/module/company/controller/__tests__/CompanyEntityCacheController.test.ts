@@ -5,6 +5,7 @@
  */
 import { CompanyEntityCacheController } from '../CompanyEntityCacheController';
 import { AccountUserConfig } from '../../../account/config';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('../../../account/config', () => {
   const xx = {
@@ -27,6 +28,13 @@ describe('CompanyEntityCacheController', () => {
   let companyEntityCacheController: CompanyEntityCacheController;
   let accountUserConfig: AccountUserConfig;
   function setUp() {
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: accountUserConfig };
+        }
+      });
     accountUserConfig = new AccountUserConfig();
     companyEntityCacheController = new CompanyEntityCacheController();
     accountUserConfig.getCurrentCompanyId = jest.fn().mockReturnValue(111);

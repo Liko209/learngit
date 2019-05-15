@@ -19,10 +19,12 @@ import { NotificationEntityPayload } from '../../../service/notificationCenter';
 import { SectionUnread } from '../types';
 import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
+import { MyStateConfig } from '../config';
 
 class StateService extends EntityBaseService<GroupState>
   implements IStateService {
   private _stateController: StateController;
+  private _myStateConfig: MyStateConfig;
   constructor(private _groupService: IGroupService) {
     super(true, daoManager.getDao(GroupStateDao));
     this.setSubscriptionController(
@@ -53,6 +55,13 @@ class StateService extends EntityBaseService<GroupState>
       );
     }
     return this._stateController;
+  }
+
+  get myStateConfig() {
+    if (!this._myStateConfig) {
+      this._myStateConfig = new MyStateConfig();
+    }
+    return this._myStateConfig;
   }
 
   async updateReadStatus(

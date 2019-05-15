@@ -60,11 +60,11 @@ class LinkItemView extends React.Component<LinkItemViewProps> {
     const { id, url, title } = item;
 
     return postText ? null : (
-      <JuiConversationPostText>
-        <a key={id} href={this.formatLinkProtocol(url)}>
-          {title}
-        </a>
-      </JuiConversationPostText>
+      <JuiConversationPostText
+        key={id}
+        url={this.formatLinkProtocol(url)}
+        title={title}
+      />
     );
   }
 
@@ -87,7 +87,6 @@ class LinkItemView extends React.Component<LinkItemViewProps> {
         title={title}
         url={url}
         html={object ? object.html : ''}
-        onLinkItemClose={this.onLinkItemClose(id)}
       />
     );
   }

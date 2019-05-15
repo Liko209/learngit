@@ -449,7 +449,9 @@ describe('Entity Cache Search Controller', () => {
               searchKeyTerms,
             ) ||
             entityCacheSearchController.isSoundexMatched(
-              [soundex(entity.name)],
+              entity.name!.split('.').map(x => {
+                return soundex(x);
+              }),
               searchKeyTermsToSoundex,
             );
           if (entity.name && isMatched) {
@@ -481,11 +483,13 @@ describe('Entity Cache Search Controller', () => {
           const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
           const isMatched =
             entityCacheSearchController.isFuzzyMatched(
-              entity.name.toLowerCase() || '',
+              entity.name!.toLowerCase() || '',
               searchKeyTerms,
             ) ||
             entityCacheSearchController.isSoundexMatched(
-              [soundex(entity.name)],
+              entity.name!.split('.').map(x => {
+                return soundex(x);
+              }),
               searchKeyTermsToSoundex,
             );
           if (entity.name && isMatched) {

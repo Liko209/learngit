@@ -358,6 +358,8 @@ const formatMemorySize = (size: number): string => {
   return `${size.toFixed(2)} ${units[idx]}`;
 }
 
+let _versionInfo: DashboardVersionInfo;
+
 class DashboardService {
 
   static async addItem(task: TaskDto, scene: SceneDto) {
@@ -573,6 +575,10 @@ class DashboardService {
   }
 
   static async getVersionInfo(): Promise<DashboardVersionInfo> {
+    if (_versionInfo) {
+      return _versionInfo;
+    }
+
     const info = new DashboardVersionInfo();
     const browser = await PptrUtils.launch();
     const page = await browser.newPage();
@@ -622,6 +628,7 @@ class DashboardService {
     info.appVersion = appVersion.replace('/', '-');
     await PptrUtils.close(browser);
 
+    _versionInfo = info;
     return info;
   }
 

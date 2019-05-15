@@ -16,7 +16,6 @@ describe('ItemModel', () => {
       at_mentioning_post_ids: 1,
       versions: [],
     } as any);
-    console.log();
     expect(itemModel.typeId).toBe(1);
     expect(itemModel.modifiedAt).toBe(1000);
     expect(itemModel.creatorId).toBe(1000);

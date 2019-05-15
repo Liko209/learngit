@@ -10,7 +10,7 @@ import { dividerTimestamp } from '@/utils/date';
 
 class TimeNodeDividerViewModel extends AbstractViewModel<TimeNodeDividerProps>
   implements TimeNodeDividerViewProps {
-  text = promisedComputed(`${this.props && this.props.value}`, async () => {
+  text = promisedComputed('', async () => {
     const { value, today } = this.props;
     if (typeof value === 'string') {
       return value;

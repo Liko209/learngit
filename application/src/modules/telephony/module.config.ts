@@ -7,14 +7,15 @@ import { TelephonyModule } from './TelephonyModule';
 import { TelephonyService } from './service';
 import { TelephonyStore } from './store';
 import { TelephonyNotificationManager } from './TelephonyNotificationManager';
+import { TelephonySettingManager } from './TelephonySettingManager/TelephonySettingManager';
 import { TELEPHONY_SERVICE } from './interface/constant';
-
 const config = {
   entry: TelephonyModule,
   provides: [
     { name: TELEPHONY_SERVICE, value: TelephonyService },
     TelephonyStore,
     TelephonyNotificationManager,
+    TelephonySettingManager,
   ],
 };
 

@@ -18,7 +18,8 @@ type NavConfig = {
 type SubModuleConfig = {
   route?: RouteProps;
   nav?: () => Promise<NavConfig>;
-  loader?: () => Promise<{ config: ModuleConfig }>;
+  moduleConfigLoader?: () => Promise<{ config: ModuleConfig }>;
+  moduleConfig?: ModuleConfig;
   afterBootstrap?: (...args: any[]) => void;
 };
 

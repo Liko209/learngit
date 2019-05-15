@@ -4,6 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-interface IProfileService {}
+import { PhoneNumberModel } from 'sdk/module/person/entity';
+import { SettingOption } from '../types';
+
+interface IProfileService {
+  getDefaultCaller(): Promise<PhoneNumberModel | undefined>;
+  updateSettingOptions(options: SettingOption[]): Promise<void>;
+}
 
 export { IProfileService };

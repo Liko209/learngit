@@ -20,12 +20,20 @@ class SyncUserConfig extends UserConfig {
     return this.get(SYNC_CONFIG_KEYS.INDEX_SOCKET_SERVER_HOST);
   }
 
+  removeIndexSocketServerHost() {
+    this.remove(SYNC_CONFIG_KEYS.INDEX_SOCKET_SERVER_HOST);
+  }
+
   setReconnectSocketServerHost(info: string) {
     this.put(SYNC_CONFIG_KEYS.RECONNECT_SOCKET_SERVER_HOST, info);
   }
 
   getReconnectSocketServerHost() {
     return this.get(SYNC_CONFIG_KEYS.RECONNECT_SOCKET_SERVER_HOST);
+  }
+
+  removeReconnectSocketServerHost() {
+    this.remove(SYNC_CONFIG_KEYS.RECONNECT_SOCKET_SERVER_HOST);
   }
 
   getLastIndexTimestamp() {
@@ -60,12 +68,20 @@ class SyncUserConfig extends UserConfig {
     this.put(SYNC_CONFIG_KEYS.INDEX_SUCCEED, value);
   }
 
+  removeIndexSucceed() {
+    this.remove(SYNC_CONFIG_KEYS.INDEX_SUCCEED);
+  }
+
   setIndexStartLocalTime(time: number) {
     this.put(SYNC_CONFIG_KEYS.INDEX_START_LOCAL_TIME, time);
   }
 
   getIndexStartLocalTime() {
     return this.get(SYNC_CONFIG_KEYS.INDEX_START_LOCAL_TIME);
+  }
+
+  removeIndexStartLocalTime() {
+    this.remove(SYNC_CONFIG_KEYS.INDEX_START_LOCAL_TIME);
   }
 
   setSocketConnectedLocalTime(time: number) {
@@ -78,6 +94,16 @@ class SyncUserConfig extends UserConfig {
 
   removeSocketConnectedLocalTime() {
     this.remove(SYNC_CONFIG_KEYS.SOCKET_CONNECTED_LOCAL_TIME);
+  }
+
+  clearSyncConfigsForDBUpgrade() {
+    this.removeIndexSocketServerHost();
+    this.removeReconnectSocketServerHost();
+    this.removeLastIndexTimestamp();
+    this.removeFetchRemaining();
+    this.removeIndexSucceed();
+    this.removeIndexStartLocalTime();
+    this.removeSocketConnectedLocalTime();
   }
 }
 

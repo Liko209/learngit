@@ -197,11 +197,12 @@ export class RcPlatformSdk {
     });
   }
 
-  async createPostWithTextAndFiles(groupId: string, filePaths: string | string[], text?: string) {
+  async createPostWithTextAndFiles(groupId: string, filePaths: string | string[], text?: string, fileNames?: string | string[]) {
     filePaths = [].concat(filePaths);
+    fileNames = [].concat(fileNames);
     let attachments = [];
-    for (const filePath of filePaths) {
-      const fileData = await this.uploadFile(filePath).then(res => res.data); // return array(length =1)
+    for (const i in filePaths) {
+      const fileData = await this.uploadFile(filePaths[i], fileNames[i]).then(res => res.data); // return array(length =1)
       const file = _.merge(fileData[0], { type: "File" });
       attachments.push(file);
     }
@@ -209,8 +210,8 @@ export class RcPlatformSdk {
     return await this.createPost(data, groupId);
   }
 
-  async createPostWithTextAndFilesThenGetPostId(groupId: string, filePaths: string | string[], text?: string) {
-    return await this.createPostWithTextAndFiles(groupId, filePaths, text).then(res => res.data.id);
+  async createPostWithTextAndFilesThenGetPostId(groupId: string, filePaths: string | string[], text?: string, fileNames?: string | string[]) {
+    return await this.createPostWithTextAndFiles(groupId, filePaths, text, fileNames).then(res => res.data.id);
   }
 
   // deprecated
@@ -220,5 +221,13 @@ export class RcPlatformSdk {
 
   async sentAndGetTextPostId(text: string, groupId: string) {
     return await this.sendTextPost(text, groupId).then(res => res.data.id);
+  }
+
+  /** phone number */
+  async getExtensionPhoneNumberList(){
+    const url = `/restapi/v1.0/account/~/extension/~/phone-number`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.get(url);
+    });
   }
 }

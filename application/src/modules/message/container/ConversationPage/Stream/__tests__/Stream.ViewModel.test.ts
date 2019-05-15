@@ -40,11 +40,22 @@ import GroupStateModel from '@/store/models/GroupState';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import { GroupState } from 'sdk/module/state/entity';
 
+jest.mock('sdk/dao');
 jest.mock('sdk/module/item');
 jest.mock('sdk/module/post');
 jest.mock('sdk/module/group');
 jest.mock('@/containers/Notification');
 jest.mock('@/store/base/visibilityChangeEvent');
+
+function streamProps(obj: any = {}): StreamProps {
+  return {
+    viewRef: React.createRef(),
+    groupId: obj.groupId || 1,
+    jumpToPostId: obj.jumpToPostId || undefined,
+    refresh: () => {},
+    updateConversationStatus: () => {},
+  };
+}
 
 function setup(obj?: any) {
   const {
@@ -69,10 +80,7 @@ function setup(obj?: any) {
   jest
     .spyOn(ConversationPostFocBuilder, 'buildConversationPostFoc')
     .mockReturnValue(listHandler);
-  const vm = new StreamViewModel({
-    viewRef: React.createRef(),
-    groupId: obj.groupId || 1,
-  });
+  const vm = new StreamViewModel(streamProps(obj));
   delete obj.groupId;
   Object.assign(vm, obj);
   return vm;
@@ -111,23 +119,23 @@ describe('StreamViewModel', () => {
   });
 
   describe('loadInitialPosts()', () => {
-    function setup(obj: any) {
-      const vm = new StreamViewModel(obj.props);
+    function setupMock({ props, getPostsByGroupIdData }: any) {
+      const vm = new StreamViewModel(props);
       jest.spyOn(vm, 'markAsRead').mockImplementation(() => {});
+      postService.getPostsByGroupId.mockResolvedValue(getPostsByGroupIdData);
       return vm;
     }
-
     it('should load posts and update itemStore when fetch initial post', async () => {
-      const vm = setup({
-        props: { groupId: 1 },
-      });
-      postService.getPostsByGroupId.mockResolvedValue({
-        posts: [
-          { id: 1, item_ids: [], created_at: 10000 },
-          { id: 2, item_ids: [], created_at: 10001 },
-          { id: 3, item_ids: [], created_at: 20010 },
-        ],
-        items: [{ id: 1 }],
+      const vm = setupMock({
+        props: streamProps(),
+        getPostsByGroupIdData: {
+          posts: [
+            { id: 1, item_ids: [], created_at: 10000 },
+            { id: 2, item_ids: [], created_at: 10001 },
+            { id: 3, item_ids: [], created_at: 20010 },
+          ],
+          items: [{ id: 1 }],
+        },
       });
       await vm.loadInitialPosts();
       expect(
@@ -259,10 +267,8 @@ describe('StreamViewModel', () => {
   });
 
   describe('notEmpty', () => {
-    function setup(props: { hasMoreUp: boolean; id?: number }) {
-      const vm = new StreamViewModel({
-        groupId: 1,
-      } as StreamProps);
+    function setupMockNoEmpty(props: { hasMoreUp: boolean; id?: number }) {
+      const vm = new StreamViewModel(streamProps());
 
       Object.assign(vm, {
         _streamController: {
@@ -278,17 +284,17 @@ describe('StreamViewModel', () => {
       return vm;
     }
     it('should be true when user has loaded messages  [JPT-478]', () => {
-      const vm = setup({ hasMoreUp: false, id: 1 });
+      const vm = setupMockNoEmpty({ hasMoreUp: false, id: 1 });
       expect(vm.notEmpty).toBe(true);
     });
 
     it('should be true when user has more unloaded messages  [JPT-478]', () => {
-      const vm = setup({ hasMoreUp: true, id: 1 });
+      const vm = setupMockNoEmpty({ hasMoreUp: true, id: 1 });
       expect(vm.notEmpty).toBe(true);
     });
 
     it('should be false when user has no more messages and no loaded messages  [JPT-478]', () => {
-      const vm = setup({ hasMoreUp: false });
+      const vm = setupMockNoEmpty({ hasMoreUp: false });
       expect(vm.notEmpty).toBe(false);
     });
   });
