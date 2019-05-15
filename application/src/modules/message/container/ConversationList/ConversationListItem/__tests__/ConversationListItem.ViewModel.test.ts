@@ -6,6 +6,8 @@
 import { ConversationListItemViewModel } from '../ConversationListItem.ViewModel';
 import storeManager from '@/store/base/StoreManager';
 import { GLOBAL_KEYS } from '@/store/constants';
+
+jest.mock('sdk/dao');
 jest.mock('sdk/api');
 
 const model = new ConversationListItemViewModel();

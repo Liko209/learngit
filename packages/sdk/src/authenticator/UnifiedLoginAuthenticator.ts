@@ -50,6 +50,7 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     notificationCenter.emit(SHOULD_UPDATE_NETWORK_TOKEN, { glipToken: token });
     return {
       success: true,
+      isFirstLogin: true,
       accountInfos: [
         {
           type: GlipAccount.name,
@@ -71,6 +72,7 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     const response = {
       success: true,
       isRCOnlyMode: false,
+      isFirstLogin: true,
       accountInfos: [
         {
           type: RCAccount.name,

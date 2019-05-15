@@ -117,7 +117,7 @@ describe('EntityBaseService', () => {
       jest
         .spyOn(networkConfig.networkClient, 'get')
         .mockRejectedValueOnce(error);
-      expect(service.getById(1)).resolves.toThrow();
+      expect(service.getById(1)).rejects.toThrow();
     });
 
     it('should not call network client once when checkFunc return false', async () => {

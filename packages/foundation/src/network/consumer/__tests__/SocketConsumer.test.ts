@@ -8,6 +8,13 @@ import { SocketConsumer } from '../SocketConsumer';
 import NetworkRequestDecorator from '../../NetworkRequestDecorator';
 import NetworkRequestHandler from '../../NetworkRequestHandler';
 import { NETWORK_VIA, CONSUMER_MAX_QUEUE_COUNT } from '../../network';
+import { isOnline } from '../../../utils';
+
+jest.mock('../../../utils', () => {
+  const utils = jest.requireActual('../../../utils');
+  utils.isOnline = jest.fn().mockReturnValue(true);
+  return utils;
+});
 
 describe('SocketConsumer', () => {
   let consumer: SocketConsumer;
@@ -50,6 +57,29 @@ describe('SocketConsumer', () => {
       mockClient.isNetworkReachable.mockReturnValue(true);
       consumer['isRequestExceeded'] = jest.fn().mockReturnValue(true);
       expect(consumer['canHandleRequest']()).toBeFalsy();
+    });
+
+    it('should return false when shouldWaitForConnecting', () => {
+      consumer['shouldWaitForConnecting'] = jest.fn().mockReturnValue(true);
+      expect(consumer['canHandleRequest']()).toBeFalsy();
+    });
+  });
+
+  describe('shouldWaitForConnecting()', () => {
+    it('should return true when is disconnect & isOnline', () => {
+      (isOnline as jest.Mock).mockReturnValue(true);
+      mockClient.isNetworkReachable.mockReturnValue(false);
+      expect(consumer['shouldWaitForConnecting']()).toBeTruthy();
+    });
+    it('should return false when is disconnect & !isOnline', () => {
+      (isOnline as jest.Mock).mockReturnValue(false);
+      mockClient.isNetworkReachable.mockReturnValue(false);
+      expect(consumer['shouldWaitForConnecting']()).toBeFalsy();
+    });
+    it('should return false when is !disconnect', () => {
+      (isOnline as jest.Mock).mockReturnValue(false);
+      mockClient.isNetworkReachable.mockReturnValue(true);
+      expect(consumer['shouldWaitForConnecting']()).toBeFalsy();
     });
   });
 });

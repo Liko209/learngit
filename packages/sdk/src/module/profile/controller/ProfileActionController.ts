@@ -21,7 +21,11 @@ class ProfileActionController {
     public profileDataController: ProfileDataController,
   ) {}
 
+  // since there are deleted-group ids in favIds
+  // so we do not use `favorite_group_ids` of `originalModel`
+  // just use favIds passed from UI, which already been filtered.
   async reorderFavoriteGroups(
+    favIds: number[],
     oldIndex: number,
     newIndex: number,
   ): Promise<Profile | null> {
@@ -31,7 +35,7 @@ class ProfileActionController {
       partialModel: Partial<Raw<Profile>>,
       originalModel: Profile,
     ): Partial<Raw<Profile>> => {
-      const favIds = originalModel.favorite_group_ids || [];
+      // const favIds = originalModel.favorite_group_ids || [];
       const newFavIds = this._reorderFavoriteGroupIds(
         oldIndex,
         newIndex,

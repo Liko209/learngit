@@ -100,7 +100,7 @@ describe('EntitySourceController', () => {
       jest
         .spyOn(entitySourceController, 'getEntityLocally')
         .mockResolvedValueOnce(null);
-      expect(entitySourceController.get(-1)).resolves.toThrow();
+      expect(entitySourceController.get(-1)).rejects.toThrow();
     });
   });
 

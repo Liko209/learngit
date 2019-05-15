@@ -47,7 +47,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
       isEmpty,
       isShow,
       showResult,
-      searchTerms,
+      searchKey,
     } = this.props;
     const { height } = this.state;
     return (
@@ -68,7 +68,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
               <JuiFullSearchResultStreamWrapper height={height}>
                 {showResult && (
                   <SearchHighlightContext.Provider
-                    value={{ terms: searchTerms }}
+                    value={{ keyword: searchKey }}
                   >
                     <PostListStream
                       isShow={isShow}

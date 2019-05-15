@@ -899,6 +899,63 @@ export class PostItem extends BaseWebComponent {
     await this.t.expect(this.isHighLight).ok();
   }
 
+  // be searched item
+  get keyworkdsByHighLight() {
+    return this.self.find('span.highlight-term');
+  }
+
+  // special item card
+  get itemCard() {
+    return this.self.find('.conversation-item-cards');
+  }
+
+  get eventTitle() {
+    this.warnFlakySelector();
+    return this.getSelectorByIcon('event', this.itemCard).nextSibling('span'); // todo: automation id
+  }
+
+  get eventLocation() {
+    this.warnFlakySelector();
+    return this.itemCard.find('div').withExactText('Location').nextSibling('div'); // todo: automation id
+  }
+
+  get eventDescripton() {
+    this.warnFlakySelector();
+    return // todo: automation id
+  }
+
+  get noteTitle() {
+    return this.itemCard.child('div').nth(0); // todo: automation id
+  }
+
+  get noteBody() {
+    return this.itemCard.child('div').nth(1); // todo: automation id
+  }
+
+  get taskTitle() {
+    return this.itemCard.child('div').nth(0).child('span').nth(1);
+  }
+
+  get taskAssignee() {
+    return this.itemCard.find('.task-avatar-name');
+  }
+
+  get taskSection() {
+    return this.itemCard.find('div').withExactText('Section').nextSibling('div');
+  }
+
+  get taskDescription() {
+    return this.itemCard.find('div').withExactText('Description').nextSibling('div');
+  }
+
+  get codeTitle() {
+    return this.getSelectorByIcon('code', this.itemCard).nextSibling('span');
+  }
+
+  get codeBody() {
+    return this.getSelectorByAutomationId('codeSnippetBody', this.itemCard);
+  }
+
 }
 
 class AudioConference extends BaseWebComponent {

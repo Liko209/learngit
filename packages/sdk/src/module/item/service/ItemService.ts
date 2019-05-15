@@ -28,6 +28,7 @@ import { ItemQueryOptions, ItemFilterFunction } from '../types';
 import { mainLogger } from 'foundation';
 import { ItemNotification } from '../utils/ItemNotification';
 import { ChangeModel } from '../../sync/types';
+const INVALID_ITEM_ID = [-1, -2, null];
 
 class ItemService extends EntityBaseService<Item> implements IItemService {
   private _itemServiceController: ItemServiceController;
@@ -211,6 +212,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
 
     let items: Item[] = [];
     if (itemIds.length > 0) {
+      itemIds = itemIds.filter(id => !INVALID_ITEM_ID.includes(id));
       items = await this.getEntitySource().batchGet([
         ...Array.from(new Set(itemIds)),
       ]);

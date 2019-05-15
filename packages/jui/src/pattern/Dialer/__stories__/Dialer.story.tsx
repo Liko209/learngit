@@ -183,7 +183,7 @@ storiesOf('Pattern', module)
               HoverActions={HoverActions}
             />
           </JuiHeaderContainer>
-          <JuiContainer End={End} KeypadActions={KeypadActions} />
+          <JuiContainer CallAction={End} KeypadActions={KeypadActions} />
         </JuiDialer>
       </JuiDraggableDialog>
     );

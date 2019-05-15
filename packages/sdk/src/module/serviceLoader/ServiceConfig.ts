@@ -24,6 +24,7 @@ const ServiceConfig = {
   SYNC_SERVICE: 'SyncService',
   TELEPHONY_SERVICE: 'TelephonyService',
   ITEM_SERVICE: 'ItemService',
+  SETTING_SERVICE: 'SettingService',
   PHONE_NUMBER_SERVICE: 'PhoneNumberService',
 };
 

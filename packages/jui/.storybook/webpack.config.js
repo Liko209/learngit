@@ -48,7 +48,7 @@ const moduleRules = [
   },
   {
     test: /\.svg$/,
-    include: path.resolve(__dirname, '../src/assets/country-svg'),
+    include: path.resolve(__dirname, '../src/assets/country-flag'),
     use: [
       {
         loader: 'svg-sprite-loader',
@@ -99,7 +99,7 @@ const resolveExtensions = ['.ts', '.tsx'];
 module.exports = async ({ config }) => {
   // modify the default svg rule
   const fileLoader = config.module.rules[3];
-  fileLoader.exclude = [path.resolve(__dirname, '../src/assets/country-svg')];
+  fileLoader.exclude = [path.resolve(__dirname, '../src/assets/country-flag')];
 
   // Make whatever fine-grained changes you need
   moduleRules.forEach(rule => {

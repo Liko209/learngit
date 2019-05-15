@@ -12,8 +12,7 @@ import { RCCallerIdController } from '../RCCallerIdController';
 import { RCBrandType } from '../../types';
 import { notificationCenter } from 'sdk/service';
 import { RCInfoGlobalConfig } from '../../config';
-import { AccountUserConfig } from '../../../account/config';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { AccountGlobalConfig } from '../../../account/config';
 
 jest.mock('../../config');
 jest.mock('../../../account/config');
@@ -69,15 +68,7 @@ describe('RegionInfoController', () => {
     _rcCallerIdController.getCallerIdList = jest.fn().mockResolvedValue([]);
   }
   function setUp() {
-    ServiceLoader.getInstance = jest
-      .fn()
-      .mockImplementation((config: string) => {
-        if (config === ServiceConfig.ACCOUNT_SERVICE) {
-          return { userConfig: AccountUserConfig.prototype };
-        }
-        return;
-      });
-    AccountUserConfig.prototype.getGlipUserId.mockReturnValue(1);
+    AccountGlobalConfig.getUserDictionary.mockReturnValue(1);
     _rcInfoFetchController = new RCInfoFetchController();
     _rcCallerIdController = new RCCallerIdController(_rcInfoFetchController);
     _rcAccountInfoController = new RCAccountInfoController(
@@ -433,7 +424,7 @@ describe('RegionInfoController', () => {
       expect(regionInfoController['_setStationLocation']).toBeCalledWith({
         newCountryInfo: DefaultCountryInfo,
         areaCode: '',
-        updateSpecialNumber: false,
+        updateSpecialNumber: true,
         areaCodeByManual: false,
         countryByManual: false,
       });
@@ -456,11 +447,11 @@ describe('RegionInfoController', () => {
       regionInfoController['_setStationLocation'] = jest.fn();
       await regionInfoController.loadRegionInfo();
       expect(regionInfoController['_setStationLocation']).toBeCalledWith({
-        newCountryInfo: setting['1'].countryInfo,
-        areaCode: '',
-        updateSpecialNumber: false,
+        areaCode: '123',
         areaCodeByManual: false,
-        countryByManual: false,
+        countryByManual: true,
+        newCountryInfo: { id: 10 },
+        updateSpecialNumber: true,
       });
       expect(regionInfoController['_currentCountryInfo']).toEqual(
         setting['1'].countryInfo,

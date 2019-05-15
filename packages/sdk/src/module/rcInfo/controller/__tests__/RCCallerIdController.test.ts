@@ -27,9 +27,13 @@ describe('RCInfoFetchController', () => {
     getCallerIdList: jest.fn(),
     getRCAccountInfo: jest.fn(),
   } as any;
+
+  function setUp() {
+    rcCallerIdController = new RCCallerIdController(mockFetchController);
+  }
   beforeEach(() => {
     clearMocks();
-    rcCallerIdController = new RCCallerIdController(mockFetchController);
+    setUp();
   });
 
   describe('getExtensionPhoneNumberList', () => {
@@ -111,6 +115,68 @@ describe('RCInfoFetchController', () => {
           phoneNumber: 'Blocked',
         },
       ]);
+    });
+  });
+
+  describe('getCallerById', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should return undefined when can not find the caller by id', async () => {
+      rcCallerIdController.getCallerIdList = jest.fn().mockResolvedValue([]);
+      expect(await rcCallerIdController.getCallerById(1)).toEqual(undefined);
+    });
+
+    it('should return matched caller by id', async () => {
+      rcCallerIdController.getCallerIdList = jest
+        .fn()
+        .mockResolvedValue([{ id: 1 }, { id: 2 }]);
+      expect(await rcCallerIdController.getCallerById(1)).toEqual({ id: 1 });
+    });
+  });
+
+  describe('getFirstDidCaller', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should return first direct number form caller list', async () => {
+      rcCallerIdController.getCallerIdList = jest
+        .fn()
+        .mockResolvedValue([
+          { id: 1, usageType: 'notDirectNumber' },
+          { id: 2, usageType: 'DirectNumber' },
+        ]);
+
+      expect(await rcCallerIdController.getFirstDidCaller()).toEqual({
+        id: 2,
+        usageType: 'DirectNumber',
+      });
+    });
+  });
+
+  describe('getCompanyMainCaller', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should return first company main number form caller list', async () => {
+      rcCallerIdController.getCallerIdList = jest
+        .fn()
+        .mockResolvedValue([
+          { id: 1, usageType: 'notDirectNumber' },
+          { id: 2, usageType: 'DirectNumber' },
+          { id: 3, usageType: 'MainCompanyNumber' },
+        ]);
+
+      expect(await rcCallerIdController.getCompanyMainCaller()).toEqual({
+        id: 3,
+        usageType: 'MainCompanyNumber',
+      });
     });
   });
 });

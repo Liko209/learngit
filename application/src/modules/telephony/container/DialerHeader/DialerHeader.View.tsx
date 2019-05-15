@@ -17,19 +17,60 @@ class DialerHeaderViewComponent extends React.Component<
 > {
   private _Avatar = () => {
     const { uid } = this.props;
-    if (uid) {
-      return <Avatar uid={uid} size="large" />;
+    return (
+      <Avatar
+        uid={uid}
+        showDefaultAvatar={!uid}
+        imgProps={{ draggable: false }}
+        size="large"
+      />
+    );
+  }
+
+  private _focusOnInput = () => {
+    const { shouldDisplayDialer, onFocus } = this.props;
+    if (shouldDisplayDialer && onFocus) {
+      onFocus();
     }
-    return null;
+  }
+
+  componentDidMount() {
+    this._focusOnInput();
   }
 
   render() {
-    const { name, phone, isExt, Back, t } = this.props;
+    const {
+      name,
+      phone,
+      isExt,
+      t,
+      shouldDisplayDialer,
+      inputString,
+      onFocus,
+      onBlur,
+      onChange,
+      dialerInputFocused,
+      deleteLastInputString,
+      deleteInputString,
+      onKeyDown,
+      Back,
+    } = this.props;
     return (
       <JuiHeader
         Avatar={this._Avatar}
-        name={name}
+        name={name ? name : t('telephony.unknownCaller')}
         phone={isExt ? `${t('telephony.Ext')} ${phone}` : phone}
+        showDialerInputField={shouldDisplayDialer}
+        dialerValue={inputString}
+        onChange={onChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        focus={dialerInputFocused}
+        placeholder={t('telephony.dialerPlaceholder')}
+        ariaLabelForDelete={t('telephony.delete')}
+        deleteLastInputString={deleteLastInputString}
+        deleteInputString={deleteInputString}
+        onKeyDown={onKeyDown}
         Back={Back}
       />
     );

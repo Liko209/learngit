@@ -30,6 +30,8 @@ const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
 const appPackage = require(paths.appPackageJson);
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 const argv = process.argv;
+const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
+
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
 const publicPath = paths.servedPath;
@@ -202,6 +204,7 @@ module.exports = {
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
       new ModuleScopePlugin(
+        [paths.appPublicEn],
         [paths.appSrc, paths.depPackages],
         [paths.appPackageJson],
       ),
@@ -318,6 +321,31 @@ module.exports = {
             // Remove this when webpack adds a warning or an error for this.
             // See https://github.com/webpack/webpack/issues/6571
             sideEffects: true,
+          },
+          // country flag svg loader
+          {
+            test: /jui\/src\/assets\/country-flag\/(.+)\.svg$/,
+            use: [
+              {
+                loader: 'svg-sprite-loader',
+                options: {
+                  extract: true,
+                  spriteFilename: 'static/media/country-flag.[hash:6].svg',
+                  symbolId: 'country-flag-[name]',
+                },
+              },
+              {
+                loader: 'svgo-loader',
+                options: {
+                  plugins: [
+                    { removeTitle: true },
+                    { convertColors: { shorthex: false } },
+                    { convertPathDtata: true },
+                    { reusePaths: true },
+                  ],
+                },
+              },
+            ],
           },
           // "file" loader makes sure assets end up in the `build` folder.
           // When you `import` an asset, you get its filename.
@@ -446,6 +474,8 @@ module.exports = {
       // The formatter is invoked directly in WebpackDevServerUtils during development
       // formatter: typescriptFormatter,
     }),
+    // svg sprite loader plugin
+    new SpriteLoaderPlugin(),
     // generate service worker
     new GenerateSW({
       exclude: [/\.map$/, /asset-manifest\.json$/],

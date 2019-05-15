@@ -6,7 +6,6 @@
 
 import { Profile } from '../entity';
 import { AccountService } from '../../account/service';
-import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { JSdkError } from '../../../error/sdk/JSdkError';
 import { ERROR_CODES_SDK } from '../../../error/sdk/types';
@@ -18,7 +17,9 @@ import _ from 'lodash';
 import { transform } from '../../../service/utils';
 import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
-
+import { SETTING_KEYS } from '../constants';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { RCInfoService } from 'sdk/module/rcInfo';
 class ProfileDataController {
   constructor(
     public entitySourceController: IEntitySourceController<Profile>,
@@ -103,6 +104,21 @@ class ProfileDataController {
       mainLogger.warn(`handleProfile error:${e}`);
       return null;
     }
+  }
+
+  async getDefaultCaller() {
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+
+    const profile = await this.getProfile();
+    const defaultCallerNumberId = profile[SETTING_KEYS.DEFAULT_NUMBER];
+    return (
+      (defaultCallerNumberId !== undefined &&
+        (await rcInfoService.getCallerById(defaultCallerNumberId))) ||
+      ((await rcInfoService.getFirstDidCaller()) ||
+        (await rcInfoService.getCompanyMainCaller()))
+    );
   }
 }
 

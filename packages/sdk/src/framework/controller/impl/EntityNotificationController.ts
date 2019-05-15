@@ -16,6 +16,10 @@ class EntityNotificationController<T extends IdModel<ModelIdType> = IdModel>
     super();
   }
 
+  setFilterFunc(filterFunc?: (entity: T) => boolean) {
+    this._filterFunc = filterFunc;
+  }
+
   onReceivedNotification(entities: T[]) {
     if (this._observers.length && entities.length) {
       const needNotifiedEntities = this._filterFunc

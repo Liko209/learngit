@@ -39,6 +39,9 @@ class PostViewDao extends BaseDao<PostView> {
     }
     // 1. Get ids from post lookup table via group id
     let postIds = await this.queryPostIdsByGroupId(groupId);
+    if (!postIds.length) {
+      return [];
+    }
 
     // 2. If post id > 0, calculate the startIndex & endIndex via direction, else limit is the endIndex
     postIds = ArrayUtils.sliceIdArray(

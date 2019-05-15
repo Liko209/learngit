@@ -16,6 +16,10 @@ class DaoGlobalConfig extends CommonGlobalConfig {
     return this.get(CONFIG_KEYS.DB_SCHEMA_VERSION);
   }
 
+  static removeDBSchemaVersion() {
+    this.remove(CONFIG_KEYS.DB_SCHEMA_VERSION);
+  }
+
   static getDBBlockMessageKey() {
     return this.get(CONFIG_KEYS.DB_BLOCK_MESSAGE_KEY);
   }

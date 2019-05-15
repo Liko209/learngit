@@ -69,7 +69,9 @@
     "version": "Version",
     "lastCommit": "Last Commit",
     "deployedTime": "Date",
-    "allRightsReserved": "All rights reserved"
+    "allRightsReserved": "All rights reserved",
+    "dialer": "Dialer",
+    "openDialer": "Open the dialer"
   },
   "globalSearch": {
     "search": "Search",
@@ -514,6 +516,7 @@
       "LackOfRecordingPermission": "Sorry, your account does not have the feature to record a call. To enable the feature, contact your account administrator.",
       "RecordOnServiceWeb": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
       "RecordAutomatically": "Cannot start call recording.",
+      "InvalidNumber": "The phone number entered is invalid. Check the number and try again.",
       "ReplyCustomMessageEmpty": "Sorry, you cannot send an empty message.",
       "ReplyMessageSuccess": "Your voice message was sent successfully."
     },
@@ -526,7 +529,22 @@
       "hold": "Hold the call",
       "resume": "Resume the call",
       "record": "Record the call",
-      "stopRecord": "Stop recording"
+      "stopRecord": "Stop recording",
+      "minimize": "Minimize the dialog"
+    },
+    "dialerPlaceholder": "Type a number",
+    "delete": "Delete",
+    "callFrom": "Call from:",
+    "phoneNumberType": {
+      "directNumber": "Direct Number",
+      "mainCompanyNumber": "Main Company Number",
+      "blocked": "Blocked",
+      "nickName": "Nick Name",
+      "companyNumber": "Company Number",
+      "companyFaxNumber": "Company Fax Number"
+    },
+    "callerIdSelector": {
+      "tooltip": "You can change this default Caller ID in settings."
     }
   },
   "meeting": {
@@ -539,9 +557,34 @@
     "general": "General",
     "notificationAndSounds": "Notification and Sounds",
     "messages": "Messages",
-    "phone": "Phone",
     "meetings": "Meetings",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "update": "Update",
+    "phone": {
+      "title": "Phone",
+      "general": {
+        "title": "General",
+        "callerID": {
+          "label": "Caller ID",
+          "description": "Choose your default Caller ID for making RingCentral phone calls",
+          "errorText": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later."
+        },
+        "extensions": {
+          "label": "Extension settings",
+          "description": "Customize your RingCentral extension settings (call routing, voicemail greetings and more)",
+          "errorText": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later"
+        },
+        "regionSetting": {
+          "label": "Region",
+          "region": "Region",
+          "country": "Country",
+          "areaCode": "Area Code",
+          "areaCodeErrorText": "Invalid area code",
+          "saveSuccessText": "Your region is updated successfully.",
+          "regionChangeDesc": "Set the country and area code for your region. This will be used for local and emergency dialing and phone number formatting."
+        }
+      }
+    }
   },
   "viewer": {
     "ZoomIn": "Scale file up",
@@ -588,5 +631,8 @@
       "noUpgradeDialogOk": "OK",
       "topBannerWarning": "Your desktop app is out-of-date. Please upgrade immediately."
     }
+  },
+  "dialer": {
+    "newCall": "New Call"
   }
 }

@@ -20,6 +20,8 @@ import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
 jest.mock('sdk/module/post');
 jest.mock('sdk/module/groupConfig');
 jest.mock('sdk/api');
+jest.mock('sdk/module/config/GlobalConfig');
+jest.mock('sdk/module/config/UserConfig');
 
 const postService = new PostService();
 
