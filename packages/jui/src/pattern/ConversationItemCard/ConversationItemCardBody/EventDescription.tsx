@@ -9,23 +9,25 @@ import { typography, grey, spacing } from '../../../foundation/utils/styles';
 import { withHighlight } from '../../../hoc/withHighlight';
 
 type Props = {
-  description: string;
+  children?: string;
 };
 
-const StyledEventDescription = styled.div`
+const StyledEventDescription = styled.pre`
   margin-top: ${spacing(2)};
   ${typography('body1')};
   color: ${grey('500')};
 `;
+function juiEventDescriptionComponent({ children = '' }: Props) {
+  if (typeof children === 'string') {
+    return <StyledEventDescription dangerouslySetInnerHTML={{ __html: children }}/>;
+  }
+  return <StyledEventDescription>{children}</StyledEventDescription>;
+}
 
-const JuiEventDescriptionComponent = ({ description }: Props) => (
-  <StyledEventDescription dangerouslySetInnerHTML={{ __html: description }} />
-);
-
-JuiEventDescriptionComponent.displayName = 'JuiEventDescription';
+juiEventDescriptionComponent.displayName = 'JuiEventDescription';
 
 const JuiEventDescription = withHighlight(['description'])(
-  memo(JuiEventDescriptionComponent),
+  memo(juiEventDescriptionComponent),
 );
 
 export { JuiEventDescription };
