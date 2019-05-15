@@ -372,3 +372,220 @@ test.meta(<ITestMeta>{
     await t.expect(searchDialog.recentPage.contentInConversationByName(displayContent).exists).ok();
   });
 });
+
+test.meta(<ITestMeta> {
+  priority: ['P2'],
+  caseIds: ['JPT-1214', 'JPT-1215'],
+  maintainers: ['alexander.zaverukha'],
+  keywords: ['search'],
+})('Re-login to check the recently searched list', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const userA = users[0];;
+  const loginUser = users[6];
+  const groupUser = users[2];
+  await h(t).glip(loginUser).init();
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
+  const nameUserA = await h(t).glip(loginUser).getPersonPartialData('display_name', userA.rcId);
+  const groupName = await h(t).glip(loginUser).getPersonPartialData('display_name', groupUser.rcId);
+
+  const team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser , users[1]],
+  };
+
+  const group = <IGroup>{
+    type: 'Group',
+    owner: loginUser,
+    members: [loginUser, groupUser],
+  };
+
+  await h(t).withLog(`When I login Jupiter : ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    },
+  );
+  const searchDialog = app.homePage.searchDialog;
+  await h(t).withLog(`And make records on searched list, group: ${groupName} team: ${team} user: ${nameUserA}`, async () => {
+    await h(t).scenarioHelper.createTeamsOrChats([team, group]);
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(groupName);
+    await t.click(searchDialog.instantPage.peoples.withText(groupName));
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(team.name);
+    await t.click(searchDialog.instantPage.teams.withText(team.name));
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(nameUserA);
+    await t.click(searchDialog.instantPage.peoples.withText(nameUserA));
+  });
+
+  await h(t).withLog('When I check the recently searched list', async () => {
+    await app.homePage.header.searchBar.clickSelf();
+  });
+
+  await h(t).withLog('Then there are some items on the recently searched list', async () => {
+    await t.expect(searchDialog.instantPage.conversationItems.count).gte(3);
+    await app.homePage.header.searchBar.clickCloseIcon();
+  });
+
+  await h(t).withLog('When I sign out the app', async () => {
+    await app.homePage.openSettingMenu();
+    await app.homePage.settingMenu.clickLogout();
+  });
+
+  await h(t).withLog(`And Re-login the app with the same account ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('And I tab or mouse in the global search box', async () => {
+    await app.homePage.header.searchBar.clickSelf();
+  });
+
+  await h(t).withLog('Then there is no dropdown list displayed', async () => {
+    await t.expect(searchDialog.instantPage.conversationItems.count).gte(0);
+  });
+});
+
+test.meta(<ITestMeta> {
+  priority: ['P2'],
+  caseIds: ['JPT-1228'],
+  maintainers: ['alexander.zaverukha'],
+  keywords: ['search'],
+})('Check the recently searched list after clear data', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const groupUser = users[2];
+  await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).resetProfileAndState();
+  const groupName =  await h(t).glip(loginUser).getPersonPartialData('display_name', groupUser.rcId);
+
+  const team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser , users[1]],
+  };
+
+
+  const team2 = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser , users[2]],
+  };
+
+
+  const group = <IGroup>{
+    type: 'Group',
+    owner: loginUser,
+    members: [loginUser, loginUser],
+  };
+
+  await h(t).withLog(`Given I login Jupiter : ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    },
+  );
+
+  const addUsersToSearchList = async (users)=>{
+    for (const user of users){
+      const userName = await h(t).glip(loginUser).getPersonPartialData('display_name', user.rcId);
+      await app.homePage.header.searchBar.clickSelf();
+      await searchDialog.typeSearchKeyword(userName);
+      await t.click(searchDialog.instantPage.peoples.withText(userName));
+    }
+  }
+
+  const searchDialog = app.homePage.searchDialog;
+  await h(t).withLog(`And have 10 records on searched list items on the recently search list and it contains team: ${team.name}`, async () => {
+    await h(t).scenarioHelper.createTeamsOrChats([team, team2, group]);
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(groupName);
+    await t.click(searchDialog.instantPage.peoples.withText(groupName));
+
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(team.name);
+    await t.click(searchDialog.instantPage.teams.withText(team.name));
+
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(team2.name);
+    await t.click(searchDialog.instantPage.teams.withText(team2.name));
+
+    await app.homePage.header.searchBar.clickSelf();
+    await addUsersToSearchList(users);
+  });
+
+  await h(t).withLog('When I tab or mouse in the global search box', async () => {
+    await app.homePage.header.searchBar.clickSelf();
+  });
+
+  await h(t).withLog(`Then the recently searched dropdown list displayed 10 items and it contains team:  ${team.name}`, async () => {
+    await t.expect(searchDialog.recentPage.conversationItems.count).eql(10);
+    await t.expect(searchDialog.recentPage.conversationByName(team.name).exists).ok();
+  });
+
+  await h(t).withLog(`When I delete team ${team}`, async () => {
+    await h(t).platform(loginUser).deleteTeam(team.glipId);
+  });
+
+  await h(t).withLog(`Then the ${team.name} item disappear immediately and just only show 9 contact items`, async () => {
+    await t.expect(searchDialog.instantPage.items.count).eql(9);
+    await t.expect(searchDialog.recentPage.conversationByName(team.name).exists).notOk();
+  });
+
+  await h(t).withLog(`When I tap ESC keyboard`, async () => {
+    await searchDialog.quitByPressEsc();
+  });
+
+  await h(t).withLog('And I tab or mouse in the global search box', async () => {
+    await app.homePage.header.searchBar.clickSelf();
+  });
+
+  await h(t).withLog(`Then the recently searched dropdown list displayed with 9 items and not contains team: ${team.name}`, async () => {
+    await t.expect(searchDialog.instantPage.items.count).eql(9);
+    await t.expect(searchDialog.recentPage.conversationByName(team.name).exists).notOk();
+  });
+
+  await h(t).withLog('When I add team to have 10 items in the recently searched dropdown', async () => {
+    await h(t).scenarioHelper.createTeam(team);
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(team.name);
+    await t.click(searchDialog.instantPage.teams.withText(team.name));
+  });
+
+  await h(t).withLog('And I tab or mouse in the global search box', async () => {
+    await app.homePage.header.searchBar.clickSelf();
+  });
+
+  await h(t).withLog(`Then the recently searched dropdown list displayed 10 items and it contains team:  ${team.name}`, async () => {
+    await t.expect(searchDialog.recentPage.conversationItems.count).eql(10);
+    await t.expect(searchDialog.recentPage.conversationByName(team.name).exists).ok();
+  });
+
+  await h(t).withLog(`When I archive team ${team}`, async () => {
+    await h(t).platform(loginUser).archiveTeam(team.glipId);
+  });
+
+  await h(t).withLog(`Then the ${team.name} item disappear immediately and just only show 9 contact items`, async () => {
+    await t.expect(searchDialog.instantPage.items.count).eql(9);
+    await t.expect(searchDialog.recentPage.conversationByName(team.name).exists).notOk();
+  });
+
+  await h(t).withLog(`When I tap ESC keyboard`, async () => {
+    await searchDialog.quitByPressEsc();
+  });
+
+  await h(t).withLog('And I tab or mouse in the global search box', async () => {
+    await app.homePage.header.searchBar.clickSelf();
+  });
+
+  await h(t).withLog(`Then the recently searched dropdown list displayed with 9 items and not contains team: ${team.name}`, async () => {
+    await t.expect(searchDialog.instantPage.items.count).eql(9);
+    await t.expect(searchDialog.recentPage.conversationByName(team.name).exists).notOk();
+  });
+});
