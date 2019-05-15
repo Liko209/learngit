@@ -2,6 +2,10 @@ import { v4 as uuid } from 'uuid';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as sharp from 'sharp';
+import * as debug from 'debug';
+import { AxiosInstance } from 'axios';
+import * as axiosDebug from 'axios-debug-log';
+
 import { TMPFILE_PATH, RUNNER_OPTS } from '../config';
 import { getLogger } from 'log4js';
 const logger = getLogger(__filename);
@@ -29,7 +33,7 @@ export class MiscUtils {
 
   static createTmpFile(content: any, filename?: string) {
     filename = filename || `${uuid()}.tmp`;
-    if( !fs.existsSync(TMPFILE_PATH)){
+    if (!fs.existsSync(TMPFILE_PATH)) {
       fs.mkdirSync(TMPFILE_PATH);
     }
     const filepath = path.join(TMPFILE_PATH, filename);
@@ -65,5 +69,33 @@ export class MiscUtils {
     if (!fs.existsSync(path)) {
       fs.mkdirSync(path)
     }
+  }
+
+  static axiosDebugConfig() {
+    axiosDebug({
+      request: function (debug, config) {
+      },
+      response: function (debug, response) {
+      },
+      error: function (debug, error) {
+        // Read https://www.npmjs.com/package/axios#handling-errors for more info
+        if (error.response) {
+          debug(error.response.data);
+          debug(error.response.status);
+          debug(error.response.headers);
+        } else if (error.request) {
+          debug(error.request);
+        } else {
+          debug('Error', error.message);
+        }
+        debug(error.config);
+      }
+    });
+  }
+
+  static addDebugLog(sdk: AxiosInstance, Indentifier: string) {
+    const rcLogger = require('debug')(Indentifier)
+    axiosDebug.enable(process.env.DEBUG);
+    axiosDebug.addLogger(sdk, rcLogger);
   }
 }
