@@ -12,9 +12,11 @@ import {
 type MembersProps = ProfileDialogGroupProps;
 
 type MembersViewProps = ProfileDialogGroupViewProps & {
-  sortedAllMemberIds: number[];
   filteredMemberIds: number[];
   changeSearchInputDebounce: (keywords: string) => void;
+  hasMore: (direction: 'up' | 'down') => boolean;
+  loadInitialData: () => Promise<void>;
+  loadMore: (direction: 'up' | 'down', count: number) => Promise<void>;
 };
 
 export { MembersProps, MembersViewProps };

@@ -37,7 +37,7 @@ class MembersView extends Component<MembersViewProps & MembersProps> {
   }
 
   render() {
-    const { id, sortedAllMemberIds, filteredMemberIds } = this.props;
+    const { id, filteredMemberIds } = this.props;
     const { width, height, searchInput } = this.state;
     const { sizeManager, showEmpty, setShowEmpty } = this.context;
     const usedHeight: number = sizeManager.getUsedSize('membersList').height;
@@ -65,12 +65,14 @@ class MembersView extends Component<MembersViewProps & MembersProps> {
         <MemberHeader id={id} onSearch={this.handleSearch} />
         <MemberList
           id={id}
-          sortedAllMemberIds={sortedAllMemberIds}
-          filteredMemberIds={filteredMemberIds}
           searchInput={searchInput}
           width={width}
           height={preferHeight}
           setShowEmpty={setShowEmpty}
+          loadInitialData={this.props.loadInitialData}
+          loadMore={this.props.loadMore}
+          hasMore={this.props.hasMore}
+          filteredMemberIds={filteredMemberIds}
         />
       </JuiProfileDialogContentMembers>
     );

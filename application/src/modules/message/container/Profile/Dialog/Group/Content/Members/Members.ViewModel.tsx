@@ -3,7 +3,7 @@
  * @Date: 2018-11-22 11:27:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, action, computed } from 'mobx';
+import { observable, action } from 'mobx';
 import { ProfileDialogGroupViewModel } from '../../Group.ViewModel';
 import { MembersProps, MembersViewProps } from './types';
 import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandler';
@@ -18,7 +18,7 @@ const DELAY_DEBOUNCE = 300;
 class MembersViewModel extends ProfileDialogGroupViewModel
   implements MembersViewProps {
   @observable
-  private _sortableGroupMemberHandler: SortableGroupMemberHandler | null = null;
+  private _sortableGroupMemberHandler: SortableGroupMemberHandler;
   @observable
   filteredMemberIds: number[] = [];
   @observable
@@ -35,12 +35,6 @@ class MembersViewModel extends ProfileDialogGroupViewModel
       fireImmediately: true,
     });
     this.reaction(
-      () => this.sortedAllMemberIds,
-      () => {
-        this.handleSearch();
-      },
-    );
-    this.reaction(
       () => this.keywords,
       () => {
         this.handleSearch();
@@ -48,18 +42,9 @@ class MembersViewModel extends ProfileDialogGroupViewModel
     );
   }
 
-  createSortableHandler = async () => {
+  createSortableHandler = () => {
     // This handler need observable
     this._sortableGroupMemberHandler = new SortableGroupMemberHandler(this.id);
-  }
-
-  @computed
-  get sortedAllMemberIds() {
-    if (this._sortableGroupMemberHandler === null) {
-      return [];
-    }
-    // getSortedGroupMembersIds is computed
-    return this._sortableGroupMemberHandler.getSortedGroupMembersIds();
   }
 
   @action
@@ -76,7 +61,7 @@ class MembersViewModel extends ProfileDialogGroupViewModel
       const result = await searchService.doFuzzySearchPersons({
         searchKey: this.keywords,
         excludeSelf: false,
-        arrangeIds: this.sortedAllMemberIds,
+        arrangeIds: this._sortableGroupMemberHandler.getSortedGroupMembersIds(),
         fetchAllIfSearchKeyEmpty: true,
         asIdsOrder: true,
       });
@@ -89,8 +74,27 @@ class MembersViewModel extends ProfileDialogGroupViewModel
       return result;
     }
     // when no keywords, just reset the member list.
-    this.filteredMemberIds = this.sortedAllMemberIds;
+    this.filteredMemberIds = this._sortableGroupMemberHandler.getSortedGroupMembersIds();
     return null;
+  }
+
+  @action
+  hasMore = (direction: 'up' | 'down') => {
+    if (this.keywords) {
+      return false;
+    }
+    return this.group.members.length !== this.filteredMemberIds.length;
+  }
+
+  @action
+  loadInitialData = async () => {
+    await this._sortableGroupMemberHandler.fetchGroupMembersByPage(20);
+    await this.handleSearch();
+  }
+  @action
+  loadMore = async (direction: 'up' | 'down', count: number) => {
+    await this._sortableGroupMemberHandler.fetchGroupMembersByPage(count);
+    await this.handleSearch();
   }
 }
 export { MembersViewModel };
