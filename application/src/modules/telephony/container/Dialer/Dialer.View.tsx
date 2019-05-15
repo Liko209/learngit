@@ -21,16 +21,19 @@ import { primary, palette } from 'jui/foundation/utils';
 import { Reply } from '../Reply';
 import { INCOMING_STATE } from '../../store';
 
+const makeSeconds = (val: number) => `${val}s`;
+const secondsToNumber = (val: string) => +val.replace('s', '');
+
 const ANIMATION_END_EVT = 'animationend';
 const SHADOW_SIZE = '20px';
-
-const EXPAND_SCALE = '1.4';
-const FADE_DURATION = '.5s';
+const EXPAND_SCALE = makeSeconds(1.4);
+const FADE_DURATION = makeSeconds(0.5);
 const MOVE_DURATION = FADE_DURATION;
-const ROUND_DURATION = '.6s';
-const BLINK_DURATION = '.4s';
-
-const MOVE_DELAY = `calc(${ROUND_DURATION} - ${MOVE_DURATION})`;
+const ROUND_DURATION = makeSeconds(0.6);
+const BLINK_DURATION = makeSeconds(0.4);
+const MOVE_DELAY = makeSeconds(
+  secondsToNumber(ROUND_DURATION) - secondsToNumber(MOVE_DURATION),
+);
 const BLINK_DELAY = ROUND_DURATION;
 
 const DEFAULT_TRANSFORMATION_BEZIER = 'ease-in-out';
