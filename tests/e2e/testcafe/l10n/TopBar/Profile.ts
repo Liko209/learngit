@@ -33,7 +33,7 @@ test(formalName('Check menu tip', ['P2', 'Profile', 'Hank.Huang']), async (t) =>
   await h(t).withLog(`Then "Profile" page should be displayed`, async() => {
     const settingMenu = app.homePage.settingMenu;
     await t.expect(settingMenu.viewYourProfileButton.exists).ok();
-  })
+  });
   await h(t).log('And I take screenshot ', {screenshotPath:`Jupiter_TopBar_ProfilePage`});
   await h(t).withLog(`When I hover "Favorites" button`, async() => {
     const favoriteButton = app.homePage.profileDialog.favoriteButton;
@@ -42,7 +42,7 @@ test(formalName('Check menu tip', ['P2', 'Profile', 'Hank.Huang']), async (t) =>
   await h(t).withLog(`Then "favorite" icon should be displayed`, async() => {
     await t.expect(app.homePage.profileDialog.favoriteStatusIcon.exists).ok();
     await t.expect(app.homePage.profileDialog.unFavoriteStatusIcon.exists).notOk();
-  })
+  });
   await h(t).log('And I take screenshot ', {screenshotPath:`Jupiter_TopBar_RemoveFromFavorites`});
   await h(t).withLog(`When I click "Favorites" button and hover it`, async() => {
     const favoriteButton = app.homePage.profileDialog.favoriteButton;
@@ -52,7 +52,7 @@ test(formalName('Check menu tip', ['P2', 'Profile', 'Hank.Huang']), async (t) =>
   await h(t).withLog(`Then "favorite" icon change to "unFavorite" icon`, async() => {
     await t.expect(app.homePage.profileDialog.favoriteStatusIcon.exists).notOk();
     await t.expect(app.homePage.profileDialog.unFavoriteStatusIcon.exists).ok();
-  })
+  });
   await h(t).log('And I take screenshot ', {screenshotPath:'Jupiter_TopBar_AddToFavorites'});
   await h(t).withLog(`When I hover "Close" button`, async() => {
     const closeButton = app.homePage.profileDialog.closeButton;
@@ -62,11 +62,10 @@ test(formalName('Check menu tip', ['P2', 'Profile', 'Hank.Huang']), async (t) =>
   await h(t).withLog(`When I hover "Ext" area and hover "Copy" button`,async() => {
     const extensionArea =app.homePage.profileDialog.extensionArea;
     await t.hover(extensionArea);
-    await t.hover(extensionArea.nth(-1).find('button'))
+    await t.hover(extensionArea.nth(-1).find('button'));
   });
   await h(t).withLog(`Then text "Copy" should be displayed` , async() => {
     const extensionArea =app.homePage.profileDialog.extensionArea;
-
     await t.expect(extensionArea.nth(-1).find('button').exists).ok();
   });
   await h(t).log('And I take screenshot ', {screenshotPath:'Jupiter_TopBar_ProfileCopyButton'});

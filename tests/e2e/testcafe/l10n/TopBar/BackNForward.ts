@@ -31,7 +31,7 @@ test(formalName('Check menu tip', ['P2', 'BackNForward', 'Hank.Huang']), async (
   await h(t).withLog(`Then back button on header should be enabled`, async() => {
     const backButton = app.homePage.header.backButton;
     await backButton.shouldBeEnabled();
-  })
+  });
   await h(t).log('And I take screenshot ',{ screenshotPath: 'Jupiter_TopBar_BackButton' });
   await h(t).withLog(`When I click "back" button and I hover "forward" button`, async() => {
     const forwardButton = app.homePage.header.forwardButton;
@@ -43,6 +43,6 @@ test(formalName('Check menu tip', ['P2', 'BackNForward', 'Hank.Huang']), async (
     const backButton = app.homePage.header.backButton;
     const forwardButton = app.homePage.header.forwardButton;
     await forwardButton.shouldBeEnabled();
-  })
+  });
   await h(t).log('And I take screenshot ',{ screenshotPath: 'Jupiter_TopBar_ForwardButton' });
 });

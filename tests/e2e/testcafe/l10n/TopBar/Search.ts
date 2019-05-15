@@ -135,7 +135,7 @@ test(formalName('Check menu tip', ['P2', 'Search', 'Hank.Huang']), async (t) => 
     await messagesTab.postByField.selectMemberByNth(0);
     await t.hover(messagesTab.postByField.selectedItems.nth(-1).find('button'));
   });
-  await h(t).withLog(`Then "Remove" button should be displayed`, async () => {
+  await h(t).withLog('Then "Remove" button should be displayed', async () => {
     const messagesTab = searchDialog.fullSearchPage.messagesTab;
     await t.expect(messagesTab.postByField.selectedItems.nth(-1).find('button').exists).ok();
   });
@@ -147,16 +147,16 @@ test(formalName('Check menu tip', ['P2', 'Search', 'Hank.Huang']), async (t) => 
   await h(t).withLog(`Then "Type Selector" selector box should be displayed `, async () => {
     const typeOption = searchDialog.fullSearchPage.messagesTab.typeOptionSelector;
     await t.expect(typeOption.exists).ok();
-  })
+  });
   await h(t).log(`And I take screenshot `, { screenshotPath: `Jupiter_TopBar_TypeSelector` });
   await h(t).withLog(`When I click "Time posted" selector`, async () => {
     const messagesTab = searchDialog.fullSearchPage.messagesTab;
     await messagesTab.openTypeOptions();
     await messagesTab.openTimeOptions();
-  })
+  });
   await h(t).withLog(`Then "Time posted" selector box should be displayed `, async () => {
     const timePostOption = searchDialog.fullSearchPage.messagesTab.timePostOptionSelector;
     await t.expect(timePostOption.exists).ok();
-  })
+  });
   await h(t).log(`Then take screenshot`, { screenshotPath: `Jupiter_TopBar_TimePostedSelector` });
 });
