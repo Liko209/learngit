@@ -11,6 +11,7 @@ import { Listener } from 'eventemitter2';
 
 class UserConfig {
   private _configService: IUserConfigService;
+  private _configCache: Map<string, any> = new Map();
   constructor(private _userId: string, private _moduleName: string) {
     this._configService = ServiceLoader.getInstance<UserConfigService>(
       ServiceConfig.USER_CONFIG_SERVICE,
@@ -25,14 +26,21 @@ class UserConfig {
   }
 
   protected get(key: string) {
-    return this._configService.get(this._moduleName, key);
+    let value = this._configCache.get(key);
+    if (value === undefined) {
+      value = this._configService.get(this._moduleName, key);
+      this._configCache.set(key, value);
+    }
+    return value;
   }
 
   protected put(key: string, value: any) {
+    this._configCache.set(key, value);
     this._configService.put(this._moduleName, key, value);
   }
 
   protected remove(key: string) {
+    this._configCache.delete(key);
     this._configService.remove(this._moduleName, key);
   }
 
