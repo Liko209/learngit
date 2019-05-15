@@ -127,6 +127,12 @@ export class DialPad extends React.Component<
   });
 
   _onMouseupForZero = throttledHandler(() => {
+    // clear all the keys being pressed
+    this._buffer = [];
+    this.setState({
+      pressedKeys: this._buffer,
+    });
+
     const curTime = +new Date();
     if (
       this._mouseDownTime &&
@@ -134,6 +140,7 @@ export class DialPad extends React.Component<
     ) {
       return;
     }
+
     this._onClicks[10](); // the '10' button is on the 11th
     this._clearTimeout();
     this._mouseDownTime = null;
