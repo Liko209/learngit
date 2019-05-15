@@ -17,14 +17,13 @@ import { Group } from 'sdk/module/group/entity';
 import { ENTITY, EVENT_TYPES } from 'sdk/service';
 import { ENTITY_NAME } from '@/store/constants';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
-import { caseInsensitive as natureCompare } from 'string-natural-compare';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { IdListPagingDataProvider } from '../base/fetch/IdListPagingDataProvider';
 import PersonModel from '@/store/models/Person';
 import { IEntityDataProvider, IMatchFunc } from '../base/fetch/types';
-
+import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils/performance';
 class PersonProvider implements IEntityDataProvider<Person> {
   async getByIds(ids: number[]) {
     const personService = ServiceLoader.getInstance<PersonService>(
@@ -65,10 +64,15 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
 
   async fetchGroupMembersByPage(pageSize: number) {
     if (!this._isInitialized()) {
+      const tracer = PerformanceTracer.initial();
       await this._initGroupData();
       await this._buildFoc();
+      tracer.end({
+        key: PERFORMANCE_KEYS.LOAD_GROUP_MEMBERS,
+        count:
+          (this._sortedGroupMembers && this._sortedGroupMembers.length) || 0,
+      });
     }
-
     return this._foc.fetchData(QUERY_DIRECTION.NEWER, pageSize);
   }
 
@@ -86,10 +90,9 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       }
     }
 
-    return natureCompare(
-      personService.getFullName(lPerson),
-      personService.getFullName(rPerson),
-    );
+    const lName = personService.getFullName(lPerson).toLowerCase();
+    const rName = personService.getFullName(rPerson).toLowerCase();
+    return lName < rName ? -1 : lName > rName ? 1 : 0;
   }
 
   private async _sortGroupMembers() {
