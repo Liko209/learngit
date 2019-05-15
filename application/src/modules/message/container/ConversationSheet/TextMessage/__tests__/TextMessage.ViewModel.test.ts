@@ -3,12 +3,23 @@
  * @Date: 2018-10-25 10:29:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { TextMessageViewModel } from '../TextMessage.ViewModel';
+import * as telephony from '@/modules/telephony/module.config';
+import * as featuresFlags from '@/modules/featuresFlags/module.config';
+import { Jupiter, container } from 'framework';
+import * as utils from '@/store/utils';
+import { AuthUserConfig } from 'sdk/module/account/config';
+import { TelephonyService } from '@/modules/telephony/service';
+import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
+import Backend from 'i18next-xhr-backend';
+import jsonFile from '../../../../../../../public/locales/en/translations.json';
+import i18next from 'i18next';
+import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 
 jest.mock('@/store/utils');
-
+jest.mock('sdk/module/config/service/UserConfigService');
+jest.mock('sdk/module/account/config');
 // const GROUP_ID = 52994050;
 // const TEAM_ID = 11370502;
 // const PERSON_ID = 2514947;
@@ -33,22 +44,48 @@ const mockMap = {
 };
 
 let vm: TextMessageViewModel;
-
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(telephony.config);
+jupiter.registerModule(featuresFlags.config);
 describe('TextMessageViewModel', () => {
   beforeAll(() => {
+    AuthUserConfig.prototype.getRCToken.mockReturnValueOnce({
+      endpoint_id: 1234,
+    });
     jest.resetAllMocks();
-    (getEntity as jest.Mock).mockImplementation((name, id) => {
+    (utils.getEntity as jest.Mock).mockImplementation((name, id) => {
       return mockMap[name];
     });
   });
 
   beforeEach(() => {
-    vm = new TextMessageViewModel();
+    AuthUserConfig.prototype.getRCToken.mockReturnValueOnce({
+      endpoint_id: 12345,
+    });
+    vm = new TextMessageViewModel({ id: 123 });
     jest.spyOn(vm, 'getGroup');
     jest.spyOn(vm, 'getPerson');
   });
-
+  it('should called directCall while directCall called', () => {
+    const telephonyService: TelephonyService = container.get(TELEPHONY_SERVICE);
+    telephonyService.directCall = jest.fn();
+    vm.directCall('12345678');
+    expect(telephonyService.directCall).toHaveBeenCalledTimes(1);
+  });
+  it('should update canUseTelephony while called updateCanUseTelephony', () => {
+    const featuresFlagsService: FeaturesFlagsService = container.get(
+      FeaturesFlagsService,
+    );
+    featuresFlagsService.canUseTelephony = jest.fn();
+    vm.canUseTelephony();
+    expect(featuresFlagsService.canUseTelephony).toHaveBeenCalledTimes(1);
+  });
   describe('html', () => {
+    beforeAll(() => {
+      AuthUserConfig.prototype.getRCToken.mockReturnValueOnce({
+        endpoint_id: 1234,
+      });
+    });
     it('should be get url format text when text has link', () => {
       mockPostData.text = 'https://www.baidu.com';
       expect(vm.html).toBe(
@@ -67,6 +104,33 @@ describe('TextMessageViewModel', () => {
       mockPostData.text = '**awesome**';
       expect(vm.html).toBe('<b>awesome</b>');
     });
+    it('should return hyperlink while get valid links', () => {
+      jest.spyOn(utils, 'getGlobalValue').mockReturnValue(true);
+      mockPostData.text = '1234567';
+      expect(vm.html).toBe(
+        '<a href="javascript:;" color="#18a4de" class=phone-number-link data-test-automation-id="phoneNumberLink" data-id=1234567>1234567</a>',
+      );
+    });
+    it('Numbers in meeting invite links should be ignored hyperlinked [JPT-1816]', () => {
+      jest.spyOn(utils, 'getGlobalValue').mockReturnValue(true);
+      const videoCallPost = 'Dial-in Number: (650)419-1505';
+      mockPostData.text = videoCallPost;
+      i18next.use(Backend).init(
+        {
+          lng: 'en',
+          debug: true,
+          resources: {
+            en: {
+              translation: jsonFile,
+            },
+          },
+        },
+        (err, t) => {},
+      );
+      i18next.loadLanguages('en', () => {});
+      const renderVideoCall = 'Dial-in Number: <a href=\"javascript:;\" color=\"#18a4de\" class=phone-number-link data-test-automation-id=\"phoneNumberLink\" data-id=(650)419-1505>(650)419-1505</a>';
+      expect(vm.html).toMatch(renderVideoCall);
+    });
   });
 
   describe('at mentions for person', () => {
@@ -75,6 +139,7 @@ describe('TextMessageViewModel', () => {
       "<a class='at_mention_compose' rel='{\"id\":2514947}'>@Thomas Yang</a>";
 
     it('should be get person name link when at mention a person', () => {
+      jest.spyOn(utils, 'getGlobalValue').mockReturnValue(false);
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
       expect(vm.html).toBe(
