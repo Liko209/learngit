@@ -227,7 +227,7 @@ class RCInfoFetchController {
 
   // this for DB special number compatibility, we can remove it after all user updated to 1.4
   private _isISpecialServiceNumber(arg: any): arg is ISpecialServiceNumber {
-    return arg.uri && arg.records && arg.paging && arg.navigation;
+    return arg && arg.uri && arg.records && arg.paging && arg.navigation;
   }
 
   async getSpecialNumberRule(): Promise<ISpecialServiceNumber | undefined> {
