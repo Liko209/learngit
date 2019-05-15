@@ -159,7 +159,7 @@ export default class GroupModel extends Base<Group> {
       diffMembers
         .map(id => getEntity(ENTITY_NAME.PERSON, id))
         .forEach((personModel: PersonModel) => {
-          if (personModel && personModel.isActivated()) {
+          if (personModel && personModel.isVisible()) {
             if (!personModel.firstName && !personModel.lastName) {
               emails.push(personModel.email);
             } else if (personModel.firstName) {

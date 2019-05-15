@@ -18,7 +18,6 @@ import {
 import { PersonService } from 'sdk/module/person';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
-const PersonFlagsDeactivated = 2;
 export default class PersonModel extends Base<Person> {
   @observable
   companyId: number;
@@ -58,6 +57,8 @@ export default class PersonModel extends Base<Person> {
   deactivated: boolean;
   @observable
   flags?: number;
+  @observable
+  id: number;
 
   constructor(data: Person) {
     super(data);
@@ -82,6 +83,7 @@ export default class PersonModel extends Base<Person> {
       sanitized_rc_extension,
       deactivated,
       flags,
+      id,
     } = data;
     this.companyId = company_id;
     this.firstName = first_name;
@@ -103,6 +105,7 @@ export default class PersonModel extends Base<Person> {
     this.sanitizedRcExtension = sanitized_rc_extension;
     this.deactivated = deactivated;
     this.flags = flags;
+    this.id = id;
   }
 
   static fromJS(data: Person) {
@@ -213,11 +216,11 @@ export default class PersonModel extends Base<Person> {
     );
   }
 
-  isActivated() {
-    return !(
-      this.deactivated ||
-      (this.flags &&
-        (this.flags & PersonFlagsDeactivated) === PersonFlagsDeactivated)
+  isVisible() {
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
     );
+    const person = personService.getSynchronously(this.id);
+    return person && personService.isVisiblePerson(person);
   }
 }

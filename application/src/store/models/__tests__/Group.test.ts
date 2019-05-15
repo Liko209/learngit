@@ -423,12 +423,12 @@ describe('GroupModel', () => {
               return {
                 deactivated: true,
                 firstName: `${id}`,
-                isActivated: jest.fn().mockReturnValue(false),
+                isVisible: jest.fn().mockReturnValue(false),
               };
             }
             return {
               firstName: `${id}`,
-              isActivated: jest.fn().mockReturnValue(true),
+              isVisible: jest.fn().mockReturnValue(true),
             };
           }
         },
@@ -445,7 +445,7 @@ describe('GroupModel', () => {
           if (name === ENTITY_NAME.PERSON) {
             return {
               firstName: `${id}`,
-              isActivated: jest.fn().mockReturnValue(false),
+              isVisible: jest.fn().mockReturnValue(false),
             };
           }
         },
