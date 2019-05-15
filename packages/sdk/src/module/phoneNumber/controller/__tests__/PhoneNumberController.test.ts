@@ -9,11 +9,12 @@ import { PhoneParserUtility } from '../../../../utils/phoneParser';
 jest.mock('../../../../utils/phoneParser');
 
 describe('PhoneNumberController', () => {
+  let phoneNumberController: PhoneNumberController;
+  beforeEach(() => {
+    phoneNumberController = new PhoneNumberController();
+  });
+
   describe('generateMatchedPhoneNumberList', () => {
-    let phoneNumberController: PhoneNumberController;
-    beforeEach(() => {
-      phoneNumberController = new PhoneNumberController();
-    });
     it('should return list when it is short number', async () => {
       PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
         isShortNumber: jest.fn().mockReturnValue(true),
@@ -115,6 +116,38 @@ describe('PhoneNumberController', () => {
       const phoneNumberController = new PhoneNumberController();
       const res = await phoneNumberController.getE164PhoneNumber('6502274787');
       expect(res).toBe('+16502274787');
+    });
+  });
+
+  describe('isValidNumber', () => {
+    it('should return true when phone num is 6502274787', () => {
+      const res = phoneNumberController.isValidNumber('6502274787');
+      expect(res).toBeTruthy();
+    });
+
+    it('should return true when phone num is (650)2274787', () => {
+      const res = phoneNumberController.isValidNumber('(650)2274787');
+      expect(res).toBeTruthy();
+    });
+
+    it('should return true when phone num is (650)227-4787', () => {
+      const res = phoneNumberController.isValidNumber('(650)227-4787');
+      expect(res).toBeTruthy();
+    });
+
+    it('should return true when phone num is +16502274787', () => {
+      const res = phoneNumberController.isValidNumber('+16502274787');
+      expect(res).toBeTruthy();
+    });
+
+    it('should return true when phone num is +1(650)227-4787', () => {
+      const res = phoneNumberController.isValidNumber('+1(650)227-4787');
+      expect(res).toBeTruthy();
+    });
+
+    it('should return true when phone num is *#123', () => {
+      const res = phoneNumberController.isValidNumber('*#123');
+      expect(res).toBeTruthy();
     });
   });
 });
