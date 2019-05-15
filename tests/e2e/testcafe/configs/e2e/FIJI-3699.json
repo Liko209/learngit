@@ -1,7 +1,7 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/**/*.ts"
+      "./telephony/**/*.ts"
     ],
     "include_tags": [
       "JPT-1792",
