@@ -9,7 +9,7 @@ import { v4 as uuid } from 'uuid';
 fixture('TopBar/AddNewAction')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase())
-test(formalName('Check menu tip', ['P2', 'AddNewActions', 'Hank.Huang']), async (t) => {
+test(formalName('Check menu tip', ['P2', 'AddNewActions', 'V1.4', 'Hank.Huang']), async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[5];
   const otherUser = h(t).rcData.mainCompany.users[6];
