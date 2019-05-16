@@ -45,7 +45,7 @@ describe('MembersViewModel', () => {
     jest.clearAllMocks();
     ServiceLoader.getInstance = jest.fn().mockReturnValue(searchService);
     SortableGroupMemberHandler.mockImplementation(() => ({
-      getSortedGroupMembersIds: jest.fn().mockReturnValue(mockMembers),
+      sortedMemberIds: mockMembers,
     }));
     vm = new MembersViewModel(props);
   });

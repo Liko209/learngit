@@ -72,10 +72,6 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
 
   @computed
   get sortedMemberIds() {
-    console.log(
-      'TMSLOG: SortableGroupMemberHandler -> getSortedGroupMembersIds -> this._foc ? this._foc.sortableListStore.getIds : []',
-      this._foc ? this._foc.sortableListStore.getIds : [],
-    );
     return this._foc ? this._foc.sortableListStore.getIds : [];
   }
 
