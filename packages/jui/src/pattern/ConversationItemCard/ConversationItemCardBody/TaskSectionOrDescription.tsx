@@ -12,7 +12,7 @@ type Props = {
   children?: string;
 };
 
-const StyledTaskSectionOrDescription = styled.pre`
+const StyledTaskSectionOrDescription = styled.div`
   ${typography('body1')};
   color: ${grey('500')};
 `;
