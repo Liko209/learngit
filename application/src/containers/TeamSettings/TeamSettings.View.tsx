@@ -305,50 +305,54 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     const noDelete = !isAdmin || isCompanyTeam;
     return (
       <ButtonList>
-        <ButtonListItem
-          data-test-automation-id="leaveTeamButton"
-          color="semantic.negative"
-          onClick={this.handleLeaveTeamClick}
-          hide={noLeave}
-        >
-          <ButtonListItemText color="semantic.negative">
-            {t('people.team.leaveTeam')}
-          </ButtonListItemText>
-        </ButtonListItem>
+        {!noLeave && (
+          <ButtonListItem
+            data-test-automation-id="leaveTeamButton"
+            color="semantic.negative"
+            onClick={this.handleLeaveTeamClick}
+            hide={noLeave}
+          >
+            <ButtonListItemText color="semantic.negative">
+              {t('people.team.leaveTeam')}
+            </ButtonListItemText>
+          </ButtonListItem>
+        )}
         {noLeave ? null : <JuiDivider />}
-        <ButtonListItem
-          data-test-automation-id="archiveTeamButton"
-          color="semantic.negative"
-          onClick={this.handleArchiveTeamClick}
-          hide={noDelete}
-        >
-          <ButtonListItemText color="semantic.negative">
-            {t('people.team.archiveTeam')}
-          </ButtonListItemText>
-          <JuiIconButton
-            variant="plain"
-            tooltipTitle={t('people.team.archiveTeamToolTip')}
+        {!noDelete && (
+          <ButtonListItem
+            data-test-automation-id="archiveTeamButton"
+            color="semantic.negative"
+            onClick={this.handleArchiveTeamClick}
           >
-            info
-          </JuiIconButton>
-        </ButtonListItem>
+            <ButtonListItemText color="semantic.negative">
+              {t('people.team.archiveTeam')}
+            </ButtonListItemText>
+            <JuiIconButton
+              variant="plain"
+              tooltipTitle={t('people.team.archiveTeamToolTip')}
+            >
+              info
+            </JuiIconButton>
+          </ButtonListItem>
+        )}
         {noDelete ? null : <JuiDivider />}
-        <ButtonListItem
-          data-test-automation-id="deleteTeamButton"
-          color="semantic.negative"
-          onClick={this.handleDeleteTeamClick}
-          hide={noDelete}
-        >
-          <ButtonListItemText color="semantic.negative">
-            {t('people.team.deleteTeam')}
-          </ButtonListItemText>
-          <JuiIconButton
-            variant="plain"
-            tooltipTitle={t('people.team.deleteTeamToolTip')}
+        {!noDelete && (
+          <ButtonListItem
+            data-test-automation-id="deleteTeamButton"
+            color="semantic.negative"
+            onClick={this.handleDeleteTeamClick}
           >
-            info
-          </JuiIconButton>
-        </ButtonListItem>
+            <ButtonListItemText color="semantic.negative">
+              {t('people.team.deleteTeam')}
+            </ButtonListItemText>
+            <JuiIconButton
+              variant="plain"
+              tooltipTitle={t('people.team.deleteTeamToolTip')}
+            >
+              info
+            </JuiIconButton>
+          </ButtonListItem>
+        )}
         {noDelete ? null : <JuiDivider />}
       </ButtonList>
     );
