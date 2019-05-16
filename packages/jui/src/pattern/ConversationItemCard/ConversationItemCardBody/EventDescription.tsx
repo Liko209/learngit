@@ -12,7 +12,7 @@ type Props = {
   children?: string;
 };
 
-const StyledEventDescription = styled.pre`
+const StyledEventDescription = styled.div`
   margin-top: ${spacing(2)};
   ${typography('body1')};
   color: ${grey('500')};
