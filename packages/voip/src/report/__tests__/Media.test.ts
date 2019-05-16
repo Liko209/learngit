@@ -71,16 +71,16 @@ const mockMediaStats = [
 
 const mockOutCome = {
   bytesReceived: {
-    accumulator: 184.11658,
+    variance: 184.11658,
     average: 9144.25,
     max: 9378,
     min: 8996,
   },
-  bytesSent: { accumulator: 543.00545, average: 8717.75, max: 9406, min: 8078 },
-  jitter: { accumulator: 0.003, average: 0.0115, max: 0.016, min: 0 },
-  packetsLost: { accumulator: 0, average: 0, max: 0, min: 0 },
-  packetsReceived: { accumulator: 3.0957, average: 100.75, max: 105, min: 98 },
-  packetsSent: { accumulator: 0.95743, average: 99.25, max: 100, min: 98 },
+  bytesSent: { variance: 543.00545, average: 8717.75, max: 9406, min: 8078 },
+  jitter: { variance: 0.003, average: 0.0115, max: 0.016, min: 0 },
+  packetsLost: { variance: 0, average: 0, max: 0, min: 0 },
+  packetsReceived: { variance: 3.0957, average: 100.75, max: 105, min: 98 },
+  packetsSent: { variance: 0.95743, average: 99.25, max: 100, min: 98 },
 };
 
 describe('Check min,max,average,variance of Media report parameters during call state is connected [JPT-1939]', () => {

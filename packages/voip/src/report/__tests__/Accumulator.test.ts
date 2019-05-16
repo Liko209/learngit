@@ -26,14 +26,4 @@ describe('check Accumulator', () => {
     expect(accumulator.prop).toBe('packetsReceived');
     expect(accumulator.value).toBeCloseTo(0.8, 1);
   });
-
-  it('should Calculated correctly when add value', () => {
-    const accumulator = new Accumulator('packetsReceived');
-    accumulator.addDateValue(98);
-    accumulator.addDateValue(99);
-    accumulator.addDateValue(100);
-    accumulator.addDateValue(100);
-    expect(accumulator.prop).toBe('packetsReceived');
-    expect(accumulator.value).toBeCloseTo(0.9, 1);
-  });
 });
