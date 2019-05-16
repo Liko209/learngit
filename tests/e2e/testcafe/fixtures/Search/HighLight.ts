@@ -2,7 +2,7 @@
  * @Author: Potar.He 
  * @Date: 2019-04-10 12:58:57 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-26 19:25:54
+ * @Last Modified time: 2019-05-14 20:44:57
  */
 import { h, H } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
@@ -137,7 +137,13 @@ test.meta(<ITestMeta>{
   let postId;
   await h(t).withLog(`And the team has a event (title, location, description contains "${multipleKeyWord}")`, async () => {
     await h(t).glip(loginUser).init();
-    const res = await h(t).glip(loginUser).createSimpleEvent(team.glipId, `${multipleKeyWord} in title`, loginUser.rcId, undefined, undefined, { location: `${multipleKeyWord} in location`, description: `${multipleKeyWord} in description` });
+    const res = await h(t).glip(loginUser).createSimpleEvent({
+      groupIds: team.glipId,
+      title: `${multipleKeyWord} in title`,
+      description: `${multipleKeyWord} in description`,
+      rcIds: loginUser.rcId,
+      location: `${multipleKeyWord} in location`
+    });
     postId = res.data['post_ids'][0];
   });
 

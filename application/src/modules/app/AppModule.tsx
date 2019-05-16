@@ -11,7 +11,6 @@ import { SectionUnread, UMI_SECTION_TYPE } from 'sdk/module/state';
 import { AbstractModule, inject } from 'framework';
 import config from '@/config';
 import storeManager from '@/store';
-import history from '@/history';
 import { GLOBAL_KEYS } from '@/store/constants';
 import '@/i18n';
 
@@ -37,6 +36,8 @@ import { isProductionVersion } from '@/common/envUtils';
 import { showUpgradeDialog } from '@/modules/electron';
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import { IApplicationInfo } from 'sdk/pal/applicationInfo';
+import history from '@/history';
+import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 
 /**
  * The root module, we call it AppModule,
@@ -117,8 +118,11 @@ class AppModule extends AbstractModule {
         const accountUserConfig = accountService.userConfig;
         const currentUserId = accountUserConfig.getGlipUserId();
         const currentCompanyId = accountUserConfig.getCurrentCompanyId();
+        const accountType = accountUserConfig.getAccountType();
+        const isRcUser = accountType === ACCOUNT_TYPE_ENUM.RC;
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
+        globalStore.set(GLOBAL_KEYS.IS_RC_USER, isRcUser);
         getAppContextInfo().then(contextInfo => {
           Pal.instance.setApplicationInfo({
             env: contextInfo.env,
@@ -197,17 +201,9 @@ class AppModule extends AbstractModule {
       this._appStore.setGlobalLoading(false);
     });
 
-    notificationCenter.on(SERVICE.SYNC_SERVICE.START_CLEAR_DATA, () => {
-      // 1. show loading
-      this._appStore.setGlobalLoading(true);
-      // 2. clear store data
-      storeManager.resetStores();
-    });
-
-    notificationCenter.on(SERVICE.SYNC_SERVICE.END_CLEAR_DATA, () => {
-      // stop loading
-      this._appStore.setGlobalLoading(false);
+    notificationCenter.on(SERVICE.RELOAD, () => {
       history.replace('/messages');
+      location.reload();
     });
 
     notificationCenter.on(SERVICE.DO_SIGN_OUT, async () => {

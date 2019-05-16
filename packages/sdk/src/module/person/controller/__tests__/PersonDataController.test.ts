@@ -3,7 +3,7 @@
  * @Date: 2019-01-23 13:23:00
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { PersonDataController } from '../PersonDataController';
 import { rawPersonFactory } from '../../../../__tests__/factories';
 import { SYNC_SOURCE } from '../../../../module/sync';
@@ -12,6 +12,7 @@ import { Person } from '../../entity';
 import { AccountGlobalConfig } from '../../../../module/account/config';
 import notificationCenter from '../../../../service/notificationCenter';
 
+jest.mock('foundation/src/ioc');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../framework/controller/impl/EntitySourceController');
 jest.mock('../../../../module/account/config');
@@ -28,6 +29,14 @@ describe('PersonDataController', () => {
   const entitySourceController = new EntitySourceController<Person>(null, null);
 
   function setUp() {
+    const accountService = {
+      userConfig: {
+        getGlipUserId() {
+          return 1;
+        },
+      },
+    };
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(accountService);
     personDataController = new PersonDataController(entitySourceController);
     AccountGlobalConfig.getCurrentUserId = jest.fn();
   }
