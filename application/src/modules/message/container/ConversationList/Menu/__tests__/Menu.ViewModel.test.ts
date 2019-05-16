@@ -12,7 +12,7 @@ import storeManager from '@/store/base/StoreManager';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ServiceConfig } from 'sdk/module/serviceLoader';
 
-describe('TestMenuViewModel', () => {
+describe.skip('TestMenuViewModel', () => {
   function createGroupState(groupState?: any) {
     return {
       unreadCount: 0,
