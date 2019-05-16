@@ -224,6 +224,10 @@ export class TelephonyDialog extends BaseWebComponent {
     '#': 'hash'
   }
 
+  async focusKeypad(){
+    await this.t.click(this.keysRecordArea);
+  }
+
   async tapKeypad(keys: string | string[]) {
     for (const i of keys) {
       await this.t.wait(5e2);

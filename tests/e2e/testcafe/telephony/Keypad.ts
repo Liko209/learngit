@@ -1,8 +1,8 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-04-19 12:16:25
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-19 14:34:32
+ * @Last Modified by: Lex Huang (lex.huang@ringcentral.com)
+ * @Last Modified time: 2019-05-16 20:14:24
  */
 
 
@@ -350,6 +350,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I click "##" on the keypad ', async () => {
+    await telephonyDialog.focusKeypad();
     await telephonyDialog.tapKeypad('##');
   });
 
