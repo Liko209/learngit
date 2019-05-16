@@ -27,10 +27,6 @@ const StyledDialer = styled('div')`
 class JuiDialer extends PureComponent<Props> {
   private _container: RefObject<any> = createRef();
 
-  componentWillUnmount() {
-    this.props.onBlur && this.props.onBlur();
-  }
-
   render() {
     const { onFocus, onBlur, ...rest } = this.props;
     return (

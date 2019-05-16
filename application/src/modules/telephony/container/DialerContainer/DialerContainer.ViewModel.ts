@@ -87,7 +87,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
 
   @computed
   get dialerFocused() {
-    return this._telephonyStore.dialerFocused;
+    return this._telephonyStore.dialerFocused && this._telephonyStore.keypadEntered;
   }
 
   /**
