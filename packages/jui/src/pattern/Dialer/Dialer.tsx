@@ -3,7 +3,8 @@
  * @Date: 2019-03-21 18:11:39
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { PureComponent, FocusEvent } from 'react';
+import React, { PureComponent, FocusEvent, RefObject, createRef } from 'react';
+import ReactDOM from 'react-dom';
 import styled from '../../foundation/styled-components';
 import { width, spacing } from '../../foundation/utils/styles';
 
@@ -25,6 +26,20 @@ const StyledDialer = styled('div')`
 `;
 
 class JuiDialer extends PureComponent<Props> {
+  private _containerRef: RefObject<any> = createRef();
+
+  componentWillUnmount() {
+    const { onBlur } = this.props;
+    onBlur && onBlur();
+  }
+
+  componentDidMount() {
+    if (this._containerRef.current) {
+      const el = ReactDOM.findDOMNode(this._containerRef.current);
+      el && (el as HTMLDivElement).focus();
+    }
+  }
+
   render() {
     const { onFocus, onBlur, ...rest } = this.props;
     return (
@@ -33,6 +48,7 @@ class JuiDialer extends PureComponent<Props> {
         tabIndex={0}
         onFocus={onFocus ? onFocus : undefined}
         onBlur={onBlur ? onBlur : undefined}
+        ref={this._containerRef}
       />
     );
   }
