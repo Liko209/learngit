@@ -1,7 +1,7 @@
 /*
  * @Author: Nello Huang (nello.huang@ringcentral.com)
- * @Date: 2019-04-22 14:37:09
+ * @Date: 2019-05-15 17:43:28
  * Copyright © RingCentral. All rights reserved.
  */
-
-export * from './core';
+export * from './store';
+export * from './globalStore';

@@ -3,13 +3,9 @@
  * @Date: 2018-12-12 14:08:17
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  test,
-  mockSingleEntity,
-  mockEntity,
-  mockService,
-  testable,
-} from 'shield';
+import { test, testable } from 'shield';
+import { mockSingleEntity, mockEntity } from 'shield/application';
+import { mockService } from 'shield/sdk';
 import { MenuViewModel } from '../Menu.ViewModel';
 import * as utils from '@/store/utils';
 import storeManager from '@/store/base/StoreManager';

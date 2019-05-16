@@ -3,7 +3,9 @@
  * @Date: 2018-09-20 14:56:18
  * Copyright © RingCentral. All rights reserved.
  */
-import { testable, test, mockService, mockGlobalValue } from 'shield';
+import { testable, test } from 'shield';
+import { mockGlobalValue } from 'shield/application';
+import { mockService } from 'shield/sdk';
 import { GroupService, TeamSetting } from 'sdk/module/group';
 import {
   ERROR_CODES_NETWORK,
@@ -128,9 +130,6 @@ describe('CreateTeamViewModel', () => {
       expect(createTeamVM.isOffline).toBe(true);
       expect(createTeamVM.isOffline).toBe(false);
     }
-
-    @test('case 12')
-    t2() {}
   }
 
   @testable

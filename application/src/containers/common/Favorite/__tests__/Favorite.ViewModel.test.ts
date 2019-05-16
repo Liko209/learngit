@@ -3,13 +3,9 @@
  * @Date: 2018-11-27 15:22:58
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  test,
-  mockService,
-  mockEntity,
-  mockGlobalValue,
-  testable,
-} from 'shield';
+import { test, testable } from 'shield';
+import { mockEntity, mockGlobalValue } from 'shield/application';
+import { mockService } from 'shield/sdk';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import { ServiceConfig } from 'sdk/module/serviceLoader';
 import { FavoriteViewModel } from '../Favorite.ViewModel';
