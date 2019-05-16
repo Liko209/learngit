@@ -431,21 +431,11 @@ class TelephonyService {
 
   makeCall = async (toNumber: string) => {
     // FIXME: move this logic to SDK and always using callerID
-    const phoneNumber = this._telephonyStore.callerPhoneNumberList
-      .map((phone) => {
-        if (phone.id === 0) {
-          // parse the `block` to `anonymous`
-          return Object.assign({}, phone, {
-            phoneNumber: ANONYMOUS,
-          });
-        }
-        return phone;
-      })
-      .find(
-        (phone) =>
-          phone.phoneNumber === this._telephonyStore.chosenCallerPhoneNumber,
-      );
-    if (!phoneNumber) {
+    const idx = this._telephonyStore.callerPhoneNumberList.findIndex(
+      (phone) =>
+        phone.phoneNumber === this._telephonyStore.chosenCallerPhoneNumber,
+    );
+    if (idx === -1) {
       return mainLogger.error(
         `${TelephonyService.TAG} can't Make call with: ${
           this._telephonyStore.chosenCallerPhoneNumber
@@ -454,7 +444,10 @@ class TelephonyService {
         )}`,
       );
     }
-    const fromNumber = phoneNumber.phoneNumber;
+    const fromNumber =
+      idx === 0
+        ? ANONYMOUS
+        : this._telephonyStore.callerPhoneNumberList[idx].phoneNumber;
     mainLogger.info(
       `${TelephonyService.TAG}Make call with fromNumber: ${
         this._telephonyStore.chosenCallerPhoneNumber
