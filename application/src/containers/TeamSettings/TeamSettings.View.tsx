@@ -323,6 +323,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             data-test-automation-id="archiveTeamButton"
             color="semantic.negative"
             onClick={this.handleArchiveTeamClick}
+            hide={noDelete}
           >
             <ButtonListItemText color="semantic.negative">
               {t('people.team.archiveTeam')}
@@ -341,6 +342,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             data-test-automation-id="deleteTeamButton"
             color="semantic.negative"
             onClick={this.handleDeleteTeamClick}
+            hide={noDelete}
           >
             <ButtonListItemText color="semantic.negative">
               {t('people.team.deleteTeam')}
