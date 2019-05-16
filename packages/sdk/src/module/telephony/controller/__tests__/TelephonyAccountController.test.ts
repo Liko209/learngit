@@ -476,4 +476,12 @@ describe('TelephonyAccountController', () => {
       expect(lastCalled).toBeCalledWith('test');
     });
   });
+
+  describe('getVoipState', () => {
+    it('should call rtc to get voip state', () => {
+      const spy = jest.spyOn(rtcAccount, 'state');
+      accountController.getVoipState();
+      expect(spy).toBeCalled();
+    });
+  });
 });

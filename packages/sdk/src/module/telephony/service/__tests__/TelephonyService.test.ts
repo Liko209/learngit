@@ -247,4 +247,12 @@ describe('TelephonyService', () => {
       expect(spy).toBeCalled();
     });
   });
+
+  describe('getVoipState', () => {
+    it('should call account controller to get voip state', () => {
+      const spy = jest.spyOn(accountController, 'getVoipState');
+      telephonyService.getVoipState();
+      expect(spy).toBeCalled();
+    });
+  });
 });

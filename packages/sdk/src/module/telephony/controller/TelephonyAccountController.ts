@@ -89,6 +89,10 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return res ? res : '';
   }
 
+  getVoipState() {
+    return this._rtcAccount.state();
+  }
+
   setLastCalledNumber(num: string) {
     const telephonyConfig = ServiceLoader.getInstance<TelephonyService>(
       ServiceConfig.TELEPHONY_SERVICE,

@@ -144,6 +144,11 @@ class TelephonyService extends EntityBaseService<IdModel> {
     const accountController = this.telephonyController.getAccountController();
     return accountController ? accountController.getLastCalledNumber() : '';
   }
+
+  getVoipState = () => {
+    const accountController = this.telephonyController.getAccountController();
+    return accountController ? accountController.getVoipState() : '';
+  }
 }
 
 export { TelephonyService };
