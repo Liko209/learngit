@@ -42,7 +42,7 @@ import { ChangeModel, SYNC_SOURCE } from '../types';
 import { DaoGlobalConfig } from 'sdk/dao/config';
 import { LogControlManager } from 'sdk/service/uploadLogControl';
 import { Nullable, IHealthStatusItem } from 'sdk/types';
-import { toString, InformationRecorder, AbstractRecord } from 'sdk/utils';
+import { InformationRecorder, AbstractRecord } from 'sdk/utils';
 import _ from 'lodash';
 
 const LOG_TAG = 'SyncController';
@@ -85,7 +85,7 @@ class SyncController {
         return LAST_SYNC_STATUS_NAME;
       },
       getStatus: async () => {
-        return `${toString(this._syncInformationRecorder.getAllRecords())}`;
+        return this._syncInformationRecorder.getAllRecords();
       },
     };
     LogControlManager.instance().unRegisterHealthStatusItem(

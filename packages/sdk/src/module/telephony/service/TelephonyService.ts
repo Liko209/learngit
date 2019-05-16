@@ -16,6 +16,7 @@ import { SERVICE } from '../../../service/eventKey';
 import { MAKE_CALL_ERROR_CODE } from '../types';
 import { IdModel } from '../../../framework/model';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
+import { LogControlManager } from 'sdk/service/uploadLogControl';
 
 class TelephonyService extends EntityBaseService<IdModel> {
   private _telephonyEngineController: TelephonyEngineController;
@@ -44,6 +45,12 @@ class TelephonyService extends EntityBaseService<IdModel> {
 
   private _init() {
     this.telephonyController.initEngine();
+    LogControlManager.instance().registerHealthStatusItem({
+      getName: () => 'Telephony',
+      getStatus: async () => ({
+        VoipState: this.getVoipState(),
+      }),
+    });
   }
 
   get userConfig() {
