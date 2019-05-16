@@ -131,7 +131,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
         ? this._group.members.some((x: number) => x === model.id)
         : false;
     };
-    const isMatchFun = _.cloneDeep(filterFunc);
+    const isMatchFunc = filterFunc;
 
     const transformFun = (model: Person) => {
       return {
@@ -158,7 +158,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
     this._foc = new FetchSortableDataListHandler(
       this._groupMemberDataProvider,
       {
-        isMatchFunc: isMatchFun,
+        isMatchFunc,
         transformFunc: transformFun,
         entityName: ENTITY_NAME.PERSON,
         eventName: ENTITY.PERSON,
