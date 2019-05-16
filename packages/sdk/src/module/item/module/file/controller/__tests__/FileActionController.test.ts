@@ -7,7 +7,7 @@
 import { Api } from '../../../../../../api';
 import { FileActionController } from '../FileActionController';
 import { GlobalConfigService } from '../../../../../config';
-import { AuthUserConfig } from '../../../../../account/config';
+import { AuthUserConfig } from '../../../../../account/config/AuthUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../../../serviceLoader';
 
 jest.mock('../../../../../config');

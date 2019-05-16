@@ -6,7 +6,7 @@
 
 import { RCInfoService } from '../RCInfoService';
 import { RCInfoController } from '../../controller/RCInfoController';
-import { AccountUserConfig } from '../../../../module/account/config';
+import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
 
 jest.mock('../../controller/RCInfoFetchController');
 jest.mock('../../controller/RCCallerIdController');

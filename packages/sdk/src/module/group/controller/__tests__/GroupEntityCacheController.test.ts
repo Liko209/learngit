@@ -5,7 +5,7 @@
  */
 
 import { GroupEntityCacheController } from '../GroupEntityCacheController';
-import { AccountUserConfig } from '../../../../module/account/config';
+import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
 import { Group } from '../../entity';
 import { GroupService } from '../../service/GroupService';
 import { service } from 'sdk/';

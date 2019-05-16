@@ -8,6 +8,7 @@ import { PostNotificationController } from '../PostNotificationController';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { GroupService } from '../../../group';
 import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
+import { AccountService } from 'sdk/module/account';
 
 jest.mock('../../../group');
 jest.mock('../../../account/config/AccountUserConfig');
@@ -25,8 +26,10 @@ describe('PostNotificationController', () => {
     groupService = new GroupService();
     AccountUserConfig.prototype.getGlipUserId.mockReturnValue(1);
 
+    const accountService = new AccountService({} as any);
     const serviceMap: Map<any, any> = new Map([
-      [ServiceConfig.GROUP_SERVICE, groupService],
+      [ServiceConfig.GROUP_SERVICE, groupService as any],
+      [ServiceConfig.ACCOUNT_SERVICE, accountService as any],
     ]);
     ServiceLoader.getInstance = jest.fn().mockImplementation(serviceName => {
       return serviceMap.get(serviceName);

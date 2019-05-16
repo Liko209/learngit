@@ -16,7 +16,7 @@ import Dexie from 'dexie';
 import { IdModel } from '../../framework/model';
 import { DaoGlobalConfig } from '../config';
 import { AccountGlobalConfig } from '../../module/account/config';
-import { SyncUserConfig } from '../../module/sync/config';
+import { SyncUserConfig } from '../../module/sync/config/SyncUserConfig';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('../../module/env/index');
@@ -47,7 +47,7 @@ jest.mock('../schema', () => ({
 }));
 jest.mock('../../module/config');
 jest.mock('../../module/account/config/AccountGlobalConfig');
-jest.mock('../../module/sync/config');
+jest.mock('../../module/sync/config/SyncUserConfig');
 
 class TestKVDao extends BaseKVDao {
   static COLLECTION_NAME = 'TestKVDao';
