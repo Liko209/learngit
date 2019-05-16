@@ -19,7 +19,7 @@ import { SETTING_KEYS } from '../constants';
 import { Profile } from '../entity';
 import { IProfileService } from '../service/IProfileService';
 import { EVENT_TYPES } from 'sdk/service/constants';
-import { AccountUserConfig } from 'sdk/module/account/config';
+import { AccountService } from 'sdk/module/account';
 
 enum EProfileSettingType {
   DEFAULT_CALLER = 'DEFAULT_CALLER',
@@ -41,7 +41,9 @@ class ProfileSetting extends SubscribeController {
       },
     });
     this.subscribe();
-    const accountConfig = new AccountUserConfig();
+    const accountConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     this._glipProfileId = accountConfig.getCurrentUserProfileId();
   }
 

@@ -222,4 +222,12 @@ export class RcPlatformSdk {
   async sentAndGetTextPostId(text: string, groupId: string) {
     return await this.sendTextPost(text, groupId).then(res => res.data.id);
   }
+
+  /** phone number */
+  async getExtensionPhoneNumberList(){
+    const url = `/restapi/v1.0/account/~/extension/~/phone-number`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.get(url);
+    });
+  }
 }

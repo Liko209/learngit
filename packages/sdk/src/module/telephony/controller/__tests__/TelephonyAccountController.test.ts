@@ -26,7 +26,6 @@ import {
   RTCCallActionSuccessOptions,
   RTC_STATUS_CODE,
 } from 'voip';
-import { PhoneNumberService } from 'sdk/module/phoneNumber';
 
 jest.mock('../TelephonyCallController');
 jest.mock('voip/src');
@@ -90,7 +89,8 @@ describe('TelephonyAccountController', () => {
         }
         if (config === ServiceConfig.PHONE_NUMBER_SERVICE) {
           return {
-            getE164PhoneNumber: jest.fn(),
+            getE164PhoneNumber: jest.fn().mockReturnValue(toNum),
+            isValidNumber: jest.fn().mockReturnValue(true),
           };
         }
       });
@@ -109,12 +109,8 @@ describe('TelephonyAccountController', () => {
         _makeCallController: makeCallController,
       });
       accountController.setLastCalledNumber = jest.fn();
-      ServiceLoader.getInstance = jest.fn().mockReturnValue({
-        getE164PhoneNumber: jest.fn().mockReturnValue(toNum),
-      });
     });
 
-    beforeAll(() => {});
     it('should return error when there is no sip prov', async () => {
       const spy = jest.spyOn(mockCall, 'onCallStateChange');
       rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce(null);

@@ -94,18 +94,20 @@ type JuiConversationPostTextProps = {
 };
 
 const JuiConversationPostText = withHighlight(['title'])(
-  memo(({ key, url, title, html, ...rest }: JuiConversationPostTextProps) => (
-    <JuiConversationPostTextWrapper {...rest}>
-      {url ? (
-        <a
-          key={key}
-          href={url}
-          dangerouslySetInnerHTML={{ __html: title || '' }}
-        />
-      ) : (
-        <div dangerouslySetInnerHTML={{ __html: html || '' }} />
-      )}
-    </JuiConversationPostTextWrapper>
-  )),
-);
+  memo(React.forwardRef(
+    ({ key, url, title, html, ...rest }: JuiConversationPostTextProps, ref: React.RefObject<any>) => (
+      <JuiConversationPostTextWrapper {...rest} ref={ref}>
+        {url ? (
+          <a
+            key={key}
+            href={url}
+            dangerouslySetInnerHTML={{ __html: title || '' }}
+          />
+        ) : (
+          <div dangerouslySetInnerHTML={{ __html: html || '' }}/>
+        )}
+      </JuiConversationPostTextWrapper>
+    ),
+  ),
+));
 export { JuiConversationPostText, JuiConversationPostTextProps };

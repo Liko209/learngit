@@ -30,7 +30,7 @@ storiesOf('Pattern/ConversationItemCard/ConversationItemCardBody', module)
 storiesOf('Pattern/ConversationItemCard/ConversationItemCardBody', module)
   .addDecorator(withInfoDecorator(JuiEventDescription, { inline: true }))
   .add('EventDescription', () => {
-    return <JuiEventDescription description="description" />;
+    return <JuiEventDescription>description</JuiEventDescription>;
   });
 
 storiesOf('Pattern/ConversationItemCard/ConversationItemCardBody', module)
@@ -38,7 +38,7 @@ storiesOf('Pattern/ConversationItemCard/ConversationItemCardBody', module)
     withInfoDecorator(JuiTaskSectionOrDescription, { inline: true }),
   )
   .add('JuiTaskSectionOrDescription', () => {
-    return <JuiTaskSectionOrDescription text="notes" />;
+    return <JuiTaskSectionOrDescription>note</JuiTaskSectionOrDescription>;
   });
 
 const Avatar = <JuiAvatar src={avatar} size="small" />;

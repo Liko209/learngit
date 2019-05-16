@@ -31,6 +31,7 @@ import { ERCServiceFeaturePermission } from '../../rcInfo/types';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { TelephonyService } from '../service';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
+import { PhoneNumberAnonymous } from 'sdk/module/phoneNumber/types';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
   private _telephonyAccountDelegate: ITelephonyAccountDelegate;
@@ -95,19 +96,16 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     telephonyConfig.setLastCalledNumber(num);
   }
 
-  isValidNumber(toNumber: string) {
-    return new RegExp('^[0-9+*# ()]+$').test(toNumber.trim());
-  }
-
   async makeCall(toNumber: string, fromNum: string) {
-    if (!this.isValidNumber(toNumber)) {
+    const phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
+      ServiceConfig.PHONE_NUMBER_SERVICE,
+    );
+
+    if (!phoneNumberService.isValidNumber(toNumber)) {
       this._callDelegate &&
         this._callDelegate.onCallStateChange('', RTC_CALL_STATE.DISCONNECTED);
       return MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
     }
-    const phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
-      ServiceConfig.PHONE_NUMBER_SERVICE,
-    );
 
     const e164ToNumber = await phoneNumberService.getE164PhoneNumber(toNumber);
 
@@ -140,14 +138,18 @@ class TelephonyAccountController implements IRTCAccountDelegate {
 
       let makeCallResult: RTC_STATUS_CODE;
       if (fromNum) {
+        let e164FromNum = fromNum;
+        if (fromNum !== PhoneNumberAnonymous) {
+          e164FromNum = await phoneNumberService.getE164PhoneNumber(fromNum);
+        }
         makeCallResult = this._rtcAccount.makeCall(
-          toNumber,
+          e164ToNumber,
           this._telephonyCallDelegate,
-          { fromNumber: fromNum },
+          { fromNumber: e164FromNum },
         );
       } else {
         makeCallResult = this._rtcAccount.makeCall(
-          toNumber,
+          e164ToNumber,
           this._telephonyCallDelegate,
         );
       }
@@ -217,7 +219,8 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   }
 
   sendToVoiceMail(callId: string) {
-    this._telephonyCallDelegate && this._telephonyCallDelegate.sendToVoiceMail();
+    this._telephonyCallDelegate &&
+      this._telephonyCallDelegate.sendToVoiceMail();
   }
 
   ignore(callId: string) {
@@ -229,7 +232,8 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   }
 
   replyWithMessage(callId: string, message: string) {
-    this._telephonyCallDelegate && this._telephonyCallDelegate.replyWithMessage(message);
+    this._telephonyCallDelegate &&
+      this._telephonyCallDelegate.replyWithMessage(message);
   }
 
   replyWithPattern(
@@ -238,7 +242,8 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     time?: number,
     timeUnit?: RTC_REPLY_MSG_TIME_UNIT,
   ) {
-    this._telephonyCallDelegate && this._telephonyCallDelegate.replyWithPattern(pattern, time, timeUnit);
+    this._telephonyCallDelegate &&
+      this._telephonyCallDelegate.replyWithPattern(pattern, time, timeUnit);
   }
   onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
     this._telephonyAccountDelegate.onAccountStateChanged(state);
