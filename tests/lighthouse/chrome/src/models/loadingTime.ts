@@ -300,6 +300,12 @@ class LoadingTimeReleaseSummaryDto extends LoadingTimeVersionSummaryDto {
   }]
 })
 class LoadingTimeDevelopSummaryDto extends LoadingTimeVersionSummaryDto {
+  @Column({
+    allowNull: false,
+    type: DataType.BOOLEAN,
+    field: 'is_release'
+  })
+  isRelease: boolean;
 }
 
 export {

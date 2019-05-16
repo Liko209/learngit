@@ -25,16 +25,28 @@ const logger = LogUtils.getLogger(__filename);
 
     const versionInfo = await DashboardService.getVersionInfo();
 
-    const version = await MetricService.createVersion(versionInfo.jupiterVersion);
+    await MetricService.createVersion(versionInfo.jupiterVersion);
     const isReleaseRun = Config.jupiterHost === Config.jupiterReleaseHost;
 
-    if (version.isRelease && !isReleaseRun) {
-      exitCode = 0;
-      skipRun = true;
-      logger.info(`version[${version.name}] is released, skip`);
-      return;
+    if (!isReleaseRun) {
+      if (Config.jupiterHost === Config.jupiterDevelopHost) {
+        const stageVersion = await DashboardService.getVersionInfo(Config.jupiterStageHost);
+        if (versionInfo.jupiterVersion !== stageVersion.jupiterVersion) {
+          exitCode = 0;
+          skipRun = true;
+          logger.info(`stage[${stageVersion.jupiterVersion}] is newer than developer[${versionInfo.jupiterVersion}], so skip`);
+          return;
+        }
+      } else {
+        const developVersion = await DashboardService.getVersionInfo(Config.jupiterDevelopHost);
+        if (versionInfo.jupiterVersion === developVersion.jupiterVersion) {
+          exitCode = 0;
+          skipRun = true;
+          logger.info(`develop[${developVersion.jupiterVersion}] is newer than stage[${versionInfo.jupiterVersion}], so skip`);
+          return;
+        }
+      }
     }
-
     let taskDto = await MetricService.createTask(versionInfo.jupiterVersion);
 
     // run scenes

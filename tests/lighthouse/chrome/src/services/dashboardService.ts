@@ -380,7 +380,7 @@ const formatMemorySize = (size: number): string => {
   return `${size.toFixed(2)} ${units[idx]}`;
 }
 
-let _versionInfo: DashboardVersionInfo;
+let _versionInfo: { [key: string]: DashboardVersionInfo } = {};
 
 class DashboardService {
 
@@ -608,16 +608,20 @@ class DashboardService {
     return result;
   }
 
-  static async getVersionInfo(): Promise<DashboardVersionInfo> {
-    if (_versionInfo) {
-      return _versionInfo;
+  static async getVersionInfo(host?: string): Promise<DashboardVersionInfo> {
+    if (!host) {
+      host = Config.jupiterHost;
+    }
+
+    if (_versionInfo[host]) {
+      return _versionInfo[host];
     }
 
     const info = new DashboardVersionInfo();
     const browser = await PptrUtils.launch();
     const page = await browser.newPage();
 
-    await page.goto(Config.jupiterHost);
+    await page.goto(host);
 
     let cnt = 2;
     let jupiterVersion;
@@ -662,7 +666,7 @@ class DashboardService {
     info.appVersion = appVersion.replace('/', '-');
     await PptrUtils.close(browser);
 
-    _versionInfo = info;
+    _versionInfo[host] = info;
     return info;
   }
 
