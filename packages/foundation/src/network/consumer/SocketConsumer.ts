@@ -13,7 +13,6 @@ import {
   IResponseListener,
   CONSUMER_MAX_QUEUE_COUNT,
 } from '../network';
-import { isOnline } from '../../utils';
 
 class SocketConsumer extends AbstractConsumer {
   constructor(
@@ -34,11 +33,7 @@ class SocketConsumer extends AbstractConsumer {
   }
 
   protected canHandleRequest() {
-    return !this.isRequestExceeded() && !this.shouldWaitForConnecting();
-  }
-
-  shouldWaitForConnecting() {
-    return !this.client.isNetworkReachable() && isOnline();
+    return !this.isRequestExceeded();
   }
 }
 

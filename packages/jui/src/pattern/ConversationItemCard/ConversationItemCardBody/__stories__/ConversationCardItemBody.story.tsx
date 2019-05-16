@@ -28,14 +28,14 @@ storiesOf('Pattern/ConversationItemCard/ConversationItemCardBody', module).add(
 storiesOf('Pattern/ConversationItemCard/ConversationItemCardBody', module).add(
   'EventDescription',
   () => {
-    return <JuiEventDescription description="description" />;
+    return <JuiEventDescription>description</JuiEventDescription>;
   },
 );
 
 storiesOf('Pattern/ConversationItemCard/ConversationItemCardBody', module).add(
   'JuiTaskSectionOrDescription',
   () => {
-    return <JuiTaskSectionOrDescription text="notes" />;
+    return <JuiTaskSectionOrDescription>note</JuiTaskSectionOrDescription>;
   },
 );
 

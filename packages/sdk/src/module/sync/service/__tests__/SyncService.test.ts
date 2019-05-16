@@ -8,10 +8,10 @@ jest.mock('../../../../dao');
 
 import { SyncService } from '../SyncService';
 import { notificationCenter, WINDOW, SERVICE } from '../../../../service';
-import { SyncUserConfig } from '../../config';
+import { SyncUserConfig } from '../../config/SyncUserConfig';
 import { SyncController } from '../../controller/SyncController';
 
-jest.mock('../../config');
+jest.mock('../../config/SyncUserConfig');
 jest.mock('../../controller/SyncController');
 
 describe('SyncService ', () => {

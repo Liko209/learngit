@@ -6,6 +6,8 @@
 import objectPath from 'object-path';
 
 const _wrapMatchedWord = (fullText: string, reg: RegExp) => {
+  if (typeof fullText !== 'string') return fullText;
+
   const matchedInEntityRegex = new RegExp(
     `(?<=&\\w*)(${reg.source})(?=\\w*;)`,
     reg.flags,
@@ -82,7 +84,6 @@ const highlightFormatter = (keyword: string, value: string) => {
       });
     return container.innerHTML;
   }
-
   return _wrapMatchedWord(value, reg);
 };
 

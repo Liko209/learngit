@@ -7,9 +7,9 @@ import { SearchService } from '../SearchService';
 import { RecentSearchRecordController } from '../../controller/RecentSearchRecordController';
 import { SearchServiceController } from '../../controller/SearchServiceController';
 import { RecentSearchTypes } from '../../entity';
-import { SearchUserConfig } from '../../config';
+import { SearchUserConfig } from '../../config/SearchUserConfig';
 
-jest.mock('../../config');
+jest.mock('../../config/SearchUserConfig');
 jest.mock('../../controller/SearchServiceController');
 jest.mock('../../controller/RecentSearchRecordController');
 

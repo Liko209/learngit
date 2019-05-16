@@ -222,7 +222,7 @@ storiesOf('Pattern/ConversationItemCard', module)
           <JuiLabelWithContent label={'hahaha'}>
             <JuiEventLocation location={'no local'} />
           </JuiLabelWithContent>
-          <JuiEventDescription description={'this is a test event'} />
+          <JuiEventDescription> this is a test event</JuiEventDescription>
         </JuiSectionDivider>
       </JuiConversationItemCard>
     );
@@ -262,16 +262,16 @@ storiesOf('Pattern/ConversationItemCard', module)
           )}
           {section && (
             <JuiLabelWithContent label={'section'}>
-              <JuiTaskSectionOrDescription
-                text={'sdfoasdfmasdf asdfaosdf asdfasdf'}
-              />
+              <JuiTaskSectionOrDescription>
+                {'sdfoasdfmasdf asdfaosdf asdfasdf'}
+              </JuiTaskSectionOrDescription>
             </JuiLabelWithContent>
           )}
           {notes && (
             <JuiLabelWithContent label={'descriptionNotes'}>
-              <JuiTaskSectionOrDescription
-                text={'sdfoasdfmasdf asdfaosdf asdfasdf'}
-              />
+              <JuiTaskSectionOrDescription>
+                {'sdfoasdfmasdf asdfaosdf asdfasdf'}
+              </JuiTaskSectionOrDescription>
             </JuiLabelWithContent>
           )}
           {files && (

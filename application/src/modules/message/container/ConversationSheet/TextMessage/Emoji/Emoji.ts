@@ -25,7 +25,7 @@ class Emoji {
   constructor(
     public text: string,
     private _staticHttpServer: string,
-    private _customEmojiMap: CustomEmojiMap,
+    private _customEmojiMap: CustomEmojiMap = {},
     private _options: EmojiOptions = {},
   ) {
     // Note: about text value.
@@ -43,7 +43,7 @@ class Emoji {
   }
 
   formatEmojiOne() {
-    this.text = this.text.replace(regExpEmojiOne, (match: string) => {
+    this.text = this.text && this.text.replace(regExpEmojiOne, (match: string) => {
       // console.log(match); // :smile:
       const obj = mapEmojiOne[match]; // :smile:
       if (obj instanceof Object) {
@@ -59,7 +59,7 @@ class Emoji {
   }
 
   formatCustom() {
-    this.text = this.text.replace(this._regExpCustom, (match: string) => {
+    this.text = this.text && this.text.replace(this._regExpCustom, (match: string) => {
       // console.log(match); // :rc:
       const obj = this._customEmojiMap[match.slice(1, -1)]; // rc
       if (!this._options.unicodeOnly && obj instanceof Object) {
@@ -79,7 +79,7 @@ class Emoji {
   }
 
   formatExactMatch(regExp: RegExp, mapData: Object) {
-    this.text = this.text.replace(regExp, (match: string) => {
+    this.text = this.text && this.text.replace(regExp, (match: string) => {
       // Note: Glipdown does not convert regular expression special characters
       const key = match
         .trim()

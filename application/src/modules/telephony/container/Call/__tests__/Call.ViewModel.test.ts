@@ -11,10 +11,10 @@ import { TelephonyStore } from '../../../store';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { CallViewModel } from '../Call.ViewModel';
 import { GlobalConfigService } from 'sdk/module/config';
-import { AuthUserConfig } from 'sdk/module/account/config';
+import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 
 jest.mock('sdk/module/config');
-jest.mock('sdk/module/account/config');
+jest.mock('sdk/module/account/config/AuthUserConfig');
 AuthUserConfig.prototype.getRCToken = jest.fn().mockReturnValue({
   endpoint_id: 'abc',
 });

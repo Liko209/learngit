@@ -10,7 +10,7 @@ import { typography, grey } from '../../foundation/utils/styles';
 import { withHighlight } from '../../hoc/withHighlight';
 
 type Props = {
-  children: string;
+  children?: string;
 };
 
 const StyledText = styled.div`
@@ -18,14 +18,16 @@ const StyledText = styled.div`
   color: ${grey('500')};
 `;
 
-const JuiNoteContentComponent = ({ children }: Props) => (
-  <StyledText dangerouslySetInnerHTML={{ __html: children }} />
-);
-
-JuiNoteContentComponent.displayName = 'JuiNoteContent';
+function juiNoteContentComponent({ children = '' }: Props) {
+  if (typeof children === 'string') {
+    return <StyledText dangerouslySetInnerHTML={{ __html: children }}/>;
+  }
+  return <StyledText>{children}</StyledText>;
+}
+juiNoteContentComponent.displayName = 'JuiNoteContent';
 
 const JuiNoteContent = withHighlight(['children'])(
-  memo(JuiNoteContentComponent),
+  memo(juiNoteContentComponent),
 );
 
 export { JuiNoteContent };

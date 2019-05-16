@@ -26,8 +26,10 @@ import { AvatarName } from './AvatarName';
 import { ViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
 import { Download } from '@/containers/common/Download';
+import { phoneParserHoc } from '@/modules/common/container/PhoneParser/PhoneParserHoc';
 
 type taskViewProps = WithTranslation & ViewProps;
+const PhoneNumberHoc = phoneParserHoc(JuiTaskSectionOrDescription);
 
 const FILE_COMPS = {
   [FileType.image]: (
@@ -173,38 +175,35 @@ class Task extends React.Component<taskViewProps> {
       >
         <JuiSectionDivider gap={2}>
           {endTime.get() && (
-            <>
-              <JuiLabelWithContent label={t('item.due')}>
-                <JuiTimeMessage
-                  time={`${startTime.get()} ${
-                    hasTime ? '-' : ''
-                  } ${endTime.get()} ${timeText.get()}`}
-                />
-              </JuiLabelWithContent>
-            </>
+            <JuiLabelWithContent label={t('item.due')}>
+              <JuiTimeMessage
+                time={`${startTime.get()} ${
+                  hasTime ? '-' : ''
+                } ${endTime.get()} ${timeText.get()}`}
+              />
+            </JuiLabelWithContent>
           )}
+
           {effectiveIds && effectiveIds.length > 0 && (
-            <>
-              <JuiLabelWithContent label={t('item.assignee')}>
-                <JuiTaskAvatarNames
-                  count={effectiveIds && effectiveIds.length}
-                  otherText={t('item.avatarNamesWithOthers', {
-                    count: effectiveIds.length - 2,
-                  })}
-                >
-                  {this._taskAvatarNames}
-                </JuiTaskAvatarNames>
-              </JuiLabelWithContent>
-            </>
+            <JuiLabelWithContent label={t('item.assignee')}>
+              <JuiTaskAvatarNames
+                count={effectiveIds && effectiveIds.length}
+                otherText={t('item.avatarNamesWithOthers', {
+                  count: effectiveIds.length - 2,
+                })}
+              >
+                {this._taskAvatarNames}
+              </JuiTaskAvatarNames>
+            </JuiLabelWithContent>
           )}
           {section && (
             <JuiLabelWithContent label={t('item.section')}>
-              <JuiTaskSectionOrDescription text={section} />
+              {section}
             </JuiLabelWithContent>
           )}
           {notes && (
             <JuiLabelWithContent label={t('item.descriptionNotes')}>
-              <JuiTaskSectionOrDescription text={notes} />
+              <PhoneNumberHoc description={notes} />
             </JuiLabelWithContent>
           )}
           {files && files.length > 0 && (

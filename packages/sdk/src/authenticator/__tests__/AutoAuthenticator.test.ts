@@ -7,11 +7,9 @@
 import { AutoAuthenticator } from '../AutoAuthenticator';
 import { ACCOUNT_TYPE_ENUM } from '../constants';
 import { GlobalConfigService } from '../../module/config';
-import {
-  AccountUserConfig,
-  AccountGlobalConfig,
-  AuthUserConfig,
-} from '../../module/account/config';
+import { AccountGlobalConfig } from '../../module/account/config';
+import { AuthUserConfig } from '../../module/account/config/AuthUserConfig';
+import { AccountUserConfig } from '../../module/account/config/AccountUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
 
 jest.mock('../../module/config');

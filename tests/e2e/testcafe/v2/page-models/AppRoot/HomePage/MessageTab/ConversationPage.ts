@@ -899,6 +899,13 @@ export class PostItem extends BaseWebComponent {
     await this.t.expect(this.isHighLight).ok();
   }
 
+  get phoneLink() {
+    return this.getSelectorByAutomationId('phoneNumberLink', this.self);
+  }
+
+  phoneLinkByDataId(dataId: string) {
+    return this.phoneLink.withAttribute('data-id', dataId);
+  }
   // be searched item
   get keyworkdsByHighLight() {
     return this.self.find('span.highlight-term');
