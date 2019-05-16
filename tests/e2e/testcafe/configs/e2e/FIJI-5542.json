@@ -5,7 +5,9 @@
     ],
     "include_tags": [
       "JPT-1751",
-      "JPT-1746"
+      "JPT-1746",
+      "JPT-1792",
+      "JPT-1793"
     ],
     "browsers": [
       "selenium:chrome"
