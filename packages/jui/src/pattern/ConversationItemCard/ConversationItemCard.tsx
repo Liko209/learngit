@@ -56,7 +56,7 @@ const ItemCardHeader = styled.div<{
   titleColor?: [keyof Palette, string];
 }>`
   position: relative;
-  padding: ${spacing(4, 4, 0, 4)};
+  padding: ${spacing(4, 4, 4, 4)};
   padding-right: ${({ buttonNumber }) => calcActionBarWith(buttonNumber)}px;
   display: flex;
   ${typography('body1')};
@@ -133,7 +133,6 @@ class JuiConversationItemCardComponent extends React.PureComponent<
       showHeaderActions,
       ...rest
     } = this.props;
-
     return (
       <ItemCardWrapper className="conversation-item-cards" {...rest}>
         <ItemCardHeader
