@@ -171,10 +171,7 @@ class TelephonyStore {
     });
 
     this._holdFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
-      const { to, from } = lifecycle;
-      if (to === from) {
-        return;
-      }
+      const { to } = lifecycle;
       this.holdState = to as HOLD_STATE;
       switch (this.holdState) {
         case HOLD_STATE.HOLDED:
@@ -187,8 +184,10 @@ class TelephonyStore {
     });
 
     this._callFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
-      const { to } = lifecycle;
-
+      const { to, from } = lifecycle;
+      if (to === from) {
+        return;
+      }
       this.callState = to as CALL_STATE;
       switch (this.callState) {
         case CALL_STATE.CONNECTED:
@@ -200,6 +199,7 @@ class TelephonyStore {
           this.quitKeypad();
           this._restoreButtonStates();
           this._clearEnteredKeys();
+          this.isMute = false;
           this.phoneNumber = undefined;
           break;
         case CALL_STATE.CONNECTING:
