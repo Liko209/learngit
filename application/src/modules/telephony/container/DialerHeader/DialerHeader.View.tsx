@@ -15,10 +15,11 @@ import { isFunction } from 'lodash';
 
 // HACK: `HTMLInputElement | any` to fix `createTextRange` missing in standard HTML spec
 const focusCampo = (inputField: HTMLInputElement | any) => {
-  inputField.blur();
   if (inputField && inputField.value.length === 0) {
     return;
   }
+  inputField.blur();
+
   if (isFunction(inputField.createTextRange as any)) {
     const FieldRange = (inputField.createTextRange as Function)();
     FieldRange.moveStart('character', inputField.value.length);
