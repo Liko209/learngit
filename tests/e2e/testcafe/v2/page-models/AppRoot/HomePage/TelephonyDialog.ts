@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import { BaseWebComponent } from "../../BaseWebComponent";
+import { ClientFunction } from 'testcafe';
 
 
 export class TelephonyDialog extends BaseWebComponent {
@@ -225,7 +226,11 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async focusKeypad(){
-    await this.t.click(this.keysRecordArea);
+    var focus = ClientFunction(() => {
+      document.querySelector('[data-test-automation-id="telephony-dialer-title"]').dispatchEvent(new Event('focus',{bubbles:true}))
+  });
+
+    await focus();
   }
 
   async tapKeypad(keys: string | string[]) {
