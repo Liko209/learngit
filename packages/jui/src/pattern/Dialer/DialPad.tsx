@@ -43,7 +43,7 @@ export class DialPad extends React.Component<
   private _buffer: string[] = [];
   private _timeoutId: NodeJS.Timeout | null = null;
   private _mouseDownTime: number | null = null;
-  private _onClicks: ((e?: MouseEvent<HTMLButtonElement>) => void)[]; // only need this to generate once
+  private _onClicks: ((e?: MouseEvent<any>) => void)[]; // only need this to generate once
 
   constructor(props: DialPadViewProps) {
     super(props);
