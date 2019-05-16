@@ -199,6 +199,7 @@ class TelephonyStore {
           this.quitKeypad();
           this._restoreButtonStates();
           this._clearEnteredKeys();
+          this.callerName = undefined;
           this.isMute = false;
           this.phoneNumber = undefined;
           break;
