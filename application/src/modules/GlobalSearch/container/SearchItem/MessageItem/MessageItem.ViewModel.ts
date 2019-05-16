@@ -47,7 +47,9 @@ class MessageItemViewModel extends SearchViewModel<ContentProps>
     if (group.id === conversationId) {
       return `${displayName} ${await i18nT('globalSearch.inThisConversation')}`;
     }
-    return `${displayName} ${await i18nT('globalSearch.in')} ${group.displayName}`;
+    return `${displayName} ${await i18nT('common.preposition.in')} ${
+      group.displayName
+    }`;
   });
 
   @action

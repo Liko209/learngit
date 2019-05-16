@@ -18,13 +18,13 @@ import { StateService } from '../../../state';
 import { GroupDao } from '../../dao';
 import { Group } from '../../entity';
 import { GroupHandleDataController } from '../GroupHandleDataController';
-import { AccountUserConfig } from '../../../../module/account/config';
+import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { SYNC_SOURCE } from '../../../../module/sync';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 jest.mock('../../../../module/config');
-jest.mock('../../../../module/account/config');
+jest.mock('../../../../module/account/config/AccountUserConfig');
 
 jest.mock('../../../../api');
 jest.mock('../../../../framework/controller/impl/EntitySourceController');

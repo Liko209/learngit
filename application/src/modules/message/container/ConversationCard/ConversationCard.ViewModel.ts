@@ -108,26 +108,20 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   }
 
   @computed
-  get nameSuffix() {
-    const integrationItems = this.integrationItems;
-    if (integrationItems.length > 0 && this.post.itemIds.length > 1) {
-      return i18nP('message.sharedItems');
-    }
-    return '';
-  }
-
-  @computed
   get name() {
     // get name from items if this post is integration post
     // post -> itemIds -> isIntegration -> integrationItem.activity
     const integrationItems = this.integrationItems;
-    if (integrationItems.length > 0 && this.post.itemIds.length === 1) {
-      const integrationItemID = integrationItems[0];
-      const item = getEntity<IntegrationItem, IntegrationItemModel>(
-        ENTITY_NAME.ITEM,
-        integrationItemID as number,
-      );
-      return item.activity;
+    if (integrationItems.length > 0) {
+      if (this.post.itemIds.length === 1) {
+        const integrationItemID = integrationItems[0];
+        const item = getEntity<IntegrationItem, IntegrationItemModel>(
+          ENTITY_NAME.ITEM,
+          integrationItemID as number,
+        );
+        return item.activity;
+      }
+      return `${this.creator.userDisplayName} ${i18nP('message.sharedItems')}`;
     }
     return this.creator.userDisplayName;
   }

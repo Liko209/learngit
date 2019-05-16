@@ -12,11 +12,9 @@ import { AccountManager, ServiceManager } from '../framework';
 import notificationCenter from '../service/notificationCenter';
 import { SERVICE } from '../service';
 import { SyncService } from '../module/sync';
-import {
-  AccountGlobalConfig,
-  AccountUserConfig,
-  AuthUserConfig,
-} from '../module/account/config';
+import { AccountGlobalConfig } from '../module/account/config';
+import { AuthUserConfig } from '../module/account/config/AuthUserConfig';
+import { AccountUserConfig } from '../module/account/config/AccountUserConfig';
 import { ServiceLoader } from '../module/serviceLoader';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 

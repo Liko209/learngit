@@ -24,7 +24,8 @@ import { IEntityCacheController } from 'sdk/framework/controller/interface/IEnti
 import { IEntityCacheSearchController } from 'sdk/framework/controller/interface/IEntityCacheSearchController';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../../group/entity';
 import { GlobalConfigService } from 'sdk/module/config';
-import { AccountUserConfig, AuthUserConfig } from 'sdk/module/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
+import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 import { ContactType } from '../../types';
 import { SearchUtils } from 'sdk/framework/utils/SearchUtils';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';

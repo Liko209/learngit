@@ -9,7 +9,7 @@ import * as telephony from '@/modules/telephony/module.config';
 import * as featuresFlags from '@/modules/featuresFlags/module.config';
 import { Jupiter, container } from 'framework';
 import * as utils from '@/store/utils';
-import { AuthUserConfig } from 'sdk/module/account/config';
+import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 import { TelephonyService } from '@/modules/telephony/service';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import Backend from 'i18next-xhr-backend';
@@ -19,7 +19,7 @@ import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 
 jest.mock('@/store/utils');
 jest.mock('sdk/module/config/service/UserConfigService');
-jest.mock('sdk/module/account/config');
+jest.mock('sdk/module/account/config/AuthUserConfig');
 // const GROUP_ID = 52994050;
 // const TEAM_ID = 11370502;
 // const PERSON_ID = 2514947;

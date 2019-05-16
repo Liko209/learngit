@@ -23,7 +23,6 @@ type ConversationCardViewProps = {
   creator: PersonModel;
   groupId: number;
   name: string;
-  nameSuffix: string;
   isArchivedGroup: boolean;
   showToast: boolean;
   customStatus?: string;

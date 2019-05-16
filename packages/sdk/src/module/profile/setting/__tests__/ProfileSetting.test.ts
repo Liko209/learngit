@@ -11,9 +11,10 @@ import { ProfileSetting } from '../ProfileSetting';
 import { ProfileService } from '../../service/ProfileService';
 import notificationCenter from '../../../../service/notificationCenter';
 import { SettingModuleIds } from '../../../setting/constants';
-import { AccountUserConfig } from 'sdk/module/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
+import { AccountService } from 'sdk/module/account';
 
-jest.mock('sdk/module/account/config');
+jest.mock('sdk/module/account/config/AccountUserConfig');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../service/ProfileService');
 jest.mock('../../../rcInfo');
@@ -31,13 +32,17 @@ describe('ProfileSetting ', () => {
   const profileId = 111;
   function setUp() {
     rcInfoService = new RCInfoService();
-    iProfileService = new ProfileService();
-    profileSetting = new ProfileSetting(iProfileService);
+    const accountService = new AccountService({} as any);
     ServiceLoader.getInstance = jest.fn().mockImplementation((key: any) => {
       if (key === ServiceConfig.RC_INFO_SERVICE) {
         return rcInfoService;
       }
+      if (key === ServiceConfig.ACCOUNT_SERVICE) {
+        return accountService;
+      }
     });
+    iProfileService = new ProfileService();
+    profileSetting = new ProfileSetting(iProfileService);
     rcInfoService.getCallerIdList = jest
       .fn()
       .mockResolvedValue([{ id: 1 }, { id: 2 }]);
