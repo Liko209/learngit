@@ -3,7 +3,7 @@
  * @Date: 2018-11-20 14:37:25
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { computed } from 'mobx';
 import {
   FetchSortableDataListHandler,
   ISortableModelWithData,
@@ -70,7 +70,12 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
     return this._foc.fetchData(QUERY_DIRECTION.NEWER, pageSize);
   }
 
-  getSortedGroupMembersIds() {
+  @computed
+  get sortedMemberIds() {
+    console.log(
+      'TMSLOG: SortableGroupMemberHandler -> getSortedGroupMembersIds -> this._foc ? this._foc.sortableListStore.getIds : []',
+      this._foc ? this._foc.sortableListStore.getIds : [],
+    );
     return this._foc ? this._foc.sortableListStore.getIds : [];
   }
 
@@ -210,6 +215,10 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
         needUpdateMemberList = !_.isEqual(newAdmins, oldAdmins);
       }
 
+      console.log(
+        'TMSLOG: SortableGroupMemberHandler -> private_handleGroupUpdate -> needUpdateMemberList',
+        needUpdateMemberList,
+      );
       if (needUpdateMemberList) {
         this._initGroupData().then(() => {
           this._groupMemberDataProvider.onSourceIdsChanged(

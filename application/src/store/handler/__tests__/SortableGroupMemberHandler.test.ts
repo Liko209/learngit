@@ -207,9 +207,7 @@ describe('SortableGroupMemberHandler', () => {
       await sortableGroupMemberHandler.fetchGroupMembersByPage(20);
 
       setTimeout(() => {
-        expect(sortableGroupMemberHandler.getSortedGroupMembersIds()).toEqual(
-          expectRes,
-        );
+        expect(sortableGroupMemberHandler.sortedMemberIds).toEqual(expectRes);
         expect(personService.getPersonsByIds).toBeCalledWith([
           1,
           2,
@@ -252,9 +250,7 @@ describe('SortableGroupMemberHandler', () => {
       sortableGroupMemberHandler.fetchGroupMembersByPage(20);
 
       setTimeout(() => {
-        expect(sortableGroupMemberHandler.getSortedGroupMembersIds()).toEqual(
-          expectRes,
-        );
+        expect(sortableGroupMemberHandler.sortedMemberIds).toEqual(expectRes);
         expect(personService.getPersonsByIds).toBeCalledWith([
           1,
           2,

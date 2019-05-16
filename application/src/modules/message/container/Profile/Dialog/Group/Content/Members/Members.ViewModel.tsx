@@ -78,7 +78,7 @@ class MembersViewModel extends ProfileDialogGroupViewModel
       return result;
     }
     // when no keywords, just reset the member list.
-    this.filteredMemberIds = this._sortableGroupMemberHandler.getSortedGroupMembersIds();
+    this.filteredMemberIds = this._sortableGroupMemberHandler.sortedMemberIds;
     return null;
   }
 
