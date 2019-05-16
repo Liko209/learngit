@@ -374,19 +374,29 @@ class GroupHandleDataController {
     );
   }
 
-  getUniqMostRecentPostsByGroup = (posts: Post[]): Post[] => {
+  getUniqMostRecentPostsByGroup = (
+    posts: Post[],
+  ): { uniqMaxPosts: Post[]; uniqMyMaxPosts: Post[] } => {
     const groupedPosts = _.groupBy(posts, 'group_id');
-
+    const currentUserId = this._getGlipUserId();
+    const uniqMyMaxPosts: Post[] = [];
     const uniqMaxPosts: Post[] = [];
-    _.each(groupedPosts, (item: any) => {
+    _.each(groupedPosts, (item: Post[]) => {
       const sortedItem = _.orderBy(item, ['created_at'], ['desc']);
       const maxItem = _.head(sortedItem);
       if (maxItem) {
         uniqMaxPosts.push(maxItem);
       }
+
+      const myMaxItem = sortedItem.find(
+        (post: Post) => post.creator_id === currentUserId,
+      );
+      if (myMaxItem) {
+        uniqMyMaxPosts.push(myMaxItem);
+      }
     });
 
-    return uniqMaxPosts;
+    return { uniqMaxPosts, uniqMyMaxPosts };
   }
 
   handleGroupMostRecentPostChanged = async ({
@@ -398,7 +408,14 @@ class GroupHandleDataController {
     }
     const posts: Post[] = [];
     body.entities.forEach((item: Post) => posts.push(item));
-    const uniqMaxPosts = this.getUniqMostRecentPostsByGroup(posts);
+    const { uniqMaxPosts, uniqMyMaxPosts } = this.getUniqMostRecentPostsByGroup(
+      posts,
+    );
+    await this._updateGroupMostRecentPost(uniqMaxPosts);
+    await this._updateMyLastPostTime(uniqMyMaxPosts);
+  }
+
+  private async _updateGroupMostRecentPost(uniqMaxPosts: Post[]) {
     const groupDao = daoManager.getDao(GroupDao);
     let validGroups: Partial<Raw<Group>>[] = [];
     const ids: number[] = [];
@@ -432,7 +449,6 @@ class GroupHandleDataController {
       >[];
     });
     await this.handlePartialData(validGroups);
-    await this._updateMyLastPostTime(uniqMaxPosts);
     ids.length &&
       notificationCenter.emit(SERVICE.POST_SERVICE.NEW_POST_TO_GROUP, ids);
   }
@@ -464,10 +480,7 @@ class GroupHandleDataController {
    */
   filterGroups = async (groups: Group[], limit: number) => {
     let sortedGroups = groups;
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
-    const currentUserId = userConfig.getGlipUserId();
+    const currentUserId = this._getGlipUserId();
     sortedGroups = groups.filter((model: Group) => {
       if (model.is_team) {
         return true;
@@ -531,12 +544,14 @@ class GroupHandleDataController {
     const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
       ServiceConfig.GROUP_CONFIG_SERVICE,
     );
+    await groupConfigService.handleMyMostRecentPostChange(uniqMaxPosts);
+  }
 
-    await Promise.all(
-      uniqMaxPosts.map((post: Post) => {
-        return groupConfigService.updateMyLastPostTime(post.group_id, post);
-      }),
-    );
+  private _getGlipUserId() {
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    return userConfig.getGlipUserId();
   }
 }
 

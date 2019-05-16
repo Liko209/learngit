@@ -98,12 +98,12 @@ describe('GroupConfigService', () => {
     });
   });
 
-  describe('updateMyLastPostTime', () => {
+  describe('handleMyMostRecentPostChange', () => {
     it('should call with correct parameter', async () => {
-      await groupConfigService.updateMyLastPostTime(1, { id: 1111 });
-      expect(groupConfigController.updateMyLastPostTime).toBeCalledWith(1, {
-        id: 1111,
-      });
+      await groupConfigService.handleMyMostRecentPostChange([{ id: 1111 }]);
+      expect(groupConfigController.updateMyLastPostTime).toBeCalledWith([
+        { id: 1111 },
+      ]);
     });
   });
 });

@@ -3,7 +3,7 @@
  * @Date: 2019-02-25 17:22:48
  * Copyright © RingCentral. All rights reserved.
  */
-
+import _ from 'lodash';
 import { GroupConfig } from '../entity';
 import { ErrorParserHolder } from '../../../error';
 import notificationCenter from '../../../service/notificationCenter';
@@ -13,8 +13,6 @@ import { buildPartialModifyController } from '../../../framework/controller';
 import { Raw } from '../../../framework/model';
 import { mainLogger } from 'foundation';
 import { Post } from 'sdk/module/post/entity';
-import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-import { AccountService } from 'sdk/module/account';
 
 const LOG_TAG = 'GroupConfigController';
 class GroupConfigController {
@@ -129,36 +127,26 @@ class GroupConfigController {
     });
   }
 
-  private async _recordMyLastPostTime(groupId: number, timeStamp: number) {
-    const updateData = {
-      id: groupId,
-      my_last_post_time: timeStamp,
-    };
+  async updateMyLastPostTime(posts: Post[]) {
     try {
-      await this.entitySourceController.update(updateData);
+      const partialDatas = [];
+      for (const post of posts) {
+        const groupConfig = await this.entitySourceController.get(
+          post.group_id,
+        );
+        const lastPostTime =
+          (groupConfig && groupConfig.my_last_post_time) || 0;
+        if (post.created_at > lastPostTime) {
+          partialDatas.push({
+            id: post.group_id,
+            my_last_post_time: post.created_at,
+          });
+        }
+      }
+
+      await this.entitySourceController.bulkUpdate(partialDatas);
     } catch (error) {
-      mainLogger
-        .tags(LOG_TAG)
-        .log('recordMyLastPostTime failed', updateData, error);
-    }
-  }
-
-  private _getCurrentUserId() {
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
-    return userConfig.getGlipUserId();
-  }
-
-  async updateMyLastPostTime(groupId: number, post: Post) {
-    if (post.creator_id !== this._getCurrentUserId()) {
-      return;
-    }
-
-    const groupConfig = await this.entitySourceController.get(groupId);
-    const lastPostTime = (groupConfig && groupConfig.my_last_post_time) || 0;
-    if (post.created_at > lastPostTime) {
-      await this._recordMyLastPostTime(groupId, post.created_at);
+      mainLogger.tags(LOG_TAG).log('recordMyLastPostTime failed', error);
     }
   }
 }

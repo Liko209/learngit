@@ -168,6 +168,8 @@ describe('GroupHandleDataController', () => {
       groupService as any,
       entitySourceController,
     );
+
+    AccountUserConfig.prototype.getGlipUserId.mockReturnValue(1);
   }
 
   beforeEach(() => {
@@ -405,6 +407,7 @@ describe('GroupHandleDataController', () => {
       created_at: 100,
       is_team: true,
       group_id: 2,
+      creator_id: 1,
     };
     const map = new Map();
     map.set(1, post);
@@ -442,7 +445,7 @@ describe('GroupHandleDataController', () => {
       expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     });
 
-    it('group has not most_recent_post_created_at should update group recent modified time', async () => {
+    it('group has no most_recent_post_created_at should update group recent modified time', async () => {
       daoManager
         .getDao(GroupDao)
         .doInTransaction.mockImplementation(async (fn: Function) => {
@@ -462,13 +465,16 @@ describe('GroupHandleDataController', () => {
           entities: map,
         },
       });
-      expect(groupConfigService.updateMyLastPostTime).toBeCalledWith(2, {
-        created_at: 100,
-        group_id: 2,
-        id: 1,
-        is_team: true,
-        modified_at: 100,
-      });
+      expect(groupConfigService.handleMyMostRecentPostChange).toBeCalledWith([
+        {
+          created_at: 100,
+          group_id: 2,
+          id: 1,
+          is_team: true,
+          modified_at: 100,
+          creator_id: 1,
+        },
+      ]);
       expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     });
 
@@ -790,20 +796,31 @@ describe('GroupHandleDataController', () => {
   });
 
   describe('getUniqMostRecentPostsByGroup', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
     it('should have 2 posts', () => {
       const posts: Post[] = toArrayOf<Post>([
-        { id: 1, group_id: 1, modified_at: 1, created_at: 100 },
-        { id: 2, group_id: 1, modified_at: 1, created_at: 101 },
+        { id: 1, group_id: 1, modified_at: 1, created_at: 100, creator_id: 1 },
+        { id: 2, group_id: 1, modified_at: 1, created_at: 101, creator_id: 2 },
 
-        { id: 3, group_id: 2, modified_at: 1, created_at: 101 },
+        { id: 3, group_id: 2, modified_at: 1, created_at: 102, creator_id: 1 },
+        { id: 4, group_id: 2, modified_at: 1, created_at: 103, creator_id: 1 },
       ]);
 
-      const groupedPosts = groupHandleDataController.getUniqMostRecentPostsByGroup(
-        posts,
-      );
-      expect(groupedPosts.length).toEqual(2);
-      expect(groupedPosts[0].id).toEqual(2);
-      expect(groupedPosts[1].id).toEqual(3);
+      const {
+        uniqMyMaxPosts,
+        uniqMaxPosts,
+      } = groupHandleDataController.getUniqMostRecentPostsByGroup(posts);
+      expect(uniqMaxPosts.length).toEqual(2);
+      expect(uniqMaxPosts[0].id).toEqual(2);
+      expect(uniqMaxPosts[1].id).toEqual(4);
+
+      expect(uniqMyMaxPosts.length).toEqual(2);
+      expect(uniqMyMaxPosts[0].id).toEqual(1);
+      expect(uniqMyMaxPosts[1].id).toEqual(4);
     });
   });
 

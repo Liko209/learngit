@@ -66,8 +66,8 @@ class GroupConfigService extends EntityBaseService<GroupConfig> {
     this.getGroupConfigController().addPostId(groupId, postId);
   }
 
-  async updateMyLastPostTime(groupId: number, post: Post) {
-    await this.getGroupConfigController().updateMyLastPostTime(groupId, post);
+  async handleMyMostRecentPostChange(posts: Post[]) {
+    await this.getGroupConfigController().updateMyLastPostTime(posts);
   }
 
   protected getGroupConfigController() {
