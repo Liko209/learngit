@@ -37,7 +37,7 @@ class AvatarView extends React.Component<AvatarViewProps> {
         presence={presence}
         {...rest}
       >
-        <span>{shortName}</span>
+        <span className="avatar-short-name">{shortName}</span>
       </JuiAvatar>
     );
 

@@ -5,26 +5,25 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 
 import { AccountService } from '..';
-import { daoManager } from '../../../../dao';
 import { PersonService } from '../../../person';
 import { RCAuthApi } from '../../../../api';
-import {
-  AccountUserConfig,
-  AccountGlobalConfig,
-} from '../../../account/config';
+import { AccountGlobalConfig } from '../../../account/config';
+import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
 import { ServiceLoader } from '../../../serviceLoader';
 
 // jest.mock('../../../../dao');
 jest.mock('../../../serviceLoader');
 jest.mock('../../../person');
 jest.mock('../../../../api');
+jest.mock('../../../account/config/AccountUserConfig');
+jest.mock('../../../account/config/AuthUserConfig');
 jest.mock('../../../account/config');
 
 describe('AccountService', () => {
   let accountService: AccountService;
   let personService: PersonService;
 
-  beforeAll(() => {
+  beforeEach(() => {
     personService = new PersonService();
     ServiceLoader.getInstance.mockReturnValue(personService);
     accountService = new AccountService(null);
@@ -67,7 +66,7 @@ describe('AccountService', () => {
   });
 
   describe('refreshRCToken()', () => {
-    it('should refresh rc roken if api return data', () => {
+    it('should refresh rc token if api return data', () => {
       const result = {
         timestamp: 1,
         accessTokenExpireIn: 6001,

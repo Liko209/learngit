@@ -18,7 +18,6 @@ type SWCallbackArgs = {
 export class SWNotification extends AbstractNotification<NotificationAction[]> {
   static CLIENT_ID = Math.random();
   private _reg: ServiceWorkerRegistration;
-  private _notifications: Notification[] = [];
   constructor() {
     super('SWNotification');
     this.isSupported() && this._subscribeWorkerMessage();
@@ -34,7 +33,7 @@ export class SWNotification extends AbstractNotification<NotificationAction[]> {
   }
 
   private _subscribeWorkerMessage() {
-    navigator.serviceWorker.addEventListener('message', (event) => {
+    navigator.serviceWorker.addEventListener('message', event => {
       const data = JSON.parse(event.data) as SWCallbackArgs;
       if (!data.id) {
         return;
@@ -77,7 +76,6 @@ export class SWNotification extends AbstractNotification<NotificationAction[]> {
         handler: opts.onClick,
       }),
     ];
-    this._updateNotificationsList();
     return actions;
   }
 
@@ -86,26 +84,17 @@ export class SWNotification extends AbstractNotification<NotificationAction[]> {
     const notifications = await this.getNotifications();
     await Promise.all(
       notifications.map(
-        async (i: Notification) => i.data.id === id && i.close(),
+        async (i: Notification) => i.data && i.data.id === id && i.close(),
       ),
     );
-    this._updateNotificationsList();
   }
 
   async clear(scope: string) {
     // todo
-    const notifications = this._notifications;
+    const notifications = await this.getNotifications();
     for (const notification of notifications) {
       notification.close();
     }
-    this._notifications = [];
-  }
-  private async _updateNotificationsList() {
-    if (!this._reg) {
-      return;
-    }
-    const notifications = await this._reg.getNotifications();
-    this._notifications = _.unionBy(this._notifications, notifications, 'tag');
   }
 
   async getNotifications() {
@@ -114,15 +103,7 @@ export class SWNotification extends AbstractNotification<NotificationAction[]> {
   }
 
   async checkNotificationValid(id: number) {
-    const notifications = await this.getNotifications();
-    for (const notification of notifications) {
-      const { id: notificationId, clientId } = notification.data;
-      const isSameNotificationFromDifferentClient =
-        notificationId === id && clientId !== SWNotification.CLIENT_ID;
-      if (isSameNotificationFromDifferentClient) {
-        return false;
-      }
-    }
+    // todo multitab problems
     return true;
   }
 }

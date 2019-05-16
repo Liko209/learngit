@@ -10,7 +10,6 @@ import { Config } from "../config";
 import * as bluebird from 'bluebird';
 
 class IndexDataGatherer extends BaseGatherer {
-  private artifacts: Map<string, Array<any>> = new Map();
   private metricKeys: Array<string> = [
     "handle_incoming_account",
     "handle_incoming_company",
@@ -28,12 +27,11 @@ class IndexDataGatherer extends BaseGatherer {
 
   constructor() {
     super();
-    for (let key of this.metricKeys) {
-      this.artifacts.set(key, []);
-    }
   }
 
-  async _beforePass(passContext) { }
+  async _beforePass(passContext) {
+    await this.gathererConsole(this.metricKeys, passContext);
+  }
 
   async _pass(passContext) {
     const driver = passContext.driver;
@@ -41,10 +39,13 @@ class IndexDataGatherer extends BaseGatherer {
     const { url } = passContext.settings;
     const browser = await groupPage.browser();
 
-    let authUrl, page, metric, cnt, item;
+    this.beginGathererConsole();
+    let authUrl, page, cnt, length;
     for (let i = 0; i < Config.sceneRepeatCount; i++) {
       try {
         cnt = 20;
+
+        length = this.consoleMetrics['handle_index_data'].length
 
         authUrl = await JupiterUtils.getAuthUrl(url, browser);
 
@@ -57,22 +58,11 @@ class IndexDataGatherer extends BaseGatherer {
         await bluebird.delay(5000);
 
         while (cnt-- > 0) {
-          metric = await page.evaluate(() => {
-            const m = performance["jupiter"];
-            return m;
-          });
-
-          if (!metric['handle_index_data']) {
+          if (length >= this.consoleMetrics['handle_index_data'].length) {
             await bluebird.delay(2000);
             continue;
           }
 
-          for (let k of this.metricKeys) {
-            if (metric[k] && metric[k].length > 0) {
-              item = metric[k].reduce((a, b) => { return (a.endTime - a.startTime) > (b.endTime - b.startTime) ? a : b });
-              this.artifacts.get(k).push(item);
-            }
-          }
           break;
         }
 
@@ -86,13 +76,14 @@ class IndexDataGatherer extends BaseGatherer {
         }
       }
     }
+    this.endGathererConsole();
   }
 
   async _afterPass(passContext) {
     let result = {};
     for (let key of this.metricKeys) {
       result[key] = {
-        api: this.artifacts.get(key),
+        api: this.consoleMetrics[key],
         ui: []
       };
     }

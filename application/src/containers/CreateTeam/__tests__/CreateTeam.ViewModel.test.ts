@@ -3,12 +3,9 @@
  * @Date: 2018-09-20 14:56:18
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  testable,
-  test,
-  mockService,
-  mockGlobalValue,
-} from 'tests/integration-test';
+import { testable, test } from 'shield';
+import { mockGlobalValue } from 'shield/application';
+import { mockService } from 'shield/sdk';
 import { GroupService, TeamSetting } from 'sdk/module/group';
 import {
   ERROR_CODES_NETWORK,
@@ -17,10 +14,10 @@ import {
 } from 'sdk/error';
 
 import { CreateTeamViewModel } from '../CreateTeam.ViewModel';
-import { AccountUserConfig } from 'sdk/module/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
 import { ServiceConfig } from 'sdk/module/serviceLoader';
 
-jest.mock('sdk/module/account/config');
+jest.mock('sdk/module/account/config/AccountUserConfig');
 jest.mock('../../Notification');
 jest.mock('sdk/api');
 
@@ -33,12 +30,17 @@ describe('CreateTeamViewModel', () => {
     name: ServiceConfig.GROUP_SERVICE,
     createTeam() {},
   };
+  const accountService = {
+    name: ServiceConfig.ACCOUNT_SERVICE,
+    userConfig: AccountUserConfig.prototype,
+  };
 
   const creatorId = 1;
   @testable
   class create {
     @test('create team success')
     @mockService(groupService, 'createTeam')
+    @mockService(accountService)
     async t1() {
       const createTeamVM = new CreateTeamViewModel();
       AccountUserConfig.prototype.getGlipUserId.mockReturnValue(creatorId);
@@ -66,6 +68,7 @@ describe('CreateTeamViewModel', () => {
     @mockService.reject(GroupService, 'createTeam', () =>
       getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN),
     )
+    @mockService(accountService)
     async t2() {
       const createTeamVM = new CreateTeamViewModel();
       const creatorId = 1;
@@ -93,6 +96,7 @@ describe('CreateTeamViewModel', () => {
     @mockService.reject(GroupService, 'createTeam', () =>
       getNewJServerError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, ''),
     )
+    @mockService(accountService)
     async t3() {
       const createTeamVM = new CreateTeamViewModel();
       const creatorId = 1;
@@ -126,9 +130,6 @@ describe('CreateTeamViewModel', () => {
       expect(createTeamVM.isOffline).toBe(true);
       expect(createTeamVM.isOffline).toBe(false);
     }
-
-    @test('case 12')
-    t2() {}
   }
 
   @testable

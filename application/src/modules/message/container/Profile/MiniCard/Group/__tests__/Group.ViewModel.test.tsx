@@ -22,6 +22,7 @@ jest.mock('@/store/utils');
 jest.mock('@/utils/error');
 jest.mock('sdk/api');
 jest.mock('sdk/dao');
+jest.mock('sdk/module/config');
 
 const mockData = {
   displayName: 'Group name',

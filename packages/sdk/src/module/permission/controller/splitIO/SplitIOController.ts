@@ -10,7 +10,7 @@ import { Api } from '../../../../api';
 import SplitIODefaultPermissions from './SplitIODefaultPermissions';
 import { notificationCenter, SERVICE } from '../../../../service';
 import { mainLogger } from 'foundation';
-import { AccountUserConfig } from '../../../../module/account/config';
+import { AccountService } from '../../../account/service';
 import { PersonService } from '../../../person';
 import { ServiceConfig, ServiceLoader } from '../../../../module/serviceLoader';
 class SplitIOController {
@@ -58,7 +58,9 @@ class SplitIOController {
     if (this.isIniting || this.isClientReady) {
       return;
     }
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const userId: number = userConfig.getGlipUserId();
     if (!userId) {
       return;

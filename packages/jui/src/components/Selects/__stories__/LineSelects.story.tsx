@@ -7,15 +7,15 @@ import {
 import { JuiLineSelect } from '../LineSelect';
 import { JuiMenuItem } from '../../Menus';
 import { JuiRegionSelect } from '../LineSelect/RegionSelect';
-import cn from '../../../assets/country-svg/cn.svg';
-import ca from '../../../assets/country-svg/ca.svg';
-import eg from '../../../assets/country-svg/eg.svg';
+import cn from '../../../assets/country-flag/China.svg';
+import ca from '../../../assets/country-flag/Canada.svg';
+import eg from '../../../assets/country-flag/United Kingdom.svg';
 
 type Menu = {
   id: number | string;
   value: string;
   regionIcon?: any;
-  regionNum?: string;
+  regionCode?: string;
 };
 
 const menu = [
@@ -56,9 +56,15 @@ const LineSelect = () => {
 };
 
 const regionList = [
-  { id: 1, value: 'China', regionIcon: cn, regionCode: '+86' },
-  { id: 2, value: 'England', regionIcon: eg },
-  { id: 3, value: 'Canada', regionIcon: ca, regionCode: '+xxx' },
+  { id: 1, label: 'China', value: 'China', regionIcon: cn, regionCode: '86' },
+  { id: 2, label: 'England', value: 'England', regionIcon: eg },
+  {
+    id: 3,
+    label: 'Canada',
+    value: 'Canada',
+    regionIcon: ca,
+    regionCode: 'xxx',
+  },
 ];
 
 const RegionLineSelect = () => {

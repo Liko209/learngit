@@ -3,10 +3,13 @@
  * @Date: 2018-10-11 10:19:56
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { AvatarViewModel } from '../Avatar.ViewModel';
-jest.mock('../../../store/utils');
+
+jest.mock('sdk/dao');
 jest.mock('sdk/api');
+jest.mock('@/store/utils');
+
 const avatarViewModel = new AvatarViewModel();
 
 describe('AvatarVM', () => {
@@ -52,8 +55,7 @@ describe('AvatarVM', () => {
         headshot_version: '',
         headshot: {
           thumbs: {
-            '90791948crop=1024x1024&offset=0x0&size=80x80':
-              'https://xmnup.s3.amazonaws.com',
+            '90791948crop=1024x1024&offset=0x0&size=80x80': 'https://xmnup.s3.amazonaws.com',
             '90791948crop = 1024x1024 & offset= 0x0 & size=92':
               'https://xmnup.s3.amazonaws.com/web/175947788/',
             '90791948crop = 1024x1024 & offset= 0x0 & size=100':
@@ -65,9 +67,7 @@ describe('AvatarVM', () => {
           },
         },
       });
-      expect(avatarViewModel.headShotUrl).toBe(
-        'https://xmnup.s3.amazonaws.com/web/90824716',
-      );
+      expect(avatarViewModel.headShotUrl).toBe('https://xmnup.s3.amazonaws.com/web/90824716');
     });
   });
 });

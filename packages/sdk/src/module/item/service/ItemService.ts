@@ -10,7 +10,7 @@ import { ItemServiceController } from '../controller/ItemServiceController';
 import {
   GlipTypeUtil,
   TypeDictionary,
-  PerformanceTracerHolder,
+  PerformanceTracer,
   PERFORMANCE_KEYS,
 } from '../../../utils';
 import { Progress } from '../../progress';
@@ -28,6 +28,7 @@ import { ItemQueryOptions, ItemFilterFunction } from '../types';
 import { mainLogger } from 'foundation';
 import { ItemNotification } from '../utils/ItemNotification';
 import { ChangeModel } from '../../sync/types';
+const INVALID_ITEM_ID = [-1, -2, null];
 
 class ItemService extends EntityBaseService<Item> implements IItemService {
   private _itemServiceController: ItemServiceController;
@@ -91,15 +92,12 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   }
 
   async getItems(options: ItemQueryOptions) {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      `${PERFORMANCE_KEYS.GOTO_CONVERSATION_SHELF_FETCH_ITEMS}_${
-        options.typeId
-      }`,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
     const result = await this.itemServiceController.getItems(options);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    performanceTracer.end({
+      key: PERFORMANCE_KEYS.GOTO_CONVERSATION_SHELF_FETCH_ITEMS,
+      infos: { typeId: options.typeId },
+    });
     return result;
   }
 
@@ -201,11 +199,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   }
 
   async getByPosts(posts: Post[]): Promise<Item[]> {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_ITEMS,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
     let itemIds: number[] = [];
     posts.forEach((post: Post) => {
       if (post.item_ids && post.item_ids[0]) {
@@ -218,6 +212,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
 
     let items: Item[] = [];
     if (itemIds.length > 0) {
+      itemIds = itemIds.filter(id => !INVALID_ITEM_ID.includes(id));
       items = await this.getEntitySource().batchGet([
         ...Array.from(new Set(itemIds)),
       ]);
@@ -228,8 +223,10 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       ': item count:',
       String(itemIds.length),
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId, itemIds.length);
-
+    performanceTracer.end({
+      key: PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_ITEMS,
+      count: itemIds.length,
+    });
     return items;
   }
 

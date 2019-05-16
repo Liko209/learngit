@@ -21,7 +21,7 @@ jest.mock('../utils', () => {
 });
 jest.mock('../zip.worker');
 jest.mock('axios');
-jest.mock('sdk/module/permission/service/PermissionService');
+jest.mock('foundation/src/ioc');
 
 describe('LogControlManager', () => {
   const logControlManager = LogControlManager.instance();
