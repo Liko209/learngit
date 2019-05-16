@@ -6,7 +6,8 @@
 import { IZipItemProvider, ZipItem } from './types';
 import { IHealthStatusItem } from 'sdk/types';
 import _ from 'lodash';
-import { logManager } from 'foundation/src';
+import { logManager } from 'foundation';
+import { toText } from 'sdk/utils';
 
 export class HealthStatusItemProvider implements IZipItemProvider {
   private _items: IHealthStatusItem[] = [];
@@ -45,9 +46,8 @@ export class HealthStatusItemProvider implements IZipItemProvider {
     const logContents: string[] = [];
     for (let index = 0; index < this._items.length; index++) {
       const item = this._items[index];
-      logContents.push(
-        `----- ${item.getName()} -----\n${await item.getStatus()}`,
-      );
+      const status = await item.getStatus();
+      logContents.push(`----- ${item.getName()} -----\n${toText(status)}\n`);
     }
     return [
       {

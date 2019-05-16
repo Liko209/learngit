@@ -4,50 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ILogEntityDecorator, LogEntity } from '../types';
-enum TYPES {
-  String = '[object String]',
-  Object = '[object Object]',
-  Function = '[object Function]',
-  Undefined = '[object Undefined]',
-  Null = '[object Null]',
-}
-
-type A = TYPES;
+import { stringifyParams } from '../utils';
 export class StringifyDecorator implements ILogEntityDecorator {
   options: object;
-  parserMap: { [key in A]: (item: any) => string };
   constructor() {
-    this.parserMap = {
-      '[object Object]': (item: object) => {
-        try {
-          return JSON.stringify(item);
-        } catch {
-          return '[object Object]';
-        }
-      },
-      '[object String]': (item: string) => {
-        return item;
-      },
-      '[object Function]': (item: Function) => {
-        return '[object Function]';
-      },
-      '[object Undefined]': (item: undefined) => {
-        return 'undefined';
-      },
-      '[object Null]': (item: null) => {
-        return 'null';
-      },
-    };
   }
 
   decorate(data: LogEntity): LogEntity {
-    data.params = data.params.map((item: any) => {
-      const type = Object.prototype.toString.call(item);
-      if (this.parserMap[type]) {
-        return this.parserMap[type](item);
-      }
-      return item ? item.toString() : type;
-    });
+    data.params = stringifyParams(...data.params);
     return data;
   }
 }

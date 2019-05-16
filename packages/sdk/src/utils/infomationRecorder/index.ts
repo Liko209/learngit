@@ -4,4 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './AbstractRecord';
-export * from './InfomationRecorder';
+export * from './InformationRecorder';

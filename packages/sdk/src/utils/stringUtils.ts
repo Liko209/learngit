@@ -15,22 +15,22 @@ function repeatString(
     : baseString;
 }
 
-function toString(arg: any, level: number = 0): string {
+function toText(arg: any, level: number = 0): string {
   if (_.isArray(arg)) {
     const nChar = repeatString(' ', level);
     return `[\n${nChar}${arg
-      .map(it => `${nChar}${toString(it, level + 1)}`)
+      .map(it => `${nChar}${toText(it, level + 1)}`)
       .join(`\n${nChar}`)}\n${nChar}]`;
   }
   if (_.isObject(arg)) {
     const nChar = repeatString(' ', level);
     return Object.entries(arg)
       .map(([key, value]) => {
-        return `\n${nChar}${key}: ${toString(value, level + 1)}`;
+        return `\n${nChar}${key}: ${toText(value, level + 1)}`;
       })
       .join('');
   }
   return `${arg}`;
 }
 
-export { repeatString, toString };
+export { repeatString, toText };

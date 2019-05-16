@@ -23,6 +23,7 @@ import { HealthStatusItemProvider } from './HealthStatusItemProvider';
 import * as zipWorker from './zip.worker';
 import { createWorker } from './utils';
 import { IHealthStatusItem } from 'sdk/types';
+import { SocketManager } from 'sdk/service/socket/SocketManager';
 
 export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
@@ -61,6 +62,15 @@ export class LogControlManager implements IAccessor {
     this._healthStatusItemProvider = new HealthStatusItemProvider();
     this.registerZipProvider(this._healthStatusItemProvider);
     this.subscribeNotifications();
+
+    this.registerHealthStatusItem({
+      getName: () => 'SocketStatus',
+      getStatus: async () => {
+        return {
+          connected: SocketManager.getInstance().isConnected(),
+        };
+      },
+    });
   }
 
   public static instance(): LogControlManager {

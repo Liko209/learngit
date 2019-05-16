@@ -26,7 +26,7 @@ interface ISdkConfig {
 
 interface IHealthStatusItem {
   getName(): string;
-  getStatus(): Promise<string>;
+  getStatus(): Promise<any>;
 }
 
 export {
