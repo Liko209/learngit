@@ -160,6 +160,8 @@ class DialerViewComponent extends React.Component<DialerViewProps> {
       xScale,
       yScale,
       incomingState,
+      onDialerFocus,
+      onDialerBlur,
     } = this.props;
 
     const round = ({ theme }: any) => keyframes`
@@ -343,7 +345,7 @@ class DialerViewComponent extends React.Component<DialerViewProps> {
               data-test-automation-id="dialer-fade-animation-container"
               ref={this._fadeContainerRef as any}
             >
-              <JuiDialer>
+              <JuiDialer onFocus={onDialerFocus} onBlur={onDialerBlur}>
                 {callState === CALL_STATE.INCOMING &&
                   (incomingState === INCOMING_STATE.REPLY ? (
                     <Reply />

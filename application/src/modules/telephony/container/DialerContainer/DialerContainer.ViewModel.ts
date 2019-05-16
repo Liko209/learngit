@@ -85,6 +85,11 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
     );
   }
 
+  @computed
+  get dialerFocused() {
+    return this._telephonyStore.dialerFocused;
+  }
+
   /**
    * Perf: since it's a loop around search, we should not block the main thread
    * while searching for the next available <audio/> roundly
@@ -131,6 +136,9 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   dtmf = (digit: string) => {
+    if (!this._telephonyStore.dialerFocused) {
+      return;
+    }
     this.playAudio(digit);
     this._telephonyService.dtmf(digit);
   }

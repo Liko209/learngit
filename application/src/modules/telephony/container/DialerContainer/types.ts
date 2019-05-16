@@ -24,6 +24,7 @@ type DialerContainerViewProps = {
   setCallerPhoneNumber: (val: string) => void;
   hasDialerOpened: boolean;
   onAfterDialerOpen: () => void;
+  dialerFocused: boolean;
 };
 
 type DialerContainerViewState = {

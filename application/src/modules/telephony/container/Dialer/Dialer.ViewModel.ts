@@ -34,6 +34,13 @@ class DialerViewModel extends StoreViewModel<DialerProps>
 
   clearAnimationPromise = () => (this._animationPromise = null);
 
+  onDialerFocus = () => {
+    this._telephonyStore.onDialerFocus();
+  }
+  onDialerBlur = () => {
+    this._telephonyStore.onDialerBlur();
+  }
+
   dialerId = this._telephonyStore.dialerId;
 
   @computed

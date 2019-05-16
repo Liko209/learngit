@@ -3,12 +3,14 @@
  * @Date: 2019-03-21 18:11:39
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { PureComponent } from 'react';
+import React, { PureComponent, FocusEvent, createRef, RefObject } from 'react';
 import styled from '../../foundation/styled-components';
 import { width, spacing } from '../../foundation/utils/styles';
 
 type Props = {
   children: React.ReactNode;
+  onFocus?: (e?: FocusEvent<HTMLDivElement>) => void;
+  onBlur?: (e?: FocusEvent<HTMLDivElement>) => void;
 };
 
 const StyledDialer = styled('div')`
@@ -18,12 +20,28 @@ const StyledDialer = styled('div')`
     box-shadow: ${({ theme }) => theme.boxShadow.val16};
     border-radius: ${({ theme }) => theme.radius.xl};
     overflow: auto;
+    outline: none;
   }
 `;
 
 class JuiDialer extends PureComponent<Props> {
+  private _container: RefObject<any> = createRef();
+
+  componentWillUnmount() {
+    this.props.onBlur && this.props.onBlur();
+  }
+
   render() {
-    return <StyledDialer {...this.props} />;
+    const { onFocus, onBlur, ...rest } = this.props;
+    return (
+      <StyledDialer
+        {...rest}
+        tabIndex={0}
+        onFocus={onFocus ? onFocus : undefined}
+        onBlur={onBlur ? onBlur : undefined}
+        ref={this._container}
+      />
+    );
   }
 }
 

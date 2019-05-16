@@ -40,16 +40,12 @@ class DialerContainerViewComponent extends React.Component<
   Props,
   DialerContainerViewState
 > {
-  private _keypadKeys: JSX.Element;
   private _timer: NodeJS.Timeout;
   private _waitForAnimationEndTimer: NodeJS.Timeout;
   private _tooltipRef: RefObject<RuiTooltip> = createRef();
 
   constructor(props: Props) {
     super(props);
-    this._keypadKeys = (
-      <DialPad makeMouseEffect={props.dtmf} makeKeyboardEffect={props.dtmf} />
-    );
     // do not sync this state with `hasDialerOpened`, since once opened, `hasDialerOpened` would be set to `true` immediately
     this.state = {
       shouldShowToolTip: !props.hasDialerOpened,
@@ -108,6 +104,8 @@ class DialerContainerViewComponent extends React.Component<
       callerPhoneNumberList,
       chosenCallerPhoneNumber,
       t,
+      dialerFocused,
+      dtmf,
     } = this.props;
     let keypadActions;
     let callAction = End;
@@ -146,7 +144,13 @@ class DialerContainerViewComponent extends React.Component<
         </>
       );
     } else if (keypadEntered) {
-      keypadActions = this._keypadKeys;
+      keypadActions = (
+        <DialPad
+          makeMouseEffect={dtmf}
+          makeKeyboardEffect={dtmf}
+          shouldHandleKeyboardEvts={dialerFocused}
+        />
+      );
     } else {
       keypadActions = KEYPAD_ACTIONS;
     }

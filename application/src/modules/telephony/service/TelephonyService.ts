@@ -123,7 +123,7 @@ class TelephonyService {
       switch (e.code) {
         case 0:
           this._pauseRingtone();
-          ['mousedown', 'keydown'].forEach(evt => {
+          ['mousedown', 'keydown'].forEach((evt) => {
             const cb = () => {
               if (!this._telephonyStore.hasIncomingCall) {
                 return;
@@ -321,7 +321,7 @@ class TelephonyService {
       () =>
         this._telephonyStore.shouldDisplayDialer &&
         this._telephonyStore.callWindowState !== CALL_WINDOW_STATUS.MINIMIZED,
-      shouldDisplayDialer => {
+      (shouldDisplayDialer) => {
         if (!shouldDisplayDialer) {
           return;
         }
@@ -383,7 +383,7 @@ class TelephonyService {
           return;
         }
         const defaultPhoneNumber = callerPhoneNumberList.find(
-          callerPhoneNumber => callerPhoneNumber.id === defaultNumberId,
+          (callerPhoneNumber) => callerPhoneNumber.id === defaultNumberId,
         );
         if (defaultPhoneNumber) {
           this._telephonyStore.updateDefaultChosenNumber(
@@ -396,7 +396,7 @@ class TelephonyService {
 
     this._incomingCallDisposer = reaction(
       () => this._telephonyStore.hasIncomingCall,
-      hasIncomingCall => {
+      (hasIncomingCall) => {
         if (hasIncomingCall) {
           this._playRingtone();
         } else {
@@ -444,14 +444,12 @@ class TelephonyService {
         )}`,
       );
     }
-    const fromNumber =
-      idx === 0
-        ? ANONYMOUS
-        : this._telephonyStore.callerPhoneNumberList[idx].phoneNumber;
+    const fromEl = this._telephonyStore.callerPhoneNumberList[idx];
+    const fromNumber = fromEl.id ? fromEl.phoneNumber : ANONYMOUS;
     mainLogger.info(
-      `${TelephonyService.TAG}Make call with fromNumber: ${
-        this._telephonyStore.chosenCallerPhoneNumber
-      }， and toNumber: ${toNumber}`,
+      `${
+        TelephonyService.TAG
+      }Make call with fromNumber: ${fromNumber}， and toNumber: ${toNumber}`,
     );
     const rv = await this._serverTelephonyService.makeCall(
       toNumber,
