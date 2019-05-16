@@ -13,6 +13,7 @@ import {
   JuiTaskSectionOrDescription,
   JuiTaskAvatarNames,
   JuiTimeMessage,
+  JuiSectionDivider,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 import {
   JuiFileWithExpand,
@@ -155,61 +156,73 @@ class Task extends React.Component<taskViewProps> {
       switchExpandHandler,
     } = this.props;
     const { text, complete } = task;
+    const hasContent =
+      endTime.get() ||
+      (effectiveIds && effectiveIds.length > 0) ||
+      section ||
+      notes ||
+      (files && files.length > 0);
     return (
       <JuiConversationItemCard
         complete={complete}
         title={this._getTitleText(text)}
         titleColor={color}
+        contentHasPadding={!!hasContent}
         Icon={
           <JuiTaskCheckbox customColor={color} checked={complete || false} />}
       >
-        {endTime.get() && (
-          <JuiLabelWithContent label={t('item.due')}>
-            <JuiTimeMessage
-              time={`${startTime.get()} ${
-                hasTime ? '-' : ''
-              } ${endTime.get()} ${timeText.get()}`}
-            />
-          </JuiLabelWithContent>
-        )}
-
-        {effectiveIds && effectiveIds.length > 0 && (
-          <JuiLabelWithContent label={t('item.assignee')}>
-            <JuiTaskAvatarNames
-              count={effectiveIds && effectiveIds.length}
-              otherText={t('item.avatarNamesWithOthers', {
-                count: effectiveIds.length - 2,
-              })}
-            >
-              {this._taskAvatarNames}
-            </JuiTaskAvatarNames>
-          </JuiLabelWithContent>
-        )}
-        {section && (
-          <JuiLabelWithContent label={t('item.section')}>
-            <JuiTaskSectionOrDescription text={section} />
-          </JuiLabelWithContent>
-        )}
-        {notes && (
-          <JuiLabelWithContent label={t('item.descriptionNotes')}>
-            <JuiTaskSectionOrDescription text={notes} />
-          </JuiLabelWithContent>
-        )}
-        {files && files.length > 0 && (
-          <JuiLabelWithContent label={t('item.attachments')}>
-            <JuiFileWrapper>
-              {files.map((file: ExtendFileItem) => {
-                return FILE_COMPS[file.type](
-                  file,
-                  this.props,
-                  this._handleImageClick,
-                  initialExpansionStatus,
-                  switchExpandHandler,
-                );
-              })}
-            </JuiFileWrapper>
-          </JuiLabelWithContent>
-        )}
+        <JuiSectionDivider gap={2}>
+          {endTime.get() && (
+            <>
+              <JuiLabelWithContent label={t('item.due')}>
+                <JuiTimeMessage
+                  time={`${startTime.get()} ${
+                    hasTime ? '-' : ''
+                  } ${endTime.get()} ${timeText.get()}`}
+                />
+              </JuiLabelWithContent>
+            </>
+          )}
+          {effectiveIds && effectiveIds.length > 0 && (
+            <>
+              <JuiLabelWithContent label={t('item.assignee')}>
+                <JuiTaskAvatarNames
+                  count={effectiveIds && effectiveIds.length}
+                  otherText={t('item.avatarNamesWithOthers', {
+                    count: effectiveIds.length - 2,
+                  })}
+                >
+                  {this._taskAvatarNames}
+                </JuiTaskAvatarNames>
+              </JuiLabelWithContent>
+            </>
+          )}
+          {section && (
+            <JuiLabelWithContent label={t('item.section')}>
+              <JuiTaskSectionOrDescription text={section} />
+            </JuiLabelWithContent>
+          )}
+          {notes && (
+            <JuiLabelWithContent label={t('item.descriptionNotes')}>
+              <JuiTaskSectionOrDescription text={notes} />
+            </JuiLabelWithContent>
+          )}
+          {files && files.length > 0 && (
+            <JuiLabelWithContent label={t('item.attachments')}>
+              <JuiFileWrapper>
+                {files.map((file: ExtendFileItem) => {
+                  return FILE_COMPS[file.type](
+                    file,
+                    this.props,
+                    this._handleImageClick,
+                    initialExpansionStatus,
+                    switchExpandHandler,
+                  );
+                })}
+              </JuiFileWrapper>
+            </JuiLabelWithContent>
+          )}
+        </JuiSectionDivider>
       </JuiConversationItemCard>
     );
   }

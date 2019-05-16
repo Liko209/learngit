@@ -12,6 +12,7 @@ import {
   JuiEventLocation,
   JuiEventDescription,
   JuiTimeMessage,
+  JuiSectionDivider,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 import { EventViewProps } from './types';
 
@@ -21,11 +22,7 @@ type Props = WithTranslation & EventViewProps;
 class Event extends React.Component<Props, {}> {
   render() {
     const { event, t, color, timeContent } = this.props;
-    const {
-      location,
-      text,
-      description,
-    } = event;
+    const { location, text, description } = event;
 
     return (
       <JuiConversationItemCard
@@ -34,15 +31,17 @@ class Event extends React.Component<Props, {}> {
         titleColor={color}
         Icon="event"
       >
-        <JuiLabelWithContent label={t('item.due')}>
-          <JuiTimeMessage time={`${timeContent.get()}`} />
-        </JuiLabelWithContent>
-        {location && (
-          <JuiLabelWithContent label={t('item.locationTitle')}>
-            <JuiEventLocation location={location} />
+        <JuiSectionDivider gap={2}>
+          <JuiLabelWithContent label={t('item.due')}>
+            <JuiTimeMessage time={`${timeContent.get()}`} />
           </JuiLabelWithContent>
-        )}
-        {description && <JuiEventDescription description={description} />}
+          {location && (
+            <JuiLabelWithContent label={t('item.locationTitle')}>
+              <JuiEventLocation location={location} />
+            </JuiLabelWithContent>
+          )}
+          {description && <JuiEventDescription description={description} />}
+        </JuiSectionDivider>
       </JuiConversationItemCard>
     );
   }

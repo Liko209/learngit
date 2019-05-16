@@ -5,7 +5,7 @@
  */
 import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
-import { typography, grey, spacing } from '../../../foundation/utils/styles';
+import { typography, grey } from '../../../foundation/utils/styles';
 import { withHighlight } from '../../../hoc/withHighlight';
 
 type Props = {
@@ -13,7 +13,6 @@ type Props = {
 };
 
 const StyledEventDescription = styled.div`
-  margin-top: ${spacing(2)};
   ${typography('body1')};
   color: ${grey('500')};
 `;
