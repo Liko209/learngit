@@ -615,18 +615,11 @@ export class GlipSdk {
   }
 
   async createSimpleTask(groupIds: string[] | string, rcIds: string[] | string, title: string, options?: object) {
-    if (typeof groupIds == "string") { groupIds = [groupIds] };
-    let personIds = this.toPersonId(rcIds);
-    let assignees;
-    if (Object.prototype.toString.call(personIds) === '[object Array]') {
-      assignees = personIds.map(id => +id);
-    } else {
-      assignees = [+personIds];
-    }
+    rcIds = rcIds ? this.toPersonId(rcIds) : this.myPersonId;
     const data = _.assign({
       text: title,
-      assigned_to_ids: assignees,
-      group_ids: groupIds
+      assigned_to_ids: H.toNumberArray(rcIds),
+      group_ids: H.toNumberArray(groupIds),
     },
       options
     )
@@ -669,7 +662,7 @@ export class GlipSdk {
   }
 
   async createSimpleNote(groupIds: string[] | string, title: string, options?: object) {
-    const group_ids = [].concat(groupIds);
+    const group_ids = H.toNumberArray(groupIds);
     const data = _.assign({
       title,
       group_ids
@@ -707,27 +700,20 @@ export class GlipSdk {
     });
   }
 
-  async createSimpleEvent(groupIds: string[] | string, title: string, rcIds?, start?: number, end?: number, options?: object) {
-    if (typeof groupIds == "string") { groupIds = [groupIds] };
-    const data = _.assign({
-      text: title,
-      group_ids: groupIds,
-      start: start || new Date().getTime() + 1800000, // start time after 30 minutes from now
-      end: end || new Date().getTime() + 3600000 // end time after 60 minutes from now
+  async createSimpleEvent(data: { groupIds: string[] | string, title: string, rcIds?, start?: number, end?: number, description?: string, location?: string }, options?: object) {
+    const rcIds = data.rcIds ? this.toPersonId(data.rcIds) : this.myPersonId;
+    const neededData = _.assign({
+      text: data.title,
+      group_ids: H.toNumberArray(data.groupIds),
+      invitee_ids: H.toNumberArray(rcIds),
+      start: data.start || new Date().getTime() + 1800000, // start time after 30 minutes from now
+      end: data.end || new Date().getTime() + 3600000, // end time after 60 minutes from now
+      description: data.description
     },
       options
     )
-    if (rcIds) {
-      let inviteeIds: number[];
-      const personIds = this.toPersonId(rcIds);
-      if (Object.prototype.toString.call(personIds) === '[object Array]') {
-        inviteeIds = personIds.map(id => +id);
-      } else {
-        inviteeIds = [+personIds];
-      }
-      data["invitee_ids"] = inviteeIds;
-    }
-    return await this.createEvent(data);
+    const newData = _.pickBy(neededData, _.identity);
+    return await this.createEvent(newData);
   }
 
   async deleteEvent(eventId: string | number) {
@@ -752,11 +738,10 @@ export class GlipSdk {
   }
 
   async createSimpleCodeSnippet(groupIds: string[] | string, body: string, title?: string, options?: object) {
-    if (typeof groupIds == "string") { groupIds = [groupIds] };
     const data = _.assign({
       title: title || 'untitled',
       body: body,
-      group_ids: groupIds,
+      group_ids: H.toNumberArray(groupIds),
       mode: 'xml',
     },
       options
@@ -781,9 +766,8 @@ export class GlipSdk {
   }
 
   async createSimpleAudioConference(groupIds: string[] | string, options?: object) {
-    if (typeof groupIds == "string") { groupIds = [groupIds] };
     const data = _.assign({
-      group_ids: groupIds
+      group_ids: H.toNumberArray(groupIds)
     },
       options
     )

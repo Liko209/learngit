@@ -37,6 +37,7 @@ import { showUpgradeDialog } from '@/modules/electron';
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import { IApplicationInfo } from 'sdk/pal/applicationInfo';
 import history from '@/history';
+import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 
 /**
  * The root module, we call it AppModule,
@@ -117,8 +118,11 @@ class AppModule extends AbstractModule {
         const accountUserConfig = accountService.userConfig;
         const currentUserId = accountUserConfig.getGlipUserId();
         const currentCompanyId = accountUserConfig.getCurrentCompanyId();
+        const accountType = accountUserConfig.getAccountType();
+        const isRcUser = accountType === ACCOUNT_TYPE_ENUM.RC;
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
+        globalStore.set(GLOBAL_KEYS.IS_RC_USER, isRcUser);
         getAppContextInfo().then(contextInfo => {
           Pal.instance.setApplicationInfo({
             env: contextInfo.env,

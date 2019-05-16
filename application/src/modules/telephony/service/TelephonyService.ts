@@ -26,6 +26,7 @@ import { mainLogger } from 'sdk';
 import { TelephonyStore, CALL_TYPE } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { ANONYMOUS } from '../interface/constant';
 import { reaction, IReactionDisposer, runInAction, action } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { Profile } from 'sdk/module/profile/entity';
@@ -37,7 +38,6 @@ import { AccountService } from 'sdk/module/account';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
-const ANONYMOUS = 'anonymous';
 const DIRECT_NUMBER = 'DirectNumber';
 const DIALER_OPENED_KEY = 'dialerOpenedCount';
 
@@ -123,7 +123,7 @@ class TelephonyService {
       switch (e.code) {
         case 0:
           this._pauseRingtone();
-          ['mousedown', 'keydown'].forEach((evt) => {
+          ['mousedown', 'keydown'].forEach(evt => {
             const cb = () => {
               if (!this._telephonyStore.hasIncomingCall) {
                 return;
@@ -322,7 +322,7 @@ class TelephonyService {
       () =>
         this._telephonyStore.shouldDisplayDialer &&
         this._telephonyStore.callWindowState !== CALL_WINDOW_STATUS.MINIMIZED,
-      (shouldDisplayDialer) => {
+      shouldDisplayDialer => {
         if (!shouldDisplayDialer) {
           return;
         }
@@ -384,7 +384,7 @@ class TelephonyService {
           return;
         }
         const defaultPhoneNumber = callerPhoneNumberList.find(
-          (callerPhoneNumber) => callerPhoneNumber.id === defaultNumberId,
+          callerPhoneNumber => callerPhoneNumber.id === defaultNumberId,
         );
         if (defaultPhoneNumber) {
           this._telephonyStore.updateDefaultChosenNumber(
@@ -397,7 +397,7 @@ class TelephonyService {
 
     this._incomingCallDisposer = reaction(
       () => this._telephonyStore.hasIncomingCall,
-      (hasIncomingCall) => {
+      hasIncomingCall => {
         if (hasIncomingCall) {
           this._playRingtone();
         } else {
@@ -433,7 +433,7 @@ class TelephonyService {
   makeCall = async (toNumber: string) => {
     // FIXME: move this logic to SDK and always using callerID
     const phoneNumber = this._telephonyStore.callerPhoneNumberList.find(
-      (phone) =>
+      phone =>
         phone.phoneNumber === this._telephonyStore.chosenCallerPhoneNumber,
     );
     mainLogger.info(
@@ -441,7 +441,7 @@ class TelephonyService {
         this._telephonyStore.chosenCallerPhoneNumber
       }`,
     );
-    const id = `${(phoneNumber && phoneNumber.id) || 'anonymous'}`;
+    const id = `${(phoneNumber && phoneNumber.id) || ANONYMOUS}`;
     const rv = await this._serverTelephonyService.makeCall(toNumber, id);
 
     switch (true) {
