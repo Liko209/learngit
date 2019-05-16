@@ -30,13 +30,14 @@ const ClearButton = styled.span`
 `;
 
 type JuiGlobalSearchInputProps = {
+  clearBtnText: string;
   showClear: boolean;
   onClear: () => void;
   onClose: () => void;
 } & JuiOutlineTextFieldProps;
 
 const JuiGlobalSearchInput = memo((props: JuiGlobalSearchInputProps) => {
-  const { showClear, onClear, onClose, ...rest } = props;
+  const { showClear, onClear, onClose, clearBtnText, ...rest } = props;
 
   const ref = useRef<JuiOutlineTextFieldRef>(null);
   const baseOnClear = () => {
@@ -58,7 +59,7 @@ const JuiGlobalSearchInput = memo((props: JuiGlobalSearchInputProps) => {
             data-test-automation-id="global-search-clear"
             onClick={baseOnClear}
           >
-            Clear
+            {clearBtnText}
           </ClearButton>
         )
       }
