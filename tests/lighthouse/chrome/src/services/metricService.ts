@@ -325,7 +325,7 @@ class MetricService {
     const isRelease = Config.jupiterHost === Config.jupiterReleaseHost;
 
     let version = await VersionDto.findOne({ where: { name: sceneDto.appVersion } });
-    if (!version || (version.isRelease && !isRelease)) {
+    if (!version) {
       return;
     }
 
@@ -388,22 +388,28 @@ class MetricService {
       apiMinTime: min,
       apiTop90Time: arr[parseInt((0.9 * arr.length).toString())],
       apiTop95Time: arr[parseInt((0.95 * arr.length).toString())],
-      apiHandleCount: cnt
+      apiHandleCount: cnt,
+      isRelease: isRelease
     }
 
-    await LoadingTimeReleaseSummaryDto.destroy({
-      where: {
-        name: summary.name, versionId: version.id
-      }
-    });
+    if (!version.isRelease || isRelease) {
+      await LoadingTimeReleaseSummaryDto.destroy({
+        where: {
+          name: summary.name, versionId: version.id
+        }
+      });
 
-    await LoadingTimeReleaseSummaryDto.create(versionSummary);
+      await LoadingTimeReleaseSummaryDto.create(versionSummary);
+    }
 
-    await LoadingTimeDevelopSummaryDto.destroy({
-      where: {
-        name: summary.name, versionId: version.id
-      }
-    });
+    const where = {
+      name: summary.name, versionId: version.id
+    };
+    if (!isRelease) {
+      where['isRelease'] = false;
+    }
+
+    await LoadingTimeDevelopSummaryDto.destroy({ where });
 
     if (isRelease) {
       await LoadingTimeDevelopSummaryDto.create(versionSummary);
@@ -466,7 +472,8 @@ class MetricService {
           apiMinTime: min,
           apiTop90Time: arr[parseInt((0.9 * arr.length).toString())],
           apiTop95Time: arr[parseInt((0.95 * arr.length).toString())],
-          apiHandleCount: cnt
+          apiHandleCount: cnt,
+          isRelease: isRelease
         }
 
         await LoadingTimeDevelopSummaryDto.create(versionSummary);
