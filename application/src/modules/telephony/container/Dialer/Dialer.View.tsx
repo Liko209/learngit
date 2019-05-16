@@ -116,15 +116,25 @@ class DialerViewComponent extends React.Component<DialerViewProps> {
     this._makeAnimationPromise();
   }
 
+  /**
+   * FIXME: it's dangerous using sCU in observer component, we need to separate the animation of fade-in-out of the dialog
+   * and ball fly animation into different trigger conditions so that they won't interfere each other
+   */
   shouldComponentUpdate(nextProps: DialerViewProps) {
-    const { callState, callWindowState } = nextProps;
-    if (
-      callState === CALL_STATE.IDLE ||
-      callWindowState === CALL_WINDOW_STATUS.MINIMIZED
-    ) {
-      return false;
+    const { callState, callWindowState, incomingState } = nextProps;
+    switch (true) {
+      case callState === CALL_STATE.INCOMING &&
+        this.props.incomingState === INCOMING_STATE.REPLY &&
+        incomingState === INCOMING_STATE.REPLY:
+        return false;
+      case callState === CALL_STATE.IDLE &&
+        this.props.callState === CALL_STATE.IDLE:
+        return false;
+      case callWindowState === CALL_WINDOW_STATUS.MINIMIZED:
+        return false;
+      default:
+        return true;
     }
-    return true;
   }
 
   componentWillUpdate() {
