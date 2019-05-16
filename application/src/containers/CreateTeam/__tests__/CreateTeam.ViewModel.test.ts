@@ -14,10 +14,10 @@ import {
 } from 'sdk/error';
 
 import { CreateTeamViewModel } from '../CreateTeam.ViewModel';
-import { AccountUserConfig } from 'sdk/module/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
 import { ServiceConfig } from 'sdk/module/serviceLoader';
 
-jest.mock('sdk/module/account/config');
+jest.mock('sdk/module/account/config/AccountUserConfig');
 jest.mock('../../Notification');
 jest.mock('sdk/api');
 

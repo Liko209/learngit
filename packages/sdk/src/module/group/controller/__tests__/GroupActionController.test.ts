@@ -16,7 +16,7 @@ import { IEntitySourceController } from '../../../../framework/controller/interf
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { Raw } from '../../../../framework/model';
 import { buildRequestController } from '../../../../framework/controller';
-import { AccountUserConfig } from '../../../../module/account/config';
+import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ProfileService } from '../../../profile';
 import { PostService } from '../../../post';
