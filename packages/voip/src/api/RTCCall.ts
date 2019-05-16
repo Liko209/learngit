@@ -24,10 +24,14 @@ import {
   RTCCallActionSuccessOptions,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
+  RTCUserAgentInfo,
 } from './types';
 import { v4 as uuid } from 'uuid';
 import { RC_SIP_HEADER_NAME } from '../signaling/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
+
+import callReport from '../report/Call';
+import { CALL_REPORT_PROPS, Establishment } from '../report/types';
 
 const LOG_TAG = 'RTCCall';
 
@@ -74,7 +78,10 @@ class RTCCall {
     account: IRTCAccount,
     delegate: IRTCCallDelegate | null,
     options?: RTCCallOptions,
+    userAgentInfo?: RTCUserAgentInfo,
   ) {
+    callReport.init();
+
     this._account = account;
     if (delegate != null) {
       this._delegate = delegate;
@@ -85,18 +92,36 @@ class RTCCall {
         this._isAnonymous = true;
       }
     }
+
+    let direction: string;
+    let establishmentKey: keyof Establishment;
+
     this._isIncomingCall = isIncoming;
     this._callInfo.uuid = uuid();
     this._fsm = new RTCCallFsm();
     this._callSession = new RTCSipCallSession(this._callInfo.uuid);
+
     if (this._isIncomingCall) {
       this._callInfo.fromName = session.remoteIdentity.displayName;
       this._callInfo.fromNum = session.remoteIdentity.uri.aor.split('@')[0];
       this.setCallSession(session);
+      direction = 'incoming';
+      establishmentKey = 'answerTime';
     } else {
       this._addHangupTimer();
       this._callInfo.toNum = toNumber;
+      direction = 'outgoing';
+      establishmentKey = 'startTime';
     }
+
+    callReport.updateByPipe([
+      { key: CALL_REPORT_PROPS.ID, value: this._callInfo.uuid },
+      { key: CALL_REPORT_PROPS.DIRECTION, value: direction },
+      { key: CALL_REPORT_PROPS.CREATE_TIME, value: new Date() },
+      { key: CALL_REPORT_PROPS.UA, value: userAgentInfo },
+    ]);
+    callReport.updateEstablishment(establishmentKey);
+
     this._rtcMediaStatsManager = new RTCMediaStatsManager();
     this._prepare();
   }
@@ -290,6 +315,10 @@ class RTCCall {
       // Update party id and session id in invite response sip message
       const inviteRes = this._callSession.getInviteResponse();
       if (inviteRes && inviteRes.headers) {
+        const key = this._isIncomingCall
+          ? CALL_REPORT_PROPS.SENT_200_OK_TIME
+          : CALL_REPORT_PROPS.RECEIVED_200_OK_TIME;
+        callReport.updateEstablishment(key);
         this._parseRcApiIds(inviteRes.headers);
       } else {
         rtcLogger.warn(
@@ -299,7 +328,10 @@ class RTCCall {
       }
       this._onSessionAccepted();
     });
-    this._callSession.on(CALL_SESSION_STATE.CONFIRMED, () => {
+    this._callSession.on(CALL_SESSION_STATE.CONFIRMED, (response: any) => {
+      if (this._isIncomingCall && response && response.headers) {
+        callReport.updateEstablishment(CALL_REPORT_PROPS.RECEIVED_ACK_TIME);
+      }
       this._onSessionConfirmed();
     });
     this._callSession.on(CALL_SESSION_STATE.DISCONNECTED, () => {
@@ -437,6 +469,7 @@ class RTCCall {
   private _destroy() {
     this._callSession.removeAllListeners();
     this._callSession.destroy();
+    callReport.destroy();
   }
   // call action listener
   private _onCallActionSuccess(
@@ -520,6 +553,7 @@ class RTCCall {
 
   private _onSessionProgress(response: any) {
     if (response.status_code === 183) {
+      callReport.updateEstablishment(CALL_REPORT_PROPS.RECEIVED_183_TIME);
       this._clearHangupTimer();
     }
   }
@@ -676,6 +710,7 @@ class RTCCall {
     });
     this._callInfo.partyId = idMap[0][1];
     this._callInfo.sessionId = idMap[1][1];
+    callReport.update(CALL_REPORT_PROPS.SESSION_ID, this._callInfo.sessionId);
     rtcLogger.info(
       LOG_TAG,
       `Got party id=${this._callInfo.partyId} session id=${

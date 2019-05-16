@@ -6,6 +6,7 @@
 
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { MediaStatsReport } from './types';
+import mediaReport from '../report/Media';
 
 const LOG_TAG = 'RTCMediaStatsManager';
 class RTCMediaStatsManager {
@@ -15,6 +16,7 @@ class RTCMediaStatsManager {
 
   setMediaStatsReport(mediaStatsReport: any): void {
     this._formatMediaStatsReport(mediaStatsReport);
+    mediaReport.startAnalysis(this._mediaStatsReport);
     rtcLogger.info(
       LOG_TAG,
       ` Got mediaStats ${JSON.stringify(this._mediaStatsReport)}`,
