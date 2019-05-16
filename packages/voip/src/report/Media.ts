@@ -149,7 +149,7 @@ class MediaReport implements IMediaReport {
   }
 }
 
-const mediaReport = ((window as any).mediaReport = new MediaReport());
+const mediaReport = new MediaReport();
 
 export { MediaReport };
 export default mediaReport;

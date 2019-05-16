@@ -120,7 +120,7 @@ class CallReport implements ICall {
   }
 }
 
-const callReport = ((window as any).callReport = new CallReport());
+const callReport = new CallReport();
 
 export { CallReport };
 export default callReport;
