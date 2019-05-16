@@ -19,8 +19,10 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { IZipItemProvider } from './types';
 import { ZipLogZipItemProvider } from './ZipLogZipItemProvider';
 import { MemoryLogZipItemProvider } from './MemoryLogZipItemProvider';
+import { HealthStatusItemProvider } from './HealthStatusItemProvider';
 import * as zipWorker from './zip.worker';
 import { createWorker } from './utils';
+import { IHealthStatusItem } from 'sdk/types';
 
 export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
@@ -28,6 +30,7 @@ export class LogControlManager implements IAccessor {
   private _debugMode: boolean;
   private _onUploadAccessorChange: (accessible: boolean) => void;
   private _zipItemProviders: IZipItemProvider[] = [];
+  private _healthStatusItemProvider: HealthStatusItemProvider;
   uploadLogConsumer: LogUploadConsumer;
   logUploadCollector: ConsumerCollector;
   memoryLogCollector: MemoryCollector;
@@ -55,6 +58,8 @@ export class LogControlManager implements IAccessor {
     this.registerZipProvider(
       new MemoryLogZipItemProvider(this.memoryLogCollector),
     );
+    this._healthStatusItemProvider = new HealthStatusItemProvider();
+    this.registerZipProvider(this._healthStatusItemProvider);
     this.subscribeNotifications();
   }
 
@@ -174,6 +179,14 @@ export class LogControlManager implements IAccessor {
 
   registerZipProvider(ins: IZipItemProvider) {
     this._zipItemProviders.push(ins);
+  }
+
+  registerHealthStatusItem(item: IHealthStatusItem) {
+    this._healthStatusItemProvider.registerHealthStatusItem(item);
+  }
+
+  unRegisterHealthStatusItem(item: IHealthStatusItem | string) {
+    this._healthStatusItemProvider.unRegisterHealthStatusItem(item);
   }
 
   getZipLog = async () => {
