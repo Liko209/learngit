@@ -1,15 +1,17 @@
 import { setupCase, teardownCase } from "../../init";
 import { BrandTire, SITE_URL } from "../../config";
 import { formalName } from "../../libs/filter";
-import { AppRoot } from "../../v2/page-models/AppRoot";
 import { h } from "../../v2/helpers";
-import { v4 as uuid } from 'uuid';
 import { IGroup } from "../../v2/models";
+import { AppRoot } from "../../v2/page-models/AppRoot";
+import { v4 as uuid } from 'uuid';
 
-fixture('RightRail/Tasks')
+
+fixture('RightRail/Links')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase());
-test(formalName('Tasks display on the right rail', ['P2', 'Messages', 'RightRail', 'Tasks', 'V1.4', 'Lorna.Li']), async(t) => {
+
+test(formalName('Links display on the right rail', ['P2', 'Messages', 'RightRail', 'Links', 'V1.4', 'Lorna.Li']), async(t) => {
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).glip(loginUser).init();
 
@@ -32,18 +34,19 @@ test(formalName('Tasks display on the right rail', ['P2', 'Messages', 'RightRail
 
   const teamPage = app.homePage.messageTab.teamsSection;
   const rightRail = app.homePage.messageTab.rightRail;
+  const conversationPage = app.homePage.messageTab.conversationPage;
 
-  await h(t).withLog('When I open a team and click Tasks Tab', async() => {
+  await h(t).withLog('When I open a team and click Links Tab', async() => {
     await teamPage.conversationEntryById(team.glipId).enter();
-    await rightRail.tasksEntry.enter();
+    await rightRail.openMore();
+    await rightRail.linksEntry.enter();
   });
 
-  await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_TasksEmpty'});
+  await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_LinksEmpty'});
 
-  const taskTitle = uuid();
-  await h(t).withLog('When I create a task via api', async() => {
-    await h(t).glip(loginUser).createSimpleTask(team.glipId, loginUser.rcId, taskTitle);
+  await h(t).withLog('When I send a link', async() => {
+    await conversationPage.sendMessage('http://www.google.com');
   });
 
-  await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_TasksList'});
+  await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_LinksList'});
 });

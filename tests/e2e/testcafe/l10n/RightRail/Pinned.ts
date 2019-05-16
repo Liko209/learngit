@@ -9,12 +9,11 @@ import { IGroup } from "../../v2/models";
 fixture('RightRail/Pinned')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase());
-test(formalName('Pinned or unpinned text', ['P2', 'Messages', 'RightRail', 'V1.4', 'Lorna.Li']), async(t) => {
+test(formalName('Pinned or unpinned text', ['P2', 'Messages', 'RightRail', 'Pinned', 'V1.4', 'Lorna.Li']), async(t) => {
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).glip(loginUser).init();
-  const postText = uuid();
 
-  let team = <IGroup>{
+  const team = <IGroup> {
     name: uuid(),
     type: "Team",
     owner: loginUser,
@@ -26,6 +25,7 @@ test(formalName('Pinned or unpinned text', ['P2', 'Messages', 'RightRail', 'V1.4
     await h(t).scenarioHelper.createTeam(team);
   });
 
+  const postText = uuid();
   await h(t).withLog(`And I send a text post:${postText}`, async() => {
     textPostId = await h(t).scenarioHelper.sentAndGetTextPostId(postText, team, loginUser);
   });

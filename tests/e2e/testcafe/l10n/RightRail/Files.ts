@@ -9,12 +9,10 @@ import { IGroup } from "../../v2/models";
 fixture('RightRail/Files')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase());
-test(formalName('Files display on the right rail', ['P2', 'Messages', 'RightRail', 'V1.4', 'Lorna.Li']), async(t) => {
+test(formalName('Files display on the right rail', ['P2', 'Messages', 'RightRail', 'Files', 'V1.4', 'Lorna.Li']), async(t) => {
   const loginUser = h(t).rcData.mainCompany.users[4];
-  const message = uuid();
-  const filesPath = ['../../sources/1.txt'];
 
-  let team = <IGroup>{
+  const team = <IGroup> {
     name: uuid(),
     type: "Team",
     owner: loginUser,
@@ -42,8 +40,9 @@ test(formalName('Files display on the right rail', ['P2', 'Messages', 'RightRail
 
   await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_FilesEmpty'});
 
+  const message = uuid();
   await h(t).withLog('When I upload a text file', async()=>{
-    await conversationPage.uploadFilesToMessageAttachment(filesPath[0]);
+    await conversationPage.uploadFilesToMessageAttachment('../../sources/1.txt');
     await conversationPage.sendMessage(message);
     await conversationPage.nthPostItem(-1).waitForPostToSend();
   });
