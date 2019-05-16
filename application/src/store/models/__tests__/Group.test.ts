@@ -450,7 +450,7 @@ describe('GroupModel', () => {
           }
         },
       );
-      expect(gm.displayName).toBe('message.deactivatedUsers');
+      expect(gm.displayName).toBe('common.deactivatedUsers');
       when(
         () => gm.translation !== {},
         () => {

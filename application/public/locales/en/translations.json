@@ -49,7 +49,8 @@
     "back": "Back",
     "forward": "Forward",
     "You": "You",
-    "Connecting": "Connecting"
+    "Connecting": "Connecting",
+    "deactivatedUsers": "Deactivated Users"
   },
   "auth": {
     "signIn": "Sign in",
@@ -200,8 +201,7 @@
       "disabledText": "This team is read-only"
     },
     "Messages": "Messages",
-    "message": "Message",
-    "deactivatedUsers": "Deactivated users"
+    "message": "Message"
   },
   "item": {
     "activity": {

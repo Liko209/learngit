@@ -57,8 +57,6 @@ export default class PersonModel extends Base<Person> {
   deactivated: boolean;
   @observable
   flags?: number;
-  @observable
-  id: number;
 
   constructor(data: Person) {
     super(data);
@@ -83,7 +81,6 @@ export default class PersonModel extends Base<Person> {
       sanitized_rc_extension,
       deactivated,
       flags,
-      id,
     } = data;
     this.companyId = company_id;
     this.firstName = first_name;
@@ -105,7 +102,6 @@ export default class PersonModel extends Base<Person> {
     this.sanitizedRcExtension = sanitized_rc_extension;
     this.deactivated = deactivated;
     this.flags = flags;
-    this.id = id;
   }
 
   static fromJS(data: Person) {

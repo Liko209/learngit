@@ -4,7 +4,8 @@
       "OK": "好的",
       "cancel": "取消",
       "done": "完成"
-    }
+    },
+    "deactivatedUsers": "无效用户"
   },
   "auth": {
     "signOut": "退出"
@@ -14,8 +15,7 @@
     "Dashboard": "仪表盘"
   },
   "message": {
-    "Messages": "消息",
-    "deactivatedUsers": "无效用户"
+    "Messages": "消息"
   },
   "telephony": {
     "Phone": "电话"

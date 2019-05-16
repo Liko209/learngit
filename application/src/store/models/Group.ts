@@ -99,8 +99,8 @@ export default class GroupModel extends Base<Group> {
       () => this.type,
       async () => {
         this.translation['message.meGroup'] = await i18nT('message.meGroup');
-        this.translation['message.deactivatedUsers'] = await i18nT(
-          'message.deactivatedUsers',
+        this.translation['common.deactivatedUsers'] = await i18nT(
+          'common.deactivatedUsers',
         );
       },
       {
@@ -163,7 +163,7 @@ export default class GroupModel extends Base<Group> {
       );
       let invisibleCount = 0;
       personModels.forEach((personModel: PersonModel) => {
-        if (personModel) {
+        if (personModel && !personModel.isMocked) {
           if (!personModel.isVisible()) {
             invisibleCount++;
             return;
@@ -179,8 +179,8 @@ export default class GroupModel extends Base<Group> {
       });
       if (personModels.length === invisibleCount) {
         return (
-          this.translation['message.deactivatedUsers'] ||
-          'message.deactivatedUsers'
+          this.translation['common.deactivatedUsers'] ||
+          'common.deactivatedUsers'
         );
       }
       return names
