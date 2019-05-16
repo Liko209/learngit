@@ -35,7 +35,7 @@ test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 
       members: [loginUser.rcId, otherUser.rcId],
     });
   });
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });

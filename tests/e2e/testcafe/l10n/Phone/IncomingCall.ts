@@ -20,7 +20,7 @@ fixture('Phone/IncomingCall')
 
   const telephonyDialog = app.homePage.telephonyDialog;
   await h(t).withLog(`When the other user make a phone call to me`, async () => {
-    const session = await h(t).webphoneHelper.newWebphoneSession(callee);
+    const session = await h(t).newWebphoneSession(callee);
     await session.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
   });
 
