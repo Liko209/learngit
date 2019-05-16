@@ -244,9 +244,7 @@ class JuiHeader extends PureComponent<Props, State> {
     delete this._timerForClearAll;
   }
 
-  private _handleMouseDownOnInput = (
-    e: React.MouseEvent<HTMLInputElement, MouseEvent>,
-  ) => {
+  private _handleMouseDownOnInput = (e: React.MouseEvent<any>) => {
     // prevent drag & drop
     e.stopPropagation();
   }
