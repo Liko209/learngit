@@ -27,7 +27,7 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-import i18nT from '@/utils/i18nT';
+import { i18nP } from '@/utils/i18nT';
 
 @observer
 export class ConversationCard extends React.Component<
@@ -67,16 +67,16 @@ export class ConversationCard extends React.Component<
     });
   }
 
-  getToastMessage = async () => {
+  getToastMessage = () => {
     const message = this.props.isArchivedGroup
       ? 'people.prompt.conversationArchived'
       : '';
-    return await i18nT(message);
+    return i18nP(message);
   }
 
   handleJumpToPost = async () => {
     if (this.props.showToast) {
-      this.flashToast(await this.getToastMessage());
+      this.flashToast(this.getToastMessage());
     } else {
       const { id, groupId } = this.props;
       jumpToPost({ id, groupId });
@@ -119,6 +119,7 @@ export class ConversationCard extends React.Component<
       isEditMode,
       showActivityStatus,
       terms,
+      nameSuffix,
       ...rest
     } = this.props;
     const { isHover } = this.state;
@@ -137,6 +138,7 @@ export class ConversationCard extends React.Component<
     const activity = <Activity id={id} />;
     const from = mode === 'navigation' ? <From id={post.groupId} /> : undefined;
     const jumpToPost = mode ? this.handleJumpToPost : undefined;
+    const nameString = `${name}${nameSuffix}`;
     return (
       <JuiConversationCard
         data-name="conversation-card"
@@ -152,8 +154,8 @@ export class ConversationCard extends React.Component<
       >
         <JuiConversationCardHeader
           data-name="header"
-          name={name.get()}
-          time={showProgressActions ? '' : createTime.get()}
+          name={nameString}
+          time={showProgressActions ? '' : createTime}
           status={customStatus}
           from={from}
           notification={showActivityStatus && activity}

@@ -3,7 +3,6 @@
  * @Date: 2018-09-28 17:23:20
  * Copyright © RingCentral. All rights reserved.
  */
-import { promisedComputed } from 'computed-async-mobx';
 import { observable, computed, action } from 'mobx';
 import { Group } from 'sdk/module/group/entity';
 import { Person } from 'sdk/module/person/entity';
@@ -14,7 +13,7 @@ import PersonModel from '@/store/models/Person';
 import { ENTITY_NAME } from '@/store';
 import { AbstractViewModel } from '@/base';
 import { CONVERSATION_TYPES } from '@/constants';
-import i18nT from '@/utils/i18nT';
+import { i18nP } from '@/utils/i18nT';
 import _ from 'lodash';
 
 class HeaderViewModel extends AbstractViewModel {
@@ -37,13 +36,14 @@ class HeaderViewModel extends AbstractViewModel {
     return group;
   }
 
-  title = promisedComputed('', async () => {
+  @computed
+  get title() {
     const group = this.group;
     if (group.type === CONVERSATION_TYPES.SMS) {
-      return `${group.displayName} (${await i18nT('message.messageTypeNameSMS')})`;
+      return `${group.displayName} (${i18nP('message.messageTypeNameSMS')})`;
     }
     return group.displayName;
-  });
+  }
 
   @computed
   get analysisSource() {

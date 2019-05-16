@@ -119,7 +119,7 @@ class JuiConversationCardHeader extends React.PureComponent<
   }
 
   componentDidMount() {
-    this.setHeaderItemMaxWidth();
+    // this.setHeaderItemMaxWidth();
     window.addEventListener('resize', this.setHeaderItemMaxWidth);
   }
 
@@ -153,10 +153,12 @@ class JuiConversationCardHeader extends React.PureComponent<
               })
             : null}
         </StyledLeftSection>
-        <RightSection>
-          <StyledTime data-name="time">{time}</StyledTime>
-          {children}
-        </RightSection>
+        {(time || children) && (
+          <RightSection>
+            {time && <StyledTime data-name="time">{time}</StyledTime>}
+            {children}
+          </RightSection>
+        )}
       </StyledConversationCardHeader>
     );
   }

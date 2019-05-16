@@ -3,7 +3,7 @@
  * @Date: 2018-10-08 16:29:08
  * Copyright © RingCentral. All rights reserved.
  */
-import { promisedComputed } from 'computed-async-mobx';
+// import { promisedComputed } from 'computed-async-mobx';
 import PostModel from '@/store/models/Post';
 import { ConversationCardProps } from '@/modules/message/container/ConversationCard/types';
 import moment from 'moment';
@@ -25,7 +25,7 @@ import { GlobalSearchStore } from '@/modules/GlobalSearch/store';
 import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
 import { IntegrationItem } from 'sdk/module/item/entity';
 import IntegrationItemModel from '@/store/models/IntegrationItem';
-import i18nT from '@/utils/i18nT';
+import { i18nP } from '@/utils/i18nT';
 
 class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   private _globalSearchStore = container.get(GlobalSearchStore);
@@ -107,38 +107,44 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
     return [];
   }
 
-  name = promisedComputed('', async () => {
+  @computed
+  get nameSuffix() {
+    const integrationItems = this.integrationItems;
+    if (integrationItems.length > 0 && this.post.itemIds.length > 1) {
+      return i18nP('message.sharedItems');
+    }
+    return '';
+  }
+
+  @computed
+  get name() {
     // get name from items if this post is integration post
     // post -> itemIds -> isIntegration -> integrationItem.activity
     const integrationItems = this.integrationItems;
-    if (integrationItems.length > 0) {
-      if (this.post.itemIds.length === 1) {
-        const integrationItemID = integrationItems[0];
-        const item = getEntity<IntegrationItem, IntegrationItemModel>(
-          ENTITY_NAME.ITEM,
-          integrationItemID as number,
-        );
-        return item.activity;
-      }
-      return `${this.creator.userDisplayName} ${await i18nT(
-        'message.sharedItems',
-      )}`;
+    if (integrationItems.length > 0 && this.post.itemIds.length === 1) {
+      const integrationItemID = integrationItems[0];
+      const item = getEntity<IntegrationItem, IntegrationItemModel>(
+        ENTITY_NAME.ITEM,
+        integrationItemID as number,
+      );
+      return item.activity;
     }
     return this.creator.userDisplayName;
-  });
+  }
 
   @computed
   get customStatus() {
     return this.creator.awayStatus;
   }
 
-  createTime = promisedComputed('', async () => {
+  @computed
+  get createTime() {
     const { createdAt } = this.post;
     if (this.props.mode === 'navigation') {
-      return await dateFormatter.dateAndTime(moment(this.post.createdAt));
+      return dateFormatter.dateAndTime(moment(this.post.createdAt));
     }
-    return await postTimestamp(createdAt);
-  });
+    return postTimestamp(createdAt);
+  }
 
   @computed
   get isEditMode() {

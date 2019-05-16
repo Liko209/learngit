@@ -3,7 +3,7 @@
  * @Date: 2018-10-08 16:26:47
  * Copyright © RingCentral. All rights reserved.
  */
-import { PromisedComputedValue } from 'computed-async-mobx';
+// import { PromisedComputedValue } from 'computed-async-mobx';
 import PostModel from '@/store/models/Post';
 import PersonModel from '@/store/models/Person';
 import { RefObject } from 'react';
@@ -22,11 +22,12 @@ type ConversationCardViewProps = {
   hideText: boolean;
   creator: PersonModel;
   groupId: number;
-  name: PromisedComputedValue<string>;
+  name: string;
+  nameSuffix: string;
   isArchivedGroup: boolean;
   showToast: boolean;
   customStatus?: string;
-  createTime: PromisedComputedValue<string>;
+  createTime: string; // PromisedComputedValue<string>;
   itemTypeIds?: {
     [key: number]: number[];
   };
