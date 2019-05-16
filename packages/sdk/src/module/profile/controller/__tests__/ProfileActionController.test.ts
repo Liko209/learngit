@@ -8,13 +8,13 @@ import { IPartialModifyController } from '../../../../framework/controller/inter
 import { ProfileDataController } from '../ProfileDataController';
 import { Raw } from '../../../../framework/model';
 import { ProfileActionController } from '../ProfileActionController';
-import { AccountUserConfig } from '../../../../module/account/config';
+import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
 import { PersonDao } from '../../../person/dao/PersonDao';
 import { daoManager } from '../../../../dao';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('../ProfileDataController');
-jest.mock('../../../../module/account/config');
+jest.mock('../../../../module/account/config/AccountUserConfig');
 jest.mock('../../../person/dao/PersonDao');
 jest.mock('../../../../dao');
 

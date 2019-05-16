@@ -31,7 +31,7 @@ const MESSAGE_WITH_SPECIAL_CHAR = '+1(650)399-0766';
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 jupiter.registerModule(featuresFlags.config);
-jest.mock('sdk/module/account/config');
+jest.mock('sdk/module/account/config/AccountUserConfig');
 jest.mock('../../../../telephony/service');
 
 const mountWithTheme = (content: React.ReactNode) =>

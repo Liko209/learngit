@@ -13,13 +13,13 @@ import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 import { DialerViewModel } from '../Dialer.ViewModel';
 import { GlobalConfigService } from 'sdk/module/config';
-import { AuthUserConfig } from 'sdk/module/account/config';
+import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
 
 jest.mock('sdk/module/config');
-jest.mock('sdk/module/account/config');
+jest.mock('sdk/module/account/config/AuthUserConfig');
 
 GlobalConfigService.getInstance = jest.fn();
 
