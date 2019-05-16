@@ -5,7 +5,7 @@
  */
 
 // TODO: move this file to JUI
-import React from 'react';
+import React, { MouseEvent } from 'react';
 import { JuiIconButton } from '../../components/Buttons';
 import _ from 'lodash';
 import { KEY_2_ICON_MAP, ACCEPTABLE_KEYS } from './constants';
@@ -43,7 +43,7 @@ export class DialPad extends React.Component<
   private _buffer: string[] = [];
   private _timeoutId: NodeJS.Timeout | null = null;
   private _mouseDownTime: number | null = null;
-  private _onClicks: (() => void)[]; // only need this to generate once
+  private _onClicks: ((e?: MouseEvent<HTMLButtonElement>) => void)[]; // only need this to generate once
 
   constructor(props: DialPadViewProps) {
     super(props);
@@ -53,16 +53,13 @@ export class DialPad extends React.Component<
 
     this._onClicks = Object.keys(KEY_2_ICON_MAP)
       .filter((key) => key !== 'plus')
-      .map((str) =>
-        _.throttle(
-          () => this.props.makeMouseEffect(KEY_2_ICON_MAP[str]),
-          THROTTLE_TIME,
-          {
-            trailing: true,
-            leading: false,
-          },
-        ),
-      );
+      .map((str) => (e) => {
+        this.props.makeMouseEffect(KEY_2_ICON_MAP[str]);
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
   }
 
   componentDidMount() {
@@ -118,21 +115,19 @@ export class DialPad extends React.Component<
     }
   }
 
-  _onMouseDownForZero = throttledHandler(() => {
+  _onMouseDownForZero = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
     this._mouseDownTime = +new Date();
     this._timeoutId = setTimeout(() => {
       this.props.makeMouseEffect(KEY_2_ICON_MAP.plus);
       this._clearTimeout();
     },                           DialPad._timeout);
-  });
+  }
 
-  _onMouseupForZero = throttledHandler(() => {
-    // clear all the keys being pressed
-    this._buffer = [];
-    this.setState({
-      pressedKeys: this._buffer,
-    });
-
+  _onMouseupForZero = throttledHandler((e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
     const curTime = +new Date();
     if (
       this._mouseDownTime &&
@@ -160,7 +155,7 @@ export class DialPad extends React.Component<
                 <JuiIconButton
                   shouldPersistBg={pressedKeys.includes(KEY_2_ICON_MAP[str])}
                   disableToolTip={true}
-                  onClick={_onclick}
+                  onMouseDown={_onclick}
                   size="xxlarge"
                   key={str}
                   color="grey.900"
