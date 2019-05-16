@@ -14,7 +14,7 @@ import GroupService from 'sdk/module/group';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { Person } from 'sdk/module/person/entity';
 import { Group } from 'sdk/module/group/entity';
-import { ENTITY, EVENT_TYPES } from 'sdk/service';
+import { ENTITY, ENTITY_LIST, EVENT_TYPES } from 'sdk/service';
 import { ENTITY_NAME } from '@/store/constants';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao';
@@ -43,7 +43,7 @@ class GroupMemberDataProvider extends IdListPagingDataProvider<
   ) {
     const options = {
       filterFunc,
-      eventName: ENTITY.PERSON,
+      eventName: ENTITY_LIST.GROUP_MEMBER,
       entityName: ENTITY_NAME.PERSON,
       entityDataProvider: new PersonProvider(),
     };
@@ -64,14 +64,8 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
 
   async fetchGroupMembersByPage(pageSize: number) {
     if (!this._isInitialized()) {
-      const tracer = PerformanceTracer.initial();
       await this._initGroupData();
       await this._buildFoc();
-      tracer.end({
-        key: PERFORMANCE_KEYS.LOAD_GROUP_MEMBERS,
-        count:
-          (this._sortedGroupMembers && this._sortedGroupMembers.length) || 0,
-      });
     }
     return this._foc.fetchData(QUERY_DIRECTION.NEWER, pageSize);
   }
@@ -112,15 +106,20 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   }
 
   private async _initGroupData() {
+    const tracer = PerformanceTracer.initial();
     const group = await ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     ).getById(this._groupId);
 
     if (group) {
-      this._group = group;
+      this._group = _.cloneDeep(group);
       await this._sortGroupMembers();
       this._subscribeGroupChange();
     }
+    tracer.end({
+      key: PERFORMANCE_KEYS.INIT_GROUP_MEMBERS,
+      count: (this._sortedGroupMembers && this._sortedGroupMembers.length) || 0,
+    });
   }
 
   private async _buildFoc() {
@@ -161,7 +160,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
         isMatchFunc,
         transformFunc: transformFun,
         entityName: ENTITY_NAME.PERSON,
-        eventName: ENTITY.PERSON,
+        eventName: ENTITY_LIST.GROUP_MEMBER,
         sortFunc: sortMemberFunc,
       },
     );
@@ -185,7 +184,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
     return this._foc!!;
   }
 
-  private _handleGroupUpdate(newGroup: Group) {
+  private async _handleGroupUpdate(newGroup: Group) {
     if (!this._isInitialized()) {
       return;
     }
@@ -195,10 +194,10 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       const sortedNewMemberList = newGroup.members.sort(sortFunc);
       const sortedOldMemberList = this._group.members.sort(sortFunc);
 
-      let needUpdateMemberList = false;
-      if (sortedNewMemberList.toString() !== sortedOldMemberList.toString()) {
-        needUpdateMemberList = true;
-      }
+      let needUpdateMemberList = !_.isEqual(
+        sortedNewMemberList,
+        sortedOldMemberList,
+      );
 
       if (!needUpdateMemberList && newGroup.is_team) {
         const oldAdmins = Array.from(this._adminIds).sort(sortFunc);
@@ -208,7 +207,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
             newGroup.permissions.admin.uids) ||
           [];
         newAdmins = newAdmins.sort(sortFunc);
-        needUpdateMemberList = !_.isEqual(oldAdmins, newAdmins);
+        needUpdateMemberList = !_.isEqual(newAdmins, oldAdmins);
       }
 
       if (needUpdateMemberList) {

@@ -39,7 +39,7 @@ export enum PERFORMANCE_KEYS {
   FETCH_LEFT_RAIL = 'fetch_left_rail',
   UNIFIED_LOGIN = 'unified_login',
   FIRST_LOGIN = 'first_login',
-  LOAD_GROUP_MEMBERS = 'load_group_members',
+  INIT_GROUP_MEMBERS = 'init_group_members',
 }
 
 export type PerformanceInfo = {
