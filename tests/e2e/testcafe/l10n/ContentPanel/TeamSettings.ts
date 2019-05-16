@@ -11,7 +11,7 @@ fixture('ContentPanel/TeamSetting')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase())
 
-test(formalName('Check the TeamSetting page',['P2','TeamSetting','V1.4','Hanny.han']),async (t) => {
+test(formalName('Check the TeamSetting page',['P2', 'TeamSetting', 'V1.4', 'Hanny.han']),async (t) => {
 
   const users=h(t).rcData.mainCompany.users;
   const loginUser = users[4];

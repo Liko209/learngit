@@ -12,7 +12,7 @@ import { IGroup } from "../../v2/models";
 
 
 fixture('ContentPanel/SendMessages').beforeEach(setupCase(BrandTire.RCOFFICE)).afterEach(teardownCase())
-test(formalName('Check the like button ', ['P2','SendMessages','V1.4','Hanny.Han']),async (t) => {
+test(formalName('Check the like button ', ['P2', 'SendMessages', 'V1.4', 'Hanny.Han']),async (t) => {
   const users=h(t).rcData.mainCompany.users;
   const userA = users[4];
   const userB = users[5];

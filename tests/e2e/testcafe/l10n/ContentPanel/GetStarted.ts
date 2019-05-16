@@ -12,7 +12,7 @@ fixture('ContentPanel/GetStarted')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase())
 
-test(formalName('Check the GetStarted page ', ['P2','GetStarted','V1.4','Hanny.Han']),
+test(formalName('Check the GetStarted page ', ['P2', 'GetStarted', 'V1.4', 'Hanny.Han']),
 async(t: TestController) => {
 
   const users=h(t).rcData.mainCompany.users;
@@ -40,7 +40,6 @@ async(t: TestController) => {
   await h(t).withLog(`When I open the team ${team.name}`, async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.waitUntilPostsBeLoaded;
-
   });
 
   await h(t).log(`Then I capture screenshot`,{screenshotPath:'Jupiter_ContentPanel_GetStarted'})
