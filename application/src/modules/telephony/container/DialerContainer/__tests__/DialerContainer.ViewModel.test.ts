@@ -4,21 +4,25 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, decorate, injectable } from 'framework';
-import { TelephonyStore } from '../../../store';
-import { TELEPHONY_SERVICE } from '../../../interface/constant';
+import { container, Jupiter } from 'framework';
 import { DialerContainerViewModel } from '../DialerContainer.ViewModel';
-import { TelephonyService } from '../../../service';
+jest.mock('sdk/module/telephony');
 
-decorate(injectable(), TelephonyStore);
-decorate(injectable(), TelephonyService);
+import * as telephony from '@/modules/telephony/module.config';
 
-container.bind(TELEPHONY_SERVICE).to(TelephonyService);
-container.bind(TelephonyStore).to(TelephonyStore);
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(telephony.config);
 
 let dialerContainerViewModel: DialerContainerViewModel;
 
 beforeAll(() => {
+  container.get = jest.fn().mockReturnValue({});
+  jest.spyOn(container, 'get').mockReturnValueOnce({
+    keypadEntered: false,
+  });
+  jest.spyOn(container, 'get').mockReturnValueOnce({
+    dtmf: jest.fn(),
+  });
   dialerContainerViewModel = new DialerContainerViewModel();
 });
 

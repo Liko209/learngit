@@ -9,7 +9,8 @@ import { SOCKET, SERVICE } from '../../../service/eventKey';
 import { Presence, RawPresence } from '../entity';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { PresenceController } from '../controller/PresenceController';
-import { AccountUserConfig } from '../../../module/account/config';
+import { AccountService } from '../../account/service';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { PRESENCE } from '../constant/Presence';
 import { ChangeModel } from '../../sync/types';
 
@@ -37,7 +38,9 @@ class PresenceService extends EntityBaseService<Presence> {
   }
 
   async getCurrentUserPresence(): Promise<PRESENCE | undefined> {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const id = userConfig.getGlipUserId();
     const result = await this.getById(id);
     return result.presence;

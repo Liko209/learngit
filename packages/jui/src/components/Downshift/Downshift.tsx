@@ -7,7 +7,11 @@ import React from 'react';
 import Downshift from 'downshift';
 import styled from '../../foundation/styled-components';
 import { JuiPaper } from '../Paper';
-import { JuiDownshiftTextField, SelectedItem } from './TextField';
+import {
+  JuiDownshiftTextField,
+  SelectedItem,
+  JuiDownshiftTextFieldKeyDownEvent,
+} from './TextField';
 import { spacing, height } from '../../foundation/utils/styles';
 import { ChipProps } from '@material-ui/core/Chip';
 import { JuiVirtualizedList } from '../../components/VirtualizedList';
@@ -17,6 +21,8 @@ type JuiDownshiftStates = {
   selectedItems: SelectedItem[];
   inputValue: string;
 };
+
+type JuiDownshiftKeyDownEvent = JuiDownshiftTextFieldKeyDownEvent;
 
 type JuiDownshiftProps = {
   selectedItems: SelectedItem[];
@@ -37,6 +43,7 @@ type JuiDownshiftProps = {
   helperText?: string;
   messageRef?: React.RefObject<HTMLInputElement>;
   maxLength?: number;
+  onKeyDown?: (event: JuiDownshiftKeyDownEvent) => void;
 };
 
 const StyledDownshiftMultipleWrapper = styled.div`
@@ -96,6 +103,7 @@ class JuiDownshift extends React.PureComponent<
       maxLength,
       selectedItems,
       inputValue,
+      onKeyDown,
     } = this.props;
 
     return (
@@ -128,6 +136,7 @@ class JuiDownshift extends React.PureComponent<
               multiple={multiple}
               messageRef={messageRef}
               maxLength={maxLength}
+              onKeyDown={onKeyDown}
             />
             {isOpen && suggestionItems.length ? (
               <JuiAutoSizer>
@@ -167,4 +176,4 @@ class JuiDownshift extends React.PureComponent<
   }
 }
 
-export { JuiDownshift, JuiDownshiftProps };
+export { JuiDownshift, JuiDownshiftProps, JuiDownshiftKeyDownEvent };

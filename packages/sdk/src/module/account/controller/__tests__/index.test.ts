@@ -12,6 +12,7 @@ import {
 import notificationCenter from '../../../../service/notificationCenter';
 import { SERVICE } from '../../../../service/eventKey';
 import { AuthUserConfig } from '../../config';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 jest.mock('foundation');
 jest.mock('../../../../service/notificationCenter');
@@ -29,6 +30,13 @@ describe('AuthService', () => {
 
   beforeEach(() => {
     authController = new AuthController(mockAccountManager);
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { authUserConfig: AuthUserConfig.prototype };
+        }
+      });
   });
 
   describe('unifiedLogin()', () => {

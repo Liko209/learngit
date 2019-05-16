@@ -13,26 +13,12 @@ import { SocketClient } from 'foundation';
 import { SocketCanConnectController } from '../SocketCanConnectController';
 import { getCurrentTime } from '../../../utils/jsUtils';
 import { SyncUserConfig } from '../../../module/sync/config/SyncUserConfig';
-import { ServiceLoader } from '../../../module/serviceLoader';
+import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
+import { AuthUserConfig } from 'sdk/module/account/config';
 
 jest.mock('../../../module/config');
-jest.mock('../SocketCanConnectController', () => {
-  const mockController: SocketCanConnectController = {
-    doCanConnectApi: (callback, forceOnline) => {
-      callback(1);
-    },
-    cleanup: () => {},
-  };
-  return {
-    SocketCanConnectController: () => {
-      return mockController;
-    },
-  };
-});
+jest.mock('../SocketCanConnectController');
 jest.mock('../../../utils/jsUtils');
-
-ServiceLoader.getInstance = jest.fn();
-
 jest.mock('foundation/src/network/client/socket');
 jest.mock('../../../dao');
 const mockedSetReconnection = jest.fn((bOn: boolean) => {});
@@ -75,7 +61,29 @@ describe('Socket Manager', () => {
     SocketClient.prototype.socket = new SocketIO();
   });
 
+  function mockCanReconnectController() {
+    jest
+      .spyOn(SocketCanConnectController.prototype, 'doCanConnectApi')
+      .mockImplementation(async (callback: any, forceOnline: any) => {
+        callback(1);
+      });
+
+    jest
+      .spyOn(SocketCanConnectController.prototype, 'isDoingCanConnect')
+      .mockReturnValue(false);
+  }
+
   function setUp() {
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { authUserConfig: AuthUserConfig.prototype };
+        }
+        if (config === ServiceConfig.SYNC_SERVICE) {
+          return { userConfig: syncUserConfig };
+        }
+      });
     getCurrentTime.mockReturnValue(1);
     syncUserConfig = new SyncUserConfig();
     mockedSetReconnection.mockRestore();
@@ -85,32 +93,49 @@ describe('Socket Manager', () => {
     syncUserConfig.getReconnectSocketServerHost = jest.fn().mockReturnValue('');
     mock.payload = test_url;
     notificationCenter.emitKVChange(SERVICE.LOGOUT);
+    mockCanReconnectController();
   }
 
-  beforeEach(() => {
-    clearMocks();
-    setUp();
-  });
-
   describe('check canReconnectController', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
     it('should be null when socketManager init', () => {
-      expect(socketManager._canReconnectController).toBeUndefined();
+      expect(socketManager['_canReconnectController']).toBeUndefined();
     });
 
     it('should not be null when has active FSM', () => {
       syncUserConfig.getLastIndexTimestamp = jest.fn().mockReturnValueOnce(1);
       notificationCenter.emitKVChange(SERVICE.LOGIN);
+      expect(socketManager['_canReconnectController']).not.toBeUndefined();
       expect(socketManager.hasActiveFSM()).toBeTruthy();
-      expect(socketManager._canReconnectController).not.toBeUndefined();
 
       notificationCenter.emitKVChange(SERVICE.LOGOUT);
-      expect(socketManager._canReconnectController).toBeUndefined();
+      expect(socketManager['_canReconnectController']).toBeUndefined();
     });
     it('should not have active FSM if id is incorrect', () => {
       syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
       getCurrentTime.mockReturnValue(2);
       notificationCenter.emitKVChange(SERVICE.LOGIN);
       expect(socketManager.hasActiveFSM()).toBeFalsy();
+    });
+
+    it('should not try to restart a new one if is doing can reconnect request', () => {
+      jest
+        .spyOn<any, any>(socketManager, '_startRealFSM')
+        .mockImplementation(() => {});
+      syncUserConfig.getLastIndexTimestamp = jest.fn().mockReturnValue(1);
+
+      notificationCenter.emitKVChange(SERVICE.LOGIN);
+      expect(socketManager['_startRealFSM']).toHaveBeenCalledTimes(1);
+
+      jest
+        .spyOn(SocketCanConnectController.prototype, 'isDoingCanConnect')
+        .mockReturnValue(true);
+
+      notificationCenter.emitKVChange(SERVICE.LOGIN);
+      expect(socketManager['_startRealFSM']).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -121,6 +146,10 @@ describe('Socket Manager', () => {
   });
 
   describe('Event', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
     it('singleton', () => {
       const manager = SocketManager.getInstance();
       expect(manager.hasActiveFSM()).toEqual(socketManager.hasActiveFSM());
@@ -159,6 +188,10 @@ describe('Socket Manager', () => {
     });
 
     describe('network_change', () => {
+      beforeEach(() => {
+        clearMocks();
+        setUp();
+      });
       it('online before logged in', () => {
         notificationCenter.emitKVChange(SERVICE.LOGOUT);
         expect(socketManager.hasActiveFSM()).toBeFalsy();
@@ -265,7 +298,7 @@ describe('Socket Manager', () => {
 
         notificationCenter.emitKVChange(SERVICE.LOGIN);
         // 2. should not start FSM since there is not socket host
-        expect(socketManager._hasLoggedIn).toBeTruthy();
+        expect(socketManager['_hasLoggedIn']).toBeTruthy();
         expect(socketManager.hasActiveFSM()).toBeFalsy();
 
         notificationCenter.emitKVChange(CONFIG.INDEX_SOCKET_SERVER_HOST, '');
@@ -427,6 +460,8 @@ describe('Socket Manager', () => {
 
   describe('PowerMonitor', () => {
     beforeEach(() => {
+      clearMocks();
+      setUp();
       syncUserConfig.getLastIndexTimestamp.mockReturnValue(1);
     });
     it('not login', () => {

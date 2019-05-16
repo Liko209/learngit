@@ -5,7 +5,6 @@
  */
 
 import * as filestack from 'filestack-js';
-import JSZip from 'jszip';
 import { FeedbackService } from '../FeedbackService';
 import { LogControlManager } from 'sdk/service/uploadLogControl/logControlManager';
 import { getAppContextInfo } from '@/utils/error';
@@ -16,7 +15,7 @@ jest.mock('../../FeedbackApi');
 jest.mock('@sentry/browser');
 jest.mock('sdk/service/uploadLogControl/logControlManager', () => {
   const mockLogMng = {
-    getRecentLogs: jest.fn(),
+    getZipLog: jest.fn(),
   };
   const mock = {
     instance: () => mockLogMng,
@@ -47,15 +46,10 @@ describe('FeedbackService', () => {
     it('should zip logs', async () => {
       const feedbackService = new FeedbackService();
       getAppContextInfo.mockReturnValue({});
-      const jsZip = new JSZip();
       const filestackClient = filestack.init('');
       const logControlManager = LogControlManager.instance();
-      logControlManager.getRecentLogs.mockReturnValue([
-        { log: { message: 'tee' } },
-      ]);
+      logControlManager.getZipLog.mockReturnValue(new Blob());
       await feedbackService.uploadRecentLogs();
-      expect(jsZip.file).toBeCalled();
-      expect(jsZip.generateAsync).toBeCalled();
       expect(filestackClient.upload).toBeCalled();
     });
   });

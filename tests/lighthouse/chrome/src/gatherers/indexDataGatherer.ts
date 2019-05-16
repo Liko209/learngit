@@ -3,14 +3,13 @@
  * @Date: 2019-04-19 17:04:24
  */
 
-const Gatherer = require("lighthouse/lighthouse-core/gather/gatherers/gatherer");
+import { BaseGatherer } from ".";
 import { GroupPage } from "../pages";
 import { JupiterUtils } from "../utils";
 import { Config } from "../config";
 import * as bluebird from 'bluebird';
 
-class IndexDataGatherer extends Gatherer {
-  private artifacts: Map<string, Array<any>> = new Map();
+class IndexDataGatherer extends BaseGatherer {
   private metricKeys: Array<string> = [
     "handle_incoming_account",
     "handle_incoming_company",
@@ -28,23 +27,25 @@ class IndexDataGatherer extends Gatherer {
 
   constructor() {
     super();
-    for (let key of this.metricKeys) {
-      this.artifacts.set(key, []);
-    }
   }
 
-  beforePass(passContext) { }
+  async _beforePass(passContext) {
+    await this.gathererConsole(this.metricKeys, passContext);
+  }
 
-  async pass(passContext) {
+  async _pass(passContext) {
     const driver = passContext.driver;
     const groupPage = new GroupPage(passContext);
     const { url } = passContext.settings;
     const browser = await groupPage.browser();
 
-    let authUrl, page, metric, cnt, item;
+    this.beginGathererConsole();
+    let authUrl, page, cnt, length;
     for (let i = 0; i < Config.sceneRepeatCount; i++) {
       try {
         cnt = 20;
+
+        length = this.consoleMetrics['handle_index_data'].length
 
         authUrl = await JupiterUtils.getAuthUrl(url, browser);
 
@@ -57,42 +58,32 @@ class IndexDataGatherer extends Gatherer {
         await bluebird.delay(5000);
 
         while (cnt-- > 0) {
-          metric = await page.evaluate(() => {
-            const m = performance["jupiter"];
-            return m;
-          });
-
-          if (!metric['handle_index_data']) {
+          if (length >= this.consoleMetrics['handle_index_data'].length) {
             await bluebird.delay(2000);
             continue;
           }
 
-          for (let k of this.metricKeys) {
-            if (metric[k] && metric[k].length > 0) {
-              item = metric[k].reduce((a, b) => { return (a.endTime - a.startTime) > (b.endTime - b.startTime) ? a : b });
-              this.artifacts.get(k).push(item);
-            }
-          }
           break;
         }
 
         await groupPage.close();
         page = undefined;
 
-        await driver.cleanBrowserCaches();
+        await driver.clearDataForOrigin(url);
       } catch (err) {
         if (page) {
           await page.close()
         }
       }
     }
+    this.endGathererConsole();
   }
 
-  afterPass(passContext) {
+  async _afterPass(passContext) {
     let result = {};
     for (let key of this.metricKeys) {
       result[key] = {
-        api: this.artifacts.get(key),
+        api: this.consoleMetrics[key],
         ui: []
       };
     }

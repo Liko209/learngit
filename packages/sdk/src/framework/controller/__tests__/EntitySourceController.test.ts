@@ -10,7 +10,7 @@ import { BaseDao, DeactivatedDao } from '../../../dao';
 import { TestEntity, TestDatabase } from './TestTypes';
 import { EntityPersistentController } from '../impl/EntityPersistentController';
 
-describe('RequestController', () => {
+describe('EntitySourceController', () => {
   let dao: BaseDao<TestEntity>;
   let deactivatedDao: DeactivatedDao;
   let requestController: RequestController<TestEntity>;
@@ -100,7 +100,7 @@ describe('RequestController', () => {
       jest
         .spyOn(entitySourceController, 'getEntityLocally')
         .mockResolvedValueOnce(null);
-      expect(entitySourceController.get(-1)).resolves.toThrow();
+      expect(entitySourceController.get(-1)).rejects.toThrow();
     });
   });
 

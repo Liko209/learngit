@@ -4,13 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RCInfoUserConfig } from '../../config';
+import { RCInfoUserConfig, RCInfoGlobalConfig } from '../../config';
 import { RCInfoFetchController } from '../RCInfoFetchController';
 import { RCInfoApi } from '../../../../api/ringcentral';
 import { jobScheduler, JOB_KEY } from '../../../../framework/utils/jobSchedule';
 import notificationCenter from '../../../../service/notificationCenter';
 import { RC_INFO } from '../../../../service/eventKey';
 import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 jest.mock('../../../permission');
 jest.mock('../../../account/config/AccountUserConfig');
@@ -26,6 +27,17 @@ describe('RCInfoFetchController', () => {
   beforeEach(() => {
     clearMocks();
     rcInfoFetchController = new RCInfoFetchController();
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: AccountUserConfig.prototype };
+        }
+        if (config === ServiceConfig.RC_INFO_SERVICE) {
+          return { DBConfig: RCInfoUserConfig.prototype };
+        }
+        return;
+      });
   });
 
   describe('requestRCInfo()', () => {
@@ -215,10 +227,15 @@ describe('RCInfoFetchController', () => {
   });
 
   describe('requestSpecialNumberRule()', () => {
+    beforeEach(() => {
+      clearMocks();
+      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(1);
+    });
+
     it('should send request and save to storage', async () => {
-      RCInfoUserConfig.prototype.getStationLocation = jest
+      RCInfoGlobalConfig.getStationLocation = jest
         .fn()
-        .mockResolvedValue({ countryInfo: { id: '2' } });
+        .mockReturnValue({ 1: { countryInfo: { id: '2' } } });
       RCInfoApi.getSpecialNumbers = jest.fn().mockReturnValue('specialNumbers');
       notificationCenter.emit = jest.fn().mockImplementationOnce(() => {});
       await rcInfoFetchController.requestSpecialNumberRule();
@@ -317,32 +334,36 @@ describe('RCInfoFetchController', () => {
 
   describe('getRCClientInfo()', () => {
     it('should get value from config when value is invalid', async () => {
-      rcInfoFetchController[ 'rcInfoUserConfig'
-].getClientInfo = jest.fn().mockReturnValue('test');
+      rcInfoFetchController[
+        'rcInfoUserConfig'
+      ].getClientInfo = jest.fn().mockReturnValue('test');
       expect(await rcInfoFetchController.getRCClientInfo()).toEqual('test');
     });
   });
 
   describe('getRCAccountInfo()', () => {
     it('should get value from config when value is invalid', async () => {
-      rcInfoFetchController[ 'rcInfoUserConfig'
-].getAccountInfo = jest.fn().mockReturnValue('test');
+      rcInfoFetchController[
+        'rcInfoUserConfig'
+      ].getAccountInfo = jest.fn().mockReturnValue('test');
       expect(await rcInfoFetchController.getRCAccountInfo()).toEqual('test');
     });
   });
 
   describe('getRCExtensionInfo()', () => {
     it('should get value from config when value is invalid', async () => {
-      rcInfoFetchController[ 'rcInfoUserConfig'
-].getExtensionInfo = jest.fn().mockReturnValue('test');
+      rcInfoFetchController[
+        'rcInfoUserConfig'
+      ].getExtensionInfo = jest.fn().mockReturnValue('test');
       expect(await rcInfoFetchController.getRCExtensionInfo()).toEqual('test');
     });
   });
 
   describe('getRCRolePermissions()', () => {
     it('should get value from config when value is invalid', async () => {
-      rcInfoFetchController[ 'rcInfoUserConfig'
-].getRolePermissions = jest.fn().mockReturnValue('test');
+      rcInfoFetchController[
+        'rcInfoUserConfig'
+      ].getRolePermissions = jest.fn().mockReturnValue('test');
       expect(await rcInfoFetchController.getRCRolePermissions()).toEqual(
         'test',
       );
@@ -350,15 +371,44 @@ describe('RCInfoFetchController', () => {
   });
 
   describe('getSpecialNumberRule()', () => {
+    beforeEach(() => {
+      clearMocks();
+      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(1);
+    });
     it('should get value from config when value is valid', async () => {
-      RCInfoUserConfig.prototype.getStationLocation = jest
+      RCInfoGlobalConfig.getStationLocation = jest
         .fn()
-        .mockResolvedValue({ countryInfo: { id: '2' } });
+        .mockReturnValue({ 1: { countryInfo: { id: '2' } } });
       // prettier-ignore
-      rcInfoFetchController['rcInfoUserConfig'].getSpecialNumberRules = jest.fn().mockReturnValue({ 2: 'test', 1: '1' });
-      expect(await rcInfoFetchController.getSpecialNumberRule()).toEqual(
-        'test',
-      );
+      rcInfoFetchController['rcInfoUserConfig'].getSpecialNumberRules = jest.fn().mockReturnValue({ 2: {
+        records: [],
+        uri: '2',
+        paging: {},
+        navigation: {},
+      }, 1: '1' });
+      expect(await rcInfoFetchController.getSpecialNumberRule()).toEqual({
+        records: [],
+        uri: '2',
+        paging: {},
+        navigation: {},
+      });
+    });
+
+    it('should just get value when db object type is ISpecialServiceNumber', async () => {
+      RCInfoGlobalConfig.getStationLocation = jest
+        .fn()
+        .mockReturnValue({ 1: { countryInfo: { id: '2' } } });
+      // prettier-ignore
+      rcInfoFetchController['rcInfoUserConfig'].getSpecialNumberRules = jest.fn().mockReturnValue({ records: [],
+        uri: '2',
+        paging: {},
+        navigation: {} });
+      expect(await rcInfoFetchController.getSpecialNumberRule()).toEqual({
+        navigation: {},
+        paging: {},
+        records: [],
+        uri: '2',
+      });
     });
   });
 
@@ -370,12 +420,35 @@ describe('RCInfoFetchController', () => {
         await rcInfoFetchController.getSpecialNumberRuleByCountryId(1),
       ).toEqual('1');
     });
+
+    it('should get value form old data format', async () => {
+      // prettier-ignore
+      rcInfoFetchController['rcInfoUserConfig'].getSpecialNumberRules = jest.fn().mockReturnValue({  navigation: {},
+        paging: {},
+        records: [],
+        uri: '2' });
+      expect(
+        await rcInfoFetchController.getSpecialNumberRuleByCountryId(1),
+      ).toEqual({ navigation: {}, paging: {}, records: [], uri: '2' });
+    });
+
+    it('should return undefined when old is data format and can not find the country', async () => {
+      // prettier-ignore
+      rcInfoFetchController['rcInfoUserConfig'].getSpecialNumberRules = jest.fn().mockReturnValue({  navigation: {},
+        paging: {},
+        records: [],
+        uri: '2' });
+      expect(
+        await rcInfoFetchController.getSpecialNumberRuleByCountryId(2),
+      ).toEqual(undefined);
+    });
   });
 
   describe('getPhoneData()', () => {
     it('should get value from config when value is invalid', async () => {
-      rcInfoFetchController[ 'rcInfoUserConfig'
-].getPhoneData = jest.fn().mockReturnValue('test');
+      rcInfoFetchController[
+        'rcInfoUserConfig'
+      ].getPhoneData = jest.fn().mockReturnValue('test');
       expect(await rcInfoFetchController.getPhoneData()).toEqual('test');
     });
   });
@@ -398,24 +471,6 @@ describe('RCInfoFetchController', () => {
       expect(await rcInfoFetchController.getExtensionPhoneNumberList()).toEqual(
         'test',
       );
-    });
-  });
-  describe('getStationLocation', () => {
-    it('should get value from config', async () => {
-      // prettier-ignore
-      rcInfoFetchController['rcInfoUserConfig'].getStationLocation = jest.fn().mockReturnValue('test');
-      expect(await rcInfoFetchController.getStationLocation()).toEqual('test');
-    });
-  });
-
-  describe('setStationLocation', () => {
-    it('should set value to config', async () => {
-      // prettier-ignore
-      rcInfoFetchController['rcInfoUserConfig'].setStationLocation = jest.fn();
-      await rcInfoFetchController.setStationLocation('test' as any);
-      expect(
-        rcInfoFetchController['rcInfoUserConfig'].setStationLocation,
-      ).toBeCalledWith('test');
     });
   });
 

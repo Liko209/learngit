@@ -15,10 +15,13 @@ import * as md from 'jui/pattern/MessageInput/markdown';
 import { PostService } from 'sdk/module/post';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { DeltaStatic } from 'quill';
+import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
 
 jest.mock('sdk/module/post');
 jest.mock('sdk/module/groupConfig');
 jest.mock('sdk/api');
+jest.mock('sdk/module/config/GlobalConfig');
+jest.mock('sdk/module/config/UserConfig');
 
 const postService = new PostService();
 
@@ -201,6 +204,50 @@ describe('MessageInputViewModel', () => {
         messageInputViewModel.draft = '<p><br></p><p><br></p>';
         messageInputViewModel.forceSaveDraft();
         expect(messageInputViewModel._memoryDraftMap.get(123)).toBe('');
+      });
+    });
+    describe('insertEmoji', () => {
+      it('should insert emoji colons into message input box if call insertEmoji', () => {
+        const emoji = { colons: ':smile:' };
+        const focusIndex = { index: 1 };
+        const mockQuill = {
+          focus: jest.fn(),
+          getSelection: jest.fn().mockReturnValue(focusIndex),
+          insertText: jest.fn(),
+        };
+        document.querySelector = jest.fn().mockReturnValue({
+          __quill: mockQuill,
+        });
+        messageInputViewModel.insertEmoji(emoji);
+        expect(mockQuill.focus).toBeCalled();
+        expect(mockQuill.getSelection()).toEqual(focusIndex);
+        expect(mockQuill.insertText).toBeCalledWith(
+          focusIndex.index,
+          emoji.colons,
+        );
+        expect(messageInputViewModel.cb).toBeCalled;
+      });
+      it('should call _doUnderscoreTransfer if emoji in Convert List', () => {
+        const emoji = { colons: ':flag-ac:' };
+        const afterTrasfer = ':flag_ac:';
+        messageInputViewModel.insertEmoji(emoji);
+        expect(
+          messageInputViewModel._doUnderscoreTransfer(emoji.colons),
+        ).toEqual(afterTrasfer);
+      });
+      it('should call _doToneTransfer if emoji is in different skin color', () => {
+        const emoji = { colons: ':baby::skin-tone-2:' };
+        const afterTrasfer = ':baby_tone1:';
+        messageInputViewModel.insertEmoji(emoji);
+        expect(messageInputViewModel._doToneTransfer(emoji.colons)).toEqual(
+          afterTrasfer,
+        );
+      });
+      it('setTimeout should be called one time', () => {
+        jest.useFakeTimers();
+        const emoji = { colons: ':baby::skin-tone-2:' };
+        messageInputViewModel.insertEmoji(emoji);
+        expect(setTimeout).toHaveBeenCalledTimes(1);
       });
     });
   });

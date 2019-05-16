@@ -49,7 +49,7 @@ class Jupiter {
     }
   }
 
-  registerModuleAsync(
+  async registerModuleAsync(
     loader: () => Promise<{ config: ModuleConfig }>,
     afterBootstrap?: () => void,
   ) {

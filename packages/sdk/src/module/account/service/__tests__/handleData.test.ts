@@ -7,6 +7,8 @@
 import notificationCenter from '../../../../service/notificationCenter';
 // import AccountDao from 'dao/account';
 import { accountHandleData } from '../handleData';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { AccountUserConfig } from '../../config';
 
 jest.mock('../../../config');
 jest.mock('../../config');
@@ -28,6 +30,13 @@ jest.mock('../../../../dao', () => ({
 describe('Account Service handleData', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: AccountUserConfig.prototype };
+        }
+      });
   });
   it('getCurrentUserId()', async () => {
     accountHandleData({

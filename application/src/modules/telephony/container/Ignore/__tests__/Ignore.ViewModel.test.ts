@@ -4,19 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, decorate, injectable } from 'framework';
-import { TelephonyStore } from '../../../store';
+import { container, Jupiter } from 'framework';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { IgnoreViewModel } from '../Ignore.ViewModel';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
+import * as telephony from '@/modules/telephony/module.config';
 
 jest.mock('../../../service/TelephonyService');
 
-decorate(injectable(), TelephonyStore);
-decorate(injectable(), TelephonyService);
-
-container.bind(TELEPHONY_SERVICE).to(TelephonyService);
-container.bind(TelephonyStore).to(TelephonyStore);
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(telephony.config);
 
 let ignoreViewModel: IgnoreViewModel;
 

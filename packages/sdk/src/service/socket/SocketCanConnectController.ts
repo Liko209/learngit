@@ -6,9 +6,9 @@
 import { canConnect, CanConnectModel } from '../../api/glip/user';
 import { PresenceService } from '../../module/presence/service/PresenceService';
 import { PRESENCE } from '../../module/presence/constant/Presence';
-import { AccountUserConfig, AuthUserConfig } from '../../module/account/config';
+import { AccountService } from '../../module/account/service';
 import { mainLogger } from 'foundation';
-import { SyncUserConfig } from '../../module/sync/config';
+import { SyncService } from '../../module/sync/service';
 import { ServiceConfig, ServiceLoader } from '../../module/serviceLoader';
 
 const NEXT_RECONNECT_TIME = 500;
@@ -21,17 +21,24 @@ class SocketCanConnectController {
   private _canConnectTimeOutId?: NodeJS.Timeout;
 
   private _managerId: number = 0;
+  private _isDoingCanConnect: boolean = false;
   constructor(id: number) {
     this._managerId = id;
   }
 
   async doCanConnectApi(callback: (id: number) => void, forceOnline: boolean) {
     this._reconnectIntervalTime = NEXT_RECONNECT_TIME;
+    this._isDoingCanConnect = true;
     mainLogger.log(TAG, ' start checkCanConnectToServer');
     await this._doCanConnectApi(callback, forceOnline);
   }
 
+  isDoingCanConnect() {
+    return this._isDoingCanConnect;
+  }
+
   cleanup() {
+    this._isDoingCanConnect = false;
     this._clearCanConnectTimeOutId();
     mainLogger.log(TAG, 'clean up');
   }
@@ -72,6 +79,7 @@ class SocketCanConnectController {
       await this._tryToCheckCanConnectAfterTime(callback, forceOnline, time);
     } else {
       callback(this._managerId);
+      this._isDoingCanConnect = false;
     }
   }
 
@@ -120,11 +128,17 @@ class SocketCanConnectController {
   private async _requestCanConnectInfo(
     forceOnline: boolean,
   ): Promise<CanConnectModel> {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const userId = userConfig.getGlipUserId();
-    const synConfig = new SyncUserConfig();
+    const synConfig = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    ).userConfig;
     const time = synConfig.getLastIndexTimestamp();
-    const authConfig = new AuthUserConfig();
+    const authConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).authUserConfig;
     const glipAccessToken = authConfig.getGlipToken();
     const params = {
       presence: await this._generateUserPresence(forceOnline),

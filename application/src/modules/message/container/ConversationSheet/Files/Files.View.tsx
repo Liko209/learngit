@@ -23,6 +23,7 @@ import { getFileIcon } from '@/common/getFileIcon';
 import { withFuture, FutureCreator } from 'jui/hoc/withFuture';
 import { UploadFileTracker } from './UploadFileTracker';
 import { Download } from '@/containers/common/Download';
+import { accelerateURL } from '@/common/accelerateURL';
 
 const SQUARE_SIZE = 180;
 const FutureAttachmentItem = withFuture(AttachmentItem);
@@ -140,7 +141,7 @@ class FilesView extends React.Component<FilesViewProps> {
                   forceSize={!singleImage}
                   squareSize={SQUARE_SIZE}
                   fileName={name}
-                  url={urlMap.get(id) || ''}
+                  url={accelerateURL(urlMap.get(id)) || ''}
                   Actions={<Download url={downloadUrl} />}
                 />
               ),
@@ -168,7 +169,7 @@ class FilesView extends React.Component<FilesViewProps> {
               forceSize={!singleImage}
               squareSize={SQUARE_SIZE}
               fileName={name}
-              url={urlMap.get(id) || ''}
+              url={accelerateURL(urlMap.get(id)) || ''}
               Actions={<Download url={downloadUrl} />}
             />
           );
@@ -185,7 +186,7 @@ class FilesView extends React.Component<FilesViewProps> {
               key={id}
               fileName={name}
               size={`${getFileSize(size)}`}
-              url={previewUrl}
+              url={accelerateURL(previewUrl)!}
               iconType={iconType}
               Actions={<Download url={downloadUrl} />}
             />

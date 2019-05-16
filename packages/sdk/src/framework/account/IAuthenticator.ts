@@ -16,6 +16,7 @@ interface IAuthResponse {
   accountInfos?: IAccountInfo[];
   data?: any;
   isRCOnlyMode?: boolean;
+  isFirstLogin?: boolean;
 }
 
 interface IAuthenticator {

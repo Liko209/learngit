@@ -12,8 +12,16 @@ import { LogControlManager } from '../logControlManager';
 import { configManager } from '../config';
 import { ServiceLoader } from '../../../module/serviceLoader';
 
+jest.mock('../utils', () => {
+  return {
+    createWorker: () => {
+      zip: () => {};
+    },
+  };
+});
+jest.mock('../zip.worker');
 jest.mock('axios');
-jest.mock('sdk/module/permission/service/PermissionService');
+jest.mock('foundation/src/ioc');
 
 describe('LogControlManager', () => {
   const logControlManager = LogControlManager.instance();
@@ -80,9 +88,10 @@ describe('LogControlManager', () => {
         browser: { enabled: false },
       });
       expect(spyConfigManagerMergeConfig).toHaveBeenLastCalledWith({
+        zipLogAutoUpload: false,
         uploadEnabled: false,
       });
-      expect(mockPermissionService.hasPermission).toHaveBeenCalledTimes(2);
+      expect(mockPermissionService.hasPermission).toHaveBeenCalledTimes(3);
       mockPermissionService.hasPermission.mockResolvedValue(true);
       await logControlManager.configByPermission();
       expect(spyLogManagerConfig).toHaveBeenLastCalledWith({
@@ -90,8 +99,9 @@ describe('LogControlManager', () => {
       });
       expect(spyConfigManagerMergeConfig).toHaveBeenLastCalledWith({
         uploadEnabled: true,
+        zipLogAutoUpload: true,
       });
-      expect(mockPermissionService.hasPermission).toHaveBeenCalledTimes(4);
+      expect(mockPermissionService.hasPermission).toHaveBeenCalledTimes(6);
     });
 
     it('Should be able to show error info when getting permission service fail. [JPT-1179]', async () => {

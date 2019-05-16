@@ -7,6 +7,7 @@ import { TelephonyEngineController } from '../TelephonyEngineController';
 import { notificationCenter } from '../../../../service';
 import { GlobalConfigService } from '../../../config';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { AuthUserConfig } from '../../../account/config';
 
 jest.mock('../../../config');
 
@@ -106,6 +107,16 @@ describe('', () => {
       const spy = jest.spyOn(engineController, 'logout');
       await engineController.onPermissionUpdated();
       expect(spy).toBeCalled();
+    });
+  });
+
+  describe('getEndpointId', () => {
+    it('should return the endpoint id which is in rc token', () => {
+      AuthUserConfig.prototype.getRCToken = jest.fn().mockReturnValueOnce({
+        endpoint_id: 'test',
+      });
+      const result = engineController.getEndpointId();
+      expect(result).toBe('test');
     });
   });
 });

@@ -19,10 +19,14 @@ const logger = LogUtils.getLogger(__filename);
   try {
     let startTime = Date.now();
 
-    let taskDto = await MetricService.createTask();
-
     // check report dir
     await FileService.checkReportPath();
+
+    const versionInfo = await DashboardService.getVersionInfo();
+
+    await MetricService.createVersion(versionInfo.jupiterVersion);
+
+    let taskDto = await MetricService.createTask(versionInfo.jupiterVersion);
 
     // run scenes
     const sceneNames = Object.keys(scenes).filter(name => {
@@ -45,18 +49,22 @@ const logger = LogUtils.getLogger(__filename);
 
     const sceneArray = [];
     for (let name of sceneNames) {
-      sceneArray.push(new scenes[name](taskDto));
+      sceneArray.push(new scenes[name](taskDto, versionInfo.jupiterVersion));
     }
 
     let result = true, scene;
     while (sceneArray.length > 0) {
-      scene = sceneArray.shift();
-      result = (await scene.run()) && result;
-      scene.clearReportCache();
-      if (Config.runFps && scene.supportFps()) {
-        scene.openFpsMode();
+      try {
+        scene = sceneArray.shift();
         result = (await scene.run()) && result;
         scene.clearReportCache();
+        if (Config.runFps && scene.supportFps()) {
+          scene.openFpsMode();
+          result = (await scene.run()) && result;
+          scene.clearReportCache();
+        }
+      } catch (err) {
+        logger.error(err);
       }
     }
 
@@ -78,7 +86,7 @@ const logger = LogUtils.getLogger(__filename);
     await FileService.generateReportIndex();
 
     // release resources
-    await closeDB;
+    await closeDB();
     await PptrUtils.closeAll();
 
     process.exitCode = exitCode;

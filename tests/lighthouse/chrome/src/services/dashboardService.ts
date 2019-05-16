@@ -7,12 +7,19 @@ import * as os from 'os';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as plist from 'plist';
+import * as jwt from 'jsonwebtoken';
 import { LogUtils, PptrUtils } from '../utils';
 import { FileService } from './fileService';
-import { Op } from 'sequelize';
 import { Config } from '../config';
+import { globals } from '../globals';
 import { HeapNode, parseMemorySnapshot } from '../analyse';
-import { TaskDto, SceneDto, PerformanceItemDto, LoadingTimeSummaryDto } from '../models';
+import { Op } from 'sequelize';
+import {
+  TaskDto, SceneDto,
+  PerformanceItemDto,
+  LoadingTimeSummaryDto,
+  VersionDto, LoadingTimeReleaseSummaryDto
+} from '../models';
 
 class DashboardMetricItemConfig {
   name: string;
@@ -174,8 +181,8 @@ class DashboardConfig {
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/149",
           "apiGoal": Number.MAX_VALUE
         },
-        "handle_incoming_data": {
-          "name": "handle_incoming_data",
+        "handle_index_data": {
+          "name": "handle_index_data",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/150",
           "apiGoal": Number.MAX_VALUE
         },
@@ -192,6 +199,21 @@ class DashboardConfig {
       }
     }
   };
+}
+
+class SceneSummary {
+  memory: number;
+  jsMemory: number;
+  metric: {
+    [key: string]: {
+      apiAvg: number,
+      apiMax: number,
+      apiMin: number,
+      apiTop90: number,
+      apiTop95: number,
+      handleCount: number
+    }
+  }
 }
 
 const logger = LogUtils.getLogger(__filename);
@@ -281,7 +303,7 @@ class DashboardPair {
     return `<span style="color:${color};margin-left:10px;margin-right:40px;">${text.join('')}</span>`
   }
 
-  formatGlip(key: string, handleCount: number, goal?: number): { level: string, text: string } {
+  formatGlip(key: string, handleCount: number, link: string, goal?: number): { level: string, text: string } {
     let icon = _config.icons.pass, suffix = '';
     if (this.last) {
       const offset = this.current - this.last;
@@ -303,12 +325,15 @@ class DashboardPair {
       level = 'block';
     }
 
+    let text = [icon, 'do [**', key, '**](', link, ') ', Config.sceneRepeatCount, ' times, average consuming time: **',
+      this.current.toFixed(2), '** ', this.unit];
+    if (handleCount >= 0) {
+      text.push(', number of data: **', handleCount, '**');
+    }
+
     return {
       level,
-      text: [
-        icon, 'do **', key, '** ', Config.sceneRepeatCount, ' times, average consuming time: **',
-        this.current.toFixed(2), '** ', this.unit, ', number of data: **', handleCount, '**'
-      ].join('')
+      text: text.join('')
     };
   }
 }
@@ -329,7 +354,7 @@ class DashboardItem {
   memory: DashboardPair;
   jsMemory: DashboardPair;
 
-  memoryDiffArray: Array<MemoryDiffItem>;
+  memoryDiffArray: Array<Array<MemoryDiffItem>>;
 }
 
 class MemoryDiffItem {
@@ -354,39 +379,17 @@ const formatMemorySize = (size: number): string => {
   return `${size.toFixed(2)} ${units[idx]}`;
 }
 
+let _versionInfo: DashboardVersionInfo;
+
 class DashboardService {
 
-  static async addItem(task: TaskDto, scene: SceneDto, artifacts: any) {
+  static async addItem(task: TaskDto, scene: SceneDto) {
     const sceneConfig = _config.scenes[scene.name];
     if (!sceneConfig || Object.keys(sceneConfig.metric).length === 0) {
       return;
     }
 
-    const tasks = await TaskDto.findAll({
-      where: {
-        status: '1',
-        host: task.host
-      }
-    });
-
-    const taskIds = [];
-    let lastScene: SceneDto;
-    if (tasks) {
-      tasks.forEach(t => {
-        taskIds.push(t.id);
-      });
-
-    }
-
-    if (taskIds.length > 0) {
-      lastScene = await SceneDto.findOne({
-        where: { name: scene.name, platform: scene.platform, id: { [Op.not]: scene.id }, taskId: { [Op.in]: taskIds } },
-        order: [['start_time', 'desc']],
-      });
-    }
-
-    const currentSummary = await DashboardService.summary(scene);
-    const lastSummary = await DashboardService.summary(lastScene);
+    const { currentSummary, lastSummary } = await DashboardService.summary(scene);
 
     const metric = sceneConfig.metric;
 
@@ -410,7 +413,7 @@ class DashboardService {
       }
     });
 
-    await DashboardService.memorySummary(item, artifacts);
+    await DashboardService.memorySummary(item);
 
     if (Object.keys(item.metric).length > 0) {
       if (currentSummary.memory && currentSummary.memory) {
@@ -423,21 +426,11 @@ class DashboardService {
     }
   }
 
-  private static async memorySummary(item: DashboardItem, artifacts: any) {
-    let result: Array<MemoryDiffItem> = new Array();
+  private static async memorySummary(item: DashboardItem) {
+    let result: Array<Array<MemoryDiffItem>> = new Array();
     item.memoryDiffArray = result;
 
-    if (!artifacts) {
-      logger.info(`artifacts is null.`);
-      return;
-    }
-    let gatherer = artifacts['MemoryGatherer'];
-    if (!gatherer) {
-      logger.info(`MemoryGatherer is not exist.`);
-      return;
-    }
-    let memoryFileArray = gatherer['memoryFileArray'];
-    logger.info(`gatherer keys : ${JSON.stringify(Object.keys(gatherer))}`);
+    let memoryFileArray = globals.getMemoryFiles();
     logger.info(`memoryFileArray : ${JSON.stringify(memoryFileArray)}`);
     if (!memoryFileArray || memoryFileArray.length <= 1) {
       return;
@@ -450,6 +443,28 @@ class DashboardService {
       return;
     }
 
+    result.push(await this.diffMemory(before, after));
+
+    if (memoryFileArray.length <= 2) {
+      return;
+    }
+
+    let next;
+    let length = memoryFileArray.length - 1;
+    for (let idx = 0; idx < length; idx++) {
+      if (idx + 1 === length) {
+        next = after;
+      } else {
+        next = parseMemorySnapshot(memoryFileArray[idx + 1]);
+      }
+
+      result.push(await this.diffMemory(before, next));
+      before = next;
+    }
+  }
+
+  private static async diffMemory(before: { [key: string]: Array<HeapNode> }, after: { [key: string]: Array<HeapNode> }) {
+    let result: Array<MemoryDiffItem> = new Array();
     let arr1: Array<HeapNode>, arr2: Array<HeapNode>;
     let sum1: number, sum2: number;
     const keys = Object.keys(after);
@@ -485,7 +500,7 @@ class DashboardService {
           name: key,
           count: arr1.length,
           size: sum1,
-          sizeChange: `0 -> ${formatMemorySize(sum1)}`,
+          sizeChange: `0B -> ${formatMemorySize(sum1)}`,
           sizeChangeForGlip: `from 0 to **${formatMemorySize(sum1)}**`,
           countChange: `0 -> ${arr1.length}`,
           countChangeForGlip: `from 0 to **${arr1.length}**`,
@@ -494,21 +509,13 @@ class DashboardService {
     }
 
     result.sort((a, b) => { return a.count !== b.count ? b.count - a.count : b.size - a.size });
+
+    return result;
   }
 
   private static async summary(scene: SceneDto): Promise<{
-    memory: number,
-    jsMemory: number,
-    metric: {
-      [key: string]: {
-        apiAvg: number,
-        apiMax: number,
-        apiMin: number,
-        apiTop90: number,
-        apiTop95: number,
-        handleCount: number
-      }
-    }
+    currentSummary: SceneSummary,
+    lastSummary: SceneSummary
   }> {
     let performanceItems: Array<PerformanceItemDto>;
     let loadingTimes: Array<LoadingTimeSummaryDto>;
@@ -539,8 +546,10 @@ class DashboardService {
       jsMemory = parseFloat('' + item.jsMemoryUsed);
     }
 
+    let metricKey = [];
     if (loadingTimes && loadingTimes.length > 0) {
       loadingTimes.forEach(time => {
+        metricKey.push(time.name);
         metric[time.name] = {
           apiAvg: parseFloat('' + time.apiAvgTime),
           apiMax: parseFloat('' + time.apiMaxTime),
@@ -551,10 +560,58 @@ class DashboardService {
         }
       });
     }
-    return { memory, jsMemory, metric }
+
+    let releaseMetric: {
+      [key: string]: {
+        apiAvg: number,
+        apiMax: number,
+        apiMin: number,
+        apiTop90: number,
+        apiTop95: number,
+        handleCount: number
+      }
+    } = {};
+
+    const result = {
+      currentSummary: { memory, jsMemory, metric },
+      lastSummary: { memory: undefined, jsMemory: undefined, metric: releaseMetric }
+    };
+
+    if (metricKey.length === 0) {
+      return result;
+    }
+
+    const now = await VersionDto.findOne({ where: { name: scene.appVersion } });
+    if (!now) {
+      return result;
+    }
+    const pre = await VersionDto.findOne({ where: { id: { [Op.lt]: now.id } }, order: [['id', 'desc']] });
+    if (!pre) {
+      return result;
+    }
+
+    const arr = await LoadingTimeReleaseSummaryDto.findAll({ where: { version: pre.name, name: { [Op.in]: metricKey } } });
+    if (arr && arr.length > 0) {
+      arr.forEach(time => {
+        releaseMetric[time.name] = {
+          apiAvg: parseFloat('' + time.apiAvgTime),
+          apiMax: parseFloat('' + time.apiMaxTime),
+          apiMin: parseFloat('' + time.apiMinTime),
+          apiTop90: parseFloat('' + time.apiTop90Time),
+          apiTop95: parseFloat('' + time.apiTop95Time),
+          handleCount: time.apiHandleCount
+        }
+      });
+    }
+
+    return result;
   }
 
   static async getVersionInfo(): Promise<DashboardVersionInfo> {
+    if (_versionInfo) {
+      return _versionInfo;
+    }
+
     const info = new DashboardVersionInfo();
     const browser = await PptrUtils.launch();
     const page = await browser.newPage();
@@ -604,7 +661,20 @@ class DashboardService {
     info.appVersion = appVersion.replace('/', '-');
     await PptrUtils.close(browser);
 
+    _versionInfo = info;
     return info;
+  }
+
+  static getIframeUrl(questionId: number, params: {}): string {
+    const METABASE_SITE_URL = "http://xmn145.rcoffice.ringcentral.com:9005";
+    const METABASE_SECRET_KEY = "4d71fd0fa0a60ad776914b4fe39326cbbb96a4761e440364e8a95d90a9a40502";
+    const payload = {
+      resource: { question: questionId },
+      params
+    };
+
+    const token = jwt.sign(payload, METABASE_SECRET_KEY);
+    return [METABASE_SITE_URL, '/embed/question/', token, '#bordered=true&titled=true'].join('');
   }
 
   static async buildReport() {
@@ -654,15 +724,24 @@ class DashboardService {
       Object.keys(metric).forEach(k => {
         const m = metric[k];
         const goal = _config.scenes[key].metric[k].apiGoal;
-        const url = _config.scenes[key].metric[k].url;
+        // const url = _config.scenes[key].metric[k].url;
+        const devIframe = DashboardService.getIframeUrl(157, { name: k });
+        const relIframe = DashboardService.getIframeUrl(156, { name: k });
         htmlArray.push(
           '<div class="dashboard-item-point">',
           '<div class="dashboard-item-point-title">', k,
-          '<a href="', url, '?sceneId=', item.sceneId.toString(), '" target="_blank">Trend</a>',
-          '<a href="', _config.lodingTimeUrl, '?sceneId=', item.sceneId.toString(), '" target="_blank">Detail</a></div>',
-          '<div class="dashboard-item-point-number">',
-          'Data size : <span>', m.handleCount.toFixed(0),
-          '</span></div>',
+          '<a href="', devIframe, '" target="_blank">Develop Trend</a>',
+          '<a href="', relIframe, '" target="_blank">Release Trend</a>',
+          '<a href="', _config.lodingTimeUrl, '?sceneId=', item.sceneId.toString(), '" target="_blank">Detail</a></div>');
+
+        if (m.handleCount >= 0) {
+          htmlArray.push(
+            '<div class="dashboard-item-point-number">',
+            'Data size : <span>', m.handleCount.toFixed(0),
+            '</span></div>');
+        }
+
+        htmlArray.push(
           '<div class="dashboard-item-point-metric">',
           'apiAvg:', m.apiAvg.formatHtml(goal),
           'apiMax:', m.apiMax.formatHtml(goal),
@@ -673,7 +752,7 @@ class DashboardService {
           '</div></div>'
         );
 
-        const avgMertic = m['apiAvg'].formatGlip(k, m.handleCount, goal);
+        const avgMertic = m['apiAvg'].formatGlip(k, m.handleCount, devIframe, goal);
         if (avgMertic.level === 'warn') {
           merticWarnArr.push(avgMertic.text);
         } else if (avgMertic.level === 'block') {
@@ -681,16 +760,28 @@ class DashboardService {
         }
       });
       if (item.memoryDiffArray.length > 0) {
-        htmlArray.push('</div><table class="dashboard-item-memory-diff"><tr><th>className</th><th>count</th><th>size</th></tr>');
-        memoryDiff.push(`In **${key}**`);
         let max = 5;
-        item.memoryDiffArray.forEach(diff => {
-          htmlArray.push('<tr><td>', diff.name, '</td>', '<td>', diff.countChange, '</td>', '<td>', diff.sizeChange, '</td></tr>');
+        memoryDiff.push(`In **${key}**`);
+        item.memoryDiffArray[0].forEach(diff => {
           if (max-- > 0) {
             memoryDiff.push(`For class **${diff.name}**, number of instance increase ${diff.countChangeForGlip} and total memory usage increase ${diff.sizeChangeForGlip}`);
           }
         });
-        htmlArray.push('</table></div>');
+        let start = item.memoryDiffArray.length > 1 ? 1 : 0;
+
+        htmlArray.push('</div>');
+        let flag = 1;
+        for (let idx = start; idx < item.memoryDiffArray.length; idx++) {
+          htmlArray.push('<br/><div>', 'from ', flag.toFixed(0), ' heap snapshot to ', (flag + 1).toFixed(0), ' heap snapshot', '</div>')
+          htmlArray.push('<table class="dashboard-item-memory-diff"><tr><th>className</th><th>count</th><th>size</th></tr>');
+          item.memoryDiffArray[idx].forEach(diff => {
+            htmlArray.push('<tr><td>', diff.name, '</td>', '<td>', diff.countChange, '</td>', '<td>', diff.sizeChange, '</td></tr>');
+          });
+          htmlArray.push('</table>');
+          flag++;
+        }
+
+        htmlArray.push('</div>');
       } else {
         htmlArray.push('</div></div>');
       }

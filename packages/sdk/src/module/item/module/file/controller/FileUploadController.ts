@@ -18,7 +18,7 @@ import { versionHash } from '../../../../../utils/mathUtils';
 import { FILE_FORM_DATA_KEYS } from '../constants';
 import { ENTITY, SERVICE } from '../../../../../service/eventKey';
 import notificationCenter from '../../../../../service/notificationCenter';
-import { AccountUserConfig } from '../../../../../module/account/config';
+import { AccountService } from '../../../../account/service';
 import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
 import { IEntitySourceController } from '../../../../../framework/controller/interface/IEntitySourceController';
 import { GroupConfigService } from '../../../../groupConfig';
@@ -813,7 +813,9 @@ class FileUploadController {
     file: File,
     isUpdate: boolean,
   ): ItemFile {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const companyId: number = userConfig.getCurrentCompanyId();
     const userId: number = userConfig.getGlipUserId();
     const now = Date.now();

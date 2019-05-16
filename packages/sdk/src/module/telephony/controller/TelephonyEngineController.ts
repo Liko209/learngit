@@ -22,6 +22,8 @@ import { RCInfoService } from '../../rcInfo';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { PermissionService, UserPermissionType } from '../../permission';
 import { ENTITY } from 'sdk/service/eventKey';
+import { AuthUserConfig } from 'sdk/module/account/config';
+import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -119,6 +121,12 @@ class TelephonyEngineController {
     });
   }
 
+  getEndpointId() {
+    const authConfig = new AuthUserConfig();
+    const rcToken = authConfig.getRCToken();
+    return rcToken.endpoint_id;
+  }
+
   initEngine() {
     RTCEngine.setLogger(new TelephonyLogController());
     this.rtcEngine = RTCEngine.getInstance();
@@ -132,6 +140,10 @@ class TelephonyEngineController {
   ) {
     // Engine can hold multiple accounts for multiple calls
     this._preCallingPermission = true;
+    this.rtcEngine.setUserAgentInfo({
+      endpointId: this.getEndpointId(),
+      userAgent: PlatformUtils.getRCUserAgent(),
+    });
     this._accountController = new TelephonyAccountController(
       this.rtcEngine,
       accountDelegate,

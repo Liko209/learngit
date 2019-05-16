@@ -13,24 +13,23 @@ import {
   SanitizedExtensionModel,
   CALL_ID_USAGE_TYPE,
 } from '../entity';
-import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import { Raw } from '../../../framework/model';
-import PersonAPI from '../../../api/glip/person';
-import {
-  AccountUserConfig,
-  AuthUserConfig,
-} from '../../../module/account/config';
+import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
+import { Raw } from 'sdk/framework/model';
+import PersonAPI from 'sdk/api/glip/person';
+import { AccountService } from 'sdk/module/account/service';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../group/entity';
-import {
-  IEntityCacheSearchController,
-  Terms,
-} from '../../../framework/controller/interface/IEntityCacheSearchController';
+import { IEntityCacheSearchController } from 'sdk/framework/controller/interface/IEntityCacheSearchController';
 import { PersonDataController } from './PersonDataController';
 import { ContactType } from '../types';
-import notificationCenter from '../../../service/notificationCenter';
-import { ENTITY } from '../../../service/eventKey';
-import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
-import { FileTypeUtils } from '../../../utils/file/FileTypeUtils';
+import notificationCenter from 'sdk/service/notificationCenter';
+import { ENTITY } from 'sdk/service/eventKey';
+import { SYNC_SOURCE, ChangeModel } from 'sdk/module/sync/types';
+import { FileTypeUtils } from 'sdk/utils/file/FileTypeUtils';
+import { PhoneParserUtility } from 'sdk/utils/phoneParser';
+import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
+import { PersonEntityCacheController } from './PersonEntityCacheController';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
 
 const PersonFlags = {
   is_webmail: 1,
@@ -55,22 +54,19 @@ const HEADSHOT_THUMB_HEIGHT = 'height';
 
 const SIZE = 'size';
 
-const PhoneNumberUsageType = {
-  DIRECT_NUMBER: 'DirectNumber',
-};
-
 class PersonController {
   private _entitySourceController: IEntitySourceController<Person>;
-  private _cacheSearchController: IEntityCacheSearchController<Person>;
+  private _entityCacheController: IEntityCacheController<Person>;
 
   constructor() {}
 
   setDependentController(
     entitySourceController: IEntitySourceController<Person>,
     _cacheSearchController: IEntityCacheSearchController<Person>,
+    entityCacheController: IEntityCacheController<Person>,
   ) {
     this._entitySourceController = entitySourceController;
-    this._cacheSearchController = _cacheSearchController;
+    this._entityCacheController = entityCacheController;
   }
 
   async handleIncomingData(
@@ -104,7 +100,9 @@ class PersonController {
     headShotVersion: string,
     size: number,
   ) {
-    const auth = new AuthUserConfig();
+    const auth = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).authUserConfig;
     const token = auth.getGlipToken();
     const glipToken = token && token.replace(/\"/g, '');
     if (headShotVersion) {
@@ -289,7 +287,9 @@ class PersonController {
     extensionData?: SanitizedExtensionModel,
   ) {
     const availNumbers: PhoneNumberInfo[] = [];
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const isCoWorker = userConfig.getCurrentCompanyId() === companyId;
     if (isCoWorker && extensionData) {
       availNumbers.push({
@@ -312,55 +312,50 @@ class PersonController {
   }
 
   async matchContactByPhoneNumber(
-    e164PhoneNumber: string,
+    phoneNumber: string,
     contactType: ContactType,
   ): Promise<Person | null> {
-    const userConfig = new AccountUserConfig();
-    const companyId = userConfig.getCurrentCompanyId();
-    const result = await this._cacheSearchController.searchEntities(
-      (person: Person, terms: Terms) => {
-        if (
-          person.sanitized_rc_extension &&
-          person.sanitized_rc_extension.extensionNumber === e164PhoneNumber &&
-          person.company_id === companyId
-        ) {
-          return {
-            id: person.id,
-            displayName: name,
-            entity: person,
-          };
-        }
-
-        if (person.rc_phone_numbers) {
-          const res = person.rc_phone_numbers.find(
-            (phoneNumberModel: PhoneNumberModel) => {
-              return (
-                phoneNumberModel.phoneNumber === e164PhoneNumber &&
-                phoneNumberModel.usageType ===
-                  PhoneNumberUsageType.DIRECT_NUMBER
-              );
-            },
-          );
-          if (res) {
-            return {
-              id: person.id,
-              displayName: name,
-              entity: person,
-            };
-          }
-        }
-        return null;
-      },
-    );
-
-    if (result) {
-      const res = result.sortableModels.find((item: { entity: Person }) => {
-        return !this._isDeactivated(item.entity);
-      });
-      return res ? res.entity : null;
+    if (!phoneNumber) {
+      return null;
     }
+    const phoneParserUtility = await PhoneParserUtility.getPhoneParser(
+      phoneNumber,
+      false,
+    );
+    if (!phoneParserUtility) {
+      return null;
+    }
+    const e164Number = phoneParserUtility.getE164();
 
-    return null;
+    const isShortNumber = phoneParserUtility.isShortNumber();
+    const phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
+      ServiceConfig.PHONE_NUMBER_SERVICE,
+    );
+    const numberList = await phoneNumberService.generateMatchedPhoneNumberList(
+      e164Number,
+    );
+    const cacheController = this
+      ._entityCacheController as PersonEntityCacheController;
+
+    const result: Person[] = [];
+
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    const companyId = userConfig.getCurrentCompanyId();
+
+    numberList &&
+      numberList.forEach((item: string) => {
+        const person = cacheController.getPersonByPhoneNumber(item);
+        if (
+          person &&
+          !this._isDeactivated(person) &&
+          (!isShortNumber || person.company_id === companyId)
+        ) {
+          result.push(person);
+        }
+      });
+    return result.length ? result[0] : null;
   }
 
   public async refreshPersonData(personId: number): Promise<void> {

@@ -69,7 +69,9 @@
     "version": "Version",
     "lastCommit": "Last Commit",
     "deployedTime": "Date",
-    "allRightsReserved": "All rights reserved"
+    "allRightsReserved": "All rights reserved",
+    "dialer": "Dialer",
+    "openDialer": "Open the dialer"
   },
   "globalSearch": {
     "search": "Search",
@@ -126,6 +128,10 @@
     "directGroups": "direct messages",
     "teamGroups": "teams",
     "messageTypeNameSMS": "text",
+    "emoji": {
+      "emojiDefaultTitle": "Pick your emoji"
+    },
+    "sharedItems": "shared items",
     "initialPost": {
       "directMessageDescription": "This is the beginning of your direct message history with {{displayName}}",
       "createATeam": "created a team",
@@ -162,6 +168,10 @@
     "conversationDetailsShow": "Show details",
     "conversationDetailsHide": "Hide details",
     "prompt": {
+      "deletePostFailedForServerIssue": "Sorry, something went wrong on our end and we weren't able to delete this post. Try again later.",
+      "deletePostFailedForNetworkIssue": "We weren't able to delete this post. Check your network connection, then try again.",
+      "editPostFailedForServerIssue": "Sorry, something went wrong on our end and we weren't able to apply edits to this post. Try again later.",
+      "editPostFailedForNetworkIssue": "We weren't able to apply edits to this post. Check your network connection, then try again.",
       "contentLength": "A maximum of 10000 characters can be sent",
       "contentIllegal": "Javascript not allowed",
       "deletePostTitle": "Delete Post?",
@@ -175,9 +185,12 @@
       "notAbleToRemoveYourBookmarkForServerIssue": "Sorry, something went wrong on our end and we weren't able to remove your bookmark. Try again later.",
       "notAbleToBookmarkThisMessageForNetworkIssue": "We weren't able to bookmark this message due to a poor network connection. Check your connectivity, then try again.",
       "notAbleToBookmarkThisMessageForServerIssue": "Sorry, something went wrong on our end and we weren't able to bookmark this message. Try again later.",
-      "SorryWeWereNotAbleToPinTheMessage": "Sorry, we weren't able to pin this message. Try again.",
-      "SorryWeWereNotAbleToUnpinTheMessage": "Sorry, we weren't able to unpin this message. Try again.",
-      "SorryWeWereNotAbleToLoadOlderMessages": "Sorry, we weren't able to load older messages. Try again.",
+      "notAbleToUnpinForNetworkIssue": "We weren't able to unpin this message. Check your network connection, then try again.",
+      "notAbleToUnpinForServerIssue": "Sorry, something went wrong on our end and we weren't able to unpin this message. Try again later.",
+      "notAbleToPinForNetworkIssue": "We weren't able to pin this message. Check your network connection, then try again.",
+      "notAbleToPinForServerIssue": "Sorry, something went wrong on our end and we weren't able to pin this message. Try again later.",
+      "notAbleToLoadOlderMessagesForNetworkIssue": "We weren't able to load older messages. Check your network connection, then try again.",
+      "notAbleToLoadOlderMessagesForServerIssue": "Sorry, something went wrong on our end and we weren't able to load older messages. Try again later.",
       "SorryWeWereNotAbleToLoadNewerMessages": "Sorry, we weren't able to load newer messages. Try again.",
       "MessageLoadingErrorTip": "We weren't able to open this conversation.",
       "NewMessage": "New Message",
@@ -303,7 +316,7 @@
     "pinnedMore": "and {{num}} more",
     "prompt": {
       "uploadFailedMessageThereIsAlreadyAFileBeingUploaded": "Your upload failed. There is already a file being uploaded. Please wait till it has completed.",
-      "fileNoLongerExists": "The file no longer exists.",
+      "fileNoLongerExists": "Sorry, we weren’t able to upload the file because it no longer exists.",
       "notAbleToCancelUpload": "Sorry, we weren't able to cancel the upload.",
       "notAbleToCancelUploadTryAgain": "Sorry, we weren't able to cancel the upload. Try again."
     }
@@ -392,20 +405,24 @@
       "convertToTeam": "Convert to team",
       "convertToTeamNamePrefix": "Team: ",
       "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content.",
-      "noMatchesFound": "No matches found"
+      "noMatchesFound": "No matches found",
+      "archivedSuffix": " - Archived"
     },
     "company": {},
     "prompt": {
       "closeConfirmDialogHeader": "Close Conversation?",
       "closeConfirmDialogContent": "Closing a conversation will remove it from the left pane, but will not delete the contents.",
       "closeConfirmDialogDontAskMeAgain": "Don't ask me again",
-      "SorryWeWereNotAbleToCloseTheConversation": "Sorry, we weren't able to close the conversation. Try again.",
+      "notAbleToCloseTheConversationForServerIssue": "Sorry, something went wrong on our end and we weren't able to close this conversation. Try again later.",
+      "notAbleToCloseTheConversationForNetworkIssue": "We weren't able to close this conversation. Check your network connection, then try again.",
       "SorryWeWereNotAbleToOpenThisProfile": "Sorry, we weren't able to open this profile. Try again.",
-      "JoinTeamNotAuthorizedError": "Sorry, we weren't able to let you join the team. This team is changed to a private team, please contact the team administrator.",
+      "JoinTeamErrorForAuthIssue": "This team is now private. To join, contact the team administrator.",
+      "JoinTeamErrorForNetworkIssue": "You weren't able to join the team. Check your network connection, then try again.",
+      "JoinTeamErrorForServerIssue": "Sorry, something went wrong on our end and you weren't able to join the team. Try again later.",
       "alreadyTaken": "This name is already taken, try choosing another one.",
       "CreateTeamError": "We are having trouble creating this team. Please try again later.",
-      "SorryWeWereNotAbleToSaveTheUpdate": "Sorry, we weren't able to save the update.",
-      "SorryWeWereNotAbleToSaveTheUpdateTryAgain": "Sorry, we weren't able to save the update. Try again.",
+      "SorryWeWereNotAbleToSaveTheUpdate": "We weren't able to save the update. Check your network connection, then try again.",
+      "SorryWeWereNotAbleToSaveTheUpdateTryAgain": "Sorry, something went wrong on our end and we weren't able to save the update. Try again later.",
       "YouAreAnAdminToThisTeam": "You are an admin to this team.",
       "LearnAboutTeamAdministration": "Learn about team administration.",
       "WeWerentAbleToCreateTheTeamTryAgain": "We weren't able to create the team. Try again.",
@@ -459,11 +476,30 @@
       "record": "Record",
       "stopRecord": "Stop",
       "callActions": "Call Actions",
-      "end": "End",
-      "Answer": "Answer"
+      "reply": "Reply",
+      "end": "End call",
+      "Answer": "Answer",
+      "back": "Back"
     },
+    "customReplyMessagePlaceholder": "Type a custom message",
+    "customReplyLabel": "Custom message",
+    "predefinedMessage": {
+      "inMeeting": "In a meeting",
+      "onMyWay": "On my way",
+      "callMeBack": "Call me back in...",
+      "willCallBack": "Will call you back in..."
+    },
+    "predefinedTime": {
+      "5min": "5 min",
+      "10min": "10 min",
+      "30min": "30 min",
+      "1hour": "1 hour"
+    },
+    "countText": "Reply in ",
+    "countdownUnit": "s",
     "ignoreTheCall": "Ignore the call",
     "sendToVoicemail": "Send to voicemail",
+    "moreOptions": "More options",
     "answerTheCall": "Answer the call",
     "unknownCaller": "Unknown Caller",
     "prompt": {
@@ -479,7 +515,10 @@
       "FailedToStopRecording": "Sorry, we weren't able to stop recording the call. Try again later.",
       "LackOfRecordingPermission": "Sorry, your account does not have the feature to record a call. To enable the feature, contact your account administrator.",
       "RecordOnServiceWeb": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
-      "RecordAutomatically": "Cannot start call recording."
+      "RecordAutomatically": "Cannot start call recording.",
+      "InvalidNumber": "The phone number entered is invalid. Check the number and try again.",
+      "ReplyCustomMessageEmpty": "Sorry, you cannot send an empty message.",
+      "ReplyMessageSuccess": "Your voice message was sent successfully."
     },
     "notification": {
       "incomingCall": "Incoming Call",
@@ -490,7 +529,22 @@
       "hold": "Hold the call",
       "resume": "Resume the call",
       "record": "Record the call",
-      "stopRecord": "Stop recording"
+      "stopRecord": "Stop recording",
+      "minimize": "Minimize the dialog"
+    },
+    "dialerPlaceholder": "Type a number",
+    "delete": "Delete",
+    "callFrom": "Call from:",
+    "phoneNumberType": {
+      "directNumber": "Direct Number",
+      "mainCompanyNumber": "Main Company Number",
+      "blocked": "Blocked",
+      "nickName": "Nick Name",
+      "companyNumber": "Company Number",
+      "companyFaxNumber": "Company Fax Number"
+    },
+    "callerIdSelector": {
+      "tooltip": "You can change this default Caller ID in settings."
     }
   },
   "meeting": {
@@ -503,9 +557,34 @@
     "general": "General",
     "notificationAndSounds": "Notification and Sounds",
     "messages": "Messages",
-    "phone": "Phone",
     "meetings": "Meetings",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "update": "Update",
+    "phone": {
+      "title": "Phone",
+      "general": {
+        "title": "General",
+        "callerID": {
+          "label": "Caller ID",
+          "description": "Choose your default Caller ID for making RingCentral phone calls",
+          "errorText": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later."
+        },
+        "extensions": {
+          "label": "Extension settings",
+          "description": "Customize your RingCentral extension settings (call routing, voicemail greetings and more)",
+          "errorText": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later"
+        },
+        "regionSetting": {
+          "label": "Region",
+          "region": "Region",
+          "country": "Country",
+          "areaCode": "Area Code",
+          "areaCodeErrorText": "Invalid area code",
+          "saveSuccessText": "Your region is updated successfully.",
+          "regionChangeDesc": "Set the country and area code for your region. This will be used for local and emergency dialing and phone number formatting."
+        }
+      }
+    }
   },
   "viewer": {
     "ZoomIn": "Scale file up",
@@ -538,5 +617,22 @@
     "issueTitle": "Summary",
     "issueDescription": "What happened?",
     "sendingInBackground": "Sending feedback..."
+  },
+  "electron": {
+    "upgrade": {
+      "dialogTitle": "Your desktop app is out-of-date",
+      "dialogMessage": " In order to have the best user experience, upgrade to the newest version. Before you upgrade, some features may not be working as expected.",
+      "ignoreOnce": "Ignore Once",
+      "upgrade": "Upgrade",
+      "notNow": "Not Now",
+      "ignore": "Ignore",
+      "noUpgradeDialogTitle": "No Upgrade Needed",
+      "noUpgradeDialogMessage": "Your desktop app is up-to-date.",
+      "noUpgradeDialogOk": "OK",
+      "topBannerWarning": "Your desktop app is out-of-date. Please upgrade immediately."
+    }
+  },
+  "dialer": {
+    "newCall": "New Call"
   }
 }
