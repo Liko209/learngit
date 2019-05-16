@@ -195,6 +195,7 @@ class TelephonyStore {
           this.activeCallTime = Date.now();
           this.enableHold();
           break;
+        case CALL_STATE.DIALING:
         case CALL_STATE.IDLE:
           this.resetReply();
           this.quitKeypad();
