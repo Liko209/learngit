@@ -3,7 +3,7 @@
  * @Date: 2018-11-22 11:27:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, action } from 'mobx';
+import { observable, action, comparer } from 'mobx';
 import { ProfileDialogGroupViewModel } from '../../Group.ViewModel';
 import { MembersProps, MembersViewProps } from './types';
 import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandler';
@@ -35,10 +35,14 @@ class MembersViewModel extends ProfileDialogGroupViewModel
       fireImmediately: true,
     });
     this.reaction(
-      () => this.keywords,
+      () => ({
+        keywords: this.keywords,
+        idsLength: this.group.members.length,
+      }),
       () => {
         this.handleSearch();
       },
+      { fireImmediately: true, equals: comparer.structural },
     );
   }
 
@@ -61,7 +65,7 @@ class MembersViewModel extends ProfileDialogGroupViewModel
       const result = await searchService.doFuzzySearchPersons({
         searchKey: this.keywords,
         excludeSelf: false,
-        arrangeIds: this._sortableGroupMemberHandler.getSortedGroupMembersIds(),
+        arrangeIds: this.group.members,
         fetchAllIfSearchKeyEmpty: true,
         asIdsOrder: true,
       });
