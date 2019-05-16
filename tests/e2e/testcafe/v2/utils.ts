@@ -18,17 +18,20 @@ export class MiscUtils {
   }
 
   static async retryAsync(cb: () => Promise<any>, errorHandler: (any) => Promise<boolean>, maxRetry: number = 10) {
-    let times = 0;
-    while (true) {
+    let errorMessage;
+    for (let times = 0; times < maxRetry; times++) {
       try {
+        errorMessage = undefined;
         return await cb();
       } catch (err) {
-        if (times++ >= maxRetry || !(await errorHandler(err))) {
+        if (times == maxRetry - 1 || !await errorHandler(err)) {
           throw err;
         }
+        errorMessage = err;
         logger.warn('retry on error!');
       }
     }
+    if (errorMessage) throw errorMessage;
   }
 
   static createTmpFile(content: any, filename?: string) {
