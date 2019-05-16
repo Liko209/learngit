@@ -586,7 +586,7 @@ class DashboardService {
     if (!now) {
       return result;
     }
-    const pre = await VersionDto.findOne({ where: { id: { [Op.lt]: now.id } }, order: [['id', 'desc']] });
+    const pre = await VersionDto.findOne({ where: { id: { [Op.lt]: now.id }, isRelease: true }, order: [['id', 'desc']] });
     if (!pre) {
       return result;
     }
