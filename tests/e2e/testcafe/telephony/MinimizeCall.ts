@@ -208,9 +208,8 @@ test.meta(<ITestMeta>{
     });
 
     // conversation page header
-    const chatEntry = app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId);
     await h(t).withLog('Then I open the 1:1 chat', async () => {
-      await chatEntry.enter();
+      await app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId).enter();
     });
 
     const conversationPage = app.homePage.messageTab.conversationPage;
@@ -270,9 +269,8 @@ test.meta(<ITestMeta>{
     });
 
     // conversation page header
-    const chatEntry = app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId);
     await h(t).withLog('Then I open the 1:1 chat', async () => {
-      await chatEntry.enter();
+      await app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId).enter();
     });
 
     const conversationPage = app.homePage.messageTab.conversationPage;
