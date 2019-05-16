@@ -16,6 +16,7 @@ const logger = LogUtils.getLogger(__filename);
   await initModel();
 })().then(async () => {
   let exitCode = 1;
+  let skipRun = false;
   try {
     let startTime = Date.now();
 
@@ -24,7 +25,15 @@ const logger = LogUtils.getLogger(__filename);
 
     const versionInfo = await DashboardService.getVersionInfo();
 
-    await MetricService.createVersion(versionInfo.jupiterVersion);
+    const version = await MetricService.createVersion(versionInfo.jupiterVersion);
+    const isReleaseRun = Config.jupiterHost === Config.jupiterReleaseHost;
+
+    if (version.isRelease && !isReleaseRun) {
+      exitCode = 0;
+      skipRun = true;
+      logger.info(`version[${version.name}] is released, skip`);
+      return;
+    }
 
     let taskDto = await MetricService.createTask(versionInfo.jupiterVersion);
 
@@ -81,9 +90,11 @@ const logger = LogUtils.getLogger(__filename);
   } catch (err) {
     logger.error(err);
   } finally {
-    await DashboardService.buildReport();
-    // generate report index.html
-    await FileService.generateReportIndex();
+    if (!skipRun) {
+      await DashboardService.buildReport();
+      // generate report index.html
+      await FileService.generateReportIndex();
+    }
 
     // release resources
     await closeDB();

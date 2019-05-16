@@ -20,6 +20,7 @@ import {
   LoadingTimeSummaryDto,
   VersionDto, LoadingTimeReleaseSummaryDto
 } from '../models';
+import { URLSearchParams } from 'url';
 
 class DashboardMetricItemConfig {
   name: string;
@@ -667,14 +668,16 @@ class DashboardService {
 
   static getIframeUrl(questionId: number, params: {}): string {
     const METABASE_SITE_URL = "http://xmn145.rcoffice.ringcentral.com:9005";
-    const METABASE_SECRET_KEY = "4d71fd0fa0a60ad776914b4fe39326cbbb96a4761e440364e8a95d90a9a40502";
-    const payload = {
-      resource: { question: questionId },
-      params
-    };
+    // const METABASE_SECRET_KEY = "4d71fd0fa0a60ad776914b4fe39326cbbb96a4761e440364e8a95d90a9a40502";
+    // const payload = {
+    //   resource: { question: questionId },
+    //   params
+    // };
 
-    const token = jwt.sign(payload, METABASE_SECRET_KEY);
-    return [METABASE_SITE_URL, '/embed/question/', token, '#bordered=true&titled=true'].join('');
+    // const token = jwt.sign(payload, METABASE_SECRET_KEY);
+    // return [METABASE_SITE_URL, '/embed/question/', token, '#bordered=true&titled=true'].join('');
+    const search = new URLSearchParams(params);
+    return [METABASE_SITE_URL, '/question/', questionId, '?', search.toString()].join('');
   }
 
   static async buildReport() {

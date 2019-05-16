@@ -22,8 +22,15 @@ import {
 class MetricService {
 
   static async createVersion(version: string): Promise<VersionDto> {
+    const isRelease = Config.jupiterHost === Config.jupiterReleaseHost;
     let now = await VersionDto.findOne({ where: { name: version } });
     if (now) {
+      if (!now.isRelease && isRelease) {
+        await VersionDto.update({ isRelease: isRelease, endTime: new Date() },
+          { where: { id: now.id } }
+        );
+        now.isRelease = isRelease;
+      }
       return now;
     }
 
@@ -37,6 +44,7 @@ class MetricService {
 
     return await VersionDto.create({
       name: version,
+      isRelease: isRelease,
       startTime: new Date()
     });
   }
@@ -317,7 +325,7 @@ class MetricService {
     const isRelease = Config.jupiterHost === Config.jupiterReleaseHost;
 
     let version = await VersionDto.findOne({ where: { name: sceneDto.appVersion } });
-    if (!version) {
+    if (!version || (version.isRelease && !isRelease)) {
       return;
     }
 
@@ -330,7 +338,6 @@ class MetricService {
       });
 
     if (!dtos || dtos.length === 0) {
-      console.log('111', dtos, [summary.name, sceneDto.name, sceneDto.appVersion, release]);
       return;
     }
 
@@ -338,9 +345,16 @@ class MetricService {
       max = 0, maxHanleCount = -1,
       arr = [], costTime, cnt;
 
+    const map = {};
     for (let dto of dtos) {
       if (!dto) {
         continue;
+      }
+
+      if (map[dto['summary_id']]) {
+        map[dto['summary_id']].push(dto);
+      } else {
+        map[dto['summary_id']] = [dto];
       }
 
       cnt = parseInt(dto['handle_count']);
@@ -377,20 +391,86 @@ class MetricService {
       apiHandleCount: cnt
     }
 
-    await LoadingTimeDevelopSummaryDto.destroy({
+    await LoadingTimeReleaseSummaryDto.destroy({
       where: {
-        name: summary.name, version: version.name
+        name: summary.name, versionId: version.id
       }
     });
-    await LoadingTimeDevelopSummaryDto.create(versionSummary);
+
+    await LoadingTimeReleaseSummaryDto.create(versionSummary);
+
+    await LoadingTimeDevelopSummaryDto.destroy({
+      where: {
+        name: summary.name, versionId: version.id
+      }
+    });
 
     if (isRelease) {
-      await LoadingTimeReleaseSummaryDto.destroy({
-        where: {
-          name: summary.name, version: version.name
+      await LoadingTimeDevelopSummaryDto.create(versionSummary);
+    } else {
+      const summaryIds = Object.keys(map).map(a => parseInt(a));
+      summaryIds.sort((a, b) => a > b ? 1 : -1);
+      const points = [0, 0, 0, 0, 0, 0, 0]; // max 7 point for develop branch
+      const blank = [];
+      for (let i = 0; i < summaryIds.length; i++) {
+        points[i % points.length]++;
+      }
+
+      let index = 0;
+      for (let idx of points) {
+        if (idx === 0) {
+          continue;
         }
-      });
-      await LoadingTimeReleaseSummaryDto.create(versionSummary);
+
+        blank.push(' ');
+
+        let dtoArr = [];
+        for (let i = 0; i < idx; i++) {
+          dtoArr.push(...map[summaryIds[index++]]);
+        }
+
+        arr = [];
+        sum = 0;
+        min = 60000000;
+        max = 0;
+        maxHanleCount = -1;
+        for (let dto of dtoArr) {
+          cnt = parseInt(dto['handle_count']);
+          costTime = parseFloat(dto['cost_time']);
+          arr.push(costTime);
+          sum += costTime;
+          min = costTime > min ? min : costTime;
+          max = costTime > max ? costTime : max;
+          if (cnt >= 0) {
+            maxHanleCount = cnt > maxHanleCount ? cnt : maxHanleCount;
+          } else {
+            cnt = 0;
+          }
+        }
+
+        arr.sort((a, b) => {
+          return a === b ? 0 : (a > b ? 1 : -1);
+        });
+
+        versionSummary = {
+          versionId: version.id,
+          version: [...blank, version.name, ...blank].join(''),
+          name: summary.name,
+          uiMaxTime: 0,
+          uiAvgTime: 0,
+          uiMinTime: 0,
+          uiTop90Time: 0,
+          uiTop95Time: 0,
+          apiMaxTime: max,
+          apiAvgTime: sum / arr.length,
+          apiMinTime: min,
+          apiTop90Time: arr[parseInt((0.9 * arr.length).toString())],
+          apiTop95Time: arr[parseInt((0.95 * arr.length).toString())],
+          apiHandleCount: cnt
+        }
+
+        await LoadingTimeDevelopSummaryDto.create(versionSummary);
+      }
     }
   }
 }
