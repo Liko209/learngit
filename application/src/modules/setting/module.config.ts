@@ -6,13 +6,13 @@
 import { SettingService } from './service';
 import { SettingStore } from './store';
 import { SettingModule } from './SettingModule';
-import { SETTING_SERVICE } from './interface';
+import { ISettingService } from './interface';
 
 const config = {
   entry: SettingModule,
   provides: [
     {
-      name: SETTING_SERVICE,
+      name: ISettingService,
       value: SettingService,
     },
     SettingStore,

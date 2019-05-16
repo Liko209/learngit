@@ -10,14 +10,14 @@ import { SettingItemType } from '../type';
 import { ISettingService } from '../interface';
 
 class SettingService implements ISettingService {
-  @inject(SettingStore) private _SettingStore: SettingStore;
+  @inject(SettingStore) private _settingStore: SettingStore;
 
   registerSettingItem(item: SettingItemType) {
-    this._SettingStore.addSettingItem(item);
+    this._settingStore.addSettingItem(item);
   }
 
   unRegisterSettingItem(key: string) {
-    this._SettingStore.removeSettingItem(key);
+    this._settingStore.removeSettingItem(key);
   }
 }
 

@@ -6,6 +6,7 @@
 
 import { SettingItemType } from '../type';
 
+const ISettingService = 'ISettingService';
 interface ISettingService {
   registerSettingItem(item: SettingItemType): void;
   unRegisterSettingItem(key: string): void;

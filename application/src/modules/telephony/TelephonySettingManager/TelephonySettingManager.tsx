@@ -3,49 +3,49 @@
  * @Date: 2019-04-23 09:12:51
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
 import { inject } from 'framework';
-import { ISettingService, SETTING_SERVICE } from '@/modules/setting/interface';
+import { SettingModuleIds } from 'sdk/module/setting';
+import { ISettingService } from '@/modules/setting/interface';
 import { buildSettingItem } from '@/modules/setting/container/SettingItemBuild';
-import { SETTING_ITEM_ID } from './constants';
 import { ExtensionsSettingItem } from './Extensions';
 import { CallerIdSettingItem } from './CallerIdSettingItem';
 import i18nT from '@/utils/i18nT';
 import { RegionSettingItem } from './RegionSettingItem';
 
-class TelephonySettingManager {
-  @inject(SETTING_SERVICE) private _settingService: ISettingService;
-  init = async () => {
-    const {
-      id,
-      label,
-      automationKey,
-      description,
-    } = SETTING_ITEM_ID.SETTING_PHONE_EXTENSIONS_SETTINGS;
-    const {
-      id: CallerID,
-      label: CallerIDLabel,
-      automationKey: CallerIDAutomationKey,
-      description: CallerIDDescription,
-    } = SETTING_ITEM_ID.SETTING_PHONE_CALLERID_SETTINGS;
-    this._settingService.registerSettingItem({
-      [CallerID]: buildSettingItem({
-        label: await i18nT(CallerIDLabel),
-        automationKey: CallerIDAutomationKey,
-        description: await i18nT(CallerIDDescription),
-        Right: CallerIdSettingItem,
-      }),
-      [id]: buildSettingItem({
-        automationKey,
-        label: await i18nT(label),
-        description: await i18nT(description),
-        Right: ExtensionsSettingItem,
-      }),
-    });
+const { CallerIdSetting, ExtensionSetting, RegionSetting } = SettingModuleIds;
 
-    const { id: regionId } = SETTING_ITEM_ID.SETTING_PHONE_REGION_SETTINGS;
+class TelephonySettingManager {
+  @inject(ISettingService) private _settingService: ISettingService;
+
+  async init() {
     this._settingService.registerSettingItem({
-      [regionId]: props => <RegionSettingItem {...props} />,
+      [CallerIdSetting.id]: await this._buildCallerSettingItem(),
+      [ExtensionSetting.id]: await this._buildExtensionsSettingItem(),
+      [RegionSetting.id]: RegionSettingItem,
+    });
+  }
+
+  dispose() {
+    this._settingService.unRegisterSettingItem(CallerIdSetting.id.toString());
+    this._settingService.unRegisterSettingItem(ExtensionSetting.id.toString());
+    this._settingService.unRegisterSettingItem(RegionSetting.id.toString());
+  }
+
+  private async _buildCallerSettingItem() {
+    return buildSettingItem({
+      automationKey: 'callerID',
+      label: await i18nT('setting.phone.general.callerID.label'),
+      description: await i18nT('setting.phone.general.callerID.description'),
+      Right: CallerIdSettingItem,
+    });
+  }
+
+  private async _buildExtensionsSettingItem() {
+    return buildSettingItem({
+      automationKey: 'extensions',
+      label: await i18nT('setting.phone.general.extensions.label'),
+      description: await i18nT('setting.phone.general.extensions.description'),
+      Right: ExtensionsSettingItem,
     });
   }
 }
