@@ -118,11 +118,11 @@ test.meta(<ITestMeta>{
       listClientHeight = await profileDialog.visualList.clientHeight;
       listScrollHeight = await profileDialog.visualList.scrollHeight;
 
-      const hasNoScrollBar = listScrollHeight - listClientHeight > 0;
+      const hasScrollBar = listScrollHeight - listClientHeight > 0;
       const memberCountOnepage = listClientHeight / itemHeight === 5.5;
 
       assert.ok(memberCountOnepage);
-      await t.expect(hasNoScrollBar).ok();
+      await t.expect(hasScrollBar).ok();
 
     });
   });
