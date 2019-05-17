@@ -57,7 +57,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   private _groupMemberDataProvider: GroupMemberDataProvider;
   private _group: Group;
   private _adminIds: Set<number>;
-  private _sortedGroupMembers: number[];
+  private _sortedGroupMemberIds: number[];
 
   constructor(private _groupId: number) {
     super();
@@ -69,6 +69,10 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       await this._buildFoc();
     }
     return this._foc.fetchData(QUERY_DIRECTION.NEWER, pageSize);
+  }
+
+  get allSortedMemberIds() {
+    return this._sortedGroupMemberIds || [];
   }
 
   @computed
@@ -104,7 +108,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       });
     }
 
-    this._sortedGroupMembers = sortedIds;
+    this._sortedGroupMemberIds = sortedIds;
   }
 
   private async _initGroupData() {
@@ -120,7 +124,8 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
     }
     tracer.end({
       key: PERFORMANCE_KEYS.INIT_GROUP_MEMBERS,
-      count: (this._sortedGroupMembers && this._sortedGroupMembers.length) || 0,
+      count:
+        (this._sortedGroupMemberIds && this._sortedGroupMemberIds.length) || 0,
     });
   }
 
@@ -146,13 +151,13 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       rhs: ISortableModelWithData<Person>,
     ): number => {
       return (
-        this._sortedGroupMembers.indexOf(lhs.id) -
-        this._sortedGroupMembers.indexOf(rhs.id)
+        this._sortedGroupMemberIds.indexOf(lhs.id) -
+        this._sortedGroupMemberIds.indexOf(rhs.id)
       );
     };
 
     this._groupMemberDataProvider = new GroupMemberDataProvider(
-      this._sortedGroupMembers,
+      this._sortedGroupMemberIds,
       filterFunc,
     );
 
@@ -215,7 +220,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       if (needUpdateMemberList) {
         this._initGroupData().then(() => {
           this._groupMemberDataProvider.onSourceIdsChanged(
-            this._sortedGroupMembers,
+            this._sortedGroupMemberIds,
           );
         });
       }

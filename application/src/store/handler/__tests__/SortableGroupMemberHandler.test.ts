@@ -170,6 +170,22 @@ describe('SortableGroupMemberHandler', () => {
     });
   });
 
+  describe('allSortedMembers', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should return all sortedMembers', () => {
+      sortableGroupMemberHandler['_sortedGroupMemberIds'] = [123, 345];
+      expect(sortableGroupMemberHandler.allSortedMemberIds).toEqual([123, 345]);
+    });
+
+    it('should return empty array when has no member ids', () => {
+      sortableGroupMemberHandler['_sortedGroupMemberIds'] = undefined as any;
+      expect(sortableGroupMemberHandler.allSortedMemberIds).toEqual([]);
+    });
+  });
   describe('sort group members', () => {
     beforeEach(() => {
       clearMocks();

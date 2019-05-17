@@ -72,7 +72,7 @@ class MembersViewModel extends ProfileDialogGroupViewModel
       const result = await searchService.doFuzzySearchPersons({
         searchKey: this.keywords,
         excludeSelf: false,
-        arrangeIds: this.group.members,
+        arrangeIds: this._sortableGroupMemberHandler.allSortedMemberIds,
         fetchAllIfSearchKeyEmpty: true,
         asIdsOrder: true,
       });
