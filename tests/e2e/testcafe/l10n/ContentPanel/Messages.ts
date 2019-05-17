@@ -8,23 +8,19 @@ import { h, H } from "../../v2/helpers";
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { IGroup } from "../../v2/models";
 
-
-
-
 fixture('ContentPanel/SendMessages').beforeEach(setupCase(BrandTire.RCOFFICE)).afterEach(teardownCase())
-test(formalName('Check the like button ', ['P2', 'SendMessages', 'V1.4', 'Hanny.Han']),async (t) => {
+test(formalName('Check the like button ', ['P2', 'ContentPanel', 'SendMessages', 'V1.4', 'Hanny.Han']),async (t) => {
   const users=h(t).rcData.mainCompany.users;
   const userA = users[4];
   const userB = users[5];
   const app=new AppRoot(t);
   await h(t).glip(userB).init();
 
-
   let team = <IGroup>{
     name: uuid(),
     type: "Team",
-    members: [userA, userB],
-    owner: userA
+    owner: userA,
+    members: [userA, userB]
   }
 
   let postId;
@@ -36,7 +32,7 @@ test(formalName('Check the like button ', ['P2', 'SendMessages', 'V1.4', 'Hanny.
   const conversationPage = app.homePage.messageTab.conversationPage;
   const postCard = conversationPage.postItemById(postId);
 
-  await h(t).withLog(`Given I login Jupiter with ${userA.company.number}#${userA.extension}`,async () => {
+  await h(t).withLog(`And I login Jupiter with ${userA.company.number}#${userA.extension}`,async () => {
     await h(t).directLoginWithUser(SITE_URL, userA);
     await app.homePage.ensureLoaded();
   })
@@ -48,18 +44,18 @@ test(formalName('Check the like button ', ['P2', 'SendMessages', 'V1.4', 'Hanny.
     await t.hover(postCard.self);
   });
 
-  await h(t).withLog(`Then Appear action bar and there have hollow "like" icon `, async () => {
+  await h(t).withLog('Then Appear action bar and there have hollow "like" icon', async () => {
     await t.hover(postCard.likeToggleOnActionBar);
   });
   await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_MessagesLike'})
 
-  await h(t).withLog(`When click like button and hover footer like button `, async () => {
+  await h(t).withLog('When I click like button and hover footer like button', async () => {
     await t.click(postCard.likeToggleOnActionBar);
     await t.hover(postCard.likeButtonOnFooter);
   });
   await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_MessagesYouLike'})
 
-  await h(t).withLog(`When hover unlike button`, async () => {
+  await h(t).withLog('When I hover unlike button', async () => {
     await t.hover(postCard.likeToggleOnActionBar);
   });
   await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_MessagesUnLike'})

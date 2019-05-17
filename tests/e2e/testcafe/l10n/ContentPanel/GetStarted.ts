@@ -7,12 +7,11 @@ import { v4 as uuid } from 'uuid';
 import * as _ from "lodash";
 import { IGroup } from "../../v2/models";
 
-
 fixture('ContentPanel/GetStarted')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase())
 
-test(formalName('Check the GetStarted page ', ['P2', 'GetStarted', 'V1.4', 'Hanny.Han']),
+test(formalName('Check the GetStarted page ', ['P2', 'ContentPanel', 'GetStarted', 'V1.4', 'Hanny.Han']),
 async(t: TestController) => {
 
   const users=h(t).rcData.mainCompany.users;
@@ -23,8 +22,8 @@ async(t: TestController) => {
   let team = <IGroup>{
     name: `publicTeamWithMe${uuid()}`,
     type: "Team",
+    owner: loginUser,
     members: [loginUser, otherUser],
-    owner: loginUser
   }
 
   await h(t).withLog(`Given I own a team: "${team.name}"`, async () => {
@@ -42,7 +41,5 @@ async(t: TestController) => {
     await conversationPage.waitUntilPostsBeLoaded;
   });
 
-  await h(t).log(`Then I capture screenshot`,{screenshotPath:'Jupiter_ContentPanel_GetStarted'})
-
-
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_GetStarted'})
 });

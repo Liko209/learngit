@@ -6,12 +6,11 @@ import { AppRoot } from "../../v2/page-models/AppRoot";
 import { IGroup } from "../../v2/models";
 import { v4 as uuid } from 'uuid';
 
-
 fixture('ContentPanel/TeamSetting')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase())
 
-test(formalName('Check the TeamSetting page',['P2', 'TeamSetting', 'V1.4', 'Hanny.han']),async (t) => {
+test(formalName('Check the TeamSetting page',['P2','ContentPanel', 'TeamSetting', 'V1.4', 'Hanny.han']),async (t) => {
 
   const users=h(t).rcData.mainCompany.users;
   const loginUser = users[4];
@@ -21,8 +20,8 @@ test(formalName('Check the TeamSetting page',['P2', 'TeamSetting', 'V1.4', 'Hann
   let team = <IGroup>{
     name: `publicTeamWithMe${uuid()}`,
     type: "Team",
-    members: [loginUser, otherUser],
-    owner: loginUser
+    owner: loginUser,
+    members: [loginUser, otherUser]
   }
   await h(t).withLog(`Given I own a team: "${team.name}"`, async () => {
     await h(t).scenarioHelper.createTeam(team);
@@ -38,23 +37,23 @@ test(formalName('Check the TeamSetting page',['P2', 'TeamSetting', 'V1.4', 'Hann
     await conversationPage.waitUntilPostsBeLoaded;
   });
   const profileDialog = app.homePage.profileDialog;
-  await h(t).withLog('When click members button and click settings button', async () => {
+  await h(t).withLog('When I click members button and click settings button', async () => {
     await t.click(conversationPage.memberCountIcon);
     await t.click(profileDialog.settingButton);
   });
 
-  await h(t).log(`Then I capture screenshot`,{screenshotPath:'Jupiter_ContentPanel_TeamSettingsDetail'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamSettingsDetail'})
 
   const teamSettingDialog = app.homePage.teamSettingDialog;
-  await h(t).withLog('When click Archive tip button', async () => {
+  await h(t).withLog('When I click Archive tip button', async () => {
     await teamSettingDialog.clickArchiveTeamButton();
   })
-  await h(t).log(`Then I capture screenshot`,{screenshotPath:'Jupiter_ContentPanel_ArchiveTeam'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_ArchiveTeam'})
 
   const archiveTeamDialog = app.homePage.archiveTeamDialog;
-  await h(t).withLog('When click archive team cancel button and click delete team button', async () =>{
+  await h(t).withLog('When I click archive team cancel button and click delete team button', async () =>{
     await archiveTeamDialog.clickCancel();
     await teamSettingDialog.clickDeleteTeamButton();
   })
-  await h(t).log(`Then I capture screenshot`,{screenshotPath:'Jupiter_ContentPanel_DeleteTeam'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_DeleteTeam'})
 });
