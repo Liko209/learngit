@@ -8,6 +8,7 @@ import { setupCase, teardownCase } from '../init';
 import { AppRoot } from '../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../config';
 import { ITestMeta } from '../v2/models';
+import * as _ from 'lodash';
 
 // TODO: change the case ids and run the test cases
 fixture('Telephony/Dialer')
@@ -208,4 +209,49 @@ fixture('Telephony/Dialer')
     await h(t).withLog(`And discard all changes of dialer after initiating a call`, async () => {
       await t.expect(app.homePage.dialpadButton.value).eql('');
     });
+  });
+
+
+  test.meta(<ITestMeta>{
+    caseIds: ['JPT-1964'],
+    priority: ['P1'],
+    maintainers: ['Foden.Lin'],
+    keywords: ['Dialer']
+  })('Can display the default caller ID in "Caller ID" selection', async (t) => {
+    const loginUser = h(t).rcData.mainCompany.users[0];
+    const app = new AppRoot(t);
+    const homePage = app.homePage;
+    const settingsEntry = homePage.leftPanel.settingsEntry;
+    const settingTab = app.homePage.settingTab;
+    const phoneTab = settingTab.phoneSettingPage;
+
+    await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await homePage.ensureLoaded();
+    });
+
+    await h(t).withLog(`When I click Setting entry`, async () => {
+      await settingsEntry.enter();
+    });
+
+    await h(t).withLog(`And I click Phone tab`, async () => {
+      await settingTab.phoneEntry.enter();
+    });
+
+    await h(t).withLog(`And I click the caller id`, async () => {
+      await phoneTab.clickCallerIDDropDown();
+    });
+
+    await h(t).withLog(`And I set the caller id is "Blocked" from the setting`, async () => {
+      await phoneTab.selectCallerID('Blocked');
+    });
+    await h(t).withLog('And I click the to diapad button', async () => {
+      await homePage.openDialer();
+    });
+
+    let fromNumber = homePage.telephonyDialog.callerIdSelector.innerText
+
+    await h(t).withLog(`Then should display "Blocked" in caller ID seclection of the dialer page`, async ()=>{
+          await t.expect(fromNumber).eql('Blocked');
+        });
   });
