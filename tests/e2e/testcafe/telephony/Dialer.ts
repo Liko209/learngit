@@ -8,7 +8,6 @@ import { setupCase, teardownCase } from '../init';
 import { AppRoot } from '../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../config';
 import { ITestMeta } from '../v2/models';
-import * as _ from 'lodash';
 
 // TODO: change the case ids and run the test cases
 fixture('Telephony/Dialer')
