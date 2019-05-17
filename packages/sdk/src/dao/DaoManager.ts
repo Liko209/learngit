@@ -46,23 +46,8 @@ class DaoManager extends Manager<
     this.dbManager.initDatabase(schema, dbType);
 
     if (!this._isSchemaCompatible()) {
-      mainLogger
-        .tags(LOG_TAG)
-        .info('schema changed, start delete current database');
-      try {
-        await this.dbManager.deleteDatabase();
-      } catch (error) {
-        this.dbManager.initDatabase(schema, DatabaseType.LokiDB);
-        await this.dbManager.deleteDatabase();
-      }
-      if (AccountGlobalConfig.getUserDictionary()) {
-        // TODO FIJI-4396
-        const synConfig = ServiceLoader.getInstance<SyncService>(
-          ServiceConfig.SYNC_SERVICE,
-        ).userConfig;
-        synConfig.clearSyncConfigsForDBUpgrade();
-        jobScheduler.userConfig.clearFetchDataConfigs();
-      }
+      mainLogger.tags(LOG_TAG).info('schema changed, should clear all data');
+      await this.clearAllData();
     }
 
     const db = this.dbManager.getDatabase();
@@ -129,6 +114,25 @@ class DaoManager extends Manager<
       observer.onDBInitialized();
     } else {
       this._observers.push(observer);
+    }
+  }
+
+  async clearAllData() {
+    try {
+      await this.dbManager.deleteDatabase();
+    } catch (error) {
+      this.dbManager.initDatabase(schema, DatabaseType.LokiDB);
+      await this.dbManager.deleteDatabase();
+    }
+
+    // remove relevant config
+    if (AccountGlobalConfig.getUserDictionary()) {
+      // TODO FIJI-4396
+      const synConfig = ServiceLoader.getInstance<SyncService>(
+        ServiceConfig.SYNC_SERVICE,
+      ).userConfig;
+      synConfig.clearSyncConfigsForDBUpgrade();
+      jobScheduler.userConfig.clearFetchDataConfigs();
     }
   }
 

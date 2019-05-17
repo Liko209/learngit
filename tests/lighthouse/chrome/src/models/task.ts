@@ -47,6 +47,20 @@ class TaskDto extends Model<TaskDto> {
     field: 'end_time',
   })
   endTime?: Date;
+
+  @Column({
+    allowNull: false,
+    type: DataType.STRING,
+    field: 'app_version'
+  })
+  appVersion: string;
+
+  @Column({
+    allowNull: false,
+    type: DataType.BOOLEAN,
+    field: 'is_release'
+  })
+  isRelease: boolean;
 }
 
 export {

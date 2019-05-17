@@ -23,7 +23,7 @@ describe('PhoneNumberService', () => {
     });
   });
 
-  describe('getById', async () => {
+  describe('getById', () => {
     it('should return id as phone number', async () => {
       const res = await phoneNumberService.getById(ID);
       expect(res.id).toBe(ID);
@@ -44,14 +44,14 @@ describe('PhoneNumberService', () => {
       expect(spy).toBeCalledWith('123');
     });
   });
-  describe('getLocalCanonical', async () => {
+  describe('getLocalCanonical', () => {
     it('should call controller to get local canonical', async () => {
       const spy = jest.spyOn(phoneNumberController, 'getLocalCanonical');
       await phoneNumberService.getLocalCanonical('123');
       expect(spy).toBeCalledWith('123');
     });
   });
-  describe('generateMatchedPhoneNumberList', async () => {
+  describe('generateMatchedPhoneNumberList', () => {
     it('should call controller to get number list', async () => {
       const spy = jest.spyOn(
         phoneNumberController,

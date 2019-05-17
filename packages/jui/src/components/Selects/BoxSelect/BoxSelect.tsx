@@ -40,9 +40,16 @@ class JuiBoxSelect extends PureComponent<
   }
 
   render() {
-    const { children, label, automationId, isFullWidth, ...rest } = this.props;
+    const {
+      children,
+      label,
+      automationId,
+      isFullWidth,
+      className,
+      ...rest
+    } = this.props;
     return (
-      <StyledSelectBoxContainer>
+      <StyledSelectBoxContainer className={className}>
         <StyledSelectBoxHeader>{label}</StyledSelectBoxHeader>
         <StyledSelect
           data-test-automation-id={automationId}

@@ -14,6 +14,9 @@
       "Network Error": "Network disconnected. Please try again when the network is resumed.",
       "tryAgain": "Try again."
     },
+    "preposition": {
+      "in": "in"
+    },
     "time": {
       "at": "at",
       "today": "Today",
@@ -49,7 +52,8 @@
     "back": "Back",
     "forward": "Forward",
     "You": "You",
-    "Connecting": "Connecting"
+    "Connecting": "Connecting",
+    "team": "team"
   },
   "auth": {
     "signIn": "Sign in",
@@ -69,7 +73,9 @@
     "version": "Version",
     "lastCommit": "Last Commit",
     "deployedTime": "Date",
-    "allRightsReserved": "All rights reserved"
+    "allRightsReserved": "All rights reserved",
+    "dialer": "Dialer",
+    "openDialer": "Open the dialer"
   },
   "globalSearch": {
     "search": "Search",
@@ -109,8 +115,7 @@
     },
     "Results": "Results ({{count}})",
     "NoMatchesFound": "No matches found",
-    "SearchForContactsAndKeywords": "Search for contacts and keywords",
-    "in": "in"
+    "SearchForContactsAndKeywords": "Search for contacts and keywords"
   },
   "dashboard": {
     "Dashboard": "Dashboard"
@@ -126,6 +131,7 @@
     "directGroups": "direct messages",
     "teamGroups": "teams",
     "messageTypeNameSMS": "text",
+    "jumpToConversation": "Jump to conversation",
     "emoji": {
       "emojiDefaultTitle": "Pick your emoji"
     },
@@ -514,6 +520,7 @@
       "LackOfRecordingPermission": "Sorry, your account does not have the feature to record a call. To enable the feature, contact your account administrator.",
       "RecordOnServiceWeb": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
       "RecordAutomatically": "Cannot start call recording.",
+      "InvalidNumber": "The phone number entered is invalid. Check the number and try again.",
       "ReplyCustomMessageEmpty": "Sorry, you cannot send an empty message.",
       "ReplyMessageSuccess": "Your voice message was sent successfully."
     },
@@ -526,7 +533,22 @@
       "hold": "Hold the call",
       "resume": "Resume the call",
       "record": "Record the call",
-      "stopRecord": "Stop recording"
+      "stopRecord": "Stop recording",
+      "minimize": "Minimize the dialog"
+    },
+    "dialerPlaceholder": "Type a number",
+    "delete": "Delete",
+    "callFrom": "Call from:",
+    "phoneNumberType": {
+      "directNumber": "Direct Number",
+      "mainCompanyNumber": "Main Company Number",
+      "blocked": "Blocked",
+      "nickName": "Nick Name",
+      "companyNumber": "Company Number",
+      "companyFaxNumber": "Company Fax Number"
+    },
+    "callerIdSelector": {
+      "tooltip": "You can change this default Caller ID in settings."
     }
   },
   "meeting": {
@@ -613,5 +635,8 @@
       "noUpgradeDialogOk": "OK",
       "topBannerWarning": "Your desktop app is out-of-date. Please upgrade immediately."
     }
+  },
+  "dialer": {
+    "newCall": "New Call"
   }
 }

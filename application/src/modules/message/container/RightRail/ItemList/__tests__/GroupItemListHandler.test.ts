@@ -3,7 +3,7 @@
  * @Date: 2019-04-25 13:53:31
  * Copyright © RingCentral. All rights reserved.
  */
-import { flushPromises } from 'test-util/flushPromises';
+import { flushPromises } from 'shield/utils/flushPromises';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { ItemNotification, ItemService } from 'sdk/module/item';
 import { EVENT_TYPES } from 'sdk/service';

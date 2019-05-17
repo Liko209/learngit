@@ -12,12 +12,16 @@ import {
   JuiItemContent,
   JuiItemTextValue,
   JuiItemConjunctionText,
+  JuiAudioConferenceDescription,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
+
 import { JuiLink } from 'jui/components/Link';
+import { phoneParserHoc } from '@/modules/common/container/PhoneParser/PhoneParserHoc';
 
 import { ViewProps } from './types';
 
 type conferenceViewProps = WithTranslation & ViewProps;
+const PhoneNumberHoc = phoneParserHoc(JuiAudioConferenceDescription);
 
 @observer
 class Conference extends React.Component<conferenceViewProps> {
@@ -32,9 +36,10 @@ class Conference extends React.Component<conferenceViewProps> {
         data-test-automation-id="conferenceItem"
       >
         <JuiItemContent title={t('item.dialInNumber')}>
-          <JuiLink size="small" data-test-automation-id="conferencePhoneNumber">
-            {phoneNumber}
-          </JuiLink>
+          <PhoneNumberHoc
+            data-test-automation-id="conferencePhoneNumber"
+            description={phoneNumber}
+          />
           {phoneNumber ? (
             <JuiItemConjunctionText description={t('item.or')} />
           ) : null}

@@ -78,6 +78,11 @@ class ToastCallError {
       'Call error: incoming call reply with custom message is empty',
     );
   }
+
+  static toastInvalidNumber(): void {
+    ToastCallError.toast('telephony.prompt.InvalidNumber', 2000);
+    mainLogger.info('Call error: Call timeout');
+  }
 }
 
 export { ToastCallError };

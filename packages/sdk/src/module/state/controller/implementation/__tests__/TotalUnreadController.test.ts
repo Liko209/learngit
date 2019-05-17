@@ -26,7 +26,7 @@ import {
 } from '../../../../../service';
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
-import { AccountUserConfig } from '../../../../account/config';
+import { AccountUserConfig } from '../../../../account/config/AccountUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
 import { EntityPersistentController } from 'sdk/framework/controller/impl/EntityPersistentController';
 import { TestDatabase } from 'sdk/framework/controller/__tests__/TestTypes';

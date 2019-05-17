@@ -1,10 +1,10 @@
 {
   "name": "fiji",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "private": true,
   "engines": {
-    "node": ">=10.0.0",
-    "npm": ">=6.2.0"
+    "node": "10.9.0",
+    "npm": "6.2.0"
   },
   "config": {
     "jira": "./jira.config.json"
@@ -42,7 +42,8 @@
     "webpack": "cd application && npm run webpack",
     "fixed:version": "ts-node fixedVersion.ts",
     "update-icon": "node application/scripts/update-icon.js",
-    "postupdate-icon": "npm run test application/src/__tests__/icons.test.ts"
+    "postupdate-icon": "npm run test application/src/__tests__/icons.test.ts",
+    "make-pseudo": "node ./scripts/make-pseudo.js"
   },
   "devDependencies": {
     "@jest-runner/electron": "1.1.1",
