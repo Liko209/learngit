@@ -7,7 +7,7 @@
 import PostModel from '@/store/models/Post';
 import PersonModel from '@/store/models/Person';
 import { RefObject } from 'react';
-import JuiConversationCard from 'jui/pattern/ConversationCard';
+import { JuiConversationCard } from 'jui/pattern/ConversationCard';
 
 type ConversationCardProps = {
   id: number; // post id
