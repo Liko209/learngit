@@ -3,6 +3,7 @@
   "compilerOptions": {
     "tsBuildInfoFile": "./.tsc_cache/cache_path",
     "baseUrl": ".",
+    "noUnusedLocals": true,
     "outDir": "build",
     "rootDir": "src"
   },

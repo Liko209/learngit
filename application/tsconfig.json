@@ -5,6 +5,7 @@
     "baseUrl": ".",
     "outDir": "build",
     "target": "es6",
+    "noUnusedLocals": true,
     "paths": {
       "@/*": ["src/*"],
       "sdk/*": ["../packages/sdk/src/*"],

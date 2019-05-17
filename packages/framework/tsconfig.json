@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./.tsc_cache/cache_path",
+    "noUnusedLocals": true,
     "target": "es5",
     "lib": ["es6", "dom"],
     "types": ["reflect-metadata"],
