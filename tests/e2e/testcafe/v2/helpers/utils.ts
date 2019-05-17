@@ -52,22 +52,20 @@ export class H {
   }
 
   static async retryUntilPass(cb: () => Promise<any>, maxRetryTime = 10, retryInterval = 5e2) {
-    let errorMessage;
-    for (let i = 0; i < maxRetryTime; i++) {
+    let i = 0;
+    while (true) {
       try {
-        errorMessage = undefined;
         await cb();
         break;
       } catch (err) {
-        errorMessage = err;
-        if (err instanceof assert.AssertionError) {
+        if (i < maxRetryTime && err instanceof assert.AssertionError) {
+          i += 1;
           await this.sleep(retryInterval);
         } else {
           throw err;
         }
       }
     }
-    if (errorMessage) throw errorMessage;
   }
 
   static toNumberArray(data: string | number | string[] | number[]): number[] {

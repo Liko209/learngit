@@ -10,7 +10,6 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 import { ITestMeta, IGroup } from '../../v2/models';
-import * as moment from 'moment';
 
 fixture('RightRail/EventList')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -208,66 +207,4 @@ test.meta(<ITestMeta>{
     await rightRail.eventsTab.countInListShouldBe(1);
     // await rightRail.eventsTab.countOnSubTitleShouldBe(1);
   });
-});
-
-
-test.meta(<ITestMeta>{
-  priority: ['P2'],
-  caseIds: ['JPT-847'],
-  maintainers: ['Allen.Lian'],
-  keywords: ['Event', 'RightRail']
-})('Display of the event list view', async t => {
-
-  const app = new AppRoot(t);
-  const rightRail = app.homePage.messageTab.rightRail;
-  const loginUser = h(t).rcData.mainCompany.users[4];
-  const eventTitle = uuid();
-
-  await h(t).platform(loginUser).init();
-  await h(t).glip(loginUser).init();
-
-  let team = <IGroup>{
-    name: uuid(),
-    type: "Team",
-    owner: loginUser,
-    members: [loginUser]
-  }
-
-  await h(t).withLog('Given I have a team before login ', async () => {
-    await h(t).scenarioHelper.createTeam(team);
-  });
-
-  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
-    await app.homePage.ensureLoaded();
-  });
-
-  const eventsTab = rightRail.eventsTab;
-  await h(t).withLog('When I enter a conversation and I click Event Tab', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
-    await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
-    await rightRail.openMore();
-    await rightRail.eventsEntry.enter();
-  });
-
-  await h(t).withLog('Then Event Tab should be opened', async () => {
-    await rightRail.eventsEntry.shouldBeOpened();
-  });
-
-  let startTime = '';
-  await h(t).withLog('When User create an event', async () => {
-    const resp = await h(t).glip(loginUser).createSimpleEvent({ groupIds: team.glipId, title: eventTitle, rcIds: loginUser.rcId });
-    const eventStartTime = resp.data.start;
-    const time = moment(eventStartTime);
-    startTime = `${time.format('l')} ${time.format('LT')}`;
-  });
-
-
-  await h(t).withLog('Then The new events shows under Events tab immediately', async () => {
-    await rightRail.eventsTab.waitUntilItemsListExist();
-    await rightRail.eventsTab.shouldHasTitle(eventTitle);
-    await rightRail.eventsTab.shouldHasEventTime(startTime);
-    await rightRail.eventsTab.shouldHasEventIcon;
-  });
-
 });

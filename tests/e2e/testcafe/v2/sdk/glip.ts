@@ -2,9 +2,9 @@ import * as assert from 'assert';
 import * as querystring from 'querystring';
 import * as _ from 'lodash';
 import axios, { AxiosInstance } from 'axios';
+
 import { RcPlatformSdk } from './platform';
 import { H } from '../helpers';
-import { MiscUtils } from '../utils';
 
 interface Person {
   _id: number;
@@ -91,7 +91,6 @@ export class GlipSdk {
     this.axiosClient = axios.create({
       baseURL: this.glipServerUrl,
     });
-    MiscUtils.addDebugLog(this.axiosClient, 'glip');
     this.glipDb = glipDb || new GlipDb();
   }
 

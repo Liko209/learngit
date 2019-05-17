@@ -12,16 +12,6 @@ import * as bluebird from 'bluebird';
 
 class SwitchConversationGatherer extends BaseGatherer {
   private conversationIds: Array<string>;
-  private metricKeys: Array<string> = [
-    'goto_conversation_fetch_posts',
-    'goto_conversation_fetch_items',
-    'conversation_fetch_from_db',
-    // 'goto_conversation_shelf_fetch_items',
-    // 'conversation_fetch_unread_post',
-    // 'conversation_fetch_interval_post',
-    // 'conversation_fetch_from_server',
-    // 'conversation_handle_data_from_server',
-  ];
 
   constructor(conversationIds: Array<string>) {
     super();
@@ -30,7 +20,6 @@ class SwitchConversationGatherer extends BaseGatherer {
   }
 
   async _beforePass(passContext) {
-    await this.gathererConsole(this.metricKeys, passContext);
   }
 
   async _pass(passContext) {
@@ -39,6 +28,12 @@ class SwitchConversationGatherer extends BaseGatherer {
     const driver = passContext.driver;
     // pre loaded
     await this.switchConversion(driver, conversationPage);
+
+    // clear performance metrics of pre-loaded
+    let page = await conversationPage.page();
+    await page.evaluate(() => {
+      performance["jupiter"] = {};
+    });
   }
 
   async _afterPass(passContext) {
@@ -53,12 +48,10 @@ class SwitchConversationGatherer extends BaseGatherer {
     await bluebird.delay(5000);
 
     globals.startCollectProcessInfo();
-    this.beginGathererConsole();
 
     // switch conversation
     await this.switchConversion(driver, conversationPage, Config.sceneRepeatCount);
 
-    this.endGathererConsole();
     await PptrUtils.collectGarbage(driver);
     await bluebird.delay(5000);
 
@@ -67,15 +60,17 @@ class SwitchConversationGatherer extends BaseGatherer {
     filePath = await FileService.saveHeapIntoDisk(await PptrUtils.trackingHeapObjects(driver));
     globals.pushMemoryFilePath(filePath);
 
-    let result = {};
-    for (let key of this.metricKeys) {
-      result[key] = {
-        api: this.consoleMetrics[key],
-        ui: []
-      };
-    }
+    let page = await conversationPage.page();
 
-    return result;
+    let metrics = await page.evaluate(() => {
+      return performance["jupiter"];
+    });
+
+    return {
+      goto_conversation_fetch_items: { api: metrics["goto_conversation_fetch_items"], ui: [] },
+      goto_conversation_fetch_posts: { api: metrics["goto_conversation_fetch_posts"], ui: [] },
+      conversation_fetch_from_db: { api: metrics["conversation_fetch_from_db"], ui: [] }
+    };
   }
 
   async switchConversion(driver, page: ConversationPage, switchCount: number = -1) {

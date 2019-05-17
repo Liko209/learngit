@@ -3,9 +3,13 @@
  * @Date: 2018-10-30 18:39:43
  * Copyright © RingCentral. All rights reserved.
  */
-import { test, testable } from 'shield';
-import { mockEntity, mockGlobalValue } from 'shield/application';
-import { registerModule } from 'shield/utils';
+import {
+  test,
+  mockEntity,
+  testable,
+  mockGlobalValue,
+} from 'tests/integration-test';
+import { registerModule } from 'test-util';
 import { config } from '@/modules/GlobalSearch/module.config';
 import { ConversationCardViewModel } from '../ConversationCard.ViewModel';
 
