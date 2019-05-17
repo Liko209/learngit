@@ -61,13 +61,10 @@ export function formalNameWithTestMetaPrefix(name: string, testMeta: ITestMeta):
 export function parseFormalName(formalName: string): INameTags {
   const tags: string[] = [];
   let rest = formalName;
-  const matchs = formalName.match(/(?<=^|\])\[[^\[\]]+\]/g);
-  for (const i in matchs) {
-    const match = /^\[([^\]]+?)\](.*)$/.exec(rest)
-    if (match) {
-      tags.push(match[1]);
-      rest = match[2];
-    }
+  let match;
+  while (match = /^\[([^\]]+?)\](.*)$/.exec(rest)) {
+    tags.push(match[1]);
+    rest = match[2];
   }
   return { tags, name: rest.trim() };
 }

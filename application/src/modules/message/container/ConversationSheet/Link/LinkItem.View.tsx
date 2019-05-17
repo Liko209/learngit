@@ -13,8 +13,10 @@ import {
 } from 'jui/pattern/ConversationCardLinkItems';
 import { LinkItemModel, LinkItemViewProps } from './types';
 import { accelerateURL } from '@/common/accelerateURL';
+import { StreamContext } from '../../PostListPage/Stream/types';
 @observer
 class LinkItemView extends React.Component<LinkItemViewProps> {
+  static contextType = StreamContext;
   onLinkItemClose = (id: number) => () => {
     const { onLinkItemClose } = this.props;
 
@@ -77,7 +79,7 @@ class LinkItemView extends React.Component<LinkItemViewProps> {
   renderVideo = (item: LinkItemModel) => {
     const { id, url, data } = item;
 
-    if (!data) return null;
+    if (!data || !this.context.isShow) return null;
 
     const { object, title } = data;
 

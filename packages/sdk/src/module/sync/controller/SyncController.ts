@@ -299,13 +299,16 @@ class SyncController {
     }
     const changeMap = new Map<string, ChangeModel>();
     const start = Date.now();
+
+    // should handle account data first anyway
+    await accountHandleData({
+      userId,
+      companyId,
+      clientConfig,
+      profileId: profile ? profile._id : undefined,
+    });
+
     await Promise.all([
-      accountHandleData({
-        userId,
-        companyId,
-        clientConfig,
-        profileId: profile ? profile._id : undefined,
-      }),
       this._handleIncomingCompany(companies, source, changeMap),
       this._handleIncomingItem(items, source, changeMap),
       this._handleIncomingPresence(presences, source, changeMap),

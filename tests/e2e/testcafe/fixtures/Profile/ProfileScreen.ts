@@ -111,15 +111,19 @@ test.meta(<ITestMeta>{
     await await h(t).platform(loginUser).addTeamMember(otherUsers.slice(1, 5), teamT1Id);
   });
 
-  title = 'Then member list show scroll bar';
+  title = 'Then the member list just display 5.5 members and has scroll bar';
+  let itemHeight = await profileDialog.visualList.find('[data-id]').nth(0).clientHeight;
   await h(t).withLog(title, async () => {
     await H.retryUntilPass(async () => {
       listClientHeight = await profileDialog.visualList.clientHeight;
       listScrollHeight = await profileDialog.visualList.scrollHeight;
 
       const hasScrollBar = listScrollHeight - listClientHeight > 0;
+      const displayMmberCount = listClientHeight / itemHeight === 5.5;
 
-      assert.ok(hasScrollBar, "Member list doesn't show scroll bar");
+      await t.expect(displayMmberCount).ok();
+      await t.expect(hasScrollBar).ok();
+
     });
   });
 

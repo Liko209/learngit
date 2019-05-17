@@ -17,11 +17,10 @@ import { Favorite, Privacy, Member } from '@/containers/common';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONVERSATION_TYPES } from '@/constants';
 import { MessageStore } from '@/modules/message/store';
-import { PromisedComputedValue } from 'computed-async-mobx';
 import { Menu } from './Menu';
 
 type HeaderProps = {
-  title: PromisedComputedValue<string>;
+  title: string;
   analysisSource: string;
 
   type: CONVERSATION_TYPES;
@@ -109,7 +108,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
     return (
       <JuiConversationPageHeader
         data-test-automation-id="conversation-page-header"
-        title={title.get()}
+        title={title}
         status={customStatus}
         SubTitle={this._SubTitle()}
         Right={this._ActionButtons}

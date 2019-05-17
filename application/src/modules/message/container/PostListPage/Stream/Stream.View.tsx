@@ -5,10 +5,10 @@
  */
 
 import React, { Component } from 'react';
-import JuiConversationCard from 'jui/pattern/ConversationCard';
+import { JuiConversationCard } from 'jui/pattern/ConversationCard';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiStream } from 'jui/pattern/ConversationPage';
-import { StreamViewProps, StreamProps } from './types';
+import { StreamViewProps, StreamProps, StreamContext } from './types';
 import { observer } from 'mobx-react';
 import { ConversationPost } from '../../ConversationPost';
 import { ConversationPageContext } from '../../ConversationPage/types';
@@ -63,7 +63,7 @@ class StreamViewComponent extends Component<Props> {
     const defaultLoading = <DefaultLoadingWithDelay delay={100} />;
     const defaultLoadingMore = <DefaultLoadingMore />;
     return (
-      <>
+      <StreamContext.Provider value={{ isShow }}>
         <JuiStream style={this._wrapperStyleGen(height)}>
           <JuiInfiniteList
             contentStyle={this._contentStyleGen(height)}
@@ -77,19 +77,17 @@ class StreamViewComponent extends Component<Props> {
             loadingMoreRenderer={defaultLoadingMore}
             stickToLastPosition={false}
           >
-            {isShow
-              ? ids.map(id => (
-                  <ConversationPost
-                    id={id}
-                    key={id}
-                    cardRef={this._jumpToPostRef}
-                    mode="navigation"
-                  />
-                ))
-              : []}
+            {ids.map(id => (
+              <ConversationPost
+                id={id}
+                key={id}
+                cardRef={this._jumpToPostRef}
+                mode="navigation"
+              />
+            ))}
           </JuiInfiniteList>
         </JuiStream>
-      </>
+      </StreamContext.Provider>
     );
   }
 }

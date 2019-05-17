@@ -55,9 +55,7 @@ export class LoginPage extends BaseWebComponent {
   }
 
   async setExtension(extension: string) {
-    // Testcafe typeText throws error when text is empty: The "text" argument is expected to be a non-empty string, but it was "".
-    if(!!extension)
-      await this.t.typeText(this.extensionField, extension, { replace: true });
+    await this.t.typeText(this.extensionField, extension, { replace: true });
   }
 
   async confirmSignIn() {

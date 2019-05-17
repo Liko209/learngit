@@ -4,13 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { v4 as uuid } from 'uuid';
-import * as _ from 'lodash';
 import { formalName } from '../../libs/filter';
 import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { IGroup, IUser, ITestMeta } from '../../v2/models';
+import { IGroup } from '../../v2/models';
 
 fixture('ConversationStream/ConversationStream')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -742,113 +741,3 @@ test(formalName('Should be unread when closed conversation received new unread',
     await directMessagesSection.conversationEntryById(chat.glipId).umi.shouldBeNumber(1);
   });
 });
-
-test.meta(<ITestMeta>{
-  priority: ['P1'],
-  caseIds: ['JPT-126'],
-  maintainers: ['ali.naffaa'],
-  keywords: ['UMI'],
-})('UMI should sync', async (t: TestController) => {
-  const app = new AppRoot(t);
-  const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
-  await h(t).platform(loginUser).init();
-  await h(t).scenarioHelper.resetProfileAndState(loginUser);
-  const chats = [
-    { name: 'F1', umi: 2, type: 'DirectMessage' }, { name: 'F2', umi: 3, type: 'DirectMessage' },
-    { name: 'DM1', umi: 2, type: 'DirectMessage' }, { name: 'DM2', umi: 3, type: 'DirectMessage' },
-    { name: 'TM1', umi: 2, type: 'Team' }, { name: 'TM2', umi: 3, type: 'Team' },
-  ];
-
-  await h(t).withLog('Given user has F1(2) F2(3) T1(2) T2(3) DM1(2) DM2(3)', async () => {
-    await createChats(t, chats, loginUser);
-  });
-
-  await h(t).withLog('When I Tap conversation \'F1/DM1/T1\' in other clients', async () => {
-    await h(t).glip(loginUser).markAsRead([getChatByName(chats, 'F1').id, getChatByName(chats, 'DM1').id, getChatByName(chats, 'TM1').id]);
-  });
-
-  await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
-    await app.homePage.ensureLoaded();
-  },
-  );
-
-  const directMessagesSection = app.homePage.messageTab.directMessagesSection;
-  const teamsSection = app.homePage.messageTab.teamsSection;
-  const favoritesSection = app.homePage.messageTab.favoritesSection;
-
-  await h(t).withLog('Then No UMI in conversation \'F1/DM1/T1\' ', async () => {
-    await favoritesSection.conversationEntryById(getChatByName(chats, 'F1').id).umi.shouldBeNumber(0);
-    await directMessagesSection.conversationEntryById(getChatByName(chats, 'DM1').id).umi.shouldBeNumber(0);
-    await teamsSection.conversationEntryById(getChatByName(chats, 'TM1').id).umi.shouldBeNumber(0);
-  });
-
-  await h(t).withLog('When I Collapsed Fav/DM/Teams section in Jupiter app', async () => {
-    await directMessagesSection.fold();
-    await teamsSection.fold();
-    await favoritesSection.fold();
-  });
-
-  await h(t).withLog('And check UMI in Fav/DM/Teams section in Jupiter app', async () => {
-    await favoritesSection.headerUmi.shouldBeNumber(3);
-    await directMessagesSection.headerUmi.shouldBeNumber(3);
-    await teamsSection.headerUmi.shouldBeNumber(3);
-  });
-});
-
-test.meta(<ITestMeta>{
-  priority: ['P1'],
-  caseIds: ['JPT-161'],
-  maintainers: ['ali.naffaa'],
-  keywords: ['UMI'],
-})('Jupiter navigation panel Messages should show the sum of messages UMI', async (t: TestController) => {
-  const app = new AppRoot(t);
-  const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[0];
-  await h(t).platform(loginUser).init();
-  await h(t).scenarioHelper.resetProfileAndState(loginUser);
-  const chats = [
-    { name: 'F1', umi: 1, type: 'DirectMessage' }, { name: 'F2', umi: 1, type: 'DirectMessage' },
-    { name: 'DM1', umi: 1, type: 'DirectMessage' }, { name: 'DM2', umi: 2, type: 'DirectMessage' },
-    { name: 'TM1', umi: 1, type: 'Team' }, { name: 'TM2', umi: 3, type: 'Team' },
-  ];
-
-  await h(t).withLog('Given user has F1(1) F2(1) T1(1) T2(3) DM1(1) DM2(2)', async () => {
-    await createChats(t, chats, loginUser);
-  });
-
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
-    await app.homePage.ensureLoaded();
-  },
-  );
-
-  await h(t).withLog('Then check UMI in Messages UMI=2+3+4=9 ', async () => {
-    await t.expect(await app.homePage.leftPanel.messagesEntry.getUmi()).eql(9);
-  });
-});
-
-const createChats = async (t: TestController, chats: any, loginUser: IUser) => {
-  const users = h(t).rcData.mainCompany.users.filter(user => user.rcId !== loginUser.rcId);
-  for (let chatIndex = 0; chatIndex < chats.length; chatIndex++) {
-    let post, team;
-    if (chats[chatIndex].type.includes('Team')) {
-      post = `![:Person](${loginUser.rcId}), ${uuid()}`; // mention for team
-      team = <IGroup>{ type: 'Team', name: uuid(), owner: loginUser, members: [loginUser, users[chatIndex]] };
-    } else {
-      post = ` post:${uuid()}`;
-      team = <IGroup>{ type: 'DirectMessage', owner: loginUser, members: [loginUser, users[chatIndex]] };
-    }
-    await h(t).scenarioHelper.createTeamsOrChats([team]).then(() => chats[chatIndex].id = team.glipId);
-    for (const i of _.range(chats[chatIndex].umi)) {
-      await h(t).scenarioHelper.sendTextPost(post + i, team, team.members[1]);
-    }
-  }
-  const favoriteChats = chats.filter(chat => chat.name.includes('F'));
-  await h(t).glip(loginUser).favoriteGroups(favoriteChats.map(chat => chat.id));
-};
-
-const getChatByName = (chats: any, name: string) => {
-  return chats.filter(chat => chat.name === name)[0];
-};

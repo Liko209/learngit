@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 interface IPreInsertIdController {
-  isInPreInsert(version: number): boolean;
-  insert(version: number): Promise<void>;
-  delete(version: number): Promise<void>;
-  bulkDelete(versions: number[]): Promise<void>;
-  getAll(): number[];
+  isInPreInsert(preInsertId: string): boolean;
+  insert(preInsertId: string): Promise<void>;
+  delete(preInsertId: string): Promise<void>;
+  bulkDelete(preInsertIds: string[]): Promise<void>;
+  getAll(): string[];
 }
 export { IPreInsertIdController };

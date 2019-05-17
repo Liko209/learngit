@@ -1,11 +1,11 @@
 import moment from 'moment';
-import i18nT, { i18nTValueProps } from '@/utils/i18nT';
+import { i18nP } from '@/utils/i18nT';
 import _ from 'lodash';
 
-async function getDateMessage(
+function getDateMessage(
   timestamp: any,
   format: string = 'ddd, MMM Do',
-): Promise<string> {
+): string {
   const m = moment(timestamp)
     .hour(0)
     .minute(0)
@@ -18,13 +18,13 @@ async function getDateMessage(
     .millisecond(0);
   const diff = now.diff(m, 'days', true);
   if (diff === 0) {
-    return await i18nT('common.time.today');
+    return i18nP('common.time.today');
   }
   if (diff === 1) {
-    return await i18nT('common.time.yesterday');
+    return i18nP('common.time.yesterday');
   }
   if (diff === -1) {
-    return await i18nT('common.time.tomorrow');
+    return i18nP('common.time.tomorrow');
   }
   if (diff <= 7) {
     return m.format(format); // Tue, Oct 30th  周二, 10月30日
@@ -48,30 +48,28 @@ const dateFormatter = {
   localTime: (m: Moment): string => {
     return m.format('LT');
   },
-  today: async (): Promise<string> => {
-    const text: string = await i18nT('common.time.today');
+  today: (): string => {
+    const text: string = i18nP('common.time.today');
     return text;
   },
-  yesterday: async (): Promise<string> => {
-    const text: string = await i18nT('common.time.yesterday');
+  yesterday: (): string => {
+    const text: string = i18nP('common.time.yesterday');
     return text;
   },
-  weekday: async (m: Moment): Promise<string> => {
-    const text: string = await i18nT(WEEKDAY[m.day()]);
+  weekday: (m: Moment): string => {
+    const text: string = i18nP(WEEKDAY[m.day()]);
     return text;
   },
-  exactDate: async (m: Moment): Promise<string> => {
-    const weekday: string = await dateFormatter.weekday(m);
+  exactDate: (m: Moment): string => {
+    const weekday: string = dateFormatter.weekday(m);
     return `${weekday.slice(0, 3)}, ${m.format('l')}`;
   },
-  weekdayAndTime: async (m: Moment): Promise<string> => {
-    const weekday: string = await dateFormatter.weekday(m);
-    return `${weekday.slice(0, 3)}, ${dateFormatter.localTime(
-      m,
-    )}`;
+  weekdayAndTime: (m: Moment): string => {
+    const weekday: string = dateFormatter.weekday(m);
+    return `${weekday.slice(0, 3)}, ${dateFormatter.localTime(m)}`;
   },
-  dateAndTime: async (m: Moment): Promise<string> => {
-    return `${await dateFormatter.exactDate(m)} ${dateFormatter.localTime(m)}`;
+  dateAndTime: (m: Moment): string => {
+    return `${dateFormatter.exactDate(m)} ${dateFormatter.localTime(m)}`;
   },
   date: (timestamp: number): string => {
     return moment(timestamp).format('l');
@@ -105,7 +103,7 @@ const condition = {
 function buildFormatter(
   buildCondition: { condition: Function; formatter: Function }[],
 ): Function {
-  return function (timestamp: Date): i18nTValueProps {
+  return function (timestamp: Date): string {
     const mInit = moment(timestamp);
     const m = moment(timestamp)
       .hour(0)

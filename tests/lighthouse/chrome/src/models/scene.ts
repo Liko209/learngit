@@ -113,13 +113,6 @@ class SceneDto extends Model<SceneDto> {
     field: 'app_version'
   })
   appVersion: string;
-
-  @Column({
-    allowNull: false,
-    type: DataType.BOOLEAN,
-    field: 'is_release'
-  })
-  isRelease: boolean;
 }
 
 export {

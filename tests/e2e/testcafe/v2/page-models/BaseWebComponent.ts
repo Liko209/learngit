@@ -117,7 +117,7 @@ export abstract class BaseWebComponent {
       // it's ok if spinner doesn't exist
     }
     finally {
-      await this.t.expect(this.spinners.count).eql(0, { timeout });
+      await this.t.expect(this.spinners.exists).notOk({ timeout });
     }
   }
 
