@@ -26,7 +26,7 @@ const secondsToNumber = (val: string) => +val.replace('s', '');
 
 const ANIMATION_END_EVT = 'animationend';
 const SHADOW_SIZE = '20px';
-const EXPAND_SCALE = makeSeconds(1.4);
+const EXPAND_SCALE = 1.4;
 const FADE_DURATION = makeSeconds(0.5);
 const MOVE_DURATION = FADE_DURATION;
 const ROUND_DURATION = makeSeconds(0.6);

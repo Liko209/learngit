@@ -36,6 +36,10 @@ class JuiDialer extends PureComponent<Props> {
   componentDidMount() {
     if (this._containerRef.current) {
       const el = ReactDOM.findDOMNode(this._containerRef.current);
+      const input = el && (el as HTMLDivElement).querySelector('input');
+      if (input) {
+        return;
+      }
       el && (el as HTMLDivElement).focus();
     }
   }
