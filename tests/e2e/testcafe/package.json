@@ -5,8 +5,7 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "e2e": "ts-node run.ts",
-    "debug": "testcafe chrome $NODE_DEBUG_OPTION"
+    "e2e": "ts-node run.ts"
   },
   "os": [
     "darwin",
