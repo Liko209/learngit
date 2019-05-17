@@ -165,7 +165,7 @@ class BaseTab extends BaseWebComponent {
   }
 
   get eventIcon() {
-    return this.items.find('.event icon');
+    return this.getSelectorByIcon('event', this.items);
   }
 
   async nthItemTitleShouldBe(n: number, title: string) {
@@ -178,12 +178,12 @@ class BaseTab extends BaseWebComponent {
     await this.t.expect(this.titles.withText(title).exists).ok(title);
   }
 
-  async shouldHasEventTime(text:string){
+  async shouldHasEventTime(text: string) {
     await this.t.expect(this.secondaryTexts.withText(text).exists).ok(text);
   }
 
-  async shouldHasEventIcon(text:string){
-    await this.t.expect(this.eventIcon.withText(text).exists).ok(text);
+  async shouldHasEventIcon() {
+    await this.t.expect(this.eventIcon.exists).ok();
   }
 
   async shouldHasNoTitle(title: string) {
