@@ -6,8 +6,10 @@
 import { IZipItemProvider, ZipItem } from './types';
 import { IHealthStatusItem } from 'sdk/types';
 import _ from 'lodash';
-import { logManager } from 'foundation';
+import { logManager, BuildUtils } from 'foundation';
 import { toText } from 'sdk/utils';
+
+const LOG_TAG = '[HealthStatusItemProvider]';
 
 export class HealthStatusItemProvider implements IZipItemProvider {
   private _items: IHealthStatusItem[] = [];
@@ -22,8 +24,8 @@ export class HealthStatusItemProvider implements IZipItemProvider {
       ) > -1
     ) {
       const warnText = `HealthStatusItem name is duplicate: ${item.getName()}`;
-      logManager.getLogger('[HealthStatusItem]').warn(warnText);
-      if (process.env.NODE_ENV === 'development') {
+      logManager.getLogger(LOG_TAG).warn(warnText);
+      if (!BuildUtils.isProductionBuild() && !BuildUtils.isPublicBuild()) {
         throw new Error(warnText);
       }
     }

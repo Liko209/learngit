@@ -140,7 +140,7 @@ class SyncController {
         await this._firstLogin();
       }
     } catch (error) {
-      this._syncInformationRecorder.error('syncData failed', { error });
+      this._syncInformationRecorder.warn('syncData failed', { error });
     }
   }
 
@@ -273,7 +273,7 @@ class SyncController {
       } catch (error) {
         this._syncInformationRecorder
           .set('index', 'failed')
-          .error('fetch index failed', { error });
+          .warn('fetch index failed', { error });
         syncConfig.updateIndexSucceed(false);
         await this._handleSyncIndexError(error);
         throw new Error(error);
