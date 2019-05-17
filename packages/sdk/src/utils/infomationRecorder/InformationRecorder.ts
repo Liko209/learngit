@@ -157,7 +157,9 @@ export class InformationRecorder<R> {
     this._currentRecord!.setProperty(key, property, addible);
     this._options.logIntegration &&
       this._options.setLog &&
-      this._options.logger.tags(...this._getLogTag(tag)).info(key, property);
+      this._options.logger
+        .tags(...this._getLogTag(tag), '[setProperty]')
+        .info(key, property);
     return this;
   }
 
