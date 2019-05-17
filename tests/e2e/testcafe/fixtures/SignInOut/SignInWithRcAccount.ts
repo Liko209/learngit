@@ -4,17 +4,22 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { SITE_URL, BrandTire, SITE_ENV } from '../../config';
+import {ITestMeta} from "../../v2/models";
 
-fixture('Sign In/Sign Out')
+fixture('SignInOut')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Sign in with RC account', ['P0', 'JPT-69', 'SignInOut', 'alexander.zaverukha']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P0'],
+  caseIds: ['JPT-69'],
+  maintainers: ['alexander.zaverukha'],
+  keywords: ['SignInOut']
+})('Sign in with RC account', async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
 
