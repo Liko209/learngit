@@ -113,7 +113,7 @@ export class MiniProfile extends BaseWebComponent {
   }
 
   get telephonyButton() {
-    return this.telephonyIcon.parent('button'); //TODO: add automationId
+    return this.getSelectorByAutomationId('telephony-call-btn');
   }
 
   get telephonyIcon() {

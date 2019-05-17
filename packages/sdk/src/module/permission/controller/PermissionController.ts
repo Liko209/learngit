@@ -7,7 +7,8 @@ import { SplitIOController } from './splitIO/SplitIOController';
 import { LaunchDarklyController } from './launchDarkly/LaunchDarklyController';
 import UserPermissionType from '../types';
 import { notificationCenter, ENTITY } from '../../../service';
-import { AccountUserConfig } from '../../../module/account/config';
+import { AccountService } from '../../account/service';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { UserPermission } from '../entity';
 import { mainLogger } from 'foundation';
 import {
@@ -65,7 +66,9 @@ class PermissionController {
 
   private async _refreshPermissions() {
     const permissions = await this._getAllPermissions();
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const id = userConfig.getGlipUserId();
     mainLogger.log(
       `user:${id}, refreshPermissions:${JSON.stringify(permissions)}`,

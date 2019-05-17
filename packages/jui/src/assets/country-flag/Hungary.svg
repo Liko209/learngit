@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>Hungary</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Hungary" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Flag_of_Hungary" transform="translate(0.000000, 5.000000)" fill-rule="nonzero">
+            <polygon id="Rectangle-path" fill="#436F4D" points="0 0 24 0 24 13.5652174 0 13.5652174"></polygon>
+            <polygon id="Rectangle-path" fill="#FFFFFF" points="0 0 24 0 24 9.04347826 0 9.04347826"></polygon>
+            <polygon id="Rectangle-path" fill="#CD2A3E" points="0 0 24 0 24 4.52173913 0 4.52173913"></polygon>
+        </g>
+    </g>
+</svg>

@@ -38,7 +38,7 @@ describe('RequestController', () => {
 
   describe('getDataById()', () => {
     it('should throw exception when id <= 0', async () => {
-      expect(requestController.get(-1)).resolves.toThrow();
+      expect(requestController.get(-1)).rejects.toThrow();
     });
 
     it('should return entity when api result is ok', async () => {
@@ -59,7 +59,7 @@ describe('RequestController', () => {
       jest
         .spyOn(networkConfig.networkClient, 'get')
         .mockRejectedValueOnce(error);
-      expect(requestController.get(1)).resolves.toThrow();
+      expect(requestController.get(1)).rejects.toThrow();
     });
   });
 
@@ -67,7 +67,7 @@ describe('RequestController', () => {
     it('should throw exception when id <= 0', async () => {
       expect(
         requestController.put({ _id: -1, name: 'jupiter' }),
-      ).resolves.toThrow();
+      ).rejects.toThrow();
     });
 
     it('should return entity when api success and has _id', async () => {
@@ -128,7 +128,7 @@ describe('RequestController', () => {
           _id: 1,
           name: 'jupiter',
         }),
-      ).resolves.toThrow();
+      ).rejects.toThrow();
     });
   });
 
@@ -144,7 +144,7 @@ describe('RequestController', () => {
 
       expect(
         requestController.post({ _id: -1, name: 'jupiter' }),
-      ).resolves.toThrow();
+      ).rejects.toThrow();
     });
 
     it('should return entity when api success', async () => {

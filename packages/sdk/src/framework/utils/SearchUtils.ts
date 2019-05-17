@@ -6,16 +6,18 @@
 import UserPermissionType from '../../module/permission/types';
 import { IPermissionService } from '../../module/permission/service/IPermissionService';
 import { container } from '../../container';
-const regExp = new RegExp(/[\s,]+/);
+
+const SplitTermsSymbols = new RegExp(/[\s,._-]+/);
 
 class SearchUtils {
   static isFuzzyMatched(srcText: string, terms: string[]): boolean {
     return srcText.length > 0
       ? terms.every((value: string) => {
-        return srcText.includes(value);
-      })
+          return srcText.includes(value);
+        })
       : false;
   }
+
   static isSoundexMatched(
     soundexOfEntity: string[],
     soundexOfSearchTerms: string[],
@@ -40,7 +42,7 @@ class SearchUtils {
   }
 
   static getTermsFromText(searchKey: string) {
-    return searchKey.split(regExp);
+    return searchKey.split(SplitTermsSymbols);
   }
 
   static async isUseSoundex(): Promise<boolean> {

@@ -15,6 +15,7 @@ import { CompanyService } from 'sdk/module/company';
 import { ModelCreator } from './utils/ModelCreator';
 import { IdModel } from 'sdk/framework/model';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { SettingService } from 'sdk/module/setting';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
 
 const CACHE_COUNT = 1000;
@@ -136,6 +137,13 @@ const ENTITY_SETTING = {
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
+  [ENTITY_NAME.USER_SETTING]: {
+    event: [ENTITY.USER_SETTING],
+    service: () =>
+      ServiceLoader.getInstance<SettingService>(ServiceConfig.SETTING_SERVICE),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: CACHE_COUNT,
+  },
   [ENTITY_NAME.USER_PERMISSION]: {
     event: [ENTITY.USER_PERMISSION],
     service: () =>
@@ -181,6 +189,7 @@ const GLOBAL_VALUES = {
   [GLOBAL_KEYS.DIRECT_MESSAGE_UNREAD]: {},
   [GLOBAL_KEYS.TEAM_UNREAD]: {},
   [GLOBAL_KEYS.CURRENT_SETTING_LIST_TYPE]: '',
+  [GLOBAL_KEYS.IS_RC_USER]: false,
 };
 
 export { ENTITY_SETTING, GLOBAL_VALUES };

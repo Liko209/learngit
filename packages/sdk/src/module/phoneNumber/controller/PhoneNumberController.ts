@@ -28,6 +28,10 @@ class PhoneNumberController {
       : phoneNumber;
   }
 
+  isValidNumber(toNumber: string) {
+    return new RegExp('^[0-9+*# ()-]+$').test(toNumber.trim());
+  }
+
   async generateMatchedPhoneNumberList(phoneNumber: string) {
     const numberList: string[] = [];
     numberList.push(phoneNumber);

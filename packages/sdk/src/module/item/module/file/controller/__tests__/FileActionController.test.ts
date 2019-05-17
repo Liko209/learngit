@@ -7,7 +7,8 @@
 import { Api } from '../../../../../../api';
 import { FileActionController } from '../FileActionController';
 import { GlobalConfigService } from '../../../../../config';
-import { AuthUserConfig } from '../../../../../account/config';
+import { AuthUserConfig } from '../../../../../account/config/AuthUserConfig';
+import { ServiceLoader, ServiceConfig } from '../../../../../serviceLoader';
 
 jest.mock('../../../../../config');
 jest.mock('../../../../../account/config');
@@ -31,6 +32,13 @@ describe('FileActionController', () => {
   const fileActionController = new FileActionController(entitySourceController);
 
   function setUp() {
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { authUserConfig: AuthUserConfig.prototype };
+        }
+      });
     Object.defineProperty(Api, 'httpConfig', {
       get: () => {
         return {

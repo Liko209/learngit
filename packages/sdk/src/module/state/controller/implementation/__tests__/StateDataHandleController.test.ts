@@ -14,9 +14,10 @@ import { IEntityPersistentController } from '../../../../../framework/controller
 import { TASK_DATA_TYPE } from '../../../constants';
 import { StateHandleTask, GroupCursorHandleTask } from '../../../types';
 import { SYNC_SOURCE } from '../../../../sync';
-import { ServiceLoader } from '../../../../serviceLoader';
+import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
 import { MyStateConfig } from '../../../config';
 import { notificationCenter } from 'sdk/service';
+import { StateService } from 'sdk/module/state/service';
 
 jest.mock('../../../../../service/notificationCenter');
 jest.mock('../../../../../module/config/service/GlobalConfigService');
@@ -32,6 +33,8 @@ describe('StateDataHandleController', () => {
   let stateDataHandleController: StateDataHandleController;
   let mockEntitySourceController: EntitySourceController<GroupState>;
   let mockStateFetchDataController: StateFetchDataController;
+  const mockAccountService = { userConfig: { getGlipUserId: jest.fn() } };
+  const mockStateService = { myStateConfig: { setMyStateId: jest.fn() } };
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
@@ -47,6 +50,17 @@ describe('StateDataHandleController', () => {
       mockEntitySourceController,
       mockStateFetchDataController,
     );
+
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return mockAccountService;
+        }
+        if (config === ServiceConfig.STATE_SERVICE) {
+          return mockStateService;
+        }
+      });
   });
 
   describe('handleState()', () => {
@@ -206,9 +220,8 @@ describe('StateDataHandleController', () => {
           last_author_id: 2223333,
         },
       ];
-      ServiceLoader.getInstance = jest.fn().mockReturnValue({
-        get: jest.fn().mockReturnValue(5683),
-      });
+
+      mockAccountService.userConfig.getGlipUserId.mockReturnValue(5683);
 
       expect(stateDataHandleController['_transformGroupData'](groups)).toEqual({
         groupStates: [
@@ -338,9 +351,7 @@ describe('StateDataHandleController', () => {
           },
         ]);
 
-      ServiceLoader.getInstance = jest.fn().mockReturnValue({
-        get: jest.fn().mockReturnValue(5683),
-      });
+      mockAccountService.userConfig.getGlipUserId.mockReturnValue(5683);
 
       expect(
         await stateDataHandleController['_generateUpdatedState'](
@@ -416,9 +427,7 @@ describe('StateDataHandleController', () => {
           },
         ]);
 
-      ServiceLoader.getInstance = jest.fn().mockReturnValue({
-        get: jest.fn().mockReturnValue(5683),
-      });
+      mockAccountService.userConfig.getGlipUserId.mockReturnValue(5683);
 
       expect(
         await stateDataHandleController['_generateUpdatedState'](
@@ -468,9 +477,7 @@ describe('StateDataHandleController', () => {
           },
         ]);
 
-      ServiceLoader.getInstance = jest.fn().mockReturnValue({
-        get: jest.fn().mockReturnValue(5683),
-      });
+      mockAccountService.userConfig.getGlipUserId.mockReturnValue(5683);
 
       expect(
         await stateDataHandleController['_generateUpdatedState'](
@@ -743,7 +750,6 @@ describe('StateDataHandleController', () => {
       daoManager.getDao = jest.fn().mockReturnValueOnce({
         update: mockUpdate,
       });
-      MyStateConfig.prototype.setMyStateId = jest.fn();
       const transformedState = {
         myState: { id: 123 },
         groupStates: [
@@ -756,7 +762,7 @@ describe('StateDataHandleController', () => {
         transformedState,
       );
       expect(mockUpdate).toBeCalledTimes(1);
-      expect(MyStateConfig.prototype.setMyStateId).toBeCalledTimes(1);
+      expect(mockStateService.myStateConfig.setMyStateId).toBeCalledTimes(1);
       expect(notificationCenter.emitEntityUpdate).toBeCalledTimes(2);
       expect(mockEntitySourceController.bulkUpdate).toBeCalledTimes(1);
     });

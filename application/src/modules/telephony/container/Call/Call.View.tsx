@@ -23,6 +23,9 @@ class CallViewComponent extends Component<Props> {
     } else {
       portalManager.dismissLast();
     }
+    /**
+     * TODO: move this call making & state changing logic down to SDK
+     */
     directCall();
     trackCall(this.props.analysisSource);
   }

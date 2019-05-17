@@ -7,6 +7,7 @@
 import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import { spacing, ellipsis, width } from '../../../foundation/utils/styles';
+import { withHighlight } from '../../../hoc/withHighlight';
 
 type Props = {
   Avatar: JSX.Element;
@@ -27,14 +28,14 @@ const StyledName = styled.span`
   margin-left: ${spacing(1)};
 `;
 
-const JuiAvatarNameComponent = (props: Props) => (
+const JuiAvatarNameComponent = ({ name, Avatar }: Props) => (
   <StyledAvatarName>
-    {props.Avatar} <StyledName>{props.name}</StyledName>
+    {Avatar} <StyledName dangerouslySetInnerHTML={{ __html: name }} />
   </StyledAvatarName>
 );
 
 JuiAvatarNameComponent.displayName = 'JuiAvatarName';
 
-const JuiAvatarName = memo(JuiAvatarNameComponent);
+const JuiAvatarName = withHighlight(['name'])(memo(JuiAvatarNameComponent));
 
 export { JuiAvatarName };

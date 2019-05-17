@@ -24,14 +24,15 @@ import { IEntityCacheController } from 'sdk/framework/controller/interface/IEnti
 import { IEntityCacheSearchController } from 'sdk/framework/controller/interface/IEntityCacheSearchController';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../../group/entity';
 import { GlobalConfigService } from 'sdk/module/config';
-import { AccountUserConfig } from 'sdk/module/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
+import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 import { ContactType } from '../../types';
 import { SearchUtils } from 'sdk/framework/utils/SearchUtils';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { PersonEntityCacheController } from '../PersonEntityCacheController';
 import { PersonService } from '../../';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
-import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/config');
 jest.mock('sdk/module/account/config');
@@ -50,8 +51,20 @@ describe('PersonService', () => {
   let entitySourceController: IEntitySourceController<Person>;
   let entityCacheController: IEntityCacheController<Person>;
   let cacheSearchController: IEntityCacheSearchController<Person>;
+  let phoneNumberService: PhoneNumberService;
 
   function setUp() {
+    phoneNumberService = new PhoneNumberService(true);
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: AccountUserConfig.prototype , authUserConfig: AuthUserConfig.prototype };
+        }
+        if (config === ServiceConfig.PHONE_NUMBER_SERVICE) {
+          return phoneNumberService;
+        }
+      });
     personController = new PersonController();
     personDao = new PersonDao(null);
 
@@ -455,7 +468,6 @@ describe('PersonService', () => {
     const personEntityCacheController = new PersonEntityCacheController(
       new PersonService(),
     );
-    let phoneNumberService: PhoneNumberService;
     async function prepareInvalidData() {
       for (let i = 1; i <= 30; i += 1) {
         const person: Person = {
@@ -603,8 +615,6 @@ describe('PersonService', () => {
         personEntityCacheController,
       );
       SearchUtils.isUseSoundex = jest.fn().mockReturnValue(false);
-      phoneNumberService = new PhoneNumberService(true);
-      ServiceLoader.getInstance = jest.fn().mockReturnValue(phoneNumberService);
     });
     it('should return null when there is no phone number data', async () => {
       await prepareInvalidData();

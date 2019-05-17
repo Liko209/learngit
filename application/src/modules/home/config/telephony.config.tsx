@@ -30,7 +30,7 @@ const config: SubModuleConfig = {
     title: await i18nT('telephony.Phone'),
     placement: 'top',
   }),
-  loader: () =>
+  moduleConfigLoader: () =>
     import(/*
     webpackChunkName: "m.telephony" */ '@/modules/telephony'),
 };

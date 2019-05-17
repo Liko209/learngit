@@ -8,6 +8,8 @@ import { PhoneParserUtility } from '../PhoneParserUtility';
 import notificationCenter from '../../../service/notificationCenter';
 import { ServiceLoader } from '../../../module/serviceLoader';
 
+jest.mock('foundation');
+
 describe('PhoneParserUtility', () => {
   let phoneParserUtility: PhoneParserUtility;
   const mockPhoneParser = {
@@ -107,9 +109,7 @@ describe('PhoneParserUtility', () => {
       PhoneParserUtility['_moduleLoadingTime'] = currentTime;
       PhoneParserUtility.loadLocalPhoneData.mockResolvedValueOnce(undefined);
       PhoneParserUtility.loadModule();
-      expect(PhoneParserUtility['_moduleLoadingTime']).toBeGreaterThan(
-        currentTime,
-      );
+      expect(PhoneParserUtility['_moduleLoadingTime']).toBeGreaterThan(currentTime);
       expect(PhoneParserUtility.loadLocalPhoneData).toBeCalledTimes(1);
     });
   });
@@ -165,9 +165,7 @@ describe('PhoneParserUtility', () => {
       expect(await PhoneParserUtility.initPhoneParser(false)).toBeFalsy();
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(0);
       expect(mockRCInfoService.getPhoneData).toBeCalledTimes(1);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].ReadRootNodeByString,
-      ).toBeCalledTimes(0);
+      expect(PhoneParserUtility['_phoneParserModule'].ReadRootNodeByString).toBeCalledTimes(0);
       expect(PhoneParserUtility['_initialized']).toBeFalsy();
     });
 
@@ -175,18 +173,12 @@ describe('PhoneParserUtility', () => {
       PhoneParserUtility['_moduleLoaded'] = true;
       PhoneParserUtility['_initialized'] = true;
       mockRCInfoService.getPhoneData.mockReturnValueOnce(123456);
-      PhoneParserUtility[
-        '_phoneParserModule'
-      ].ReadRootNodeByString.mockReturnValueOnce(true);
-      PhoneParserUtility[
-        '_phoneParserModule'
-      ].GetPhoneDataFileVersion.mockReturnValueOnce('1.3');
+      PhoneParserUtility['_phoneParserModule'].ReadRootNodeByString.mockReturnValueOnce(true);
+      PhoneParserUtility['_phoneParserModule'].GetPhoneDataFileVersion.mockReturnValueOnce('1.3');
       expect(await PhoneParserUtility.initPhoneParser(true)).toBeTruthy();
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(0);
       expect(mockRCInfoService.getPhoneData).toBeCalledTimes(1);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].ReadRootNodeByString,
-      ).toBeCalledWith(123456);
+      expect(PhoneParserUtility['_phoneParserModule'].ReadRootNodeByString).toBeCalledWith(123456);
       expect(mockRCInfoService.setPhoneDataVersion).toBeCalledWith('1.3');
       expect(mockRCInfoService.loadRegionInfo).toHaveBeenCalled();
       expect(PhoneParserUtility['_initialized']).toBeTruthy();
@@ -210,69 +202,43 @@ describe('PhoneParserUtility', () => {
   describe('getPhoneParser()', () => {
     it('should return undefined when phone parser is not initialized', async () => {
       PhoneParserUtility.canGetPhoneParser.mockReturnValueOnce(false);
-      expect(
-        await PhoneParserUtility.getPhoneParser('5683', true),
-      ).toBeUndefined();
+      expect(await PhoneParserUtility.getPhoneParser('5683', true)).toBeUndefined();
       expect(PhoneParserUtility.canGetPhoneParser).toBeCalledTimes(1);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].NewSettingsKey,
-      ).toBeCalledTimes(0);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].GetStationSettingsKey,
-      ).toBeCalledTimes(0);
+      expect(PhoneParserUtility['_phoneParserModule'].NewSettingsKey).toBeCalledTimes(0);
+      expect(PhoneParserUtility['_phoneParserModule'].GetStationSettingsKey).toBeCalledTimes(0);
     });
 
     it('should use default settingsKey when useDefaultSettingsKey = true', async () => {
       PhoneParserUtility.canGetPhoneParser.mockReturnValueOnce(true);
-      expect(
-        await PhoneParserUtility.getPhoneParser('5683', true),
-      ).toBeDefined();
+      expect(await PhoneParserUtility.getPhoneParser('5683', true)).toBeDefined();
       expect(PhoneParserUtility.canGetPhoneParser).toBeCalledTimes(1);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].NewSettingsKey,
-      ).toBeCalledTimes(1);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].GetStationSettingsKey,
-      ).toBeCalledTimes(0);
+      expect(PhoneParserUtility['_phoneParserModule'].NewSettingsKey).toBeCalledTimes(1);
+      expect(PhoneParserUtility['_phoneParserModule'].GetStationSettingsKey).toBeCalledTimes(0);
     });
 
     it('should use station settingsKey when useDefaultSettingsKey = false', async () => {
       PhoneParserUtility.canGetPhoneParser.mockReturnValueOnce(true);
-      expect(
-        await PhoneParserUtility.getPhoneParser('5683', false),
-      ).toBeDefined();
+      expect(await PhoneParserUtility.getPhoneParser('5683', false)).toBeDefined();
       expect(PhoneParserUtility.canGetPhoneParser).toBeCalledTimes(1);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].NewSettingsKey,
-      ).toBeCalledTimes(0);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].GetStationSettingsKey,
-      ).toBeCalledTimes(1);
+      expect(PhoneParserUtility['_phoneParserModule'].NewSettingsKey).toBeCalledTimes(0);
+      expect(PhoneParserUtility['_phoneParserModule'].GetStationSettingsKey).toBeCalledTimes(1);
     });
   });
 
   describe('getPhoneDataFileVersion()', () => {
     it('should return undefined when phone parser is not initialized', async () => {
       PhoneParserUtility.canGetPhoneParser.mockReturnValueOnce(false);
-      expect(
-        await PhoneParserUtility.getPhoneDataFileVersion(),
-      ).toBeUndefined();
+      expect(await PhoneParserUtility.getPhoneDataFileVersion()).toBeUndefined();
       expect(PhoneParserUtility.canGetPhoneParser).toBeCalledTimes(1);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].GetPhoneDataFileVersion,
-      ).toBeCalledTimes(0);
+      expect(PhoneParserUtility['_phoneParserModule'].GetPhoneDataFileVersion).toBeCalledTimes(0);
     });
 
     it('should return value when phone parser is initialized', async () => {
       PhoneParserUtility.canGetPhoneParser.mockReturnValueOnce(true);
-      PhoneParserUtility[
-        '_phoneParserModule'
-      ].GetPhoneDataFileVersion.mockReturnValueOnce('8.2');
+      PhoneParserUtility['_phoneParserModule'].GetPhoneDataFileVersion.mockReturnValueOnce('8.2');
       expect(await PhoneParserUtility.getPhoneDataFileVersion()).toEqual('8.2');
       expect(PhoneParserUtility.canGetPhoneParser).toBeCalledTimes(1);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].GetPhoneDataFileVersion,
-      ).toBeCalledTimes(1);
+      expect(PhoneParserUtility['_phoneParserModule'].GetPhoneDataFileVersion).toBeCalledTimes(1);
     });
   });
 
@@ -282,22 +248,18 @@ describe('PhoneParserUtility', () => {
       PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
       expect(PhoneParserUtility.getStationCountryCode()).toBeUndefined();
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].GetStationCountryCode,
-      ).toBeCalledTimes(0);
+      expect(PhoneParserUtility['_phoneParserModule'].GetStationCountryCode).toBeCalledTimes(0);
     });
 
     it('should return value when module is loaded', () => {
       PhoneParserUtility['_moduleLoaded'] = true;
       PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
-      PhoneParserUtility[
-        '_phoneParserModule'
-      ].GetStationCountryCode.mockReturnValueOnce('countryCode');
+      PhoneParserUtility['_phoneParserModule'].GetStationCountryCode.mockReturnValueOnce(
+        'countryCode',
+      );
       expect(PhoneParserUtility.getStationCountryCode()).toEqual('countryCode');
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(0);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].GetStationCountryCode,
-      ).toBeCalledTimes(1);
+      expect(PhoneParserUtility['_phoneParserModule'].GetStationCountryCode).toBeCalledTimes(1);
     });
   });
 
@@ -307,22 +269,16 @@ describe('PhoneParserUtility', () => {
       PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
       expect(PhoneParserUtility.getStationAreaCode()).toBeUndefined();
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].GetStationAreaCode,
-      ).toBeCalledTimes(0);
+      expect(PhoneParserUtility['_phoneParserModule'].GetStationAreaCode).toBeCalledTimes(0);
     });
 
     it('should return value when module is loaded', () => {
       PhoneParserUtility['_moduleLoaded'] = true;
       PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
-      PhoneParserUtility[
-        '_phoneParserModule'
-      ].GetStationAreaCode.mockReturnValueOnce('areaCode');
+      PhoneParserUtility['_phoneParserModule'].GetStationAreaCode.mockReturnValueOnce('areaCode');
       expect(PhoneParserUtility.getStationAreaCode()).toEqual('areaCode');
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(0);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].GetStationAreaCode,
-      ).toBeCalledTimes(1);
+      expect(PhoneParserUtility['_phoneParserModule'].GetStationAreaCode).toBeCalledTimes(1);
     });
   });
 
@@ -330,11 +286,15 @@ describe('PhoneParserUtility', () => {
     it('should return false when module is not loaded', () => {
       PhoneParserUtility['_moduleLoaded'] = false;
       PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
-      expect(PhoneParserUtility.setStationLocation('1', '650')).toBeFalsy();
-      expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
+      PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
       expect(
-        PhoneParserUtility['_phoneParserModule'].SetStationLocation,
-      ).toBeCalledTimes(0);
+        PhoneParserUtility.setStationLocation({
+          szCountryCode: '1',
+          szAreaCode: '650',
+        }),
+      ).toBeFalsy();
+      expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
+      expect(PhoneParserUtility['_phoneParserModule'].SetStationLocation).toBeCalledTimes(0);
     });
 
     it('should return true when module is loaded', () => {
@@ -349,12 +309,17 @@ describe('PhoneParserUtility', () => {
         }),
       ).toBeTruthy();
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(0);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].SetStationLocation,
-      ).toBeCalledTimes(1);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].SetStationLocation,
-      ).toBeCalledWith('1', '650', 0, -1, false, '', 0, '');
+      expect(PhoneParserUtility['_phoneParserModule'].SetStationLocation).toBeCalledTimes(1);
+      expect(PhoneParserUtility['_phoneParserModule'].SetStationLocation).toBeCalledWith(
+        '1',
+        '650',
+        0,
+        -1,
+        false,
+        '',
+        0,
+        '',
+      );
     });
   });
 
@@ -364,52 +329,36 @@ describe('PhoneParserUtility', () => {
       PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
       expect(PhoneParserUtility.getStationSettingsKey()).toBeUndefined();
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].GetStationSettingsKey,
-      ).toBeCalledTimes(0);
+      expect(PhoneParserUtility['_phoneParserModule'].GetStationSettingsKey).toBeCalledTimes(0);
     });
 
     it('should return value when module is loaded', () => {
       PhoneParserUtility['_moduleLoaded'] = true;
       PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
-      PhoneParserUtility[
-        '_phoneParserModule'
-      ].GetStationSettingsKey.mockReturnValueOnce('settingsKey');
+      PhoneParserUtility['_phoneParserModule'].GetStationSettingsKey.mockReturnValueOnce(
+        'settingsKey',
+      );
       expect(PhoneParserUtility.getStationSettingsKey()).toEqual('settingsKey');
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(0);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].GetStationSettingsKey,
-      ).toBeCalledTimes(1);
+      expect(PhoneParserUtility['_phoneParserModule'].GetStationSettingsKey).toBeCalledTimes(1);
     });
   });
 
   describe('getRegionalInfo()', () => {
     it('should return undefined when phone parser is not initialized', async () => {
       PhoneParserUtility.canGetPhoneParser.mockReturnValueOnce(false);
-      expect(
-        await PhoneParserUtility.getRegionalInfo(1, '650'),
-      ).toBeUndefined();
+      expect(await PhoneParserUtility.getRegionalInfo(1, '650')).toBeUndefined();
       expect(PhoneParserUtility.canGetPhoneParser).toBeCalledTimes(1);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].GetRegionalInfo,
-      ).toBeCalledTimes(0);
+      expect(PhoneParserUtility['_phoneParserModule'].GetRegionalInfo).toBeCalledTimes(0);
     });
 
     it('should return value when phone parser is initialized', async () => {
       PhoneParserUtility.canGetPhoneParser.mockReturnValueOnce(true);
-      PhoneParserUtility[
-        '_phoneParserModule'
-      ].GetRegionalInfo.mockReturnValueOnce('regionalInfo');
-      expect(await PhoneParserUtility.getRegionalInfo(1, '650')).toEqual(
-        'regionalInfo',
-      );
+      PhoneParserUtility['_phoneParserModule'].GetRegionalInfo.mockReturnValueOnce('regionalInfo');
+      expect(await PhoneParserUtility.getRegionalInfo(1, '650')).toEqual('regionalInfo');
       expect(PhoneParserUtility.canGetPhoneParser).toBeCalledTimes(1);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].GetRegionalInfo,
-      ).toBeCalledTimes(1);
-      expect(
-        PhoneParserUtility['_phoneParserModule'].GetRegionalInfo,
-      ).toBeCalledWith(1, '650');
+      expect(PhoneParserUtility['_phoneParserModule'].GetRegionalInfo).toBeCalledTimes(1);
+      expect(PhoneParserUtility['_phoneParserModule'].GetRegionalInfo).toBeCalledWith(1, '650');
     });
   });
 
@@ -571,12 +520,8 @@ describe('PhoneParserUtility', () => {
 
     it('should return false when phone numbers are different', async () => {
       const mockPhoneParserUtility = new PhoneParserUtility('', '');
-      PhoneParserUtility.getPhoneParser.mockReturnValueOnce(
-        mockPhoneParserUtility,
-      );
-      mockPhoneParser.GetE164Extended.mockReturnValueOnce(
-        '123',
-      ).mockReturnValueOnce('321');
+      PhoneParserUtility.getPhoneParser.mockReturnValueOnce(mockPhoneParserUtility);
+      mockPhoneParser.GetE164Extended.mockReturnValueOnce('123').mockReturnValueOnce('321');
       expect(await phoneParserUtility.isEqualToPhoneNumber('321')).toBeFalsy();
       expect(PhoneParserUtility.getPhoneParser).toBeCalledTimes(1);
       expect(mockPhoneParser.GetE164Extended).toBeCalledTimes(2);
@@ -584,12 +529,8 @@ describe('PhoneParserUtility', () => {
 
     it('should return true when phone numbers are the same', async () => {
       const mockPhoneParserUtility = new PhoneParserUtility('', '');
-      PhoneParserUtility.getPhoneParser.mockReturnValueOnce(
-        mockPhoneParserUtility,
-      );
-      mockPhoneParser.GetE164Extended.mockReturnValueOnce(
-        '123',
-      ).mockReturnValueOnce('123');
+      PhoneParserUtility.getPhoneParser.mockReturnValueOnce(mockPhoneParserUtility);
+      mockPhoneParser.GetE164Extended.mockReturnValueOnce('123').mockReturnValueOnce('123');
       expect(await phoneParserUtility.isEqualToPhoneNumber('123')).toBeTruthy();
       expect(PhoneParserUtility.getPhoneParser).toBeCalledTimes(1);
       expect(mockPhoneParser.GetE164Extended).toBeCalledTimes(2);
@@ -649,15 +590,9 @@ describe('PhoneParserUtility', () => {
         mainNumber: '123456',
       });
       const mockPhoneParserUtility = new PhoneParserUtility('', '');
-      PhoneParserUtility.getPhoneParser.mockReturnValueOnce(
-        mockPhoneParserUtility,
-      );
-      mockPhoneParser.GetCountryId.mockReturnValueOnce(1).mockReturnValueOnce(
-        86,
-      );
-      mockPhoneParser.GetCountryName.mockReturnValueOnce(
-        'USA',
-      ).mockReturnValueOnce('China');
+      PhoneParserUtility.getPhoneParser.mockReturnValueOnce(mockPhoneParserUtility);
+      mockPhoneParser.GetCountryId.mockReturnValueOnce(1).mockReturnValueOnce(86);
+      mockPhoneParser.GetCountryName.mockReturnValueOnce('USA').mockReturnValueOnce('China');
       expect(await phoneParserUtility.isInternationalDialing()).toBeTruthy();
     });
   });

@@ -15,3 +15,4 @@ export * from './ItemConjunctionText';
 export * from './AvatarName';
 export * from './TimeMessage';
 export * from './CodeSnippet';
+export * from './AudioConferenceDescription';

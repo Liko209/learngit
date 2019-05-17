@@ -23,11 +23,9 @@ type SectionViewProps = {
   iconName: string;
   title: string;
   onSortEnd: SortEndHandler;
-  isLast: boolean;
   handleCollapse: Function;
   handleExpand: Function;
-  type: SECTION_TYPE;
-};
+} & SectionProps;
 
 type SectionConfig = {
   title: string;

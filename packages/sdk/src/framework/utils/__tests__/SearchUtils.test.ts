@@ -79,5 +79,19 @@ describe('SearchUtils', () => {
         'chen',
       ]);
     });
+
+    it.each`
+      srcStr          | expectRes
+      ${'123,456'}    | ${['123', '456']}
+      ${'123_456'}    | ${['123', '456']}
+      ${'123-456'}    | ${['123', '456']}
+      ${'123.456'}    | ${['123', '456']}
+      ${'1,2_3-4.56'} | ${['1', '2', '3', '4', '56']}
+    `(
+      'should split src $srcStr and return $expectRes',
+      ({ srcStr, expectRes }) => {
+        expect(SearchUtils.getTermsFromText(srcStr)).toEqual(expectRes);
+      },
+    );
   });
 });

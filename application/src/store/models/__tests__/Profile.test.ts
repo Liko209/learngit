@@ -20,7 +20,7 @@ describe('Profile', () => {
     } as any;
     const profile = new ProfileModel(data);
     expect(profile.callOption).toEqual(CALLING_OPTIONS.GLIP);
-    expect(profile.defaultNumberId).toEqual(0);
+    expect(profile.defaultNumberId).toBeUndefined();
     expect(profile.mobileDMNotification).toEqual(false);
     expect(profile.mobileTeamNotification).toEqual(
       MOBILE_TEAM_NOTIFICATION_OPTIONS.OFF,

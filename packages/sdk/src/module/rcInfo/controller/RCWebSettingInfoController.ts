@@ -9,8 +9,7 @@ import { RCAuthApi, RCClientInfo } from 'sdk/api';
 import { RCInfoFetchController } from './RCInfoFetchController';
 import { mainLogger } from 'foundation';
 import { UndefinedAble } from 'sdk/types';
-import { JOB_KEY } from 'sdk/framework/utils/jobSchedule';
-import { JobSchedulerConfig } from 'sdk/framework/utils/jobSchedule/JobSchedulerConfig';
+import { JOB_KEY, jobScheduler } from 'sdk/framework/utils/jobSchedule';
 
 const LOG_TAG = 'RCWebSettingInfoController';
 const SAFE_SYNC_INTERVAL = 5 * 60 * 1000;
@@ -144,9 +143,10 @@ class RCWebSettingInfoController {
   }
 
   private get _getLastSyncTime() {
-    const config = new JobSchedulerConfig();
     return (
-      (config.getLastSuccessTime(JOB_KEY.FETCH_CLIENT_INFO) as number) || 0
+      (jobScheduler.userConfig.getLastSuccessTime(
+        JOB_KEY.FETCH_CLIENT_INFO,
+      ) as number) || 0
     );
   }
 }
