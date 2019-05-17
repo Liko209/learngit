@@ -4,8 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export type IdModel = {
-  id: number;
-  _id?: number;
+import { DatabaseKeyType } from 'foundation';
+
+export type ModelIdType = DatabaseKeyType;
+
+export type IdModel<IdType extends DatabaseKeyType = number> = {
+  id: IdType;
+  _id?: IdType;
   isMocked?: boolean;
 };

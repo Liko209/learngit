@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-// import { SortableContainer, SortableElement } from 'react-sortable-hoc';
+import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import {
   JuiConversationList,
   JuiConversationListSection,
@@ -18,31 +18,31 @@ import { JuiDivider } from 'jui/components/Divider';
 import { observer } from 'mobx-react';
 // TODO remove Stubs here
 
-// const SortableList = SortableContainer(JuiConversationList);
-// const SortableItem = SortableElement(ConversationListItem);
+const SortableList = SortableContainer(JuiConversationList);
+const SortableItem = SortableElement(ConversationListItem);
 
 type Props = SectionViewProps & WithTranslation;
 
 @observer
 class SectionViewComponent extends React.Component<Props> {
   renderList() {
-    // const { sortable, onSortEnd } = this.props;
+    const { sortable, onSortEnd } = this.props;
 
-    // if (sortable) {
-    //   return (
-    //     <SortableList
-    //       className="conversation-list-section-collapse"
-    //       distance={5}
-    //       lockAxis="y"
-    //       helperClass="dragging"
-    //       onSortEnd={onSortEnd}
-    //     >
-    //       {this.props.groupIds.map((id: number, index: number) => (
-    //         <SortableItem key={id} groupId={id} index={index} />
-    //       ))}
-    //     </SortableList>
-    //   );
-    // }
+    if (sortable) {
+      return (
+        <SortableList
+          className="conversation-list-section-collapse"
+          distance={5}
+          lockAxis="y"
+          helperClass="dragging"
+          onSortEnd={onSortEnd}
+        >
+          {this.props.groupIds.map((id: number, index: number) => (
+            <SortableItem key={id} groupId={id} index={index} />
+          ))}
+        </SortableList>
+      );
+    }
 
     return (
       <JuiConversationList className="conversation-list-section-collapse">

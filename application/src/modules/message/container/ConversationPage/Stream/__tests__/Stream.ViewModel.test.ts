@@ -12,7 +12,13 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import storeManager from '@/store';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import _ from 'lodash';
-import { JError, ERROR_TYPES, ERROR_CODES_SERVER } from 'sdk/error';
+import {
+  JError,
+  ERROR_TYPES,
+  ERROR_CODES_SERVER,
+  JNetworkError,
+  ERROR_CODES_NETWORK,
+} from 'sdk/error';
 import { Notification } from '@/containers/Notification';
 import * as errorUtil from '@/utils/error';
 
@@ -30,11 +36,26 @@ import { HistoryHandler } from '../HistoryHandler';
 import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPostFocBuilder';
 import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDataListHandler';
 import { Post } from 'sdk/module/post/entity';
+import GroupStateModel from '@/store/models/GroupState';
+import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
+import { GroupState } from 'sdk/module/state/entity';
 
+jest.mock('sdk/dao');
 jest.mock('sdk/module/item');
 jest.mock('sdk/module/post');
 jest.mock('sdk/module/group');
+jest.mock('@/containers/Notification');
 jest.mock('@/store/base/visibilityChangeEvent');
+
+function streamProps(obj: any = {}): StreamProps {
+  return {
+    viewRef: React.createRef(),
+    groupId: obj.groupId || 1,
+    jumpToPostId: obj.jumpToPostId || undefined,
+    refresh: () => {},
+    updateConversationStatus: () => {},
+  };
+}
 
 function setup(obj?: any) {
   const {
@@ -59,10 +80,7 @@ function setup(obj?: any) {
   jest
     .spyOn(ConversationPostFocBuilder, 'buildConversationPostFoc')
     .mockReturnValue(listHandler);
-  const vm = new StreamViewModel({
-    viewRef: React.createRef(),
-    groupId: obj.groupId || 1,
-  });
+  const vm = new StreamViewModel(streamProps(obj));
   delete obj.groupId;
   Object.assign(vm, obj);
   return vm;
@@ -101,23 +119,23 @@ describe('StreamViewModel', () => {
   });
 
   describe('loadInitialPosts()', () => {
-    function setup(obj: any) {
-      const vm = new StreamViewModel(obj.props);
+    function setupMock({ props, getPostsByGroupIdData }: any) {
+      const vm = new StreamViewModel(props);
       jest.spyOn(vm, 'markAsRead').mockImplementation(() => {});
+      postService.getPostsByGroupId.mockResolvedValue(getPostsByGroupIdData);
       return vm;
     }
-
     it('should load posts and update itemStore when fetch initial post', async () => {
-      const vm = setup({
-        props: { groupId: 1 },
-      });
-      postService.getPostsByGroupId.mockResolvedValue({
-        posts: [
-          { id: 1, item_ids: [], created_at: 10000 },
-          { id: 2, item_ids: [], created_at: 10001 },
-          { id: 3, item_ids: [], created_at: 20010 },
-        ],
-        items: [{ id: 1 }],
+      const vm = setupMock({
+        props: streamProps(),
+        getPostsByGroupIdData: {
+          posts: [
+            { id: 1, item_ids: [], created_at: 10000 },
+            { id: 2, item_ids: [], created_at: 10001 },
+            { id: 3, item_ids: [], created_at: 20010 },
+          ],
+          items: [{ id: 1 }],
+        },
       });
       await vm.loadInitialPosts();
       expect(
@@ -136,37 +154,50 @@ describe('StreamViewModel', () => {
 
   describe('getFirstUnreadPostByLoadAllUnread()', () => {
     function setupMock({
+      groupId,
       groupState,
       currentPosts,
       readThroughPost,
       postsNewerThanAnchor,
       postsOlderThanAnchor,
     }: any) {
-      const postService = ServiceLoader.getInstance<PostService>(
-        ServiceConfig.POST_SERVICE,
-      );
-      jest.spyOn(postService, 'getById').mockResolvedValue(readThroughPost);
-
-      const historyHandler = new HistoryHandler();
+      const store = storeManager.getEntityMapStore(
+        ENTITY_NAME.GROUP_STATE,
+      ) as MultiEntityMapStore<GroupState, GroupStateModel>;
+      store.set(groupState);
+      postService.getById.mockResolvedValue(readThroughPost);
+      postService.getUnreadPostsByGroupId.mockResolvedValue({
+        posts: postsNewerThanAnchor,
+        items: [],
+        hasMore: false,
+      });
+      postService.getPostsByGroupId.mockResolvedValue({
+        posts: postsOlderThanAnchor,
+        items: [],
+        hasMore: false,
+      });
       const dataProvider = { fetchData: jest.fn().mockName('fetchData()') };
-      dataProvider.fetchData
-        .mockResolvedValueOnce({ data: postsNewerThanAnchor, hasMore: true })
-        .mockResolvedValueOnce({ data: postsOlderThanAnchor, hasMore: false });
       const listHandler = new FetchSortableDataListHandler<Post>(dataProvider, {
         isMatchFunc: () => true,
         transformFunc: (post: Post) => {
           return { id: post.id, sortValue: post.created_at, data: post };
         },
       });
-      listHandler.upsert(currentPosts);
       listHandler.setHasMore(true, QUERY_DIRECTION.OLDER);
-      listHandler.setHasMore(true, QUERY_DIRECTION.NEWER);
+      listHandler.setHasMore(false, QUERY_DIRECTION.NEWER);
       jest.spyOn(listHandler, 'fetchDataByAnchor');
       jest
         .spyOn(ConversationPostFocBuilder, 'buildConversationPostFoc')
         .mockReturnValue(listHandler);
+
+      const historyHandler = new HistoryHandler();
       historyHandler.update(groupState, _.map(currentPosts, post => post.id));
-      const streamController = new StreamController(1, historyHandler, 1);
+
+      const streamController = new StreamController(groupId, historyHandler, 1);
+      streamController.disableNewMessageSep();
+      listHandler.upsert(currentPosts);
+      streamController.enableNewMessageSep();
+
       const vm = setup({
         _streamController: streamController,
         _historyHandler: historyHandler,
@@ -194,11 +225,11 @@ describe('StreamViewModel', () => {
         postsOlderThanAnchor,
         readThroughPost,
         groupState: { unreadCount: 4, readThrough: readThroughPost.id },
-        currentPosts: [{ id: 8, created_at: 108, creator_id: 1 }],
+        currentPosts: [{ id: 9, created_at: 109, creator_id: 1 }],
       });
       const firstUnreadPostId = await vm.getFirstUnreadPostByLoadAllUnread();
 
-      expect(vm.postIds).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+      expect(vm.postIds).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
       expect(firstUnreadPostId).toBe(5);
     });
 
@@ -206,8 +237,9 @@ describe('StreamViewModel', () => {
       const readThroughPost = { id: 4, created_at: 104, creator_id: 1 };
 
       const { vm, historyHandler } = setupMock({
+        groupId: 1,
         readThroughPost,
-        groupState: { unreadCount: 4, readThrough: readThroughPost.id },
+        groupState: { id: 1, unreadCount: 4, readThrough: readThroughPost.id },
         currentPosts: [
           { id: 1, created_at: 101, creator_id: 1 },
           { id: 2, created_at: 102, creator_id: 1 },
@@ -235,10 +267,8 @@ describe('StreamViewModel', () => {
   });
 
   describe('notEmpty', () => {
-    function setup(props: { hasMoreUp: boolean; id?: number }) {
-      const vm = new StreamViewModel({
-        groupId: 1,
-      } as StreamProps);
+    function setupMockNoEmpty(props: { hasMoreUp: boolean; id?: number }) {
+      const vm = new StreamViewModel(streamProps());
 
       Object.assign(vm, {
         _streamController: {
@@ -254,17 +284,17 @@ describe('StreamViewModel', () => {
       return vm;
     }
     it('should be true when user has loaded messages  [JPT-478]', () => {
-      const vm = setup({ hasMoreUp: false, id: 1 });
+      const vm = setupMockNoEmpty({ hasMoreUp: false, id: 1 });
       expect(vm.notEmpty).toBe(true);
     });
 
     it('should be true when user has more unloaded messages  [JPT-478]', () => {
-      const vm = setup({ hasMoreUp: true, id: 1 });
+      const vm = setupMockNoEmpty({ hasMoreUp: true, id: 1 });
       expect(vm.notEmpty).toBe(true);
     });
 
     it('should be false when user has no more messages and no loaded messages  [JPT-478]', () => {
-      const vm = setup({ hasMoreUp: false });
+      const vm = setupMockNoEmpty({ hasMoreUp: false });
       expect(vm.notEmpty).toBe(false);
     });
   });
@@ -416,7 +446,7 @@ describe('StreamViewModel', () => {
       expect(posts).toEqual(data);
     });
 
-    it('should show error toast when server throw error while scroll up [JPT-695]', async () => {
+    it('User manually loading older messages (by scrolling down) in Conversation page failed due to unexpected backend error [JPT-1803]', async () => {
       const fetchData = jest.fn(() =>
         Promise.reject(
           new JError(
@@ -435,14 +465,40 @@ describe('StreamViewModel', () => {
         },
       });
 
-      Notification.flashToast = jest.fn();
+      await vm.loadPrevPosts();
+
+      expect(Notification.flashToast).toHaveBeenCalledWith({
+        dismissible: false,
+        fullWidth: false,
+        autoHideDuration: 3000,
+        message: 'message.prompt.notAbleToLoadOlderMessagesForServerIssue',
+        messageAlign: ToastMessageAlign.LEFT,
+        type: ToastType.ERROR,
+      });
+    });
+
+    it('User manually loading older messages (by scrolling down) in Conversation page failed due to network disconnection [JPT-1804]', async () => {
+      const fetchData = jest.fn(() =>
+        Promise.reject(
+          new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK'),
+        ),
+      );
+      const hasMore = jest.fn(() => true);
+
+      const vm = setup({
+        _streamController: {
+          hasMore,
+          fetchData,
+        },
+      });
 
       await vm.loadPrevPosts();
 
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
         fullWidth: false,
-        message: 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages',
+        autoHideDuration: 3000,
+        message: 'message.prompt.notAbleToLoadOlderMessagesForNetworkIssue',
         messageAlign: ToastMessageAlign.LEFT,
         type: ToastType.ERROR,
       });
@@ -460,7 +516,9 @@ describe('StreamViewModel', () => {
         },
       });
 
-      await vm.loadPrevPosts();
+      try {
+        await vm.loadPrevPosts();
+      } catch {}
 
       expect(errorUtil.generalErrorHandler).toHaveBeenCalled();
     });
@@ -519,13 +577,14 @@ describe('StreamViewModel', () => {
         },
       });
 
-      Notification.flashToast = jest.fn();
-
-      await vm.loadNextPosts();
+      try {
+        await vm.loadNextPosts();
+      } catch (error) {}
 
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
         fullWidth: false,
+        autoHideDuration: 3000,
         message: 'message.prompt.SorryWeWereNotAbleToLoadNewerMessages',
         messageAlign: ToastMessageAlign.LEFT,
         type: ToastType.ERROR,
@@ -550,14 +609,12 @@ describe('StreamViewModel', () => {
           fetchData,
         },
       });
-
-      Notification.flashToast = jest.fn();
-
-      await vm.loadNextPosts();
-      await vm.loadNextPosts();
-      await vm.loadNextPosts();
-
-      expect(Notification.flashToast).toHaveBeenCalledTimes(1);
+      setTimeout(async () => {
+        await vm.loadNextPosts();
+        await vm.loadNextPosts();
+        await vm.loadNextPosts();
+        expect(Notification.flashToast).toHaveBeenCalledTimes(1);
+      },         1000);
     });
   });
 

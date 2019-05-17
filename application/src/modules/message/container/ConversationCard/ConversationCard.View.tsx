@@ -21,6 +21,14 @@ import {
 } from './EditMessageInput';
 import { Profile, PROFILE_TYPE } from '../Profile';
 import { jumpToPost } from '@/common/jumpToPost';
+import { noop } from 'jui/foundation/utils';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import i18nT from '@/utils/i18nT';
+import { Translation } from 'react-i18next';
 
 @observer
 export class ConversationCard extends React.Component<
@@ -60,9 +68,30 @@ export class ConversationCard extends React.Component<
     });
   }
 
-  jumpToPost = () => {
-    const { id, groupId } = this.props;
-    jumpToPost({ id, groupId });
+  getToastMessage = async () => {
+    const message = this.props.isArchivedGroup
+      ? 'people.prompt.conversationArchived'
+      : '';
+    return await i18nT(message);
+  }
+
+  handleJumpToPost = async () => {
+    if (this.props.showToast) {
+      this.flashToast(await this.getToastMessage());
+    } else {
+      const { id, groupId } = this.props;
+      jumpToPost({ id, groupId });
+    }
+  }
+
+  flashToast(message: string) {
+    Notification.flashToast({
+      message,
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: false,
+    });
   }
 
   private _focusEditor() {
@@ -72,7 +101,26 @@ export class ConversationCard extends React.Component<
       }
     },         100);
   }
-
+  get _navigationProps(): {
+    mode?: string;
+    navigate?: () => void;
+    navigationTip?: JSX.Element;
+    from?: JSX.Element;
+  } {
+    let navigationProps = {};
+    const { mode, post } = this.props;
+    if (mode === 'navigation') {
+      navigationProps = {
+        mode: 'navigation',
+        navigate: this.handleJumpToPost,
+        navigationTip: (
+          <Translation>{(t) => t('message.jumpToConversation')}</Translation>
+        ),
+        from: <From id={post.groupId} />,
+      };
+    }
+    return navigationProps;
+  }
   render() {
     const {
       id,
@@ -93,21 +141,22 @@ export class ConversationCard extends React.Component<
       terms,
       ...rest
     } = this.props;
+    const { from, ...restNavigationProps } = this._navigationProps;
     const { isHover } = this.state;
     if (!creator.id) {
       return null;
     }
     const avatar = (
       <Avatar
+        icon={post.icon}
         uid={creator.id}
         size="medium"
         data-name="avatar"
-        onClick={this.onClickAvatar}
+        onClick={post.icon ? noop : this.onClickAvatar}
       />
     );
     const activity = <Activity id={id} />;
-    const from = mode === 'navigation' ? <From id={post.groupId} /> : undefined;
-    const jumpToPost = mode ? this.jumpToPost : undefined;
+
     return (
       <JuiConversationCard
         data-name="conversation-card"
@@ -115,19 +164,18 @@ export class ConversationCard extends React.Component<
         Avatar={avatar}
         onMouseOver={this.handleMouseOver}
         onMouseLeave={this.handleMouseLeave}
-        mode={mode}
-        jumpToPost={jumpToPost}
         onAnimationStart={onAnimationStart}
         ref={cardRef}
         {...rest}
+        {...restNavigationProps}
       >
         <JuiConversationCardHeader
           data-name="header"
-          name={name}
+          name={name.get()}
           time={showProgressActions ? '' : createTime.get()}
           status={customStatus}
-          from={from}
           notification={showActivityStatus && activity}
+          from={from}
         >
           {showProgressActions && <ProgressActions id={id} />}
           {!showProgressActions && isHover && (

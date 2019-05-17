@@ -1,0 +1,159 @@
+/*
+ * @Author: Conner (conner.kang@ringcentral.com)
+ * @Date: 2019-05-09 14:00:02
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import React, { Component } from 'react';
+import { observer } from 'mobx-react';
+import { JuiButton } from 'jui/components/Buttons';
+import { withTranslation, WithTranslation } from 'react-i18next';
+import { RegionSettingItemViewProps } from './types';
+import { JuiSettingSectionItem } from 'jui/pattern/SettingSectionItem';
+import { JuiModal, JuiDialogTitle } from 'jui/components/Dialog';
+import { JuiRegionSelect } from 'jui/components/Selects';
+import { JuiTextField } from 'jui/components/Forms';
+import { JuiTypography } from 'jui/foundation/Typography';
+import { ESettingItemState } from 'sdk/framework/model/setting';
+
+type Props = WithTranslation & RegionSettingItemViewProps;
+type State = {
+  dialogOpen: boolean;
+};
+@observer
+class RegionSettingItemViewComponent extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      dialogOpen: false,
+    };
+  }
+
+  saveRegion = async () => {
+    const { saveRegion, dialPlanISOCode, areaCode } = this.props;
+    const save = await saveRegion(dialPlanISOCode, areaCode);
+    save && this.setState({ dialogOpen: false });
+  }
+
+  onCancel = () => {
+    this.setState({
+      dialogOpen: false,
+    });
+  }
+
+  handleClicked = async () => {
+    await this.props.loadRegionSetting();
+    this.setState({
+      dialogOpen: true,
+    });
+  }
+
+  render() {
+    const {
+      t,
+      value,
+      state,
+      currentCountryInfo,
+      countriesList,
+      handleDialPlanChange,
+      renderAreaCode,
+      areaCode,
+      areaCodeError,
+      errorMsg,
+      handleAreaCodeChange,
+      disabledOkBtn,
+    } = this.props;
+
+    const { isoCode } = currentCountryInfo;
+    const regionText = t('setting.phone.general.regionSetting.region');
+    const countryText = t('setting.phone.general.regionSetting.country');
+    const areaCodeText = t('setting.phone.general.regionSetting.areaCode');
+    const saveText = t('common.dialog.save');
+    const cancelText = t('common.dialog.cancel');
+
+    const regionChangeDesc = t(
+      'setting.phone.general.regionSetting.regionChangeDesc',
+    );
+
+    const { areaCode: currentAreaCode } = value;
+    const { name, callingCode } = value.countryInfo;
+    let descriptionText = `${countryText}: ${name} (+${callingCode})`;
+    if (currentAreaCode !== '') {
+      descriptionText += `, ${areaCodeText}: ${currentAreaCode}`;
+    }
+
+    return (
+      <JuiSettingSectionItem
+        id="regionSetting"
+        label={regionText}
+        description={descriptionText}
+      >
+        <JuiButton
+          color="primary"
+          onClick={this.handleClicked}
+          disabled={state !== ESettingItemState.ENABLE}
+          data-test-automation-id="regionSettingDialogOpenButton"
+        >
+          {t('setting.update')}
+        </JuiButton>
+        <JuiModal
+          title={
+            <JuiDialogTitle data-test-automation-id="regionSettingDialogHeader">
+              {regionText}
+            </JuiDialogTitle>
+          }
+          size="small"
+          okText={saveText}
+          cancelText={cancelText}
+          open={this.state.dialogOpen}
+          onOK={this.saveRegion}
+          onCancel={this.onCancel}
+          okBtnProps={{
+            disabled: disabledOkBtn,
+            'data-test-automation-id': 'saveRegionSettingOkButton',
+          }}
+          cancelBtnProps={{
+            'data-test-automation-id': 'saveRegionSettingCancelButton',
+          }}
+        >
+          <JuiTypography
+            variant={'caption'}
+            gutterBottom={true}
+            data-test-automation-id="regionSettingDialogContentDescription"
+          >
+            {regionChangeDesc}
+          </JuiTypography>
+          <JuiRegionSelect
+            label="Country"
+            initialRegionValue={isoCode}
+            regionList={countriesList}
+            onChange={handleDialPlanChange}
+            automationId={'regionSettingDialPlanSelect'}
+          />
+          {!!renderAreaCode && (
+            <JuiTextField
+              id="areaCode"
+              label={areaCodeText}
+              value={areaCode}
+              fullWidth={true}
+              error={areaCodeError}
+              inputProps={{
+                maxLength: 200,
+                'data-test-automation-id': 'areaCodeInput',
+              }}
+              helperText={areaCodeError && errorMsg}
+              onChange={handleAreaCodeChange}
+              data-test-automation-id="areaCodeTextField"
+            />
+          )}
+        </JuiModal>
+      </JuiSettingSectionItem>
+    );
+  }
+}
+
+const RegionSettingItemView = withTranslation('translations')(
+  RegionSettingItemViewComponent,
+);
+
+export { RegionSettingItemView };

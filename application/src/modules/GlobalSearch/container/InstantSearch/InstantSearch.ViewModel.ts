@@ -144,8 +144,8 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
         excludeSelf: false,
         recentFirst: true,
       }),
-      groupService.doFuzzySearchGroups(key),
-      groupService.doFuzzySearchTeams(key),
+      groupService.doFuzzySearchGroups(key, undefined, true),
+      groupService.doFuzzySearchTeams(key, undefined, true),
     ]);
     const sectionCount = this.calculateSectionCount(persons, groups, teams);
 

@@ -7,7 +7,8 @@
 import { Person } from '../entity';
 import { daoManager, DeactivatedDao } from '../../../dao';
 import { Raw } from '../../../framework/model';
-import { AccountUserConfig } from '../../../module/account/config';
+import { AccountService } from '../../account/service';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { transform } from '../../../service/utils';
 import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import notificationCenter from '../../../service/notificationCenter';
@@ -22,7 +23,9 @@ class PersonDataController {
     people: any[],
     changeMap?: Map<string, ChangeModel>,
   ) => {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const userId: Number = userConfig.getGlipUserId();
     if (userId) {
       let ids: number[] = [];

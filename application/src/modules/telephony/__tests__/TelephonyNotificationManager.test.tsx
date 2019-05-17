@@ -8,10 +8,28 @@ import { TelephonyNotificationManager } from '../TelephonyNotificationManager';
 import * as i18nT from '@/utils/i18nT';
 import * as telephony from '@/modules/telephony/module.config';
 import * as notification from '@/modules/notification/module.config';
+import { NOTIFICATION_PRIORITY } from '@/modules/notification/interface';
 import { TelephonyStore } from '../store';
+import { getEntity } from '@/store/utils';
+import { ANONYMOUS } from '../interface/constant';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
+
+jest.mock('@/store/utils');
+jest.mock('sdk/module/telephony');
+
+jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
+  matchContactByPhoneNumber: jest.fn().mockResolvedValue({}),
+});
+
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 jupiter.registerModule(notification.config);
+
+beforeAll(() => {
+  (getEntity as jest.Mock).mockReturnValue({
+    userDisplayName: 'belle',
+  });
+});
 
 describe('TelephonyNotificationManager', () => {
   const telephonyNotificationManager = jupiter.get(
@@ -36,22 +54,43 @@ describe('TelephonyNotificationManager', () => {
       callId: '1',
       phoneNumber: '123',
       callerName: 'alex',
+      uid: 1,
     });
   });
 
   describe('_showNotification()', () => {
-    it('should call show() when call _showNotification', async () => {
+    it('should call show() with body contains "belle" when the call is from a caller which has a match in contacts', async () => {
       jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
       await telephonyNotificationManager._showNotification();
 
       expect(telephonyNotificationManager.show).toHaveBeenCalledWith(
         title,
         expect.objectContaining({
-          requireInteraction: true,
           tag: '1',
           data: {
             id: '1',
             scope: 'telephony',
+            priority: NOTIFICATION_PRIORITY.INCOMING_CALL,
+          },
+          body: 'belle 123',
+          icon: '/icon/incomingCall.png',
+        }),
+      );
+    });
+
+    it('should call show() with body contains "alex" when the call is from a caller which does not have a match in contacts but has a callerName', async () => {
+      telephonyStore.uid = null;
+      jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
+      await telephonyNotificationManager._showNotification();
+
+      expect(telephonyNotificationManager.show).toHaveBeenCalledWith(
+        title,
+        expect.objectContaining({
+          tag: '1',
+          data: {
+            id: '1',
+            scope: 'telephony',
+            priority: NOTIFICATION_PRIORITY.INCOMING_CALL,
           },
           body: 'alex 123',
           icon: '/icon/incomingCall.png',
@@ -59,9 +98,10 @@ describe('TelephonyNotificationManager', () => {
       );
     });
 
-    it('should call show() with body contains "Unknown Caller" when the call is from an unrecognized caller [JPT-1489]', async () => {
+    it('should call show() with body contains "Unknown Caller" when the call is from a caller which does not have a match in contacts and number was blocked', async () => {
+      telephonyStore.uid = null;
+      telephonyStore.callerName = ANONYMOUS;
       jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
-      telephonyStore.callerName = '';
       await telephonyNotificationManager._showNotification();
 
       expect(telephonyNotificationManager.show).toHaveBeenCalledWith(
@@ -71,16 +111,17 @@ describe('TelephonyNotificationManager', () => {
           data: {
             id: '1',
             scope: 'telephony',
+            priority: NOTIFICATION_PRIORITY.INCOMING_CALL,
           },
           body: 'Unknown Caller 123',
           icon: '/icon/incomingCall.png',
         }),
       );
     });
-
-    it('should call show() with body contains "Unknown Caller" when the phone number is empty [JPT-1489]', async () => {
+    it('should call show() with body contains "Unknown Caller" when the call is from a caller which does not have a match in contacts and name is empty', async () => {
+      telephonyStore.uid = null;
+      telephonyStore.callerName = '';
       jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
-      telephonyStore.phoneNumber = '';
       await telephonyNotificationManager._showNotification();
 
       expect(telephonyNotificationManager.show).toHaveBeenCalledWith(
@@ -90,8 +131,9 @@ describe('TelephonyNotificationManager', () => {
           data: {
             id: '1',
             scope: 'telephony',
+            priority: NOTIFICATION_PRIORITY.INCOMING_CALL,
           },
-          body: 'Unknown Caller ',
+          body: 'Unknown Caller 123',
           icon: '/icon/incomingCall.png',
         }),
       );

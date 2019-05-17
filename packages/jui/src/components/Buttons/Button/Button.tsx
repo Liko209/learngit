@@ -7,7 +7,7 @@ import * as React from 'react';
 import MuiButton, {
   ButtonProps as MuiButtonProps,
 } from '@material-ui/core/Button';
-import { JuiCircularProgress } from '../../Progress';
+import { RuiCircularProgress } from 'rcui/components/Progress';
 import { Palette } from '../../../foundation/theme/theme';
 import styled, { css } from '../../../foundation/styled-components';
 import {
@@ -67,7 +67,7 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
       variant={_variant}
       {...restProps}
     >
-      {loading ? <JuiCircularProgress size={20} color="inherit" /> : children}
+      {loading ? <RuiCircularProgress size={20} color="inherit" /> : children}
     </MuiButton>
   );
 };
@@ -83,8 +83,10 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
   && {
     min-width: ${({ theme }) => width(26)({ theme })};
     padding: ${spacing(2.5, 4)};
+    text-transform: none;
     ${typography('button')};
     color: ${palette('primary', 'main')};
+    text-align: center;
     &.containedButtonStyle {
       color: ${palette('common', 'white')};
       ${shadow(3)}
@@ -138,6 +140,7 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
       transform: scale(1);
       animation-name: ${({ theme }) => rippleEnter(theme)};
     }
+  }
   }
 `;
 

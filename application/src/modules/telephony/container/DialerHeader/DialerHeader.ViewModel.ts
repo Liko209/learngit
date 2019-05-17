@@ -3,27 +3,21 @@
  * @Date: 2019-03-06 16:31:49
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, computed } from 'mobx';
+import { computed } from 'mobx';
 import { container } from 'framework';
 import { TelephonyService } from '../../service';
 import { TelephonyStore } from '../../store';
 import { StoreViewModel } from '@/store/ViewModel';
-import { getEntity } from '@/store/utils';
-import { ENTITY_NAME } from '@/store';
-import {
-  Person,
-  PhoneNumberInfo,
-  PHONE_NUMBER_TYPE,
-} from 'sdk/module/person/entity';
-import PersonModel from '@/store/models/Person';
 import { DialerHeaderProps, DialerHeaderViewProps } from './types';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
+import { ChangeEvent, KeyboardEvent } from 'react';
 
 class DialerHeaderViewModel extends StoreViewModel<DialerHeaderProps>
   implements DialerHeaderViewProps {
   private _telephonyService: TelephonyService = container.get(
     TELEPHONY_SERVICE,
   );
+
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
 
   @computed
@@ -33,55 +27,73 @@ class DialerHeaderViewModel extends StoreViewModel<DialerHeaderProps>
 
   @computed
   get isExt() {
-    if (this._person) {
-      return this._person.phoneNumbers.some((info: PhoneNumberInfo) => {
-        if (
-          info.type === PHONE_NUMBER_TYPE.EXTENSION_NUMBER &&
-          info.phoneNumber === this._telephonyStore.phoneNumber
-        ) {
-          return true;
-        }
-        return false;
-      });
-    }
-
-    return true;
+    return this._telephonyStore.isExt;
   }
 
   @computed
   get name() {
-    if (this._person) {
-      return this._person.userDisplayName;
-    }
-    return '';
+    return this._telephonyStore.displayName;
   }
 
-  @observable
-  uid?: number;
+  deleteLastInputString = () => {
+    this._telephonyService.deleteInputString();
+  }
 
-  @observable
-  extensionPhoneNumbers?: number[];
+  deleteInputString = () => {
+    this._telephonyService.deleteInputString(true);
+  }
 
-  constructor(props: DialerHeaderProps) {
-    super(props);
-    this.reaction(
-      () => this._telephonyStore.phoneNumber,
-      async (phoneNumber: string) => {
-        const contact = await this._telephonyService.matchContactByPhoneNumber(
-          phoneNumber,
-        );
-        if (contact) {
-          this.uid = contact.id;
-        }
-      },
-      { fireImmediately: true },
-    );
+  onFocus = () => {
+    this._telephonyStore.onDialerInputFocus();
+  }
+
+  onBlur = () => {
+    this._telephonyStore.onDialerInputBlur();
+  }
+
+  onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this._telephonyService.updateInputString(e.target.value);
+  }
+
+  onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && this._telephonyStore.inputString.length) {
+      /**
+       * TODO: move this call making & state changing logic down to SDK
+       */
+      this._makeCall(this._telephonyStore.inputString);
+      this._telephonyStore.dialerCall();
+    }
+  }
+
+  // FIXME: remove this logic by exposing the phone parser from SDK to view-model layer
+  _makeCall = async (val: string) => {
+    // make sure line 30 run before end()
+    if (!(await this._telephonyService.makeCall(val))) {
+      await new Promise((resolve) => {
+        requestAnimationFrame(resolve);
+      });
+      this._telephonyStore.end();
+    }
   }
 
   @computed
-  private get _person() {
-    if (!this.uid) return null;
-    return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, this.uid);
+  get uid() {
+    return this._telephonyStore.uid;
+  }
+
+  @computed
+  get shouldDisplayDialer() {
+    return this._telephonyStore.shouldDisplayDialer;
+  }
+
+  @computed
+  get inputString() {
+    return this._telephonyStore.inputString;
+  }
+
+  @computed
+  get dialerInputFocused() {
+    return this._telephonyStore.dialerInputFocused;
   }
 }
 

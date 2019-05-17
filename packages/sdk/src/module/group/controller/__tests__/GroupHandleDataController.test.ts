@@ -18,13 +18,13 @@ import { StateService } from '../../../state';
 import { GroupDao } from '../../dao';
 import { Group } from '../../entity';
 import { GroupHandleDataController } from '../GroupHandleDataController';
-import { AccountUserConfig } from '../../../../module/account/config';
+import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { SYNC_SOURCE } from '../../../../module/sync';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 jest.mock('../../../../module/config');
-jest.mock('../../../../module/account/config');
+jest.mock('../../../../module/account/config/AccountUserConfig');
 
 jest.mock('../../../../api');
 jest.mock('../../../../framework/controller/impl/EntitySourceController');
@@ -33,6 +33,7 @@ jest.mock('../../../profile');
 jest.mock('../../../../module/account');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../state');
+jest.mock('sdk/framework/service/EntityBaseService');
 jest.mock('../../../../dao', () => {
   const dao = {
     getEntityName: jest.fn().mockReturnValue('test'),
@@ -46,6 +47,7 @@ jest.mock('../../../../dao', () => {
     daoManager: {
       getDao: () => dao,
       getKVDao: () => dao,
+      observeDBInitialize: jest.fn(),
     },
   };
 });
@@ -121,12 +123,16 @@ beforeEach(() => {
       if (serviceName === ServiceConfig.STATE_SERVICE) {
         return stateService;
       }
+
       if (serviceName === ServiceConfig.PERSON_SERVICE) {
         return personService;
       }
-
       if (serviceName === ServiceConfig.PROFILE_SERVICE) {
         return profileService;
+      }
+
+      if (serviceName === ServiceConfig.ACCOUNT_SERVICE) {
+        return { userConfig: AccountUserConfig.prototype };
       }
       return null;
     });
@@ -448,6 +454,42 @@ describe('GroupHandleDataController', () => {
         },
       });
       expect(notificationCenter.emit).toHaveBeenCalledTimes(0);
+    });
+    it('should not update most_recent_post_id when post is pre-insert', async () => {
+      daoManager
+        .getDao(GroupDao)
+        .doInTransaction.mockImplementation(async (fn: Function) => {
+          await fn();
+        });
+      const group = {
+        id: 2,
+        members: [],
+        most_recent_post_created_at: 88,
+        most_recent_post_id: 10,
+      };
+      daoManager.getDao(GroupDao).get.mockResolvedValueOnce(group);
+      entitySourceController.get.mockResolvedValueOnce(group);
+      post['id'] = -1;
+      map.clear();
+
+      map.set(-1, post);
+      jest
+        .spyOn(groupHandleDataController, 'handlePartialData')
+        .mockResolvedValueOnce();
+      await groupHandleDataController.handleGroupMostRecentPostChanged({
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          entities: map,
+        },
+      });
+      expect(groupHandleDataController.handlePartialData).toHaveBeenCalledWith([
+        {
+          _id: 2,
+          most_recent_content_modified_at: 100,
+          most_recent_post_created_at: 100,
+        },
+      ]);
+      expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     });
   });
 

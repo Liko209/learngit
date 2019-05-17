@@ -13,6 +13,9 @@ class ConfigWrapper {
   public fileUpload: boolean;
   public sceneRepeatCount: number;
   public buildURL: string;
+  public runFps: boolean;
+  public defaultProtocolTimeout: number;
+  public takeHeapSnapshot: boolean;
   /* basic config */
 
   /* mock config */
@@ -28,6 +31,9 @@ class ConfigWrapper {
   public jupiterPin: string;
   public jupiterLoginUrl: string;
   public jupiterHost: string;
+  public jupiterReleaseHost: string;
+  public jupiterStageHost: string;
+  public jupiterDevelopHost: string;
   public jupiterAppKey: string;
   public jupiterAppSecret: string;
   /* jupiter config */
@@ -60,6 +66,9 @@ class ConfigWrapper {
     this.fileServerUrl = this.getValue("FILE_SERVER_URL", "http://xmn02-i01-mck01.lab.nordigy.ru:9000");
     this.sceneRepeatCount = parseInt(this.getValue("SCENE_REPEAT_COUNT", "100"));
     this.buildURL = this.getValue("BUILD_URL", "http://jenkins.lab.rcch.ringcentral.com/view/Jupiter/job/Jupiter-Performance-Daily/");
+    this.runFps = this.getValue("RUN_FPS", "true").toLowerCase() === 'true';
+    this.defaultProtocolTimeout = parseInt(this.getValue("DEFAULT_PROTOCOL_TIMEOUT", "120000"));
+    this.takeHeapSnapshot = this.getValue("TAKE_HEAP_SNAPSHOT", "false").toLowerCase() === 'true';
     /* basic config */
 
     /* mock config */
@@ -75,12 +84,15 @@ class ConfigWrapper {
     this.jupiterPin = this.getValue("JUPITER_USER_PIN", "1001");
     this.jupiterLoginUrl = this.getValue("JUPITER_LOGIN_URL", "https://xmn02-i01-mck02.lab.nordigy.ru/jupiter/login");
     this.jupiterHost = this.getValue("JUPITER_HOST", "https://develop.fiji.gliprc.com");
+    this.jupiterReleaseHost = this.getValue("JUPITER_RELEASE_HOST", "https://release.fiji.gliprc.com");
+    this.jupiterStageHost = this.getValue("JUPITER_STAGE_HOST", "https://stage.fiji.gliprc.com");
+    this.jupiterDevelopHost = this.getValue("JUPITER_DEVELOP_HOST", "https://develop.fiji.gliprc.com");
     this.jupiterAppKey = this.getValue("JUPITER_APP_KEY", "YCWFuqW8T7-GtSTb6KBS6g");
     this.jupiterAppSecret = this.getValue("JUPITER_APP_SECRET", "vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA");
     /* jupiter config */
 
     /* db connecttion config */
-    this.dbName = this.getValue("DB_NAME", "jupiter_performance");
+    this.dbName = this.getValue("DB_NAME", "performance_testing");
     this.dbUser = this.getValue("DB_USER", "root");
     this.dbPassword = this.getValue("DB_PASSWORD", "123456");
     this.dbHost = this.getValue("DB_HOST", "127.0.0.1");

@@ -13,9 +13,10 @@ import {
 } from '../../../foundation/Iconography';
 import tinycolor from 'tinycolor2';
 import styled, { keyframes } from '../../../foundation/styled-components';
-import { JuiArrowTip } from '../../Tooltip/ArrowTip';
+import { RuiTooltip } from 'rcui/components/Tooltip';
 import { palette, grey, width } from '../../../foundation/utils/styles';
 import { Theme, Palette } from '../../../foundation/theme/theme';
+import { TooltipProps } from '@material-ui/core/Tooltip';
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 type IconButtonVariant = 'round' | 'plain';
@@ -37,6 +38,7 @@ type JuiIconButtonProps = {
   ref?: any;
   children: ReactNode;
   stretchIcon?: boolean;
+  tooltipPlacement?: TooltipProps['placement'];
 } & Omit<MuiIconButtonProps, 'color' | 'children'> &
   Omit<JuiIconographyProps, 'color' | 'children'>;
 
@@ -81,6 +83,7 @@ const WrappedMuiIconButton = ({
   colorScope,
   alwaysEnableTooltip,
   tooltipForceHide,
+  tooltipPlacement,
   stretchIcon,
   shouldPersistBg,
   ...rest
@@ -184,6 +187,7 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
     color,
     disableToolTip = false,
     alwaysEnableTooltip = false,
+    tooltipPlacement,
     ariaLabel,
     ...rest
   } = props;
@@ -230,9 +234,13 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
   }
   if (!disableToolTip) {
     return (
-      <JuiArrowTip title={tooltipTitle} tooltipForceHide={tooltipForceHide}>
+      <RuiTooltip
+        title={tooltipTitle}
+        tooltipForceHide={tooltipForceHide}
+        placement={tooltipPlacement}
+      >
         {renderToolTipWrapper()}
-      </JuiArrowTip>
+      </RuiTooltip>
     );
   }
   return renderToolTipWrapper();

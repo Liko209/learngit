@@ -92,7 +92,7 @@ class Test extends React.Component {
                 targetElement={this.targetImage!}
                 show={this.state.show}
                 duration="standard"
-                easing="openCloseDialog"
+                easing="sharp"
                 onExited={this.hide}
               />
             )}

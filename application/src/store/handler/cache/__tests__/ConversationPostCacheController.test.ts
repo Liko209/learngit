@@ -9,6 +9,7 @@ import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDa
 import { Post } from 'sdk/module/post/entity';
 import { SortableListStore } from '@/store/base';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/api');
 jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
@@ -24,6 +25,9 @@ describe('ConversationPostCacheController', () => {
   let fetchSortableDataListHandler2: FetchSortableDataListHandler<Post>;
   let fetchSortableDataListHandler3: FetchSortableDataListHandler<Post>;
   function setUp() {
+    jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
+      getPostsByGroupId: jest.fn().mockResolvedValue([]),
+    });
     fetchSortableDataListHandler2 = new FetchSortableDataListHandler(
       null as any,
       null as any,

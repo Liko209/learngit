@@ -6,7 +6,7 @@
 import { action, computed, observable } from 'mobx';
 
 import GroupService, { TeamSetting, Group } from 'sdk/module/group';
-import { AccountUserConfig } from 'sdk/module/account/config';
+import { AccountService } from 'sdk/module/account';
 
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
@@ -76,7 +76,9 @@ class CreateTeamViewModel extends AbstractViewModel {
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     );
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const creatorId = userConfig.getGlipUserId();
     try {
       this.loading = true;

@@ -14,14 +14,15 @@ import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SOCKET, SERVICE } from '../../../service/eventKey';
 import { Raw } from '../../../framework/model/Raw';
 import { ProfileController } from '../controller/ProfileController';
-import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { SettingOption } from '../types';
+import { ProfileSetting } from '../setting';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {
   private profileController: ProfileController;
-
+  private _profileSetting: ProfileSetting;
   constructor() {
     super(true, daoManager.getDao(ProfileDao), {
       basePath: '/profile',
@@ -39,6 +40,15 @@ class ProfileService extends EntityBaseService<Profile>
     this.setCheckTypeFunc((id: number) => {
       return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PROFILE);
     });
+  }
+
+  protected onStopped() {
+    if (this._profileSetting) {
+      this._profileSetting.unsubscribe();
+      delete this._profileSetting;
+    }
+
+    super.onStopped();
   }
 
   handleIncomingData = async (
@@ -77,12 +87,13 @@ class ProfileService extends EntityBaseService<Profile>
   }
 
   async reorderFavoriteGroups(
+    favIds: number[],
     oldIndex: number,
     newIndex: number,
   ): Promise<Profile | null> {
     return await this.getProfileController()
       .getProfileActionController()
-      .reorderFavoriteGroups(oldIndex, newIndex);
+      .reorderFavoriteGroups(favIds, oldIndex, newIndex);
   }
 
   async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {
@@ -129,6 +140,27 @@ class ProfileService extends EntityBaseService<Profile>
     await this.getProfileController()
       .getSettingsActionController()
       .updateSettingOptions(options);
+  }
+
+  async getDefaultCaller() {
+    return await this.getProfileController()
+      .getProfileDataController()
+      .getDefaultCaller();
+  }
+
+  private get profileSettings() {
+    if (!this._profileSetting) {
+      this._profileSetting = new ProfileSetting(this);
+    }
+    return this._profileSetting;
+  }
+
+  async getSettingsByParentId(settingId: number) {
+    return this.profileSettings.getSettingsByParentId(settingId);
+  }
+
+  async getSettingItemById(settingId: number) {
+    return this.profileSettings.getSettingById(settingId);
   }
 }
 

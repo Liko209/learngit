@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>Colombia</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Colombia" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Flag_of_Colombia" transform="translate(0.000000, 5.000000)" fill-rule="nonzero">
+            <polygon id="Rectangle-path" fill="#CE1126" points="0 0 24 0 24 13.5652174 0 13.5652174"></polygon>
+            <polygon id="Rectangle-path" fill="#003893" points="0 0 24 0 24 10.4347826 0 10.4347826"></polygon>
+            <polygon id="Rectangle-path" fill="#FCD116" points="0 0 24 0 24 6.7826087 0 6.7826087"></polygon>
+        </g>
+    </g>
+</svg>

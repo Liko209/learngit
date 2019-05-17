@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
+import React, { Component, ComponentType } from 'react';
 import { observer } from 'mobx-react';
 import { Markdown } from 'glipdown';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -37,12 +37,16 @@ import copy from 'copy-to-clipboard';
 import { PhoneNumberInfo } from 'sdk/module/person/entity';
 import { JuiIconButton } from 'jui/components/Buttons';
 import portalManager from '@/common/PortalManager';
-import { Call } from '@/modules/telephony';
+
+import { MessageStore } from '@/modules/message/store';
+import { container } from 'framework';
 
 @observer
 class ProfileDialogPersonContentViewComponent extends Component<
   WithTranslation & ProfileDialogPersonContentViewProps
 > {
+  private _messageStore: MessageStore = container.get(MessageStore);
+
   renderPresence = () => {
     const { id } = this.props;
     return <Presence uid={id} size="xlarge" borderSize="xlarge" />;
@@ -72,23 +76,35 @@ class ProfileDialogPersonContentViewComponent extends Component<
 
   renderIcons = (value: string, aria?: string, showCall?: boolean) => {
     const { t, id } = this.props;
-    return (
-      <FormCopy>
-        {showCall && (
-          <Call phone={value} size="small" id={id} analysisSource="profile" />
-        )}
-        <JuiIconButton
-          size="small"
-          onClick={this.onClickCopy.bind(this, value)}
-          tooltipTitle={t('common.copy')}
-          ariaLabel={t('common.ariaCopy', {
-            value: aria || value,
-          })}
-        >
-          copy
-        </JuiIconButton>
-      </FormCopy>
+    const copy = (
+      <JuiIconButton
+        size="small"
+        onClick={this.onClickCopy.bind(this, value)}
+        tooltipTitle={t('common.copy')}
+        ariaLabel={t('common.ariaCopy', {
+          value: aria || value,
+        })}
+        key="copy phone number"
+      >
+        copy
+      </JuiIconButton>
     );
+    const { conversationHeaderExtensions } = this._messageStore;
+    const icons = showCall
+      ? conversationHeaderExtensions.map((Comp: ComponentType<any>) => (
+          <Comp
+            key={`MESSAGE_PROFILE_CONTENT_EXTENSION_${Comp.displayName}`}
+            phone={value}
+            size="small"
+            id={id}
+            analysisSource="profile"
+          />
+        ))
+      : [];
+
+    icons.push(copy);
+
+    return <FormCopy>{icons}</FormCopy>;
   }
 
   onClickCopy = (value: string) => {

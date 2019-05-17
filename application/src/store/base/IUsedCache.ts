@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export default interface IUsedCache {
-  getUsedIds(): number[];
+import { ModelIdType } from 'sdk/framework/model';
+
+export default interface IUsedCache<IdType extends ModelIdType = number> {
+  getUsedIds(): IdType[];
 }

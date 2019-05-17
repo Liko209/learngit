@@ -114,6 +114,44 @@ describe('Post Dao', () => {
     });
   });
 
+  describe('queryIntervalPostsByGroupId()', () => {
+    beforeAll(async () => {
+      jest.spyOn(postDao, 'getPostViewDao').mockReturnValue(postViewDao);
+      await postDao.clear();
+      await postDao.bulkPut(posts);
+    });
+
+    beforeEach(async () => {
+      jest.clearAllMocks();
+      jest.restoreAllMocks();
+      jest.resetAllMocks();
+      jest.spyOn(daoManager, 'getDao').mockReturnValue(postDao);
+    });
+
+    it('should call postViewDao queryIntervalPostsByGroupId', async () => {
+      const spy = jest.spyOn(postViewDao, 'queryIntervalPostsByGroupId');
+      const result = await postDao.queryIntervalPostsByGroupId({
+        groupId: 9163628546,
+        startPostId: 1151236554756,
+        endPostId: 1151236399108,
+        limit: 500,
+      });
+      expect(spy).toBeCalled();
+    });
+
+    it('should return interval posts if start post is in db and end post is in db', async () => {
+      const result = await postDao.queryIntervalPostsByGroupId({
+        groupId: 9163628546,
+        startPostId: 1151236554756,
+        endPostId: 1151236399108,
+        limit: 500,
+      });
+      expect(result).toHaveLength(2);
+      expect(_.first(result).created_at).toBe(2);
+      expect(_.last(result).created_at).toBe(3);
+    });
+  });
+
   describe('local pre-inserted posts', () => {
     beforeEach(async () => {
       await postDao.clear();

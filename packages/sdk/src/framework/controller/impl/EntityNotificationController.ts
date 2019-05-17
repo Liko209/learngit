@@ -4,16 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { IdModel } from '../../model';
+import { IdModel, ModelIdType } from '../../model';
 import { IEntityChangeObserver } from '../types';
 import { ObservableController } from '../impl/ObservableController';
 import { IEntityNotificationController } from '../interface/IEntityNotificationController';
 
-class EntityNotificationController<T extends IdModel = IdModel>
-  extends ObservableController<IEntityChangeObserver>
+class EntityNotificationController<T extends IdModel<ModelIdType> = IdModel>
+  extends ObservableController<IEntityChangeObserver<T>>
   implements IEntityNotificationController<T> {
   constructor(private _filterFunc?: (entity: T) => boolean) {
     super();
+  }
+
+  setFilterFunc(filterFunc?: (entity: T) => boolean) {
+    this._filterFunc = filterFunc;
   }
 
   onReceivedNotification(entities: T[]) {

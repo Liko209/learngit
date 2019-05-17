@@ -129,6 +129,32 @@ export class BaseConversationPage extends BaseWebComponent {
     }
   }
 
+  get postCardBodies() {
+    return this.self.find(`[data-name="body"]`);
+  }
+
+  async scrollDownToCheckPostInOrder(posts: string[], maxTry: number = 10) {
+    let lastIndex = 0;
+    let currentIndex = 0;
+    for (const c of _.range(maxTry)) {
+      const count = await this.postCardBodies.count;
+      for (const i of _.range(count)) {
+        const text = await this.postCardBodies.nth(i).textContent
+        currentIndex = posts.indexOf(text)
+        assert(currentIndex >= 0, 'some post is not in postList')
+        if (i > 0) {
+          assert(currentIndex == lastIndex + 1);
+        }
+        lastIndex = currentIndex
+      }
+      if (currentIndex == posts.length - 1) break;
+      await this.scrollDownOnePage();
+      await this.t.wait(2e3);
+      lastIndex = 0;
+    }
+    assert(currentIndex == posts.length - 1, "retry scroll some times but all posts did not loaded");
+  }
+
   postItemById(postId: string) {
     return this.getComponent(PostItem, this.posts.filter(`[data-id="${postId}"]`));
   }
@@ -197,14 +223,34 @@ export class BaseConversationPage extends BaseWebComponent {
     }
   }
 
-  async scrollToCurrentFirstPost() {
-    const scrollTop = await this.posts.nth(0).scrollTop;
+  async scrollUpOnePage() {
+    const scrollTop = await this.scrollDiv.scrollTop - await this.scrollDiv.clientHeight;
     await this.scrollToY(scrollTop);
   }
 
-  async scrollToCurrentLastPost() {
-    const scrollTop = await this.posts.nth(-1).scrollTop;
+  async scrollDownOnePage() {
+    const scrollTop = await this.scrollDiv.scrollTop + await this.scrollDiv.clientHeight;
     await this.scrollToY(scrollTop);
+  }
+
+  async isPossibleToScrollBottom() {
+    const scrollHeight = await this.scrollDiv.scrollHeight;
+    await this.scrollToBottom();
+    return scrollHeight !== await this.scrollDiv.scrollHeight
+  }
+
+  async isPossibleToScrollUp() {
+    const scrollHeight = await this.scrollDiv.scrollHeight;
+    await this.scrollToTop();
+    return scrollHeight !== await this.scrollDiv.scrollHeight;
+  }
+
+  async scrollToTop() {
+    await this.scrollToY(0);
+  }
+
+  async getScrollHeight() {
+    return await this.scrollDiv.scrollHeight;
   }
 
   async scrollUpToViewPostById(postId: string) {
@@ -214,7 +260,7 @@ export class BaseConversationPage extends BaseWebComponent {
         await postItem.scrollIntoView()
         break
       } else {
-        await this.scrollToCurrentFirstPost();
+        await this.scrollUpOnePage();
         await this.t.wait(1e3);
       }
     }
@@ -228,7 +274,7 @@ export class BaseConversationPage extends BaseWebComponent {
         await postItem.scrollIntoView()
         break
       } else {
-        await this.scrollToCurrentLastPost();
+        await this.scrollDownOnePage();
         await this.t.wait(1e3);
       }
     }
@@ -468,6 +514,14 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.expect(this.readOnlyDiv.exists).ok();
   }
 
+  get emojiButton() {
+    return this.getSelectorByAutomationId('conversation-chatbar-emoji-button');
+  }
+
+  async clickEmojiButton() {
+    await this.t.click(this.emojiButton);
+  }
+
   /* 1:1 */
   get telephonyButton() {
     return this.telephonyIcon.parent('button'); //TODO: add automationId
@@ -586,6 +640,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
+  get href(){
+    return this.self.find(`[href]`)
+  }
+
   get img() {
     this.warnFlakySelector(); // todo: all specify item...
     return this.body.find('img');
@@ -614,8 +672,19 @@ export class PostItem extends BaseWebComponent {
     return this.mentions.filter((el) => el.textContent === name);
   }
 
-  emojiTitle(text) {
-    return this.text.find("img").withAttribute("title", text);
+  get emojis() {
+    return this.self.find('.emoji');
+  }
+
+  async shouldHasEmojiByValue(text: string) {
+    await this.t.expect(this.emojis.withAttribute('title', `:${text}:`))
+  }
+
+  async emojisShouldBeInOrder(valueList: string[], timeout: number = 5e3) {
+    await this.t.expect(this.emojis.count).eql(valueList.length, { timeout });
+    for (const n in valueList) {
+      await this.t.expect(this.emojis.nth(+n).withAttribute('title', `:${valueList[n]}:`)).ok({ timeout });
+    }
   }
 
   get likeToggleOnActionBar() {
@@ -832,6 +901,70 @@ export class PostItem extends BaseWebComponent {
 
   async shouldBeHighLight() {
     await this.t.expect(this.isHighLight).ok();
+  }
+
+  get phoneLink() {
+    return this.getSelectorByAutomationId('phoneNumberLink', this.self);
+  }
+
+  phoneLinkByDataId(dataId: string) {
+    return this.phoneLink.withAttribute('data-id', dataId);
+  }
+  // be searched item
+  get keyworkdsByHighLight() {
+    return this.self.find('span.highlight-term');
+  }
+
+  // special item card
+  get itemCard() {
+    return this.self.find('.conversation-item-cards');
+  }
+
+  get eventTitle() {
+    this.warnFlakySelector();
+    return this.getSelectorByIcon('event', this.itemCard).nextSibling('span'); // todo: automation id
+  }
+
+  get eventLocation() {
+    this.warnFlakySelector();
+    return this.itemCard.find('div').withExactText('Location').nextSibling('div'); // todo: automation id
+  }
+
+  get eventDescripton() {
+    this.warnFlakySelector();
+    return // todo: automation id
+  }
+
+  get noteTitle() {
+    return this.itemCard.child('div').nth(0); // todo: automation id
+  }
+
+  get noteBody() {
+    return this.itemCard.child('div').nth(1); // todo: automation id
+  }
+
+  get taskTitle() {
+    return this.itemCard.child('div').nth(0).child('span').nth(1);
+  }
+
+  get taskAssignee() {
+    return this.itemCard.find('.task-avatar-name');
+  }
+
+  get taskSection() {
+    return this.itemCard.find('div').withExactText('Section').nextSibling('div');
+  }
+
+  get taskDescription() {
+    return this.itemCard.find('div').withExactText('Description').nextSibling('div');
+  }
+
+  get codeTitle() {
+    return this.getSelectorByIcon('code', this.itemCard).nextSibling('span');
+  }
+
+  get codeBody() {
+    return this.getSelectorByAutomationId('codeSnippetBody', this.itemCard);
   }
 
 }

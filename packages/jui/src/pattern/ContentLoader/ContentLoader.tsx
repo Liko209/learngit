@@ -6,7 +6,7 @@ import { withTheme } from 'styled-components';
 import styled from '../../foundation/styled-components';
 import { ThemeProps } from '../../foundation/theme/theme';
 import { width } from '../../foundation/utils/styles';
-import { JuiCircularProgress } from '../../components/Progress';
+import { RuiCircularProgress } from 'rcui/components/Progress';
 
 const WrapperCircularProgress = styled.div`
   position: absolute;
@@ -298,7 +298,7 @@ class ContentLoader extends PureComponent<ThemeProps> {
               }}
             >
               <WrapperCircularProgress>
-                <JuiCircularProgress size={42} />
+                <RuiCircularProgress size={42} />
               </WrapperCircularProgress>
             </Grid>
             <Hidden only={['xs', 'sm']}>

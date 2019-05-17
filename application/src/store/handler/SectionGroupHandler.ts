@@ -29,7 +29,7 @@ import _ from 'lodash';
 import { autorun, computed, observable, reaction } from 'mobx';
 import { mainLogger } from 'sdk';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { AccountUserConfig } from 'sdk/module/account/config';
+import { AccountService } from 'sdk/module/account';
 import { ProfileService } from 'sdk/module/profile';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { StateService } from 'sdk/module/state';
@@ -38,7 +38,7 @@ import {
   NotificationEntityReplaceBody,
   NotificationEntityReplacePayload,
 } from 'sdk/service/notificationCenter';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
+import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
 import { TDelta } from '../base/fetch/types';
 import preFetchConversationDataHandler from './PreFetchConversationDataHandler';
 
@@ -122,6 +122,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private async _init() {
+    mainLogger.tags(LOG_TAG).info('start init SectionGroupHandler');
     await this._initHandlerMap();
     this._lastGroupId = storeManager
       .getGlobalStore()
@@ -348,7 +349,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (checkLimit) {
       limit = await this._getMaxLeftRailGroup();
     }
-    mainLogger.info(LOG_TAG, `_remove limit: ${limit}`);
+    mainLogger.tags(LOG_TAG).info(`_remove limit: ${limit}`);
     const directIdsShouldBeRemoved: number[] = [];
     const teamIdsShouldBeRemoved: number[] = [];
     const directIds = this.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE);
@@ -549,11 +550,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   async fetchGroups(sectionType: SECTION_TYPE, direction: QUERY_DIRECTION) {
     if (this._handlersMap[sectionType]) {
       const performanceKey = this._getPerformanceKey(sectionType);
-      const logId = Date.now();
-      PerformanceTracerHolder.getPerformanceTracer().start(
-        performanceKey,
-        logId,
-      );
+      const performanceTracer = PerformanceTracer.initial();
       const groups =
         (await this._handlersMap[sectionType].fetchData(direction)) || [];
       if (sectionType === SECTION_TYPE.FAVORITE) {
@@ -581,7 +578,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           }
         });
       }
-      PerformanceTracerHolder.getPerformanceTracer().end(logId, groups.length);
+      performanceTracer.end({ key: performanceKey, count: groups.length });
     }
   }
 
@@ -661,10 +658,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     const lastGroupId = this._lastGroupId;
     const limit = await this._getMaxLeftRailGroup();
-    mainLogger.info(
-      LOG_TAG,
-      `removeOverLimitGroupByChangingCurrentGroupId limit: ${limit}`,
-    );
+    mainLogger
+      .tags(LOG_TAG)
+      .info(`removeOverLimitGroupByChangingCurrentGroupId limit: ${limit}`);
     if (currentId !== lastGroupId) {
       await this._removeOverLimitGroupByChangingCurrentGroupId(
         SECTION_TYPE.DIRECT_MESSAGE,
@@ -712,10 +708,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     const directIds = this.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE);
     const teamIds = this.getGroupIdsByType(SECTION_TYPE.TEAM);
     const limit = await this._getMaxLeftRailGroup();
-    mainLogger.info(
-      LOG_TAG,
-      `removeOverLimitGroupByChangingIds limit: ${limit}`,
-    );
+    mainLogger
+      .tags(LOG_TAG)
+      .info(`removeOverLimitGroupByChangingIds limit: ${limit}`);
     await this._removeOverLimitGroupByChangingIds(
       SECTION_TYPE.DIRECT_MESSAGE,
       directIds,
@@ -761,7 +756,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       ServiceConfig.PROFILE_SERVICE,
     );
 
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const currentProfileId = userConfig.getCurrentUserProfileId();
 
     let count = DEFAULT_LEFT_RAIL_GROUP;

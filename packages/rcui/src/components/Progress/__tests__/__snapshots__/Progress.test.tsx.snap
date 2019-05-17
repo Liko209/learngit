@@ -1,0 +1,87 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RuiCircularProgress renders correctly 1`] = `
+<div>
+  <div
+    className="MuiCircularProgress-root-1 MuiCircularProgress-colorPrimary-4 MuiCircularProgress-indeterminate-3 "
+    role="progressbar"
+    style={
+      Object {
+        "height": 24,
+        "width": 24,
+      }
+    }
+  >
+    <svg
+      className="MuiCircularProgress-svg-6"
+      viewBox="22 22 44 44"
+    >
+      <circle
+        className="MuiCircularProgress-circle-7 MuiCircularProgress-circleIndeterminate-9"
+        cx={44}
+        cy={44}
+        fill="none"
+        r={20.2}
+        strokeWidth={3.6}
+        style={Object {}}
+      />
+    </svg>
+  </div>
+  <div
+    className="MuiCircularProgress-root-1 MuiCircularProgress-colorSecondary-5 MuiCircularProgress-indeterminate-3 "
+    role="progressbar"
+    style={
+      Object {
+        "height": 30,
+        "width": 30,
+      }
+    }
+  >
+    <svg
+      className="MuiCircularProgress-svg-6"
+      viewBox="22 22 44 44"
+    >
+      <circle
+        className="MuiCircularProgress-circle-7 MuiCircularProgress-circleIndeterminate-9"
+        cx={44}
+        cy={44}
+        fill="none"
+        r={20.2}
+        strokeWidth={3.6}
+        style={Object {}}
+      />
+    </svg>
+  </div>
+</div>
+`;
+
+exports[`RuiLinearProgress renders correctly 1`] = `
+<div>
+  <div
+    className="MuiLinearProgress-root-11 MuiLinearProgress-colorPrimary-12 MuiLinearProgress-indeterminate-15 "
+    role="progressbar"
+  >
+    <div
+      className="MuiLinearProgress-bar-21 MuiLinearProgress-barColorPrimary-22 MuiLinearProgress-bar1Indeterminate-24"
+      style={Object {}}
+    />
+    <div
+      className="MuiLinearProgress-bar-21 MuiLinearProgress-barColorPrimary-22 MuiLinearProgress-bar2Indeterminate-27"
+      style={Object {}}
+    />
+  </div>
+  <div
+    className="MuiLinearProgress-root-11 MuiLinearProgress-colorSecondary-13 MuiLinearProgress-indeterminate-15 "
+    role="progressbar"
+  >
+    <div
+      className="MuiLinearProgress-bar-21 MuiLinearProgress-barColorSecondary-23 MuiLinearProgress-bar1Indeterminate-24"
+      style={Object {}}
+    />
+    <div
+      className="MuiLinearProgress-bar-21 MuiLinearProgress-barColorSecondary-23 MuiLinearProgress-bar2Indeterminate-27"
+      style={Object {}}
+    />
+  </div>
+</div>
+`;

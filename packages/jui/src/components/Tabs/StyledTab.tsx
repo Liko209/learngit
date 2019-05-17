@@ -28,6 +28,7 @@ const StyledMuiTab = styled<MuiTabProps>(MuiTab)`
     min-width: ${width(8)};
     max-width: ${width(30)};
     min-height: ${height(8)};
+    text-transform: none;
   }
   &.selected {
     .label {

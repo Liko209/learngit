@@ -31,6 +31,8 @@ import { SortableListStore } from '../SortableListStore';
 const PAGE_SIZE = 2;
 
 jest.mock('sdk/api');
+jest.mock('sdk/module/config/service/BaseConfigService');
+jest.mock('sdk/module/config/UserConfig');
 
 type SimpleItem = IdModel & {
   value: number;

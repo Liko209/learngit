@@ -48,6 +48,8 @@ const testcafeElectronRcContent = JSON.stringify(electronRunConfig, null, 4);
 fs.writeFileSync(testcafeElectronRcFilename, testcafeElectronRcContent);
 logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectronRcContent}`);
 
+// initialize axios-debug-log
+MiscUtils.axiosDebugConfig();
 
 // initialize mock client
 export const mockClient = ENABLE_MOCK_SERVER ? new MockClient(MOCK_SERVER_URL) : null;
@@ -157,6 +159,8 @@ export function setupCase(accountType: string) {
     );
 
     await h(t).logHelper.setup();
+
+    await h(t).upgradeHelper.setup();
 
     await h(t).notificationHelper.setup();
 

@@ -101,6 +101,16 @@ describe('', () => {
       const result = await rcAccountInfoController.getAccountBrandId();
       expect(result).toEqual(RC_BRAND_IDS.RINGCENTRAL);
     });
+
+    it('should return undefined id when has no brand id in company and account ', async () => {
+      rcInfoFetchController.getRCAccountInfo = jest
+        .fn()
+        .mockResolvedValue(inValidAccountInfo);
+
+      companyService.getBrandType = jest.fn().mockResolvedValue(undefined);
+      const result = await rcAccountInfoController.getAccountBrandId();
+      expect(result).toBeUndefined();
+    });
   });
 
   describe('getOutboundCallPrefix', () => {
@@ -111,7 +121,7 @@ describe('', () => {
 
     it.each`
       ocp     | result
-      ${'1'}  | ${'0'}
+      ${'1'}  | ${'\0'}
       ${'2'}  | ${'2'}
       ${'3'}  | ${'3'}
       ${'4'}  | ${'4'}
@@ -120,7 +130,7 @@ describe('', () => {
       ${'7'}  | ${'7'}
       ${'8'}  | ${'8'}
       ${'9'}  | ${'9'}
-      ${'10'} | ${'0'}
+      ${'10'} | ${'\0'}
     `(
       'should return ocp as $result when ocp is $ocp',
       async ({ ocp, result }) => {

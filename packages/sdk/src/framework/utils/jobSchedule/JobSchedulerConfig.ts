@@ -26,12 +26,15 @@ class JobSchedulerConfig extends UserConfig {
   }
 
   clearFetchDataConfigs() {
-    this.remove(JOB_KEY.FETCH_ACCOUNT_INFO);
     this.remove(JOB_KEY.FETCH_CLIENT_INFO);
+    this.remove(JOB_KEY.FETCH_ACCOUNT_INFO);
     this.remove(JOB_KEY.FETCH_EXTENSION_INFO);
-    this.remove(JOB_KEY.FETCH_PHONE_DATA);
     this.remove(JOB_KEY.FETCH_ROLE_PERMISSIONS);
     this.remove(JOB_KEY.FETCH_SPECIAL_NUMBER_RULE);
+    this.remove(JOB_KEY.FETCH_PHONE_DATA);
+    this.remove(JOB_KEY.FETCH_EXTENSION_PHONE_NUMBER_LIST);
+    this.remove(JOB_KEY.FETCH_DIALING_PLAN);
+    this.remove(JOB_KEY.FETCH_RC_ACCOUNT_SERVICE_INFO);
   }
 }
 

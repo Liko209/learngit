@@ -8,8 +8,10 @@ import { analyticsCollector } from '../index';
 import { dataAnalysis } from 'sdk';
 import { ENTITY_NAME } from '@/store/constants';
 import * as utils from '@/store/utils';
+import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 jest.mock('@/store/utils');
 jest.mock('sdk');
+jest.mock('@/containers/VersionInfo/helper');
 
 describe('analyticsCollector', () => {
   describe('makeOutboundCall', () => {
@@ -50,7 +52,7 @@ describe('analyticsCollector', () => {
         );
       jest.spyOn(utils, 'getGlobalValue').mockReturnValue(userId);
     }
-    it('identify should call with correct value', () => {
+    it('identify should call with correct value', async () => {
       setUp(
         {
           email: 99,
@@ -64,7 +66,10 @@ describe('analyticsCollector', () => {
         },
         100,
       );
-      analyticsCollector.identify();
+      fetchVersionInfo.mockResolvedValueOnce({
+        deployedVersion: '1.0',
+      });
+      await analyticsCollector.identify();
       expect(dataAnalysis.identify).toBeCalledWith(100, {
         accountType: 'rc',
         companyId: 1,
@@ -74,6 +79,7 @@ describe('analyticsCollector', () => {
         id: 100,
         rcAccountId: 2,
         signupType: 'viral',
+        appVersion: '1.0',
       });
     });
     it('identify should not be called due to invalid data', () => {

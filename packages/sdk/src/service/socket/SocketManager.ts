@@ -3,14 +3,15 @@
  * @Date: 2018-06-22 16:59:44
  * Copyright © RingCentral. All rights reserved.
  */
-import { SocketFSM } from './SocketFSM';
+import { SocketFSM, StateHandlerType } from './SocketFSM';
 import notificationCenter from '../../service/notificationCenter';
 import { CONFIG, SOCKET, SERVICE } from '../../service/eventKey';
 import { mainLogger } from 'foundation';
-import { AuthUserConfig } from '../../module/account/config';
+import { AccountService } from '../../module/account/service';
 import { SocketCanConnectController } from './SocketCanConnectController';
 import { getCurrentTime } from '../../utils/jsUtils';
-import { SyncUserConfig } from '../../module/sync/config/SyncUserConfig';
+import { SyncService } from '../../module/sync/service';
+import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
 
 const SOCKET_LOGGER = 'SOCKET';
 export class SocketManager {
@@ -142,7 +143,9 @@ export class SocketManager {
   }
 
   private _onLogin() {
-    const synConfig = new SyncUserConfig();
+    const synConfig = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    ).userConfig;
     const timeStamp = synConfig.getLastIndexTimestamp();
     this.info('onLogin', timeStamp);
     if (!timeStamp) {
@@ -200,7 +203,9 @@ export class SocketManager {
     if (!serverUrl) {
       return;
     }
-    const socketUserConfig = new SyncUserConfig();
+    const socketUserConfig = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    ).userConfig;
     socketUserConfig.setReconnectSocketServerHost(serverUrl);
     if (serverUrl === runningUrl) {
       return;
@@ -327,7 +332,9 @@ export class SocketManager {
   private _startRealFSM() {
     // TO-DO: 1. jitter 2. ignore for same serverURL when activeFSM is connected?
     const serverHost = this._getServerHost();
-    const authConfig = new AuthUserConfig();
+    const authConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).authUserConfig;
     const glipToken = authConfig.getGlipToken();
     this.info('starting FSM with host:', serverHost);
     if (serverHost) {
@@ -360,15 +367,20 @@ export class SocketManager {
   private _clearReconnectSocketHost() {
     this.info('start clearing reconnect socket address');
     const runningUrl = this._getRunningFSMUrl();
-    const socketUserConfig = new SyncUserConfig();
+    const socketUserConfig = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    ).userConfig;
     if (runningUrl === socketUserConfig.getReconnectSocketServerHost()) {
       this.info('clearing reconnect socket address', runningUrl);
       socketUserConfig.setReconnectSocketServerHost('');
     }
   }
 
-  private _stateHandler(name: string, state: string) {
-    this.info('_stateHandler state:', state);
+  private _stateHandler({ name, state, isManualStopped }: StateHandlerType) {
+    this.info(
+      `stateHandler name:${name}, state:${state}, isManualStopped:${isManualStopped}`,
+    );
+
     if (state === 'connected') {
       const activeState = this.activeFSM && this.activeFSM.state;
       if (state === activeState) {
@@ -379,7 +391,8 @@ export class SocketManager {
       } else {
         this.warn(`Invalid activeState: ${activeState}`);
       }
-    } else if (state === 'disconnected') {
+    } else if (state === 'disconnected' && !isManualStopped) {
+      // should restart FSM when is not stopped by manual
       this._restartFSM();
     }
 
@@ -395,16 +408,32 @@ export class SocketManager {
     }
   }
 
+  private _isDoingCanConnect() {
+    return (
+      this._canReconnectController &&
+      this._canReconnectController.isDoingCanConnect()
+    );
+  }
+
   private _restartFSM() {
-    this.info('restartFSM _isScreenLocked:', this._isScreenLocked);
-    if (!this._isScreenLocked) {
-      this._stopActiveFSM();
-      this._startFSM();
+    if (this._isScreenLocked || this._isDoingCanConnect()) {
+      this.info(
+        'should not restartFSM _isScreenLocked:',
+        this._isScreenLocked,
+        ', _isDoingCanConnect:',
+        this._isDoingCanConnect(),
+      );
+      return;
     }
+
+    this._stopActiveFSM();
+    this._startFSM();
   }
 
   private _getServerHost() {
-    const socketUserConfig = new SyncUserConfig();
+    const socketUserConfig = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    ).userConfig;
     const reconnectAddress = socketUserConfig.getReconnectSocketServerHost();
     return reconnectAddress || socketUserConfig.getIndexSocketServerHost();
   }

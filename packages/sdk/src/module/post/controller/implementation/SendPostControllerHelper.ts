@@ -63,6 +63,7 @@ class SendPostControllerHelper {
       company_id: params.companyId,
       deactivated: false,
       parent_id: params.parentId,
+      source: 'Jupiter',
     };
 
     if (params.annotation) {

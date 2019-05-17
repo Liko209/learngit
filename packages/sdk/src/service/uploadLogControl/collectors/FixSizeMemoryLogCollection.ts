@@ -28,6 +28,7 @@ export class FixSizeMemoryLogCollection implements ILogCollection {
   private _totalReleaseSize: number = 0;
   private _totalReleaseCount: number = 0;
   private _circle: number = 0;
+  private _onThresholdReach: (ins: ILogCollection) => void;
 
   constructor(sizeThreshold?: number) {
     this._sizeThreshold = sizeThreshold || DEFAULT_SIZE_THRESHOLD;
@@ -54,6 +55,9 @@ export class FixSizeMemoryLogCollection implements ILogCollection {
   push(logEntity: LogEntity) {
     const sizeSpace = this._sizeThreshold - this._totalSize;
     const shouldReleaseSize = logEntity.size - sizeSpace;
+    shouldReleaseSize > 0 &&
+      this._onThresholdReach &&
+      this._onThresholdReach(this);
     if (shouldReleaseSize > 0) {
       const [index, releaseSize] = countSize(
         this._recentLogQueue,
@@ -80,6 +84,11 @@ export class FixSizeMemoryLogCollection implements ILogCollection {
     return this._recentLogQueue.splice(0, index + 1);
   }
 
+  popAll() {
+    this._totalSize = 0;
+    return this._recentLogQueue.splice(0);
+  }
+
   get(limit?: number): LogEntity[] {
     if (limit === undefined) {
       return this._recentLogQueue;
@@ -94,5 +103,9 @@ export class FixSizeMemoryLogCollection implements ILogCollection {
 
   setSizeThreshold(threshold: number) {
     this._sizeThreshold = threshold;
+  }
+
+  setOnThresholdReach(cb: (ins: ILogCollection) => void) {
+    this._onThresholdReach = cb;
   }
 }

@@ -4,19 +4,23 @@
  */
 
 import { IFilter } from 'foundation';
+import { IdModel, ModelIdType } from '../../model';
 
-interface IQueryOpt<T> {
-  reset(): IQueryOpt<T>;
+interface IQueryOpt<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+> {
+  reset(): IQueryOpt<T, IdType>;
 
-  orderBy(key: string, desc: boolean): IQueryOpt<T>;
+  orderBy(key: string, desc: boolean): IQueryOpt<T, IdType>;
 
-  reverse(): IQueryOpt<T>;
+  reverse(): IQueryOpt<T, IdType>;
 
-  or(query: IQueryOpt<T>): IQueryOpt<T>;
+  or(query: IQueryOpt<T, IdType>): IQueryOpt<T, IdType>;
 
-  equal(key: string, value: any, ignoreCase: boolean): IQueryOpt<T>;
+  equal(key: string, value: any, ignoreCase: boolean): IQueryOpt<T, IdType>;
 
-  notEqual(key: string, value: any): IQueryOpt<T>;
+  notEqual(key: string, value: any): IQueryOpt<T, IdType>;
 
   between(
     key: string,
@@ -24,31 +28,35 @@ interface IQueryOpt<T> {
     upperBound: any,
     includeLower: any,
     includeUpper: any,
-  ): IQueryOpt<T>;
+  ): IQueryOpt<T, IdType>;
 
-  greaterThan(key: string, value: any): IQueryOpt<T>;
+  greaterThan(key: string, value: any): IQueryOpt<T, IdType>;
 
-  greaterThanOrEqual(key: string, value: any): IQueryOpt<T>;
+  greaterThanOrEqual(key: string, value: any): IQueryOpt<T, IdType>;
 
-  lessThan(key: string, value: any): IQueryOpt<T>;
+  lessThan(key: string, value: any): IQueryOpt<T, IdType>;
 
-  lessThanOrEqual(key: string, value: any): IQueryOpt<T>;
+  lessThanOrEqual(key: string, value: any): IQueryOpt<T, IdType>;
 
-  anyOf(key: string, array: any[], ignoreCase: boolean): IQueryOpt<T>;
+  anyOf(key: string, array: any[], ignoreCase: boolean): IQueryOpt<T, IdType>;
 
-  startsWith(key: string, value: string, ignoreCase: boolean): IQueryOpt<T>;
+  startsWith(
+    key: string,
+    value: string,
+    ignoreCase: boolean,
+  ): IQueryOpt<T, IdType>;
 
-  contain(key: string, value: any): IQueryOpt<T>;
+  contain(key: string, value: any): IQueryOpt<T, IdType>;
 
-  filter(filter: IFilter<T>): IQueryOpt<T>;
+  filter(filter: IFilter<T>): IQueryOpt<T, IdType>;
 
-  offset(n: number): IQueryOpt<T>;
+  offset(n: number): IQueryOpt<T, IdType>;
 
-  limit(n: number): IQueryOpt<T>;
+  limit(n: number): IQueryOpt<T, IdType>;
 
   toArray({ sortBy, desc }: { sortBy?: string; desc?: boolean }): Promise<T[]>;
 
-  primaryKeys(): Promise<number[]>;
+  primaryKeys(): Promise<IdType[]>;
 
   count(): Promise<number>;
 
