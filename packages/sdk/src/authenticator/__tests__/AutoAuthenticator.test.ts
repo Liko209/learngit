@@ -7,11 +7,9 @@
 import { AutoAuthenticator } from '../AutoAuthenticator';
 import { ACCOUNT_TYPE_ENUM } from '../constants';
 import { GlobalConfigService } from '../../module/config';
-import {
-  AccountUserConfig,
-  AccountGlobalConfig,
-  AuthUserConfig,
-} from '../../module/account/config';
+import { AccountGlobalConfig } from '../../module/account/config';
+import { AuthUserConfig } from '../../module/account/config/AuthUserConfig';
+import { AccountUserConfig } from '../../module/account/config/AccountUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
 
 jest.mock('../../module/config');
@@ -39,7 +37,7 @@ describe('AutoAuthenticator', () => {
 
   describe('user has not loggin', () => {
     const resp = autoAuthenticator.authenticate();
-    expect(resp.success).toBe(false);
+    expect(resp).toEqual({ success: false });
   });
   describe('GLIP user', () => {
     it('GLIP user type but has not token', () => {
@@ -47,7 +45,7 @@ describe('AutoAuthenticator', () => {
         .fn()
         .mockReturnValue(ACCOUNT_TYPE_ENUM.GLIP);
       const resp = autoAuthenticator.authenticate();
-      expect(resp.success).toBe(false);
+      expect(resp).toEqual({ success: false });
     });
     it('GLIP user type and has token', () => {
       AccountUserConfig.prototype.getAccountType = jest
@@ -57,7 +55,11 @@ describe('AutoAuthenticator', () => {
         .fn()
         .mockReturnValue('glip_token');
       const resp = autoAuthenticator.authenticate();
-      expect(resp.success).toBe(true);
+      expect(resp).toEqual({
+        success: true,
+        isFirstLogin: false,
+        accountInfos: [{ data: 'glip_token', type: 'GlipAccount' }],
+      });
     });
   });
 
@@ -67,7 +69,7 @@ describe('AutoAuthenticator', () => {
         .fn()
         .mockReturnValue(ACCOUNT_TYPE_ENUM.RC);
       const resp = autoAuthenticator.authenticate();
-      expect(resp.success).toBe(false);
+      expect(resp).toEqual({ success: false });
     });
     it('RC user type and has token', () => {
       AuthUserConfig.prototype.getGlipToken = jest
@@ -77,8 +79,16 @@ describe('AutoAuthenticator', () => {
         .fn()
         .mockReturnValue('rc_token');
       const resp = autoAuthenticator.authenticate();
-      expect(resp.success).toBe(true);
-      expect(resp.accountInfos!.length).toBe(2);
+      expect(resp).toEqual({
+        success: true,
+        isFirstLogin: false,
+        isRCOnlyMode: false,
+        accountInfos: [
+          { data: 'rc_token', type: 'RCAccount' },
+          { data: 'glip_token', type: 'GlipAccount' },
+        ],
+      });
+      expect(resp.accountInfos!.length).toEqual(2);
     });
     it('RC user type and only has rc token', () => {
       AuthUserConfig.prototype.getGlipToken = jest
@@ -91,7 +101,7 @@ describe('AutoAuthenticator', () => {
 
       // todo: for now, ui can not support the rc only mode
       // so will return false to logout when glip is down
-      expect(resp.success).toBe(false);
+      expect(resp).toEqual({ success: false });
     });
   });
 });

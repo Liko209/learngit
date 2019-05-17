@@ -8,23 +8,22 @@ import React, { Component } from 'react';
 import JuiConversationCard from 'jui/pattern/ConversationCard';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiStream } from 'jui/pattern/ConversationPage';
-import { StreamViewProps, StreamProps } from './types';
+import { StreamViewProps, StreamProps, StreamContext } from './types';
 import { observer } from 'mobx-react';
 import { ConversationPost } from '../../ConversationPost';
+import { ConversationPageContext } from '../../ConversationPage/types';
 import {
   JuiInfiniteList,
   ThresholdStrategy,
 } from 'jui/components/VirtualizedList';
-import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import _ from 'lodash';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
 
-const MIN_DIALOG_HEIGHT = 400;
-const MIN_HEIGHT_FIX = 40;
 @observer
 class StreamViewComponent extends Component<Props> {
+  static contextType = ConversationPageContext;
   listRef: React.RefObject<HTMLElement> = React.createRef();
   private _loadMoreStrategy = new ThresholdStrategy({
     threshold: 60,
@@ -53,25 +52,18 @@ class StreamViewComponent extends Component<Props> {
     }
     return this.props.hasMoreDown;
   }
-  state = { width: 0, height: 0 };
-  handleSizeChanged = (size: Size) => {
-    const { usedHeight } = this.props;
-    let height = size.height - usedHeight;
-    height = size.height < MIN_DIALOG_HEIGHT ? height + MIN_HEIGHT_FIX : height;
-    this.setState({ height, width: size.width });
-  }
+
   render() {
     const { ids, isShow = true } = this.props;
     // if conversation post include video and play video
     // when switch tab in global search will cache tabs
     // so we need to unmount conversation post
 
-    const { height } = this.state;
+    const { height } = this.context;
     const defaultLoading = <DefaultLoadingWithDelay delay={100} />;
     const defaultLoadingMore = <DefaultLoadingMore />;
     return (
-      <>
-        <JuiSizeDetector handleSizeChanged={this.handleSizeChanged} />
+      <StreamContext.Provider value={{ isShow }}>
         <JuiStream style={this._wrapperStyleGen(height)}>
           <JuiInfiniteList
             contentStyle={this._contentStyleGen(height)}
@@ -85,19 +77,17 @@ class StreamViewComponent extends Component<Props> {
             loadingMoreRenderer={defaultLoadingMore}
             stickToLastPosition={false}
           >
-            {isShow
-              ? ids.map(id => (
-                  <ConversationPost
-                    id={id}
-                    key={id}
-                    cardRef={this._jumpToPostRef}
-                    mode="navigation"
-                  />
-                ))
-              : []}
+            {ids.map(id => (
+              <ConversationPost
+                id={id}
+                key={id}
+                cardRef={this._jumpToPostRef}
+                mode="navigation"
+              />
+            ))}
           </JuiInfiniteList>
         </JuiStream>
-      </>
+      </StreamContext.Provider>
     );
   }
 }

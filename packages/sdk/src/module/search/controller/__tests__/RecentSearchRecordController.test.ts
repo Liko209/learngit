@@ -6,11 +6,11 @@
 import _ from 'lodash';
 
 import { RecentSearchRecordController } from '../RecentSearchRecordController';
-import { SearchUserConfig } from '../../config';
+import { SearchUserConfig } from '../../config/SearchUserConfig';
 import { RecentSearchTypes } from '../../entity';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
-jest.mock('../../config', () => {
+jest.mock('../../config/SearchUserConfig', () => {
   const xx = {
     setRecentSearchRecords: jest.fn(),
     getRecentSearchRecords: jest.fn(),

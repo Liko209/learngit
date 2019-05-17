@@ -87,12 +87,13 @@ class ProfileService extends EntityBaseService<Profile>
   }
 
   async reorderFavoriteGroups(
+    favIds: number[],
     oldIndex: number,
     newIndex: number,
   ): Promise<Profile | null> {
     return await this.getProfileController()
       .getProfileActionController()
-      .reorderFavoriteGroups(oldIndex, newIndex);
+      .reorderFavoriteGroups(favIds, oldIndex, newIndex);
   }
 
   async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {

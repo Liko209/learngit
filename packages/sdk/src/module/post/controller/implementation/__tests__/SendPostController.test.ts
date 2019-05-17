@@ -21,7 +21,7 @@ import { PostDao } from '../../../dao/PostDao';
 import notificationCenter from '../../../../../service/notificationCenter';
 import { ExtendedBaseModel } from '../../../../models';
 import { PROGRESS_STATUS } from '../../../../progress';
-import { AccountUserConfig } from '../../../../../module/account/config';
+import { AccountUserConfig } from '../../../../../module/account/config/AccountUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
 
 jest.mock('../../../../../module/config');

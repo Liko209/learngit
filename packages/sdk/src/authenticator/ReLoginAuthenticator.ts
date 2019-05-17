@@ -36,6 +36,7 @@ class ReLoginAuthenticator implements IAuthenticator {
       });
       return {
         success: true,
+        isFirstLogin: false,
         accountInfos: [
           {
             type: GlipAccount.name,

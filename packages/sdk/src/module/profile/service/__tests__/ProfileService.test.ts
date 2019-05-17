@@ -10,6 +10,7 @@ import { ProfileDataController } from '../../controller/ProfileDataController';
 import { SettingsActionController } from '../../controller/SettingsActionController';
 import { ProfileSetting } from '../../setting/ProfileSetting';
 
+jest.mock('sdk/dao');
 jest.mock('../../../../api');
 jest.mock('../../controller/ProfileActionController');
 jest.mock('../../controller/ProfileDataController');
@@ -89,8 +90,9 @@ describe('ProfileService', () => {
 
   describe('reorderFavoriteGroups()', () => {
     it('should call controller', async () => {
-      await profileService.reorderFavoriteGroups(678, 90);
+      await profileService.reorderFavoriteGroups([1, 2], 678, 90);
       expect(mockProfileActionController.reorderFavoriteGroups).toBeCalledWith(
+        [1, 2],
         678,
         90,
       );

@@ -12,8 +12,7 @@ import { RCCallerIdController } from '../RCCallerIdController';
 import { RCBrandType } from '../../types';
 import { notificationCenter } from 'sdk/service';
 import { RCInfoGlobalConfig } from '../../config';
-import { AccountUserConfig } from '../../../account/config';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { AccountGlobalConfig } from '../../../account/config';
 
 jest.mock('../../config');
 jest.mock('../../../account/config');
@@ -69,15 +68,7 @@ describe('RegionInfoController', () => {
     _rcCallerIdController.getCallerIdList = jest.fn().mockResolvedValue([]);
   }
   function setUp() {
-    ServiceLoader.getInstance = jest
-      .fn()
-      .mockImplementation((config: string) => {
-        if (config === ServiceConfig.ACCOUNT_SERVICE) {
-          return { userConfig: AccountUserConfig.prototype };
-        }
-        return;
-      });
-    AccountUserConfig.prototype.getGlipUserId.mockReturnValue(1);
+    AccountGlobalConfig.getUserDictionary.mockReturnValue(1);
     _rcInfoFetchController = new RCInfoFetchController();
     _rcCallerIdController = new RCCallerIdController(_rcInfoFetchController);
     _rcAccountInfoController = new RCAccountInfoController(

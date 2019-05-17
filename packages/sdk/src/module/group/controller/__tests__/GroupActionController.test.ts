@@ -16,7 +16,7 @@ import { IEntitySourceController } from '../../../../framework/controller/interf
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { Raw } from '../../../../framework/model';
 import { buildRequestController } from '../../../../framework/controller';
-import { AccountUserConfig } from '../../../../module/account/config';
+import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ProfileService } from '../../../profile';
 import { PostService } from '../../../post';
@@ -202,13 +202,15 @@ describe('GroupFetchDataController', () => {
     it('updateGroupPrivacy({id, privacy}) is update success', async () => {
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
       GroupAPI.putTeamById.mockResolvedValue(group);
-      const result = groupActionController.updateGroupPrivacy({
+      const params = {
         id: 1,
         privacy: 'privacy',
-      });
-      result.then((bool: boolean) => {
-        expect(bool).toEqual(true);
-      });
+      };
+      await groupActionController.updateGroupPrivacy(params);
+      expect(testPartialModifyController.updatePartially).toHaveBeenCalled();
+      expect(testGroupRequestController.put).toBeCalledWith(
+        expect.objectContaining(params),
+      );
     });
 
     it('data should have correct permission level if passed in options', async () => {

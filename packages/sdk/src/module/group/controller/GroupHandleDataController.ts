@@ -415,8 +415,10 @@ class GroupHandleDataController {
                 _id: post.group_id,
                 most_recent_post_created_at: post.created_at,
                 most_recent_content_modified_at: post.modified_at,
-                most_recent_post_id: post.id,
               };
+              if (post.id > 0) {
+                pg['most_recent_post_id'] = post.id;
+              }
               return pg;
             }
           } catch (error) {

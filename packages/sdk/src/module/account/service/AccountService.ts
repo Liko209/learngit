@@ -13,11 +13,9 @@ import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE } from '../../../service/eventKey';
 import { ProfileService } from '../../profile';
 import { setRCToken } from '../../../authenticator/utils';
-import {
-  AccountUserConfig,
-  AccountGlobalConfig,
-  AuthUserConfig,
-} from '../config';
+import { AccountGlobalConfig } from '../config';
+import { AuthUserConfig } from '../config/AuthUserConfig';
+import { AccountUserConfig } from '../config/AccountUserConfig';
 import {
   AuthController,
   IUnifiedLogin,
@@ -28,6 +26,8 @@ import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { Nullable } from '../../../types';
 
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
+const LOG_TAG = 'AccountService';
+
 class AccountService extends AbstractService
   implements IPlatformHandleDelegate {
   static serviceName = 'AccountService';
@@ -80,7 +80,7 @@ class AccountService extends AbstractService
     try {
       return await personService.getById(userId);
     } catch (error) {
-      mainLogger.debug('Get user info fail:', error);
+      mainLogger.tags(LOG_TAG).debug('Get user info fail:', error);
     }
     return null;
   }
@@ -114,9 +114,7 @@ class AccountService extends AbstractService
       ServiceConfig.PROFILE_SERVICE,
     );
     await profileService.markMeConversationAsFav().catch((error: Error) => {
-      mainLogger
-        .tags('AccountService')
-        .info('markMeConversationAsFav fail:', error);
+      mainLogger.tags(LOG_TAG).info('markMeConversationAsFav fail:', error);
     });
   }
 
@@ -136,6 +134,7 @@ class AccountService extends AbstractService
 
   onRefreshTokenFailure(forceLogout: boolean) {
     if (forceLogout) {
+      mainLogger.tags(LOG_TAG).info('Refresh Token failed, force logout.');
       notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
     }
   }

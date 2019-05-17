@@ -7,6 +7,7 @@ import React from 'react';
 import { Markdown } from 'glipdown';
 import styled from '../../../foundation/styled-components';
 import { spacing, typography, palette } from '../../../foundation/utils';
+import { withHighlight } from '../../../hoc/withHighlight';
 
 const Wrapper = styled.div`
   ${typography('body1')};
@@ -23,10 +24,12 @@ const BodyWrapper = styled.div`
   margin-top: ${spacing(2.5)};
 `;
 
-const MarkdownWrapper = styled.div`
-  ${typography('caption1')};
+const MarkdownWrapper = withHighlight([
+  'dangerouslySetInnerHTML.__html',
+])(styled.div`
+  ${typography('body1')};
   white-space: pre-wrap;
-`;
+`);
 
 type JuiIntegrationItemProps = {
   title?: string;

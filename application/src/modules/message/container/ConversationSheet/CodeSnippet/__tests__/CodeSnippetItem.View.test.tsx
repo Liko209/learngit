@@ -64,11 +64,16 @@ describe('CodeSnippetItem.View', () => {
     it('should update vm on user toggle on view', () => {
       props.isCollapse = true;
       props.setCollapse = jest.fn();
-      const codeSnippet = new CodeSnippetView(props);
-      codeSnippet.handleCollapse();
-      expect(props.setCollapse).toHaveBeenCalledWith(true);
-      codeSnippet.handleExpand();
-      expect(props.setCollapse).toHaveBeenCalledWith(false);
+      const codeSnippet = shallow(<CodeSnippetView {...props} />);
+      const component: CodeSnippetView = codeSnippet.instance();
+
+      component.handleExpand();
+      expect(component.state.isCollapse).toBeFalsy();
+      expect(component.props.setCollapse).toHaveBeenCalledWith(false);
+
+      component.handleCollapse();
+      expect(component.state.isCollapse).toBeTruthy();
+      expect(component.props.setCollapse).toHaveBeenCalledWith(true);
     });
   });
 });

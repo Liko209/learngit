@@ -8,13 +8,13 @@ import { IPartialModifyController } from '../../../../framework/controller/inter
 import { ProfileDataController } from '../ProfileDataController';
 import { Raw } from '../../../../framework/model';
 import { ProfileActionController } from '../ProfileActionController';
-import { AccountUserConfig } from '../../../../module/account/config';
+import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
 import { PersonDao } from '../../../person/dao/PersonDao';
 import { daoManager } from '../../../../dao';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('../ProfileDataController');
-jest.mock('../../../../module/account/config');
+jest.mock('../../../../module/account/config/AccountUserConfig');
 jest.mock('../../../person/dao/PersonDao');
 jest.mock('../../../../dao');
 
@@ -66,7 +66,11 @@ describe('ProfileActionController', () => {
         favorite_group_ids: [1, 2, 3],
       } as Profile;
       const controller = getActionController();
-      const result = await controller.reorderFavoriteGroups(1, 0);
+      const result = await controller.reorderFavoriteGroups(
+        testPartialModifyController.originalEntity.favorite_group_ids,
+        1,
+        0,
+      );
       expect(result).toEqual({
         _id: 2,
         favorite_group_ids: [2, 1, 3],
@@ -79,7 +83,11 @@ describe('ProfileActionController', () => {
         favorite_group_ids: [1, 2, 3],
       } as Profile;
       const controller = getActionController();
-      const result = await controller.reorderFavoriteGroups(0, 2);
+      const result = await controller.reorderFavoriteGroups(
+        testPartialModifyController.originalEntity.favorite_group_ids,
+        0,
+        2,
+      );
       expect(result).toEqual({
         _id: 2,
         favorite_group_ids: [2, 3, 1],

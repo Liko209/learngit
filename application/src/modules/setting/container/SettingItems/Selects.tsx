@@ -8,38 +8,53 @@ import React, { Component } from 'react';
 import { JuiBoxSelect } from 'jui/components/Selects';
 import { JuiMenuItem } from 'jui/components/Menus';
 import { SettingItemProps } from '../SettingItemBuild';
-import { IPhoneNumberRecord } from 'sdk/api/ringcentral/types/common';
 
-class SelectsView extends Component<SettingItemProps> {
+type BaseItemType = {
+  id: number;
+};
+
+type BaseComponentType<T> = {
+  automationKey?: string;
+  sourceItemRenderer: (sourceItem: T) => React.ReactNode;
+};
+
+class SelectsView<T extends BaseItemType> extends Component<
+  SettingItemProps<T> & BaseComponentType<T>
+> {
+  static defaultProps = {
+    source: [],
+  };
+
   handleOnChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
     const { onChange, source = [] } = this.props;
     let item;
-    source.some((sourceItem: IPhoneNumberRecord) => {
+    source.some((sourceItem: T) => {
       if (sourceItem.id === Number(value)) {
         item = sourceItem;
         return true;
       }
       return false;
     });
-    item && onChange<IPhoneNumberRecord>(item);
+    item && onChange(item);
   }
 
   render() {
-    const { source = [], value } = this.props;
+    const { source, value, sourceItemRenderer } = this.props;
+    const valueId = value && value.id;
     return (
       <JuiBoxSelect
         onChange={this.handleOnChange}
-        value={value.id}
+        value={valueId}
         automationId={'SettingSelectBox'}
       >
-        {source.map((item: IPhoneNumberRecord) => (
+        {source.map((item: T) => (
           <JuiMenuItem
             value={item.id}
             key={item.id}
             automationId={'SettingSelectItem'}
           >
-            {item.phoneNumber}
+            {sourceItemRenderer(item)}
           </JuiMenuItem>
         ))}
       </JuiBoxSelect>

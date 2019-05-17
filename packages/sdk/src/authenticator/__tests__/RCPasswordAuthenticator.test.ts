@@ -7,7 +7,8 @@ import { HttpResponseBuilder, HttpResponse } from 'foundation';
 import { loginGlip, ITokenModel, RCAuthApi } from '../../api';
 import { RCPasswordAuthenticator } from '..';
 import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
-import { AccountUserConfig, AuthUserConfig } from '../../module/account/config';
+import { AuthUserConfig } from '../../module/account/config/AuthUserConfig';
+import { AccountUserConfig } from '../../module/account/config/AccountUserConfig';
 jest.mock('../../module/config');
 
 jest.mock('../../api');
@@ -59,7 +60,27 @@ describe('RCPasswordAuthenticator', () => {
       username: '18662032065',
       password: '123123',
     });
-    expect(resp.success).toBe(true);
+    expect(resp).toEqual({
+      success: true,
+      isFirstLogin: true,
+      accountInfos: [
+        {
+          data: {
+            access_token: 'rc_token',
+            endpoint_id: 'endpoint_id',
+            expires_in: 1,
+            owner_id: 'owner_id',
+            refresh_token: 'refresh_token',
+            refresh_token_expires_in: 1,
+            scope: 'scope',
+            timestamp: 1,
+            token_type: 'token_type',
+          },
+          type: 'RCAccount',
+        },
+        { data: {}, type: 'GlipAccount' },
+      ],
+    });
   });
 
   describe('parsePhoneNumber()', () => {

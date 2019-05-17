@@ -6,27 +6,17 @@
 
 import * as goToConversation from '@/common/goToConversation';
 import { NewMessageViewModel } from '../NewMessage.ViewModel';
-import { PostService } from 'sdk/module/post';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
-import GroupService from 'sdk/module/group';
 
 jest.mock('sdk/module/post');
 jest.mock('../../Notification');
 jest.mock('@/common/goToConversation');
 
-const postService = new PostService(new GroupService());
-jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue(postService);
+jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({});
 
 const newMessageVM = new NewMessageViewModel();
 
 describe('NewMessageVM', () => {
-  beforeAll(() => {
-    const gs = {
-      get: jest.fn(),
-      set: jest.fn(),
-    };
-  });
-
   it('new message success', async () => {
     jest
       .spyOn(goToConversation, 'goToConversation')

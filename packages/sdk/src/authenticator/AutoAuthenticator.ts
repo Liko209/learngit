@@ -51,6 +51,7 @@ class AutoAuthenticator implements ISyncAuthenticator {
     if (glipToken) {
       return {
         success: true,
+        isFirstLogin: false,
         accountInfos: [
           {
             type: GlipAccount.name,
@@ -75,6 +76,7 @@ class AutoAuthenticator implements ISyncAuthenticator {
     const response = {
       success: true,
       isRCOnlyMode: false,
+      isFirstLogin: false,
       accountInfos: [
         {
           type: RCAccount.name,
