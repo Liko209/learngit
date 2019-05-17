@@ -3,7 +3,7 @@
  * @Date: 2018-11-20 14:37:25
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed } from 'mobx';
+import { computed, observable } from 'mobx';
 import {
   FetchSortableDataListHandler,
   ISortableModelWithData,
@@ -52,6 +52,7 @@ class GroupMemberDataProvider extends IdListPagingDataProvider<
 }
 
 class SortableGroupMemberHandler extends BaseNotificationSubscribable {
+  @observable
   private _foc: FetchSortableDataListHandler<Person>;
   private _groupMemberDataProvider: GroupMemberDataProvider;
   private _group: Group;
@@ -211,10 +212,6 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
         needUpdateMemberList = !_.isEqual(newAdmins, oldAdmins);
       }
 
-      console.log(
-        'TMSLOG: SortableGroupMemberHandler -> private_handleGroupUpdate -> needUpdateMemberList',
-        needUpdateMemberList,
-      );
       if (needUpdateMemberList) {
         this._initGroupData().then(() => {
           this._groupMemberDataProvider.onSourceIdsChanged(
