@@ -16,18 +16,27 @@ import {
 } from './collectors';
 import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { IZipItemProvider } from './types';
+import { ZipLogZipItemProvider } from './ZipLogZipItemProvider';
+import { MemoryLogZipItemProvider } from './MemoryLogZipItemProvider';
+import * as zipWorker from './zip.worker';
+import { createWorker } from './utils';
 
 export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
   private _isOnline: boolean;
   private _debugMode: boolean;
   private _onUploadAccessorChange: (accessible: boolean) => void;
+  private _zipItemProviders: IZipItemProvider[] = [];
   uploadLogConsumer: LogUploadConsumer;
   logUploadCollector: ConsumerCollector;
   memoryLogCollector: MemoryCollector;
+  worker: typeof zipWorker = createWorker(zipWorker);
+
   private constructor() {
     this._isOnline = window.navigator.onLine;
-    this.memoryLogCollector = new MemoryCollector();
+    const zipLogProvider = new ZipLogZipItemProvider();
+    this.memoryLogCollector = new MemoryCollector(zipLogProvider);
     this.logUploadCollector = new ConsumerCollector(
       new FixSizeMemoryLogCollection(
         configManager.getConfig().memoryCacheSizeThreshold,
@@ -42,6 +51,10 @@ export class LogControlManager implements IAccessor {
     this.logUploadCollector.setConsumer(this.uploadLogConsumer);
     logManager.addCollector(this.logUploadCollector);
     logManager.addCollector(this.memoryLogCollector);
+    this.registerZipProvider(zipLogProvider);
+    this.registerZipProvider(
+      new MemoryLogZipItemProvider(this.memoryLogCollector),
+    );
     this.subscribeNotifications();
   }
 
@@ -127,12 +140,16 @@ export class LogControlManager implements IAccessor {
       const logUploadEnabled = await permissionService.hasPermission(
         UserPermissionType.JUPITER_CAN_UPLOAD_LOG,
       );
+      const zipLogAutoUpload = await permissionService.hasPermission(
+        UserPermissionType.ZIP_LOG_AUTO_UPLOAD_BETA,
+      );
       logManager.config({
         browser: {
           enabled: this._debugMode || logEnabled,
         },
       });
       configManager.mergeConfig({
+        zipLogAutoUpload,
         uploadEnabled: !this._debugMode && logUploadEnabled,
       });
     } catch (error) {
@@ -153,5 +170,21 @@ export class LogControlManager implements IAccessor {
       mainLogger.fatal(reason, promise);
     }
     this.flush();
+  }
+
+  registerZipProvider(ins: IZipItemProvider) {
+    this._zipItemProviders.push(ins);
+  }
+
+  getZipLog = async () => {
+    const result = await Promise.all(
+      this._zipItemProviders.map(provider => {
+        return provider.getZipItems();
+      }),
+    );
+    const zipItems = result.reduce((previousValue, currentValue) => {
+      return previousValue.concat(currentValue);
+    });
+    return this.worker.zip(zipItems);
   }
 }

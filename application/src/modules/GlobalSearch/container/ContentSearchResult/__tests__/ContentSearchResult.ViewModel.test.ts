@@ -4,14 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { container } from 'framework';
-import { errorHelper } from 'sdk/error';
 import * as utils from '@/utils/error';
 import { Post } from 'sdk/module/post/entity';
 import { getGlobalValue } from '@/store/utils';
-import {
-  ToastType,
-  ToastMessageAlign,
-} from '@/containers/ToastWrapper/Toast/types';
 import { Notification } from '@/containers/Notification';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { TypeDictionary } from 'sdk/utils';
@@ -259,7 +254,7 @@ describe('ContentSearchResult fix(FIJI-4870)', () => {
     ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
   });
 
-  it('Should add new property to the contentCounts from service, the value should be sum of counts of all displayed types', async () => {
+  it('Should add new property to the contentCounts from service, the value should be sum of counts of all types', async () => {
     config.TYPE_MAP = [
       {
         id: TypeDictionary.TYPE_ID_POST,
@@ -281,39 +276,52 @@ describe('ContentSearchResult fix(FIJI-4870)', () => {
     const vm = new ContentSearchResultViewModel({});
     await vm.onPostsFetch();
 
-    expect(vm.searchState.contentsCount[-1]).toBe(18);
+    expect(vm.searchState.contentsCount[-1]).toBe(21);
   });
 });
 
 describe('ContentSearchResult fix(FIJI-5161)', () => {
   const TIMING = 100;
-  let postService: PostService;
 
-  beforeEach(() => {
-    postService = {
-      getSearchContentsCount: () =>
-        new Promise((res, rej) => setTimeout(rej, TIMING)),
-      searchPosts: () => new Promise((res, rej) => setTimeout(rej, TIMING)),
+  it('Should post init be rejected when get count is rejected.', async () => {
+    const postService: PostService = {
+      getSearchContentsCount: () => Promise.reject(),
+      searchPosts: () => new Promise(res => setTimeout(res, TIMING)),
     };
 
     ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
+
+    const vm = new ContentSearchResultViewModel({});
+    const spyPostInit = jest.spyOn(vm, '_onPostsInit');
+
+    try {
+      await vm._onPostsInit();
+    } catch {
+      expect(postService.getSearchContentsCount).rejects;
+      expect(postService.searchPosts).not.resolves;
+    }
+
+    expect(spyPostInit).rejects;
   });
 
-  it('Should error be throw out when one of service is rejected.', async () => {
+  it('Should post init be rejected when get posts is rejected.', async () => {
+    const postService: PostService = {
+      getSearchContentsCount: () => new Promise(res => setTimeout(res, TIMING)),
+      searchPosts: () => Promise.reject(),
+    };
+
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
+
     const vm = new ContentSearchResultViewModel({});
+    const spyPostInit = jest.spyOn(vm, '_onPostsInit');
 
-    const mockAsyncTest = jest.fn(async () => {
-      let timer = Date.now();
+    try {
+      await vm._onPostsInit();
+    } catch {
+      expect(postService.getSearchContentsCount).not.resolves;
+      expect(postService.searchPosts).rejects;
+    }
 
-      try {
-        await vm._onPostsInit();
-      } catch {
-        timer = Date.now() - timer;
-      }
-
-      return timer;
-    });
-
-    expect(await mockAsyncTest()).toBeLessThan(TIMING * 2);
+    expect(spyPostInit).rejects;
   });
 });

@@ -15,63 +15,110 @@ const path = require('path');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
 const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
 
-module.exports = async ({ config }) => ({
-  ...config,
-  module: {
-    ...config.module,
-    rules: [
-      ...config.module.rules,
+const moduleRules = [
+  {
+    test: /\.story\.tsx?$/,
+    use: [
       {
-        test: /\.story\.tsx?$/,
-        use: [
-          {
-            loader: '@storybook/addon-storysource/loader',
-            options: { parser: 'typescript' },
-          },
-        ],
-        include: [path.resolve(__dirname, '../src')],
-        enforce: 'pre',
+        loader: '@storybook/addon-storysource/loader',
+        options: { parser: 'typescript' },
+      },
+    ],
+    include: path.resolve(__dirname, '../src'),
+    enforce: 'pre',
+  },
+  {
+    test: /\.ts(x)?$/,
+    exclude: excludeNodeModulesExcept(['rcui']),
+    use: [
+      {
+        loader: 'ts-loader',
+        options: {
+          // disable type checker - we will use it in fork plugin
+          transpileOnly: true,
+        },
       },
       {
-        test: /\.ts(x)?$/,
-        exclude: excludeNodeModulesExcept(['rcui']),
-        use: [
-          {
-            loader: 'ts-loader',
-            options: {
-              // disable type checker - we will use it in fork plugin
-              transpileOnly: true,
-            },
-          },
-          {
-            loader: 'react-docgen-typescript-loader',
-          },
-        ],
+        loader: 'react-docgen-typescript-loader',
       },
     ],
   },
-  plugins: [
-    ...config.plugins,
-    new CopyWebpackPlugin([
-      { from: '../../application/public/theme/', to: 'theme' },
-    ]),
-    new ForkTsCheckerWebpackPlugin({
-      checkSyntacticErrors: true,
-    }),
-    new webpack.ProvidePlugin({
-      'window.Quill': 'quill/dist/quill.js',
-      Quill: 'quill/dist/quill.js',
-    }),
-  ],
-  resolve: {
-    ...config.resolve,
-    plugins: [
-      new TsconfigPathsPlugin({
-        configFile: path.resolve(__dirname, '../tsconfig.json'),
-      }),
+  {
+    test: /\.svg$/,
+    include: path.resolve(__dirname, '../src/assets/country-flag'),
+    use: [
+      {
+        loader: 'svg-sprite-loader',
+        options: {
+          extract: true,
+          publicPath: '/static/',
+          spriteFilename: 'country-flag-[hash:6].svg',
+          symbolId: 'country-flag-[name]',
+        },
+      },
+      {
+        loader: 'svgo-loader',
+        options: {
+          plugins: [
+            { removeTitle: true },
+            { convertColors: { shorthex: false } },
+            { convertPathData: true },
+            { reusePaths: true },
+          ],
+        },
+      },
     ],
-    extensions: [...(config.resolve.extensions || []), '.ts', '.tsx'],
   },
-});
+];
+
+const plugins = [
+  new CopyWebpackPlugin([
+    { from: '../../application/public/theme/', to: 'theme' },
+  ]),
+  new ForkTsCheckerWebpackPlugin({
+    checkSyntacticErrors: true,
+  }),
+  new webpack.ProvidePlugin({
+    'window.Quill': 'quill/dist/quill.js',
+    Quill: 'quill/dist/quill.js',
+  }),
+  new SpriteLoaderPlugin(),
+];
+
+const resolvePlugins = [
+  new TsconfigPathsPlugin({
+    configFile: path.resolve(__dirname, '../tsconfig.json'),
+  }),
+];
+
+const resolveExtensions = ['.ts', '.tsx'];
+
+module.exports = async ({ config }) => {
+  // modify the default svg rule
+  const fileLoader = config.module.rules[3];
+  fileLoader.exclude = [path.resolve(__dirname, '../src/assets/country-flag')];
+
+  // Make whatever fine-grained changes you need
+  moduleRules.forEach(rule => {
+    config.module.rules.push(rule);
+  });
+
+  plugins.forEach(plugin => {
+    config.plugins.push(plugin);
+  });
+
+  config.resolve.plugins = [];
+  resolvePlugins.forEach(plugin => {
+    config.resolve.plugins.push(plugin);
+  });
+
+  resolveExtensions.forEach(ext => {
+    config.resolve.extensions.push(ext);
+  });
+
+  // Return the altered config
+  return config;
+};

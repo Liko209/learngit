@@ -11,6 +11,7 @@ import { Post, PostView } from '../../entity';
 import { QUERY_DIRECTION } from '../../../../dao/constants';
 import { postFactory } from '../../../../__tests__/factories';
 import { daoManager } from '../../../../dao';
+import { ArrayUtils } from 'sdk/utils/ArrayUtils';
 
 const postViews: PostView[] = [
   {
@@ -92,19 +93,31 @@ describe('PostViewDao', () => {
   });
 
   describe('queryPostsByGroupId()', () => {
-    beforeAll(async () => {
-      await postDao.clear();
-      await postDao.bulkPut(posts);
-    });
-
-    beforeEach(() => {
+    beforeEach(async () => {
       jest.restoreAllMocks();
       jest.resetAllMocks();
+      await postDao.clear();
+      await postDao.bulkPut(posts);
       jest.spyOn(daoManager, 'getDao').mockReturnValue(postDao);
       fetchPostsFunc = async (ids: number[]) => {
         const posts = await postDao.batchGet(ids);
         return _.orderBy(posts, 'created_at', 'asc');
       };
+    });
+
+    it('should return directly when db has not posts', async () => {
+      await postDao.clear();
+      jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[2]);
+      const result = await postViewDao.queryPostsByGroupId(
+        fetchPostsFunc,
+        9163628546,
+        1151236399108,
+        QUERY_DIRECTION.OLDER,
+        3,
+      );
+      const spy = jest.spyOn(ArrayUtils, 'sliceIdArray');
+      expect(result).toHaveLength(0);
+      expect(spy).not.toBeCalled();
     });
 
     it('should return older posts when direction is older and post id > 0', async () => {

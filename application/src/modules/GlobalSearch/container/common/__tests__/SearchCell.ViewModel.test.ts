@@ -8,6 +8,7 @@ import { config } from '../../../module.config';
 import { getEntity } from '@/store/utils';
 import { GlobalSearchStore } from '../../../store';
 
+jest.mock('sdk/dao');
 jest.mock('@/store/utils');
 
 import { SearchCellViewModel } from '../SearchCell.ViewModel';

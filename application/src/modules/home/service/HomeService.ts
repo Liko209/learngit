@@ -3,7 +3,7 @@
  * @Date: 2019-01-17 10:03:23
  * Copyright © RingCentral. All rights reserved.
  */
-import { ReactNode } from 'react';
+import { ComponentType } from 'react';
 import _ from 'lodash';
 import { inject, Jupiter } from 'framework';
 import { HomeStore, SubModuleConfig } from '../store';
@@ -32,19 +32,22 @@ class HomeService {
     subModuleConfig: SubModuleConfig,
   ) {
     const config = _.cloneDeep(subModuleConfig);
-    if (config.loader) {
+
+    if (config.moduleConfigLoader) {
       await this._jupiter.registerModuleAsync(
-        config.loader,
+        config.moduleConfigLoader,
         config.afterBootstrap,
       );
+    } else if (config.moduleConfig) {
+      this._jupiter.registerModule(config.moduleConfig, config.afterBootstrap);
     }
     this._homeStore.addSubModule(name, config);
   }
 
   async unRegisterModule(name: string) {
     const subModuleConfig = this._homeStore.getSubModule(name);
-    if (subModuleConfig && subModuleConfig.loader) {
-      const { config } = await subModuleConfig.loader();
+    if (subModuleConfig && subModuleConfig.moduleConfigLoader) {
+      const { config } = await subModuleConfig.moduleConfigLoader();
       config.entry && this._jupiter.unRegisterModule(config);
     }
   }
@@ -53,8 +56,8 @@ class HomeService {
     return modules.every(module => !!this._homeStore.getSubModule(module));
   }
 
-  registerExtension(extension: ReactNode) {
-    this._homeStore.addExtensions(extension);
+  registerExtension(key: string, extension: ComponentType) {
+    this._homeStore.addExtensions(key, extension);
   }
 }
 

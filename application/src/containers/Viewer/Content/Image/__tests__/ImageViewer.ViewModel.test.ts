@@ -41,6 +41,7 @@ Pal.getInstance = () => palInstance;
 jest.mock('@/common/getThumbnailURL', () => {
   return {
     getMaxThumbnailURLInfo: jest.fn(),
+    getThumbnailURL: jest.fn(),
   };
 });
 describe('ImageViewer.ViewModel', () => {
@@ -113,6 +114,7 @@ describe('ImageViewer.ViewModel', () => {
       getEntity.mockReturnValue(item);
       FileItemUtils.isSupportShowRawImage.mockReturnValue(true);
       const vm = new ImageViewerViewModel(props);
+      // @ts-ignore
       vm._largeRawImageURL = item.versionUrl;
       const imageInfo = vm.imageInfo;
       expect(FileItemUtils.isSupportShowRawImage).toBeCalled();

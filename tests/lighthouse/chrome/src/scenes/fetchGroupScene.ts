@@ -5,16 +5,13 @@
 import { Scene } from "./scene";
 import { SceneDto } from "../models";
 import { SceneConfigFactory } from "./config/sceneConfigFactory";
-import { LoginGatherer, FetchGroupGatherer } from "../gatherers";
+import { FetchGroupGatherer } from "../gatherers";
 import { MetricService, FileService } from "../services";
 
 class FetchGroupScene extends Scene {
   async preHandle() {
     this.config = SceneConfigFactory.getSimplifyConfig({ fpsMode: this.fpsMode });
 
-    this.config.passes[0].gatherers.unshift({
-      instance: new LoginGatherer()
-    });
     this.config.passes[0].gatherers.unshift({
       instance: new FetchGroupGatherer()
     });

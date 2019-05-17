@@ -18,7 +18,7 @@ class RCAccountInfoController {
     return type !== undefined ? type : RCBrandType.OTHER;
   }
 
-  async getAccountBrandId(): Promise<string> {
+  async getAccountBrandId(): Promise<string | undefined> {
     const accountInfo = await this._getAccountInfo();
     if (
       accountInfo &&
@@ -39,7 +39,7 @@ class RCAccountInfoController {
   async getOutboundCallPrefix() {
     const accountInfo = await this._getAccountInfo();
     const prefix = (accountInfo && accountInfo.outboundCallPrefix) || 0;
-    return prefix >= 2 && prefix <= 9 ? prefix.toString() : '0';
+    return prefix >= 2 && prefix <= 9 ? prefix.toString() : '\0';
   }
 
   async getAccountMainNumber() {

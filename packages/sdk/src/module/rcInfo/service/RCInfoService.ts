@@ -10,12 +10,20 @@ import { EntityBaseService } from '../../../framework/service/EntityBaseService'
 import { RCInfoController } from '../controller/RCInfoController';
 import { ERCServiceFeaturePermission, ERCWebSettingUri } from '../types';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
-import { AccountUserConfig } from '../../../module/account/config';
+import { AccountService } from '../../account/service';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { mainLogger } from 'foundation';
+import { IRCInfoService } from './IRCInfoService';
+import { RcInfoSettings } from '../setting';
 import { IdModel } from '../../../framework/model';
+import { RCInfoUserConfig } from '../config';
+import { RC_INFO_HISTORY } from '../config/constants';
 
-class RCInfoService extends EntityBaseService<IdModel> {
+class RCInfoService extends EntityBaseService<IdModel>
+  implements IRCInfoService {
   private _rcInfoController: RCInfoController;
+  private _rcInfoSettings: RcInfoSettings;
+  private _DBConfig: RCInfoUserConfig;
 
   constructor() {
     super(false);
@@ -26,12 +34,22 @@ class RCInfoService extends EntityBaseService<IdModel> {
     );
   }
 
-  protected onStarted() {
-    super.onStarted();
+  getHistoryDetail() {
+    return RC_INFO_HISTORY;
+  }
 
-    this.getRCInfoController()
-      .getRegionInfoController()
-      .loadRegionInfo();
+  protected onStopped() {
+    if (this._rcInfoController) {
+      this._rcInfoController.dispose();
+      delete this._rcInfoController;
+    }
+
+    if (this._rcInfoSettings) {
+      this._rcInfoSettings.unsubscribe();
+      delete this._rcInfoSettings;
+    }
+
+    super.onStopped();
   }
 
   protected getRCInfoController(): RCInfoController {
@@ -39,6 +57,28 @@ class RCInfoService extends EntityBaseService<IdModel> {
       this._rcInfoController = new RCInfoController();
     }
     return this._rcInfoController;
+  }
+
+  async getSettingsByParentId(settingId: number) {
+    return this.rcInfoSettings.getSettingsByParentId(settingId);
+  }
+
+  async getSettingItemById(settingId: number) {
+    return this.rcInfoSettings.getSettingById(settingId);
+  }
+
+  private get rcInfoSettings() {
+    if (!this._rcInfoSettings) {
+      this._rcInfoSettings = new RcInfoSettings(this);
+    }
+    return this._rcInfoSettings;
+  }
+
+  get DBConfig() {
+    if (!this._DBConfig) {
+      this._DBConfig = new RCInfoUserConfig();
+    }
+    return this._DBConfig;
   }
 
   requestRCInfo = () => {
@@ -102,14 +142,14 @@ class RCInfoService extends EntityBaseService<IdModel> {
   }
 
   async isVoipCallingAvailable(): Promise<boolean> {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const result =
       userConfig.getAccountType() === ACCOUNT_TYPE_ENUM.RC &&
-      (await this.getRCInfoController()
-        .getRCPermissionController()
-        .isRCFeaturePermissionEnabled(
-          ERCServiceFeaturePermission.VOIP_CALLING,
-        ));
+      (await this.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.VOIP_CALLING,
+      ));
     mainLogger.debug(`isVoipCallingAvailable: ${result}`);
     return result;
   }
@@ -127,6 +167,7 @@ class RCInfoService extends EntityBaseService<IdModel> {
       .getRCCallerIdController()
       .getCallerIdList();
   }
+
   async generateWebSettingUri(type: ERCWebSettingUri) {
     return this.getRCInfoController()
       .getRcWebSettingInfoController()
@@ -163,6 +204,31 @@ class RCInfoService extends EntityBaseService<IdModel> {
 
   async isAreaCodeValid(areaCode: string) {
     return await this.regionInfoController.isAreaCodeValid(areaCode);
+  }
+
+  async loadRegionInfo() {
+    (await this.isVoipCallingAvailable()) &&
+      (await this.getRCInfoController()
+        .getRegionInfoController()
+        .loadRegionInfo());
+  }
+
+  async getCallerById(callerId: number) {
+    return this.getRCInfoController()
+      .getRCCallerIdController()
+      .getCallerById(callerId);
+  }
+
+  async getFirstDidCaller() {
+    return this.getRCInfoController()
+      .getRCCallerIdController()
+      .getFirstDidCaller();
+  }
+
+  async getCompanyMainCaller() {
+    return this.getRCInfoController()
+      .getRCCallerIdController()
+      .getCompanyMainCaller();
   }
 }
 

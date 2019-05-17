@@ -5,10 +5,11 @@
 
 import { EBETA_FLAG, isInBeta } from '../clientConfig';
 import { GlobalConfigService } from '../../../config';
-import { AccountUserConfig } from '../../config';
+import { AccountUserConfig } from '../../config/AccountUserConfig';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('../../../config');
-jest.mock('../../config');
+jest.mock('../../config/AccountUserConfig');
 
 GlobalConfigService.getInstance = jest.fn();
 
@@ -17,6 +18,13 @@ describe('Client Config', () => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     jest.restoreAllMocks();
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: AccountUserConfig.prototype };
+        }
+      });
   });
 
   function setUploadLogBeta() {

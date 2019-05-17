@@ -10,9 +10,11 @@ import {
   ACCOUNT_CLIENT_CONFIG,
 } from '../../../dao/account/constants';
 import notificationCenter from '../../../service/notificationCenter';
-import { AccountGlobalConfig, AccountUserConfig } from '../config';
+import { AccountGlobalConfig } from '../config';
+import { AccountService } from '../service';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { PerformanceTracer, PERFORMANCE_KEYS } from '../../../utils';
 
 export interface IHandleData {
   userId?: number;
@@ -27,17 +29,17 @@ const accountHandleData = ({
   profileId,
   clientConfig,
 }: IHandleData): void => {
-  const logId = Date.now();
-  PerformanceTracerHolder.getPerformanceTracer().start(
-    PERFORMANCE_KEYS.HANDLE_INCOMING_ACCOUNT,
-    logId,
-  );
-  let userConfig = new AccountUserConfig();
+  const performanceTracer = PerformanceTracer.initial();
+  let userConfig = ServiceLoader.getInstance<AccountService>(
+    ServiceConfig.ACCOUNT_SERVICE,
+  ).userConfig;
   if (userId) {
     if (!AccountGlobalConfig.getUserDictionary()) {
       // by default, rc extension id will be used as UD. For glip only user, we'll use glip id as UD
       AccountGlobalConfig.setUserDictionary(userId.toString());
-      userConfig = new AccountUserConfig();
+      userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
       userConfig.setAccountType(ACCOUNT_TYPE_ENUM.GLIP);
     }
     notificationCenter.emitKVChange(ACCOUNT_USER_ID, userId);
@@ -56,7 +58,7 @@ const accountHandleData = ({
     notificationCenter.emitKVChange(ACCOUNT_CLIENT_CONFIG, clientConfig);
     userConfig.setClientConfig(clientConfig);
   }
-  PerformanceTracerHolder.getPerformanceTracer().end(logId);
+  performanceTracer.end({ key: PERFORMANCE_KEYS.HANDLE_INCOMING_ACCOUNT });
 };
 
 export { accountHandleData };

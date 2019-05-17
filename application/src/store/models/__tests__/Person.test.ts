@@ -3,17 +3,16 @@
  * @Date: 2018-09-14 14:43:42
  * Copyright © RingCentral. All rights reserved.
  */
-import PersonModel from '../../../store/models/Person';
+import PersonModel from '@/store/models/Person';
 import {
   Person,
   PhoneNumberInfo,
   PHONE_NUMBER_TYPE,
 } from 'sdk/module/person/entity';
-
 import { ServiceLoader } from 'sdk/module/serviceLoader';
-
 import { PersonService } from 'sdk/module/person';
 
+jest.mock('sdk/dao');
 jest.mock('sdk/api');
 
 type UserInfo = {

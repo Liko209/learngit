@@ -212,7 +212,6 @@ class StreamController {
     const oldestPost = _.last(postsNewerThanAnchor);
     if (oldestPost) {
       ({
-        hasMore,
         posts: postsOlderThanAnchor,
       } = await this._postService.getPostsByGroupId({
         groupId: this._groupId,

@@ -5,7 +5,10 @@
  */
 import React, { createRef } from 'react';
 import { observer } from 'mobx-react';
-import { JuiDownshift } from 'jui/components/Downshift';
+import {
+  JuiDownshift,
+  JuiDownshiftKeyDownEvent,
+} from 'jui/components/Downshift';
 
 import { Chip } from '@/containers/Chip';
 import { ContactSearchItem } from './ContactSearchItem';
@@ -15,6 +18,12 @@ import { ViewProps } from './types';
 @observer
 class ContactSearchView extends React.Component<ViewProps> {
   inputRef = createRef<HTMLInputElement>();
+
+  onKeyDown = (event: JuiDownshiftKeyDownEvent) => {
+    if (event.key === 'Escape') {
+      event.nativeEvent.preventDownshiftDefault = true;
+    }
+  }
 
   render() {
     const {
@@ -53,6 +62,7 @@ class ContactSearchView extends React.Component<ViewProps> {
         multiple={multiple}
         autoSwitchEmail={autoSwitchEmail}
         maxLength={maxLength}
+        onKeyDown={this.onKeyDown}
       />
     );
   }

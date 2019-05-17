@@ -7,7 +7,6 @@ import { action, computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { MemberListProps } from './types';
 import storeManager, { ENTITY_NAME } from '@/store';
-const globalStore = storeManager.getGlobalStore();
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
@@ -22,13 +21,13 @@ class MemberListViewModel extends StoreViewModel<MemberListProps> {
     );
   }
   @action
-  onScrollEvent = (event: { scrollTop: number }) => {
-    const scrollTop = event.scrollTop;
-    if (scrollTop > 20) {
-      globalStore.set(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW, true);
-    } else {
-      globalStore.set(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW, false);
-    }
+  onScrollEvent = (event: React.UIEvent<HTMLElement>) => {
+    const scrollTop = event.currentTarget.scrollTop;
+    const globalStore = storeManager.getGlobalStore();
+    globalStore.set(
+      GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW,
+      scrollTop > 20 ? true : false,
+    );
   }
 
   @computed

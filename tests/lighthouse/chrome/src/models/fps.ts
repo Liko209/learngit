@@ -6,7 +6,13 @@ import {
   Table, Column, Model, DataType
 } from 'sequelize-typescript';
 
-@Table({ modelName: 't_fps' })
+@Table({
+  modelName: 't_fps',
+  indexes: [{
+    unique: false,
+    fields: ['scene_id']
+  }]
+})
 class FpsDto extends Model<FpsDto> {
 
   @Column({

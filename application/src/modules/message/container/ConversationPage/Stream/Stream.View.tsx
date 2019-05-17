@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import React, { Component, RefObject, createRef } from 'react';
+import React, { Component, RefObject, createRef, cloneElement } from 'react';
 import storeManager from '@/store/base/StoreManager';
 import { observable, runInAction, reaction, action } from 'mobx';
 import { observer, Observer, Disposer } from 'mobx-react';
@@ -33,10 +33,11 @@ import {
   IndexRange,
   ThresholdStrategy,
   JuiVirtualizedListHandles,
+  ItemWrapper,
+  shouldUseNativeImplementation,
 } from 'jui/components/VirtualizedList';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
-import { JuiConversationInitialPostWrapper } from 'jui/pattern/ConversationInitialPost';
 import { goToConversation } from '@/common/goToConversation';
 import JuiConversationCard from 'jui/pattern/ConversationCard';
 
@@ -45,7 +46,7 @@ type Props = WithTranslation & StreamViewProps & StreamProps;
 type StreamItemPost = StreamItem & { value: number[] };
 
 const LOADING_DELAY = 500;
-
+const MINSTREAMITEMHEIGHT = shouldUseNativeImplementation ? 50 : 72;
 @observer
 class StreamViewComponent extends Component<Props> {
   private _currentUserId: number = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
@@ -165,10 +166,12 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _renderDateDivider(streamItem: StreamItem) {
+    const today = new Date().getDate();
     return (
       <TimeNodeDivider
         key={`TimeNodeDividerDateDivider${streamItem.id}`}
         value={streamItem.id}
+        today={today}
       />
     );
   }
@@ -189,11 +192,11 @@ class StreamViewComponent extends Component<Props> {
 
   private _renderInitialPost() {
     const { groupId, notEmpty } = this.props;
-    return (
-      <JuiConversationInitialPostWrapper key="ConversationInitialPost">
-        <ConversationInitialPost notEmpty={notEmpty} id={groupId} />
-      </JuiConversationInitialPostWrapper>
-    );
+    return cloneElement(ItemWrapper, {
+      key: 'ConversationInitialPost',
+      style: { flex: '1 1 auto' },
+      children: <ConversationInitialPost notEmpty={notEmpty} id={groupId} />,
+    });
   }
 
   private _renderStreamItems() {
@@ -401,13 +404,14 @@ class StreamViewComponent extends Component<Props> {
                   <>
                     {this._renderJumpToFirstUnreadButton()}
                     <JuiInfiniteList
+                      fixedWrapper={true}
                       contentStyle={this._contentStyleGen(height)}
                       ref={this._listRef}
                       height={height}
                       stickToBottom={true}
                       loadMoreStrategy={this._loadMoreStrategy}
                       initialScrollToIndex={initialPosition}
-                      minRowHeight={50} // extract to const
+                      minRowHeight={MINSTREAMITEMHEIGHT} // extract to const
                       loadInitialData={this._loadInitialPosts}
                       loadMore={loadMore}
                       loadingRenderer={defaultLoading}

@@ -6,6 +6,7 @@
 
 import { container, Jupiter } from 'framework';
 import { DialerContainerViewModel } from '../DialerContainer.ViewModel';
+jest.mock('sdk/module/telephony');
 
 import * as telephony from '@/modules/telephony/module.config';
 
@@ -15,6 +16,13 @@ jupiter.registerModule(telephony.config);
 let dialerContainerViewModel: DialerContainerViewModel;
 
 beforeAll(() => {
+  container.get = jest.fn().mockReturnValue({});
+  jest.spyOn(container, 'get').mockReturnValueOnce({
+    keypadEntered: false,
+  });
+  jest.spyOn(container, 'get').mockReturnValueOnce({
+    dtmf: jest.fn(),
+  });
   dialerContainerViewModel = new DialerContainerViewModel();
 });
 

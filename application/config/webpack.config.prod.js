@@ -30,6 +30,8 @@ const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
 const appPackage = require(paths.appPackageJson);
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 const argv = process.argv;
+const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
+
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
 const publicPath = paths.servedPath;
@@ -93,6 +95,7 @@ module.exports = {
       path
         .relative(paths.appSrc, info.absoluteResourcePath)
         .replace(/\\/g, '/'),
+    globalObject: 'this',
   },
   optimization: {
     minimizer: [
@@ -201,6 +204,7 @@ module.exports = {
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
       new ModuleScopePlugin(
+        [paths.appPublicEn],
         [paths.appSrc, paths.depPackages],
         [paths.appPackageJson],
       ),
@@ -241,7 +245,12 @@ module.exports = {
           // Compile .tsx?
           {
             test: /\.(js|jsx|ts|tsx)$/,
-            exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
+            exclude: excludeNodeModulesExcept([
+              'jui',
+              'sdk',
+              'foundation',
+              'ringcentral-web-phone.+ts$',
+            ]),
             use: {
               loader: 'babel-loader',
               options: {
@@ -313,6 +322,31 @@ module.exports = {
             // See https://github.com/webpack/webpack/issues/6571
             sideEffects: true,
           },
+          // country flag svg loader
+          {
+            test: /jui\/src\/assets\/country-flag\/(.+)\.svg$/,
+            use: [
+              {
+                loader: 'svg-sprite-loader',
+                options: {
+                  extract: true,
+                  spriteFilename: 'static/media/country-flag.[hash:6].svg',
+                  symbolId: 'country-flag-[name]',
+                },
+              },
+              {
+                loader: 'svgo-loader',
+                options: {
+                  plugins: [
+                    { removeTitle: true },
+                    { convertColors: { shorthex: false } },
+                    { convertPathDtata: true },
+                    { reusePaths: true },
+                  ],
+                },
+              },
+            ],
+          },
           // "file" loader makes sure assets end up in the `build` folder.
           // When you `import` an asset, you get its filename.
           // This loader doesn't use a "test" so it will catch all modules
@@ -328,8 +362,28 @@ module.exports = {
               name: 'static/media/[name].[hash:8].[ext]',
             },
           },
+
           // ** STOP ** Are you adding a new loader?
           // Make sure to add the new loader(s) before the "file" loader.
+        ],
+      },
+      {
+        test: /\.worker\.ts$/,
+        // include: paths.appSrc,
+        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
+        use: [
+          { loader: 'workerize-loader', options: { inline: false } },
+          {
+            loader: require.resolve('babel-loader'),
+            options: {
+              cacheDirectory: true,
+              // cacheCompression: isEnvProduction,
+              // compact: isEnvProduction,
+              babelrc: false,
+              presets: [['react-app', { flow: false, typescript: true }]],
+              plugins: [['@babel/plugin-syntax-dynamic-import']],
+            },
+          },
         ],
       },
     ],
@@ -420,6 +474,8 @@ module.exports = {
       // The formatter is invoked directly in WebpackDevServerUtils during development
       // formatter: typescriptFormatter,
     }),
+    // svg sprite loader plugin
+    new SpriteLoaderPlugin(),
     // generate service worker
     new GenerateSW({
       exclude: [/\.map$/, /asset-manifest\.json$/],

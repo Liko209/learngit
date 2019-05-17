@@ -22,6 +22,8 @@ import { RCInfoService } from '../../rcInfo';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { PermissionService, UserPermissionType } from '../../permission';
 import { ENTITY } from 'sdk/service/eventKey';
+import { PlatformUtils } from 'sdk/utils/PlatformUtils';
+import { AccountService } from 'sdk/module/account';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -40,11 +42,7 @@ class VoIPNetworkClient implements ITelephonyNetworkDelegate {
 }
 
 class VoIPDaoClient implements ITelephonyDaoDelegate {
-  private _telephonyConfig: TelephonyUserConfig;
-
-  constructor() {
-    this._telephonyConfig = new TelephonyUserConfig();
-  }
+  constructor(private _telephonyConfig: TelephonyUserConfig) {}
   put(key: string, value: any): void {
     this._telephonyConfig.putConfig(key, value);
   }
@@ -65,9 +63,9 @@ class TelephonyEngineController {
   private _accountController: TelephonyAccountController;
   private _preCallingPermission: boolean = false;
 
-  constructor() {
+  constructor(telephonyConfig: TelephonyUserConfig) {
     this.voipNetworkDelegate = new VoIPNetworkClient();
-    this.voipDaoDelegate = new VoIPDaoClient();
+    this.voipDaoDelegate = new VoIPDaoClient(telephonyConfig);
 
     this.subscribeNotifications();
   }
@@ -119,6 +117,14 @@ class TelephonyEngineController {
     });
   }
 
+  getEndpointId() {
+    const authConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).authUserConfig;
+    const rcToken = authConfig.getRCToken();
+    return rcToken.endpoint_id;
+  }
+
   initEngine() {
     RTCEngine.setLogger(new TelephonyLogController());
     this.rtcEngine = RTCEngine.getInstance();
@@ -132,6 +138,10 @@ class TelephonyEngineController {
   ) {
     // Engine can hold multiple accounts for multiple calls
     this._preCallingPermission = true;
+    this.rtcEngine.setUserAgentInfo({
+      endpointId: this.getEndpointId(),
+      userAgent: PlatformUtils.getRCUserAgent(),
+    });
     this._accountController = new TelephonyAccountController(
       this.rtcEngine,
       accountDelegate,

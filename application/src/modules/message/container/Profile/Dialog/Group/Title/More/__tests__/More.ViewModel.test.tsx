@@ -11,7 +11,7 @@ const groupService = {
   getGroupEmail: jest.fn(),
 };
 
-ServiceLoader.getInstance = jest.fn().mockResolvedValue(groupService);
+ServiceLoader.getInstance = jest.fn().mockReturnValue(groupService);
 
 const props = {
   id: 123,

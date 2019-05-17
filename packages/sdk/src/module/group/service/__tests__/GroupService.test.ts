@@ -374,16 +374,17 @@ describe('GroupService', () => {
     });
 
     it('should call getGroupFetchDataController when call doFuzzySearchALlGroups  ', async () => {
-      await groupService.doFuzzySearchALlGroups('123', true, false);
+      await groupService.doFuzzySearchALlGroups('123', true, false, true);
       expect(
         mockGroupFetchDataController.doFuzzySearchAllGroups,
-      ).toBeCalledWith('123', true, false);
+      ).toBeCalledWith('123', true, false, true);
     });
 
     it('should call getGroupFetchDataController when call doFuzzySearchGroups  ', async () => {
-      await groupService.doFuzzySearchGroups('123', true);
+      await groupService.doFuzzySearchGroups('123', true, true);
       expect(mockGroupFetchDataController.doFuzzySearchGroups).toBeCalledWith(
         '123',
+        true,
         true,
       );
     });
@@ -393,6 +394,7 @@ describe('GroupService', () => {
       expect(mockGroupFetchDataController.doFuzzySearchTeams).toBeCalledWith(
         '123',
         false,
+        undefined,
       );
     });
   });

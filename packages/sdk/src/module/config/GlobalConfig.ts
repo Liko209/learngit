@@ -6,26 +6,35 @@
 
 import { GlobalConfigService } from './service/GlobalConfigService';
 import { ServiceLoader, ServiceConfig } from '../serviceLoader';
+import { Listener } from 'eventemitter2';
 
 class GlobalConfig {
   static moduleName: string;
 
-  static get(key: string) {
+  static get configService(): GlobalConfigService {
     return ServiceLoader.getInstance<GlobalConfigService>(
       ServiceConfig.GLOBAL_CONFIG_SERVICE,
-    ).get(this.moduleName, key);
+    );
+  }
+
+  static get(key: string) {
+    return this.configService.get(this.moduleName, key);
   }
 
   static put(key: string, value: any) {
-    ServiceLoader.getInstance<GlobalConfigService>(
-      ServiceConfig.GLOBAL_CONFIG_SERVICE,
-    ).put(this.moduleName, key, value);
+    this.configService.put(this.moduleName, key, value);
   }
 
   static remove(key: string) {
-    ServiceLoader.getInstance<GlobalConfigService>(
-      ServiceConfig.GLOBAL_CONFIG_SERVICE,
-    ).remove(this.moduleName, key);
+    this.configService.remove(this.moduleName, key);
+  }
+
+  static on(key: string, listener: Listener) {
+    this.configService.on(this.moduleName, key, listener);
+  }
+
+  static off(key: string, listener: Listener) {
+    this.configService.off(this.moduleName, key, listener);
   }
 }
 

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export type LogControlConfig = {
+type LogControlConfig = {
   uploadEnabled: boolean;
   memoryCountThreshold: number;
   memorySizeThreshold: number;
@@ -13,4 +13,43 @@ export type LogControlConfig = {
   combineSizeThreshold: number;
   persistentLimit: number;
   memoryCacheSizeThreshold: number;
+  zipLogAutoUpload: boolean;
+};
+
+type ZipItem = {
+  type: '.txt' | '.zip';
+  name: string;
+  content: string | Blob;
+  folder?: string;
+};
+
+interface IZipItemProvider {
+  getZipItems(): Promise<ZipItem[]>;
+}
+
+type LocalZip = {
+  index: number;
+  name: string;
+  blob: Blob;
+};
+
+type UploadedZip = {
+  index: number;
+  fileId: string;
+  url: string;
+};
+
+type Nullable<T> = T | null;
+
+interface IZipProducer {
+  produce(): Nullable<LocalZip>;
+}
+
+export {
+  IZipItemProvider,
+  ZipItem,
+  LogControlConfig,
+  LocalZip,
+  UploadedZip,
+  IZipProducer,
 };

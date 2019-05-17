@@ -5,18 +5,26 @@
  */
 
 import { ReLoginAuthenticator } from '../ReLoginAuthenticator';
-import { AuthUserConfig } from '../../module/account/config';
+import { AuthUserConfig } from '../../module/account/config/AuthUserConfig';
 import { loginGlip } from '../../api';
 import notificationCenter from '../../service/notificationCenter';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from '../../service/constants';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
-jest.mock('../../module/account/config');
+jest.mock('../../module/account/config/AuthUserConfig');
 jest.mock('../../api');
 jest.mock('../../service/notificationCenter');
 
 describe('ReLoginAuthenticator', () => {
   let reLoginAuthenticator: ReLoginAuthenticator;
   beforeEach(() => {
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { authUserConfig: AuthUserConfig.prototype };
+        }
+      });
     reLoginAuthenticator = new ReLoginAuthenticator();
   });
   describe('authenticate()', () => {
@@ -46,6 +54,7 @@ describe('ReLoginAuthenticator', () => {
       });
       expect(await reLoginAuthenticator.authenticate({})).toEqual({
         success: true,
+        isFirstLogin: false,
         accountInfos: [
           {
             type: 'GlipAccount',

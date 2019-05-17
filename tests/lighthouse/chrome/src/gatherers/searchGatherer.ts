@@ -2,14 +2,17 @@
  * @Author: doyle.wu
  * @Date: 2018-12-12 12:56:30
  */
-const Gatherer = require("lighthouse/lighthouse-core/gather/gatherers/gatherer");
+import { BaseGatherer } from ".";
 import { SearchPage } from "../pages";
-import { LogUtils } from "../utils";
 import { Config } from "../config";
 
-class SearchGatherer extends Gatherer {
+class SearchGatherer extends BaseGatherer {
   private keywords: Array<string>;
-  private logger = LogUtils.getLogger(__filename);
+  private metricKeys: Array<string> = [
+    'search_group',
+    'search_people',
+    'search_team'
+  ];
 
   constructor(keywords: Array<string>) {
     super();
@@ -17,38 +20,36 @@ class SearchGatherer extends Gatherer {
     this.keywords = keywords;
   }
 
-  beforePass(passContext) {}
+  async _beforePass(passContext) {
+    await this.gathererConsole(this.metricKeys, passContext);
+  }
 
-  async pass(passContext) {
+  async _pass(passContext) {
     let searchPage = new SearchPage(passContext);
 
     // pre loaded
     await this.search(searchPage);
-
-    // clear performance metrics of pre-loaded
-    let page = await searchPage.page();
-    await page.evaluate(() => {
-      performance["jupiter"] = {};
-    });
   }
 
-  async afterPass(passContext) {
+  async _afterPass(passContext) {
     let searchPage = new SearchPage(passContext);
+
+    this.beginGathererConsole();
 
     // switch conversation
     await this.search(searchPage, Config.sceneRepeatCount);
 
-    let page = await searchPage.page();
+    this.endGathererConsole();
 
-    let metrics = await page.evaluate(() => {
-      return performance["jupiter"];
-    });
+    let result = {};
+    for (let key of this.metricKeys) {
+      result[key] = {
+        api: this.consoleMetrics[key],
+        ui: []
+      };
+    }
 
-    return {
-      search_group: { api: metrics["search_group"], ui: [] },
-      search_people: { api: metrics["search_people"], ui: [] },
-      search_team: { api: metrics["search_team"], ui: [] }
-    };
+    return result;
   }
 
   async search(page: SearchPage, searchCount: number = -1) {

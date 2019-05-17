@@ -5,55 +5,51 @@
  */
 
 import React, { ComponentType, createContext } from 'react';
-import { highlightFormatter } from './utils';
-import _ from 'lodash';
+import { highlightFormatter, cascadingCreate, cascadingGet } from './utils';
 
 type HighlightProps = string[];
 
 type HighlightContextInfo = {
-  terms: string[];
+  keyword: string;
 };
 
-const SearchHighlightContext = createContext({
-  terms: [],
-} as HighlightContextInfo);
+type withHighlightProps = {
+  noHighlight?: boolean;
+  forwardedRef?: React.RefObject<any>;
+};
+const SearchHighlightContext = createContext<HighlightContextInfo>({
+  keyword: '',
+});
 
-const withHighlight = (highlightProps: HighlightProps) => (
-  Component: ComponentType<any> | React.SFC<any>,
+const withHighlight = (highlightProps: HighlightProps) => <P extends object>(
+  Component: ComponentType<P> | React.FunctionComponent<P>,
 ) => {
-  class ComponentWithHighlight extends React.Component {
+  type Props = P & withHighlightProps;
+  class ComponentWithHighlight extends React.Component<Props> {
     static contextType = SearchHighlightContext;
+    context: HighlightContextInfo;
     render() {
       const newProps = {};
-      if (this.context.terms && this.context.terms.length) {
+      if (
+        !this.props.noHighlight &&
+        this.context.keyword &&
+        this.context.keyword.length
+      ) {
         highlightProps.forEach(propName => {
-          let thisPropsRef = this.props;
-          let newPropsRef = newProps;
-          let realPropName = propName;
-          if (propName.indexOf('.') > 0) {
-            const keys = propName.split('.');
-            keys.forEach((key, index) => {
-              if (index === keys.length - 1) {
-                realPropName = key;
-              } else {
-                thisPropsRef = thisPropsRef[key] || {};
-                newPropsRef = newPropsRef[key] || {};
-              }
-            });
+          const value = cascadingGet(this.props, propName);
+          if (value) {
+            const formatStr = highlightFormatter(this.context.keyword, value);
+            const newPropObj = cascadingCreate(propName, formatStr);
+            Object.assign(newProps, newPropObj);
           }
-          const value = thisPropsRef[propName];
-          value &&
-            (newPropsRef[realPropName] = highlightFormatter(
-              this.context.terms,
-              value,
-            ));
         });
       }
-      return <Component {...this.props} {...newProps} />;
+      return <Component {...this.props} {...newProps} ref={this.props.forwardedRef}/>;
     }
   }
-
-  return ComponentWithHighlight as any;
+  return React.forwardRef((props: Props, ref: React.RefObject<any>) => {
+    return <ComponentWithHighlight {...props} forwardedRef={ref} />;
+  });
 };
 
 export { withHighlight, SearchHighlightContext, HighlightProps };
