@@ -13,7 +13,11 @@ import { IDao } from '../../../../framework/dao';
 import { ControllerUtils } from '../../../../framework/controller/ControllerUtils';
 import { PROGRESS_STATUS } from '../../../progress';
 import PreInsertIdController from './PreInsertIdController';
+import _ from 'lodash';
+import { mainLogger } from 'foundation';
 
+const LOG_TAG = '[PreInsertController]';
+const UNIQUE_ID = 'unique_id';
 class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
   implements IPreInsertController<T> {
   private _preInsertIdController: IPreInsertIdController;
@@ -30,14 +34,38 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
 
   async insert(entity: T): Promise<void> {
     this.updateStatus(entity, PROGRESS_STATUS.INPROGRESS);
-    this.dao && (await this.dao.bulkPut([entity]));
-    this._preInsertIdController.insert(entity.version);
+    notificationCenter.emitEntityUpdate(this.getEntityNotificationKey(entity), [
+      entity,
+    ]);
+    const preInsertId = this._getPreInsertId(entity);
+    if (!this.isInPreInsert(preInsertId)) {
+      this.dao && (await this.dao.bulkPut([entity]));
+      this._preInsertIdController.insert(preInsertId);
+    } else {
+      mainLogger.tags(LOG_TAG).info(`insert() ${entity.id} already pre-insert`);
+    }
   }
 
   async delete(entity: T): Promise<void> {
-    this.updateStatus(entity, PROGRESS_STATUS.SUCCESS);
-    await this.dao.delete(entity.id);
-    this._preInsertIdController.delete(entity.version);
+    const originalEntityId = this._deleteEntity(entity);
+    originalEntityId && (await this.dao.delete(originalEntityId));
+  }
+
+  private _deleteEntity(entity: T): number | undefined {
+    const preInsertId = this._getPreInsertId(entity);
+    if (this.isInPreInsert(preInsertId)) {
+      const originalEntityId = Number(preInsertId);
+      const progressEntity = _.cloneDeep(entity);
+      progressEntity.id > 0 && (progressEntity.id = originalEntityId);
+      this._notifyChange(entity, originalEntityId);
+      this.updateStatus(progressEntity, PROGRESS_STATUS.SUCCESS);
+      this._preInsertIdController.delete(preInsertId);
+      return originalEntityId;
+    }
+    mainLogger
+      .tags(LOG_TAG)
+      .info(`delete() ${entity.id} is not in pre-insert list`);
+    return undefined;
   }
 
   updateStatus(entity: T, status: PROGRESS_STATUS): void {
@@ -47,11 +75,6 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
           id: entity.id,
           status: PROGRESS_STATUS.INPROGRESS,
         });
-
-        notificationCenter.emitEntityUpdate(
-          this.getEntityNotificationKey(entity),
-          [entity],
-        );
         break;
 
       case PROGRESS_STATUS.FAIL:
@@ -64,10 +87,6 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
       case PROGRESS_STATUS.SUCCESS:
       case PROGRESS_STATUS.CANCELED:
         this.progressService.deleteProgress(entity.id);
-        notificationCenter.emitEntityDelete(
-          this.getEntityNotificationKey(entity),
-          [entity.id],
-        );
         break;
     }
   }
@@ -76,21 +95,20 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
     if (!entities || !entities.length) {
       return;
     }
-    const entityMap: Map<number, number> = new Map();
-    entities.map(async (entity: T) => {
-      if (this.isInPreInsert(entity.version)) {
-        entityMap.set(entity.id, entity.version);
-      }
+    const entityMap: Map<number, string> = new Map();
+    entities.map((entity: T) => {
+      const originalEntityId = this._deleteEntity(entity);
+      originalEntityId &&
+        entityMap.set(originalEntityId, this._getPreInsertId(entity));
     });
-
     if (entityMap.size) {
       await this.dao.bulkDelete([...entityMap.keys()]);
       this._preInsertIdController.bulkDelete([...entityMap.values()]);
     }
   }
 
-  isInPreInsert(version: number): boolean {
-    return this._preInsertIdController.isInPreInsert(version);
+  isInPreInsert(preInsertId: string): boolean {
+    return this._preInsertIdController.isInPreInsert(preInsertId);
   }
 
   getEntityNotificationKey(entity: T) {
@@ -98,6 +116,32 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
       return this.entityNotificationKey(entity);
     }
     return ControllerUtils.getEntityNotificationKey(this.dao);
+  }
+
+  private async _notifyChange(entity: T, originalEntityId: number) {
+    if (entity.id > 0) {
+      notificationCenter.emitEntityReplace(
+        this.getEntityNotificationKey(entity),
+        new Map().set(originalEntityId, _.cloneDeep(entity)),
+      );
+    } else {
+      notificationCenter.emitEntityDelete(
+        this.getEntityNotificationKey(entity),
+        [entity.id],
+      );
+    }
+  }
+
+  private _getPreInsertId(entity: T) {
+    return this._getUniqueId(entity) || entity.version.toString();
+  }
+
+  private _getUniqueId(entity: T) {
+    let preInsertId: string = '';
+    if (entity.hasOwnProperty(UNIQUE_ID)) {
+      preInsertId = entity[UNIQUE_ID];
+    }
+    return preInsertId;
   }
 }
 
