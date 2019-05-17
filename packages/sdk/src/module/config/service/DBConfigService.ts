@@ -30,14 +30,13 @@ class DBConfigService extends AbstractService implements IDBConfigService {
     notificationCenter.emit(
       `${module}.${key}`,
       CONFIG_EVENT_TYPE.UPDATE,
-      key,
       value,
     );
   }
 
   async remove(module: string, key: string) {
     await this.configDao.remove(`${module}.${key}`);
-    notificationCenter.emit(`${module}.${key}`, CONFIG_EVENT_TYPE.REMOVE, key);
+    notificationCenter.emit(`${module}.${key}`, CONFIG_EVENT_TYPE.REMOVE);
   }
 
   async clear() {
