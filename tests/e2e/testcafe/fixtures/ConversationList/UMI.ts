@@ -785,7 +785,6 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I Collapsed Fav/DM/Teams section in Jupiter app', async () => {
-    await t.debug();
     await directMessagesSection.fold();
     await teamsSection.fold();
     await favoritesSection.fold();
