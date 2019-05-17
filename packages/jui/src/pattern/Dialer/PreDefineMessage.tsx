@@ -77,16 +77,11 @@ const JuiPreDefineMenuItem = React.memo(
 const JuiPreDefineItem = React.memo(
   (props: {
     text: string;
-    isMenu?: boolean;
     handleClick?: () => void;
     automationId?: string;
   }) => {
-    const { text, isMenu, handleClick, automationId } = props;
-    return isMenu ? (
-      <StyledListItem data-test-automation-id={automationId}>
-        <JuiListItemText primary={text} />
-      </StyledListItem>
-    ) : (
+    const { text, handleClick, automationId } = props;
+    return handleClick ? (
       <StyledListItem
         onClick={handleClick}
         data-test-automation-id={automationId}
@@ -98,6 +93,10 @@ const JuiPreDefineItem = React.memo(
           </JuiIconography>
         </StyledIconContainer>
       </StyledListItem>
+    ) : (
+      <StyledListItem data-test-automation-id={automationId}>
+        <JuiListItemText primary={text} />
+      </StyledListItem>
     );
   },
 );
@@ -107,11 +106,7 @@ const JuiPreDefineMessage = React.memo((props: Props) => {
   return children && children.length > 0 ? (
     <JuiPopoverMenu
       Anchor={() => (
-        <JuiPreDefineItem
-          isMenu={true}
-          text={text}
-          automationId={automationId}
-        />
+        <JuiPreDefineItem text={text} automationId={automationId} />
       )}
       anchorOrigin={{
         vertical: 'top',
