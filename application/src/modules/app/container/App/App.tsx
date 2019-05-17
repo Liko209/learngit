@@ -9,6 +9,7 @@ import { observer } from 'mobx-react';
 import { hot } from 'react-hot-loader/root';
 import { container } from 'framework';
 import { JuiContentLoader } from 'jui/pattern/ContentLoader';
+import { HighlightStyle } from 'jui/pattern/ConversationCard';
 import ThemeProvider from '@/containers/ThemeProvider';
 import { generalErrorHandler, errorReporter } from '@/utils/error';
 import { Router } from '@/modules/router';
@@ -39,6 +40,7 @@ class App extends React.Component {
             <Title />
             <TopBanner />
             <Router />
+            <HighlightStyle />
             {window.jupiterElectron && <ElectronBadgeWithAppUmi />}
           </>
         )}
