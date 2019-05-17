@@ -19,11 +19,11 @@ fixture('Phone/IncomingCall')
   });
 
   const telephonyDialog = app.homePage.telephonyDialog;
+
   await h(t).withLog(`When the other user make a phone call to me`, async () => {
     const session = await h(t).newWebphoneSession(callee);
     await session.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
   });
-
   await h(t).withLog('And I hover send to voicemail button', async () => {
     await telephonyDialog.ensureLoaded();
     await telephonyDialog.hoverSendToVoiceMailButton();
@@ -31,13 +31,11 @@ fixture('Phone/IncomingCall')
   await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_Phone_SendToVoicemail' });
 
   await h(t).withLog('When I hover answer button', async () => {
-    await telephonyDialog.ensureLoaded();
     await telephonyDialog.hoverAnswerButton();
   });
   await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_Phone_Answer' });
 
   await h(t).withLog('When I hover close button', async () => {
-    await telephonyDialog.ensureLoaded();
     await telephonyDialog.hoverIgnoreButton();
   });
   await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_Phone_Ignore' });

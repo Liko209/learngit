@@ -12,9 +12,8 @@ test(formalName('Links display on the right rail', ['P2', 'RightRail', 'Links', 
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[5];
   const otherUser = h(t).rcData.mainCompany.users[6];
-  let teamID: string, teamName: string = `Team ${uuid()}`;
-
-  //await h(t).glip(loginUser).init();
+  const teamName = `H-Team ${uuid()}`;
+  let teamID: string;
 
   await h(t).withLog(`Given I have a team conversation: "${teamName}"`, async () => {
     teamID = await h(t).platform(loginUser).createAndGetGroupId({

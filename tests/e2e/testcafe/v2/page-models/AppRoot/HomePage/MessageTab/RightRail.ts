@@ -15,7 +15,7 @@ export class RightRail extends BaseWebComponent {
 
   get foldStatusButton() {
     this.warnFlakySelector();
-    return this.getSelectorByIcon('double_chevron_right').parent('button[aria-label="Show details"]');
+    return this.getSelectorByIcon('double_chevron_right',).parent('button[aria-label="Show details"]');
   }
 
   async expand() {

@@ -12,9 +12,8 @@ test(formalName('Conversation Details on the right rail', ['P2', 'RightRail', 'C
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[5];
   const otherUser = h(t).rcData.mainCompany.users[6];
-  let teamID: string, teamName: string = `Team ${uuid()}`;
-
-  //await h(t).glip(loginUser).init();
+  const teamName = `H-Team ${uuid()}`;
+  let teamID: string;
 
   await h(t).withLog(`Given I have a team conversation: "${teamName}"`, async () => {
     teamID = await h(t).platform(loginUser).createAndGetGroupId({
@@ -30,28 +29,9 @@ test(formalName('Conversation Details on the right rail', ['P2', 'RightRail', 'C
 
   const rightRail = app.homePage.messageTab.rightRail;
 
-  await h(t).withLog('When I open the created team conversation and hover "Hide details" button on right rail', async () => {
+  await h(t).withLog('When I open the created team conversation and hover "More" icon on right rail', async () => {
     const teamsSection = app.homePage.messageTab.teamsSection;
     await teamsSection.conversationEntryById(teamID).enter();
-    await t.hover(rightRail.expandStatusButton);
-  });
-  await h(t).withLog('And text "Hide details" should be displayed', async () => {
-    await t.expect(rightRail.foldStatusButton.exists).notOk();
-  });
-  await h(t).log('Then I take screenshot' , { screenshotPath:'Jupiter_RightRail_HideDetails' });
-
-  //This case need automation id
-  // await h(t).withLog('When I click "Hide details" button and hover "Show details" button on right rail', async () => {
-  //   await rightRail.fold();
-  //   await rightRail.expand();
-  // });
-  // await h(t).withLog('And text "Show details" should be displayed', async () => {
-  //   await t.expect(rightRail.expandStatusButton.exists).notOk();
-  // });
-  // await h(t).log('Then I take screenshot' , { screenshotPath:'Jupiter_RightRail_ShowDetails' });
-
-  await h(t).withLog('When I hover "More" icon on right rail', async () => {
-  //await rightRail.expand();
     await t.hover(rightRail.moreButton);
   });
   await h(t).log('Then I take screenshot' , { screenshotPath:'Jupiter_RightRail_MoreIcon' });
@@ -63,4 +43,21 @@ test(formalName('Conversation Details on the right rail', ['P2', 'RightRail', 'C
     await t.expect(rightRail.eventsEntry.exists).ok();
   });
   await h(t).log('Then I take screenshot' , { screenshotPath:'Jupiter_RightRail_MoreList' });
+
+  await h(t).withLog('When I hover "Hide detail" icon on right rail', async () => {
+    await t.hover(rightRail.expandStatusButton);
+  });
+  await h(t).withLog('And text "Hide details" should be displayed', async () => {
+    await t.expect(rightRail.foldStatusButton.exists).notOk();
+  });
+  await h(t).log('Then I take screenshot' , { screenshotPath:'Jupiter_RightRail_HideDetails' });
+
+  await h(t).withLog('When I click "Hide details" button and hover "Show details" button on right rail', async () => {
+    await rightRail.fold();
+    await t.hover(rightRail.foldStatusButton);
+  });
+  await h(t).withLog('And text "Show details" should be displayed', async () => {
+    await t.expect(rightRail.expandStatusButton.exists).notOk();
+  });
+  await h(t).log('Then I take screenshot' , { screenshotPath:'Jupiter_RightRail_ShowDetails' });
 });

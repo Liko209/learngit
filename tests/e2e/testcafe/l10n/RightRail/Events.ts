@@ -12,9 +12,8 @@ test(formalName('Events display on the right rail', ['P2', 'RightRail', 'Events'
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[5];
   const otherUser = h(t).rcData.mainCompany.users[6];
-  let teamID: string, teamName: string = `H-Team ${uuid()}`;
-
-  await h(t).glip(loginUser).init();
+  const teamName = `H-Team ${uuid()}`;
+  let teamID: string;
 
   await h(t).withLog(`Given I have a team conversation: "${teamName}"`, async () => {
     teamID = await h(t).platform(loginUser).createAndGetGroupId({
@@ -40,7 +39,7 @@ test(formalName('Events display on the right rail', ['P2', 'RightRail', 'Events'
   await h(t).log('Then I take screenshot' , { screenshotPath:'Jupiter_RightRail_EventsEmpty' });
 
   await h(t).withLog(`When ${loginUser} create a note in the created team conversation` , async () =>{
-    const eventTitle = uuid();
+    const eventTitle = `H-${uuid()}`;
     await h(t).glip(loginUser).createSimpleEvent(teamID, eventTitle ,loginUser.rcId);
   });
   await h(t).withLog('And the text "Events" should be display', async () => {
