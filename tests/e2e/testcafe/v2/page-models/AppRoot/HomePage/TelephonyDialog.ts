@@ -355,4 +355,13 @@ export class TelephonyMinimizeWindow extends BaseWebComponent {
   async clickHangupButton() {
     await this.t.click(this.hangupButton);
   }
+  async hoverhandupButton() {
+    await this.t.hover(this.hangupButton);
+  }
+  async hoverMuteButton() {
+    await this.t.hover(this.muteButton);
+  }
+  async hoverunMuteButton() {
+    await this.t.hover(this.unMuteButton);
+  }
 }

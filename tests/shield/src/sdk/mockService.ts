@@ -1,6 +1,6 @@
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { registerConfigs } from 'sdk/registerConfigs';
-import { descriptorAOP } from './utils';
+import { descriptorAOP } from '../core/utils';
 
 jest.mock('sdk/dao');
 

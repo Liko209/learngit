@@ -640,6 +640,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
+  get href(){
+    return this.self.find(`[href]`)
+  }
+
   get img() {
     this.warnFlakySelector(); // todo: all specify item...
     return this.body.find('img');
