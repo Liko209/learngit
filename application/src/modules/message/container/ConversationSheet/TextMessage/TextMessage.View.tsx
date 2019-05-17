@@ -19,11 +19,12 @@ class TextMessageViewComponent extends React.Component<TextMessageViewProps> {
   private _handlePhoneCall = async (evt: MouseEvent) => {
     const canUseTelephony = await this.props.canUseTelephony();
     const target = evt.target as HTMLAnchorElement;
-    const phoneNumber = target.innerText;
-    if (!phoneNumber) {
-      return;
+    let phoneNumber = target.getAttribute('data-id');
+    const parentNode = target.parentNode as HTMLElement;
+    if (!phoneNumber && parentNode) {
+      phoneNumber = parentNode.getAttribute('data-id');
     }
-    if (isSupportWebRTC() && canUseTelephony) {
+    if (isSupportWebRTC() && canUseTelephony && phoneNumber) {
       evt.preventDefault();
       this.props.directCall(phoneNumber);
     }
