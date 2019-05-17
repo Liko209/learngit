@@ -5,7 +5,7 @@
  */
 
 import React, { Component } from 'react';
-import JuiConversationCard from 'jui/pattern/ConversationCard';
+import { JuiConversationCard } from 'jui/pattern/ConversationCard';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiStream } from 'jui/pattern/ConversationPage';
 import { StreamViewProps, StreamProps, StreamContext } from './types';

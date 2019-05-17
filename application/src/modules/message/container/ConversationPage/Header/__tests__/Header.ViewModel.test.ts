@@ -131,15 +131,21 @@ describe('ConversationPageHeaderViewModel', () => {
   });
   describe('title', () => {
     it('conversation types is sms', async () => {
-      (getEntity as jest.Mock).mockImplementation((type: string, id: number) => mockGroup);
-      expect(await vm.title.fetch()).toBe(`${mockGroup.displayName} (messageTypeNameSMS)`);
+      (getEntity as jest.Mock).mockImplementation(
+        (type: string, id: number) => mockGroup,
+      );
+      expect(await vm.title).toBe(
+        `${mockGroup.displayName} (messageTypeNameSMS)`,
+      );
     });
     it('conversation types is not sms', async () => {
-      (getEntity as jest.Mock).mockImplementation((type: string, id: number) => ({
-        ...mockGroup,
-        type: CONVERSATION_TYPES.TEAM,
-      }));
-      expect(await vm.title.fetch()).toBe(mockGroup.displayName);
+      (getEntity as jest.Mock).mockImplementation(
+        (type: string, id: number) => ({
+          ...mockGroup,
+          type: CONVERSATION_TYPES.TEAM,
+        }),
+      );
+      expect(await vm.title).toBe(mockGroup.displayName);
     });
   });
 });
