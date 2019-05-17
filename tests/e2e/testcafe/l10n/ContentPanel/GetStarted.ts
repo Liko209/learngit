@@ -11,7 +11,7 @@ fixture('ContentPanel/GetStarted')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase())
 
-test(formalName('Check the GetStarted page ', ['P2', 'ContentPanel', 'GetStarted', 'V1.4', 'Hanny.Han']),
+test(formalName('Check the GetStarted page ', ['P2', 'ContentPanel','Messages', 'GetStarted', 'V1.4', 'Hanny.Han']),
 async(t: TestController) => {
 
   const users=h(t).rcData.mainCompany.users;

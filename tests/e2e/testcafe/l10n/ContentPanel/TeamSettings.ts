@@ -10,7 +10,7 @@ fixture('ContentPanel/TeamSetting')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase())
 
-test(formalName('Check the TeamSetting page',['P2','ContentPanel', 'TeamSetting', 'V1.4', 'Hanny.han']),async (t) => {
+test(formalName('Check the TeamSetting page',['P2','ContentPanel','Messages', 'TeamSetting', 'V1.4', 'Hanny.han']),async (t) => {
 
   const users=h(t).rcData.mainCompany.users;
   const loginUser = users[4];
@@ -37,7 +37,7 @@ test(formalName('Check the TeamSetting page',['P2','ContentPanel', 'TeamSetting'
     await conversationPage.waitUntilPostsBeLoaded;
   });
   const profileDialog = app.homePage.profileDialog;
-  await h(t).withLog('When I click members button and click settings button', async () => {
+  await h(t).withLog('And I click members button and click settings button', async () => {
     await t.click(conversationPage.memberCountIcon);
     await t.click(profileDialog.settingButton);
   });

@@ -10,7 +10,7 @@ import { IGroup } from "../../v2/models";
 fixture('ContentPanel/TeamOverview')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase())
-test(formalName('Check the all button on team conversation', ['P2','ContentPane', 'TeamOverview', 'V1.4', 'Hanny.Han']),
+test(formalName('Check the all button on team conversation', ['P2','ContentPane', 'Messages', 'TeamOverview', 'V1.4', 'Hanny.Han']),
 async (t: TestController) => {
 
   const users=h(t).rcData.mainCompany.users;

@@ -9,7 +9,7 @@ import { AppRoot } from "../../v2/page-models/AppRoot";
 import { IGroup } from "../../v2/models";
 
 fixture('ContentPanel/SendMessages').beforeEach(setupCase(BrandTire.RCOFFICE)).afterEach(teardownCase())
-test(formalName('Check the like button ', ['P2', 'ContentPanel', 'SendMessages', 'V1.4', 'Hanny.Han']),async (t) => {
+test(formalName('Check the like button ', ['P2', 'ContentPanel','Messages', 'SendMessages', 'V1.4', 'Hanny.Han']),async (t) => {
   const users=h(t).rcData.mainCompany.users;
   const userA = users[4];
   const userB = users[5];
@@ -44,7 +44,7 @@ test(formalName('Check the like button ', ['P2', 'ContentPanel', 'SendMessages',
     await t.hover(postCard.self);
   });
 
-  await h(t).withLog('Then Appear action bar and there have hollow "like" icon', async () => {
+  await h(t).withLog('And Appear action bar and there have hollow "like" icon', async () => {
     await t.hover(postCard.likeToggleOnActionBar);
   });
   await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_MessagesLike'})
