@@ -10,10 +10,7 @@ import { GlobalSearchService } from '@/modules/GlobalSearch/service/GlobalSearch
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { TelephonyService } from '@/modules/telephony/service';
 import { TELEPHONY_SERVICE } from './interface/constant';
-import {
-  LEAVE_BLOCKER_SERVICE,
-  ILeaveBlockerService,
-} from '@/modules/leave-blocker/interface';
+import { ILeaveBlockerService } from '@/modules/leave-blocker/interface';
 import { mainLogger } from 'sdk';
 import { SERVICE } from 'sdk/service/eventKey';
 import { notificationCenter } from 'sdk/service';
@@ -30,7 +27,7 @@ class TelephonyModule extends AbstractModule {
   private _featuresFlagsService: FeaturesFlagsService;
   @inject(TELEPHONY_SERVICE)
   private _telephonyService: TelephonyService;
-  @inject(LEAVE_BLOCKER_SERVICE)
+  @ILeaveBlockerService
   private _leaveBlockerService: ILeaveBlockerService;
   @inject(TelephonyNotificationManager)
   private _notificationManager: TelephonyNotificationManager;
@@ -92,7 +89,7 @@ class TelephonyModule extends AbstractModule {
     if (this._telephonyService.getAllCallCount() > 0) {
       mainLogger.info(
         `${
-        TelephonyModule.TAG
+          TelephonyModule.TAG
         }Notify user has call count: ${this._telephonyService.getAllCallCount()}`,
       );
       return true;

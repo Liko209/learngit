@@ -3,13 +3,16 @@
  * @Date: 2019-04-01 15:16:45
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
+import { ModuleConfig, Jupiter } from 'framework';
 import { NotificationModule } from './notificationModule';
 import { NotificationService } from './service';
-import { NOTIFICATION_SERVICE } from './interface/constant';
+import { INotificationService } from './interface';
 
-const config = {
+const config: ModuleConfig = {
   entry: NotificationModule,
-  provides: [{ name: NOTIFICATION_SERVICE, value: NotificationService }],
+  binding: (jupiter: Jupiter) => {
+    jupiter.registerService(INotificationService, NotificationService);
+  },
 };
 
 export { config };

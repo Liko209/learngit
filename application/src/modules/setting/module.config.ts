@@ -3,20 +3,18 @@
  * @Date: 2019-04-23 09:12:51
  * Copyright © RingCentral. All rights reserved.
  */
+import { Jupiter, ModuleConfig } from 'framework';
 import { SettingService } from './service';
 import { SettingStore } from './store';
 import { SettingModule } from './SettingModule';
 import { ISettingService } from './interface';
 
-const config = {
+const config: ModuleConfig = {
   entry: SettingModule,
-  provides: [
-    {
-      name: ISettingService,
-      value: SettingService,
-    },
-    SettingStore,
-  ],
+  binding: (jupiter: Jupiter) => {
+    jupiter.registerService(ISettingService, SettingService);
+    jupiter.registerClass(SettingStore);
+  },
 };
 
 export { config };

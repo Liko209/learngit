@@ -3,18 +3,16 @@
  * @Date: 2019-02-02 14:33:34
  * Copyright © RingCentral. All rights reserved.
  */
+import { ModuleConfig, Jupiter } from 'framework';
 import { LeaveBlockerModule } from './LeaveBlockerModule';
 import { LeaveBlockerService } from './service';
-import { LEAVE_BLOCKER_SERVICE } from './interface';
+import { ILeaveBlockerService } from './interface';
 
-const config = {
+const config: ModuleConfig = {
   entry: LeaveBlockerModule,
-  provides: [
-    {
-      name: LEAVE_BLOCKER_SERVICE,
-      value: LeaveBlockerService,
-    },
-  ],
+  binding: (jupiter: Jupiter) => {
+    jupiter.registerService(ILeaveBlockerService, LeaveBlockerService);
+  },
 };
 
 export { config };

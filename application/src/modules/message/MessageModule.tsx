@@ -4,10 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AbstractModule, inject, Jupiter } from 'framework';
-import {
-  ILeaveBlockerService,
-  LEAVE_BLOCKER_SERVICE,
-} from '../leave-blocker/interface';
+import { ILeaveBlockerService } from '../leave-blocker/interface';
 import { ItemService } from 'sdk/module/item/service';
 
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -21,7 +18,7 @@ const itemService = ServiceLoader.getInstance<ItemService>(
 );
 
 class MessageModule extends AbstractModule {
-  @inject(LEAVE_BLOCKER_SERVICE) _leaveBlockerService: ILeaveBlockerService;
+  @ILeaveBlockerService _leaveBlockerService: ILeaveBlockerService;
   @inject(Jupiter) private _jupiter: Jupiter;
   @inject(MESSAGE_NOTIFICATION_MANAGER)
   _messageNotificationManager: MessageNotificationManager;

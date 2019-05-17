@@ -13,6 +13,7 @@ import {
   interfaces,
 } from './ioc';
 import { ModuleConfig, Provide } from './types';
+import { IS_DECORATOR } from './constants';
 
 /**
  * Jupiter Framework
@@ -30,17 +31,15 @@ class Jupiter {
   private _disposedListenerMap = new Map<interfaces.ServiceIdentifier<any>[], any[]>();
 
   registerModule(
-    { provides, entry }: ModuleConfig,
+    { entry, binding }: ModuleConfig,
     afterBootstrap?: () => void,
   ): void {
-    if (provides) {
-      provides.forEach((provide: Provide<any>) => {
-        this.bindProvide(provide);
-      });
+    if (binding) {
+      binding(this);
     }
 
     if (entry) {
-      this.bindProvide(entry);
+      this.registerService(entry, entry);
       this.addEntry(entry);
       if (this._running) {
         // async module
@@ -112,11 +111,7 @@ class Jupiter {
 
   bindProvide<T>(provide: Provide<T>) {
     const { identifier, creator } = this._parseProvide(provide);
-
-    if (!Reflect.hasOwnMetadata(METADATA_KEY.PARAM_TYPES, creator)) {
-      decorate(injectable(), creator);
-    }
-
+    this._ensureInjectable(creator);
     this._container.bind(identifier).to(creator);
     this._identifiersMap.set(identifier, null);
   }
@@ -129,10 +124,21 @@ class Jupiter {
     this._container.unbind(identifier);
   }
 
-  get<T>(
-    name: string | symbol | interfaces.Newable<T> | interfaces.Abstract<T>,
+  registerService<T>(
+    identifier: interfaces.ServiceIdentifier<T>,
+    newable: interfaces.Newable<T>,
   ) {
-    return this._container.get<T>(name);
+    const id = identifier[IS_DECORATOR] ? identifier.toString() : identifier;
+    this._ensureInjectable(newable);
+    return this._container.bind<T>(id).to(newable);
+  }
+
+  registerClass<T>(newable: interfaces.Newable<T>) {
+    return this.registerService(newable, newable);
+  }
+
+  get<T>(identifier: interfaces.ServiceIdentifier<T>) {
+    return this._container.get<T>(identifier);
   }
 
   async bootstrapModule<T extends AbstractModule>(
@@ -225,6 +231,12 @@ class Jupiter {
         callback,
         this._disposedListenerMap,
       );
+    }
+  }
+
+  private _ensureInjectable(creator: interfaces.Newable<any>) {
+    if (!Reflect.hasOwnMetadata(METADATA_KEY.PARAM_TYPES, creator)) {
+      decorate(injectable(), creator);
     }
   }
 
