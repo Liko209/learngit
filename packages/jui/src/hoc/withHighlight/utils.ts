@@ -9,13 +9,13 @@ const _wrapMatchedWord = (fullText: string, reg: RegExp) => {
   if (typeof fullText !== 'string') return fullText;
 
   const matchedInEntityRegex = new RegExp(
-    `(?<=&\\w*)(${reg.source})(?=\\w*;)`,
+    `(&[^&]*)(${reg.source})(?=\\w*;)`,
     reg.flags,
   );
   const indexesOfMatchedInEntity: number[] = [];
   let result = matchedInEntityRegex.exec(fullText);
   while (result) {
-    indexesOfMatchedInEntity.push(result.index);
+    indexesOfMatchedInEntity.push(result.index + result[1].length);
     result = matchedInEntityRegex.exec(fullText);
   }
   return fullText.replace(reg, (match: string, ...args: any[]) => {
