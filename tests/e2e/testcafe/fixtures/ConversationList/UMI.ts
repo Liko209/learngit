@@ -785,9 +785,10 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I Collapsed Fav/DM/Teams section in Jupiter app', async () => {
-    await t.click(directMessagesSection.toggleButton);
-    await t.click(teamsSection.toggleButton);
-    await t.click(favoritesSection.toggleButton);
+    await t.debug();
+    await directMessagesSection.fold();
+    await teamsSection.fold();
+    await favoritesSection.fold();
   });
 
   await h(t).withLog('And check UMI in Fav/DM/Teams section in Jupiter app', async () => {
