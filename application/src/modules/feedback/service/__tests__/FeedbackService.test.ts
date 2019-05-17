@@ -6,7 +6,7 @@
 
 import * as filestack from 'filestack-js';
 import { FeedbackService } from '../FeedbackService';
-import { LogControlManager } from 'sdk/src/service/uploadLogControl/LogControlManager';
+import { LogControlManager } from 'sdk/service/uploadLogControl/LogControlManager';
 import { getAppContextInfo } from '@/utils/error';
 import * as Sentry from '@sentry/browser';
 import { FeedbackApi } from '../../FeedbackApi';
