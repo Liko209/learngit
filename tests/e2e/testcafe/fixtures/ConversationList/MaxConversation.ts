@@ -8,6 +8,7 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 import * as _ from 'lodash';
+import {IGroup, ITestMeta} from "../../v2/models";
 
 fixture('ConversationList/maxConversation')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
