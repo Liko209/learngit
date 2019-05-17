@@ -61,8 +61,6 @@ export class LogControlManager implements IAccessor {
     );
     this._healthStatusItemProvider = new HealthStatusItemProvider();
     this.registerZipProvider(this._healthStatusItemProvider);
-    this.subscribeNotifications();
-
     this.registerHealthStatusItem({
       getName: () => 'SocketStatus',
       getStatus: async () => {
@@ -71,6 +69,7 @@ export class LogControlManager implements IAccessor {
         };
       },
     });
+    this.subscribeNotifications();
   }
 
   public static instance(): LogControlManager {

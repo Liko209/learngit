@@ -47,7 +47,7 @@ export class HealthStatusItemProvider implements IZipItemProvider {
     for (let index = 0; index < this._items.length; index++) {
       const item = this._items[index];
       const status = await item.getStatus();
-      logContents.push(`----- ${item.getName()} -----\n${toText(status)}\n`);
+      logContents.push(`----- ${item.getName()} -----\n\n${toText(status)}\n`);
     }
     return [
       {

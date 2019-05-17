@@ -48,7 +48,7 @@ class TelephonyService extends EntityBaseService<IdModel> {
     LogControlManager.instance().registerHealthStatusItem({
       getName: () => 'Telephony',
       getStatus: async () => ({
-        VoipState: this.getVoipState(),
+        VoIPState: this.getVoipState(),
       }),
     });
   }

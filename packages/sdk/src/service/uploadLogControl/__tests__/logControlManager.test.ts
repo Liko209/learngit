@@ -11,6 +11,17 @@ import { ENTITY, SERVICE, WINDOW, DOCUMENT } from '../../../service/eventKey';
 import { LogControlManager } from '../logControlManager';
 import { configManager } from '../config';
 import { ServiceLoader } from '../../../module/serviceLoader';
+import { HealthStatusItemProvider } from '../HealthStatusItemProvider';
+
+jest.mock('../HealthStatusItemProvider', () => {
+  const mockHealthStatusItemProvider = {
+    registerHealthStatusItem: jest.fn(),
+    unRegisterHealthStatusItem: jest.fn(),
+  };
+  return {
+    HealthStatusItemProvider: () => mockHealthStatusItemProvider,
+  };
+});
 
 jest.mock('../utils', () => {
   return {
@@ -121,6 +132,35 @@ describe('LogControlManager', () => {
       expect(spyMainLoggerWarn).toBeCalled();
       expect(spyLogManagerConfig).not.toHaveBeenCalled();
       expect(mockPermissionService.hasPermission).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('registerHealthStatusItem()', () => {
+    it('should call HealthStatusItemProvider.registerHealthStatusItem', () => {
+      const mockHealthProvider = new HealthStatusItemProvider();
+      const testItem = {
+        getName: () => 'test',
+        getStatus: async () => 'status',
+      };
+      logControlManager.registerHealthStatusItem(testItem);
+      expect(mockHealthProvider.registerHealthStatusItem).toBeCalledWith(
+        testItem,
+      );
+    });
+  });
+
+  describe('unRegisterHealthStatusItem()', () => {
+    it('should call HealthStatusItemProvider.unRegisterHealthStatusItem', () => {
+      const mockHealthProvider = new HealthStatusItemProvider();
+      const testItem = {
+        getName: () => 'test',
+        getStatus: async () => 'status',
+      };
+      logControlManager.registerHealthStatusItem(testItem);
+      logControlManager.unRegisterHealthStatusItem(testItem);
+      expect(mockHealthProvider.unRegisterHealthStatusItem).toBeCalledWith(
+        testItem,
+      );
     });
   });
 });

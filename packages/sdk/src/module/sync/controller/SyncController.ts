@@ -46,7 +46,7 @@ import { InformationRecorder, AbstractRecord } from 'sdk/utils';
 import _ from 'lodash';
 
 const LOG_TAG = 'SyncController';
-const LAST_SYNC_STATUS_NAME = 'LastSyncStatus';
+const MODULE_NAME = 'SyncModule';
 
 type RequestStatus = 'none' | 'executing' | 'success' | 'failed';
 
@@ -63,7 +63,7 @@ class SyncController {
     remaining: RequestStatus;
     logs: any[];
   }> = new InformationRecorder(
-    LAST_SYNC_STATUS_NAME,
+    MODULE_NAME,
     () =>
       new AbstractRecord({
         lastIndexTimestamp: null,
@@ -82,15 +82,13 @@ class SyncController {
     this._progressBar = progressManager.newProgressBar();
     this._syncHealthStatusItem = {
       getName: () => {
-        return LAST_SYNC_STATUS_NAME;
+        return MODULE_NAME;
       },
       getStatus: async () => {
-        return this._syncInformationRecorder.getAllRecords();
+        return _.omit(this._syncInformationRecorder.getCurrentRecord(), 'logs');
       },
     };
-    LogControlManager.instance().unRegisterHealthStatusItem(
-      LAST_SYNC_STATUS_NAME,
-    );
+    LogControlManager.instance().unRegisterHealthStatusItem(MODULE_NAME);
     LogControlManager.instance().registerHealthStatusItem(
       this._syncHealthStatusItem,
     );

@@ -79,9 +79,8 @@ export class InformationRecorder<R> {
   }
 
   private _getLogTag(tag?: string) {
-    return tag
-      ? [LOG_TAG, ...this._options.logTags, tag]
-      : [LOG_TAG, ...this._options.logTags];
+    const optionLogTags = this._options.logTags || [];
+    return tag ? [LOG_TAG, ...optionLogTags, tag] : [LOG_TAG, ...optionLogTags];
   }
 
   private _ensureOptions(options?: Partial<RecorderOptions>): RecorderOptions {
@@ -145,7 +144,7 @@ export class InformationRecorder<R> {
   }
 
   getLatestRecord() {
-    return _.last(this.getRecordHistory());
+    return _.last(this.getRecordHistory()) || null;
   }
 
   set<K extends keyof R>(

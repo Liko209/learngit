@@ -15,20 +15,47 @@ function repeatString(
     : baseString;
 }
 
+const SUPPORT_TO_TEXT_TYPES = [
+  '[object Object]',
+  '[object Array]',
+  '[object Null]',
+  '[object Undefined]',
+  '[object Number]',
+  '[object String]',
+  '[object Boolean]',
+];
+
+const COMPLEX_TYPE = ['[object Object]', '[object Array]'];
+
 function toText(arg: any, level: number = 0): string {
+  const type = Object.prototype.toString.call(arg);
+  if (!SUPPORT_TO_TEXT_TYPES.includes(type)) return '';
   if (_.isArray(arg)) {
-    const nChar = repeatString(' ', level);
-    return `[\n${nChar}${arg
-      .map(it => `${nChar}${toText(it, level + 1)}`)
-      .join(`\n${nChar}`)}\n${nChar}]`;
+    const space = repeatString(' ', level + 1);
+    return `[\n${space}${arg
+      .filter(it =>
+        SUPPORT_TO_TEXT_TYPES.includes(Object.prototype.toString.call(it)),
+      )
+      .map(it => `${toText(it, level + 1)}`)
+      .join(`\n${space}`)}\n${repeatString(' ', level)}]`;
   }
   if (_.isObject(arg)) {
-    const nChar = repeatString(' ', level);
+    const space = repeatString(' ', level);
     return Object.entries(arg)
+      .filter(([, value]) =>
+        SUPPORT_TO_TEXT_TYPES.includes(Object.prototype.toString.call(value)),
+      )
       .map(([key, value]) => {
-        return `\n${nChar}${key}: ${toText(value, level + 1)}`;
+        const valueType = Object.prototype.toString.call(value);
+        if (COMPLEX_TYPE.includes(valueType)) {
+          return `${key}: \n${repeatString(' ', level + 1)}${toText(
+            value,
+            level + 1,
+          )}`;
+        }
+        return `${key}: ${toText(value, level + 1)}`;
       })
-      .join('');
+      .join(`\n${space}`);
   }
   return `${arg}`;
 }
