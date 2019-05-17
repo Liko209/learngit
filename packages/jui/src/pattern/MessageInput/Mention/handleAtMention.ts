@@ -7,7 +7,7 @@
 const UN_ESCAPE_HTML_AT_MENTION_REGEXP =
   /&lt;a class=['"]at_mention_compose[\S\s.]*?rel=\D+(\d+)((?!&gt;).)+&gt;@((((?!&lt;).))+)&lt;&sol;a&gt;/g;
 
-export function decode(text: string) {
+function decode(text: string) {
   const DECODE = {
     '&': '&amp;',
     '\\': '&bsol;',
@@ -26,6 +26,10 @@ export function decode(text: string) {
   });
 }
 
+function atMentionTemplate(id: string, name: string) {
+  return `<span class='mention' data-id='${id}' data-name='${name}' data-denotation-char='@'><span contenteditable='false'><span class='ql-mention-denotation-char'>@</span>${name}</span></span>`;
+}
+
 const handleAtMention = (str: string) => {
   let text = decode(str);
 
@@ -39,10 +43,10 @@ const handleAtMention = (str: string) => {
       UN_ESCAPE_HTML_AT_MENTION_REGEXP,
       (match, id, $1, name) => {
         // tslint:disable-next-line
-        return `<span class='mention' data-id='${id}' data-name='${name}' data-denotation-char='@'><span contenteditable='false'><span class='ql-mention-denotation-char'>@</span>${name}</span></span>`;
+        return atMentionTemplate(id, name);
       },
     )}</p>`;
   }
   return text;
 };
-export { handleAtMention };
+export { handleAtMention, UN_ESCAPE_HTML_AT_MENTION_REGEXP, decode, atMentionTemplate };
