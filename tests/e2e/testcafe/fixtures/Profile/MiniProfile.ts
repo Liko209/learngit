@@ -16,8 +16,7 @@ fixture('Profile/MiniProfile')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-// skip by https://jira.ringcentral.com/browse/FIJI-5156
-test.skip(formalName('Open mini profile via post avatar then open conversation', ['JPT-449', 'P1', 'Potar.He', 'Profile']), async (t) => {
+test(formalName('Open mini profile via post avatar then open conversation', ['JPT-449', 'P1', 'Potar.He', 'Profile']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   await h(t).platform(loginUser).init();

@@ -14,11 +14,14 @@ import {
   grey,
   typography,
 } from '../../foundation/utils/styles';
+import { Theme } from '../../foundation/theme/theme';
 import defaultLinkImage from './link_img@2x.png';
+import { withHighlight } from '../../hoc/withHighlight';
 
 const LinkItemsWrapper = styled(JuiCard)`
   margin-top: ${spacing(3)};
-  background-color: ${({ theme }) => theme.palette.common.white};
+  background-color: ${({ theme }: { theme: Theme }) =>
+    theme.palette.common.white};
   width: 100%;
   border-radius: ${({ theme }) => theme.shape.borderRadius}px;
   overflow: hidden;
@@ -31,7 +34,7 @@ const LinkItemsWrapper = styled(JuiCard)`
 const LinkItemContents = styled.div`
   display: flex;
   & > span {
-    color: ${({ theme }) => theme.palette.accent.ash};
+    color: ${({ theme }: { theme: Theme }) => theme.palette.accent.ash};
     width: ${width(5)};
     height: ${height(5)};
     cursor: pointer;
@@ -118,7 +121,7 @@ type Props = {
   favicon: string;
   faviconName: string;
 };
-class JuiConversationCardLinkItems extends PureComponent<Props> {
+class JuiConversationCardLinkItemsComponent extends PureComponent<Props> {
   constructor(props: Props) {
     super(props);
   }
@@ -136,11 +139,13 @@ class JuiConversationCardLinkItems extends PureComponent<Props> {
           <TitleWithSummary>
             <TitleNSummaryWrapper>
               <LinkTitle>
-                <a href={url} target="_blank">
-                  {title}
-                </a>
+                <a
+                  href={url}
+                  target="_blank"
+                  dangerouslySetInnerHTML={{ __html: title }}
+                />
               </LinkTitle>
-              <LinkSummary>{summary}</LinkSummary>
+              <LinkSummary dangerouslySetInnerHTML={{ __html: summary }} />
             </TitleNSummaryWrapper>
             <FaviconWrapper>
               <Favicon favicon={favicon} />
@@ -159,4 +164,8 @@ class JuiConversationCardLinkItems extends PureComponent<Props> {
     );
   }
 }
+
+const JuiConversationCardLinkItems = withHighlight(['title', 'summary'])(
+  JuiConversationCardLinkItemsComponent,
+);
 export { JuiConversationCardLinkItems };

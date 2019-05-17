@@ -22,7 +22,6 @@ import conversationPostCacheController from '@/store/handler/cache/ConversationP
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const BEFORE_ANCHOR_POSTS_COUNT = 20;
-const LOAD_UNREAD_POSTS_REDUNDANCY = 500;
 
 const transformFunc = (streamItem: StreamItem): IStreamItemSortableModel => ({
   id: streamItem.id,
@@ -31,10 +30,10 @@ const transformFunc = (streamItem: StreamItem): IStreamItemSortableModel => ({
 });
 
 class StreamController {
-  private _orderListHandler: FetchSortableDataListHandler<
-    Post,
-    IStreamItemSortableModel
-  >;
+  private _postService = ServiceLoader.getInstance<PostService>(
+    ServiceConfig.POST_SERVICE,
+  );
+  private _orderListHandler: FetchSortableDataListHandler<Post>;
   private _streamListHandler: FetchSortableDataListHandler<
     StreamItem,
     IStreamItemSortableModel
@@ -70,10 +69,7 @@ class StreamController {
     private _historyHandler: HistoryHandler,
     private _jumpToPostId?: number,
   ) {
-    let listHandler: FetchSortableDataListHandler<
-      Post,
-      IStreamItemSortableModel
-    >;
+    let listHandler: FetchSortableDataListHandler<Post>;
     if (this._jumpToPostId) {
       listHandler = ConversationPostFocBuilder.buildConversationPostFoc(
         this._groupId,
@@ -185,41 +181,53 @@ class StreamController {
 
   @action
   async fetchAllUnreadData() {
-    const pageSize = this.historyUnreadCount + LOAD_UNREAD_POSTS_REDUNDANCY;
-    const readThrough = this.historyReadThrough || 0;
-
-    let sortableModel: IStreamItemSortableModel | undefined = undefined;
-    if (readThrough !== 0) {
-      const postService = ServiceLoader.getInstance<PostService>(
-        ServiceConfig.POST_SERVICE,
-      );
-      const post = await postService.getById(readThrough);
-      sortableModel = this._orderListHandler.transform2SortableModel(post!);
-    }
-
     this.enableNewMessageSep();
-    const postsNewerThanAnchor = await this._orderListHandler.fetchDataByAnchor(
+    await this._orderListHandler.fetchDataBy(
       QUERY_DIRECTION.NEWER,
-      pageSize,
-      sortableModel,
+      this._unreadPostsLoader,
     );
+    return this._orderListHandler.listStore.items;
+  }
 
-    const firstPost = postsNewerThanAnchor[0];
+  private _unreadPostsLoader = async () => {
+    let hasMore = true;
+    let postsNewerThanAnchor: Post[] = [];
+    let postsOlderThanAnchor: Post[] = [];
 
-    if (firstPost) {
-      await this._orderListHandler.fetchDataByAnchor(
-        QUERY_DIRECTION.OLDER,
-        BEFORE_ANCHOR_POSTS_COUNT,
-        this._orderListHandler.transform2SortableModel(firstPost),
-      );
+    // (1)
+    // Fetch all posts between readThrough and firstPost
+    ({
+      hasMore,
+      posts: postsNewerThanAnchor,
+    } = await this._postService.getUnreadPostsByGroupId({
+      groupId: this._groupId,
+      unreadCount: this.historyUnreadCount,
+      startPostId: this.historyReadThrough || 0,
+      endPostId: this._orderListHandler.listStore.items[0].id,
+    }));
+
+    // (2)
+    // Fetch $BEFORE_ANCHOR_POSTS_COUNT posts that older than
+    // oldest post of (1)
+    const oldestPost = _.last(postsNewerThanAnchor);
+    if (oldestPost) {
+      ({
+        posts: postsOlderThanAnchor,
+      } = await this._postService.getPostsByGroupId({
+        groupId: this._groupId,
+        postId: oldestPost.id,
+        direction: QUERY_DIRECTION.OLDER,
+        limit: BEFORE_ANCHOR_POSTS_COUNT,
+      }));
     }
 
-    return this._orderListHandler.listStore.items;
+    // (3)
+    // Return all the posts from (1) and (2)
+    return {
+      hasMore,
+      data: [...postsNewerThanAnchor, ...postsOlderThanAnchor],
+    };
   }
 }
 
-export {
-  StreamController,
-  BEFORE_ANCHOR_POSTS_COUNT,
-  LOAD_UNREAD_POSTS_REDUNDANCY,
-};
+export { StreamController, BEFORE_ANCHOR_POSTS_COUNT };

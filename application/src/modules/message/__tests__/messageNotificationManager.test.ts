@@ -3,10 +3,11 @@
  * @Date: 2019-01-17 15:16:45
  * Copyright Â© RingCentral. All rights reserved.
  */
-import { ServiceConfig } from 'sdk/module/serviceLoader';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import * as utils from '@/store/utils';
 import { MessageNotificationManager } from '../MessageNotificationManager';
-import { ServiceLoader } from 'sdk/module/serviceLoader';
+
+jest.mock('sdk/module/config');
 describe('messageNotificationManager', () => {
   let notificationManager: MessageNotificationManager;
   const currentUserId = 110;

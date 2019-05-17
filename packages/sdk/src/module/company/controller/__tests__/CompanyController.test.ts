@@ -10,6 +10,7 @@ import notificationCenter from '../../../../service/notificationCenter';
 import { rawCompanyFactory } from '../../../../__tests__/factories';
 import { SYNC_SOURCE } from '../../../../module/sync/types';
 import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('../../../account/config/AccountUserConfig', () => {
   const xx = {
@@ -55,6 +56,13 @@ describe('CompanyController', () => {
   let companyController: CompanyController;
   let accountUserConfig: AccountUserConfig;
   function setUp() {
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: accountUserConfig };
+        }
+      });
     accountUserConfig = new AccountUserConfig();
     companyController = new CompanyController(entitySourceController);
   }

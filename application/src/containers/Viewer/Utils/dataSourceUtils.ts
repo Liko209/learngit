@@ -19,7 +19,7 @@ function getFilterFunc(groupId: number, type: VIEWER_ITEM_TYPE) {
     case VIEWER_ITEM_TYPE.IMAGE_FILES:
       return (file: Item) => {
         return (
-          ItemUtils.fileFilter(groupId, true)(file) &&
+          ItemUtils.imageFilter(groupId)(file) &&
           FileItemUtils.isSupportPreview(file)
         );
       };

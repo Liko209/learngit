@@ -7,16 +7,15 @@
 jest.mock('../../../../dao');
 
 import { SyncService } from '../SyncService';
-import {
-  notificationCenter,
-  SOCKET,
-  WINDOW,
-  SERVICE,
-} from '../../../../service';
-import dataDispatcher from '../../../../component/DataDispatcher';
+import { notificationCenter, WINDOW, SERVICE } from '../../../../service';
+import { SyncUserConfig } from '../../config/SyncUserConfig';
+import { SyncController } from '../../controller/SyncController';
+
+jest.mock('../../config/SyncUserConfig');
+jest.mock('../../controller/SyncController');
 
 describe('SyncService ', () => {
-  let syncService: SyncService = null;
+  let syncService: SyncService;
   const syncController = {
     getIndexTimestamp: jest.fn(),
     syncData: jest.fn(),
@@ -30,6 +29,21 @@ describe('SyncService ', () => {
     syncService = new SyncService();
     Object.assign(syncService, {
       _syncController: syncController,
+    });
+  });
+
+  describe('userConfig', () => {
+    it('should create userConfig', () => {
+      syncService.userConfig;
+      expect(SyncUserConfig).toBeCalled();
+    });
+  });
+
+  describe('getSyncController', () => {
+    it('should create getSyncController', () => {
+      syncService['_syncController'] = undefined as any;
+      syncService['getSyncController']();
+      expect(SyncController).toBeCalled();
     });
   });
 

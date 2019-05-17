@@ -12,10 +12,20 @@ import {
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { RCInfoFetchController } from './RCInfoFetchController';
 import { RCAccountInfoController } from './RCAccountInfoController';
+import { RCCallerIdController } from './RCCallerIdController';
 import { SELLING_COUNTRY_LIST, SUPPORT_AREA_CODE_COUNTRIES } from './constants';
-import { RCBrandType, StationLocationSetting } from '../types';
+import {
+  RCBrandType,
+  StationLocationSetting,
+  GlobalStationLocationSetting,
+  RegionInfo,
+} from '../types';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/types';
 import { AccountServiceInfoController } from './AccountServiceInfoController';
 import { mainLogger } from 'foundation';
+import { notificationCenter, RC_INFO, SERVICE } from 'sdk/service';
+import { RCInfoGlobalConfig } from '../config';
+import { AccountGlobalConfig } from 'sdk/module/account/config';
 
 type StationSetting = {
   newCountryInfo: DialingCountryInfo;
@@ -23,7 +33,6 @@ type StationSetting = {
   updateSpecialNumber?: boolean;
   areaCodeByManual?: boolean;
   countryByManual?: boolean;
-  updateDB?: boolean;
 };
 const LOG_TAG = 'RegionInfoController';
 const DefaultCountryInfo = {
@@ -32,6 +41,7 @@ const DefaultCountryInfo = {
   isoCode: 'US',
   callingCode: '1',
 };
+const DefaultBrandId = '1210';
 
 class RegionInfoController {
   private _currentCountryInfo: DialingCountryInfo;
@@ -40,27 +50,47 @@ class RegionInfoController {
     private _rcInfoFetchController: RCInfoFetchController,
     private _rcAccountInfoController: RCAccountInfoController,
     private _accountServiceInfoController: AccountServiceInfoController,
+    private _callerIdController: RCCallerIdController,
   ) {}
 
+  init() {
+    notificationCenter.on(
+      RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
+      this.updateStationLocation,
+    );
+  }
+
+  dispose() {
+    notificationCenter.off(
+      RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
+      this.updateStationLocation,
+    );
+  }
+
+  updateStationLocation = () => {
+    this.loadRegionInfo();
+  }
+
   async loadRegionInfo() {
-    const stationSetting = await this._rcInfoFetchController.getStationLocation();
+    const stationSetting = this._getStationLocation();
     const countryInfo =
       (stationSetting && stationSetting.countryInfo) || DefaultCountryInfo;
     this._updateCurrentCountryId(countryInfo);
     await this._setStationLocation({
       newCountryInfo: countryInfo,
-      areaCode: '',
-      updateSpecialNumber: false,
-      areaCodeByManual: false,
-      countryByManual: false,
-      updateDB: false,
+      areaCode: (stationSetting && stationSetting.areaCode) || '',
+      updateSpecialNumber: true,
+      areaCodeByManual:
+        (stationSetting && stationSetting.areaCodeByManual) || false,
+      countryByManual:
+        (stationSetting && stationSetting.countryByManual) || false,
     });
   }
 
   async getCountryList(): Promise<DialingCountryInfo[]> {
     const list = await this._getDialingPlanCountryRecords();
     if (list.length === 0) {
-      const countryInfo = await this._getCountryFromAccountInfo();
+      const countryInfo = await this._getCountryFromUserNumber();
       if (countryInfo) {
         list.push(countryInfo);
       }
@@ -77,14 +107,15 @@ class RegionInfoController {
       this._currentCountryInfo.isoCode,
     );
 
-    return countryInfo || (await this._getCountryFromAccountInfo())!;
+    return countryInfo || (await this._getCountryFromUserNumber())!;
   }
 
   async setDefaultCountry(isoCode: string) {
     const countryInfo =
       (await this._getDialingPlanCountryRecordByISOCode(isoCode)) ||
-      (await this._getCountryFromAccountInfo());
+      (await this._getCountryFromUserNumber());
 
+    mainLogger.tags(LOG_TAG).log('setDefaultCountry', isoCode, countryInfo);
     if (countryInfo) {
       await this._setStationLocation({
         newCountryInfo: countryInfo,
@@ -99,11 +130,12 @@ class RegionInfoController {
       (await this._getDialingPlanCountryRecordByISOCode(
         this._currentCountryInfo.isoCode,
       )) || DefaultCountryInfo;
+    mainLogger.tags(LOG_TAG).log('setAreaCode', areaCode, info);
     await this._setStationLocation({ areaCode, newCountryInfo: info });
   }
 
   async getAreaCode() {
-    return PhoneParserUtility.getStationAreaCode();
+    return PhoneParserUtility.getStationAreaCode() || '';
   }
 
   hasAreaCode(countryCallingCode: string) {
@@ -125,11 +157,10 @@ class RegionInfoController {
     return (plan && plan.records) || [];
   }
 
-  private async _getCountryFromAccountInfo() {
-    const callingCodeFromMainNumber = await this._getAccountMainNumberCountryCode();
-    return await this._getCountryFromDefaultSellingCountries(
-      callingCodeFromMainNumber,
-    );
+  private async _getCountryFromUserNumber() {
+    const phoneNumber = await this._validUserPhoneNumber();
+    const callingCode = await this._getAccountCallingCodeByNumber(phoneNumber!);
+    return await this._getCountryFromDefaultSellingCountries(callingCode);
   }
 
   private async _getCountryFromDefaultSellingCountries(callingCode: string) {
@@ -145,16 +176,16 @@ class RegionInfoController {
     return this._getDefaultCountryInfoByCallingCode(callingCode);
   }
 
-  private async _getAccountMainNumberCountryCode(): Promise<string> {
+  private async _getAccountCallingCodeByNumber(
+    phoneNumber: string,
+  ): Promise<string> {
     let countryCode = DefaultCountryInfo.callingCode; // default country
-    const mainNumber = await this._rcAccountInfoController.getAccountMainNumber();
-    if (mainNumber) {
+    if (phoneNumber) {
       const phoneParser = await PhoneParserUtility.getPhoneParser(
-        mainNumber,
+        phoneNumber,
         false,
       );
-      countryCode =
-        (phoneParser && phoneParser.getCountryCode()) || countryCode;
+      countryCode = phoneParser ? phoneParser.getCountryCode() : countryCode;
     }
     return countryCode;
   }
@@ -191,20 +222,22 @@ class RegionInfoController {
       updateSpecialNumber = true,
       areaCodeByManual = true,
       countryByManual = true,
-      updateDB = true,
     } = setting;
     let { areaCode } = setting;
 
-    const stationSettingInDB = await this._rcInfoFetchController.getStationLocation();
+    const stationSettingInDB = this._getStationLocation();
     if (
       stationSettingInDB &&
       !this._shouldUpdateRegion(countryByManual, stationSettingInDB)
     ) {
+      mainLogger.tags(LOG_TAG).log('no need to update region');
       return;
     }
 
     let countryInfo = _.cloneDeep(newCountryInfo);
-    const brandId = await this._rcAccountInfoController.getAccountBrandId();
+    const brandId =
+      (await this._rcAccountInfoController.getAccountBrandId()) ||
+      DefaultBrandId;
     const isATT =
       (await this._rcAccountInfoController.getBrandID2Type(brandId)) ===
       RCBrandType.ATT;
@@ -225,13 +258,12 @@ class RegionInfoController {
     const shortExtLen = await this._accountServiceInfoController.getShortExtensionNumberLength();
     const siteCode = await this._getSiteCode();
 
-    updateDB &&
-      this._rcInfoFetchController.setStationLocation({
-        areaCodeByManual,
-        areaCode,
-        countryByManual,
-        countryInfo: newCountryInfo,
-      });
+    this._updateStationLocation({
+      areaCodeByManual,
+      areaCode,
+      countryByManual,
+      countryInfo: newCountryInfo,
+    });
 
     this._updateCurrentCountryId(countryInfo);
 
@@ -239,18 +271,50 @@ class RegionInfoController {
       .tags(LOG_TAG)
       .info('setStationLocation', { brandId, countryInfo, areaCode });
 
-    PhoneParserUtility.setStationLocation({
-      siteCode,
-      outboundCallPrefix,
-      brandId: _.toInteger(brandId),
-      szCountryCode: countryInfo.callingCode,
-      szAreaCode: areaCode,
-      maxShortLen: maxExtLen,
-      shortPinLen: shortExtLen,
-    });
+    try {
+      PhoneParserUtility.setStationLocation({
+        siteCode,
+        outboundCallPrefix,
+        brandId: _.toInteger(brandId),
+        szCountryCode: countryInfo.callingCode,
+        szAreaCode: areaCode,
+        maxShortLen: maxExtLen,
+        shortPinLen: shortExtLen,
+      });
+
+      notificationCenter.emit(RC_INFO.RC_REGION_INFO);
+    } catch (error) {
+      mainLogger
+        .tags(LOG_TAG)
+        .log('PhoneParserUtility.setStationLocation', error);
+    }
 
     updateSpecialNumber &&
       (await this._updateSpecialNumberIfNeed(_.toInteger(newCountryInfo.id)));
+
+    const regionInfo: RegionInfo = {
+      areaCode,
+      countryCode: countryInfo.callingCode,
+    };
+
+    notificationCenter.emit(SERVICE.RC_INFO_SERVICE.REGION_UPDATED, regionInfo);
+  }
+
+  private _getStationLocation(): StationLocationSetting {
+    const userId = AccountGlobalConfig.getUserDictionary() as number;
+    const currentInfo =
+      RCInfoGlobalConfig.getStationLocation() ||
+      ({} as GlobalStationLocationSetting);
+    return currentInfo[userId.toString()];
+  }
+
+  private _updateStationLocation(newRegionInfo: StationLocationSetting) {
+    const userId = AccountGlobalConfig.getUserDictionary() as number;
+    const currentInfo =
+      RCInfoGlobalConfig.getStationLocation() ||
+      ({} as GlobalStationLocationSetting);
+    currentInfo[userId.toString()] = newRegionInfo;
+    RCInfoGlobalConfig.setStationLocation(currentInfo);
   }
 
   private _shouldUpdateRegion(
@@ -293,7 +357,7 @@ class RegionInfoController {
         areaCode,
       );
       if (areaCode.length === 0 || (region && region.HasBan())) {
-        const areaCodeFromCallerId = await this._getAreaCodeFromCallerIds();
+        const areaCodeFromCallerId = await this._getAreaCodeFromUserNumbers();
         region = await PhoneParserUtility.getRegionalInfo(
           _.toInteger(countryInfo.id),
           areaCodeFromCallerId,
@@ -321,33 +385,38 @@ class RegionInfoController {
     );
   }
 
-  private async _getAreaCodeFromCallerIds() {
+  private async _getAreaCodeFromUserNumbers(): Promise<string> {
+    const phoneNumber = await this._validUserPhoneNumber();
     return (
-      (await this._getAreaCodeFromUserCallerIds()) ||
-      (await this._getAreaCodeFromAccountMainNumber())
-    );
-  }
-
-  private async _getAreaCodeFromUserCallerIds(): Promise<
-    UndefinedAble<string>
-  > {
-    // TODO:  get real caller ids and refine types and hard code, ticket FIJI-5538
-    const callerIds = [] as any;
-    for (const callerId of callerIds) {
-      if (callerId && callerId.type === 'DID' && callerId.phoneNumber) {
-        return this._getNonTollFreeNumberAreaCode(callerId.phoneNumber);
-      }
-    }
-
-    return undefined;
-  }
-
-  private async _getAreaCodeFromAccountMainNumber() {
-    const mainNumber = await this._rcAccountInfoController.getAccountMainNumber();
-    return (
-      (mainNumber && (await this._getNonTollFreeNumberAreaCode(mainNumber))) ||
+      (phoneNumber &&
+        phoneNumber.length &&
+        (await this._getNonTollFreeNumberAreaCode(phoneNumber))) ||
       ''
     );
+  }
+
+  private async _validUserPhoneNumber() {
+    return (
+      (await this._firstDirectNumber()) || (await this._accountMainNumber())
+    );
+  }
+
+  private async _accountMainNumber() {
+    return await this._rcAccountInfoController.getAccountMainNumber();
+  }
+
+  private async _firstDirectNumber(): Promise<UndefinedAble<string>> {
+    const callerIds = (await this._callerIdController.getCallerIdList()) || [];
+    for (const callerId of callerIds) {
+      if (
+        callerId &&
+        callerId.usageType === PhoneNumberType.DirectNumber &&
+        callerId.phoneNumber
+      ) {
+        return callerId.phoneNumber;
+      }
+    }
+    return undefined;
   }
 
   private async _getNonTollFreeNumberAreaCode(

@@ -7,7 +7,7 @@
 import { IDatabase } from 'foundation';
 import { BaseDao } from '../../../framework/dao';
 import { PostViewDao } from './PostViewDao';
-import { Post, PostView } from '../entity';
+import { Post, PostView, UnreadPostQuery } from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
 import { daoManager } from '../../../dao';
 import _ from 'lodash';
@@ -67,21 +67,31 @@ class PostDao extends BaseDao<Post> {
     return await this.getPostViewDao().queryPostIdsByGroupId(groupId);
   }
 
+  private _fetchPostsFunc = async (ids: number[]) => {
+    return await this.batchGet(ids, true);
+  }
+
   async queryPostsByGroupId(
     groupId: number,
     anchorPostId?: number,
     direction: QUERY_DIRECTION = QUERY_DIRECTION.OLDER,
     limit: number = Infinity,
   ): Promise<Post[]> {
-    const fetchPostsFunc = async (ids: number[]) => {
-      return await this.batchGet(ids, true);
-    };
     return this.getPostViewDao().queryPostsByGroupId(
-      fetchPostsFunc,
+      this._fetchPostsFunc,
       groupId,
       anchorPostId,
       direction,
       limit,
+    );
+  }
+
+  async queryIntervalPostsByGroupId(
+    unreadPostQuery: UnreadPostQuery,
+  ): Promise<Post[]> {
+    return this.getPostViewDao().queryIntervalPostsByGroupId(
+      this._fetchPostsFunc,
+      unreadPostQuery,
     );
   }
 

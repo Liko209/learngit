@@ -5,23 +5,25 @@
  */
 
 import * as React from 'react';
-import { JuiIconography } from '../../foundation/Iconography';
 import {
   typography,
   ellipsis,
   primary,
   spacing,
   grey,
+  noop,
 } from '../../foundation/utils';
 import styled from '../../foundation/styled-components';
 
 type ConversationCardFromProps = {
   name: string;
-  isTeam?: boolean;
+  prefix?: JSX.Element;
   onClick: (e: React.MouseEvent) => any;
+  disabled?: boolean;
+  preposition: JSX.Element;
 };
-const StyledName = styled('div')`
-  color: ${primary('700')};
+const StyledName = styled('div')<{ disabled?: boolean }>`
+  color: ${({ disabled }) => (disabled ? grey('500') : primary('700'))};
   ${typography('caption1')};
   ${ellipsis()};
   box-sizing: border-box;
@@ -33,16 +35,29 @@ const StyledName = styled('div')`
     color: ${grey('900')};
   }
   .conversation-name {
-    cursor: pointer;
-    ${ellipsis()}
+    color: ${({ disabled }) => (disabled ? grey('600') : 'inherit')};
+    cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')}};
   }
 `;
 
 const JuiConversationCardFrom = React.memo(
-  ({ onClick, isTeam, name, ...rest }: ConversationCardFromProps) => (
-    <StyledName onClick={onClick} {...rest}>
-      <span className="preposition">in</span>
-      {isTeam ? <JuiIconography iconSize="small">team</JuiIconography> : null}
+  ({
+    onClick,
+    name,
+    disabled,
+    prefix,
+    preposition,
+    ...rest
+  }: ConversationCardFromProps) => (
+    <StyledName
+      onClick={disabled ? noop : onClick}
+      disabled={disabled}
+      data-disabled={disabled}
+      data-name="cardHeaderFrom"
+      {...rest}
+    >
+      <span className="preposition">{preposition}</span>
+      {prefix}
       <span className="conversation-name">{name}</span>
     </StyledName>
   ),

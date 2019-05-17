@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>China</title>
+    <desc>Created with Sketch.</desc>
+    <g id="China" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Flag_of_the_People's_Republic_of_China" transform="translate(0.000000, 5.000000)" fill-rule="nonzero">
+            <rect id="Rectangle-path" fill="#DE2910" x="0" y="0" width="24" height="14.0869565"></rect>
+            <g id="s-link" transform="translate(1.565217, 1.565217)" fill="#FFDE00">
+                <polygon id="s" points="2.08695652 0 3.31363826 3.77533983 0.102141913 1.44205148 4.07177113 1.44205148 0.860274783 3.77533983"></polygon>
+            </g>
+            <g id="s-link" transform="translate(7.043478, 1.304348) rotate(23.036243) translate(-7.043478, -1.304348) translate(6.260870, 0.521739)" fill="#FFDE00">
+                <polygon id="s" points="0.782608696 0 1.24261435 1.41575243 0.0383032174 0.540769304 1.52691417 0.540769304 0.322603043 1.41575243"></polygon>
+            </g>
+            <g id="s-link" transform="translate(8.608696, 2.869565) rotate(45.869898) translate(-8.608696, -2.869565) translate(7.826087, 2.086957)" fill="#FFDE00">
+                <polygon id="s" points="0.782608696 0 1.24261435 1.41575243 0.0383032174 0.540769304 1.52691417 0.540769304 0.322603043 1.41575243"></polygon>
+            </g>
+            <g id="s-link" transform="translate(8.608696, 4.956522) rotate(69.945396) translate(-8.608696, -4.956522) translate(7.826087, 4.173913)" fill="#FFDE00">
+                <polygon id="s" points="0.782608696 0 1.24261435 1.41575243 0.0383032174 0.540769304 1.52691417 0.540769304 0.322603043 1.41575243"></polygon>
+            </g>
+            <g id="s-link" transform="translate(7.043478, 6.521739) rotate(20.659808) translate(-7.043478, -6.521739) translate(6.260870, 5.739130)" fill="#FFDE00">
+                <polygon id="s" points="0.782608696 0 1.24261435 1.41575243 0.0383032174 0.540769304 1.52691417 0.540769304 0.322603043 1.41575243"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

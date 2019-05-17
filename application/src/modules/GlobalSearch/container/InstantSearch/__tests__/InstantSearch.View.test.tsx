@@ -5,18 +5,15 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
-import { ThemeProvider } from 'styled-components';
+import { container, Jupiter } from 'framework';
 import { JuiTypography } from 'jui/foundation/Typography';
 
 import { TAB_TYPE } from '@/modules/GlobalSearch/container/InstantSearch/types';
 import { InstantSearchView } from '@/modules/GlobalSearch/container/InstantSearch/InstantSearch.View';
 import { JuiSearchTitle } from 'jui/pattern/GlobalSearch';
-import { theme } from '../../../../../__tests__/utils';
+import { mountWithTheme } from '@/__tests__/utils';
 import { SearchItemTypes } from '../types';
-
-const mountWithTheme = (content: React.ReactNode) =>
-  mount(<ThemeProvider theme={theme}>{content}</ThemeProvider>);
+import { config } from '../../../module.config';
 
 jest.mock('sdk/api');
 jest.mock('sdk/dao');
@@ -24,6 +21,9 @@ jest.mock('sdk/module/group');
 jest.mock('sdk/module/config');
 jest.mock('sdk/module/search');
 jest.mock('@/modules/telephony');
+
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(config);
 
 function setup(type?: TAB_TYPE | 'ALL') {
   return {

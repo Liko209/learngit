@@ -130,6 +130,10 @@ const name2icon = {
   seven: '7',
   eight: '8',
   nine: '9',
+  send: 'send',
+  emoji: 'emoji',
+  dialer: 'dialer',
+  deletenumber: 'deletenumber',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

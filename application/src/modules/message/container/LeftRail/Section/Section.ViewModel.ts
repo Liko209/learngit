@@ -8,12 +8,7 @@ import { ProfileService } from 'sdk/module/profile';
 import _ from 'lodash';
 import StoreViewModel from '@/store/ViewModel';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
-import {
-  SectionProps,
-  SectionConfigs,
-  SectionViewProps,
-  SECTION_TYPE,
-} from './types';
+import { SectionProps, SectionConfigs, SECTION_TYPE } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 import { QUERY_DIRECTION } from 'sdk/dao';
@@ -36,46 +31,47 @@ const SECTION_CONFIGS: SectionConfigs = {
   },
 };
 
-class SectionViewModel extends StoreViewModel<SectionProps>
-  implements SectionViewProps {
-  @observable
-  isLast: boolean;
-
-  private _type: SECTION_TYPE;
-
-  private _sortable?: boolean;
-
+class SectionViewModel extends StoreViewModel<SectionProps> {
   @observable
   expanded: boolean = true;
 
-  title: string;
-  iconName: string;
+  @observable
+  private _groupIDs: number[] = [];
 
   constructor(props: SectionProps) {
     super(props);
-    const { type, isLast } = props;
-    const { iconName, title, sortable } = SECTION_CONFIGS[type];
-    this.isLast = isLast;
-    this.iconName = iconName;
-    this.title = title;
-    this._type = type;
-    this._sortable = sortable;
+    this.autorun(() => {
+      const ids = SectionGroupHandler.getInstance().getGroupIdsByType(
+        this.props.type,
+      );
+      this._groupIDs = [...ids];
+    });
+  }
+
+  @computed
+  get _config() {
+    return SECTION_CONFIGS[this.props.type];
   }
 
   @computed
   get sortable() {
     const unreadToggleOn = getGlobalValue(GLOBAL_KEYS.UNREAD_TOGGLE_ON);
-    return !unreadToggleOn && !!this._sortable;
+    return !unreadToggleOn && !!this._config.sortable;
   }
 
   @computed
   get groupIds() {
-    return SectionGroupHandler.getInstance().getGroupIdsByType(this._type);
+    return this._groupIDs;
   }
 
   @computed
-  get type() {
-    return this._type;
+  get iconName() {
+    return this._config.iconName;
+  }
+
+  @computed
+  get title() {
+    return this._config.title;
   }
 
   onSortEnd = ({
@@ -85,28 +81,48 @@ class SectionViewModel extends StoreViewModel<SectionProps>
     oldIndex: number;
     newIndex: number;
   }) => {
-    return this.handleSortEnd(oldIndex, newIndex);
+    this.handleSortEnd(oldIndex, newIndex);
   }
 
   @action
   async fetchGroups() {
     await SectionGroupHandler.getInstance().fetchGroups(
-      this._type,
+      this.props.type,
       QUERY_DIRECTION.NEWER,
     );
   }
 
-  handleSortEnd(oldIndex: number, newIndex: number) {
+  private _reorder = (oldIndex: number, newIndex: number) => {
+    const newOrder = _.cloneDeep(this._groupIDs);
+    const id = newOrder[oldIndex];
+    if (oldIndex > newIndex) {
+      for (let i = oldIndex; i > newIndex; i -= 1) {
+        newOrder[i] = newOrder[i - 1];
+      }
+    } else {
+      for (let i = oldIndex; i < newIndex; i += 1) {
+        newOrder[i] = newOrder[i + 1];
+      }
+    }
+    newOrder[newIndex] = id;
+    return newOrder;
+  }
+
+  @action
+  handleSortEnd = async (oldIndex: number, newIndex: number) => {
+    const oldIds = [...this._groupIDs];
+    this._groupIDs = this._reorder(oldIndex, newIndex);
+
     const profileService = ServiceLoader.getInstance<ProfileService>(
       ServiceConfig.PROFILE_SERVICE,
     );
-    profileService
-      .reorderFavoriteGroups(oldIndex, newIndex)
-      .catch((error: Error) => {
-        mainLogger
-          .tags('Section.ViewModel')
-          .info('reorderFavoriteGroups fail:', error);
-      });
+    try {
+      await profileService.reorderFavoriteGroups(oldIds, oldIndex, newIndex);
+    } catch (error) {
+      mainLogger
+        .tags('Section.ViewModel')
+        .info('reorderFavoriteGroups fail:', error);
+    }
   }
 
   @action

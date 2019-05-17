@@ -3,8 +3,11 @@
  * @Date: 2019-04-18 19:15:22
  * Copyright © RingCentral. All rights reserved.
  */
+import _ from 'lodash';
 import { Post } from 'sdk/module/post/entity';
-import { QUERY_DIRECTION } from 'sdk/dao/constants';
+import { QUERY_DIRECTION } from 'sdk/dao';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { PostService } from 'sdk/module/post/service/PostService';
 import { FetchSortableDataListHandler } from '@/store/base/fetch';
 import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPostFocBuilder';
 import { HistoryHandler } from '../HistoryHandler';
@@ -13,37 +16,83 @@ import {
   BEFORE_ANCHOR_POSTS_COUNT,
 } from '../StreamController';
 import { StreamItemType } from '../types';
+import storeManager, { ENTITY_NAME } from '@/store';
+import GroupStateModel from '@/store/models/GroupState';
+import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
+import { GroupState } from 'sdk/module/state/entity';
+
+jest.mock('sdk/dao');
 
 describe('StreamController', () => {
+  afterEach(() => {
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+  });
+
   describe('fetchAllUnreadData()', () => {
     function setup({
+      groupId,
+      readThrough,
+      unreadCount,
+      currentPosts,
       postsNewerThanAnchor,
       postsOlderThanAnchor,
     }: {
+      groupId: number;
+      readThrough: number;
+      unreadCount: number;
+      currentPosts: Post[];
       postsNewerThanAnchor: Post[];
       postsOlderThanAnchor: Post[];
     }) {
+      const store = storeManager.getEntityMapStore(
+        ENTITY_NAME.GROUP_STATE,
+      ) as MultiEntityMapStore<GroupState, GroupStateModel>;
+      store.set({
+        read_through: readThrough,
+        unread_count: unreadCount,
+        id: groupId,
+      } as GroupState);
       const dataProvider = { fetchData: jest.fn().mockName('fetchData()') };
-      dataProvider.fetchData
-        .mockResolvedValueOnce({ data: postsNewerThanAnchor, hasMore: true })
-        .mockResolvedValueOnce({ data: postsOlderThanAnchor, hasMore: false });
+      const postService = ServiceLoader.getInstance<PostService>(
+        ServiceConfig.POST_SERVICE,
+      );
+      jest.spyOn(postService, 'getUnreadPostsByGroupId').mockResolvedValueOnce({
+        posts: postsNewerThanAnchor.reverse(),
+        items: [],
+        hasMore: false,
+      });
+      jest.spyOn(postService, 'getPostsByGroupId').mockResolvedValueOnce({
+        posts: postsOlderThanAnchor,
+        items: [],
+        hasMore: true,
+      });
       const listHandler = new FetchSortableDataListHandler<Post>(dataProvider, {
         isMatchFunc: () => true,
         transformFunc: (post: Post) => {
           return { id: post.id, sortValue: post.created_at, data: post };
         },
       });
-      jest.spyOn(listHandler, 'fetchDataByAnchor');
+      const historyHandler = new HistoryHandler();
+      historyHandler.update(
+        { readThrough, unreadCount, id: groupId } as GroupStateModel,
+        _.map(currentPosts, 'id'),
+      );
       jest
         .spyOn(ConversationPostFocBuilder, 'buildConversationPostFoc')
         .mockReturnValue(listHandler);
-      const historyHandler = new HistoryHandler();
-      const streamController = new StreamController(1, historyHandler, 1);
+      const streamController = new StreamController(groupId, historyHandler, 1);
+      streamController.disableNewMessageSep();
+      listHandler.upsert(currentPosts);
+      streamController.enableNewMessageSep();
 
-      return { streamController, listHandler };
+      return { streamController, postService, listHandler };
     }
 
     it('should fetch posts newer and older than anchor', async () => {
+      const currentPosts = [
+        { id: 9, created_at: 109, creator_id: 1 },
+      ] as Post[];
       const postsNewerThanAnchor = [
         { id: 5, created_at: 105, creator_id: 1 },
         { id: 6, created_at: 106, creator_id: 1 },
@@ -57,7 +106,11 @@ describe('StreamController', () => {
         { id: 4, created_at: 104, creator_id: 1 },
       ] as Post[];
 
-      const { listHandler, streamController } = setup({
+      const { streamController, postService } = setup({
+        groupId: 1,
+        readThrough: 4,
+        unreadCount: 4,
+        currentPosts,
         postsNewerThanAnchor,
         postsOlderThanAnchor,
       });
@@ -65,27 +118,13 @@ describe('StreamController', () => {
 
       const posts = await streamController.fetchAllUnreadData();
 
-      expect(listHandler.fetchDataByAnchor).toBeCalledTimes(2);
-      expect(listHandler.fetchDataByAnchor).toBeCalledWith(
-        QUERY_DIRECTION.OLDER,
-        BEFORE_ANCHOR_POSTS_COUNT,
-        expect.objectContaining({
-          id: 5,
-          sortValue: 105,
-        }),
-      );
       expect(streamController.enableNewMessageSep).toBeCalled();
-      expect(streamController.items).toEqual([
-        { id: 1, type: StreamItemType.INITIAL_POST, timeStart: 1 },
-        { id: 101, type: StreamItemType.POST, value: [1], timeStart: 101 },
-        { id: 102, type: StreamItemType.POST, value: [2], timeStart: 102 },
-        { id: 103, type: StreamItemType.POST, value: [3], timeStart: 103 },
-        { id: 104, type: StreamItemType.NEW_MSG_SEPARATOR, timeStart: 104 },
-        { id: 105, type: StreamItemType.POST, value: [5], timeStart: 105 },
-        { id: 106, type: StreamItemType.POST, value: [6], timeStart: 106 },
-        { id: 107, type: StreamItemType.POST, value: [7], timeStart: 107 },
-        { id: 108, type: StreamItemType.POST, value: [8], timeStart: 108 },
-      ]);
+      expect(postService.getPostsByGroupId).toBeCalledWith({
+        groupId: 1,
+        postId: 5,
+        direction: QUERY_DIRECTION.OLDER,
+        limit: BEFORE_ANCHOR_POSTS_COUNT,
+      });
       expect(posts).toEqual([
         {
           id: 1,
@@ -127,7 +166,32 @@ describe('StreamController', () => {
           sortValue: 108,
           data: { id: 8, created_at: 108, creator_id: 1 },
         },
+        {
+          id: 9,
+          sortValue: 109,
+          data: { id: 9, created_at: 109, creator_id: 1 },
+        },
       ]);
+
+      expect(streamController.items).toEqual([
+        { id: 1, type: StreamItemType.INITIAL_POST, timeStart: 1 },
+        { id: 101, type: StreamItemType.POST, value: [1], timeStart: 101 },
+        { id: 102, type: StreamItemType.POST, value: [2], timeStart: 102 },
+        { id: 103, type: StreamItemType.POST, value: [3], timeStart: 103 },
+        { id: 104, type: StreamItemType.NEW_MSG_SEPARATOR, timeStart: 104 },
+        { id: 105, type: StreamItemType.POST, value: [5], timeStart: 105 },
+        { id: 106, type: StreamItemType.POST, value: [6], timeStart: 106 },
+        { id: 107, type: StreamItemType.POST, value: [7], timeStart: 107 },
+        { id: 108, type: StreamItemType.POST, value: [8], timeStart: 108 },
+        { id: 109, type: StreamItemType.POST, value: [9], timeStart: 109 },
+      ]);
+
+      //
+      // FIJI-5662
+      // https://jira.ringcentral.com/browse/FIJI-5662
+      // should be the newer direction's hasMore value
+      //
+      expect(streamController.hasMore(QUERY_DIRECTION.NEWER)).toBeFalsy();
     });
   });
 });

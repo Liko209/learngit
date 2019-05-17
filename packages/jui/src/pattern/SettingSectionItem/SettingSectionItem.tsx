@@ -16,9 +16,11 @@ import {
 import { JuiDivider, JuiDividerProps } from '../../components/Divider/Divider';
 
 type JuiSettingSectionItemProps = {
-  label: string;
-  description?: string;
+  id: string;
+  label: string | JSX.Element;
+  description?: string | JSX.Element;
   disabled?: boolean;
+  automationId?: string;
 };
 
 const SettingSectionItemContentWrap = styled.div`
@@ -50,7 +52,7 @@ const LabelWrap = styled<TypographyProps>(Typography)`
     margin-bottom: ${spacing(1)};
 
     &.disabled {
-      opacity: ${({ theme }) => theme.opacity.p50};
+      opacity: ${({ theme }) => theme.opacity['5']};
     }
   }
 `;
@@ -62,7 +64,7 @@ const DescriptionWrap = styled<TypographyProps>(Typography)`
     ${lineClamp(3, 15)}
 
     &.disabled {
-      opacity: ${({ theme }) => theme.opacity.p50};
+      opacity: ${({ theme }) => theme.opacity['5']};
     }
   }
 `;
@@ -100,19 +102,32 @@ class JuiSettingSectionItem extends React.PureComponent<
   JuiSettingSectionItemProps
 > {
   render() {
-    const { children, label, description, disabled } = this.props;
+    const {
+      children,
+      id,
+      label,
+      description,
+      disabled,
+      automationId,
+    } = this.props;
     const disabledClass = disabled ? 'disabled' : '';
+    const testId = automationId ? `-${automationId}` : `-${id}`;
     return (
-      <SettingSectionItemWrap className="setting-section-item">
+      <SettingSectionItemWrap
+        className="setting-section-item"
+        data-test-automation-id={`SettingSectionItem${testId}`}
+      >
         <SettingSectionItemContentWrap className="setting-section-item-content">
           <LeftWrap className="setting-section-item-left">
             <LabelWrap
+              data-test-automation-id={`SettingSectionItemLabel${testId}`}
               className={`setting-section-item-label ${disabledClass}`}
             >
               {label}
             </LabelWrap>
             {description && (
               <DescriptionWrap
+                data-test-automation-id={`SettingSectionItemDescription${testId}`}
                 className={`setting-section-item-description ${disabledClass}`}
               >
                 {description}

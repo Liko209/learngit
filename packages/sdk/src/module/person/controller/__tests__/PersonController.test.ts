@@ -17,23 +17,31 @@ import {
   buildEntityCacheSearchController,
   buildEntityCacheController,
   buildEntityPersistentController,
-} from '../../../../framework/controller';
-import { IEntityPersistentController } from '../../../../framework/controller/interface/IEntityPersistentController';
-import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
-import { IEntityCacheController } from '../../../../framework/controller/interface/IEntityCacheController';
-import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
+} from 'sdk/framework/controller';
+import { IEntityPersistentController } from 'sdk/framework/controller/interface/IEntityPersistentController';
+import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
+import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
+import { IEntityCacheSearchController } from 'sdk/framework/controller/interface/IEntityCacheSearchController';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../../group/entity';
-import { GlobalConfigService } from '../../../../module/config';
-import { AccountUserConfig } from '../../../../module/account/config';
+import { GlobalConfigService } from 'sdk/module/config';
+import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
+import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 import { ContactType } from '../../types';
-import { SearchUtils } from '../../../../framework/utils/SearchUtils';
+import { SearchUtils } from 'sdk/framework/utils/SearchUtils';
+import { PhoneParserUtility } from 'sdk/utils/phoneParser';
+import { PersonEntityCacheController } from '../PersonEntityCacheController';
+import { PersonService } from '../../';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
-jest.mock('../../../../module/config');
-jest.mock('../../../../module/account/config');
+jest.mock('sdk/module/config');
+jest.mock('sdk/module/account/config');
 
-jest.mock('../../../../module/group');
-jest.mock('../../../../service/notificationCenter');
+jest.mock('sdk/module/group');
+jest.mock('sdk/service/notificationCenter');
 jest.mock('../../../../dao/DaoManager');
+jest.mock('sdk/module/phoneNumber');
+jest.mock('sdk/utils/phoneParser');
 
 describe('PersonService', () => {
   let personController: PersonController;
@@ -43,8 +51,20 @@ describe('PersonService', () => {
   let entitySourceController: IEntitySourceController<Person>;
   let entityCacheController: IEntityCacheController<Person>;
   let cacheSearchController: IEntityCacheSearchController<Person>;
+  let phoneNumberService: PhoneNumberService;
 
   function setUp() {
+    phoneNumberService = new PhoneNumberService(true);
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: AccountUserConfig.prototype , authUserConfig: AuthUserConfig.prototype };
+        }
+        if (config === ServiceConfig.PHONE_NUMBER_SERVICE) {
+          return phoneNumberService;
+        }
+      });
     personController = new PersonController();
     personDao = new PersonDao(null);
 
@@ -63,6 +83,7 @@ describe('PersonService', () => {
     personController.setDependentController(
       entitySourceController,
       cacheSearchController,
+      entityCacheController,
     );
   }
 
@@ -444,6 +465,9 @@ describe('PersonService', () => {
   });
 
   describe('matchContactByPhoneNumber', () => {
+    const personEntityCacheController = new PersonEntityCacheController(
+      new PersonService(),
+    );
     async function prepareInvalidData() {
       for (let i = 1; i <= 30; i += 1) {
         const person: Person = {
@@ -459,7 +483,7 @@ describe('PersonService', () => {
           last_name: `bruce${i.toString()}`,
           display_name: `dora${i.toString()} bruce${i.toString()}`,
         };
-        await entityCacheController.put(person);
+        await personEntityCacheController.put(person);
       }
     }
     async function preparePhoneNumData() {
@@ -481,7 +505,7 @@ describe('PersonService', () => {
             type: 'User',
           },
         };
-        await entityCacheController.put(person);
+        await personEntityCacheController.put(person);
       }
       for (let i = 31; i <= 35; i += 1) {
         const person: Person = {
@@ -500,7 +524,7 @@ describe('PersonService', () => {
             { id: i, phoneNumber: `65022700${i}`, usageType: 'DirectNumber' },
           ],
         };
-        await entityCacheController.put(person);
+        await personEntityCacheController.put(person);
       }
       for (let i = 36; i <= 37; i += 1) {
         const person: Person = {
@@ -524,7 +548,7 @@ describe('PersonService', () => {
             { id: i, phoneNumber: `65022700${i}`, usageType: 'DirectNumber' },
           ],
         };
-        await entityCacheController.put(person);
+        await personEntityCacheController.put(person);
       }
 
       const deactivatedPerson2: Person = {
@@ -553,7 +577,7 @@ describe('PersonService', () => {
           { id: 39, phoneNumber: '6502270039', usageType: 'DirectNumber' },
         ],
       };
-      await entityCacheController.put(deactivatedPerson2);
+      await personEntityCacheController.put(deactivatedPerson2);
 
       const deactivatedPerson1: Person = {
         id: 38,
@@ -577,13 +601,19 @@ describe('PersonService', () => {
           { id: 38, phoneNumber: '6502270038', usageType: 'DirectNumber' },
         ],
       };
-      await entityCacheController.put(deactivatedPerson1);
+      await personEntityCacheController.put(deactivatedPerson1);
     }
 
     beforeEach(async () => {
       jest.clearAllMocks();
       jest.resetAllMocks();
       setUp();
+
+      personController.setDependentController(
+        entitySourceController,
+        cacheSearchController,
+        personEntityCacheController,
+      );
       SearchUtils.isUseSoundex = jest.fn().mockReturnValue(false);
     });
     it('should return null when there is no phone number data', async () => {
@@ -604,9 +634,16 @@ describe('PersonService', () => {
     });
 
     it('should return when both short number and company id are matched', async () => {
+      PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
+        isShortNumber: jest.fn().mockReturnValue(true),
+        getE164: jest.fn().mockReturnValue('21'),
+      });
+      phoneNumberService.generateMatchedPhoneNumberList = jest
+        .fn()
+        .mockReturnValue(['21']);
       AccountUserConfig.prototype.getCurrentCompanyId = jest
         .fn()
-        .mockReturnValueOnce(1);
+        .mockReturnValue(1);
       await preparePhoneNumData();
       const result = await personController.matchContactByPhoneNumber(
         '21',
@@ -629,6 +666,18 @@ describe('PersonService', () => {
     });
 
     it('should return when long number is matched', async () => {
+      PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
+        isShortNumber: jest.fn().mockReturnValue(false),
+        getE164: jest.fn().mockReturnValue('+16502270033'),
+      });
+      phoneNumberService.generateMatchedPhoneNumberList = jest
+        .fn()
+        .mockReturnValue([
+          '+16502270033',
+          '16502270033',
+          '6502270033',
+          '06502270033',
+        ]);
       await preparePhoneNumData();
       const result = await personController.matchContactByPhoneNumber(
         '6502270033',
@@ -637,8 +686,21 @@ describe('PersonService', () => {
       expect(result).not.toBeNull();
       expect(result.id).toBe(33);
     });
+
     it('should return when there is two more long number and long number is matched', async () => {
+      PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
+        isShortNumber: jest.fn().mockReturnValue(false),
+        getE164: jest.fn().mockReturnValue('+16502270036'),
+      });
       await preparePhoneNumData();
+      phoneNumberService.generateMatchedPhoneNumberList = jest
+        .fn()
+        .mockReturnValue([
+          '+16502270036',
+          '16502270036',
+          '6502270036',
+          '06502270036',
+        ]);
       const result = await personController.matchContactByPhoneNumber(
         '6502270036',
         ContactType.GLIP_CONTACT,

@@ -42,6 +42,7 @@ export default class PostModel extends Base<Post> {
   parentId?: number;
   @observable
   deactivated?: boolean;
+  @observable icon?: string;
 
   constructor(data: Post) {
     super(data);
@@ -60,6 +61,7 @@ export default class PostModel extends Base<Post> {
       source,
       parent_id,
       deactivated,
+      icon,
     } = data;
     this.createdAt = created_at;
     this.creatorId = creator_id;
@@ -75,6 +77,7 @@ export default class PostModel extends Base<Post> {
     this.source = source;
     this.parentId = parent_id;
     this.deactivated = deactivated;
+    this.icon = icon;
   }
 
   @computed

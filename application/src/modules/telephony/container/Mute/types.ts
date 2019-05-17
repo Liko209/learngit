@@ -4,11 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type MuteProps = {};
+type MuteProps = {
+  type?: 'fab' | 'icon';
+};
 
 type MuteViewProps = {
   muteOrUnmute: () => void;
   isMute: boolean;
-};
+} & MuteProps;
 
 export { MuteProps, MuteViewProps };

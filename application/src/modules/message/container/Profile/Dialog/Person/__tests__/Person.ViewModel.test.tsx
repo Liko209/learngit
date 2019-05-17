@@ -8,6 +8,7 @@ import { getEntity } from '@/store/utils';
 import { ProfileDialogPersonViewModel } from '../Person.ViewModel';
 
 jest.mock('@/store/utils');
+jest.mock('sdk/dao');
 
 const mockData = {
   userDisplayName: 'Name 1',

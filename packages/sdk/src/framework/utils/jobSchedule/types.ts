@@ -12,6 +12,7 @@ type JobInfo = {
   periodic: boolean;
   needNetwork: boolean;
   executeFunc: (callback: (successful: boolean) => void) => any;
+  callback?: (successful: boolean) => any;
   retryForever?: boolean;
   retryTime?: number;
   jobId?: NodeJS.Timeout;

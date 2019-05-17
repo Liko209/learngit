@@ -54,8 +54,6 @@ type GroupCommon = {
   is_public?: boolean;
   description?: string;
   is_company_team: boolean;
-  __send_failure_post_ids?: number[];
-  __draft?: string;
   __last_accessed_at?: number;
 };
 

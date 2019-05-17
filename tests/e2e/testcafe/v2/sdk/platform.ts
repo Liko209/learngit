@@ -33,6 +33,7 @@ export class RcPlatformSdk {
 
   constructor(key, secret, url, private credential: ICredential) {
     this.sdk = new Ringcentral(key, secret, url);
+    MiscUtils.addDebugLog(this.sdk._axios, 'rc');
   }
 
   get token() {
@@ -184,9 +185,10 @@ export class RcPlatformSdk {
     });
   }
 
-  async uploadFile(path: string, name: string, groupId?: string) {
+  async uploadFile(filePath: string, name?: string, groupId?: string) {
     const url = `restapi/v1.0/glip/files`;
-    const content = fs.readFileSync(path);
+    const content = fs.readFileSync(filePath);
+    if (!name) name = path.basename(filePath);
     const params = _.pickBy({ groupId, name }, _.identity);
     return await this.retryRequestOnException(async () => {
       return await this.sdk.post(url, content, {
@@ -196,21 +198,21 @@ export class RcPlatformSdk {
     });
   }
 
-  async createPostWithTextAndFiles(text: string, filePaths: string | string[], groupId: string) {
+  async createPostWithTextAndFiles(groupId: string, filePaths: string | string[], text?: string, fileNames?: string | string[]) {
     filePaths = [].concat(filePaths);
+    fileNames = [].concat(fileNames);
     let attachments = [];
-    for (const filePath of filePaths) {
-      const fileName = path.basename(filePath)
-      const fileData = await this.uploadFile(filePath, fileName).then(res => res.data);
-      const file = _.merge(fileData[0], { type: "File" })
+    for (const i in filePaths) {
+      const fileData = await this.uploadFile(filePaths[i], fileNames[i]).then(res => res.data); // return array(length =1)
+      const file = _.merge(fileData[0], { type: "File" });
       attachments.push(file);
     }
-    const data = { text, attachments };
+    const data = _.pickBy({ text, attachments }, _.identity);
     return await this.createPost(data, groupId);
   }
 
-  async createPostWithTextAndFilesThenGetPostId(text: string, filePaths: string | string[], groupId: string) {
-    return await this.createPostWithTextAndFiles(text, filePaths, groupId).then(res => res.data.id);
+  async createPostWithTextAndFilesThenGetPostId(groupId: string, filePaths: string | string[], text?: string, fileNames?: string | string[]) {
+    return await this.createPostWithTextAndFiles(groupId, filePaths, text, fileNames).then(res => res.data.id);
   }
 
   // deprecated
@@ -220,5 +222,13 @@ export class RcPlatformSdk {
 
   async sentAndGetTextPostId(text: string, groupId: string) {
     return await this.sendTextPost(text, groupId).then(res => res.data.id);
+  }
+
+  /** phone number */
+  async getExtensionPhoneNumberList() {
+    const url = `/restapi/v1.0/account/~/extension/~/phone-number`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.get(url);
+    });
   }
 }

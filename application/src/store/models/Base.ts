@@ -4,14 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Entity } from '../store';
-import { IdModel } from 'sdk/framework/model';
+import { IdModel, ModelIdType } from 'sdk/framework/model';
 
-export default class Base<T extends IdModel> implements Entity {
-  id: number;
+export default class Base<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+> implements Entity<IdType> {
+  id: IdType;
   data?: any;
   isMocked: boolean;
   constructor(data: T) {
-    const { id, isMocked }: { id: number; isMocked?: boolean } = data;
+    const { id, isMocked }: { id: IdType; isMocked?: boolean } = data;
     this.id = id;
     this.isMocked = isMocked || false;
   }

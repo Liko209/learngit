@@ -16,13 +16,32 @@ const logger = LogUtils.getLogger(__filename);
   await initModel();
 })().then(async () => {
   let exitCode = 1;
+  let skipRun = false;
   try {
     let startTime = Date.now();
 
-    let taskDto = await MetricService.createTask();
-
     // check report dir
     await FileService.checkReportPath();
+
+    const versionInfo = await DashboardService.getVersionInfo();
+    await DashboardService.getVersionInfo(Config.jupiterStageHost);
+    await DashboardService.getVersionInfo(Config.jupiterDevelopHost);
+
+    await MetricService.createVersion(versionInfo.jupiterVersion);
+    const isReleaseRun = Config.jupiterHost === Config.jupiterReleaseHost;
+
+    if (!isReleaseRun) {
+      if (Config.jupiterHost === Config.jupiterStageHost) {
+        const developVersion = await DashboardService.getVersionInfo(Config.jupiterDevelopHost);
+        if (versionInfo.jupiterVersion === developVersion.jupiterVersion) {
+          exitCode = 0;
+          skipRun = true;
+          logger.info(`stage[${versionInfo.jupiterVersion}] has released, so skip`);
+          return;
+        }
+      }
+    }
+    let taskDto = await MetricService.createTask(versionInfo.jupiterVersion);
 
     // run scenes
     const sceneNames = Object.keys(scenes).filter(name => {
@@ -45,18 +64,22 @@ const logger = LogUtils.getLogger(__filename);
 
     const sceneArray = [];
     for (let name of sceneNames) {
-      sceneArray.push(new scenes[name](taskDto));
+      sceneArray.push(new scenes[name](taskDto, versionInfo.jupiterVersion));
     }
 
     let result = true, scene;
     while (sceneArray.length > 0) {
-      scene = sceneArray.shift();
-      result = (await scene.run()) && result;
-      scene.clearReportCache();
-      if (Config.runFps && scene.supportFps()) {
-        scene.openFpsMode();
+      try {
+        scene = sceneArray.shift();
         result = (await scene.run()) && result;
         scene.clearReportCache();
+        if (Config.runFps && scene.supportFps()) {
+          scene.openFpsMode();
+          result = (await scene.run()) && result;
+          scene.clearReportCache();
+        }
+      } catch (err) {
+        logger.error(err);
       }
     }
 
@@ -73,12 +96,14 @@ const logger = LogUtils.getLogger(__filename);
   } catch (err) {
     logger.error(err);
   } finally {
-    await DashboardService.buildReport();
-    // generate report index.html
-    await FileService.generateReportIndex();
+    if (!skipRun) {
+      await DashboardService.buildReport();
+      // generate report index.html
+      await FileService.generateReportIndex();
+    }
 
     // release resources
-    await closeDB;
+    await closeDB();
     await PptrUtils.closeAll();
 
     process.exitCode = exitCode;

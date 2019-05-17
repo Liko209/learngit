@@ -2,24 +2,41 @@
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-02-28 00:00:57
  */
-import { DBManager, KVStorageManager, DexieDB, DatabaseType } from 'foundation';
+import {
+  DBManager,
+  KVStorageManager,
+  DexieDB,
+  DatabaseType,
+  mainLogger,
+} from 'foundation';
 import { BaseDao, BaseKVDao, DBKVDao } from '../framework/dao';
 import schema from './schema';
 import Manager from '../Manager';
 import { INewable } from '../types';
-import { SyncUserConfig } from '../module/sync/config';
-import { JobSchedulerConfig } from '../framework/utils/jobSchedule/JobSchedulerConfig';
+import { SyncService } from '../module/sync/service';
+import { jobScheduler } from '../framework/utils/jobSchedule';
 import { AccountGlobalConfig } from '../module/account/config/AccountGlobalConfig';
 import { DaoGlobalConfig } from './config';
+import { IdModel, ModelIdType } from '../framework/model';
+import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
+import { IDBObserver } from './IDBObserver';
 
-class DaoManager extends Manager<BaseDao<any> | BaseKVDao | DBKVDao> {
+const LOG_TAG = 'DaoManager';
+
+class DaoManager extends Manager<
+  BaseDao<IdModel<ModelIdType>, ModelIdType> | BaseKVDao | DBKVDao
+> {
   private kvStorageManager: KVStorageManager;
   private dbManager: DBManager;
+  private _isDBInitialized: boolean;
+  private _observers: IDBObserver[];
 
   constructor() {
     super();
     this.kvStorageManager = new KVStorageManager();
     this.dbManager = new DBManager();
+    this._isDBInitialized = false;
+    this._observers = [];
   }
 
   async initDatabase(): Promise<void> {
@@ -29,21 +46,8 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao | DBKVDao> {
     this.dbManager.initDatabase(schema, dbType);
 
     if (!this._isSchemaCompatible()) {
-      try {
-        await this.dbManager.deleteDatabase();
-      } catch (error) {
-        this.dbManager.initDatabase(schema, DatabaseType.LokiDB);
-        await this.dbManager.deleteDatabase();
-      }
-      if (AccountGlobalConfig.getUserDictionary()) {
-        // TODO FIJI-4396
-        const synConfig = new SyncUserConfig();
-        synConfig.removeLastIndexTimestamp();
-        synConfig.removeFetchRemaining();
-        synConfig.removeSocketConnectedLocalTime();
-        const jobConfig = new JobSchedulerConfig();
-        jobConfig.clearFetchDataConfigs();
-      }
+      mainLogger.tags(LOG_TAG).info('schema changed, should clear all data');
+      await this.clearAllData();
     }
 
     const db = this.dbManager.getDatabase();
@@ -69,6 +73,7 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao | DBKVDao> {
         });
       }
     }
+    this._notifyDBInitialized();
   }
 
   async openDatabase(): Promise<void> {
@@ -87,7 +92,9 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao | DBKVDao> {
     return this.dbManager && this.dbManager.isDatabaseOpen();
   }
 
-  getDao<T extends BaseDao<any>>(DaoClass: INewable<T>): T {
+  getDao<T extends BaseDao<IdModel<ModelIdType>, ModelIdType>>(
+    DaoClass: INewable<T>,
+  ): T {
     const database = this.dbManager.getDatabase();
     return this.get(DaoClass, database);
   }
@@ -100,6 +107,41 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao | DBKVDao> {
   getDBKVDao(): DBKVDao {
     const database = this.dbManager.getDatabase();
     return this.get(DBKVDao, database);
+  }
+
+  observeDBInitialize(observer: IDBObserver) {
+    if (this._isDBInitialized) {
+      observer.onDBInitialized();
+    } else {
+      this._observers.push(observer);
+    }
+  }
+
+  async clearAllData() {
+    try {
+      await this.dbManager.deleteDatabase();
+    } catch (error) {
+      this.dbManager.initDatabase(schema, DatabaseType.LokiDB);
+      await this.dbManager.deleteDatabase();
+    }
+
+    // remove relevant config
+    if (AccountGlobalConfig.getUserDictionary()) {
+      // TODO FIJI-4396
+      const synConfig = ServiceLoader.getInstance<SyncService>(
+        ServiceConfig.SYNC_SERVICE,
+      ).userConfig;
+      synConfig.clearSyncConfigsForDBUpgrade();
+      jobScheduler.userConfig.clearFetchDataConfigs();
+    }
+  }
+
+  private _notifyDBInitialized() {
+    this._isDBInitialized = true;
+    this._observers.forEach((observer: IDBObserver) => {
+      observer.onDBInitialized();
+    });
+    this._observers = [];
   }
 
   async getStorageQuotaOccupation(): Promise<number> {

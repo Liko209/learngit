@@ -16,15 +16,14 @@ import { ProfileService } from '../../profile';
 import { Item } from '../../../module/item/entity';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SOCKET } from '../../../service/eventKey';
-import { IRemotePostRequest } from '../entity/Post';
+import { IRemotePostRequest, UnreadPostQuery } from '../entity/Post';
 import { Raw } from '../../../framework/model';
 import { ContentSearchParams } from '../../../api/glip/search';
 import { IGroupService } from '../../../module/group/service/IGroupService';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
-import { EntityNotificationController } from '../../../framework/controller/impl/EntityNotificationController';
-import { AccountUserConfig } from '../../account/config/AccountUserConfig';
 import { ChangeModel } from 'sdk/module/sync/types';
+import { PostNotificationController } from '../controller/PostNotificationController';
 
 class PostService extends EntityBaseService<Post> {
   postController: PostController;
@@ -49,11 +48,7 @@ class PostService extends EntityBaseService<Post> {
   }
 
   protected buildNotificationController() {
-    const userConfig = new AccountUserConfig();
-    const currentUserId = userConfig.getGlipUserId();
-    return new EntityNotificationController<Post>((post: Post) => {
-      return post.creator_id !== currentUserId;
-    });
+    return new PostNotificationController();
   }
 
   protected getPostController() {
@@ -114,6 +109,12 @@ class PostService extends EntityBaseService<Post> {
     return this.getPostController()
       .getDiscontinuousPostFetchController()
       .getPostsByIds(ids);
+  }
+
+  async getUnreadPostsByGroupId(unreadPostQuery: UnreadPostQuery) {
+    return this.getPostController()
+      .getPostFetchController()
+      .getUnreadPostsByGroupId(unreadPostQuery);
   }
 
   async bookmarkPost(postId: number, toBook: boolean) {

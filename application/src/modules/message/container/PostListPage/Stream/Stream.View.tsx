@@ -11,11 +11,11 @@ import { JuiStream } from 'jui/pattern/ConversationPage';
 import { StreamViewProps, StreamProps } from './types';
 import { observer } from 'mobx-react';
 import { ConversationPost } from '../../ConversationPost';
+import { ConversationPageContext } from '../../ConversationPage/types';
 import {
   JuiInfiniteList,
   ThresholdStrategy,
 } from 'jui/components/VirtualizedList';
-import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import _ from 'lodash';
 
@@ -23,6 +23,7 @@ type Props = WithTranslation & StreamViewProps & StreamProps;
 
 @observer
 class StreamViewComponent extends Component<Props> {
+  static contextType = ConversationPageContext;
   listRef: React.RefObject<HTMLElement> = React.createRef();
   private _loadMoreStrategy = new ThresholdStrategy({
     threshold: 60,
@@ -51,23 +52,18 @@ class StreamViewComponent extends Component<Props> {
     }
     return this.props.hasMoreDown;
   }
-  state = { width: 0, height: 0 };
-  handleSizeChanged = (size: Size) => {
-    const { usedHeight } = this.props;
-    this.setState({ width: size.width, height: size.height - usedHeight });
-  }
+
   render() {
     const { ids, isShow = true } = this.props;
     // if conversation post include video and play video
     // when switch tab in global search will cache tabs
     // so we need to unmount conversation post
 
-    const { height } = this.state;
+    const { height } = this.context;
     const defaultLoading = <DefaultLoadingWithDelay delay={100} />;
     const defaultLoadingMore = <DefaultLoadingMore />;
     return (
       <>
-        <JuiSizeDetector handleSizeChanged={this.handleSizeChanged} />
         <JuiStream style={this._wrapperStyleGen(height)}>
           <JuiInfiniteList
             contentStyle={this._contentStyleGen(height)}

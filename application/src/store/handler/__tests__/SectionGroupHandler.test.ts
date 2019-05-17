@@ -42,6 +42,10 @@ function setup() {
         return groupService;
       }
 
+      if (ServiceConfig.ACCOUNT_SERVICE === serviceName) {
+        return { userConfig: { getCurrentUserProfileId: jest.fn() } };
+      }
+
       return null;
     });
 

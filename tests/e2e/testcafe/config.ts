@@ -85,6 +85,10 @@ const SELENIUM_CAPABILITIES = process.env.SELENIUM_CAPABILITIES || 'capabilities
 const DISABLE_SCREENSHOT = process.env.DISABLE_SCREENSHOT === 'true';
 const ENABLE_NOTIFICATION = process.env.ENABLE_NOTIFICATION === 'true';
 
+const GIT_SOURCE_BRANCH = process.env.BRANCH;
+const GIT_TARGET_BRANCH = process.env.TARGET_BRANCH;
+const NEW_VERSION_SITE = process.env.NEW_VERSION_SITE;
+
 const RUNNER_OPTS = {
   REPORTER,
   SCREENSHOT_ON_FAIL,
@@ -119,7 +123,9 @@ enum BrandTire {
   "RCOFFICE" = "kamino(Fiji,Jupiter,1210,4488)",
   "RC_PROFESSIONAL_TIER" = "kamino(Fiji,Jupiter,1210,4442)",
   "RC_FIJI_GUEST" = "kamino(Fiji-with-guest,Jupiter,1210,4488)",
-  "RC_USERS_20" = "kamino(FIJI-Users-20,Jupiter,1210,4488)"
+  "RC_USERS_20" = "kamino(FIJI-Users-20,Jupiter,1210,4488)",
+  "RC_WITH_DID" = "kamino(FIJI-With-2-DirectNumber,Jupiter,1210,4488)",
+  "RC_VOIP_DISABLE" = "kamino(RC_VOIP_DISABLE,Jupiter,1210,4488)",
 };
 
 const WebphoneConfig = {
@@ -146,5 +152,8 @@ export {
   MOCK_SERVER_URL,
   MOCK_ENV,
   MOCK_AUTH_URL,
-  ENABLE_NOTIFICATION
+  ENABLE_NOTIFICATION,
+  GIT_SOURCE_BRANCH,
+  GIT_TARGET_BRANCH,
+  NEW_VERSION_SITE
 };

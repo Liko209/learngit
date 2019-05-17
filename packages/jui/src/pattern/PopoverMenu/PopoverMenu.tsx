@@ -26,6 +26,7 @@ type PopoverMenuProps = {
 
 const StyledAnchorWrapper = styled.div`
   display: inline-flex;
+  width: 100%;
 `;
 
 class JuiPopoverMenu extends React.PureComponent<

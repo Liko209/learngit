@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { SheetsType, filterIDsByType } from './helper';
 
 type RegisterOptions = {
   priority: number;
@@ -42,18 +43,15 @@ class ConversationSheet {
 
     const chain = this._compose(this._middleware)(this._defaultHandler);
 
-    this.dispatch = (
-      sheets: { [type: string]: number[] },
-      postId: number,
-      mode?: string,
-    ) => {
+    this.dispatch = (sheets: SheetsType, postId: number, mode?: string) => {
       if (!Object.keys(sheets).length) {
         return null;
       }
       const renderSheets: any[] = [];
       modules.every((module: RegisterOptions) => {
         const { type, breakIn } = module;
-        if (!sheets[type]) {
+        const ids = filterIDsByType(sheets, type);
+        if (ids.length === 0) {
           return true;
         }
         renderSheets.push(
@@ -62,7 +60,7 @@ class ConversationSheet {
             props: {
               postId,
               mode,
-              ids: sheets[type],
+              ids,
             },
           }),
         );
@@ -99,4 +97,4 @@ class ConversationSheet {
 
 const conversationSheet = new ConversationSheet();
 
-export { conversationSheet };
+export { conversationSheet, filterIDsByType };
