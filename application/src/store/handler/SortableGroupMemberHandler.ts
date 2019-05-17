@@ -57,6 +57,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   private _groupMemberDataProvider: GroupMemberDataProvider;
   private _group: Group;
   private _adminIds: Set<number>;
+  @observable
   private _sortedGroupMemberIds: number[];
 
   constructor(private _groupId: number) {
@@ -71,6 +72,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
     return this._foc.fetchData(QUERY_DIRECTION.NEWER, pageSize);
   }
 
+  @computed
   get allSortedMemberIds() {
     return this._sortedGroupMemberIds || [];
   }
@@ -242,6 +244,11 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
     return ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
+  }
+
+  dispose() {
+    this._foc && this._foc.dispose();
+    super.dispose();
   }
 }
 

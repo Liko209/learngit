@@ -170,6 +170,20 @@ describe('SortableGroupMemberHandler', () => {
     });
   });
 
+  describe('dispose', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should off notification when call dispose', () => {
+      const foc = { dispose: jest.fn() };
+      sortableGroupMemberHandler['_foc'] = foc as any;
+      sortableGroupMemberHandler.dispose();
+      expect(foc.dispose).toBeCalled();
+    });
+  });
+
   describe('allSortedMembers', () => {
     beforeEach(() => {
       clearMocks();

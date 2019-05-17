@@ -17,6 +17,7 @@ type MembersViewProps = ProfileDialogGroupViewProps & {
   hasMore: (direction: 'up' | 'down') => boolean;
   loadInitialData: () => Promise<void>;
   loadMore: (direction: 'up' | 'down', count: number) => Promise<void>;
+  dispose: () => void;
 };
 
 export { MembersProps, MembersViewProps };

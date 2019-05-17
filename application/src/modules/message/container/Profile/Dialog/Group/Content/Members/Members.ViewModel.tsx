@@ -37,7 +37,7 @@ class MembersViewModel extends ProfileDialogGroupViewModel
     this.reaction(
       () => ({
         keywords: this.keywords,
-        idsLength: this.group.members.length,
+        allSortedIds: this._sortableGroupMemberHandler.allSortedMemberIds,
       }),
       () => {
         this.handleSearch();
@@ -107,8 +107,11 @@ class MembersViewModel extends ProfileDialogGroupViewModel
   @action
   loadMore = async (direction: 'up' | 'down', count: number) => {
     await this._sortableGroupMemberHandler.fetchGroupMembersByPage(count);
+  }
 
-    await this.handleSearch();
+  dispose = () => {
+    this._sortableGroupMemberHandler &&
+      this._sortableGroupMemberHandler.dispose();
   }
 }
 export { MembersViewModel };

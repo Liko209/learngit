@@ -36,6 +36,10 @@ class MembersView extends Component<MembersViewProps & MembersProps> {
     changeSearchInputDebounce(value);
   }
 
+  componentWillUnmount() {
+    this.props.dispose();
+  }
+
   render() {
     const { id, filteredMemberIds } = this.props;
     const { width, height, searchInput } = this.state;
