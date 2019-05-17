@@ -306,6 +306,10 @@ export class TelephonyDialog extends BaseWebComponent {
   async sendCustomReplyMessage() {
     await this.t.click(this.replyWithCustomMessage).pressKey('enter');
   }
+
+  get callerIdSelector() {
+    return this.getSelectorByAutomationId('callerIdSelector');
+  }
 }
 
 export class TelephonyMinimizeWindow extends BaseWebComponent{
@@ -342,5 +346,4 @@ export class TelephonyMinimizeWindow extends BaseWebComponent{
   async clickHangupButton() {
     await this.t.click(this.hangupButton);
   }
-
 }
