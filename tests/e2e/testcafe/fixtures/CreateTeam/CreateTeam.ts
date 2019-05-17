@@ -11,7 +11,7 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { IGroup } from '../../v2/models';
+import {IGroup, ITestMeta} from '../../v2/models';
 import * as faker from 'faker/locale/en';
 
 fixture('CreateTeam')
