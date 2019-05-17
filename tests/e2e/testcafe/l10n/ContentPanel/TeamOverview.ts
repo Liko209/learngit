@@ -52,17 +52,6 @@ async (t: TestController) => {
 
   await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_PublicLock'})
 
-  await h(t).withLog('When I hover favorite button', async () => {
-    await t.hover(conversationPage.favoriteButton);
-  });
-
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_AddToFavorites'})
-
-  await h(t).withLog('When I click favorite button', async () => {
-    await t.click(conversationPage.favoriteButton);
-  });
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_RemoveFromFavorites'})
-
   await h(t).withLog('When I hover members button', async () => {
     await t.hover(conversationPage.memberCountIcon);
   });
