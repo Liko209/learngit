@@ -119,9 +119,9 @@ test.meta(<ITestMeta>{
       listScrollHeight = await profileDialog.visualList.scrollHeight;
 
       const hasScrollBar = listScrollHeight - listClientHeight > 0;
-      const memberCountOnepage = listClientHeight / itemHeight === 5.5;
+      const displayMmberCount = listClientHeight / itemHeight === 5.5;
 
-      assert.ok(memberCountOnepage);
+      await t.expect(displayMmberCount).ok();
       await t.expect(hasScrollBar).ok();
 
     });
