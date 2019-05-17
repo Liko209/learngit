@@ -45,7 +45,6 @@ describe('DBConfigService', () => {
       expect(notificationCenter.emit).toBeCalledWith(
         `${module}.${key}`,
         CONFIG_EVENT_TYPE.UPDATE,
-        key,
         value,
       );
     });
@@ -60,7 +59,6 @@ describe('DBConfigService', () => {
       expect(notificationCenter.emit).toBeCalledWith(
         `${module}.${key}`,
         CONFIG_EVENT_TYPE.REMOVE,
-        key,
       );
     });
   });

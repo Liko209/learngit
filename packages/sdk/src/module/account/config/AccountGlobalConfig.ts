@@ -6,6 +6,7 @@
 
 import { GlobalConfig } from '../../config';
 import { ACCOUNT_KEYS } from '../config/configKeys';
+import { Listener } from 'eventemitter2';
 
 class AccountGlobalConfig extends GlobalConfig {
   static moduleName = 'account';
@@ -20,6 +21,14 @@ class AccountGlobalConfig extends GlobalConfig {
 
   static removeUserDictionary() {
     this.remove(ACCOUNT_KEYS.USER_DICTIONARY);
+  }
+
+  static observeUserDictionary(listener: Listener) {
+    this.on(ACCOUNT_KEYS.USER_DICTIONARY, listener);
+  }
+
+  static unobserveUserDictionary(listener: Listener) {
+    this.off(ACCOUNT_KEYS.USER_DICTIONARY, listener);
   }
 }
 
