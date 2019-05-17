@@ -763,3 +763,86 @@ test.meta(<ITestMeta>{
     await t.expect(messageTab.postItemById(postId).codeBody.find('span.highlight-term').exists).notOk();
   });
 });
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1965'],
+  maintainers: ['potar.he'],
+  keywords: ['search', 'HighLight', 'phoneNumber'],
+})('Phone number from searched list should be hyperlinked and successful ring out', async (t) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const otherUser = users[5];
+  await h(t).log(`Given I have an extension ${loginUser.company.number}#${loginUser.extension}`);
+
+  const phoneNumber = "+1(650)399-0766";
+  const phoneNumberChunks = phoneNumber.split(/\+|\(|\)|\ |\-/).filter(_.identity);
+
+  let chat = <IGroup>{
+    type: 'DirectMessage',
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
+  let postId;
+  await h(t).withLog(`And prepare a chat has post with phone number: ${phoneNumber}`, async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+    postId = await h(t).scenarioHelper.sentAndGetTextPostId(phoneNumber, chat, loginUser);
+  });
+
+  const app = new AppRoot(t)
+
+  await h(t).withLog(`And I login with the extension`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`And I enter the team`, async () => {
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId).enter();
+  });
+
+  const searchBar = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
+  await h(t).withLog(`When I search keyword ${phoneNumber}`, async () => {
+    await searchBar.clickSelf();
+    await searchDialog.clearInputAreaTextByKey();
+    await searchDialog.typeSearchKeyword(phoneNumber);
+  }, true);
+
+  await h(t).withLog(`And I click ${phoneNumber} in this conversation`, async () => {
+    await searchDialog.instantPage.clickContentSearchInThisConversationEntry();
+  });
+
+  await h(t).withLog(`Then messages tab should be open`, async () => {
+    await searchDialog.fullSearchPage.messagesTabEntry.shouldBeOpened();
+  });
+
+  const postItem = searchDialog.fullSearchPage.messagesTab.postItemById(postId);
+  await h(t).withLog(`And display the post and phonenumber in hyper-link stype`, async () => {
+    await postItem.ensureLoaded();
+    await t.expect(postItem.phoneLinkByDataId(phoneNumber).exists).ok();
+  });
+
+  await h(t).withLog(`And the post highlight the keyword ${phoneNumber}`, async () => {
+    await t.expect(postItem.keyworkdsByHighLight.count).eql(phoneNumberChunks.length);
+    for (const i in phoneNumberChunks) {
+      await t.expect(postItem.keyworkdsByHighLight.nth(+i).withText(phoneNumberChunks[i]).exists).ok();
+    }
+  });
+
+  const telephonyDialog = app.homePage.telephonyDialog;
+  for (const i in phoneNumberChunks) {
+    await h(t).withLog(`When I click each high light part of the phone number: ${phoneNumberChunks[i]}`, async () => {
+      await t.click(postItem.keyworkdsByHighLight.nth(+i));
+    });
+
+    await h(t).withLog(`Then a telephony dialog should be popup`, async () => {
+      await telephonyDialog.ensureLoaded()
+    });
+
+    await h(t).withLog(`And the callee number should be ${phoneNumber} then close dialog`, async () => {
+      await t.expect(telephonyDialog.extension.withExactText(phoneNumber).exists).ok();
+      await telephonyDialog.clickHangupButton();
+    });
+  }
+});

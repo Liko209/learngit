@@ -193,7 +193,7 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-voice-mail-btn');
   }
 
-  get dialerInput(){
+  get dialerInput() {
     return this.getSelectorByAutomationId('telephony-dialer-header').find('input[type="text"]');
   }
 
@@ -260,15 +260,15 @@ export class TelephonyDialog extends BaseWebComponent {
     await this.t.hover(this.sendToVoiceMailButton);
   }
 
-  async hoverMinimizeButton(){
+  async hoverMinimizeButton() {
     await this.t.hover(this.minimizeButton);
   }
 
-  async hoverDeleteButton(){
+  async hoverDeleteButton() {
     await this.t.hover(this.deleteButton);
   }
 
-  async clickDeleteButton(){
+  async clickDeleteButton() {
     await this.t.click(this.deleteButton);
   }
 
@@ -321,7 +321,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 }
 
-export class TelephonyMinimizeWindow extends BaseWebComponent{
+export class TelephonyMinimizeWindow extends BaseWebComponent {
 
   get self() {
     return this.getSelectorByAutomationId('telephony-minimized-view');
