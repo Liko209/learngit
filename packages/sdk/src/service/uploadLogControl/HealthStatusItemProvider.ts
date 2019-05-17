@@ -25,7 +25,11 @@ export class HealthStatusItemProvider implements IZipItemProvider {
     ) {
       const warnText = `HealthStatusItem name is duplicate: ${item.getName()}`;
       logManager.getLogger(LOG_TAG).warn(warnText);
-      if (!BuildUtils.isProductionBuild() && !BuildUtils.isPublicBuild()) {
+      if (
+        !BuildUtils.isProductionBuild() &&
+        !BuildUtils.isPublicBuild() &&
+        process.env.NODE_ENV !== 'test'
+      ) {
         throw new Error(warnText);
       }
     }
