@@ -18,6 +18,8 @@ import {
 import * as utils from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 
+jest.mock('sdk/dao');
+
 type OnAddCaseConfig = {
   readThrough?: number;
   currentUserId?: number;

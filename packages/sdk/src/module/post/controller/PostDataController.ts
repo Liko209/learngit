@@ -21,7 +21,7 @@ import {
 import { PostDao, PostDiscontinuousDao } from '../dao';
 import { IRawPostResult, Post } from '../entity';
 import { IGroupService } from '../../group/service/IGroupService';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { PerformanceTracer, PERFORMANCE_KEYS } from '../../../utils';
 import { SortUtils } from '../../../framework/utils';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { ChangeModel } from '../../sync/types';
@@ -36,11 +36,7 @@ class PostDataController {
 
   async handleFetchedPosts(data: IRawPostResult, shouldSaveToDb: boolean) {
     mainLogger.info(LOG_FETCH_POST, 'handleFetchedPosts()');
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.CONVERSATION_HANDLE_DATA_FROM_SERVER,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
     const transformedData = this.transformData(data.posts);
     if (shouldSaveToDb) {
       await this.preInsertController.bulkDelete(transformedData);
@@ -51,7 +47,10 @@ class PostDataController {
       (await ServiceLoader.getInstance<ItemService>(
         ServiceConfig.ITEM_SERVICE,
       ).handleIncomingData(data.items)) || [];
-    PerformanceTracerHolder.getPerformanceTracer().end(logId, posts.length);
+    performanceTracer.end({
+      key: PERFORMANCE_KEYS.CONVERSATION_HANDLE_DATA_FROM_SERVER,
+      count: posts.length,
+    });
     return {
       posts,
       items,
@@ -136,6 +135,12 @@ class PostDataController {
    * For bookmark/@mentions/pin post/reply
    */
   private async _handleModifiedDiscontinuousPosts(posts: Post[]) {
+    if (!posts || !posts.length) {
+      mainLogger.info(
+        '_handleModifiedDiscontinuousPosts() return directly due to not posts',
+      );
+      return;
+    }
     const postDiscontinuousDao = daoManager.getDao(PostDiscontinuousDao);
     const deactivatedPosts: Post[] = [];
     const normalPosts: Post[] = [];
@@ -370,9 +375,10 @@ class PostDataController {
               deletePostIds.concat(deletePosts.map((post: Post) => post.id));
             }
           }
+          const postIds = posts && posts.map(post => post._id);
           mainLogger.info(
             LOG_INDEX_DATA_POST,
-            `removeDiscontinuousPosts() remove groupId: ${groupId}, deletePostIds: ${deletePostIds}`,
+            `removeDiscontinuousPosts() remove groupId: ${groupId}, deletePostIds: ${deletePostIds}, postIds:${postIds}`,
           );
         }
       }),

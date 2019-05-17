@@ -15,7 +15,7 @@ import notificationCenter from '../../../../../../service/notificationCenter';
 import { RequestHolder } from '../../../../../../api/requestHolder';
 import { Progress, PROGRESS_STATUS } from '../../../../../progress';
 import { ENTITY, SERVICE } from '../../../../../../service/eventKey';
-import { AccountUserConfig } from '../../../../../../module/account/config';
+import { AccountUserConfig } from '../../../../../../module/account/config/AccountUserConfig';
 import { PartialModifyController } from '../../../../../../framework/controller/impl/PartialModifyController';
 import { EntitySourceController } from '../../../../../../framework/controller/impl/EntitySourceController';
 import { RequestController } from '../../../../../../framework/controller/impl/RequestController';
@@ -32,7 +32,7 @@ import {
 import { IPartialModifyController } from '../../../../../../framework/controller/interface/IPartialModifyController';
 import { GroupConfigService } from '../../../../../groupConfig';
 import { ItemNotification } from '../../../../utils/ItemNotification';
-import { ServiceLoader } from '../../../../../serviceLoader';
+import { ServiceLoader, ServiceConfig } from '../../../../../serviceLoader';
 
 jest.mock('../../../../../groupConfig');
 jest.mock('../../../../service/ItemService');
@@ -42,7 +42,7 @@ jest.mock(
 jest.mock('../../../../../../framework/controller/impl/EntitySourceController');
 jest.mock('../../../../../../framework/controller/impl/RequestController');
 jest.mock('../../../../../../module/account/service/clientConfig');
-jest.mock('../../../../../../module/account/config');
+jest.mock('../../../../../../module/account/config/AccountUserConfig');
 jest.mock('../../../../../../api/glip/item');
 jest.mock('../../../../dao');
 jest.mock('../../../../../../dao');
@@ -91,7 +91,14 @@ describe('fileUploadController', () => {
     AccountUserConfig.prototype.getGlipUserId.mockReturnValue(userId);
 
     notificationCenter.emitEntityReplace.mockImplementation(() => {});
-    ServiceLoader.getInstance = jest.fn().mockReturnValue(groupConfigService);
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: AccountUserConfig.prototype };
+        }
+        return groupConfigService;
+      });
 
     notificationCenter.emit.mockImplementation(() => {});
     notificationCenter.removeListener.mockImplementation(() => {});

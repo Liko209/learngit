@@ -23,7 +23,9 @@ const HomeRouterViewComponent = observer(
     defaultRouterPath,
   }: HomeRouterViewProps & RouteComponentProps) => (
     <Switch>
-      <Redirect exact={true} from="/" to={defaultRouterPath} />
+      {defaultRouterPath && (
+        <Redirect exact={true} from="/" to={defaultRouterPath} />
+      )}
       {routes.map((route: RouteProps, i: number) => (
         <Route key={`HOME_ROUTE_${i}`} {...route} />
       ))}

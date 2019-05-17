@@ -25,8 +25,10 @@ import { AvatarName } from './AvatarName';
 import { ViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
 import { Download } from '@/containers/common/Download';
+import { phoneParserHoc } from '@/modules/common/container/PhoneParser/PhoneParserHoc';
 
 type taskViewProps = WithTranslation & ViewProps;
+const PhoneNumberHoc = phoneParserHoc(JuiTaskSectionOrDescription);
 
 const FILE_COMPS = {
   [FileType.image]: (
@@ -39,6 +41,8 @@ const FILE_COMPS = {
       origWidth: number,
       origHeight: number,
     ) => (ev: React.MouseEvent, loaded: boolean) => void,
+    initialExpansionStatus: boolean,
+    switchExpandHandler: (isExpanded: boolean) => void,
   ) => {
     const { item, previewUrl } = file;
     const { groupId, t } = props;
@@ -60,6 +64,7 @@ const FILE_COMPS = {
           fileName={name}
           i18UnfoldLess={t('common.collapse')}
           i18UnfoldMore={t('common.expand')}
+          defaultExpansionStatus={initialExpansionStatus}
           handleImageClick={handleImageClick(
             groupId,
             id,
@@ -69,6 +74,7 @@ const FILE_COMPS = {
           )}
           Actions={<Download url={downloadUrl} />}
           ImageActions={<Download url={downloadUrl} />}
+          onSwitchExpand={switchExpandHandler}
         />
       )
     );
@@ -120,11 +126,7 @@ class Task extends React.Component<taskViewProps> {
 
   private _getTitleText(text: string) {
     const { task, effectiveIds } = this.props;
-    const {
-      completeType,
-      completePeopleIds,
-      completePercentage,
-    } = task;
+    const { completeType, completePeopleIds, completePercentage } = task;
 
     switch (completeType) {
       case 'all':
@@ -151,12 +153,10 @@ class Task extends React.Component<taskViewProps> {
       section,
       effectiveIds,
       timeText,
+      initialExpansionStatus,
+      switchExpandHandler,
     } = this.props;
-    const {
-      text,
-      complete,
-    } = task;
-
+    const { text, complete } = task;
     return (
       <JuiConversationItemCard
         complete={complete}
@@ -168,7 +168,9 @@ class Task extends React.Component<taskViewProps> {
         {endTime.get() && (
           <JuiLabelWithContent label={t('item.due')}>
             <JuiTimeMessage
-              time={`${startTime.get()} ${hasTime ? '-' : ''} ${endTime.get()} ${timeText.get()}`}
+              time={`${startTime.get()} ${
+                hasTime ? '-' : ''
+              } ${endTime.get()} ${timeText.get()}`}
             />
           </JuiLabelWithContent>
         )}
@@ -187,12 +189,12 @@ class Task extends React.Component<taskViewProps> {
         )}
         {section && (
           <JuiLabelWithContent label={t('item.section')}>
-            <JuiTaskSectionOrDescription text={section} />
+            {section}
           </JuiLabelWithContent>
         )}
         {notes && (
           <JuiLabelWithContent label={t('item.descriptionNotes')}>
-            <JuiTaskSectionOrDescription text={notes} />
+            <PhoneNumberHoc description={notes} />
           </JuiLabelWithContent>
         )}
         {files && files.length > 0 && (
@@ -203,6 +205,8 @@ class Task extends React.Component<taskViewProps> {
                   file,
                   this.props,
                   this._handleImageClick,
+                  initialExpansionStatus,
+                  switchExpandHandler,
                 );
               })}
             </JuiFileWrapper>

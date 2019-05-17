@@ -3,14 +3,21 @@
  * @Date: 2018-02-28 00:26:24
  */
 /// <reference path="../../__tests__/types.d.ts" />
-import { KVStorage, DBManager, DexieDB, IDatabase } from 'foundation';
+import {
+  KVStorage,
+  DBManager,
+  DexieDB,
+  IDatabase,
+  mainLogger,
+} from 'foundation';
 import DaoManager from '../DaoManager';
 import { BaseDao, BaseKVDao } from '../../framework/dao';
 import Dexie from 'dexie';
 import { IdModel } from '../../framework/model';
 import { DaoGlobalConfig } from '../config';
 import { AccountGlobalConfig } from '../../module/account/config';
-import { SyncUserConfig } from '../../module/sync/config';
+import { SyncUserConfig } from '../../module/sync/config/SyncUserConfig';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('../../module/env/index');
 
@@ -40,7 +47,7 @@ jest.mock('../schema', () => ({
 }));
 jest.mock('../../module/config');
 jest.mock('../../module/account/config/AccountGlobalConfig');
-jest.mock('../../module/sync/config');
+jest.mock('../../module/sync/config/SyncUserConfig');
 
 class TestKVDao extends BaseKVDao {
   static COLLECTION_NAME = 'TestKVDao';
@@ -63,7 +70,15 @@ describe('DaoManager', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.SYNC_SERVICE) {
+          return { userConfig: SyncUserConfig.prototype };
+        }
+      });
     daoManager = new DaoManager();
+    mainLogger.tags = jest.fn().mockReturnValue({ info: jest.fn() });
   });
 
   describe('initDataBase()', () => {
@@ -81,7 +96,7 @@ describe('DaoManager', () => {
           DBManager.mock.instances[0].deleteDatabase,
         ).not.toHaveBeenCalled();
         expect(
-          SyncUserConfig.prototype.removeLastIndexTimestamp,
+          SyncUserConfig.prototype.clearSyncConfigsForDBUpgrade,
         ).not.toHaveBeenCalled();
       });
 
@@ -91,7 +106,7 @@ describe('DaoManager', () => {
         await daoManager.initDatabase();
         expect(DBManager.mock.instances[0].deleteDatabase).toHaveBeenCalled();
         expect(
-          SyncUserConfig.prototype.removeLastIndexTimestamp,
+          SyncUserConfig.prototype.clearSyncConfigsForDBUpgrade,
         ).toHaveBeenCalled();
       });
 
@@ -102,7 +117,7 @@ describe('DaoManager', () => {
         await daoManager.initDatabase();
         expect(DBManager.mock.instances[0].deleteDatabase).toHaveBeenCalled();
         expect(
-          SyncUserConfig.prototype.removeLastIndexTimestamp,
+          SyncUserConfig.prototype.clearSyncConfigsForDBUpgrade,
         ).toHaveBeenCalled();
       });
 

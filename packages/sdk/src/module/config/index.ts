@@ -4,17 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { UserConfigService } from './service/UserConfigService';
+import { DBConfigService } from './service/DBConfigService';
 import { GlobalConfigService } from './service/GlobalConfigService';
 import { GlobalConfig } from './GlobalConfig';
 import { UserConfig } from './UserConfig';
-import { UserDBConfig } from './UserDBConfig';
-import { DataMigration } from './DataMigration';
+import { DBConfig } from './DBConfig';
 
 export {
   GlobalConfig,
   UserConfig,
+  DBConfig,
   UserConfigService,
-  UserDBConfig,
+  DBConfigService,
   GlobalConfigService,
-  DataMigration,
 };

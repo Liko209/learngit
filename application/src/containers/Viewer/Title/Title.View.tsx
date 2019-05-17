@@ -63,7 +63,7 @@ class ViewerTitleViewComponent extends Component<
             appear={true}
             show={viewerContext.show}
             duration="standard"
-            easing="openCloseDialog"
+            easing="sharp"
             animation={imageViewerHeaderAnimation}
           >
             <div>

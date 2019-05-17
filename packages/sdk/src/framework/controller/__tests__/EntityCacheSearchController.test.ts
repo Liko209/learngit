@@ -8,11 +8,10 @@ import {
   buildEntityCacheController,
   buildEntityCacheSearchController,
 } from '../';
-import { IdModel } from '../../model';
+import { IdModel, SortableModel } from '../../model';
 import { IEntityCacheController } from '../interface/IEntityCacheController';
 import {
   IEntityCacheSearchController,
-  SortableModel,
   Terms,
 } from '../interface/IEntityCacheSearchController';
 import { SearchUtils } from '../../utils/SearchUtils';
@@ -23,8 +22,8 @@ export type TestModel = IdModel & {
 };
 
 describe('Entity Cache Search Controller', () => {
-  let entityCacheController: IEntityCacheController;
-  let entityCacheSearchController: IEntityCacheSearchController;
+  let entityCacheController: IEntityCacheController<TestModel>;
+  let entityCacheSearchController: IEntityCacheSearchController<TestModel>;
 
   function sortEntitiesByName(
     groupA: SortableModel<TestModel>,
@@ -450,7 +449,9 @@ describe('Entity Cache Search Controller', () => {
               searchKeyTerms,
             ) ||
             entityCacheSearchController.isSoundexMatched(
-              [soundex(entity.name)],
+              entity.name!.split('.').map(x => {
+                return soundex(x);
+              }),
               searchKeyTermsToSoundex,
             );
           if (entity.name && isMatched) {
@@ -482,11 +483,13 @@ describe('Entity Cache Search Controller', () => {
           const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
           const isMatched =
             entityCacheSearchController.isFuzzyMatched(
-              entity.name.toLowerCase() || '',
+              entity.name!.toLowerCase() || '',
               searchKeyTerms,
             ) ||
             entityCacheSearchController.isSoundexMatched(
-              [soundex(entity.name)],
+              entity.name!.split('.').map(x => {
+                return soundex(x);
+              }),
               searchKeyTermsToSoundex,
             );
           if (entity.name && isMatched) {

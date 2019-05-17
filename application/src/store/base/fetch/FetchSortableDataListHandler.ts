@@ -63,6 +63,7 @@ export class FetchSortableDataListHandler<
     SortableModel
   >;
   protected _totalCountChangeCallback?: CountChangeCallback;
+  private _eventName: string;
 
   private _maintainMode: boolean = false;
 
@@ -80,6 +81,7 @@ export class FetchSortableDataListHandler<
     this._sortableDataProvider = dataProvider;
     this._entityName = options.entityName;
     this._sortFun = options.sortFunc;
+    this._eventName = options.eventName || '';
 
     if (options.eventName) {
       this.subscribeNotification(options.eventName, ({ type, body }) => {
@@ -129,17 +131,23 @@ export class FetchSortableDataListHandler<
     pageSize: number,
     anchor?: SortableModel,
   ) {
-    if (!this._sortableDataProvider) {
+    const dataProvider = this._sortableDataProvider;
+    if (!dataProvider) {
       mainLogger.warn(
         'FetchSortableDataListHandler: data fetcher should be defined ',
       );
       return [];
     }
-    const { data = [], hasMore } = await this._sortableDataProvider.fetchData(
-      direction,
-      pageSize,
-      anchor,
+    return this.fetchDataBy(direction, () =>
+      dataProvider.fetchData(direction, pageSize, anchor),
     );
+  }
+
+  async fetchDataBy(
+    direction: QUERY_DIRECTION,
+    dataLoader: () => Promise<{ data: Model[]; hasMore: boolean }>,
+  ) {
+    const { data = [], hasMore } = await dataLoader();
     const sortableResult: SortableModel[] = [];
     data.forEach((element: Model) => {
       sortableResult.push(this._transformFunc(element));
@@ -164,7 +172,6 @@ export class FetchSortableDataListHandler<
     });
     return data;
   }
-
   @action
   refreshData() {
     mainLogger.debug(
@@ -275,7 +282,15 @@ export class FetchSortableDataListHandler<
         const model = entities.get(key) as Model;
         if (this._isMatchFunc(model)) {
           const sortModel = this._transformFunc(model);
-          if (this._isInRange(sortModel)) {
+          const isInRange = this._isInRange(sortModel);
+          this._eventName &&
+            this._eventName.startsWith('ENTITY.POST') &&
+            mainLogger.info(
+              `FetchSortableDataListHandler:${
+                this._eventName
+              }, key:${key}, isInRange:${isInRange}`,
+            );
+          if (isInRange) {
             matchedSortableModels.push(sortModel);
             matchedEntities.push(model);
           }
@@ -359,35 +374,46 @@ export class FetchSortableDataListHandler<
     return this.maintainMode || this._dataChangeCallBacks.length;
   }
 
+  getOldest() {
+    return this.sortableListStore.last();
+  }
+
+  getNewest() {
+    return this.sortableListStore.first();
+  }
+
   private _isInRange(newData: SortableModel) {
     let inRange = false;
     const idArray = this.sortableListStore.items;
     if (idArray && idArray.length > 0) {
-      const first = idArray[0];
-      const last = idArray[idArray.length - 1];
-      if (this._sortFun) {
-        inRange =
-          this._sortFun(newData, first) >= 0 &&
-          this._sortFun(newData, last) <= 0;
-      } else {
-        inRange =
-          newData.sortValue >= first.sortValue &&
-          newData.sortValue <= last.sortValue;
-      }
+      const first = this.getNewest();
+      const last = this.getOldest();
 
-      if (!inRange) {
+      if (first && last) {
         if (this._sortFun) {
           inRange =
-            (this._sortFun(newData, first) < 0 &&
-              !this.hasMore(QUERY_DIRECTION.OLDER)) ||
-            (this._sortFun(newData, last) > 0 &&
-              !this.hasMore(QUERY_DIRECTION.NEWER));
+            this._sortFun(newData, first) >= 0 &&
+            this._sortFun(newData, last) <= 0;
         } else {
           inRange =
-            (newData.sortValue < first.sortValue &&
-              !this.hasMore(QUERY_DIRECTION.OLDER)) ||
-            (newData.sortValue > last.sortValue &&
-              !this.hasMore(QUERY_DIRECTION.NEWER));
+            newData.sortValue >= first.sortValue &&
+            newData.sortValue <= last.sortValue;
+        }
+
+        if (!inRange) {
+          if (this._sortFun) {
+            inRange =
+              (this._sortFun(newData, first) < 0 &&
+                !this.hasMore(QUERY_DIRECTION.OLDER)) ||
+              (this._sortFun(newData, last) > 0 &&
+                !this.hasMore(QUERY_DIRECTION.NEWER));
+          } else {
+            inRange =
+              (newData.sortValue < first.sortValue &&
+                !this.hasMore(QUERY_DIRECTION.OLDER)) ||
+              (newData.sortValue > last.sortValue &&
+                !this.hasMore(QUERY_DIRECTION.NEWER));
+          }
         }
       }
     } else {

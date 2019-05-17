@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed } from 'mobx';
+import { container } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
 import PostModel from '@/store/models/Post';
 import GroupModel from '@/store/models/Group';
@@ -19,8 +20,23 @@ import PersonModel from '@/store/models/Person';
 import { FormatToHtml } from './FormatToHtml';
 import { TextMessageProps } from './types';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
+import { TelephonyService } from '@/modules/telephony/service';
+import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
+import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 
 class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
+  private _featuresFlagsService: FeaturesFlagsService = container.get(
+    FeaturesFlagsService,
+  );
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
+  canUseTelephony = async () => {
+    return await this._featuresFlagsService.canUseTelephony();
+  }
+  directCall = (phoneNumber: string) => {
+    this._telephonyService.directCall(phoneNumber);
+  }
   @computed
   private get _post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.props.id);

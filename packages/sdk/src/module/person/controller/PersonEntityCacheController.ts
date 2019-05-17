@@ -5,12 +5,20 @@
  */
 
 import _ from 'lodash';
-import { Person } from '../entity';
-import { EntityCacheController } from '../../../framework/controller/impl/EntityCacheController';
+import { Person, PhoneNumberModel } from '../entity';
+import { EntityCacheController } from 'sdk/framework/controller/impl/EntityCacheController';
 import { IPersonService } from '../service/IPersonService';
+import { SearchUtils } from 'sdk/framework/utils/SearchUtils';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { AccountService } from 'sdk/module/account';
+
 const soundex = require('soundex-code');
+
 class PersonEntityCacheController extends EntityCacheController<Person> {
   private _soundexValue: Map<number, string[]> = new Map();
+  private _phoneNumberCache: Map<string, Person> = new Map();
+  private _companyId: number = 0;
 
   static buildPersonEntityCacheController(personService: IPersonService) {
     return new PersonEntityCacheController(personService);
@@ -23,17 +31,74 @@ class PersonEntityCacheController extends EntityCacheController<Person> {
   async clear(): Promise<void> {
     super.clear();
     this._soundexValue.clear();
+    this._phoneNumberCache.clear();
+    this._companyId = 0;
   }
 
   public getSoundexById(id: number): string[] {
     return this._soundexValue.get(id) || [];
   }
 
+  public getPersonByPhoneNumber(phoneNumber: string) {
+    return this._phoneNumberCache.get(phoneNumber);
+  }
+
+  private _removePhoneNumbersByPerson(person: Person) {
+    if (!person) {
+      return;
+    }
+    if (person.sanitized_rc_extension) {
+      const ext = person.sanitized_rc_extension.extensionNumber;
+      this._phoneNumberCache.has(ext) &&
+        person.company_id === this._companyId &&
+        this._phoneNumberCache.delete(ext);
+    }
+    person.rc_phone_numbers &&
+      person.rc_phone_numbers.forEach((phoneNumberModel: PhoneNumberModel) => {
+        const phoneNumber = phoneNumberModel.phoneNumber;
+        this._phoneNumberCache.has(phoneNumber) &&
+          this._phoneNumberCache.delete(phoneNumber);
+      });
+  }
+
+  private _removePhoneNumbersByPersonId(id: number) {
+    const person = this.getSynchronously(id);
+    if (person) {
+      this._removePhoneNumbersByPerson(person);
+    }
+  }
+
   protected deleteInternal(key: number) {
+    this._removePhoneNumbersByPersonId(key);
     if (this._soundexValue.has(key)) {
       this._soundexValue.delete(key);
     }
     super.deleteInternal(key);
+  }
+
+  private _addPhoneNumbers(person: Person) {
+    if (!person) {
+      return;
+    }
+    if (person.sanitized_rc_extension) {
+      if (!this._companyId) {
+        const userConfig = ServiceLoader.getInstance<AccountService>(
+          ServiceConfig.ACCOUNT_SERVICE,
+        ).userConfig;
+        this._companyId = userConfig.getCurrentCompanyId();
+      }
+      const ext = person.sanitized_rc_extension.extensionNumber;
+      ext &&
+        person.company_id === this._companyId &&
+        this._phoneNumberCache.set(ext, person);
+    }
+    person.rc_phone_numbers &&
+      person.rc_phone_numbers.forEach((phoneNumberModel: PhoneNumberModel) => {
+        if (phoneNumberModel.usageType === PhoneNumberType.DirectNumber) {
+          const phoneNumber = phoneNumberModel.phoneNumber;
+          phoneNumber && this._phoneNumberCache.set(phoneNumber, person);
+        }
+      });
   }
 
   protected putInternal(person: Person) {
@@ -42,11 +107,14 @@ class PersonEntityCacheController extends EntityCacheController<Person> {
     }
     super.putInternal(person);
     this._setSoundexValue(person);
+    this._addPhoneNumbers(person);
   }
 
   protected updatePartial(oldEntity: Person, partialEntity: Partial<Person>) {
+    this._removePhoneNumbersByPerson(oldEntity);
     super.updatePartial(oldEntity, partialEntity);
     this._setSoundexValue(oldEntity);
+    this._addPhoneNumbers(oldEntity);
   }
 
   private _setSoundexValue(person: Person) {
@@ -54,7 +122,9 @@ class PersonEntityCacheController extends EntityCacheController<Person> {
     if (this._personService.isValidPerson(person)) {
       const name = this._personService.getName(person);
       if (name) {
-        soundexResult = name.split(' ').map(item => soundex(item));
+        soundexResult = SearchUtils.getTermsFromText(name).map(item =>
+          soundex(item),
+        );
       } else {
         soundexResult = [soundex(person.email)];
       }

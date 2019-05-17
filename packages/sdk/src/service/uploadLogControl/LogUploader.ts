@@ -3,8 +3,8 @@
  * @Date: 2019-03-24 11:06:33
  * Copyright © RingCentral. All rights reserved.
  */
-import axios, { AxiosError } from 'axios';
-import { HTTP_STATUS_CODE, LogEntity, mainLogger } from 'foundation';
+import axios, { AxiosError, AxiosResponse } from 'axios';
+import { RESPONSE_STATUS_CODE, LogEntity, mainLogger } from 'foundation';
 import { Api } from 'sdk/api';
 import { Pal } from 'sdk/pal';
 import { ILogUploader } from './consumer';
@@ -27,16 +27,17 @@ export class LogUploader implements ILogUploader {
       env = '',
       browser = '',
     } = Pal.instance.getApplicationInfo();
+    const host = location.host;
     await axios.post(postUrl, message, {
       headers: {
-        'X-Sumo-Name': `${platform}/${appVersion}/${browser}/${os}/${env}/${email}/${userId}/${sessionId}`,
+        'X-Sumo-Name': `${platform}/${appVersion}/${browser}/${os}/${env}/${email}/${userId}/${sessionId}/${host}`,
         'Content-Type': 'application/json',
       },
     });
   }
 
   transform(logs: LogEntity[]) {
-    return logs.map(log => this._getLogText(log)).join('\n');
+    return logs.map(log => this._getLogText(log)).join('\t\n');
   }
 
   errorHandler(error: AxiosError) {
@@ -48,14 +49,7 @@ export class LogUploader implements ILogUploader {
       mainLogger.debug('Log errorHandler: abortAll');
       return 'abortAll';
     }
-    if (
-      [
-        HTTP_STATUS_CODE.UNAUTHORIZED,
-        HTTP_STATUS_CODE.TOO_MANY_REQUESTS,
-        HTTP_STATUS_CODE.SERVICE_UNAVAILABLE,
-        HTTP_STATUS_CODE.GATEWAY_TIME_OUT,
-      ].includes(response.status)
-    ) {
+    if (this._canRetry(response)) {
       mainLogger.debug('Log errorHandler: retry');
       return 'retry';
     }
@@ -85,5 +79,13 @@ export class LogUploader implements ILogUploader {
   private _getLogText(log: LogEntity) {
     const { message = '' } = log;
     return message;
+  }
+
+  private _canRetry(response: AxiosResponse) {
+    return [
+      RESPONSE_STATUS_CODE.TOO_MANY_REQUESTS,
+      RESPONSE_STATUS_CODE.SERVICE_UNAVAILABLE,
+      RESPONSE_STATUS_CODE.GATEWAY_TIME_OUT,
+    ].includes(response.status);
   }
 }

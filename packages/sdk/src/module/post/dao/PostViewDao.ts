@@ -6,7 +6,7 @@
 import { IDatabase, mainLogger } from 'foundation';
 import _ from 'lodash';
 import { BaseDao } from '../../../framework/dao';
-import { Post, PostView } from '../entity';
+import { Post, PostView, UnreadPostQuery } from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
 import { DEFAULT_PAGE_SIZE, LOG_FETCH_POST } from '../constant';
 import { ArrayUtils } from '../../../utils/ArrayUtils';
@@ -39,6 +39,9 @@ class PostViewDao extends BaseDao<PostView> {
     }
     // 1. Get ids from post lookup table via group id
     let postIds = await this.queryPostIdsByGroupId(groupId);
+    if (!postIds.length) {
+      return [];
+    }
 
     // 2. If post id > 0, calculate the startIndex & endIndex via direction, else limit is the endIndex
     postIds = ArrayUtils.sliceIdArray(
@@ -61,6 +64,40 @@ class PostViewDao extends BaseDao<PostView> {
         end}, groupId:${groupId}`,
     );
     return posts;
+  }
+
+  /*
+   * 1, If startPostId === 0 or startPostId not exist in db, return []
+   * 2, If startPostId and endPostId exist, but startIndex > endIndex, return []
+   * 3, If startPostId exist, endPostId === 0 or endPostId not exist in db, will return the newer posts than startPost
+   */
+  async queryIntervalPostsByGroupId(
+    fetchPostFunc: (ids: number[]) => Promise<Post[]>,
+    { groupId, startPostId, endPostId }: UnreadPostQuery,
+  ): Promise<Post[]> {
+    do {
+      if (startPostId && (await this.get(startPostId))) {
+        let postIds = await this.queryPostIdsByGroupId(groupId);
+
+        const startIndex = postIds.indexOf(startPostId);
+        const endIndex = postIds.indexOf(endPostId);
+        if (startIndex === -1 || (endIndex !== -1 && startIndex >= endIndex)) {
+          break;
+        }
+
+        postIds = postIds.slice(
+          startIndex,
+          endIndex === -1 ? postIds.length : endIndex,
+        );
+        const posts = await fetchPostFunc(postIds);
+        return posts;
+      }
+    } while (false);
+    mainLogger.info(
+      LOG_FETCH_POST,
+      `queryIntervalPostsByGroupId() return [] for groupId:${groupId} startPostId:${startPostId} endPostId:${endPostId}`,
+    );
+    return [];
   }
 
   async queryPostIdsByGroupId(groupId: number): Promise<number[]> {

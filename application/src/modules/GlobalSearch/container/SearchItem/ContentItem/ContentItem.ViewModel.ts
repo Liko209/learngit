@@ -3,7 +3,7 @@
  * @Date: 2019-01-30 14:38:45
  * Copyright © RingCentral. All rights reserved.
  */
-import { action } from 'mobx';
+import { action, computed } from 'mobx';
 import { SearchService } from 'sdk/module/search';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -24,14 +24,20 @@ class ContentItemViewModel extends SearchViewModel<ContentProps>
     this.addRecentRecord();
   }
 
-  contentText = promisedComputed(this.props && this.props.displayName, async () => {
-    const { searchScope, displayName } = this.props;
+  @computed
+  get contentText() {
+    const { displayName } = this.props;
+    return displayName;
+  }
+
+  inThisConversation = promisedComputed('', async () => {
+    const { searchScope } = this.props;
 
     if (searchScope === SEARCH_SCOPE.CONVERSATION) {
       const defaultTip = await i18nT('globalSearch.inThisConversation');
-      return `${displayName} ${defaultTip}`;
+      return ` ${defaultTip}`;
     }
-    return displayName;
+    return '';
   });
 
   addRecentRecord = () => {

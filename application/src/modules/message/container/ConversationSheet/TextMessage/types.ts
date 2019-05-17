@@ -3,6 +3,7 @@
  * @Date: 2018-10-26 09:53:25
  * Copyright © RingCentral. All rights reserved.
  */
+// import { PromisedComputedValue } from 'computed-async-mobx';
 
 type TextMessageProps = {
   id: number; // post id
@@ -11,6 +12,8 @@ type TextMessageProps = {
 
 type TextMessageViewProps = {
   html: string;
+  directCall: (phoneNumber: string) => void;
+  canUseTelephony: () => Promise<boolean>;
 };
 
 type CustomEmojiMap = {
@@ -28,6 +31,7 @@ type FormatToHtmlParams = {
   staticHttpServer: string;
   customEmojiMap: CustomEmojiMap;
   highlightTerms?: string[];
+  unicodeOnly?: boolean;
 };
 
 export {

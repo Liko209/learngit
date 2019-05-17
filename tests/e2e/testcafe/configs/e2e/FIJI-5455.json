@@ -1,0 +1,11 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Setting/Phone/GeneralSettings.ts",
+      "./fixtures/Setting/Phone/Permission.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

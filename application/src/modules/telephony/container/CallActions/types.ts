@@ -10,7 +10,7 @@ type CallActionsProps = {
 };
 
 type CallActionsViewProps = {
-  callActions: () => void;
+  directReply: () => void;
   showLabel?: boolean;
   shouldPersistBg?: boolean;
 };

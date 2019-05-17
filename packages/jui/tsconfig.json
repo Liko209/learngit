@@ -4,9 +4,9 @@
     "tsBuildInfoFile": "./.tsc_cache/cache_path",
     "baseUrl": ".",
     "outDir": "build",
-    "rootDir": "src",
     "paths": {
-      "test-util/*": ["../packages/test-util/src/*"]
+      "shield/*": ["../../tests/shield//src/*"],
+      "rcui/*": ["../rcui/src/*"]
     }
   },
   "include": ["src/**/*"],

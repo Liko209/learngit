@@ -33,7 +33,7 @@ const config: SubModuleConfig = {
       placement: 'top',
     };
   },
-  loader: () =>
+  moduleConfigLoader: () =>
     import(/*
     webpackChunkName: "m.message" */ '@/modules/message'),
 };

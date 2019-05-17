@@ -16,6 +16,8 @@ import {
 import { JuiAvatar } from '../../../components/Avatar';
 import JuiConversationCardFrom from '../ConversationCardFrom';
 import JuiConversationCardBody from '../ConversationCardBody';
+import { JuiIconography } from 'src/foundation/Iconography';
+import { noop } from 'src/foundation/utils';
 
 storiesOf('Pattern', module)
   .addDecorator(withInfoDecorator(JuiConversationCard, { inline: true }))
@@ -25,11 +27,14 @@ storiesOf('Pattern', module)
     const activity = text('activity', 'shared 22 files');
     const status = text('status', '🏃 in the meeting');
     const mode = boolean('navigation', false) ? 'navigation' : undefined;
+    const disabled = boolean('Team name disabled', false);
     const from = mode && (
       <JuiConversationCardFrom
+        preposition={<>in</>}
+        onClick={noop}
         name={groupName}
-        isTeam={true}
-        onClick={() => {}}
+        prefix={<JuiIconography iconSize="small">team</JuiIconography>}
+        disabled={disabled}
       />
     );
     const card = (

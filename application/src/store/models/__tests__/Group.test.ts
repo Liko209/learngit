@@ -9,10 +9,11 @@ import { Group } from 'sdk/models';
 import { PERMISSION_ENUM } from 'sdk/service';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
-import { AccountUserConfig } from 'sdk/module/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
 
+jest.mock('sdk/dao');
 jest.mock('sdk/api');
-jest.mock('sdk/module/account/config');
+jest.mock('sdk/module/account/config/AccountUserConfig');
 jest.mock('@/store/utils/entities');
 jest.mock('sdk/module/config');
 

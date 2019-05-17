@@ -14,9 +14,12 @@ import { ITelephonyAccountDelegate } from './ITelephonyAccountDelegate';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SERVICE } from '../../../service/eventKey';
 import { MAKE_CALL_ERROR_CODE } from '../types';
+import { IdModel } from '../../../framework/model';
+import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 
-class TelephonyService extends EntityBaseService {
+class TelephonyService extends EntityBaseService<IdModel> {
   private _telephonyEngineController: TelephonyEngineController;
+  private _userConfig: TelephonyUserConfig;
 
   constructor() {
     super(false);
@@ -34,13 +37,22 @@ class TelephonyService extends EntityBaseService {
 
   protected get telephonyController() {
     if (!this._telephonyEngineController) {
-      this._telephonyEngineController = new TelephonyEngineController();
+      this._telephonyEngineController = new TelephonyEngineController(
+        this.userConfig,
+      );
     }
     return this._telephonyEngineController;
   }
 
   private _init() {
     this.telephonyController.initEngine();
+  }
+
+  get userConfig() {
+    if (!this._userConfig) {
+      this._userConfig = new TelephonyUserConfig();
+    }
+    return this._userConfig;
   }
 
   createAccount = (
@@ -122,8 +134,8 @@ class TelephonyService extends EntityBaseService {
   replyWithPattern = (
     callId: string,
     pattern: RTC_REPLY_MSG_PATTERN,
-    time: number,
-    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+    time?: number,
+    timeUnit?: RTC_REPLY_MSG_TIME_UNIT,
   ) => {
     this.telephonyController
       .getAccountController()

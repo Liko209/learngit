@@ -5,7 +5,6 @@
  */
 import React from 'react';
 import { JuiPopper } from '../../components/Popper';
-import styled from '../../foundation/styled-components';
 import { ClickAwayListener, Paper, Grow } from '@material-ui/core';
 import { PopperPlacementType } from '@material-ui/core/Popper';
 
@@ -16,44 +15,20 @@ type AnchorProps = {
 type JuiPopperMenuProps = {
   children: React.ReactNode;
   Anchor: React.SFC<AnchorProps>;
+  anchorEl: EventTarget & Element | null;
   automationId?: string;
   transformOrigin?: string;
   placement?: PopperPlacementType;
   setMoreItemState?: (value: boolean) => void;
   open: boolean;
   value?: number;
+  noTransition?: boolean;
+  onClose: any;
+  disablePortal?: boolean;
 };
 
-const StyledAnchorWrapper = styled.div`
-  display: inline-flex;
-`;
-
-class JuiPopperMenu extends React.PureComponent<
-  JuiPopperMenuProps,
-  { anchorEl: HTMLElement | null }
-> {
-  constructor(props: JuiPopperMenuProps) {
-    super(props);
-    this.state = {
-      anchorEl: null,
-    };
-  }
-
-  handleToggle = (event: React.MouseEvent<HTMLElement>) => {
-    const { currentTarget } = event;
-    this.setState({
-      anchorEl: currentTarget,
-    });
-  }
-
-  handleClose = () => {
-    this.setState({
-      anchorEl: null,
-    });
-  }
-
+class JuiPopperMenu extends React.PureComponent<JuiPopperMenuProps> {
   render() {
-    const { anchorEl } = this.state;
     const {
       Anchor,
       children,
@@ -61,38 +36,45 @@ class JuiPopperMenu extends React.PureComponent<
       transformOrigin,
       placement,
       open,
+      noTransition,
+      anchorEl,
+      onClose,
+      disablePortal,
     } = this.props;
     const id = open ? 'popper-menu' : '';
-    const _open = open && Boolean(anchorEl);
     return (
-      <>
-        <StyledAnchorWrapper onClick={this.handleToggle}>
-          <Anchor aria-describedby={id} tooltipForceHide={_open} />
-        </StyledAnchorWrapper>
-        <JuiPopper
-          id={id}
-          open={_open}
-          anchorEl={anchorEl}
-          placement={placement}
-          data-test-automation-id={automationId}
-          transition={true}
-        >
-          {({ TransitionProps }) => (
-            <Grow
-              {...TransitionProps}
-              style={{
-                transformOrigin: transformOrigin || 'center top',
-              }}
-            >
-              <Paper>
-                <ClickAwayListener onClickAway={this.handleClose}>
-                  {children}
-                </ClickAwayListener>
-              </Paper>
-            </Grow>
-          )}
-        </JuiPopper>
-      </>
+      <ClickAwayListener onClickAway={onClose}>
+        {/*
+       ClickAwayListener only finds the first child
+       so must be use div include Anchor and JuiPopper
+      https://github.com/mui-org/material-ui/blob/master/packages/material-ui/src/ClickAwayListener/ClickAwayListener.js#L19-L22 */}
+        <div>
+          <Anchor aria-describedby={id} tooltipForceHide={open} />
+          <JuiPopper
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            placement={placement}
+            data-test-automation-id={automationId}
+            transition={true}
+            disablePortal={disablePortal}
+          >
+            {({ TransitionProps }) => {
+              return (
+                <Grow
+                  {...TransitionProps}
+                  timeout={noTransition ? 0 : 'auto'}
+                  style={{
+                    transformOrigin: transformOrigin || 'center top',
+                  }}
+                >
+                  <Paper>{children}</Paper>
+                </Grow>
+              );
+            }}
+          </JuiPopper>
+        </div>
+      </ClickAwayListener>
     );
   }
 }

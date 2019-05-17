@@ -10,6 +10,7 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { FromViewProps } from './types';
 import { JuiConversationCardFrom } from 'jui/pattern/ConversationCard/ConversationCardFrom';
 import history from '@/history';
+import { JuiIconography } from 'jui/foundation/Iconography';
 
 type Props = FromViewProps & WithTranslation;
 
@@ -20,11 +21,19 @@ class FromViewComponent extends Component<Props> {
     history.push(`/messages/${this.props.id}`);
   }
   render() {
-    const { displayName, isTeam, ...rest } = this.props;
+    const { displayName, isTeam, disabled, t, ...rest } = this.props;
+    const prefix = isTeam ? (
+      <JuiIconography iconSize="small">team</JuiIconography>
+    ) : (
+      undefined
+    );
+
     return (
       <JuiConversationCardFrom
         name={displayName}
-        isTeam={isTeam}
+        preposition={t('common.preposition.in')}
+        prefix={prefix}
+        disabled={disabled}
         onClick={this.jumpToConversation}
         {...rest}
       />

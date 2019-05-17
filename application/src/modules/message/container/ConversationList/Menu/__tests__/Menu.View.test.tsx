@@ -17,20 +17,31 @@ jest.mock('@/containers/Notification');
 
 Notification.flashToast = jest.fn();
 
-function setUpMockFavorite(isFavorite: boolean, isFailed: boolean, errorType: 'network' | 'server') {
+function setUpMock(boolVal: boolean, isFailed: boolean, errorType: 'network' | 'server') {
   return {
-    isFavorite,
+    isFavorite: boolVal,
+    isUnread: boolVal,
     onClose: () => { },
     personId: 1234,
     groupId: 1234,
     anchorEl: null,
-    isUnread: false,
+    showClose: true,
     disabledReadOrUnread: false,
     favoriteText: 'favoriteText',
-    shouldSkipCloseConfirmation: false,
+    shouldSkipCloseConfirmation: true,
     closable: false,
     toggleRead: jest.fn(),
-    closeConversation: jest.fn(),
+    closeConversation: jest.fn().mockImplementationOnce(() => {
+      if (!isFailed) {
+        return;
+      }
+      if (errorType === 'network') {
+        throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK');
+      }
+      if (errorType === 'server') {
+        throw new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
+      }
+    }),
     toggleFavorite: jest.fn().mockImplementationOnce(() => {
       if (!isFailed) {
         return;
@@ -51,40 +62,40 @@ describe('MenuView', () => {
   });
 
   describe('render()', () => {
-    it('should display flash toast notification when close conversation failed [JPT-490]', (done: jest.DoneCallback) => {
-      const props: any = {
-        groupId: 1,
-        showClose: true,
-        closeConversation: () => {
-          throw new JSdkError(
-            ERROR_CODES_SDK.GENERAL,
-            'Failed to close conversation',
-          );
-        },
-
-        shouldSkipCloseConfirmation: true,
-        onClose: () => { },
-      };
-
+    it('should display flash toast notification when close conversation failed for backend issue. [JPT-490]', async (done: jest.DoneCallback) => {
+      const props = setUpMock(true, true, 'server');
       const wrapper = shallow(<MenuViewComponent {...props} />);
 
-      wrapper
+      await wrapper
         .find('[data-test-automation-id="closeConversation"]')
         .simulate('click', { stopPropagation: () => undefined });
 
-      setTimeout(() => {
-        expect(Notification.flashToast).toHaveBeenCalledWith(
-          expect.objectContaining({
-            message: 'people.prompt.SorryWeWereNotAbleToCloseTheConversation',
-            type: ToastType.ERROR,
-          }),
-        );
-        done();
-      },         0);
-    }, 2);
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'people.prompt.notAbleToCloseTheConversationForServerIssue',
+        }),
+      );
+      done();
+    });
+
+    it('should display flash toast notification when close conversation failed for network issue. [JPT-490]', async (done: jest.DoneCallback) => {
+      const props = setUpMock(true, true, 'network');
+      const wrapper = shallow(<MenuViewComponent {...props} />);
+
+      await wrapper
+        .find('[data-test-automation-id="closeConversation"]')
+        .simulate('click', { stopPropagation: () => undefined });
+
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'people.prompt.notAbleToCloseTheConversationForNetworkIssue',
+        }),
+      );
+      done();
+    });
 
     it('display flash toast notification when unfavorite conversation failed for backend issue.[JPT-489]', async (done: jest.DoneCallback) => {
-      const props = setUpMockFavorite(true, true, 'server');
+      const props = setUpMock(true, true, 'server');
       const wrapper = shallow(<MenuViewComponent {...props} />);
 
       await wrapper
@@ -100,7 +111,7 @@ describe('MenuView', () => {
     });
 
     it('display flash toast notification when favorite conversation failed for backend issue.[JPT-488]', async (done: jest.DoneCallback) => {
-      const props = setUpMockFavorite(false, true, 'server');
+      const props = setUpMock(false, true, 'server');
       const wrapper = shallow(<MenuViewComponent {...props} />);
 
       await wrapper
@@ -116,7 +127,7 @@ describe('MenuView', () => {
     });
 
     it('display flash toast notification when unfavorite conversation failed for network issue.[JPT-489]', async (done: jest.DoneCallback) => {
-      const props = setUpMockFavorite(true, true, 'network');
+      const props = setUpMock(true, true, 'network');
       const wrapper = shallow(<MenuViewComponent {...props} />);
 
       await wrapper
@@ -132,7 +143,7 @@ describe('MenuView', () => {
     });
 
     it('display flash toast notification when favorite conversation failed for network issue.[JPT-488]', async (done: jest.DoneCallback) => {
-      const props = setUpMockFavorite(false, true, 'network');
+      const props = setUpMock(false, true, 'network');
       const wrapper = shallow(<MenuViewComponent {...props} />);
 
       await wrapper

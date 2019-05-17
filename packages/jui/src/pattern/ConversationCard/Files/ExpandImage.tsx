@@ -17,25 +17,32 @@ type Props = {
   i18UnfoldLess: string;
   ImageActions?: JSX.Element;
   handleImageClick?: (ev: React.MouseEvent, loaded: boolean) => void;
+  onSwitchExpand: (isExpanded: boolean) => void;
+  defaultExpansionStatus?: boolean;
 };
 
 type State = {
-  expand: boolean;
+  expand?: boolean;
 };
 
 class JuiExpandImage extends React.PureComponent<Props, State> {
+  static defaultProps = {
+    onSwitchExpand: () => {},
+  };
   constructor(props: Props) {
     super(props);
     this.state = {
-      expand: false,
+      expand: this.props.defaultExpansionStatus,
     };
   }
 
   switchExpand = () => {
     const { expand } = this.state;
+    const { onSwitchExpand } = this.props;
     this.setState({
       expand: !expand,
     });
+    onSwitchExpand(!expand);
   }
 
   render() {

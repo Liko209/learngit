@@ -5,14 +5,19 @@
  */
 
 import { LifeCycle } from 'ts-javascript-state-machine';
-import { observable, computed, reaction } from 'mobx';
+import { observable, computed, action, reaction } from 'mobx';
 import { PersonService, ContactType } from 'sdk/module/person';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { mainLogger } from 'sdk';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
-import { Person, PHONE_NUMBER_TYPE } from 'sdk/module/person/entity';
+import {
+  Person,
+  PHONE_NUMBER_TYPE,
+  PhoneNumberModel,
+} from 'sdk/module/person/entity';
+import { v4 } from 'uuid';
 import {
   HOLD_STATE,
   HOLD_TRANSITION_NAMES,
@@ -30,8 +35,8 @@ import {
   CALL_TRANSITION_NAMES,
   CALL_WINDOW_TRANSITION_NAMES,
 } from '../FSM';
+import { ANONYMOUS } from '../interface/constant';
 const some = require('lodash/some');
-
 const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
 
 enum CALL_TYPE {
@@ -40,7 +45,13 @@ enum CALL_TYPE {
   OUTBOUND,
 }
 
+enum INCOMING_STATE {
+  IDLE,
+  REPLY,
+}
+
 const logTag = '[TelephonyStore_View]';
+const INITIAL_REPLY_COUNTDOWN_TIME = 55;
 
 class TelephonyStore {
   private _callFSM = new CallFSM();
@@ -48,6 +59,12 @@ class TelephonyStore {
   private _holdFSM = new HoldFSM();
   private _recordFSM = new RecordFSM();
   private _recordDisableFSM = new RecordDisableFSM();
+  private _intervalReplyId?: NodeJS.Timeout;
+
+  maximumInputLength = 30;
+
+  @observable
+  canUseTelephony: boolean = false;
 
   @observable
   callWindowState: CALL_WINDOW_STATUS = this._callWindowFSM.state;
@@ -76,14 +93,64 @@ class TelephonyStore {
   @observable
   activeCallTime?: number;
   @observable
+  replyCountdownTime?: number = INITIAL_REPLY_COUNTDOWN_TIME;
+  @observable
   keypadEntered: boolean = false;
   @observable
   enteredKeys: string = '';
+  @observable
+  customReplyMessage: string = '';
+  @observable
+  shiftKeyDown = false;
+  @observable
+  isMute = false;
 
   @observable
   pendingForHold: boolean = false;
   @observable
   pendingForRecord: boolean = false;
+
+  @observable
+  shouldResume: boolean;
+
+  @observable
+  inputString: string = '';
+
+  @observable
+  dialerInputFocused: boolean = false;
+
+  @observable
+  chosenCallerPhoneNumber: string;
+
+  @observable
+  defaultCallerPhoneNumber: string;
+
+  @observable
+  callerPhoneNumberList: PhoneNumberModel[] = [];
+
+  @observable
+  dialerOpenedCount: number;
+
+  @observable
+  shouldAnimationStart: boolean = false;
+
+  @observable
+  dialerMinimizeTranslateX: number = NaN;
+
+  @observable
+  dialerMinimizeTranslateY: number = NaN;
+
+  @observable
+  dialerHeight: number = NaN;
+
+  @observable
+  dialerWidth: number = NaN;
+
+  dialpadBtnId = v4();
+  dialerId = v4();
+
+  @observable
+  incomingState: INCOMING_STATE = INCOMING_STATE.IDLE;
 
   constructor() {
     type FSM = '_callWindowFSM' | '_recordFSM' | '_recordDisableFSM';
@@ -104,7 +171,10 @@ class TelephonyStore {
     });
 
     this._holdFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
-      const { to } = lifecycle;
+      const { to, from } = lifecycle;
+      if (to === from) {
+        return;
+      }
       this.holdState = to as HOLD_STATE;
       switch (this.holdState) {
         case HOLD_STATE.HOLDED:
@@ -118,6 +188,7 @@ class TelephonyStore {
 
     this._callFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
       const { to } = lifecycle;
+
       this.callState = to as CALL_STATE;
       switch (this.callState) {
         case CALL_STATE.CONNECTED:
@@ -125,13 +196,14 @@ class TelephonyStore {
           this.enableHold();
           break;
         case CALL_STATE.IDLE:
+          this.resetReply();
+          this.quitKeypad();
           this._restoreButtonStates();
+          this._clearEnteredKeys();
+          this.phoneNumber = undefined;
           break;
         case CALL_STATE.CONNECTING:
           this.activeCallTime = undefined;
-        case CALL_STATE.IDLE:
-          this.quitKeypad();
-          this._clearEnteredKeys();
           break;
         default:
           setTimeout(() => {
@@ -144,9 +216,11 @@ class TelephonyStore {
     reaction(
       () => this.phoneNumber,
       async (phoneNumber: string) => {
-        const contact = await this._matchContactByPhoneNumber(phoneNumber);
-        if (contact) {
-          this.uid = contact.id;
+        if (phoneNumber) {
+          const contact = await this._matchContactByPhoneNumber(phoneNumber);
+          this.uid = contact ? contact.id : undefined;
+        } else {
+          this.uid = undefined;
         }
         this.isContactMatched = true;
       },
@@ -165,7 +239,9 @@ class TelephonyStore {
     if (this.person) {
       return this.person.userDisplayName;
     }
-    return '';
+    return this.callerName === ANONYMOUS || !this.callerName
+      ? ''
+      : this.callerName;
   }
 
   @computed
@@ -176,7 +252,7 @@ class TelephonyStore {
         phoneNumber: this.phoneNumber,
       });
     }
-    return true;
+    return false;
   }
 
   private _matchContactByPhoneNumber = async (phone: string) => {
@@ -220,6 +296,7 @@ class TelephonyStore {
         return;
       }
       this._callWindowFSM[OPEN_FLOATING_DIALER]();
+      this.stopAnimation();
     }
   }
 
@@ -233,6 +310,17 @@ class TelephonyStore {
     this.enteredKeys = '';
   }
 
+  updateDefaultChosenNumber = (defaultCallerPhoneNumber?: string) => {
+    if (defaultCallerPhoneNumber !== undefined) {
+      this.defaultCallerPhoneNumber = defaultCallerPhoneNumber;
+    } else if (
+      Array.isArray(this.callerPhoneNumberList) &&
+      this.callerPhoneNumberList.length
+    ) {
+      this.defaultCallerPhoneNumber = this.callerPhoneNumberList[0].phoneNumber;
+    }
+  }
+
   openKeypad = () => {
     this.keypadEntered = true;
   }
@@ -243,6 +331,14 @@ class TelephonyStore {
 
   inputKey = (key: string) => {
     this.enteredKeys += key;
+  }
+
+  inputCustomReplyMessage = (msg: string) => {
+    this.customReplyMessage = msg.trimLeft();
+  }
+
+  setShiftKeyDown = (down: boolean) => {
+    this.shiftKeyDown = down;
   }
 
   openDialer = () => {
@@ -272,9 +368,16 @@ class TelephonyStore {
       END_DIRECT_CALL,
       END_WIDGET_CALL,
       END_DIALER_CALL,
+      END_INCOMING_CALL_AND_RESUME,
     } = CALL_TRANSITION_NAMES;
 
     switch (true) {
+      case history.includes(CALL_STATE.INCOMING) &&
+        history.includes(CALL_STATE.DIALING) &&
+        this.shouldResume:
+        this.openDialer();
+        this._callFSM[END_INCOMING_CALL_AND_RESUME]();
+        break;
       case history.includes(CALL_STATE.INCOMING):
         this._closeCallWindow();
         this._callFSM[END_INCOMING_CALL]();
@@ -294,10 +397,12 @@ class TelephonyStore {
 
   dialerCall = () => {
     this._callFSM[CALL_TRANSITION_NAMES.START_DIALER_CALL]();
+    this.shouldResume = false;
   }
 
   directCall = () => {
     this._callFSM[CALL_TRANSITION_NAMES.START_DIRECT_CALL]();
+    this.shouldResume = false;
     this._openCallWindow();
   }
 
@@ -380,6 +485,22 @@ class TelephonyStore {
     return this._recordDisableFSM[RECORD_DISABLED_STATE_TRANSITION_NAMES.DISABLE]();
   }
 
+  onDialerInputFocus = () => {
+    this.dialerInputFocused = true;
+  }
+
+  onDialerInputBlur = () => {
+    this.dialerInputFocused = false;
+  }
+
+  startAnimation = () => {
+    this.shouldAnimationStart = true;
+  }
+
+  stopAnimation = () => {
+    this.shouldAnimationStart = false;
+  }
+
   @computed
   get isDetached() {
     if (this.callWindowState === CALL_WINDOW_STATUS.FLOATING) {
@@ -407,6 +528,51 @@ class TelephonyStore {
   get recordDisabled() {
     return this.recordDisabledState === RECORD_DISABLED_STATE.DISABLED;
   }
+
+  directReply = () => {
+    this.incomingState = INCOMING_STATE.REPLY;
+    if (!this._intervalReplyId) {
+      this._createReplyInterval();
+    }
+  }
+
+  quitReply = () => {
+    this.incomingState = INCOMING_STATE.IDLE;
+  }
+
+  resetReply = () => {
+    this.replyCountdownTime = undefined;
+    this.customReplyMessage = '';
+    this._intervalReplyId && clearInterval(this._intervalReplyId);
+    this._intervalReplyId = undefined;
+  }
+
+  @action.bound
+  private _createReplyInterval() {
+    this.replyCountdownTime = INITIAL_REPLY_COUNTDOWN_TIME;
+    this._intervalReplyId = setInterval(() => {
+      this.replyCountdownTime && --this.replyCountdownTime;
+      if (!this.replyCountdownTime) {
+        this._intervalReplyId && clearInterval(this._intervalReplyId);
+      }
+    },                                  1000);
+  }
+
+  @action
+  switchBetweenMuteAndUnmute = () => {
+    this.isMute = !this.isMute;
+  }
+
+  @computed
+  get shouldDisplayDialer() {
+    // TODO: change this when refactoring for multi-call
+    return [CALL_STATE.DIALING, CALL_STATE.IDLE].includes(this.callState);
+  }
+
+  @computed
+  get hasIncomingCall() {
+    return this.callState === CALL_STATE.INCOMING;
+  }
 }
 
-export { TelephonyStore, CALL_TYPE };
+export { TelephonyStore, CALL_TYPE, INCOMING_STATE };
