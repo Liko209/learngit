@@ -152,6 +152,9 @@ class TelephonyStore {
   @observable
   incomingState: INCOMING_STATE = INCOMING_STATE.IDLE;
 
+  @observable
+  dialerFocused: boolean;
+
   constructor() {
     type FSM = '_callWindowFSM' | '_recordFSM' | '_recordDisableFSM';
     type FSMProps = 'callWindowState' | 'recordState' | 'recordDisabledState';
@@ -194,6 +197,7 @@ class TelephonyStore {
           this.activeCallTime = Date.now();
           this.enableHold();
           break;
+        case CALL_STATE.DIALING:
         case CALL_STATE.IDLE:
           this.resetReply();
           this.quitKeypad();
@@ -492,6 +496,14 @@ class TelephonyStore {
 
   onDialerInputBlur = () => {
     this.dialerInputFocused = false;
+  }
+
+  onDialerFocus = () => {
+    this.dialerFocused = true;
+  }
+
+  onDialerBlur = () => {
+    this.dialerFocused = false;
   }
 
   startAnimation = () => {

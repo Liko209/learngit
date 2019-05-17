@@ -8,6 +8,7 @@ type FakeInputProps = {};
 
 type FakeInputViewProps = {
   enteredKeys: string;
+  showCursor: boolean;
 };
 
 export { FakeInputProps, FakeInputViewProps };
