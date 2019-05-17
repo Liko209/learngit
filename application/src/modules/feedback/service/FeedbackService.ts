@@ -6,7 +6,7 @@
 
 import { init } from 'filestack-js';
 import { logger } from '../utils';
-import { LogControlManager } from 'sdk/service/uploadLogControl/logControlManager';
+import { LogControlManager } from 'sdk/src/service/uploadLogControl/LogControlManagerTmp';
 import { FILE_STACK_API_KEY } from '../constants';
 import { UploadResult } from '../types';
 import { getAppContextInfo } from '@/utils/error';

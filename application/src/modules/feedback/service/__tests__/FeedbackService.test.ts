@@ -6,14 +6,14 @@
 
 import * as filestack from 'filestack-js';
 import { FeedbackService } from '../FeedbackService';
-import { LogControlManager } from 'sdk/service/uploadLogControl/logControlManager';
+import { LogControlManager } from 'sdk/src/service/uploadLogControl/LogControlManagerTmp';
 import { getAppContextInfo } from '@/utils/error';
 import * as Sentry from '@sentry/browser';
 import { FeedbackApi } from '../../FeedbackApi';
 jest.mock('@/utils/error');
 jest.mock('../../FeedbackApi');
 jest.mock('@sentry/browser');
-jest.mock('sdk/service/uploadLogControl/logControlManager', () => {
+jest.mock('sdk/service/uploadLogControl/LogControlManagerTmp', () => {
   const mockLogMng = {
     getZipLog: jest.fn(),
   };
