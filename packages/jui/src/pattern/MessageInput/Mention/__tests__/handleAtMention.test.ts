@@ -16,8 +16,8 @@ describe('RegExp UN_ESCAPE_HTML_AT_MENTION_REGEXP', () => {
     const decodeString = decode(richText);
     const matches = decodeString.match(UN_ESCAPE_HTML_AT_MENTION_REGEXP);
     expect(matches).toHaveLength(2);
-    expect(matches[0]).toBe(decode(mentionTagOne));
-    expect(matches[1]).toBe(decode(mentionTagTwo));
+    expect(matches && matches[0]).toBe(decode(mentionTagOne));
+    expect(matches && matches[1]).toBe(decode(mentionTagTwo));
   });
 });
 describe('handleAtMention', () => {
