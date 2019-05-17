@@ -164,6 +164,10 @@ class BaseTab extends BaseWebComponent {
     return this.items.find('.list-item-secondary');
   }
 
+  get eventIcon() {
+    return this.items.find('.event icon');
+  }
+
   async nthItemTitleShouldBe(n: number, title: string) {
     await this.t.expect(this.titles.nth(n).withText(title).exists).ok(
       `n: ${n} , title: ${title}`
@@ -172,6 +176,14 @@ class BaseTab extends BaseWebComponent {
 
   async shouldHasTitle(title: string) {
     await this.t.expect(this.titles.withText(title).exists).ok(title);
+  }
+
+  async shouldHasEventTime(text:string){
+    await this.t.expect(this.secondaryTexts.withText(text).exists).ok(text);
+  }
+
+  async shouldHasEventIcon(text:string){
+    await this.t.expect(this.eventIcon.withText(text).exists).ok(text);
   }
 
   async shouldHasNoTitle(title: string) {
@@ -228,6 +240,11 @@ class NotesTab extends BaseTab {
   get items() {
     return this.getSelectorByAutomationId('rightRail-note-item');
   }
+
+  get secondaryText() {
+    return this.getSelectorByAutomationId('list-item-secondary-text', this.self);
+  }
+
 }
 
 class ImageAndFileItem extends BaseWebComponent {
