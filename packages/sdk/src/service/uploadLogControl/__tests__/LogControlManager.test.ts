@@ -8,7 +8,7 @@ import axios from 'axios';
 import { logManager, mainLogger } from 'foundation/src/log/index';
 import { notificationCenter } from 'sdk/service';
 import { ENTITY, SERVICE, WINDOW, DOCUMENT } from '../../eventKey';
-import { LogControlManager } from '../LogControlManagerTmp';
+import { LogControlManager } from '../LogControlManager';
 import { configManager } from '../config';
 import { ServiceLoader } from '../../../module/serviceLoader';
 import { HealthStatusItemProvider } from '../HealthStatusItemProvider';
