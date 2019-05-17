@@ -26,7 +26,6 @@ import { AccountService } from '../../../account/service';
 import { PostControllerUtils } from './PostControllerUtils';
 import { PROGRESS_STATUS } from '../../../progress';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
-import { PostUtils } from '../../utils/PostUtils';
 
 type PostData = {
   id: number;
@@ -209,9 +208,7 @@ class SendPostController implements ISendPostController {
 
     // 1. change status
     // 2. delete from db
-    await this.preInsertController.delete(
-      PostUtils.transformToPreInsertPost(originalPost),
-    );
+    await this.preInsertController.delete(originalPost);
     await dao.put(post);
     return result;
   }
