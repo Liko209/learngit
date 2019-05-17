@@ -10,7 +10,7 @@ import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import { ServiceConfig } from 'sdk/module/serviceLoader';
 import { FavoriteViewModel } from '../Favorite.ViewModel';
 
-describe('FavoriteViewModel', () => {
+describe.skip('FavoriteViewModel', () => {
   const initId = 11370502; // Note: Make sure that each instance is created the same
   const groupService = {
     name: ServiceConfig.GROUP_SERVICE,

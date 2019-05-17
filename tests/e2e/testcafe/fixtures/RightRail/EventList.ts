@@ -5,19 +5,22 @@
  */
 
 import { v4 as uuid } from 'uuid';
-import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { log } from 'util';
-import * as moment from 'moment';
+import { ITestMeta, IGroup } from '../../v2/models';
 
 fixture('RightRail/EventList')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('New event will show under Events tab', ['Shining', 'P1', 'JPT-843', 'EventList']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-843'],
+  keywords: ['Event', 'EventList'],
+  maintainers: ['Shining', 'Potar.He']
+})('New event will show under Events tab', async t => {
   const app = new AppRoot(t);
   const rightRail = app.homePage.messageTab.rightRail;
   const loginUser = h(t).rcData.mainCompany.users[4];
@@ -25,13 +28,15 @@ test(formalName('New event will show under Events tab', ['Shining', 'P1', 'JPT-8
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  let teamId;
-  await h(t).withLog('Given I have a team before login ', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId],
-    });
+  let team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    members: [loginUser],
+    owner: loginUser
+  }
+
+  await h(t).withLog(`Given I have a team named : ${team.name} before login`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -41,7 +46,7 @@ test(formalName('New event will show under Events tab', ['Shining', 'P1', 'JPT-8
 
   const eventsTab = rightRail.eventsTab;
   await h(t).withLog('When I enter a conversation and I click Event Tab', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
     await rightRail.openMore();
     await rightRail.eventsEntry.enter();
@@ -53,7 +58,7 @@ test(formalName('New event will show under Events tab', ['Shining', 'P1', 'JPT-8
 
   // step 2 create a event
   await h(t).withLog('When User create a event', async () => {
-    await h(t).glip(loginUser).createSimpleEvent(teamId, eventTitle, loginUser.rcId);
+    await h(t).glip(loginUser).createSimpleEvent({ groupIds: team.glipId, title: eventTitle });
   });
 
   await h(t).withLog('Then The new events shows under Events tab immediately', async () => {
@@ -64,7 +69,12 @@ test(formalName('New event will show under Events tab', ['Shining', 'P1', 'JPT-8
   });
 });
 
-test(formalName('Event info will sync immediately when update', ['Shining', 'P2', 'JPT-845', 'EventList']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-845'],
+  keywords: ['Event', 'EventList'],
+  maintainers: ['Shining', 'Potar.He']
+})('Event info will sync immediately when update', async t => {
   const app = new AppRoot(t);
   const rightRail = app.homePage.messageTab.rightRail;
   const loginUser = h(t).rcData.mainCompany.users[4];
@@ -74,13 +84,16 @@ test(formalName('Event info will sync immediately when update', ['Shining', 'P2'
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  let eventId, teamId;
-  await h(t).withLog('Given I have a team before login ', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId],
-    });
+
+  let team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    members: [loginUser],
+    owner: loginUser
+  }
+
+  await h(t).withLog(`Given I have a team named : ${team.name} before login`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -90,7 +103,7 @@ test(formalName('Event info will sync immediately when update', ['Shining', 'P2'
 
   const eventsTab = rightRail.eventsTab;
   await h(t).withLog('When I enter a conversation and I click Event Tab', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
     await rightRail.openMore();
     await rightRail.eventsEntry.enter();
@@ -101,8 +114,9 @@ test(formalName('Event info will sync immediately when update', ['Shining', 'P2'
   });
 
   // step 2 create a event
+  let eventId;
   await h(t).withLog('When User create a event', async () => {
-    const resp = await h(t).glip(loginUser).createSimpleEvent(teamId, eventTitle, loginUser.rcId);
+    const resp = await h(t).glip(loginUser).createSimpleEvent({ groupIds: team.glipId, title: eventTitle });
     eventId = resp.data._id;
   });
 
@@ -124,7 +138,12 @@ test(formalName('Event info will sync immediately when update', ['Shining', 'P2'
   });
 });
 
-test(formalName('Deleted event will NOT show under Events tab', ['Shining', 'P2', 'JPT-844']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-844'],
+  keywords: ['Event', 'EventList'],
+  maintainers: ['Shining', 'Potar.He']
+})('Deleted event will NOT show under Events tab', async t => {
   const app = new AppRoot(t);
   const rightRail = app.homePage.messageTab.rightRail;
   const loginUser = h(t).rcData.mainCompany.users[4];
@@ -133,13 +152,15 @@ test(formalName('Deleted event will NOT show under Events tab', ['Shining', 'P2'
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  let eventId, teamId;
-  await h(t).withLog('Given I have a team before login ', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId],
-    });
+  let team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    members: [loginUser],
+    owner: loginUser
+  }
+
+  await h(t).withLog(`Given I have a team named : ${team.name} before login`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -149,7 +170,7 @@ test(formalName('Deleted event will NOT show under Events tab', ['Shining', 'P2'
 
   const eventsTab = rightRail.eventsTab;
   await h(t).withLog('When I enter a conversation and I click Event Tab', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
     await rightRail.openMore();
     await rightRail.eventsEntry.enter();
@@ -160,10 +181,11 @@ test(formalName('Deleted event will NOT show under Events tab', ['Shining', 'P2'
   });
 
   // step 2 create 2 event
+  let eventId;
   await h(t).withLog('When User create Event A and Event B', async () => {
-    const resp = await h(t).glip(loginUser).createSimpleEvent(teamId, eventTitle, loginUser.rcId);
+    const resp = await h(t).glip(loginUser).createSimpleEvent({ groupIds: team.glipId, title: eventTitle });
     eventId = resp.data._id;
-    await h(t).glip(loginUser).createSimpleEvent(teamId, uuid(), loginUser.rcId);
+    await h(t).glip(loginUser).createSimpleEvent({ groupIds: team.glipId, title: uuid() });
   });
 
   await h(t).withLog('Then The new events shows under Events tab immediately', async () => {

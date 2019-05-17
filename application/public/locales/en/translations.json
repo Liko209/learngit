@@ -14,6 +14,9 @@
       "Network Error": "Network disconnected. Please try again when the network is resumed.",
       "tryAgain": "Try again."
     },
+    "preposition": {
+      "in": "in"
+    },
     "time": {
       "at": "at",
       "today": "Today",
@@ -49,7 +52,8 @@
     "back": "Back",
     "forward": "Forward",
     "You": "You",
-    "Connecting": "Connecting"
+    "Connecting": "Connecting",
+    "team": "team"
   },
   "auth": {
     "signIn": "Sign in",
@@ -111,8 +115,7 @@
     },
     "Results": "Results ({{count}})",
     "NoMatchesFound": "No matches found",
-    "SearchForContactsAndKeywords": "Search for contacts and keywords",
-    "in": "in"
+    "SearchForContactsAndKeywords": "Search for contacts and keywords"
   },
   "dashboard": {
     "Dashboard": "Dashboard"
@@ -128,6 +131,7 @@
     "directGroups": "direct messages",
     "teamGroups": "teams",
     "messageTypeNameSMS": "text",
+    "jumpToConversation": "Jump to conversation",
     "emoji": {
       "emojiDefaultTitle": "Pick your emoji"
     },

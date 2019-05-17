@@ -20,6 +20,7 @@ import {
   LoadingTimeSummaryDto,
   VersionDto, LoadingTimeReleaseSummaryDto
 } from '../models';
+import { URLSearchParams } from 'url';
 
 class DashboardMetricItemConfig {
   name: string;
@@ -379,7 +380,7 @@ const formatMemorySize = (size: number): string => {
   return `${size.toFixed(2)} ${units[idx]}`;
 }
 
-let _versionInfo: DashboardVersionInfo;
+let _versionInfo: { [key: string]: DashboardVersionInfo } = {};
 
 class DashboardService {
 
@@ -585,7 +586,7 @@ class DashboardService {
     if (!now) {
       return result;
     }
-    const pre = await VersionDto.findOne({ where: { id: { [Op.lt]: now.id } }, order: [['id', 'desc']] });
+    const pre = await VersionDto.findOne({ where: { id: { [Op.lt]: now.id }, isRelease: true }, order: [['id', 'desc']] });
     if (!pre) {
       return result;
     }
@@ -607,16 +608,20 @@ class DashboardService {
     return result;
   }
 
-  static async getVersionInfo(): Promise<DashboardVersionInfo> {
-    if (_versionInfo) {
-      return _versionInfo;
+  static async getVersionInfo(host?: string): Promise<DashboardVersionInfo> {
+    if (!host) {
+      host = Config.jupiterHost;
+    }
+
+    if (_versionInfo[host]) {
+      return _versionInfo[host];
     }
 
     const info = new DashboardVersionInfo();
     const browser = await PptrUtils.launch();
     const page = await browser.newPage();
 
-    await page.goto(Config.jupiterHost);
+    await page.goto(host);
 
     let cnt = 2;
     let jupiterVersion;
@@ -661,20 +666,22 @@ class DashboardService {
     info.appVersion = appVersion.replace('/', '-');
     await PptrUtils.close(browser);
 
-    _versionInfo = info;
+    _versionInfo[host] = info;
     return info;
   }
 
   static getIframeUrl(questionId: number, params: {}): string {
     const METABASE_SITE_URL = "http://xmn145.rcoffice.ringcentral.com:9005";
-    const METABASE_SECRET_KEY = "4d71fd0fa0a60ad776914b4fe39326cbbb96a4761e440364e8a95d90a9a40502";
-    const payload = {
-      resource: { question: questionId },
-      params
-    };
+    // const METABASE_SECRET_KEY = "4d71fd0fa0a60ad776914b4fe39326cbbb96a4761e440364e8a95d90a9a40502";
+    // const payload = {
+    //   resource: { question: questionId },
+    //   params
+    // };
 
-    const token = jwt.sign(payload, METABASE_SECRET_KEY);
-    return [METABASE_SITE_URL, '/embed/question/', token, '#bordered=true&titled=true'].join('');
+    // const token = jwt.sign(payload, METABASE_SECRET_KEY);
+    // return [METABASE_SITE_URL, '/embed/question/', token, '#bordered=true&titled=true'].join('');
+    const search = new URLSearchParams(params);
+    return [METABASE_SITE_URL, '/question/', questionId, '?', search.toString()].join('');
   }
 
   static async buildReport() {

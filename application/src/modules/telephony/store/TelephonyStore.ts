@@ -35,8 +35,8 @@ import {
   CALL_TRANSITION_NAMES,
   CALL_WINDOW_TRANSITION_NAMES,
 } from '../FSM';
+import { ANONYMOUS } from '../interface/constant';
 const some = require('lodash/some');
-
 const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
 
 enum CALL_TYPE {
@@ -239,7 +239,9 @@ class TelephonyStore {
     if (this.person) {
       return this.person.userDisplayName;
     }
-    return '';
+    return this.callerName === ANONYMOUS || !this.callerName
+      ? ''
+      : this.callerName;
   }
 
   @computed

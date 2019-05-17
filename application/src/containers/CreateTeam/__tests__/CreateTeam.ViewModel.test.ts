@@ -25,7 +25,7 @@ function getNewJServerError(code: string, message: string = '') {
   return new JServerError(code, message);
 }
 
-describe('CreateTeamViewModel', () => {
+describe.skip('CreateTeamViewModel', () => {
   const groupService = {
     name: ServiceConfig.GROUP_SERVICE,
     createTeam() {},
