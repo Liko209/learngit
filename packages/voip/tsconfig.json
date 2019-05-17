@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./.tsc_cache/cache_path",
-    "noUnusedLocals": true,
     "baseUrl": ".",
     "outDir": "build",
     "rootDir": "src"
