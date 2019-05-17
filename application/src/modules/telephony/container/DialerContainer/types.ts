@@ -15,7 +15,8 @@ type DialerContainerProps = {};
 type DialerContainerViewProps = {
   keypadEntered: boolean;
   isDialer: boolean;
-  dtmf: (digit: string) => void;
+  dtmfThroughKeypad: (digit: string) => void;
+  dtmfThroughKeyboard: (digit: string) => void;
   typeString: (digit: string) => void;
   dialerInputFocused?: boolean;
   playAudio: (digit: string) => void;

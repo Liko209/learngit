@@ -135,10 +135,14 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
     }
   }
 
-  dtmf = (digit: string) => {
+  dtmfThroughKeyboard = (digit: string) => {
     if (!this._telephonyStore.dialerFocused) {
       return;
     }
+    this.dtmfThroughKeypad(digit);
+  }
+
+  dtmfThroughKeypad = (digit: string) => {
     this.playAudio(digit);
     this._telephonyService.dtmf(digit);
   }

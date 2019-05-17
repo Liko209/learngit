@@ -105,7 +105,8 @@ class DialerContainerViewComponent extends React.Component<
       chosenCallerPhoneNumber,
       t,
       dialerFocused,
-      dtmf,
+      dtmfThroughKeyboard,
+      dtmfThroughKeypad,
     } = this.props;
     let keypadActions;
     let callAction = End;
@@ -146,8 +147,8 @@ class DialerContainerViewComponent extends React.Component<
     } else if (keypadEntered) {
       keypadActions = (
         <DialPad
-          makeMouseEffect={dtmf}
-          makeKeyboardEffect={dtmf}
+          makeMouseEffect={dtmfThroughKeypad}
+          makeKeyboardEffect={dtmfThroughKeyboard}
           shouldHandleKeyboardEvts={dialerFocused}
         />
       );
