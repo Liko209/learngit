@@ -270,7 +270,7 @@ test(formalName(`User should not be allowed to leave the all hands team`, ['P1',
   const teamSettingDialog = app.homePage.teamSettingDialog;
   await h(t).withLog(`Then team member can't see the 'Leave Team' option`, async () => {
     await teamSettingDialog.shouldBePopup();
-    await t.expect(teamSettingDialog.leaveTeamButton.visible).notOk();
+    await t.expect(teamSettingDialog.leaveTeamButton.exists).notOk();
   });
 });
 
