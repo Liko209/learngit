@@ -92,17 +92,17 @@ test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 
   });
   await h(t).log(`Then I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ScaleFiledUp' });
 
-  // await h(t).withLog('When I hover "view previous file" button', async () => {
-  //   const imagePreviewer = app.homePage.fileAndImagePreviewer;
-  //   await imagePreviewer.hoverPerviousButton();
-  // });
-  // await h(t).log(`Then I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ViewPreviousFile' });
-  // await h(t).withLog('When I click "view previous file" button and hover "view next file" button' , async () => {
-  //   const imagePreviewer = app.homePage.fileAndImagePreviewer;
-  //   await imagePreviewer.clickPerviousButton();
-  //   await imagePreviewer.hoverForwardButton();
-  // });
-  // await h(t).log(`Then I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ViewNextFile' });
+  await h(t).withLog('When I hover "view previous file" button', async () => {
+    const imagePreviewer = app.homePage.fileAndImagePreviewer;
+    await imagePreviewer.hoverPerviousButton();
+  });
+  await h(t).log(`Then I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ViewPreviousFile' });
+  await h(t).withLog('When I click "view previous file" button and hover "view next file" button' , async () => {
+    const imagePreviewer = app.homePage.fileAndImagePreviewer;
+    await imagePreviewer.clickPerviousButton();
+    await imagePreviewer.hoverForwardButton();
+  });
+  await h(t).log(`Then I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ViewNextFile' });
 
   const downloadButton = app.homePage.fileAndImagePreviewer.downloadIcon;
 
