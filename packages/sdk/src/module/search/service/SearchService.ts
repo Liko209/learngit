@@ -14,7 +14,7 @@ import { SearchServiceController } from '../controller/SearchServiceController';
 import { container } from '../../../container';
 import { Person } from '../../person/entity';
 import { SortableModel } from '../../../framework/model';
-import { SearchUserConfig } from '../config';
+import { SearchUserConfig } from '../config/SearchUserConfig';
 
 class SearchService extends AbstractService implements ISearchService {
   private _searchServiceController: SearchServiceController = new SearchServiceController(

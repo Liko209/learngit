@@ -5,11 +5,11 @@
 
 import { EBETA_FLAG, isInBeta } from '../clientConfig';
 import { GlobalConfigService } from '../../../config';
-import { AccountUserConfig } from '../../config';
+import { AccountUserConfig } from '../../config/AccountUserConfig';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('../../../config');
-jest.mock('../../config');
+jest.mock('../../config/AccountUserConfig');
 
 GlobalConfigService.getInstance = jest.fn();
 

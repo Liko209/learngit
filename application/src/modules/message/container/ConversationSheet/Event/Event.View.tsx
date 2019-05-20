@@ -9,23 +9,20 @@ import { withTranslation, WithTranslation } from 'react-i18next'; // use externa
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import {
   JuiLabelWithContent,
-  JuiEventLocation,
   JuiEventDescription,
   JuiTimeMessage,
+  JuiSectionDivider,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 import { EventViewProps } from './types';
-
+import { phoneParserHoc } from '@/modules/common/container/PhoneParser/PhoneParserHoc';
 type Props = WithTranslation & EventViewProps;
 
+const HocDescription = phoneParserHoc(JuiEventDescription);
 @observer
 class Event extends React.Component<Props, {}> {
   render() {
     const { event, t, color, timeContent } = this.props;
-    const {
-      location,
-      text,
-      description,
-    } = event;
+    const { text, description } = event;
 
     return (
       <JuiConversationItemCard
@@ -34,15 +31,13 @@ class Event extends React.Component<Props, {}> {
         titleColor={color}
         Icon="event"
       >
-        <JuiLabelWithContent label={t('item.due')}>
-          <JuiTimeMessage time={`${timeContent.get()}`} />
-        </JuiLabelWithContent>
-        {location && (
-          <JuiLabelWithContent label={t('item.locationTitle')}>
-            <JuiEventLocation location={location} />
+        <JuiSectionDivider gap={2}>
+          <JuiLabelWithContent label={t('item.due')}>
+            <JuiTimeMessage time={`${timeContent.get()}`} />
           </JuiLabelWithContent>
-        )}
-        {description && <JuiEventDescription description={description} />}
+          )}
+          {description && <HocDescription description={description} />}
+        </JuiSectionDivider>
       </JuiConversationItemCard>
     );
   }

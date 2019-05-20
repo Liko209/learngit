@@ -3,7 +3,7 @@
  * @Date: 2019-04-26 10:29:30
  * Copyright © RingCentral. All rights reserved.
  */
-
+import React from 'react';
 import {
   highlightFormatter,
   cascadingCreate,
@@ -96,6 +96,15 @@ describe('highlightForamtter', () => {
     ).toBe(
       '<a href="mailto:skye.wang@ringcentral.com" target="_blank" rel="noreferrer"><span class="highlight-term">skye</span>.<span class="highlight-term">wang</span>@<span class="highlight-term">ringcentral</span>.<span class="highlight-term">com</span></a>',
     );
+  });
+});
+
+describe('highlightForamtter fix(FIJI-5862)', () => {
+  it('Should value be return directly when non-string type', () => {
+    const value = React.createElement('span', null, '(907) 522-0755');
+    const result = highlightFormatter('907', <string>(<unknown>value));
+
+    expect(result).toEqual(value);
   });
 });
 

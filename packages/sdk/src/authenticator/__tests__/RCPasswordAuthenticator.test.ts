@@ -7,7 +7,8 @@ import { HttpResponseBuilder, HttpResponse } from 'foundation';
 import { loginGlip, ITokenModel, RCAuthApi } from '../../api';
 import { RCPasswordAuthenticator } from '..';
 import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
-import { AccountUserConfig, AuthUserConfig } from '../../module/account/config';
+import { AuthUserConfig } from '../../module/account/config/AuthUserConfig';
+import { AccountUserConfig } from '../../module/account/config/AccountUserConfig';
 jest.mock('../../module/config');
 
 jest.mock('../../api');

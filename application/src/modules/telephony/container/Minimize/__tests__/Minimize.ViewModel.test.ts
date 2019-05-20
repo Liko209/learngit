@@ -10,7 +10,7 @@ import { MinimizeViewModel } from '../Minimize.ViewModel';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { GlobalConfigService } from 'sdk/module/config';
-import { AuthUserConfig } from 'sdk/module/account/config';
+import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
@@ -18,7 +18,7 @@ decorate(injectable(), TelephonyService);
 GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('sdk/module/config');
-jest.mock('sdk/module/account/config');
+jest.mock('sdk/module/account/config/AuthUserConfig');
 
 container.bind(TELEPHONY_SERVICE).to(TelephonyService);
 container.bind(TelephonyStore).to(TelephonyStore);

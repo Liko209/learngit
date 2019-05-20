@@ -308,4 +308,20 @@ test.meta(<ITestMeta>{
     await emojiLibrary.ensureDismiss();
   });
 
+  await h(t).withLog('And I click Emoji button', async () => {
+    await conversationPage.clickEmojiButton();
+  });
+
+  await h(t).withLog('Then the emoji library should be open', async () => {
+    await emojiLibrary.ensureLoaded();
+  });
+
+  await h(t).withLog(`When click emoji button again`, async () => {
+    await conversationPage.clickEmojiButton();
+  });
+
+  await h(t).withLog('Then the emoji library should be dismiss', async () => {
+    await emojiLibrary.ensureDismiss();
+  });
+
 });

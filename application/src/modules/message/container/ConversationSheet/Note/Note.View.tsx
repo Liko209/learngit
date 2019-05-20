@@ -12,14 +12,16 @@ import {
 } from 'jui/pattern/ConversationItemCard';
 import NoteIcon from '@material-ui/icons/EventNote';
 import { observer } from 'mobx-react';
+import { phoneParserHoc } from '@/modules/common/container/PhoneParser/PhoneParserHoc';
 
+const PhoneNumberHoc = phoneParserHoc(JuiNoteContent);
 @observer
 class NoteView extends Component<NoteViewProps> {
   render() {
     const { title, summary } = this.props;
     return (
       <JuiConversationItemCard title={title} Icon={<NoteIcon />}>
-        <JuiNoteContent>{summary}</JuiNoteContent>
+        <PhoneNumberHoc description={summary}/>
       </JuiConversationItemCard>
     );
   }

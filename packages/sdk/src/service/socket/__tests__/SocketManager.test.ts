@@ -14,7 +14,7 @@ import { SocketCanConnectController } from '../SocketCanConnectController';
 import { getCurrentTime } from '../../../utils/jsUtils';
 import { SyncUserConfig } from '../../../module/sync/config/SyncUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
-import { AuthUserConfig } from 'sdk/module/account/config';
+import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 
 jest.mock('../../../module/config');
 jest.mock('../SocketCanConnectController');
