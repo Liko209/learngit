@@ -21,6 +21,8 @@ type DialerViewProps = {
   xScale: string;
   yScale: string;
   callWindowState: string;
+  onDialerFocus: () => void;
+  onDialerBlur: () => void;
 };
 
 export { DialerProps, DialerViewProps };

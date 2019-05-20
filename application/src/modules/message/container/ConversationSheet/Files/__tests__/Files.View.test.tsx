@@ -3,7 +3,7 @@
  * @Date: 2019-03-18 15:06:10
  * Copyright © RingCentral. All rights reserved.
  */
-import { testable, test } from 'shield';
+import { testable, test } from 'tests/integration-test';
 import React from 'react';
 import { shallow } from 'enzyme';
 import { FilesView } from '../Files.View';

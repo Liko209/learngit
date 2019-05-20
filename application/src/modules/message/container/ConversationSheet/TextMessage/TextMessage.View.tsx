@@ -19,11 +19,12 @@ class TextMessageViewComponent extends React.Component<TextMessageViewProps> {
   private _handlePhoneCall = async (evt: MouseEvent) => {
     const canUseTelephony = await this.props.canUseTelephony();
     const target = evt.target as HTMLAnchorElement;
-    const phoneNumber = target.innerText;
-    if (!phoneNumber) {
-      return;
+    let phoneNumber = target.getAttribute('data-id');
+    const parentNode = target.parentNode as HTMLElement;
+    if (!phoneNumber && parentNode) {
+      phoneNumber = parentNode.getAttribute('data-id');
     }
-    if (isSupportWebRTC() && canUseTelephony) {
+    if (isSupportWebRTC() && canUseTelephony && phoneNumber) {
       evt.preventDefault();
       this.props.directCall(phoneNumber);
     }
@@ -44,10 +45,7 @@ class TextMessageViewComponent extends React.Component<TextMessageViewProps> {
           ? 'javascript:;'
           : `rcmobile: ${match}`;
       phoneLink.setAttribute('href', _href);
-      phoneLink.removeEventListener(
-        'click',
-        this._handlePhoneCall,
-      );
+      phoneLink.removeEventListener('click', this._handlePhoneCall);
       phoneLink.addEventListener('click', this._handlePhoneCall);
     }
   }
@@ -58,23 +56,14 @@ class TextMessageViewComponent extends React.Component<TextMessageViewProps> {
     }
     const phoneElements = current.getElementsByClassName(PHONE_LINKS_CLS) || [];
     for (let k = 0, len = phoneElements.length; k < len; k++) {
-      phoneElements[k].removeEventListener(
-        'click',
-        this._handlePhoneCall,
-      );
+      phoneElements[k].removeEventListener('click', this._handlePhoneCall);
     }
   }
   render() {
     const { html } = this.props;
     if (html) {
       return (
-        <React.Fragment>
-          <JuiConversationPostText
-            data-name="text"
-            html={html}
-            ref={this._ref}
-          />
-        </React.Fragment>
+        <JuiConversationPostText data-name="text" html={html} ref={this._ref} />
       );
     }
     return null;

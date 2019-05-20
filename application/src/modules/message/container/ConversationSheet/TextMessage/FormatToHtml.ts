@@ -86,7 +86,7 @@ class FormatToHtml {
     return mdTextWithAtMention;
   }
   static getPhoneLink(match: string) {
-    return `<a href="javascript:;" color="#18a4de" class=${PHONE_LINKS_CLS} data-test-automation-id="phoneNumberLink" data-id=${match}>${match}</a>`;
+    return `<a href='javascript:;' color='#18a4de' class=${PHONE_LINKS_CLS} data-test-automation-id='phoneNumberLink' data-id='${match}'>${match}</a>`;
   }
 
   static formatToEmoji(

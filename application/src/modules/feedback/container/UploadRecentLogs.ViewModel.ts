@@ -27,7 +27,6 @@ export const isTaskInQueue = (taskStatus: TaskStatus) => {
 
 export class UploadRecentLogsViewModel extends AbstractViewModel
   implements UploadRecentLogsViewModelProps {
-  private _feedbackService: FeedbackService = container.get(FeedbackService);
   private _uploadLogResult: Nullable<UploadResult>;
   private _taskQueue: TaskQueueLoop;
   private _onSendFeedbackDoneCallback: (taskStatus: TaskStatus) => void;
@@ -86,6 +85,7 @@ export class UploadRecentLogsViewModel extends AbstractViewModel
   }
 
   private _sendFeedback = async (): Promise<void> => {
+    const feedbackService: FeedbackService = container.get(FeedbackService);
     const uploadResult = this._uploadLogResult;
     if (uploadResult) {
       const comments = `Describe your problem here:\n\n${
@@ -93,10 +93,10 @@ export class UploadRecentLogsViewModel extends AbstractViewModel
       }\n---\nID: ${uploadResult.handle}\nFile: ${uploadResult.filename}\nurl:${
         uploadResult.url
       }`;
-      await this._feedbackService.sendFeedback(this.issueTitle, comments);
+      await feedbackService.sendFeedback(this.issueTitle, comments);
     } else {
       logger.debug('Send feedback without recent logs');
-      await this._feedbackService
+      await feedbackService
         .sendFeedback(this.issueTitle, this.issueDescription)
         .catch();
       throw 'upload step failed, can not send feedback.';
@@ -104,8 +104,9 @@ export class UploadRecentLogsViewModel extends AbstractViewModel
   }
 
   private _uploadRecentLogs = async () => {
+    const feedbackService: FeedbackService = container.get(FeedbackService);
     this._uploadLogResult = null;
-    this._uploadLogResult = await this._feedbackService.uploadRecentLogs();
+    this._uploadLogResult = await feedbackService.uploadRecentLogs();
     if (!this._uploadLogResult) {
       logger.debug('Upload recent logs failed.');
       throw 'Upload recent logs failed.';

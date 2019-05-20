@@ -5,7 +5,7 @@
 import { Scene } from "./scene";
 import { SceneDto } from "../models";
 import { SceneConfigFactory } from "./config/sceneConfigFactory";
-import { FetchGroupGatherer } from "../gatherers";
+import { LoginGatherer, FetchGroupGatherer } from "../gatherers";
 import { MetricService, FileService } from "../services";
 
 class FetchGroupScene extends Scene {

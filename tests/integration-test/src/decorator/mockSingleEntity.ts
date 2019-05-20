@@ -1,12 +1,12 @@
 /*
  * @Author: Nello Huang (nello.huang@ringcentral.com)
- * @Date: 2019-04-22 14:31:22
+ * @Date: 2019-04-29 14:03:13
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '@/store/utils';
-import { createMockEntity, descriptorAOP, createMultiFn } from '../core/utils';
+import { getSingleEntity } from '@/store/utils';
+import { createMockEntity, createMultiFn, descriptorAOP } from './utils';
 
-function mockEntity(data: any) {
+function mockSingleEntity(data: any) {
   return function (
     target: any,
     property: string,
@@ -17,7 +17,7 @@ function mockEntity(data: any) {
 
     const _mockEntity = (args: any) => {
       const isEach = descriptor.value.isEach;
-      (getEntity as jest.Mock) = createMockEntity(data, args, isEach);
+      (getSingleEntity as jest.Mock) = createMockEntity(data, args, isEach);
     };
 
     descriptor.value = descriptorAOP(hasParam, _mockEntity, oldFn);
@@ -25,7 +25,7 @@ function mockEntity(data: any) {
   };
 }
 
-mockEntity.multi = function (data: any[]) {
+mockSingleEntity.multi = function (data: any[]) {
   return function (
     target: any,
     property: string,
@@ -34,13 +34,13 @@ mockEntity.multi = function (data: any[]) {
     const oldFn = descriptor.value;
     const hasParam = oldFn.length > 0;
 
-    const _mockEntity = () => {
-      (getEntity as jest.Mock) = createMultiFn(data);
+    const _mockGlobalValue = () => {
+      (getSingleEntity as jest.Mock) = createMultiFn(data);
     };
 
-    descriptor.value = descriptorAOP(hasParam, _mockEntity, oldFn);
+    descriptor.value = descriptorAOP(hasParam, _mockGlobalValue, oldFn);
     return descriptor;
   };
 };
 
-export { mockEntity };
+export { mockSingleEntity };

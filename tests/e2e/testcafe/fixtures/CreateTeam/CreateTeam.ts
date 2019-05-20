@@ -186,48 +186,6 @@ test(formalName('Check the Create button is disabled when user create team witho
   },
 );
 
-test(formalName('new team popup can be open', ['P2', 'JPT-88']), async t => {
-  const app = new AppRoot(t);
-  const loginUser = h(t).rcData.mainCompany.users[0];
-
-  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
-    await app.homePage.ensureLoaded();
-  });
-
-  await h(t).withLog('Then I can open add menu in home page', async () => {
-    await app.homePage.openAddActionMenu();
-  });
-
-  const createTeamModal = app.homePage.createTeamModal;
-  await h(t).withLog('And I can open Create Team in AddActionMenu', async () => {
-    await app.homePage.addActionMenu.createTeamEntry.enter();
-    await createTeamModal.ensureLoaded();
-  }, true);
-
-  await h(t).withLog('And Pubic Team toggle is false by default', async () => {
-    await t.expect(createTeamModal.isPublicToggle.checked).notOk();
-  });
-
-  await h(t).withLog('And Add other members toggle is true by default', async () => {
-    await t.expect(createTeamModal.mayAddMemberToggle.checked).ok();
-  });
-  await h(t).withLog('And Post messages toggle is true by default', async () => {
-    await t.expect(createTeamModal.mayPostMessageToggle.checked).ok();
-  });
-  await h(t).withLog('And Pin pist toggle is true by default', async () => {
-    await t.expect(createTeamModal.mayPinPostToggle.checked).ok();
-  });
-
-  await h(t).withLog('And Team name ghost by default', async () => {
-    await t.expect(createTeamModal.teamNameInput.getAttribute('placeholder')).eql('Enter team name');
-  });
-
-  await h(t).withLog('And Members ghost by default', async () => {
-    await t.expect(createTeamModal.memberInput.InputArea.getAttribute('placeholder')).eql('Enter names or email addresses');
-  });
-});
-
 test(formalName('Check the maximum length of the Team Description input box', ['P3', 'JPT-111']),
   async t => {
     const app = new AppRoot(t);

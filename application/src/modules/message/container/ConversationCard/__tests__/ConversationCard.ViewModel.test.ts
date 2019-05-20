@@ -3,9 +3,13 @@
  * @Date: 2018-10-30 18:39:43
  * Copyright © RingCentral. All rights reserved.
  */
-import { test, testable } from 'shield';
-import { mockEntity, mockGlobalValue } from 'shield/application';
-import { registerModule } from 'shield/utils';
+import {
+  test,
+  mockEntity,
+  testable,
+  mockGlobalValue,
+} from 'tests/integration-test';
+import { registerModule } from 'test-util';
 import { config } from '@/modules/GlobalSearch/module.config';
 import { ConversationCardViewModel } from '../ConversationCard.ViewModel';
 
@@ -79,9 +83,7 @@ describe('TestConversationCardViewModel', () => {
       const conversationCardVM = new ConversationCardViewModel();
       global.Date.now = jest.fn(() => DATE_2019_1_4);
       conversationCardVM.props.mode = 'navigation';
-      expect(await conversationCardVM.createTime.fetch()).toBe(
-        'Fri, 1/4/2019 9:21 AM',
-      );
+      expect(await conversationCardVM.createTime).toBe('Fri, 1/4/2019 9:21 AM');
       conversationCardVM.props.mode = undefined;
       done();
     }
@@ -94,7 +96,7 @@ describe('TestConversationCardViewModel', () => {
     async t2(done: jest.DoneCallback) {
       const conversationCardVM = new ConversationCardViewModel();
       global.Date.now = jest.fn(() => DATE_2019_1_4);
-      expect(await conversationCardVM.createTime.fetch()).toBe('9:21 AM');
+      expect(await conversationCardVM.createTime).toBe('9:21 AM');
       done();
     }
 
@@ -108,7 +110,7 @@ describe('TestConversationCardViewModel', () => {
     async t3(done: jest.DoneCallback) {
       const conversationCardVM = new ConversationCardViewModel();
       global.Date.now = jest.fn(() => DATE_2019_1_4);
-      expect(await conversationCardVM.createTime.fetch()).toBe('Thu, 9:21 AM');
+      expect(await conversationCardVM.createTime).toBe('Thu, 9:21 AM');
       done();
     }
 
@@ -120,9 +122,7 @@ describe('TestConversationCardViewModel', () => {
     async t4(done: jest.DoneCallback) {
       const conversationCardVM = new ConversationCardViewModel();
       global.Date.now = jest.fn(() => DATE_2019_1_4);
-      expect(await conversationCardVM.createTime.fetch()).toBe(
-        'Sat, 1/5/2019 9:21 AM',
-      );
+      expect(await conversationCardVM.createTime).toBe('Sat, 1/5/2019 9:21 AM');
       done();
     }
 
@@ -140,7 +140,7 @@ describe('TestConversationCardViewModel', () => {
     async t5({ expected }) {
       const conversationCardVM = new ConversationCardViewModel();
       global.Date.now = jest.fn(() => DATE_2019_1_4);
-      expect(await conversationCardVM.createTime.fetch()).toBe(expected);
+      expect(await conversationCardVM.createTime).toBe(expected);
     }
 
     @(test.each`
@@ -155,7 +155,7 @@ describe('TestConversationCardViewModel', () => {
     async t6({ expected }) {
       const conversationCardVM = new ConversationCardViewModel();
       global.Date.now = jest.fn(() => DATE_2019_1_4);
-      expect(await conversationCardVM.createTime.fetch()).not.toBe(expected);
+      expect(await conversationCardVM.createTime).not.toBe(expected);
     }
   }
 

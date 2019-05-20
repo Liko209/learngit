@@ -1,5 +1,8 @@
 {
   "lerna": "3.4.3",
-  "packages": ["application", "packages/*", "tests/shield"],
+  "packages": [
+    "application",
+    "packages/*"
+  ],
   "version": "1.4.0"
 }

@@ -29,9 +29,7 @@ jest.mock('../../../person');
 jest.mock('../../../group');
 jest.mock('../../../post');
 jest.mock('../../../item/service');
-jest.mock('../../../../module/account/config');
-jest.mock('../../../../module/account');
-jest.mock('../../../../module/account/service');
+jest.mock('../../../../module/account/config/AccountGlobalConfig');
 
 let groupConfigService: GroupConfigService;
 let personService: PersonService;

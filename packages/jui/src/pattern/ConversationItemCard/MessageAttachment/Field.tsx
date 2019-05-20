@@ -22,14 +22,14 @@ const FieldWrapper = styled.div`
 const TitleWrapper = withHighlight([
   'dangerouslySetInnerHTML.__html',
 ])(styled.div`
-  ${typography('caption2')};
+  ${typography('body2')};
   ${ellipsis()};
 `);
 
 const ValueWrapper = withHighlight([
   'dangerouslySetInnerHTML.__html',
 ])(styled.div`
-  ${typography('caption1')};
+  ${typography('body1')};
 `);
 
 const Field = (props: FieldProps) => {

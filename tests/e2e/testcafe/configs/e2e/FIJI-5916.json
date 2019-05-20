@@ -1,10 +1,10 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/CreateTeam/CreateTeam.ts"
+      "./telephony/Dialer.ts"
     ],
     "include_tags": [
-      "JPT-88"
+      "JPT-1964"
     ],
     "browsers": [
       "selenium:chrome"
