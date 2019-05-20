@@ -31,8 +31,7 @@ module.exports = {
     '^sdk/(.*)$': '<rootDir>/packages/sdk/src/$1',
     '^jui/(.*)$': '<rootDir>/packages/jui/src/$1',
     '^rcui/(.*)$': '<rootDir>/packages/rcui/src/$1',
-    '^test-util/(.*)$': '<rootDir>/packages/test-util/src/$1',
-    '^tests/(.*)$': '<rootDir>/tests/$1',
+    '^shield/(.*)$': '<rootDir>/tests/shield/src/$1',
   },
   moduleFileExtensions: [
     'web.ts',
