@@ -26,8 +26,8 @@ import {
 } from '../../../../../service';
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
-import { AccountUserConfig } from '../../../../account/config';
-import { ServiceLoader } from '../../../../serviceLoader';
+import { AccountUserConfig } from '../../../../account/config/AccountUserConfig';
+import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
 import { EntityPersistentController } from 'sdk/framework/controller/impl/EntityPersistentController';
 import { TestDatabase } from 'sdk/framework/controller/__tests__/TestTypes';
 
@@ -46,6 +46,9 @@ describe('TotalUnreadController', () => {
   let mockEntitySourceController: EntitySourceController<GroupState>;
   let mockEntityPersistentController: EntityPersistentController<GroupState>;
   const mockGroupService = new GroupService();
+  const mockProfileService = {
+    getFavoriteGroupIds: jest.fn(),
+  };
   beforeEach(() => {
     jest.clearAllMocks();
     mockEntityPersistentController = new EntityPersistentController<GroupState>(
@@ -59,6 +62,17 @@ describe('TotalUnreadController', () => {
       mockGroupService,
       mockEntitySourceController,
     );
+
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.PROFILE_SERVICE) {
+          return mockProfileService;
+        }
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: AccountUserConfig.prototype };
+        }
+      });
   });
 
   describe('reset()', () => {
@@ -675,17 +689,14 @@ describe('TotalUnreadController', () => {
         .mockReturnValueOnce(true)
         .mockReturnValueOnce(false);
 
-      const profileService = {
-        getFavoriteGroupIds: jest.fn().mockReturnValue(undefined),
-      };
+      mockProfileService.getFavoriteGroupIds.mockReturnValue(undefined);
       mockEntitySourceController.batchGet = jest
         .fn()
         .mockReturnValue([{ id: 2 }]);
-      ServiceLoader.getInstance = jest.fn().mockReturnValue(profileService);
 
       await totalUnreadController['_initializeTotalUnread']();
       expect(totalUnreadController.reset).toBeCalledTimes(1);
-      expect(profileService.getFavoriteGroupIds).toBeCalledTimes(1);
+      expect(mockProfileService.getFavoriteGroupIds).toBeCalledTimes(1);
       expect(mockGroupService.getEntities).toBeCalledTimes(1);
       expect(mockGroupService.isValid).toBeCalledTimes(3);
       expect(AccountUserConfig.prototype.getGlipUserId).toBeCalledTimes(1);
@@ -720,16 +731,13 @@ describe('TotalUnreadController', () => {
         .mockReturnValueOnce(true)
         .mockReturnValueOnce(true)
         .mockReturnValueOnce(false);
-      const profileService = {
-        getFavoriteGroupIds: jest.fn().mockReturnValue([123, 456]),
-      };
+      mockProfileService.getFavoriteGroupIds.mockReturnValue([123, 456]);
       mockEntitySourceController.batchGet = jest
         .fn()
         .mockReturnValueOnce([{ id: 2 }]);
-      ServiceLoader.getInstance = jest.fn().mockReturnValue(profileService);
       await totalUnreadController['_initializeTotalUnread']();
       expect(totalUnreadController.reset).toBeCalledTimes(1);
-      expect(profileService.getFavoriteGroupIds).toBeCalledTimes(1);
+      expect(mockProfileService.getFavoriteGroupIds).toBeCalledTimes(1);
       expect(mockGroupService.getEntities).toBeCalledTimes(1);
       expect(mockGroupService.isValid).toBeCalledTimes(3);
       expect(AccountUserConfig.prototype.getGlipUserId).toBeCalledTimes(1);

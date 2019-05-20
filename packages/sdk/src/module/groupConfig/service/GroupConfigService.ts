@@ -13,7 +13,7 @@ import { GroupConfigController } from '../controller/GroupConfigController';
 class GroupConfigService extends EntityBaseService<GroupConfig> {
   private _groupConfigController: GroupConfigController;
   constructor() {
-    super(false, daoManager.getDao(GroupConfigDao));
+    super(true, daoManager.getDao(GroupConfigDao));
   }
 
   // update partial groupConfig data
@@ -63,6 +63,13 @@ class GroupConfigService extends EntityBaseService<GroupConfig> {
 
   async addPostId(groupId: number, postId: number) {
     this.getGroupConfigController().addPostId(groupId, postId);
+  }
+
+  async recordMyLastPostTime(groupId: number, timeStamp: number) {
+    await this.getGroupConfigController().recordMyLastPostTime(
+      groupId,
+      timeStamp,
+    );
   }
 
   protected getGroupConfigController() {

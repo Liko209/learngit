@@ -332,6 +332,13 @@ describe('ItemService', () => {
         5,
       ]);
     });
+
+    it('should call dao method with item_ids have invalid id', async () => {
+      await itemService.getByPosts([
+        postFactory.build({ item_ids: [1, 2, 3, -1, -2, null] }),
+      ]);
+      expect(entitySourceController.batchGet).toHaveBeenCalledWith([1, 2, 3]);
+    });
   });
 
   describe('doNotRenderItem', () => {

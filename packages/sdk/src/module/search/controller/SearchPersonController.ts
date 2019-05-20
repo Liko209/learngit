@@ -9,20 +9,25 @@ import { ISearchService } from '../service/ISearchService';
 import { GroupService } from '../../group';
 import { PersonService } from '../../person';
 import { Person } from '../../person/entity';
+import { Group } from 'sdk/module/group';
 import { SortableModel } from '../../../framework/model';
 import {
-  PerformanceTracerHolder,
+  PerformanceTracer,
   PERFORMANCE_KEYS,
 } from '../../../utils/performance';
-import { AccountUserConfig } from '../../../module/account/config';
+import { AccountService } from '../../account/service';
 import {
   RecentSearchTypes,
   FuzzySearchPersonOptions,
   PersonSortingOrder,
+  RecentSearchModel,
 } from '../entity';
 import { SearchUtils } from '../../../framework/utils/SearchUtils';
 import { Terms } from '../../../framework/controller/interface/IEntityCacheSearchController';
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
+import { MY_LAST_POST_VALID_PERIOD } from '../constants';
+import { GroupConfigService } from 'sdk/module/groupConfig';
+
 class SearchPersonController {
   constructor(private _searchService: ISearchService) {}
 
@@ -41,11 +46,7 @@ class SearchPersonController {
       recentFirst,
     } = options;
 
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.SEARCH_PERSON,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
 
     const sortFunc =
       !asIdsOrder || recentFirst ? this._sortByKeyFunc : undefined;
@@ -65,7 +66,7 @@ class SearchPersonController {
       sortFunc,
     );
 
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_PERSON });
     return result;
   }
 
@@ -94,12 +95,35 @@ class SearchPersonController {
       return 0;
     };
   }
+
+  private _getMostRecentViewTime(
+    personId: number,
+    groupConfigService: GroupConfigService,
+    recentSearchedPersons: Map<string | number, RecentSearchModel>,
+    individualGroups: Map<number, Group>,
+  ) {
+    const individualGroup = individualGroups.get(personId);
+    const now = Date.now();
+    const record = recentSearchedPersons.get(personId);
+    const config =
+      individualGroup &&
+      groupConfigService.getSynchronously(individualGroup.id);
+
+    const lastSearchTime = (record && record.time_stamp) || 0;
+    let lastPostTime = (config && config.my_last_post_time) || 0;
+    lastPostTime =
+      now - lastPostTime > MY_LAST_POST_VALID_PERIOD ? 0 : lastPostTime;
+    return Math.max(lastPostTime, lastSearchTime);
+  }
+
   private async _getTransFromPersonToSortableModelFunc(
     excludeSelf?: boolean,
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
   ) {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
     const recentSearchedPersons = recentFirst
       ? this._searchService.getRecentSearchRecordsByType(
@@ -116,7 +140,9 @@ class SearchPersonController {
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
-
+    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
     return (person: Person, terms: Terms) => {
       do {
         const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
@@ -177,19 +203,14 @@ class SearchPersonController {
         if (name.length <= 0) {
           name = personService.getEmailAsName(person);
         }
-        let firstSortKey = 0;
-        if (recentFirst) {
-          const individualGroup =
-            individualGroups && individualGroups.get(person.id);
-          const record =
-            recentSearchedPersons && recentSearchedPersons.get(person.id);
-          const lastSearchedTime = (record && record.time_stamp) || 0;
-          const lastPostTime =
-            (individualGroup && individualGroup.most_recent_post_created_at) ||
-            0;
-          firstSortKey = Math.max(lastPostTime, lastSearchedTime);
-        }
-
+        const firstSortKey = recentFirst
+          ? this._getMostRecentViewTime(
+              person.id,
+              groupConfigService,
+              recentSearchedPersons!,
+              individualGroups!,
+            )
+          : 0;
         return {
           firstSortKey,
           id: person.id,

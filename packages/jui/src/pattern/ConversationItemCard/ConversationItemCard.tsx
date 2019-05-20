@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { JuiIconography } from '../../foundation/Iconography';
-import styled, { css } from '../../foundation/styled-components';
+import styled from '../../foundation/styled-components';
 import { JuiCardContent, JuiCard } from '../../components/Cards';
 import { spacing, typography, palette } from '../../foundation/utils/styles';
 import { omit } from 'lodash';
@@ -17,6 +17,7 @@ import {
 
 import { Palette } from '../../foundation/theme/theme';
 import { getAccentColor } from '../../foundation/utils';
+import { withHighlight } from '../../hoc/withHighlight';
 
 const ItemCardWrapper = styled(JuiCard)`
   word-break: break-word;
@@ -55,7 +56,7 @@ const ItemCardHeader = styled.div<{
   titleColor?: [keyof Palette, string];
 }>`
   position: relative;
-  padding: ${spacing(4, 4, 0, 4)};
+  padding: ${spacing(4)};
   padding-right: ${({ buttonNumber }) => calcActionBarWith(buttonNumber)}px;
   display: flex;
   ${typography('body1')};
@@ -71,15 +72,9 @@ const ItemCardContent = styled(props => (
 ))<{
   hasPadding: boolean;
 }>`
-  && {
-    ${({ hasPadding }) =>
-      hasPadding
-        ? css`
-            padding: ${spacing(0, 4, 5, 10)} !important;
-          `
-        : css`
-            padding: ${spacing(0, 0, 0, 0)} !important;
-          `}
+  &&& {
+    padding: ${({ hasPadding }) =>
+      hasPadding ? spacing(0, 4, 5, 10) : spacing(0, 0, 0, 0)};
     ${typography('body1')};
   }
 `;
@@ -109,7 +104,7 @@ type JuiConversationItemCardProps = {
   showHeaderActions?: boolean;
 } & React.DOMAttributes<{}>;
 
-class JuiConversationItemCard extends React.PureComponent<
+class JuiConversationItemCardComponent extends React.PureComponent<
   JuiConversationItemCardProps
 > {
   titleHandle = (e: React.MouseEvent<HTMLElement>) => {
@@ -132,7 +127,6 @@ class JuiConversationItemCard extends React.PureComponent<
       showHeaderActions,
       ...rest
     } = this.props;
-
     return (
       <ItemCardWrapper className="conversation-item-cards" {...rest}>
         <ItemCardHeader
@@ -147,7 +141,15 @@ class JuiConversationItemCard extends React.PureComponent<
           ) : (
             Icon
           )}
-          {title && <ItemTitle complete={complete}>{title}</ItemTitle>}
+          {title &&
+            (typeof title === 'string' ? (
+              <ItemTitle
+                complete={complete}
+                dangerouslySetInnerHTML={{ __html: title }}
+              />
+            ) : (
+              <ItemTitle complete={complete}>{title}</ItemTitle>
+            ))}
           {showHeaderActions && headerActions && (
             <HeaderActionsWrapper overlapSize={2}>
               {headerActions.map((headerAction: HeaderAction) => (
@@ -175,5 +177,9 @@ class JuiConversationItemCard extends React.PureComponent<
     );
   }
 }
+
+const JuiConversationItemCard = withHighlight(['title'])(
+  JuiConversationItemCardComponent,
+);
 
 export { JuiConversationItemCard };

@@ -11,11 +11,16 @@ import { ENTITY_NAME } from '@/store';
 import { ImageDownloader } from '@/common/ImageDownloader';
 import { DownloadItemInfo, IImageDownloadedListener } from 'sdk/pal';
 import { SequenceProcessorHandler } from 'sdk/framework/processor';
-import { getMaxThumbnailURLInfo } from '@/common/getThumbnailURL';
+import {
+  getMaxThumbnailURLInfo,
+  getThumbnailURL,
+} from '@/common/getThumbnailURL';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 import { mainLogger, ILogger } from 'sdk';
 import { ItemService } from 'sdk/module/item/service';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { LARGE_IMAGE_SIZE } from '../Content/Image/constants';
+import { action } from 'mobx';
 
 class PreloadController implements IImageDownloadedListener {
   private _logger: ILogger;
@@ -99,6 +104,7 @@ class PreloadController implements IImageDownloadedListener {
     });
   }
 
+  @action
   private _tryPreloadWithItemId(itemId: number) {
     const item: FileItemModel = getEntity(ENTITY_NAME.ITEM, itemId);
     if (!item || item.id <= 0) {
@@ -107,8 +113,18 @@ class PreloadController implements IImageDownloadedListener {
 
     this._logger.info(`Will process itemId: ${item.id}, ${item.name}`);
     if (FileItemUtils.isSupportShowRawImage(item)) {
-      if (item.versionUrl) {
-        this._addToQueue(item.id, item.versionUrl);
+      const info = {
+        id: item.id,
+        type: item.type,
+        versionUrl: item.versionUrl || '',
+        versions: item.versions,
+      };
+      const url = getThumbnailURL(info, {
+        width: LARGE_IMAGE_SIZE,
+        height: LARGE_IMAGE_SIZE,
+      });
+      if (url) {
+        this._addToQueue(item.id, url);
         return true;
       }
     }

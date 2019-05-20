@@ -3,7 +3,7 @@
  * @Date: 2019-04-25 13:53:31
  * Copyright © RingCentral. All rights reserved.
  */
-import { flushPromises } from 'test-util/flushPromises';
+import { flushPromises } from 'shield/utils/flushPromises';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { ItemNotification, ItemService } from 'sdk/module/item';
 import { EVENT_TYPES } from 'sdk/service';
@@ -16,6 +16,10 @@ import { GroupItemListHandler } from '../GroupItemListHandler';
 import { RIGHT_RAIL_ITEM_TYPE } from '../constants';
 import { getTypeId } from '../utils';
 
+const itemService = ServiceLoader.getInstance<ItemService>(
+  ServiceConfig.ITEM_SERVICE,
+);
+
 function setup({
   groupId,
   type,
@@ -25,6 +29,7 @@ function setup({
   type: RIGHT_RAIL_ITEM_TYPE;
   items: any[];
 }) {
+  jest.spyOn(itemService, 'getGroupItemsCount').mockResolvedValue(100);
   const listHandler = new GroupItemListHandler(groupId, type);
   listHandler.upsert(items);
   return { listHandler };
@@ -83,22 +88,14 @@ function triggerDeleteItem(groupId: number, item: any) {
 }
 
 describe('GroupItemListHandler', () => {
-  let itemService: ItemService;
   beforeEach(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
-    itemService = ServiceLoader.getInstance<ItemService>(
-      ServiceConfig.ITEM_SERVICE,
-    );
   });
 
   describe('total', () => {
-    beforeEach(() => {
-      jest.spyOn(itemService, 'getGroupItemsCount');
-    });
-
     it('should be Infinity by default then fetch total', async () => {
-      itemService.getGroupItemsCount.mockResolvedValue(100);
+      jest.spyOn(itemService, 'getGroupItemsCount').mockResolvedValue(100);
 
       const { listHandler } = setup({
         groupId: 1,
@@ -114,7 +111,7 @@ describe('GroupItemListHandler', () => {
     it('should fetch total when list changed [JPT-983, JPT-984]', async () => {
       const groupId = 1;
 
-      itemService.getGroupItemsCount.mockResolvedValue(100);
+      jest.spyOn(itemService, 'getGroupItemsCount').mockResolvedValue(100);
       const { listHandler } = setup({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.TASKS,
@@ -125,7 +122,7 @@ describe('GroupItemListHandler', () => {
 
       expect(listHandler.total).toBe(100);
 
-      itemService.getGroupItemsCount.mockResolvedValue(101);
+      jest.spyOn(itemService, 'getGroupItemsCount').mockResolvedValue(101);
       triggerReceiveItem(groupId, buildTaskItem(2147475465));
       await flushPromises();
 
@@ -184,6 +181,7 @@ describe('GroupItemListHandler', () => {
           },
         ],
       });
+      // item;
       const items = await listHandler.fetchData(QUERY_DIRECTION.NEWER, 20);
 
       expect(mockedFetchDataInternal).toBeCalledWith(

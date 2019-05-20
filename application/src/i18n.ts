@@ -5,6 +5,7 @@ import intervalPlural from 'i18next-intervalplural-postprocessor';
 import moment from 'moment';
 import { initReactI18next } from 'react-i18next';
 import { toTitleCase } from '@/utils/string';
+import enLngJson from '../public/locales/en/translations.json';
 
 const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
   const letters = ['a', 'e', 'i', 'o', 'u', 'h'];
@@ -52,6 +53,7 @@ const config = {
   defaultNS: 'translations',
   debug: true,
   react: { wait: true, useSuspense: false },
+  whitelist: ['en', 'zh'],
 };
 
 const ready = () => {
@@ -64,5 +66,8 @@ i18next
   .use(initReactI18next)
   .use(intervalPlural)
   .init(config, ready);
+
+i18next
+  .addResourceBundle('en', 'translations', enLngJson);
 
 export default i18next;

@@ -9,7 +9,8 @@ import { IPartialModifyController } from '../../../framework/controller/interfac
 import { Raw } from '../../../framework/model';
 import _ from 'lodash';
 import { ProfileDataController } from './ProfileDataController';
-import { AccountUserConfig } from '../../../module/account/config';
+import { AccountService } from '../../account/service';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { PersonDao } from '../../person/dao/PersonDao';
 import { daoManager } from '../../../dao';
 
@@ -20,7 +21,11 @@ class ProfileActionController {
     public profileDataController: ProfileDataController,
   ) {}
 
+  // since there are deleted-group ids in favIds
+  // so we do not use `favorite_group_ids` of `originalModel`
+  // just use favIds passed from UI, which already been filtered.
   async reorderFavoriteGroups(
+    favIds: number[],
     oldIndex: number,
     newIndex: number,
   ): Promise<Profile | null> {
@@ -30,7 +35,7 @@ class ProfileActionController {
       partialModel: Partial<Raw<Profile>>,
       originalModel: Profile,
     ): Partial<Raw<Profile>> => {
-      const favIds = originalModel.favorite_group_ids || [];
+      // const favIds = originalModel.favorite_group_ids || [];
       const newFavIds = this._reorderFavoriteGroupIds(
         oldIndex,
         newIndex,
@@ -91,7 +96,9 @@ class ProfileActionController {
 
     // should use Person Service to get current user
     // waiting for Person Service refactor
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const currentId = userConfig.getGlipUserId();
     const personDao = daoManager.getDao(PersonDao);
     const result = await personDao.get(currentId);

@@ -58,6 +58,7 @@ interface INetworkRequestConsumerListener {
   onTokenRefreshed: () => void;
 }
 interface INetworkRequestProducer {
+  hasImmediateTask: (via: NETWORK_VIA) => boolean;
   produceRequest: (
     via: NETWORK_VIA,
     isViaReachable: boolean,
@@ -145,7 +146,7 @@ enum NETWORK_METHOD {
 }
 
 enum REQUEST_PRIORITY {
-  SPECIFIC,
+  IMMEDIATE,
   HIGH,
   NORMAL,
   LOW,

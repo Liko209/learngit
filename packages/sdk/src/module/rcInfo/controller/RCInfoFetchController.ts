@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { RCInfoUserConfig, RCInfoGlobalConfig } from '../config';
+import { RCInfoGlobalConfig } from '../config';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import {
   RCInfoApi,
@@ -20,13 +20,15 @@ import { jobScheduler, JOB_KEY } from '../../../framework/utils/jobSchedule';
 import { mainLogger } from 'foundation';
 import notificationCenter from '../../../service/notificationCenter';
 import { RC_INFO } from '../../../service/eventKey';
-import { AccountUserConfig } from '../../../module/account/config';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { RCInfoService } from '../service';
+import { AccountService } from '../../account/service';
 import { SpecialNumberRuleModel } from '../types';
+import { AccountGlobalConfig } from 'sdk/module/account/config';
 
 const OLD_EXIST_SPECIAL_NUMBER_COUNTRY = 1; // in old version, we only store US special number
 
 class RCInfoFetchController {
-  private _rcInfoUserConfig: RCInfoUserConfig;
   private _isRCInfoJobScheduled: boolean;
   private _shouldIgnoreFirstTime: boolean;
 
@@ -35,15 +37,16 @@ class RCInfoFetchController {
     this._shouldIgnoreFirstTime = false;
   }
 
-  private get rcInfoUserConfig(): RCInfoUserConfig {
-    if (!this._rcInfoUserConfig) {
-      this._rcInfoUserConfig = new RCInfoUserConfig();
-    }
-    return this._rcInfoUserConfig;
+  private get rcInfoUserConfig() {
+    return ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    ).DBConfig;
   }
 
   requestRCInfo(): void {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const accountType = userConfig.getAccountType();
     if (!this._isRCInfoJobScheduled && accountType === ACCOUNT_TYPE_ENUM.RC) {
       this.scheduleRCInfoJob(
@@ -152,12 +155,12 @@ class RCInfoFetchController {
     });
     const specialNumbers = (await this._getAllSpecialNumberRules()) || {};
     specialNumbers[countryId] = specialNumberRule;
-    await this._rcInfoUserConfig.setSpecialNumberRules(specialNumbers);
+    await this.rcInfoUserConfig.setSpecialNumberRules(specialNumbers);
     notificationCenter.emit(RC_INFO.SPECIAL_NUMBER_RULE, specialNumbers);
   }
 
   private async _getCurrentCountryId() {
-    const userId = new AccountUserConfig().getGlipUserId() as number;
+    const userId = AccountGlobalConfig.getUserDictionary() as number;
     const stationLocations = RCInfoGlobalConfig.getStationLocation();
     const stationLocation =
       stationLocations && stationLocations[userId.toString()];
@@ -223,8 +226,10 @@ class RCInfoFetchController {
   }
 
   // this for DB special number compatibility, we can remove it after all user updated to 1.4
-  private _isISpecialServiceNumber(arg: any): arg is ISpecialServiceNumber {
-    return arg.uri && arg.records && arg.paging && arg.navigation;
+  private _isISpecialServiceNumber(model: any): model is ISpecialServiceNumber {
+    return (
+      model && model.uri && model.records && model.paging && model.navigation
+    );
   }
 
   async getSpecialNumberRule(): Promise<ISpecialServiceNumber | undefined> {

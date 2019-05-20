@@ -29,7 +29,9 @@ import { MakeCallController } from './MakeCallController';
 import { RCInfoService } from '../../rcInfo';
 import { ERCServiceFeaturePermission } from '../../rcInfo/types';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
-import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
+import { TelephonyService } from '../service';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
+import { PhoneNumberAnonymous } from 'sdk/module/phoneNumber/types';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
   private _telephonyAccountDelegate: ITelephonyAccountDelegate;
@@ -80,125 +82,168 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   }
 
   getLastCalledNumber() {
-    const telephonyConfig = new TelephonyUserConfig();
-    return telephonyConfig.getLastCalledNumber();
+    const telephonyConfig = ServiceLoader.getInstance<TelephonyService>(
+      ServiceConfig.TELEPHONY_SERVICE,
+    ).userConfig;
+    const res = telephonyConfig.getLastCalledNumber();
+    return res ? res : '';
   }
 
   setLastCalledNumber(num: string) {
-    const telephonyConfig = new TelephonyUserConfig();
+    const telephonyConfig = ServiceLoader.getInstance<TelephonyService>(
+      ServiceConfig.TELEPHONY_SERVICE,
+    ).userConfig;
     telephonyConfig.setLastCalledNumber(num);
   }
 
   async makeCall(toNumber: string, fromNum: string) {
-    let result = this._checkVoipStatus();
-    if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
-      return result;
-    }
-    const e164ToNumber = await this._makeCallController.getE164PhoneNumber(
-      toNumber,
+    const phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
+      ServiceConfig.PHONE_NUMBER_SERVICE,
     );
-    this.setLastCalledNumber(e164ToNumber);
-    result = await this._makeCallController.tryMakeCall(e164ToNumber);
-    if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
-      return result;
+
+    if (!phoneNumberService.isValidNumber(toNumber)) {
+      this._callDelegate &&
+        this._callDelegate.onCallStateChange('', RTC_CALL_STATE.DISCONNECTED);
+      return MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
     }
-    if (this._telephonyCallDelegate) {
-      return MAKE_CALL_ERROR_CODE.MAX_CALLS_REACHED;
+
+    const e164ToNumber = await phoneNumberService.getE164PhoneNumber(toNumber);
+
+    if (!e164ToNumber) {
+      this._callDelegate &&
+        this._callDelegate.onCallStateChange('', RTC_CALL_STATE.DISCONNECTED);
+      return MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
     }
-    this._telephonyCallDelegate = new TelephonyCallController(
-      this._callDelegate,
-    );
-    this._telephonyCallDelegate.setCallStateCallback(this.callStateChanged);
-    let makeCallResult: RTC_STATUS_CODE;
-    if (fromNum) {
-      makeCallResult = this._rtcAccount.makeCall(
-        toNumber,
-        this._telephonyCallDelegate,
-        { fromNumber: fromNum },
+    this.setLastCalledNumber(toNumber);
+
+    let result: MAKE_CALL_ERROR_CODE = MAKE_CALL_ERROR_CODE.NO_ERROR;
+    do {
+      result = this._checkVoipStatus();
+      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
+        break;
+      }
+
+      result = await this._makeCallController.tryMakeCall(e164ToNumber);
+      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
+        break;
+      }
+
+      if (this._telephonyCallDelegate) {
+        return MAKE_CALL_ERROR_CODE.MAX_CALLS_REACHED;
+      }
+      this._telephonyCallDelegate = new TelephonyCallController(
+        this._callDelegate,
       );
-    } else {
-      makeCallResult = this._rtcAccount.makeCall(
-        toNumber,
-        this._telephonyCallDelegate,
-      );
-    }
-    switch (makeCallResult) {
-      case RTC_STATUS_CODE.NUMBER_INVALID: {
+      this._telephonyCallDelegate.setCallStateCallback(this.callStateChanged);
+
+      let makeCallResult: RTC_STATUS_CODE;
+      if (fromNum) {
+        let e164FromNum = fromNum;
+        if (fromNum !== PhoneNumberAnonymous) {
+          e164FromNum = await phoneNumberService.getE164PhoneNumber(fromNum);
+        }
+        makeCallResult = this._rtcAccount.makeCall(
+          e164ToNumber,
+          this._telephonyCallDelegate,
+          { fromNumber: e164FromNum },
+        );
+      } else {
+        makeCallResult = this._rtcAccount.makeCall(
+          e164ToNumber,
+          this._telephonyCallDelegate,
+        );
+      }
+
+      if (
+        makeCallResult !== RTC_STATUS_CODE.OK &&
+        this._telephonyCallDelegate
+      ) {
+        delete this._telephonyCallDelegate;
+      }
+
+      if (makeCallResult === RTC_STATUS_CODE.NUMBER_INVALID) {
         result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
         break;
-      }
-      case RTC_STATUS_CODE.MAX_CALLS_REACHED: {
+      } else if (makeCallResult === RTC_STATUS_CODE.MAX_CALLS_REACHED) {
         result = MAKE_CALL_ERROR_CODE.MAX_CALLS_REACHED;
         break;
-      }
-      case RTC_STATUS_CODE.INVALID_STATE: {
+      } else if (makeCallResult === RTC_STATUS_CODE.INVALID_STATE) {
         result = MAKE_CALL_ERROR_CODE.INVALID_STATE;
         break;
       }
+    } while (false);
+
+    if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
+      this._callDelegate &&
+        this._callDelegate.onCallStateChange('', RTC_CALL_STATE.DISCONNECTED);
     }
+
     return result;
   }
 
   hangUp(callId: string) {
     // So far only need to support one call. By design, we should get call controller according callID.
-    this._telephonyCallDelegate.hangUp();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.hangUp();
   }
 
   mute(callId: string) {
-    this._telephonyCallDelegate.mute();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.mute();
   }
 
   unmute(callId: string) {
-    this._telephonyCallDelegate.unmute();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.unmute();
   }
 
   hold(callId: string) {
-    this._telephonyCallDelegate.hold();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.hold();
   }
 
   unhold(callId: string) {
-    this._telephonyCallDelegate.unhold();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.unhold();
   }
 
   startRecord(callId: string) {
-    this._telephonyCallDelegate.startRecord();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.startRecord();
   }
 
   stopRecord(callId: string) {
-    this._telephonyCallDelegate.stopRecord();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.stopRecord();
   }
 
   dtmf(callId: string, digits: string) {
-    this._telephonyCallDelegate.dtmf(digits);
+    this._telephonyCallDelegate && this._telephonyCallDelegate.dtmf(digits);
   }
 
   answer(callId: string) {
-    this._telephonyCallDelegate.answer();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.answer();
   }
 
   sendToVoiceMail(callId: string) {
-    this._telephonyCallDelegate.sendToVoiceMail();
+    this._telephonyCallDelegate &&
+      this._telephonyCallDelegate.sendToVoiceMail();
   }
 
   ignore(callId: string) {
-    this._telephonyCallDelegate.ignore();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.ignore();
   }
 
   startReply(callId: string) {
-    this._telephonyCallDelegate.startReply();
+    this._telephonyCallDelegate && this._telephonyCallDelegate.startReply();
   }
 
   replyWithMessage(callId: string, message: string) {
-    this._telephonyCallDelegate.replyWithMessage(message);
+    this._telephonyCallDelegate &&
+      this._telephonyCallDelegate.replyWithMessage(message);
   }
 
   replyWithPattern(
     callId: string,
     pattern: RTC_REPLY_MSG_PATTERN,
-    time: number,
-    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+    time?: number,
+    timeUnit?: RTC_REPLY_MSG_TIME_UNIT,
   ) {
-    this._telephonyCallDelegate.replyWithPattern(pattern, time, timeUnit);
+    this._telephonyCallDelegate &&
+      this._telephonyCallDelegate.replyWithPattern(pattern, time, timeUnit);
   }
   onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
     this._telephonyAccountDelegate.onAccountStateChanged(state);

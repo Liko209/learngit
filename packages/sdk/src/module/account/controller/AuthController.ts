@@ -17,7 +17,8 @@ import { SERVICE } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
 import { ErrorParserHolder } from '../../../error';
 import { jobScheduler, JOB_KEY } from '../../../framework/utils/jobSchedule';
-import { AuthUserConfig } from '../config';
+import { AccountService } from '../service';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 interface ILogin {
   username: string;
@@ -65,7 +66,9 @@ class AuthController {
   }
 
   async makeSureUserInWhitelist() {
-    const authConfig = new AuthUserConfig();
+    const authConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).authUserConfig;
     const rc_token_info = authConfig.getRCToken();
     if (rc_token_info && rc_token_info.owner_id) {
       await this._accountManager.makeSureUserInWhitelist(
@@ -86,7 +89,7 @@ class AuthController {
   }
 
   scheduleReLoginGlipJob() {
-    jobScheduler.scheduleAndIgnoreFirstTime({
+    jobScheduler.scheduleJob({
       key: JOB_KEY.RE_LOGIN_GLIP,
       intervalSeconds: 3600,
       periodic: false,

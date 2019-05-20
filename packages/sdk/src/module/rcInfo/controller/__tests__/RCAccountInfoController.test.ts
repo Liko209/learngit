@@ -101,6 +101,16 @@ describe('', () => {
       const result = await rcAccountInfoController.getAccountBrandId();
       expect(result).toEqual(RC_BRAND_IDS.RINGCENTRAL);
     });
+
+    it('should return undefined id when has no brand id in company and account ', async () => {
+      rcInfoFetchController.getRCAccountInfo = jest
+        .fn()
+        .mockResolvedValue(inValidAccountInfo);
+
+      companyService.getBrandType = jest.fn().mockResolvedValue(undefined);
+      const result = await rcAccountInfoController.getAccountBrandId();
+      expect(result).toBeUndefined();
+    });
   });
 
   describe('getOutboundCallPrefix', () => {

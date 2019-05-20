@@ -66,6 +66,7 @@ class GroupSearchViewModel extends StoreViewModel<GroupSearchProps> {
       query,
       false,
       true,
+      true,
     );
 
     return result ? result.sortableModels : null;

@@ -6,6 +6,7 @@
 import React from 'react';
 import styled from '../../../foundation/styled-components';
 import { width, height, spacing, ellipsis } from '../../../foundation/utils';
+import { withHighlight } from '../../../hoc/withHighlight';
 
 type AuthorProps = {
   author_name?: string;
@@ -15,6 +16,7 @@ type AuthorProps = {
 
 const Wrapper = styled.a`
   margin-bottom: ${spacing(5)};
+  /* copy from dThor */
   color: #2f2f2f;
   ${ellipsis()}
 `;
@@ -28,10 +30,12 @@ const IconWrapper = styled.img`
   position: absolute;
 `;
 
-const NameWrapper = styled.span`
+const NameWrapper = withHighlight([
+  'dangerouslySetInnerHTML.__html',
+])(styled.span`
   margin-left: ${spacing(11)};
   ${ellipsis()};
-`;
+`);
 
 const Author = (props: AuthorProps) => {
   const { author_name, author_link, author_icon } = props;
@@ -39,7 +43,9 @@ const Author = (props: AuthorProps) => {
     return (
       <Wrapper href={author_link}>
         {author_icon && <IconWrapper src={author_icon} />}
-        {author_name && <NameWrapper>{author_name}</NameWrapper>}
+        {author_name && (
+          <NameWrapper dangerouslySetInnerHTML={{ __html: author_name }} />
+        )}
       </Wrapper>
     );
   }

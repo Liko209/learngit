@@ -6,7 +6,7 @@
 import React, { ComponentType, RefObject } from 'react';
 import styled from '../../foundation/styled-components';
 import { spacing } from '../../foundation/utils/styles';
-import { JuiCircularProgress } from '../../components/Progress';
+import { RuiCircularProgress } from 'rcui/components/Progress';
 import { withDelay } from '../withDelay';
 
 type WithLoadingMoreProps = {
@@ -26,7 +26,7 @@ const StyledLoadingMore = styled.div`
 
 export const DefaultLoadingMore = () => (
   <StyledLoadingMore>
-    <JuiCircularProgress />
+    <RuiCircularProgress />
   </StyledLoadingMore>
 );
 

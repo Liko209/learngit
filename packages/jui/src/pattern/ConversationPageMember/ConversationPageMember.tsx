@@ -6,7 +6,7 @@
 import React from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiConversationPageMemberProps } from './types';
-import { JuiArrowTip } from '../../components';
+import { RuiTooltip } from 'rcui/components/Tooltip';
 import { JuiIconography } from '../../foundation/Iconography';
 import { grey, typography, width } from '../../foundation/utils/styles';
 import { darken } from '@material-ui/core/styles/colorManipulator';
@@ -58,7 +58,7 @@ class JuiConversationPageMember extends React.Component<
     const { onClick, ariaLabel, title, children, size } = this.props;
 
     return (
-      <JuiArrowTip title={title}>
+      <RuiTooltip title={title}>
         <StyledConversationPageMember
           aria-label={ariaLabel}
           onClick={onClick}
@@ -67,7 +67,7 @@ class JuiConversationPageMember extends React.Component<
           <JuiIconography iconSize="medium">member_count</JuiIconography>
           {children}
         </StyledConversationPageMember>
-      </JuiArrowTip>
+      </RuiTooltip>
     );
   }
 }

@@ -100,7 +100,7 @@ describe('EntitySourceController', () => {
       jest
         .spyOn(entitySourceController, 'getEntityLocally')
         .mockResolvedValueOnce(null);
-      expect(entitySourceController.get(-1)).resolves.toThrow();
+      expect(entitySourceController.get(-1)).rejects.toThrow();
     });
   });
 
@@ -248,6 +248,18 @@ describe('EntitySourceController', () => {
     it('should return entity when db has', () => {
       const result = entitySourceController.getEntityNotificationKey();
       expect(result).toBe('ENTITY.TESTENTITY');
+    });
+  });
+
+  describe('batchGet', () => {
+    it('should not throw error when get from server and error happens', async () => {
+      const ids = [1];
+      deactivatedDao.batchGet = jest.fn().mockResolvedValue([]);
+      entityPersistentController.batchGet = jest.fn().mockResolvedValue([]);
+      requestController.get = jest.fn().mockImplementationOnce(() => {
+        throw new Error();
+      });
+      expect(entitySourceController.batchGet(ids)).resolves.toEqual([]);
     });
   });
 });

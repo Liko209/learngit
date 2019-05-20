@@ -161,10 +161,10 @@ class AccountManager extends EventEmitter2 {
     }
     this._isLogin = true;
     const accounts = this._createAccounts(resp.accountInfos);
-    this.emit(AUTH_SUCCESS, resp.isRCOnlyMode);
+    this.emit(AUTH_SUCCESS, resp);
     return {
       accounts,
-      isRCOnlyMode: resp.isRCOnlyMode,
+      resp,
       success: true,
     };
   }

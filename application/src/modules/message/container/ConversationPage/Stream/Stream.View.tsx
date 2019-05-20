@@ -39,7 +39,7 @@ import {
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
 import { goToConversation } from '@/common/goToConversation';
-import JuiConversationCard from 'jui/pattern/ConversationCard';
+import { JuiConversationCard } from 'jui/pattern/ConversationCard';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
 
@@ -166,10 +166,12 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _renderDateDivider(streamItem: StreamItem) {
+    const today = new Date().getDate();
     return (
       <TimeNodeDivider
         key={`TimeNodeDividerDateDivider${streamItem.id}`}
         value={streamItem.id}
+        today={today}
       />
     );
   }

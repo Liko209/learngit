@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 import 'testcafe';
-import { Selector } from 'testcafe';
+import { Selector, ClientFunction } from 'testcafe';
 
 import * as assert from 'assert';
 import { H } from '../helpers'
@@ -117,7 +117,7 @@ export abstract class BaseWebComponent {
       // it's ok if spinner doesn't exist
     }
     finally {
-      await this.t.expect(this.spinners.count).eql(0, { timeout });
+      await this.t.expect(this.spinners.exists).notOk({ timeout });
     }
   }
 
@@ -165,5 +165,12 @@ export abstract class BaseWebComponent {
   // hover some selector will show
   async showTooltip(text: string) {
     await this.t.expect(this.getSelector('[role="tooltip"]').withExactText(text).exists).ok();
+  }
+
+  async scrollIntoView() {
+    await ClientFunction((_self) => {
+      const ele: any = _self()
+      ele.scrollIntoView()
+    })(this.self)
   }
 }
