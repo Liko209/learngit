@@ -128,7 +128,7 @@ test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 
 
   await h(t).withLog('When I send a link in the created team conversation ', async () => {
     await conversationPage.sendMessage("www.google.com");
-  })
+  });
   await h(t).withLog(`Then text "shared a link" should be displayed`, async () => {
     await t.expect(conversationPage.fileNotification.nth(3).exists).ok();
   });
