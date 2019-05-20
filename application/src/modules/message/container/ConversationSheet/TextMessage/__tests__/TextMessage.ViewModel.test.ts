@@ -16,6 +16,7 @@ import Backend from 'i18next-xhr-backend';
 import jsonFile from '../../../../../../../public/locales/en/translations.json';
 import i18next from 'i18next';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
+import { PHONE_LINKS_CLS } from '../constants';
 
 jest.mock('@/store/utils');
 jest.mock('sdk/module/config/service/UserConfigService');
@@ -47,6 +48,8 @@ let vm: TextMessageViewModel;
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 jupiter.registerModule(featuresFlags.config);
+const phoneNumber = '(650)419-1505';
+const phoneLink = `<a href='javascript:;' color='#18a4de' class=${PHONE_LINKS_CLS} data-test-automation-id='phoneNumberLink' data-id='${phoneNumber}'>${phoneNumber}</a>`;
 describe('TextMessageViewModel', () => {
   beforeAll(() => {
     AuthUserConfig.prototype.getRCToken.mockReturnValueOnce({
@@ -106,14 +109,12 @@ describe('TextMessageViewModel', () => {
     });
     it('should return hyperlink while get valid links', () => {
       jest.spyOn(utils, 'getGlobalValue').mockReturnValue(true);
-      mockPostData.text = '1234567';
-      expect(vm.html).toBe(
-        '<a href="javascript:;" color="#18a4de" class=phone-number-link data-test-automation-id="phoneNumberLink" data-id=1234567>1234567</a>',
-      );
+      mockPostData.text = `${phoneNumber}`;
+      expect(vm.html).toBe(phoneLink);
     });
     it('Numbers in meeting invite links should be ignored hyperlinked [JPT-1816]', () => {
       jest.spyOn(utils, 'getGlobalValue').mockReturnValue(true);
-      const videoCallPost = 'Dial-in Number: (650)419-1505';
+      const videoCallPost = `Dial-in Number: ${phoneNumber}`;
       mockPostData.text = videoCallPost;
       i18next.use(Backend).init(
         {
@@ -128,7 +129,7 @@ describe('TextMessageViewModel', () => {
         (err, t) => {},
       );
       i18next.loadLanguages('en', () => {});
-      const renderVideoCall = 'Dial-in Number: <a href=\"javascript:;\" color=\"#18a4de\" class=phone-number-link data-test-automation-id=\"phoneNumberLink\" data-id=(650)419-1505>(650)419-1505</a>';
+      const renderVideoCall = `Dial-in Number: ${phoneLink}`;
       expect(vm.html).toMatch(renderVideoCall);
     });
   });

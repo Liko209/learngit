@@ -24,25 +24,19 @@ const logger = LogUtils.getLogger(__filename);
     await FileService.checkReportPath();
 
     const versionInfo = await DashboardService.getVersionInfo();
+    await DashboardService.getVersionInfo(Config.jupiterStageHost);
+    await DashboardService.getVersionInfo(Config.jupiterDevelopHost);
 
     await MetricService.createVersion(versionInfo.jupiterVersion);
     const isReleaseRun = Config.jupiterHost === Config.jupiterReleaseHost;
 
     if (!isReleaseRun) {
-      if (Config.jupiterHost === Config.jupiterDevelopHost) {
-        const stageVersion = await DashboardService.getVersionInfo(Config.jupiterStageHost);
-        if (versionInfo.jupiterVersion !== stageVersion.jupiterVersion) {
-          exitCode = 0;
-          skipRun = true;
-          logger.info(`stage[${stageVersion.jupiterVersion}] is newer than developer[${versionInfo.jupiterVersion}], so skip`);
-          return;
-        }
-      } else {
+      if (Config.jupiterHost === Config.jupiterStageHost) {
         const developVersion = await DashboardService.getVersionInfo(Config.jupiterDevelopHost);
         if (versionInfo.jupiterVersion === developVersion.jupiterVersion) {
           exitCode = 0;
           skipRun = true;
-          logger.info(`develop[${developVersion.jupiterVersion}] is newer than stage[${versionInfo.jupiterVersion}], so skip`);
+          logger.info(`stage[${versionInfo.jupiterVersion}] has released, so skip`);
           return;
         }
       }

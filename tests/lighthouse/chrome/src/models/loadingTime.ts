@@ -274,6 +274,20 @@ class LoadingTimeVersionSummaryDto extends Model<LoadingTimeVersionSummaryDto> {
     type: DataType.INTEGER
   })
   apiHandleCount: number;
+
+  @Column({
+    allowNull: false,
+    field: "platform",
+    type: DataType.STRING
+  })
+  platform: string;
+
+  @Column({
+    allowNull: false,
+    field: "time",
+    type: DataType.STRING
+  })
+  time: string;
 }
 
 @Table({
@@ -284,6 +298,9 @@ class LoadingTimeVersionSummaryDto extends Model<LoadingTimeVersionSummaryDto> {
   }, {
     unique: false,
     fields: ['name']
+  }, {
+    unique: false,
+    fields: ['platform']
   }]
 })
 class LoadingTimeReleaseSummaryDto extends LoadingTimeVersionSummaryDto {
@@ -297,6 +314,9 @@ class LoadingTimeReleaseSummaryDto extends LoadingTimeVersionSummaryDto {
   }, {
     unique: false,
     fields: ['name']
+  }, {
+    unique: false,
+    fields: ['platform']
   }]
 })
 class LoadingTimeDevelopSummaryDto extends LoadingTimeVersionSummaryDto {

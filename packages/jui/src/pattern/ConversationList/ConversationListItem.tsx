@@ -65,7 +65,6 @@ const JuiMenuContain = styled(JuiMenu)`
 `;
 const StyledListItem = styled(WrapperListItem)`
   && {
-    display: ${({ hidden }) => (hidden ? 'none' : 'flex')};
     white-space: nowrap;
     padding: ${spacing(0, 4, 0, 3)};
     height: ${height(8)};
@@ -172,13 +171,16 @@ const JuiConversationListItem: IConversationListItem = memo(
       selected,
       innerRef,
       umiHint,
+      hidden,
       children,
       isItemHover,
       ...rest
     } = props;
 
     const fontWeight = umiHint ? 'bold' : 'normal';
-    return (
+    return hidden ? (
+      <></>
+    ) : (
       <StyledListItem
         onClick={onClick}
         component={component}

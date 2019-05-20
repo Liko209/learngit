@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { mainLogger } from 'foundation';
 import { IdModel, ModelIdType } from '../../model';
 import { IDao } from '../../../framework/dao';
 import _ from 'lodash';
@@ -11,6 +12,7 @@ import { IRequestController } from '../interface/IRequestController';
 import { IEntitySourceController } from '../interface/IEntitySourceController';
 import { IEntityPersistentController } from '../interface/IEntityPersistentController';
 
+const LOG_TAG = 'EntitySourceController';
 class EntitySourceController<
   T extends IdModel<IdType>,
   IdType extends ModelIdType = number
@@ -132,8 +134,11 @@ class EntitySourceController<
     const promises = remoteIds.map(async (id: IdType) => {
       if (this.requestController) {
         try {
-          return this._getEntityFromServer(id);
-        } catch {
+          return await this._getEntityFromServer(id);
+        } catch (error) {
+          mainLogger
+            .tags(LOG_TAG)
+            .log('failed to _getEntitiesFromServer', error);
           return null;
         }
       }

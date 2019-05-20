@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import { BaseWebComponent } from "../../BaseWebComponent";
+import { ClientFunction } from 'testcafe';
 
 
 export class TelephonyDialog extends BaseWebComponent {
@@ -192,7 +193,7 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-voice-mail-btn');
   }
 
-  get dialerInput(){
+  get dialerInput() {
     return this.getSelectorByAutomationId('telephony-dialer-header').find('input[type="text"]');
   }
 
@@ -224,6 +225,14 @@ export class TelephonyDialog extends BaseWebComponent {
     '#': 'hash'
   }
 
+  async focusKeypad(){
+    var focus = ClientFunction(() => {
+      document.querySelector('[data-test-automation-id="telephony-dialer-title"]').dispatchEvent(new Event('focus',{bubbles:true}))
+  });
+
+    await focus();
+  }
+
   async tapKeypad(keys: string | string[]) {
     for (const i of keys) {
       await this.t.wait(5e2);
@@ -251,15 +260,15 @@ export class TelephonyDialog extends BaseWebComponent {
     await this.t.hover(this.sendToVoiceMailButton);
   }
 
-  async hoverMinimizeButton(){
+  async hoverMinimizeButton() {
     await this.t.hover(this.minimizeButton);
   }
 
-  async hoverDeleteButton(){
+  async hoverDeleteButton() {
     await this.t.hover(this.deleteButton);
   }
 
-  async clickDeleteButton(){
+  async clickDeleteButton() {
     await this.t.click(this.deleteButton);
   }
 
@@ -306,9 +315,13 @@ export class TelephonyDialog extends BaseWebComponent {
   async sendCustomReplyMessage() {
     await this.t.click(this.replyWithCustomMessage).pressKey('enter');
   }
+
+  get callerIdSelector() {
+    return this.getSelectorByAutomationId('callerIdSelector');
+  }
 }
 
-export class TelephonyMinimizeWindow extends BaseWebComponent{
+export class TelephonyMinimizeWindow extends BaseWebComponent {
 
   get self() {
     return this.getSelectorByAutomationId('telephony-minimized-view');
@@ -342,5 +355,4 @@ export class TelephonyMinimizeWindow extends BaseWebComponent{
   async clickHangupButton() {
     await this.t.click(this.hangupButton);
   }
-
 }
