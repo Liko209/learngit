@@ -6,21 +6,28 @@ import { h } from "../../v2/helpers";
 import { v4 as uuid } from 'uuid';
 import { IGroup } from "../../v2/models";
 
-fixture('RightRail/Images')
+fixture('ContentPanelPanel/MemberProfile')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase());
-test(formalName('Image files display on the right rail', ['P2', 'Messages', 'RightRail', 'Images', 'V1.4', 'Lorna.Li']), async(t) => {
+test(formalName('Files display on the right rail', ['P2', 'Messages', 'ContentPanelPanel', 'MemberProfile', 'V1.4', 'Lorna.Li']), async(t) => {
   const loginUser = h(t).rcData.mainCompany.users[4];
+  await h(t).glip(loginUser).init();
 
   const team = <IGroup> {
     name: uuid(),
-    type: "Team",
+    type: "team",
     owner: loginUser,
     members: [loginUser]
   }
 
+  let textPostId;
   await h(t).withLog(`Given I have a team named: ${team.name}`, async() => {
     await h(t).scenarioHelper.createTeam(team);
+  });
+
+  const postText = uuid();
+  await h(t).withLog(`And I send a text post:${postText}`, async() => {
+    textPostId = await h(t).scenarioHelper.sentAndGetTextPostId(postText, team, loginUser);
   });
 
   const app = new AppRoot(t);
@@ -30,25 +37,15 @@ test(formalName('Image files display on the right rail', ['P2', 'Messages', 'Rig
   });
 
   const teamPage = app.homePage.messageTab.teamsSection;
-  const rightRail = app.homePage.messageTab.rightRail;
   const conversationPage = app.homePage.messageTab.conversationPage;
 
-  await h(t).withLog('When I open a team and click Images Tab', async() => {
+  const miniProfile = app.homePage.miniProfile;
+  await h(t).withLog('When I open a team and tap avatar', async() => {
     await teamPage.conversationEntryById(team.glipId).enter();
-    await rightRail.imagesEntry.enter();
+    // await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.postItemById(textPostId).clickAvatar();
+    await t.expect(miniProfile.profileButton).ok();
   });
 
-  await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_ImagesEmpty'});
-
-  const message = uuid();
-  const imagesTab = rightRail.imagesTab;
-  await h(t).withLog('When I upload a text file', async() => {
-    await conversationPage.uploadFilesToMessageAttachment('../../sources/1.png');
-    await conversationPage.sendMessage(message);
-    await conversationPage.nthPostItem(-1).waitForPostToSend();
-    await t.expect(imagesTab.items.exists).ok();
-  });
-
-  await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_ImagesList'});
+  await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_ContentPanelPanel_MiniProfile'});
 });
-
