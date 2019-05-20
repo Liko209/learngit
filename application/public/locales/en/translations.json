@@ -53,6 +53,7 @@
     "forward": "Forward",
     "You": "You",
     "Connecting": "Connecting",
+    "deactivatedUsers": "Deactivated Users",
     "team": "team"
   },
   "auth": {

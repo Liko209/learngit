@@ -119,7 +119,7 @@ class PersonEntityCacheController extends EntityCacheController<Person> {
 
   private _setSoundexValue(person: Person) {
     let soundexResult: string[] = [];
-    if (this._personService.isValidPerson(person)) {
+    if (this._personService.isVisiblePerson(person)) {
       const name = this._personService.getName(person);
       if (name) {
         soundexResult = SearchUtils.getTermsFromText(name).map(item =>
