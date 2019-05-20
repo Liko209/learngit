@@ -35,7 +35,6 @@ class Event extends React.Component<Props, {}> {
           <JuiLabelWithContent label={t('item.due')}>
             <JuiTimeMessage time={`${timeContent.get()}`} />
           </JuiLabelWithContent>
-          )}
           {description && <HocDescription description={description} />}
         </JuiSectionDivider>
       </JuiConversationItemCard>
