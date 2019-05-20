@@ -80,7 +80,7 @@ class ConfigMigrator implements IDBObserver {
   }
 
   private async _doDataMigration(history: ConfigChangeHistory) {
-    if (!history || !history.version || !history.moduleName) {
+    if (!history || history.version === undefined || !history.moduleName) {
       return;
     }
     try {

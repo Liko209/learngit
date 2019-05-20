@@ -15,8 +15,13 @@ import { container } from '../../../container';
 import { Person } from '../../person/entity';
 import { SortableModel } from '../../../framework/model';
 import { SearchUserConfig } from '../config/SearchUserConfig';
+import { IConfigHistory } from 'sdk/framework/config/IConfigHistory';
+import { ConfigChangeHistory } from 'sdk/framework/config/types';
+import { Nullable } from 'sdk/types';
+import { configMigrator } from 'sdk/framework/config';
 
-class SearchService extends AbstractService implements ISearchService {
+class SearchService extends AbstractService
+  implements ISearchService, IConfigHistory {
   private _searchServiceController: SearchServiceController = new SearchServiceController(
     this,
   );
@@ -25,8 +30,16 @@ class SearchService extends AbstractService implements ISearchService {
   constructor() {
     super();
   }
-  protected onStarted() {}
+
+  protected onStarted() {
+    configMigrator.addHistory(this);
+  }
+
   protected onStopped() {}
+
+  getHistoryDetail(): Nullable<ConfigChangeHistory> {
+    return null;
+  }
 
   private get recentSearchRecordController() {
     return this._searchServiceController.recentSearchRecordController;

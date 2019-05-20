@@ -7,7 +7,7 @@
 import { SearchUserConfig } from '../SearchUserConfig';
 import { AccountGlobalConfig } from '../../../../module/account/config';
 import { UserConfigService } from '../../../config/service/UserConfigService';
-import { SEARCH_CONFIG_KEYS } from '../configKeys';
+import { SEARCH_CONFIG_KEYS } from '../constants';
 import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../../../config/service/UserConfigService');
