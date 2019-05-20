@@ -375,7 +375,7 @@ test.meta(<ITestMeta>{
 
 test.meta(<ITestMeta> {
   priority: ['P2'],
-  caseIds: ['JPT-1214', 'JPT-1215'],
+  caseIds: ['JPT-1214'],
   maintainers: ['alexander.zaverukha'],
   keywords: ['search'],
 })('Re-login to check the recently searched list', async (t: TestController) => {
