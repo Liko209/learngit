@@ -25,10 +25,15 @@ storiesOf('Pattern/Setting', module)
   .add('SettingSectionItem', () => {
     return (
       <div>
-        <JuiSettingSectionItem label={getLabelKnob()} disabled={isDisabled()}>
+        <JuiSettingSectionItem
+          id={'0'}
+          label={getLabelKnob()}
+          disabled={isDisabled()}
+        >
           {getContentKnob()}
         </JuiSettingSectionItem>
         <JuiSettingSectionItem
+          id={'1'}
           label={getLabelKnob()}
           description={getDescriptionKnob()}
           disabled={isDisabled()}
@@ -36,6 +41,7 @@ storiesOf('Pattern/Setting', module)
           {getContentKnob()}
         </JuiSettingSectionItem>
         <JuiSettingSectionItem
+          id={'2'}
           label={getLabelKnob()}
           description={getLongDescriptionKnob()}
           disabled={isDisabled()}
@@ -43,6 +49,7 @@ storiesOf('Pattern/Setting', module)
           {getContentKnob()}
         </JuiSettingSectionItem>
         <JuiSettingSectionItem
+          id={'3'}
           label={getLabelKnob()}
           description={getDescriptionKnob()}
           disabled={isDisabled()}

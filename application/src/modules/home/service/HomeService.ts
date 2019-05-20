@@ -32,19 +32,22 @@ class HomeService {
     subModuleConfig: SubModuleConfig,
   ) {
     const config = _.cloneDeep(subModuleConfig);
-    if (config.loader) {
+
+    if (config.moduleConfigLoader) {
       await this._jupiter.registerModuleAsync(
-        config.loader,
+        config.moduleConfigLoader,
         config.afterBootstrap,
       );
+    } else if (config.moduleConfig) {
+      this._jupiter.registerModule(config.moduleConfig, config.afterBootstrap);
     }
     this._homeStore.addSubModule(name, config);
   }
 
   async unRegisterModule(name: string) {
     const subModuleConfig = this._homeStore.getSubModule(name);
-    if (subModuleConfig && subModuleConfig.loader) {
-      const { config } = await subModuleConfig.loader();
+    if (subModuleConfig && subModuleConfig.moduleConfigLoader) {
+      const { config } = await subModuleConfig.moduleConfigLoader();
       config.entry && this._jupiter.unRegisterModule(config);
     }
   }

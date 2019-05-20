@@ -5,16 +5,14 @@
  */
 import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
-import { typography, grey, spacing } from '../../../foundation/utils/styles';
+import { typography, grey } from '../../../foundation/utils/styles';
 
 type Props = {
   children: React.ReactNode;
   label: string;
 };
 
-const Wrapper = styled.div`
-  margin-top: ${spacing(2)};
-`;
+const Wrapper = styled.div``;
 
 const StyledTitle = styled.div`
   ${typography('caption1')};

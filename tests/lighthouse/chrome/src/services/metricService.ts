@@ -12,10 +12,32 @@ import {
   PerformanceItemDto,
   LoadingTimeSummaryDto,
   LoadingTimeItemDto,
-  FpsDto
+  FpsDto,
+  VersionDto
 } from "../models";
 
 class MetricService {
+
+  static async createVersion(version: string): Promise<VersionDto> {
+    let now = await VersionDto.findOne({ where: { name: version } });
+    if (now) {
+      return now;
+    }
+
+    let last = await VersionDto.findOne({ order: [['id', 'DESC']] });
+
+    if (last && !last.endTime) {
+      await VersionDto.update({ endTime: new Date() },
+        { where: { id: last.id } }
+      );
+    }
+
+    return await VersionDto.create({
+      name: version,
+      startTime: new Date()
+    });
+  }
+
   static async createTask(): Promise<TaskDto> {
     return await TaskDto.create({
       host: Config.jupiterHost,
@@ -43,6 +65,7 @@ class MetricService {
     let performance, accessibility, bestPractices, seo, pwa;
     let taskId = taskDto.id,
       name = scene.name();
+    let appVersion = scene.getAppVersion();
 
     performance = accessibility = bestPractices = seo = pwa = 0;
     if (categories["performance"] && categories["performance"].score) {
@@ -76,7 +99,8 @@ class MetricService {
       seo,
       pwa,
       startTime,
-      endTime
+      endTime,
+      appVersion
     });
   }
 

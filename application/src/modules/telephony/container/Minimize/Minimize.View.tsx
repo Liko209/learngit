@@ -28,6 +28,8 @@ class MinimizeViewComponent extends Component<Props> {
         onClick={this._handleMinimize}
         variant="plain"
         color="common.white"
+        ariaLabel={t('telephony.accessibility.minimize')}
+        data-test-automation-id="telephony-minimize-btn"
       >
         minimize
       </JuiIconButton>

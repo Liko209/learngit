@@ -5,6 +5,9 @@
  */
 import store from 'store2';
 import { AbstractService } from '../../../framework/service/AbstractService';
+import notificationCenter from '../../../service/notificationCenter';
+import { CONFIG_EVENT_TYPE } from '../constants';
+import { Listener } from 'eventemitter2';
 
 class BaseConfigService extends AbstractService {
   private _ns: string;
@@ -20,29 +23,37 @@ class BaseConfigService extends AbstractService {
     return this._ns;
   }
 
+  protected get store() {
+    return store.namespace(this._ns);
+  }
+
   put(module: string, key: string, value: any) {
-    const st = store.namespace(this._ns);
-    st.set(`${module}.${key}`, value);
-    // TODO emit notification FIJI-3770
+    this.store.set(`${module}.${key}`, value);
+    notificationCenter.emit(
+      `${this._ns}.${module}.${key}`,
+      CONFIG_EVENT_TYPE.UPDATE,
+      value,
+    );
   }
 
   get(module: string, key: string): any {
-    const st = store.namespace(this._ns);
-    return st.get(`${module}.${key}`);
+    return this.store.get(`${module}.${key}`);
   }
 
   remove(module: string, key: string) {
-    const st = store.namespace(this._ns);
-    return st.remove(`${module}.${key}`);
-    // TODO remove from notification list FIJI-3770
+    this.store.remove(`${module}.${key}`);
+    notificationCenter.emit(
+      `${this._ns}.${module}.${key}`,
+      CONFIG_EVENT_TYPE.REMOVE,
+    );
   }
 
-  on(module: string, key: string) {
-    // TODO add to notification list FIJI-3770
+  on(module: string, key: string, listener: Listener) {
+    notificationCenter.on(`${this._ns}.${module}.${key}`, listener);
   }
 
-  off(module: string, key: string) {
-    // TODO remove from notification list FIJI-3770
+  off(module: string, key: string, listener: Listener) {
+    notificationCenter.off(`${this._ns}.${module}.${key}`, listener);
   }
 
   clear() {

@@ -18,6 +18,7 @@ import { mainLogger } from 'sdk';
 import { SERVICE } from 'sdk/service/eventKey';
 import { notificationCenter } from 'sdk/service';
 import { TelephonyNotificationManager } from './TelephonyNotificationManager';
+import { TelephonySettingManager } from './TelephonySettingManager/TelephonySettingManager';
 import { Dialer, Dialpad, Call } from './container';
 
 class TelephonyModule extends AbstractModule {
@@ -25,18 +26,21 @@ class TelephonyModule extends AbstractModule {
 
   @inject(FeaturesFlagsService)
   private _FeaturesFlagsService: FeaturesFlagsService;
-  @inject(TELEPHONY_SERVICE) private _TelephonyService: TelephonyService;
+  @inject(TELEPHONY_SERVICE) private _telephonyService: TelephonyService;
   @inject(LEAVE_BLOCKER_SERVICE) _leaveBlockerService: ILeaveBlockerService;
   @inject(TelephonyNotificationManager)
   private _telephonyNotificationManager: TelephonyNotificationManager;
+  @inject(TelephonySettingManager)
+  private _telephonySettingManager: TelephonySettingManager;
   @inject(Jupiter) _jupiter: Jupiter;
 
   @inject(HomeService) _homeService: HomeService;
   @inject(GlobalSearchService) _globalSearchService: GlobalSearchService;
 
   initTelephony = () => {
-    this._TelephonyService.init();
+    this._telephonyService.init();
     this._telephonyNotificationManager.init();
+    this._telephonySettingManager.init();
     this._leaveBlockerService.onLeave(this.handleLeave);
   }
 
@@ -71,15 +75,16 @@ class TelephonyModule extends AbstractModule {
       this.onVoipCallingStateChanged,
     );
     this._telephonyNotificationManager.dispose();
+    this._telephonyService.dispose();
     this._leaveBlockerService.offLeave(this.handleLeave);
   }
 
   handleLeave = () => {
-    if (this._TelephonyService.getAllCallCount() > 0) {
+    if (this._telephonyService.getAllCallCount() > 0) {
       mainLogger.info(
         `${
           TelephonyModule.TAG
-        }Notify user has call count: ${this._TelephonyService.getAllCallCount()}`,
+        }Notify user has call count: ${this._telephonyService.getAllCallCount()}`,
       );
       return true;
     }

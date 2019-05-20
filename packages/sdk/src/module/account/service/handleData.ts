@@ -10,9 +10,11 @@ import {
   ACCOUNT_CLIENT_CONFIG,
 } from '../../../dao/account/constants';
 import notificationCenter from '../../../service/notificationCenter';
-import { AccountGlobalConfig, AccountUserConfig } from '../config';
-import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { AccountService } from '../service';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { PerformanceTracer, PERFORMANCE_KEYS } from '../../../utils';
+import { AccountGlobalConfig } from '../config';
+import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 
 export interface IHandleData {
   userId?: number;
@@ -27,19 +29,24 @@ const accountHandleData = ({
   profileId,
   clientConfig,
 }: IHandleData): void => {
-  const logId = Date.now();
-  PerformanceTracerHolder.getPerformanceTracer().start(
-    PERFORMANCE_KEYS.HANDLE_INCOMING_ACCOUNT,
-    logId,
-  );
-  let userConfig = new AccountUserConfig();
-  if (userId) {
-    if (!AccountGlobalConfig.getUserDictionary()) {
-      // by default, rc extension id will be used as UD. For glip only user, we'll use glip id as UD
-      AccountGlobalConfig.setUserDictionary(userId.toString());
-      userConfig = new AccountUserConfig();
-      userConfig.setAccountType(ACCOUNT_TYPE_ENUM.GLIP);
+  const performanceTracer = PerformanceTracer.initial();
+
+  // should set UserDictionary before handle data for free user
+  if (!AccountGlobalConfig.getUserDictionary()) {
+    if (!userId) {
+      throw new Error('can not get id for free user');
     }
+    // by default, rc extension id will be used as UD. For glip only user, we'll use glip id as UD
+    AccountGlobalConfig.setUserDictionary(userId.toString());
+    ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig.setAccountType(ACCOUNT_TYPE_ENUM.GLIP);
+  }
+
+  const userConfig = ServiceLoader.getInstance<AccountService>(
+    ServiceConfig.ACCOUNT_SERVICE,
+  ).userConfig;
+  if (userId) {
     notificationCenter.emitKVChange(ACCOUNT_USER_ID, userId);
     userConfig.setGlipUserId(userId);
   }
@@ -56,7 +63,7 @@ const accountHandleData = ({
     notificationCenter.emitKVChange(ACCOUNT_CLIENT_CONFIG, clientConfig);
     userConfig.setClientConfig(clientConfig);
   }
-  PerformanceTracerHolder.getPerformanceTracer().end(logId);
+  performanceTracer.end({ key: PERFORMANCE_KEYS.HANDLE_INCOMING_ACCOUNT });
 };
 
 export { accountHandleData };

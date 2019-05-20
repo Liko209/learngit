@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./telephony/Dialer.ts"
+    ],
+    "include_tags": [
+      "JPT-1964"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

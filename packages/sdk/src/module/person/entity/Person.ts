@@ -10,6 +10,7 @@ export type PhoneNumberModel = {
   id: number;
   phoneNumber: string;
   usageType: string;
+  label?: string;
 };
 
 export type SanitizedExtensionModel = {

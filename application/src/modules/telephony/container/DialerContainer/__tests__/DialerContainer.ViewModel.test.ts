@@ -16,6 +16,13 @@ jupiter.registerModule(telephony.config);
 let dialerContainerViewModel: DialerContainerViewModel;
 
 beforeAll(() => {
+  container.get = jest.fn().mockReturnValue({});
+  jest.spyOn(container, 'get').mockReturnValueOnce({
+    keypadEntered: false,
+  });
+  jest.spyOn(container, 'get').mockReturnValueOnce({
+    dtmf: jest.fn(),
+  });
   dialerContainerViewModel = new DialerContainerViewModel();
 });
 

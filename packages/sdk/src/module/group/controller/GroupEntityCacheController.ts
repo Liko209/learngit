@@ -7,7 +7,8 @@
 import _ from 'lodash';
 import { Group } from '../entity';
 import { EntityCacheController } from '../../../framework/controller/impl/EntityCacheController';
-import { AccountUserConfig } from '../../../module/account/config';
+import { AccountService } from '../../account/service';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { IGroupService } from '../service/IGroupService';
 import { SearchUtils } from '../../../framework/utils/SearchUtils';
 const soundex = require('soundex-code');
@@ -74,7 +75,9 @@ class GroupEntityCacheController extends EntityCacheController<Group> {
   }
 
   private _getPersonIdInIndividualGroup(group: Group) {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
 
     for (const memberId of group.members) {

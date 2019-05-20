@@ -181,6 +181,10 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
           <HiddenImage
             src={src}
             onLoad={(event: SyntheticEvent<HTMLImageElement>) => {
+              if (src === thumbnailSrc) {
+                const { naturalWidth, naturalHeight } = event.currentTarget;
+                onSizeLoad && onSizeLoad(naturalWidth, naturalHeight);
+              }
               this.setState({
                 loadings: {
                   ...loadings,

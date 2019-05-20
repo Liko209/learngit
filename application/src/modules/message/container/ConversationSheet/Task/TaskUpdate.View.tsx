@@ -20,12 +20,13 @@ import { AvatarName } from './AvatarName';
 import { TaskUpdateViewProps } from './types';
 
 @observer
-class TaskUpdate extends React.Component<TaskUpdateViewProps & WithTranslation> {
+class TaskUpdate extends React.Component<
+  TaskUpdateViewProps & WithTranslation
+> {
   private _getTaskAvatarNames = (assignedIds: number[]) =>
-    assignedIds
-      .map((assignedId: number) => (
-        <AvatarName key={assignedId} id={assignedId} />
-      ))
+    assignedIds.map((assignedId: number) => (
+      <AvatarName key={assignedId} id={assignedId} />
+    ))
 
   private _getTitleText(text: string) {
     const { activityData, effectiveIds } = this.props;

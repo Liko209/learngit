@@ -7,9 +7,13 @@
 import notificationCenter from '../../../../service/notificationCenter';
 // import AccountDao from 'dao/account';
 import { accountHandleData } from '../handleData';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { AccountGlobalConfig } from '../../config/AccountGlobalConfig';
+import { AccountUserConfig } from '../../config/AccountUserConfig';
 
 jest.mock('../../../config');
-jest.mock('../../config');
+jest.mock('../../config/AccountUserConfig');
+jest.mock('../../config/AccountGlobalConfig');
 jest.mock('../../../../service/notificationCenter', () => ({
   emitKVChange: jest.fn(),
 }));
@@ -28,6 +32,14 @@ jest.mock('../../../../dao', () => ({
 describe('Account Service handleData', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: AccountUserConfig.prototype };
+        }
+      });
+    AccountGlobalConfig.getUserDictionary.mockReturnValue('123');
   });
   it('getCurrentUserId()', async () => {
     accountHandleData({
