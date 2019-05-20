@@ -5,6 +5,7 @@
  */
 import { GlobalSearchStore } from '../GlobalSearchStore';
 import { TAB_TYPE, SEARCH_VIEW } from '../../types';
+import { Dialer } from '../../../telephony/container';
 
 describe('GlobalSearchStore', () => {
   let globalSearchStore: GlobalSearchStore;
@@ -37,5 +38,9 @@ describe('GlobalSearchStore', () => {
     globalSearchStore.clearSearchKey();
     expect(globalSearchStore.searchKey).toBe('');
     expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.RECENT_SEARCH);
+  });
+  it('addExtensions()', () => {
+    globalSearchStore.addExtensions('Dialer', Dialer);
+    expect(globalSearchStore.extensions['Dialer'].has(Dialer)).toBeTruthy();
   });
 });

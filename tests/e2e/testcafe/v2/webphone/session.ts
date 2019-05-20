@@ -16,6 +16,7 @@ export class WebphoneSession {
   TTL: number;
   occupied: boolean;
   isOpen: boolean = false;
+  lastIncomingCallNumber: string;
 
 
   webphoneClient: WebphoneClient;
@@ -43,6 +44,7 @@ export class WebphoneSession {
     this.status = session.status;
     this.message = session.message;
     this.occupied = session.occupied;
+    this.lastIncomingCallNumber = session.lastIncomingCallNumber;
   }
 
   async preOperate(action: string, always: boolean) {
@@ -91,6 +93,13 @@ export class WebphoneSession {
     await H.retryUntilPass(async () => {
       await this.update();
       assert.ok(status == this.status, `webphone status: expect "${status}", but actual "${this.status}"`);
+    }, 10, 1e3);
+  }
+
+  async waitForPhoneNumber(phoneNumber: string) {
+    await H.retryUntilPass(async () => {
+      await this.update();
+      assert.ok(phoneNumber == this.lastIncomingCallNumber, `webphone lastIncomingCallNumber: expect "${phoneNumber}", but actual "${this.lastIncomingCallNumber}"`);
     }, 10, 1e3);
   }
 

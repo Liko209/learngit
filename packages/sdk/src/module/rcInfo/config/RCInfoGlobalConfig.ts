@@ -5,10 +5,10 @@
  */
 
 import { GlobalConfig } from '../../config';
-import { RC_INFO_GLOBAL_KEYS } from './configKeys';
+import { RC_INFO_GLOBAL_KEYS, MODULE_NAME } from './constants';
 
 class RCInfoGlobalConfig extends GlobalConfig {
-  static moduleName = 'rc_info';
+  static moduleName = MODULE_NAME;
 
   static setStationLocation(info: any) {
     this.put(RC_INFO_GLOBAL_KEYS.STATION_LOCATION, info);

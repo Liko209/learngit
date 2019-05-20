@@ -11,6 +11,9 @@ import { ENTITY } from '../../../service/eventKey';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { buildPartialModifyController } from '../../../framework/controller';
 import { Raw } from '../../../framework/model';
+import { mainLogger } from 'foundation';
+
+const LOG_TAG = 'GroupConfigController';
 class GroupConfigController {
   static serviceName = 'GroupConfigService';
 
@@ -121,6 +124,18 @@ class GroupConfigController {
       id: groupId,
       send_failure_post_ids: newIds,
     });
+  }
+
+  async recordMyLastPostTime(groupId: number, timeStamp: number) {
+    const updateData = {
+      id: groupId,
+      my_last_post_time: timeStamp,
+    };
+    try {
+      await this.entitySourceController.update(updateData);
+    } catch (error) {
+      mainLogger.tags(LOG_TAG).log('recordMyLastPostTime failed', updateData);
+    }
   }
 }
 

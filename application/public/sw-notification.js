@@ -1,4 +1,4 @@
-self.onnotificationclose = async (event) => {
+self.onnotificationclose = async event => {
   const targetClient = await getTargetedClient();
   if (targetClient) {
     targetClient.postMessage(
@@ -11,10 +11,10 @@ self.onnotificationclose = async (event) => {
   }
 };
 
-self.onnotificationclick = async (event) => {
+self.onnotificationclick = event => {
   event.notification.close();
   event.waitUntil(
-    getTargetedClient().then((targetClient) => {
+    getTargetedClient().then(targetClient => {
       if (targetClient) {
         targetClient.focus();
         targetClient.postMessage(

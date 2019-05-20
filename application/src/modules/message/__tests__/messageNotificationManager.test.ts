@@ -6,6 +6,8 @@
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import * as utils from '@/store/utils';
 import { MessageNotificationManager } from '../MessageNotificationManager';
+
+jest.mock('sdk/module/config');
 describe('messageNotificationManager', () => {
   let notificationManager: MessageNotificationManager;
   const currentUserId = 110;

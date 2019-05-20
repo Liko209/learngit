@@ -59,7 +59,10 @@ class JuiSettingSection extends React.PureComponent<JuiSettingSectionProps> {
     const { children, title } = this.props;
     return (
       <SettingSectionWrap className="setting-section">
-        <TitleHeaderWrap component="div">
+        <TitleHeaderWrap
+          component="div"
+          data-test-automation-id="SettingSectionHeader"
+        >
           <TitleWrap className="setting-section-title">{title}</TitleWrap>
         </TitleHeaderWrap>
         <JuiCard>

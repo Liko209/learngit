@@ -6,7 +6,8 @@
 
 import { Company } from '../entity';
 import { EntityCacheController } from '../../../framework/controller/impl/EntityCacheController';
-import { AccountUserConfig } from '../../account/config';
+import { AccountService } from '../../account/service';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 class CompanyEntityCacheController extends EntityCacheController<Company> {
   private _currentUserCompanyId: number;
@@ -26,7 +27,9 @@ class CompanyEntityCacheController extends EntityCacheController<Company> {
 
   private get _needCachedId() {
     if (!this._currentUserCompanyId) {
-      const userConfig = new AccountUserConfig();
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
       this._currentUserCompanyId = userConfig.getCurrentCompanyId();
     }
     return this._currentUserCompanyId;

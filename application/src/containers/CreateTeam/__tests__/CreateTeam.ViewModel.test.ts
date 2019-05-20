@@ -17,10 +17,10 @@ import {
 } from 'sdk/error';
 
 import { CreateTeamViewModel } from '../CreateTeam.ViewModel';
-import { AccountUserConfig } from 'sdk/module/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
 import { ServiceConfig } from 'sdk/module/serviceLoader';
 
-jest.mock('sdk/module/account/config');
+jest.mock('sdk/module/account/config/AccountUserConfig');
 jest.mock('../../Notification');
 jest.mock('sdk/api');
 
@@ -33,12 +33,17 @@ describe('CreateTeamViewModel', () => {
     name: ServiceConfig.GROUP_SERVICE,
     createTeam() {},
   };
+  const accountService = {
+    name: ServiceConfig.ACCOUNT_SERVICE,
+    userConfig: AccountUserConfig.prototype,
+  };
 
   const creatorId = 1;
   @testable
   class create {
     @test('create team success')
     @mockService(groupService, 'createTeam')
+    @mockService(accountService)
     async t1() {
       const createTeamVM = new CreateTeamViewModel();
       AccountUserConfig.prototype.getGlipUserId.mockReturnValue(creatorId);
@@ -66,6 +71,7 @@ describe('CreateTeamViewModel', () => {
     @mockService.reject(GroupService, 'createTeam', () =>
       getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN),
     )
+    @mockService(accountService)
     async t2() {
       const createTeamVM = new CreateTeamViewModel();
       const creatorId = 1;
@@ -93,6 +99,7 @@ describe('CreateTeamViewModel', () => {
     @mockService.reject(GroupService, 'createTeam', () =>
       getNewJServerError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, ''),
     )
+    @mockService(accountService)
     async t3() {
       const createTeamVM = new CreateTeamViewModel();
       const creatorId = 1;

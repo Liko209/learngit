@@ -20,6 +20,8 @@ class DialpadViewModel extends StoreViewModel<Props> implements ViewProps {
     TELEPHONY_SERVICE,
   );
 
+  id = this._telephonyStore.dialpadBtnId;
+
   constructor(props: Props) {
     super(props);
     this.reaction(
@@ -106,6 +108,16 @@ class DialpadViewModel extends StoreViewModel<Props> implements ViewProps {
       return { key: 'common.Connecting' };
     }
     return this._timing;
+  }
+
+  @computed
+  get canUseTelephony() {
+    return this._telephonyStore.canUseTelephony;
+  }
+
+  @computed
+  get shouldAnimationStart() {
+    return this._telephonyStore.shouldAnimationStart;
   }
 
   dispose = () => {

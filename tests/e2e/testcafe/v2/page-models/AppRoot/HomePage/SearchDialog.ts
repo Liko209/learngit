@@ -173,6 +173,10 @@ class InstantSearch extends BaseSearchResultPage {
     return this.getComponent(SearchItem, this.teams.nth(n));
   }
 
+  searchPeopleWithText(text:string){
+    return this.getComponent(SearchItem,this.peoples.withText(text));
+  }
+
   /* content search */
   get contentSearchHeader() {
     return this.getSelectorByAutomationId('search-content');

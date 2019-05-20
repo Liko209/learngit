@@ -31,9 +31,13 @@ class AccountPoolClient implements IAccountPoolClient {
     const accountLockAcquireBody = new AccountLockAcquire();
     accountLockAcquireBody.envName = this.envName;
     accountLockAcquireBody.accountType = accountType;
-    const acquiredAccount = await this.accountLockApi.accountLocksPost(
-      accountLockAcquireBody,
-    );
+    let acquiredAccount = undefined;
+    try {
+      acquiredAccount = await this.accountLockApi.accountLocksPost(accountLockAcquireBody);
+    } catch (err) {
+      logger.info(err.body);
+    }
+    assert(acquiredAccount, `acquiredAccount error: envName: ${this.envName}; accountType:${accountType}`)
     return acquiredAccount.body;
   }
 

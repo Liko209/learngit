@@ -18,7 +18,9 @@ import { IEntityPersistentController } from '../../../../framework/controller/in
 import _ from 'lodash';
 import { notificationCenter, ENTITY } from '../../../../service';
 import GroupService from '../../../../module/group';
-import { ServiceLoader } from '../../../serviceLoader';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
+import { AccountService } from 'sdk/module/account';
 
 jest.mock('../../../../framework/controller/impl/EntitySourceController');
 jest.mock('../../../item');
@@ -28,6 +30,7 @@ jest.mock('../../dao');
 jest.mock('../../../../framework/controller');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../group');
+jest.mock('sdk/module/account/config/AccountUserConfig');
 
 class MockPreInsertController<T extends ExtendedBaseModel>
   implements IPreInsertController {
@@ -43,8 +46,8 @@ class MockPreInsertController<T extends ExtendedBaseModel>
   updateStatus(entity: T, status: PROGRESS_STATUS): void {
     return;
   }
-  isInPreInsert(version: number): boolean {
-    return;
+  isInPreInsert(entity: T): boolean {
+    return true;
   }
 }
 
@@ -75,9 +78,21 @@ describe('PostDataController', () => {
   }
 
   function setup() {
-    ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
+    const accountService = new AccountService({} as any);
+
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return accountService;
+        }
+        if (config === ServiceConfig.ITEM_SERVICE) {
+          return itemService;
+        }
+      });
     itemService.handleIncomingData = jest.fn();
     groupService.updateHasMore = jest.fn();
+    AccountUserConfig.prototype.getGlipUserId.mockReturnValue(5);
     daoManager.getDao.mockImplementation(arg => {
       if (arg === PostDao) {
         return postDao;
@@ -434,6 +449,45 @@ describe('PostDataController', () => {
         posts.filter((post: Post) => post.created_at !== post.modified_at),
       );
     });
+
+    it('should call delete pre-insert if post in pre-insert list', async () => {
+      const posts = [];
+      for (let i = 1; i <= 30; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 1,
+          unique_id: i.toString(),
+          created_at: i,
+          creator_id: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      for (let i = 31; i <= 60; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 2,
+          unique_id: i.toString(),
+          created_at: i,
+          creator_id: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      postDao.queryOldestPostCreationTimeByGroupId.mockImplementation(arg => {
+        if (arg === 1) {
+          return posts[3];
+        }
+        if (arg === 2) {
+          return posts[39];
+        }
+      });
+      const spy = jest.spyOn(preInsertController, 'bulkDelete');
+      let result = await postDataController.handleIndexPosts(posts, true);
+
+      result = _.orderBy(result, 'id', 'asc');
+      const expectPosts = posts.slice(3, 30).concat(posts.slice(39, 60));
+      expect(result).toEqual(expectPosts);
+      expect(spy).toHaveBeenCalledWith([posts[4]]);
+    });
   });
 
   describe('handleSexioPosts()', () => {
@@ -519,6 +573,28 @@ describe('PostDataController', () => {
         ENTITY.DISCONTINUOUS_POST,
         posts.filter((post: Post) => post.created_at !== post.modified_at),
       );
+    });
+
+    it('should call delete pre-insert if post in pre-insert list', async () => {
+      const posts = [];
+      for (let i = 1; i <= 10; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 1,
+          unique_id: i.toString(),
+          created_at: i,
+          creator_id: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      mockEntitySourceController.getEntityLocally.mockImplementation(arg => {
+        return posts[arg - 1];
+      });
+      const spy = jest.spyOn(preInsertController, 'bulkDelete');
+      const result = await postDataController.handleSexioPosts(posts);
+
+      expect(result).toEqual(posts);
+      expect(spy).toHaveBeenCalledWith([posts[4]]);
     });
   });
 

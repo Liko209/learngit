@@ -28,10 +28,12 @@ class Scene {
   protected taskDto: TaskDto;
   protected fpsMode: boolean = false;
   protected logger = LogUtils.getLogger(__filename);
+  protected appVersion;
 
-  constructor(taskDto: TaskDto) {
+  constructor(taskDto: TaskDto, appVersion: string) {
     this.url = Config.jupiterHost;
     this.taskDto = taskDto;
+    this.appVersion = appVersion;
   }
 
   /**
@@ -275,6 +277,10 @@ class Scene {
 
   finallyUrl(): string {
     return this.url;
+  }
+
+  getAppVersion(): string {
+    return this.appVersion;
   }
 
   getData() {
