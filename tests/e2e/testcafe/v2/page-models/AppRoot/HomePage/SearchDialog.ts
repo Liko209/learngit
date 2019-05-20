@@ -213,6 +213,10 @@ class RecentSearch extends BaseSearchResultPage {
     return this.getSelectorByAutomationId('search-clear');
   }
 
+  async title() {
+    return await this.historyHeader.child('p').innerText;
+  }
+
   get clearHistoryButton() {
     return this.getSelectorByAutomationId('search-clear-button');
   }

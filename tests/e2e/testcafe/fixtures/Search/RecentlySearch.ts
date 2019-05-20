@@ -613,15 +613,6 @@ test.meta(<ITestMeta>{
     members: [loginUser , users[1]],
   };
 
-
-  const team2 = <IGroup>{
-    name: uuid(),
-    type: 'Team',
-    owner: loginUser,
-    members: [loginUser , users[2]],
-  };
-
-
   const group = <IGroup>{
     type: 'Group',
     owner: loginUser,
@@ -683,3 +674,134 @@ test.meta(<ITestMeta>{
   });
 });
 
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1238'],
+  maintainers: ['alexander.zaverukha'],
+  keywords: ['search'],
+})('Check the UI of the recently searched list', async (t) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const groupUser = users[2];
+  await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).resetProfileAndState();
+  const groupName =  await h(t).glip(loginUser).getPersonPartialData('display_name', groupUser.rcId);
+  const userName = await h(t).glip(loginUser).getPersonPartialData('display_name', users[1].rcId);
+  const contentName = 'Ring';
+  const contentNameInThisConversation = 'Central in this conversation';
+  let recentSearchItems = [];
+
+  const team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser , users[1]]
+  };
+
+  const group = <IGroup>{
+    type: 'Group',
+    owner: loginUser,
+    members: [loginUser, loginUser]
+  };
+
+  await h(t).withLog(`Given I login Jupiter : ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    },
+  );
+
+  const searchDialog = app.homePage.searchDialog;
+  await h(t).withLog(`And there are some records on recently searched list`, async () => {
+    await h(t).scenarioHelper.createTeamsOrChats([team, group]);
+    await app.homePage.header.searchBar.clickSelf();
+
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(team.name);
+    recentSearchItems.push(team.name);
+    await t.click(searchDialog.instantPage.teams.withText(team.name));
+
+    const userName = await h(t).glip(loginUser).getPersonPartialData('display_name', users[1].rcId);
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(userName);
+    recentSearchItems.push(userName);
+    await t.click(searchDialog.instantPage.peoples.withText(userName));
+
+    await searchDialog.typeSearchKeyword(groupName);
+    recentSearchItems.push(groupName);
+    await t.click(searchDialog.instantPage.peoples.withText(groupName));
+
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(contentName);
+    recentSearchItems.push(contentName);
+    await t.click(searchDialog.instantPage.contentSearchItem.withText(contentName));
+    await searchDialog.clickClearButton();
+    await searchDialog.clickCloseButton();
+
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(contentNameInThisConversation);
+    recentSearchItems.push(contentNameInThisConversation);
+    await t.click(searchDialog.instantPage.contentSearchItem.withText(contentNameInThisConversation));
+    await searchDialog.clickClearButton();
+    await searchDialog.clickCloseButton();
+  });
+
+  await h(t).withLog('When I tab or mouse in the global search box', async () => {
+    await app.homePage.header.searchBar.clickSelf();
+  });
+
+  await h(t).withLog('Then "Recent searches" title', async () => {
+    await t.expect(await searchDialog.recentPage.title()).eql('Recent searches');
+  });
+
+  await h(t).withLog('And "Clear History" button', async () => {
+    await t.expect(searchDialog.recentPage.clearHistoryButton.innerText).eql('Clear history');
+  });
+
+  await h(t).withLog('And item display Team/Group/People show "Avatar+Name"', async () => {
+    await t.expect(searchDialog.recentPage.conversationEntryByName(team.name).avatar.exists).ok();
+    await t.expect(await searchDialog.recentPage.conversationEntryByName(team.name).getName()).eql(team.name);
+    await t.expect(searchDialog.recentPage.conversationEntryByName(userName).avatar.exists).ok();
+    await t.expect(await searchDialog.recentPage.conversationEntryByName(userName).getName()).eql(userName);
+    await t.expect(searchDialog.recentPage.conversationEntryByName(groupName).avatar.exists).ok();
+    await t.expect(await searchDialog.recentPage.conversationEntryByName(groupName).getName()).eql(groupName);
+  });
+
+  await h(t).withLog('Content display "icon+content search text+ conversation name/in this conversation"', async () => {
+    await t.expect(searchDialog.recentPage.conversationEntryByName(contentName).avatar.exists).ok();
+    await t.expect(await searchDialog.recentPage.conversationEntryByName(contentName).getName()).eql(contentName);
+    await t.expect(searchDialog.recentPage.conversationEntryByName(contentNameInThisConversation).avatar.exists).ok();
+    await t.expect(await searchDialog.recentPage.conversationEntryByName(contentNameInThisConversation).getName()).eql(contentNameInThisConversation);
+  });
+
+  await h(t).withLog('And  "Close" icon ', async () => {
+    await t.expect(searchDialog.closeButton.exists).ok();
+  });
+
+  await h(t).withLog('When add more than 10 records to recently searched list ', async () => {
+    // we already have 4 items in recent search list. Add 7 to have more then 10 items searched.
+    for ( let i = 0; i < 7; i++ ) {
+      const team = <IGroup>{
+        name: uuid(),
+        type: 'Team',
+        owner: loginUser,
+        members: [loginUser , users[1]]
+      };
+      await h(t).scenarioHelper.createTeamsOrChats([team]);
+      await app.homePage.header.searchBar.clickSelf();
+      await searchDialog.typeSearchKeyword(team.name);
+      recentSearchItems.push(team.name);
+      await t.click(searchDialog.instantPage.teams.withText(team.name));
+    }
+  });
+
+  await h(t).withLog('Then At most 10 items [content, people, groups, and teams] show', async () => {
+    await app.homePage.header.searchBar.clickSelf();
+    await t.expect(searchDialog.instantPage.items.count).eql(10);
+    const top10RecentSearchItems = recentSearchItems.reverse().slice(0, 10);
+    for (const itemName of top10RecentSearchItems){
+      await t.expect(searchDialog.recentPage.itemByName(itemName).name.innerText).eql(itemName)
+    }
+  });
+});
