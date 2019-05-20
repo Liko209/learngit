@@ -707,6 +707,7 @@ export class GlipSdk {
       invitee_ids: H.toNumberArray(rcIds),
       start: data.start || new Date().getTime() + 1800000, // start time after 30 minutes from now
       end: data.end || new Date().getTime() + 3600000, // end time after 60 minutes from now
+      location: data.location,
       description: data.description
     },
       options
