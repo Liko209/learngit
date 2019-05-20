@@ -292,22 +292,17 @@ test.meta(<ITestMeta>{
     await h(t).glip(loginUser).favoriteGroups(teamsId);
   });
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
-    async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    },
-  );
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
   const favoritesSection = app.homePage.messageTab.favoritesSection;
   await h(t).withLog('Then all conversations are displayed in Favorite section', async () => {
     await favoritesSection.expand();
-    let isAllChatsInFavorite = true;
+    await t.expect(favoritesSection.conversations.count).eql(favConversationCount);
     for (let teamId of teamsId) {
-      if (!(await favoritesSection.conversationEntryById(teamId).exists)) {
-        isAllChatsInFavorite = false;
-        break;
-      }
+      await favoritesSection.conversationEntryById(teamId).ensureLoaded();
     }
-    await t.expect(isAllChatsInFavorite).ok();
   });
 });
