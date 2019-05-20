@@ -13,6 +13,7 @@ import {
   MediaReportOutCome,
 } from './types';
 import mediaReport from './Media';
+import Report from './Report';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 
 type Update = Omit<ICall, 'establishment' | 'fsmStatus'>;
@@ -102,7 +103,29 @@ class CallReport implements ICall {
   }
 
   private _report() {
-    rtcLogger.info(LOG_TAG, JSON.stringify(this));
+    const {
+      id,
+      createTime,
+      sessionId,
+      ua,
+      direction,
+      establishment,
+      fsmStatus,
+      media,
+    } = this as ICall;
+    const options = JSON.stringify({
+      id,
+      createTime,
+      sessionId,
+      ua,
+      direction,
+      establishment,
+      fsmStatus,
+      media,
+    });
+
+    rtcLogger.info(LOG_TAG, options);
+    Report(options);
   }
 
   private _beforeDestroy() {

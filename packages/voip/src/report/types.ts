@@ -68,6 +68,7 @@ export interface ICall {
   direction: 'incoming' | 'outgoing' | '';
   establishment: Establishment;
   fsmStatus: FsmStatus[];
+  media: MediaReportOutCome | null;
 }
 
 export type MediaReportProps =

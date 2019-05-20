@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { EventEmitter2 } from 'eventemitter2';
+import { dataAnalysis } from 'foundation';
 import callReport from '../Call';
 import { RTCCall } from '../../api/RTCCall';
 import { IRTCCallDelegate } from '../../api/IRTCCallDelegate';
@@ -130,6 +131,8 @@ const diff: Diff = fsmStatus => {
 
   return tail.map((item, index) => item.timestamp - head[index].timestamp);
 };
+
+dataAnalysis.track = jest.fn();
 
 afterEach(() => {
   (callReport as any)._initState();
@@ -319,5 +322,56 @@ describe('Check call FSM state timestamp [JPT-1938]', () => {
 
     expect(fsmStatus.length).toBeGreaterThan(0);
     expect(diffArr.find(d => d <= 0)).toBeUndefined;
+  });
+});
+
+describe('check data', () => {
+  it('should called', async () => {
+    const account = new MockAccountAndCallObserver();
+    const session = new MockSession();
+    const call = new RTCCall(false, '123', null, account, account, undefined, {
+      userAgent: UA,
+    });
+
+    call.setCallSession(session);
+    call.onAccountReady();
+    session.mockSignal('accepted');
+    (call as any)._callSession.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS);
+    (call as any)._callSession.getInviteResponse = jest
+      .fn()
+      .mockReturnValue(MockResponse);
+
+    await sleep(10);
+    (call as any)._callSession.emit(CALL_SESSION_STATE.ACCEPTED);
+    await sleep(10);
+    (call as any)._destroy();
+
+    const {
+      id,
+      createTime,
+      sessionId,
+      ua,
+      direction,
+      establishment,
+      fsmStatus,
+      media,
+    } = callReport;
+
+    expect(dataAnalysis.track).toHaveBeenCalledWith(
+      'Jup_Web/DT_phone_call_media_report',
+      {
+        info: JSON.stringify({
+          id,
+          createTime,
+          sessionId,
+          ua,
+          direction,
+          establishment,
+          fsmStatus,
+          media,
+        }),
+        type: 'call',
+      },
+    );
   });
 });
