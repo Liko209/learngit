@@ -29,6 +29,9 @@ class AttachmentManagerViewComponent extends Component<
           onCancel={this.props.cancelDuplicateFiles}
           onCreate={this.props.uploadDuplicateFiles}
           onUpdate={this.props.updateDuplicateFiles}
+          btnCancelText={t('common.dialog.cancel')}
+          btnUpdateText={t('common.dialog.update')}
+          btnCreateText={t('common.dialog.create')}
         />
       );
     }

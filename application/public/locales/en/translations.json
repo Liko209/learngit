@@ -3,6 +3,8 @@
     "dialog": {
       "OK": "OK",
       "cancel": "Cancel",
+      "update": "Update",
+      "create": "Create",
       "done": "Done",
       "save": "Save",
       "send": "Send",
