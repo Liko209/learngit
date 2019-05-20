@@ -20,6 +20,7 @@ import {
   LoadingTimeDevelopSummaryDto,
   LoadingTimeReleaseSummaryDto
 } from "../models";
+import { DashboardService } from '.';
 
 class MetricService {
 
@@ -342,9 +343,8 @@ class MetricService {
       where: {
         name: {
           [Op.in]: [
-            // (await DashboardService.getVersionInfo(Config.jupiterDevelopHost)).jupiterVersion,
-            // (await DashboardService.getVersionInfo(Config.jupiterStageHost)).jupiterVersion
-            "1.3.1", "1.4.0"
+            (await DashboardService.getVersionInfo(Config.jupiterDevelopHost)).jupiterVersion,
+            (await DashboardService.getVersionInfo(Config.jupiterStageHost)).jupiterVersion
           ]
         }
       }
@@ -465,6 +465,7 @@ class MetricService {
         max = 0;
 
         maxHanleCount = -1;
+        minTime = maxTime = new Date(dtos[0]['start_time']).getTime();
         for (let dto of dtoArr) {
           time = new Date(dto['start_time']).getTime();
           minTime = minTime > time ? time : minTime;

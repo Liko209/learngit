@@ -667,6 +667,9 @@ class DashboardService {
     await PptrUtils.close(browser);
 
     _versionInfo[host] = info;
+
+    logger.info(`${host} => ${JSON.stringify(info)}`);
+    
     return info;
   }
 
