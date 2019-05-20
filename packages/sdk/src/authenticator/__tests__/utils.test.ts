@@ -11,9 +11,11 @@ import {
   setGlipAccountType,
 } from '../utils';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { AccountUserConfig, AuthUserConfig } from 'sdk/module/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
+import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 
-jest.mock('../../module/account/config');
+jest.mock('../../module/account/config/AccountUserConfig');
+jest.mock('../../module/account/config/AuthUserConfig');
 jest.mock('../../module/config/service/GlobalConfigService');
 
 describe('utils method', () => {

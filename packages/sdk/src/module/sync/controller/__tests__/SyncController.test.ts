@@ -18,6 +18,7 @@ import { AccountService } from '../../../../module/account';
 import { ServiceLoader, ServiceConfig } from '../../../../module/serviceLoader';
 import { notificationCenter, SERVICE } from 'sdk/service';
 import { SYNC_SOURCE } from '../../types';
+import { DaoGlobalConfig } from 'sdk/dao/config';
 
 jest.mock('../../config/SyncUserConfig');
 
@@ -28,9 +29,7 @@ jest.mock('../../../person');
 jest.mock('../../../group');
 jest.mock('../../../post');
 jest.mock('../../../item/service');
-jest.mock('../../../../module/account/config');
-jest.mock('../../../../module/account');
-jest.mock('../../../../module/account/service');
+jest.mock('../../../../module/account/config/AccountGlobalConfig');
 
 let groupConfigService: GroupConfigService;
 let personService: PersonService;
@@ -350,22 +349,9 @@ describe('SyncController ', () => {
         });
       });
       it('should clear data when call _handle504GateWayError', async () => {
-        jest.spyOn(syncController, '_firstLogin').mockResolvedValueOnce({});
-
-        itemService.clear.mockResolvedValueOnce({});
-        groupConfigService.clear.mockResolvedValueOnce({});
-        groupService.clear.mockResolvedValueOnce({});
-        personService.clear.mockResolvedValueOnce({});
-        postService.clear.mockResolvedValueOnce({});
-
+        DaoGlobalConfig.removeDBSchemaVersion = jest.fn();
         await syncController._handle504GateWayError();
-
-        expect(itemService.clear).toHaveBeenCalledTimes(1);
-        expect(postService.clear).toHaveBeenCalledTimes(1);
-        expect(groupConfigService.clear).toHaveBeenCalledTimes(1);
-        expect(groupService.clear).toHaveBeenCalledTimes(1);
-        expect(personService.clear).toHaveBeenCalledTimes(1);
-        expect(syncController._firstLogin).toHaveBeenCalledTimes(1);
+        expect(DaoGlobalConfig.removeDBSchemaVersion).toBeCalled();
       });
     });
   });

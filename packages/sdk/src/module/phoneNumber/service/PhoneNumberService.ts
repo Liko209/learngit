@@ -38,6 +38,10 @@ class PhoneNumberService extends EntityBaseService<PhoneNumber, string> {
       phoneNumber,
     );
   }
+
+  isValidNumber(toNumber: string) {
+    return this.getPhoneNumberController().isValidNumber(toNumber);
+  }
 }
 
 export { PhoneNumberService };

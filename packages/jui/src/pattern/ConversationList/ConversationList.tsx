@@ -5,7 +5,6 @@
  */
 import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
-
 import MuiMenuList from '@material-ui/core/MenuList';
 
 const StyledList = styled(MuiMenuList)`

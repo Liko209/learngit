@@ -250,4 +250,16 @@ describe('EntitySourceController', () => {
       expect(result).toBe('ENTITY.TESTENTITY');
     });
   });
+
+  describe('batchGet', () => {
+    it('should not throw error when get from server and error happens', async () => {
+      const ids = [1];
+      deactivatedDao.batchGet = jest.fn().mockResolvedValue([]);
+      entityPersistentController.batchGet = jest.fn().mockResolvedValue([]);
+      requestController.get = jest.fn().mockImplementationOnce(() => {
+        throw new Error();
+      });
+      expect(entitySourceController.batchGet(ids)).resolves.toEqual([]);
+    });
+  });
 });

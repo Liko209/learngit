@@ -3,6 +3,7 @@
  * @Date: 2019-04-02 09:12:17
  * Copyright © RingCentral. All rights reserved.
  */
+import { createContext } from 'react';
 import { LoadingMorePlugin } from '@/plugins';
 import { Post } from 'sdk/module/post/entity';
 import { ISortableModelWithData } from '@/store/base/fetch/types';
@@ -40,4 +41,10 @@ type SuccinctPost = {
   deactivated?: boolean;
 };
 
-export { StreamProps, StreamViewProps, SuccinctPost };
+type StreamContextInfo = {
+  isShow: boolean;
+};
+
+const StreamContext = createContext<StreamContextInfo>({ isShow: true });
+
+export { StreamProps, StreamViewProps, SuccinctPost, StreamContext };
