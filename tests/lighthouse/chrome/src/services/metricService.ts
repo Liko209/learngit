@@ -20,7 +20,6 @@ import {
   LoadingTimeDevelopSummaryDto,
   LoadingTimeReleaseSummaryDto
 } from "../models";
-import { DashboardService } from '.';
 
 class MetricService {
 
@@ -355,7 +354,7 @@ class MetricService {
     }
 
     const release = isRelease ? 1 : 0;
-    const versionName = isDevelop ? "dev" : version.name;
+    const versionName = isDevelop ? "develop" : version.name;
 
     let dtos = await LoadingTimeItemDto.sequelize.query("select i.*, s.start_time from t_loading_time_summary ss  join t_scene s on s.id=ss.scene_id join t_loading_time_item i on i.summary_id=ss.id where ss.name=? and s.name=? and s.app_version=? and s.is_release=?",
       {
@@ -444,18 +443,16 @@ class MetricService {
       const summaryIds = Object.keys(map).map(a => parseInt(a));
       summaryIds.sort((a, b) => a > b ? 1 : -1);
       const points = [0, 0, 0, 0, 0, 0, 0]; // max 7 point for develop branch
-      const blank = [];
       for (let i = 0; i < summaryIds.length; i++) {
         points[i % points.length]++;
       }
 
       let index = 0;
+      let branchIndex = 1;
       for (let idx of points) {
         if (idx === 0) {
           continue;
         }
-
-        blank.push(' ');
 
         let dtoArr = [];
         for (let i = 0; i < idx; i++) {
@@ -466,6 +463,7 @@ class MetricService {
         sum = 0;
         min = 60000000;
         max = 0;
+
         maxHanleCount = -1;
         for (let dto of dtoArr) {
           time = new Date(dto['start_time']).getTime();
@@ -491,7 +489,7 @@ class MetricService {
 
         versionSummary = {
           versionId: version.id,
-          version: [...blank, versionName, ...blank].join(''),
+          version: [versionName, '_', branchIndex++].join(''),
           name: summary.name,
           uiMaxTime: 0,
           uiAvgTime: 0,
