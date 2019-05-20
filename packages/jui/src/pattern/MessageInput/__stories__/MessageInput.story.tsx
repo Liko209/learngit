@@ -133,6 +133,9 @@ storiesOf('Pattern/MessageInput', module).add('JuiDuplicateAlert', () => {
         onCancel={() => callback('cancel')}
         onCreate={() => callback('create')}
         onUpdate={() => callback('update')}
+        btnCancelText="Cancel"
+        btnUpdateText="Update"
+        btnCreateText="Create"
       />
     </div>
   );
