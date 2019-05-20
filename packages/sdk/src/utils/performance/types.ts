@@ -39,6 +39,8 @@ export enum PERFORMANCE_KEYS {
   FETCH_LEFT_RAIL = 'fetch_left_rail',
   UNIFIED_LOGIN = 'unified_login',
   FIRST_LOGIN = 'first_login',
+  LOAD_PHONE_PARSER = 'load_phone_parser',
+  INIT_PHONE_PARSER = 'init_phone_parser',
 }
 
 export type PerformanceInfo = {

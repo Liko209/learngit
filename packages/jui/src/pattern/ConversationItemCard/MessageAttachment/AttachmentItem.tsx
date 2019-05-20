@@ -18,6 +18,7 @@ type AttachmentItemProps = {
 const Wrapper = styled.div<{ hasThumb?: boolean; leftBorderColor?: string }>`
   min-height: ${height(25)};
   position: relative;
+  /* copy from dThor */
   background: #fcfcfc;
   border: 1px solid #eff0ef;
   margin: ${spacing(2.5, 0, 2.5, 0)};

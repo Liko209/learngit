@@ -7,16 +7,16 @@
 import { AccountService } from '..';
 import { PersonService } from '../../../person';
 import { RCAuthApi } from '../../../../api';
-import {
-  AccountUserConfig,
-  AccountGlobalConfig,
-} from '../../../account/config';
+import { AccountGlobalConfig } from '../../../account/config';
+import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
 import { ServiceLoader } from '../../../serviceLoader';
+import { setRCToken } from '../../../../authenticator/utils';
 
-// jest.mock('../../../../dao');
 jest.mock('../../../serviceLoader');
 jest.mock('../../../person');
 jest.mock('../../../../api');
+jest.mock('../../../account/config/AccountUserConfig');
+jest.mock('../../../account/config/AuthUserConfig');
 jest.mock('../../../account/config');
 
 describe('AccountService', () => {
@@ -27,6 +27,7 @@ describe('AccountService', () => {
     personService = new PersonService();
     ServiceLoader.getInstance.mockReturnValue(personService);
     accountService = new AccountService(null);
+    setRCToken = jest.fn();
   });
 
   describe('getCurrentUserInfo()', () => {
@@ -66,7 +67,7 @@ describe('AccountService', () => {
   });
 
   describe('refreshRCToken()', () => {
-    it('should refresh rc roken if api return data', () => {
+    it('should refresh rc token if api return data', () => {
       const result = {
         timestamp: 1,
         accessTokenExpireIn: 6001,

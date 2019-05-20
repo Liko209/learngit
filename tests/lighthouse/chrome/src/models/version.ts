@@ -40,6 +40,13 @@ class VersionDto extends Model<VersionDto> {
     field: 'end_time',
   })
   endTime?: Date;
+
+  @Column({
+    allowNull: false,
+    type: DataType.BOOLEAN,
+    field: 'is_release'
+  })
+  isRelease: boolean;
 }
 
 export {

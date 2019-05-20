@@ -4,5 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export * from './decorator';
-export * from './runner';
+export * from './core';

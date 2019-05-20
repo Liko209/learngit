@@ -3,10 +3,10 @@
  * @Date: 2019-04-29 14:03:13
  * Copyright © RingCentral. All rights reserved.
  */
-import { getGlobalValue } from '@/store/utils';
-import { createMockEntity, createMultiFn, descriptorAOP } from './utils';
+import { getSingleEntity } from '@/store/utils';
+import { createMockEntity, createMultiFn, descriptorAOP } from '../core/utils';
 
-function mockGlobalValue(data: any) {
+function mockSingleEntity(data: any) {
   return function (
     target: any,
     property: string,
@@ -17,7 +17,7 @@ function mockGlobalValue(data: any) {
 
     const _mockEntity = (args: any) => {
       const isEach = descriptor.value.isEach;
-      (getGlobalValue as jest.Mock) = createMockEntity(data, args, isEach);
+      (getSingleEntity as jest.Mock) = createMockEntity(data, args, isEach);
     };
 
     descriptor.value = descriptorAOP(hasParam, _mockEntity, oldFn);
@@ -25,7 +25,7 @@ function mockGlobalValue(data: any) {
   };
 }
 
-mockGlobalValue.multi = function (data: any[]) {
+mockSingleEntity.multi = function (data: any[]) {
   return function (
     target: any,
     property: string,
@@ -35,7 +35,7 @@ mockGlobalValue.multi = function (data: any[]) {
     const hasParam = oldFn.length > 0;
 
     const _mockGlobalValue = () => {
-      (getGlobalValue as jest.Mock) = createMultiFn(data);
+      (getSingleEntity as jest.Mock) = createMultiFn(data);
     };
 
     descriptor.value = descriptorAOP(hasParam, _mockGlobalValue, oldFn);
@@ -43,4 +43,4 @@ mockGlobalValue.multi = function (data: any[]) {
   };
 };
 
-export { mockGlobalValue };
+export { mockSingleEntity };

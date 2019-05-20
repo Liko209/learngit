@@ -17,6 +17,8 @@ describe('AccountGlobalConfig', () => {
       get: jest.fn(),
       put: jest.fn(),
       remove: jest.fn(),
+      on: jest.fn(),
+      off: jest.fn(),
     };
     ServiceLoader.getInstance = jest
       .fn()
@@ -43,6 +45,24 @@ describe('AccountGlobalConfig', () => {
     expect(mockGlobalConfigService.remove).toHaveBeenCalledWith(
       MODULE,
       ACCOUNT_KEYS.USER_DICTIONARY,
+    );
+  });
+  it('should call on when observeUserDictionary', () => {
+    const listener = () => {};
+    AccountGlobalConfig.observeUserDictionary(listener);
+    expect(mockGlobalConfigService.on).toHaveBeenCalledWith(
+      MODULE,
+      ACCOUNT_KEYS.USER_DICTIONARY,
+      listener,
+    );
+  });
+  it('should call off when unobserveUserDictionary', () => {
+    const listener = () => {};
+    AccountGlobalConfig.unobserveUserDictionary(listener);
+    expect(mockGlobalConfigService.off).toHaveBeenCalledWith(
+      MODULE,
+      ACCOUNT_KEYS.USER_DICTIONARY,
+      listener,
     );
   });
 });

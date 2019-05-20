@@ -10,7 +10,8 @@ import { EntityCacheController } from 'sdk/framework/controller/impl/EntityCache
 import { IPersonService } from '../service/IPersonService';
 import { SearchUtils } from 'sdk/framework/utils/SearchUtils';
 import { PhoneNumberType } from 'sdk/module/phoneNumber/types';
-import { AccountUserConfig } from 'sdk/module/account/config';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { AccountService } from 'sdk/module/account';
 
 const soundex = require('soundex-code');
 
@@ -81,7 +82,9 @@ class PersonEntityCacheController extends EntityCacheController<Person> {
     }
     if (person.sanitized_rc_extension) {
       if (!this._companyId) {
-        const userConfig = new AccountUserConfig();
+        const userConfig = ServiceLoader.getInstance<AccountService>(
+          ServiceConfig.ACCOUNT_SERVICE,
+        ).userConfig;
         this._companyId = userConfig.getCurrentCompanyId();
       }
       const ext = person.sanitized_rc_extension.extensionNumber;

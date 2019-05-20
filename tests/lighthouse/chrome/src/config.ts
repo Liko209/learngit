@@ -32,6 +32,8 @@ class ConfigWrapper {
   public jupiterLoginUrl: string;
   public jupiterHost: string;
   public jupiterReleaseHost: string;
+  public jupiterStageHost: string;
+  public jupiterDevelopHost: string;
   public jupiterAppKey: string;
   public jupiterAppSecret: string;
   /* jupiter config */
@@ -83,6 +85,8 @@ class ConfigWrapper {
     this.jupiterLoginUrl = this.getValue("JUPITER_LOGIN_URL", "https://xmn02-i01-mck02.lab.nordigy.ru/jupiter/login");
     this.jupiterHost = this.getValue("JUPITER_HOST", "https://develop.fiji.gliprc.com");
     this.jupiterReleaseHost = this.getValue("JUPITER_RELEASE_HOST", "https://release.fiji.gliprc.com");
+    this.jupiterStageHost = this.getValue("JUPITER_STAGE_HOST", "https://stage.fiji.gliprc.com");
+    this.jupiterDevelopHost = this.getValue("JUPITER_DEVELOP_HOST", "https://develop.fiji.gliprc.com");
     this.jupiterAppKey = this.getValue("JUPITER_APP_KEY", "YCWFuqW8T7-GtSTb6KBS6g");
     this.jupiterAppSecret = this.getValue("JUPITER_APP_SECRET", "vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA");
     /* jupiter config */

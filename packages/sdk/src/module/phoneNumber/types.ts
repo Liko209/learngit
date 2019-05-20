@@ -13,4 +13,6 @@ enum PhoneNumberType {
   CompanyFaxNumber = 'CompanyFaxNumber',
 }
 
-export { PhoneNumberType };
+const PhoneNumberAnonymous = 'anonymous';
+
+export { PhoneNumberType, PhoneNumberAnonymous };

@@ -6,7 +6,6 @@
 
 import React, { ComponentType, createContext } from 'react';
 import { highlightFormatter, cascadingCreate, cascadingGet } from './utils';
-import _ from 'lodash';
 
 type HighlightProps = string[];
 
@@ -16,6 +15,7 @@ type HighlightContextInfo = {
 
 type withHighlightProps = {
   noHighlight?: boolean;
+  forwardedRef?: React.RefObject<any>;
 };
 const SearchHighlightContext = createContext<HighlightContextInfo>({
   keyword: '',
@@ -24,7 +24,8 @@ const SearchHighlightContext = createContext<HighlightContextInfo>({
 const withHighlight = (highlightProps: HighlightProps) => <P extends object>(
   Component: ComponentType<P> | React.FunctionComponent<P>,
 ) => {
-  class ComponentWithHighlight extends React.Component<P & withHighlightProps> {
+  type Props = P & withHighlightProps;
+  class ComponentWithHighlight extends React.Component<Props> {
     static contextType = SearchHighlightContext;
     context: HighlightContextInfo;
     render() {
@@ -43,11 +44,12 @@ const withHighlight = (highlightProps: HighlightProps) => <P extends object>(
           }
         });
       }
-      return <Component {...this.props} {...newProps} />;
+      return <Component {...this.props} {...newProps} ref={this.props.forwardedRef}/>;
     }
   }
-
-  return ComponentWithHighlight;
+  return React.forwardRef((props: Props, ref: React.RefObject<any>) => {
+    return <ComponentWithHighlight {...props} forwardedRef={ref} />;
+  });
 };
 
 export { withHighlight, SearchHighlightContext, HighlightProps };

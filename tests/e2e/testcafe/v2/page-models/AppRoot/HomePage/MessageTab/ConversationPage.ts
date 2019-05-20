@@ -640,6 +640,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
+  get href(){
+    return this.self.find(`[href]`)
+  }
+
   get img() {
     this.warnFlakySelector(); // todo: all specify item...
     return this.body.find('img');
@@ -899,6 +903,13 @@ export class PostItem extends BaseWebComponent {
     await this.t.expect(this.isHighLight).ok();
   }
 
+  get phoneLink() {
+    return this.getSelectorByAutomationId('phoneNumberLink', this.self);
+  }
+
+  phoneLinkByDataId(dataId: string) {
+    return this.phoneLink.withAttribute('data-id', dataId);
+  }
   // be searched item
   get keyworkdsByHighLight() {
     return this.self.find('span.highlight-term');

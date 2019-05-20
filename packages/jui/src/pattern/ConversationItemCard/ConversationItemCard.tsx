@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { JuiIconography } from '../../foundation/Iconography';
-import styled, { css } from '../../foundation/styled-components';
+import styled from '../../foundation/styled-components';
 import { JuiCardContent, JuiCard } from '../../components/Cards';
 import { spacing, typography, palette } from '../../foundation/utils/styles';
 import { omit } from 'lodash';
@@ -56,7 +56,7 @@ const ItemCardHeader = styled.div<{
   titleColor?: [keyof Palette, string];
 }>`
   position: relative;
-  padding: ${spacing(4, 4, 0, 4)};
+  padding: ${spacing(4)};
   padding-right: ${({ buttonNumber }) => calcActionBarWith(buttonNumber)}px;
   display: flex;
   ${typography('body1')};
@@ -72,15 +72,9 @@ const ItemCardContent = styled(props => (
 ))<{
   hasPadding: boolean;
 }>`
-  && {
-    ${({ hasPadding }) =>
-      hasPadding
-        ? css`
-            padding: ${spacing(0, 4, 5, 10)} !important;
-          `
-        : css`
-            padding: ${spacing(0, 0, 0, 0)} !important;
-          `}
+  &&& {
+    padding: ${({ hasPadding }) =>
+      hasPadding ? spacing(0, 4, 5, 10) : spacing(0, 0, 0, 0)};
     ${typography('body1')};
   }
 `;
@@ -133,7 +127,6 @@ class JuiConversationItemCardComponent extends React.PureComponent<
       showHeaderActions,
       ...rest
     } = this.props;
-
     return (
       <ItemCardWrapper className="conversation-item-cards" {...rest}>
         <ItemCardHeader

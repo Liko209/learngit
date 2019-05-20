@@ -30,6 +30,7 @@ const StyledReply = styled.div`
   background-color: ${palette('common', 'white')};
   padding-top: ${spacing(6)};
   height: ${height(99)};
+  box-sizing: border-box;
 `;
 
 const StyledList = styled(JuiList)`
