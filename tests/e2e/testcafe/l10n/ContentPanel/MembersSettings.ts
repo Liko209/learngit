@@ -46,7 +46,7 @@ test(formalName('Check the MembersSettings page',['P2', 'ContentPanel','Messages
   await h(t).withLog('When I hover settings button', async () => {
     await t.hover(profileDialog.settingButton);
   })
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamSettings'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamHostSettings'})
 
   await h(t).withLog('When I click more button', async () => {
     await t.click(profileDialog.moreIcon);
