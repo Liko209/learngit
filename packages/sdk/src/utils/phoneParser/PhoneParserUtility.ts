@@ -20,14 +20,16 @@ import { RC_INFO } from '../../service/eventKey';
 import { RCInfoService } from '../../module/rcInfo';
 import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
 import { StationSettingInfo } from './types';
+import { UndefinedAble } from 'sdk/types';
+import { MODULE_STATUS, COUNTRY_CODE } from './constants';
+import { PerformanceTracer, PERFORMANCE_KEYS } from '../performance';
 
-const MODULE_LOADING_TIME_OUT: number = 60000; // 1 minute
 const PhoneParserModule: ModuleClass = Module;
 
 class PhoneParserUtility {
   private static _phoneParserModule: ModuleType;
-  private static _moduleLoadingTime: number = 0;
-  private static _moduleLoaded: boolean = false;
+  private static _moduleStatus: MODULE_STATUS = MODULE_STATUS.IDLE;
+  private static _loadingQueue: ((status: boolean) => void)[] = [];
   private static _initialized: boolean = false;
   private static _localPhoneDataLoaded: boolean = false;
   private _phoneParser: PhoneParser;
@@ -39,51 +41,74 @@ class PhoneParserUtility {
     );
   }
 
-  static loadModule(): void {
-    if (PhoneParserUtility._moduleLoaded) {
-      return;
+  static onPhoneDataChange = () => {
+    PhoneParserUtility.initPhoneParser(true);
+  }
+
+  static async loadModule(): Promise<boolean> {
+    if (PhoneParserUtility._moduleStatus === MODULE_STATUS.LOADED) {
+      return true;
     }
 
-    if (
-      Date.now() - PhoneParserUtility._moduleLoadingTime <
-      MODULE_LOADING_TIME_OUT
-    ) {
-      mainLogger.debug('PhoneParserUtility: module is loading...');
-      return;
+    if (PhoneParserUtility._moduleStatus === MODULE_STATUS.LOADING) {
+      return new Promise<boolean>(resolve => {
+        this._loadingQueue.push(resolve);
+      });
     }
 
-    if (PhoneParserUtility._moduleLoadingTime !== 0) {
-      mainLogger.error(
-        'PhoneParserUtility: module load timeout, will try again.',
-      );
-    }
+    notificationCenter.on(
+      RC_INFO.PHONE_DATA,
+      PhoneParserUtility.onPhoneDataChange,
+    );
 
-    PhoneParserUtility.loadLocalPhoneData();
-    try {
-      PhoneParserUtility._moduleLoadingTime = Date.now();
+    const performanceTracer = PerformanceTracer.initial();
+
+    return new Promise<boolean>(resolve => {
+      PhoneParserUtility._moduleStatus = MODULE_STATUS.LOADING;
       const params: ModuleParams = {
         onRuntimeInitialized: () => {
-          PhoneParserUtility.onModuleLoaded();
+          mainLogger.debug('PhoneParserUtility: module loaded successfully.');
+          PhoneParserUtility._moduleStatus = MODULE_STATUS.LOADED;
+          performanceTracer.end({
+            key: PERFORMANCE_KEYS.LOAD_PHONE_PARSER,
+            infos: true,
+          });
+          resolve(true);
+          PhoneParserUtility._loadingQueue.forEach(resolve => {
+            resolve(true);
+          });
+          PhoneParserUtility._loadingQueue = [];
+          PhoneParserUtility.loadLocalPhoneData().catch(err => {
+            mainLogger.warn(
+              `PhoneParserUtility: loadLocalPhoneData error: ${err}`,
+            );
+          });
         },
         locateFile: (fileName: string) => {
           return `/wasm/${fileName}`;
         },
       };
       PhoneParserUtility._phoneParserModule = new PhoneParserModule(params);
-    } catch (err) {
-      mainLogger.error(
+    }).catch(err => {
+      mainLogger.warn(
         `PhoneParserUtility: module failed to load, error: ${err}`,
       );
-      PhoneParserUtility._moduleLoaded = false;
-    }
-  }
+      PhoneParserUtility._moduleStatus = MODULE_STATUS.IDLE;
+      performanceTracer.end({
+        key: PERFORMANCE_KEYS.LOAD_PHONE_PARSER,
+        infos: false,
+      });
 
-  static onModuleLoaded(): void {
-    mainLogger.debug('PhoneParserUtility: module loaded successfully.');
-    PhoneParserUtility._moduleLoaded = true;
-    PhoneParserUtility.initPhoneParser(false);
-    notificationCenter.on(RC_INFO.PHONE_DATA, () => {
-      PhoneParserUtility.initPhoneParser(true);
+      notificationCenter.off(
+        RC_INFO.PHONE_DATA,
+        PhoneParserUtility.onPhoneDataChange,
+      );
+
+      PhoneParserUtility._loadingQueue.forEach(resolve => {
+        resolve(false);
+      });
+      PhoneParserUtility._loadingQueue = [];
+      return false;
     });
   }
 
@@ -108,7 +133,6 @@ class PhoneParserUtility {
         if (result) {
           await rcInfoService.setPhoneData(result);
           PhoneParserUtility._localPhoneDataLoaded = true;
-          PhoneParserUtility.initPhoneParser(true);
         }
       })
       .catch((error: any) => {
@@ -117,8 +141,7 @@ class PhoneParserUtility {
   }
 
   static async initPhoneParser(force: boolean): Promise<boolean> {
-    if (!PhoneParserUtility._moduleLoaded) {
-      PhoneParserUtility.loadModule();
+    if (!(await PhoneParserUtility.loadModule())) {
       return false;
     }
 
@@ -138,20 +161,38 @@ class PhoneParserUtility {
       mainLogger.debug('PhoneParserUtility: Storage phone data is invalid.');
       return false;
     }
-    const result = PhoneParserUtility._phoneParserModule.ReadRootNodeByString(
-      phoneData,
-    );
 
-    PhoneParserUtility._initialized = result;
-    mainLogger.debug('PhoneParserUtility: init result => ', result);
+    const performanceTracer = PerformanceTracer.initial();
 
-    if (result) {
-      await rcInfoService.setPhoneDataVersion(
-        PhoneParserUtility._phoneParserModule.GetPhoneDataFileVersion(),
+    return new Promise<boolean>(async resolve => {
+      const result = PhoneParserUtility._phoneParserModule.ReadRootNodeByString(
+        phoneData,
       );
-      await rcInfoService.loadRegionInfo();
-    }
-    return result;
+
+      PhoneParserUtility._initialized = result;
+      mainLogger.debug('PhoneParserUtility: init result => ', result);
+
+      if (result) {
+        await rcInfoService.setPhoneDataVersion(
+          PhoneParserUtility._phoneParserModule.GetPhoneDataFileVersion(),
+        );
+        await rcInfoService.loadRegionInfo();
+      }
+
+      performanceTracer.end({
+        key: PERFORMANCE_KEYS.INIT_PHONE_PARSER,
+        infos: result,
+      });
+
+      return resolve(result);
+    }).catch(err => {
+      mainLogger.warn('PhoneParserUtility: init error: ', err);
+      performanceTracer.end({
+        key: PERFORMANCE_KEYS.INIT_PHONE_PARSER,
+        infos: false,
+      });
+      return false;
+    });
   }
 
   static async canGetPhoneParser(): Promise<boolean> {
@@ -181,30 +222,28 @@ class PhoneParserUtility {
     return new PhoneParserUtility(phoneNumber, settingsKey);
   }
 
-  static async getPhoneDataFileVersion(): Promise<string | undefined> {
+  static async getPhoneDataFileVersion(): Promise<UndefinedAble<string>> {
     if (!(await PhoneParserUtility.canGetPhoneParser())) {
       return undefined;
     }
     return PhoneParserUtility._phoneParserModule.GetPhoneDataFileVersion();
   }
 
-  static getStationCountryCode(): string | undefined {
-    if (!PhoneParserUtility._moduleLoaded) {
-      PhoneParserUtility.loadModule();
+  static async getStationCountryCode(): Promise<UndefinedAble<string>> {
+    if (!(await PhoneParserUtility.loadModule())) {
       return undefined;
     }
     return PhoneParserUtility._phoneParserModule.GetStationCountryCode();
   }
 
-  static getStationAreaCode(): string | undefined {
-    if (!PhoneParserUtility._moduleLoaded) {
-      PhoneParserUtility.loadModule();
+  static async getStationAreaCode(): Promise<UndefinedAble<string>> {
+    if (!(await PhoneParserUtility.loadModule())) {
       return undefined;
     }
     return PhoneParserUtility._phoneParserModule.GetStationAreaCode();
   }
 
-  static setStationLocation(info: StationSettingInfo): boolean {
+  static async setStationLocation(info: StationSettingInfo): Promise<boolean> {
     const {
       szCountryCode,
       szAreaCode,
@@ -215,8 +254,7 @@ class PhoneParserUtility {
       shortPinLen = 0,
       outboundCallPrefix = '',
     } = info;
-    if (!PhoneParserUtility._moduleLoaded) {
-      PhoneParserUtility.loadModule();
+    if (!(await PhoneParserUtility.loadModule())) {
       return false;
     }
 
@@ -233,9 +271,8 @@ class PhoneParserUtility {
     return true;
   }
 
-  static getStationSettingsKey(): SettingsKey | undefined {
-    if (!PhoneParserUtility._moduleLoaded) {
-      PhoneParserUtility.loadModule();
+  static async getStationSettingsKey(): Promise<SettingsKey> {
+    if (!(await PhoneParserUtility.loadModule())) {
       return undefined;
     }
     return PhoneParserUtility._phoneParserModule.GetStationSettingsKey();
@@ -262,12 +299,17 @@ class PhoneParserUtility {
     return regionalInfo ? !regionalInfo.HasBan() : false;
   }
 
-  static isStationUK(): boolean {
-    return PhoneParserUtility.getStationCountryCode() === '44';
+  static async isStationUK(): Promise<boolean> {
+    return (
+      (await PhoneParserUtility.getStationCountryCode()) === COUNTRY_CODE.UK
+    );
   }
 
-  static isStationUSorCA(): boolean {
-    return PhoneParserUtility.getStationCountryCode() === '1';
+  static async isStationUSorCA(): Promise<boolean> {
+    return (
+      (await PhoneParserUtility.getStationCountryCode()) ===
+      COUNTRY_CODE.US_OR_CA
+    );
   }
 
   getE164(addDtmfPostfix: boolean = true): string {

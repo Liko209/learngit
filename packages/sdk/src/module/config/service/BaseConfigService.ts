@@ -32,7 +32,6 @@ class BaseConfigService extends AbstractService {
     notificationCenter.emit(
       `${this._ns}.${module}.${key}`,
       CONFIG_EVENT_TYPE.UPDATE,
-      key,
       value,
     );
   }
@@ -46,7 +45,6 @@ class BaseConfigService extends AbstractService {
     notificationCenter.emit(
       `${this._ns}.${module}.${key}`,
       CONFIG_EVENT_TYPE.REMOVE,
-      key,
     );
   }
 

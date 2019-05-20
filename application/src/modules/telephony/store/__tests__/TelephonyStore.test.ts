@@ -202,4 +202,16 @@ describe('Telephony store', () => {
     store.onDialerInputBlur();
     expect(store.dialerInputFocused).toBe(false);
   });
+
+  it('reset status when the call status is idle', () => {
+    const store = createStore();
+    store.callerName = 'name';
+    store.phoneNumber = '112233';
+    store.isMute = true;
+    store.directCall();
+    store.end();
+    expect(store.callerName).toBeUndefined();
+    expect(store.phoneNumber).toBeUndefined();
+    expect(store.isMute).toBeFalsy();
+  });
 });

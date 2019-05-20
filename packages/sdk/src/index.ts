@@ -34,4 +34,5 @@ export {
   dataAnalysis,
   logManager,
   SessionManager,
+  DateFormatter,
 } from 'foundation';

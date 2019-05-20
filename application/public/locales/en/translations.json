@@ -536,7 +536,7 @@
       "stopRecord": "Stop recording",
       "minimize": "Minimize the dialog"
     },
-    "dialerPlaceholder": "Type a number",
+    "dialerPlaceholder": "Enter a number",
     "delete": "Delete",
     "callFrom": "Call from:",
     "phoneNumberType": {

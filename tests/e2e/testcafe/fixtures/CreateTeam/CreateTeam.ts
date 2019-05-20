@@ -11,7 +11,8 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { IGroup } from '../../v2/models';
+import {IGroup, ITestMeta} from '../../v2/models';
+import * as faker from 'faker/locale/en';
 
 fixture('CreateTeam')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -448,5 +449,241 @@ test(formalName('Check \"Allow members to add other members\" can be turn on/off
 
   await h(t).withLog('Then I should not see "Add team members" button', async () => {
     await t.expect(app.homePage.profileDialog.addMembersIcon.exists).notOk();
+  });
+});
+
+test.meta(<ITestMeta> {
+  priority: ['P1'],
+  caseIds: ['JPT-121'],
+  maintainers: ['ali.naffaa'],
+  keywords: ['CreateTeam'],
+})('Allow members to post messages" can be turn on or off in the create new team.', async (t: TestController) => {
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const loginUser = users[4];
+    await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfileAndState();
+
+    const otherUser = users[5];
+    await h(t).glip(otherUser).init();
+    const teamNames = [uuid(), uuid()];
+    const anotherUserName = await h(t).glip(loginUser).getPerson(otherUser.rcId).then(res => res.data.display_name);
+
+    const createTeam = async (teamName: string) => {
+      await app.homePage.createTeamModal.typeTeamName(teamName);
+      await app.homePage.createTeamModal.memberInput.addMember(anotherUserName);
+      await app.homePage.createTeamModal.clickCreateButton();
+    };
+
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
+        await app.homePage.ensureLoaded();
+      },
+    );
+    await h(t).withLog('And click "Create Team" button on top bar', async () => {
+      await app.homePage.openAddActionMenu();
+      await app.homePage.addActionMenu.createTeamEntry.enter();
+
+    });
+
+    await h(t).withLog('Then check toggle is On for \'Allow members to post messages\'', async () => {
+      await t.expect(await app.homePage.createTeamModal.mayPostMessageToggle().checked).ok();
+    });
+
+    await h(t).withLog('And create a team', async () => {
+      await createTeam(teamNames[0]);
+    });
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${otherUser.company.number}#${otherUser.extension} as member`,
+      async () => {
+        await app.homePage.logoutThenLoginWithUser(SITE_URL, otherUser);
+        await app.homePage.ensureLoaded();
+      },
+    );
+
+    await h(t).withLog('And open a team', async () => {
+        await app.homePage.messageTab.teamsSection.conversationEntryByName(teamNames[0]).enter();
+      },
+    );
+
+    await h(t).withLog('Then team member can see input box in the team', async () => {
+        await t.expect(await app.homePage.messageTab.conversationPage.messageInputArea.exists).ok();
+      },
+    );
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
+      async () => {
+        await app.homePage.logoutThenLoginWithUser(SITE_URL, loginUser);
+        await app.homePage.ensureLoaded();
+      },
+    );
+
+    await h(t).withLog('And click "Create Team" button on top bar', async () => {
+        await app.homePage.openAddActionMenu();
+        await app.homePage.addActionMenu.createTeamEntry.enter();
+      },
+    );
+
+    await h(t).withLog('When I turn off the “Allow members to post messages” toggle', async () => {
+        await app.homePage.createTeamModal.turnOffMayPostMessage();
+      },
+    );
+
+    await h(t).withLog('Then the toggle can be turn off', async () => {
+        await t.expect(await app.homePage.createTeamModal.mayPostMessageToggle().checked).notOk();
+      },
+    );
+
+    await h(t).withLog('And create a team', async () => {
+      await createTeam(teamNames[1]);
+    });
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${otherUser.company.number}#${otherUser.extension} as member`,
+      async () => {
+        await app.homePage.logoutThenLoginWithUser(SITE_URL, otherUser);
+        await app.homePage.ensureLoaded();
+      },
+    );
+
+    await h(t).withLog('And open a team', async () => {
+        await app.homePage.messageTab.teamsSection.conversationEntryByName(teamNames[1]).enter();
+      },
+    );
+
+    await h(t).withLog('Then team member should not see input box in the team', async () => {
+        await t.expect(await app.homePage.messageTab.conversationPage.messageInputArea.exists).notOk();
+      },
+    );
+  });
+
+test.meta(<ITestMeta> {
+  priority: ['P2'],
+  caseIds: ['JPT-104'],
+  maintainers: ['ali.naffaa'],
+  keywords: ['CreateTeam'],
+})('Check any characters can be enter into input box of Team Name', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  await h(t).platform(loginUser).init();
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
+  const createTeamModal = app.homePage.createTeamModal;
+
+  const enterSymbols = async (text: string) => {
+    await createTeamModal.ensureLoaded();
+    await createTeamModal.typeTeamName(text);
+    await createTeamModal.memberInput.typeText(text, { replace: true });
+    await createTeamModal.typeTeamDescription(text);
+  };
+
+  const checkResult = async (text: string) => {
+    await t.expect(createTeamModal.teamNameInput.value).eql(text);
+    await t.expect(createTeamModal.memberInput.InputArea.value).eql(text);
+    await t.expect(createTeamModal.teamDescriptionInput.value).eql(text);
+  };
+
+  await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    },
+  );
+
+  await h(t).withLog('When I click "Create Team" button on top bar', async () => {
+    await app.homePage.openAddActionMenu();
+    await app.homePage.addActionMenu.createTeamEntry.enter();
+  });
+
+  const specialSymbols = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
+  const alphanumeric = faker.random.alphaNumeric(15);
+  const asianSymbols = '\u2e80\u2e81\u2ee7\u2f87\u3028\u3226\u3359\u3400\u3598\u3D18\u4027\u4618\u4808\u4CB9';
+  await h(t).withLog(`When enter alphanumeric ${alphanumeric} characters into the fields`, async () => {
+    await enterSymbols(alphanumeric);
+  });
+
+  await h(t).withLog('Then they can be input into fields', async () => {
+    await checkResult(alphanumeric);
+  });
+
+  await h(t).withLog(`When enter asian ${asianSymbols} characters into the fields`, async () => {
+    await enterSymbols(asianSymbols);
+  });
+
+  await h(t).withLog('Then they can be input into fields', async () => {
+    await checkResult(asianSymbols);
+  });
+
+  await h(t).withLog(`When enter specific ${specialSymbols} characters into the fields`, async () => {
+    await enterSymbols(specialSymbols);
+  });
+
+  await h(t).withLog('Then they can be input into fields', async () => {
+    await checkResult(specialSymbols);
+  });
+});
+
+test.meta(<ITestMeta> {
+  priority: ['P2'],
+  caseIds: ['JPT-115'],
+  maintainers: ['ali.naffaa'],
+  keywords: ['CreateTeam'],
+})('Check "Invite Type" can be chosen and save in the create new team', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const otherUser = users[5];
+  const workerUser = users[1];
+  await h(t).platform(loginUser).init();
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
+  await h(t).scenarioHelper.resetProfileAndState(workerUser);
+  const otherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', otherUser.rcId);
+  const createTeamModal = app.homePage.createTeamModal;
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    },
+  );
+
+  await h(t).withLog('And I click "Create Team" button on top bar', async () => {
+    await app.homePage.openAddActionMenu();
+    await app.homePage.addActionMenu.createTeamEntry.enter();
+  });
+
+  await h(t).withLog('Then Toggle is OFF, Private (invite only) is the default option', async () => {
+    await createTeamModal.ensureLoaded();
+    await t.expect(createTeamModal.isPublicToggle.checked).notOk();
+  });
+
+  await h(t).withLog('When I turn on "Public Team (visible to any co-worker)". ', async () => {
+    await createTeamModal.turnOnIsPublic();
+  });
+
+  await h(t).withLog('Then toggle "Public Team (visible to any co-worker)" can be turn on', async () => {
+    await t.expect(createTeamModal.isPublicToggle.checked).ok();
+  });
+  const teamName = uuid();
+  await h(t).withLog(`When I save team ${teamName}`, async () => {
+    await createTeamModal.turnOnIsPublic();
+    await createTeamModal.typeTeamName(teamName);
+    await createTeamModal.memberInput.typeText(otherUserName);
+    await createTeamModal.clickCreateButton();
+  });
+
+  await h(t).withLog(`And I logout and then login Jupiter with ${workerUser.company.number}#${workerUser.extension}`, async () => {
+    await app.homePage.openSettingMenu();
+    await app.homePage.settingMenu.clickLogout();
+    await h(t).directLoginWithUser(SITE_URL, workerUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I type team name ${teamName} in search input area`, async () => {
+    await app.homePage.header.searchBar.clickSelf();
+    await app.homePage.searchDialog.typeSearchKeyword(teamName);
+  });
+
+  await h(t).withLog(`Then I should find ${teamName} team (visible to any co-worker)`, async () => {
+    await t.expect(app.homePage.searchDialog.instantPage.teams.withText(teamName).exists).ok();
   });
 });

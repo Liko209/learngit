@@ -137,7 +137,7 @@ class ConversationEntry extends BaseWebComponent {
   }
 
   async shouldBeInvisible() {
-    await this.t.expect(this.isVisible).notOk();
+    await this.t.expect(this.exists).notOk();
   }
 
   get umi() {

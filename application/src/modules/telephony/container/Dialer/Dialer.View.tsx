@@ -21,16 +21,19 @@ import { primary, palette } from 'jui/foundation/utils';
 import { Reply } from '../Reply';
 import { INCOMING_STATE } from '../../store';
 
+const makeSeconds = (val: number) => `${val}s`;
+const secondsToNumber = (val: string) => +val.replace('s', '');
+
 const ANIMATION_END_EVT = 'animationend';
 const SHADOW_SIZE = '20px';
-
-const EXPAND_SCALE = '1.4';
-const FADE_DURATION = '.5s';
+const EXPAND_SCALE = 1.4;
+const FADE_DURATION = makeSeconds(0.5);
 const MOVE_DURATION = FADE_DURATION;
-const ROUND_DURATION = '.6s';
-const BLINK_DURATION = '.4s';
-
-const MOVE_DELAY = `calc(${ROUND_DURATION} - ${MOVE_DURATION})`;
+const ROUND_DURATION = makeSeconds(0.6);
+const BLINK_DURATION = makeSeconds(0.4);
+const MOVE_DELAY = makeSeconds(
+  secondsToNumber(ROUND_DURATION) - secondsToNumber(MOVE_DURATION),
+);
 const BLINK_DELAY = ROUND_DURATION;
 
 const DEFAULT_TRANSFORMATION_BEZIER = 'ease-in-out';
@@ -113,15 +116,25 @@ class DialerViewComponent extends React.Component<DialerViewProps> {
     this._makeAnimationPromise();
   }
 
+  /**
+   * FIXME: it's dangerous using sCU in observer component, we need to separate the animation of fade-in-out of the dialog
+   * and ball fly animation into different trigger conditions so that they won't interfere each other
+   */
   shouldComponentUpdate(nextProps: DialerViewProps) {
-    const { callState, callWindowState } = nextProps;
-    if (
-      callState === CALL_STATE.IDLE ||
-      callWindowState === CALL_WINDOW_STATUS.MINIMIZED
-    ) {
-      return false;
+    const { callState, callWindowState, incomingState } = nextProps;
+    switch (true) {
+      case callState === CALL_STATE.INCOMING &&
+        this.props.incomingState === INCOMING_STATE.REPLY &&
+        incomingState === INCOMING_STATE.REPLY:
+        return false;
+      case callState === CALL_STATE.IDLE &&
+        this.props.callState === CALL_STATE.IDLE:
+        return false;
+      case callWindowState === CALL_WINDOW_STATUS.MINIMIZED:
+        return false;
+      default:
+        return true;
     }
-    return true;
   }
 
   componentWillUpdate() {
@@ -157,6 +170,8 @@ class DialerViewComponent extends React.Component<DialerViewProps> {
       xScale,
       yScale,
       incomingState,
+      onDialerFocus,
+      onDialerBlur,
     } = this.props;
 
     const round = ({ theme }: any) => keyframes`
@@ -340,7 +355,7 @@ class DialerViewComponent extends React.Component<DialerViewProps> {
               data-test-automation-id="dialer-fade-animation-container"
               ref={this._fadeContainerRef as any}
             >
-              <JuiDialer>
+              <JuiDialer onFocus={onDialerFocus} onBlur={onDialerBlur}>
                 {callState === CALL_STATE.INCOMING &&
                   (incomingState === INCOMING_STATE.REPLY ? (
                     <Reply />

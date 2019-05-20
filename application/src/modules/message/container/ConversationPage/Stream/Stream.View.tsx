@@ -39,7 +39,7 @@ import {
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
 import { goToConversation } from '@/common/goToConversation';
-import JuiConversationCard from 'jui/pattern/ConversationCard';
+import { JuiConversationCard } from 'jui/pattern/ConversationCard';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
 
