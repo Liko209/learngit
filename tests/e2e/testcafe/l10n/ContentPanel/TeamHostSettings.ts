@@ -6,10 +6,10 @@ import { AppRoot } from "../../v2/page-models/AppRoot";
 import { IGroup } from "../../v2/models";
 import { v4 as uuid } from 'uuid';
 
-fixture('ContentPanel/MembersSettings')
+fixture('ContentPanel/TeamHostSettings')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase());
-test(formalName('Check the MembersSettings page',['P2', 'ContentPanel','Messages', 'TeamSettings', 'MembersSettings', 'V1.4', 'Hanny.han']),async (t) => {
+test(formalName('Check the MembersSettings page',['P2', 'ContentPanel','Messages', 'TeamSettings', 'TeamHostSettings', 'V1.4', 'Hanny.han']),async (t) => {
   const users=h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const otherUser = users[5];
