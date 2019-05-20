@@ -67,8 +67,8 @@ class PhoneNumberController {
         if (plusPos === 0) {
           numberList.push(phoneNumber.substr(1));
         }
-        const localCountryCode = PhoneParserUtility.getStationCountryCode();
-        const localAreaCode = PhoneParserUtility.getStationAreaCode();
+        const localCountryCode = await PhoneParserUtility.getStationCountryCode();
+        const localAreaCode = await PhoneParserUtility.getStationAreaCode();
         if (localCountryCode && localCountryCode === countryCode) {
           const phoneWithoutCountryCode = e164Num.substr(
             pos + countryCode.length,

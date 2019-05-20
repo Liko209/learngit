@@ -34,6 +34,8 @@ type Props = ViewProps & WithTranslation;
 @observer
 class ReplyViewComponent extends React.Component<Props> {
   private _handleClickMap = {};
+  private _preDefinedCallbackTimeMenuItems: any;
+  private _preDefinedWillCallbackTimeMenuItems: any;
   private _handleClick = (
     pattern: RTC_REPLY_MSG_PATTERN,
     time?: number,
@@ -60,6 +62,12 @@ class ReplyViewComponent extends React.Component<Props> {
 
   componentDidMount() {
     const { startReply } = this.props;
+    this._preDefinedCallbackTimeMenuItems = this._generatePredefinedTimes(
+      RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER,
+    );
+    this._preDefinedWillCallbackTimeMenuItems = this._generatePredefinedTimes(
+      RTC_REPLY_MSG_PATTERN.WILL_CALL_YOU_BACK_LATER,
+    );
     startReply();
   }
 
@@ -89,6 +97,19 @@ class ReplyViewComponent extends React.Component<Props> {
       />
     );
   }
+  private _generatePredefinedTimes = (pattern: RTC_REPLY_MSG_PATTERN) => {
+    const { t } = this.props;
+
+    return predefinedTime.map(({ label, unit, value }, index) => (
+      <JuiPreDefineMenuItem
+        onClick={this._handleClick(pattern, value, unit)}
+        key={label}
+        automationId={`reply-with-${index}-type-time`}
+      >
+        {t(`telephony.predefinedTime.${label}`)}
+      </JuiPreDefineMenuItem>
+    ));
+  }
 
   private _CallBack = () => {
     const { t } = this.props;
@@ -99,18 +120,7 @@ class ReplyViewComponent extends React.Component<Props> {
           `telephony.predefinedMessage.${predefinedMessage.callMeBack.label}`,
         )}
       >
-        {predefinedTime.map(({ label, unit, value }) => (
-          <JuiPreDefineMenuItem
-            onClick={this._handleClick(
-              predefinedMessage.callMeBack.pattern,
-              value,
-              unit,
-            )}
-            key={label}
-          >
-            {t(`telephony.predefinedTime.${label}`)}
-          </JuiPreDefineMenuItem>
-        ))}
+        {this._preDefinedCallbackTimeMenuItems}
       </JuiPreDefineMessage>
     );
   }
@@ -125,19 +135,7 @@ class ReplyViewComponent extends React.Component<Props> {
         )}
         automationId="reply-with-will-call-back"
       >
-        {predefinedTime.map(({ label, unit, value }, index) => (
-          <JuiPreDefineMenuItem
-            onClick={this._handleClick(
-              predefinedMessage.willCallBack.pattern,
-              value,
-              unit,
-            )}
-            key={label}
-            automationId={`reply-with-${index}-type-time`}
-          >
-            {t(`telephony.predefinedTime.${label}`)}
-          </JuiPreDefineMenuItem>
-        ))}
+        {this._preDefinedWillCallbackTimeMenuItems}
       </JuiPreDefineMessage>
     );
   }

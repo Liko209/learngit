@@ -34,6 +34,13 @@ class DialerViewModel extends StoreViewModel<DialerProps>
 
   clearAnimationPromise = () => (this._animationPromise = null);
 
+  onDialerFocus = () => {
+    this._telephonyStore.onDialerFocus();
+  }
+  onDialerBlur = () => {
+    this._telephonyStore.onDialerBlur();
+  }
+
   dialerId = this._telephonyStore.dialerId;
 
   @computed
@@ -73,12 +80,12 @@ class DialerViewModel extends StoreViewModel<DialerProps>
 
   @computed
   get xScale() {
-    return `calc(${RADIUS} / ${this._telephonyStore.dialerWidth})`;
+    return `${RADIUS / this._telephonyStore.dialerWidth}`;
   }
 
   @computed
   get yScale() {
-    return `calc(${RADIUS} / ${this._telephonyStore.dialerHeight})`;
+    return `${RADIUS / this._telephonyStore.dialerHeight}`;
   }
 }
 

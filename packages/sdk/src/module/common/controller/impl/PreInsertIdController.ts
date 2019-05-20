@@ -5,28 +5,35 @@
  */
 
 import { IPreInsertIdController } from '../interface/IPreInsertIdController';
-import { mainLogger } from 'foundation';
 import { AccountGlobalConfig } from '../../../../module/account/config';
 import { UserConfigService } from '../../../../module/config';
 import { ServiceConfig, ServiceLoader } from '../../../serviceLoader';
 
 const PREINSERT_KEY_ID = 'PREINSERT_KEY_ID';
 
-const TAG = 'PreInsertIdController';
 class PreInsertIdController implements IPreInsertIdController {
-  private _versions: number[];
+  private _preInsertIds: Set<string>;
   private _modelName: string;
   constructor(modelName: string) {
     this._modelName = modelName;
-    this._initVersions();
+    this._preInsertIds = new Set();
+    this._initPreInsertIds();
   }
 
-  private _initVersions() {
+  private _initPreInsertIds() {
     const configService = ServiceLoader.getInstance<UserConfigService>(
       ServiceConfig.USER_CONFIG_SERVICE,
     );
     configService.setUserId(AccountGlobalConfig.getUserDictionary());
-    this._versions = configService.get(this._modelName, PREINSERT_KEY_ID) || [];
+    const ids = configService.get(this._modelName, PREINSERT_KEY_ID) || [];
+    for (let i = 0; i < ids.length; i++) {
+      const id = ids[i];
+      if (typeof id === 'number') {
+        this._preInsertIds.add(id.toString());
+      } else {
+        this._preInsertIds.add(id);
+      }
+    }
   }
 
   private _syncDataDB() {
@@ -34,43 +41,39 @@ class PreInsertIdController implements IPreInsertIdController {
       ServiceConfig.USER_CONFIG_SERVICE,
     );
     configService.setUserId(AccountGlobalConfig.getUserDictionary());
-    configService.put(this._modelName, PREINSERT_KEY_ID, this._versions);
+    configService.put(this._modelName, PREINSERT_KEY_ID, [
+      ...this._preInsertIds,
+    ]);
   }
 
-  isInPreInsert(version: number): boolean {
-    return !this._versions || !this._versions.length
-      ? false
-      : this._versions.includes(version);
+  isInPreInsert(preInsertId: string): boolean {
+    return this._preInsertIds.size
+      ? this._preInsertIds.has(preInsertId)
+      : false;
   }
 
-  async insert(version: number): Promise<void> {
-    if (this.isInPreInsert(version)) {
-      mainLogger.info(TAG, 'insert() version already in preinsert array');
-    }
-    this._versions.push(version);
+  async insert(preInsertId: string): Promise<void> {
+    this._preInsertIds.add(preInsertId);
     this._syncDataDB();
   }
 
-  async delete(version: number): Promise<void> {
-    const index = this._versions.indexOf(version);
-    if (index !== -1) {
-      this._versions.splice(index, 1);
+  async delete(preInsertId: string): Promise<void> {
+    if (this._preInsertIds.has(preInsertId)) {
+      this._preInsertIds.delete(preInsertId);
       this._syncDataDB();
     }
   }
 
-  async bulkDelete(versions: number[]): Promise<void> {
-    if (!versions || !versions.length) {
+  async bulkDelete(preInsertIds: string[]): Promise<void> {
+    if (!preInsertIds || !preInsertIds.length) {
       return;
     }
-    this._versions = this._versions.filter(
-      (version: number) => !versions.includes(version),
-    );
+    preInsertIds.forEach((id: string) => this._preInsertIds.delete(id));
     this._syncDataDB();
   }
 
-  getAll(): number[] {
-    return this._versions;
+  getAll(): string[] {
+    return [...this._preInsertIds];
   }
 }
 
