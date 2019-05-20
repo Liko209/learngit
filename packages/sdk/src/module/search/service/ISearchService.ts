@@ -5,19 +5,21 @@
  */
 
 import { RecentSearchTypes, RecentSearchModel } from '../entity';
+import { SearchUserConfig } from '../config/SearchUserConfig';
+
 interface ISearchService {
   addRecentSearchRecord(
     type: RecentSearchTypes,
     value: string | number,
     params: {},
-  ): void;
-  clearRecentSearchRecords(): void;
-  getRecentSearchRecords(): RecentSearchModel[];
-  removeRecentSearchRecords(ids: Set<number>): void;
-
+  ): Promise<void>;
+  clearRecentSearchRecords(): Promise<void>;
+  getRecentSearchRecords(): Promise<RecentSearchModel[]>;
+  removeRecentSearchRecords(ids: Set<number>): Promise<void>;
   getRecentSearchRecordsByType(
     type: RecentSearchTypes,
-  ): Map<number | string, RecentSearchModel>;
+  ): Promise<Map<number | string, RecentSearchModel>>;
+  userConfig: SearchUserConfig;
 }
 
 export { ISearchService };

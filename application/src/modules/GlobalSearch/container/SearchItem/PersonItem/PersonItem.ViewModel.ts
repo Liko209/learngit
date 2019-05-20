@@ -9,7 +9,7 @@ import { ENTITY_NAME } from '@/store';
 import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 import { SearchService } from 'sdk/module/search';
-
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { Props, ISearchItemModel, RecentSearchTypes } from '../types';
 import { SearchViewModel } from '../../common/Search.ViewModel';
 
@@ -23,7 +23,7 @@ class PersonItemViewModel extends SearchViewModel<Props>
       () => (person: PersonModel) => {
         this.props.didChange();
         if (person.deactivated) {
-          SearchService.getInstance().removeRecentSearchRecords(
+          this._getSearchService().removeRecentSearchRecords(
             new Set([person.id]),
           );
         }
@@ -42,9 +42,15 @@ class PersonItemViewModel extends SearchViewModel<Props>
   }
 
   addRecentRecord = () => {
-    SearchService.getInstance().addRecentSearchRecord(
+    this._getSearchService().addRecentSearchRecord(
       RecentSearchTypes.PEOPLE,
       this.props.id,
+    );
+  }
+
+  private _getSearchService() {
+    return ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
     );
   }
 }

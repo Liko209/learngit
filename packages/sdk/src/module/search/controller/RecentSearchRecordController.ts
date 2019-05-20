@@ -9,17 +9,18 @@ import { SearchService } from '../service';
 import { RecentSearchModel, RecentSearchTypes } from '../entity';
 import { serializeUrlParams } from '../../../utils';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { SearchUserConfig } from '../config/SearchUserConfig';
 
 const MAX_RECENT_LIMIT = 10;
 class RecentSearchRecordController {
-  constructor() {}
+  constructor(private _searchConfig: SearchUserConfig) {}
 
-  addRecentSearchRecord(
+  async addRecentSearchRecord(
     type: RecentSearchTypes,
     value: string | number,
     params: {},
   ) {
-    let recentRecords = this.getRecentSearchRecords();
+    let recentRecords = await this.getRecentSearchRecords();
     if (recentRecords.length === MAX_RECENT_LIMIT) {
       recentRecords.pop();
     }
@@ -42,36 +43,33 @@ class RecentSearchRecordController {
     };
 
     recentRecords = [model].concat(recentRecords);
-    this._updateRecentRecords(recentRecords);
+    await this._updateRecentRecords(recentRecords);
   }
 
-  clearRecentSearchRecords() {
-    this._updateRecentRecords([]);
+  async clearRecentSearchRecords() {
+    await this._updateRecentRecords([]);
   }
 
-  getRecentSearchRecords(): RecentSearchModel[] {
+  async getRecentSearchRecords(): Promise<RecentSearchModel[]> {
     const searchConfig = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     ).userConfig;
-    const records = searchConfig.getRecentSearchRecords();
+    const records = await searchConfig.getRecentSearchRecords();
     return records || [];
   }
 
-  removeRecentSearchRecords(toRemoveIds: Set<number>) {
-    let records = this.getRecentSearchRecords();
+  async removeRecentSearchRecords(toRemoveIds: Set<number>) {
+    let records = await this.getRecentSearchRecords();
     records = records.filter((record: RecentSearchModel) => {
       return !toRemoveIds.has(record.id);
     });
     this._updateRecentRecords(records);
   }
 
-  getRecentSearchRecordsByType(
+  async getRecentSearchRecordsByType(
     type: RecentSearchTypes,
-  ): Map<number | string, RecentSearchModel> {
-    const searchConfig = ServiceLoader.getInstance<SearchService>(
-      ServiceConfig.SEARCH_SERVICE,
-    ).userConfig;
-    const records = searchConfig.getRecentSearchRecords();
+  ): Promise<Map<number | string, RecentSearchModel>> {
+    const records = await this._searchConfig.getRecentSearchRecords();
     const result = new Map<number | string, RecentSearchModel>();
     records &&
       records.forEach((model: RecentSearchModel) => {
@@ -82,11 +80,8 @@ class RecentSearchRecordController {
     return result;
   }
 
-  private _updateRecentRecords(records: RecentSearchModel[]) {
-    const searchConfig = ServiceLoader.getInstance<SearchService>(
-      ServiceConfig.SEARCH_SERVICE,
-    ).userConfig;
-    searchConfig.setRecentSearchRecords(records);
+  private async _updateRecentRecords(records: RecentSearchModel[]) {
+    this._searchConfig.setRecentSearchRecords(records);
   }
 }
 

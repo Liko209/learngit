@@ -11,7 +11,6 @@ import {
   FuzzySearchPersonOptions,
 } from '../entity';
 import { SearchServiceController } from '../controller/SearchServiceController';
-import { container } from '../../../container';
 import { Person } from '../../person/entity';
 import { SortableModel } from '../../../framework/model';
 import { SearchUserConfig } from '../config/SearchUserConfig';
@@ -19,6 +18,7 @@ import { IConfigHistory } from 'sdk/framework/config/IConfigHistory';
 import { ConfigChangeHistory } from 'sdk/framework/config/types';
 import { Nullable } from 'sdk/types';
 import { configMigrator } from 'sdk/framework/config';
+import { searchConfigHistory } from '../config/ConfigHistory';
 
 class SearchService extends AbstractService
   implements ISearchService, IConfigHistory {
@@ -29,16 +29,16 @@ class SearchService extends AbstractService
 
   constructor() {
     super();
-  }
 
-  protected onStarted() {
     configMigrator.addHistory(this);
   }
+
+  protected onStarted() {}
 
   protected onStopped() {}
 
   getHistoryDetail(): Nullable<ConfigChangeHistory> {
-    return null;
+    return searchConfigHistory;
   }
 
   private get recentSearchRecordController() {
@@ -56,36 +56,36 @@ class SearchService extends AbstractService
     return this._userConfig;
   }
 
-  addRecentSearchRecord(
+  async addRecentSearchRecord(
     type: RecentSearchTypes,
     value: string | number,
     params = {},
   ) {
-    this.recentSearchRecordController.addRecentSearchRecord(
+    await this.recentSearchRecordController.addRecentSearchRecord(
       type,
       value,
       params,
     );
   }
 
-  clearRecentSearchRecords() {
-    this.recentSearchRecordController.clearRecentSearchRecords();
+  async clearRecentSearchRecords() {
+    await this.recentSearchRecordController.clearRecentSearchRecords();
   }
 
-  getRecentSearchRecords(): RecentSearchModel[] {
-    return this.recentSearchRecordController.getRecentSearchRecords();
+  async getRecentSearchRecords(): Promise<RecentSearchModel[]> {
+    return await this.recentSearchRecordController.getRecentSearchRecords();
   }
 
-  getRecentSearchRecordsByType(type: RecentSearchTypes) {
-    return this.recentSearchRecordController.getRecentSearchRecordsByType(type);
+  async getRecentSearchRecordsByType(type: RecentSearchTypes) {
+    return await this.recentSearchRecordController.getRecentSearchRecordsByType(
+      type,
+    );
   }
 
-  removeRecentSearchRecords(ids: Set<number>) {
-    return this.recentSearchRecordController.removeRecentSearchRecords(ids);
-  }
-
-  static getInstance(): SearchService {
-    return container.get(this.name);
+  async removeRecentSearchRecords(ids: Set<number>) {
+    return await this.recentSearchRecordController.removeRecentSearchRecords(
+      ids,
+    );
   }
 
   async doFuzzySearchPersons(
