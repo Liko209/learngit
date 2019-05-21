@@ -87,7 +87,7 @@ function getDurationTimeText(
   // if has repeat and is forever need hide times
   const hideTimes = (repeatEndingAfter: string, repeatEnding: string) =>
     repeatEnding === 'none' || repeatEnding === 'on';
-  const repeatText = ` ${i18nP('item.until')} ${date}`;
+  const repeatText = date ? ` ${i18nP('item.until')} ${date}` : '';
 
   return `${i18nP(REPEAT_TEXT[repeat]) || ''} ${
     hideTimes(repeatEndingAfter, repeatEnding) ? '' : times
