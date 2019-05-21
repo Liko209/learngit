@@ -14,7 +14,7 @@ fixture('ContentPanel/PicPreview')
 test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 'ContentPanel', 'PicPreview', 'V1.4', 'hank.huang']), async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[6];
-  const team = <IGroup> {
+  const team = <IGroup>{
     name: `H-${uuid()}`,
     type: "Team",
     owner: loginUser,
@@ -89,7 +89,7 @@ test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 
     await imagePreviewer.hoverPerviousButton();
   });
   await h(t).log(`Then I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ViewPreviousFile' });
-  await h(t).withLog('When I click "view previous file" button and hover "view next file" button' , async () => {
+  await h(t).withLog('When I click "view previous file" button and hover "view next file" button', async () => {
     const imagePreviewer = app.homePage.fileAndImagePreviewer;
     await imagePreviewer.clickPerviousButton();
     await imagePreviewer.hoverForwardButton();
