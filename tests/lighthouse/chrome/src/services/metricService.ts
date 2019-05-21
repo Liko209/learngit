@@ -465,7 +465,7 @@ class MetricService {
         max = 0;
 
         maxHanleCount = -1;
-        minTime = maxTime = new Date(dtos[0]['start_time']).getTime();
+        minTime = maxTime = new Date(dtoArr[0]['start_time']).getTime();
         for (let dto of dtoArr) {
           time = new Date(dto['start_time']).getTime();
           minTime = minTime > time ? time : minTime;
