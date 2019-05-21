@@ -10,6 +10,7 @@ import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import {
   JuiLabelWithContent,
   JuiEventDescription,
+  JuiEventLocation,
   JuiTimeMessage,
   JuiSectionDivider,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
@@ -22,7 +23,7 @@ const HocDescription = phoneParserHoc(JuiEventDescription);
 class Event extends React.Component<Props, {}> {
   render() {
     const { event, t, color, timeContent } = this.props;
-    const { text, description } = event;
+    const { text, description, location } = event;
 
     return (
       <JuiConversationItemCard
@@ -35,6 +36,11 @@ class Event extends React.Component<Props, {}> {
           <JuiLabelWithContent label={t('item.due')}>
             <JuiTimeMessage time={`${timeContent.get()}`} />
           </JuiLabelWithContent>
+          {location && (
+            <JuiLabelWithContent label={t('item.locationTitle')}>
+              <JuiEventLocation location={location} />
+            </JuiLabelWithContent>
+          )}
           {description && <HocDescription description={description} />}
         </JuiSectionDivider>
       </JuiConversationItemCard>
