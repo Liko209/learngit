@@ -17,14 +17,6 @@ export class SettingMenu extends BaseWebComponent {
     await this.t.click(this.viewYourProfileButton);
   }
 
-  get viewAboutButton() {
-    return this.getSelectorByAutomationId('aboutPage', this.self);
-  }
-
-  async clickAboutButton() {
-    await this.t.click(this.viewAboutButton);
-  }
-
   async clickLogout() {
     await this.t.click(this.logoutButton);
   }
