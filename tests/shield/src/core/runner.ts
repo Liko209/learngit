@@ -20,18 +20,18 @@ const _doTest = (
 };
 
 const _testable = function (Class: any, testType?: TestType) {
-  beforeEach(() => {
-    jest.restoreAllMocks();
-    jest.resetAllMocks();
-    jest.clearAllMocks();
-    jest.resetModules(); // reset jest.doMock
-  });
-
   const target = new Class();
   const keys = Reflect.ownKeys(Class.prototype).slice(1); // filter constructor
 
   const howDescribe = testType ? describe[testType] : describe;
   howDescribe(Class.name, () => {
+    beforeEach(() => {
+      jest.restoreAllMocks();
+      jest.resetAllMocks();
+      jest.clearAllMocks();
+      jest.resetModules(); // reset jest.doMock
+    });
+
     if (target.beforeAll) {
       beforeAll(target.beforeAll);
     }
