@@ -19,6 +19,8 @@ test(formalName('Events display on the right rail', ['P2', 'RightRail', 'Events'
     members: [loginUser]
   };
 
+  await h(t).glip(loginUser).init();
+
   await h(t).withLog(`Given I have a team conversation: "${team.name}"`, async () => {
     await h(t).scenarioHelper.createTeam(team);
   });
