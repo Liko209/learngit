@@ -10,12 +10,12 @@ export class RightRail extends BaseWebComponent {
 
   get expandStatusButton() {
     this.warnFlakySelector();
-    return this.getSelectorByIcon('double_chevron_right').parent('button[aria-label="Hide details"]');
+    return this.getSelectorByIcon('chevron_right').parent('button[aria-label="Hide details"]');
   }
 
   get foldStatusButton() {
     this.warnFlakySelector();
-    return this.getSelector('button[aria-label="Show details"]');
+    return this.getSelectorByIcon('chevron_left').parent('button[aria-label="Show details"]');
   }
 
   async expand() {

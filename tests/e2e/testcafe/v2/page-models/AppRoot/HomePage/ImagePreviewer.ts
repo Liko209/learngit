@@ -93,22 +93,10 @@ export class FileAndImagePreviewer extends BaseWebComponent {
       .click(this.perviousButton);
   }
 
-  async hoverPerviousButton() {
-    await this.t
-      .expect(this.perviousButton.hasAttribute('disabled')).notOk()
-      .hover(this.perviousButton);
-  }
-
   async clickForwardButton() {
     await this.t
       .expect(this.forwardButton.hasAttribute('disabled')).notOk()
       .click(this.forwardButton);
-  }
-
-  async hoverForwardButton() {
-    await this.t
-      .expect(this.forwardButton.hasAttribute('disabled')).notOk()
-      .hover(this.forwardButton);
   }
 
   get zoomOutIcon() {
@@ -124,14 +112,9 @@ export class FileAndImagePreviewer extends BaseWebComponent {
       .expect(this.zoomOutButton.hasAttribute('disabled')).notOk()
       .click(this.zoomOutButton);
   }
-  async hoverZoomOutButton() {
-    await this.t
-      .expect(this.zoomOutButton.hasAttribute('disabled')).notOk()
-      .hover(this.zoomOutButton);
-  }
 
   get zoomInIcon() {
-    return this.getSelectorByIcon('zoom_in', this.self);
+    return this.getSelectorByIcon('zoom_out', this.self);
   }
 
   get zoomInButton() {
@@ -142,10 +125,5 @@ export class FileAndImagePreviewer extends BaseWebComponent {
     await this.t
       .expect(this.zoomInButton.hasAttribute('disabled')).notOk()
       .click(this.zoomInButton);
-  }
-  async hoverZoomInButton() {
-    await this.t
-      .expect(this.zoomInButton.hasAttribute('disabled')).notOk()
-      .hover(this.zoomInButton);
   }
 }
