@@ -1,39 +1,32 @@
 import * as _ from 'lodash';
-import * as path from 'path';
-import * as fs from 'fs';
 import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 import { v4 as uuid } from "uuid"
-
-function fileSizeOf(filePath: string, unit: string = 'KB', num: number = 1) {
-  const stat = fs.statSync(path.join(__dirname, filePath));
-  if ('KB' === unit) {
-    return `${(stat.size / 1024).toFixed(num)}KB`
-  }
-  throw Error(`unsupported unit: ${unit}`);
-}
+import { IGroup } from '../../v2/models';
 
 fixture('ContentPanel/PicPreview')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 'ContentPanel', 'V1.4', 'hank.huang']), async (t) => {
+test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 'PicPreview', 'V1.4', 'hank.huang']), async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[6];
   const otherUser = h(t).rcData.mainCompany.users[7];
-  let teamID: string, teamName: string = `Team ${uuid()}`;
+  const team = <IGroup> {
+    name: `H-${uuid()}`,
+    type: "Team",
+    owner: loginUser,
+    members: [loginUser]
+  }
 
   await h(t).glip(loginUser).init();
 
-  await h(t).withLog(`Given I have a team conversation: "${teamName}"`, async () => {
-    teamID = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'Team',
-      name: teamName,
-      members: [loginUser.rcId, otherUser.rcId],
-    });
+  await h(t).withLog(`Given I have a team conversation: "${team.glipId}"`, async () => {
+    await h(t).platform(loginUser).createTeam(team)
+
   });
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -87,22 +80,22 @@ test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 
   });
   await h(t).log(`Then I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ScaleFiledDown' });
 
-  // await h(t).withLog('When I hover the image and hover "Scale file Up"', async () => {
-  //   await imagePreviewer.hoverZoomInButton();
-  // });
-  // await h(t).log(`Then I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ScaleFiledUp' });
+  await h(t).withLog('When I hover the image and hover "Scale file Up"', async () => {
+    await imagePreviewer.hoverZoomInButton();
+  });
+  await h(t).log(`Then I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ScaleFiledUp' });
 
-  // await h(t).withLog('When I hover "view previous file" button', async () => {
-  //   const imagePreviewer = app.homePage.fileAndImagePreviewer;
-  //   await imagePreviewer.hoverPerviousButton();
-  // });
-  // await h(t).log(`Then I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ViewPreviousFile' });
-  // await h(t).withLog('When I click "view previous file" button and hover "view next file" button' , async () => {
-  //   const imagePreviewer = app.homePage.fileAndImagePreviewer;
-  //   await imagePreviewer.clickPerviousButton();
-  //   await imagePreviewer.hoverForwardButton();
-  // });
-  // await h(t).log(`Then I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ViewNextFile' });
+  await h(t).withLog('When I hover "view previous file" button', async () => {
+    const imagePreviewer = app.homePage.fileAndImagePreviewer;
+    await imagePreviewer.hoverPerviousButton();
+  });
+  await h(t).log(`Then I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ViewPreviousFile' });
+  await h(t).withLog('When I click "view previous file" button and hover "view next file" button' , async () => {
+    const imagePreviewer = app.homePage.fileAndImagePreviewer;
+    await imagePreviewer.clickPerviousButton();
+    await imagePreviewer.hoverForwardButton();
+  });
+  await h(t).log(`Then I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ViewNextFile' });
 
   const downloadButton = app.homePage.fileAndImagePreviewer.downloadIcon;
 
