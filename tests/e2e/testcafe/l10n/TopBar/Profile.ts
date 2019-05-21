@@ -78,8 +78,5 @@ test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'Profile', 'V1.4', 'Han
     await t.click(topBarAvatar);
     await settingMenu.clickAboutButton();
   });
-  // await h(t).withLog(`Then "About" popup should be displayed` ,async() => {
-  //   await t.expect(settingMenu.viewAboutButton.exists).ok;
-  // });
   await h(t).log('Then I take screenshot', {screenshotPath:'Jupiter_TopBar_AboutPage'});
 });

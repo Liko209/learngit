@@ -17,12 +17,12 @@ export class SettingMenu extends BaseWebComponent {
     await this.t.click(this.viewYourProfileButton);
   }
 
-  get viewAboutButton() {
+  get AboutButton() {
     return this.getSelectorByAutomationId('aboutPage', this.self);
   }
 
   async clickAboutButton() {
-    await this.t.click(this.viewAboutButton);
+    await this.t.click(this.AboutButton);
   }
 
   async clickLogout() {

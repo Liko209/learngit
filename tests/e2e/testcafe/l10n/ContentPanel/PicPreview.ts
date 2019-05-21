@@ -11,10 +11,9 @@ fixture('ContentPanel/PicPreview')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 'PicPreview', 'V1.4', 'hank.huang']), async (t) => {
+test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 'ContentPanel', 'PicPreview', 'V1.4', 'hank.huang']), async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[6];
-  const otherUser = h(t).rcData.mainCompany.users[7];
   const team = <IGroup> {
     name: `H-${uuid()}`,
     type: "Team",
@@ -24,7 +23,7 @@ test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 
 
   await h(t).glip(loginUser).init();
 
-  await h(t).withLog(`Given I have a team conversation: "${team.glipId}"`, async () => {
+  await h(t).withLog(`Given I have a team conversation: "${team.name}"`, async () => {
     await h(t).platform(loginUser).createTeam(team)
 
   });
@@ -40,9 +39,9 @@ test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 
   const conversationPage = app.homePage.messageTab.conversationPage;
   const duplicatePromptPage = app.homePage.messageTab.duplicatePromptPage;
 
-  await h(t).withLog('And I upload a picture as attachments and send it', async () => {
-    const files = ['../../sources/1.png'];
-    await conversationPage.uploadFilesToMessageAttachment(files);
+  await h(t).withLog('And I upload a picture as attachment and send it', async () => {
+    const file = '../../sources/1.png';
+    await conversationPage.uploadFilesToMessageAttachment(file);
     await t.pressKey('enter');
   });
   await h(t).withLog(`Then text "shared a file" should be displayed`, async () => {
@@ -50,9 +49,9 @@ test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 
   });
   await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_SendAPicture' });
 
-  await h(t).withLog('When I upload a duplicate picture as attachments and send it', async () => {
-    const files = ['../../sources/1.png']
-    await conversationPage.uploadFilesToMessageAttachment(files);
+  await h(t).withLog('When I upload a duplicate picture as attachment and send it', async () => {
+    const file = '../../sources/1.png';
+    await conversationPage.uploadFilesToMessageAttachment(file);
   });
   await h(t).withLog(`Then "update files" page should be displayed`, async () => {
     await t.expect(duplicatePromptPage.duplicateCancelButton.exists).ok();

@@ -9,7 +9,7 @@ import { IGroup } from "../../v2/models";
 fixture('RightRail/ConversationDetails')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase())
-test(formalName('Conversation Details on the right rail', ['P2', 'RightRail', 'ConversationDetails', 'V1.4', 'Hank.Huang']), async (t) => {
+test(formalName('Conversation Details on the right rail', ['P2', 'Messages', 'RightRail', 'ConversationDetails', 'V1.4', 'Hank.Huang']), async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[5];
   const team = <IGroup> {
