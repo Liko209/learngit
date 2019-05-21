@@ -1,16 +1,19 @@
 import { setupCase, teardownCase } from "../../init";
 import { BrandTire, SITE_URL } from "../../config";
 import { formalName } from "../../libs/filter";
-import { AppRoot } from "../../v2/page-models/AppRoot";
 import { h } from "../../v2/helpers";
-import { v4 as uuid } from 'uuid';
 import { IGroup } from "../../v2/models";
+import { AppRoot } from "../../v2/page-models/AppRoot";
+import { v4 as uuid } from 'uuid';
 
-fixture('RightRail/Images')
+
+fixture('RightRail/Links')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase());
-test(formalName('Image files display on the right rail', ['P2', 'Messages', 'RightRail', 'Images', 'V1.4', 'Lorna.Li']), async(t) => {
+
+test(formalName('Links display on the right rail', ['P2', 'Messages', 'RightRail', 'Links', 'V1.4', 'Lorna.Li']), async(t) => {
   const loginUser = h(t).rcData.mainCompany.users[4];
+  await h(t).glip(loginUser).init();
 
   const team = <IGroup> {
     name: uuid(),
@@ -33,22 +36,19 @@ test(formalName('Image files display on the right rail', ['P2', 'Messages', 'Rig
   const rightRail = app.homePage.messageTab.rightRail;
   const conversationPage = app.homePage.messageTab.conversationPage;
 
-  await h(t).withLog('When I open a team and click Images Tab', async() => {
+  await h(t).withLog('When I open a team and click Links Tab', async() => {
     await teamPage.conversationEntryById(team.glipId).enter();
-    await rightRail.imagesEntry.enter();
+    await rightRail.openMore();
+    await rightRail.linksEntry.enter();
   });
 
-  await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_ImagesEmpty'});
+  await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_LinksEmpty'});
 
-  const message = uuid();
-  const imagesTab = rightRail.imagesTab;
-  await h(t).withLog('When I upload a text file', async() => {
-    await conversationPage.uploadFilesToMessageAttachment('../../sources/1.png');
-    await conversationPage.sendMessage(message);
-    await conversationPage.nthPostItem(-1).waitForPostToSend();
-    await t.expect(imagesTab.items.exists).ok();
+  const linksTab = rightRail.linksTab;
+  await h(t).withLog('When I send a link', async() => {
+    await conversationPage.sendMessage('http://www.google.com');
+    await t.expect(linksTab.items.exists).ok();
   });
 
-  await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_ImagesList'});
+  await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_LinksList'});
 });
-

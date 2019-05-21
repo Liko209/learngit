@@ -41,10 +41,12 @@ test(formalName('Files display on the right rail', ['P2', 'Messages', 'RightRail
   await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_FilesEmpty'});
 
   const message = uuid();
+  const filesTab = rightRail.filesTab;
   await h(t).withLog('When I upload a text file', async()=>{
     await conversationPage.uploadFilesToMessageAttachment('../../sources/1.txt');
     await conversationPage.sendMessage(message);
     await conversationPage.nthPostItem(-1).waitForPostToSend();
+    await t.expect(filesTab.items.exists).ok();
   });
 
   await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_FilesList'});
