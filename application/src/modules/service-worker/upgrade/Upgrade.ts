@@ -18,6 +18,8 @@ const WAITING_WORKER_FLAG = 'upgrade.waiting_worker_flag';
 
 class Upgrade {
   private _hasNewVersion: boolean = false;
+  private _hasControllerChanged: boolean = false;
+  private _refreshing: boolean = false;
   private _swURL: string;
   private _lastCheckTime?: Date;
   private _lastRouterChangeTime?: Date;
@@ -58,7 +60,7 @@ class Upgrade {
     isByWaitingWorker: boolean,
   ) {
     mainLogger.info(
-      `${logTag}onNewContentAvailable. hasFocus: ${document.hasFocus()}, control: ${isCurrentPageInControl}, byWaitingWorker: ${isByWaitingWorker}`,
+      `${logTag}onNewContentAvailable. hasFocus: ${this._appInFocus()}, controller: ${isCurrentPageInControl}, byWaitingWorker: ${isByWaitingWorker}`,
     );
     if (isByWaitingWorker) {
       const workingWorkerFlag = this._getWorkingWorkerFlag();
@@ -74,7 +76,23 @@ class Upgrade {
 
     this._hasNewVersion = true;
 
-    if (document.hasFocus()) {
+    if (this._appInFocus()) {
+      if (
+        this._isTimeOut(FOREGROUND_RELOAD_THRESHOLD, this._lastRouterChangeTime)
+      ) {
+        this.skipWaitingIfAvailable('Foreground upgrade');
+      }
+    } else {
+      this.skipWaitingIfAvailable('Background upgrade');
+    }
+  }
+
+  public onControllerChanged() {
+    mainLogger.info(`${logTag}onControllerChanged`);
+
+    this._hasControllerChanged = true;
+
+    if (this._appInFocus()) {
       if (
         this._isTimeOut(FOREGROUND_RELOAD_THRESHOLD, this._lastRouterChangeTime)
       ) {
@@ -85,11 +103,22 @@ class Upgrade {
     }
   }
 
-  public reloadIfAvailable(triggerSource: string) {
+  public skipWaitingIfAvailable(triggerSource: string) {
     if (this._hasNewVersion && this._canDoReload()) {
       this._hasNewVersion = false;
       mainLogger.info(
-        `${logTag}[${triggerSource}] Will auto reload due to new version is detected`,
+        `${logTag}[${triggerSource}] Will skip waiting due to new version is detected`,
+      );
+
+      this._serviceWorkerSkipWaiting();
+    }
+  }
+
+  public reloadIfAvailable(triggerSource: string) {
+    if (this._hasControllerChanged && this._canDoReload()) {
+      this._hasControllerChanged = false;
+      mainLogger.info(
+        `${logTag}[${triggerSource}] Will auto reload due to service worker controller is changed`,
       );
 
       this._reloadApp();
@@ -109,52 +138,86 @@ class Upgrade {
     window.sessionStorage.removeItem(WAITING_WORKER_FLAG);
   }
 
-  private _queryIfHasNewVersion() {
+  private async _queryIfHasNewVersion() {
     if (!window.navigator.onLine) {
       this.logInfo('Ignore update due to offline');
       return;
     }
 
-    if (this._swURL && navigator.serviceWorker) {
-      this.logInfo('Will check new version');
-      navigator.serviceWorker
-        .getRegistration(this._swURL)
-        .then((registration: ServiceWorkerRegistration) => {
-          this._lastCheckTime = new Date();
+    const registration = await this._getRegistration('Update');
+    this._startServiceWorkerUpdate(registration);
+  }
 
-          const activeWorker = registration.active;
-          const installingWorker = registration.installing;
-          const waitingWorker = registration.waiting;
-          mainLogger.info(
-            `${logTag}active[${!!activeWorker}]${
-              !!activeWorker ? activeWorker.state : ''
-            }, installing[${!!installingWorker}]${
-              !!installingWorker ? installingWorker.state : ''
-            }, waiting[${!!waitingWorker}]${
-              !!waitingWorker ? waitingWorker.state : ''
-            }`,
-          );
+  private async _serviceWorkerSkipWaiting() {
+    const registration = await this._getRegistration('Skip Waiting');
+    if (!registration) {
+      mainLogger.warn(`${logTag}Fail to skip waiting. Invalid registration`);
+      return;
+    }
 
-          registration
-            .update()
-            .then((...args) => {
-              mainLogger.info(
-                `${logTag}Check new version done. ${JSON.stringify(args)}`,
-              );
-            })
-            .catch((...args) => {
-              mainLogger.warn(
-                `${logTag}Check new version failed. ${JSON.stringify(args)}`,
-              );
-            });
-          mainLogger.info(`${logTag}Checking new version`);
-        });
-    } else {
+    const waiting = registration.waiting;
+    const hasController = this._hasServiceWorkerController();
+    this.logInfo(
+      `Will try skip waiting [${!!waiting}], controller: ${hasController}`,
+    );
+    waiting && waiting.postMessage({ type: 'SKIP_WAITING' });
+
+    // In case there is no controller, the controllerchange event would not be fired.
+    if (!hasController) {
+      this._hasControllerChanged = true;
+    }
+  }
+
+  private _hasServiceWorkerController() {
+    return !!navigator.serviceWorker.controller;
+  }
+
+  private async _getRegistration(triggerSource: string) {
+    if (!this._swURL || !navigator.serviceWorker) {
       this.logInfo(
-        `Query no started. _swURL ${!!this
+        `Fail to get registration for ${triggerSource}. _swURL ${!!this
           ._swURL}, ${!!navigator.serviceWorker}`,
       );
+      return undefined;
     }
+
+    this.logInfo(`Getting registration for ${triggerSource}`);
+    return navigator.serviceWorker.getRegistration(this._swURL);
+  }
+
+  private _startServiceWorkerUpdate(registration?: ServiceWorkerRegistration) {
+    if (!registration) {
+      mainLogger.warn(`${logTag}Fail to start update. Invalid registration`);
+      return;
+    }
+    this._lastCheckTime = new Date();
+
+    const activeWorker = registration.active;
+    const installingWorker = registration.installing;
+    const waitingWorker = registration.waiting;
+    mainLogger.info(
+      `${logTag}active[${!!activeWorker}]${
+        !!activeWorker ? activeWorker.state : ''
+      }, installing[${!!installingWorker}]${
+        !!installingWorker ? installingWorker.state : ''
+      }, waiting[${!!waitingWorker}]${
+        !!waitingWorker ? waitingWorker.state : ''
+      }`,
+    );
+
+    registration
+      .update()
+      .then((...args) => {
+        mainLogger.info(
+          `${logTag}Check new version done. ${JSON.stringify(args)}`,
+        );
+      })
+      .catch((...args) => {
+        mainLogger.warn(
+          `${logTag}Check new version failed. ${JSON.stringify(args)}`,
+        );
+      });
+    mainLogger.info(`${logTag}Checking new version`);
   }
 
   private _isTimeOut(interval: number, fromDate?: Date) {
@@ -178,6 +241,8 @@ class Upgrade {
 
   private _blurHandler() {
     this.reloadIfAvailable('Blur upgrade');
+
+    this.skipWaitingIfAvailable('Blur upgrade');
   }
 
   private _resetQueryTimer() {
@@ -266,7 +331,18 @@ class Upgrade {
     return telephony.getAllCallCount() > 0;
   }
 
+  private _appInFocus() {
+    return document.hasFocus();
+  }
+
   private _reloadApp() {
+    // To avoid infinite refresh loop when using the Chrome Dev Tools “Update on Reload” feature.
+    if (this._refreshing) {
+      mainLogger.info(`${logTag}_reloadApp: refreshing is in progress`);
+      return;
+    }
+
+    this._refreshing = true;
     window.location.reload();
   }
 }
