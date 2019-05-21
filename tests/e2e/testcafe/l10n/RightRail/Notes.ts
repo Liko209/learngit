@@ -19,7 +19,7 @@ test(formalName('Notes display on the right rail', ['P2', 'RightRail', 'Notes', 
     members: [loginUser]
   }
 
-  await h(t).withLog(`Given I have a team conversation: "${team.glipId}"`, async () => {
+  await h(t).withLog(`Given I have a team conversation: "${team.name}"`, async () => {
     await h(t).scenarioHelper.createTeam(team);
   });
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
