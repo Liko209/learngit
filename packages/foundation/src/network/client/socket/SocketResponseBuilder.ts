@@ -6,8 +6,9 @@
 import NetworkResponseBuilder from '../NetworkResponseBuilder';
 import { SocketResponse } from './SocketResponse';
 import _ from 'lodash';
+import SocketRequest from './SocketRequest';
 
-class SocketResponseBuilder extends NetworkResponseBuilder {
+class SocketResponseBuilder extends NetworkResponseBuilder<SocketRequest> {
   options(options: any) {
     if (options) {
       this.data = options.body || {};
@@ -20,7 +21,6 @@ class SocketResponseBuilder extends NetworkResponseBuilder {
       if (options.request) {
         this.request = {
           ...options.request,
-          params: options.request.parameters,
         };
       }
     }
