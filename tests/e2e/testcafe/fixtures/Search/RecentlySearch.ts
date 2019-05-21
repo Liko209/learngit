@@ -373,7 +373,7 @@ test.meta(<ITestMeta>{
   });
 });
 
-test.meta(<ITestMeta> {
+test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-1214'],
   maintainers: ['alexander.zaverukha'],
@@ -393,7 +393,7 @@ test.meta(<ITestMeta> {
     name: uuid(),
     type: 'Team',
     owner: loginUser,
-    members: [loginUser , users[1]],
+    members: [loginUser, users[1]],
   };
 
   const group = <IGroup>{
@@ -402,32 +402,34 @@ test.meta(<ITestMeta> {
     members: [loginUser, groupUser],
   };
 
-  await h(t).withLog(`When I login Jupiter : ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    },
+  await h(t).withLog(`Given I login Jupiter : ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  },
   );
+
+  const searchBar = app.homePage.header.searchBar;
   const searchDialog = app.homePage.searchDialog;
-  await h(t).withLog(`And make records on searched list, group: ${groupName} team: ${team} user: ${nameUserA}`, async () => {
+  await h(t).withLog(`And make 3 records on searched list, group: ${groupName} team: ${team.name} user: ${nameUserA}`, async () => {
     await h(t).scenarioHelper.createTeamsOrChats([team, group]);
-    await app.homePage.header.searchBar.clickSelf();
+    await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(groupName);
     await t.click(searchDialog.instantPage.peoples.withText(groupName));
-    await app.homePage.header.searchBar.clickSelf();
+    await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(team.name);
     await t.click(searchDialog.instantPage.teams.withText(team.name));
-    await app.homePage.header.searchBar.clickSelf();
+    await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(nameUserA);
     await t.click(searchDialog.instantPage.peoples.withText(nameUserA));
   });
 
   await h(t).withLog('When I check the recently searched list', async () => {
-    await app.homePage.header.searchBar.clickSelf();
+    await searchBar.clickSelf();
   });
 
-  await h(t).withLog('Then there are some items on the recently searched list', async () => {
-    await t.expect(searchDialog.instantPage.conversationItems.count).gte(3);
-    await app.homePage.header.searchBar.clickCloseIcon();
+  await h(t).withLog('Then there are 3 items on the recently searched list', async () => {
+    await t.expect(searchDialog.recentPage.conversationItems.count).eql(3);
+    await searchBar.clickCloseIcon();
   });
 
   await h(t).withLog('When I sign out the app', async () => {
@@ -441,154 +443,14 @@ test.meta(<ITestMeta> {
   });
 
   await h(t).withLog('And I tab or mouse in the global search box', async () => {
-    await app.homePage.header.searchBar.clickSelf();
+    await searchBar.clickSelf();
   });
 
   await h(t).withLog('Then there is no dropdown list displayed', async () => {
-    await t.expect(searchDialog.instantPage.conversationItems.count).gte(0);
+    await t.expect(searchDialog.recentPage.conversationItems.count).eql(0);
   });
 });
 
-test.meta(<ITestMeta> {
-  priority: ['P2'],
-  caseIds: ['JPT-1228'],
-  maintainers: ['alexander.zaverukha'],
-  keywords: ['search'],
-})('Check the recently searched list after clear data', async (t: TestController) => {
-  const app = new AppRoot(t);
-  const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
-  const groupUser = users[2];
-  await h(t).glip(loginUser).init();
-  await h(t).platform(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
-  const groupName =  await h(t).glip(loginUser).getPersonPartialData('display_name', groupUser.rcId);
-
-  const team = <IGroup>{
-    name: uuid(),
-    type: 'Team',
-    owner: loginUser,
-    members: [loginUser , users[1]],
-  };
-
-
-  const team2 = <IGroup>{
-    name: uuid(),
-    type: 'Team',
-    owner: loginUser,
-    members: [loginUser , users[2]],
-  };
-
-
-  const group = <IGroup>{
-    type: 'Group',
-    owner: loginUser,
-    members: [loginUser, loginUser],
-  };
-
-  await h(t).withLog(`Given I login Jupiter : ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    },
-  );
-
-  const addUsersToSearchList = async (users)=>{
-    for (const user of users){
-      const userName = await h(t).glip(loginUser).getPersonPartialData('display_name', user.rcId);
-      await app.homePage.header.searchBar.clickSelf();
-      await searchDialog.typeSearchKeyword(userName);
-      await t.click(searchDialog.instantPage.peoples.withText(userName));
-    }
-  }
-
-  const searchDialog = app.homePage.searchDialog;
-  await h(t).withLog(`And have 10 records on searched list items on the recently search list and it contains team: ${team.name}`, async () => {
-    await h(t).scenarioHelper.createTeamsOrChats([team, team2, group]);
-    await app.homePage.header.searchBar.clickSelf();
-    await searchDialog.typeSearchKeyword(groupName);
-    await t.click(searchDialog.instantPage.peoples.withText(groupName));
-
-    await app.homePage.header.searchBar.clickSelf();
-    await searchDialog.typeSearchKeyword(team.name);
-    await t.click(searchDialog.instantPage.teams.withText(team.name));
-
-    await app.homePage.header.searchBar.clickSelf();
-    await searchDialog.typeSearchKeyword(team2.name);
-    await t.click(searchDialog.instantPage.teams.withText(team2.name));
-
-    await app.homePage.header.searchBar.clickSelf();
-    await addUsersToSearchList(users);
-  });
-
-  await h(t).withLog('When I tab or mouse in the global search box', async () => {
-    await app.homePage.header.searchBar.clickSelf();
-  });
-
-  await h(t).withLog(`Then the recently searched dropdown list displayed 10 items and it contains team:  ${team.name}`, async () => {
-    await t.expect(searchDialog.recentPage.conversationItems.count).eql(10);
-    await t.expect(searchDialog.recentPage.conversationByName(team.name).exists).ok();
-  });
-
-  await h(t).withLog(`When I delete team ${team}`, async () => {
-    await h(t).platform(loginUser).deleteTeam(team.glipId);
-  });
-
-  await h(t).withLog(`Then the ${team.name} item disappear immediately and just only show 9 contact items`, async () => {
-    await t.expect(searchDialog.instantPage.items.count).eql(9);
-    await t.expect(searchDialog.recentPage.conversationByName(team.name).exists).notOk();
-  });
-
-  await h(t).withLog(`When I tap ESC keyboard`, async () => {
-    await searchDialog.quitByPressEsc();
-  });
-
-  await h(t).withLog('And I tab or mouse in the global search box', async () => {
-    await app.homePage.header.searchBar.clickSelf();
-  });
-
-  await h(t).withLog(`Then the recently searched dropdown list displayed with 9 items and not contains team: ${team.name}`, async () => {
-    await t.expect(searchDialog.instantPage.items.count).eql(9);
-    await t.expect(searchDialog.recentPage.conversationByName(team.name).exists).notOk();
-  });
-
-  await h(t).withLog('When I add team to have 10 items in the recently searched dropdown', async () => {
-    await h(t).scenarioHelper.createTeam(team);
-    await app.homePage.header.searchBar.clickSelf();
-    await searchDialog.typeSearchKeyword(team.name);
-    await t.click(searchDialog.instantPage.teams.withText(team.name));
-  });
-
-  await h(t).withLog('And I tab or mouse in the global search box', async () => {
-    await app.homePage.header.searchBar.clickSelf();
-  });
-
-  await h(t).withLog(`Then the recently searched dropdown list displayed 10 items and it contains team:  ${team.name}`, async () => {
-    await t.expect(searchDialog.recentPage.conversationItems.count).eql(10);
-    await t.expect(searchDialog.recentPage.conversationByName(team.name).exists).ok();
-  });
-
-  await h(t).withLog(`When I archive team ${team}`, async () => {
-    await h(t).platform(loginUser).archiveTeam(team.glipId);
-  });
-
-  await h(t).withLog(`Then the ${team.name} item disappear immediately and just only show 9 contact items`, async () => {
-    await t.expect(searchDialog.instantPage.items.count).eql(9);
-    await t.expect(searchDialog.recentPage.conversationByName(team.name).exists).notOk();
-  });
-
-  await h(t).withLog(`When I tap ESC keyboard`, async () => {
-    await searchDialog.quitByPressEsc();
-  });
-
-  await h(t).withLog('And I tab or mouse in the global search box', async () => {
-    await app.homePage.header.searchBar.clickSelf();
-  });
-
-  await h(t).withLog(`Then the recently searched dropdown list displayed with 9 items and not contains team: ${team.name}`, async () => {
-    await t.expect(searchDialog.instantPage.items.count).eql(9);
-    await t.expect(searchDialog.recentPage.conversationByName(team.name).exists).notOk();
-  });
-});
 
 test.meta(<ITestMeta>{
   priority: ['P2'],
@@ -599,80 +461,251 @@ test.meta(<ITestMeta>{
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
-  const groupUser = users[2];
+  const antherUser = users[2];
+
   await h(t).glip(loginUser).init();
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).resetProfileAndState();
-  const groupName =  await h(t).glip(loginUser).getPersonPartialData('display_name', groupUser.rcId);
-  const searchedUserName =  await h(t).glip(loginUser).getPersonPartialData('display_name',  users[3].rcId);
+
+  const searchedUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', antherUser.rcId);
 
   const team = <IGroup>{
     name: uuid(),
     type: 'Team',
     owner: loginUser,
-    members: [loginUser , users[1]],
+    members: [loginUser],
   };
 
   const group = <IGroup>{
     type: 'Group',
     owner: loginUser,
-    members: [loginUser, loginUser],
+    members: [loginUser, antherUser, users[1]]
   };
 
-  await h(t).withLog(`Given I login Jupiter : ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    },
-  );
+  const contentKeyword = uuid();
+  await h(t).withLog(`Given I have team name : ${team.name}`, async () => {
+    await h(t).scenarioHelper.createTeamsOrChats([team, group]);
+  })
 
+  await h(t).withLog(`Given I login Jupiter : ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const searchBar = app.homePage.header.searchBar;
   const searchDialog = app.homePage.searchDialog;
   const itemsInSearchOrder = [];
-  await h(t).withLog(`And there are some records on recently searched list`, async () => {
-    await h(t).scenarioHelper.createTeamsOrChats([team, group]);
-    await app.homePage.header.searchBar.clickSelf();
-    await searchDialog.typeSearchKeyword(groupName);
-    await t.click(searchDialog.instantPage.peoples.withText(groupName));
-    itemsInSearchOrder.push(groupName);
+  await h(t).withLog(`When search ${contentKeyword} and make content search item in recently search`, async () => {
+    await searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(contentKeyword);
+    itemsInSearchOrder.unshift(await searchDialog.instantPage.contentSearchGlobalEntry.textContent)
+    await searchDialog.instantPage.clickContentSearchGlobalEntry();
+    await searchDialog.clearInputAreaTextByKey();
+    await searchDialog.clickCloseButton();
+  });
 
+  await h(t).withLog('And I tab or mouse in the global search box', async () => {
     await app.homePage.header.searchBar.clickSelf();
+  });
+
+  await h(t).withLog(`Then  the items should be sorted in the reverse chronological order, with the most recently searched item on the top of the list`, async () => {
+    await t.expect(searchDialog.recentPage.itemsNames.count).eql(itemsInSearchOrder.length);
+    const count = await searchDialog.recentPage.itemsNames.count;
+    for (let i = 0; i < count; i++) {
+      await t.expect(searchDialog.recentPage.itemsNames.nth(i).textContent).eql(itemsInSearchOrder[i]);
+    }
+    await searchDialog.clickCloseButton();
+  });
+
+  await h(t).withLog(`When search ${searchedUserName} and make first people name item in recently search`, async () => {
+    await searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(searchedUserName);
+    await t.expect(searchDialog.instantPage.peoples.count).gte(0);
+    itemsInSearchOrder.unshift(await searchDialog.instantPage.nthPeople(0).name.textContent)
+    await searchDialog.instantPage.nthPeople(0).enter();
+  });
+
+  await h(t).withLog('And I tab or mouse in the global search box', async () => {
+    await app.homePage.header.searchBar.clickSelf();
+  });
+
+  await h(t).withLog(`Then the items should be sorted in the reverse chronological order, with the most recently searched item on the top of the list`, async () => {
+    await t.expect(searchDialog.recentPage.itemsNames.count).eql(itemsInSearchOrder.length);
+    const count = await searchDialog.recentPage.itemsNames.count;
+    for (let i = 0; i < count; i++) {
+      await t.expect(searchDialog.recentPage.itemsNames.nth(i).textContent).eql(itemsInSearchOrder[i]);
+    }
+    await searchDialog.clickCloseButton();
+  });
+
+  await h(t).withLog(`When search ${team.name} and make first team name item in recently search`, async () => {
+    await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(team.name);
-    await t.click(searchDialog.instantPage.teams.withText(team.name));
-    itemsInSearchOrder.push(team.name);
+    await t.expect(searchDialog.instantPage.teams.exists).ok();
+    itemsInSearchOrder.unshift(await searchDialog.instantPage.nthTeam(0).name.textContent)
+    await searchDialog.instantPage.nthTeam(0).enter();
+  });
 
-    const userName = await h(t).glip(loginUser).getPersonPartialData('display_name', users[1].rcId);
+  await h(t).withLog('And I tab or mouse in the global search box', async () => {
     await app.homePage.header.searchBar.clickSelf();
-    await searchDialog.typeSearchKeyword(userName);
-    await t.click(searchDialog.instantPage.peoples.withText(userName));
-    itemsInSearchOrder.push(userName);
+  });
+
+  await h(t).withLog(`Then the items should be sorted in the reverse chronological order, with the most recently searched item on the top of the list`, async () => {
+    await t.expect(searchDialog.recentPage.itemsNames.count).eql(itemsInSearchOrder.length);
+    const count = await searchDialog.recentPage.itemsNames.count;
+    for (let i = 0; i < count; i++) {
+      await t.expect(searchDialog.recentPage.itemsNames.nth(i).textContent).eql(itemsInSearchOrder[i]);
+    }
+    await searchDialog.clickCloseButton();
+  });
+
+
+  await h(t).withLog(`When search ${searchedUserName} and make first group name item in recently search`, async () => {
+    await searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(searchedUserName);
+    await t.expect(searchDialog.instantPage.groups.exists).ok();
+    itemsInSearchOrder.unshift(await searchDialog.instantPage.nthGroup(0).name.textContent)
+    await searchDialog.instantPage.nthGroup(0).enter();
+  });
+
+  await h(t).withLog('And I tab or mouse in the global search box', async () => {
+    await app.homePage.header.searchBar.clickSelf();
+  });
+
+  await h(t).withLog(`Then the items should be sorted in the reverse chronological order, with the most recently searched item on the top of the list`, async () => {
+    await t.expect(searchDialog.recentPage.itemsNames.count).eql(itemsInSearchOrder.length);
+    const count = await searchDialog.recentPage.itemsNames.count;
+    for (let i = 0; i < count; i++) {
+      await t.expect(searchDialog.recentPage.itemsNames.nth(i).textContent).eql(itemsInSearchOrder[i]);
+    }
+    await searchDialog.clickCloseButton();
+  });
+});
+
+
+fixture('Recently Search')
+  .beforeEach(setupCase(BrandTire.RC_USERS_20))
+  .afterEach(teardownCase());
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1228'],
+  maintainers: ['alexander.zaverukha'],
+  keywords: ['search'],
+})('Recently searched list can be synced in time', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const admin = users[2];
+  await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).resetProfileAndState();
+
+
+  const team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: admin,
+    members: [loginUser, admin],
+  };
+
+  let historyCount = 6;
+  await h(t).withLog(`Given I have team named ${team.name}`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  await h(t).withLog(`Given I login Jupiter : ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const searchBar = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
+  await h(t).withLog(`And have ${historyCount} records on searched list items on the recently search list and it contains team: ${team.name}`, async () => {
+    const nineUsers = users.slice(0, historyCount - 1);
+    for (const user of nineUsers) {
+      await searchBar.clickSelf();
+      await searchDialog.typeSearchKeyword(user.extension);
+      await searchDialog.instantPage.nthPeople(0).enter();
+    }
+    await searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(team.name);
+    await t.click(searchDialog.instantPage.teams.withExactText(team.name));
   });
 
   await h(t).withLog('When I tab or mouse in the global search box', async () => {
     await app.homePage.header.searchBar.clickSelf();
   });
 
-  await h(t).withLog(`Add a record to the recent search list: ${searchedUserName}`, async () => {
-    await app.homePage.header.searchBar.clickSelf();
-    await searchDialog.typeSearchKeyword(searchedUserName);
-    await t.click(searchDialog.instantPage.peoples.withText(searchedUserName));
-    itemsInSearchOrder.push(searchedUserName);
+  await h(t).withLog(`Then the recently searched dropdown list displayed ${historyCount} items and it contains team:  ${team.name}`, async () => {
+    await t.expect(searchDialog.recentPage.conversationItems.count).eql(historyCount);
+    await t.expect(searchDialog.recentPage.conversationByName(team.name).exists).ok();
   });
 
-  await h(t).withLog('And I tab or mouse in the global search box and check the recently searched list', async () => {
-    await app.homePage.header.searchBar.clickSelf();
+  await h(t).withLog(`When I delete team ${team}`, async () => {
+    await h(t).platform(admin).deleteTeam(team.glipId);
   });
 
+  historyCount -=  1;
+  await h(t).withLog(`Then the ${team.name} item disappear immediately and just only show ${historyCount} contact items`, async () => {
+    await t.expect(searchDialog.recentPage.items.count).eql(historyCount);
+    await searchDialog.recentPage.conversationByName(team.name).ensureDismiss();
+  });
 
-  await h(t).withLog(`Then I the items should be sorted in the reverse chronological order, with the most recently searched item on the top of the list`, async () => {
-    const searchedUserNameCurrent = [];
-    const count = await searchDialog.recentPage.itemsNames.count;
+  await h(t).withLog(`When I tap ESC keyboard`, async () => {
+    await searchDialog.quitByPressEsc();
+  });
 
-    for (let i = 0; i < count; i++){
-      searchedUserNameCurrent.push(await searchDialog.recentPage.itemsNames.nth(i).textContent);
-    }
+  await h(t).withLog('And I tab or mouse in the global search box', async () => {
+    await searchBar.clickSelf();
+  });
 
-    await t.expect(itemsInSearchOrder.reverse()).eql(searchedUserNameCurrent);
+  await h(t).withLog(`Then the recently searched dropdown list displayed with ${historyCount} items and not contains team: ${team.name}`, async () => {
+    await t.expect(searchDialog.instantPage.items.count).eql(historyCount);
+    await searchDialog.recentPage.conversationByName(team.name).ensureDismiss();
+  });
+
+  historyCount += 1;
+  await h(t).withLog(`When create team again then search it`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
+    await searchDialog.typeSearchKeyword(team.name);
+    await t.click(searchDialog.instantPage.teams.withText(team.name));
+  });
+
+  await h(t).withLog('And I tab or mouse in the global search box', async () => {
+    await searchBar.clickSelf();
+  });
+
+  await h(t).withLog(`Then the recently searched dropdown list displayed ${historyCount} items and it contains team:  ${team.name}`, async () => {
+    await t.debug();
+    await t.expect(searchDialog.recentPage.conversationItems.count).eql(historyCount);
+    await searchDialog.recentPage.conversationByName(team.name).ensureLoaded();
+  });
+
+  await h(t).withLog(`When I archive team ${team.name}`, async () => {
+    await h(t).platform(admin).archiveTeam(team.glipId);
+  });
+
+  historyCount -= 1;
+  await h(t).withLog(`Then the ${team.name} item disappear immediately and just only show ${historyCount} contact items`, async () => {
+    await t.expect(searchDialog.recentPage.items.count).eql(historyCount);
+    await searchDialog.recentPage.conversationByName(team.name).ensureDismiss();
+  });
+
+  await h(t).withLog(`When I tap ESC keyboard`, async () => {
+    await searchDialog.quitByPressEsc();
+  });
+
+  await h(t).withLog('And I tab or mouse in the global search box', async () => {
+    await searchBar.clickSelf();
+  });
+
+  await h(t).withLog(`Then the recently searched dropdown list displayed with ${historyCount} items and not contains team: ${team.name}`, async () => {
+    await t.expect(searchDialog.recentPage.items.count).eql(historyCount);
+    await searchDialog.recentPage.conversationByName(team.name).ensureDismiss();
   });
 });
+
 
 test.meta(<ITestMeta>{
   priority: ['P2'],
@@ -683,125 +716,124 @@ test.meta(<ITestMeta>{
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
-  const groupUser = users[2];
+  const anotherUser = users[2];
   await h(t).glip(loginUser).init();
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).resetProfileAndState();
-  const groupName =  await h(t).glip(loginUser).getPersonPartialData('display_name', groupUser.rcId);
-  const userName = await h(t).glip(loginUser).getPersonPartialData('display_name', users[1].rcId);
+  const userName = await h(t).glip(loginUser).getPersonPartialData('display_name', anotherUser.rcId);
   const contentName = 'Ring';
-  const contentNameInThisConversation = 'Central in this conversation';
-  let recentSearchItems = [];
+  const contentNameInThisConversation = `${contentName} in this conversation`;
+  let searchItemsNames = [];
+
+  //UI
+  const headerTitle = 'Recent searches';
+  const clearButtonText = 'Clear history';
 
   const team = <IGroup>{
     name: uuid(),
     type: 'Team',
     owner: loginUser,
-    members: [loginUser , users[1]]
+    members: [loginUser]
   };
 
   const group = <IGroup>{
     type: 'Group',
     owner: loginUser,
-    members: [loginUser, loginUser]
+    members: [loginUser, anotherUser, users[1]]
   };
 
-  await h(t).withLog(`Given I login Jupiter : ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    },
-  );
-
-  const searchDialog = app.homePage.searchDialog;
-  await h(t).withLog(`And there are some records on recently searched list`, async () => {
+  await h(t).withLog(`Given I have one group with extension ${anotherUser.extension} and one team named: ${team.name},`, async () => {
     await h(t).scenarioHelper.createTeamsOrChats([team, group]);
-    await app.homePage.header.searchBar.clickSelf();
+  });
 
-    await app.homePage.header.searchBar.clickSelf();
-    await searchDialog.typeSearchKeyword(team.name);
-    recentSearchItems.push(team.name);
-    await t.click(searchDialog.instantPage.teams.withText(team.name));
+  await h(t).withLog(`And I login Jupiter : ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
 
-    const userName = await h(t).glip(loginUser).getPersonPartialData('display_name', users[1].rcId);
-    await app.homePage.header.searchBar.clickSelf();
+  await h(t).withLog('And I enter the new created team', async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId);
+  });
+
+  const searchBar = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
+
+  await h(t).withLog(`When I search 7 people one by one `, async () => {
+    const sevenUsers = users.slice(0, 7);
+    for (const user of sevenUsers) {
+      await searchBar.clickSelf();
+      await searchDialog.typeSearchKeyword(user.extension);
+      const peopleName = await searchDialog.instantPage.nthPeople(0).name.textContent;
+      searchItemsNames.unshift(peopleName);
+      await searchDialog.instantPage.nthPeople(0).enter();
+    }
+  });
+
+  await h(t).withLog(`And I search ${userName} and click the group`, async () => {
+    await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(userName);
-    recentSearchItems.push(userName);
-    await t.click(searchDialog.instantPage.peoples.withText(userName));
+    const groupName = await searchDialog.instantPage.nthGroup(0).name.textContent;
+    searchItemsNames.unshift(groupName);
+    await searchDialog.instantPage.nthGroup(0).enter();
+  });
 
-    await searchDialog.typeSearchKeyword(groupName);
-    recentSearchItems.push(groupName);
-    await t.click(searchDialog.instantPage.peoples.withText(groupName));
+  await h(t).withLog(`And I search ${team.name} and click the group`, async () => {
+    await searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(team.name);
+    const teamName = await searchDialog.instantPage.nthTeam(0).name.textContent;
+    searchItemsNames.unshift(teamName);
+    await searchDialog.instantPage.nthTeam(0).enter();
+  });
 
-    await app.homePage.header.searchBar.clickSelf();
+  await h(t).withLog(`And I search ${contentName} and click the global content item`, async () => {
+    await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(contentName);
-    recentSearchItems.push(contentName);
-    await t.click(searchDialog.instantPage.contentSearchItem.withText(contentName));
-    await searchDialog.clickClearButton();
-    await searchDialog.clickCloseButton();
-
-    await app.homePage.header.searchBar.clickSelf();
-    await searchDialog.typeSearchKeyword(contentNameInThisConversation);
-    recentSearchItems.push(contentNameInThisConversation);
-    await t.click(searchDialog.instantPage.contentSearchItem.withText(contentNameInThisConversation));
-    await searchDialog.clickClearButton();
-    await searchDialog.clickCloseButton();
+    searchItemsNames.unshift(contentName);
+    await searchDialog.instantPage.clickContentSearchGlobalEntry();
+    await searchDialog.clearInputAreaTextByKey();
   });
 
-  await h(t).withLog('When I tab or mouse in the global search box', async () => {
-    await app.homePage.header.searchBar.clickSelf();
+  await h(t).withLog('Then at most 10 items in recently searched list', async () => {
+    await t.expect(searchDialog.recentPage.items.count).eql(10);
   });
 
-  await h(t).withLog('Then "Recent searches" title', async () => {
-    await t.expect(await searchDialog.recentPage.title()).eql('Recent searches');
+  await h(t).withLog(`When I search ${contentName} and click content in this conversation item`, async () => {
+    await searchDialog.typeSearchKeyword(contentName);
+    searchItemsNames.unshift(contentNameInThisConversation);
+    await searchDialog.instantPage.clickContentSearchInThisConversationEntry();
+    await searchDialog.clearInputAreaTextByKey();
   });
 
-  await h(t).withLog('And "Clear History" button', async () => {
-    await t.expect(searchDialog.recentPage.clearHistoryButton.innerText).eql('Clear history');
+  await h(t).withLog('Then at most 10 items in recently searched list', async () => {
+    await t.expect(searchDialog.recentPage.items.count).eql(10);
   });
 
-  await h(t).withLog('And item display Team/Group/People show "Avatar+Name"', async () => {
-    await t.expect(searchDialog.recentPage.conversationEntryByName(team.name).avatar.exists).ok();
-    await t.expect(await searchDialog.recentPage.conversationEntryByName(team.name).getName()).eql(team.name);
-    await t.expect(searchDialog.recentPage.conversationEntryByName(userName).avatar.exists).ok();
-    await t.expect(await searchDialog.recentPage.conversationEntryByName(userName).getName()).eql(userName);
-    await t.expect(searchDialog.recentPage.conversationEntryByName(groupName).avatar.exists).ok();
-    await t.expect(await searchDialog.recentPage.conversationEntryByName(groupName).getName()).eql(groupName);
+  await h(t).withLog(`And display "${headerTitle}" title`, async () => {
+    await t.expect(searchDialog.recentPage.historyHeader.find('p').textContent).eql(headerTitle);
   });
 
-  await h(t).withLog('Content display "icon+content search text+ conversation name/in this conversation"', async () => {
-    await t.expect(searchDialog.recentPage.conversationEntryByName(contentName).avatar.exists).ok();
-    await t.expect(await searchDialog.recentPage.conversationEntryByName(contentName).getName()).eql(contentName);
-    await t.expect(searchDialog.recentPage.conversationEntryByName(contentNameInThisConversation).avatar.exists).ok();
-    await t.expect(await searchDialog.recentPage.conversationEntryByName(contentNameInThisConversation).getName()).eql(contentNameInThisConversation);
+  await h(t).withLog(`And display "${clearButtonText}" button`, async () => {
+    await t.expect(searchDialog.recentPage.clearHistoryButton.textContent).eql(clearButtonText);
   });
 
   await h(t).withLog('And  "Close" icon ', async () => {
     await t.expect(searchDialog.closeButton.exists).ok();
   });
 
-  await h(t).withLog('When add more than 10 records to recently searched list ', async () => {
-    // we already have 4 items in recent search list. Add 7 to have more then 10 items searched.
-    for ( let i = 0; i < 7; i++ ) {
-      const team = <IGroup>{
-        name: uuid(),
-        type: 'Team',
-        owner: loginUser,
-        members: [loginUser , users[1]]
-      };
-      await h(t).scenarioHelper.createTeamsOrChats([team]);
-      await app.homePage.header.searchBar.clickSelf();
-      await searchDialog.typeSearchKeyword(team.name);
-      recentSearchItems.push(team.name);
-      await t.click(searchDialog.instantPage.teams.withText(team.name));
+  await h(t).withLog('Content display "icon+content search text+ conversation name/in this conversation"', async () => {
+    for (let i = 0; i < 2; i++) { // last two is content search
+      await t.expect(searchDialog.recentPage.nthItemOfAll(i).name.textContent).eql(searchItemsNames[i]);
+      await t.expect(searchDialog.recentPage.nthItemOfAll(i).avatar.exists).ok();
+      await t.expect(searchDialog.recentPage.nthItemOfAll(i).contentIcon.exists).ok();
     }
   });
 
-  await h(t).withLog('Then At most 10 items [content, people, groups, and teams] show', async () => {
-    await app.homePage.header.searchBar.clickSelf();
-    await t.expect(searchDialog.instantPage.items.count).eql(10);
-    const top10RecentSearchItems = recentSearchItems.reverse().slice(0, 10);
-    for (const itemName of top10RecentSearchItems){
-      await t.expect(searchDialog.recentPage.itemByName(itemName).name.innerText).eql(itemName)
+  await h(t).withLog('And item display Team/Group/People show "Avatar+Name"', async () => {
+    for (let i = 2; i < 10; i++) {
+      await t.expect(searchDialog.recentPage.nthItemOfAll(i).name.textContent).eql(searchItemsNames[i]);
+      await t.expect(searchDialog.recentPage.nthItemOfAll(i).avatar.exists).ok();
+      await t.expect(searchDialog.recentPage.nthItemOfAll(i).contentIcon.exists).notOk();
     }
   });
+
 });
