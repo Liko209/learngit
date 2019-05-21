@@ -43,9 +43,9 @@ test(formalName(`Check the display of the Event in the conversation stream`, ['P
   const startTime = new Date().getTime() + 1800000;
   const endTime = new Date().getTime() + 3600000;
 
-  const format = "hh:mm A"
-  const a = moment(startTime).format(format).replace('0', '');
-  const b = moment(endTime).format(format).replace('0', '');
+  const format = "h:mm A"
+  const a = moment(startTime).format(format);
+  const b = moment(endTime).format(format);
   const dueTime = `${a} - ${b}`
 
   await h(t).withLog(`And the team has a event (title, location, description)`, async () => {
