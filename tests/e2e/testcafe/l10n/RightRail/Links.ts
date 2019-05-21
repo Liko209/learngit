@@ -44,8 +44,10 @@ test(formalName('Links display on the right rail', ['P2', 'Messages', 'RightRail
 
   await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_LinksEmpty'});
 
+  const linksTab = rightRail.linksTab;
   await h(t).withLog('When I send a link', async() => {
     await conversationPage.sendMessage('http://www.google.com');
+    await t.expect(linksTab.items.exists).ok();
   });
 
   await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_LinksList'});

@@ -54,7 +54,7 @@ test(formalName('Pinned or unpinned text', ['P2', 'Messages', 'RightRail', 'Pinn
     await h(t).glip(loginUser).updateGroup(team.glipId, {
       "pinned_post_ids": postIds
     })
-    await pinnedTab.waitUntilItemsListExist();
+    await t.expect(pinnedTab.items.exists).ok();
   });
 
   await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_PinnedList'});
