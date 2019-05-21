@@ -57,7 +57,7 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps> {
               'data-test-automation-id': 'global-search-input',
             },
           }}
-          clearBtnText={t('globalSearch.clear')}
+          clearText={t('globalSearch.clear')}
         />
         <CurrentView />
       </JuiGlobalSearch>

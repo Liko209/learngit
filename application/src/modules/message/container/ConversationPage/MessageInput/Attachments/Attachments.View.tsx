@@ -17,7 +17,7 @@ import { getFileIcon } from '@/common/getFileIcon';
 
 @observer
 class AttachmentsViewComponent extends Component<
-  AttachmentsViewProps & WithTranslation
+AttachmentsViewProps & WithTranslation
 > {
   private _showDuplicateFilesDialogIfNeeded = () => {
     const { duplicateFiles, showDuplicateFiles } = this.props;
@@ -34,9 +34,9 @@ class AttachmentsViewComponent extends Component<
           onCancel={this.props.cancelDuplicateFiles}
           onCreate={this.props.uploadDuplicateFiles}
           onUpdate={this.props.updateDuplicateFiles}
-          btnCancelText={t('common.dialog.cancel')}
-          btnUpdateText={t('common.dialog.update')}
-          btnCreateText={t('common.dialog.create')}
+          cancelText={t('common.dialog.cancel')}
+          updateText={t('common.dialog.update')}
+          createText={t('common.dialog.create')}
         />
       );
     }

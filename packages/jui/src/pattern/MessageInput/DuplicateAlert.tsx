@@ -32,9 +32,9 @@ type Props = {
   title: string;
   subtitle: string;
   footText: string;
-  btnCancelText: string;
-  btnUpdateText: string;
-  btnCreateText: string;
+  cancelText: string;
+  updateText: string;
+  createText: string;
   onCancel: () => void;
   onUpdate: () => void;
   onCreate: () => void;
@@ -68,9 +68,9 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
     title,
     subtitle,
     footText,
-    btnCancelText,
-    btnUpdateText,
-    btnCreateText,
+    cancelText,
+    updateText,
+    createText,
   } = props;
   const showDuplicateFiles = duplicateFiles.length > 0;
   if (showDuplicateFiles) {
@@ -96,7 +96,7 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
           autoFocus={true}
           data-test-automation-id="messageinput-duplicate-cancel-button"
         >
-          {btnCancelText}
+          {cancelText}
         </JuiButton>
         <JuiButton
           onClick={onUpdate}
@@ -105,7 +105,7 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
           autoFocus={true}
           data-test-automation-id="messageinput-duplicate-update-button"
         >
-          {btnUpdateText}
+          {updateText}
         </JuiButton>
         <JuiButton
           onClick={onCreate}
@@ -114,7 +114,7 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
           autoFocus={true}
           data-test-automation-id="messageinput-duplicate-create-button"
         >
-          {btnCreateText}
+          {createText}
         </JuiButton>
       </Footer>
     );
