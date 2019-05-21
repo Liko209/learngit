@@ -12,12 +12,12 @@ fixture('RightRail/Notes')
 test(formalName('Notes display on the right rail', ['P2', 'Messages', 'RightRail', 'Notes', 'V1.4', 'Hank.Huang']), async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[5];
-  const team = <IGroup>{
+  const team = <IGroup> {
     name: `H-${uuid()}`,
     type: "Team",
     owner: loginUser,
     members: [loginUser]
-  }
+  };
 
   await h(t).glip(loginUser).init();
 
@@ -40,12 +40,12 @@ test(formalName('Notes display on the right rail', ['P2', 'Messages', 'RightRail
   });
   await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_RightRail_NotesEmpty' });
 
-  await h(t).withLog(`When I create a note in the created team conversation`, async () => {
+  await h(t).withLog('When I create a note in the created team conversation', async () => {
     await rightRail.notesEntry.shouldBeOpened();
     const noteTitle = uuid();
     await h(t).glip(loginUser).createSimpleNote(team.glipId,noteTitle);
   });
-  await h(t).withLog('And the text "Notes" should be display', async () => {
+  await h(t).withLog('And the text "Notes" should be displayed', async () => {
     const listSubTitle = rightRail.listSubTitle;
     await t.expect(listSubTitle.exists).ok();
   });

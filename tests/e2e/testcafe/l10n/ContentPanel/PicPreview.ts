@@ -16,16 +16,13 @@ test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 
   const loginUser = h(t).rcData.mainCompany.users[6];
   const team = <IGroup>{
     name: `H-${uuid()}`,
-    type: "Team",
+    type: 'Team',
     owner: loginUser,
     members: [loginUser]
-  }
+  };
 
-  await h(t).glip(loginUser).init();
-
-  await h(t).withLog(`Given I have a team conversation: "${team.name}"`, async () => {
-    await h(t).platform(loginUser).createTeam(team)
-
+  await h(t).withLog(`Given I have a team conversation:"${team.name}"`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -40,71 +37,74 @@ test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 
   const duplicatePromptPage = app.homePage.messageTab.duplicatePromptPage;
 
   await h(t).withLog('And I upload a picture as attachment and send it', async () => {
-    const file = '../../sources/1.png';
+    const file = '../../sources/files1/1.jpg';
     await conversationPage.uploadFilesToMessageAttachment(file);
     await t.pressKey('enter');
   });
-  await h(t).withLog(`Then text "shared a file" should be displayed`, async () => {
+  await h(t).withLog('Then text "shared a file" should be displayed', async () => {
     await t.expect(conversationPage.fileNotification.nth(0).exists).ok();
   });
-  await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_SendAPicture' });
+  await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_ContentPanel_SharedAFile' });
 
   await h(t).withLog('When I upload a duplicate picture as attachment and send it', async () => {
-    const file = '../../sources/1.png';
-    await conversationPage.uploadFilesToMessageAttachment(file);
+    const file2 = '../../sources/files/1.jpg';
+    await conversationPage.uploadFilesToMessageAttachment(file2);
   });
-  await h(t).withLog(`Then "update files" page should be displayed`, async () => {
+  await h(t).withLog('Then "update files" page should be displayed', async () => {
     await t.expect(duplicatePromptPage.duplicateCancelButton.exists).ok();
   });
-  await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_UpdateFiles' });
+  await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_ContentPanel_UpdateFiles' });
 
   await h(t).withLog('When I click "update" button on "update files" page', async () => {
     await duplicatePromptPage.clickUpdateButton();
     await t.pressKey('enter');
   });
-  await h(t).withLog(`Then text "uploaded version" should be displayed`, async () => {
+  await h(t).withLog('Then text "uploaded version" should be displayed', async () => {
     await t.expect(conversationPage.fileNotification.nth(1).exists).ok();
   });
-  await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_UpdateVersion' });
+  await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_ContentPanel_UpdateVersion' });
 
   const imagePreviewer = app.homePage.fileAndImagePreviewer;
 
-  await h(t).withLog('When I can find the image in post and click the image', async () => {
+  await h(t).withLog('When I upload a picture once again and click the image', async () => {
     const posts = app.homePage.messageTab.conversationPage.posts;
+    const file = '../../sources/2.png';
+    await conversationPage.uploadFilesToMessageAttachment(file);
+    await t.pressKey('enter');
     await t.expect(posts.nth(-1).find('img').exists).ok();
     await t.click(posts.nth(-1).find('img'));
   });
   await h(t).withLog('And I hover the image and hover "Scale file Down"', async () => {
     await imagePreviewer.hoverZoomOutButton();
   });
-  await h(t).log(`Then I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ScaleFiledDown' });
+  await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_ContentPanel_ScaleFiledDown' });
 
   await h(t).withLog('When I hover the image and hover "Scale file Up"', async () => {
     await imagePreviewer.hoverZoomInButton();
   });
-  await h(t).log(`Then I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ScaleFiledUp' });
+  await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_ContentPanel_ScaleFiledUp' });
 
   await h(t).withLog('When I hover "view previous file" button', async () => {
     const imagePreviewer = app.homePage.fileAndImagePreviewer;
-    await imagePreviewer.hoverPerviousButton();
+    await imagePreviewer.hoverPreviousButton();
   });
-  await h(t).log(`Then I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ViewPreviousFile' });
+  await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_ContentPanel_ViewPreviousFile' });
   await h(t).withLog('When I click "view previous file" button and hover "view next file" button', async () => {
     const imagePreviewer = app.homePage.fileAndImagePreviewer;
-    await imagePreviewer.clickPerviousButton();
-    await imagePreviewer.hoverForwardButton();
+    await imagePreviewer.clickPreviousButton();
+    await imagePreviewer.hoverForwardButton()
   });
-  await h(t).log(`Then I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ViewNextFile' });
+  await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_ContentPanel_ViewNextFile' });
 
   const downloadButton = app.homePage.fileAndImagePreviewer.downloadIcon;
 
   await h(t).withLog('When I hover "download" button', async () => {
     await t.hover(downloadButton);
   });
-  await h(t).withLog(`Then "download" button should be displayed`, async () => {
+  await h(t).withLog('Then "download" button should be displayed', async () => {
     await t.expect(downloadButton.exists).ok();
   });
-  await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_Download' });
+  await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_ContentPanel_Download' });
 
   await h(t).withLog('When I upload more than two pictures as attachments and send them', async () => {
     const files = ['../../sources/1.png', '../../sources/2.png', '../../sources/files/1.jpg']
@@ -113,15 +113,15 @@ test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 
     await duplicatePromptPage.clickUpdateButton();
     await t.pressKey('enter');
   });
-  await h(t).withLog(`Then text "shared 3 files" should be displayed`, async () => {
+  await h(t).withLog('Then text "shared 3 files" should be displayed', async () => {
     await t.expect(conversationPage.fileNotification.nth(2).exists).ok();
   });
-  await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_SendThreePictures' });
+  await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ShareThreeFiles' });
 
-  await h(t).withLog('When I send a link in the created team conversation ', async () => {
+  await h(t).withLog('When I send a link in the created team conversation', async () => {
     await conversationPage.sendMessage("www.google.com");
   });
-  await h(t).withLog(`Then text "shared a link" should be displayed`, async () => {
+  await h(t).withLog('Then text "shared a link" should be displayed', async () => {
     await t.expect(conversationPage.fileNotification.nth(3).exists).ok();
   });
   await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_SendALink' });
@@ -129,7 +129,7 @@ test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 
   await h(t).withLog('When I send more than 2 links in the created team conversation ', async () => {
     await conversationPage.sendMessage("www.google.com www.google.com");
   });
-  await h(t).withLog(`Then text "shared 2 links" should be displayed`, async () => {
+  await h(t).withLog('Then text "shared 2 links" should be displayed', async () => {
     await t.expect(conversationPage.fileNotification.nth(4).exists).ok();
   });
   await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_SendTwoLinks' });

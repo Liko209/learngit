@@ -71,12 +71,12 @@ export class FileAndImagePreviewer extends BaseWebComponent {
     await this.t.click(this.closeButton);
   }
 
-  get perviousIcon() {
-    return this.getSelectorByIcon('pervious', this.self);
+  get previousIcon() {
+    return this.getSelectorByIcon('previous', this.self);
   }
 
-  get perviousButton() {
-    return this.perviousIcon.parent('button');
+  get previousButton() {
+    return this.previousIcon.parent('button');
   }
 
   get forwardIcon() {
@@ -87,16 +87,16 @@ export class FileAndImagePreviewer extends BaseWebComponent {
     return this.forwardIcon.parent('button');
   }
 
-  async clickPerviousButton() {
+  async clickPreviousButton() {
     await this.t
-      .expect(this.perviousButton.hasAttribute('disabled')).notOk()
-      .click(this.perviousButton);
+      .expect(this.previousButton.hasAttribute('disabled')).notOk()
+      .click(this.previousButton);
   }
 
-  async hoverPerviousButton() {
+  async hoverPreviousButton() {
     await this.t
-      .expect(this.perviousButton.hasAttribute('disabled')).notOk()
-      .hover(this.perviousButton);
+      .expect(this.previousButton.hasAttribute('disabled')).notOk()
+      .hover(this.previousButton);
   }
 
   async clickForwardButton() {

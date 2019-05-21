@@ -44,7 +44,7 @@ test(formalName('Events display on the right rail', ['P2', 'Messages', 'RightRai
     const eventTitle = `H-${uuid()}`;
     await h(t).glip(loginUser).createSimpleEvent({groupIds: team.glipId, title: eventTitle});
   });
-  await h(t).withLog('And the text "Events" should be display', async () => {
+  await h(t).withLog('And the text "Events" should be displayed', async () => {
     const listSubTitle = rightRail.listSubTitle;
     await t.expect(listSubTitle.exists).ok();
   });
