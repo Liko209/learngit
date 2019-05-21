@@ -24,7 +24,7 @@ test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 
 
   await h(t).glip(loginUser).init();
 
-  await h(t).withLog(`Given I have a team conversation: "${team.glipId}"`, async () => {
+  await h(t).withLog(`Given I have a team conversation: "${team.name}"`, async () => {
     await h(t).platform(loginUser).createTeam(team)
 
   });
