@@ -1,30 +1,39 @@
 import * as _ from 'lodash';
+import * as path from 'path';
+import * as fs from 'fs';
 import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 import { v4 as uuid } from "uuid"
-import { IGroup } from '../../v2/models';
+
+function fileSizeOf(filePath: string, unit: string = 'KB', num: number = 1) {
+  const stat = fs.statSync(path.join(__dirname, filePath));
+  if ('KB' === unit) {
+    return `${(stat.size / 1024).toFixed(num)}KB`
+  }
+  throw Error(`unsupported unit: ${unit}`);
+}
 
 fixture('ContentPanel/PicPreview')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 'PicPreview', 'V1.4', 'hank.huang']), async (t) => {
+test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 'ContentPanel', 'V1.4', 'hank.huang']), async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[6];
-  const team = <IGroup> {
-    name: `H-${uuid()}`,
-    type: "Team",
-    owner: loginUser,
-    members: [loginUser]
-  }
+  const otherUser = h(t).rcData.mainCompany.users[7];
+  let teamID: string, teamName: string = `Team ${uuid()}`;
 
   await h(t).glip(loginUser).init();
 
-  await h(t).withLog(`Given I have a team conversation: "${team.name}"`, async () => {
-    await h(t).scenarioHelper.createTeam(team);
+  await h(t).withLog(`Given I have a team conversation: "${teamName}"`, async () => {
+    teamID = await h(t).platform(loginUser).createAndGetGroupId({
+      type: 'Team',
+      name: teamName,
+      members: [loginUser.rcId, otherUser.rcId],
+    });
   });
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
