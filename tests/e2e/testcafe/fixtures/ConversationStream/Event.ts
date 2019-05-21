@@ -11,6 +11,7 @@ import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 import { IGroup } from '../../v2/models';
 import * as uuid from 'uuid';
+import * as moment from 'moment'
 
 fixture('ConversationStream/Event')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -39,30 +40,27 @@ test(formalName(`Check the display of the Event in the conversation stream`, ['P
   });
 
   let postId;
-  //let eventId;
   const startTime = new Date().getTime() + 1800000;
-  const startTimeHours = new Date(startTime).getHours() % 12 == 0 ? 12 : new Date(startTime).getHours() % 12;
-  const startTimeMinutes = new Date(startTime).getMinutes() < 10 ? '0' + new Date(startTime).getMinutes() : new Date(startTime).getMinutes();
-  const startTimeAmpm = new Date(startTime).getHours() >= 12 ? 'PM' : 'AM';
-
   const endTime = new Date().getTime() + 3600000;
-  const endTimeHours = new Date(endTime).getHours() % 12 == 0 ? 12 : new Date(endTime).getHours() % 12;
-  const endTimeMinutes = new Date(endTime).getMinutes() < 10 ? '0' + new Date(endTime).getMinutes() : new Date(endTime).getMinutes();
-  const endTimeAmpm = new Date(endTime).getHours() >= 12 ? 'PM' : 'AM';
 
-  const dueTime = startTimeHours + ":" + startTimeMinutes + " " + startTimeAmpm + " - " + endTimeHours + ":" + endTimeMinutes + " " + endTimeAmpm;
+  const format = "hh:mm A"
+  const a = moment(startTime).format(format).replace('0', '');
+  const b = moment(endTime).format(format).replace('0', '');
+  const dueTime = `${a} - ${b}`
+
   await h(t).withLog(`And the team has a event (title, location, description)`, async () => {
     await h(t).glip(loginUser).init();
     const res = await h(t).glip(loginUser).createSimpleEvent({
       groupIds: team.glipId,
       title,
+      start: startTime,
+      end: endTime,
       location,
       description
     }, {
         color,
       });
     postId = res.data['post_ids'][0]
-    //eventId = res.data['_id'];
   });
 
   await h(t).withLog(`And I login with the extension`, async () => {
@@ -76,18 +74,12 @@ test(formalName(`Check the display of the Event in the conversation stream`, ['P
 
   const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog(`And check the display of the Event in the conversation stream`, async () => {
-    // Check Event icon(with color)、Event title(with color)、Due time with repeat、Location、Description
     const eventIconStyle = await conversationPage.postItemById(postId).eventIcon.style;
     const eventTitleStyle = await conversationPage.postItemById(postId).eventTitle.style;
-    // Check Event icon(with color)
     await t.expect(eventIconStyle['color']).eql("rgb(255, 55, 55)");
-    // Check Event title(with color)
     await t.expect(eventTitleStyle['color']).eql("rgb(255, 55, 55)");
     await t.expect(conversationPage.postItemById(postId).eventTitle.textContent).eql(`${title}`);
-    // Check Location
     await t.expect(conversationPage.postItemById(postId).eventLocation.textContent).eql(`${location}`);
-    // Check Description(todo: automation id)
-    // Check Due time with repeat
     await t.expect(conversationPage.postItemById(postId).eventDue.textContent).contains(`${dueTime}`);
   });
 });
