@@ -455,7 +455,7 @@ test.meta(<ITestMeta>{
 test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-1237'],
-  maintainers: ['alexander.zaverukha'],
+  maintainers: ['alexander.zaverukha', 'potar.he'],
   keywords: ['search'],
 })('Check the sort of the recently searched list', async (t) => {
   const app = new AppRoot(t);
@@ -590,7 +590,7 @@ fixture('Recently Search')
 test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-1228'],
-  maintainers: ['alexander.zaverukha'],
+  maintainers: ['alexander.zaverukha', 'potar.he'],
   keywords: ['search'],
 })('Recently searched list can be synced in time', async (t: TestController) => {
   const app = new AppRoot(t);
@@ -646,9 +646,9 @@ test.meta(<ITestMeta>{
     await h(t).platform(admin).deleteTeam(team.glipId);
   });
 
-  historyCount -=  1;
+  historyCount -= 1;
   await h(t).withLog(`Then the ${team.name} item disappear immediately and just only show ${historyCount} contact items`, async () => {
-    await t.expect(searchDialog.recentPage.items.count).eql(historyCount);
+    await t.expect(searchDialog.recentPage.items.count).eql(historyCount, { timeout: 10e3 });
     await searchDialog.recentPage.conversationByName(team.name).ensureDismiss();
   });
 
@@ -665,7 +665,6 @@ test.meta(<ITestMeta>{
     await searchDialog.recentPage.conversationByName(team.name).ensureDismiss();
   });
 
-  historyCount += 1;
   await h(t).withLog(`When create team again then search it`, async () => {
     await h(t).scenarioHelper.createTeam(team);
     await searchDialog.typeSearchKeyword(team.name);
@@ -676,8 +675,8 @@ test.meta(<ITestMeta>{
     await searchBar.clickSelf();
   });
 
+  historyCount += 1;
   await h(t).withLog(`Then the recently searched dropdown list displayed ${historyCount} items and it contains team:  ${team.name}`, async () => {
-    await t.debug();
     await t.expect(searchDialog.recentPage.conversationItems.count).eql(historyCount);
     await searchDialog.recentPage.conversationByName(team.name).ensureLoaded();
   });
@@ -688,7 +687,7 @@ test.meta(<ITestMeta>{
 
   historyCount -= 1;
   await h(t).withLog(`Then the ${team.name} item disappear immediately and just only show ${historyCount} contact items`, async () => {
-    await t.expect(searchDialog.recentPage.items.count).eql(historyCount);
+    await t.expect(searchDialog.recentPage.items.count).eql(historyCount, { timeout: 10e3 });
     await searchDialog.recentPage.conversationByName(team.name).ensureDismiss();
   });
 
@@ -710,7 +709,7 @@ test.meta(<ITestMeta>{
 test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-1238'],
-  maintainers: ['alexander.zaverukha'],
+  maintainers: ['alexander.zaverukha', 'potar.he'],
   keywords: ['search'],
 })('Check the UI of the recently searched list', async (t) => {
   const app = new AppRoot(t);
