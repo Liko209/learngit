@@ -3,10 +3,7 @@
  * @Date: 2018-06-04 15:43:44
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  SocketRequestParamsType,
-  default as SocketRequest,
-} from './SocketRequest';
+import SocketRequest from './SocketRequest';
 import { SocketResponseBuilder } from './SocketResponseBuilder';
 import { EventEmitter2 } from 'eventemitter2';
 import { NETWORK_FAIL_TEXT, RESPONSE_STATUS_CODE } from '../../network';
@@ -37,9 +34,8 @@ class SocketRequestHelper implements ISocketRequestManager {
     const socketResponse = new SocketResponseBuilder()
       .options(response)
       .build();
-    if (socketResponse.request && socketResponse.request.params) {
-      const requestId = (socketResponse.request
-        .params as SocketRequestParamsType).request_id;
+    if (socketResponse.request && socketResponse.request.parameters) {
+      const requestId = socketResponse.request.parameters.request_id;
       this._removeRequestTimer(requestId);
       this._handleRegisteredRequest(requestId, socketResponse);
     }

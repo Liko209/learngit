@@ -55,6 +55,8 @@ export default class PersonModel extends Base<Person> {
   sanitizedRcExtension?: SanitizedExtensionModel;
   @observable
   deactivated: boolean;
+  @observable
+  flags?: number;
 
   constructor(data: Person) {
     super(data);
@@ -78,6 +80,7 @@ export default class PersonModel extends Base<Person> {
       homepage,
       sanitized_rc_extension,
       deactivated,
+      flags,
     } = data;
     this.companyId = company_id;
     this.firstName = first_name;
@@ -98,6 +101,7 @@ export default class PersonModel extends Base<Person> {
     this.homepage = homepage;
     this.sanitizedRcExtension = sanitized_rc_extension;
     this.deactivated = deactivated;
+    this.flags = flags;
   }
 
   static fromJS(data: Person) {
@@ -206,5 +210,13 @@ export default class PersonModel extends Base<Person> {
       this.rcPhoneNumbers,
       this.sanitizedRcExtension,
     );
+  }
+
+  isVisible() {
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
+    const person = personService.getSynchronously(this.id);
+    return person && personService.isVisiblePerson(person);
   }
 }
