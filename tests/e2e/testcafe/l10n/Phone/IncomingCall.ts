@@ -8,7 +8,7 @@ import { SITE_URL, BrandTire } from '../../config';
 fixture('Phone/IncomingCall')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
-  
+
   test(formalName('Called by another extension from webphone', ['P2', 'Phone', 'IncomingCall' ,'Hank.Huang']), async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[5];
   const callee = h(t).rcData.mainCompany.users[6];
@@ -39,5 +39,5 @@ fixture('Phone/IncomingCall')
   await h(t).withLog('When I hover close button', async () => {
     await telephonyDialog.hoverIgnoreButton();
   });
-  await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_Phone_Ignore' });
+  await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_Phone_IgnoreTheCall' });
 });
