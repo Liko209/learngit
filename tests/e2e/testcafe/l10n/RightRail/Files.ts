@@ -14,7 +14,7 @@ test(formalName('Files display on the right rail', ['P2', 'Messages', 'RightRail
 
   const team = <IGroup> {
     name: uuid(),
-    type: "Team",
+    type: 'Team',
     owner: loginUser,
     members: [loginUser]
   }
