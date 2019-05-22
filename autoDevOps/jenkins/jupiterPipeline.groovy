@@ -104,18 +104,6 @@ class BaseJob {
         sshCmd(remoteUri, cmd)
     }
 
-    // FIXME: move to Jupiter Job
-    // business logic
-    static String getSubDomain(String sourceBranch, String targetBranch) {
-        if ("master" == sourceBranch)
-            return 'release'
-        if (sourceBranch in ["develop", "stage"])
-            return sourceBranch
-        String subDomain = sourceBranch.replaceAll(/[\/\.]/, '-').toLowerCase()
-        if (null != targetBranch && sourceBranch != targetBranch)
-            return "mr-${subDomain}".toString()
-        return subDomain
-    }
 
     // FIXME: move to Jupiter Job
     // FIXME:
@@ -219,11 +207,12 @@ class JupiterPipelineParam {
     String deployUri
     String deployCredentialId
     String deployBaseDir
-    String rcCredentialId
+    String e2eRcCredentialId
     String dockerDeployUri
     String dockerDeployCredentialId
     String dockerDeployBaseDir
     String releaseBranch = 'master'
+    String stageBranch = 'stage'
     String integrationBranch = 'develop'
 
     // gitlab params
@@ -246,37 +235,60 @@ class JupiterPipelineParam {
     Boolean e2eEnableRemoteDashboard
     Boolean e2eEnableMockServer
 
-    // deploy params
-    String subDomain
-    String appLinkDir
-    String appStageLinkDir
-    String juiLinkDir
-    String publishDir
 
-    String appUrl
-    String juiUrl
-    String publishPackageName
-    String publishUrl
+
+    Boolean isMerge() {
+        gitlabSourceBranch != gitlabTargetBranch
+    }
+
+    String getSubDomain() {
+        if (gitlabSourceBranch in [releaseBranch,])
+            return 'release'
+        if (gitlabSourceBranch in [integrationBranch, stageBranch])
+            return gitlabSourceBranch
+        String domain = sourceBranch.replaceAll(/[\/\.]/, '-').toLowerCase()
+        if (isMerge())
+            return "mr-${domain}".toString()
+        return domain
+    }
+
+    String getAppLinkDir() {
+        "${deployBaseDir}/${subDomain}".toString()
+    }
+
+    String getAppStageLinkDir() {
+        "${deployBaseDir}/stage".toString()
+    }
+
+    String getJuiLinkDir() {
+        "${deployBaseDir}/${subDomain}-jui".toString()
+    }
+
+    String getAppUrl() {
+        "https://${subDomain}.fiji.gliprc.com".toString()
+    }
+
+    String getJuiUrl() {
+        "https://${subDomain}-jui.fiji.gliprc.com".toString()
+    }
+
 
     JupiterPipelineParam(script) {
         def params = script.params
         def env = script.env
 
-        // init job params
+        // jenkins params
         buildNode = params.BUILD_NODE ?: env.BUILD_NODE
-        scmCredentialId = params.SCM_CREDENTIAL
+        buildUrl = env.BUILD_URL
+
         npmRegistry = params.NPM_REGISTRY
         nodejsTool = params.NODEJS_TOOL
         deployUri = params.DEPLOY_URI
         deployCredentialId = params.DEPLOY_CREDENTIAL
         deployBaseDir = params.DEPLOY_BASE_DIR
-        rcCredentialId = params.E2E_RC_CREDENTIAL
-        dockerDeployUri = params.DOCKER_DEPLOY_URI
-        dockerDeployCredentialId = params.DOCKER_DEPLOY_CREDENTIAL
-        dockerDeployBaseDir = params.DOCKER_DEPLOY_BASE_DIR
 
-        // init gitlab params
-        buildUrl = env.BUILD_URL
+        // gitlab params
+        scmCredentialId = params.SCM_CREDENTIAL
         gitlabSourceBranch = env.gitlabSourceBranch?: params.GITLAB_BRANCH
         gitlabTargetBranch = env.gitlabTargetBranch?: gitlabSourceBranch
         gitlabSourceNamespace = env.gitlabSourceNamespace?: params.GITLAB_NAMESPACE
@@ -284,9 +296,10 @@ class JupiterPipelineParam {
         gitlabSourceRepoSshURL = env.gitlabSourceRepoSshURL?: params.GITLAB_SSH_URL
         gitlabTargetRepoSshURL = env.gitlabTargetRepoSshURL?: gitlabSourceRepoSshURL
         gitlabUserEmail = env.gitlabUserEmail
-        gitlabMergeRequestLastCommit = env.gitlabMergeRequestLastCommitbuildUrl = env.BUILD_URL
+        gitlabMergeRequestLastCommit = env.gitlabMergeRequestLastCommitbuildUrl
 
-        // init e2e params
+        // e2e params
+        e2eRcCredentialId = params.E2E_RC_CREDENTIAL
         e2eSiteEnv = params.E2E_SITE_ENV
         e2eSeleniumServer = params.E2E_SELENIUM_SERVER
         e2eBrowsers = params.E2E_BROWSERS
@@ -294,18 +307,6 @@ class JupiterPipelineParam {
         e2eExcludeTags = params.E2E_EXCLUDE_TAGS?: ''
         e2eEnableRemoteDashboard = params.E2E_ENABLE_REMOTE_DASHBOARD
         e2eEnableMockServer = params.E2E_ENABLE_MOCK_SERVER
-
-        // init deploy params
-        subDomain = BaseJob.getSubDomain(gitlabSourceBranch, gitlabTargetBranch)
-        appLinkDir = "${deployBaseDir}/${subDomain}".toString()
-        appStageLinkDir = "${deployBaseDir}/stage".toString()
-        juiLinkDir = "${deployBaseDir}/${subDomain}-jui".toString()
-        publishDir = "${deployBaseDir}/publish".toString()
-
-        appUrl = "https://${subDomain}.fiji.gliprc.com".toString()
-        juiUrl = "https://${subDomain}-jui.fiji.gliprc.com".toString()
-        publishPackageName = "${subDomain}.tar.gz".toString()
-        publishUrl = "https://publish.fiji.gliprc.com/${publishPackageName}".toString()
     }
 }
 
@@ -832,7 +833,7 @@ class E2eAutomationStage extends JupiterPipelineStage {
                     report.e2eUrl = 'beat dashboard is disabled'
                 }
                 script.withCredentials([script.usernamePassword(
-                    credentialsId: param.rcCredentialId,
+                    credentialsId: param.e2eRcCredentialId,
                     usernameVariable: 'RC_PLATFORM_APP_KEY',
                     passwordVariable: 'RC_PLATFORM_APP_SECRET')]) {
                     try {
