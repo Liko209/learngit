@@ -13,8 +13,6 @@ test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'Profile', 'V1.4', 'Han
   const settingMenu = app.homePage.settingMenu;
   const topBarAvatar = app.homePage.topBarAvatar;
 
-  await h(t).glip(loginUser).init();
-
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
