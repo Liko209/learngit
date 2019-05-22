@@ -7,8 +7,8 @@ import { IGroup } from "../../v2/models";
 import { v4 as uuid } from 'uuid';
 
 fixture('TopBar/AddNewActions')
-.beforeEach(setupCase(BrandTire.RCOFFICE))
-.afterEach(teardownCase());
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .afterEach(teardownCase());
 
 test(formalName('Check "New actions" menu', ['P2', 'TopBar', 'AddNewActions', 'V1.4', 'Hank.Huang']), async (t) => {
   const app = new AppRoot(t);

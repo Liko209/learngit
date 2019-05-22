@@ -7,8 +7,8 @@ import { v4 as uuid } from "uuid"
 import { IGroup } from "../../v2/models";
 
 fixture('RightRail/Notes')
-.beforeEach(setupCase(BrandTire.RCOFFICE))
-.afterEach(teardownCase());
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .afterEach(teardownCase());
 
 test(formalName('Notes display on the right rail', ['P2', 'Messages', 'RightRail', 'Notes', 'V1.4', 'Hank.Huang']), async (t) => {
   const app = new AppRoot(t);

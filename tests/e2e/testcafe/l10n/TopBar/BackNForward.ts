@@ -7,8 +7,8 @@ import { AppRoot } from "../../v2/page-models/AppRoot";
 
 
 fixture('TopBar/BackNForward')
-.beforeEach(setupCase(BrandTire.RCOFFICE))
-.afterEach(teardownCase());
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .afterEach(teardownCase());
 
 test(formalName('Check "back" button and "forward" button', ['P2', 'TopBar', 'BackNForward', 'V1.4', 'Hank.Huang']), async (t) => {
   const app = new AppRoot(t);

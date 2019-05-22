@@ -7,8 +7,8 @@ import { IGroup } from "../../v2/models";
 import { v4 as uuid } from "uuid"
 
 fixture('TopBar/Search')
-.beforeEach(setupCase(BrandTire.RCOFFICE))
-.afterEach(teardownCase());
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .afterEach(teardownCase());
 
 test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.Huang']), async (t) => {
   const app = new AppRoot(t);
