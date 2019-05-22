@@ -556,7 +556,7 @@ node(buildNode) {
 
             'Build Application': {
                 condStage(name: 'Build Application', enable: !skipBuildApp) {
-                    // FIXME: move this part to build script
+                    // FIXME: move this part to build jenkins
                     sh 'npx ts-node application/src/containers/VersionInfo/GitRepo.ts'
                     sh 'mv commitInfo.ts application/src/containers/VersionInfo/'
                     try {

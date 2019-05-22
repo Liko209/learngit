@@ -1,109 +1,110 @@
+import jenkins.model.*
+import java.net.URI
+import com.dabsquared.gitlabjenkins.cause.GitLabWebHookCause
 
-class Util {
-    def script
+class BaseJob {
+    def jenkins
 
     // cancel old build to safe slave resources
     @NonCPS
-    def cancelOldBuildOfSameCause() {
-        GitLabWebHookCause currentBuildCause = script.currentBuild.rawBuild.getCause(script.GitLabWebHookCause.class)
+    void cancelOldBuildOfSameCause() {
+        GitLabWebHookCause currentBuildCause = jenkins.currentBuild.rawBuild.getCause(jenkins.GitLabWebHookCause.class)
         if (null == currentBuildCause)
             return
         def currentCauseData = currentBuildCause.getData()
 
-        script.currentBuild.rawBuild.getParent().getBuilds().each { build ->
-            if (!build.isBuilding() || script.currentBuild.rawBuild.getNumber() <= build.getNumber())
+        jenkins.currentBuild.rawBuild.getParent().getBuilds().each { build ->
+            if (!build.isBuilding() || jenkins.currentBuild.rawBuild.getNumber() <= build.getNumber())
                 return
-            GitLabWebHookCause cause = build.getCause(script.GitLabWebHookCause.class)
+            GitLabWebHookCause cause = build.getCause(jenkins.GitLabWebHookCause.class)
             if (null == cause)
                 return
             def causeData = cause.getData()
-
             if (currentCauseData.sourceBranch == causeData.sourceBranch
                 && currentCauseData.sourceRepoName == causeData.sourceRepoName
                 && currentCauseData.targetBranch == causeData.targetBranch
                 && currentCauseData.targetRepoName == causeData.targetRepoName) {
                 build.doStop()
-                script.println "build ${build.getFullDisplayName()} is canceled"
+                jenkins.echo "build ${build.getFullDisplayName()} is canceled"
             }
         }
     }
     
     // conditional stage
-    def condStage(Map args, Closure block) {
+    void condStage(Map args, Closure block) {
         assert args.name, 'stage name is required'
-        String name = args.name
-        Boolean enable = (null == args.enable) ? true: args.enable
-        Integer time = (null == args.timeout) ? 1800: args.timeout
+        String  name     = args.name
+        Integer time     = (null == args.timeout) ? 1800 : args.timeout
         Boolean activity = (null == args.activity) ? true: args.activity
-        return script.timeout(time: time, activity: activity, unit: 'SECONDS') {
-            script.stage(name, enable ? block : {
-                script.echo "Skip stage: ${name}"
-            })
+        jenkins.timeout(time: time, activity: activity, unit: 'SECONDS') {
+            jenkins.stage(name, block)
         }
     }
 
-    // generate sha1 hash from a git treeish object, ensure stability by only taking parent and tree object into account
-    def stableSha1(String treeish) {
-        String cmd = "git cat-file commit ${treeish} | grep -e ^tree | openssl sha1 |  grep -oE '[^ ]+\$'".toString()
-        return script.sh(returnStdout: true, script: cmd).trim()
+    // get stable key from a git treeish object, ensure stability by only taking tree object into account
+    String stableSha1(String treeish) {
+        String cmd = "git cat-file commit ${treeish} | grep -e ^tree | cut -d ' ' -f 2".toString()
+        jenkins.sh(returnStdout: true, script: cmd).trim()
     }
-
 
     // ssh helper
-    def sshCmd(String remoteUri, String cmd) {
+    String sshCmd(String remoteUri, String cmd) {
         URI uri = new URI(remoteUri)
         GString sshCmd = "ssh -q -o StrictHostKeyChecking=no -p ${uri.getPort()} ${uri.getUserInfo()}@${uri.getHost()}"
-        return script.sh(returnStdout: true, script: "${sshCmd} \"${cmd}\"").trim()
+        jenkins.sh(returnStdout: true, script: "${sshCmd} \"${cmd}\"").trim()
     }
 
+    // FIXME: move to Jupiter Job
     // deploy helper
-    def rsyncFolderToRemote(String sourceDir, String remoteUri, String remoteDir) {
+    void rsyncFolderToRemote(String sourceDir, String remoteUri, String remoteDir) {
         URI uri = new URI(remoteUri)
         sshCmd(remoteUri, "mkdir -p ${remoteDir}".toString())
         String rsyncRemoteUri = "${uri.getUserInfo()}@${uri.getHost()}:${remoteDir}".toString()
-        script.sh "rsync -azPq --delete --progress -e 'ssh -o StrictHostKeyChecking=no -p ${uri.getPort()}' ${sourceDir} ${rsyncRemoteUri}"
+        jenkins.sh "rsync -azPq --delete --progress -e 'ssh -o StrictHostKeyChecking=no -p ${uri.getPort()}' ${sourceDir} ${rsyncRemoteUri}"
         sshCmd(remoteUri, "chmod -R 755 ${remoteDir}".toString())
     }
 
-    def rsyncFolderRemoteToRemote(String fromRemoteUri, String fromRemoteDir, String toRemoteUri, String toRemoteDir) {
+    // FIXME: move to Jupiter Job
+    void rsyncFolderRemoteToRemote(String fromRemoteUri, String fromRemoteDir, String toRemoteUri, String toRemoteDir) {
         URI fromUri = new URI(fromRemoteUri)
-
         String from = "${fromUri.getUserInfo()}@${fromUri.getHost()}:${fromRemoteDir}".toString()
-
-        sshCmd(toRemoteUri, "scp -r -P ${fromUri.getPort()} ${from} ${toRemoteDir}")
-
+        sshCmd(toRemoteUri, "scp -r -P ${fromUri.getPort()} ${from} ${toRemoteDir}".toString())
         sshCmd(toRemoteUri, "chmod -R 755 ${toRemoteDir}".toString())
     }
 
-    def doesRemoteDirectoryExist(String remoteUri, String remoteDir) {
+    Boolean doesRemoteDirectoryExist(String remoteUri, String remoteDir) {
         // the reason to use stdout instead of return code is,
         // by return code we can not tell the error of ssh itself or dir not exists
-        return 'true' == sshCmd(remoteUri, "[ -d ${remoteDir} ] && echo 'true' || echo 'false'")
+        'true' == sshCmd(remoteUri, "[ -d ${remoteDir} ] && echo 'true' || echo 'false'".toString()).trim()
     }
 
+    // FIXME: move to Jupiter Job
     def updateRemoteCopy(String remoteUri, String linkSource, String linkTarget) {
         updateRemoteCopy(remoteUri, linkSource, linkTarget, true)
     }
 
+    // FIXME: move to Jupiter Job
     def updateRemoteCopy(String remoteUri, String linkSource, String linkTarget, Boolean delete) {
         assert '/' != linkTarget, 'What the hell are you doing?'
         if (delete) {
             // remove link if exists
-            script.println sshCmd(remoteUri, "[ -L ${linkTarget} ] && unlink ${linkTarget} || true")
+            jenkins.println sshCmd(remoteUri, "[ -L ${linkTarget} ] && unlink ${linkTarget} || true")
             // remote directory if exists
-            script.println sshCmd(remoteUri, "[ -d ${linkTarget} ] && rm -rf ${linkTarget} || true")
+            jenkins.println sshCmd(remoteUri, "[ -d ${linkTarget} ] && rm -rf ${linkTarget} || true")
         }
         // ensure target directory existed
-        script.println sshCmd(remoteUri, "mkdir -p ${linkTarget}")
+        jenkins.println sshCmd(remoteUri, "mkdir -p ${linkTarget}")
         // create copy to new target
-        script.println sshCmd(remoteUri, "cp -rf ${linkSource}/* ${linkTarget}/")
+        jenkins.println sshCmd(remoteUri, "cp -rf ${linkSource}/* ${linkTarget}/")
     }
 
-    def updateVersionInfo(String remoteUri, String appDir, String sha, long timestamp) {
+    // FIXME: move to Jupiter Job
+    void updateVersionInfo(String remoteUri, String appDir, String sha, long timestamp) {
         String cmd = "sed -i 's/{{deployedCommit}}/${sha.substring(0,9)}/;s/{{deployedTime}}/${timestamp}/' ${appDir}/static/js/versionInfo.*.chunk.js || true"
-        script.println sshCmd(remoteUri, cmd)
+        sshCmd(remoteUri, cmd)
     }
 
+    // FIXME: move to Jupiter Job
     // business logic
     static String getSubDomain(String sourceBranch, String targetBranch) {
         if ("master" == sourceBranch)
@@ -116,6 +117,8 @@ class Util {
         return subDomain
     }
 
+    // FIXME: move to Jupiter Job
+    // FIXME:
     static String getMessageChannel(String sourceBranch, String targetBranch) {
         if (null != targetBranch && sourceBranch != targetBranch)
             return "jupiter_mr_ci@ringcentral.glip.com"
@@ -126,16 +129,16 @@ class Util {
         }
     }
 
-    def safeMail(addresses, subject, body) {
-        addresses.each {
-            try {
-                script.mail to: it, subject: subject, body: body
-            } catch (e) {
-                script.println e
-            }
+    void safeMail(addresses, subject, body) {
+        try {
+            // use bcc to avoid create glip group
+            jenkins.mail to: addresses[0], bcc: addresses.join(','), subject: subject, body: body
+        } catch (e) {
+            jenkins.println e
         }
     }
 
+    // FIXME: move to context
     static def isStableBranch(String branchName) {
         if (null == branchName)
             return false
@@ -146,6 +149,7 @@ class Util {
         return html.replaceAll(/<a\b[^>]*?href="(.*?)"[^>]*?>(.*?)<\/a>/, '[$2]($1)')
     }
 
+    // FIXME: move to Jupiter Job
     static def formatGlipReport(report) {
         List lines = []
         if (null != report.buildResult)
@@ -177,6 +181,8 @@ class Util {
         return """<a href="${url}">${url}</a>""".toString()
     }
 
+
+    // FIXME: move to Jupiter Job
     static def formatJenkinsReport(report) {
         List lines = []
         if (null != report.description)
@@ -196,8 +202,9 @@ class Util {
         return lines.join('<br>')
     }
 
+    // FIXME: move to Jupiter Job
     String getPackageJsonVersion() {
-        script.sh "git ls-files | grep package.json | grep -v tests | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- | xargs git cat-file commit | grep -e ^tree | cut -d ' ' -f 2"
+        jenkins.sh "git ls-files | grep package.json | grep -v tests | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- | xargs git cat-file commit | grep -e ^tree | cut -d ' ' -f 2"
     }
 }
 
@@ -289,7 +296,7 @@ class JupiterPipelineParam {
         e2eEnableMockServer = params.E2E_ENABLE_MOCK_SERVER
 
         // init deploy params
-        subDomain = Util.getSubDomain(gitlabSourceBranch, gitlabTargetBranch)
+        subDomain = BaseJob.getSubDomain(gitlabSourceBranch, gitlabTargetBranch)
         appLinkDir = "${deployBaseDir}/${subDomain}".toString()
         appStageLinkDir = "${deployBaseDir}/stage".toString()
         juiLinkDir = "${deployBaseDir}/${subDomain}-jui".toString()
@@ -304,7 +311,7 @@ class JupiterPipelineParam {
 
 class JupiterPipelineContext {
     def script
-    Util util
+    BaseJob util
     Map report = [:]
     JupiterPipelineParam param
     def reportChannels
@@ -345,14 +352,14 @@ class JupiterPipelineContext {
     }
 
     private void init() {
-        util = new Util(script: script)
+        util = new BaseJob(jenkins: script)
         param = new JupiterPipelineParam(script)
 
         appHeadShaDir = "${param.deployBaseDir}/app-${buildRelease ? 'release-' : ''}".toString()
         juiHeadShaDir = "${param.deployBaseDir}/jui-".toString()
 
         reportChannels = [
-            Util.getMessageChannel(param.gitlabSourceBranch, param.gitlabTargetBranch)
+            BaseJob.getMessageChannel(param.gitlabSourceBranch, param.gitlabTargetBranch)
         ]
         // send report to owner if gitlabUserEmail is provided
         if (param.gitlabUserEmail) {
@@ -361,7 +368,7 @@ class JupiterPipelineContext {
         }
 
         isMerge = param.gitlabSourceBranch != param.gitlabTargetBranch
-        skipEndToEnd = !Util.isStableBranch(param.gitlabSourceBranch) && !Util.isStableBranch(param.gitlabTargetBranch)
+        skipEndToEnd = !BaseJob.isStableBranch(param.gitlabSourceBranch) && !BaseJob.isStableBranch(param.gitlabTargetBranch)
         skipUpdateGitlabStatus = !isMerge && param.integrationBranch != param.gitlabTargetBranch
         buildRelease = (param.gitlabTargetBranch.startsWith('release') || param.gitlabTargetBranch.endsWith('release')
             || param.releaseBranch == param.gitlabTargetBranch)
@@ -377,7 +384,7 @@ abstract class JupiterPipelineStage {
     JupiterPipelineStage next
 
     //some object in context
-    Util util
+    BaseJob util
     def script
     Map report
     JupiterPipelineParam param
@@ -714,7 +721,7 @@ class BuildAppStage extends JupiterPipelineStage {
 
     void resolve() {
         util.condStage(name: 'Build Application', enable: !context.skipBuildApp) {
-            // FIXME: move this part to build script
+            // FIXME: move this part to build jenkins
             script.sh 'npx ts-node application/src/containers/VersionInfo/GitRepo.ts'
             script.sh 'mv commitInfo.ts application/src/containers/VersionInfo/'
             try {
@@ -863,7 +870,7 @@ class JupiterPipeline {
     JupiterPipelineContext context
     JupiterPipelineParam param
     Map report
-    Util util
+    BaseJob util
 
     JupiterPipeline(script) {
         this.script = script
@@ -928,7 +935,7 @@ class JupiterPipeline {
         report.jobUrl = param.buildUrl
         report.buildResult = "${context.SUCCESS_EMOJI} Success".toString()
         script.currentBuild.setDescription(util.formatJenkinsReport(report))
-        util.safeMail(context.reportChannels, "Jenkins Pipeline Success: ${script.currentBuild.fullDisplayName}".toString(), Util.formatGlipReport(report))
+        util.safeMail(context.reportChannels, "Jenkins Pipeline Success: ${script.currentBuild.fullDisplayName}".toString(), BaseJob.formatGlipReport(report))
     }
 
     void postFailure(e) {
@@ -939,7 +946,7 @@ class JupiterPipeline {
         if (e in InterruptedException)
             report.buildResult = "${context.ABORTED_EMOJI} Aborted".toString()
         script.currentBuild.setDescription(util.formatJenkinsReport(report))
-        util.safeMail(context.reportChannels, "Jenkins Pipeline Stop: ${script.currentBuild.fullDisplayName}".toString(), Util.formatGlipReport(report))
+        util.safeMail(context.reportChannels, "Jenkins Pipeline Stop: ${script.currentBuild.fullDisplayName}".toString(), BaseJob.formatGlipReport(report))
         throw e
     }
 
