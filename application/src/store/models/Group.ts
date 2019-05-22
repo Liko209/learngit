@@ -177,7 +177,7 @@ export default class GroupModel extends Base<Group> {
           }
         }
       });
-      if (personModels.length === invisibleCount) {
+      if (invisibleCount && personModels.length === invisibleCount) {
         return (
           this.translation['common.deactivatedUsers'] ||
           'common.deactivatedUsers'
