@@ -19,14 +19,14 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
     type: 'group',
     owner: loginUser,
     members: [loginUser, otherUser, anotherUser],
-  }
+  };
   const publicTeamWithoutMe: IGroup = {
     name: `H-PublicTeamWithoutMe ${uuid()}`,
     type: 'Team',
     isPublic: true,
     owner: anotherUser,
     members: [otherUser, anotherUser],
-  }
+  };
   const teamsNames = Array(3).fill(null).map(() => "h" + uuid())
   const teams: IGroup[] = teamsNames.map(name => ({
     name: name,
