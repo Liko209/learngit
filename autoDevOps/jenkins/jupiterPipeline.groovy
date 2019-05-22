@@ -195,6 +195,10 @@ class Util {
             lines.push("E2E Report: ${urlToATag(report.e2eUrl)}")
         return lines.join('<br>')
     }
+
+    String getPackageJsonVersion() {
+        script.sh "git ls-files | grep package.json | grep -v tests | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- | xargs git cat-file commit | grep -e ^tree | cut -d ' ' -f 2"
+    }
 }
 
 
@@ -577,6 +581,9 @@ class InstallDependencyStage extends JupiterPipelineStage {
             try {
                 script.sh 'npm run fixed:version check'
                 script.sh 'npm run fixed:version cache'
+
+                // create the file for judging if need to install dependency
+                script.sh 'touch ' + util.getPackageJsonVersion()
             } catch (e) { }
         }
     }
@@ -894,25 +901,28 @@ class JupiterPipeline {
                 def telephonyAutomationStage = new TelephonyAutomationStage(context)
                 def unitTestStage = new UnitTestStage(context)
 
-                collectFactsStage
-                    .next(checkoutStage)
-                    .next(postCheckoutStage)
-                    .next(installDependencyStage)
-                    .next(new ParallelStage(staticAnalysisStage, unitTestStage))
+                //organize stages logic
+                def temp = collectFactsStage.next(checkoutStage).next(postCheckoutStage)
+                if(needInstallDependency()) {
+                    temp = temp.next(installDependencyStage)
+                }
+
+                temp.next(new ParallelStage(staticAnalysisStage, unitTestStage))
                     .next(new ParallelStage(buildJuiStage, buildAppStage))
                     .next(telephonyAutomationStage)
                     .next(e2eAutomationStage)
 
+                // start run stages
                 collectFactsStage.run()
 
-                postSuccuess()
+                postSuccess()
             } catch (e) {
                 postFailure(e)
             }
         }
-
     }
-    void postSuccuess() {
+
+    void postSuccess() {
         context.skipUpdateGitlabStatus || script.updateGitlabCommitStatus(name: 'jenkins', state: 'success')
         report.description = script.currentBuild.getDescription()
         report.jobUrl = param.buildUrl
@@ -920,6 +930,7 @@ class JupiterPipeline {
         script.currentBuild.setDescription(util.formatJenkinsReport(report))
         util.safeMail(context.reportChannels, "Jenkins Pipeline Success: ${script.currentBuild.fullDisplayName}".toString(), Util.formatGlipReport(report))
     }
+
     void postFailure(e) {
         context.skipUpdateGitlabStatus || script.updateGitlabCommitStatus(name: 'jenkins', state: 'failed')
         report.description = script.currentBuild.getDescription()
@@ -931,6 +942,12 @@ class JupiterPipeline {
         util.safeMail(context.reportChannels, "Jenkins Pipeline Stop: ${script.currentBuild.fullDisplayName}".toString(), Util.formatGlipReport(report))
         throw e
     }
+
+    boolean needInstallDependency() {
+        def version = util.getPackageJsonVersion()
+        return !script.fileExists(version)
+    }
+
 }
 
 new JupiterPipeline(script: this).run()
