@@ -8,7 +8,7 @@ import { IGroup } from "../../v2/models";
 
 fixture('RightRail/Notes')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
-  .afterEach(teardownCase())
+  .afterEach(teardownCase());
 test(formalName('Notes display on the right rail', ['P2', 'Messages', 'RightRail', 'Notes', 'V1.4', 'Hank.Huang']), async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[5];
