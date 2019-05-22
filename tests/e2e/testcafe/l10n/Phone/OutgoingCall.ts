@@ -48,7 +48,7 @@ test(formalName('Make a call from a conversation', ['P2', 'Phone', 'OutgoingCall
 
   const telephonyDialog = app.homePage.telephonyDialog;
   await h(t).withLog('Then I can see call dialog', async () => {
-    await telephonyDialog.ensureLoaded();
+    await t.expect(telephonyDialog.title.exists).ok();
   })
 
   await h(t).log('Then I capture screenshot', {screenshotPath: 'Jupiter_Phone_OutgoingCall_01'})
@@ -67,16 +67,20 @@ test(formalName('Make a call from a conversation', ['P2', 'Phone', 'OutgoingCall
   await h(t).log('Then I capture screenshot', {screenshotPath: 'Jupiter_Phone_OutgoingCall_02'})
 
   await h(t).withLog('When I click logout button in the upper right corner', async () => {
-    await telephonyDialog.clickStopRecordButton();
-    await telephonyDialog.clickUnMuteButton();
-    await telephonyDialog.clickUnHoldButton();
-    await app.homePage.openSettingMenu;
-    await app.homePage.settingMenu.clickLogout;
+    await app.homePage.openSettingMenu();
+    await app.homePage.settingMenu.clickLogout();
   })
 
+  const logoutDialog = app.homePage.logoutDialog;
   await h(t).withLog('Then I see a prompt popup', async () => {
-    await app.homePage.logoutDialog.ensureLoaded();
+    await logoutDialog.ensureLoaded();
   })
 
   await h(t).log('And I capture screenshot', {screenshotPath: 'Jupiter_Phone_logoutDuringACall'})
+
+  await h(t).withLog('And I close the popup and end the call', async () => {
+    await logoutDialog.clickCancelButton();
+    await session.hangup();
+  })
+
 })
