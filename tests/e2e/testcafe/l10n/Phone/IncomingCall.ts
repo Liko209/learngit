@@ -9,8 +9,8 @@ fixture('Phone/IncomingCall')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
   test(formalName('Called by another extension from webphone', ['P2', 'Phone', 'IncomingCall' ,'Hank.Huang']), async (t) => {
-  const loginUser = h(t).rcData.mainCompany.users[0];
-  const callee = h(t).rcData.mainCompany.users[1];
+  const loginUser = h(t).rcData.mainCompany.users[5];
+  const callee = h(t).rcData.mainCompany.users[6];
   const app = new AppRoot(t);
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
