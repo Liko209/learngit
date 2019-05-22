@@ -13,41 +13,7 @@ import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
-
-function isSupportWebRTC() {
-  return (
-    window['RTCPeerConnection'] ||
-    window['mozRTCPeerConnection'] ||
-    window['webkitRTCPeerConnection'] ||
-    navigator['webkitGetUserMedia'] ||
-    navigator['mozGetUserMedia']
-  );
-}
-
-const isValidPhoneNumber = (content: string) => {
-  const IS_PHONE_NUMBER = /\+?(\d{1,4} ?)?((\(\d{1,4}\)|\d(( |\-)?\d){0,3})(( |\-)?\d){2,}|(\(\d{2,4}\)|\d(( |\-)?\d){1,3})(( |\-)?\d){1,})(( x| ext.?)\d{1,5}){0,1}/g.test(
-    content,
-  );
-  const NUMBER_WITH_PLUS = 10;
-  const MIN_PHONE_NUMBER_LENGTH = 7;
-  const MAX_PHONE_NUMBER_LENGTH = 15;
-  if (!content) return false;
-  const noneSpecialChar = content.replace(/\+|\-|\(|\)|\s+/g, '');
-  const phoneNumberLength = noneSpecialChar.length;
-  if (content.indexOf('+') === 0 && IS_PHONE_NUMBER) {
-    return (
-      phoneNumberLength >= NUMBER_WITH_PLUS &&
-      phoneNumberLength <= MAX_PHONE_NUMBER_LENGTH
-    );
-  }
-  if (
-    phoneNumberLength < MIN_PHONE_NUMBER_LENGTH ||
-    phoneNumberLength > MAX_PHONE_NUMBER_LENGTH
-  ) {
-    return false;
-  }
-  return IS_PHONE_NUMBER;
-};
+import { isSupportWebRTC, isValidPhoneNumber, handleHrefAttribute } from './helper';
 
 @observer
 class CommonPhoneLink extends React.Component<{
@@ -79,19 +45,18 @@ class CommonPhoneLink extends React.Component<{
     }
   }
   private _renderPhoneLink = (content: string, key: number) => {
-    const _href =
-      this._isRCUser && this.canUseTelephony
-        ? 'javascript:;'
-        : `rcmobile: ${content}`;
     return (
       <JuiConversationNumberLink
-        href={_href}
+        href={handleHrefAttribute({
+          content,
+          canUseTelephony: this.canUseTelephony,
+        })}
         key={key}
         data-test-automation-id="phoneNumberLink"
         onClick={
           this._isRCUser
             ? (evt: React.MouseEvent<HTMLAnchorElement>) =>
-                this._handlePhoneClick(evt, content)
+              this._handlePhoneClick(evt, content)
             : () => null
         }
         data-id={content}
@@ -111,4 +76,4 @@ class CommonPhoneLink extends React.Component<{
     });
   }
 }
-export { CommonPhoneLink, isValidPhoneNumber, isSupportWebRTC };
+export { CommonPhoneLink };
