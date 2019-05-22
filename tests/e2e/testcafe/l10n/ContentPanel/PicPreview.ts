@@ -11,7 +11,7 @@ fixture('ContentPanel/PicPreview')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Open team conversation and share files/share links', ['P2', 'Messages', 'ContentPanel', 'PicPreview', 'V1.4', 'hank.huang']), async (t) => {
+test(formalName('Open team conversation and shared files/shared links', ['P2', 'Messages', 'ContentPanel', 'PicPreview', 'V1.4', 'hank.huang']), async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[6];
   const team = <IGroup>{
@@ -116,7 +116,7 @@ test(formalName('Open team conversation and share files/share links', ['P2', 'Me
   await h(t).withLog('Then text "shared 3 files" should be displayed', async () => {
     await t.expect(conversationPage.fileNotification.nth(2).exists).ok();
   });
-  await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ShareThreeFiles' });
+  await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_SharedThreeFiles' });
 
   await h(t).withLog('When I send a link in the created team conversation', async () => {
     await conversationPage.sendMessage("www.google.com");
@@ -124,7 +124,7 @@ test(formalName('Open team conversation and share files/share links', ['P2', 'Me
   await h(t).withLog('Then text "shared a link" should be displayed', async () => {
     await t.expect(conversationPage.fileNotification.nth(3).exists).ok();
   });
-  await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_ContentPanel_ShareALink' });
+  await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_ContentPanel_SharedALink' });
 
   await h(t).withLog('When I send 2 links in the created team conversation ', async () => {
     await conversationPage.sendMessage("www.google.com www.google.com");
@@ -132,5 +132,5 @@ test(formalName('Open team conversation and share files/share links', ['P2', 'Me
   await h(t).withLog('Then text "shared 2 links" should be displayed', async () => {
     await t.expect(conversationPage.fileNotification.nth(4).exists).ok();
   });
-  await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ShareTwoLinks' });
+  await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_SharedTwoLinks' });
 });
