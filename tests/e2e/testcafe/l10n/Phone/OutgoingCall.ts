@@ -12,8 +12,8 @@ fixture('Phone/OutgoingCall')
   .afterEach(teardownCase());
 
 test(formalName('Make a call from a conversation', ['P2', 'Phone', 'OutgoingCall', 'V1.4', 'Jenny.Cai']), async (t) => {
-  const loginUser = h(t).rcData.mainCompany.users[6];
-  const otherUser = h(t).rcData.mainCompany.users[7];
+  const loginUser = h(t).rcData.mainCompany.users[4];
+  const otherUser = h(t).rcData.mainCompany.users[5];
   const app = new AppRoot(t);
 
   let chat = <IGroup>{
@@ -27,7 +27,7 @@ test(formalName('Make a call from a conversation', ['P2', 'Phone', 'OutgoingCall
   })
 
   let session: WebphoneSession;
-  await h(t).withLog('And other user login webphone', async () => {
+  await h(t).withLog(`And ${otherUser.company.number}#${otherUser.extension} login webphone`, async () => {
     session = await h(t).newWebphoneSession(otherUser);
   })
 
@@ -42,11 +42,11 @@ test(formalName('Make a call from a conversation', ['P2', 'Phone', 'OutgoingCall
     await directMessagesSection.conversationEntryById(chat.glipId).enter();
   })
 
-  const telephonyDialog = app.homePage.telephonyDialog;
   await h(t).withLog('And click Call button', async() => {
-    await telephonyDialog.clickActionsButton();
+    await app.homePage.messageTab.conversationPage.clickTelephonyButton();
   })
 
+  const telephonyDialog = app.homePage.telephonyDialog;
   await h(t).withLog('Then I can see call dialog', async () => {
     await telephonyDialog.ensureLoaded();
   })
@@ -66,7 +66,10 @@ test(formalName('Make a call from a conversation', ['P2', 'Phone', 'OutgoingCall
 
   await h(t).log('Then I capture screenshot', {screenshotPath: 'Jupiter_Phone_OutgoingCall_02'})
 
-  await h(t).withLog('When I click logout button in the upper right cornner', async () => {
+  await h(t).withLog('When I click logout button in the upper right corner', async () => {
+    await telephonyDialog.clickStopRecordButton();
+    await telephonyDialog.clickUnMuteButton();
+    await telephonyDialog.clickUnHoldButton();
     await app.homePage.openSettingMenu;
     await app.homePage.settingMenu.clickLogout;
   })
