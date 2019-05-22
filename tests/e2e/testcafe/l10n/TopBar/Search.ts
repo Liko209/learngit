@@ -36,7 +36,7 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
     members: [loginUser, otherUser, anotherUser],
   }));
 
-  await h(t).withLog('And I have a team without me', async () => {
+  await h(t).withLog('Given I have a team without me', async () => {
     await h(t).scenarioHelper.createTeam(publicTeamWithoutMe);
   });
   await h(t).withLog(`And I have three teams named"${teamsNames.join(",")}"`, async () => {
@@ -45,7 +45,7 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
   await h(t).withLog('And I have a group with three members', async () => {
     await h(t).scenarioHelper.createOrOpenChat(group);
   });
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
