@@ -8,6 +8,7 @@ import { SITE_URL, BrandTire } from '../../config';
 fixture('Phone/IncomingCall')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
+  
   test(formalName('Called by another extension from webphone', ['P2', 'Phone', 'IncomingCall' ,'Hank.Huang']), async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[5];
   const callee = h(t).rcData.mainCompany.users[6];
