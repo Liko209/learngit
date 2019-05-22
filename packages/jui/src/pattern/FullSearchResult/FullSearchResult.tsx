@@ -19,11 +19,11 @@ const JuiFullSearchResultWrapper = styled.div`
   flex-direction: column;
 `;
 
-const JuiFullSearchResultStreamWrapper = styled.div`
+const JuiFullSearchResultStreamWrapper = styled.div<{ height: number }>`
   position: relative;
-  flex: 1;
+  /* flex: 1; */
   min-height: 0;
-  height: 99999999999px;
+  height: ${({ height }) => height};
 `;
 
 export {

@@ -20,7 +20,7 @@ class CallActionsViewComponent extends Component<Props> {
   static defaultProps = { showLabel: true };
 
   private _Anchor = () => {
-    const { t, shouldPersistBg } = this.props;
+    const { t, shouldPersistBg, shouldDisableCallActions } = this.props;
     return (
       <JuiIconButton
         color="grey.900"
@@ -30,48 +30,49 @@ class CallActionsViewComponent extends Component<Props> {
         aria-label={t('telephony.moreOptions')}
         size={shouldPersistBg ? 'xlarge' : 'xxlarge'}
         data-test-automation-id="telephony-call-actions-btn"
+        disabled={shouldDisableCallActions}
+        disableToolTip={shouldDisableCallActions}
       >
         call_more
       </JuiIconButton>
     );
   }
 
-  private _RenderReplyCall() {
-    const { t } = this.props;
-    return (
-      <JuiMenuItem
-        onClick={this._handleReplyActions}
-        data-test-automation-id="telephony-reply-menu-item"
-      >
-        {t('telephony.action.reply')}
-      </JuiMenuItem>
-    );
-  }
-
-  private _handleReplyActions = () => {
-    const { directReply } = this.props;
-    directReply();
-  }
-
   render() {
-    const { t, showLabel } = this.props;
+    const { t, showLabel, callActions, shouldDisableCallActions } = this.props;
     return (
       <JuiKeypadAction>
-        <JuiPopoverMenu
-          Anchor={this._Anchor}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-        >
-          <JuiMenuList data-test-automation-id="telephony-more-option-menu">
-            {this._RenderReplyCall()}
-          </JuiMenuList>
-        </JuiPopoverMenu>
+        {!shouldDisableCallActions ? (
+          <JuiPopoverMenu
+            Anchor={this._Anchor}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+          >
+            <JuiMenuList data-test-automation-id="telephony-more-option-menu">
+              {callActions.map(
+                callAction =>
+                  !callAction.disabled && (
+                    <JuiMenuItem
+                      onClick={callAction.handleClick}
+                      data-test-automation-id={`telephony-${
+                        callAction.label
+                      }-menu-item`}
+                    >
+                      {t(`telephony.action.${callAction.label}`)}
+                    </JuiMenuItem>
+                  ),
+              )}
+            </JuiMenuList>
+          </JuiPopoverMenu>
+        ) : (
+          this._Anchor()
+        )}
         {showLabel && <span>{t('telephony.action.callActions')}</span>}
       </JuiKeypadAction>
     );

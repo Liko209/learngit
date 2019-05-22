@@ -26,6 +26,7 @@ import { mainLogger } from 'sdk';
 import { TelephonyStore, CALL_TYPE } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { ANONYMOUS } from '../interface/constant';
 import { reaction, IReactionDisposer, runInAction, action } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { Profile } from 'sdk/module/profile/entity';
@@ -37,7 +38,6 @@ import { AccountService } from 'sdk/module/account';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
-const ANONYMOUS = 'anonymous';
 const DIRECT_NUMBER = 'DirectNumber';
 const DIALER_OPENED_KEY = 'dialerOpenedCount';
 
@@ -432,17 +432,30 @@ class TelephonyService {
 
   makeCall = async (toNumber: string) => {
     // FIXME: move this logic to SDK and always using callerID
-    const phoneNumber = this._telephonyStore.callerPhoneNumberList.find(
+    const idx = this._telephonyStore.callerPhoneNumberList.findIndex(
       (phone) =>
         phone.phoneNumber === this._telephonyStore.chosenCallerPhoneNumber,
     );
+    if (idx === -1) {
+      return mainLogger.error(
+        `${TelephonyService.TAG} can't Make call with: ${
+          this._telephonyStore.chosenCallerPhoneNumber
+        }, because can't find corresponding phone number from ${this._telephonyStore.callerPhoneNumberList.join(
+          ',',
+        )}`,
+      );
+    }
+    const fromEl = this._telephonyStore.callerPhoneNumberList[idx];
+    const fromNumber = fromEl.id ? fromEl.phoneNumber : ANONYMOUS;
     mainLogger.info(
-      `${TelephonyService.TAG}Make call with: ${
-        this._telephonyStore.chosenCallerPhoneNumber
-      }`,
+      `${
+        TelephonyService.TAG
+      }Make call with fromNumber: ${fromNumber}， and toNumber: ${toNumber}`,
     );
-    const id = `${(phoneNumber && phoneNumber.id) || 'anonymous'}`;
-    const rv = await this._serverTelephonyService.makeCall(toNumber, id);
+    const rv = await this._serverTelephonyService.makeCall(
+      toNumber,
+      fromNumber,
+    );
 
     switch (true) {
       case MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION === rv: {

@@ -68,6 +68,7 @@ class Sdk {
       AM.EVENT_SUPPORTED_SERVICE_CHANGE,
       this.updateServiceStatus.bind(this),
     );
+    configMigrator.observeUserDictionaryStatus();
 
     // Check is already login
     const loginResp = await this.accountManager.syncLogin(
@@ -119,7 +120,6 @@ class Sdk {
         glipToken: authConfig.getGlipToken(),
       });
     }
-    configMigrator.init();
 
     // load phone parser module
     PhoneParserUtility.loadModule();

@@ -19,14 +19,14 @@ const logger = LogUtils.getLogger(__filename);
   try {
     let startTime = Date.now();
 
+    let taskDto = await MetricService.createTask();
+
     // check report dir
     await FileService.checkReportPath();
 
     const versionInfo = await DashboardService.getVersionInfo();
 
     await MetricService.createVersion(versionInfo.jupiterVersion);
-
-    let taskDto = await MetricService.createTask(versionInfo.jupiterVersion);
 
     // run scenes
     const sceneNames = Object.keys(scenes).filter(name => {

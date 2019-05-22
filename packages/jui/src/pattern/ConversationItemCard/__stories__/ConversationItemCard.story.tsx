@@ -5,12 +5,22 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { text, object } from '@storybook/addon-knobs';
+import { text, object, boolean } from '@storybook/addon-knobs';
 import Checkbox from '@material-ui/core/Checkbox';
 import styled from '../../../foundation/styled-components';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiConversationItemCard } from '../';
-import { JuiCodeSnippetBody } from '../ConversationItemCardBody';
+import {
+  JuiCodeSnippetBody,
+  JuiTaskSectionOrDescription,
+  JuiLabelWithContent,
+  JuiTimeMessage,
+  JuiEventLocation,
+  JuiEventDescription,
+  JuiTaskAvatarNames,
+  JuiSectionDivider,
+} from '../ConversationItemCardBody';
+import { JuiExpandImage, JuiFileWrapper } from '../../ConversationCard/Files';
+import { JuiTaskCheckbox } from '../ConversationItemCardHeader';
 import { JuiMessageAttachment } from '../MessageAttachment';
 import { JuiIntegrationItemView } from '../IntegrationItem';
 
@@ -24,7 +34,6 @@ const CheckboxTest = styled(Checkbox)`
 const Wrapper = styled.div``;
 
 storiesOf('Pattern/ConversationItemCard', module)
-  .addDecorator(withInfoDecorator(JuiConversationItemCard, { inline: true }))
   .add('JuiConversationItemCard', () => {
     class ConversationItem extends React.PureComponent<
       {},
@@ -53,7 +62,7 @@ storiesOf('Pattern/ConversationItemCard', module)
               content
             </JuiConversationItemCard>
             <JuiConversationItemCard
-              complete={checked}
+              complete={false}
               title={'Event Name'}
               titleClick={this.onClick}
               Icon={<CheckboxTest checked={checked} disableRipple={true} />}
@@ -196,5 +205,91 @@ storiesOf('Pattern/ConversationItemCard', module)
       <div style={{ border: '1px solid grey', minHeight: 400 }}>
         <JuiIntegrationItemView title={title} body={body} />
       </div>
+    );
+  })
+  .add('eventItemCard', () => {
+    return (
+      <JuiConversationItemCard
+        title="event"
+        iconColor={['primary', '500']}
+        titleColor={['primary', '500']}
+        Icon="event"
+      >
+        <JuiSectionDivider gap={2}>
+          <JuiLabelWithContent label={'new event'}>
+            <JuiTimeMessage time={`${new Date().toLocaleDateString()}`} />
+          </JuiLabelWithContent>
+          <JuiLabelWithContent label={'hahaha'}>
+            <JuiEventLocation location={'no local'} />
+          </JuiLabelWithContent>
+          <JuiEventDescription> this is a test event</JuiEventDescription>
+        </JuiSectionDivider>
+      </JuiConversationItemCard>
+    );
+  })
+  .add('taskItemCard', () => {
+    const hasEndTime = boolean('hasEndTime', true);
+    const hasEffectId = boolean('hasEffectID', true);
+    const section = boolean('hasSection', true);
+    const notes = boolean('hasNote', true);
+    const files = boolean('hasFiles', true);
+    const hasContent = hasEndTime || hasEffectId || section || notes || files;
+
+    return (
+      <JuiConversationItemCard
+        contentHasPadding={!!hasContent}
+        complete={false}
+        title={'a task'}
+        titleColor={['primary', '400']}
+        Icon={<JuiTaskCheckbox checked={false} />}
+      >
+        <JuiSectionDivider gap={2}>
+          {hasEndTime && (
+            <>
+              <JuiLabelWithContent label={'due'}>
+                <JuiTimeMessage time={`${new Date().toLocaleDateString()} `} />
+              </JuiLabelWithContent>
+            </>
+          )}
+          {hasEffectId && (
+            <>
+              <JuiLabelWithContent label={'assignee'}>
+                <JuiTaskAvatarNames count={3} otherText={'3 others'}>
+                  avatar name
+                </JuiTaskAvatarNames>
+              </JuiLabelWithContent>
+            </>
+          )}
+          {section && (
+            <JuiLabelWithContent label={'section'}>
+              <JuiTaskSectionOrDescription>
+                {'sdfoasdfmasdf asdfaosdf asdfasdf'}
+              </JuiTaskSectionOrDescription>
+            </JuiLabelWithContent>
+          )}
+          {notes && (
+            <JuiLabelWithContent label={'descriptionNotes'}>
+              <JuiTaskSectionOrDescription>
+                {'sdfoasdfmasdf asdfaosdf asdfasdf'}
+              </JuiTaskSectionOrDescription>
+            </JuiLabelWithContent>
+          )}
+          {files && (
+            <JuiLabelWithContent label={'files'}>
+              <JuiFileWrapper>
+                <JuiExpandImage
+                  Actions={(() => ({})) as any}
+                  previewUrl=""
+                  icon={'doc'}
+                  fileName={'filename'}
+                  i18UnfoldLess={'common.collapse'}
+                  i18UnfoldMore={'common.expand'}
+                  defaultExpansionStatus={false}
+                />
+              </JuiFileWrapper>
+            </JuiLabelWithContent>
+          )}
+        </JuiSectionDivider>
+      </JuiConversationItemCard>
     );
   });

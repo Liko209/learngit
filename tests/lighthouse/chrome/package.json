@@ -18,7 +18,6 @@
     "btoa": "^1.2.1",
     "dotenv": "^6.1.0",
     "form-data": "^2.3.3",
-    "jsonwebtoken": "^8.5.1",
     "lighthouse": "^5.0.0",
     "log4js": "^3.0.6",
     "mock-client": "git+ssh://git@git.ringcentral.com:TA/tools/mock-client.git#master",
