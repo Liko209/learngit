@@ -1,9 +1,11 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/ConversationStream/Event.ts"
+      "./fixtures/**/*.ts"
     ],
     "include_tags": [
+      "p0",
+      "p1",
       "JPT-262"
     ],
     "browsers": [

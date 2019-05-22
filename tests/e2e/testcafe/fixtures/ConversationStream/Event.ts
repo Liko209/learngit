@@ -5,7 +5,7 @@
 */
 
 import { formalName } from '../../libs/filter';
-import { h } from '../../v2/helpers';
+import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
@@ -43,10 +43,12 @@ test(formalName(`Check the display of the Event in the conversation stream`, ['P
   const startTime = new Date().getTime() + 1800000;
   const endTime = new Date().getTime() + 3600000;
 
-  const format = "h:mm A"
-  const a = moment(startTime).format(format);
-  const b = moment(endTime).format(format);
-  const dueTime = `${a} - ${b}`
+  const utcOffset = await H.getUtcOffset();
+
+  const format = "h:mm A";
+  const a = moment(startTime).utcOffset(-utcOffset).format(format);
+  const b = moment(endTime).utcOffset(-utcOffset).format(format);
+  const dueTime = `${a} - ${b}`;
 
   await h(t).withLog(`And the team has a event (title, location, description)`, async () => {
     await h(t).glip(loginUser).init();
@@ -56,10 +58,9 @@ test(formalName(`Check the display of the Event in the conversation stream`, ['P
       start: startTime,
       end: endTime,
       location,
-      description
-    }, {
-        color,
-      });
+      description,
+      color
+    });
     postId = res.data['post_ids'][0]
   });
 
