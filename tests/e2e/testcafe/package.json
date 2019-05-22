@@ -36,7 +36,7 @@
     "jszip": "^3.1.5",
     "lodash": "^4.17.10",
     "log4js": "^3.0.5",
-    "mock-client": "git+ssh://git@git.ringcentral.com:TA/tools/mock-client.git#master",
+    "mock-client": "http://xmn145.rcoffice.ringcentral.com:9003/packages/mock-client-1.0.0.tgz",
     "moment": "^2.22.2",
     "openssl-self-signed-certificate": "^1.1.6",
     "pretty-error": "^2.1.1",
