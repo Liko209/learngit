@@ -9,7 +9,6 @@ import { IGroup } from "../../v2/models";
 fixture('RightRail/Images')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase());
-
 test(formalName('Image files display on the right rail', ['P2', 'Messages', 'RightRail', 'Images', 'V1.4', 'Lorna.Li']), async(t) => {
   const loginUser = h(t).rcData.mainCompany.users[4];
 
