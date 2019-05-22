@@ -135,7 +135,7 @@ class RegionInfoController {
   }
 
   async getAreaCode() {
-    return PhoneParserUtility.getStationAreaCode() || '';
+    return (await PhoneParserUtility.getStationAreaCode()) || '';
   }
 
   hasAreaCode(countryCallingCode: string) {
@@ -272,7 +272,7 @@ class RegionInfoController {
       .info('setStationLocation', { brandId, countryInfo, areaCode });
 
     try {
-      PhoneParserUtility.setStationLocation({
+      await PhoneParserUtility.setStationLocation({
         siteCode,
         outboundCallPrefix,
         brandId: _.toInteger(brandId),

@@ -247,7 +247,10 @@ describe('GroupFetchDataController', () => {
       [ServiceConfig.COMPANY_SERVICE, companyService as any],
       [ServiceConfig.GROUP_CONFIG_SERVICE, groupConfigService as any],
       [ServiceConfig.SEARCH_SERVICE, searchService as any],
-      [ServiceConfig.ACCOUNT_SERVICE, { userConfig: AccountUserConfig.prototype } as any],
+      [
+        ServiceConfig.ACCOUNT_SERVICE,
+        { userConfig: AccountUserConfig.prototype } as any,
+      ],
     ]);
 
     ServiceLoader.getInstance = jest
@@ -992,6 +995,172 @@ describe('GroupFetchDataController', () => {
       const result = await groupFetchDataController.doFuzzySearchTeams('');
       expect(result.sortableModels.length).toBe(0);
       expect(result.terms.length).toBe(0);
+    });
+  });
+
+  describe('getGroupNameByMultiMembers', () => {
+    beforeEach(() => {
+      personService.getName = jest.fn().mockImplementation((person: Person) => {
+        if (person.id === 1) {
+          return '1';
+        }
+        if (person.id === 2) {
+          return '2';
+        }
+      });
+    });
+    it('should return name when members are specified', async () => {
+      const person1: Person = {
+        id: 1,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+      };
+
+      const person2: Person = {
+        id: 2,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+      };
+
+      const res = await groupFetchDataController.getGroupNameByMultiMembers([
+        person1,
+        person2,
+      ]);
+      expect(res).toBe('1, 2');
+    });
+    it('should filter out when members are deactivated', async () => {
+      const person1: Person = {
+        id: 1,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+      };
+
+      const person2: Person = {
+        id: 2,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: true,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+      };
+
+      const res = await groupFetchDataController.getGroupNameByMultiMembers([
+        person1,
+        person2,
+      ]);
+      expect(res).toBe('1');
+    });
+
+    it('should filter out when members flag are deactivated', async () => {
+      const person1: Person = {
+        id: 1,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+        flags: 2,
+      };
+
+      const person2: Person = {
+        id: 2,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+      };
+
+      const res = await groupFetchDataController.getGroupNameByMultiMembers([
+        person1,
+        person2,
+      ]);
+      expect(res).toBe('2');
+    });
+  });
+
+  describe('getAllPersonOfGroup', () => {
+    let mockIsVisiblePerson = jest.fn();
+    beforeEach(() => {
+      ServiceLoader.getInstance = jest
+        .fn()
+        .mockImplementation((serviceName: string) => {
+          if (serviceName === ServiceConfig.PERSON_SERVICE) {
+            return {
+              isVisiblePerson: mockIsVisiblePerson,
+              getSynchronously: jest.fn().mockImplementation(id => {
+                return id;
+              }),
+            };
+          }
+        });
+    });
+    it('should return all person if no one is invalid', () => {
+      mockIsVisiblePerson = jest.fn().mockReturnValue(true);
+      const res = groupFetchDataController.getAllPersonOfGroup([1, 2, 3], 1);
+      expect(res.visiblePersons.length).toBe(2);
+      expect(res.invisiblePersons.length).toBe(0);
+    });
+
+    it('should return deactivated person if there is any', () => {
+      mockIsVisiblePerson = jest.fn().mockImplementation(person => {
+        return person !== 3;
+      });
+      const res = groupFetchDataController.getAllPersonOfGroup([1, 2, 3, 4], 2);
+      expect(res.visiblePersons.length).toBe(2);
+      expect(res.invisiblePersons.length).toBe(1);
+      expect(res.invisiblePersons[0]).toBe(3);
     });
   });
 });

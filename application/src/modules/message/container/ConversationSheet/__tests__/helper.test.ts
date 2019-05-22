@@ -8,6 +8,7 @@ import {
   getDurationTime,
   getDateAndTime,
   getDurationDate,
+  getDurationTimeText,
 } from '../helper';
 
 jest.mock('i18next', () => ({
@@ -20,7 +21,8 @@ jest.mock('i18next', () => ({
     },
   },
   isInitialized: true,
-  t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
+  t: (text: string) =>
+    text ? text.substring(text.lastIndexOf('.') + 1) : text,
 }));
 
 const DAY = 24 * 3600 * 1000;
@@ -112,6 +114,22 @@ describe('Conversation sheet helpers', () => {
       done();
     });
   });
+
+  describe('getDurationTimeText()', () => {
+    it('should hide `until` when no repeadEndOn', async (done: jest.DoneCallback) => {
+      const Thu_1_24_2019_2_00PM = 1548309600000; // Thu, 1/24/2019 at 2:00 PM
+      const repeat = ' ';
+      const result = await getDurationTimeText(
+        repeat,
+        `${Thu_1_24_2019_2_00PM}`,
+        0,
+        '',
+      );
+      expect(result).toBe('  ');
+      done();
+    });
+  });
+
   describe('filterIDsByType()', () => {
     it('should filter ids by number type', () => {
       const sheets = {

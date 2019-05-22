@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`render() render correctly 1`] = `
+<ForwardRef
+  Icon="event"
+  iconColor="color"
+  title="text"
+  titleColor="color"
+>
+  <JuiSectionDivider
+    gap={2}
+  >
+    <JuiLabelWithContent
+      label="item.due"
+    >
+      <JuiTimeMessage
+        time="1997/10/17"
+      />
+    </JuiLabelWithContent>
+    <JuiLabelWithContent
+      label="item.locationTitle"
+    >
+      <ForwardRef
+        location="location"
+      />
+    </JuiLabelWithContent>
+    <ComponentWithLink
+      description="description"
+    />
+  </JuiSectionDivider>
+</ForwardRef>
+`;

@@ -146,11 +146,9 @@ class JuiConversationCard extends React.PureComponent<ConversationCardProps> {
         {this._navigationButtonBuilder()}
         <JuiConversationCardAvatarArea>{Avatar}</JuiConversationCardAvatarArea>
         <StyledRightSection>{children}</StyledRightSection>
-        <HighlightStyle />
       </StyledConversationCard>
     );
   }
 }
 
-export { JuiConversationCard };
-export default JuiConversationCard;
+export { JuiConversationCard, HighlightStyle };

@@ -55,4 +55,5 @@ export type Person = ExtendedBaseModel & {
   teams_removed_from?: number[];
   flags?: number;
   has_registered?: boolean;
+  has_bogus_email?: boolean;
 };
