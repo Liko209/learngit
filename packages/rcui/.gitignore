@@ -38,3 +38,4 @@ config/commitizen/jira.config.json
 storybook-static/
 public/
 docs/export
+dist
