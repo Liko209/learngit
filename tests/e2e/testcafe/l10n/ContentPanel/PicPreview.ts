@@ -124,13 +124,13 @@ test(formalName('Open team conversation and send file/link', ['P2', 'Messages', 
   await h(t).withLog('Then text "shared a link" should be displayed', async () => {
     await t.expect(conversationPage.fileNotification.nth(3).exists).ok();
   });
-  await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_SendALink' });
+  await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_ContentPanel_ShareALink' });
 
-  await h(t).withLog('When I send more than 2 links in the created team conversation ', async () => {
+  await h(t).withLog('When I send 2 links in the created team conversation ', async () => {
     await conversationPage.sendMessage("www.google.com www.google.com");
   });
   await h(t).withLog('Then text "shared 2 links" should be displayed', async () => {
     await t.expect(conversationPage.fileNotification.nth(4).exists).ok();
   });
-  await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_SendTwoLinks' });
+  await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_ContentPanel_ShareTwoLinks' });
 });
