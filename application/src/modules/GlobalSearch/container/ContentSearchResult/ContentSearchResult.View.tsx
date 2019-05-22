@@ -75,7 +75,6 @@ class ContentSearchResultViewComponent extends Component<Props> {
                       postIds={searchState.postIds}
                       postFetcher={onPostsFetch}
                       selfProvide={true}
-                      usedHeight={USED_HEIGHT}
                     />
                   </SearchHighlightContext.Provider>
                 )}
