@@ -916,14 +916,23 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('.conversation-item-cards');
   }
 
+  get eventIcon() {
+    return this.getSelectorByIcon('event', this.itemCard);
+  }
+
   get eventTitle() {
     this.warnFlakySelector();
-    return this.getSelectorByIcon('event', this.itemCard).nextSibling('span'); // todo: automation id
+    return this.eventIcon.nextSibling('span'); // todo: automation id
   }
 
   get eventLocation() {
     this.warnFlakySelector();
     return this.itemCard.find('div').withExactText('Location').nextSibling('div'); // todo: automation id
+  }
+
+  get eventDue() {
+    this.warnFlakySelector();
+    return this.itemCard.find('div').withExactText('Due').nextSibling('div'); // todo: automation id
   }
 
   get eventDescripton() {
