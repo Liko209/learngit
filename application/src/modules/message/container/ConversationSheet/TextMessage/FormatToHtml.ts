@@ -9,7 +9,7 @@ import i18next from 'i18next';
 import { handleAtMentionName } from './utils/handleAtMentionName';
 import { CustomEmojiMap, AtMentions, FormatToHtmlParams } from './types';
 import { Emoji } from './Emoji';
-import { isValidPhoneNumber } from '@/modules/common/container/PhoneParser/parserNumber';
+import { isValidPhoneNumber } from '@/modules/common/container/PhoneParser/helper';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { PHONE_LINKS_CLS, PHONE_NUMBER_REGEX } from './constants';
