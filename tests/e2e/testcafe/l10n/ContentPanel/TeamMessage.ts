@@ -7,11 +7,11 @@ import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 import { IGroup } from '../../v2/models';
 
-fixture('TeamMessage/TeamMessage')
+fixture('ContentPanel/TeamMessage')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Check menu tip',['P2','TeamMessage','V1.4','Sean']),async(t)=>{
+test(formalName('Check menu tip',['P2','ContentPanel','Team','TeamMessage','V1.4','Sean']),async(t)=>{
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
@@ -45,13 +45,13 @@ test(formalName('Check menu tip',['P2','TeamMessage','V1.4','Sean']),async(t)=>{
     await h(t).scenarioHelper.updateTeam(publicTeam, {name: `rename ${uuid()}`})
   });
 
-  await h(t).withLog(`When I login Jupiter with this extension ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with this extension ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
   const teamSection = app.homePage.messageTab.teamsSection;
-  await h(t).withLog(`And I enter and rename the team`, async () => {
+  await h(t).withLog(`When I enter the team`, async () => {
     await teamSection.conversationEntryById(publicTeam.glipId).enter();
   });
 
