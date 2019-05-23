@@ -11,7 +11,7 @@ fixture('ContentPanel/UpdateFiles')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Open team conversation and shared files then update it', ['P2', 'Messages', 'ContentPanel', 'UpdateFiles', 'V1.4', 'hank.huang']), async (t) => {
+test(formalName('Open team conversation and shared a file then update it', ['P2', 'Messages', 'ContentPanel', 'UpdateFiles', 'V1.4', 'hank.huang']), async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[6];
   const team = <IGroup>{
