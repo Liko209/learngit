@@ -3,6 +3,7 @@
  * @Date: 2019-01-16 17:14:27
  * Copyright © RingCentral. All rights reserved.
  */
+import '@/polyfill';
 import { Jupiter, inject, container, injectable } from 'framework';
 import * as sw from '@/modules/service-worker/module.config';
 import * as leaveBlocker from '@/modules/leave-blocker/module.config';

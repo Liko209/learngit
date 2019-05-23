@@ -2,9 +2,9 @@ import * as assert from 'assert';
 import * as querystring from 'querystring';
 import * as _ from 'lodash';
 import axios, { AxiosInstance } from 'axios';
-
 import { RcPlatformSdk } from './platform';
 import { H } from '../helpers';
+import { MiscUtils } from '../utils';
 
 interface Person {
   _id: number;
@@ -91,6 +91,7 @@ export class GlipSdk {
     this.axiosClient = axios.create({
       baseURL: this.glipServerUrl,
     });
+    MiscUtils.addDebugLog(this.axiosClient, 'glip');
     this.glipDb = glipDb || new GlipDb();
   }
 
@@ -699,7 +700,7 @@ export class GlipSdk {
     });
   }
 
-  async createSimpleEvent(data: { groupIds: string[] | string, title: string, rcIds?, start?: number, end?: number, description?: string, location?: string }, options?: object) {
+  async createSimpleEvent(data: { groupIds: string[] | string, title: string, rcIds?, start?: number, end?: number, description?: string, location?: string, repeat?: string, color?: string }, options?: object) {
     const rcIds = data.rcIds ? this.toPersonId(data.rcIds) : this.myPersonId;
     const neededData = _.assign({
       text: data.title,
@@ -707,7 +708,10 @@ export class GlipSdk {
       invitee_ids: H.toNumberArray(rcIds),
       start: data.start || new Date().getTime() + 1800000, // start time after 30 minutes from now
       end: data.end || new Date().getTime() + 3600000, // end time after 60 minutes from now
-      description: data.description
+      repeat: data.repeat || 'none',
+      location: data.location,
+      description: data.description,
+      color: data.color || 'black',
     },
       options
     )

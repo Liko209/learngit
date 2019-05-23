@@ -97,6 +97,7 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
         Actions={canJoinTeam ? joinTeamBtn : goToConversationIcon}
         isPrivate={isPrivate}
         isJoined={isJoined}
+        joinedStatusText={t('people.team.joinedStatus')}
       />
     );
   }

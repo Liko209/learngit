@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ConversationList/MaxConversation.ts"
+    ],
+    "include_tags": [
+      "JPT-247"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

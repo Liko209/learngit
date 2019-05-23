@@ -14,6 +14,10 @@ LaunchDarklyClient.prototype.hasPermission = (type: UserPermissionType) => {
   return result;
 };
 
+LaunchDarklyClient.prototype.hasFlags = () => {
+  return true;
+};
+
 jest.mock('../LaunchDarklyClient');
 jest.mock('../../../../../service');
 

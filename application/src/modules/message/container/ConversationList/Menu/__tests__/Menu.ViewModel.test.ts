@@ -3,13 +3,9 @@
  * @Date: 2018-12-12 14:08:17
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  test,
-  mockSingleEntity,
-  mockEntity,
-  mockService,
-  testable,
-} from 'tests/integration-test';
+import { test, testable } from 'shield';
+import { mockSingleEntity, mockEntity } from 'shield/application';
+import { mockService } from 'shield/sdk';
 import { MenuViewModel } from '../Menu.ViewModel';
 import * as utils from '@/store/utils';
 import storeManager from '@/store/base/StoreManager';
@@ -39,7 +35,7 @@ describe('TestMenuViewModel', () => {
 
   @testable
   class shouldSkipCloseConfirmation {
-    @test('should return falsy for shouldSkipCloseConfirmation as default')
+    @test('should be return falsy if shouldSkipCloseConfirmation as default')
     @mockSingleEntity(false)
     t1() {
       const model = new MenuViewModel();
@@ -49,7 +45,7 @@ describe('TestMenuViewModel', () => {
 
   @testable
   class testProps {
-    @test('should test props for view model')
+    @test('should current props if pass props to view model')
     t1() {
       const props = {
         personId: 1,
