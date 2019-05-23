@@ -12,6 +12,7 @@ import { SITE_URL, BrandTire } from '../../config';
 import { ITestMeta, IGroup } from '../../v2/models';
 import * as uuid from 'uuid';
 
+
 fixture('Recently Search')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
@@ -834,5 +835,4 @@ test.meta(<ITestMeta>{
       await t.expect(searchDialog.recentPage.nthItemOfAll(i).contentIcon.exists).notOk();
     }
   });
-
 });
