@@ -84,7 +84,7 @@ class MoreMenu extends Entry {
   }
 
   get close() {
-    return this.getToggler('closeConversation');
+    return this.getComponent(MenuItem, this.getSelectorByAutomationId('closeConversation'));
   }
 
   async openProfile() {
