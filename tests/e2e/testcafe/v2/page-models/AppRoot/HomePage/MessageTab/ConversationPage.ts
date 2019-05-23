@@ -885,7 +885,7 @@ export class PostItem extends BaseWebComponent {
   }
 
   get audioConference() {
-    return this.getComponent(AudioConference, this.self);
+    return this.getComponent(AudioConference, this.getSelectorByAutomationId('conferenceItem', this.self));
   }
 
   async scrollIntoView() {
@@ -979,29 +979,25 @@ export class PostItem extends BaseWebComponent {
 }
 
 class AudioConference extends BaseWebComponent {
-  get container() {
-    return this.self.find('.conversation-item-cards');
-  }
-
   get icon() {
     return this.getSelectorByIcon('conference');
   }
 
   get title() {
     this.warnFlakySelector();
-    return this.icon.parent('div').find('span').withText('Audio Conference');
+    return this.icon.parent('div').find('span').withText('Audio Conference'); // todo i18n
   }
 
   get dialInNumber() {
-    return this.self.find('div').withText('Dial-in Number');
+    return this.self.find('div').withText('Dial-in Number'); // todo i18n
   }
 
   get phoneNumber() {
-    return this.getSelectorByAutomationId('conferencePhoneNumber', this.self.find('a'));
+    return this.getSelectorByAutomationId('phoneNumberLink', this.self);
   }
 
   get globalNumber() {
-    return this.getSelectorByAutomationId('conferenceGlobalNumber', this.self.find('a'));
+    return this.getSelectorByAutomationId('conferenceGlobalNumber', this.self);
   }
 
   // only host can see
