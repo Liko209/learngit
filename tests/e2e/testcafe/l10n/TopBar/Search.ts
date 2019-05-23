@@ -61,7 +61,7 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
   await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_SearchBox' });
 
   await h(t).withLog('When I search with "H"', async () => {
-    await searchDialog.typeSearchKeyword("H 2222222");
+    await searchDialog.typeSearchKeyword("H");
   });
   await h(t).withLog('Then search result should be displayed', async () => {
     const searchResult = searchDialog.instantPage.contentSearchHeader;

@@ -43,7 +43,7 @@ test(formalName('Notes display on the right rail', ['P2', 'Messages', 'RightRail
 
   await h(t).withLog('When I create a note in the created team conversation', async () => {
     await rightRail.notesEntry.shouldBeOpened();
-    const noteTitle = uuid();
+    const noteTitle = `H-${uuid()}`;
     await h(t).glip(loginUser).createSimpleNote(team.glipId,noteTitle);
   });
   await h(t).withLog('And the text "Notes" should be displayed', async () => {
