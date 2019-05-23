@@ -11,13 +11,14 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 import FileItemModel from '@/store/models/FileItem';
-import { getMaxThumbnailURLInfo } from '@/common/getThumbnailURL';
+import {
+  getMaxThumbnailURLInfo,
+  getThumbnailURL,
+} from '@/common/getThumbnailURL';
 import { ItemService } from 'sdk/module/item/service';
 import { Pal } from 'sdk/pal';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-
-// same with dThor
-const LARGE_IMAGE_SIZE = 2000;
+import { LARGE_IMAGE_SIZE } from './constants';
 
 class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
   @observable
@@ -36,7 +37,7 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
     this.thumbnailSrc = props.initialOptions.thumbnailSrc;
     this._initialWidth = props.initialOptions.initialWidth;
     this._initialHeight = props.initialOptions.initialHeight;
-    this.props.setOnItemSwitchCb(this._clearThumbnailInfo);
+    props.setOnItemSwitchCb(this._clearThumbnailInfo);
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
     );
@@ -47,12 +48,34 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
       },
       async (id: number) => {
         this._largeRawImageURL = undefined;
-        const url = await itemService.getThumbsUrlWithSize(
-          id,
-          LARGE_IMAGE_SIZE,
-          LARGE_IMAGE_SIZE,
-        );
-        this._largeRawImageURL = url;
+        if (id > 0) {
+          const item = this.item;
+          const info = {
+            id: item.id,
+            type: item.type,
+            versionUrl: item.versionUrl || '',
+            versions: item.versions,
+          };
+
+          // get from thumb first
+          this._largeRawImageURL = getThumbnailURL(info, {
+            width: LARGE_IMAGE_SIZE,
+            height: LARGE_IMAGE_SIZE,
+          });
+
+          // if not in thumb, get url from itemService
+          if (!this._largeRawImageURL) {
+            const url = await itemService.getThumbsUrlWithSize(
+              id,
+              LARGE_IMAGE_SIZE,
+              LARGE_IMAGE_SIZE,
+            );
+            this._largeRawImageURL = url;
+          }
+          if (!this._largeRawImageURL) {
+            this._largeRawImageURL = this.item.downloadUrl;
+          }
+        }
       },
       { fireImmediately: true },
     );

@@ -7,21 +7,24 @@
 
 
 import { v4 as uuid } from 'uuid';
-import { formalName } from '../../libs/filter';
 import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { IGroup } from '../../v2/models';
-import { ConversationPage } from '../../v2/page-models/AppRoot/HomePage/MessageTab/ConversationPage';
+import { IGroup, ITestMeta } from '../../v2/models';
 import * as _ from 'lodash';
-import * as assert from 'assert';
+
 
 fixture('RightRail')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('New pinned will show under Pinned tab immediately', ['PinnedPost', 'Potar', 'P1', 'JPT-1057']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-1057'],
+  keywords: ['PinnedPost'],
+  maintainers: ['Potar.He']
+})('New pinned will show under Pinned tab immediately', async t => {
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
@@ -110,7 +113,12 @@ test(formalName('New pinned will show under Pinned tab immediately', ['PinnedPos
   });
 });
 
-test(formalName('Unpinned item will disappear from Pinned tab', ['PinnedPost', 'Potar', 'P1', 'JPT-1059']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-1059'],
+  keywords: ['PinnedPost'],
+  maintainers: ['Potar.He']
+})('Unpinned item will disappear from Pinned tab', async t => {
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
@@ -176,8 +184,12 @@ test(formalName('Unpinned item will disappear from Pinned tab', ['PinnedPost', '
   });
 });
 
-test(formalName('Pinned info will sync immediately when update', ['PinnedPost', 'Potar', 'P2', 'JPT-1061']), async t => {
-
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1061'],
+  keywords: ['PinnedPost'],
+  maintainers: ['Potar.He']
+})('Pinned info will sync immediately when update', async t => {
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
@@ -273,27 +285,32 @@ test(formalName('Pinned info will sync immediately when update', ['PinnedPost', 
   });
 });
 
-test(formalName('Locate the pinned post in the conversation thread in the center panel', ['PinnedPost', 'Aaron', 'P2', 'JPT-1079']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1079'],
+  keywords: ['PinnedPost'],
+  maintainers: ['Potar.He']
+})('Locate the pinned post in the conversation thread in the center panel', async t => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).glip(loginUser).init();
 
-  const team = <IGroup> {
+  const team = <IGroup>{
     name: uuid(),
     type: 'Team',
     owner: loginUser,
     members: [loginUser],
   };
 
-  await h(t).withLog(`Given I have a team named: ${team.name}`,async () => {
+  await h(t).withLog(`Given I have a team named: ${team.name}`, async () => {
     await h(t).scenarioHelper.createTeam(team);
   });
 
   let targetPostId: string;
 
   await h(t).withLog('And I send two events', async () => {
-    await h(t).glip(loginUser).createSimpleEvent(team.glipId, uuid(), loginUser.rcId);
-    targetPostId =  await h(t).glip(loginUser).createSimpleEvent(team.glipId, uuid(), loginUser.rcId).then(res => res.data.post_ids[0]);
+    await h(t).glip(loginUser).createSimpleEvent({ groupIds: team.glipId, title: uuid() });
+    targetPostId = await h(t).glip(loginUser).createSimpleEvent({ groupIds: team.glipId, title: uuid() }).then(res => res.data.post_ids[0]);
   });
 
   await h(t).withLog('And I send three multi-line text', async () => {
@@ -333,7 +350,6 @@ test(formalName('Locate the pinned post in the conversation thread in the center
     await conversationPage.postByIdExpectVisible(targetPostId, true);
   });
 
-  const header = conversationPage.header;
   await h(t).withLog('And the pined event at the top of conversation page.', async () => {
     await conversationPage.postCardByIdShouldBeOnTheTop(targetPostId);
   });

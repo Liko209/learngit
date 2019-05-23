@@ -15,14 +15,19 @@ const companyController = {
   handleCompanyData: jest.fn(),
   getUserAccountTypeFromSP430: jest.fn(),
   isUserCompanyTelephonyOn: jest.fn(),
+  getBrandType: jest.fn(),
 };
+
+function clearMocks() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
 
 describe('CompanyController', () => {
   let companyService: CompanyService;
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.restoreAllMocks();
-
+    clearMocks();
     companyService = new CompanyService();
 
     Object.assign(companyService, {
@@ -55,6 +60,13 @@ describe('CompanyController', () => {
       const res = await companyService.isUserCompanyTelephonyOn();
       expect(res).toBeTruthy();
     });
+
+    it('should call getBrandType in companyController', async () => {
+      const result = 'RC';
+      companyController.getBrandType = jest.fn().mockResolvedValue(result);
+      expect(await companyService.getBrandType()).toEqual(result);
+      expect(companyController.getBrandType).toBeCalled();
+    });
   });
 
   describe('handleData', () => {
@@ -78,7 +90,7 @@ describe('CompanyController', () => {
   });
 
   describe('getById', () => {
-    it('shoule receive null when id is not correct company id', async () => {
+    it('should receive null when id is not correct company id', async () => {
       try {
         await companyService.getById(2);
       } catch (e) {

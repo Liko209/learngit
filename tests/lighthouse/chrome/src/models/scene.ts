@@ -3,9 +3,15 @@
  * @Date: 2018-12-17 09:03:10
  */
 import {
-  Table, Column, Model, Sequelize
+  Table, Column, Model, DataType
 } from 'sequelize-typescript';
-@Table({ tableName: 't_scene' })
+@Table({
+  modelName: 't_scene',
+  indexes: [{
+    unique: false,
+    fields: ['task_id']
+  }]
+})
 class SceneDto extends Model<SceneDto> {
 
   @Column({
@@ -13,93 +19,100 @@ class SceneDto extends Model<SceneDto> {
     autoIncrement: true,
     allowNull: false,
     field: 'id',
-    type: Sequelize.BIGINT
+    type: DataType.BIGINT
   })
   id: number;
 
   @Column({
     allowNull: false,
     field: 'task_id',
-    type: Sequelize.BIGINT
+    type: DataType.BIGINT
   })
   taskId: number;
 
   @Column({
     allowNull: false,
     field: 'name',
-    type: Sequelize.STRING
+    type: DataType.STRING
   })
   name: string;
 
   @Column({
     allowNull: false,
     field: 'platform',
-    type: Sequelize.STRING
+    type: DataType.STRING
   })
   platform: string;
 
   @Column({
     allowNull: false,
     field: 'uri',
-    type: Sequelize.STRING
+    type: DataType.STRING
   })
   uri: string;
 
   @Column({
     allowNull: false,
     field: 'alias_uri',
-    type: Sequelize.STRING
+    type: DataType.STRING
   })
   aliasUri: string;
 
   @Column({
     allowNull: false,
     field: 'performance',
-    type: Sequelize.INTEGER
+    type: DataType.INTEGER
   })
   performance: number;
 
   @Column({
     allowNull: false,
     field: 'accessibility',
-    type: Sequelize.INTEGER
+    type: DataType.INTEGER
   })
   accessibility: number;
 
   @Column({
     allowNull: false,
     field: 'best_practices',
-    type: Sequelize.INTEGER
+    type: DataType.INTEGER
   })
   bestPractices: number;
 
   @Column({
     allowNull: false,
     field: 'seo',
-    type: Sequelize.INTEGER
+    type: DataType.INTEGER
   })
   seo: number;
 
   @Column({
     allowNull: false,
     field: 'pwa',
-    type: Sequelize.INTEGER
+    type: DataType.INTEGER
   })
   pwa: number;
 
   @Column({
     allowNull: true,
-    type: Sequelize.DATE,
+    type: DataType.DATE,
     field: 'start_time',
   })
   startTime?: Date;
 
   @Column({
     allowNull: true,
-    type: Sequelize.DATE,
+    type: DataType.DATE,
     field: 'end_time',
   })
   endTime?: Date;
+
+  @Column({
+    allowNull: false,
+    type: DataType.STRING,
+    field: 'app_version'
+  })
+  appVersion: string;
 }
 
 export {

@@ -15,7 +15,7 @@ function ajax(url: string, callback: (responseText: string, x: XMLHttpRequest) =
     };
     x.send();
   } catch (e) {
-    window.console && console.log(e);
+    window.console && console.error(e);
   }
 }
 

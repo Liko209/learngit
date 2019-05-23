@@ -10,6 +10,7 @@ export type PhoneNumberModel = {
   id: number;
   phoneNumber: string;
   usageType: string;
+  label?: string;
 };
 
 export type SanitizedExtensionModel = {
@@ -20,10 +21,10 @@ export type SanitizedExtensionModel = {
 export type HeadShotModel =
   | string
   | {
-    url: string;
-    stored_file_id?: string;
-    thumbs?: { key: string; value: string }[];
-  };
+      url: string;
+      stored_file_id?: string;
+      thumbs?: { key: string; value: string }[];
+    };
 
 export type Person = ExtendedBaseModel & {
   company_id: number;
@@ -54,4 +55,5 @@ export type Person = ExtendedBaseModel & {
   teams_removed_from?: number[];
   flags?: number;
   has_registered?: boolean;
+  has_bogus_email?: boolean;
 };

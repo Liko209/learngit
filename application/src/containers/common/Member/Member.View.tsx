@@ -3,28 +3,30 @@
  * @Date: 2019-03-11 16:25:35,
  * Copyright © RingCentral. All rights reserved.
  */
+import { withTranslation, WithTranslation } from 'react-i18next';
 import React from 'react';
 import { observer } from 'mobx-react';
 import { JuiConversationPageMember } from 'jui/pattern/ConversationPageMember';
 import { MemberViewProps } from './types';
 import { OpenProfile } from '@/common/OpenProfile';
-import i18next from 'i18next';
 
 @observer
-class MemberView extends React.Component<MemberViewProps> {
+class Member extends React.Component<MemberViewProps & WithTranslation> {
   openProfile = () => {
-    OpenProfile.show(this.props.groupId);
+    OpenProfile.show(this.props.groupId, null, null, {
+      disableRestoreFocus: true,
+    });
   }
 
   render() {
-    const { membersCount, showMembersCount } = this.props;
+    const { membersCount, showMembersCount, t } = this.props;
 
     if (!showMembersCount) return null;
 
     return (
       <JuiConversationPageMember
-        ariaLabel={i18next.t('people.team.Members')}
-        title={i18next.t('people.team.Members')}
+        ariaLabel={t('people.team.Members')}
+        title={t('people.team.Members')}
         onClick={this.openProfile}
       >
         <span>{membersCount || ''}</span>
@@ -32,5 +34,7 @@ class MemberView extends React.Component<MemberViewProps> {
     );
   }
 }
+
+const MemberView = withTranslation('translations')(Member);
 
 export { MemberView };

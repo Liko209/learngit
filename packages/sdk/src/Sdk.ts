@@ -5,7 +5,14 @@
  */
 
 // import featureFlag from './component/featureFlag';
-import { Foundation, NetworkManager, Token, dataAnalysis } from 'foundation';
+import {
+  Foundation,
+  NetworkManager,
+  Token,
+  dataAnalysis,
+  sleepModeDetector,
+  mainLogger,
+} from 'foundation';
 import merge from 'lodash/merge';
 import './service/windowEventListener'; // to initial window events listener
 
@@ -13,20 +20,22 @@ import { Api, HandleByGlip, HandleByRingCentral, HandleByUpload } from './api';
 import { defaultConfig as defaultApiConfig } from './api/defaultConfig';
 import { AutoAuthenticator } from './authenticator/AutoAuthenticator';
 import DaoManager from './dao/DaoManager';
-import { AccountManager, ServiceManager } from './framework';
+import { AccountManager, ServiceManager, IAuthResponse } from './framework';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from './service/constants';
 import { SERVICE } from './service/eventKey';
 import notificationCenter from './service/notificationCenter';
 import { SyncService } from './module/sync';
 import { ApiConfig, DBConfig, ISdkConfig } from './types';
 import { AccountService } from './module/account';
-import { DataMigration, UserConfigService } from './module/config';
+import { UserConfigService } from './module/config';
 import { setGlipToken } from './authenticator/utils';
-import { AuthUserConfig, AccountGlobalConfig } from './module/account/config';
+import { AccountGlobalConfig } from './module/account/config';
 import { ServiceConfig, ServiceLoader } from './module/serviceLoader';
+import { PhoneParserUtility } from './utils/phoneParser';
+import { configMigrator } from './framework/config';
 
+const LOG_TAG = 'SDK';
 const AM = AccountManager;
-
 const defaultDBConfig: DBConfig = {
   adapter: 'dexie',
 };
@@ -34,6 +43,7 @@ const defaultDBConfig: DBConfig = {
 class Sdk {
   private _glipToken: string;
   private _sdkConfig: ISdkConfig;
+  private _sleepModeKey: string = 'SDK_SLEEP_MODE_DETECT';
 
   constructor(
     public daoManager: DaoManager,
@@ -45,7 +55,6 @@ class Sdk {
 
   async init(config: ISdkConfig) {
     this._sdkConfig = config;
-    DataMigration.migrateKVStorage();
 
     notificationCenter.on(
       SHOULD_UPDATE_NETWORK_TOKEN,
@@ -59,32 +68,23 @@ class Sdk {
       AM.EVENT_SUPPORTED_SERVICE_CHANGE,
       this.updateServiceStatus.bind(this),
     );
+    configMigrator.observeUserDictionaryStatus();
 
     // Check is already login
     const loginResp = await this.accountManager.syncLogin(
       AutoAuthenticator.name,
     );
 
-    if (loginResp && loginResp.success) {
-      if (loginResp.isRCOnlyMode) {
-        this.accountManager.updateSupportedServices();
-        const accountService = ServiceLoader.getInstance<AccountService>(
-          ServiceConfig.ACCOUNT_SERVICE,
-        );
-        accountService.reLoginGlip();
-      } else {
-        // TODO replace all LOGIN listen on notificationCenter
-        // with accountManager.on(EVENT_LOGIN)
-        this.accountManager.updateSupportedServices();
-        notificationCenter.emitKVChange(SERVICE.LOGIN);
-      }
-    } else {
+    if (!loginResp || !loginResp.success) {
       window.indexedDB && window.indexedDB.deleteDatabase('Glip');
     }
+    this._subscribeNotification();
     this._initDataAnalysis();
+    mainLogger.tags(LOG_TAG).info('sdk init finished');
   }
 
   async onStartLogin() {
+    mainLogger.tags(LOG_TAG).info('onStartLogin');
     // Use default config value
     const apiConfig: ApiConfig = merge(
       {},
@@ -108,19 +108,26 @@ class Sdk {
     HandleByRingCentral.platformHandleDelegate = accountService;
   }
 
-  async onAuthSuccess(isRCOnlyMode: boolean) {
+  async onAuthSuccess(authResponse: IAuthResponse) {
+    mainLogger.tags(LOG_TAG).info('start onAuthSuccess');
     // need to set token if it's not first login
     if (AccountGlobalConfig.getUserDictionary()) {
-      const authConfig = new AuthUserConfig();
+      const authConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).authUserConfig;
       this.updateNetworkToken({
         rcToken: authConfig.getRCToken(),
         glipToken: authConfig.getGlipToken(),
       });
     }
 
-    if (isRCOnlyMode) {
-      this.accountManager.updateSupportedServices();
-      notificationCenter.emitKVChange(SERVICE.LOGIN, isRCOnlyMode);
+    // load phone parser module
+    PhoneParserUtility.loadModule();
+
+    this.accountManager.updateSupportedServices();
+
+    if (authResponse.isRCOnlyMode) {
+      notificationCenter.emitKVChange(SERVICE.LOGIN, authResponse.isRCOnlyMode);
       const accountService = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,
       );
@@ -128,30 +135,50 @@ class Sdk {
       return;
     }
 
-    await this.syncService.syncData({
-      /**
-       * LifeCycle when first login
-       */
-      onInitialLoaded: async () => {
-        // await featureFlag.getServicePermission();
-        this.accountManager.updateSupportedServices();
-      },
-      onInitialHandled: async () => {
-        const accountService = ServiceLoader.getInstance<AccountService>(
-          ServiceConfig.ACCOUNT_SERVICE,
-        );
-        accountService.onBoardingPreparation();
-        if (this._glipToken) {
-          await setGlipToken(this._glipToken);
-        }
-      },
-      /**
-       * LifeCycle when refresh page
-       */
-      onIndexLoaded: async () => {
-        this.accountManager.updateSupportedServices();
-      },
-    });
+    let isInLoading = false;
+    if (!authResponse.isFirstLogin) {
+      const lastIndexTimestamp = this.syncService.getIndexTimestamp();
+      if (lastIndexTimestamp) {
+        notificationCenter.emitKVChange(SERVICE.LOGIN);
+      } else {
+        mainLogger.tags(LOG_TAG).info('start loading');
+        isInLoading = true;
+        notificationCenter.emitKVChange(SERVICE.START_LOADING);
+      }
+    }
+
+    try {
+      await this.syncService.syncData({
+        /**
+         * LifeCycle when first login
+         */
+        onInitialLoaded: async () => {
+          // await featureFlag.getServicePermission();
+          this.accountManager.updateSupportedServices();
+        },
+        onInitialHandled: async () => {
+          const accountService = ServiceLoader.getInstance<AccountService>(
+            ServiceConfig.ACCOUNT_SERVICE,
+          );
+          accountService.onBoardingPreparation();
+          if (this._glipToken) {
+            await setGlipToken(this._glipToken);
+          }
+        },
+        /**
+         * LifeCycle when refresh page
+         */
+        onIndexLoaded: async () => {
+          this.accountManager.updateSupportedServices();
+        },
+      });
+    } finally {
+      if (isInLoading) {
+        mainLogger.tags(LOG_TAG).info('stop loading');
+        notificationCenter.emitKVChange(SERVICE.STOP_LOADING);
+      }
+    }
+    mainLogger.tags(LOG_TAG).info('end onAuthSuccess');
   }
 
   async onLogout() {
@@ -190,9 +217,16 @@ class Sdk {
     }
   }
 
+  private _subscribeNotification() {
+    sleepModeDetector.subScribe(this._sleepModeKey, (interval: number) => {
+      notificationCenter.emit(SERVICE.WAKE_UP_FROM_SLEEP, interval);
+    });
+  }
+
   private _initDataAnalysis() {
     dataAnalysis.init();
   }
+
   private _resetDataAnalysis() {
     dataAnalysis.reset();
   }

@@ -5,3 +5,4 @@
  */
 
 export { RCInfoUserConfig } from './RCInfoUserConfig';
+export { RCInfoGlobalConfig } from './RCInfoGlobalConfig';

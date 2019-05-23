@@ -6,17 +6,19 @@
 import { TelephonyService } from '../TelephonyService';
 import { TelephonyEngineController } from '../../controller/TelephonyEngineController';
 import { ITelephonyAccountDelegate } from '../ITelephonyAccountDelegate';
-import { TELEPHONY_ACCOUNT_STATE, MAKE_CALL_ERROR_CODE } from '../../types';
-import { GlobalConfigService } from '../../../config';
+import { MAKE_CALL_ERROR_CODE } from '../../types';
 import { MakeCallController } from '../../controller/MakeCallController';
 import { ITelephonyCallDelegate } from '../ITelephonyCallDelegate';
 import {
   RTC_CALL_ACTION,
   RTC_CALL_STATE,
   RTCCallActionSuccessOptions,
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip';
 import { TelephonyAccountController } from '../../controller/TelephonyAccountController';
 import { ServiceLoader } from '../../../serviceLoader';
+import { TelephonyUserConfig } from '../../config/TelephonyUserConfig';
 
 jest.mock('../../controller/TelephonyEngineController');
 jest.mock('../../controller/TelephonyAccountController');
@@ -69,6 +71,37 @@ describe('TelephonyService', () => {
   beforeEach(() => {
     clearMocks();
     setup();
+  });
+
+  describe('handleLogOut', () => {
+    it('should call logout', () => {
+      engineController.logout = jest.fn();
+      telephonyService.handleLogOut();
+      expect(engineController.logout).toBeCalled();
+    });
+  });
+
+  describe('telephonyController', () => {
+    it('should create telephonyController', () => {
+      telephonyService['_telephonyEngineController'] = undefined as any;
+      telephonyService['telephonyController'];
+      expect(TelephonyEngineController).toBeCalled();
+    });
+  });
+
+  describe('_init', () => {
+    it('should call initEngine', () => {
+      engineController.initEngine = jest.fn();
+      telephonyService['_init']();
+      expect(engineController.initEngine).toBeCalled();
+    });
+  });
+
+  describe('userConfig', () => {
+    it('should create userConfig', () => {
+      telephonyService.userConfig;
+      expect(TelephonyUserConfig).toBeCalled();
+    });
   });
 
   describe('createAccount', () => {
@@ -171,6 +204,47 @@ describe('TelephonyService', () => {
     it('should call account controller to ignore', () => {
       telephonyService.ignore(callId);
       expect(accountController.ignore).toHaveBeenCalledWith(callId);
+    });
+  });
+
+  describe('startReply', () => {
+    it('should call account controller to startReply', () => {
+      telephonyService.startReply(callId);
+      expect(accountController.startReply).toHaveBeenCalledWith(callId);
+    });
+  });
+
+  describe('replyWithMessage', () => {
+    it('should call account controller to replyWithMessage', () => {
+      const message = 'test message';
+      telephonyService.replyWithMessage(callId, message);
+      expect(accountController.replyWithMessage).toHaveBeenCalledWith(
+        callId,
+        message,
+      );
+    });
+  });
+
+  describe('replyWithPattern', () => {
+    it('should call account controller to replyWithPattern', () => {
+      const pattern = RTC_REPLY_MSG_PATTERN.WILL_CALL_YOU_BACK_LATER;
+      const time = 13;
+      const timeUnit = RTC_REPLY_MSG_TIME_UNIT.MINUTE;
+      telephonyService.replyWithPattern(callId, pattern, time, timeUnit);
+      expect(accountController.replyWithPattern).toHaveBeenCalledWith(
+        callId,
+        pattern,
+        time,
+        timeUnit,
+      );
+    });
+  });
+
+  describe('getLastCalledNumber', () => {
+    it('should call account controller to get last called number', () => {
+      const spy = jest.spyOn(accountController, 'getLastCalledNumber');
+      telephonyService.getLastCalledNumber();
+      expect(spy).toBeCalled();
     });
   });
 });

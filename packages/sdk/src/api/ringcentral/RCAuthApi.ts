@@ -8,22 +8,21 @@ import {
   NETWORK_METHOD,
   NETWORK_VIA,
   BaseResponse,
-  NetworkRequestExecutor,
-  SURVIVAL_MODE,
-  NETWORK_HANDLE_TYPE,
   RESPONSE_HEADER_KEY,
   HA_PRIORITY,
+  REQUEST_PRIORITY,
 } from 'foundation';
 import Api from '../api';
 import { RINGCENTRAL_API } from './constants';
-import { ITokenModel } from './types';
-import { stringify } from 'qs';
+import { ITokenModel, RCAuthCodeInfo } from './types';
+import { ApiConfiguration } from '../config';
 
 class RCAuthApi extends Api {
   static oauthTokenViaAuthCode(params: object, headers?: object) {
     const model = {
       ...params,
       grant_type: 'authorization_code',
+      client_id: ApiConfiguration.apiConfig.rc.clientId,
     };
 
     const query = {
@@ -60,6 +59,7 @@ class RCAuthApi extends Api {
       refresh_token: data.refresh_token,
       endpoint_id: data.endpoint_id,
       grant_type: 'refresh_token',
+      client_id: ApiConfiguration.apiConfig.rc.clientId,
     };
 
     const query = {
@@ -68,40 +68,10 @@ class RCAuthApi extends Api {
       data: model,
       authFree: true,
       via: NETWORK_VIA.HTTP,
+      priority: REQUEST_PRIORITY.IMMEDIATE,
     };
 
-    const promise = new Promise((resolve, reject) => {
-      const callbackFunc = (response: BaseResponse) => {
-        if (response.status >= 200 && response.status < 300) {
-          resolve(response.data);
-          return;
-        }
-        if (response.status >= 500) {
-          const handler = Api.rcNetworkClient.networkManager.networkRequestHandler(
-            NETWORK_HANDLE_TYPE.RINGCENTRAL,
-          );
-          if (handler) {
-            handler.onSurvivalModeDetected(SURVIVAL_MODE.SURVIVAL, 0);
-          }
-        }
-        reject(response.status);
-      };
-
-      const request = Api.rcNetworkClient.getRequestByVia(
-        query,
-        NETWORK_VIA.HTTP,
-      );
-      request.headers.Authorization = `Basic ${request.handlerType.basic()}`;
-      request.callback = callbackFunc;
-      request.data = stringify(request.data);
-      const client = Api.rcNetworkClient.networkManager.clientManager.getApiClient(
-        NETWORK_VIA.HTTP,
-      );
-
-      const executor = new NetworkRequestExecutor(request, client);
-      executor.execute();
-    });
-    return promise;
+    return RCAuthApi.rcNetworkClient.http<ITokenModel>(query);
   }
 
   static requestServerStatus(
@@ -132,6 +102,20 @@ class RCAuthApi extends Api {
     const request = Api.rcNetworkClient.getRequestByVia(query, query.via);
     request.callback = callbackFunc;
     Api.rcNetworkClient.networkManager.addApiRequest(request);
+  }
+
+  static generateRCCode(clientId: string, ttl: number) {
+    const model = {
+      clientId,
+      ttl,
+    };
+
+    return RCAuthApi.rcNetworkClient.http<RCAuthCodeInfo>({
+      path: RINGCENTRAL_API.API_GENERATE_CODE,
+      method: NETWORK_METHOD.POST,
+      via: NETWORK_VIA.HTTP,
+      data: model,
+    });
   }
 }
 

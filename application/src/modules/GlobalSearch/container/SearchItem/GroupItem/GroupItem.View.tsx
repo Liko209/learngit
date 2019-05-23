@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import i18next from 'i18next';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';
@@ -77,7 +76,7 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
     const goToConversationIcon = (
       <JuiIconButton
         data-test-automation-id="goToConversationIcon"
-        tooltipTitle={i18next.t('message.message')}
+        tooltipTitle={t('message.message')}
         onClick={this.handleGoToConversation}
         variant="plain"
         size="small"
@@ -98,6 +97,7 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
         Actions={canJoinTeam ? joinTeamBtn : goToConversationIcon}
         isPrivate={isPrivate}
         isJoined={isJoined}
+        joinedStatusText={t('people.team.joinedStatus')}
       />
     );
   }

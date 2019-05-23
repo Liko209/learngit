@@ -3,16 +3,17 @@
  * @Date: 2019-03-13 13:21:24
  * Copyright © RingCentral. All rights reserved.
  */
-import i18next from 'i18next';
 import { Notification } from '@/containers/Notification';
 import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import { mainLogger } from 'sdk';
+import i18next from 'i18next';
 
 class ToastCallError {
-  static toast(message: string, duration: number): void {
+  static toast(msg: string, duration: number): void {
+    const message = i18next.t(msg);
     Notification.flagToast({
       message,
       type: ToastType.ERROR,
@@ -24,50 +25,62 @@ class ToastCallError {
   }
 
   static toastNoNetwork(): void {
-    ToastCallError.toast(i18next.t('telephony.prompt.NoNetwork'), 3000);
+    ToastCallError.toast('telephony.prompt.NoNetwork', 3000);
     mainLogger.info("Call error: No network, can't make call");
   }
 
   static toastCallFailed(): void {
-    ToastCallError.toast(i18next.t('telephony.prompt.CallFailed'), 2000);
+    ToastCallError.toast('telephony.prompt.CallFailed', 2000);
     mainLogger.info('Call error: Call failed');
   }
 
   static toastCallTimeout(): void {
-    ToastCallError.toast(i18next.t('telephony.prompt.CallTimeout'), 2000);
+    ToastCallError.toast('telephony.prompt.CallTimeout', 2000);
     mainLogger.info('Call error: Call timeout');
   }
   static toastFailedToHold(): void {
-    ToastCallError.toast(i18next.t('telephony.prompt.FailedToHold'), 2000);
+    ToastCallError.toast('telephony.prompt.FailedToHold', 2000);
     mainLogger.info('Call error: Call timeout');
   }
   static toastFailedToResume(): void {
-    ToastCallError.toast(i18next.t('telephony.prompt.FailedToResume'), 2000);
-    mainLogger.info('Call error: Call timeout');
+    ToastCallError.toast('telephony.prompt.FailedToResume', 2000);
+    mainLogger.info('Call error: Call FailedToHold');
   }
 
   static toastFailedToRecord(): void {
-    ToastCallError.toast(i18next.t('telephony.prompt.FailedToRecord'), 2000);
+    ToastCallError.toast('telephony.prompt.FailedToRecord', 2000);
     mainLogger.info('Call error: Call timeout');
   }
 
   static toastFailedToStopRecording(): void {
-    ToastCallError.toast(i18next.t('telephony.prompt.FailedToStopRecording'), 2000);
-    mainLogger.info('Call error: Call timeout');
+    ToastCallError.toast('telephony.prompt.FailedToStopRecording', 2000);
+    mainLogger.info('Call error: Call FailedToRecord');
   }
 
   static toastLackOfRecordingPermission(): void {
-    ToastCallError.toast(i18next.t('telephony.prompt.LackOfRecordingPermission'), 2000);
-    mainLogger.info('Call error: Call timeout');
+    ToastCallError.toast('telephony.prompt.LackOfRecordingPermission', 2000);
+    mainLogger.info('Call error: Call LackOfRecordingPermission');
   }
 
   static toastRecordOnServiceWeb(): void {
-    ToastCallError.toast(i18next.t('telephony.prompt.RecordOnServiceWeb'), 2000);
-    mainLogger.info('Call error: Call timeout');
+    ToastCallError.toast('telephony.prompt.RecordOnServiceWeb', 2000);
+    mainLogger.info('Call error: Call RecordOnServiceWeb');
   }
 
   static toastRecordAutomatically(): void {
-    ToastCallError.toast(i18next.t('telephony.prompt.RecordAutomatically'), 2000);
+    ToastCallError.toast('telephony.prompt.RecordAutomatically', 2000);
+    mainLogger.info('Call error: Call RecordAutomatically');
+  }
+
+  static toastEmptyReplyMessage(): void {
+    ToastCallError.toast('telephony.prompt.ReplyCustomMessageEmpty', 3000);
+    mainLogger.info(
+      'Call error: incoming call reply with custom message is empty',
+    );
+  }
+
+  static toastInvalidNumber(): void {
+    ToastCallError.toast('telephony.prompt.InvalidNumber', 2000);
     mainLogger.info('Call error: Call timeout');
   }
 }

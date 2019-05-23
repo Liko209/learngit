@@ -6,7 +6,7 @@
 import { BaseWebComponent } from '../../BaseWebComponent';
 import * as _ from 'lodash';
 import * as faker from 'faker/locale/en';
-import { searchComoBox } from './SearchComboBox';
+import { SearchComoBox } from './SearchComboBox';
 
 
 // TODO: unify create team, convert to team, team setting automation ID
@@ -51,8 +51,8 @@ class BaseTeamSetting extends BaseWebComponent {
     return this.getSelectorByAutomationId('CreateTeamCanPinPost').parent('li');
   }
 
-  async typeTeamName(teamName) {
-    await this.clickAndTypeText(this.teamNameInput, teamName, { replace: true, });
+  async typeTeamName(teamName: string, options: TypeActionOptions = { replace: true }) {
+    await this.clickAndTypeText(this.teamNameInput, teamName, options);
   }
 
   randomString(length: number) {
@@ -159,7 +159,7 @@ export class CreateTeamModal extends BaseTeamSetting {
   }
 
   get memberInput() {
-    return this.getComponent(searchComoBox, this.self.find('*[role="combobox"]'));
+    return this.getComponent(SearchComoBox, this.self.find('*[role="combobox"]'));
   }
 }
 

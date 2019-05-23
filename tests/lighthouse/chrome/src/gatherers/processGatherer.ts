@@ -3,7 +3,7 @@
  * @Date: 2018-12-12 12:56:30
  */
 import { PptrUtils, FunctionUtils } from "../utils";
-const Gatherer = require("lighthouse/lighthouse-core/gather/gatherers/gatherer");
+import { BaseGatherer } from ".";
 import * as bluebird from "bluebird";
 
 const EXTENSION_ID = "ijjcejlmgpmagghhloglnenalapepejo";
@@ -18,12 +18,12 @@ class PerformanceMetric {
   public type: string;
 }
 
-class ProcessGatherer extends Gatherer {
+class ProcessGatherer extends BaseGatherer {
   private intervalId;
   private browser;
   private metrics: Array<PerformanceMetric> = new Array();
 
-  async beforePass(passContext) {
+  async _beforePass(passContext) {
     const driver = passContext.driver;
     let ws = await driver.wsEndpoint();
     this.browser = await PptrUtils.connect(ws);
@@ -60,15 +60,19 @@ class ProcessGatherer extends Gatherer {
             })()`);
     }, 1000);
   }
-  async afterPass(passContext) {
-    await bluebird.delay(5000);
+  async _afterPass(passContext) {
+    const driver = passContext.driver;
+
+    await PptrUtils.collectGarbage(driver);
+
+    await bluebird.delay(10000);
 
     clearInterval(this.intervalId);
 
     return { metrics: this.metrics };
   }
 
-  pass(passContext) { }
+  async _pass(passContext) { }
 }
 
 export { ProcessGatherer, PerformanceMetric };

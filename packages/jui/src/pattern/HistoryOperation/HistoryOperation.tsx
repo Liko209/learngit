@@ -7,7 +7,7 @@ import React from 'react';
 import { TowardIcons } from './TowardIcons';
 import { OPERATION } from './types';
 import styled from '../../foundation/styled-components';
-import { spacing, ellipsis } from '../../foundation/utils/styles';
+import { ellipsis } from '../../foundation/utils/styles';
 import { JuiMenuItem, JuiPopover, JuiMenuList } from '../../components';
 
 type TowardsProps = {
@@ -20,10 +20,9 @@ type TowardsProps = {
   menuItemMaxWidth?: number;
 };
 
-const MenuListCompositionWrapper = styled.div`
+export const MenuListCompositionWrapper = styled.div`
   position: relative;
   display: flex;
-  margin-right: ${spacing(1)};
 `;
 
 const MenuListItemWrapper = styled.div`

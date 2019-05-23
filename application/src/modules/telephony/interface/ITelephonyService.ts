@@ -1,0 +1,3 @@
+interface ITelephonyService {}
+
+export { ITelephonyService };

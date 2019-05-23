@@ -9,6 +9,8 @@ import {
   RTC_CALL_ACTION,
   RTCCallActionSuccessOptions,
   RTCCall,
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip';
 import { ITelephonyCallDelegate } from '../service/ITelephonyCallDelegate';
 import { CallStateCallback } from '../types';
@@ -93,6 +95,22 @@ class TelephonyCallController implements IRTCCallDelegate {
 
   ignore() {
     this._rtcCall.ignore();
+  }
+
+  startReply() {
+    this._rtcCall.startReply();
+  }
+
+  replyWithMessage(message: string) {
+    this._rtcCall.replyWithMessage(message);
+  }
+
+  replyWithPattern(
+    pattern: RTC_REPLY_MSG_PATTERN,
+    time?: number,
+    timeUnit?: RTC_REPLY_MSG_TIME_UNIT,
+  ) {
+    this._rtcCall.replyWithPattern(pattern, time, timeUnit);
   }
 }
 

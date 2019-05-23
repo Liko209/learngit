@@ -18,11 +18,12 @@ import { DeleteTeamDialog } from './DeleteTeamDialog';
 import { ArchiveTeamDialog } from './ArchiveTeamDialog';
 import { AlertDialog } from "./AlertDialog";
 import { IUser } from '../../../models';
-import { TelephonyDialog } from './TelephonyDialog';
+import { TelephonyDialog, TelephonyMinimizeWindow } from './TelephonyDialog';
 import { FileAndImagePreviewer } from './ImagePreviewer';
 import { ViewerDialog } from './ViewerDialog';
 import { SearchDialog, JoinTeamDialog } from './SearchDialog';
 import { SettingTab } from './SettingTab';
+import { LogoutDialog } from './LogoutDialog';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
@@ -80,6 +81,7 @@ export class HomePage extends BaseWebComponent {
   get convertToTeamModal() {
     return this.getComponent(ConvertToTeamDialog);
   }
+
   get sendNewMessageModal() {
     return this.getComponent(SendNewMessageModal);
   }
@@ -94,6 +96,10 @@ export class HomePage extends BaseWebComponent {
 
   get topBarAvatar() {
     return this.getSelectorByAutomationId('topBarAvatar');
+  }
+
+  get dialpadButton() {
+    return this.getSelectorByAutomationId('telephony-dialpad-btn');
   }
 
   get settingMenu() {
@@ -114,6 +120,14 @@ export class HomePage extends BaseWebComponent {
 
   async openSettingMenu() {
     await this.t.click(this.topBarAvatar);
+  }
+
+  async openDialer() {
+    await this.t.hover('html').click(this.dialpadButton);
+  }
+
+  async hoverDialpadButton() {
+    await this.t.hover(this.dialpadButton);
   }
 
   get joinTeamDialog() {
@@ -143,6 +157,10 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(TelephonyDialog);
   }
 
+  get minimizeCallWindow() {
+    return this.getComponent(TelephonyMinimizeWindow);
+  }
+
   get fileAndImagePreviewer() {
     return this.getComponent(FileAndImagePreviewer);
   }
@@ -155,4 +173,7 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(SearchDialog);
   }
 
+  get logoutDialog() {
+    return this.getComponent(LogoutDialog);
+  }
 }

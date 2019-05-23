@@ -10,6 +10,7 @@ import notificationCenter from '../../../../service/notificationCenter';
 import { rawCompanyFactory } from '../../../../__tests__/factories';
 import { SYNC_SOURCE } from '../../../../module/sync/types';
 import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('../../../account/config/AccountUserConfig', () => {
   const xx = {
@@ -55,6 +56,13 @@ describe('CompanyController', () => {
   let companyController: CompanyController;
   let accountUserConfig: AccountUserConfig;
   function setUp() {
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: accountUserConfig };
+        }
+      });
     accountUserConfig = new AccountUserConfig();
     companyController = new CompanyController(entitySourceController);
   }
@@ -269,6 +277,30 @@ describe('CompanyController', () => {
       entitySourceController.get = jest.fn().mockReturnValue(company);
       const res = await companyController.getUserAccountTypeFromSP430();
       expect(res).toBe('TestType');
+    });
+  });
+
+  describe('getBrandType', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should return brand type of the company', async () => {
+      const company = {
+        id: 16385,
+        rc_brand: 'RC',
+      };
+      entitySourceController.get = jest.fn().mockReturnValue(company);
+      expect(await companyController.getBrandType()).toEqual(company.rc_brand);
+    });
+
+    it('should return undefined when company has no such data', async () => {
+      const company = {
+        id: 16385,
+      };
+      entitySourceController.get = jest.fn().mockReturnValue(company);
+      expect(await companyController.getBrandType()).toEqual(undefined);
     });
   });
 });

@@ -4,19 +4,23 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, decorate, injectable } from 'framework';
-import { TelephonyStore } from '../../../store';
+import { container, Jupiter } from 'framework';
 import { HoldViewModel } from '../Hold.ViewModel';
-import { TelephonyService } from '../../../service';
+import * as telephony from '@/modules/telephony/module.config';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
-[TelephonyService, TelephonyStore].forEach(kls => decorate(injectable(), kls));
-[TelephonyService, TelephonyStore].forEach(kls => container.bind(kls).to(kls));
+jest.mock('sdk/module/telephony');
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(telephony.config);
 
 let holdViewModel: HoldViewModel;
-
 beforeAll(() => {
+  jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
+    matchContactByPhoneNumber: jest.fn(),
+  });
   holdViewModel = new HoldViewModel();
 });
+
 describe('HoldViewModel', () => {
   it('Should be disabled', async () => {
     expect(holdViewModel.disabled).toBe(true);

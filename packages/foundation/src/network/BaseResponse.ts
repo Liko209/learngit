@@ -4,16 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IResponse, HTTP_STATUS_CODE, IRequest } from '../network';
-abstract class BaseResponse implements IResponse {
-  request: IRequest;
+import { IResponse, RESPONSE_STATUS_CODE, IRequest } from '../network';
+abstract class BaseResponse<R extends IRequest = IRequest>
+  implements IResponse {
+  request: R;
   constructor(
     readonly data: any,
-    readonly status: HTTP_STATUS_CODE,
+    readonly status: RESPONSE_STATUS_CODE,
     readonly statusText: string,
     readonly headers: object,
     readonly retryAfter: number,
-    request: IRequest,
+    request: R,
   ) {
     this.data = data;
     this.status = status;

@@ -83,6 +83,7 @@ const name2icon = {
   default_video: 'default-video',
   default_avatar: 'default-avatar',
   pin: 'pin',
+  unpin: 'unpin',
   zoom_out: 'zoom-out',
   zoom_in: 'zoom-in',
   info: 'info',
@@ -129,6 +130,10 @@ const name2icon = {
   seven: '7',
   eight: '8',
   nine: '9',
+  send: 'send',
+  emoji: 'emoji',
+  dialer: 'dialer',
+  deletenumber: 'deletenumber',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

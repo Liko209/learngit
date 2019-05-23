@@ -14,9 +14,23 @@ class FakeInputViewModel extends StoreViewModel<FakeInputProps>
   implements FakeInputViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
 
+  // Perf: this is the fastest solution by using js-bench in node.V10.15.0
+  static reverse(str: string) {
+    let reversed = '';
+    for (let i = str.length - 1; i >= 0; i--) {
+      reversed += str[i];
+    }
+    return reversed;
+  }
+
   @computed
   get enteredKeys() {
-    return this._telephonyStore.enteredKeys;
+    return FakeInputViewModel.reverse(this._telephonyStore.enteredKeys);
+  }
+
+  @computed
+  get showCursor() {
+    return this._telephonyStore.dialerFocused;
   }
 }
 

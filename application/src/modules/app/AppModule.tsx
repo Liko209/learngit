@@ -11,7 +11,6 @@ import { SectionUnread, UMI_SECTION_TYPE } from 'sdk/module/state';
 import { AbstractModule, inject } from 'framework';
 import config from '@/config';
 import storeManager from '@/store';
-import history from '@/history';
 import { GLOBAL_KEYS } from '@/store/constants';
 import '@/i18n';
 
@@ -20,7 +19,6 @@ import { App } from './container';
 
 import { RouterService } from '@/modules/router';
 import { config as appConfig } from './app.config';
-import { HomeService } from '@/modules/home';
 
 import './index.css';
 import {
@@ -28,15 +26,18 @@ import {
   errorReporter,
   getAppContextInfo,
 } from '@/utils/error';
-import { AccountUserConfig } from 'sdk/module/account/config';
 import { AccountService } from 'sdk/module/account';
-import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { AppEnvSetting } from 'sdk/module/env';
 import { SyncGlobalConfig } from 'sdk/module/sync/config';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { Pal } from 'sdk/pal';
 import { isProductionVersion } from '@/common/envUtils';
+import { showUpgradeDialog } from '@/modules/electron';
+import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
+import { IApplicationInfo } from 'sdk/pal/applicationInfo';
+import history from '@/history';
+import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 
 /**
  * The root module, we call it AppModule,
@@ -44,9 +45,7 @@ import { isProductionVersion } from '@/common/envUtils';
  */
 class AppModule extends AbstractModule {
   @inject(RouterService) private _routerService: RouterService;
-  @inject(HomeService) private _homeService: HomeService;
   @inject(AppStore) private _appStore: AppStore;
-  private _subModuleRegistered: boolean = false;
   private _umiEventKeyMap: Map<UMI_SECTION_TYPE, GLOBAL_KEYS>;
   private _logControlManager: LogControlManager = LogControlManager.instance();
 
@@ -87,6 +86,11 @@ class AppModule extends AbstractModule {
       );
     });
 
+    const { deployedVersion } = await fetchVersionInfo();
+    Pal.instance.setApplicationInfo({
+      appVersion: deployedVersion,
+    } as IApplicationInfo);
+
     const {
       notificationCenter,
       socketManager,
@@ -99,6 +103,7 @@ class AppModule extends AbstractModule {
       window.jupiterElectron.onPowerMonitorEvent = (actionName: string) => {
         socketManager.onPowerMonitorEvent(actionName);
       };
+      window.jupiterElectron.onUpgradeEvent = showUpgradeDialog;
     }
 
     // subscribe service notification to global store
@@ -110,11 +115,14 @@ class AppModule extends AbstractModule {
       );
 
       if (accountService.isAccountReady()) {
-        const accountUserConfig = new AccountUserConfig();
+        const accountUserConfig = accountService.userConfig;
         const currentUserId = accountUserConfig.getGlipUserId();
         const currentCompanyId = accountUserConfig.getCurrentCompanyId();
+        const accountType = accountUserConfig.getAccountType();
+        const isRcUser = accountType === ACCOUNT_TYPE_ENUM.RC;
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
+        globalStore.set(GLOBAL_KEYS.IS_RC_USER, isRcUser);
         getAppContextInfo().then(contextInfo => {
           Pal.instance.setApplicationInfo({
             env: contextInfo.env,
@@ -128,28 +136,6 @@ class AppModule extends AbstractModule {
             window.jupiterElectron.setContextInfo(contextInfo);
           errorReporter.setUserContextInfo(contextInfo);
         });
-
-        if (!this._subModuleRegistered) {
-          // load phone parser module
-          PhoneParserUtility.loadModule();
-
-          // TODO register subModule according to account profile
-          this._homeService.registerSubModules([
-            'dashboard',
-            'message',
-            'telephony',
-            'meeting',
-            'contact',
-            'calendar',
-            'task',
-            'note',
-            'file',
-            'setting',
-          ]);
-
-          // Avoid duplicate register
-          this._subModuleRegistered = true;
-        }
       }
     };
 
@@ -207,17 +193,17 @@ class AppModule extends AbstractModule {
     };
     notificationCenter.on(SERVICE.TOTAL_UNREAD, setTotalUnread);
 
-    notificationCenter.on(SERVICE.SYNC_SERVICE.START_CLEAR_DATA, () => {
-      // 1. show loading
+    notificationCenter.on(SERVICE.START_LOADING, () => {
       this._appStore.setGlobalLoading(true);
-      // 2. clear store data
-      storeManager.resetStores();
     });
 
-    notificationCenter.on(SERVICE.SYNC_SERVICE.END_CLEAR_DATA, () => {
-      // stop loading
+    notificationCenter.on(SERVICE.STOP_LOADING, () => {
       this._appStore.setGlobalLoading(false);
+    });
+
+    notificationCenter.on(SERVICE.RELOAD, () => {
       history.replace('/messages');
+      location.reload();
     });
 
     notificationCenter.on(SERVICE.DO_SIGN_OUT, async () => {

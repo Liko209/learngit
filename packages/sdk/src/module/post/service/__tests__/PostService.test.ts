@@ -10,9 +10,23 @@ import { PostService } from '../PostService';
 import { PostDataController } from '../../controller/PostDataController';
 import { ProfileService } from '../../../profile';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { GroupService } from '../../../group';
+import { AccountService } from '../../../account/service';
 
-jest.mock('../../../account/config/AccountUserConfig');
-jest.mock('../../../../framework/controller/impl/EntityNotificationController');
+jest.mock('../../../account/config/AccountUserConfig', () => {
+  const xx = {
+    getGlipUserId() {
+      return 1;
+    },
+  };
+  return {
+    AccountUserConfig: () => {
+      return xx;
+    },
+  };
+});
+
+jest.mock('../../../group');
 jest.mock('../../controller/PostDataController');
 jest.mock('../../controller/PostController');
 jest.mock('../../controller/implementation/PostSearchController');
@@ -27,15 +41,49 @@ function clearMocks() {
 }
 
 describe('PostService', () => {
+  let profileService: ProfileService;
   let postService: PostService;
   let postController: PostController;
+  let groupService: GroupService;
+  let accountService: AccountService;
   function setUp() {
+    profileService = new ProfileService();
+    groupService = new GroupService();
     postController = new PostController();
     postService = new PostService();
+
+    const serviceMap = new Map([[ServiceConfig.GROUP_SERVICE, groupService]]);
+
+    ServiceLoader.getInstance = jest.fn().mockImplementation(name => {
+      return serviceMap.get(name);
+    });
+    accountService = new AccountService();
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.PROFILE_SERVICE) {
+          return profileService;
+        }
+        if (serviceName === ServiceConfig.ACCOUNT_SERVICE) {
+          return accountService;
+        }
+      });
   }
 
   beforeEach(() => {
     clearMocks();
+    setUp();
+  });
+
+  describe('canSaveRemoteEntity()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+    it('should return false', () => {
+      const result = postService['canSaveRemoteEntity']();
+      expect(result).toBeFalsy();
+    });
   });
 
   describe('handleSexioData', () => {
@@ -124,14 +172,6 @@ describe('PostService', () => {
 
   describe('bookmarkPost', () => {
     it('bookmarkPost', async () => {
-      const profileService = new ProfileService();
-      ServiceLoader.getInstance = jest
-        .fn()
-        .mockImplementation((serviceName: string) => {
-          if (serviceName === ServiceConfig.PROFILE_SERVICE) {
-            return profileService;
-          }
-        });
       await postService.bookmarkPost(1, true);
       expect(profileService.putFavoritePost).toBeCalledWith(1, true);
     });

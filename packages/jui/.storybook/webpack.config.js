@@ -13,53 +13,112 @@
 const webpack = require('webpack');
 const path = require('path');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-const HappyPack = require('happypack');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
+const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
 
-module.exports = (baseConfig, env, config) => {
-  config.module.rules.push({
-    test: /\.(ts|tsx)$/,
+const moduleRules = [
+  {
+    test: /\.story\.tsx?$/,
+    use: [
+      {
+        loader: '@storybook/addon-storysource/loader',
+        options: { parser: 'typescript' },
+      },
+    ],
     include: path.resolve(__dirname, '../src'),
-    loader: 'happypack/loader?id=ts',
+    enforce: 'pre',
+  },
+  {
+    test: /\.ts(x)?$/,
+    exclude: excludeNodeModulesExcept(['rcui']),
+    use: [
+      {
+        loader: 'ts-loader',
+        options: {
+          // disable type checker - we will use it in fork plugin
+          transpileOnly: true,
+        },
+      },
+      {
+        loader: 'react-docgen-typescript-loader',
+      },
+    ],
+  },
+  {
+    test: /\.svg$/,
+    include: path.resolve(__dirname, '../src/assets/country-flag'),
+    use: [
+      {
+        loader: 'svg-sprite-loader',
+        options: {
+          extract: true,
+          publicPath: '/static/',
+          spriteFilename: 'country-flag-[hash:6].svg',
+          symbolId: 'country-flag-[name]',
+        },
+      },
+      {
+        loader: 'svgo-loader',
+        options: {
+          plugins: [
+            { removeTitle: true },
+            { convertColors: { shorthex: false } },
+            { convertPathData: true },
+            { reusePaths: true },
+          ],
+        },
+      },
+    ],
+  },
+];
+
+const plugins = [
+  new CopyWebpackPlugin([
+    { from: '../../application/public/theme/', to: 'theme' },
+  ]),
+  new ForkTsCheckerWebpackPlugin({
+    checkSyntacticErrors: true,
+  }),
+  new webpack.ProvidePlugin({
+    'window.Quill': 'quill/dist/quill.js',
+    Quill: 'quill/dist/quill.js',
+  }),
+  new SpriteLoaderPlugin(),
+];
+
+const resolvePlugins = [
+  new TsconfigPathsPlugin({
+    configFile: path.resolve(__dirname, '../tsconfig.json'),
+  }),
+];
+
+const resolveExtensions = ['.ts', '.tsx'];
+
+module.exports = async ({ config }) => {
+  // modify the default svg rule
+  const fileLoader = config.module.rules[3];
+  fileLoader.exclude = [path.resolve(__dirname, '../src/assets/country-flag')];
+
+  // Make whatever fine-grained changes you need
+  moduleRules.forEach(rule => {
+    config.module.rules.push(rule);
   });
 
-  config.plugins.push(
-    new HappyPack({
-      id: 'ts',
-      // 3) re-add the loaders you replaced above in #1:
-      loaders: [
-        {
-          path: 'babel-loader',
-          query: {
-            cacheDirectory: true,
-            babelrc: false,
-            presets: [['react-app', { flow: false, typescript: true }]],
-          },
-        },
-        {
-          path: 'react-docgen-typescript-loader',
-        },
-      ],
-    }),
-    new CopyWebpackPlugin([
-      { from: '../../application/public/theme/', to: 'theme' },
-    ]),
-  );
-  config.plugins.push(
-    new ForkTsCheckerWebpackPlugin({
-      checkSyntacticErrors: true,
-    }),
-    new webpack.ProvidePlugin({
-      'window.Quill': 'quill/dist/quill.js',
-      Quill: 'quill/dist/quill.js',
-    }),
-  );
-  config.resolve.plugins = [
-    new TsconfigPathsPlugin({
-      configFile: path.resolve(__dirname, '../tsconfig.json'),
-    }),
-  ];
-  config.resolve.extensions.push('.ts', '.tsx');
+  plugins.forEach(plugin => {
+    config.plugins.push(plugin);
+  });
+
+  config.resolve.plugins = [];
+  resolvePlugins.forEach(plugin => {
+    config.resolve.plugins.push(plugin);
+  });
+
+  resolveExtensions.forEach(ext => {
+    config.resolve.extensions.push(ext);
+  });
+
+  // Return the altered config
   return config;
 };

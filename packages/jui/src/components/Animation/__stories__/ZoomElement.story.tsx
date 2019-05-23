@@ -12,9 +12,9 @@ import styled from '../../../foundation/styled-components';
 import { Button } from '@material-ui/core';
 
 const StyledImage = styled('img')<any>`
-  position: absolute;
-  top: 0px;
-  left: 0px;
+  position: fixed;
+  top: 20%;
+  left: 20%;
   width: ${({ position }) => position.width};
   height: ${({ position }) => position.height};
 `;
@@ -32,8 +32,6 @@ class Test extends React.Component {
 
   setTargetImageRef = (element: any) => {
     this.targetImage = element;
-    console.log(element);
-
     this.forceUpdate();
   }
 
@@ -84,7 +82,7 @@ class Test extends React.Component {
           <>
             <StyledImage
               ref={this.setTargetImageRef}
-              position={{ width: '70%', height: '70%' }}
+              position={{ width: '70vh', height: '70vh' }}
               src="https://placeimg.com/100/100/any"
               onClick={this.close}
             />
@@ -94,7 +92,7 @@ class Test extends React.Component {
                 targetElement={this.targetImage!}
                 show={this.state.show}
                 duration="standard"
-                easing="openCloseDialog"
+                easing="sharp"
                 onExited={this.hide}
               />
             )}

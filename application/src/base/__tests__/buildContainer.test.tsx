@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { observable } from 'mobx';
-import { mount } from 'enzyme';
+import { mount, shallow } from 'enzyme';
 import { StoreViewModel } from '@/store/ViewModel';
 import { buildContainer } from '../buildContainer';
 
@@ -93,6 +93,6 @@ describe('buildContainer()', () => {
       ViewModel: ConflictViewModel,
     });
 
-    expect(() => mount(<ConflictContainer id={1} />)).toThrow();
+    expect(() => shallow(<ConflictContainer id={1} />)).toThrow();
   });
 });

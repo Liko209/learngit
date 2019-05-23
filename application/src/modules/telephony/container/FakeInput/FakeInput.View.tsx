@@ -6,19 +6,26 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import { StyledHeaderNoPadding } from 'jui/pattern/Dialer';
 import { height, spacing } from 'jui/foundation/utils';
 import { FakeInputViewProps } from './types';
 
 @observer
 class FakeInputView extends Component<FakeInputViewProps> {
+  // HACK: using `direction:rtl` and `unicode-bidi` while also reversing the input string
   render() {
+    const { showCursor, enteredKeys } = this.props;
     const blink = keyframes`
       0% { opacity:1; }
       50% { opacity:0; }
       100% { opacity:1; }
     `;
+
+    const blinkAnimation = () =>
+      css`
+        ${blink} 0.8s steps(1) infinite
+      `;
 
     const FlexContainer = styled.div`
       flex-grow: 1;
@@ -36,7 +43,7 @@ class FakeInputView extends Component<FakeInputViewProps> {
     `;
 
     const Inner = styled.div`
-      direction: ltr;
+      direction: rtl;
       overflow: hidden;
       color: white;
       font-size: ${({ theme }) => theme.typography.headline.fontSize};
@@ -46,14 +53,14 @@ class FakeInputView extends Component<FakeInputViewProps> {
       align-items: center;
       padding: ${spacing(0, 2)};
 
-      &&:after {
+      &&:before {
         font-size: 1.75rem;
         display: inline-block;
         content: '';
-        animation: ${blink} 0.8s steps(1) infinite;
+        animation: ${showCursor ? blinkAnimation : undefined};
         width: 1px;
         height: ${height(8)};
-        border-right: 1px solid white;
+        border-right: 1px solid ${showCursor ? 'white' : 'transparent'};
       }
     `;
 
@@ -64,8 +71,7 @@ class FakeInputView extends Component<FakeInputViewProps> {
       text-overflow: ellipsis;
       word-break: keep-all;
       white-space: nowrap;
-      unicode-bidi: plaintext;
-      direction: rtl;
+      unicode-bidi: bidi-override;
     `;
 
     return (
@@ -73,7 +79,7 @@ class FakeInputView extends Component<FakeInputViewProps> {
         <StyledHeaderNoPadding>
           <Container>
             <Inner>
-              <KeyText>{this.props.enteredKeys}</KeyText>
+              <KeyText>{enteredKeys}</KeyText>
             </Inner>
           </Container>
         </StyledHeaderNoPadding>

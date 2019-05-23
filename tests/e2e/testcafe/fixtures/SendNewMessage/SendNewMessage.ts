@@ -38,7 +38,7 @@ test(formalName('JPT-285 Check New Message popup can be opened and closed', ['P1
 
   await h(t).withLog('Then the Send New Message popup shows', async () => {
     //check members input exists
-    await h(t).waitUntilExist(sendNewMessageModal.membersInput);
+    await sendNewMessageModal.memberInput.ensureLoaded();
   }, true);
 
   await h(t).withLog('When I close the Send New Message popup', async () => {
@@ -47,7 +47,7 @@ test(formalName('JPT-285 Check New Message popup can be opened and closed', ['P1
 
   await h(t).withLog('Then the Send New Message popup dismiss', async () => {
     //check members input not exists
-    await t.expect(sendNewMessageModal.membersInput.exists).notOk();
+    await sendNewMessageModal.memberInput.ensureDismiss();
   }, true);
 });
 
@@ -80,7 +80,7 @@ test(formalName('JPT-288 Check the maximum length of the “Type new message" Te
 
   await h(t).withLog('Then the Send New Message popup shows', async () => {
     //check members input exists
-    await h(t).waitUntilExist(sendNewMessageModal.membersInput);
+    await sendNewMessageModal.memberInput.ensureLoaded();
   }, true);
 
   await h(t).withLog(`When I input new message with ${lessThanMax} character`, async () => {
@@ -149,12 +149,11 @@ test(formalName('JPT-286 New Message can be created successfully', ['P1', 'SendN
 
   await h(t).withLog('Then the Send New Message popup shows', async () => {
     //check members input exists
-    await h(t).waitUntilExist(sendNewMessageModal.membersInput);
+    await sendNewMessageModal.memberInput.ensureLoaded();
   }, true);
 
   await h(t).withLog('When I input one memeber name', async () => {
-    await sendNewMessageModal.setMember(user2Name);
-
+    await sendNewMessageModal.memberInput.addMember(user2Name);
   });
 
   await h(t).withLog('Then the Send button should be enable', async () => {
@@ -225,7 +224,7 @@ test(formalName('JPT-293 The Send button is disabled when user create new messag
 
     await h(t).withLog('Then the Send New Message popup shows', async () => {
       //check members input exists
-      await h(t).waitUntilExist(sendNewMessageModal.membersInput);
+      await sendNewMessageModal.memberInput.ensureLoaded();
     }, true);
 
     await h(t).withLog('And Send button is disabled', async () => {

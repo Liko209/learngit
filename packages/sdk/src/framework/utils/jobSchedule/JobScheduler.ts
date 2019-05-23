@@ -14,7 +14,7 @@ import { mainLogger } from 'foundation/src';
 class JobScheduler {
   private _isOnline: boolean;
   private _jobMap: Map<JOB_KEY, JobInfo>;
-  private _jobConfig: JobSchedulerConfig;
+  private _userConfig: JobSchedulerConfig;
 
   constructor() {
     this._isOnline = true;
@@ -25,6 +25,13 @@ class JobScheduler {
     notificationCenter.on(SERVICE.LOGOUT, () => {
       this.clear();
     });
+  }
+
+  get userConfig(): JobSchedulerConfig {
+    if (!this._userConfig) {
+      this._userConfig = new JobSchedulerConfig();
+    }
+    return this._userConfig;
   }
 
   onNetWorkChanged(isOnline: boolean): void {
@@ -139,16 +146,9 @@ class JobScheduler {
     this._jobMap.clear();
   }
 
-  private get jobConfig(): JobSchedulerConfig {
-    if (!this._jobConfig) {
-      this._jobConfig = new JobSchedulerConfig();
-    }
-    return this._jobConfig;
-  }
-
   private _getLastSuccessTime(key: JOB_KEY): number {
     try {
-      return this.jobConfig.getLastSuccessTime(key) || 0;
+      return this.userConfig.getLastSuccessTime(key) || 0;
     } catch (err) {
       mainLogger.error(`JobScheduler: _getLastSuccessTime error => ${err}`);
       return 0;
@@ -157,7 +157,7 @@ class JobScheduler {
 
   private _setLastSuccessTime(key: JOB_KEY, value: number): boolean {
     try {
-      this.jobConfig.setLastSuccessTime(key, value);
+      this.userConfig.setLastSuccessTime(key, value);
     } catch (err) {
       mainLogger.error(`JobScheduler: _setLastSuccessTime error => ${err}`);
       return false;
@@ -167,7 +167,7 @@ class JobScheduler {
 
   private _removeLastSuccessTime(key: JOB_KEY): boolean {
     try {
-      this.jobConfig.removeLastSuccessTime(key);
+      this.userConfig.removeLastSuccessTime(key);
     } catch (err) {
       mainLogger.error(`JobScheduler: _removeLastSuccessTime error => ${err}`);
       return false;
@@ -230,6 +230,9 @@ class JobScheduler {
             this.cancelJob(info.key, true);
           }
         }
+      }
+      if (info.callback) {
+        info.callback(successful);
       }
     };
 

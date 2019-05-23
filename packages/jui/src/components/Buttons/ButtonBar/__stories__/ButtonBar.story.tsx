@@ -10,12 +10,12 @@ import {
   withInfoDecorator,
   alignCenterDecorator,
 } from '../../../../foundation/utils/decorators';
-import { JuiButtonBar } from '../index';
+import { JuiButtonBar, JuiButtonBarProps } from '../index';
 import { JuiIconButton } from '../../IconButton/IconButton';
 import { JuiCheckboxButton } from '../../CheckboxButton/CheckboxButton';
 
 const getKnobs = () => {
-  const direction = select(
+  const direction = select<JuiButtonBarProps['direction']>(
     'direction',
     {
       vertical: 'vertical',

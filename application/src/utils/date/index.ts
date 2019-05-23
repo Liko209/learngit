@@ -1,5 +1,5 @@
 import moment from 'moment';
-import i18next from 'i18next';
+import { i18nP } from '@/utils/i18nT';
 import _ from 'lodash';
 
 function getDateMessage(
@@ -18,13 +18,13 @@ function getDateMessage(
     .millisecond(0);
   const diff = now.diff(m, 'days', true);
   if (diff === 0) {
-    return i18next.t('common.time.today');
+    return i18nP('common.time.today');
   }
   if (diff === 1) {
-    return i18next.t('common.time.yesterday');
+    return i18nP('common.time.yesterday');
   }
   if (diff === -1) {
-    return i18next.t('common.time.tomorrow');
+    return i18nP('common.time.tomorrow');
   }
   if (diff <= 7) {
     return m.format(format); // Tue, Oct 30th  周二, 10月30日
@@ -41,35 +41,40 @@ const WEEKDAY = [
   'common.time.Friday',
   'common.time.Saturday',
 ];
+
 type Moment = moment.Moment;
+
 const dateFormatter = {
-  localTime: (m: Moment) => {
+  localTime: (m: Moment): string => {
     return m.format('LT');
   },
-  today: () => {
-    return i18next.t('common.time.today');
+  today: (): string => {
+    const text: string = i18nP('common.time.today');
+    return text;
   },
-  yesterday: () => {
-    return i18next.t('common.time.yesterday');
+  yesterday: (): string => {
+    const text: string = i18nP('common.time.yesterday');
+    return text;
   },
-  weekday: (m: Moment) => {
-    return i18next.t(WEEKDAY[m.day()]);
+  weekday: (m: Moment): string => {
+    const text: string = i18nP(WEEKDAY[m.day()]);
+    return text;
   },
-  exactDate: (m: Moment) => {
-    return `${dateFormatter.weekday(m).slice(0, 3)}, ${m.format('l')}`;
+  exactDate: (m: Moment): string => {
+    const weekday: string = dateFormatter.weekday(m);
+    return `${weekday.slice(0, 3)}, ${m.format('l')}`;
   },
-  weekdayAndTime: (m: Moment) => {
-    return `${dateFormatter.weekday(m).slice(0, 3)}, ${dateFormatter.localTime(
-      m,
-    )}`;
+  weekdayAndTime: (m: Moment): string => {
+    const weekday: string = dateFormatter.weekday(m);
+    return `${weekday.slice(0, 3)}, ${dateFormatter.localTime(m)}`;
   },
-  dateAndTime: (m: Moment) => {
+  dateAndTime: (m: Moment): string => {
     return `${dateFormatter.exactDate(m)} ${dateFormatter.localTime(m)}`;
   },
-  date: (timestamp: number) => {
+  date: (timestamp: number): string => {
     return moment(timestamp).format('l');
   },
-  dateAndTimeWithoutWeekday: (m: Moment) => {
+  dateAndTimeWithoutWeekday: (m: Moment): string => {
     return `${m.format('l')} ${dateFormatter.localTime(m)}`;
   },
 };
@@ -171,11 +176,13 @@ const postTimestamp = buildFormatter([
     formatter: dateFormatter.dateAndTime,
   },
 ]);
-function getDateTimeStamp(timestamp: number) {
+
+function getDateTimeStamp(timestamp: number): number {
   return moment(timestamp)
     .startOf('day')
     .valueOf();
 }
+
 function handleTimeZoneOffset(
   timestamp: number,
   timezoneOffset: number,
@@ -185,7 +192,7 @@ function handleTimeZoneOffset(
   return timestamp + (localTimezoneOffset - timezoneOffset) * MINUTE;
 }
 
-function twoDigit(n: number) {
+function twoDigit(n: number): string {
   return (n < 10 ? '0' : '') + n;
 }
 

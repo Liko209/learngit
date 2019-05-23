@@ -9,6 +9,7 @@ import { LogUtils } from "./logUtils";
 import { FunctionUtils } from "./functionUtils";
 import { MockClient, BrowserInitDto } from 'mock-client';
 import { Config } from '../config';
+import * as bluebird from 'bluebird';
 
 const MAX_TRY_COUNT = 10;
 
@@ -17,6 +18,52 @@ const browsers = new Map<string, Browser>();
 const logger = LogUtils.getLogger(__filename);
 
 class PptrUtils {
+  static async trackingHeapObjects(driver): Promise<string> {
+    const memory = [];
+    if (Config.takeHeapSnapshot) {
+      const listener = (data) => {
+        memory.push(data.chunk);
+      }
+
+      driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
+      await driver.sendCommand('HeapProfiler.enable');
+
+      driver.on('HeapProfiler.addHeapSnapshotChunk', listener);
+      driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
+      await driver.sendCommand('HeapProfiler.startTrackingHeapObjects');
+      driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
+      await driver.sendCommand('HeapProfiler.stopTrackingHeapObjects');
+
+      driver.off('HeapProfiler.addHeapSnapshotChunk', listener);
+
+      driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
+      await driver.sendCommand('HeapProfiler.disable');
+
+      logger.info('tracking heap object.');
+    }
+    return memory.join('');
+  }
+
+  static async collectGarbage(driver) {
+    driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
+    await driver.sendCommand('HeapProfiler.enable');
+
+    driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
+    await driver.sendCommand('HeapProfiler.collectGarbage');
+
+    await bluebird.delay(2000);
+
+    driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
+    await driver.sendCommand('HeapProfiler.collectGarbage');
+
+    await bluebird.delay(2000);
+
+    driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
+    await driver.sendCommand('HeapProfiler.disable');
+
+    logger.info('trigger garbage collection.');
+  }
+
   static async scrollBy(page: Page, selector: string, x: number, y: number, options = {}): Promise<boolean> {
     if (!(await PptrUtils.waitForSelector(page, selector, options))) {
       return false;
@@ -217,7 +264,7 @@ class PptrUtils {
   /**
    * @description: get element text
    */
-  static async text(page: Page, selector: string, options = {}): Promise<boolean> {
+  static async text(page: Page, selector: string, options = {}): Promise<any> {
     if (!(await PptrUtils.waitForSelector(page, selector, options))) {
       return false;
     }
@@ -234,7 +281,7 @@ class PptrUtils {
   }
 
   static async launch(options = {}): Promise<Browser> {
-    let defaultArgs = ["--ignore-certificate-errors"];
+    let defaultArgs = ["--ignore-certificate-errors", "--disable-web-security"];
     if (options["args"]) {
       defaultArgs = defaultArgs.concat(options["args"]);
     }
@@ -340,7 +387,9 @@ class PptrUtils {
       .env(Config.jupiterEnv)
       .appKey(Config.jupiterAppKey)
       .appSecret(Config.jupiterAppSecret)
-      .useInitialCache(Config.useInitialCache);
+      .useInitialCache(Config.useInitialCache)
+      .record(false)
+      .replay(true);
 
     let requestId = await client.registerBrowser(initDto);
 

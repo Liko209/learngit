@@ -29,9 +29,15 @@
     "interface-name": [true, "always-prefix"],
     "arrow-parens": false,
     "ter-arrow-parens": false,
-    "ter-indent": false
+    "ter-indent": false,
+    "ter-computed-property-spacing": false,
+    "no-console": [true, "log", "debug", "info", "time", "timeEnd", "trace"],
+    "no-eval": true,
+    "no-debugger": true
   },
   "jsRules": {
-    "no-empty": true
+    "no-empty": true,
+    "no-eval": true,
+    "no-debugger": true
   }
 }

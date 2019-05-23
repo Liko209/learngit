@@ -12,12 +12,22 @@ import { IEntitySourceController } from '../../../framework/controller/interface
 import { ENTITY } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
 import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
-import { AccountUserConfig } from '../../account/config/AccountUserConfig';
+import { AccountService } from '../../account/service';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 class CompanyController {
   private _currentCompanyId: number;
   constructor(public entitySourceController: IEntitySourceController<Company>) {
-    const config = new AccountUserConfig();
+    const config = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     this._currentCompanyId = config.getCurrentCompanyId();
+  }
+
+  async getBrandType() {
+    const company = await this.entitySourceController.get(
+      this._currentCompanyId,
+    );
+    return (company && company.rc_brand) || undefined;
   }
 
   async getUserAccountTypeFromSP430(): Promise<E_ACCOUNT_TYPE | undefined> {

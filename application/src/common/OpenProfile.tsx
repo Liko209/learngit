@@ -5,10 +5,11 @@
  */
 import React from 'react';
 import { Dialog } from '@/containers/Dialog';
+import { JuiDialogFuncProps } from 'jui/components/Dialog';
 import {
   ProfileDialogGroup,
   ProfileDialogPerson,
-} from '@/containers/Profile/Dialog';
+} from '@/modules/message/container/Profile/Dialog';
 import { TypeDictionary, GlipTypeUtil } from 'sdk/utils';
 
 const getProfileDialogComponent = (id: number) => {
@@ -27,7 +28,8 @@ class OpenProfile {
   static show(
     id: number,
     beforeClick?: (() => void) | null,
-    afterClick?: () => void,
+    afterClick?: (() => void) | null,
+    options?: JuiDialogFuncProps,
   ) {
     const ProfileDialog = getProfileDialogComponent(id);
     beforeClick && beforeClick();
@@ -38,6 +40,7 @@ class OpenProfile {
     const { dismiss } = Dialog.simple(<ProfileDialog id={id} />, {
       size: 'medium',
       scroll: 'body',
+      ...options,
     });
     afterClick && afterClick();
 

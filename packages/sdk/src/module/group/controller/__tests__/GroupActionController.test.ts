@@ -16,7 +16,7 @@ import { IEntitySourceController } from '../../../../framework/controller/interf
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { Raw } from '../../../../framework/model';
 import { buildRequestController } from '../../../../framework/controller';
-import { AccountUserConfig } from '../../../../module/account/config';
+import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ProfileService } from '../../../profile';
 import { PostService } from '../../../post';
@@ -30,7 +30,8 @@ import { TeamPermissionController } from '../TeamPermissionController';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { DEFAULT_ADMIN_PERMISSION_LEVEL } from '../../constants';
 import { PERMISSION_ENUM } from '../../../../service';
-import { ServiceLoader } from '../../../serviceLoader';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { AccountService } from '../../../account';
 
 jest.mock('../GroupHandleDataController');
 jest.mock('../../../../dao');
@@ -73,7 +74,7 @@ describe('GroupFetchDataController', () => {
   let testEntitySourceController: IEntitySourceController<Group>;
   let groupActionController: GroupActionController;
   let testPartialModifyController: IPartialModifyController<Group>;
-  let entityCacheController: EntityCacheController;
+  let entityCacheController: EntityCacheController<Group>;
   let testEntityCacheSearchController: IEntityCacheSearchController<Group>;
 
   let groupService: GroupService;
@@ -93,6 +94,10 @@ describe('GroupFetchDataController', () => {
 
         if (serviceName === ServiceConfig.PROFILE_SERVICE) {
           return profileService;
+        }
+
+        if (serviceName === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: AccountUserConfig.prototype };
         }
       });
 
@@ -148,6 +153,7 @@ describe('GroupFetchDataController', () => {
 
   describe('createTeam()', () => {
     const data = {
+      is_team: true,
       set_abbreviation: 'some team',
       members: [1323],
       description: 'abc',
@@ -197,13 +203,15 @@ describe('GroupFetchDataController', () => {
     it('updateGroupPrivacy({id, privacy}) is update success', async () => {
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
       GroupAPI.putTeamById.mockResolvedValue(group);
-      const result = groupActionController.updateGroupPrivacy({
+      const params = {
         id: 1,
         privacy: 'privacy',
-      });
-      result.then((bool: boolean) => {
-        expect(bool).toEqual(true);
-      });
+      };
+      await groupActionController.updateGroupPrivacy(params);
+      expect(testPartialModifyController.updatePartially).toHaveBeenCalled();
+      expect(testGroupRequestController.put).toBeCalledWith(
+        expect.objectContaining(params),
+      );
     });
 
     it('data should have correct permission level if passed in options', async () => {
@@ -285,6 +293,7 @@ describe('GroupFetchDataController', () => {
       members: [1, 2, 3],
       description: 'abc',
       privacy: 'private',
+      is_team: true,
       permissions: {
         admin: {
           uids: [1],

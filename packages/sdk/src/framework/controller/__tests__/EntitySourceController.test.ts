@@ -10,23 +10,61 @@ import { BaseDao, DeactivatedDao } from '../../../dao';
 import { TestEntity, TestDatabase } from './TestTypes';
 import { EntityPersistentController } from '../impl/EntityPersistentController';
 
-describe('RequestController', () => {
+describe('EntitySourceController', () => {
   let dao: BaseDao<TestEntity>;
   let deactivatedDao: DeactivatedDao;
   let requestController: RequestController<TestEntity>;
   let entitySourceController: EntitySourceController<TestEntity>;
+  let entityPersistentController: EntityPersistentController<TestEntity>;
   beforeEach(() => {
     dao = new BaseDao('TestEntity', new TestDatabase());
     deactivatedDao = new DeactivatedDao(new TestDatabase());
     requestController = new RequestController<TestEntity>(undefined);
-    const entityPersistentController: EntityPersistentController<
-      TestEntity
-    > = new EntityPersistentController(dao);
+    entityPersistentController = new EntityPersistentController(dao);
     entitySourceController = new EntitySourceController<TestEntity>(
       entityPersistentController,
       deactivatedDao,
       requestController,
     );
+  });
+
+  describe('get()', () => {
+    it('should save entity if it is fetched from remote when enable save', async () => {
+      entitySourceController = new EntitySourceController<TestEntity>(
+        entityPersistentController,
+        deactivatedDao,
+        requestController,
+        true,
+      );
+      jest
+        .spyOn(entitySourceController, 'getEntityLocally')
+        .mockResolvedValueOnce(null);
+      jest
+        .spyOn(requestController, 'get')
+        .mockResolvedValueOnce({ id: 1, name: 'jupiter' });
+      dao.put = jest.fn();
+      const daoPutSpyOn = jest.spyOn(dao, 'put');
+      await entitySourceController.get(1);
+      expect(daoPutSpyOn).toBeCalledWith({ id: 1, name: 'jupiter' });
+    });
+    it('should not save entity if it is fetched from remote when disable save', async () => {
+      entitySourceController = new EntitySourceController<TestEntity>(
+        entityPersistentController,
+        deactivatedDao,
+        requestController,
+        false,
+      );
+      jest
+        .spyOn(entitySourceController, 'getEntityLocally')
+        .mockResolvedValueOnce(null);
+      jest
+        .spyOn(requestController, 'get')
+        .mockResolvedValueOnce({ id: 1, name: 'jupiter' });
+      dao.put = jest.fn();
+      const daoPutSpyOn = jest.spyOn(dao, 'put');
+      await entitySourceController.get(1);
+      expect(daoPutSpyOn).not.toBeCalled();
+    });
   });
 
   describe('getEntity()', () => {
@@ -35,7 +73,9 @@ describe('RequestController', () => {
         .spyOn(entitySourceController, 'getEntityLocally')
         .mockResolvedValueOnce({ id: 1, name: 'jupiter' });
 
-      jest.spyOn(requestController, 'get').mockImplementation(() => {});
+      jest
+        .spyOn(requestController, 'get')
+        .mockImplementation((id: number) => {});
 
       const result = await entitySourceController.get(1);
       expect(result.id).toBe(1);
@@ -60,7 +100,7 @@ describe('RequestController', () => {
       jest
         .spyOn(entitySourceController, 'getEntityLocally')
         .mockResolvedValueOnce(null);
-      expect(entitySourceController.get(-1)).resolves.toThrow();
+      expect(entitySourceController.get(-1)).rejects.toThrow();
     });
   });
 
@@ -208,6 +248,18 @@ describe('RequestController', () => {
     it('should return entity when db has', () => {
       const result = entitySourceController.getEntityNotificationKey();
       expect(result).toBe('ENTITY.TESTENTITY');
+    });
+  });
+
+  describe('batchGet', () => {
+    it('should not throw error when get from server and error happens', async () => {
+      const ids = [1];
+      deactivatedDao.batchGet = jest.fn().mockResolvedValue([]);
+      entityPersistentController.batchGet = jest.fn().mockResolvedValue([]);
+      requestController.get = jest.fn().mockImplementationOnce(() => {
+        throw new Error();
+      });
+      expect(entitySourceController.batchGet(ids)).resolves.toEqual([]);
     });
   });
 });

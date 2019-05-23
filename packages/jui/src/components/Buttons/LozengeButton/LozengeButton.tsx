@@ -12,7 +12,7 @@ import {
   typography,
   width,
 } from '../../../foundation/utils';
-import { JuiCircularProgress } from '../../Progress/CircularProgress';
+import { RuiCircularProgress } from 'rcui/components/Progress';
 
 type Direction = 'up' | 'down';
 type JuiLozengeButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -52,14 +52,14 @@ const StyledLozengeButton = styled.button`
   &.lozengeButtonLoading {
     pointer-events: none;
 
-    ${JuiCircularProgress} {
+    ${RuiCircularProgress} {
       margin-left: ${spacing(1)};
     }
   }
 
   &.lozengeButtonLoading,
   &.lozengeButtonWithArrow {
-    ${Arrow}, ${JuiCircularProgress}, span {
+    ${Arrow}, ${RuiCircularProgress}, span {
       vertical-align: middle;
     }
   }
@@ -84,7 +84,7 @@ const _JuiLozengeButton: React.StatelessComponent<JuiLozengeButtonProps> = ({
     <StyledLozengeButton {...rest} className={newClassName}>
       <span>{children}</span>
       {loading ? (
-        <JuiCircularProgress color="inherit" size={16} />
+        <RuiCircularProgress color="inherit" size={16} />
       ) : (
         arrowComponent
       )}
@@ -97,4 +97,4 @@ _JuiLozengeButton.defaultProps = {
 };
 _JuiLozengeButton.displayName = 'JuiLozengeButton';
 const JuiLozengeButton = memo(_JuiLozengeButton);
-export { JuiLozengeButton };
+export { JuiLozengeButton, JuiLozengeButtonProps };

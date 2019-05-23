@@ -9,7 +9,6 @@ import { JuiListSubheader } from 'jui/components/Lists';
 import { JuiTabPageEmptyScreen } from 'jui/pattern/GlobalSearch';
 import { ContentSearchResultView } from '@/modules/GlobalSearch/container/ContentSearchResult/ContentSearchResult.View';
 import jsonFile from '../../../../../../public/locales/en/translations.json';
-import { JuiListSubheader } from 'jui/components/Lists';
 
 const i18n = (key: string, { count }: { count?: number } = {}) => {
   const paths = key.split('.');
@@ -21,8 +20,10 @@ const i18n = (key: string, { count }: { count?: number } = {}) => {
 };
 
 jest.mock('sdk/module/post');
-jest.mock('@/containers/ConversationSheet', () => ({}));
-jest.mock('@/containers/ConversationPost', () => () => 'conversation');
+jest.mock('@/modules/message/container/ConversationSheet', () => ({}));
+jest.mock('@/modules/message/container/ConversationPost', () => () =>
+  'conversation',
+);
 
 describe('ContentSearchResult', () => {
   it('component should display empty page when there are no records found matching and title should be "Results (0)"[JPT-1596]', () => {

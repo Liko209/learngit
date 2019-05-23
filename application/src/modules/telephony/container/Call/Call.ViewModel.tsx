@@ -24,10 +24,13 @@ import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { analyticsCollector } from '@/AnalyticsCollector';
+import { TELEPHONY_SERVICE } from '../../interface/constant';
 
 class CallViewModel extends AbstractViewModel<CallProps>
   implements CallViewProps {
-  private _telephonyService: TelephonyService = container.get(TelephonyService);
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
   private _featuresFlagsService: FeaturesFlagsService = container.get(
     FeaturesFlagsService,
   );

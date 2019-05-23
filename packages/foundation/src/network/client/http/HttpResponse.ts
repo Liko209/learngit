@@ -4,10 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import BaseResponse from '../../BaseResponse';
-import NetworkResponseBuilder from '../NetworkResponseBuilder';
+import HttpRequest from './HttpRequest';
+import HttpResponseBuilder from './HttpResponseBuilder';
 
-class HttpResponse extends BaseResponse {
-  constructor(builder: NetworkResponseBuilder) {
+class HttpResponse extends BaseResponse<HttpRequest> {
+  constructor(builder: HttpResponseBuilder) {
     super(
       builder.data,
       builder.status,

@@ -10,14 +10,14 @@ import { Permission } from '../Permission';
 import { INotificationService, NotificationOpts } from '../interface';
 import { AbstractNotification } from '../agent/AbstractNotification';
 import { SWNotification } from '../agent/SWNotification';
-import { isFirefox, isEdge } from '@/common/isUserAgent';
+import { isFirefox } from '@/common/isUserAgent';
 
 class NotificationService implements INotificationService {
   private _permission = new Permission();
   private _notificationDistributors: Map<string, AbstractNotification<any>>;
   private _notificationDistributor: AbstractNotification<any>;
   private _maximumFirefoxTxtLength = 40;
-  private _maximumEdgeTxtLength = 700;
+  private _maximumTxtLength = 700;
   constructor() {
     this._notificationDistributors = new Map();
     this._notificationDistributors.set('sw', new SWNotification());
@@ -45,14 +45,11 @@ class NotificationService implements INotificationService {
       opts.body = this.addEllipsis(opts.body, this._maximumFirefoxTxtLength);
       titleFormatted = this.addEllipsis(title, this._maximumFirefoxTxtLength);
     }
-
-    if (isEdge) {
-      opts.body = this.addEllipsis(opts.body, this._maximumEdgeTxtLength);
-      titleFormatted = this.addEllipsis(title, this._maximumEdgeTxtLength);
-    }
+    opts.body = this.addEllipsis(opts.body, this._maximumTxtLength);
+    titleFormatted = this.addEllipsis(title, this._maximumTxtLength);
     if (!this._permission.isGranted) {
-      const permission = await this._permission.request();
-      if (permission) {
+      await this._permission.request();
+      if (this._permission.isGranted) {
         this._notificationDistributor.create(titleFormatted, opts);
       }
     } else {

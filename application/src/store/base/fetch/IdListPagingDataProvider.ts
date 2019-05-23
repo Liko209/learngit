@@ -41,7 +41,7 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
   async fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor?: ISortableModel<T>,
+    anchor?: ISortableModel,
   ): Promise<{ data: T[]; hasMore: boolean }> {
     if (!this._sourceIds.length) {
       return { data: [], hasMore: false };
@@ -282,7 +282,7 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
   }
 
   private _updateEntityStore(models: T[]) {
-    if (!models.length) {
+    if (!models || !models.length) {
       return;
     }
     if (this._options.entityName) {

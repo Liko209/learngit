@@ -4,14 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-// http://git.ringcentral.com:8888/Glip/glip-type-dictionary
+// http://git.ringcentral.com/Glip/glip-type-dictionary
 
 const INTEGRATION_LOWER_ID = 7000;
 const TYPE_ID_MASK = 0x1fff;
 const MAX_PSEUDO_ID = 0x3ffff;
 
 export default class GlipTypeUtil {
-  static isIntegrationType(typeId: number): boolean {
+  static isIntegrationType(objectId: number): boolean {
+    const typeId = GlipTypeUtil.extractTypeId(objectId);
     return typeId >= INTEGRATION_LOWER_ID;
   }
   static extractTypeId(objectId: number): number {

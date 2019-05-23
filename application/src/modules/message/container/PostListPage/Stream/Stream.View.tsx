@@ -1,0 +1,97 @@
+/*
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-11-08 16:35:56
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import React, { Component } from 'react';
+import { JuiConversationCard } from 'jui/pattern/ConversationCard';
+import { withTranslation, WithTranslation } from 'react-i18next';
+import { JuiStream } from 'jui/pattern/ConversationPage';
+import { StreamViewProps, StreamProps, StreamContext } from './types';
+import { observer } from 'mobx-react';
+import { ConversationPost } from '../../ConversationPost';
+import { ConversationPageContext } from '../../ConversationPage/types';
+import {
+  JuiInfiniteList,
+  ThresholdStrategy,
+} from 'jui/components/VirtualizedList';
+import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
+import _ from 'lodash';
+
+type Props = WithTranslation & StreamViewProps & StreamProps;
+
+@observer
+class StreamViewComponent extends Component<Props> {
+  static contextType = ConversationPageContext;
+  listRef: React.RefObject<HTMLElement> = React.createRef();
+  private _loadMoreStrategy = new ThresholdStrategy({
+    threshold: 60,
+    minBatchCount: 10,
+  });
+  private _jumpToPostRef: React.RefObject<
+    JuiConversationCard
+  > = React.createRef();
+  private _contentStyleGen = _.memoize(
+    (height?: number) =>
+      ({
+        minHeight: height,
+        display: 'flex',
+        flexDirection: 'column',
+      } as React.CSSProperties),
+  );
+  private _wrapperStyleGen = _.memoize(
+    (height?: number) =>
+      ({
+        height,
+      } as React.CSSProperties),
+  );
+  private _hasMore = (direction: string) => {
+    if (direction === 'up') {
+      return false;
+    }
+    return this.props.hasMoreDown;
+  }
+
+  render() {
+    const { ids, isShow = true } = this.props;
+    // if conversation post include video and play video
+    // when switch tab in global search will cache tabs
+    // so we need to unmount conversation post
+
+    const { height } = this.context;
+    const defaultLoading = <DefaultLoadingWithDelay delay={100} />;
+    const defaultLoadingMore = <DefaultLoadingMore />;
+    return (
+      <StreamContext.Provider value={{ isShow }}>
+        <JuiStream style={this._wrapperStyleGen(height)}>
+          <JuiInfiniteList
+            contentStyle={this._contentStyleGen(height)}
+            height={height}
+            loadMoreStrategy={this._loadMoreStrategy}
+            minRowHeight={50} // extract to const
+            loadInitialData={this.props.fetchInitialPosts}
+            loadMore={this.props.fetchNextPagePosts}
+            loadingRenderer={defaultLoading}
+            hasMore={this._hasMore}
+            loadingMoreRenderer={defaultLoadingMore}
+            stickToLastPosition={false}
+          >
+            {ids.map(id => (
+              <ConversationPost
+                id={id}
+                key={id}
+                cardRef={this._jumpToPostRef}
+                mode="navigation"
+              />
+            ))}
+          </JuiInfiniteList>
+        </JuiStream>
+      </StreamContext.Provider>
+    );
+  }
+}
+
+const StreamView = withTranslation('translations')(StreamViewComponent);
+
+export { StreamView };

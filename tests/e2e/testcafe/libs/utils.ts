@@ -11,7 +11,7 @@ export function parseArgs(argsString: string) {
   return argsString.split(',').filter(Boolean).map(s => s.trim());
 }
 
-export function flattenGlobs(globs: string[], needShuffle: Boolean = false): string[] {
+export function flattenGlobs(globs: string[], needShuffle: Boolean = false) {
   let newArray = _(globs).flatMap(g => G.sync(g)).uniq().value();
   if (needShuffle) {
     return _.shuffle(newArray);
@@ -31,7 +31,12 @@ export class ConfigLoader {
     this.config = require(defaultConfigFile);
     if (fs.existsSync(configFile)) {
       logger.info(`load custom configuration from ${configFile}`);
-      _.assign(this.config, require(configFile));
+      _.mergeWith(this.config, require(configFile),
+        (objValue, srcValue) => {
+          if (_.isArray(objValue)) {
+            return srcValue;
+          }
+        });
     }
   }
 

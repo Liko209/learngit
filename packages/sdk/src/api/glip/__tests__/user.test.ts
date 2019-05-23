@@ -40,7 +40,7 @@ describe('UserAPI', () => {
         path: '/index',
         params: mock,
         via: NETWORK_VIA.HTTP,
-        retryCount: 3,
+        retryCount: 0,
         priority: REQUEST_PRIORITY.HIGH,
         HAPriority: HA_PRIORITY.BASIC,
         timeout: TEN_MINUTE_TIMEOUT,

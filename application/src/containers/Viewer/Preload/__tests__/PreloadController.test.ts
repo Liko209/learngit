@@ -7,6 +7,7 @@
 import { PreloadController } from '../PreloadController';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 import { getEntity } from '@/store/utils';
+import '@/common/getThumbnailURL';
 import FileItemModel from '@/store/models/FileItem';
 
 jest.mock('sdk/module/item/module/file/utils');
@@ -28,6 +29,11 @@ jest.mock('@/common/ImageDownloader', () => {
   };
 });
 jest.mock('sdk/module/item/service');
+jest.mock('@/common/getThumbnailURL', () => {
+  return {
+    getThumbnailURL: jest.fn().mockReturnValue('http://xxx'),
+  };
+});
 
 const item = {
   versionUrl: 'about:blank',

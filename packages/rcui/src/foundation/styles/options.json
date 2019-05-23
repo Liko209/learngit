@@ -1,0 +1,5 @@
+{
+  "bindEvent": "themeChanged",
+  "brandThemeFile": "theme",
+  "basePath": "/theme/"
+}

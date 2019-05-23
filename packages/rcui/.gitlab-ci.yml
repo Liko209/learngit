@@ -1,0 +1,51 @@
+image: nikolaik/python-nodejs:latest
+stages:
+  - test
+  - deploy
+
+cache:
+  paths:
+    - node_modules/
+
+before_script:
+  - npm install
+  
+ui test:
+  stage: test
+  only:
+    - branches
+    - tags
+    - merge_requests
+  script:
+    - npm run test
+
+.deploy-docs: &deploy-docs |
+  npm run docs:build
+  npm run docs:export
+  export BUCKET_NAME='rcui-docs'
+  sh deploy/docs.sh
+
+deploy preview:
+  stage: deploy
+  except: ['master']
+  only:
+    - dev
+    - tags
+    - merge_requests
+  script:
+    - *deploy-docs
+    - npm run prestorybook
+    - npm run build:storybook
+    - export BUCKET_NAME='rcui-dev'
+    - sh deploy/storybook.sh
+
+deploy production:
+  stage: deploy
+  only: 
+    - master
+  script:
+    - *deploy-docs
+    - npm run prestorybook
+    - npm run build:storybook
+    - export BUCKET_NAME='rcui'
+    - sh deploy/storybook.sh

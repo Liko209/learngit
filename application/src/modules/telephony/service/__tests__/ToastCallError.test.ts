@@ -8,17 +8,13 @@ import { Notification } from '@/containers/Notification';
 import i18next from 'i18next';
 
 describe('ToastCallError', () => {
-  i18next.t = jest.fn((key: string) => {
-    return key;
-  });
-
-  it('should display call error: unknow_error', () => {
+  it('should display call error: unknown_error', () => {
     Notification.flagToast = jest.fn();
-    const msg = 'unknow_error';
+    const msg = 'unknown_error';
     ToastCallError.toast(msg, 2000);
     expect(Notification.flagToast).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: msg,
+        message: i18next.t(msg),
         autoHideDuration: 2000,
       }),
     );
@@ -29,7 +25,6 @@ describe('ToastCallError', () => {
     ToastCallError.toastNoNetwork();
     const i18nkey = 'telephony.prompt.NoNetwork';
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
-    expect(i18next.t).toHaveBeenCalledWith(i18nkey);
   });
 
   it('should display call error: Call failed [JPT-1393]', () => {
@@ -37,7 +32,6 @@ describe('ToastCallError', () => {
     const i18nkey = 'telephony.prompt.CallFailed';
     ToastCallError.toastCallFailed();
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
-    expect(i18next.t).toHaveBeenCalledWith(i18nkey);
   });
 
   it('should display call error: time out [JPT-1407]', () => {
@@ -45,7 +39,6 @@ describe('ToastCallError', () => {
     const i18nkey = 'telephony.prompt.CallTimeout';
     ToastCallError.toastCallTimeout();
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
-    expect(i18next.t).toHaveBeenCalledWith(i18nkey);
   });
 
   it('should display call error: time out [JPT-1547]', () => {
@@ -53,7 +46,6 @@ describe('ToastCallError', () => {
     const i18nkey = 'telephony.prompt.FailedToHold';
     ToastCallError.toastFailedToHold();
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
-    expect(i18next.t).toHaveBeenCalledWith(i18nkey);
   });
 
   it('should display call error: time out [JPT-1549]', () => {
@@ -61,7 +53,6 @@ describe('ToastCallError', () => {
     const i18nkey = 'telephony.prompt.FailedToResume';
     ToastCallError.toastFailedToResume();
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
-    expect(i18next.t).toHaveBeenCalledWith(i18nkey);
   });
 
   it('should display call error: time out [JPT-1610]', () => {
@@ -69,7 +60,6 @@ describe('ToastCallError', () => {
     const i18nkey = 'telephony.prompt.FailedToRecord';
     ToastCallError.toastFailedToRecord();
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
-    expect(i18next.t).toHaveBeenCalledWith(i18nkey);
   });
 
   it('should display call error: time out [JPT-1612]', () => {
@@ -77,6 +67,33 @@ describe('ToastCallError', () => {
     const i18nkey = 'telephony.prompt.FailedToStopRecording';
     ToastCallError.toastFailedToStopRecording();
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
-    expect(i18next.t).toHaveBeenCalledWith(i18nkey);
+  });
+
+  it('should display lack of recording permission', () => {
+    ToastCallError.toast = jest.fn();
+    const i18nkey = 'telephony.prompt.LackOfRecordingPermission';
+    ToastCallError.toastLackOfRecordingPermission();
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
+  });
+
+  it('should display record on service web', () => {
+    ToastCallError.toast = jest.fn();
+    const i18nkey = 'telephony.prompt.RecordOnServiceWeb';
+    ToastCallError.toastRecordOnServiceWeb();
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
+  });
+
+  it('should display recorded automatically', () => {
+    ToastCallError.toast = jest.fn();
+    const i18nkey = 'telephony.prompt.RecordAutomatically';
+    ToastCallError.toastRecordAutomatically();
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
+  });
+
+  it('should display empty reply message error', () => {
+    ToastCallError.toast = jest.fn();
+    const i18nkey = 'telephony.prompt.ReplyCustomMessageEmpty';
+    ToastCallError.toastEmptyReplyMessage();
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
   });
 });

@@ -4,4 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { Setting as default } from '@/modules/setting/container';
+export { Setting as default } from '@/modules/setting/container/Setting';

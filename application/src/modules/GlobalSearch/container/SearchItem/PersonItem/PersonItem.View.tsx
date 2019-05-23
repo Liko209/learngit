@@ -5,10 +5,11 @@
  */
 import React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import { container } from 'framework';
+import { GlobalSearchStore } from '@/modules/GlobalSearch/store';
 import { observer } from 'mobx-react';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';
 import { Avatar } from '@/containers/Avatar';
-import { Call } from '@/modules/telephony';
 
 import { ViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
@@ -16,6 +17,10 @@ import { JuiIconButton } from 'jui/components/Buttons';
 type PersonItemProps = ViewProps & WithTranslation & { automationId?: string };
 @observer
 class PersonItemComponent extends React.Component<PersonItemProps> {
+  private _globalSearchStore: GlobalSearchStore = container.get(
+    GlobalSearchStore,
+  );
+
   goToConversation = async () => {
     const { goToConversation, person } = this.props;
     await goToConversation(person.id);
@@ -37,6 +42,8 @@ class PersonItemComponent extends React.Component<PersonItemProps> {
   }
 
   render() {
+    const { extensions } = this._globalSearchStore;
+
     const {
       t,
       person,
@@ -63,15 +70,19 @@ class PersonItemComponent extends React.Component<PersonItemProps> {
         messages
       </JuiIconButton>
     );
-    const callIcon = (
-      <Call
-        key="search item call icon"
-        variant="plain"
-        id={id}
-        onClick={this.onCallClose}
-        size="small"
-      />
-    );
+    const callIcon = extensions['searchItem']
+      ? [...extensions['searchItem']].map(
+        (Extension: React.ComponentType<any>) => (
+          <Extension
+            key={`GLOBAL_SEARCH_EXTENSION_${Extension.displayName}`}
+            variant="plain"
+            id={id}
+            onClick={this.onCallClose}
+            size="small"
+          />
+        ),
+      )
+      : null;
 
     return (
       <JuiSearchItem
@@ -87,6 +98,7 @@ class PersonItemComponent extends React.Component<PersonItemProps> {
         Actions={[goToConversationIcon, callIcon]}
         isPrivate={false}
         isJoined={false}
+        joinedStatusText={t('people.team.joinedStatus')}
       />
     );
   }

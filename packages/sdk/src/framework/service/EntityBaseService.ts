@@ -5,7 +5,7 @@
  */
 
 import { AbstractService } from './AbstractService';
-import { IdModel } from '../model';
+import { IdModel, ModelIdType } from '../model';
 import { IEntityChangeObserver } from '../controller/types';
 import { ISubscribeController } from '../controller/interface/ISubscribeController';
 import { IEntitySourceController } from '../controller/interface/IEntitySourceController';
@@ -23,30 +23,43 @@ import { mainLogger } from 'foundation';
 import { IEntityCacheController } from '../controller/interface/IEntityCacheController';
 import { IEntityCacheSearchController } from '../controller/interface/IEntityCacheSearchController';
 import { IEntityNotificationController } from '../controller/interface/IEntityNotificationController';
+import { BaseSettingEntity } from '../model/setting';
+import { IConfigHistory } from '../config/IConfigHistory';
+import { configMigrator } from '../config';
+import { Nullable } from 'sdk/types';
+import { ConfigChangeHistory } from '../config/types';
 
-class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
+class EntityBaseService<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+> extends AbstractService implements IConfigHistory {
   private _subscribeController: ISubscribeController;
-  private _entitySourceController: IEntitySourceController<T>;
-  private _entityCacheController: IEntityCacheController<T>;
-  private _checkTypeFunc: (id: number) => boolean;
+  private _entitySourceController: IEntitySourceController<T, IdType>;
+  private _entityCacheController: IEntityCacheController<T, IdType>;
+  private _checkTypeFunc: (id: IdType) => boolean;
   private _entityNotificationController: IEntityNotificationController<T>;
 
   constructor(
     public isSupportedCache: boolean,
-    public dao?: BaseDao<T>,
+    public dao?: BaseDao<T, IdType>,
     public networkConfig?: { basePath: string; networkClient: NetworkClient },
   ) {
     super();
+    configMigrator.addHistory(this);
     this._initControllers();
+  }
+
+  getHistoryDetail(): Nullable<ConfigChangeHistory> {
+    return null;
   }
 
   getEntitySource() {
     return this._entitySourceController;
   }
-  setCheckTypeFunc(checkTypeFunc: (id: number) => boolean) {
+  setCheckTypeFunc(checkTypeFunc: (id: IdType) => boolean) {
     this._checkTypeFunc = checkTypeFunc;
   }
-  async getById(id: number): Promise<T | null> {
+  async getById(id: IdType): Promise<T | null> {
     if (this._checkTypeFunc && !this._checkTypeFunc(id)) {
       mainLogger.trace('getById receive a error type of id');
       return null;
@@ -56,11 +69,13 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     }
     throw new Error('entitySourceController is null');
   }
-  getEntityCacheSearchController(): IEntityCacheSearchController<T> {
-    return buildEntityCacheSearchController<T>(this._entityCacheController);
+  getEntityCacheSearchController(): IEntityCacheSearchController<T, IdType> {
+    return buildEntityCacheSearchController<T, IdType>(
+      this._entityCacheController,
+    );
   }
 
-  getEntityCacheController(): IEntityCacheController<T> {
+  getEntityCacheController(): IEntityCacheController<T, IdType> {
     return this._entityCacheController;
   }
 
@@ -88,7 +103,7 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     delete this._entityNotificationController;
   }
 
-  async batchGet(ids: number[]): Promise<T[]> {
+  async batchGet(ids: IdType[]): Promise<T[]> {
     if (this._entitySourceController) {
       return await this._entitySourceController.batchGet(ids);
     }
@@ -96,7 +111,7 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     throw new Error('entitySourceController is null');
   }
 
-  getSynchronously(id: number): T | null {
+  getSynchronously(id: IdType): T | null {
     if (this._entityCacheController) {
       return this._entityCacheController.getSynchronously(id);
     }
@@ -112,7 +127,11 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
   }
 
   protected buildEntityCacheController() {
-    return buildEntityCacheController<T>();
+    return buildEntityCacheController<T, IdType>();
+  }
+
+  protected canSaveRemoteEntity(): boolean {
+    return true;
   }
 
   private _initControllers() {
@@ -123,13 +142,14 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
 
     if (this.dao || this._entityCacheController) {
       this._entitySourceController = buildEntitySourceController(
-        buildEntityPersistentController<T>(
+        buildEntityPersistentController<T, IdType>(
           this.dao,
           this._entityCacheController,
         ),
         this.networkConfig
-          ? buildRequestController<T>(this.networkConfig)
+          ? buildRequestController<T, IdType>(this.networkConfig)
           : undefined,
+        this.canSaveRemoteEntity(),
       );
     }
   }
@@ -160,7 +180,7 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     this.getEntityNotificationController().addObserver(observer);
   }
 
-  removeEntityNotificationObserver(observer: IEntityChangeObserver) {
+  removeEntityNotificationObserver(observer: IEntityChangeObserver<T>) {
     this.getEntityNotificationController().removeObserver(observer);
   }
 
@@ -169,6 +189,16 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
       this._entityNotificationController = this.buildNotificationController();
     }
     return this._entityNotificationController;
+  }
+
+  async getSettingsByParentId(settingId: number): Promise<BaseSettingEntity[]> {
+    return [];
+  }
+
+  async getSettingItemById(
+    settingId: number,
+  ): Promise<BaseSettingEntity | undefined> {
+    return undefined;
   }
 }
 

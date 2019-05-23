@@ -3,13 +3,10 @@
  * @Date: 2018-06-04 15:43:44
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  SocketRequestParamsType,
-  default as SocketRequest,
-} from './SocketRequest';
+import SocketRequest from './SocketRequest';
 import { SocketResponseBuilder } from './SocketResponseBuilder';
 import { EventEmitter2 } from 'eventemitter2';
-import { NETWORK_FAIL_TYPE } from '../../network';
+import { NETWORK_FAIL_TEXT, RESPONSE_STATUS_CODE } from '../../network';
 import { mainLogger } from '../../../log';
 import { SocketResponse } from './SocketResponse';
 
@@ -37,9 +34,8 @@ class SocketRequestHelper implements ISocketRequestManager {
     const socketResponse = new SocketResponseBuilder()
       .options(response)
       .build();
-    if (socketResponse.request && socketResponse.request.params) {
-      const requestId = (socketResponse.request
-        .params as SocketRequestParamsType).request_id;
+    if (socketResponse.request && socketResponse.request.parameters) {
+      const requestId = socketResponse.request.parameters.request_id;
       this._removeRequestTimer(requestId);
       this._handleRegisteredRequest(requestId, socketResponse);
     }
@@ -73,8 +69,8 @@ class SocketRequestHelper implements ISocketRequestManager {
   private _onRequestTimeout(requestId: string, reject: any) {
     mainLogger.info('[Socket]: request timeout');
     const response = new SocketResponseBuilder()
-      .setStatus(0)
-      .setStatusText(NETWORK_FAIL_TYPE.TIME_OUT)
+      .setStatus(RESPONSE_STATUS_CODE.LOCAL_TIME_OUT)
+      .setStatusText(NETWORK_FAIL_TEXT.TIME_OUT)
       .build();
     reject(response);
   }
@@ -85,8 +81,8 @@ class SocketRequestHelper implements ISocketRequestManager {
         `[Socket]: socket disconnect, return SOCKET_DISCONNECTED error for request id:${requestId}`,
       );
       const response = new SocketResponseBuilder()
-        .setStatus(0)
-        .setStatusText(NETWORK_FAIL_TYPE.SOCKET_DISCONNECTED)
+        .setStatus(RESPONSE_STATUS_CODE.LOCAL_NOT_NETWORK_CONNECTION)
+        .setStatusText(NETWORK_FAIL_TEXT.SOCKET_DISCONNECTED)
         .build();
       this._removeRequestTimer(requestId);
       this._handleRegisteredRequest(requestId, response);

@@ -120,6 +120,15 @@ describe('GroupConfigService', () => {
       const result = await groupConfigController.getGroupSendFailurePostIds(1);
       expect(result).toEqual([]);
     });
+
+    it('should not modified the original value', async () => {
+      const ids = [12, 13];
+      const mock = { id: 1, send_failure_post_ids: ids };
+      entitySourceController.get.mockResolvedValue(mock);
+      const result = await groupConfigController.getGroupSendFailurePostIds(1);
+      result.splice(1);
+      expect(mock.send_failure_post_ids).toEqual(ids);
+    });
   });
 
   describe('updateGroupSendFailurePostIds', () => {
@@ -145,6 +154,27 @@ describe('GroupConfigService', () => {
     it('should call groupConfigDao.update where there is not local groupConfig', async () => {
       entitySourceController.get.mockResolvedValue(null);
       await groupConfigController.saveAndDoNotify({ id: 1, draft: '1' });
+      expect(entitySourceController.update).toHaveBeenCalled();
+    });
+  });
+
+  describe('recordMyLastPostTime', () => {
+    it('should call update to set last post time', async () => {
+      entitySourceController.update = jest.fn();
+      await groupConfigController.recordMyLastPostTime(1, 1111);
+      expect(entitySourceController.update).toBeCalledWith({
+        id: 1,
+        my_last_post_time: 1111,
+      });
+    });
+
+    it('should not throw error when error happened', async () => {
+      entitySourceController.update = jest.fn().mockImplementation(() => {
+        throw new Error();
+      });
+      expect(
+        groupConfigController.recordMyLastPostTime(1, 1111),
+      ).resolves.not.toThrow();
       expect(entitySourceController.update).toHaveBeenCalled();
     });
   });

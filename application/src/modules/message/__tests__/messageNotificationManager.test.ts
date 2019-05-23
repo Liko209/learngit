@@ -3,10 +3,11 @@
  * @Date: 2019-01-17 15:16:45
  * Copyright Â© RingCentral. All rights reserved.
  */
-import { ServiceConfig } from 'sdk/module/serviceLoader';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import * as utils from '@/store/utils';
 import { MessageNotificationManager } from '../MessageNotificationManager';
-import { ServiceLoader } from 'sdk/module/serviceLoader';
+
+jest.mock('sdk/module/config');
 describe('messageNotificationManager', () => {
   let notificationManager: MessageNotificationManager;
   const currentUserId = 110;
@@ -70,7 +71,7 @@ describe('messageNotificationManager', () => {
     jest.clearAllMocks();
     notificationManager = new MessageNotificationManager();
     jest.spyOn(utils, 'getGlobalValue').mockReturnValue(currentUserId);
-    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation((type) => {
+    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(type => {
       switch (type) {
         case ServiceConfig.POST_SERVICE:
           return mockedPostService;
@@ -88,46 +89,55 @@ describe('messageNotificationManager', () => {
     });
     it('should not show notification when post is local', async () => {
       const result = await notificationManager.shouldEmitNotification(
-        localPost.id,
+        localPost,
       );
       expect(result).toBeFalsy();
     });
     it('should not show notification when post is deleted', async () => {
       const result = await notificationManager.shouldEmitNotification(
-        mockedDeletedPost.id,
+        mockedDeletedPost,
       );
       expect(result).toBeFalsy();
     });
     it('should not show notification when post is created by user', async () => {
       const result = await notificationManager.shouldEmitNotification(
-        mockedPost.id,
+        mockedPost,
       );
       expect(result).toBeFalsy();
     });
     it('should not show notification when post is from team with no @mention', async () => {
       const result = await notificationManager.shouldEmitNotification(
-        postFromTeam.id,
+        postFromTeam,
       );
       expect(result).toBeFalsy();
     });
     it('should not show notification when post is from team with @mention other users', async () => {
       const result = await notificationManager.shouldEmitNotification(
-        postFromWithMentionOthers.id,
+        postFromWithMentionOthers,
       );
       expect(result).toBeFalsy();
     });
-
     it('should  show notification when post is from group', async () => {
       const result = await notificationManager.shouldEmitNotification(
-        postFromGroup.id,
+        postFromGroup,
       );
       expect(result).toBeTruthy();
     });
     it('should  show notification when post is from team and with current user @mentioned', async () => {
       const result = await notificationManager.shouldEmitNotification(
-        postFromWithMentionMe.id,
+        postFromWithMentionMe,
       );
       expect(result).toBeTruthy();
+    });
+  });
+  describe('handleDeletedPost()', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.spyOn(notificationManager, 'close').mockImplementation();
+    });
+    it('should close notification if exists when post is deleted', async () => {
+      await notificationManager.handlePostEntityChanged([mockedDeletedPost]);
+      expect(notificationManager.close).toBeCalledWith(mockedDeletedPost.id);
     });
   });
 });

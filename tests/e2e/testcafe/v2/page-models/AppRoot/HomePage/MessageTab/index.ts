@@ -6,6 +6,7 @@ import { ClientFunction } from 'testcafe';
 import { MentionPage, BookmarkPage, ConversationPage, DuplicatePromptPage } from "./ConversationPage";
 import { RightRail } from './RightRail';
 import { LeftRail } from './LeftRail';
+import { EmojiLibrary } from './EmojiLib';
 
 class Entry extends BaseWebComponent {
   async enter() {
@@ -136,7 +137,7 @@ class ConversationEntry extends BaseWebComponent {
   }
 
   async shouldBeInvisible() {
-    await this.t.expect(this.isVisible).notOk();
+    await this.t.expect(this.exists).notOk();
   }
 
   get umi() {
@@ -182,12 +183,8 @@ class ConversationEntry extends BaseWebComponent {
 }
 
 class ConversationSection extends BaseWebComponent {
-  get toggleButton() {
-    return this.self.find('[role="button"]');
-  }
-
   get header() {
-    return this.self.find('.conversation-list-section-header');
+    return this.getSelectorByAutomationId('conversation-list-section-header',this.self);
   }
 
   get collapse() {
@@ -212,14 +209,13 @@ class ConversationSection extends BaseWebComponent {
   }
 
   get isExpand() {
-    this.warnFlakySelector();
-    return this.self.child().find('.arrow_up').exists;
+    return this.getSelectorByIcon('arrow_up', this.self).exists;
   }
 
   private async toggle(expand: boolean) {
     const isExpand = await this.isExpand;
     if (isExpand != expand) {
-      await this.t.click(this.toggleButton);
+      await this.t.click(this.header);
     }
   }
 
@@ -385,6 +381,10 @@ export class MessageTab extends BaseWebComponent {
 
   get rightRail() {
     return this.getComponent(RightRail);
+  }
+
+  get emojiLibrary() {
+    return this.getComponent(EmojiLibrary);
   }
 
 }

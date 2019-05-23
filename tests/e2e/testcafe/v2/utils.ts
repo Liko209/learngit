@@ -29,30 +29,33 @@ export class MiscUtils {
 
   static createTmpFile(content: any, filename?: string) {
     filename = filename || `${uuid()}.tmp`;
+    if( !fs.existsSync(TMPFILE_PATH)){
+      fs.mkdirSync(TMPFILE_PATH);
+    }
     const filepath = path.join(TMPFILE_PATH, filename);
     fs.writeFileSync(filepath, content);
     return filepath;
   }
 
-  static async convertToWebp(imagePath: string) {
+  static async convertToWebp(imagePath: string, quality: string | number = 50, scale: number = 0.5) {
     if (path.extname(imagePath) == '.webp' || !fs.existsSync(imagePath)) {
       return imagePath;
     }
     try {
-      const webpIamgePath = imagePath + ".webp";
+      const webpImagePath = imagePath + ".webp";
       const image = sharp(imagePath);
       await image
         .metadata()
         .then(function (metadata) {
           return image
-            .resize(Math.round(metadata.width / 2))
-            .webp({ quality: RUNNER_OPTS.SCREENSHOT_WEBP_QUALITY })
+            .resize(Math.round(metadata.width * scale))
+            .webp({ quality })
             .toBuffer();
         })
         .then((data) => {
-          fs.writeFileSync(webpIamgePath, data)
+          fs.writeFileSync(webpImagePath, data)
         });
-      return webpIamgePath;
+      return webpImagePath;
     } catch {
       return imagePath;
     }

@@ -273,24 +273,24 @@ describe('JobScheduler', () => {
     });
   });
 
-  describe('_jobConfig', () => {
-    it('should call jobConfig', () => {
-      jobScheduler['_jobConfig'] = {
+  describe('_userConfig', () => {
+    it('should call userConfig', () => {
+      jobScheduler['_userConfig'] = {
         getLastSuccessTime: jest.fn(),
         setLastSuccessTime: jest.fn(),
         removeLastSuccessTime: jest.fn(),
       } as any;
       jobScheduler['_getLastSuccessTime'](JOB_KEY.FETCH_ACCOUNT_INFO);
-      expect(jobScheduler['_jobConfig'].getLastSuccessTime).toBeCalledWith(
+      expect(jobScheduler['_userConfig'].getLastSuccessTime).toBeCalledWith(
         JOB_KEY.FETCH_ACCOUNT_INFO,
       );
       jobScheduler['_setLastSuccessTime'](JOB_KEY.FETCH_ACCOUNT_INFO, 666);
-      expect(jobScheduler['_jobConfig'].setLastSuccessTime).toBeCalledWith(
+      expect(jobScheduler['_userConfig'].setLastSuccessTime).toBeCalledWith(
         JOB_KEY.FETCH_ACCOUNT_INFO,
         666,
       );
       jobScheduler['_removeLastSuccessTime'](JOB_KEY.FETCH_ACCOUNT_INFO);
-      expect(jobScheduler['_jobConfig'].removeLastSuccessTime).toBeCalledWith(
+      expect(jobScheduler['_userConfig'].removeLastSuccessTime).toBeCalledWith(
         JOB_KEY.FETCH_ACCOUNT_INFO,
       );
     });

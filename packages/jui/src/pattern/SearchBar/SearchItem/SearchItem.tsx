@@ -84,6 +84,9 @@ type JuiSearchItemProps = {
   isJoined?: boolean;
   isPrivate?: boolean;
   hovered?: boolean;
+  beforeValue?: string;
+  afterValue?: string;
+  joinedStatusText?: string;
 } & MenuItemProps;
 
 const JuiSearchItem = memo((props: JuiSearchItemProps) => {
@@ -95,6 +98,9 @@ const JuiSearchItem = memo((props: JuiSearchItemProps) => {
     isPrivate,
     isJoined,
     hovered,
+    beforeValue,
+    afterValue,
+    joinedStatusText,
     ...rest
   } = props;
   // e2e also will be use it. shouldn't change the class name
@@ -108,13 +114,15 @@ const JuiSearchItem = memo((props: JuiSearchItemProps) => {
         <JuiSearchItemValue
           value={value}
           terms={terms}
+          beforeValue={beforeValue}
+          afterValue={afterValue}
           data-test-automation-id="search-item-text"
         />
         {isPrivate && (
           <PrivateIcon data-test-automation-id="search-item-private" />
         )}
         {isJoined && (
-          <Joined data-test-automation-id="search-item-joined">Joined</Joined>
+          <Joined data-test-automation-id="search-item-joined">{joinedStatusText}</Joined>
         )}
       </SearchItemValueWrapper>
       {Actions && <SearchItemActions>{Actions}</SearchItemActions>}

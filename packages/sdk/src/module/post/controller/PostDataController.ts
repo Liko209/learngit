@@ -21,11 +21,12 @@ import {
 import { PostDao, PostDiscontinuousDao } from '../dao';
 import { IRawPostResult, Post } from '../entity';
 import { IGroupService } from '../../group/service/IGroupService';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { PerformanceTracer, PERFORMANCE_KEYS } from '../../../utils';
 import { SortUtils } from '../../../framework/utils';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { ChangeModel } from '../../sync/types';
 import GroupService from '../../group';
+import { AccountService } from 'sdk/module/account';
 
 class PostDataController {
   constructor(
@@ -36,11 +37,7 @@ class PostDataController {
 
   async handleFetchedPosts(data: IRawPostResult, shouldSaveToDb: boolean) {
     mainLogger.info(LOG_FETCH_POST, 'handleFetchedPosts()');
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.CONVERSATION_HANDLE_DATA_FROM_SERVER,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
     const transformedData = this.transformData(data.posts);
     if (shouldSaveToDb) {
       await this.preInsertController.bulkDelete(transformedData);
@@ -51,7 +48,10 @@ class PostDataController {
       (await ServiceLoader.getInstance<ItemService>(
         ServiceConfig.ITEM_SERVICE,
       ).handleIncomingData(data.items)) || [];
-    PerformanceTracerHolder.getPerformanceTracer().end(logId, posts.length);
+    performanceTracer.end({
+      key: PERFORMANCE_KEYS.CONVERSATION_HANDLE_DATA_FROM_SERVER,
+      count: posts.length,
+    });
     return {
       posts,
       items,
@@ -76,7 +76,7 @@ class PostDataController {
         posts.filter((post: Post) => post.created_at !== post.modified_at),
       );
       const result = await this.handelPostsOverThreshold(posts, maxPostsExceed);
-      await this._deletePreInsertPosts(posts);
+      this._deletePreInsertPosts(posts);
       posts = await this.handleIndexModifiedPosts(posts);
       mainLogger.info(
         LOG_INDEX_DATA_POST,
@@ -113,15 +113,31 @@ class PostDataController {
         data.filter((post: Post) => post.created_at !== post.modified_at),
       );
       const posts = await this.handleSexioModifiedPosts(data);
-      await this.preInsertController.bulkDelete(posts);
-      return await this.filterAndSavePosts(posts, true);
+      this._deletePreInsertPosts(posts);
+      const result = await this.filterAndSavePosts(posts, true);
+      return result;
     }
     return [];
   }
 
-  private async _deletePreInsertPosts(posts: Post[]) {
+  private _filterPreInsertPosts(posts: Post[]) {
+    if (posts && posts.length) {
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
+      const currentUserId = userConfig.getGlipUserId() as number;
+      return posts.filter((post: Post, index: number) => {
+        return post.creator_id === currentUserId;
+      });
+    }
+    return [];
+  }
+
+  private _deletePreInsertPosts(posts: Post[]) {
     try {
-      await this.preInsertController.bulkDelete(posts);
+      const preInsertPosts = this._filterPreInsertPosts(posts);
+      preInsertPosts.length &&
+        this.preInsertController.bulkDelete(preInsertPosts);
     } catch (error) {
       mainLogger.info(
         LOG_INDEX_DATA_POST,

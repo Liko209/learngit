@@ -55,6 +55,7 @@ class PersonService extends EntityBaseService<Person>
       this._personController.setDependentController(
         this.getEntitySource(),
         this.getEntityCacheSearchController(),
+        this.getEntityCacheController(),
       );
     }
     return this._personController;
@@ -104,8 +105,8 @@ class PersonService extends EntityBaseService<Person>
     return this.getPersonController().getName(person);
   }
 
-  isValidPerson(person: Person): boolean {
-    return this.getPersonController().isValid(person);
+  isVisiblePerson(person: Person): boolean {
+    return this.getPersonController().isVisible(person);
   }
 
   getEmailAsName(person: Person) {
@@ -129,11 +130,11 @@ class PersonService extends EntityBaseService<Person>
   }
 
   async matchContactByPhoneNumber(
-    e164PhoneNumber: string,
+    phoneNumber: string,
     contactType: ContactType,
   ): Promise<Person | null> {
     return await this.getPersonController().matchContactByPhoneNumber(
-      e164PhoneNumber,
+      phoneNumber,
       contactType,
     );
   }

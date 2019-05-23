@@ -14,21 +14,11 @@ import { ItemListDataSource } from '../Viewer.DataSource';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import * as mobx from 'mobx';
 
-import { getEntity } from '@/store/utils';
+import { getEntity, getSingleEntity } from '@/store/utils';
 import FileItemModel from '@/store/models/FileItem';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 
-jest.mock('@/store/utils', () => {
-  return {
-    getEntity: jest.fn(),
-  };
-});
-const item = {
-  versionUrl: '',
-  origWidth: 1,
-  origHeight: 2,
-} as FileItemModel;
-getEntity.mockReturnValue(item);
+jest.mock('@/store/utils');
 
 jest.mock('../Viewer.DataSource', () => {
   const dataSource: ItemListDataSource = {
@@ -67,6 +57,15 @@ describe('Viewer.ViewModel', () => {
       getItemIndexInfo: jest.fn().mockResolvedValue({}),
     };
     ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
+    const item = {
+      versionUrl: '',
+      origWidth: 1,
+      origHeight: 2,
+      deactivated: false,
+      isArchived: false,
+    };
+    (getEntity as jest.Mock).mockReturnValue(item);
+    (getSingleEntity as jest.Mock).mockReturnValue(item);
   });
   describe('constructor()', () => {
     it('should successfully construct', () => {
@@ -181,9 +180,6 @@ describe('Viewer.ViewModel', () => {
   });
 
   describe('switchToPrevious()', () => {
-    beforeEach(() => {
-      jest.resetAllMocks();
-    });
     it('should load data then switch to previous', (done: jest.DoneCallback) => {
       const dataSource = createDataSource();
       dataSource.getIds.mockReturnValue([2]);
@@ -232,9 +228,6 @@ describe('Viewer.ViewModel', () => {
     });
   });
   describe('switchToNext()', () => {
-    beforeEach(() => {
-      jest.resetAllMocks();
-    });
     it('should load data then switch to NextImage', (done: jest.DoneCallback) => {
       const dataSource = createDataSource();
       dataSource.getIds.mockReturnValue([2]);

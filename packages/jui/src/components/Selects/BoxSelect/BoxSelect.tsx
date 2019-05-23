@@ -15,7 +15,6 @@ import styled from '../../../foundation/styled-components';
 type JuiBoxSelectProps = SelectProps & {
   children: JSX.Element[];
   heightSize?: HeightSize;
-  handleChange: (value: string) => void;
   label?: string;
   isFullWidth?: boolean;
   automationId: string;
@@ -39,22 +38,24 @@ class JuiBoxSelect extends PureComponent<
     const { heightSize = 'default' } = this.props;
     return <StyledInput classes={CLASSES_INPUT_BASE} heightSize={heightSize} />;
   }
-  private _handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { value } = event.target;
-    this.props.handleChange(value);
-  }
 
   render() {
-    const { children, label, automationId, isFullWidth, ...rest } = this.props;
+    const {
+      children,
+      label,
+      automationId,
+      isFullWidth,
+      className,
+      ...rest
+    } = this.props;
     return (
-      <StyledSelectBoxContainer>
+      <StyledSelectBoxContainer className={className}>
         <StyledSelectBoxHeader>{label}</StyledSelectBoxHeader>
         <StyledSelect
           data-test-automation-id={automationId}
           classes={CLASSES_SELECT}
           style={isFullWidth ? { width: '100%' } : {}}
           input={this._renderInput()}
-          onChange={this._handleChange}
           {...rest}
         >
           {children}

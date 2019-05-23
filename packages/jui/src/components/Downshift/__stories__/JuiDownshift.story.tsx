@@ -48,7 +48,6 @@ const getItemById = (suggestions: Item[], id: number) =>
 
 const SearchItem = (props: any) => {
   const { itemId, ...rest } = props;
-  debugger;
   const item = getItemById(suggestions, itemId);
 
   return item ? (

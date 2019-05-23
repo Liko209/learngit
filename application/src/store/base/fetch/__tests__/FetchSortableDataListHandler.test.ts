@@ -11,6 +11,7 @@ import {
 } from '../FetchSortableDataListHandler';
 import {
   ISortableModel,
+  ISortableModelWithData,
   ITransformFunc,
   IMatchFunc,
   ISortFunc,
@@ -30,6 +31,8 @@ import { SortableListStore } from '../SortableListStore';
 const PAGE_SIZE = 2;
 
 jest.mock('sdk/api');
+jest.mock('sdk/module/config/service/BaseConfigService');
+jest.mock('sdk/module/config/UserConfig');
 
 type SimpleItem = IdModel & {
   value: number;
@@ -39,7 +42,9 @@ function buildItem(id: number): SimpleItem {
   return { id, value: id };
 }
 
-function sortableTransformFunc(model: SimpleItem): ISortableModel {
+function sortableTransformFunc(
+  model: SimpleItem,
+): ISortableModelWithData<SimpleItem> {
   return { data: model, id: model.id, sortValue: model.value };
 }
 
@@ -158,7 +163,7 @@ function setup(
   entityName?: ENTITY_NAME,
 ) {
   const dataProvider = new TestFetchSortableDataHandler<SimpleItem>();
-  const listStore = new SortableListStore<SimpleItem>(customSortFunc);
+  const listStore = new SortableListStore(customSortFunc);
   listStore.upsert(
     originalItems.map((item: SimpleItem) => {
       return { id: item.id, sortValue: item.value, data: item };
@@ -191,7 +196,7 @@ class TestFetchSortableDataHandler<T> implements IFetchSortableDataProvider<T> {
   fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor?: ISortableModel<T>,
+    anchor?: ISortableModel,
   ): Promise<{ data: T[]; hasMore: boolean }> {
     return Promise.resolve(this.mockData);
   }
@@ -213,7 +218,7 @@ function matchFunc<T>(arg: T): boolean {
   return true;
 }
 
-function numberTransformFunc(data: IdModel): ISortableModel<IdModel> {
+function numberTransformFunc(data: IdModel): ISortableModelWithData<IdModel> {
   return { data, id: data.id, sortValue: data.id };
 }
 describe('FetchSortableDataListHandler', () => {
@@ -525,12 +530,14 @@ describe('FetchSortableDataListHandler', () => {
         fetchSortableDataHandler.addDataChangeCallback(dataChangeCallback);
         fetchSortableDataHandler.onDataChanged(payload);
         if (callbackMuted) {
-          return expect(dataChangeCallback).not.toHaveBeenCalled();
+          expect(dataChangeCallback).not.toHaveBeenCalled();
+          return;
         }
         expect(dataChangeCallback).toHaveBeenCalled();
         expect(dataChangeCallback).toHaveBeenCalledWith(
           expect.objectContaining(expectedCallbackResponse),
         );
+        return;
       });
     },
   );
@@ -715,7 +722,6 @@ describe('FetchSortableDataListHandler', () => {
     let fetchSortableDataHandler: FetchSortableDataListHandler<SimpleItem>;
     let dataProvider: TestFetchSortableDataHandler<SimpleItem>;
     const eventName = 'SIMPLE_ITEM';
-    const entityName: any = 'SIMPLE_ENTITY_ITEM';
 
     let callbackFunc: any;
     beforeEach(() => {

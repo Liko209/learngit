@@ -4,17 +4,22 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, decorate, injectable } from 'framework';
-import { TelephonyStore } from '../../../store';
+import { container, Jupiter } from 'framework';
 import { RecordViewModel } from '../Record.ViewModel';
-import { TelephonyService } from '../../../service';
+import * as telephony from '@/modules/telephony/module.config';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
-[TelephonyService, TelephonyStore].forEach(kls => decorate(injectable(), kls));
-[TelephonyService, TelephonyStore].forEach(kls => container.bind(kls).to(kls));
+jest.mock('sdk/module/telephony');
+
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(telephony.config);
 
 let recordViewModel: RecordViewModel;
 
 beforeAll(() => {
+  jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
+    matchContactByPhoneNumber: jest.fn(),
+  });
   recordViewModel = new RecordViewModel();
 });
 describe('RecordViewModel', () => {

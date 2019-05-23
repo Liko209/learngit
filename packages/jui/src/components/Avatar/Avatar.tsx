@@ -64,6 +64,14 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
       opacity: ${({ theme }) => 1 - 2 * theme.palette.action.hoverOpacity};
     }
   }
+
+  > .avatar-short-name {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+  }
 `;
 
 const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`

@@ -143,10 +143,16 @@ class ScenarioHelper {
     await platform.removeChatToFavorites(chat.glipId);
   }
 
-  async uploadFile(path: string, name: string, chat: IGroup, operator: IUser) {
-    assert(chat && operator, "require chat and operator");
-    const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
-    return await platform.uploadFile(path, name, chat.glipId);
+  async uploadFile(data: { filePath: string, name?: string, group?: IGroup, operator: IUser }) {
+    assert(data.operator && data.filePath, "require operator and filePath");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(data.operator);
+    return await platform.uploadFile(data.filePath, data.name, data.group ? data.group.glipId: undefined);
+  }
+
+  async createPostWithTextAndFilesThenGetPostId(data: { filePaths: string | string[], group: IGroup, text?: string, operator: IUser, fileNames?: string | string[] }): Promise<string> {
+    assert(data.operator && data.filePaths && data.group, "require operator and filePaths");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(data.operator);
+    return await platform.createPostWithTextAndFilesThenGetPostId(data.group.glipId, data.filePaths, data.text, data.fileNames);
   }
 
   // glip

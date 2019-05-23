@@ -10,7 +10,7 @@ import React, {
   SyntheticEvent,
 } from 'react';
 
-import { JuiCircularProgress } from '../../components/Progress';
+import { RuiCircularProgress } from 'rcui/components/Progress';
 import { JuiIconography } from '../../foundation/Iconography';
 import styled from '../../foundation/styled-components';
 import { withDelay } from '../../hoc/withDelay';
@@ -115,7 +115,7 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
   private _loadingView() {
     return (
       <DelayLoadingPage delay={DELAY_SHOW_LOADING_TIME}>
-        <JuiCircularProgress />
+        <RuiCircularProgress />
       </DelayLoadingPage>
     );
   }
@@ -181,6 +181,10 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
           <HiddenImage
             src={src}
             onLoad={(event: SyntheticEvent<HTMLImageElement>) => {
+              if (src === thumbnailSrc) {
+                const { naturalWidth, naturalHeight } = event.currentTarget;
+                onSizeLoad && onSizeLoad(naturalWidth, naturalHeight);
+              }
               this.setState({
                 loadings: {
                   ...loadings,

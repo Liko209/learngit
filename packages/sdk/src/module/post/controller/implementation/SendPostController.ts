@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { mainLogger } from 'foundation';
+import { mainLogger, DEFAULT_RETRY_COUNT } from 'foundation';
 import { daoManager } from '../../../../dao';
 import { PostDao } from '../../dao';
 import { Post } from '../../entity';
@@ -22,11 +22,10 @@ import { IPostItemController } from '../interface/IPostItemController';
 import { ISendPostController } from '../interface/ISendPostController';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 import { Raw } from '../../../../framework/model';
-import { AccountUserConfig } from '../../../../module/account/config';
+import { AccountService } from '../../../account/service';
 import { PostControllerUtils } from './PostControllerUtils';
 import { PROGRESS_STATUS } from '../../../progress';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
-import { PostUtils } from '../../utils/PostUtils';
 
 type PostData = {
   id: number;
@@ -46,8 +45,18 @@ class SendPostController implements ISendPostController {
     );
   }
 
+  private async _recordMyLastPost(groupId: number, postTime: number) {
+    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
+    await groupConfigService.recordMyLastPostTime(groupId, postTime);
+  }
+
   async sendPost(params: SendPostType) {
-    const userConfig = new AccountUserConfig();
+    this._recordMyLastPost(params.groupId, Date.now());
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const userId: number = userConfig.getGlipUserId();
     const companyId: number = userConfig.getCurrentCompanyId();
     const paramsInfo = {
@@ -163,6 +172,9 @@ class SendPostController implements ISendPostController {
     try {
       const result = await this.postActionController.requestController.post(
         sendPost,
+        {
+          retryCount: DEFAULT_RETRY_COUNT,
+        },
       );
       return await this.handleSendPostSuccess(result, post);
     } catch (e) {
@@ -196,9 +208,7 @@ class SendPostController implements ISendPostController {
 
     // 1. change status
     // 2. delete from db
-    await this.preInsertController.delete(
-      PostUtils.transformToPreInsertPost(originalPost),
-    );
+    await this.preInsertController.delete(originalPost);
     await dao.put(post);
     return result;
   }

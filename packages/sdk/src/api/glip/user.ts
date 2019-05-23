@@ -104,7 +104,7 @@ function indexData(params: object, requestConfig = {}, headers = {}) {
     priority,
     path: '/index',
     via: NETWORK_VIA.HTTP,
-    retryCount: DEFAULT_RETRY_COUNT,
+    retryCount: 0,
     HAPriority: HA_PRIORITY.BASIC,
     timeout: TEN_MINUTE_TIMEOUT,
   });
@@ -154,10 +154,12 @@ function canConnect(
   requestConfig = {},
   headers = {},
 ) {
+  const priority = REQUEST_PRIORITY.IMMEDIATE;
   return Api.glipNetworkClient.get<CanConnectModel>({
     params,
     requestConfig,
     headers,
+    priority,
     path: '/can-reconnect-v2',
     via: NETWORK_VIA.HTTP,
   });

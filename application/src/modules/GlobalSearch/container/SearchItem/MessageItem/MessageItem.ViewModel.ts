@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { action, computed } from 'mobx';
+import { promisedComputed } from 'computed-async-mobx';
 import { SearchService } from 'sdk/module/search';
 import { container } from 'framework';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
@@ -36,8 +37,7 @@ class MessageItemViewModel extends SearchViewModel<ContentProps>
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, id);
   }
 
-  @computed
-  get groupName() {
+  groupName = promisedComputed('', async () => {
     const group = this.group;
     const { displayName } = this.props;
     if (!group) {
@@ -45,10 +45,12 @@ class MessageItemViewModel extends SearchViewModel<ContentProps>
     }
     const conversationId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     if (group.id === conversationId) {
-      return `${displayName} ${i18nT('globalSearch.inThisConversation')}`;
+      return `${displayName} ${await i18nT('globalSearch.inThisConversation')}`;
     }
-    return `${displayName} ${i18nT('globalSearch.in')} ${group.displayName}`;
-  }
+    return `${displayName} ${await i18nT('common.preposition.in')} ${
+      group.displayName
+    }`;
+  });
 
   @action
   onClick = () => {

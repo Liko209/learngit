@@ -5,3 +5,5 @@
  */
 
 export * from './BoxSelect';
+export * from './LineSelect';
+export * from './LineSelect/RegionSelect';

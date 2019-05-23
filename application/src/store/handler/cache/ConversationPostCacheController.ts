@@ -7,6 +7,7 @@
 import {
   FetchSortableDataListHandler,
   ISortableModel,
+  ISortableModelWithData,
   TDelta,
   DeltaDataHandler,
 } from '@/store/base';
@@ -16,26 +17,17 @@ import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
 import { TypeDictionary } from 'sdk/utils';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import PostModel from '@/store/models/Post';
-import _ from 'lodash';
 import { ThumbnailPreloadController } from './ThumbnailPreloadController';
 import { PostCacheController } from './PostCacheController';
 import { ConversationPostFocBuilder } from './ConversationPostFocBuilder';
 import { mainLogger } from 'sdk';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import notificationCenter from 'sdk/service/notificationCenter';
-import { SERVICE } from 'sdk/service/eventKey';
 
 const LOG_TAG = 'ConversationPostCacheController';
 class ConversationPostCacheController extends PostCacheController {
   private _cacheDeltaDataHandlerMap: Map<number, DeltaDataHandler> = new Map();
   private _thumbnailPreloadController: ThumbnailPreloadController;
-  constructor() {
-    super();
-    notificationCenter.on(
-      SERVICE.SYNC_SERVICE.START_CLEAR_DATA,
-      this._clearAll,
-    );
-  }
+
   name() {
     return 'ConversationPostCacheController';
   }
@@ -86,7 +78,7 @@ class ConversationPostCacheController extends PostCacheController {
 
             await Promise.all(
               sortableModels.map(
-                async (sortableModel: ISortableModel<Post>) => {
+                async (sortableModel: ISortableModelWithData<Post>) => {
                   if (
                     sortableModel &&
                     sortableModel.id &&
@@ -115,10 +107,6 @@ class ConversationPostCacheController extends PostCacheController {
     return listHandler;
   }
 
-  private _clearAll = () => {
-    [...this._cacheMap.keys()].forEach(this.remove.bind(this));
-  }
-
   protected removeInternal(groupId: number) {
     const preloadThumbnail = this._cacheDeltaDataHandlerMap.get(groupId);
     if (preloadThumbnail) {
@@ -131,9 +119,6 @@ class ConversationPostCacheController extends PostCacheController {
 
   needToCache(groupId: number) {
     return this.shouldPreFetch(groupId, QUERY_DIRECTION.OLDER);
-  }
-  dispose() {
-    notificationCenter.off(SERVICE.SYNC_SERVICE.END_CLEAR_DATA, this._clearAll);
   }
 }
 

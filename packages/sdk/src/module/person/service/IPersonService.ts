@@ -57,7 +57,7 @@ interface IPersonService {
   ): Promise<Person | null>;
   refreshPersonData(personId: number): Promise<void>;
 
-  isValidPerson(person: Person): boolean;
+  isVisiblePerson(person: Person): boolean;
 
   getSoundexById(id: number): string[];
 

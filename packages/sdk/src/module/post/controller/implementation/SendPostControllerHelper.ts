@@ -39,17 +39,20 @@ class SendPostControllerHelper {
 
   buildRawPostInfo(params: RawPostInfo): Post {
     const vers = versionHash();
+    const preId = GlipTypeUtil.generatePseudoIdByType(
+      TypeDictionary.TYPE_ID_POST,
+    );
     const links = this.buildLinksInfo(params.text);
     const now = Date.now();
     const buildPost: Post = {
       links,
-      id: GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_POST),
+      id: preId,
       created_at: now,
       modified_at: now,
       creator_id: params.userId,
       version: vers,
       new_version: vers,
-      unique_id: String(vers),
+      unique_id: preId.toString(),
       is_new: true,
       model_size: 0,
       text: params.text,
@@ -63,6 +66,7 @@ class SendPostControllerHelper {
       company_id: params.companyId,
       deactivated: false,
       parent_id: params.parentId,
+      source: 'Jupiter',
     };
 
     if (params.annotation) {

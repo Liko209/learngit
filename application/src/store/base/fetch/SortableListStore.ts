@@ -5,7 +5,7 @@
  */
 import { computed, action } from 'mobx';
 import { ListStore } from './ListStore';
-import { ISortableModel, ISortFunc } from './types';
+import { ISortFunc, ISortableModel } from './types';
 import _ from 'lodash';
 import { mainLogger } from 'sdk';
 
@@ -14,16 +14,18 @@ import { mainLogger } from 'sdk';
 //   second: ISortableModel,
 // ) => first.sortValue - second.sortValue;
 
-export class SortableListStore<T = any> extends ListStore<ISortableModel<T>> {
-  private _sortFunc?: ISortFunc<ISortableModel<T>>;
+export class SortableListStore<
+  SortableModel extends ISortableModel = ISortableModel
+> extends ListStore<SortableModel> {
+  private _sortFunc?: ISortFunc<SortableModel>;
 
-  constructor(sortFunc?: ISortFunc<ISortableModel<T>>, limit?: number) {
+  constructor(sortFunc?: ISortFunc<SortableModel>, limit?: number) {
     super(limit);
     this._sortFunc = sortFunc;
   }
 
   @action
-  upsert(idArray: ISortableModel<T>[]) {
+  upsert(idArray: SortableModel[]) {
     if (idArray.length) {
       const unionArray = _.unionBy(idArray, this.items, 'id');
       const unionAndSortIds = this._sortFunc
@@ -35,7 +37,7 @@ export class SortableListStore<T = any> extends ListStore<ISortableModel<T>> {
         _.isEqualWith(
           unionAndSortIds,
           this._items,
-          (objValue: ISortableModel<T>, otherValue: ISortableModel<T>) => {
+          (objValue: ISortableModel, otherValue: ISortableModel) => {
             return objValue.id === otherValue.id;
           },
         )
@@ -76,6 +78,6 @@ export class SortableListStore<T = any> extends ListStore<ISortableModel<T>> {
   }
 
   getById(id: number) {
-    return _.find(this.items, { id });
+    return _.find(this.items, { id }) as SortableModel | undefined;
   }
 }

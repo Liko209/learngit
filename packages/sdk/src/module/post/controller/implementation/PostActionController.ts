@@ -20,6 +20,7 @@ import { ItemService } from '../../../../module/item/service';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { PostControllerUtils } from './PostControllerUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { DEFAULT_RETRY_COUNT } from 'foundation/src';
 
 class PostActionController implements IPostActionController {
   constructor(
@@ -96,7 +97,9 @@ class PostActionController implements IPostActionController {
       params.postId,
       preHandlePartial,
       async (newPost: Post) => {
-        return this.requestController.put(newPost);
+        return this.requestController.put(newPost, {
+          retryCount: DEFAULT_RETRY_COUNT,
+        });
       },
       this._doPartialNotify.bind(this),
     );
@@ -130,7 +133,7 @@ class PostActionController implements IPostActionController {
     if (id < 0) {
       return this._deletePreInsertedPost(id);
     }
-    return !!this._deletePostFromRemote(id);
+    return !!(await this._deletePostFromRemote(id));
   }
 
   async removeItemFromPost(postId: number, itemId: number) {

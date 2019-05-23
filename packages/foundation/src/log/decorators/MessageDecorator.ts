@@ -3,17 +3,13 @@
  * @Date: 2018-12-26 15:21:56
  * Copyright © RingCentral. All rights reserved.
  */
-import DateFormatter from './DateFormatter';
-import { DATE_FORMATTER, LOG_LEVEL } from '../constants';
+import { DateFormatter } from '../../utils/DateFormatter';
+import { LOG_LEVEL } from '../constants';
 import { ILogEntityDecorator, LogEntity } from '../types';
 import _ from 'lodash';
 
 export class MessageDecorator implements ILogEntityDecorator {
   options: object;
-  private dateFormatter: DateFormatter;
-  constructor() {
-    this.dateFormatter = new DateFormatter();
-  }
 
   decorate(data: LogEntity): LogEntity {
     const { tags, message, level, timestamp, sessionIndex } = data;
@@ -36,9 +32,6 @@ export class MessageDecorator implements ILogEntityDecorator {
   }
 
   private _formatTime(timestamp: number): string {
-    return this.dateFormatter.formatDate(
-      new Date(timestamp),
-      DATE_FORMATTER.DEFAULT_DATE_FORMAT,
-    );
+    return DateFormatter.formatDate(new Date(timestamp));
   }
 }

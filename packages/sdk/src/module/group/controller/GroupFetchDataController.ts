@@ -15,8 +15,8 @@ import {
 } from '../../../framework/controller/interface/IEntityCacheSearchController';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
-import { SortableModel } from '../../../framework/model';
-import { AccountUserConfig } from '../../../module/account/config';
+import { AccountService } from '../../account/service';
+import { SortableModel, ModelIdType } from '../../../framework/model';
 import { CompanyService } from '../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { versionHash } from '../../../utils/mathUtils';
@@ -27,7 +27,7 @@ import {
 import { transform } from '../../../service/utils';
 import {
   PERFORMANCE_KEYS,
-  PerformanceTracerHolder,
+  PerformanceTracer,
   uniqueArray,
 } from '../../../utils';
 import TypeDictionary from '../../../utils/glip-type-dictionary/types';
@@ -40,9 +40,15 @@ import { Group, TeamPermission } from '../entity';
 import { IGroupService } from '../service/IGroupService';
 import { GroupHandleDataController } from './GroupHandleDataController';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { GroupConfigService } from '../../groupConfig';
+import { SearchService } from '../../search';
+import { RecentSearchTypes, RecentSearchModel } from '../../search/entity';
+import { MY_LAST_POST_VALID_PERIOD } from '../../search/constants';
 
 function buildNewGroupInfo(members: number[]) {
-  const userConfig = new AccountUserConfig();
+  const userConfig = ServiceLoader.getInstance<AccountService>(
+    ServiceConfig.ACCOUNT_SERVICE,
+  ).userConfig;
   const userId = userConfig.getGlipUserId();
   return {
     members,
@@ -86,7 +92,9 @@ export class GroupFetchDataController {
         ? await extractHiddenGroupIdsWithoutUnread(profile)
         : [];
       const excludeIds = favoriteGroupIds.concat(hiddenIds);
-      const userConfig = new AccountUserConfig();
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
       const userId = userConfig.getGlipUserId();
       const isTeam = groupType === GROUP_QUERY_TYPE.TEAM;
       result = await this.entitySourceController.getEntities(
@@ -179,18 +187,19 @@ export class GroupFetchDataController {
     searchKey: string,
     fetchAllIfSearchKeyEmpty?: boolean,
     myGroupsOnly?: boolean,
+    recentFirst?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.SEARCH_ALL_GROUP,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
-      this._getTransformAllGroupFunc(fetchAllIfSearchKeyEmpty, myGroupsOnly),
+      this._getTransformAllGroupFunc(
+        fetchAllIfSearchKeyEmpty,
+        myGroupsOnly,
+        recentFirst,
+      ),
       searchKey,
       undefined,
       (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
@@ -210,23 +219,61 @@ export class GroupFetchDataController {
         return 0;
       },
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_ALL_GROUP });
     return result;
   }
 
   private get _currentUserId() {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     return userConfig.getGlipUserId();
   }
 
-  private _getTransformGroupFunc(fetchAllIfSearchKeyEmpty?: boolean) {
+  private _getMostRecentViewTime(
+    groupId: number,
+    groupConfigService: GroupConfigService,
+    recentSearchedGroups: Map<ModelIdType, RecentSearchModel>,
+  ) {
+    const now = Date.now();
+    const record = recentSearchedGroups!.get(groupId);
+    const config = groupConfigService.getSynchronously(groupId);
+    const lastSearchTime = (record && record.time_stamp) || 0;
+    let lastPostTime = (config && config.my_last_post_time) || 0;
+    lastPostTime =
+      now - lastPostTime > MY_LAST_POST_VALID_PERIOD ? 0 : lastPostTime;
+    return Math.max(lastPostTime, lastSearchTime);
+  }
+
+  private get _groupConfigService() {
+    return ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
+  }
+
+  private _getTransformGroupFunc(
+    fetchAllIfSearchKeyEmpty?: boolean,
+    recentFirst?: boolean,
+  ) {
+    const groupConfigService = this._groupConfigService;
+    const recentSearchedGroups = recentFirst
+      ? this._getRecentSearchGroups([RecentSearchTypes.GROUP])
+      : undefined;
+
     return (group: Group, terms: Terms) => {
       if (this._isValidGroup(group) && group.members.length > 2) {
-        const allPersons = this.getAllPersonOfGroup(
+        const persons = this.getAllPersonOfGroup(
           group.members,
           this._currentUserId,
         );
-        const groupName = this.getGroupNameByMultiMembers(allPersons);
+
+        if (persons.invisiblePersons.length) {
+          return null;
+        }
+
+        const groupName = this.getGroupNameByMultiMembers(
+          persons.visiblePersons,
+        );
         const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
         const lowerCaseGroupName = groupName.toLowerCase();
         const isFuzzyMatched =
@@ -236,17 +283,26 @@ export class GroupFetchDataController {
           ) ||
           (searchKeyTermsToSoundex.length &&
             this.entityCacheSearchController.isSoundexMatched(
-              this.getSoundexValueOfGroup(allPersons),
+              this.getSoundexValueOfGroup(persons.visiblePersons),
               searchKeyTermsToSoundex,
             ));
         if (
           (searchKeyTerms.length > 0 && isFuzzyMatched) ||
           (fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0)
         ) {
+          const firstSortKey = recentFirst
+            ? this._getMostRecentViewTime(
+                group.id,
+                groupConfigService,
+                recentSearchedGroups!,
+              )
+            : 0;
           return {
+            firstSortKey,
+            secondSortKey: group.members.length,
             id: group.id,
             displayName: groupName,
-            firstSortKey: lowerCaseGroupName,
+            thirdSortKey: lowerCaseGroupName,
             entity: group,
           };
         }
@@ -258,38 +314,72 @@ export class GroupFetchDataController {
   async doFuzzySearchGroups(
     searchKey: string,
     fetchAllIfSearchKeyEmpty?: boolean,
+    recentFirst?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.SEARCH_GROUP,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
-      this._getTransformGroupFunc(fetchAllIfSearchKeyEmpty),
+      this._getTransformGroupFunc(fetchAllIfSearchKeyEmpty, recentFirst),
       searchKey,
       undefined,
       (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
-        if (groupA.firstSortKey < groupB.firstSortKey) {
+        if (groupA.firstSortKey > groupB.firstSortKey) {
           return -1;
         }
-        if (groupA.firstSortKey > groupB.firstSortKey) {
+        if (groupA.firstSortKey < groupB.firstSortKey) {
+          return 1;
+        }
+
+        if (groupA.secondSortKey < groupB.secondSortKey) {
+          return -1;
+        }
+        if (groupA.secondSortKey > groupB.secondSortKey) {
+          return 1;
+        }
+
+        if (groupA.thirdSortKey < groupB.thirdSortKey) {
+          return -1;
+        }
+        if (groupA.thirdSortKey > groupB.thirdSortKey) {
           return 1;
         }
         return 0;
       },
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_GROUP });
+    return result;
+  }
+
+  private _getRecentSearchGroups(types: RecentSearchTypes[]) {
+    const searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    );
+
+    let result: Map<ModelIdType, RecentSearchModel> = new Map();
+    for (const iterator of types) {
+      const recentGroups = searchService.getRecentSearchRecordsByType(iterator);
+      result = new Map([...result].concat([...recentGroups]));
+    }
     return result;
   }
 
   private _getTransformAllGroupFunc(
     fetchAllIfSearchKeyEmpty?: boolean,
     myGroupsOnly?: boolean,
+    recentFirst?: boolean,
   ) {
+    const groupConfigService = this._groupConfigService;
+
+    const recentSearchedGroups = recentFirst
+      ? this._getRecentSearchGroups([
+          RecentSearchTypes.GROUP,
+          RecentSearchTypes.TEAM,
+        ])
+      : undefined;
+
     let groupName: string = '';
     let lowerCaseName: string = '';
     const currentUserId = this._currentUserId;
@@ -331,11 +421,14 @@ export class GroupFetchDataController {
                 searchKeyTermsToSoundex,
               ));
         } else {
-          const allPerson = this.getAllPersonOfGroup(
+          const persons = this.getAllPersonOfGroup(
             group.members,
             currentUserId,
           );
-          groupName = this.getGroupNameByMultiMembers(allPerson);
+          if (persons.invisiblePersons.length) {
+            break;
+          }
+          groupName = this.getGroupNameByMultiMembers(persons.visiblePersons);
           lowerCaseName = groupName.toLowerCase();
           isFuzzy =
             this.entityCacheSearchController.isFuzzyMatched(
@@ -344,7 +437,7 @@ export class GroupFetchDataController {
             ) ||
             (searchKeyTermsToSoundex.length > 0 &&
               this.entityCacheSearchController.isSoundexMatched(
-                this.getSoundexValueOfGroup(allPerson),
+                this.getSoundexValueOfGroup(persons.visiblePersons),
                 searchKeyTermsToSoundex,
               ));
         }
@@ -357,15 +450,24 @@ export class GroupFetchDataController {
         isMatched = true;
       } while (false);
 
-      return isMatched
-        ? {
-            id: group.id,
-            displayName: groupName,
-            firstSortKey: sortValue,
-            secondSortKey: lowerCaseName,
-            entity: group,
-          }
-        : null;
+      if (isMatched) {
+        const firstSortKey = recentFirst
+          ? this._getMostRecentViewTime(
+              group.id,
+              groupConfigService,
+              recentSearchedGroups!,
+            )
+          : 0;
+        return {
+          firstSortKey,
+          id: group.id,
+          displayName: groupName,
+          secondSortKey: sortValue,
+          thirdSortKey: lowerCaseName,
+          entity: group,
+        };
+      }
+      return null;
     };
   }
 
@@ -400,7 +502,15 @@ export class GroupFetchDataController {
     return sortValue;
   }
 
-  private _getTransformTeamsFunc(fetchAllIfSearchKeyEmpty?: boolean) {
+  private _getTransformTeamsFunc(
+    fetchAllIfSearchKeyEmpty?: boolean,
+    recentFirst?: boolean,
+  ) {
+    const groupConfigService = this._groupConfigService;
+    const recentSearchedTeams = recentFirst
+      ? this._getRecentSearchGroups([RecentSearchTypes.TEAM])
+      : undefined;
+
     const currentUserId = this._currentUserId;
     return (team: Group, terms: Terms) => {
       let isMatched: boolean = false;
@@ -448,33 +558,39 @@ export class GroupFetchDataController {
         isMatched = true;
       } while (false);
 
-      return isMatched
-        ? {
-            id: team.id,
-            displayName: team.set_abbreviation,
-            firstSortKey: sortValue,
-            secondSortKey: team.set_abbreviation.toLowerCase(),
-            entity: team,
-          }
-        : null;
+      if (isMatched) {
+        const firstSortKey = recentFirst
+          ? this._getMostRecentViewTime(
+              team.id,
+              groupConfigService,
+              recentSearchedTeams!,
+            )
+          : 0;
+        return {
+          firstSortKey,
+          secondSortKey: sortValue,
+          thirdSortKey: team.set_abbreviation.toLowerCase(),
+          id: team.id,
+          displayName: team.set_abbreviation,
+          entity: team,
+        };
+      }
+      return null;
     };
   }
 
   async doFuzzySearchTeams(
     searchKey?: string,
     fetchAllIfSearchKeyEmpty?: boolean,
+    recentFirst?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.SEARCH_TEAM,
-      logId,
-    );
+    const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
-      this._getTransformTeamsFunc(fetchAllIfSearchKeyEmpty),
+      this._getTransformTeamsFunc(fetchAllIfSearchKeyEmpty, recentFirst),
       searchKey,
       undefined,
       (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
@@ -485,21 +601,30 @@ export class GroupFetchDataController {
           return 1;
         }
 
+        if (groupA.secondSortKey > groupB.secondSortKey) {
+          return -1;
+        }
         if (groupA.secondSortKey < groupB.secondSortKey) {
+          return 1;
+        }
+
+        if (groupA.thirdSortKey < groupB.thirdSortKey) {
           return -1;
         }
         if (groupA.secondSortKey > groupB.secondSortKey) {
           return 1;
         }
+
         return 0;
       },
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_TEAM });
     return result;
   }
 
   getAllPersonOfGroup(members: number[], currentUserId: number) {
-    const allPersons: Person[] = [];
+    const visiblePersons: Person[] = [];
+    const invisiblePersons: Person[] = [];
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
@@ -509,10 +634,14 @@ export class GroupFetchDataController {
       }
       const person = personService.getSynchronously(id);
       if (person) {
-        allPersons.push(person);
+        if (personService.isVisiblePerson(person)) {
+          visiblePersons.push(person);
+        } else {
+          invisiblePersons.push(person);
+        }
       }
     });
-    return allPersons;
+    return { invisiblePersons, visiblePersons };
   }
   getSoundexValueOfGroup(allPersons: Person[]): string[] {
     const personService = ServiceLoader.getInstance<PersonService>(
@@ -532,7 +661,7 @@ export class GroupFetchDataController {
       ServiceConfig.PERSON_SERVICE,
     );
     allPersons.forEach((person: Person) => {
-      if (person) {
+      if (person && personService.isVisiblePerson(person)) {
         const name = personService.getName(person);
         if (name.length) {
           names.push(name);
@@ -615,7 +744,9 @@ export class GroupFetchDataController {
   }
 
   private _addCurrentUserToMemList(ids: number[]) {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const userId = userConfig.getGlipUserId();
     if (userId) {
       ids.push(userId);
@@ -675,7 +806,9 @@ export class GroupFetchDataController {
         favoriteGroupIds,
         true,
       );
-      const userConfig = new AccountUserConfig();
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
       const currentUserId = userConfig.getGlipUserId();
 
       return groups.filter(
