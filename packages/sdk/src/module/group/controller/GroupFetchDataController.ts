@@ -299,9 +299,10 @@ export class GroupFetchDataController {
             : 0;
           return {
             firstSortKey,
+            secondSortKey: group.members.length,
             id: group.id,
             displayName: groupName,
-            secondSortKey: lowerCaseGroupName,
+            thirdSortKey: lowerCaseGroupName,
             entity: group,
           };
         }
@@ -336,6 +337,13 @@ export class GroupFetchDataController {
           return -1;
         }
         if (groupA.secondSortKey > groupB.secondSortKey) {
+          return 1;
+        }
+
+        if (groupA.thirdSortKey < groupB.thirdSortKey) {
+          return -1;
+        }
+        if (groupA.thirdSortKey > groupB.thirdSortKey) {
           return 1;
         }
         return 0;
