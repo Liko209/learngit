@@ -80,11 +80,11 @@ class MoreMenu extends Entry {
   }
 
   get profile() {
-    return this.getEntry('Profile');
+    return this.getToggler('profileEntry');
   }
 
   get close() {
-    return this.getComponent(MenuItem, this.self.find('li').withText('Close'));
+    return this.getToggler('closeConversation');
   }
 
   async openProfile() {
