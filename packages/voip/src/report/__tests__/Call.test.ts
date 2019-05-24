@@ -344,7 +344,7 @@ describe('Check call FSM state timestamp [JPT-1938]', () => {
 });
 
 describe('check upload call and media report after call is terminated', () => {
-  it('should called dataAnalysis api when end call', async () => {
+  it('should called dataAnalysis api when end call [JPT-2000]', async () => {
     const account = new MockAccountAndCallObserver();
     const session = new MockSession();
     const call = new RTCCall(false, '123', null, account, account, undefined, {
