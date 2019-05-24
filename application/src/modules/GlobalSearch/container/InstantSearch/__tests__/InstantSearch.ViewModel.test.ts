@@ -302,6 +302,13 @@ describe('InstantSearchViewModel', () => {
     });
   });
 
+  describe('setSelectIndexToDefault()', () => {
+    it('should be set to [0,0] when called', () => {
+      instantSearchViewModel.setSelectIndexToDefault();
+      expect(instantSearchViewModel.selectIndex).toEqual([0, 0]);
+    });
+  });
+
   describe('setSearchResult()', () => {
     it('If search return null should be return', async () => {
       jest.spyOn(instantSearchViewModel, 'search').mockReturnValue(null);
@@ -329,6 +336,7 @@ describe('InstantSearchViewModel', () => {
         .mockReturnValue([]);
       jest.spyOn(instantSearchViewModel, 'search').mockReturnValue(resultData);
       jest.spyOn(instantSearchViewModel, 'resetSelectIndex');
+      jest.spyOn(instantSearchViewModel, 'setSelectIndexToDefault');
       await instantSearchViewModel.setSearchResult('value');
       expect(instantSearchViewModel.searchResult).toEqual([
         {
@@ -353,7 +361,7 @@ describe('InstantSearchViewModel', () => {
         },
       ]);
       expect(instantSearchViewModel.terms).toEqual(['a']);
-      expect(instantSearchViewModel.resetSelectIndex).toHaveBeenCalled();
+      expect(instantSearchViewModel.setSelectIndexToDefault).toHaveBeenCalled();
     });
   });
 
