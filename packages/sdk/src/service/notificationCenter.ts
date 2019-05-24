@@ -131,6 +131,19 @@ class NotificationCenter extends EventEmitter2 {
     this._notifyEntityChange(key, notification);
   }
 
+  onEntityUpdate<
+    T extends IdModel<IdType>,
+    IdType extends ModelIdType = number
+  >(
+    event: string | string[],
+    listener: (payload: NotificationEntityUpdatePayload<T, IdType>) => void,
+  ) {
+    this.on(
+      event,
+      payload => payload.type === EVENT_TYPES.UPDATE && listener(payload),
+    );
+  }
+
   emitEntityReplace<
     T extends IdModel<IdType>,
     IdType extends ModelIdType = number
@@ -151,6 +164,19 @@ class NotificationCenter extends EventEmitter2 {
     this._notifyEntityChange(key, notification);
   }
 
+  onEntityReplace<
+    T extends IdModel<IdType>,
+    IdType extends ModelIdType = number
+  >(
+    event: string | string[],
+    listener: (payload: NotificationEntityReplacePayload<T, IdType>) => void,
+  ) {
+    this.on(
+      event,
+      payload => payload.type === EVENT_TYPES.REPLACE && listener(payload),
+    );
+  }
+
   emitEntityDelete<IdType extends ModelIdType = number>(
     key: string,
     ids: IdType[],
@@ -166,6 +192,16 @@ class NotificationCenter extends EventEmitter2 {
     this._notifyEntityChange(key, notification);
   }
 
+  onEntityDelete<IdType extends ModelIdType = number>(
+    event: string | string[],
+    listener: (payload: NotificationEntityDeletePayload<IdType>) => void,
+  ) {
+    this.on(
+      event,
+      payload => payload.type === EVENT_TYPES.DELETE && listener(payload),
+    );
+  }
+
   emitEntityReset(key: string): void {
     const notification: NotificationEntityResetPayload = {
       type: EVENT_TYPES.RESET,
@@ -173,11 +209,31 @@ class NotificationCenter extends EventEmitter2 {
     this._notifyEntityChange(key, notification);
   }
 
+  onEntityReset(
+    event: string | string[],
+    listener: (payload: NotificationEntityResetPayload) => void,
+  ) {
+    this.on(
+      event,
+      payload => payload.type === EVENT_TYPES.RESET && listener(payload),
+    );
+  }
+
   emitEntityReload(key: string): void {
     const notification: NotificationEntityReloadPayload = {
       type: EVENT_TYPES.RELOAD,
     };
     this._notifyEntityChange(key, notification);
+  }
+
+  onEntityReload(
+    event: string | string[],
+    listener: (payload: NotificationEntityReloadPayload) => void,
+  ) {
+    this.on(
+      event,
+      payload => payload.type === EVENT_TYPES.RELOAD && listener(payload),
+    );
   }
 
   emitKVChange(key: string, value?: any): void {

@@ -7,4 +7,5 @@
 export { SettingModuleIds } from './constants';
 export { UserSettingEntity, ESettingValueType } from './entity';
 export { SettingService } from './service';
-export * from './ModuleSettings';
+export * from './types';
+export * from './settingEntityHandler';

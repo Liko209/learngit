@@ -9,27 +9,20 @@ import {
   IFetchSortableDataProvider,
 } from '@/store/base/fetch';
 import { ENTITY_NAME } from '@/store/constants';
-import { SettingService } from 'sdk/module/setting/service';
 import { UserSettingEntity } from 'sdk/module/setting/entity';
 import { ENTITY } from 'sdk/service';
 import _ from 'lodash';
-import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { SETTING_ITEM } from '../constants';
-
-const settingService = ServiceLoader.getInstance<SettingService>(
-  ServiceConfig.SETTING_SERVICE,
-);
 
 class SettingItemDataProvider
   implements IFetchSortableDataProvider<UserSettingEntity> {
-  constructor(private _leftRailId: number) {}
+  constructor(_leftRailId: number) {}
 
   async fetchData(): Promise<{
     data: UserSettingEntity[];
     hasMore: boolean;
   }> {
-    const result = await settingService.getSettingsByParentId(this._leftRailId);
-    return { data: result, hasMore: false };
+    return { data: [], hasMore: false };
   }
 }
 
@@ -39,8 +32,7 @@ class SettingLeftRailDataProvider
     data: UserSettingEntity[];
     hasMore: boolean;
   }> {
-    const result = await settingService.getModuleSettings();
-    return { data: result, hasMore: false };
+    return { data: [], hasMore: false };
   }
 }
 

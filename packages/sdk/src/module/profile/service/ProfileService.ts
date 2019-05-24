@@ -18,6 +18,8 @@ import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { SettingOption } from '../types';
 import { ProfileSetting } from '../setting';
+import { SettingService } from 'sdk/module/setting';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {
@@ -40,11 +42,14 @@ class ProfileService extends EntityBaseService<Profile>
     this.setCheckTypeFunc((id: number) => {
       return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PROFILE);
     });
+    ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    ).registerModuleSetting(this.profileSettings);
   }
 
   protected onStopped() {
     if (this._profileSetting) {
-      this._profileSetting.unsubscribe();
+      // this._profileSetting.unsubscribe();
       delete this._profileSetting;
     }
 
@@ -153,14 +158,6 @@ class ProfileService extends EntityBaseService<Profile>
       this._profileSetting = new ProfileSetting(this);
     }
     return this._profileSetting;
-  }
-
-  async getSettingsByParentId(settingId: number) {
-    return this.profileSettings.getSettingsByParentId(settingId);
-  }
-
-  async getSettingItemById(settingId: number) {
-    return this.profileSettings.getSettingById(settingId);
   }
 }
 

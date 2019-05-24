@@ -5,6 +5,7 @@
  */
 import { AbstractService } from 'sdk/framework';
 import { SettingController } from '../controller/SettingController';
+import { IModuleSetting } from '../types';
 
 class SettingService extends AbstractService {
   private _settingController: SettingController;
@@ -22,12 +23,12 @@ class SettingService extends AbstractService {
     return this.settingController.getById(id);
   }
 
-  async getSettingsByParentId(id: number) {
-    return this.settingController.getSettingsByParentId(id);
+  registerModuleSetting(moduleSetting: IModuleSetting) {
+    this.settingController.registerModuleSetting(moduleSetting);
   }
 
-  async getModuleSettings() {
-    return this.settingController.getModuleSettings();
+  unRegisterModuleSetting(moduleSetting: IModuleSetting) {
+    this.settingController.unRegisterModuleSetting(moduleSetting);
   }
 
   private get settingController() {
