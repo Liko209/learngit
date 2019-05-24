@@ -12,7 +12,7 @@ import {
   FsmStatusCategory,
   MediaReportOutCome,
 } from './types';
-import mediaReport from './Media';
+import { MediaReport } from './Media';
 import Report from './Report';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 
@@ -21,32 +21,18 @@ type Update = Omit<ICall, 'establishment' | 'fsmStatus'>;
 const LOG_TAG = 'Call and Media Report';
 
 class CallReport implements ICall {
-  public id: string;
-  public createTime: Date | null;
-  public sessionId: string;
+  private static _singleton: CallReport | null = null;
+  public id: string = '';
+  public createTime: Date | null = null;
+  public sessionId: string = '';
   public ua: any = null;
-  public direction: 'incoming' | 'outgoing' | '';
-  public establishment: Establishment;
-  public fsmStatus: FsmStatus[];
+  public direction: 'incoming' | 'outgoing' | '' = '';
+  public establishment: Establishment = Object.create(null);
+  public fsmStatus: FsmStatus[] = [];
   public media: MediaReportOutCome | null = null;
 
-  constructor() {
-    this._mount();
-  }
-
-  private _mount() {
-    this._initState();
-  }
-
-  private _initState(): void {
-    this.id = '';
-    this.media = null;
-    this.createTime = null;
-    this.sessionId = '';
-    this.ua = null;
-    this.direction = '';
-    this.establishment = Object.create(null);
-    this.fsmStatus = [];
+  public static instance() {
+    return CallReport._singleton || (CallReport._singleton = new CallReport());
   }
 
   public update(key: keyof Update, value: ValueOf<Update>): void {
@@ -132,18 +118,17 @@ class CallReport implements ICall {
     this._calculationEstablishDurationBulk();
   }
 
-  public destroy() {
-    this._beforeDestroy();
-    this.media = mediaReport.stopAnalysis();
-    this._report();
+  public destroySingleton() {
+    CallReport._singleton = null;
   }
 
-  public init() {
-    this._initState();
+  public destroy() {
+    this._beforeDestroy();
+    this.media = MediaReport.instance().stopAnalysis();
+    this._report();
+
+    this.destroySingleton();
   }
 }
 
-const callReport = new CallReport();
-
 export { CallReport };
-export default callReport;

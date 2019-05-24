@@ -23,7 +23,7 @@ import { RTCMediaElementManager } from '../utils/RTCMediaElementManager';
 import { RTCMediaElement } from '../utils/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCMediaDeviceManager } from '../api/RTCMediaDeviceManager';
-import callReport from '../report/Call';
+import { CallReport } from '../report/Call';
 import { CALL_REPORT_PROPS } from '../report/types';
 
 const {
@@ -244,7 +244,9 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         rtcLogger.error(LOG_TAG, `Reconnecting media. State = ${event}`);
         break;
       case WEBPHONE_MEDIA_CONNECTION_STATE_EVENT.MEDIA_CONNECTION_CONNECTED:
-        callReport.updateEstablishment(CALL_REPORT_PROPS.MEDIA_CONNECTED_TIME);
+        CallReport.instance().updateEstablishment(
+          CALL_REPORT_PROPS.MEDIA_CONNECTED_TIME,
+        );
         break;
       default:
         break;

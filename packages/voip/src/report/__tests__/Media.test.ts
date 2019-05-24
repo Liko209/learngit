@@ -77,7 +77,7 @@ const mockOutCome = {
     min: 8996,
   },
   bytesSent: { variance: 543.00545, average: 8717.75, max: 9406, min: 8078 },
-  jitter: { variance: 0.003, average: 0.0115, max: 0.016, min: 0 },
+  jitter: { variance: 0.003, average: 0.0115, max: 0.016, min: 0.01 },
   packetsLost: { variance: 0, average: 0, max: 0, min: 0 },
   packetsReceived: { variance: 3.0957, average: 100.75, max: 105, min: 98 },
   packetsSent: { variance: 0.95743, average: 99.25, max: 100, min: 98 },

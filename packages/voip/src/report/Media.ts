@@ -15,6 +15,7 @@ import {
 import { KEYS, deepClone, defaultItems } from './util';
 
 class MediaReport implements IMediaReport {
+  private static _singleton: MediaReport | null = null;
   private _queen: MediaReportItemType[] = [];
   private _outcome: MediaReportOutCome | null = null;
   private _accumulator = Object.create(null);
@@ -35,6 +36,16 @@ class MediaReport implements IMediaReport {
       this._accumulator[key] = new Accumulator(key);
       this._sum[key] = 0;
     });
+  }
+
+  public static instance() {
+    return (
+      MediaReport._singleton || (MediaReport._singleton = new MediaReport())
+    );
+  }
+
+  public destroySingleton() {
+    MediaReport._singleton = null;
   }
 
   private _generateItem({
@@ -65,8 +76,8 @@ class MediaReport implements IMediaReport {
       // jitter don't calculation diff
       if (this._isJitter(key)) {
         item[key] = this._generateItem({
-          headMin: head[key],
-          headMax: head[key],
+          headMin: tail[key],
+          headMax: tail[key],
           tailMin: tail[key],
           tailMax: tail[key],
         });
@@ -133,7 +144,7 @@ class MediaReport implements IMediaReport {
 
   public stopAnalysis(): MediaReportOutCome {
     const outcome = deepClone(this.outcome);
-    this._init();
+    this.destroySingleton();
 
     return outcome;
   }
@@ -149,7 +160,4 @@ class MediaReport implements IMediaReport {
   }
 }
 
-const mediaReport = new MediaReport();
-
 export { MediaReport };
-export default mediaReport;

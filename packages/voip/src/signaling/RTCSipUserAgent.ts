@@ -10,7 +10,7 @@ import { RTCCallOptions } from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCSipProvisionInfo } from '../account/types';
 import { opusModifier, isFireFox } from '../utils/utils';
-import callReport from '../report/Call';
+import { CallReport } from '../report/Call';
 import { CALL_REPORT_PROPS } from '../report/types';
 
 const WebPhone = require('ringcentral-web-phone');
@@ -101,7 +101,9 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
       options.homeCountryId = '1';
     }
 
-    callReport.updateEstablishment(CALL_REPORT_PROPS.INVITE_SENT_TIME);
+    CallReport.instance().updateEstablishment(
+      CALL_REPORT_PROPS.INVITE_SENT_TIME,
+    );
     return this._webphone.userAgent.invite(phoneNumber, options);
   }
 

@@ -30,7 +30,7 @@ import { v4 as uuid } from 'uuid';
 import { RC_SIP_HEADER_NAME } from '../signaling/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 
-import callReport from '../report/Call';
+import { CallReport } from '../report/Call';
 import { CALL_REPORT_PROPS, Establishment } from '../report/types';
 
 const LOG_TAG = 'RTCCall';
@@ -80,8 +80,6 @@ class RTCCall {
     options?: RTCCallOptions,
     userAgentInfo?: RTCUserAgentInfo,
   ) {
-    callReport.init();
-
     this._account = account;
     if (delegate != null) {
       this._delegate = delegate;
@@ -114,13 +112,13 @@ class RTCCall {
       establishmentKey = 'startTime';
     }
 
-    callReport.updateByPipe([
+    CallReport.instance().updateByPipe([
       { key: CALL_REPORT_PROPS.ID, value: this._callInfo.uuid },
       { key: CALL_REPORT_PROPS.DIRECTION, value: direction },
       { key: CALL_REPORT_PROPS.CREATE_TIME, value: new Date() },
       { key: CALL_REPORT_PROPS.UA, value: userAgentInfo },
     ]);
-    callReport.updateEstablishment(establishmentKey);
+    CallReport.instance().updateEstablishment(establishmentKey);
 
     this._rtcMediaStatsManager = new RTCMediaStatsManager();
     this._prepare();
@@ -318,7 +316,7 @@ class RTCCall {
         const key = this._isIncomingCall
           ? CALL_REPORT_PROPS.SENT_200_OK_TIME
           : CALL_REPORT_PROPS.RECEIVED_200_OK_TIME;
-        callReport.updateEstablishment(key);
+        CallReport.instance().updateEstablishment(key);
         this._parseRcApiIds(inviteRes.headers);
       } else {
         rtcLogger.warn(
@@ -330,7 +328,9 @@ class RTCCall {
     });
     this._callSession.on(CALL_SESSION_STATE.CONFIRMED, (response: any) => {
       if (this._isIncomingCall && response && response.headers) {
-        callReport.updateEstablishment(CALL_REPORT_PROPS.RECEIVED_ACK_TIME);
+        CallReport.instance().updateEstablishment(
+          CALL_REPORT_PROPS.RECEIVED_ACK_TIME,
+        );
       }
       this._onSessionConfirmed();
     });
@@ -469,7 +469,7 @@ class RTCCall {
   private _destroy() {
     this._callSession.removeAllListeners();
     this._callSession.destroy();
-    callReport.destroy();
+    CallReport.instance().destroy();
   }
   // call action listener
   private _onCallActionSuccess(
@@ -553,7 +553,9 @@ class RTCCall {
 
   private _onSessionProgress(response: any) {
     if (response.status_code === 183) {
-      callReport.updateEstablishment(CALL_REPORT_PROPS.RECEIVED_183_TIME);
+      CallReport.instance().updateEstablishment(
+        CALL_REPORT_PROPS.RECEIVED_183_TIME,
+      );
       this._clearHangupTimer();
     }
   }
@@ -710,7 +712,10 @@ class RTCCall {
     });
     this._callInfo.partyId = idMap[0][1];
     this._callInfo.sessionId = idMap[1][1];
-    callReport.update(CALL_REPORT_PROPS.SESSION_ID, this._callInfo.sessionId);
+    CallReport.instance().update(
+      CALL_REPORT_PROPS.SESSION_ID,
+      this._callInfo.sessionId,
+    );
     rtcLogger.info(
       LOG_TAG,
       `Got party id=${this._callInfo.partyId} session id=${
