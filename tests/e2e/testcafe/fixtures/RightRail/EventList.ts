@@ -271,3 +271,77 @@ test.meta(<ITestMeta>{
   });
 
 });
+
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-964'],
+  maintainers: ['alexander.zaverukha'],
+  keywords: ['Event', 'RightRail'],
+})('Expired event will NOT show under Events tab', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[0];
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
+  let eventTitles = ['Event A', 'Event B', 'Event C'];
+
+  const team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser],
+  };
+
+  await h(t).withLog(`Given I have a team named: ${team.name}`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  const now = new Date().getTime();
+  let event = null;
+  await h(t).withLog('And create events \'Event A\', \'Event B\', \'Event C\' in this team', async () => {
+    await h(t).glip(loginUser).createSimpleEvent({ groupIds: team.glipId, title: eventTitles[0], rcIds: loginUser.rcId });
+    const startDate = moment(now).subtract(1, 'days').valueOf();
+    const endDate = moment(now).valueOf();
+    event = await h(t).glip(loginUser).createSimpleEvent({ groupIds: team.glipId, title: eventTitles[1], rcIds: loginUser.rcId, start: startDate, end: endDate });
+    await h(t).glip(loginUser).createSimpleEvent({ groupIds: team.glipId, title: eventTitles[2], rcIds: loginUser.rcId });
+  });
+
+  await h(t).withLog(`And I login Jupiter as User A: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const rightRail = app.homePage.messageTab.rightRail;
+  await h(t).withLog('When I open a team with events', async () => {
+    const teamsSection = app.homePage.messageTab.teamsSection;
+    await teamsSection.conversationEntryById(team.glipId).enter();
+    await rightRail.openMore();
+    await rightRail.eventsEntry.enter();
+  });
+
+  await h(t).withLog('Then the 3 events should exist in rightRail', async () => {
+    await rightRail.eventsTab.waitUntilItemsListExist();
+    await rightRail.eventsTab.countInListShouldBe(3);
+    for (const title of eventTitles) {
+      await rightRail.eventsTab.shouldHasTitle(title);
+    }
+  });
+
+  await h(t).withLog(`When the \'Event B\' expired (via update event start and end time) -> Refresh screen`, async () => {
+    const expiredStartDate = moment(now).subtract(1, 'days').subtract(10, 'minutes').valueOf();
+    const expiredEndDate = moment(now).subtract(1, 'days').valueOf();
+    await h(t).glip(loginUser).updateEvent(event.data._id, { start: expiredStartDate, end: expiredEndDate });
+    await h(t).reload();
+    await app.homePage.ensureLoaded();
+    await rightRail.eventsTab.ensureLoaded(30e3);
+  });
+
+  await h(t).withLog('Then the \'Event B\' is removed from Events tab', async () => {
+    await rightRail.eventsTab.waitUntilItemsListExist();
+    await rightRail.eventsTab.countInListShouldBe(2);
+    const expiredEventTitle = eventTitles.splice(1, 1);
+    await rightRail.eventsTab.shouldHasNoTitle(expiredEventTitle[0]);
+    for (const title of eventTitles) {
+      await rightRail.eventsTab.shouldHasTitle(title);
+    }
+  });
+});
