@@ -178,7 +178,8 @@ describe('GroupFetchDataController', () => {
         is_team: false,
         deactivated: i % 2 === 0,
         version: i,
-        members: [userId, i, i + 1000],
+        members:
+          i % 3 === 0 ? [userId, i, i + 1000] : [userId, i, i + 1000, i + 2000],
         company_id: i,
         is_company_team: false,
         set_abbreviation: '',
@@ -239,6 +240,7 @@ describe('GroupFetchDataController', () => {
     AccountUserConfig.prototype.getGlipUserId = jest
       .fn()
       .mockImplementation(() => mockUserId);
+    groupService = new GroupService();
 
     const serviceMap: Map<string, any> = new Map([
       [ServiceConfig.PERSON_SERVICE, personService as any],
@@ -273,7 +275,6 @@ describe('GroupFetchDataController', () => {
     testEntityCacheSearchController = new TestEntityCacheSearchController(
       entityCacheController,
     );
-    groupService = new GroupService();
 
     groupFetchDataController = new GroupFetchDataController(
       groupService,
@@ -526,6 +527,15 @@ describe('GroupFetchDataController', () => {
         result!.sortableModels[1].id,
         result!.sortableModels[2].id,
       ]).toEqual(ids);
+    });
+
+    it('do fuzzy search of groups, group of less members should sort first', async () => {
+      const result = await groupFetchDataController.doFuzzySearchGroups(
+        'ben, tu',
+      );
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.sortableModels[0].entity.members.length).toEqual(3);
+      expect(result.sortableModels[499].entity.members.length).toEqual(4);
     });
   });
   describe('doFuzzySearchAllGroups', () => {

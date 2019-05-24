@@ -33,7 +33,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get hangupButton() {
-    return this.buttonOfIcon('hand_up');
+    return this.getSelectorByAutomationId('telephony-end-btn');
   }
 
   async clickHangupButton() {
