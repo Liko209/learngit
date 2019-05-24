@@ -11,7 +11,6 @@ import {
   RTCCall,
   RTCSipFlags,
   RTCCallInfo,
-  RTC_STATUS_CODE,
   RTC_CALL_STATE,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
@@ -136,7 +135,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       );
       this._telephonyCallDelegate.setCallStateCallback(this.callStateChanged);
 
-      let makeCallResult: RTC_STATUS_CODE;
+      let call: RTCCall | null;
       if (fromNum) {
         let e164FromNum = fromNum;
         if (fromNum !== PhoneNumberAnonymous) {
@@ -145,33 +144,31 @@ class TelephonyAccountController implements IRTCAccountDelegate {
         telephonyLogger.debug(
           `Place a call voip toNum: ${e164ToNumber} fromNum: ${e164FromNum}`,
         );
-        makeCallResult = this._rtcAccount.makeCall(
+        call = this._rtcAccount.makeCall(
           e164ToNumber,
           this._telephonyCallDelegate,
           { fromNumber: e164FromNum },
         );
       } else {
         telephonyLogger.debug(`Place a call to voip toNum: ${e164ToNumber}`);
-        makeCallResult = this._rtcAccount.makeCall(
+        call = this._rtcAccount.makeCall(
           e164ToNumber,
           this._telephonyCallDelegate,
         );
       }
 
-      if (
-        makeCallResult !== RTC_STATUS_CODE.OK &&
-        this._telephonyCallDelegate
-      ) {
+      if (!call && this._telephonyCallDelegate) {
         delete this._telephonyCallDelegate;
       }
 
-      if (makeCallResult === RTC_STATUS_CODE.NUMBER_INVALID) {
-        result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
-        break;
-      } else if (makeCallResult === RTC_STATUS_CODE.MAX_CALLS_REACHED) {
-        result = MAKE_CALL_ERROR_CODE.MAX_CALLS_REACHED;
-        break;
-      } else if (makeCallResult === RTC_STATUS_CODE.INVALID_STATE) {
+      // if (makeCallResult === RTC_STATUS_CODE.NUMBER_INVALID) {
+      //   result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
+      //   break;
+      // } else if (makeCallResult === RTC_STATUS_CODE.MAX_CALLS_REACHED) {
+      //   result = MAKE_CALL_ERROR_CODE.MAX_CALLS_REACHED;
+      //   break;
+      // } else
+      if (!call) {
         result = MAKE_CALL_ERROR_CODE.INVALID_STATE;
         break;
       }

@@ -64,13 +64,6 @@ type RTCSipFlags = {
   dscpVideo: Number;
 };
 
-enum RTC_STATUS_CODE {
-  OK = 0,
-  NUMBER_INVALID = 1000,
-  MAX_CALLS_REACHED = 1001,
-  INVALID_STATE = 1002,
-}
-
 type RTCUserAgentInfo = {
   endpointId?: string;
   userAgent?: string;
@@ -101,7 +94,6 @@ export {
   RTCUserAgentInfo,
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
-  RTC_STATUS_CODE,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
   RTCCallOptions,

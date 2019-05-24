@@ -12,7 +12,6 @@ import {
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
   RTCCallOptions,
-  RTC_STATUS_CODE,
 } from '../types';
 import {
   kRTCAnonymous,
@@ -72,7 +71,6 @@ const mockProvisionData2 = {
 class MockAccountListener implements IRTCAccountDelegate {
   onAccountStateChanged = jest.fn();
   onReceiveIncomingCall = jest.fn();
-  onMadeOutgoingCall = jest.fn();
   onReceiveNewProvFlags = jest.fn();
 }
 
@@ -179,7 +177,10 @@ function setupAccount() {
   mockListener = new MockAccountListener();
   localStorage = new MockLocalStorage();
   RTCDaoManager.instance().setDaoDelegate(localStorage);
-  account = new RTCAccount(mockListener);
+  account = new RTCAccount(mockListener, {
+    endpointId: 'test',
+    userAgent: 'test',
+  });
   ua = new MockUserAgent();
   jest.spyOn(account._regManager._fsm, 'provisionReady');
   account._regManager._userAgent = ua;
@@ -253,9 +254,8 @@ describe('RTCAccount', () => {
     setImmediate(() => {
       const ret2 = account.makeCall('234', listener);
       setImmediate(() => {
-        expect(mockListener.onMadeOutgoingCall).toBeCalledTimes(1);
-        expect(ret1).toBe(RTC_STATUS_CODE.OK);
-        expect(ret2).toBe(RTC_STATUS_CODE.MAX_CALLS_REACHED);
+        expect(ret1).not.toBe(null);
+        expect(ret2).toBe(null);
         done();
       });
     });
@@ -264,10 +264,10 @@ describe('RTCAccount', () => {
   it('Should do nothing when receive incoming call and new call is not allowed. [JPT-809]', done => {
     setupAccount();
     const listener = new MockCallListener();
-    account.makeCall('123', listener);
+    const call = account.makeCall('123', listener);
     ua.emit(UA_EVENT.RECEIVE_INVITE, new MockSession());
     setImmediate(() => {
-      expect(mockListener.onMadeOutgoingCall).toBeCalledTimes(1);
+      expect(call).not.toBe(null);
       expect(mockListener.onReceiveIncomingCall).not.toBeCalled();
       done();
     });
@@ -360,9 +360,9 @@ describe('RTCAccount', () => {
   it('Should call count set to 1 and return call when outbound call is allowed. [JPT-806]', done => {
     setupAccount();
     const listener = new MockCallListener();
-    account.makeCall('123', listener);
+    const call = account.makeCall('123', listener);
     setImmediate(() => {
-      expect(mockListener.onMadeOutgoingCall).toBeCalledTimes(1);
+      expect(call).not.toBe(null);
       expect(account.callCount()).toBe(1);
       done();
     });
@@ -515,13 +515,11 @@ describe('RTCAccount', () => {
   it('Should parse multi-party conference headers for outbound call. [JPT-1051]', done => {
     setupAccount();
     const listener = new MockCallListener();
-    account.makeCall('123', listener);
+    const call = account.makeCall('123', listener);
     const session = new MockSession();
     const res = new MockResponse();
     setImmediate(() => {
-      expect(mockListener.onMadeOutgoingCall).toBeCalled();
-      expect(account.callList().length).toBe(1);
-      const call = account.callList()[0];
+      expect(call).not.toBe(null);
       call.onAccountReady();
       call.setCallSession(session);
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED, res);
@@ -705,7 +703,7 @@ describe('RTCAccount', () => {
     const ret = account.makeCall('123', callListener);
     setImmediate(() => {
       expect(account.state()).toBe(RTC_ACCOUNT_STATE.IDLE);
-      expect(ret).toBe(RTC_STATUS_CODE.OK);
+      expect(ret).not.toBe(null);
       expect(account.callCount()).toBe(1);
       setImmediate(() => {
         expect(account.callList()[0]._fsm.state()).toBe('pending');
@@ -719,9 +717,9 @@ describe('RTCAccount', () => {
       setupAccount();
       const listener = new MockCallListener();
       jest.spyOn(account, 'createOutgoingCallSession');
-      account.makeAnonymousCall('123', listener);
+      const call = account.makeAnonymousCall('123', listener);
       setImmediate(() => {
-        expect(mockListener.onMadeOutgoingCall).toBeCalled();
+        expect(call).not.toBe(null);
         account._callManager.notifyAccountReady();
         setImmediate(() => {
           expect(account.createOutgoingCallSession).toHaveBeenCalledWith(
@@ -730,7 +728,7 @@ describe('RTCAccount', () => {
               fromNumber: kRTCAnonymous,
             },
           );
-          expect(account.callList()[0].isAnonymous()).toBe(true);
+          expect(call.isAnonymous()).toBe(true);
           done();
         });
       });
@@ -741,9 +739,9 @@ describe('RTCAccount', () => {
       const listener = new MockCallListener();
       jest.spyOn(account, 'createOutgoingCallSession');
       const options: RTCCallOptions = { fromNumber: '234' };
-      account.makeAnonymousCall('123', listener, options);
+      const call = account.makeAnonymousCall('123', listener, options);
       setImmediate(() => {
-        expect(mockListener.onMadeOutgoingCall).toBeCalled();
+        expect(call).not.toBe(null);
         account._callManager.notifyAccountReady();
         setImmediate(() => {
           expect(account.createOutgoingCallSession).toHaveBeenCalledWith(

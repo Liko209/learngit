@@ -20,7 +20,6 @@ import {
   RTC_ACCOUNT_STATE,
   RTCCallOptions,
   RTCSipFlags,
-  RTC_STATUS_CODE,
   RTCUserAgentInfo,
 } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
@@ -84,21 +83,21 @@ class RTCAccount implements IRTCAccount {
     toNumber: string,
     delegate: IRTCCallDelegate,
     options?: RTCCallOptions,
-  ): RTC_STATUS_CODE {
+  ): RTCCall | null {
     if (!toNumber || toNumber.length === 0) {
       rtcLogger.error(LOG_TAG, 'Failed to make call. To number is empty');
-      return RTC_STATUS_CODE.NUMBER_INVALID;
+      return null;
     }
     if (!this._callManager.allowCall()) {
       rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
-      return RTC_STATUS_CODE.MAX_CALLS_REACHED;
+      return null;
     }
     if (this.state() === RTC_ACCOUNT_STATE.UNREGISTERED) {
       rtcLogger.warn(
         LOG_TAG,
         'Failed to make call. Account is in Unregistered state',
       );
-      return RTC_STATUS_CODE.INVALID_STATE;
+      return null;
     }
     let callOption: RTCCallOptions;
     if (options) {
@@ -109,22 +108,19 @@ class RTCAccount implements IRTCAccount {
     this._regManager.makeCall(toNumber, delegate, callOption);
     const call = new RTCCall(false, toNumber, null, this, delegate, callOption);
     this._callManager.addCall(call);
-    if (this._delegate) {
-      this._delegate.onMadeOutgoingCall(call);
-    }
     if (this.isReady()) {
       call.onAccountReady();
     } else {
       call.onAccountNotReady();
     }
-    return RTC_STATUS_CODE.OK;
+    return call;
   }
 
   public makeAnonymousCall(
     toNumber: string,
     delegate: IRTCCallDelegate,
     options?: RTCCallOptions,
-  ) {
+  ): RTCCall | null {
     let optionsWithAnonymous: RTCCallOptions;
     if (options) {
       optionsWithAnonymous = options;
@@ -133,7 +129,7 @@ class RTCAccount implements IRTCAccount {
       optionsWithAnonymous = { fromNumber: kRTCAnonymous };
     }
     rtcLogger.debug(LOG_TAG, 'make anonymous call');
-    this.makeCall(toNumber, delegate, optionsWithAnonymous);
+    return this.makeCall(toNumber, delegate, optionsWithAnonymous);
   }
 
   isReady(): boolean {
