@@ -19,7 +19,7 @@ storiesOf('Pattern/MessageInput', module)
   .addDecorator(withInfoDecorator(JuiMessageInput, { inline: true }))
   .add('MessageInput', () => {
     const value = text('value', 'default text');
-    const onChange = () => {};
+    const onChange = () => { };
     const ref = React.createRef<JuiMessageInput>();
     return (
       <>
@@ -40,7 +40,7 @@ storiesOf('Pattern/MessageInput', module)
   });
 
 storiesOf('Pattern/MessageInput', module).add('Attachment Button', () => {
-  const autoUploadFile = () => {};
+  const autoUploadFile = () => { };
   return (
     <div>
       <MessageActionBar>
@@ -94,7 +94,7 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentItem', () => {
 });
 
 storiesOf('Pattern/MessageInput', module).add('AttachmentList', () => {
-  const removeAttachment = () => {};
+  const removeAttachment = () => { };
   const f2 = 'f2.txt';
   const f1 = 'f1.txt';
   const f3 =
@@ -133,6 +133,9 @@ storiesOf('Pattern/MessageInput', module).add('JuiDuplicateAlert', () => {
         onCancel={() => callback('cancel')}
         onCreate={() => callback('create')}
         onUpdate={() => callback('update')}
+        cancelText="Cancel"
+        updateText="Update"
+        createText="Create"
       />
     </div>
   );

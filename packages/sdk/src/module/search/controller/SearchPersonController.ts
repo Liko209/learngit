@@ -151,7 +151,7 @@ class SearchPersonController {
         }
 
         if (
-          !personService.isValidPerson(person) ||
+          !personService.isVisiblePerson(person) ||
           (excludeSelf && person.id === currentUserId)
         ) {
           break;

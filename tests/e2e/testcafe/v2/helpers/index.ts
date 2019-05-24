@@ -1,7 +1,7 @@
 import 'testcafe';
 import { MockClient } from 'mock-client';
 
-import { ClientFunction, Role } from 'testcafe';
+import { ClientFunction, Role, t } from 'testcafe';
 import { getLogger } from 'log4js';
 
 import { DataHelper } from './data-helper'
@@ -21,6 +21,9 @@ import { WebphoneHelper } from './webphone-helper';
 import { NotificationHelper } from './notification';
 import { UpgradeHelper } from './upgrade';
 import { WebphoneSession } from '../webphone/session';
+
+import * as _ from 'lodash';
+import * as assert from 'assert';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -208,6 +211,25 @@ class Helper {
     await this.t
       .expect(selector)
       .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
+  }
+
+  async isConsoleLogIncludesText(text: string, type?: string) {
+    const logs: any = await this.t.getBrowserConsoleMessages();
+    if (type) {
+      if (_.includes(logs[type], text)) return true;
+    } else {
+      for (const key in logs) {
+        if (_.includes(logs[key], text)) return true;
+      }
+    }
+    return false;
+  }
+
+  async checkConsoleLogIncludesText(text: string, type?: string) {
+    await H.retryUntilPass(async () => {
+      const result = await this.isConsoleLogIncludesText(text, type);
+      assert.ok(result, `console log ${type || ""} does not includes: ${text}`);
+    })
   }
 
   get setLocalStorage(): (k: string, v: string) => Promise<any> {

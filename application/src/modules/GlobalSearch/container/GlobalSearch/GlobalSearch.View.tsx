@@ -37,7 +37,7 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps> {
   }
 
   render() {
-    const { open, onClose, searchKey, onClear, showClear } = this.props;
+    const { open, onClose, searchKey, onClear, showClear, t } = this.props;
     const CurrentView = this.currentView;
 
     return (
@@ -57,6 +57,7 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps> {
               'data-test-automation-id': 'global-search-input',
             },
           }}
+          clearText={t('globalSearch.clear')}
         />
         <CurrentView />
       </JuiGlobalSearch>

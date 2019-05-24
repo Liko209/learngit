@@ -26,7 +26,7 @@ class LaunchDarklyController {
   }
 
   hasPermission(type: UserPermissionType): boolean {
-    return this.isClientReady
+    return this.isClientReady && this.launchDarklyClient.hasFlags()
       ? this.launchDarklyClient.hasPermission(type)
       : this._defaultPermission(type);
   }
