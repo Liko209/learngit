@@ -244,12 +244,20 @@ export class TelephonyDialog extends BaseWebComponent {
     await this.t.click(this.answerButton);
   }
 
+  async hoverAnswerButton() {
+    await this.t.hover(this.answerButton);
+  }
+
   async clickMinimizeButton() {
     await this.t.click(this.minimizeButton);
   }
 
   async clickIgnoreButton() {
     await this.t.click(this.ignoreButton);
+  }
+
+  async hoverIgnoreButton() {
+    await this.t.hover(this.ignoreButton);
   }
 
   async hoverSendToVoiceMailButton() {
