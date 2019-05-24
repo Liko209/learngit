@@ -527,6 +527,10 @@ export class ConversationPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('telephony-call-btn');
   }
 
+  get telephonyIcon() {
+    return this.getSelectorByIcon('phone', this.self);
+  }
+
   async clickTelephonyButton() {
     await this.t.click(this.telephonyButton);
   }
