@@ -27,7 +27,7 @@ import { SpecialNumberRuleModel } from '../types';
 import { AccountGlobalConfig } from 'sdk/module/account/config';
 
 const OLD_EXIST_SPECIAL_NUMBER_COUNTRY = 1; // in old version, we only store US special number
-
+const EXTENSION_PHONE_NUMBER_LIST_COUNT = 1000;
 class RCInfoFetchController {
   private _isRCInfoJobScheduled: boolean;
   private _shouldIgnoreFirstTime: boolean;
@@ -180,7 +180,9 @@ class RCInfoFetchController {
   }
 
   requestExtensionPhoneNumberList = async (): Promise<void> => {
-    const extensionPhoneNumberList = await RCInfoApi.getExtensionPhoneNumberList();
+    const extensionPhoneNumberList = await RCInfoApi.getExtensionPhoneNumberList(
+      { perPage: EXTENSION_PHONE_NUMBER_LIST_COUNT },
+    );
     await this.rcInfoUserConfig.setExtensionPhoneNumberList(
       extensionPhoneNumberList,
     );
