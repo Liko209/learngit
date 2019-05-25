@@ -52,7 +52,9 @@ class ProfileService extends EntityBaseService<Profile>
 
   protected onStopped() {
     if (this._profileSetting) {
-      // this._profileSetting.unsubscribe();
+      ServiceLoader.getInstance<SettingService>(
+        ServiceConfig.SETTING_SERVICE,
+      ).unRegisterModuleSetting(this._profileSetting);
       delete this._profileSetting;
     }
 

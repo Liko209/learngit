@@ -60,7 +60,7 @@ export abstract class AbstractUserSettingHandler<T>
   onEntity() {
     return {
       onUpdate: <E, IdType extends ModelIdType = number>(
-        eventName: keyof typeof ENTITY,
+        eventName: string,
         listener: (
           payload: NotificationEntityUpdatePayload<E, IdType>,
         ) => Promise<void>,
@@ -69,21 +69,21 @@ export abstract class AbstractUserSettingHandler<T>
         ) => boolean,
       ) => {
         this.on<NotificationEntityUpdatePayload<E, IdType>>(
-          ENTITY[eventName],
+          eventName,
           listener,
           payload =>
             payload.type === EVENT_TYPES.UPDATE && (!filter || filter(payload)),
         );
       },
       onDelete: <IdType extends ModelIdType = number>(
-        eventName: keyof typeof ENTITY,
+        eventName: string,
         listener: (
           payload: NotificationEntityDeletePayload<IdType>,
         ) => Promise<void>,
         filter?: (payload: NotificationEntityDeletePayload<IdType>) => boolean,
       ) => {
         this.on<NotificationEntityDeletePayload<IdType>>(
-          ENTITY[eventName],
+          eventName,
           listener,
           payload =>
             payload.type === EVENT_TYPES.DELETE && (!filter || filter(payload)),

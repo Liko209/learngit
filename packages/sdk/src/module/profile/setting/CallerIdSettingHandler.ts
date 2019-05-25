@@ -8,6 +8,7 @@ import {
   ESettingValueType,
   UserSettingEntity,
   AbstractUserSettingHandler,
+  SettingEntityIds,
 } from 'sdk/module/setting';
 import { SettingModuleIds } from 'sdk/module/setting/constants';
 import { RCInfoService } from 'sdk/module/rcInfo';
@@ -19,11 +20,12 @@ import { SETTING_KEYS } from '../constants';
 import { Profile } from '../entity';
 import { IProfileService } from '../service/IProfileService';
 import { AccountService } from 'sdk/module/account';
+import { ENTITY } from 'sdk/service';
 
 export class CallerIdSettingHandler extends AbstractUserSettingHandler<
   PhoneNumberModel
 > {
-  id = SettingModuleIds.CallerIdSetting.id;
+  id = SettingEntityIds.CallerId;
 
   constructor(private _profileService: IProfileService) {
     super();
@@ -31,7 +33,7 @@ export class CallerIdSettingHandler extends AbstractUserSettingHandler<
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<Profile>('PROFILE', payload =>
+    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
       this.onProfileEntityUpdate(payload),
     );
   }
@@ -42,8 +44,8 @@ export class CallerIdSettingHandler extends AbstractUserSettingHandler<
     ]);
   }
 
-  async getUserSettingEntity(disableCache: boolean = false) {
-    if (!disableCache && this.userSettingEntityCache) {
+  async getUserSettingEntity(enableCache: boolean = false) {
+    if (enableCache && this.userSettingEntityCache) {
       return this.userSettingEntityCache;
     }
     const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
@@ -55,7 +57,7 @@ export class CallerIdSettingHandler extends AbstractUserSettingHandler<
       weight: SettingModuleIds.CallerIdSetting.weight,
       valueType: ESettingValueType.OBJECT,
       parentModelId: SettingModuleIds.PhoneSetting_General.id,
-      id: SettingModuleIds.CallerIdSetting.id,
+      id: SettingEntityIds.CallerId,
       source: callerList,
       value: info,
       state: ESettingItemState.ENABLE,
