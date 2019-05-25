@@ -42,9 +42,12 @@ class ProfileService extends EntityBaseService<Profile>
     this.setCheckTypeFunc((id: number) => {
       return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PROFILE);
     });
+  }
+
+  protected onStarted() {
     ServiceLoader.getInstance<SettingService>(
       ServiceConfig.SETTING_SERVICE,
-    ).registerModuleSetting(this.profileSettings);
+    ).registerModuleSetting(this.profileSetting);
   }
 
   protected onStopped() {
@@ -153,7 +156,7 @@ class ProfileService extends EntityBaseService<Profile>
       .getDefaultCaller();
   }
 
-  private get profileSettings() {
+  private get profileSetting() {
     if (!this._profileSetting) {
       this._profileSetting = new ProfileSetting(this);
     }

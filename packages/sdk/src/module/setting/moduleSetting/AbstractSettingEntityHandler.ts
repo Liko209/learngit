@@ -5,7 +5,7 @@
  */
 import _ from 'lodash';
 import { UserSettingEntity } from '../entity';
-import { IUserSettingHandler } from '../types';
+import { IUserSettingHandler } from './types';
 import { ENTITY, EVENT_TYPES } from 'sdk/service';
 import notificationCenter, {
   NotificationEntityUpdatePayload,
@@ -17,12 +17,28 @@ export abstract class AbstractUserSettingHandler<T>
   implements IUserSettingHandler<T> {
   id: number;
   userSettingEntityCache: UserSettingEntity<T>;
+  _subscriptions: { eventName: string; listener: (...values: any[]) => void }[];
+
+  private _on(eventName: string, listener: (...values: any[]) => void) {
+    notificationCenter.on(eventName, listener);
+    this._subscriptions.push({ eventName, listener });
+  }
+
+  dispose() {
+    this._subscriptions = this._subscriptions.filter(
+      ({ eventName, listener }) => {
+        notificationCenter.off(eventName, listener);
+        return false;
+      },
+    );
+  }
+
   on<E>(
     eventName: string,
     listener: (e: E) => Promise<void>,
     filter?: (e: E) => boolean,
   ): void {
-    notificationCenter.on(eventName, (e: E) => {
+    this._on(eventName, (e: E) => {
       this.userSettingEntityCache !== undefined &&
         (!filter || filter(e)) &&
         listener(e);

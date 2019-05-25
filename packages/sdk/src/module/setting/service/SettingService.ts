@@ -5,18 +5,17 @@
  */
 import { AbstractService } from 'sdk/framework';
 import { SettingController } from '../controller/SettingController';
-import { IModuleSetting } from '../types';
+import { IModuleSetting } from '../moduleSetting/types';
 
 class SettingService extends AbstractService {
   private _settingController: SettingController;
 
-  protected onStarted() {}
+  protected onStarted() {
+    this._settingController && this._settingController.init();
+  }
 
   protected onStopped() {
-    if (this._settingController) {
-      this._settingController.dispose();
-      delete this._settingController;
-    }
+    this._settingController && this._settingController.dispose();
   }
 
   async getById(id: number) {

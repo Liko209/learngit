@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IModuleSetting } from '../types';
+import { IModuleSetting } from '../moduleSetting/types';
 
 async function findFirst<R, T>(
   arr: R[],
@@ -13,7 +13,6 @@ async function findFirst<R, T>(
 ): Promise<T | null> {
   for (let index = 0; index < arr.length; index++) {
     const element = arr[index];
-    // filter(element);
     const transformElement = await transform(element);
     if (filter(transformElement)) {
       return transformElement;
@@ -26,13 +25,15 @@ class SettingController {
   private _moduleSettings: IModuleSetting[] = [];
 
   registerModuleSetting(moduleSetting: IModuleSetting) {
+    moduleSetting.init();
     this._moduleSettings.push(moduleSetting);
   }
 
   unRegisterModuleSetting(moduleSetting: IModuleSetting) {
     this._moduleSettings = this._moduleSettings.filter(
-      it => it === moduleSetting,
+      it => it !== moduleSetting,
     );
+    moduleSetting.dispose();
   }
 
   async getById(id: number) {
@@ -43,7 +44,13 @@ class SettingController {
     );
   }
 
-  dispose() {}
+  init() {
+    this._moduleSettings.forEach(moduleSetting => moduleSetting.init());
+  }
+
+  dispose() {
+    this._moduleSettings.forEach(moduleSetting => moduleSetting.dispose());
+  }
 }
 
 export { SettingController };
