@@ -324,7 +324,9 @@ describe('RCInfoFetchController', () => {
         .mockReturnValue('extensionPhoneNumberList');
       notificationCenter.emit.mockImplementationOnce(() => {});
       await rcInfoFetchController.requestExtensionPhoneNumberList();
-      expect(RCInfoApi.getExtensionPhoneNumberList).toBeCalledTimes(1);
+      expect(RCInfoApi.getExtensionPhoneNumberList).toBeCalledWith({
+        perPage: 1000,
+      });
       expect(
         RCInfoUserConfig.prototype.setExtensionPhoneNumberList,
       ).toBeCalledWith('extensionPhoneNumberList');
