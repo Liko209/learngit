@@ -20,6 +20,7 @@ import { SettingOption } from '../types';
 import { ProfileSetting } from '../setting';
 import { SettingService } from 'sdk/module/setting';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { TelephonyService } from 'sdk/module/telephony';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {
@@ -160,7 +161,10 @@ class ProfileService extends EntityBaseService<Profile>
 
   private get profileSetting() {
     if (!this._profileSetting) {
-      this._profileSetting = new ProfileSetting(this);
+      this._profileSetting = new ProfileSetting(
+        this,
+        ServiceLoader.getInstance(ServiceConfig.TELEPHONY_SERVICE),
+      );
     }
     return this._profileSetting;
   }
