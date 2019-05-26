@@ -9,7 +9,7 @@ import { IProfileService } from '../service/IProfileService';
 import { CallerIdSettingHandler } from './CallerIdSettingHandler';
 
 type HandlerMap = {
-  [SettingEntityIds.CallerId]: CallerIdSettingHandler;
+  [SettingEntityIds.Phone_CallerId]: CallerIdSettingHandler;
 };
 
 class ProfileSetting extends BaseModuleSetting<HandlerMap> {
@@ -19,7 +19,7 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
 
   getHandlerMap() {
     return {
-      [SettingEntityIds.CallerId]: new CallerIdSettingHandler(
+      [SettingEntityIds.Phone_CallerId]: new CallerIdSettingHandler(
         this._profileService,
       ),
     };

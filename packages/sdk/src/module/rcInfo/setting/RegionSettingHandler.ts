@@ -20,7 +20,7 @@ import { RegionSettingInfo } from './types';
 export class RegionSettingHandler extends AbstractUserSettingHandler<
   RegionSettingInfo
 > {
-  id = SettingEntityIds.Region;
+  id = SettingEntityIds.Phone_Region;
 
   constructor(private _rcInfoService: IRCInfoService) {
     super();
@@ -51,7 +51,7 @@ export class RegionSettingHandler extends AbstractUserSettingHandler<
       countryInfo.callingCode,
     );
     return {
-      id: SettingEntityIds.Region,
+      id: SettingEntityIds.Phone_Region,
       weight: SettingModuleIds.RegionSetting.weight,
       valueType: ESettingValueType.OBJECT,
       value: { countryInfo, areaCode },

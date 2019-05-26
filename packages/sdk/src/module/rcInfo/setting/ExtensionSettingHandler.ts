@@ -20,7 +20,7 @@ import { ERCWebSettingUri } from '../types';
 export class ExtensionSettingHandler extends AbstractUserSettingHandler<
   string
 > {
-  id = SettingEntityIds.Extension;
+  id = SettingEntityIds.Phone_Region;
 
   constructor(private _rcInfoService: IRCInfoService) {
     super();
@@ -47,7 +47,7 @@ export class ExtensionSettingHandler extends AbstractUserSettingHandler<
 
   private _getExtensionSetting(): UserSettingEntity<string> {
     return {
-      id: SettingEntityIds.Extension,
+      id: SettingEntityIds.Phone_Region,
       weight: SettingModuleIds.ExtensionSetting.weight,
       valueType: ESettingValueType.LINK,
       valueGetter: () => {

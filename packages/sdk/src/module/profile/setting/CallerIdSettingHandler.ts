@@ -25,7 +25,7 @@ import { ENTITY } from 'sdk/service';
 export class CallerIdSettingHandler extends AbstractUserSettingHandler<
   PhoneNumberModel
 > {
-  id = SettingEntityIds.CallerId;
+  id = SettingEntityIds.Phone_CallerId;
 
   constructor(private _profileService: IProfileService) {
     super();
@@ -57,7 +57,7 @@ export class CallerIdSettingHandler extends AbstractUserSettingHandler<
       weight: SettingModuleIds.CallerIdSetting.weight,
       valueType: ESettingValueType.OBJECT,
       parentModelId: SettingModuleIds.PhoneSetting_General.id,
-      id: SettingEntityIds.CallerId,
+      id: SettingEntityIds.Phone_CallerId,
       source: callerList,
       value: info,
       state: ESettingItemState.ENABLE,

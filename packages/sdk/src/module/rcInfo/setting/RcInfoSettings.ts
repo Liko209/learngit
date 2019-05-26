@@ -10,8 +10,8 @@ import { BaseModuleSetting } from '../../setting';
 import { RegionSettingHandler } from './RegionSettingHandler';
 import { ExtensionSettingHandler } from './ExtensionSettingHandler';
 type HandlerMap = {
-  [SettingEntityIds.Region]: RegionSettingHandler;
-  [SettingEntityIds.Extension]: ExtensionSettingHandler;
+  [SettingEntityIds.Phone_Region]: RegionSettingHandler;
+  [SettingEntityIds.Phone_Region]: ExtensionSettingHandler;
 };
 
 class RcInfoSettings extends BaseModuleSetting<HandlerMap> {
@@ -21,8 +21,10 @@ class RcInfoSettings extends BaseModuleSetting<HandlerMap> {
 
   getHandlerMap() {
     return {
-      [SettingEntityIds.Region]: new RegionSettingHandler(this._rcInfoService),
-      [SettingEntityIds.Extension]: new ExtensionSettingHandler(
+      [SettingEntityIds.Phone_Region]: new RegionSettingHandler(
+        this._rcInfoService,
+      ),
+      [SettingEntityIds.Phone_Region]: new ExtensionSettingHandler(
         this._rcInfoService,
       ),
     };
