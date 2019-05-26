@@ -11,7 +11,7 @@ import { RegionSettingHandler } from './RegionSettingHandler';
 import { ExtensionSettingHandler } from './ExtensionSettingHandler';
 type HandlerMap = {
   [SettingEntityIds.Phone_Region]: RegionSettingHandler;
-  [SettingEntityIds.Phone_Region]: ExtensionSettingHandler;
+  [SettingEntityIds.Phone_Extension]: ExtensionSettingHandler;
 };
 
 class RcInfoSettings extends BaseModuleSetting<HandlerMap> {
@@ -24,7 +24,7 @@ class RcInfoSettings extends BaseModuleSetting<HandlerMap> {
       [SettingEntityIds.Phone_Region]: new RegionSettingHandler(
         this._rcInfoService,
       ),
-      [SettingEntityIds.Phone_Region]: new ExtensionSettingHandler(
+      [SettingEntityIds.Phone_Extension]: new ExtensionSettingHandler(
         this._rcInfoService,
       ),
     };

@@ -79,7 +79,9 @@ export class CallerIdSettingHandler extends AbstractUserSettingHandler<
     }
     const defaultCallerId = profile[SETTING_KEYS.DEFAULT_NUMBER];
     const lastNumberId =
-      this.userSettingEntityCache.value && this.userSettingEntityCache.value.id;
+      this.userSettingEntityCache &&
+      this.userSettingEntityCache.value &&
+      this.userSettingEntityCache.value.id;
     if (defaultCallerId !== lastNumberId) {
       this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
     }

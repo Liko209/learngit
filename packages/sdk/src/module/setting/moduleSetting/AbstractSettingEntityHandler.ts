@@ -17,7 +17,10 @@ export abstract class AbstractUserSettingHandler<T>
   implements IUserSettingHandler<T> {
   id: number;
   userSettingEntityCache: UserSettingEntity<T>;
-  _subscriptions: { eventName: string; listener: (...values: any[]) => void }[];
+  _subscriptions: {
+    eventName: string;
+    listener: (...values: any[]) => void;
+  }[] = [];
 
   private _on(eventName: string, listener: (...values: any[]) => void) {
     notificationCenter.on(eventName, listener);

@@ -28,12 +28,9 @@ export class ExtensionSettingHandler extends AbstractUserSettingHandler<
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<RCExtensionInfo>(
-      RC_INFO.EXTENSION_INFO,
-      async () => {
-        this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
-      },
-    );
+    this.onEntity().onUpdate<RCExtensionInfo>(RC_INFO.CLIENT_INFO, async () => {
+      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+    });
   }
 
   async updateValue(value: string) {}
@@ -47,7 +44,7 @@ export class ExtensionSettingHandler extends AbstractUserSettingHandler<
 
   private _getExtensionSetting(): UserSettingEntity<string> {
     return {
-      id: SettingEntityIds.Phone_Region,
+      id: SettingEntityIds.Phone_Extension,
       weight: SettingModuleIds.ExtensionSetting.weight,
       valueType: ESettingValueType.LINK,
       valueGetter: () => {
