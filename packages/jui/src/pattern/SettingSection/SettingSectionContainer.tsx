@@ -14,7 +14,6 @@ type JuiSettingSectionContainerProps = {
 const MAX_WIDTH = 800;
 const MAX_BREAKPOINT = 832;
 const MIN_BREAKPOINT = 400;
-const MIN_WIDTH = 368;
 
 const JuiSettingSectionContainer = styled.div<JuiSettingSectionContainerProps>`
   && {
@@ -23,7 +22,7 @@ const JuiSettingSectionContainer = styled.div<JuiSettingSectionContainerProps>`
         return css`
           padding: ${spacing(4)} ${(containerWidth - MAX_WIDTH) / 2}px;
           > div {
-            width: ${MAX_WIDTH};
+            width: ${spacing(200)};
           }
         `;
       }
@@ -38,7 +37,7 @@ const JuiSettingSectionContainer = styled.div<JuiSettingSectionContainerProps>`
       return css`
         padding: ${spacing(4)};
         > div {
-          width: ${MIN_WIDTH};
+          width: ${spacing(92)};
         }
       `;
     }};
