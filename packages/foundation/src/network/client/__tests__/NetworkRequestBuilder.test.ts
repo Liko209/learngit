@@ -46,7 +46,7 @@ describe('NetworkRequestBuilder', () => {
     expect(request).toBeInstanceOf(HttpRequest);
   });
 
-  it('should return HttpRequest when build via HTTP and set via ALL', () => {
+  it('should return HttpRequest when build via ALL and set via HTTP', () => {
     const request = builder.setVia(NETWORK_VIA.ALL).build(NETWORK_VIA.HTTP);
     expect(request).toBeInstanceOf(HttpRequest);
   });
