@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/SignInOut/SignInWithRcAccount.ts"
+    ],
+    "include_tags": [
+      "JPT-69"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

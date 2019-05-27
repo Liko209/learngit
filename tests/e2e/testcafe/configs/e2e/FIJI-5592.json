@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/MessageInput/ScrollConversation.ts"
+    ],
+    "include_tags": [
+      "JPT-60"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
