@@ -17,6 +17,9 @@ class ServiceWorkerModule extends AbstractModule {
           isByWaitingWorker,
         );
       },
+      () => {
+        this._upgradeHandler.onControllerChanged();
+      },
       (text: string) => {
         this._upgradeHandler.logInfo(text);
       },

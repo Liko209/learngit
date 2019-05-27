@@ -14,6 +14,10 @@ class DataAnalysis {
     this._segAnalysis.init();
   }
 
+  setProduction(isProduction: boolean) {
+    this._segAnalysis.setProduction(isProduction);
+  }
+
   reset() {
     this._segAnalysis.reset();
   }

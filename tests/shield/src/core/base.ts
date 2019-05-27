@@ -12,7 +12,15 @@ function skip(target: any) {
   target.testType = 'skip';
 }
 
+const keyword = ['when', 'if'];
+
 const _test = function (description: string, testType?: 'skip' | 'only') {
+  if (!description.startsWith('should')) {
+    throw new Error('@test should be startWith "should"');
+  }
+  if (!keyword.some((key: string) => description.includes(key))) {
+    throw new Error('@test must be has keyword when or if');
+  }
   return function (
     target: any,
     property: string,

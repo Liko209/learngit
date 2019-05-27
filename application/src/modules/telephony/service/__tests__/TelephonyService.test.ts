@@ -28,7 +28,14 @@ let telephonyService: TelephonyService | null;
 
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
+
 jest.mock('../ToastCallError');
+
+// mock media element methods
+window.HTMLMediaElement.prototype.load = jest.fn();
+window.HTMLMediaElement.prototype.play = jest.fn();
+window.HTMLMediaElement.prototype.pause = jest.fn();
+window.HTMLMediaElement.prototype.addTextTrack = jest.fn();
 
 const sleep = (time: number): Promise<void> => {
   return new Promise<void>((res, rej) => {

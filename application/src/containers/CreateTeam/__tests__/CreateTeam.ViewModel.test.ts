@@ -7,6 +7,7 @@ import { testable, test } from 'shield';
 import { mockGlobalValue } from 'shield/application';
 import { mockService } from 'shield/sdk';
 import { GroupService, TeamSetting } from 'sdk/module/group';
+import { AccountService } from 'sdk/module/account';
 import {
   ERROR_CODES_NETWORK,
   ERROR_CODES_SERVER,
@@ -25,7 +26,7 @@ function getNewJServerError(code: string, message: string = '') {
   return new JServerError(code, message);
 }
 
-describe.skip('CreateTeamViewModel', () => {
+describe('CreateTeamViewModel', () => {
   const groupService = {
     name: ServiceConfig.GROUP_SERVICE,
     createTeam() {},
@@ -36,14 +37,22 @@ describe.skip('CreateTeamViewModel', () => {
   };
 
   const creatorId = 1;
+  const mockUserConfig = () => {
+    return {
+      getGlipUserId() {
+        return creatorId;
+      },
+    };
+  };
   @testable
   class create {
-    @test('create team success')
+    @test(
+      'should be success if create team with creatorId memberIds and options',
+    )
     @mockService(groupService, 'createTeam')
-    @mockService(accountService)
+    @mockService(AccountService, 'userConfig.get', mockUserConfig)
     async t1() {
       const createTeamVM = new CreateTeamViewModel();
-      AccountUserConfig.prototype.getGlipUserId.mockReturnValue(creatorId);
       const name = 'name';
       const memberIds = [1, 2];
       const description = 'description';
@@ -64,16 +73,13 @@ describe.skip('CreateTeamViewModel', () => {
       );
     }
 
-    @test('create team success handle error')
+    @test('should be null if create team success handle error')
     @mockService.reject(GroupService, 'createTeam', () =>
       getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN),
     )
-    @mockService(accountService)
+    @mockService(AccountService, 'userConfig.get', mockUserConfig)
     async t2() {
       const createTeamVM = new CreateTeamViewModel();
-      const creatorId = 1;
-
-      AccountUserConfig.prototype.getGlipUserId.mockReturnValue(creatorId);
 
       jest
         .spyOn(createTeamVM, 'createErrorHandler')
@@ -92,16 +98,15 @@ describe.skip('CreateTeamViewModel', () => {
       expect(await createTeamVM.create(memberIds, options)).toEqual(null);
     }
 
-    @test('create team server error')
+    @test('should be error if create team server error')
     @mockService.reject(GroupService, 'createTeam', () =>
       getNewJServerError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, ''),
     )
-    @mockService(accountService)
+    @mockService(AccountService, 'userConfig.get', mockUserConfig)
     async t3() {
       const createTeamVM = new CreateTeamViewModel();
       const creatorId = 1;
 
-      AccountUserConfig.prototype.getGlipUserId.mockReturnValue(creatorId);
       const name = 'name';
       const memberIds = [1, 2];
       const description = 'description';
@@ -123,7 +128,7 @@ describe.skip('CreateTeamViewModel', () => {
 
   @testable
   class isOffline {
-    @test('getGlobalValue')
+    @test('should be true or false when offline or online')
     @mockGlobalValue.multi(['offline', 'online'])
     t1() {
       const createTeamVM = new CreateTeamViewModel();
@@ -134,7 +139,7 @@ describe.skip('CreateTeamViewModel', () => {
 
   @testable
   class handleNameChange {
-    @test('handleNameChange()')
+    @test('should be change btn status if change team name')
     t1() {
       const createTeamVM = new CreateTeamViewModel();
       createTeamVM.handleNameChange({
@@ -161,7 +166,7 @@ describe.skip('CreateTeamViewModel', () => {
 
   @testable
   class handleDescChange {
-    @test('handleDescChange()')
+    @test('should be change if typing text in description input')
     t1() {
       const createTeamVM = new CreateTeamViewModel();
       createTeamVM.handleDescChange({
@@ -175,7 +180,7 @@ describe.skip('CreateTeamViewModel', () => {
 
   @testable
   class createErrorHandle {
-    @test('createErrorHandle()')
+    @test('should show error tip if get error')
     createErrorHandle() {
       const createTeamVM = new CreateTeamViewModel();
       let error = getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN);

@@ -3,6 +3,8 @@
     "dialog": {
       "OK": "OK",
       "cancel": "Cancel",
+      "update": "Update",
+      "create": "Create",
       "done": "Done",
       "save": "Save",
       "send": "Send",
@@ -42,6 +44,7 @@
     },
     "more": "More",
     "copy": "Copy",
+    "remove": "Remove",
     "pin": "Pin",
     "ariaCopy": "Copy this {{value}}",
     "call": "Call",
@@ -53,6 +56,7 @@
     "forward": "Forward",
     "You": "You",
     "Connecting": "Connecting",
+    "deactivatedUsers": "Deactivated Users",
     "team": "team"
   },
   "auth": {
@@ -81,6 +85,7 @@
     "search": "Search",
     "showMore": "Show more",
     "ClearHistory": "Clear history",
+    "clear": "Clear",
     "RecentSearches": "Recent searches",
     "contentSearch": "Content search",
     "inThisConversation": "in this conversation",
@@ -141,7 +146,6 @@
       "createATeam": "created a team",
       "on": "on",
       "postInitialTitle": "Get Started",
-      "postInitialContent": "Having a home based business is a wonderful asset to your life.",
       "shareFile": "Share a file",
       "createTask": "Create a task",
       "integrateApps": "Integrate apps"
@@ -397,6 +401,7 @@
       "joinTeamTitle": "Join team?",
       "joinTeamContent": "You are not currently a member of the <0>{{teamName}}</0> team. Would you like to join the team?",
       "joinTeamSubmit": "Join",
+      "joinedStatus": "Joined",
       "ariaGoToTeam": "Go to the conversation with team {{name}}",
       "ariaGoToGroup": "Go to the conversation with group",
       "favorite": "Favorite",
@@ -596,7 +601,6 @@
     "ZoomReset": "Reset zoom",
     "PreviousFile": "View previous file",
     "NextFile": "View next file",
-    "DismissTip": "Sorry, the image you were viewing is deleted.",
     "ImageDeleted": "Sorry, the image you were viewing is deleted.",
     "TeamDeleted": "The team was deleted. To know more, contact the team administrator.",
     "TeamArchived": "The team was archived. To know more, contact the team administrator.",

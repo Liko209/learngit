@@ -153,6 +153,7 @@ describe('GroupFetchDataController', () => {
 
   describe('createTeam()', () => {
     const data = {
+      is_team: true,
       set_abbreviation: 'some team',
       members: [1323],
       description: 'abc',
@@ -292,6 +293,7 @@ describe('GroupFetchDataController', () => {
       members: [1, 2, 3],
       description: 'abc',
       privacy: 'private',
+      is_team: true,
       permissions: {
         admin: {
           uids: [1],

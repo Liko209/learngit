@@ -142,12 +142,16 @@ class TelephonyAccountController implements IRTCAccountDelegate {
         if (fromNum !== PhoneNumberAnonymous) {
           e164FromNum = await phoneNumberService.getE164PhoneNumber(fromNum);
         }
+        telephonyLogger.debug(
+          `Place a call voip toNum: ${e164ToNumber} fromNum: ${e164FromNum}`,
+        );
         makeCallResult = this._rtcAccount.makeCall(
           e164ToNumber,
           this._telephonyCallDelegate,
           { fromNumber: e164FromNum },
         );
       } else {
+        telephonyLogger.debug(`Place a call to voip toNum: ${e164ToNumber}`);
         makeCallResult = this._rtcAccount.makeCall(
           e164ToNumber,
           this._telephonyCallDelegate,

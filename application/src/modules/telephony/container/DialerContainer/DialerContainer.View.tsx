@@ -98,7 +98,7 @@ class DialerContainerViewComponent extends React.Component<
     const {
       keypadEntered,
       isDialer,
-      typeString,
+      clickToInput,
       playAudio,
       dialerInputFocused,
       callerPhoneNumberList,
@@ -138,7 +138,7 @@ class DialerContainerViewComponent extends React.Component<
             callerIdSelector
           )}
           <DialPad
-            makeMouseEffect={typeString}
+            makeMouseEffect={clickToInput}
             makeKeyboardEffect={playAudio}
             shouldHandleKeyboardEvts={dialerInputFocused}
           />

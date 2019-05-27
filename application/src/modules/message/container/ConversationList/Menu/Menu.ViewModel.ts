@@ -20,12 +20,6 @@ import { Group } from 'sdk/module/group/entity';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
-  private _profileService = ServiceLoader.getInstance<ProfileService>(
-    ServiceConfig.PROFILE_SERVICE,
-  );
-  private _stateService = ServiceLoader.getInstance<StateService>(
-    ServiceConfig.STATE_SERVICE,
-  );
   @computed
   get personId() {
     return this.props.personId;
@@ -102,18 +96,15 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   }
 
   toggleFavorite = () => {
-    return this._profileService.markGroupAsFavorite(
-      this.groupId,
-      !this.isFavorite,
-    );
+    return ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    ).markGroupAsFavorite(this.groupId, !this.isFavorite);
   }
 
   closeConversation = (shouldSkipNextTime: boolean) => {
-    return this._profileService.hideConversation(
-      this.groupId,
-      true,
-      shouldSkipNextTime,
-    );
+    return ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    ).hideConversation(this.groupId, true, shouldSkipNextTime);
   }
 
   toggleRead = async () => {
@@ -124,11 +115,9 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
       const globalStore = storeManager.getGlobalStore();
       globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
     }
-    await this._stateService.updateReadStatus(
-      this.groupId,
-      !this.isUnread,
-      false,
-    );
+    await ServiceLoader.getInstance<StateService>(
+      ServiceConfig.STATE_SERVICE,
+    ).updateReadStatus(this.groupId, !this.isUnread, false);
   }
 }
 export { MenuViewModel };

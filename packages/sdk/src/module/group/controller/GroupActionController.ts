@@ -480,6 +480,7 @@ export class GroupActionController {
       description,
       members,
       set_abbreviation: name,
+      is_team: true,
       permissions: {
         admin: {
           uids: [creatorId],

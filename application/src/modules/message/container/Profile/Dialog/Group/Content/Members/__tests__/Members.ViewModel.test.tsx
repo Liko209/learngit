@@ -11,6 +11,7 @@ import { ServiceLoader } from 'sdk/module/serviceLoader';
 import debounce from 'lodash/debounce';
 
 jest.mock('@/store/utils');
+jest.mock('@/store/handler/SortableGroupMemberHandler');
 
 jest.useFakeTimers();
 
@@ -29,13 +30,6 @@ const mockGroup = {
 const searchService = {
   doFuzzySearchPersons: jest.fn().mockResolvedValue(mockResult),
 };
-ServiceLoader.getInstance = jest.fn().mockReturnValue(searchService);
-
-SortableGroupMemberHandler.createSortableGroupMemberHandler = jest
-  .fn()
-  .mockResolvedValue({
-    getSortedGroupMembersIds: jest.fn().mockReturnValue(mockMembers),
-  });
 
 const props = {
   id: 1,
@@ -49,14 +43,11 @@ describe('MembersViewModel', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(searchService);
+    SortableGroupMemberHandler.mockImplementation(() => ({
+      sortedMemberIds: mockMembers,
+    }));
     vm = new MembersViewModel(props);
-  });
-
-  describe('sortedAllMemberIds', () => {
-    it('should be get sorted member ids when invoke service order [JPT-1263]', async () => {
-      await vm.createSortableHandler();
-      expect(vm.sortedAllMemberIds).toEqual(mockMembers);
-    });
   });
 
   describe('doFuzzySearchPersons()', () => {
@@ -78,7 +69,7 @@ describe('MembersViewModel', () => {
     it('should use all ids as filtered ids [JPT-1263]', async () => {
       vm.keywords = '';
       await vm.handleSearch();
-      expect(vm.filteredMemberIds).toEqual(vm.sortedAllMemberIds);
+      expect(vm.filteredMemberIds.length).toEqual(mockMembers.length);
     });
   });
 });

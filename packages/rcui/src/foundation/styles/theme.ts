@@ -9,7 +9,7 @@ import boxShadow from './theme/boxShadow.json';
 
 import {
   Theme as MuiTheme,
-  ThemeOptions as MuiThemeOptions,
+  ThemeOptions,
 } from '@material-ui/core/styles/createMuiTheme';
 import { Transitions } from '@material-ui/core/styles/transitions';
 import { Shadows } from '@material-ui/core/styles/shadows';

@@ -85,8 +85,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   }: Props,
   forwardRef,
 ) => {
-  const shouldUseNativeImplementation =
-    'ResizeObserver' in window || !fixedWrapper;
+  const shouldUseNativeImplementation = true;
   // TODO use useCallback to optimize performance
   const computeVisibleRange = () => {
     let result: IndexRange;
@@ -465,7 +464,6 @@ const JuiVirtualizedList: RefForwardingComponent<
       }
       updateRange();
       onScroll(event);
-      useDebounceForceUpdate();
     }
   };
 

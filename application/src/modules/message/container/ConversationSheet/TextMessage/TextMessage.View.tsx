@@ -9,7 +9,7 @@ import { observer } from 'mobx-react';
 import { JuiConversationPostText } from 'jui/pattern/ConversationCard';
 import { TextMessageViewProps } from './types';
 import { withHighlight } from 'jui/hoc/withHighlight';
-import { isSupportWebRTC } from '@/modules/common/container/PhoneParser/parserNumber';
+import { isSupportWebRTC, handleHrefAttribute } from '@/modules/common/container/PhoneParser/helper';
 import { PHONE_LINKS_CLS } from './constants';
 
 @observer
@@ -40,10 +40,10 @@ class TextMessageViewComponent extends React.Component<TextMessageViewProps> {
     for (let k = 0, len = phoneElements.length; k < len; k++) {
       const phoneLink = phoneElements[k];
       const match = phoneLink.getAttribute('data-id');
-      const _href =
-        canUseTelephony && isSupportWebRTC()
-          ? 'javascript:;'
-          : `rcmobile: ${match}`;
+      const _href = handleHrefAttribute({
+        canUseTelephony,
+        content: match,
+      });
       phoneLink.setAttribute('href', _href);
       phoneLink.removeEventListener('click', this._handlePhoneCall);
       phoneLink.addEventListener('click', this._handlePhoneCall);

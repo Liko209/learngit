@@ -90,8 +90,7 @@ export class MiscUtils {
           debug("response error");
           debug(responseError);
         } else if (error.request) {
-          debug("request error")
-          debug("request", error.request);
+          debug("request error");
         } else {
           debug('Error', error.message);
         }

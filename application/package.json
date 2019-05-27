@@ -19,6 +19,7 @@
     "filestack-js": "2.0.2",
     "framework": "1.4.0",
     "glipdown": "0.0.54",
+    "event-source-polyfill": "1.0.5",
     "hoist-non-react-statics": "3.1.0",
     "i18next": "15.0.7",
     "i18next-browser-languagedetector": "3.0.1",

@@ -65,7 +65,7 @@ class PostListPageViewModel extends AbstractViewModel {
   private _type: POST_LIST_TYPE;
 
   @computed
-  get type(): POST_LIST_TYPE {
+  get kind(): POST_LIST_TYPE {
     return this._type;
   }
 
