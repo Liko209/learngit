@@ -1,9 +1,11 @@
+import { CLIENT_SERVICE } from '@/modules/common/interface';
 /*
  * @Author: Lex Huang (lex.huang@ringcentral.com)
  * @Date: 2019-04-02 17:28:54
  * Copyright © RingCentral. All rights reserved.
  */
 import { TelephonyService } from '../TelephonyService';
+import { Jupiter } from 'framework';
 import { v4 } from 'uuid';
 import {
   TelephonyService as ServerTelephonyService,
@@ -18,7 +20,7 @@ import { TelephonyStore } from '../../store/TelephonyStore';
 import { ToastCallError } from '../ToastCallError';
 import { container, injectable, decorate } from 'framework';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-
+import { ClientService } from '@/modules/common';
 const testProcedureWaitingTime = 20;
 const mockedDelay = 10;
 
@@ -28,6 +30,7 @@ let telephonyService: TelephonyService | null;
 
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
+decorate(injectable(), ClientService);
 
 jest.mock('../ToastCallError');
 
@@ -59,7 +62,6 @@ describe('TelephonyService', () => {
     let cachedOnCallActionFailed: any;
     let cachedOnCallStateChange: any;
     let callId: string | null = null;
-
     mockedServerTelephonyService = {
       hold: jest.fn().mockImplementation(() => {
         sleep(mockedDelay).then(() =>
@@ -151,6 +153,7 @@ describe('TelephonyService', () => {
           return {} as PersonService;
       }
     });
+    container.bind(CLIENT_SERVICE).to(ClientService);
     container.bind(TelephonyStore).to(TelephonyStore);
     container.bind(TelephonyService).to(TelephonyService);
     telephonyService = container.get(TelephonyService);
