@@ -10,6 +10,16 @@ const networkManager = new NetworkManager(new OAuthTokenManager());
 builder.setNetworkManager(networkManager);
 
 describe('NetworkRequestBuilder', () => {
+  function clearMocks() {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+  }
+
+  beforeEach(() => {
+    clearMocks();
+  });
+
   it('should return SocketRequest when via socket', () => {
     const request = builder.setVia(NETWORK_VIA.SOCKET).build();
     expect(request).toBeInstanceOf(SocketRequest);
@@ -19,6 +29,7 @@ describe('NetworkRequestBuilder', () => {
     const request = builder.setVia(NETWORK_VIA.HTTP).build();
     expect(request).toBeInstanceOf(HttpRequest);
   });
+
   it('should return SocketRequest when via all and getAvailableClientType return socket', () => {
     networkManager.clientManager.getAvailableClientType = jest
       .fn()
@@ -26,6 +37,7 @@ describe('NetworkRequestBuilder', () => {
     const request = builder.setVia(NETWORK_VIA.ALL).build();
     expect(request).toBeInstanceOf(SocketRequest);
   });
+
   it('should return SocketRequest when via all and getAvailableClientType return http', () => {
     networkManager.clientManager.getAvailableClientType = jest
       .fn()
@@ -33,6 +45,17 @@ describe('NetworkRequestBuilder', () => {
     const request = builder.setVia(NETWORK_VIA.ALL).build();
     expect(request).toBeInstanceOf(HttpRequest);
   });
+
+  it('should return HttpRequest when build via HTTP and set via ALL', () => {
+    const request = builder.setVia(NETWORK_VIA.ALL).build(NETWORK_VIA.HTTP);
+    expect(request).toBeInstanceOf(HttpRequest);
+  });
+
+  it('should return SocketRequest when build via HTTP and set via SOCKET', () => {
+    const request = builder.setVia(NETWORK_VIA.ALL).build(NETWORK_VIA.SOCKET);
+    expect(request).toBeInstanceOf(SocketRequest);
+  });
+
   describe('options()', () => {
     const request: IRequest = {
       host: 'host',
