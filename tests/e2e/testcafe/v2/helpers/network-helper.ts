@@ -38,6 +38,7 @@ class NetworkHelper {
       await cb();
     } finally {
       this.setNetwork(true, false);
+      this.waitUntilReachable();
     }
   }
 }
