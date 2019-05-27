@@ -627,7 +627,7 @@ class DashboardService {
     let jupiterVersion;
     const jupiterVersionSelector = "#root > div:nth-child(2) > div > div:nth-child(1)";
     while (cnt-- > 0) {
-      if (!PptrUtils.waitForSelector(page, jupiterVersionSelector)) {
+      if (!(await PptrUtils.waitForSelector(page, jupiterVersionSelector))) {
         continue;
       }
       jupiterVersion = await PptrUtils.text(page, jupiterVersionSelector);

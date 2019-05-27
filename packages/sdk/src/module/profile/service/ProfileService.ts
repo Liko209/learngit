@@ -18,6 +18,8 @@ import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { SettingOption } from '../types';
 import { ProfileSetting } from '../setting';
+import { SettingService } from 'sdk/module/setting';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {
@@ -42,9 +44,17 @@ class ProfileService extends EntityBaseService<Profile>
     });
   }
 
+  protected onStarted() {
+    ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    ).registerModuleSetting(this.profileSetting);
+  }
+
   protected onStopped() {
     if (this._profileSetting) {
-      this._profileSetting.unsubscribe();
+      ServiceLoader.getInstance<SettingService>(
+        ServiceConfig.SETTING_SERVICE,
+      ).unRegisterModuleSetting(this._profileSetting);
       delete this._profileSetting;
     }
 
@@ -148,19 +158,11 @@ class ProfileService extends EntityBaseService<Profile>
       .getDefaultCaller();
   }
 
-  private get profileSettings() {
+  private get profileSetting() {
     if (!this._profileSetting) {
       this._profileSetting = new ProfileSetting(this);
     }
     return this._profileSetting;
-  }
-
-  async getSettingsByParentId(settingId: number) {
-    return this.profileSettings.getSettingsByParentId(settingId);
-  }
-
-  async getSettingItemById(settingId: number) {
-    return this.profileSettings.getSettingById(settingId);
   }
 }
 

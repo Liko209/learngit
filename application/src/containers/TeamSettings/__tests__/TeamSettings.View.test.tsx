@@ -150,7 +150,7 @@ describe('TeamSettingsView', () => {
         .filterWhere(
           wrapper => wrapper.find(ButtonListItemText).text() === 'deleteTeam',
         );
-      expect(deleteTeamButton.prop('hide')).toBeTruthy();
+      expect(deleteTeamButton.exists()).toBeFalsy();
       props.isAdmin = true;
       result = shallow(<TeamSettingsComponent {...props} />);
       deleteTeamButton = result
@@ -181,7 +181,7 @@ describe('TeamSettingsView', () => {
         .filterWhere(
           wrapper => wrapper.find(ButtonListItemText).text() === 'deleteTeam',
         );
-      expect(deleteTeamButton.prop('hide')).toBeTruthy();
+      expect(deleteTeamButton.exists()).toBeFalsy();
       props.isCompanyTeam = false;
       result = shallow(<TeamSettingsComponent {...props} />);
       deleteTeamButton = result
@@ -249,7 +249,7 @@ describe('TeamSettingsView', () => {
         .filterWhere(
           wrapper => wrapper.find(ButtonListItemText).text() === 'archiveTeam',
         );
-      expect(archiveTeamButton.prop('hide')).toBeTruthy();
+      expect(archiveTeamButton.exists()).toBeFalsy();
       props.isAdmin = true;
       result = shallow(<TeamSettingsComponent {...props} />);
       archiveTeamButton = result
@@ -280,7 +280,7 @@ describe('TeamSettingsView', () => {
         .filterWhere(
           wrapper => wrapper.find(ButtonListItemText).text() === 'archiveTeam',
         );
-      expect(archiveTeamButton.prop('hide')).toBeTruthy();
+      expect(archiveTeamButton.exists()).toBeFalsy();
       props.isCompanyTeam = false;
       result = shallow(<TeamSettingsComponent {...props} />);
       archiveTeamButton = result

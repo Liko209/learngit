@@ -73,10 +73,11 @@ describe('SomeNeedTestClass', () => {
 
 ## @test
 
-> @test should be startWith "should be" and must be has other keyword when or if
+> @test should be startWith "should" and must be has other keyword when or if
 
 ### For example
 
 > @test('should be time format if createdAt is 2019/1/4')
 > @test('should be get PROGRESS_STATUS.SUCCESS when postId > 0')
 > @test('should be false when is not production or public')
+> @test('should return foo when balabalabala')

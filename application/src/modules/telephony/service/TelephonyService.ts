@@ -123,7 +123,7 @@ class TelephonyService {
       switch (e.code) {
         case 0:
           this._pauseRingtone();
-          ['mousedown', 'keydown'].forEach(evt => {
+          ['mousedown', 'keydown'].forEach((evt) => {
             const cb = () => {
               if (!this._telephonyStore.hasIncomingCall) {
                 return;
@@ -322,7 +322,7 @@ class TelephonyService {
       () =>
         this._telephonyStore.shouldDisplayDialer &&
         this._telephonyStore.callWindowState !== CALL_WINDOW_STATUS.MINIMIZED,
-      shouldDisplayDialer => {
+      (shouldDisplayDialer) => {
         if (!shouldDisplayDialer) {
           return;
         }
@@ -384,7 +384,7 @@ class TelephonyService {
           return;
         }
         const defaultPhoneNumber = callerPhoneNumberList.find(
-          callerPhoneNumber => callerPhoneNumber.id === defaultNumberId,
+          (callerPhoneNumber) => callerPhoneNumber.id === defaultNumberId,
         );
         if (defaultPhoneNumber) {
           this._telephonyStore.updateDefaultChosenNumber(
@@ -397,7 +397,7 @@ class TelephonyService {
 
     this._incomingCallDisposer = reaction(
       () => this._telephonyStore.hasIncomingCall,
-      hasIncomingCall => {
+      (hasIncomingCall) => {
         if (hasIncomingCall) {
           this._playRingtone();
         } else {
@@ -432,17 +432,30 @@ class TelephonyService {
 
   makeCall = async (toNumber: string) => {
     // FIXME: move this logic to SDK and always using callerID
-    const phoneNumber = this._telephonyStore.callerPhoneNumberList.find(
-      phone =>
+    const idx = this._telephonyStore.callerPhoneNumberList.findIndex(
+      (phone) =>
         phone.phoneNumber === this._telephonyStore.chosenCallerPhoneNumber,
     );
+    if (idx === -1) {
+      return mainLogger.error(
+        `${TelephonyService.TAG} can't Make call with: ${
+          this._telephonyStore.chosenCallerPhoneNumber
+        }, because can't find corresponding phone number from ${this._telephonyStore.callerPhoneNumberList.join(
+          ',',
+        )}`,
+      );
+    }
+    const fromEl = this._telephonyStore.callerPhoneNumberList[idx];
+    const fromNumber = fromEl.id ? fromEl.phoneNumber : ANONYMOUS;
     mainLogger.info(
-      `${TelephonyService.TAG}Make call with: ${
-        this._telephonyStore.chosenCallerPhoneNumber
-      }`,
+      `${
+        TelephonyService.TAG
+      }Make call with fromNumber: ${fromNumber}， and toNumber: ${toNumber}`,
     );
-    const id = `${(phoneNumber && phoneNumber.id) || ANONYMOUS}`;
-    const rv = await this._serverTelephonyService.makeCall(toNumber, id);
+    const rv = await this._serverTelephonyService.makeCall(
+      toNumber,
+      fromNumber,
+    );
 
     switch (true) {
       case MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION === rv: {

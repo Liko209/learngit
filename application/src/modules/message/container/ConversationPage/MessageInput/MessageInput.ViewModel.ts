@@ -45,8 +45,7 @@ const DEBUG_COMMAND_MAP = {
           mainLogger.debug('Zip log fail.');
           return;
         }
-        const [name, blob] = zipResult;
-        saveBlob(name, blob);
+        saveBlob(zipResult.zipName, zipResult.zipBlob);
       });
   },
 };

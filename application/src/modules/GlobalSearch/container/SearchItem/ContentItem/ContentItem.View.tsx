@@ -25,6 +25,7 @@ class ContentItemComponent extends React.Component<ContentItemProps> {
       onClick,
       automationId,
       inThisConversation,
+      t,
     } = this.props;
 
     return (
@@ -41,6 +42,7 @@ class ContentItemComponent extends React.Component<ContentItemProps> {
         afterValue={inThisConversation.get()}
         terms={terms}
         data-test-automation-id={automationId}
+        joinedStatusText={t('people.team.joinedStatus')}
       />
     );
   }

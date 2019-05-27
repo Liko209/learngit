@@ -72,16 +72,16 @@ class PersonItemComponent extends React.Component<PersonItemProps> {
     );
     const callIcon = extensions['searchItem']
       ? [...extensions['searchItem']].map(
-          (Extension: React.ComponentType<any>) => (
-            <Extension
-              key={`GLOBAL_SEARCH_EXTENSION_${Extension.displayName}`}
-              variant="plain"
-              id={id}
-              onClick={this.onCallClose}
-              size="small"
-            />
-          ),
-        )
+        (Extension: React.ComponentType<any>) => (
+          <Extension
+            key={`GLOBAL_SEARCH_EXTENSION_${Extension.displayName}`}
+            variant="plain"
+            id={id}
+            onClick={this.onCallClose}
+            size="small"
+          />
+        ),
+      )
       : null;
 
     return (
@@ -98,6 +98,7 @@ class PersonItemComponent extends React.Component<PersonItemProps> {
         Actions={[goToConversationIcon, callIcon]}
         isPrivate={false}
         isJoined={false}
+        joinedStatusText={t('people.team.joinedStatus')}
       />
     );
   }

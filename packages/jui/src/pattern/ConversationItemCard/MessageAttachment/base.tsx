@@ -33,7 +33,7 @@ type MarkDownViewProps = {
 const MarkdownWrapper = withHighlight([
   'dangerouslySetInnerHTML.__html',
 ])(styled.div`
-  ${typography('caption1')};
+  ${typography('body1')};
   ${ellipsis()}
 `);
 

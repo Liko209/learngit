@@ -262,11 +262,18 @@ export class GroupFetchDataController {
 
     return (group: Group, terms: Terms) => {
       if (this._isValidGroup(group) && group.members.length > 2) {
-        const allPersons = this.getAllPersonOfGroup(
+        const persons = this.getAllPersonOfGroup(
           group.members,
           this._currentUserId,
         );
-        const groupName = this.getGroupNameByMultiMembers(allPersons);
+
+        if (persons.invisiblePersons.length) {
+          return null;
+        }
+
+        const groupName = this.getGroupNameByMultiMembers(
+          persons.visiblePersons,
+        );
         const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
         const lowerCaseGroupName = groupName.toLowerCase();
         const isFuzzyMatched =
@@ -276,7 +283,7 @@ export class GroupFetchDataController {
           ) ||
           (searchKeyTermsToSoundex.length &&
             this.entityCacheSearchController.isSoundexMatched(
-              this.getSoundexValueOfGroup(allPersons),
+              this.getSoundexValueOfGroup(persons.visiblePersons),
               searchKeyTermsToSoundex,
             ));
         if (
@@ -292,9 +299,10 @@ export class GroupFetchDataController {
             : 0;
           return {
             firstSortKey,
+            secondSortKey: group.members.length,
             id: group.id,
             displayName: groupName,
-            secondSortKey: lowerCaseGroupName,
+            thirdSortKey: lowerCaseGroupName,
             entity: group,
           };
         }
@@ -329,6 +337,13 @@ export class GroupFetchDataController {
           return -1;
         }
         if (groupA.secondSortKey > groupB.secondSortKey) {
+          return 1;
+        }
+
+        if (groupA.thirdSortKey < groupB.thirdSortKey) {
+          return -1;
+        }
+        if (groupA.thirdSortKey > groupB.thirdSortKey) {
           return 1;
         }
         return 0;
@@ -406,11 +421,14 @@ export class GroupFetchDataController {
                 searchKeyTermsToSoundex,
               ));
         } else {
-          const allPerson = this.getAllPersonOfGroup(
+          const persons = this.getAllPersonOfGroup(
             group.members,
             currentUserId,
           );
-          groupName = this.getGroupNameByMultiMembers(allPerson);
+          if (persons.invisiblePersons.length) {
+            break;
+          }
+          groupName = this.getGroupNameByMultiMembers(persons.visiblePersons);
           lowerCaseName = groupName.toLowerCase();
           isFuzzy =
             this.entityCacheSearchController.isFuzzyMatched(
@@ -419,7 +437,7 @@ export class GroupFetchDataController {
             ) ||
             (searchKeyTermsToSoundex.length > 0 &&
               this.entityCacheSearchController.isSoundexMatched(
-                this.getSoundexValueOfGroup(allPerson),
+                this.getSoundexValueOfGroup(persons.visiblePersons),
                 searchKeyTermsToSoundex,
               ));
         }
@@ -605,7 +623,8 @@ export class GroupFetchDataController {
   }
 
   getAllPersonOfGroup(members: number[], currentUserId: number) {
-    const allPersons: Person[] = [];
+    const visiblePersons: Person[] = [];
+    const invisiblePersons: Person[] = [];
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
@@ -615,10 +634,14 @@ export class GroupFetchDataController {
       }
       const person = personService.getSynchronously(id);
       if (person) {
-        allPersons.push(person);
+        if (personService.isVisiblePerson(person)) {
+          visiblePersons.push(person);
+        } else {
+          invisiblePersons.push(person);
+        }
       }
     });
-    return allPersons;
+    return { invisiblePersons, visiblePersons };
   }
   getSoundexValueOfGroup(allPersons: Person[]): string[] {
     const personService = ServiceLoader.getInstance<PersonService>(
@@ -638,7 +661,7 @@ export class GroupFetchDataController {
       ServiceConfig.PERSON_SERVICE,
     );
     allPersons.forEach((person: Person) => {
-      if (person) {
+      if (person && personService.isVisiblePerson(person)) {
         const name = personService.getName(person);
         if (name.length) {
           names.push(name);

@@ -282,7 +282,7 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
   }
 
   private _updateEntityStore(models: T[]) {
-    if (!models.length) {
+    if (!models || !models.length) {
       return;
     }
     if (this._options.entityName) {

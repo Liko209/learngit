@@ -80,11 +80,11 @@ class MoreMenu extends Entry {
   }
 
   get profile() {
-    return this.getEntry('Profile');
+    return this.getToggler('profileEntry');
   }
 
   get close() {
-    return this.getComponent(MenuItem, this.self.find('li').withText('Close'));
+    return this.getComponent(MenuItem, this.self.find('*[data-test-automation-id="closeConversation"]'));
   }
 
   async openProfile() {
@@ -137,7 +137,7 @@ class ConversationEntry extends BaseWebComponent {
   }
 
   async shouldBeInvisible() {
-    await this.t.expect(this.isVisible).notOk();
+    await this.t.expect(this.exists).notOk();
   }
 
   get umi() {

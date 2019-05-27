@@ -3,8 +3,7 @@
  * @Date: 2019-05-04 17:12:19
  * Copyright © RingCentral. All rights reserved.
  */
-import { DateFormatter } from './decorators/DateFormatter';
-import { DATE_FORMATTER } from './constants';
+import { DateFormatter } from '../utils/DateFormatter';
 
 export class SessionManager {
   private constructor() {}
@@ -24,10 +23,7 @@ export class SessionManager {
         (window as any).jupiterElectron &&
         (window as any).jupiterElectron.sessionId
           ? (window as any).jupiterElectron.sessionId
-          : new DateFormatter().formatDate(
-              new Date(),
-              DATE_FORMATTER.DEFAULT_DATE_FORMAT,
-            );
+          : DateFormatter.formatDate();
     }
     return this.sessionId;
   }

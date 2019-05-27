@@ -28,7 +28,7 @@ class ProfileDialogGroupViewModel
 
   @computed
   get hasSearch() {
-    return this.group.members.length > COUNT_TO_SHOW_SEARCH;
+    return this.group && this.group.members.length > COUNT_TO_SHOW_SEARCH;
   }
 }
 

@@ -9,7 +9,7 @@ import i18next from 'i18next';
 import { handleAtMentionName } from './utils/handleAtMentionName';
 import { CustomEmojiMap, AtMentions, FormatToHtmlParams } from './types';
 import { Emoji } from './Emoji';
-import { isValidPhoneNumber } from '@/modules/common/container/PhoneParser/parserNumber';
+import { isValidPhoneNumber } from '@/modules/common/container/PhoneParser/helper';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { PHONE_LINKS_CLS, PHONE_NUMBER_REGEX } from './constants';
@@ -86,7 +86,7 @@ class FormatToHtml {
     return mdTextWithAtMention;
   }
   static getPhoneLink(match: string) {
-    return `<a href="javascript:;" color="#18a4de" class=${PHONE_LINKS_CLS} data-test-automation-id="phoneNumberLink" data-id=${match}>${match}</a>`;
+    return `<a href='javascript:;' color='#18a4de' class=${PHONE_LINKS_CLS} data-test-automation-id='phoneNumberLink' data-id='${match}'>${match}</a>`;
   }
 
   static formatToEmoji(

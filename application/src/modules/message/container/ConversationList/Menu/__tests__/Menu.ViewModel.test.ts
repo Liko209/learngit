@@ -12,7 +12,7 @@ import storeManager from '@/store/base/StoreManager';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ServiceConfig } from 'sdk/module/serviceLoader';
 
-describe.skip('TestMenuViewModel', () => {
+describe('TestMenuViewModel', () => {
   function createGroupState(groupState?: any) {
     return {
       unreadCount: 0,
@@ -35,7 +35,7 @@ describe.skip('TestMenuViewModel', () => {
 
   @testable
   class shouldSkipCloseConfirmation {
-    @test('should return falsy for shouldSkipCloseConfirmation as default')
+    @test('should be return falsy if shouldSkipCloseConfirmation as default')
     @mockSingleEntity(false)
     t1() {
       const model = new MenuViewModel();
@@ -45,7 +45,7 @@ describe.skip('TestMenuViewModel', () => {
 
   @testable
   class testProps {
-    @test('should test props for view model')
+    @test('should current props if pass props to view model')
     t1() {
       const props = {
         personId: 1,

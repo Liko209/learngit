@@ -34,19 +34,18 @@ import {
   ThresholdStrategy,
   JuiVirtualizedListHandles,
   ItemWrapper,
-  shouldUseNativeImplementation,
 } from 'jui/components/VirtualizedList';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
 import { goToConversation } from '@/common/goToConversation';
-import JuiConversationCard from 'jui/pattern/ConversationCard';
+import { JuiConversationCard } from 'jui/pattern/ConversationCard';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
 
 type StreamItemPost = StreamItem & { value: number[] };
 
 const LOADING_DELAY = 500;
-const MINSTREAMITEMHEIGHT = shouldUseNativeImplementation ? 50 : 72;
+const MINSTREAMITEMHEIGHT = 50;
 @observer
 class StreamViewComponent extends Component<Props> {
   private _currentUserId: number = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);

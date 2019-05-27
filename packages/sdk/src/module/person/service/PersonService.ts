@@ -105,8 +105,8 @@ class PersonService extends EntityBaseService<Person>
     return this.getPersonController().getName(person);
   }
 
-  isValidPerson(person: Person): boolean {
-    return this.getPersonController().isValid(person);
+  isVisiblePerson(person: Person): boolean {
+    return this.getPersonController().isVisible(person);
   }
 
   getEmailAsName(person: Person) {

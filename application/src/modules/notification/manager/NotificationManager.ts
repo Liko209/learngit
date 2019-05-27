@@ -17,9 +17,9 @@ export abstract class AbstractNotificationManager {
   show(title: string, opts: NotificationOpts) {
     const { id, scope } = opts.data;
     const tag = `${scope}.${id}`;
-    opts.tag = tag;
+    const customOps = { ...opts, tag, silent: true };
     logger.info(`prepare notification for ${tag}`);
-    this._notificationService.show(title, opts);
+    this._notificationService.show(title, customOps);
   }
 
   close(id: NotificationId) {
