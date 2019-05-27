@@ -20,6 +20,11 @@ type JuiDownshiftTextFieldStates = {
   showPlaceholder: boolean;
 };
 
+// https://github.com/downshift-js/downshift#customizing-handlers
+type JuiDownshiftTextFieldKeyDownEvent = React.KeyboardEvent & {
+  nativeEvent: { preventDownshiftDefault: boolean };
+};
+
 type JuiDownshiftTextFieldProps = {
   multiple?: boolean;
   inputValue: string;
@@ -36,6 +41,7 @@ type JuiDownshiftTextFieldProps = {
   onSelectChange: (selectedItems: SelectedItem[]) => void;
   onInputChange: (value: string) => void;
   maxLength?: number;
+  onKeyDown?: (event: JuiDownshiftTextFieldKeyDownEvent) => void;
 };
 
 const StyledTextField = styled<TextFieldProps>(JuiTextField)`
@@ -112,11 +118,13 @@ class JuiDownshiftTextField extends React.PureComponent<
       onInputChange('');
     }
   }
-  handleKeyDown = (event: KeyboardEvent) => {
-    const { onSelectChange, inputValue, selectedItems } = this.props;
+  handleKeyDown = (event: JuiDownshiftTextFieldKeyDownEvent) => {
+    const { onSelectChange, inputValue, selectedItems, onKeyDown } = this.props;
     if (selectedItems.length && !inputValue.length && event.keyCode === 8) {
       onSelectChange(selectedItems.slice(0, selectedItems.length - 1));
     }
+
+    onKeyDown && onKeyDown(event);
   }
   handleDelete = (item: SelectedItem) => () => {
     const { onSelectChange, inputValue } = this.props;
@@ -194,4 +202,8 @@ class JuiDownshiftTextField extends React.PureComponent<
   }
 }
 
-export { JuiDownshiftTextField, SelectedItem };
+export {
+  JuiDownshiftTextField,
+  JuiDownshiftTextFieldKeyDownEvent,
+  SelectedItem,
+};

@@ -29,6 +29,7 @@ enum CALL_TRANSITION_NAMES {
   HAS_CONNECTED = 'hasConnected',
   END_DIALER_CALL = 'endDialerCall',
   END_INCOMING_CALL = 'endIncomingCall',
+  END_INCOMING_CALL_AND_RESUME = 'endIncomingCallAndResume',
   END_DIRECT_CALL = 'endDirectCall',
   END_WIDGET_CALL = 'endWidgetCall',
 }
@@ -50,7 +51,7 @@ const CallFSM = StateMachine.factory({
     },
     {
       name: CALL_TRANSITION_NAMES.START_DIRECT_CALL,
-      from: CALL_STATE.IDLE,
+      from: [CALL_STATE.IDLE, CALL_STATE.DIALING],
       to: CALL_STATE.CONNECTING,
     },
     {
@@ -60,7 +61,7 @@ const CallFSM = StateMachine.factory({
     },
     {
       name: CALL_TRANSITION_NAMES.START_INCOMING_CALL,
-      from: CALL_STATE.IDLE,
+      from: [CALL_STATE.IDLE, CALL_STATE.DIALING],
       to: CALL_STATE.INCOMING,
     },
     {
@@ -75,13 +76,18 @@ const CallFSM = StateMachine.factory({
     },
     {
       name: CALL_TRANSITION_NAMES.END_DIALER_CALL,
-      from: [CALL_STATE.CONNECTING, CALL_STATE.CONNECTED],
+      from: [CALL_STATE.CONNECTING, CALL_STATE.CONNECTED, CALL_STATE.DIALING],
       to: CALL_STATE.DIALING,
     },
     {
       name: CALL_TRANSITION_NAMES.END_INCOMING_CALL,
       from: [CALL_STATE.INCOMING, CALL_STATE.CONNECTING, CALL_STATE.CONNECTED],
       to: CALL_STATE.IDLE,
+    },
+    {
+      name: CALL_TRANSITION_NAMES.END_INCOMING_CALL_AND_RESUME,
+      from: [CALL_STATE.INCOMING, CALL_STATE.CONNECTING, CALL_STATE.CONNECTED],
+      to: CALL_STATE.DIALING,
     },
     {
       name: CALL_TRANSITION_NAMES.END_DIRECT_CALL,

@@ -7,12 +7,17 @@
 import { container, Jupiter } from 'framework';
 import { HoldViewModel } from '../Hold.ViewModel';
 import * as telephony from '@/modules/telephony/module.config';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
+
 jest.mock('sdk/module/telephony');
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 
 let holdViewModel: HoldViewModel;
 beforeAll(() => {
+  jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
+    matchContactByPhoneNumber: jest.fn(),
+  });
   holdViewModel = new HoldViewModel();
 });
 

@@ -12,6 +12,10 @@ import {
   ITokenRefreshListener,
   IToken,
 } from './network';
+import { networkLogger } from '../log';
+
+const LOG_TAG = 'OAuthTokenHandler';
+
 class OAuthTokenHandler implements ITokenHandler {
   type: IHandleType;
   token?: Token;
@@ -126,6 +130,7 @@ class OAuthTokenHandler implements ITokenHandler {
       this.isOAuthTokenRefreshing = true;
       if (this.isAccessTokenRefreshable()) {
         if (this.isRefreshTokenExpired()) {
+          networkLogger.tags(LOG_TAG).info('The refresh token expired.');
           this._notifyRefreshTokenFailure();
           return;
         }
@@ -133,17 +138,27 @@ class OAuthTokenHandler implements ITokenHandler {
           this.doRefreshToken(this.token)
             .then((token: Token) => {
               if (token) {
+                networkLogger
+                  .tags(LOG_TAG)
+                  .info('Refreshing Token successfully! Token:', token);
                 this.token = token;
                 this._notifyRefreshTokenSuccess(token);
               } else {
+                networkLogger
+                  .tags(LOG_TAG)
+                  .info('Can not get token from server.');
                 this._notifyRefreshTokenFailure();
               }
             })
             .catch((errorCode: string) => {
+              networkLogger
+                .tags(LOG_TAG)
+                .info('Refreshing token error:', errorCode);
               this._notifyRefreshTokenFailure(errorCode);
             });
         }
       } else {
+        networkLogger.tags(LOG_TAG).info('Token is not refreshable.');
         this._notifyRefreshTokenFailure();
       }
     }

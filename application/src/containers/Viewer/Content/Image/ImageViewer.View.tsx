@@ -27,6 +27,7 @@ import ViewerContext from '../../ViewerContext';
 import { JuiImageView } from 'jui/components/ImageView';
 import { memoizeColor } from '@/common/memoizeFunction';
 import { accelerateURL } from '@/common/accelerateURL';
+import { mainLogger } from 'sdk';
 
 type ImageViewerProps = WithTranslation & ImageViewerViewProps & ThemeProps;
 
@@ -110,8 +111,9 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
 
   onCurrentItemDeleted = () => {
     const { t } = this.props;
+    mainLogger.tags('ImageViewer').info('onCurrentItemDeleted');
     Notification.flashToast({
-      message: t('viewer.DismissTip'),
+      message: t('viewer.ImageDeleted'),
       type: ToastType.ERROR,
       messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,

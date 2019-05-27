@@ -1,6 +1,10 @@
-import { ERROR_CODES_NETWORK, JNetworkError } from 'foundation';
-import _ from 'lodash';
+/*
+ * @Author: Thomas Yang(thomas.yang@ringcentral.com)
+ * @Date: 2019-05-09 11:18:21
+ * Copyright © RingCentral. All rights reserved.
+ */
 
+import { ERROR_CODES_NETWORK, JNetworkError } from 'foundation';
 import { groupFactory } from '../../../../__tests__/factories';
 import { Api } from '../../../../api';
 import GroupAPI from '../../../../api/glip/group';
@@ -12,7 +16,7 @@ import { EntityCacheController } from '../../../../framework/controller/impl/Ent
 import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
-import { AccountUserConfig } from '../../../account/config';
+import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
 import { CompanyService } from '../../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../../service/constants';
 import { ProfileService } from '../../../profile';
@@ -28,6 +32,9 @@ import { GroupHandleDataController } from '../GroupHandleDataController';
 import { SearchUtils } from '../../../../framework/utils/SearchUtils';
 import { GroupEntityCacheController } from '../GroupEntityCacheController';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { GroupConfigService } from '../../../groupConfig';
+import { SearchService } from 'sdk/module/search';
+
 const soundex = require('soundex-code');
 jest.mock('../../../../dao');
 jest.mock('../../../groupConfig/dao');
@@ -40,6 +47,8 @@ jest.mock('../../../../module/company');
 jest.mock('../../../post');
 jest.mock('sdk/api');
 jest.mock('sdk/api/glip/group');
+jest.mock('../../../groupConfig');
+jest.mock('sdk/module/search');
 
 function clearMock() {
   jest.clearAllMocks();
@@ -60,7 +69,32 @@ describe('GroupFetchDataController', () => {
   const profileService = new ProfileService();
   const personService = new PersonService();
   const companyService = new CompanyService();
+  const groupConfigService = new GroupConfigService();
+  const searchService = new SearchService();
   const mockUserId = 1;
+
+  function prepareRecentData(groupIds: number[], time = Date.now()) {
+    const groupConfigs = new Map([
+      [groupIds[0], { id: groupIds[1], my_last_post_time: time }],
+      [groupIds[1], { id: groupIds[2], my_last_post_time: time - 1 }],
+      [groupIds[2], { id: groupIds[3], my_last_post_time: time - 2 }],
+    ]);
+    groupConfigService.getSynchronously = jest
+      .fn()
+      .mockImplementation((id: number) => {
+        return groupConfigs.get(id);
+      });
+
+    const records = new Map([
+      [groupIds[0], { id: groupIds[1], time_stamp: time + 3 }],
+      [groupIds[1], { id: groupIds[2], time_stamp: time + 2 }],
+      [groupIds[2], { id: groupIds[3], time_stamp: time - 3 }],
+    ]);
+    searchService.getRecentSearchRecordsByType = jest
+      .fn()
+      .mockReturnValue(records);
+  }
+
   function prepareGroupsForSearch() {
     AccountUserConfig.prototype.getGlipUserId = jest
       .fn()
@@ -144,7 +178,8 @@ describe('GroupFetchDataController', () => {
         is_team: false,
         deactivated: i % 2 === 0,
         version: i,
-        members: [userId, i, i + 1000],
+        members:
+          i % 3 === 0 ? [userId, i, i + 1000] : [userId, i, i + 1000, i + 2000],
         company_id: i,
         is_company_team: false,
         set_abbreviation: '',
@@ -205,24 +240,25 @@ describe('GroupFetchDataController', () => {
     AccountUserConfig.prototype.getGlipUserId = jest
       .fn()
       .mockImplementation(() => mockUserId);
+    groupService = new GroupService();
+
+    const serviceMap: Map<string, any> = new Map([
+      [ServiceConfig.PERSON_SERVICE, personService as any],
+      [ServiceConfig.PROFILE_SERVICE, profileService as any],
+      [ServiceConfig.POST_SERVICE, postService as any],
+      [ServiceConfig.COMPANY_SERVICE, companyService as any],
+      [ServiceConfig.GROUP_CONFIG_SERVICE, groupConfigService as any],
+      [ServiceConfig.SEARCH_SERVICE, searchService as any],
+      [
+        ServiceConfig.ACCOUNT_SERVICE,
+        { userConfig: AccountUserConfig.prototype } as any,
+      ],
+    ]);
+
     ServiceLoader.getInstance = jest
       .fn()
       .mockImplementation((serviceName: string) => {
-        if (serviceName === ServiceConfig.PERSON_SERVICE) {
-          return personService;
-        }
-
-        if (serviceName === ServiceConfig.PROFILE_SERVICE) {
-          return profileService;
-        }
-
-        if (serviceName === ServiceConfig.POST_SERVICE) {
-          return postService;
-        }
-
-        if (serviceName === ServiceConfig.COMPANY_SERVICE) {
-          return companyService;
-        }
+        return serviceMap.get(serviceName);
       });
     testEntitySourceController = new TestEntitySourceController<Group>(
       groupFactory,
@@ -239,7 +275,6 @@ describe('GroupFetchDataController', () => {
     testEntityCacheSearchController = new TestEntityCacheSearchController(
       entityCacheController,
     );
-    groupService = new GroupService();
 
     groupFetchDataController = new GroupFetchDataController(
       groupService,
@@ -253,6 +288,7 @@ describe('GroupFetchDataController', () => {
     clearMock();
     setup();
   });
+
   describe('getGroupsByType()', () => {
     it('should can fetch groups via type', async () => {
       const mock = [{ id: 1 }, { id: 2 }];
@@ -458,9 +494,48 @@ describe('GroupFetchDataController', () => {
       );
       expect(result.sortableModels.length).toBe(500);
       expect(result.terms.length).toBe(3);
-      expect(result.terms[0]).toBe('this');
-      expect(result.terms[1]).toBe('team');
-      expect(result.terms[2]).toBe('name');
+    });
+
+    it('do fuzzy search of teams, recent contact should at top', async () => {
+      const ids = [12020, 12016, 12018];
+      prepareRecentData(ids);
+      const result = await groupFetchDataController.doFuzzySearchTeams(
+        'this team name',
+        true,
+        true,
+      );
+      expect(result!.sortableModels.length).toBe(500);
+      expect([
+        result!.sortableModels[0].id,
+        result!.sortableModels[1].id,
+        result!.sortableModels[2].id,
+      ]).toEqual(ids);
+    });
+
+    it('do fuzzy search of groups, recent contact should at top', async () => {
+      const ids = [11021, 11025, 11023];
+      prepareRecentData([11021, 11025, 11023]);
+      const result = await groupFetchDataController.doFuzzySearchGroups(
+        'ben, tu',
+        undefined,
+        true,
+      );
+
+      expect(result!.sortableModels.length).toBe(500);
+      expect([
+        result!.sortableModels[0].id,
+        result!.sortableModels[1].id,
+        result!.sortableModels[2].id,
+      ]).toEqual(ids);
+    });
+
+    it('do fuzzy search of groups, group of less members should sort first', async () => {
+      const result = await groupFetchDataController.doFuzzySearchGroups(
+        'ben, tu',
+      );
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.sortableModels[0].entity.members.length).toEqual(3);
+      expect(result.sortableModels[499].entity.members.length).toEqual(4);
     });
   });
   describe('doFuzzySearchAllGroups', () => {
@@ -519,6 +594,23 @@ describe('GroupFetchDataController', () => {
         true,
       );
       expect(result.sortableModels.length).toEqual(1505);
+    });
+
+    it('fetch all matched groups and recent should at top ', async () => {
+      const ids = [12022, 12024, 12026];
+      prepareRecentData(ids);
+      const result: any = await groupFetchDataController.doFuzzySearchAllGroups(
+        'name',
+        false,
+        false,
+        true,
+      );
+      expect(result.sortableModels.length).toEqual(505);
+      expect([
+        result.sortableModels[0].id,
+        result.sortableModels[1].id,
+        result.sortableModels[2].id,
+      ]).toEqual(ids);
     });
   });
 
@@ -866,6 +958,7 @@ describe('GroupFetchDataController', () => {
       prepareGroupsForSearch();
       SearchUtils.isUseSoundex = jest.fn().mockReturnValue(true);
     });
+
     it('do fuzzy search of groups with multi terms, ', async () => {
       const result = await groupFetchDataController.doFuzzySearchGroups(
         'baaaaen teeeu',
@@ -875,6 +968,7 @@ describe('GroupFetchDataController', () => {
       expect(result.terms[0]).toBe('baaaaen');
       expect(result.terms[1]).toBe('teeeu');
     });
+
     it('do fuzzy search of groups with single term', async () => {
       const result = await groupFetchDataController.doFuzzySearchGroups(
         'baaaaen',
@@ -911,6 +1005,172 @@ describe('GroupFetchDataController', () => {
       const result = await groupFetchDataController.doFuzzySearchTeams('');
       expect(result.sortableModels.length).toBe(0);
       expect(result.terms.length).toBe(0);
+    });
+  });
+
+  describe('getGroupNameByMultiMembers', () => {
+    beforeEach(() => {
+      personService.getName = jest.fn().mockImplementation((person: Person) => {
+        if (person.id === 1) {
+          return '1';
+        }
+        if (person.id === 2) {
+          return '2';
+        }
+      });
+    });
+    it('should return name when members are specified', async () => {
+      const person1: Person = {
+        id: 1,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+      };
+
+      const person2: Person = {
+        id: 2,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+      };
+
+      const res = await groupFetchDataController.getGroupNameByMultiMembers([
+        person1,
+        person2,
+      ]);
+      expect(res).toBe('1, 2');
+    });
+    it('should filter out when members are deactivated', async () => {
+      const person1: Person = {
+        id: 1,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+      };
+
+      const person2: Person = {
+        id: 2,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: true,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+      };
+
+      const res = await groupFetchDataController.getGroupNameByMultiMembers([
+        person1,
+        person2,
+      ]);
+      expect(res).toBe('1');
+    });
+
+    it('should filter out when members flag are deactivated', async () => {
+      const person1: Person = {
+        id: 1,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+        flags: 2,
+      };
+
+      const person2: Person = {
+        id: 2,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+      };
+
+      const res = await groupFetchDataController.getGroupNameByMultiMembers([
+        person1,
+        person2,
+      ]);
+      expect(res).toBe('2');
+    });
+  });
+
+  describe('getAllPersonOfGroup', () => {
+    let mockIsVisiblePerson = jest.fn();
+    beforeEach(() => {
+      ServiceLoader.getInstance = jest
+        .fn()
+        .mockImplementation((serviceName: string) => {
+          if (serviceName === ServiceConfig.PERSON_SERVICE) {
+            return {
+              isVisiblePerson: mockIsVisiblePerson,
+              getSynchronously: jest.fn().mockImplementation(id => {
+                return id;
+              }),
+            };
+          }
+        });
+    });
+    it('should return all person if no one is invalid', () => {
+      mockIsVisiblePerson = jest.fn().mockReturnValue(true);
+      const res = groupFetchDataController.getAllPersonOfGroup([1, 2, 3], 1);
+      expect(res.visiblePersons.length).toBe(2);
+      expect(res.invisiblePersons.length).toBe(0);
+    });
+
+    it('should return deactivated person if there is any', () => {
+      mockIsVisiblePerson = jest.fn().mockImplementation(person => {
+        return person !== 3;
+      });
+      const res = groupFetchDataController.getAllPersonOfGroup([1, 2, 3, 4], 2);
+      expect(res.visiblePersons.length).toBe(2);
+      expect(res.invisiblePersons.length).toBe(1);
+      expect(res.invisiblePersons[0]).toBe(3);
     });
   });
 });

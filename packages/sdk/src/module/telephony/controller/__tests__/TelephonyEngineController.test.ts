@@ -7,12 +7,15 @@ import { TelephonyEngineController } from '../TelephonyEngineController';
 import { notificationCenter } from '../../../../service';
 import { GlobalConfigService } from '../../../config';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
-import { AuthUserConfig } from '../../../account/config';
+import { AuthUserConfig } from '../../../account/config/AuthUserConfig';
+import { AccountService } from 'sdk/module/account';
 
 jest.mock('../../../config');
 
 describe('', () => {
   let engineController: TelephonyEngineController;
+  const mockIsVoipCallingAvailable = jest.fn();
+  const mockHasPermission = jest.fn();
 
   function clearMocks() {
     jest.clearAllMocks();
@@ -22,49 +25,38 @@ describe('', () => {
   beforeEach(() => {
     clearMocks();
     engineController = new TelephonyEngineController();
+    ServiceLoader.getInstance = jest.fn().mockImplementation(service => {
+      if (service === ServiceConfig.RC_INFO_SERVICE) {
+        return {
+          isVoipCallingAvailable: mockIsVoipCallingAvailable,
+        };
+      }
+      if (service === ServiceConfig.PERMISSION_SERVICE) {
+        return { hasPermission: mockHasPermission };
+      }
+      if (service === ServiceConfig.ACCOUNT_SERVICE) {
+        return { authUserConfig: AuthUserConfig.prototype };
+      }
+    });
   });
   describe('getVoipCallPermission', () => {
     it('should return true when both rcinfo and ld has permission', async () => {
-      ServiceLoader.getInstance = jest.fn().mockImplementation(service => {
-        if (service === ServiceConfig.RC_INFO_SERVICE) {
-          return {
-            isVoipCallingAvailable: jest.fn().mockReturnValue(true),
-          };
-        }
-        if (service === ServiceConfig.PERMISSION_SERVICE) {
-          return { hasPermission: jest.fn().mockReturnValue(true) };
-        }
-      });
+      mockIsVoipCallingAvailable.mockReturnValue(true);
+      mockHasPermission.mockReturnValue(true);
       const res = await engineController.getVoipCallPermission();
       expect(res).toBe(true);
     });
 
     it('should return false when neither rcinfo nor ld has permission', async () => {
-      ServiceLoader.getInstance = jest.fn().mockImplementation(service => {
-        if (service === ServiceConfig.RC_INFO_SERVICE) {
-          return {
-            isVoipCallingAvailable: jest.fn().mockReturnValue(false),
-          };
-        }
-        if (service === ServiceConfig.PERMISSION_SERVICE) {
-          return { hasPermission: jest.fn().mockReturnValue(false) };
-        }
-      });
+      mockIsVoipCallingAvailable.mockReturnValue(false);
+      mockHasPermission.mockReturnValue(false);
       const res = await engineController.getVoipCallPermission();
       expect(res).toBe(false);
     });
 
     it('should return false if ld has no permission', async () => {
-      ServiceLoader.getInstance = jest.fn().mockImplementation(service => {
-        if (service === ServiceConfig.RC_INFO_SERVICE) {
-          return {
-            isVoipCallingAvailable: jest.fn().mockReturnValue(true),
-          };
-        }
-        if (service === ServiceConfig.PERMISSION_SERVICE) {
-          return { hasPermission: jest.fn().mockReturnValue(false) };
-        }
-      });
+      mockIsVoipCallingAvailable.mockReturnValue(true);
+      mockHasPermission.mockReturnValue(false);
       const res = await engineController.getVoipCallPermission();
       expect(res).toBe(false);
     });

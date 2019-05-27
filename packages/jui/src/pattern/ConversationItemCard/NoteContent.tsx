@@ -7,9 +7,10 @@
 import React, { memo } from 'react';
 import styled from '../../foundation/styled-components';
 import { typography, grey } from '../../foundation/utils/styles';
+import { withHighlight } from '../../hoc/withHighlight';
 
 type Props = {
-  children: string;
+  children?: string;
 };
 
 const StyledText = styled.div`
@@ -17,10 +18,16 @@ const StyledText = styled.div`
   color: ${grey('500')};
 `;
 
-const JuiNoteContent = memo((props: Props) => (
-  <StyledText>{props.children}</StyledText>
-));
+function juiNoteContentComponent({ children = '' }: Props) {
+  if (typeof children === 'string') {
+    return <StyledText dangerouslySetInnerHTML={{ __html: children }}/>;
+  }
+  return <StyledText>{children}</StyledText>;
+}
+juiNoteContentComponent.displayName = 'JuiNoteContent';
 
-JuiNoteContent.displayName = 'JuiNoteContent';
+const JuiNoteContent = withHighlight(['children'])(
+  memo(juiNoteContentComponent),
+);
 
 export { JuiNoteContent };

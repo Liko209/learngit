@@ -11,6 +11,7 @@ import { DialpadViewModel } from '../Dialpad.ViewModel';
 import { CALL_STATE, CALL_WINDOW_STATUS } from '../../../FSM';
 import * as telephony from '@/modules/telephony/module.config';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('../../../service/TelephonyService');
 
@@ -20,6 +21,9 @@ jupiter.registerModule(telephony.config);
 let dialpadViewModel: DialpadViewModel;
 
 beforeAll(() => {
+  jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
+    matchContactByPhoneNumber: jest.fn(),
+  });
   dialpadViewModel = new DialpadViewModel();
   dialpadViewModel._telephonyService.maximize = jest.fn();
 });
@@ -52,5 +56,8 @@ describe('DialpadViewModel', () => {
       TELEPHONY_SERVICE,
     );
     expect(_telephonyService.maximize).toBeCalled();
+  });
+  it('should initialize without fade animation', () => {
+    expect(dialpadViewModel.startMinimizeAnimation).toBe(false);
   });
 });

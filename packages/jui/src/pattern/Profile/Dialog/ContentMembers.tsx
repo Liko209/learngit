@@ -63,10 +63,7 @@ const JuiProfileDialogContentMemberList = styled('ul')`
 
 const JuiProfileDialogContentMemberListItemRightWrapper = styled('div')`
   > div {
-    align-items: center;
-    justify-content: flex-end;
-    flex: 1;
-    display: flex;
+    display: inline-block;
   }
   width: ${width(5)};
   height: ${height(5)};
@@ -74,10 +71,10 @@ const JuiProfileDialogContentMemberListItemRightWrapper = styled('div')`
   margin-left: ${spacing(6)};
   display: flex;
   flex: 1;
+  justify-content: flex-end;
   z-index: ${({ theme }) => theme.zIndex.elementOnRipple};
   color: ${palette('grey', '400')};
   font-size: ${spacing(5)};
-  display: inline-block;
 `;
 type MemberListItemProps = {
   isHover: boolean;

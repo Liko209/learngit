@@ -11,11 +11,12 @@ import {
 } from '../../../../authenticator';
 import notificationCenter from '../../../../service/notificationCenter';
 import { SERVICE } from '../../../../service/eventKey';
-import { AuthUserConfig } from '../../config';
+import { AuthUserConfig } from '../../config/AuthUserConfig';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 jest.mock('foundation');
 jest.mock('../../../../service/notificationCenter');
-jest.mock('../../config');
+jest.mock('../../config/AuthUserConfig');
 jest.mock('../../../../api/ringcentral/RCAuthApi');
 
 describe('AuthService', () => {
@@ -29,6 +30,13 @@ describe('AuthService', () => {
 
   beforeEach(() => {
     authController = new AuthController(mockAccountManager);
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { authUserConfig: AuthUserConfig.prototype };
+        }
+      });
   });
 
   describe('unifiedLogin()', () => {

@@ -27,16 +27,17 @@ export class LogUploader implements ILogUploader {
       env = '',
       browser = '',
     } = Pal.instance.getApplicationInfo();
+    const host = location.host;
     await axios.post(postUrl, message, {
       headers: {
-        'X-Sumo-Name': `${platform}/${appVersion}/${browser}/${os}/${env}/${email}/${userId}/${sessionId}`,
+        'X-Sumo-Name': `${platform}/${appVersion}/${browser}/${os}/${env}/${email}/${userId}/${sessionId}/${host}`,
         'Content-Type': 'application/json',
       },
     });
   }
 
   transform(logs: LogEntity[]) {
-    return logs.map(log => this._getLogText(log)).join('\n');
+    return logs.map(log => this._getLogText(log)).join('\t\n');
   }
 
   errorHandler(error: AxiosError) {

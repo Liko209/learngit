@@ -25,7 +25,7 @@ import { AccountServiceInfoController } from './AccountServiceInfoController';
 import { mainLogger } from 'foundation';
 import { notificationCenter, RC_INFO, SERVICE } from 'sdk/service';
 import { RCInfoGlobalConfig } from '../config';
-import { AccountUserConfig } from 'sdk/module/account/config';
+import { AccountGlobalConfig } from 'sdk/module/account/config';
 
 type StationSetting = {
   newCountryInfo: DialingCountryInfo;
@@ -41,6 +41,7 @@ const DefaultCountryInfo = {
   isoCode: 'US',
   callingCode: '1',
 };
+const DefaultBrandId = '1210';
 
 class RegionInfoController {
   private _currentCountryInfo: DialingCountryInfo;
@@ -77,10 +78,12 @@ class RegionInfoController {
     this._updateCurrentCountryId(countryInfo);
     await this._setStationLocation({
       newCountryInfo: countryInfo,
-      areaCode: '',
-      updateSpecialNumber: false,
-      areaCodeByManual: false,
-      countryByManual: false,
+      areaCode: (stationSetting && stationSetting.areaCode) || '',
+      updateSpecialNumber: true,
+      areaCodeByManual:
+        (stationSetting && stationSetting.areaCodeByManual) || false,
+      countryByManual:
+        (stationSetting && stationSetting.countryByManual) || false,
     });
   }
 
@@ -132,7 +135,7 @@ class RegionInfoController {
   }
 
   async getAreaCode() {
-    return PhoneParserUtility.getStationAreaCode();
+    return (await PhoneParserUtility.getStationAreaCode()) || '';
   }
 
   hasAreaCode(countryCallingCode: string) {
@@ -232,7 +235,9 @@ class RegionInfoController {
     }
 
     let countryInfo = _.cloneDeep(newCountryInfo);
-    const brandId = await this._rcAccountInfoController.getAccountBrandId();
+    const brandId =
+      (await this._rcAccountInfoController.getAccountBrandId()) ||
+      DefaultBrandId;
     const isATT =
       (await this._rcAccountInfoController.getBrandID2Type(brandId)) ===
       RCBrandType.ATT;
@@ -267,7 +272,7 @@ class RegionInfoController {
       .info('setStationLocation', { brandId, countryInfo, areaCode });
 
     try {
-      PhoneParserUtility.setStationLocation({
+      await PhoneParserUtility.setStationLocation({
         siteCode,
         outboundCallPrefix,
         brandId: _.toInteger(brandId),
@@ -276,6 +281,8 @@ class RegionInfoController {
         maxShortLen: maxExtLen,
         shortPinLen: shortExtLen,
       });
+
+      notificationCenter.emit(RC_INFO.RC_REGION_INFO);
     } catch (error) {
       mainLogger
         .tags(LOG_TAG)
@@ -294,7 +301,7 @@ class RegionInfoController {
   }
 
   private _getStationLocation(): StationLocationSetting {
-    const userId = new AccountUserConfig().getGlipUserId() as number;
+    const userId = AccountGlobalConfig.getUserDictionary() as number;
     const currentInfo =
       RCInfoGlobalConfig.getStationLocation() ||
       ({} as GlobalStationLocationSetting);
@@ -302,7 +309,7 @@ class RegionInfoController {
   }
 
   private _updateStationLocation(newRegionInfo: StationLocationSetting) {
-    const userId = new AccountUserConfig().getGlipUserId() as number;
+    const userId = AccountGlobalConfig.getUserDictionary() as number;
     const currentInfo =
       RCInfoGlobalConfig.getStationLocation() ||
       ({} as GlobalStationLocationSetting);

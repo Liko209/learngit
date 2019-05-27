@@ -11,6 +11,7 @@ import {
   primary,
   spacing,
 } from '../../../foundation/utils/styles';
+import { withHighlight } from '../../../hoc/withHighlight';
 
 type Props = {
   children?: React.ReactNode;
@@ -22,11 +23,13 @@ type States = {
   isShow: boolean;
 };
 
-const StyledContent = styled.div`
+const JuiEventCollapseContent = withHighlight([
+  'dangerouslySetInnerHTML.__html',
+])(styled.div`
   ${typography('body1')};
   color: ${grey('500')};
   margin-bottom: ${spacing(1)};
-`;
+`);
 
 const StyledToggle = styled.div`
   display: inline-block;
@@ -61,7 +64,5 @@ class JuiEventCollapse extends React.PureComponent<Props, States> {
     );
   }
 }
-
-const JuiEventCollapseContent = StyledContent;
 
 export { JuiEventCollapse, JuiEventCollapseContent };

@@ -7,6 +7,24 @@
 import { PhoneParserUtility } from '../PhoneParserUtility';
 import notificationCenter from '../../../service/notificationCenter';
 import { ServiceLoader } from '../../../module/serviceLoader';
+import { MODULE_STATUS } from '../constants';
+import { ModuleParams, mainLogger } from 'foundation';
+
+const mockModuleFunc = jest.fn();
+jest.mock('foundation', () => {
+  return {
+    Module: (params: ModuleParams) => {
+      mockModuleFunc();
+      return { params };
+    },
+    Container: jest.fn(),
+    mainLogger: {
+      debug: jest.fn(),
+      warn: jest.fn(),
+      tags: jest.fn(),
+    },
+  };
+});
 
 describe('PhoneParserUtility', () => {
   let phoneParserUtility: PhoneParserUtility;
@@ -33,6 +51,7 @@ describe('PhoneParserUtility', () => {
   };
 
   notificationCenter.on = jest.fn();
+  notificationCenter.off = jest.fn();
   const mockRCInfoService = {
     getPhoneData: jest.fn(),
     getRCAccountInfo: jest.fn(),
@@ -42,7 +61,6 @@ describe('PhoneParserUtility', () => {
 
   beforeEach(() => {
     jest.spyOn(PhoneParserUtility, 'loadModule');
-    jest.spyOn(PhoneParserUtility, 'onModuleLoaded');
     jest.spyOn(PhoneParserUtility, 'loadLocalPhoneData');
     jest.spyOn(PhoneParserUtility, 'initPhoneParser');
     jest.spyOn(PhoneParserUtility, 'canGetPhoneParser');
@@ -56,9 +74,10 @@ describe('PhoneParserUtility', () => {
     jest.spyOn(PhoneParserUtility, 'isStationUK');
     jest.spyOn(PhoneParserUtility, 'isStationUSorCA');
     ServiceLoader.getInstance = jest.fn().mockReturnValue(mockRCInfoService);
+    mainLogger.tags.mockReturnValue({ info: jest.fn() });
 
-    PhoneParserUtility['_moduleLoadingTime'] = 0;
-    PhoneParserUtility['_moduleLoaded'] = false;
+    PhoneParserUtility['_moduleStatus'] = MODULE_STATUS.IDLE;
+    PhoneParserUtility['_loadingQueue'] = [];
     PhoneParserUtility['_initialized'] = false;
     PhoneParserUtility['_localPhoneDataLoaded'] = false;
     PhoneParserUtility['_phoneParserModule'] = {
@@ -87,41 +106,75 @@ describe('PhoneParserUtility', () => {
   });
 
   describe('loadModule()', () => {
-    it('should do nothing when module is loaded', () => {
-      PhoneParserUtility['_moduleLoaded'] = true;
-      PhoneParserUtility.loadModule();
-      expect(PhoneParserUtility['_moduleLoadingTime']).toEqual(0);
+    it('should do nothing when moduleStatus is loaded', async () => {
+      PhoneParserUtility['_moduleStatus'] = MODULE_STATUS.LOADED;
+      expect(await PhoneParserUtility.loadModule()).toBeTruthy();
+      expect(notificationCenter.on).not.toBeCalled();
     });
 
-    it('should do nothing when module loading is not timeout', () => {
-      PhoneParserUtility['_moduleLoaded'] = false;
-      const currentTime = Date.now();
-      PhoneParserUtility['_moduleLoadingTime'] = currentTime;
-      PhoneParserUtility.loadModule();
-      expect(PhoneParserUtility['_moduleLoadingTime']).toEqual(currentTime);
+    it('should wait the result and push the promise to queue when moduleStatus is loading', async () => {
+      PhoneParserUtility['_moduleStatus'] = MODULE_STATUS.LOADING;
+      const waiter = PhoneParserUtility.loadModule();
+      expect(notificationCenter.on).not.toBeCalled();
+      expect(PhoneParserUtility['_loadingQueue'].length).toEqual(1);
+      PhoneParserUtility['_loadingQueue'][0](false);
+      await new Promise(resolve => {
+        waiter.then(result => {
+          expect(result).toBeFalsy();
+          resolve();
+        });
+      });
     });
 
-    it('should load module when module is not loaded and timeout', () => {
-      PhoneParserUtility['_moduleLoaded'] = false;
-      const currentTime = Date.now() - 60000;
-      PhoneParserUtility['_moduleLoadingTime'] = currentTime;
+    it('should resolve all loading as true when moduleStatus is idle and load success', async () => {
+      PhoneParserUtility['_moduleStatus'] = MODULE_STATUS.IDLE;
       PhoneParserUtility.loadLocalPhoneData.mockResolvedValueOnce(undefined);
-      PhoneParserUtility.loadModule();
-      expect(PhoneParserUtility['_moduleLoadingTime']).toBeGreaterThan(
-        currentTime,
-      );
-      expect(PhoneParserUtility.loadLocalPhoneData).toBeCalledTimes(1);
-    });
-  });
+      PhoneParserUtility.loadLocalPhoneData.mockImplementationOnce(() => {});
 
-  describe('onModuleLoaded()', () => {
-    it('should set _moduleLoaded as true', () => {
-      PhoneParserUtility['_moduleLoaded'] = false;
-      PhoneParserUtility.initPhoneParser.mockReturnValueOnce(undefined);
-      PhoneParserUtility.onModuleLoaded();
-      expect(PhoneParserUtility['_moduleLoaded']).toBeTruthy();
-      expect(PhoneParserUtility.initPhoneParser).toBeCalled();
-      expect(notificationCenter.on).toBeCalled();
+      const waiter1 = PhoneParserUtility.loadModule();
+      const waiter2 = PhoneParserUtility.loadModule();
+      expect(notificationCenter.on).toBeCalledTimes(1);
+      expect(PhoneParserUtility['_loadingQueue'].length).toEqual(1);
+      PhoneParserUtility['_phoneParserModule']['params'].onRuntimeInitialized();
+      expect(PhoneParserUtility['_moduleStatus']).toEqual(MODULE_STATUS.LOADED);
+      expect(PhoneParserUtility['_loadingQueue']).toEqual([]);
+      expect(PhoneParserUtility.loadLocalPhoneData).toBeCalled();
+      await new Promise(resolve => {
+        waiter1.then(result => {
+          expect(result).toBeTruthy();
+          resolve();
+        });
+      });
+      await new Promise(resolve => {
+        waiter2.then(result => {
+          expect(result).toBeTruthy();
+          resolve();
+        });
+      });
+    });
+
+    it('should resolve all loading as false when moduleStatus is idle and load failed', async () => {
+      PhoneParserUtility['_moduleStatus'] = MODULE_STATUS.IDLE;
+      PhoneParserUtility.loadLocalPhoneData.mockResolvedValueOnce(undefined);
+      PhoneParserUtility.loadLocalPhoneData.mockImplementationOnce(() => {});
+      mockModuleFunc.mockImplementationOnce(() => {
+        throw 'mock';
+      });
+      const waiter = new Promise(resolve => {
+        PhoneParserUtility['_loadingQueue'].push(resolve);
+      });
+
+      expect(await PhoneParserUtility.loadModule()).toBeFalsy();
+      expect(notificationCenter.on).toBeCalledTimes(1);
+      expect(notificationCenter.off).toBeCalledTimes(1);
+      expect(PhoneParserUtility['_loadingQueue']).toEqual([]);
+      expect(PhoneParserUtility['_moduleStatus']).toEqual(MODULE_STATUS.IDLE);
+      await new Promise(resolve => {
+        waiter.then(result => {
+          expect(result).toBeFalsy();
+          resolve();
+        });
+      });
     });
   });
 
@@ -142,28 +195,27 @@ describe('PhoneParserUtility', () => {
   });
 
   describe('initPhoneParser()', () => {
-    it('should load module when module is not loaded', async () => {
-      PhoneParserUtility['_moduleLoaded'] = false;
-      PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
+    it('should return false when moduleStatus is not loaded', async () => {
+      PhoneParserUtility.loadModule.mockResolvedValueOnce(false);
       expect(await PhoneParserUtility.initPhoneParser(true)).toBeFalsy();
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
       expect(PhoneParserUtility['_initialized']).toBeFalsy();
     });
 
     it('should do nothing when _initialized = true and force = false', async () => {
-      PhoneParserUtility['_moduleLoaded'] = true;
+      PhoneParserUtility.loadModule.mockResolvedValueOnce(true);
       PhoneParserUtility['_initialized'] = true;
       expect(PhoneParserUtility.initPhoneParser(false)).toBeTruthy();
-      expect(PhoneParserUtility.loadModule).toBeCalledTimes(0);
+      expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
       expect(PhoneParserUtility['_initialized']).toBeTruthy();
     });
 
     it('should return false when _initialized = false and phoneData is invalid', async () => {
-      PhoneParserUtility['_moduleLoaded'] = true;
+      PhoneParserUtility.loadModule.mockResolvedValueOnce(true);
       PhoneParserUtility['_initialized'] = false;
       mockRCInfoService.getPhoneData.mockReturnValueOnce(undefined);
       expect(await PhoneParserUtility.initPhoneParser(false)).toBeFalsy();
-      expect(PhoneParserUtility.loadModule).toBeCalledTimes(0);
+      expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
       expect(mockRCInfoService.getPhoneData).toBeCalledTimes(1);
       expect(
         PhoneParserUtility['_phoneParserModule'].ReadRootNodeByString,
@@ -172,7 +224,7 @@ describe('PhoneParserUtility', () => {
     });
 
     it('should do init when _initialized = true and force = true', async () => {
-      PhoneParserUtility['_moduleLoaded'] = true;
+      PhoneParserUtility.loadModule.mockResolvedValueOnce(true);
       PhoneParserUtility['_initialized'] = true;
       mockRCInfoService.getPhoneData.mockReturnValueOnce(123456);
       PhoneParserUtility[
@@ -182,7 +234,7 @@ describe('PhoneParserUtility', () => {
         '_phoneParserModule'
       ].GetPhoneDataFileVersion.mockReturnValueOnce('1.3');
       expect(await PhoneParserUtility.initPhoneParser(true)).toBeTruthy();
-      expect(PhoneParserUtility.loadModule).toBeCalledTimes(0);
+      expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
       expect(mockRCInfoService.getPhoneData).toBeCalledTimes(1);
       expect(
         PhoneParserUtility['_phoneParserModule'].ReadRootNodeByString,
@@ -277,24 +329,24 @@ describe('PhoneParserUtility', () => {
   });
 
   describe('getStationCountryCode()', () => {
-    it('should return undefined when module is not loaded', () => {
-      PhoneParserUtility['_moduleLoaded'] = false;
-      PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
-      expect(PhoneParserUtility.getStationCountryCode()).toBeUndefined();
+    it('should return undefined when module is not loaded', async () => {
+      PhoneParserUtility.loadModule.mockResolvedValueOnce(false);
+      expect(await PhoneParserUtility.getStationCountryCode()).toBeUndefined();
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
       expect(
         PhoneParserUtility['_phoneParserModule'].GetStationCountryCode,
       ).toBeCalledTimes(0);
     });
 
-    it('should return value when module is loaded', () => {
-      PhoneParserUtility['_moduleLoaded'] = true;
-      PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
+    it('should return value when module is loaded', async () => {
+      PhoneParserUtility.loadModule.mockResolvedValueOnce(true);
       PhoneParserUtility[
         '_phoneParserModule'
       ].GetStationCountryCode.mockReturnValueOnce('countryCode');
-      expect(PhoneParserUtility.getStationCountryCode()).toEqual('countryCode');
-      expect(PhoneParserUtility.loadModule).toBeCalledTimes(0);
+      expect(await PhoneParserUtility.getStationCountryCode()).toEqual(
+        'countryCode',
+      );
+      expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
       expect(
         PhoneParserUtility['_phoneParserModule'].GetStationCountryCode,
       ).toBeCalledTimes(1);
@@ -302,24 +354,22 @@ describe('PhoneParserUtility', () => {
   });
 
   describe('getStationAreaCode()', () => {
-    it('should return undefined when module is not loaded', () => {
-      PhoneParserUtility['_moduleLoaded'] = false;
-      PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
-      expect(PhoneParserUtility.getStationAreaCode()).toBeUndefined();
+    it('should return undefined when module is not loaded', async () => {
+      PhoneParserUtility.loadModule.mockResolvedValueOnce(false);
+      expect(await PhoneParserUtility.getStationAreaCode()).toBeUndefined();
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
       expect(
         PhoneParserUtility['_phoneParserModule'].GetStationAreaCode,
       ).toBeCalledTimes(0);
     });
 
-    it('should return value when module is loaded', () => {
-      PhoneParserUtility['_moduleLoaded'] = true;
-      PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
+    it('should return value when module is loaded', async () => {
+      PhoneParserUtility.loadModule.mockResolvedValueOnce(true);
       PhoneParserUtility[
         '_phoneParserModule'
       ].GetStationAreaCode.mockReturnValueOnce('areaCode');
-      expect(PhoneParserUtility.getStationAreaCode()).toEqual('areaCode');
-      expect(PhoneParserUtility.loadModule).toBeCalledTimes(0);
+      expect(await PhoneParserUtility.getStationAreaCode()).toEqual('areaCode');
+      expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
       expect(
         PhoneParserUtility['_phoneParserModule'].GetStationAreaCode,
       ).toBeCalledTimes(1);
@@ -327,28 +377,31 @@ describe('PhoneParserUtility', () => {
   });
 
   describe('setStationLocation()', () => {
-    it('should return false when module is not loaded', () => {
-      PhoneParserUtility['_moduleLoaded'] = false;
-      PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
-      expect(PhoneParserUtility.setStationLocation('1', '650')).toBeFalsy();
+    it('should return false when module is not loaded', async () => {
+      PhoneParserUtility.loadModule.mockResolvedValueOnce(false);
+      expect(
+        await PhoneParserUtility.setStationLocation({
+          szCountryCode: '1',
+          szAreaCode: '650',
+        }),
+      ).toBeFalsy();
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
       expect(
         PhoneParserUtility['_phoneParserModule'].SetStationLocation,
       ).toBeCalledTimes(0);
     });
 
-    it('should return true when module is loaded', () => {
-      PhoneParserUtility['_moduleLoaded'] = true;
-      PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
+    it('should return true when module is loaded', async () => {
+      PhoneParserUtility.loadModule.mockResolvedValueOnce(true);
       // prettier-ignore
       PhoneParserUtility['_phoneParserModule'].SetStationLocation.mockImplementationOnce(() => {});
       expect(
-        PhoneParserUtility.setStationLocation({
+        await PhoneParserUtility.setStationLocation({
           szCountryCode: '1',
           szAreaCode: '650',
         }),
       ).toBeTruthy();
-      expect(PhoneParserUtility.loadModule).toBeCalledTimes(0);
+      expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
       expect(
         PhoneParserUtility['_phoneParserModule'].SetStationLocation,
       ).toBeCalledTimes(1);
@@ -359,24 +412,24 @@ describe('PhoneParserUtility', () => {
   });
 
   describe('getStationSettingsKey()', () => {
-    it('should return undefined when module is not loaded', () => {
-      PhoneParserUtility['_moduleLoaded'] = false;
-      PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
-      expect(PhoneParserUtility.getStationSettingsKey()).toBeUndefined();
+    it('should return undefined when module is not loaded', async () => {
+      PhoneParserUtility.loadModule.mockResolvedValueOnce(false);
+      expect(await PhoneParserUtility.getStationSettingsKey()).toBeUndefined();
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
       expect(
         PhoneParserUtility['_phoneParserModule'].GetStationSettingsKey,
       ).toBeCalledTimes(0);
     });
 
-    it('should return value when module is loaded', () => {
-      PhoneParserUtility['_moduleLoaded'] = true;
-      PhoneParserUtility.loadModule.mockImplementationOnce(() => {});
+    it('should return value when module is loaded', async () => {
+      PhoneParserUtility.loadModule.mockResolvedValueOnce(true);
       PhoneParserUtility[
         '_phoneParserModule'
       ].GetStationSettingsKey.mockReturnValueOnce('settingsKey');
-      expect(PhoneParserUtility.getStationSettingsKey()).toEqual('settingsKey');
-      expect(PhoneParserUtility.loadModule).toBeCalledTimes(0);
+      expect(await PhoneParserUtility.getStationSettingsKey()).toEqual(
+        'settingsKey',
+      );
+      expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
       expect(
         PhoneParserUtility['_phoneParserModule'].GetStationSettingsKey,
       ).toBeCalledTimes(1);
@@ -427,26 +480,26 @@ describe('PhoneParserUtility', () => {
   });
 
   describe('isStationUK()', () => {
-    it('should return false when country code is not 44', () => {
-      PhoneParserUtility.getStationCountryCode.mockReturnValueOnce('86');
-      expect(PhoneParserUtility.isStationUK()).toBeFalsy();
+    it('should return false when country code is not 44', async () => {
+      PhoneParserUtility.getStationCountryCode.mockResolvedValueOnce('86');
+      expect(await PhoneParserUtility.isStationUK()).toBeFalsy();
     });
 
-    it('should return true when country code is 44', () => {
-      PhoneParserUtility.getStationCountryCode.mockReturnValueOnce('44');
-      expect(PhoneParserUtility.isStationUK()).toBeTruthy();
+    it('should return true when country code is 44', async () => {
+      PhoneParserUtility.getStationCountryCode.mockResolvedValueOnce('44');
+      expect(await PhoneParserUtility.isStationUK()).toBeTruthy();
     });
   });
 
   describe('isStationUSorCA()', () => {
-    it('should return false when country code is not 1', () => {
-      PhoneParserUtility.getStationCountryCode.mockReturnValueOnce('86');
-      expect(PhoneParserUtility.isStationUSorCA()).toBeFalsy();
+    it('should return false when country code is not 1', async () => {
+      PhoneParserUtility.getStationCountryCode.mockResolvedValueOnce('86');
+      expect(await PhoneParserUtility.isStationUSorCA()).toBeFalsy();
     });
 
-    it('should return true when country code is 1', () => {
-      PhoneParserUtility.getStationCountryCode.mockReturnValueOnce('1');
-      expect(PhoneParserUtility.isStationUSorCA()).toBeTruthy();
+    it('should return true when country code is 1', async () => {
+      PhoneParserUtility.getStationCountryCode.mockResolvedValueOnce('1');
+      expect(await PhoneParserUtility.isStationUSorCA()).toBeTruthy();
     });
   });
 

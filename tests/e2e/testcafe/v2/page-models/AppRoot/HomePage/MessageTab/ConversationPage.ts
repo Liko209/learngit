@@ -640,6 +640,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
+  get href(){
+    return this.self.find(`[href]`)
+  }
+
   get img() {
     this.warnFlakySelector(); // todo: all specify item...
     return this.body.find('img');
@@ -861,6 +865,11 @@ export class PostItem extends BaseWebComponent {
   }
 
   async hoverPostAndClickJumpToConversationButton() {
+    await this.hoverPost();
+    await this.t.click(this.jumpToConversationButton);
+  }
+
+  async hoverPost() {
     const buttonElement = this.jumpToConversationButton;
     const displayJumpButton = ClientFunction(() => {
       buttonElement().style["opacity"] = "1";
@@ -868,9 +877,8 @@ export class PostItem extends BaseWebComponent {
         dependencies: { buttonElement }
       }
     );
-    await this.t.hover(this.self)
+    await this.t.hover(this.self);
     await displayJumpButton();
-    await this.t.click(this.jumpToConversationButton);
   }
 
   // audio conference
@@ -881,7 +889,7 @@ export class PostItem extends BaseWebComponent {
   }
 
   get audioConference() {
-    return this.getComponent(AudioConference, this.self);
+    return this.getComponent(AudioConference, this.getSelectorByAutomationId('conferenceItem', this.self));
   }
 
   async scrollIntoView() {
@@ -899,32 +907,101 @@ export class PostItem extends BaseWebComponent {
     await this.t.expect(this.isHighLight).ok();
   }
 
-}
+  get phoneLink() {
+    return this.getSelectorByAutomationId('phoneNumberLink', this.self);
+  }
 
-class AudioConference extends BaseWebComponent {
-  get container() {
+  phoneLinkByDataId(dataId: string) {
+    return this.phoneLink.withAttribute('data-id', dataId);
+  }
+  // be searched item
+  get keyworkdsByHighLight() {
+    return this.self.find('span.highlight-term');
+  }
+
+  // special item card
+  get itemCard() {
     return this.self.find('.conversation-item-cards');
   }
 
+  get eventIcon() {
+    return this.getSelectorByIcon('event', this.itemCard);
+  }
+
+  get eventTitle() {
+    this.warnFlakySelector();
+    return this.eventIcon.nextSibling('span'); // todo: automation id
+  }
+
+  get eventLocation() {
+    this.warnFlakySelector();
+    return this.itemCard.find('div').withExactText('Location').nextSibling('div'); // todo: automation id
+  }
+
+  get eventDue() {
+    this.warnFlakySelector();
+    return this.itemCard.find('div').withExactText('Due').nextSibling('div'); // todo: automation id
+  }
+
+  get eventDescripton() {
+    this.warnFlakySelector();
+    return // todo: automation id
+  }
+
+  get noteTitle() {
+    return this.itemCard.child('div').nth(0); // todo: automation id
+  }
+
+  get noteBody() {
+    return this.itemCard.child('div').nth(1); // todo: automation id
+  }
+
+  get taskTitle() {
+    return this.itemCard.child('div').nth(0).child('span').nth(1);
+  }
+
+  get taskAssignee() {
+    return this.itemCard.find('.task-avatar-name');
+  }
+
+  get taskSection() {
+    return this.itemCard.find('div').withExactText('Section').nextSibling('div');
+  }
+
+  get taskDescription() {
+    return this.itemCard.find('div').withExactText('Description').nextSibling('div');
+  }
+
+  get codeTitle() {
+    return this.getSelectorByIcon('code', this.itemCard).nextSibling('span');
+  }
+
+  get codeBody() {
+    return this.getSelectorByAutomationId('codeSnippetBody', this.itemCard);
+  }
+
+}
+
+class AudioConference extends BaseWebComponent {
   get icon() {
     return this.getSelectorByIcon('conference');
   }
 
   get title() {
     this.warnFlakySelector();
-    return this.icon.parent('div').find('span').withText('Audio Conference');
+    return this.icon.parent('div').find('span').withText('Audio Conference'); // todo i18n
   }
 
   get dialInNumber() {
-    return this.self.find('div').withText('Dial-in Number');
+    return this.self.find('div').withText('Dial-in Number'); // todo i18n
   }
 
   get phoneNumber() {
-    return this.getSelectorByAutomationId('conferencePhoneNumber', this.self.find('a'));
+    return this.getSelectorByAutomationId('phoneNumberLink', this.self);
   }
 
   get globalNumber() {
-    return this.getSelectorByAutomationId('conferenceGlobalNumber', this.self.find('a'));
+    return this.getSelectorByAutomationId('conferenceGlobalNumber', this.self);
   }
 
   // only host can see

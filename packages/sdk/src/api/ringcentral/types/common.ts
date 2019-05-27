@@ -134,9 +134,9 @@ type DialingPlan = {
 };
 
 type IPhoneNumberRequest = {
-  usageType: string;
-  page: number;
-  perPage: number;
+  usageType?: string;
+  page?: number;
+  perPage?: number;
 };
 
 type ICountryInfo = {

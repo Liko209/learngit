@@ -42,6 +42,14 @@ describe('EnvConfig', () => {
     );
   });
 
+  it('should call remove when try to removeDBSchemaVersion', () => {
+    DaoGlobalConfig.removeDBSchemaVersion();
+    expect(mockConfigService.remove).toHaveBeenCalledWith(
+      MODULE,
+      CONFIG_KEYS.DB_SCHEMA_VERSION,
+    );
+  });
+
   it('should call get when try to getDBBlockMessageKey', () => {
     DaoGlobalConfig.getDBBlockMessageKey();
     expect(mockConfigService.get).toHaveBeenCalledWith(

@@ -13,6 +13,7 @@ enum ENTITY_NAME {
   'GLOBAL' = 'global',
   'PROGRESS' = 'progress',
   'USER_PERMISSION' = 'userPermission',
+  'USER_SETTING' = 'userSetting',
   'PHONE_NUMBER' = 'phoneNumber',
 }
 
@@ -46,6 +47,7 @@ enum GLOBAL_KEYS {
   DIRECT_MESSAGE_UNREAD = 'DIRECT_MESSAGE_UNREAD',
   TEAM_UNREAD = 'TEAM_UNREAD',
   CURRENT_SETTING_LIST_TYPE = 'CURRENT_SETTING_LIST_TYPE',
+  IS_RC_USER = 'IS_RC_USER',
 }
 
 export { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS };

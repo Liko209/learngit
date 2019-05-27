@@ -16,8 +16,9 @@ import Base from './Base';
 import i18nT from '@/utils/i18nT';
 import { TeamPermission, GroupService } from 'sdk/module/group';
 import { PERMISSION_ENUM } from 'sdk/service';
-import { AccountUserConfig } from 'sdk/module/account/config';
+import { AccountService } from 'sdk/module/account';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import PersonModel from './Person';
 
 export default class GroupModel extends Base<Group> {
   @observable
@@ -49,7 +50,7 @@ export default class GroupModel extends Base<Group> {
   @observable
   convertedToTeam?: { team_id?: number; created?: number };
   @observable
-  translation: { [key: string ]: string } = {};
+  translation: { [key: string]: string } = {};
 
   isCompanyTeam: boolean;
   latestTime: number;
@@ -98,6 +99,9 @@ export default class GroupModel extends Base<Group> {
       () => this.type,
       async () => {
         this.translation['message.meGroup'] = await i18nT('message.meGroup');
+        this.translation['common.deactivatedUsers'] = await i18nT(
+          'common.deactivatedUsers',
+        );
       },
       {
         fireImmediately: true,
@@ -117,7 +121,9 @@ export default class GroupModel extends Base<Group> {
   }
 
   get isMember() {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     return (
       this.members && this.members.indexOf(userConfig.getGlipUserId()) >= 0
     );
@@ -128,7 +134,9 @@ export default class GroupModel extends Base<Group> {
     if (this.type === CONVERSATION_TYPES.TEAM) {
       return this.setAbbreviation || '';
     }
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
     const members: number[] = this.members || [];
     const diffMembers = _.difference(members, [currentUserId]);
@@ -150,17 +158,31 @@ export default class GroupModel extends Base<Group> {
     if (this.type === CONVERSATION_TYPES.NORMAL_GROUP) {
       const names: string[] = [];
       const emails: string[] = [];
-      diffMembers
-        .map(id => getEntity(ENTITY_NAME.PERSON, id))
-        .forEach(({ firstName, lastName, email }) => {
-          if (!firstName && !lastName) {
-            emails.push(email);
-          } else if (firstName) {
-            names.push(firstName);
-          } else if (lastName) {
-            names.push(lastName);
+      const personModels = diffMembers.map(id =>
+        getEntity(ENTITY_NAME.PERSON, id),
+      );
+      let invisibleCount = 0;
+      personModels.forEach((personModel: PersonModel) => {
+        if (personModel && !personModel.isMocked) {
+          if (!personModel.isVisible()) {
+            invisibleCount++;
+            return;
           }
-        });
+          if (!personModel.firstName && !personModel.lastName) {
+            emails.push(personModel.email);
+          } else if (personModel.firstName) {
+            names.push(personModel.firstName);
+          } else if (personModel.lastName) {
+            names.push(personModel.lastName);
+          }
+        }
+      });
+      if (invisibleCount && personModels.length === invisibleCount) {
+        return (
+          this.translation['common.deactivatedUsers'] ||
+          'common.deactivatedUsers'
+        );
+      }
       return names
         .sort(compareName)
         .concat(emails.sort(compareName))
@@ -172,7 +194,9 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get type(): CONVERSATION_TYPES {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
 
     const members = this.members || [];
@@ -218,7 +242,9 @@ export default class GroupModel extends Base<Group> {
   @computed
   get membersExcludeMe() {
     const members = this.members || [];
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
 
     const currentUserId = userConfig.getGlipUserId();
 

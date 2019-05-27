@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IGlobalConfigService } from './IGlobalConfigService';
+import { IConfigService } from './IConfigService';
 
-interface IUserConfigService extends IGlobalConfigService {
+interface IUserConfigService extends IConfigService {
   setUserId(ns: string): void;
 }
 

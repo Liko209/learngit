@@ -4,9 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { createRef, RefObject } from 'react';
 import { observer } from 'mobx-react';
 import { JuiDialer, JuiHeaderContainer } from 'jui/pattern/Dialer';
+// import ReactDOM from 'react-dom';
 import { DialerTitleBar } from '../DialerTitleBar';
 import { DialerHeader } from '../DialerHeader';
 import { DialerContainer } from '../DialerContainer';
@@ -15,38 +16,40 @@ import { withDialogOrNewWindow } from '../../HOC';
 import { Incoming } from '../Incoming';
 import { CALL_STATE } from '../../FSM';
 import { DialerKeypadHeader } from '../DialerKeypadHeader';
+import { Reply } from '../Reply';
+import { INCOMING_STATE } from '../../store';
 
 @observer
 class DialerViewComponent extends React.Component<DialerViewProps> {
-  shouldComponentUpdate(nextProps: DialerViewProps) {
-    const { callState } = nextProps;
-    if (callState === CALL_STATE.IDLE) {
-      return false;
-    }
-    return true;
-  }
+  dialerHeaderRef: RefObject<any> = createRef();
+
   render() {
-    const { callState } = this.props;
+    const {
+      callState,
+      keypadEntered,
+      incomingState,
+      dialerId,
+      ...rest
+    } = this.props;
     return (
-      <JuiDialer>
-        {callState === CALL_STATE.INCOMING && <Incoming />}
-        {
-          callState !== CALL_STATE.INCOMING && (
-            <>
-              <JuiHeaderContainer>
-                <DialerTitleBar />
-                {
-                  this.props.keypadEntered ?
-                    <DialerKeypadHeader />
-                    :
-                    <DialerHeader />
-                }
-              </JuiHeaderContainer>
-              <DialerContainer />
-            </>
-          )
-        }
-      </JuiDialer >
+      <JuiDialer {...rest} id={dialerId}>
+        {callState === CALL_STATE.INCOMING &&
+          (incomingState === INCOMING_STATE.REPLY ? <Reply /> : <Incoming />)}
+        {// Dialer view here
+        callState !== CALL_STATE.INCOMING && (
+          <>
+            <JuiHeaderContainer>
+              <DialerTitleBar />
+              {keypadEntered ? (
+                <DialerKeypadHeader />
+              ) : (
+                <DialerHeader ref={this.dialerHeaderRef} />
+              )}
+            </JuiHeaderContainer>
+            <DialerContainer dialerHeaderRef={this.dialerHeaderRef} />
+          </>
+        )}
+      </JuiDialer>
     );
   }
 }

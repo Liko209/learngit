@@ -31,6 +31,19 @@ type States = {
 };
 
 class JuiTopBar extends React.PureComponent<Props, States> {
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      isShowSearchBar: false,
+    };
+  }
+
+  showSearchBar = () => {
+    this.setState((prevState) => ({
+      isShowSearchBar: !prevState.isShowSearchBar,
+    }));
+  }
+
   render() {
     const {
       MainMenu,

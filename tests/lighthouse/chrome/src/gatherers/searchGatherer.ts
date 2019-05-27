@@ -8,6 +8,11 @@ import { Config } from "../config";
 
 class SearchGatherer extends BaseGatherer {
   private keywords: Array<string>;
+  private metricKeys: Array<string> = [
+    'search_group',
+    'search_people',
+    'search_team'
+  ];
 
   constructor(keywords: Array<string>) {
     super();
@@ -15,38 +20,36 @@ class SearchGatherer extends BaseGatherer {
     this.keywords = keywords;
   }
 
-  async _beforePass(passContext) {}
+  async _beforePass(passContext) {
+    await this.gathererConsole(this.metricKeys, passContext);
+  }
 
   async _pass(passContext) {
     let searchPage = new SearchPage(passContext);
 
     // pre loaded
     await this.search(searchPage);
-
-    // clear performance metrics of pre-loaded
-    let page = await searchPage.page();
-    await page.evaluate(() => {
-      performance["jupiter"] = {};
-    });
   }
 
   async _afterPass(passContext) {
     let searchPage = new SearchPage(passContext);
 
+    this.beginGathererConsole();
+
     // switch conversation
     await this.search(searchPage, Config.sceneRepeatCount);
 
-    let page = await searchPage.page();
+    this.endGathererConsole();
 
-    let metrics = await page.evaluate(() => {
-      return performance["jupiter"];
-    });
+    let result = {};
+    for (let key of this.metricKeys) {
+      result[key] = {
+        api: this.consoleMetrics[key],
+        ui: []
+      };
+    }
 
-    return {
-      search_group: { api: metrics["search_group"], ui: [] },
-      search_people: { api: metrics["search_people"], ui: [] },
-      search_team: { api: metrics["search_team"], ui: [] }
-    };
+    return result;
   }
 
   async search(page: SearchPage, searchCount: number = -1) {

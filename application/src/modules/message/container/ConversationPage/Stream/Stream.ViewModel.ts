@@ -315,6 +315,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return firstUnreadPostId;
   }
 
+  @action
   initialize = (groupId: number) => {
     this._syncGroupItems();
     const globalStore = storeManager.getGlobalStore();

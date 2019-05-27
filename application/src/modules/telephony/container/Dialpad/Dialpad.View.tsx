@@ -17,7 +17,20 @@ const Actions = [() => <Mute type="fab" />, () => <End size="medium" />];
 
 class DialpadViewComponent extends React.Component<DialpadProps> {
   render() {
-    const { showMinimized, maximize, name, timing, t } = this.props;
+    const {
+      showMinimized,
+      maximize,
+      name,
+      timing,
+      t,
+      id,
+      startMinimizeAnimation,
+      canUseTelephony,
+    } = this.props;
+
+    if (!canUseTelephony) {
+      return null;
+    }
     return showMinimized ? (
       <JuiMinimizedCall
         onClick={maximize}
@@ -28,10 +41,11 @@ class DialpadViewComponent extends React.Component<DialpadProps> {
       />
     ) : (
       <JuiDialpadBtn
-        size="medium"
-        iconName="keypad"
-        disableRipple={true}
-        data-test-automation-id="telephony-dialpad-btn"
+        onClick={maximize}
+        ariaLabel={t('home.openDialer')}
+        id={id}
+        startMinimizeAnimation={startMinimizeAnimation}
+        tooltipTitle={t('home.dialer')}
       />
     );
   }

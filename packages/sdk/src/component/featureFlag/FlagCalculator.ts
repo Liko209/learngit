@@ -8,7 +8,8 @@ import {
   Middleware,
   Next,
 } from './interface';
-import { AccountUserConfig } from '../../module/account/config';
+import { AccountService } from '../../module/account/service';
+import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
 
 class FlagCalculator implements IFlagCalculator {
   featureConfig: IFeatureConfig;
@@ -20,7 +21,9 @@ class FlagCalculator implements IFlagCalculator {
     this._permissionKeys = Object.values(PERMISSION);
   }
   get accountInfo(): IAccountInfo {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const companyId: number = userConfig.getCurrentCompanyId();
     const userId: number = userConfig.getGlipUserId();
     return { companyId, userId };

@@ -48,6 +48,8 @@ const testcafeElectronRcContent = JSON.stringify(electronRunConfig, null, 4);
 fs.writeFileSync(testcafeElectronRcFilename, testcafeElectronRcContent);
 logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectronRcContent}`);
 
+// initialize axios-debug-log
+MiscUtils.axiosDebugConfig();
 
 // initialize mock client
 export const mockClient = ENABLE_MOCK_SERVER ? new MockClient(MOCK_SERVER_URL) : null;
@@ -123,7 +125,7 @@ export async function getOrCreateRunId(runIdFile: string = './runId') {
 
 export async function finishRun() {
   let result = '';
-  if (_runId) {
+  if (_runId && ENABLE_REMOTE_DASHBOARD) {
     const run = new Run();
     run.process = 1;
     run.endTime = new Date();

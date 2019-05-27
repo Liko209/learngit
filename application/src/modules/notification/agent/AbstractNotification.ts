@@ -23,11 +23,9 @@ export abstract class AbstractNotification<T> {
     this._store = new NotificationStore();
   }
 
-  protected async handlePriority(
-    notifications: Notification[],
-    opts: NotificationOpts,
-  ) {
+  protected async handlePriority(opts: NotificationOpts) {
     if (isEdge || (isElectron && isWindows)) {
+      const notifications = await this.getNotifications();
       const { priority } = opts.data;
       const lowPriorityNotifications = notifications.filter(notification => {
         if (notification.data) {
@@ -59,7 +57,7 @@ export abstract class AbstractNotification<T> {
     const isValid = await this.checkNotificationValid(opts.data.id);
     this._logger.log(`check notification for ${opts.tag} is valid`, isValid);
     if (isValid) {
-      await this.handlePriority(await this.getNotifications(), opts);
+      await this.handlePriority(opts);
       this._logger.log(`creating notification for ${opts.tag}`);
       const result = await this.showNotification(title, opts);
       this._store.add(opts.data.scope, opts.data.id, result);

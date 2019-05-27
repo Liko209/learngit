@@ -13,10 +13,12 @@ import {
 
 const styles = {
   entering: {
+    opacity: 0,
     transform: 'scale(1.1)',
   },
   entered: {
     transform: 'scale(1)',
+    opacity: 1,
   },
   exiting: {
     opacity: 0,
@@ -112,7 +114,7 @@ class ZoomInFadeOut extends React.PureComponent<JuiZoomProps> {
           return React.cloneElement(children, {
             style: {
               transform: 'scale(0)',
-              opacity: 1,
+              opacity: state === 'entering' ? 0 : 1,
               visibility: state === 'exited' && !inProp ? 'hidden' : undefined,
               ...styles[state],
               ...style,
@@ -126,4 +128,5 @@ class ZoomInFadeOut extends React.PureComponent<JuiZoomProps> {
   }
 }
 // @ts-ignore
-export const JuiZoomInFadeOut = withTheme(ZoomInFadeOut);
+const JuiZoomInFadeOut = withTheme(ZoomInFadeOut);
+export { JuiZoomProps, JuiZoomInFadeOut };

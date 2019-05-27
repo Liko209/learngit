@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>Sweden</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Sweden" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="swe" transform="translate(0.000000, 5.000000)">
+            <polygon id="Fill-2" fill="#005B99" points="0.5 0.5 23.5 0.5 23.5 13.5 0.5 13.5"></polygon>
+            <polyline id="Fill-3" fill="#FCD116" points="23.5 5.86233737 10.3964789 5.86233737 10.3964789 0.5 7.71371386 0.5 7.71371386 5.86233737 0.5 5.86233737 0.5 8.13693984 7.71371386 8.13693984 7.71371386 13.5 10.3964789 13.5 10.3964789 8.13693984 23.5 8.13693984 23.5 5.86233737"></polyline>
+        </g>
+    </g>
+</svg>
