@@ -45,4 +45,13 @@ const JuiSettingSectionContainer = styled.div<JuiSettingSectionContainerProps>`
   }
 `;
 
-export { JuiSettingSectionContainer, JuiSettingSectionContainerProps };
+const JuiSettingContainer = styled.div`
+  overflow: auto;
+  height: 100%;
+`;
+
+export {
+  JuiSettingSectionContainer,
+  JuiSettingSectionContainerProps,
+  JuiSettingContainer,
+};

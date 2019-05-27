@@ -7,10 +7,10 @@
 import React, { Component } from 'react';
 import { SettingContainerViewProps } from './types';
 import { observer } from 'mobx-react';
-import styled from 'jui/foundation/styled-components';
 import {
   JuiSettingSection,
   JuiSettingSectionContainer,
+  JuiSettingContainer,
 } from 'jui/pattern/SettingSection';
 import { SettingStore } from '@/modules/setting/store';
 import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
@@ -19,11 +19,6 @@ import SettingModel from '@/store/models/UserSetting';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiConversationPageHeader } from 'jui/pattern/ConversationPageHeader';
 import { SETTING_ITEM } from '../../constants';
-
-const StyledSettingContainer = styled.div`
-  overflow: auto;
-  height: 100%;
-`;
 @observer
 class SettingContainerViewComponent extends Component<
   SettingContainerViewProps & WithTranslation,
@@ -127,9 +122,9 @@ class SettingContainerViewComponent extends Component<
       this.source = [this._wrapRef.current];
     }
     return (
-      <StyledSettingContainer
-        data-test-automation-id="SettingContainer"
+      <JuiSettingContainer
         ref={this._wrapRef}
+        data-test-automation-id="SettingContainer"
       >
         <JuiConversationPageHeader
           data-test-automation-id="SettingPageHeader"
@@ -143,7 +138,7 @@ class SettingContainerViewComponent extends Component<
         <JuiSettingSectionContainer containerWidth={width}>
           {this.renderItem()}
         </JuiSettingSectionContainer>
-      </StyledSettingContainer>
+      </JuiSettingContainer>
     );
   }
 }
