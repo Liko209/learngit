@@ -15,6 +15,7 @@ import { ScenarioHelper } from './scenario-helper';
 import { H } from './utils';
 
 import { IUser, IStep, IStepOptions, INotification } from '../models';
+import { Step } from './log-helper'
 import { AppRoot } from '../page-models/AppRoot';
 import { SITE_URL, SITE_ENV } from '../../config';
 import { WebphoneHelper } from './webphone-helper';
@@ -122,7 +123,7 @@ class Helper {
   }
 
   async withLog(step: IStep | string,
-    cb: (step?: IStep) => Promise<any>,
+    cb: (step?: Step) => Promise<any>,
     options?: boolean | IStepOptions) {
     return await this.logHelper.withLog(step, cb, options);
   }
