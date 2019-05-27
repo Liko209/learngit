@@ -49,7 +49,7 @@ describe('DialerViewModel', () => {
     expect(dialerViewModel.keypadEntered).toEqual(false);
   });
   it('should initialize without fade animation', async () => {
-    expect(dialerViewModel.shouldAnimationStart).toEqual(false);
+    expect(dialerViewModel.startMinimizeAnimation).toEqual(false);
   });
   it('should initialize with dialerId', async () => {
     expect(typeof dialerViewModel.dialerId).toBe('string');

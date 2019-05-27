@@ -116,6 +116,7 @@ export class DialPad extends React.Component<
   }
 
   _onMouseDownForZero = (e: MouseEvent<HTMLButtonElement>) => {
+    e.persist();
     e.preventDefault();
     e.stopPropagation();
     this._mouseDownTime = +new Date();
@@ -126,6 +127,7 @@ export class DialPad extends React.Component<
   }
 
   _onMouseupForZero = throttledHandler((e: MouseEvent<HTMLButtonElement>) => {
+    e.persist();
     e.preventDefault();
     e.stopPropagation();
     const curTime = +new Date();
