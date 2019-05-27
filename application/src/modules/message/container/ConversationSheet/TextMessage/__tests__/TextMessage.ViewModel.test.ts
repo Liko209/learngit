@@ -18,7 +18,6 @@ import jsonFile from '../../../../../../../public/locales/en/translations.json';
 import i18next from 'i18next';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { PHONE_LINKS_CLS } from '../constants';
-import config from '../../../../../../config/api/Chris_sandbox';
 
 jest.mock('@/store/utils');
 jest.mock('sdk/module/config/service/UserConfigService');

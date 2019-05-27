@@ -36,6 +36,7 @@ import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { CALL_WINDOW_STATUS } from '../FSM';
 import { AccountService } from 'sdk/module/account';
 import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
+import { CALLING_OPTIONS } from 'sdk/module/profile';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -79,9 +80,10 @@ class TelephonyService {
   }
 
   private _onReceiveIncomingCall = async (callInfo: TelephonyCallInfo) => {
-    const canReceive =
-      getSingleEntity(ENTITY_NAME.PROFILE, 'callingOption') === 'glip';
-    if (!canReceive) {
+    const isDefaultPhoneApp =
+      getSingleEntity(ENTITY_NAME.PROFILE, 'callingOption') ===
+      CALLING_OPTIONS.GLIP;
+    if (!isDefaultPhoneApp) {
       return;
     }
     const { fromName, fromNum, callId } = callInfo;
