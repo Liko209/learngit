@@ -62,6 +62,7 @@ const configLoader = new ConfigLoader(
 
 configLoader.load();
 
+const TESTCAFE_HOST = process.env.TESTCAFE_HOST;
 const LANGUAGE_CODE = process.env.LANGUAGE_CODE || 'en' // ref: https://www.w3schools.com/tags/ref_language_codes.asp
 const REPORTER = process.env.REPORTER || 'spec';
 const SCREENSHOTS_PATH = path.join(process.env.SCREENSHOTS_PATH || '/tmp', LANGUAGE_CODE);
@@ -90,6 +91,7 @@ const GIT_TARGET_BRANCH = process.env.TARGET_BRANCH;
 const NEW_VERSION_SITE = process.env.NEW_VERSION_SITE;
 
 const RUNNER_OPTS = {
+  TESTCAFE_HOST,
   REPORTER,
   SCREENSHOT_ON_FAIL,
   SCREENSHOTS_PATH,

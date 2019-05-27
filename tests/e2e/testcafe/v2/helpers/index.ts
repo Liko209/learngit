@@ -19,6 +19,7 @@ import { Step } from './log-helper'
 import { AppRoot } from '../page-models/AppRoot';
 import { SITE_URL, SITE_ENV } from '../../config';
 import { WebphoneHelper } from './webphone-helper';
+import { NetworkHelper } from './network-helper';
 import { NotificationHelper } from './notification';
 import { UpgradeHelper } from './upgrade';
 import { WebphoneSession } from '../webphone/session';
@@ -79,6 +80,10 @@ class Helper {
 
   get webphoneHelper() {
     return new WebphoneHelper(this.t);
+  }
+
+  get networkHelper() {
+    return new NetworkHelper(this.t);
   }
 
   get scenarioHelper() {
@@ -247,6 +252,19 @@ class Helper {
         await cb(app);
       }
     }, { preserveUrl: true, });
+  }
+
+  async withNetworkOff(cb: () => Promise<any>) {
+    await this.networkHelper.withNetworkOff(cb);
+  }
+
+  turnOnNetwork(suppressError: boolean = true) {
+    this.networkHelper.setNetwork(true, suppressError);
+    this.networkHelper.waitUntilReachable();
+  }
+
+  turnOffNetwork(suppressError: boolean = true) {
+    this.networkHelper.setNetwork(false, suppressError);
   }
 
   // a temporary method:  need time to wait back-end and front-end sync umi data.
