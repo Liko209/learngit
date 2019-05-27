@@ -260,6 +260,7 @@ class Helper {
 
   turnOnNetwork(suppressError: boolean = true) {
     this.networkHelper.setNetwork(true, suppressError);
+    this.networkHelper.waitUntilReachable();
   }
 
   turnOffNetwork(suppressError: boolean = true) {

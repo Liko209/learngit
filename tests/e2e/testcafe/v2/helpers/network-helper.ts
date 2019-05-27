@@ -19,6 +19,16 @@ class NetworkHelper {
     }
   }
 
+  waitUntilReachable(host: string = 'github.com', port: number = 443, maxRetry: number = 5, interval: number = 5) {
+    for (let i = 0; i < maxRetry; i++) {
+      const isReachable = !!shell.exec(`nc -z ${host} ${port}`)
+      if (isReachable)
+        return;
+      shell.exec(`sleep ${interval}`);
+    }
+    throw new Error('Network is unreachable!')
+  }
+
   async withNetworkOff(cb: () => Promise<any>) {
     if (this.isSupported()) {
       throw new Error("cannot find command: nmcli")
