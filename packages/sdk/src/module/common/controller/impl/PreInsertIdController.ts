@@ -68,10 +68,7 @@ class PreInsertIdController implements IPreInsertIdController {
     if (!preInsertIds || !preInsertIds.length) {
       return;
     }
-    preInsertIds.forEach(
-      (id: string) =>
-        this._preInsertIds.has(id) && this._preInsertIds.delete(id),
-    );
+    preInsertIds.forEach((id: string) => this._preInsertIds.delete(id));
     this._syncDataDB();
   }
 
