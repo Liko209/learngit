@@ -591,7 +591,7 @@ class DashboardService {
       return result;
     }
 
-    const arr = await LoadingTimeReleaseSummaryDto.findAll({ where: { version: pre.name, name: { [Op.in]: metricKey } } });
+    const arr = await LoadingTimeReleaseSummaryDto.findAll({ where: { platform: scene.platform, version: pre.name, name: { [Op.in]: metricKey } } });
     if (arr && arr.length > 0) {
       arr.forEach(time => {
         releaseMetric[time.name] = {
@@ -669,7 +669,7 @@ class DashboardService {
     _versionInfo[host] = info;
 
     logger.info(`${host} => ${JSON.stringify(info)}`);
-    
+
     return info;
   }
 

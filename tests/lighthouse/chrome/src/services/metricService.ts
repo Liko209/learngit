@@ -350,7 +350,7 @@ class MetricService {
       }
     });
     if (versions && versions.length > 0) {
-      await LoadingTimeDevelopSummaryDto.destroy({ where: { versionId: { [Op.notIn]: versions.map(a => a.id) }, isRelease: false } })
+      await LoadingTimeDevelopSummaryDto.destroy({ where: { versionId: { [Op.notIn]: versions.map(a => a.id) }, platform: platform, isRelease: false } })
     }
 
     const release = isRelease ? 1 : 0;
@@ -424,7 +424,7 @@ class MetricService {
     if ((!version.isRelease && isDevelop) || isRelease) {
       await LoadingTimeReleaseSummaryDto.destroy({
         where: {
-          name: summary.name, versionId: version.id
+          name: summary.name, version: versionName, platform: platform
         }
       });
 
@@ -432,7 +432,7 @@ class MetricService {
     }
 
     const where = {
-      name: summary.name, versionId: version.id, isRelease
+      name: summary.name, versionId: version.id, isRelease, platform: platform
     };
 
     await LoadingTimeDevelopSummaryDto.destroy({ where });
