@@ -21,12 +21,12 @@ class NetworkHelper {
 
   waitUntilReachable(host: string = 'github.com', port: number = 443, maxRetry: number = 5, interval: number = 5) {
     for (let i = 0; i < maxRetry; i++) {
-      const isReachable = !!shell.exec(`nc -z ${host} ${port}`)
+      const isReachable = (0 === shell.exec(`nc -z ${host} ${port}`).code);
       if (isReachable)
         return;
       shell.exec(`sleep ${interval}`);
     }
-    throw new Error('Network is unreachable!')
+    throw new Error('Network is unreachable!');
   }
 
   async withNetworkOff(cb: () => Promise<any>) {
