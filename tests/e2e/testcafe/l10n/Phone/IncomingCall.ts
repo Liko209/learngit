@@ -40,4 +40,9 @@ fixture('Phone/IncomingCall')
     await telephonyDialog.hoverIgnoreButton();
   });
   await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_Phone_IgnoreTheCall' });
+
+  await h(t).withLog('When I hover More option button', async () => {
+    await telephonyDialog.hoverMoreOptionsButton();
+  })
+  await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_Phone_MoreOptions'})
 });
