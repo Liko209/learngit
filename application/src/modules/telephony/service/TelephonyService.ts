@@ -31,10 +31,11 @@ import { reaction, IReactionDisposer, runInAction, action } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { Profile } from 'sdk/module/profile/entity';
 import ProfileModel from '@/store/models/Profile';
-import { getSingleEntity } from '@/store/utils';
-import { ENTITY_NAME } from '@/store/constants';
+import { getSingleEntity, getEntity, getGlobalValue } from '@/store/utils';
+import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { CALL_WINDOW_STATUS } from '../FSM';
 import { AccountService } from 'sdk/module/account';
+import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -45,8 +46,9 @@ class TelephonyService {
   static TAG: string = '[UI TelephonyService] ';
 
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
+  @inject(CLIENT_SERVICE) private _clientService: IClientService;
   // prettier-ignore
-  private _serverTelephonyService = ServiceLoader.getInstance<ServerTelephonyService>(ServiceConfig.TELEPHONY_SERVICE);
+  private _serverTelephonyService = ServiceLoader.getInstance <ServerTelephonyService>(ServiceConfig.TELEPHONY_SERVICE);
   private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
     ServiceConfig.RC_INFO_SERVICE,
   );
@@ -77,6 +79,11 @@ class TelephonyService {
   }
 
   private _onReceiveIncomingCall = async (callInfo: TelephonyCallInfo) => {
+    const canReceive =
+      getSingleEntity(ENTITY_NAME.PROFILE, 'callingOption') === 'glip';
+    if (!canReceive) {
+      return;
+    }
     const { fromName, fromNum, callId } = callInfo;
     this._callId = callId;
     this._telephonyStore.callType = CALL_TYPE.INBOUND;
@@ -811,6 +818,22 @@ class TelephonyService {
       time,
       timeUnit,
     );
+  }
+
+  makeRCPhoneCall(phoneNumber: string) {
+    const buildURL = (phoneNumber: string) => {
+      enum RCPhoneCallURL {
+        'RC' = 'rcmobile',
+        'ATT' = 'attvr20',
+        'TELUS' = 'rctelus',
+      }
+      const currentCompanyId = getGlobalValue(GLOBAL_KEYS.CURRENT_COMPANY_ID);
+      const { rcBrand } = getEntity(ENTITY_NAME.COMPANY, currentCompanyId);
+      return `${RCPhoneCallURL[rcBrand] ||
+        RCPhoneCallURL['RC']}://call?number=${encodeURIComponent(phoneNumber)}`;
+    };
+    const url = buildURL(phoneNumber);
+    this._clientService.invokeApp(url);
   }
 }
 

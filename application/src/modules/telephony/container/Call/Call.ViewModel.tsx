@@ -10,7 +10,7 @@ import { TelephonyService } from '../../service';
 import { CallProps, CallViewProps } from './types';
 import { computed, action } from 'mobx';
 import { promisedComputed } from 'computed-async-mobx';
-import { getEntity, getGlobalValue } from '@/store/utils';
+import { getEntity, getGlobalValue, getSingleEntity } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
 import GroupModel from '@/store/models/Group';
 import { CONVERSATION_TYPES } from '@/constants';
@@ -25,6 +25,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
+import { CALLING_OPTIONS } from 'sdk/module/profile';
 
 class CallViewModel extends AbstractViewModel<CallProps>
   implements CallViewProps {
@@ -96,9 +97,16 @@ class CallViewModel extends AbstractViewModel<CallProps>
   }
 
   @action
-  directCall = () => {
+  call = () => {
+    const isJupiterDefaultPhoneApp =
+      getSingleEntity(ENTITY_NAME.PROFILE, 'callOption') ===
+      CALLING_OPTIONS.GLIP;
     if (this.phoneNumber) {
-      this._telephonyService.directCall(this.phoneNumber);
+      if (isJupiterDefaultPhoneApp) {
+        this._telephonyService.directCall(this.phoneNumber);
+      } else {
+        this._telephonyService.makeRCPhoneCall(this.phoneNumber);
+      }
     }
   }
 

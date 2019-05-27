@@ -22,6 +22,10 @@ class ElectronService {
     const bringAppToFront = window.jupiterElectron.bringAppToFront;
     bringAppToFront && bringAppToFront();
   }
+  openExternalApp(url: string) {
+    const openExternalApp = window.jupiterElectron.openExternalApp;
+    openExternalApp && openExternalApp(url);
+  }
 }
 
 export { ElectronService };
