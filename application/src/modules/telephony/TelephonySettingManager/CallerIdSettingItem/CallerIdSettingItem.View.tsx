@@ -3,33 +3,28 @@
  * @Date: 2019-05-08 14:40:39
  * Copyright © RingCentral. All rights reserved.
  */
-
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { SettingItemProps } from '@/modules/setting/container/SettingItemBuild';
-import { SelectsView } from '@/modules/setting/container/SettingItems';
-import { IPhoneNumberRecord } from 'sdk/api/ringcentral/types/common';
-import { CallerIdSettingItemViewModelProps } from './types';
+import { CallerIdSettingItemViewProps } from './types';
+import { JuiMenuItem } from 'jui/components/Menus/MenuItem';
+
+type Props = SettingItemProps & CallerIdSettingItemViewProps;
 
 @observer
-class CallerIdSettingItemViewComponent extends Component<
-  SettingItemProps & CallerIdSettingItemViewModelProps
-> {
-  private _renderSourceItem = (sourceItem: IPhoneNumberRecord) => {
-    const parsedItem = this.props.parsedSource.find(
-      item => item.id === sourceItem.id,
-    );
-    return parsedItem!.phoneNumber;
-  }
-
+class CallerIdSettingItemViewComponent extends Component<Props> {
   render() {
-    const { parsedSource, ...rest } = this.props;
+    const { parsedSourceItem } = this.props;
+
+    if (!parsedSourceItem) return null;
+
     return (
-      <SelectsView
-        {...rest}
-        sourceItemRenderer={this._renderSourceItem}
-        automationKey={'callerId'}
-      />
+      <JuiMenuItem
+        value={parsedSourceItem.id}
+        automationId={'SettingSelectItem'}
+      >
+        {parsedSourceItem.phoneNumber}
+      </JuiMenuItem>
     );
   }
 }

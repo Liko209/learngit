@@ -95,8 +95,8 @@ class Jupiter {
       return !!provide.value;
     };
 
-    let identifier;
-    let creator;
+    let identifier: string | interfaces.Newable<T>;
+    let creator: interfaces.Newable<T>;
 
     if (hasNameValue(provide)) {
       identifier = provide.name;
@@ -128,9 +128,8 @@ class Jupiter {
     identifier: interfaces.ServiceIdentifier<T>,
     newable: interfaces.Newable<T>,
   ) {
-    const id = identifier[IS_DECORATOR] ? identifier.toString() : identifier;
     this._ensureInjectable(newable);
-    return this._container.bind<T>(id).to(newable);
+    return this._container.bind<T>(this._getRealId(identifier)).to(newable);
   }
 
   registerClass<T>(newable: interfaces.Newable<T>) {
@@ -138,7 +137,7 @@ class Jupiter {
   }
 
   get<T>(identifier: interfaces.ServiceIdentifier<T>) {
-    return this._container.get<T>(identifier);
+    return this._container.get<T>(this._getRealId(identifier));
   }
 
   async bootstrapModule<T extends AbstractModule>(
@@ -232,6 +231,10 @@ class Jupiter {
         this._disposedListenerMap,
       );
     }
+  }
+
+  private _getRealId(identifier: interfaces.ServiceIdentifier<T>) {
+    return identifier[IS_DECORATOR] ? identifier.toString() : identifier;
   }
 
   private _ensureInjectable(creator: interfaces.Newable<any>) {
@@ -358,5 +361,6 @@ class Jupiter {
 }
 
 container.bind<Jupiter>(Jupiter).to(Jupiter);
+const jupiter = container.get<Jupiter>(Jupiter);
 
-export { Jupiter };
+export { jupiter, Jupiter };

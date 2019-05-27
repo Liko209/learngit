@@ -14,20 +14,15 @@ class CallerIdSettingItemViewModel extends StoreViewModel<
   SettingItemProps<IPhoneNumberRecord>
 > {
   @computed
-  get parsedSource() {
-    const { source } = this.props;
-    if (!source) return [];
-    return source.map((oldItem, i) => {
-      const item = { ...oldItem };
-      const phoneNumber = oldItem.phoneNumber;
-      if (item.usageType !== 'Blocked') {
-        item.phoneNumber = getEntity(
-          ENTITY_NAME.PHONE_NUMBER,
-          phoneNumber,
-        ).formattedPhoneNumber;
-      }
-      return item;
-    });
+  get phoneNumber() {
+    if (!this.props.value) return;
+
+    let result: string = '';
+    if (this.props.value.usageType !== 'Blocked') {
+      result = getEntity(ENTITY_NAME.PHONE_NUMBER, this.props.value.phoneNumber)
+        .formattedPhoneNumber;
+    }
+    return result;
   }
 }
 

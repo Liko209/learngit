@@ -6,8 +6,12 @@
 
 import { IPhoneNumberRecord } from 'sdk/api/ringcentral/types/common';
 
-type CallerIdSettingItemViewModelProps = {
-  parsedSource: IPhoneNumberRecord[];
+type CallerIdSelectItemProps = {
+  value: IPhoneNumberRecord;
 };
 
-export { CallerIdSettingItemViewModelProps };
+type CallerIdSettingItemViewProps = {
+  parsedSourceItem?: IPhoneNumberRecord;
+};
+
+export { CallerIdSelectItemProps, CallerIdSettingItemViewProps };

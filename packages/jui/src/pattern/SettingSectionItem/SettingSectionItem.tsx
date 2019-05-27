@@ -16,8 +16,8 @@ import {
 import { JuiDivider, JuiDividerProps } from '../../components/Divider/Divider';
 
 type JuiSettingSectionItemProps = {
-  id: string;
-  label: string | JSX.Element;
+  id: string | number;
+  label?: string | JSX.Element;
   description?: string | JSX.Element;
   disabled?: boolean;
   automationId?: string;

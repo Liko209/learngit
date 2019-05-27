@@ -18,10 +18,10 @@ const itemService = ServiceLoader.getInstance<ItemService>(
 );
 
 class MessageModule extends AbstractModule {
-  @ILeaveBlockerService _leaveBlockerService: ILeaveBlockerService;
+  @ILeaveBlockerService private _leaveBlockerService: ILeaveBlockerService;
   @inject(Jupiter) private _jupiter: Jupiter;
   @inject(MESSAGE_NOTIFICATION_MANAGER)
-  _messageNotificationManager: MessageNotificationManager;
+  private _messageNotificationManager: MessageNotificationManager;
   handleLeave = () => {
     return itemService.hasUploadingFiles();
   }

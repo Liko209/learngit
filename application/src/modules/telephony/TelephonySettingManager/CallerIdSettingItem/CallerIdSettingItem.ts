@@ -7,8 +7,9 @@
 import { buildContainer } from '@/base';
 import { CallerIdSettingItemView } from './CallerIdSettingItem.View';
 import { CallerIdSettingItemViewModel } from './CallerIdSettingItem.ViewModel';
+import { CallerIdSelectItemProps } from './types';
 
-const CallerIdSettingItem = buildContainer({
+const CallerIdSettingItem = buildContainer<CallerIdSelectItemProps>({
   View: CallerIdSettingItemView,
   ViewModel: CallerIdSettingItemViewModel,
 });

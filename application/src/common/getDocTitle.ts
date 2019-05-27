@@ -54,6 +54,7 @@ const DOC_TITLE = {
   notes: (): i18nTValueProps => i18nT('item.notes'),
   files: (): i18nTValueProps => i18nT('item.files'),
   settings: getSettingsTitle,
+  settings2: getSettingsTitle,
 };
 
 function getDocTitle(pathname: string): i18nTValueProps {

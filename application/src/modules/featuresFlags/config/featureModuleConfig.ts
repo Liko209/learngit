@@ -39,6 +39,10 @@ const featureModuleDep = [
     featureName: 'Settings',
     depModules: ['setting'],
   },
+  {
+    featureName: 'Settings2',
+    depModules: ['setting2'],
+  },
 ];
 
 const featureModuleConfig = featureModuleDep;

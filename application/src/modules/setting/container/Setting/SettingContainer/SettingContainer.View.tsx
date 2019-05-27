@@ -20,9 +20,11 @@ const StyledSettingContainer = styled.div`
   overflow: auto;
   height: 100%;
 `;
+
 const StyledSettingContent = styled.div`
   padding: 16px;
 `;
+
 @observer
 class SettingContainerViewComponent extends Component<
   SettingContainerViewProps & WithTranslation

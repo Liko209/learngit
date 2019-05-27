@@ -5,8 +5,9 @@
  */
 
 import { SettingItemType } from '../type';
+import { createDecorator } from 'framework';
 
-const ISettingService = 'ISettingService';
+const ISettingService = createDecorator('ISettingServiceOld');
 interface ISettingService {
   registerSettingItem(item: SettingItemType): void;
   unRegisterSettingItem(key: string): void;

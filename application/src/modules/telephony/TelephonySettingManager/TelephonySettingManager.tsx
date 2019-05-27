@@ -3,51 +3,79 @@
  * @Date: 2019-04-23 09:12:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { inject } from 'framework';
-import { SettingModuleIds } from 'sdk/module/setting';
-import { ISettingService } from '@/modules/setting/interface';
-import { buildSettingItem } from '@/modules/setting/container/SettingItemBuild';
-import { ExtensionsSettingItem } from './Extensions';
+// import React from 'react';
+import {
+  ISettingService,
+  SETTING_ITEM_TYPE,
+  SelectSettingItem,
+} from '@/interface/setting';
 import { CallerIdSettingItem } from './CallerIdSettingItem';
-import i18nT from '@/utils/i18nT';
-import { RegionSettingItem } from './RegionSettingItem';
+import { IPhoneNumberRecord } from 'sdk/api/ringcentral/types/common';
+import { SettingModuleIds } from 'sdk/module/setting/constants';
+// import { buildSettingItem } from '@/modules/setting/container/SettingItemBuild';
+// import { ExtensionsSettingItem } from './Extensions';
+// import { CallerIdSettingItem } from './CallerIdSettingItem';
+// import i18nT from '@/utils/i18nT';
+// import { RegionSettingItem } from './RegionSettingItem';
 
-const { CallerIdSetting, ExtensionSetting, RegionSetting } = SettingModuleIds;
+// const { CallerIdSetting, ExtensionSetting, RegionSetting } = SettingModuleIds;
+const SETTING_PAGE__PHONE = 'SETTING_PAGE__PHONE';
+const SETTING_SECTION__PHONE_GENERAL = 'SETTING_SECTION__PHONE_GENERAL';
+const SETTING_ITEM__PHONE_CALLER_ID = SettingModuleIds.CallerIdSetting.id;
 
 class TelephonySettingManager {
-  @inject(ISettingService) private _settingService: ISettingService;
+  private _scope = Symbol('TelephonySettingManager');
+  @ISettingService private _settingService: ISettingService;
 
   async init() {
-    this._settingService.registerSettingItem({
-      [CallerIdSetting.id]: await this._buildCallerSettingItem(),
-      [ExtensionSetting.id]: await this._buildExtensionsSettingItem(),
-      [RegionSetting.id]: RegionSettingItem,
+    this._settingService.registerPage(this._scope, {
+      id: SETTING_PAGE__PHONE,
+      icon: 'phone',
+      title: 'setting.phone.title',
+      path: '/phone',
+      weight: 300,
+      sections: [
+        {
+          id: SETTING_SECTION__PHONE_GENERAL,
+          title: 'setting.phone.general.title',
+          weight: 0,
+          items: [
+            {
+              id: SETTING_ITEM__PHONE_CALLER_ID,
+              title: 'setting.phone.general.callerID.label',
+              description: 'setting.phone.general.callerID.description',
+              type: SETTING_ITEM_TYPE.SELECT,
+              weight: 0,
+              // valueRenderer: (value: IPhoneNumberRecord) => <div>value</div>,
+              sourceRenderer: CallerIdSettingItem,
+            } as SelectSettingItem<IPhoneNumberRecord>,
+          ],
+        },
+      ],
     });
   }
 
   dispose() {
-    this._settingService.unRegisterSettingItem(CallerIdSetting.id.toString());
-    this._settingService.unRegisterSettingItem(ExtensionSetting.id.toString());
-    this._settingService.unRegisterSettingItem(RegionSetting.id.toString());
+    this._settingService.unRegisterAll(this._scope);
   }
 
-  private async _buildCallerSettingItem() {
-    return buildSettingItem({
-      automationKey: 'callerID',
-      label: await i18nT('setting.phone.general.callerID.label'),
-      description: await i18nT('setting.phone.general.callerID.description'),
-      Right: CallerIdSettingItem,
-    });
-  }
+  // private async _buildCallerSettingItem() {
+  //   return buildSettingItem({
+  //     automationKey: 'callerID',
+  //     label: await i18nT('setting.phone.general.callerID.label'),
+  //     description: await i18nT('setting.phone.general.callerID.description'),
+  //     Right: CallerIdSettingItem,
+  //   });
+  // }
 
-  private async _buildExtensionsSettingItem() {
-    return buildSettingItem({
-      automationKey: 'extensions',
-      label: await i18nT('setting.phone.general.extensions.label'),
-      description: await i18nT('setting.phone.general.extensions.description'),
-      Right: ExtensionsSettingItem,
-    });
-  }
+  // private async _buildExtensionsSettingItem() {
+  //   return buildSettingItem({
+  //     automationKey: 'extensions',
+  //     label: await i18nT('setting.phone.general.extensions.label'),
+  //     description: await i18nT('setting.phone.general.extensions.description'),
+  //     Right: ExtensionsSettingItem,
+  //   });
+  // }
 }
 
 export { TelephonySettingManager };
