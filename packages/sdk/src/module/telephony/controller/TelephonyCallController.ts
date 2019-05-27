@@ -49,7 +49,7 @@ class TelephonyCallController implements IRTCCallDelegate {
     this._callDelegate.onCallActionSuccess(callAction, options);
   }
 
-  onCallActionFailed(callAction: RTC_CALL_ACTION) {
+  onCallActionFailed(callAction: RTC_CALL_ACTION, code: number) {
     this._callDelegate.onCallActionFailed(callAction);
   }
 

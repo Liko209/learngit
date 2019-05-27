@@ -320,7 +320,7 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
   }
 
   onReportCallActionFailed(name: string): void {
-    this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, name);
+    this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, name, -1);
   }
 
   onHoldAction(): void {

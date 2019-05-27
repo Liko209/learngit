@@ -108,7 +108,7 @@ class RTCCall {
   private _addHangupTimer(): void {
     this._hangupInvalidCallTimer = setTimeout(() => {
       rtcLogger.info(LOG_TAG, 'call time out and be hangup');
-      this._delegate.onCallActionFailed(RTC_CALL_ACTION.CALL_TIME_OUT);
+      this._delegate.onCallActionFailed(RTC_CALL_ACTION.CALL_TIME_OUT, -1);
       this.hangup();
     },                                        kRTCHangupInvalidCallInterval * 1000);
   }
@@ -160,7 +160,7 @@ class RTCCall {
 
   startReply(): void {
     if (!this.isIncomingCall()) {
-      this._onCallActionFailed(RTC_CALL_ACTION.START_REPLY);
+      this._onCallActionFailed(RTC_CALL_ACTION.START_REPLY, -1);
       return;
     }
     this._fsm.startReplyWithMessage();
@@ -168,11 +168,11 @@ class RTCCall {
 
   replyWithMessage(message: string): void {
     if (!message || message.length === 0) {
-      this._onCallActionFailed(RTC_CALL_ACTION.REPLY_WITH_MSG);
+      this._onCallActionFailed(RTC_CALL_ACTION.REPLY_WITH_MSG, -1);
       return;
     }
     if (!this.isIncomingCall()) {
-      this._onCallActionFailed(RTC_CALL_ACTION.REPLY_WITH_MSG);
+      this._onCallActionFailed(RTC_CALL_ACTION.REPLY_WITH_MSG, -1);
       return;
     }
     this._fsm.replyWithMessage(message);
@@ -184,7 +184,7 @@ class RTCCall {
     timeUnit: RTC_REPLY_MSG_TIME_UNIT = RTC_REPLY_MSG_TIME_UNIT.MINUTE,
   ): void {
     if (!this.isIncomingCall()) {
-      this._onCallActionFailed(RTC_CALL_ACTION.REPLY_WITH_PATTERN);
+      this._onCallActionFailed(RTC_CALL_ACTION.REPLY_WITH_PATTERN, -1);
       return;
     }
     this._fsm.replyWithPattern(pattern, time, timeUnit);
@@ -238,7 +238,7 @@ class RTCCall {
 
   transfer(target: string): void {
     if (target.length === 0) {
-      this._delegate.onCallActionFailed(RTC_CALL_ACTION.TRANSFER);
+      this._delegate.onCallActionFailed(RTC_CALL_ACTION.TRANSFER, -1);
       return;
     }
     this._fsm.transfer(target);
@@ -246,7 +246,7 @@ class RTCCall {
 
   forward(target: string): void {
     if (target.length === 0 || !this._isIncomingCall) {
-      this._delegate.onCallActionFailed(RTC_CALL_ACTION.FORWARD);
+      this._delegate.onCallActionFailed(RTC_CALL_ACTION.FORWARD, -1);
       return;
     }
     this._fsm.forward(target);
@@ -331,8 +331,8 @@ class RTCCall {
     );
     this._callSession.on(
       CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
-      (callAction: RTC_CALL_ACTION) => {
-        this._onCallActionFailed(callAction);
+      (callAction: RTC_CALL_ACTION, code: number = -1) => {
+        this._onCallActionFailed(callAction, code);
       },
     );
     // listen fsm
@@ -413,8 +413,8 @@ class RTCCall {
     });
     this._fsm.on(
       CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
-      (callAction: RTC_CALL_ACTION) => {
-        this._onCallActionFailed(callAction);
+      (callAction: RTC_CALL_ACTION, code: number = -1) => {
+        this._onCallActionFailed(callAction, code);
       },
     );
     this._fsm.on(CALL_FSM_NOTIFY.ANSWER_ACTION, () => {
@@ -469,7 +469,7 @@ class RTCCall {
     }
   }
 
-  private _onCallActionFailed(callAction: RTC_CALL_ACTION) {
+  private _onCallActionFailed(callAction: RTC_CALL_ACTION, code: number) {
     switch (callAction) {
       case RTC_CALL_ACTION.START_RECORD: {
         this._recordState = RECORD_STATE.IDLE;
@@ -491,7 +491,11 @@ class RTCCall {
         break;
     }
     if (this._delegate) {
-      this._delegate.onCallActionFailed(callAction);
+      rtcLogger.warn(
+        LOG_TAG,
+        `Call action ${callAction} Failed. Error code: ${code}`,
+      );
+      this._delegate.onCallActionFailed(callAction, code);
     }
   }
 
@@ -543,7 +547,7 @@ class RTCCall {
 
   private _onSessionReinviteFailed(session: any) {
     if (this._isReinviteForHoldOrUnhold) {
-      this._onCallActionFailed(this._getSessionReinviteAction(session));
+      this._onCallActionFailed(this._getSessionReinviteAction(session), -1);
       this._isReinviteForHoldOrUnhold = false;
     }
   }
@@ -596,7 +600,7 @@ class RTCCall {
       this._recordState = RECORD_STATE.START_RECORD_IN_PROGRESS;
       this._callSession.startRecord();
     } else if (this._delegate) {
-      this._delegate.onCallActionFailed(RTC_CALL_ACTION.START_RECORD);
+      this._delegate.onCallActionFailed(RTC_CALL_ACTION.START_RECORD, -6);
     }
   }
 
@@ -607,7 +611,7 @@ class RTCCall {
     } else if (RECORD_STATE.IDLE === this._recordState && this._delegate) {
       this._delegate.onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD, {});
     } else if (this._delegate) {
-      this._delegate.onCallActionFailed(RTC_CALL_ACTION.STOP_RECORD);
+      this._delegate.onCallActionFailed(RTC_CALL_ACTION.STOP_RECORD, -6);
     }
   }
 

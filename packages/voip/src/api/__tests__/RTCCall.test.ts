@@ -212,6 +212,7 @@ describe('RTC call', () => {
         expect(session.flip).toHaveBeenCalledWith(5);
         expect(account.onCallActionFailed).toHaveBeenCalledWith(
           RTC_CALL_ACTION.FLIP,
+          -1,
         );
         done();
       });
@@ -230,6 +231,7 @@ describe('RTC call', () => {
           expect(fsmState).toBe('idle');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.FLIP,
+            -1,
           );
           done();
         });
@@ -248,6 +250,7 @@ describe('RTC call', () => {
           expect(fsmState).toBe('pending');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.FLIP,
+            -1,
           );
           done();
         });
@@ -266,6 +269,7 @@ describe('RTC call', () => {
           expect(fsmState).toBe('connecting');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.FLIP,
+            -1,
           );
           done();
         });
@@ -284,6 +288,7 @@ describe('RTC call', () => {
           expect(fsmState).toBe('disconnected');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.FLIP,
+            -1,
           );
           done();
         });
@@ -302,6 +307,7 @@ describe('RTC call', () => {
           expect(fsmState).toBe('answering');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.FLIP,
+            -1,
           );
           done();
         });
@@ -383,6 +389,7 @@ describe('RTC call', () => {
           expect(call._recordState).toBe('startRecordInProgress');
           expect(account.onCallActionFailed).toBeCalledWith(
             RTC_CALL_ACTION.START_RECORD,
+            -6,
           );
           done();
         });
@@ -416,6 +423,7 @@ describe('RTC call', () => {
             expect(call._recordState).toBe('stopRecordInProgress');
             expect(account.onCallActionFailed).toBeCalledWith(
               RTC_CALL_ACTION.START_RECORD,
+              -6,
             );
             done();
           });
@@ -441,6 +449,7 @@ describe('RTC call', () => {
           expect(call._recordState).toBe('startRecordInProgress');
           expect(account.onCallActionFailed).toBeCalledWith(
             RTC_CALL_ACTION.STOP_RECORD,
+            -6,
           );
           done();
         });
@@ -500,6 +509,7 @@ describe('RTC call', () => {
         expect(session.startRecord).toHaveBeenCalled();
         expect(account.onCallActionFailed).toHaveBeenCalledWith(
           RTC_CALL_ACTION.START_RECORD,
+          -1,
         );
         done();
       });
@@ -517,6 +527,7 @@ describe('RTC call', () => {
           expect(fsmState).toBe('idle');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.START_RECORD,
+            -1,
           );
           done();
         });
@@ -535,6 +546,7 @@ describe('RTC call', () => {
           expect(fsmState).toBe('pending');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.START_RECORD,
+            -1,
           );
           done();
         });
@@ -553,6 +565,7 @@ describe('RTC call', () => {
           expect(fsmState).toBe('connecting');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.START_RECORD,
+            -1,
           );
           done();
         });
@@ -571,6 +584,7 @@ describe('RTC call', () => {
           expect(fsmState).toBe('disconnected');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.START_RECORD,
+            -1,
           );
           done();
         });
@@ -588,6 +602,7 @@ describe('RTC call', () => {
           expect(fsmState).toBe('answering');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.START_RECORD,
+            -1,
           );
           done();
         });
@@ -668,6 +683,7 @@ describe('RTC call', () => {
         expect(fsmState).toBe('connected');
         expect(account.onCallActionFailed).toHaveBeenCalledWith(
           RTC_CALL_ACTION.STOP_RECORD,
+          -1,
         );
         done();
       });
@@ -686,6 +702,7 @@ describe('RTC call', () => {
           expect(fsmState).toBe('idle');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.STOP_RECORD,
+            -1,
           );
           done();
         });
@@ -705,6 +722,7 @@ describe('RTC call', () => {
           expect(fsmState).toBe('pending');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.STOP_RECORD,
+            -1,
           );
           done();
         });
@@ -724,6 +742,7 @@ describe('RTC call', () => {
           expect(fsmState).toBe('connecting');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.STOP_RECORD,
+            -1,
           );
           done();
         });
@@ -743,6 +762,7 @@ describe('RTC call', () => {
           expect(fsmState).toBe('disconnected');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.STOP_RECORD,
+            -1,
           );
           done();
         });
@@ -761,6 +781,7 @@ describe('RTC call', () => {
           expect(fsmState).toBe('answering');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.STOP_RECORD,
+            -1,
           );
           done();
         });
@@ -779,6 +800,7 @@ describe('RTC call', () => {
       setImmediate(() => {
         expect(account.onCallActionFailed).toBeCalledWith(
           RTC_CALL_ACTION.TRANSFER,
+          -1,
         );
         done();
       });
@@ -820,6 +842,7 @@ describe('RTC call', () => {
       setImmediate(() => {
         expect(account.onCallActionFailed).toBeCalledWith(
           RTC_CALL_ACTION.TRANSFER,
+          -1,
         );
         done();
       });
@@ -1191,6 +1214,7 @@ describe('RTC call', () => {
         );
         expect(account.onCallActionFailed).toHaveBeenCalledWith(
           RTC_CALL_ACTION.PARK,
+          -1,
         );
         done();
       });
@@ -1204,6 +1228,7 @@ describe('RTC call', () => {
         expect(fsmState).toBe('pending');
         expect(account.onCallActionFailed).toHaveBeenCalledWith(
           RTC_CALL_ACTION.PARK,
+          -1,
         );
         done();
       });
@@ -1218,6 +1243,7 @@ describe('RTC call', () => {
         expect(fsmState).toBe('connecting');
         expect(account.onCallActionFailed).toHaveBeenCalledWith(
           RTC_CALL_ACTION.PARK,
+          -1,
         );
         done();
       });
@@ -1234,6 +1260,7 @@ describe('RTC call', () => {
         expect(fsmState).toBe('disconnected');
         expect(account.onCallActionFailed).toHaveBeenCalledWith(
           RTC_CALL_ACTION.PARK,
+          -1,
         );
         done();
       });
@@ -1249,6 +1276,7 @@ describe('RTC call', () => {
         expect(fsmState).toBe('idle');
         expect(account.onCallActionFailed).toHaveBeenCalledWith(
           RTC_CALL_ACTION.PARK,
+          -1,
         );
         done();
       });
@@ -1265,6 +1293,7 @@ describe('RTC call', () => {
         expect(fsmState).toBe('answering');
         expect(account.onCallActionFailed).toHaveBeenCalledWith(
           RTC_CALL_ACTION.PARK,
+          -1,
         );
         done();
       });
@@ -2003,6 +2032,7 @@ describe('RTC call', () => {
         expect(call.hangup).toBeCalled();
         expect(account.onCallActionFailed).toBeCalledWith(
           RTC_CALL_ACTION.CALL_TIME_OUT,
+          -1,
         );
         done();
       });
@@ -2230,6 +2260,7 @@ describe('RTC call', () => {
         expect(call._fsm.state()).toBe('idle');
         expect(account.onCallActionFailed).toHaveBeenCalledWith(
           RTC_CALL_ACTION.FORWARD,
+          -1,
         );
         done();
       });
@@ -2268,6 +2299,7 @@ describe('RTC call', () => {
           expect(call._fsm.state()).toBe('pending');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.FORWARD,
+            -1,
           );
           done();
         });
@@ -2281,6 +2313,7 @@ describe('RTC call', () => {
           expect(call._fsm.state()).toBe('answering');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.FORWARD,
+            -1,
           );
           done();
         });
@@ -2294,6 +2327,7 @@ describe('RTC call', () => {
           expect(call._fsm.state()).toBe('forwarding');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.FORWARD,
+            -1,
           );
           done();
         });
@@ -2307,6 +2341,7 @@ describe('RTC call', () => {
           expect(call._fsm.state()).toBe('connecting');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.FORWARD,
+            -1,
           );
           done();
         });
@@ -2321,6 +2356,7 @@ describe('RTC call', () => {
           expect(call._fsm.state()).toBe('connected');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.FORWARD,
+            -1,
           );
           done();
         });
@@ -2337,6 +2373,7 @@ describe('RTC call', () => {
           expect(call._fsm.state()).toBe('holding');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.FORWARD,
+            -1,
           );
           done();
         });
@@ -2354,6 +2391,7 @@ describe('RTC call', () => {
           expect(call._fsm.state()).toBe('holded');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.FORWARD,
+            -1,
           );
           done();
         });
@@ -2373,6 +2411,7 @@ describe('RTC call', () => {
           expect(call._fsm.state()).toBe('unholding');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.FORWARD,
+            -1,
           );
           done();
         });
@@ -2387,6 +2426,7 @@ describe('RTC call', () => {
           expect(call._fsm.state()).toBe('disconnected');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.FORWARD,
+            -1,
           );
           done();
         });

@@ -315,10 +315,12 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
           RTC_CALL_ACTION.START_RECORD,
         );
       },
-      () => {
+      (data: any) => {
+        const code = data && data.code ? data.code : -1;
         this.emit(
           CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
           RTC_CALL_ACTION.START_RECORD,
+          code,
         );
       },
     );
@@ -332,10 +334,12 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
           RTC_CALL_ACTION.STOP_RECORD,
         );
       },
-      () => {
+      (data: any) => {
+        const code = data && data.code ? data.code : -1;
         this.emit(
           CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
           RTC_CALL_ACTION.STOP_RECORD,
+          code,
         );
       },
     );
