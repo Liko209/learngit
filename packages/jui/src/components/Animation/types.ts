@@ -17,3 +17,22 @@ export type TransitionAnimationProps = {
   duration: string;
   easing: string;
 } & Omit<TransitionProps, 'timeout'>;
+
+export type ShrinkToFadeAnimationProps = {
+  children: JSX.Element | (JSX.Element | null)[];
+  startMinimizeAnimation: boolean;
+  xScale: string;
+  yScale: string;
+  translateX: number;
+  translateY: number;
+  onAnimationEnd?: () => any;
+  expandScale?: number;
+  fadeDuration?: string;
+  moveDuration?: string;
+  roundDuration?: string;
+  blinkDuration?: string;
+  moveDelay?: string;
+  blinkDelay?: string;
+  setRef?: (ref: React.RefObject<any>) => any;
+  removeRef?: () => void;
+};

@@ -12,17 +12,11 @@ type DialerViewProps = {
   callState: CALL_STATE;
   incomingState: INCOMING_STATE;
   keypadEntered: boolean;
-  setAnimationPromise: (p: Promise<any>) => void;
-  clearAnimationPromise: () => void;
   dialerId: string;
   dialerMinimizeTranslateX: number;
   dialerMinimizeTranslateY: number;
-  shouldAnimationStart: boolean;
-  xScale: string;
-  yScale: string;
+  startMinimizeAnimation: boolean;
   callWindowState: string;
-  onDialerFocus: () => void;
-  onDialerBlur: () => void;
 };
 
 export { DialerProps, DialerViewProps };

@@ -12,6 +12,7 @@ import { IEntitySourceController } from '../../../framework/controller/interface
 import { buildPartialModifyController } from '../../../framework/controller';
 import { Raw } from '../../../framework/model';
 import { mainLogger } from 'foundation';
+import _ from 'lodash';
 
 const LOG_TAG = 'GroupConfigController';
 class GroupConfigController {
@@ -99,7 +100,10 @@ class GroupConfigController {
   async getGroupSendFailurePostIds(id: number): Promise<number[]> {
     try {
       const group = (await this.entitySourceController.get(id)) as GroupConfig;
-      return (group && group.send_failure_post_ids) || [];
+      if (group && group.send_failure_post_ids) {
+        return _.cloneDeep(group.send_failure_post_ids);
+      }
+      return [];
     } catch (error) {
       throw ErrorParserHolder.getErrorParser().parse(error);
     }

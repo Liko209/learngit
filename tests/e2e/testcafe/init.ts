@@ -125,7 +125,7 @@ export async function getOrCreateRunId(runIdFile: string = './runId') {
 
 export async function finishRun() {
   let result = '';
-  if (_runId) {
+  if (_runId && ENABLE_REMOTE_DASHBOARD) {
     const run = new Run();
     run.process = 1;
     run.endTime = new Date();

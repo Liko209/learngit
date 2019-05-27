@@ -12,6 +12,10 @@ import { TelephonyStore } from '../../store';
 import { TelephonyService } from '../../service';
 import audios from './sounds/sounds.json';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
+import { RefObject } from 'react';
+import ReactDOM from 'react-dom';
+import { focusCampo } from '../../helpers';
+import { debounce } from 'lodash';
 
 const sleep = function () {
   return new Promise((resolve: (args: any) => any) => {
@@ -29,9 +33,13 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   private _currentSoundTrack: number | null;
   private _canPlayOgg = false;
   private _frameId?: number;
+  private _dialerContainerRef: RefObject<any>;
 
   constructor(...args: DialerContainerProps[]) {
     super(...args);
+    if (args.length) {
+      this._dialerContainerRef = args[0].dialerHeaderRef;
+    }
     if (typeof document !== 'undefined' && document.createElement) {
       this._audioPool = Array(this._telephonyStore.maximumInputLength)
         .fill(1)
@@ -78,7 +86,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   @computed
-  get canTypeString() {
+  get canclickToInput() {
     return (
       this._telephonyStore.inputString.length <
       this._telephonyStore.maximumInputLength
@@ -87,9 +95,10 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
 
   @computed
   get dialerFocused() {
-    return this._telephonyStore.dialerFocused && this._telephonyStore.keypadEntered;
+    return (
+      this._telephonyStore.dialerFocused && this._telephonyStore.keypadEntered
+    );
   }
-
   /**
    * Perf: since it's a loop around search, we should not block the main thread
    * while searching for the next available <audio/> roundly
@@ -148,7 +157,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   playAudio = (digit: string) => {
-    if (!this.canTypeString) {
+    if (!this.canclickToInput) {
       return;
     }
     this._playAudio(digit === '+' ? '0' : digit);
@@ -162,12 +171,28 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
     }
   }
 
-  typeString = (str: string) => {
-    if (!this.canTypeString) {
+  private _focusCampo = debounce(focusCampo, 30, {
+    leading: false,
+    trailing: true,
+  });
+
+  clickToInput = (str: string) => {
+    if (!this.canclickToInput) {
       return;
     }
     this.playAudio(str);
     this._telephonyService.concatInputString(str);
+
+    if (!this._dialerContainerRef) {
+      return;
+    }
+    const input = (ReactDOM.findDOMNode(
+      this._dialerContainerRef.current,
+    ) as HTMLDivElement).querySelector('input');
+
+    if (input && this._telephonyStore.inputString) {
+      this._focusCampo(input);
+    }
   }
 
   setCallerPhoneNumber = (str: string) =>

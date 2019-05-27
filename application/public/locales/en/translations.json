@@ -146,7 +146,6 @@
       "createATeam": "created a team",
       "on": "on",
       "postInitialTitle": "Get Started",
-      "postInitialContent": "Having a home based business is a wonderful asset to your life.",
       "shareFile": "Share a file",
       "createTask": "Create a task",
       "integrateApps": "Integrate apps"
@@ -602,7 +601,6 @@
     "ZoomReset": "Reset zoom",
     "PreviousFile": "View previous file",
     "NextFile": "View next file",
-    "DismissTip": "Sorry, the image you were viewing is deleted.",
     "ImageDeleted": "Sorry, the image you were viewing is deleted.",
     "TeamDeleted": "The team was deleted. To know more, contact the team administrator.",
     "TeamArchived": "The team was archived. To know more, contact the team administrator.",

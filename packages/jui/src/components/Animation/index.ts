@@ -11,3 +11,4 @@ export * from './types';
 export * from './TransitionAnimation';
 export * from './preDefinedAnimations';
 export * from './ZoomInFadeOut';
+export * from './ShrinkToFadeAnimation';

@@ -31,11 +31,11 @@ test.meta(<ITestMeta>{
   await h(t).glip(me).init();
   const otherUserName = await h(t).glip(me).getPersonPartialData('display_name', anotherUser.rcId)
 
-  const searchKeyWord = H.uuid();
+  const searchKeyword = H.uuid();
   let publicTeamWithoutMe = <IGroup>{
     type: "Team",
     isPublic: true,
-    name: `${searchKeyWord} publicWithoutMe`,
+    name: `${searchKeyword} publicWithoutMe`,
     owner: anotherUser,
     members: [anotherUser]
   }
@@ -43,7 +43,7 @@ test.meta(<ITestMeta>{
   let publicTeamWithMe = <IGroup>{
     type: "Team",
     isPublic: true,
-    name: `${searchKeyWord} publicWithMe`,
+    name: `${searchKeyword} publicWithMe`,
     owner: anotherUser,
     members: [anotherUser, me]
   }
@@ -54,25 +54,30 @@ test.meta(<ITestMeta>{
     members: [me, anotherUser, users[0]]
   }
 
-  await h(t).log(`Given I have an extension "${me.company.number}#${me.extension}"`);
-  await h(t).withLog(`And there are public teams (I joined and did not join), people and group chat`, async () => {
+  await h(t).withLog(`Given there are public teams (I joined and did not join), people and group chat`, async () => {
     await h(t).scenarioHelper.createTeamsOrChats([publicTeamWithMe, publicTeamWithoutMe, otherChat]);
   });
 
-  await h(t).withLog(`When I login Jupiter with this extension`, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: me.company.number,
+      extension: me.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, me);
     await app.homePage.ensureLoaded();
   });
 
   const searchBar = app.homePage.header.searchBar;
   const searchDialog = app.homePage.searchDialog;
-  await h(t).withLog(`When I search keyword “${searchKeyWord}”`, async () => {
+  await h(t).withLog(`When I search keyword "{searchKeyWord}"`, async (step) => {
+    step.setMetadata('searchKeyWord', searchKeyword);
     await searchBar.clickSelf();
-    await searchDialog.typeSearchKeyword(searchKeyWord);
+    await searchDialog.typeSearchKeyword(searchKeyword);
     await t.expect(searchDialog.instantPage.teams.count).gte(1, { timeout: 10e3 });
   });
 
-  await h(t).withLog(`And I hover search result “${publicTeamWithoutMe.name}”`, async () => {
+  await h(t).withLog(`And I hover search result publicTeamWithoutMe “{name}”`, async (step) => {
+    step.setMetadata('name', publicTeamWithoutMe.name);
     await t.hover(searchDialog.instantPage.conversationEntryByCid(publicTeamWithoutMe.glipId).self);
   });
 
@@ -80,16 +85,18 @@ test.meta(<ITestMeta>{
     await searchDialog.instantPage.conversationEntryByCid(publicTeamWithoutMe.glipId).shouldHaveJoinButton();
   });
 
-  await h(t).withLog(`When I hover search result “${publicTeamWithMe.name}”`, async () => {
+  await h(t).withLog(`When I hover search result publicTeamWithMe “{name}”`, async (step) => {
+    step.setMetadata('name', publicTeamWithMe.name);
     await t.hover(searchDialog.instantPage.conversationEntryByCid(publicTeamWithMe.glipId).self);
   });
 
-  await h(t).withLog(`Then the join button should not be showed `, async () => {
+  await h(t).withLog(`Then the join button should not be showed`, async () => {
     await searchDialog.instantPage.conversationEntryByCid(publicTeamWithMe.glipId).shouldNotHaveJoinButton();
   });
 
   let peopleCount, groupCount;
-  await h(t).withLog(`When I search keyword "${otherUserName}”`, async () => {
+  await h(t).withLog(`When I search keyword otherUserName "{name}”`, async (step) => {
+    step.setMetadata('name', otherUserName);
     await searchDialog.typeSearchKeyword(otherUserName);
     await t.expect(searchDialog.instantPage.conversationItems.count).gte(1, { timeout: 10e3 });
     peopleCount = await searchDialog.instantPage.peoples.count;
@@ -98,7 +105,8 @@ test.meta(<ITestMeta>{
 
   for (let i of _.range(peopleCount)) {
     const item = searchDialog.instantPage.nthPeople(i);
-    await h(t).withLog(`When I hover each one group result ${i + 1}/${peopleCount}`, async () => {
+    await h(t).withLog(`When I hover each one group result {index}`, async (step) => {
+      step.setMetadata('index', `${i + 1}/${peopleCount}`);
       await t.hover(item.self);
     });
 
@@ -109,7 +117,8 @@ test.meta(<ITestMeta>{
 
   for (let i of _.range(groupCount)) {
     const item = searchDialog.instantPage.nthGroup(i);
-    await h(t).withLog(`When I hover each one people result ${i + 1}/${groupCount}`, async () => {
+    await h(t).withLog(`When I hover each one people result {index}`, async (step) => {
+      step.setMetadata('index', `${i + 1}/${groupCount}`);
       await t.hover(item.self);
     });
 
@@ -138,12 +147,16 @@ test.meta(<ITestMeta>{
     members: [anotherUser],
   };
 
-  await h(t).log(`Given I have an extension "${me.company.number}#${me.extension}"`);
-  await h(t).withLog(`And there is a public team named "${publicTeamWithoutMe.name}" without me`, async () => {
+  await h(t).withLog(`Given there is a public team without me named "{name}" `, async (step) => {
+    step.setMetadata('name', publicTeamWithoutMe.name)
     await h(t).scenarioHelper.createTeam(publicTeamWithoutMe);
   });
 
-  await h(t).withLog(`When I login Jupiter with the extension`, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: me.company.number,
+      extension: me.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, me);
     await app.homePage.ensureLoaded();
   });
@@ -151,12 +164,14 @@ test.meta(<ITestMeta>{
   const searchBar = app.homePage.header.searchBar;
   const searchDialog = app.homePage.searchDialog;
 
-  await h(t).withLog(`When I search the public team ${searchKeyword}`, async () => {
-    await searchBar.clickSelf()
+  await h(t).withLog(`When I search keyword "{searchKeyWord}"`, async (step) => {
+    step.setMetadata('searchKeyWord', searchKeyword);
+    await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(searchKeyword);
-  });
+    await t.expect(searchDialog.instantPage.teams.count).gte(1, { timeout: 10e3 });
+  })
 
-  await h(t).withLog(`And I click join button of the public team A`, async () => {
+  await h(t).withLog(`And I click join button of the public team`, async () => {
     await t.expect(searchDialog.instantPage.teams.count).gte(1, { timeout: 10e3 });
     await searchDialog.instantPage.conversationEntryByCid(publicTeamWithoutMe.glipId).join();
   });
@@ -186,7 +201,7 @@ test.meta(<ITestMeta>{
     await joinTeamDialog.clickCancelButton();
   });
 
-  await h(t).withLog(`And The confirmation dismiss, loginUser did not join team A`, async () => {
+  await h(t).withLog(`And The confirmation dismiss, loginUser did not join team`, async () => {
     await t.expect(joinTeamDialog.exists).notOk();
     await t.expect(app.homePage.messageTab.teamsSection.conversationEntryById(publicTeamWithoutMe.glipId).exists).notOk();
   });
@@ -211,20 +226,24 @@ test.meta(<ITestMeta>{
     members: [otherUser]
   }
 
-  await h(t).log(`Given I have an extension "${me.company.number}#${me.extension}"`);
-
-  await h(t).withLog(`And there is public team A without me: ${publicTeamWithoutMe.name}`, async () => {
+  await h(t).withLog(`Given there is a public teamA without me named "{name}" `, async (step) => {
+    step.setMetadata('name', publicTeamWithoutMe.name)
     await h(t).scenarioHelper.createTeam(publicTeamWithoutMe);
   });
 
-  await h(t).withLog(`When I login Jupiter with this extension`, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: me.company.number,
+      extension: me.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, me);
     await app.homePage.ensureLoaded();
   });
 
   const searchBar = app.homePage.header.searchBar;
   const searchDialog = app.homePage.searchDialog;
-  await h(t).withLog(`When I search the public team A ${publicTeamWithoutMe.name}, and click Join button of team A`, async () => {
+  await h(t).withLog(`When I search the public teamA {teamA}, and click Join button of teamA`, async (step) => {
+    step.setMetadata('teamA', publicTeamWithoutMe.name)
     await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(publicTeamWithoutMe.name);
     await t.expect(searchDialog.instantPage.teams.count).gte(1, { timeout: 10e3 });
@@ -265,7 +284,12 @@ test.meta(<ITestMeta>{
 
 });
 
-test(formalName(`The user should see go to conversation icon instead of the join team icon when the user was added by someone to the team`, ['P2', 'JPT-858', 'PublicTeam', 'Potar.He']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-858'],
+  keywords: ['PublicTeam'],
+  maintainers: ['Potar.He']
+})(`The user should see go to conversation icon instead of the join team icon when the user was added by someone to the team`, async t => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[4];
   const adminUser = h(t).rcData.mainCompany.users[5];
@@ -289,21 +313,27 @@ test(formalName(`The user should see go to conversation icon instead of the join
   });
 
   let teamMentionPostId;
-  await h(t).withLog(`And adminUser send @public_team post to loginUser`, async () => {
+  await h(t).withLog(`And adminUser send @{public_team} post to loginUser`, async (step) => {
+    step.setMetadata('public_team', publicTeamWithoutMe.name)
     teamMentionPostId = await h(t).platform(adminUser).sentAndGetTextPostId(
       `Join public team, ![:Team](${publicTeamWithoutMe.glipId})`,
       chatWithMe.glipId,
     );
   });
 
-  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
-  });
+  })
 
   const conversationPage = app.homePage.messageTab.conversationPage;
   const post = conversationPage.postItemById(teamMentionPostId);
-  await h(t).withLog(`When loginUser click the @public_team mention`, async () => {
+  await h(t).withLog(`When loginUser click the @{public_team} mention`, async (step) => {
+    step.setMetadata('public_team', publicTeamWithoutMe.name)
     await app.homePage.messageTab.directMessagesSection.conversationEntryById(chatWithMe.glipId).enter();
     await t.click(post.mentions);
   });
@@ -339,7 +369,12 @@ test(formalName(`The user should see go to conversation icon instead of the join
 });
 
 
-test(formalName(`Will show confirmation dialog when joining the public team from a public team profile`, ['P2', 'JPT-867', 'PublicTeam', 'Potar.He']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-867'],
+  keywords: ['PublicTeam'],
+  maintainers: ['Potar.He']
+})(`Will show confirmation dialog when joining the public team from a public team profile`, async t => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[4];
   const adminUser = h(t).rcData.mainCompany.users[5];
@@ -363,21 +398,27 @@ test(formalName(`Will show confirmation dialog when joining the public team from
   });
 
   let teamMentionPostId;
-  await h(t).withLog(`And adminUser send @public_team post to loginUser`, async () => {
+  await h(t).withLog(`And adminUser send @{public_team} post to loginUser`, async (step) => {
+    step.setMetadata('public_team', publicTeamWithoutMe.name)
     teamMentionPostId = await h(t).platform(adminUser).sentAndGetTextPostId(
       `Join public team, ![:Team](${publicTeamWithoutMe.glipId})`,
       chatWithMe.glipId,
     );
   });
 
-  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
-  });
+  })
 
   const conversationPage = app.homePage.messageTab.conversationPage;
   const post = conversationPage.postItemById(teamMentionPostId);
-  await h(t).withLog(`When loginUser click the @public_team mention`, async () => {
+  await h(t).withLog(`When loginUser click the @{public_team} mention`, async (step) => {
+    step.setMetadata('public_team', publicTeamWithoutMe.name)
     await app.homePage.messageTab.directMessagesSection.conversationEntryById(chatWithMe.glipId).enter();
     await t.click(post.mentions);
   });
