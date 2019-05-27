@@ -20,7 +20,7 @@ type DialerContainerViewProps = {
   isDialer: boolean;
   dtmfThroughKeypad: (digit: string) => void;
   dtmfThroughKeyboard: (digit: string) => void;
-  typeString: (digit: string) => void;
+  clickToInput: (digit: string) => void;
   dialerInputFocused?: boolean;
   playAudio: (digit: string) => void;
   chosenCallerPhoneNumber: string;
