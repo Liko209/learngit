@@ -52,6 +52,7 @@ export interface IStep {
   screenshotPath?: string;
   attachments?: string[];
   children?: IStep[];
+  description?: string;
 }
 
 export interface IStepOptions {

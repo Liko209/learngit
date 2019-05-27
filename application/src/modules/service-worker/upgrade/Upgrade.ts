@@ -22,7 +22,7 @@ class Upgrade {
   private _refreshing: boolean = false;
   private _swURL: string;
   private _lastCheckTime?: Date;
-  private _lastRouterChangeTime?: Date;
+  private _lastRouterChangeTime?: Date = new Date();
   private _queryTimer: NodeJS.Timeout;
 
   constructor(public queryInterval = DEFAULT_UPDATE_INTERVAL) {

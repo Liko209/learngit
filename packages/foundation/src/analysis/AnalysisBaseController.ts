@@ -3,10 +3,8 @@
  * @Date: 2019-04-02 19:25:53
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { BuildUtils } from '../utils/BuildUtils';
-
 class AnalysisBaseController {
+  private _isProduction: boolean = false;
   constructor() {}
 
   getEndPoint() {
@@ -26,8 +24,12 @@ class AnalysisBaseController {
     return result;
   }
 
-  public isProductionBuild() {
-    return BuildUtils.isProductionBuild() || BuildUtils.isPublicBuild();
+  public setProduction(isProduction: boolean) {
+    this._isProduction = isProduction;
+  }
+
+  public isProduction() {
+    return this._isProduction;
   }
 }
 
