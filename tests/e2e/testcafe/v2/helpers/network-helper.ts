@@ -20,6 +20,8 @@ class NetworkHelper {
   }
 
   waitUntilReachable(host: string = 'github.com', port: number = 443, maxRetry: number = 5, interval: number = 5) {
+    if (!shell.which('nc'))
+      return;
     for (let i = 0; i < maxRetry; i++) {
       const isReachable = (0 === shell.exec(`nc -z ${host} ${port}`).code);
       if (isReachable)
