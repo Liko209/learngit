@@ -132,7 +132,7 @@ class TelephonyStore {
   dialerOpenedCount: number;
 
   @observable
-  shouldAnimationStart: boolean = false;
+  startMinimizeAnimation: boolean = false;
 
   @observable
   dialerMinimizeTranslateX: number = NaN;
@@ -507,11 +507,11 @@ class TelephonyStore {
   }
 
   startAnimation = () => {
-    this.shouldAnimationStart = true;
+    this.startMinimizeAnimation = true;
   }
 
   stopAnimation = () => {
-    this.shouldAnimationStart = false;
+    this.startMinimizeAnimation = false;
   }
 
   @computed

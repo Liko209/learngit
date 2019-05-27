@@ -123,7 +123,6 @@ class ConversationInitialPost extends React.Component<
     return (
       <JuiConversationPageInit
         text={t('message.initialPost.postInitialTitle')}
-        content={t('message.initialPost.postInitialContent')}
         actions={[
           this._handleShareFile,
           this._handleCreateTask,

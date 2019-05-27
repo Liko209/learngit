@@ -264,6 +264,15 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
       if (this.currentItemId === itemId) {
         this.currentIndex = info.index;
         if (info.index < 0) {
+          const itemType = this._itemListDataSource.type;
+          const groupId = this._itemListDataSource.groupId;
+          mainLogger
+            .tags('ImageViewer')
+            .info(
+              `Item no exist. itemId: ${itemId}, itemType: ${itemType}, groupId: ${groupId}, info: ${
+                info.index
+              }/${info.totalCount}`,
+            );
           this._onCurrentItemDeletedCb && this._onCurrentItemDeletedCb();
         }
       }

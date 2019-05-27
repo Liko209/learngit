@@ -4,15 +4,76 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
+import React, { Component, RefObject, createRef } from 'react';
+import ReactDOM from 'react-dom';
 import { observer } from 'mobx-react';
 import styled, { keyframes, css } from 'styled-components';
 import { StyledHeaderNoPadding } from 'jui/pattern/Dialer';
 import { height, spacing } from 'jui/foundation/utils';
 import { FakeInputViewProps } from './types';
 
+const FOCUS_IN_EVT = 'focusin';
+const BLUR = 'blur';
+
 @observer
 class FakeInputView extends Component<FakeInputViewProps> {
+  private _containerRef: RefObject<any> = createRef();
+
+  private _onFocus = (e: FocusEvent) => {
+    const el = ReactDOM.findDOMNode(this._containerRef.current);
+
+    if (!el) {
+      return;
+    }
+    if (e.target && (el as HTMLDivElement).contains(e.target as Element)) {
+      this.props.onFocus && this.props.onFocus();
+      return;
+    }
+    this.props.onBlur && this.props.onBlur();
+  }
+
+  private _onBlur = (e: FocusEvent) => {
+    const el = ReactDOM.findDOMNode(this._containerRef.current);
+
+    if (!el) {
+      return;
+    }
+    if (
+      e.target &&
+      (e.target === window ||
+        (el as HTMLDivElement).contains(e.target as Element))
+    ) {
+      this.props.onBlur && this.props.onBlur();
+      return;
+    }
+  }
+
+  componentWillUnmount() {
+    const { onBlur } = this.props;
+    onBlur && onBlur();
+    window.removeEventListener(FOCUS_IN_EVT, this._onFocus);
+    window.removeEventListener(BLUR, this._onBlur);
+  }
+
+  componentDidMount() {
+    if (!this._containerRef.current) {
+    }
+
+    const el = ReactDOM.findDOMNode(this._containerRef.current);
+    if (!el) {
+      return;
+    }
+    window.addEventListener(FOCUS_IN_EVT, this._onFocus);
+    window.addEventListener(BLUR, this._onBlur);
+
+    // auto focus
+    requestAnimationFrame(() => {
+      if (this._containerRef.current) {
+        (el as HTMLElement).focus();
+      }
+    });
+  }
+
   // HACK: using `direction:rtl` and `unicode-bidi` while also reversing the input string
   render() {
     const { showCursor, enteredKeys } = this.props;
@@ -31,6 +92,7 @@ class FakeInputView extends Component<FakeInputViewProps> {
       flex-grow: 1;
       align-self: stretch;
       min-width: 0;
+      outline: none;
     `;
 
     const Container = styled.div`
@@ -75,7 +137,7 @@ class FakeInputView extends Component<FakeInputViewProps> {
     `;
 
     return (
-      <FlexContainer>
+      <FlexContainer tabIndex={0} ref={this._containerRef}>
         <StyledHeaderNoPadding>
           <Container>
             <Inner>

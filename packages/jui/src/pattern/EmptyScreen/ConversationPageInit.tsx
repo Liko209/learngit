@@ -15,13 +15,12 @@ const Pic = styled(EmptyScreen.Pic)`
 `;
 
 const JuiConversationPageInit = React.memo((props: JuiEmptyScreenProps) => {
-  const { image, text, content, actions } = props;
+  const { image, text, actions } = props;
 
   return (
     <EmptyScreen.Wrapper>
       <Pic src={image} />
       <EmptyScreen.Text>{text}</EmptyScreen.Text>
-      <EmptyScreen.Content>{content}</EmptyScreen.Content>
       <EmptyScreen.Actions>
         {actions.length
           ? actions.map((action, inx) => (

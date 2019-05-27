@@ -1,3 +1,4 @@
+import { RefObject } from 'react';
 /*
  * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
  * @Date: 2019-03-06 15:43:50
@@ -10,7 +11,9 @@ interface ICallerPhoneNumber {
   usageType: string;
 }
 
-type DialerContainerProps = {};
+type DialerContainerProps = {
+  dialerHeaderRef: RefObject<any>;
+};
 
 type DialerContainerViewProps = {
   keypadEntered: boolean;
