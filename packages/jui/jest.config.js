@@ -16,12 +16,12 @@ module.exports = {
   },
   transform: {
     '\\.svg$': 'jest-raw-loader',
-    '^.+\\.css$': '<rootDir>/config/jest/cssTransform.js',
   },
 
   moduleNameMapper: {
     '^rcui/(.*)$': '<rootDir>/node_modules/rcui/src/$1',
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
       '<rootDir>/config/jest/__mocks__/fileMock.js',
+    '\\.(css|less)$': '<rootDir>/config/jest/__mocks__/cssMock.js',
   },
 };

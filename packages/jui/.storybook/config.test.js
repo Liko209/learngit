@@ -4,25 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import {
-  storiesOf,
-  configure,
-  addDecorator,
-  addParameters,
-} from '@storybook/react';
+import { storiesOf, configure, addDecorator } from '@storybook/react';
 import {
   Global,
   ThemeProvider,
   themes,
   createReset,
-  create,
   convert,
 } from '@storybook/theming';
-
-import { withKnobs } from '@storybook/addon-knobs';
-import { withA11y } from '@storybook/addon-a11y';
-import { withNotes } from '@storybook/addon-notes';
-import { withInfo } from '@storybook/addon-info';
 
 import { ThemeProvider as JuiThemeProvider } from '../src/foundation/theme/index';
 import './index.css';
@@ -46,67 +35,6 @@ const ThemeDecorator = storyFn => {
     </JuiThemeProvider>
   );
 };
-
-const ENV = build_env;
-if (ENV !== 'test') {
-  addDecorator(
-    withInfo({
-      styles: {
-        header: {
-          h1: {
-            marginRight: '20px',
-            fontSize: '25px',
-            display: 'inline',
-          },
-          body: {
-            paddingTop: 0,
-            paddingBottom: 0,
-            marginBottom: 0,
-          },
-          h2: {
-            display: 'inline',
-            color: '#999',
-          },
-        },
-        infoBody: {
-          backgroundColor: '#eee',
-          padding: '0px 5px',
-          lineHeight: '2',
-        },
-      },
-      inline: false,
-      source: false,
-    }),
-  );
-  addDecorator(withA11y);
-  addDecorator(withNotes);
-  addDecorator(withKnobs);
-
-  addParameters({
-    a11y: {
-      configure: {},
-      options: {
-        checks: { 'color-contrast': { options: { noScroll: true } } },
-        restoreScroll: true,
-      },
-    },
-    options: {
-      theme: create({
-        colorPrimary: 'hotpink',
-        colorSecondary: 'orangered',
-        brandTitle: 'Jupiter!',
-      }),
-    },
-    backgrounds: [
-      { name: 'storybook app', value: themes.light.appBg, default: true },
-      { name: 'light', value: '#eeeeee' },
-      { name: 'dark', value: '#222222' },
-    ],
-  });
-  console.log('normal build');
-} else {
-  console.log('testing build');
-}
 
 addDecorator(ThemeDecorator);
 
@@ -171,7 +99,7 @@ function importAll(context) {
 }
 
 function loadStories() {
-  const req = require.context('../src/components/Animation', true, /\.story\.tsx?$/);
+  const req = require.context('../src/', true, /\.story\.tsx?$/);
   importAll(req);
 }
 

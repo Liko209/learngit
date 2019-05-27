@@ -5,7 +5,8 @@
   "scripts": {
     "storybook": "STORYBOOK_DISPLAY_WARNING=true DISPLAY_WARNING=true start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "test": "jest"
+    "test": "jest",
+    "build-test-storybook": "BUILD_TARGET='test'  npm run build-storybook"
   },
   "dependencies": {
     "@material-ui/core": "3.9.3",
@@ -15,6 +16,7 @@
     "emoji-mart": "2.11.0",
     "eventemitter2": "5.0.1",
     "mousetrap": "1.6.2",
+    "rcui": "0.1.0",
     "re-resizable": "4.11.0",
     "react": "16.8.6",
     "react-content-loader": "3.2.0",
@@ -26,12 +28,12 @@
     "react-resize-detector": "4.0.5",
     "react-select": "2.1.1",
     "react-virtualized": "9.21.0",
-    "rcui": "0.1.0",
     "styled-components": "4.0.3",
     "tinycolor2": "1.4.1",
     "typeface-roboto": "0.0.54"
   },
   "devDependencies": {
+    "@types/npmlog": "4.1.1",
     "react-test-renderer": "16.8.3",
     "@types/react-test-renderer": "16.8.1",
     "jest-raw-loader": "1.0.1",

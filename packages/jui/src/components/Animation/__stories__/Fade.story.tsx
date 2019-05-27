@@ -6,7 +6,6 @@
 
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiFade } from '../index';
 import { Button } from '@material-ui/core';
 
@@ -73,8 +72,6 @@ class Test extends React.Component {
   }
 }
 
-storiesOf('Components/Animation', module)
-  .addDecorator(withInfoDecorator(JuiFade, { inline: true }))
-  .add('JuiFade', () => {
-    return <Test />;
-  });
+storiesOf('Components/Animation', module).add('JuiFade', () => {
+  return <Test />;
+});

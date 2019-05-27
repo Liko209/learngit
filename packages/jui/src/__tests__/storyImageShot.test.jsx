@@ -9,12 +9,13 @@ import initStoryshots from '@storybook/addon-storyshots';
 import { imageSnapshot } from './customImageShot';
 
 const getScreenshotOptions = ({ context, url }) => {
-  return {
-    omitBackground: true,
-  };
+  return {};
 };
 initStoryshots({
   suite: 'image storyshots',
-  test: imageSnapshot({ getScreenshotOptions }),
-  configPath: path.resolve(__dirname, '../../.storybook/config.js'),
+  test: imageSnapshot({
+    getScreenshotOptions,
+    storybookUrl: 'http://localhost:8080',
+  }),
+  configPath: path.resolve(__dirname, '../../.storybook/config.test.js'),
 });

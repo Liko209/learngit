@@ -82,6 +82,8 @@ export const imageSnapshot = (customConfig = {}) => {
         getScreenshotOptions({ context, url }),
       );
     } catch (e) {
+      console.log(e);
+
       logger.error(
         `Error when connecting to ${url}, did you start or build the storybook first? A storybook instance should be running or a static version should be built when using image snapshot feature.`,
         e,
@@ -101,6 +103,7 @@ export const imageSnapshot = (customConfig = {}) => {
       return { left: x, top: y, width, height, id: element.id };
     }, selector);
 
+    console.log(option);
     return await page.screenshot({
       clip: {
         x: rect.left - padding,
