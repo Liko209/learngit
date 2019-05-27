@@ -8,8 +8,12 @@ import React, { Component } from 'react';
 import { SettingContainerViewProps } from './types';
 import { observer } from 'mobx-react';
 import styled from 'jui/foundation/styled-components';
-import { JuiSettingSection } from 'jui/pattern/SettingSection';
+import {
+  JuiSettingSection,
+  JuiSettingSectionContainer,
+} from 'jui/pattern/SettingSection';
 import { SettingStore } from '@/modules/setting/store';
+import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 import { container } from 'framework';
 import SettingModel from '@/store/models/UserSetting';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -20,17 +24,21 @@ const StyledSettingContainer = styled.div`
   overflow: auto;
   height: 100%;
 `;
-const StyledSettingContent = styled.div`
-  padding: 16px;
-`;
 @observer
 class SettingContainerViewComponent extends Component<
-  SettingContainerViewProps & WithTranslation
+  SettingContainerViewProps & WithTranslation,
+  Size
 > {
+  state: Size = {
+    width: 0,
+    height: 0,
+  };
   private _wrapRef: React.RefObject<any> = React.createRef();
   private _settingStore: SettingStore = container.get(SettingStore);
 
   private _scrollEl: HTMLElement;
+
+  source: HTMLElement[];
 
   componentDidMount() {
     this.scrollToPosition();
@@ -38,6 +46,12 @@ class SettingContainerViewComponent extends Component<
 
   componentWillUnmount() {
     this.setScrollHeight();
+  }
+
+  private _handleSizeUpdate = (size: Size) => {
+    this.setState({
+      ...size,
+    });
   }
 
   scrollToPosition = () => {
@@ -108,16 +122,27 @@ class SettingContainerViewComponent extends Component<
 
   render() {
     const { leftRailItemId, t } = this.props;
+    const { width } = this.state;
+    if (this._wrapRef.current && !this.source) {
+      this.source = [this._wrapRef.current];
+    }
     return (
       <StyledSettingContainer
-        ref={this._wrapRef}
         data-test-automation-id="SettingContainer"
+        ref={this._wrapRef}
       >
         <JuiConversationPageHeader
           data-test-automation-id="SettingPageHeader"
           title={t(SETTING_ITEM[leftRailItemId].title)}
         />
-        <StyledSettingContent>{this.renderItem()}</StyledSettingContent>
+
+        <JuiSizeDetector
+          handleSizeChanged={this._handleSizeUpdate}
+          sources={this.source}
+        />
+        <JuiSettingSectionContainer containerWidth={width}>
+          {this.renderItem()}
+        </JuiSettingSectionContainer>
       </StyledSettingContainer>
     );
   }

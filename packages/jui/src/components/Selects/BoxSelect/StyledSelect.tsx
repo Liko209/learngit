@@ -15,6 +15,9 @@ const CLASSES_SELECT = {
 };
 
 const StyledSelect = styled<SelectProps>(Select)`
+  && {
+    max-width: ${spacing(58)};
+  }
   .root {
     height: 100%;
   }
@@ -24,6 +27,7 @@ const StyledSelect = styled<SelectProps>(Select)`
   .selectMenu {
     padding: ${spacing(1.5, 6, 1.5, 2)};
     height: 100%;
+    width: inherit;
     display: flex;
     align-items: center;
     box-sizing: border-box;

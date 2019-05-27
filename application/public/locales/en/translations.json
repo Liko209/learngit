@@ -564,11 +564,21 @@
   "setting": {
     "Settings": "Settings",
     "teamSettings": "Settings",
-    "general": "General",
-    "notificationAndSounds": "Notification and Sounds",
-    "messages": "Messages",
-    "meetings": "Meetings",
-    "calendar": "Calendar",
+    "general": {
+      "title": "General"
+    },
+    "notificationAndSounds": {
+      "title": "Notification and Sounds"
+    },
+    "messages": {
+      "title": "Messages"
+    },
+    "meetings": {
+      "title": "Meetings"
+    },
+    "calendar": {
+      "title": "Calendar"
+    },
     "update": "Update",
     "phone": {
       "title": "Phone",
