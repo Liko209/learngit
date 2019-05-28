@@ -4,7 +4,6 @@
       "./fixtures/CreateTeam/CreateTeam.ts"
     ],
     "include_tags": [
-      "JPT-121",
       "JPT-104",
       "JPT-115"
     ],
