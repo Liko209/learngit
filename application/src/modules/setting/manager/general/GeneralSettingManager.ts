@@ -21,7 +21,7 @@ class GeneralSettingManager {
       sections: [
         {
           id: SETTING_SECTION__GENERAL,
-          title: 'General',
+          title: 'setting.general',
           weight: 0,
           items: [],
         },

@@ -18,13 +18,13 @@ class NotificationSoundSettingManager {
     this._settingService.registerPage(this._scope, {
       id: SETTING_PAGE__NOTIFICATION_SOUND,
       icon: 'bell',
-      title: 'setting.notificationAndSounds.title',
+      title: 'setting.notificationAndSounds',
       path: '/notification_and_sounds',
       weight: 100,
       sections: [
         {
           id: SETTING_SECTION__SOUNDS,
-          title: 'setting.notificationAndSounds.sounds',
+          title: 'setting.sounds',
           weight: 200,
           items: [],
         },

@@ -1,14 +1,35 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { Switch, Route, Redirect } from 'react-router-dom';
-import { container } from 'framework';
+import {
+  Switch,
+  Route,
+  Redirect,
+  withRouter,
+  RouteComponentProps,
+} from 'react-router-dom';
+import { jupiter } from 'framework';
 import { SettingStore, emptyPageFilter } from '../../store';
 import { SETTING_ROUTE_ROOT } from '../../constant';
 import { SettingPage } from '../SettingPage';
+import { ISettingService } from '@/interface/setting';
 
 @observer
-class SettingRouter extends Component {
-  private _settingStore = container.get(SettingStore);
+class SettingRouterComponent extends Component<RouteComponentProps> {
+  private get _settingStore() {
+    return jupiter.get(SettingStore);
+  }
+
+  private get _settingService() {
+    return jupiter.get<ISettingService>(ISettingService);
+  }
+
+  componentDidMount() {
+    if (!this._settingStore.currentPage) {
+      this._settingService.goToSettingPage(
+        this._settingStore.pages.filter(emptyPageFilter)[0].id,
+      );
+    }
+  }
 
   private _renderRoutes() {
     return this._settingStore.pages.filter(emptyPageFilter).map(page => {
@@ -37,4 +58,5 @@ class SettingRouter extends Component {
   }
 }
 
+const SettingRouter = withRouter(SettingRouterComponent);
 export { SettingRouter };

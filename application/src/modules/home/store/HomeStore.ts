@@ -7,7 +7,11 @@ import { ComponentType } from 'react';
 import { observable, computed, action } from 'mobx';
 import { RouteProps } from 'react-router-dom';
 import { SubModuleConfig, NavConfig } from '../types';
-// import { config } from '../home.config';
+import { config } from '../home.config';
+
+function isNavConfig(navConfig: NavConfig | undefined): navConfig is NavConfig {
+  return navConfig !== undefined;
+}
 
 class HomeStore {
   @observable private _subModuleConfigsMap = new Map<string, SubModuleConfig>();
@@ -19,9 +23,12 @@ class HomeStore {
   get subRoutes() {
     return [...this._subRouteMap.values()];
   }
+
   @computed
   get navConfigs() {
-    return [...this._navConfigMap.values()];
+    return Object.keys(config.subModules)
+      .map(moduleName => this._navConfigMap.get(moduleName))
+      .filter(isNavConfig);
   }
 
   @computed

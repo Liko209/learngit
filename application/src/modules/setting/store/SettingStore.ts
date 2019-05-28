@@ -7,6 +7,10 @@ import { observable, action, computed, createAtom } from 'mobx';
 import { SettingPage, SettingSection, SettingItem } from '@/interface/setting';
 import { SettingStoreScope } from './SettingStoreScope';
 
+function compareWeight<T extends { weight: number }>(left: T, right: T) {
+  return left.weight - right.weight;
+}
+
 class SettingStore {
   // NOTE
   // We can not add @observable to _storeScopes because
@@ -30,24 +34,25 @@ class SettingStore {
     this._storeScopes.forEach(store => {
       resultPages.push(...store.pages);
     });
-    return resultPages;
+    return resultPages.sort(compareWeight);
   }
 
   @computed
   get sections() {
-    return this.pages.reduce((result: SettingSection[], page: SettingPage) => {
-      return result.concat(page.sections);
-    },                       []);
+    return this.pages
+      .reduce((result: SettingSection[], page: SettingPage) => {
+        return result.concat(page.sections);
+      },      [])
+      .sort(compareWeight);
   }
 
   @computed
   get items() {
-    return this.sections.reduce(
-      (result: SettingItem[], section: SettingSection) => {
+    return this.sections
+      .reduce((result: SettingItem[], section: SettingSection) => {
         return result.concat(section.items);
-      },
-      [],
-    );
+      },      [])
+      .sort(compareWeight);
   }
 
   @action
