@@ -4,23 +4,17 @@
  */
 import { Op } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
-import { Scene } from "../scenes";
-import { Config } from '../config';
-import { PerformanceMetric } from "../gatherers";
+import { Config, h, Globals } from '..';
 import { DateUtils } from "../utils";
 import {
   TaskDto,
   SceneDto,
-  PerformanceDto,
-  PerformanceItemDto,
   LoadingTimeSummaryDto,
   LoadingTimeItemDto,
-  FpsDto,
   VersionDto,
   LoadingTimeDevelopSummaryDto,
   LoadingTimeReleaseSummaryDto
-} from "../models";
-import { DashboardService } from '.';
+} from "../dtos";
 
 class MetricService {
 
@@ -72,37 +66,19 @@ class MetricService {
     );
   }
 
-  static async createScene(taskDto: TaskDto, scene: Scene): Promise<SceneDto> {
-    let platform = 'chrome';
-    let data = scene.getData();
-    let timing = scene.getTiming();
-    let { uri, aliasUri, categories } = data;
-    let { startTime, endTime } = timing;
+  static async createScene(taskDto: TaskDto, t: TestController): Promise<SceneDto> {
+    let platform = h(t).getBrowser().name;
+    let uri = Config.jupiterHost;
+    let aliasUri = uri;
+    let startTime = Globals.startTime;
+    let endTime = Globals.endTime;
     let performance, accessibility, bestPractices, seo, pwa;
     let taskId = taskDto.id,
-      name = scene.name();
-    let appVersion = scene.getAppVersion();
+      name = h(t).getSceneName();
+    let appVersion = h(t).getVersion(Config.jupiterHost).jupiterVersion;
 
     performance = accessibility = bestPractices = seo = pwa = 0;
-    if (categories["performance"] && categories["performance"].score) {
-      performance = categories["performance"].score * 100;
-    }
 
-    if (categories["pwa"] && categories["pwa"].score) {
-      pwa = categories["pwa"].score * 100;
-    }
-
-    if (categories["accessibility"] && categories["accessibility"].score) {
-      accessibility = categories["accessibility"].score * 100;
-    }
-
-    if (categories["best-practices"] && categories["best-practices"].score) {
-      bestPractices = categories["best-practices"].score * 100;
-    }
-
-    if (categories["seo"] && categories["seo"].score) {
-      seo = categories["seo"].score * 100;
-    }
     return await SceneDto.create({
       taskId,
       name,
@@ -121,133 +97,18 @@ class MetricService {
     });
   }
 
-  static async createPerformance(sceneDto: SceneDto, scene: Scene) {
+  static async createLoadingTime(sceneDto: SceneDto, t: TestController) {
     let sceneId = sceneDto.id;
-    let data = scene.getData();
-    let { audits } = data;
-    let firstContentfulPaint,
-      firstMeaningfulPaint,
-      speedIndex,
-      firstCpuIdle,
-      timeToInteractive,
-      estimatedInputLatency;
-
-    firstContentfulPaint = firstMeaningfulPaint = speedIndex = 0;
-    firstCpuIdle = timeToInteractive = estimatedInputLatency = 0;
-    if (
-      audits["first-contentful-paint"] &&
-      audits["first-contentful-paint"].rawValue
-    ) {
-      firstContentfulPaint = audits["first-contentful-paint"].rawValue;
-    }
-
-    if (
-      audits["first-meaningful-paint"] &&
-      audits["first-meaningful-paint"].rawValue
-    ) {
-      firstMeaningfulPaint = audits["first-meaningful-paint"].rawValue;
-    }
-
-    if (audits["speed-index"] && audits["speed-index"].rawValue) {
-      speedIndex = audits["speed-index"].rawValue;
-    }
-
-    if (audits["first-cpu-idle"] && audits["first-cpu-idle"].rawValue) {
-      firstCpuIdle = audits["first-cpu-idle"].rawValue;
-    }
-
-    if (audits["interactive"] && audits["interactive"].rawValue) {
-      timeToInteractive = audits["interactive"].rawValue;
-    }
-
-    if (
-      audits["estimated-input-latency"] &&
-      audits["estimated-input-latency"].rawValue
-    ) {
-      estimatedInputLatency = audits["estimated-input-latency"].rawValue;
-    }
-
-    await PerformanceDto.create({
-      sceneId,
-      firstContentfulPaint,
-      firstMeaningfulPaint,
-      speedIndex,
-      firstCpuIdle,
-      timeToInteractive,
-      estimatedInputLatency
-    });
-  }
-
-  static async createPerformanceItem(sceneDto: SceneDto, scene: Scene) {
-    let dtoArr = new Array();
-    let sceneId = sceneDto.id;
-    let artifacts = scene.getArtifacts();
-    let { ProcessGatherer, ProcessGatherer2 } = artifacts;
-    let metrics: Array<PerformanceMetric>;
-    if (ProcessGatherer) {
-      metrics = ProcessGatherer.metrics;
-    } else if (ProcessGatherer2) {
-      metrics = ProcessGatherer2.metrics;
-    }
-
-    if (!metrics || metrics.length == 0) {
-      return;
-    }
-
-    let index = 1;
-    for (let item of metrics) {
-      dtoArr.push({
-        sceneId: sceneId,
-        index: index++,
-        url: item.url,
-        cpu: item.cpu,
-        privateMemory: item.privateMemory / 1024 / 1024,
-        jsMemoryAllocated: item.jsMemoryAllocated / 1024 / 1024,
-        jsMemoryUsed: item.jsMemoryUsed / 1024 / 1024,
-        type: item.type
-      });
-    }
-
-    if (dtoArr.length > 0) {
-      await PerformanceItemDto.bulkCreate(dtoArr);
-    }
-  }
-
-  static async createFpsItem(sceneDto: SceneDto, scene: Scene) {
-    let dtoArr = new Array();
-    let sceneId = sceneDto.id;
-    let artifacts = scene.getArtifacts();
-    let { FpsGatherer } = artifacts;
-    let metrics: Array<any>;
-    if (FpsGatherer) {
-      metrics = FpsGatherer.metrics;
-    }
-
-    if (!metrics || metrics.length == 0) {
-      return;
-    }
-
-    let idx = 1;
-    for (let item of metrics) {
-      dtoArr.push(Object.assign(item, { sceneId, index: idx++ }));
-    }
-
-    if (dtoArr.length > 0) {
-      await FpsDto.bulkCreate(dtoArr);
-    }
-  }
-
-  static async createLoadingTime(sceneDto: SceneDto, scene: Scene, name: string) {
-    let sceneId = sceneDto.id;
-    let artifacts = scene.getArtifacts();
-    let gatherer = artifacts[name];
+    let gatherer = h(t).getMetricHelper().getResult();
     let apiTimes, dtoArr;
 
     if (!gatherer) {
       return;
     }
 
-    for (let key of Object.keys(gatherer)) {
+    const keys = Object.keys(gatherer);
+
+    for (let key of keys) {
       dtoArr = [];
       apiTimes = [];
       let item = gatherer[key];
@@ -267,8 +128,8 @@ class MetricService {
         apiHandleCount: -1
       };
 
-      if (item.api) {
-        apiTimes = apiTimes.concat(item.api);
+      if (item) {
+        apiTimes = apiTimes.concat(item);
       }
 
       let sum, arr, costTime, min, max, maxHanleCount;
@@ -319,12 +180,12 @@ class MetricService {
 
         await LoadingTimeItemDto.bulkCreate(dtoArr);
 
-        await MetricService.summaryLoadingTimeForVersion(sceneDto, summary);
+        await MetricService.summaryLoadingTimeForVersion(sceneDto, summary, t);
       }
     }
   }
 
-  static async summaryLoadingTimeForVersion(sceneDto: SceneDto, summary: LoadingTimeSummaryDto): Promise<void> {
+  static async summaryLoadingTimeForVersion(sceneDto: SceneDto, summary: LoadingTimeSummaryDto, t: TestController): Promise<void> {
     const isRelease = Config.jupiterHost === Config.jupiterReleaseHost;
     const isDevelop = Config.jupiterHost === Config.jupiterDevelopHost;
     const isStage = Config.jupiterHost === Config.jupiterStageHost;
@@ -338,13 +199,13 @@ class MetricService {
       return;
     }
 
-    const platform = 'chrome';
+    const platform = h(t).getBrowser().name;
     let versions = await VersionDto.findAll({
       where: {
         name: {
           [Op.in]: [
-            (await DashboardService.getVersionInfo(Config.jupiterDevelopHost)).jupiterVersion,
-            (await DashboardService.getVersionInfo(Config.jupiterStageHost)).jupiterVersion
+            Globals.versions[Config.jupiterDevelopHost].jupiterVersion,
+            Globals.versions[Config.jupiterStageHost].jupiterVersion,
           ]
         }
       }
