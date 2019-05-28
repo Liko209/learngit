@@ -12,14 +12,11 @@ import { JuiFabButton } from 'jui/components/Buttons';
 
 type Props = DialBtnViewProps & WithTranslation;
 
-const ANALYTICS_SOURCE = 'dialer';
-
 @observer
 class DialBtnViewComponent extends Component<Props> {
   private _handleMakeCall = async () => {
-    const { makeCall, trackCall } = this.props;
+    const { makeCall } = this.props;
     makeCall();
-    trackCall(ANALYTICS_SOURCE);
   }
 
   render() {

@@ -8,7 +8,6 @@ type DialBtnProps = {};
 
 type DialBtnViewProps = {
   makeCall: () => void;
-  trackCall: (analysisSource?: string) => void;
 };
 
 export { DialBtnProps, DialBtnViewProps };

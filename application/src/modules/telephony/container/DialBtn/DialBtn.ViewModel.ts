@@ -11,6 +11,8 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { DialBtnProps, DialBtnViewProps } from './types';
 import { analyticsCollector } from '@/AnalyticsCollector';
 
+const ANALYTICS_SOURCE = 'dialer';
+
 class DialBtnViewModel extends StoreViewModel<DialBtnProps>
   implements DialBtnViewProps {
   private _telephonyService: TelephonyService = container.get<TelephonyService>(
@@ -29,6 +31,7 @@ class DialBtnViewModel extends StoreViewModel<DialBtnProps>
      */
     this._makeCall(this._telephonyStore.inputString);
     this._telephonyStore.dialerCall();
+    this._trackCall(ANALYTICS_SOURCE);
   }
 
   // FIXME: remove this logic by exposing the phone parser from SDK to view-model layer
@@ -42,7 +45,7 @@ class DialBtnViewModel extends StoreViewModel<DialBtnProps>
     }
   }
 
-  trackCall = (analysisSource: string) => {
+  private _trackCall = (analysisSource: string) => {
     analyticsCollector.makeOutboundCall(analysisSource);
   }
 }
