@@ -13,7 +13,6 @@ import { config as task } from './config/task.config';
 import { config as note } from './config/note.config';
 import { config as file } from './config/file.config';
 import { config as setting } from './config/setting.config';
-import { config as setting2 } from './config/setting2.config';
 import { HomeConfig } from './types';
 
 const config: HomeConfig = {
@@ -35,7 +34,6 @@ const config: HomeConfig = {
     note,
     file,
     setting,
-    setting2,
   },
 };
 

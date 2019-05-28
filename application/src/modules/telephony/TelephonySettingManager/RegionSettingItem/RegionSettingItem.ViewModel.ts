@@ -25,6 +25,7 @@ import {
   CountriesListType,
   RegionSettingItemViewProps,
 } from './types';
+import { RegionSettingInfo } from 'sdk/module/rcInfo/setting/types';
 
 const AVOID_AREA_CODE_BEGIN_NUM = '0';
 const AREA_CODE_ALLOW_LEN = 3;
@@ -57,7 +58,7 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
 
   @computed
   get settingItemEntity() {
-    return getEntity<UserSettingEntity, SettingModel>(
+    return getEntity<UserSettingEntity, SettingModel<RegionSettingInfo>>(
       ENTITY_NAME.USER_SETTING,
       this.props.id,
     );

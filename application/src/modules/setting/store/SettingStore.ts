@@ -1,27 +1,85 @@
 /*
- * @Author: looper wang (looper.wang@ringcentral.com)
- * @Date: 2019-04-23 09:12:51
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-05-19 18:14:42
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable } from 'mobx';
-import { SettingItemType } from '../type';
+import { observable, action, computed, createAtom } from 'mobx';
+import { SettingPage, SettingSection, SettingItem } from '@/interface/setting';
+import { SettingStoreScope } from './SettingStoreScope';
 
 class SettingStore {
-  @observable _settingItems: SettingItemType;
+  // NOTE
+  // We can not add @observable to _storeScopes because
+  // mobx didn't support using symbol as key of a Map. As
+  // a fallback solution, we have to use mobx atom api to
+  // make _storeScopes observable.
+  private _storeScopeAtom = createAtom('_storeScopes');
+  // @observable by _storeScopeAtom
+  private _storeScopes = new Map<symbol, SettingStoreScope>();
+  @observable private _currentPageId: SettingPage['id'];
 
-  getSettingItem(key: string) {
-    return this._settingItems[key];
-  }
-  addSettingItem(item: SettingItemType) {
-    this._settingItems = { ...this._settingItems, ...item };
-  }
-  removeSettingItem(key: string) {
-    delete this._settingItems[key];
+  @computed
+  get currentPage() {
+    return this.getPageById(this._currentPageId);
   }
 
-  get SettingItems() {
-    return this._settingItems;
+  @computed
+  get pages() {
+    this._storeScopeAtom.reportObserved();
+    const resultPages: SettingPage[] = [];
+    this._storeScopes.forEach(store => {
+      resultPages.push(...store.pages);
+    });
+    return resultPages;
+  }
+
+  @computed
+  get sections() {
+    return this.pages.reduce((result: SettingSection[], page: SettingPage) => {
+      return result.concat(page.sections);
+    },                       []);
+  }
+
+  @computed
+  get items() {
+    return this.sections.reduce(
+      (result: SettingItem[], section: SettingSection) => {
+        return result.concat(section.items);
+      },
+      [],
+    );
+  }
+
+  @action
+  getPageById(pageId: string) {
+    return this.pages.find(page => page.id === pageId);
+  }
+
+  @action
+  getSectionById(sectionId: SettingSection['id']) {
+    return this.sections.find(section => section.id === sectionId);
+  }
+
+  @action
+  getItemById(itemId: SettingItem['id']) {
+    return this.items.find(item => item.id === itemId);
+  }
+
+  @action
+  useScope(scope: symbol) {
+    let store = this._storeScopes.get(scope);
+    if (!store) {
+      store = new SettingStoreScope();
+      this._storeScopeAtom.reportChanged();
+      this._storeScopes.set(scope, store);
+    }
+    return store;
+  }
+
+  @action
+  setCurrentPageId(pageId: SettingPage['id']) {
+    this._currentPageId = pageId;
   }
 }
 
-export { SettingStore };
+export { SettingStore, SettingStoreScope };

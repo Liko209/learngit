@@ -4,11 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { DialingCountryInfo } from 'sdk/api';
+import { RegionSettingInfo } from 'sdk/module/rcInfo/setting/types';
 import { JuiRegionSelectProps } from 'jui/components/Selects';
 import SettingModel from '@/store/models/UserSetting';
 
 type RegionSettingItemViewProps = {
-  settingItemEntity: SettingModel;
+  settingItemEntity: SettingModel<RegionSettingInfo>;
   currentCountryInfo: DialingCountryInfo;
   countriesList: CountriesListType;
   loadRegionSetting: () => void;

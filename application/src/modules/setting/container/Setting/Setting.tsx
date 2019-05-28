@@ -1,28 +1,45 @@
 /*
- * @Author: Conner (conner.kang@ringcentral.com)
- * @Date: 2019-04-02 10:29:39
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-05-19 17:49:41
  * Copyright © RingCentral. All rights reserved.
  */
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { Route, withRouter } from 'react-router-dom';
+import {
+  JuiResponsiveLayout,
+  withResponsive,
+  VISUAL_MODE,
+} from 'jui/foundation/Layout/Responsive';
+import { SettingRouter } from '../SettingRouter';
+import { SettingLeftRail } from '../SettingLeftRail';
 
-import { SettingRouter } from './SettingRouter';
-import { SettingViewProps } from './types';
+const LeftRailResponsive = withResponsive(SettingLeftRail, {
+  maxWidth: 360,
+  minWidth: 200,
+  defaultWidth: 268,
+  visualMode: VISUAL_MODE.AUTOMATIC,
+  enable: {
+    right: true,
+  },
+  priority: 1,
+});
+
+const RouterResponsive = withResponsive(SettingRouter, {
+  minWidth: 400,
+  priority: 2,
+});
 
 @observer
-class SettingComponent extends Component<SettingViewProps> {
+class Setting extends Component {
   render() {
     return (
-      <Route
-        path={`${this.props.match.path}/:subPath?`}
-        component={SettingRouter}
-      />
+      <JuiResponsiveLayout>
+        <LeftRailResponsive />
+        <RouterResponsive />
+      </JuiResponsiveLayout>
     );
   }
 }
-
-const Setting = withRouter(SettingComponent);
 
 export { Setting };

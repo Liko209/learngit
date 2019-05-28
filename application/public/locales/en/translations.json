@@ -565,7 +565,10 @@
     "Settings": "Settings",
     "teamSettings": "Settings",
     "general": "General",
-    "notificationAndSounds": "Notification and Sounds",
+    "notificationAndSounds": {
+      "title": "Notification and Sounds",
+      "sounds": "Sounds"
+    },
     "messages": "Messages",
     "meetings": "Meetings",
     "calendar": "Calendar",
