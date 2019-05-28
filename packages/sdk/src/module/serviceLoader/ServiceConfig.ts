@@ -26,6 +26,7 @@ const ServiceConfig = {
   ITEM_SERVICE: 'ItemService',
   SETTING_SERVICE: 'SettingService',
   PHONE_NUMBER_SERVICE: 'PhoneNumberService',
+  BADGE_SERVICE: 'BadgeService',
 };
 
 export { ServiceConfig };
