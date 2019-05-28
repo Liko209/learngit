@@ -7,7 +7,7 @@ import _ from 'lodash';
 import {
   ESettingValueType,
   UserSettingEntity,
-  AbstractUserSettingHandler,
+  AbstractSettingEntityHandler,
   SettingEntityIds,
 } from 'sdk/module/setting';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
@@ -21,12 +21,13 @@ import { ENTITY, SERVICE } from 'sdk/service';
 import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
 import { TelephonyService } from 'sdk/module/telephony';
 
-export class DefaultAppSettingHandler extends AbstractUserSettingHandler<
+export class DefaultAppSettingHandler extends AbstractSettingEntityHandler<
   CALLING_OPTIONS
 > {
   id = SettingEntityIds.Phone_DefaultApp;
 
   constructor(
+    private _accountService: AccountService,
     private _profileService: IProfileService,
     private _telephonyService: TelephonyService,
   ) {
@@ -49,10 +50,7 @@ export class DefaultAppSettingHandler extends AbstractUserSettingHandler<
     ]);
   }
 
-  async getUserSettingEntity(enableCache: boolean = false) {
-    if (enableCache && this.userSettingEntityCache) {
-      return this.userSettingEntityCache;
-    }
+  async fetchUserSettingEntity() {
     const hasCallPermission = await this._telephonyService.getVoipCallPermission();
     const profile = await this._profileService.getProfile();
 
@@ -74,10 +72,7 @@ export class DefaultAppSettingHandler extends AbstractUserSettingHandler<
   async onProfileEntityUpdate(
     payload: NotificationEntityUpdatePayload<Profile>,
   ) {
-    const accountConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
-    const glipProfileId = accountConfig.getCurrentUserProfileId();
+    const glipProfileId = this._accountService.userConfig.getCurrentUserProfileId();
     const profile = payload.body.entities.get(glipProfileId);
     if (!profile) {
       return;

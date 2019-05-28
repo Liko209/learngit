@@ -9,6 +9,7 @@ import { IProfileService } from '../service/IProfileService';
 import { CallerIdSettingHandler } from './CallerIdSettingHandler';
 import { DefaultAppSettingHandler } from './DefaultAppSettingHandler';
 import { TelephonyService } from 'sdk/module/telephony';
+import { AccountService } from 'sdk/module/account';
 
 type HandlerMap = {
   [SettingEntityIds.Phone_CallerId]: CallerIdSettingHandler;
@@ -19,6 +20,7 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
   constructor(
     private _profileService: IProfileService,
     private _telephonyService: TelephonyService,
+    private _accountService: AccountService,
   ) {
     super();
   }
@@ -29,6 +31,7 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
         this._profileService,
       ),
       [SettingEntityIds.Phone_DefaultApp]: new DefaultAppSettingHandler(
+        this._accountService,
         this._profileService,
         this._telephonyService,
       ),
