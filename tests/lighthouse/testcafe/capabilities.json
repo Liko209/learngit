@@ -1,0 +1,16 @@
+{
+  "firefox": {
+    "acceptSslCerts": true,
+    "acceptInsecureCerts": true,
+    "moz:firefoxOptions": {
+      "args": [],
+      "prefs": {}
+    }
+  },
+  "safari": {
+    "acceptSslCerts": true,
+    "safari.options": {
+
+    }
+  }
+}
