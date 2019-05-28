@@ -51,7 +51,7 @@ def condStage(Map args, Closure block) {
 
 // generate sha1 hash from a git treeish object, ensure stability by only taking parent and tree object into account
 def stableSha1(String treeish) {
-    String cmd = "git cat-file commit ${treeish} | grep -e ^tree | openssl sha1 |  grep -oE '[^ ]+\$'".toString()
+    String cmd = "git cat-file commit ${treeish} | grep -e ^tree | cut -d ' ' -f 2".toString()
     return sh(returnStdout: true, script: cmd).trim()
 }
 
@@ -195,6 +195,8 @@ def formatGlipReport(report) {
         lines.push("**Application URL**: ${report.appUrl}")
     if (null != report.juiUrl)
         lines.push("**Storybook URL**: ${report.juiUrl}")
+    if (null != report.rcuiUrl)
+        lines.push("**RCUI Storybook URL**: ${report.rcuiUrl}")
     if (null != report.publishUrl)
         lines.push("**Package URL**: ${report.publishUrl}")
     if (null != report.e2eUrl)
@@ -215,6 +217,8 @@ def formatJenkinsReport(report) {
         lines.push("Application URL: ${urlToATag(report.appUrl)}")
     if (null != report.juiUrl)
         lines.push("Storybook URL: ${urlToATag(report.juiUrl)}")
+    if (null != report.rcuiUrl)
+        lines.push("RCUI Storybook URL: ${urlToATag(report.rcuiUrl)}")
     if (null != report.publishUrl)
         lines.push("Package URL: ${urlToATag(report.publishUrl)}")
     if (null != report.e2eUrl)
@@ -274,26 +278,29 @@ String subDomain = getSubDomain(gitlabSourceBranch, gitlabTargetBranch)
 String appLinkDir = "${deployBaseDir}/${subDomain}".toString()
 String appStageLinkDir = "${deployBaseDir}/stage".toString()
 String juiLinkDir = "${deployBaseDir}/${subDomain}-jui".toString()
-String publishDir = "${deployBaseDir}/publish".toString()
+String rcuiLinkDir = "${deployBaseDir}/${subDomain}-rcui".toString()
 
 String appUrl = "https://${subDomain}.fiji.gliprc.com".toString()
 String juiUrl = "https://${subDomain}-jui.fiji.gliprc.com".toString()
-String publishPackageName = "${subDomain}.tar.gz".toString()
-String publishUrl = "https://publish.fiji.gliprc.com/${publishPackageName}".toString()
+String rcuiUrl = "https://${subDomain}-rcui.fiji.gliprc.com".toString()
+
 
 // following params should be updated after checkout stage success
 String headSha = null
 String appHeadSha = null
 String juiHeadSha = null
+String rcuiHeadSha = null
 
 // update with +=
 // release build use different build command, we should distinguish it from other build by using different name pattern
 String appHeadShaDir = "${deployBaseDir}/app-${buildRelease ? 'release-' : ''}".toString()
 String juiHeadShaDir = "${deployBaseDir}/jui-".toString()
+String rcuiHeadShaDir = "${deployBaseDir}/rcui-".toString()
 
 // by default we should not skip building app and jui
 Boolean skipBuildApp = false
 Boolean skipBuildJui = false
+Boolean skipBuildRcui = false
 Boolean skipSaAndUt = false
 Boolean skipInstallDependencies = false
 
@@ -384,53 +391,42 @@ node(buildNode) {
             // for git 1.9, there is an easy way to exclude files
             // but most slaves are centos, whose git's version is still 1.8, we use a cmd pipeline here for compatibility
             appHeadSha = sh(returnStdout: true, script: '''ls -1 | grep -Ev '^(tests|autoDevOps)$' | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- ''').trim()
-            if (isMerge && headSha == appHeadSha) {
-                // the reason to use stableSha here is if HEAD is generate via fast-forward, the commit will be changed when re-running the job due to timestamp changed
-                echo "generate stable sha1 key from ${appHeadSha}"
-                appHeadSha = stableSha1(appHeadSha)
-            }
+            // the reason to use stableSha here is if HEAD is generate via fast-forward, the commit will be changed when re-running the job due to timestamp changed
+            echo "generate stable sha1 key from ${appHeadSha}"
+            appHeadSha = stableSha1(appHeadSha)
 
             echo "appHeadSha=${appHeadSha}"
             assert appHeadSha, 'appHeadSha is invalid'
             appHeadShaDir += appHeadSha
             echo "appHeadShaDir=${appHeadShaDir}"
+
             // build jui only when packages/jui has change
             juiHeadSha = sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/jui''').trim()
-            if (isMerge && headSha == juiHeadSha) {
-                // same as appHeadSha
-                echo "generate stable sha1 key from ${juiHeadSha}"
-                juiHeadSha = stableSha1(juiHeadSha)
-            }
+            // same as appHeadSha
+            echo "generate stable sha1 key from ${juiHeadSha}"
+            juiHeadSha = stableSha1(juiHeadSha)
             echo "juiHeadSha=${juiHeadSha}"
             assert juiHeadSha, 'juiHeadSha is invalid'
             juiHeadShaDir += juiHeadSha
             echo "juiHeadShaDir=${juiHeadShaDir}"
+
+            // build rcui only when packages/rcui has change
+            rcuiHeadSha = sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/rcui''').trim()
+                // same as appHeadSha
+            echo "generate stable sha1 key from ${rcuiHeadSha}"
+            rcuiHeadSha = stableSha1(rcuiHeadSha)
+
+            echo "rcuiHeadSha=${rcuiHeadSha}"
+            assert rcuiHeadSha, 'rcuiHeadSha is invalid'
+            rcuiHeadShaDir += rcuiHeadSha
+            echo "rcuiHeadShaDir=${rcuiHeadShaDir}"
 
             // check if app or jui has been built
             sshagent(credentials: [deployCredentialId]) {
                 // we should always build release version
                 skipBuildApp = doesRemoteDirectoryExist(deployUri, appHeadShaDir)
                 skipBuildJui = doesRemoteDirectoryExist(deployUri, juiHeadShaDir)
-            }
-
-            if (!skipBuildApp && !skipBuildJui) {
-                String dockerAppHeadShaDir = "${dockerDeployBaseDir}/app-${buildRelease ? 'release-' : ''}${appHeadSha}".toString()
-                String dockerJuiHeadShaDir = "${dockerDeployBaseDir}/jui-${juiHeadSha}".toString()
-
-                sshagent(credentials: [dockerDeployCredentialId]) {
-                    // we should always build release version
-                    skipBuildApp = doesRemoteDirectoryExist(dockerDeployUri, dockerAppHeadShaDir)
-                    skipBuildJui = doesRemoteDirectoryExist(dockerDeployUri, dockerJuiHeadShaDir)
-                }
-
-                sshagent(credentials: [deployCredentialId]) {
-                    if (skipBuildApp) {
-                        rsyncFolderRemoteToRemote(dockerDeployUri, dockerAppHeadShaDir, deployUri, appHeadShaDir)
-                    }
-                    if (skipBuildJui) {
-                        rsyncFolderRemoteToRemote(dockerDeployUri, dockerJuiHeadShaDir, deployUri, juiHeadShaDir)
-                    }
-                }
+                skipBuildRcui = doesRemoteDirectoryExist(deployUri, rcuiHeadShaDir)
             }
 
             // since SA and UT must be passed before we build and deploy app and jui
@@ -438,10 +434,11 @@ node(buildNode) {
             // SA and UT must have already passed, we can just skip them to save more resources
             skipSaAndUt = skipBuildApp && skipBuildJui && (integrationBranch != gitlabSourceBranch)
 
+            // we should always rebuild release version
             skipBuildApp = skipBuildApp && !buildRelease
 
             // we can even skip install dependencies
-            skipInstallDependencies = skipSaAndUt
+            skipInstallDependencies = skipSaAndUt && skipBuildRcui
 
             // don't skip e2e if configuration file exists
             skipEndToEnd = skipEndToEnd && !fileExists("tests/e2e/testcafe/configs/${gitlabSourceBranch}.json")
@@ -579,6 +576,27 @@ node(buildNode) {
                     }
                 }
                 report.juiUrl = juiUrl
+            },
+
+            'Build RCUI' : {
+                condStage(name: 'Build RCUI', enable: !skipBuildRcui) {
+                    withEnv(["NODE_OPTIONS=--max_old_space_size=12000"]) {
+                        dir('packages/rcui') {
+                            sh 'npm run build:storybook'
+                        }
+                    }
+                }
+
+                condStage(name: 'Deploy RCUI') {
+                    String sourceDir = "packages/rcui/public/"  // !!! don't forget trailing '/'
+                    sshagent(credentials: [deployCredentialId]) {
+                        // copy to dir name with head sha when dir is not exists
+                        skipBuildRcui || rsyncFolderToRemote(sourceDir, deployUri, rcuiHeadShaDir)
+                        // and create copy to branch name based folder
+                        updateRemoteCopy(deployUri, rcuiHeadShaDir, rcuiLinkDir)
+                    }
+                }
+                report.rcuiUrl = rcuiUrl
             },
 
             'Build Application': {
