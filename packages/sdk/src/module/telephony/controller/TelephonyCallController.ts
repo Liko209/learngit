@@ -65,7 +65,7 @@ class TelephonyCallController implements IRTCCallDelegate {
     options: RTCCallActionSuccessOptions,
   ) {
     // TODO, waiting Lewi to refactor all the actions to have the same handling flow
-    if (callAction === RTC_CALL_ACTION.PARK) {
+    if (this._isSupportNewFlow(callAction)) {
       this._handleCallActionCallback(callAction, true, options);
     } else {
       this._callDelegate.onCallActionSuccess(callAction, options);
@@ -74,11 +74,20 @@ class TelephonyCallController implements IRTCCallDelegate {
 
   onCallActionFailed(callAction: RTC_CALL_ACTION) {
     // TODO, waiting Lewi to refactor all the actions to have the same handling flow
-    if (callAction === RTC_CALL_ACTION.PARK) {
+    if (this._isSupportNewFlow(callAction)) {
       this._handleCallActionCallback(callAction, false);
     } else {
       this._callDelegate.onCallActionFailed(callAction);
     }
+  }
+
+  private _isSupportNewFlow(callAction: RTC_CALL_ACTION) {
+    // this function should be removed after refactoring by Lewi
+    return (
+      callAction === RTC_CALL_ACTION.PARK ||
+      callAction === RTC_CALL_ACTION.FLIP ||
+      callAction === RTC_CALL_ACTION.FORWARD
+    );
   }
 
   hangUp() {
@@ -125,6 +134,20 @@ class TelephonyCallController implements IRTCCallDelegate {
     return new Promise((resolve, reject) => {
       this._saveCallActionCallback(RTC_CALL_ACTION.PARK, resolve, reject);
       this._rtcCall.park();
+    });
+  }
+
+  flip(phoneNumber: string) {
+    return new Promise((resolve, reject) => {
+      this._saveCallActionCallback(RTC_CALL_ACTION.FLIP, resolve, reject);
+      this._rtcCall.flip(phoneNumber);
+    });
+  }
+
+  forward(phoneNumber: string) {
+    return new Promise((resolve, reject) => {
+      this._saveCallActionCallback(RTC_CALL_ACTION.FORWARD, resolve, reject);
+      this._rtcCall.forward(phoneNumber);
     });
   }
 

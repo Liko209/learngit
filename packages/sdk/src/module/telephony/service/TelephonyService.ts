@@ -125,11 +125,6 @@ class TelephonyService extends EntityBaseService<IdModel> {
     this.telephonyController.getAccountController().startReply(callId);
   }
 
-  flip = (callId: string, phoneNumber: string) => {
-    // return this.telephonyController
-  }
-  forward = (callId: string, phoneNumber: string) => {};
-
   replyWithMessage = (callId: string, message: string) => {
     this.telephonyController
       .getAccountController()
@@ -138,6 +133,18 @@ class TelephonyService extends EntityBaseService<IdModel> {
 
   park = async (callId: string) => {
     return await this.telephonyController.getAccountController().park(callId);
+  }
+
+  flip = async (callId: string, phoneNumber: string) => {
+    return await this.telephonyController
+      .getAccountController()
+      .flip(callId, phoneNumber);
+  }
+
+  forward = async (callId: string, phoneNumber: string) => {
+    return await this.telephonyController
+      .getAccountController()
+      .forward(callId, phoneNumber);
   }
 
   replyWithPattern = (

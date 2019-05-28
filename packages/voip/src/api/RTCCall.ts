@@ -194,7 +194,7 @@ class RTCCall {
     this._fsm.hangup();
   }
 
-  flip(target: number): void {
+  flip(target: string): void {
     this._fsm.flip(target);
   }
 
