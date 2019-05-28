@@ -55,26 +55,26 @@ test.meta(<ITestMeta>{
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
-  // await h(t).withLog('Then the call button should display', async () => {
-  //   await t.expect(conversationPage.telephonyButton).ok();
-  // });
+  await h(t).withLog('Then the call button should display', async () => {
+    await t.expect(conversationPage.telephonyButton).ok();
+  });
 
-  // await h(t).withLog('When I click the call button', async () => {
-  //   await conversationPage.clickTelephonyButton();
-  // });
+  await h(t).withLog('When I click the call button', async () => {
+    await conversationPage.clickTelephonyButton();
+  });
 
   let telephonyDialog = app.homePage.telephonyDialog;
-  // await h(t).withLog('Then should start call and display call UI', async () => {
-  //   await telephonyDialog.ensureLoaded();
-  // });
+  await h(t).withLog('Then should start call and display call UI', async () => {
+    await telephonyDialog.ensureLoaded();
+  });
 
-  // await h(t).withLog('When I click the hang up button', async () => {
-  //   await telephonyDialog.clickHangupButton();
-  // });
+  await h(t).withLog('When I click the hang up button', async () => {
+    await telephonyDialog.clickHangupButton();
+  });
 
-  // await h(t).withLog('Then telephony dialog dismiss', async () => {
-  //   await t.expect(telephonyDialog.exists).notOk();
-  // });
+  await h(t).withLog('Then telephony dialog dismiss', async () => {
+    await t.expect(telephonyDialog.exists).notOk();
+  });
 
   await h(t).withLog('When I receive a call', async () => {
     await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);

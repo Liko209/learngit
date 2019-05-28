@@ -1,11 +1,11 @@
-import { CLIENT_SERVICE } from '@/modules/common/interface';
 /*
  * @Author: Lex Huang (lex.huang@ringcentral.com)
  * @Date: 2019-04-02 17:28:54
  * Copyright © RingCentral. All rights reserved.
  */
 import { TelephonyService } from '../TelephonyService';
-import { Jupiter } from 'framework';
+import * as utils from '@/store/utils';
+import { CLIENT_SERVICE } from '@/modules/common/interface';
 import { v4 } from 'uuid';
 import {
   TelephonyService as ServerTelephonyService,
@@ -26,7 +26,7 @@ const mockedDelay = 10;
 
 // HACK: flag for changing the call action result dynamically
 let count = 0;
-let telephonyService: TelephonyService | null;
+let telephonyService: TelephonyService;
 
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
@@ -54,7 +54,7 @@ function initializeCallerId() {
     { id: '123', phoneNumber: '123', usageType: 'companyNumber' },
   ];
 }
-
+let defaultPhoneApp = 'glip';
 describe('TelephonyService', () => {
   beforeEach(() => {
     let cachedOnMadeOutgoingCall: any;
@@ -62,6 +62,7 @@ describe('TelephonyService', () => {
     let cachedOnCallActionFailed: any;
     let cachedOnCallStateChange: any;
     let callId: string | null = null;
+    jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
     mockedServerTelephonyService = {
       hold: jest.fn().mockImplementation(() => {
         sleep(mockedDelay).then(() =>
@@ -409,6 +410,7 @@ describe('TelephonyService', () => {
   });
 
   describe('TelephonyService', () => {
+
     it('should call answer', () => {
       const callId = 'id_0';
       telephonyService.answer();
@@ -625,4 +627,26 @@ describe('TelephonyService', () => {
       (telephonyService as TelephonyService)._telephonyStore.inputString,
     ).toBe('');
   });
+      describe(`onReceiveIncomingCall`, () => {
+        beforeEach(() => {
+          jest.clearAllMocks();
+          defaultPhoneApp = 'glip';
+          jest
+            .spyOn(telephonyService._telephonyStore, 'incomingCall')
+            .mockImplementation();
+        });
+        it(`should not response when there's incoming call and default phone setting is RC phone`, () => {
+          defaultPhoneApp = 'rcphone';
+          telephonyService._onReceiveIncomingCall();
+          expect(
+            elephonyService._telephonyStore.incomingCall,
+          ).not.toBeCalled();
+        });
+        it(`should show ui when there's incoming call and default phone setting is Ringcentral App`, () => {
+          telephonyService._onReceiveIncomingCall();
+          expect(
+            elephonyService._telephonyStore.incomingCall,
+          ).toBeCalled();
+        });
+      });
 });
