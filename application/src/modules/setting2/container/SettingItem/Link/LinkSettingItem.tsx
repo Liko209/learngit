@@ -1,11 +1,16 @@
 /*
  * @Author: Valor Lin (valor.lin@ringcentral.com)
- * @Date: 2019-05-27 13:30:09
+ * @Date: 2019-05-27 10:51:43
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
-import { SettingItemProps } from '../types';
+import { buildContainer } from '@/base';
+import { LinkSettingItemView } from './LinkSettingItem.View';
+import { LinkSettingItemViewModel } from './LinkSettingItem.ViewModel';
+import { LinkSettingItemProps } from './types';
 
-const LinkSettingItem = ({ id }: SettingItemProps) => <div>Link {id}</div>;
+const LinkSettingItem = buildContainer<LinkSettingItemProps>({
+  View: LinkSettingItemView,
+  ViewModel: LinkSettingItemViewModel,
+});
 
-export { LinkSettingItem };
+export { LinkSettingItem, LinkSettingItemProps };

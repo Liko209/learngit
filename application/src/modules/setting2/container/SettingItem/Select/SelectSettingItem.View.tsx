@@ -3,14 +3,14 @@
  * @Date: 2019-05-10 14:40:39
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React, { Component, ChangeEvent } from 'react';
 import { observer } from 'mobx-react';
 import { JuiBoxSelect } from 'jui/components/Selects';
 import { JuiMenuItem } from 'jui/components/Menus';
 import { SelectSettingItemViewProps, SelectSettingItemProps } from './types';
 import { JuiSettingSectionItem } from 'jui/pattern/SettingSectionItem';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { toTitleCase } from '@/utils/string';
+import { catchError } from '@/common/catchError';
 
 type BaseItemType = {
   id: number;
@@ -23,7 +23,14 @@ type Props<T> = SelectSettingItemViewProps<T> &
 class SelectSettingItemViewComponent<T extends BaseItemType> extends Component<
   Props<T>
 > {
-  handleOnChange = (event: React.ChangeEvent<HTMLSelectElement>) => {};
+  @catchError.flash({
+    // TODO move the keys out of setting.phone
+    network: 'setting.phone.general.callerID.errorText',
+    server: 'setting.phone.general.callerID.errorText',
+  })
+  private _handleChange = async (event: ChangeEvent<HTMLSelectElement>) => {
+    await this.props.saveSetting(event.target.value);
+  }
 
   render() {
     const { t, id, automationKey, settingItem, settingItemEntity } = this.props;
@@ -32,18 +39,18 @@ class SelectSettingItemViewComponent<T extends BaseItemType> extends Component<
       <JuiSettingSectionItem
         id={id}
         automationId={automationKey}
-        label={toTitleCase(t(settingItem.title || ''))}
+        label={t(settingItem.title || '')}
         description={t(settingItem.description || '')}
       >
-        {settingItemEntity.value && (
+        {
           <JuiBoxSelect
-            onChange={this.handleOnChange}
-            value={settingItemEntity.value.id}
+            onChange={this._handleChange}
+            value={settingItemEntity.value ? settingItemEntity.value.id : ''}
             automationId={'SettingSelectBox'}
           >
             {this._renderSource()}
           </JuiBoxSelect>
-        )}
+        }
       </JuiSettingSectionItem>
     );
   }

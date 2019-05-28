@@ -20,4 +20,4 @@ const CallerIdSelectSourceItem = ({ value }: CallerIdSelectItemProps) => {
   );
 };
 
-export { CallerIdSelectSourceItem };
+export { CallerIdSelectSourceItem, CallerIdSelectItemProps };

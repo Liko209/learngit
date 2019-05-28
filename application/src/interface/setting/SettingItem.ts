@@ -41,7 +41,7 @@ type SettingItem = {
   /**
    * The component type or component used for render this item
    */
-  type: SETTING_ITEM_TYPE | ComponentType<{ id: number }>;
+  type: SETTING_ITEM_TYPE | ComponentType<{ id: SettingItem['id'] }>;
 };
 
 export { SettingItem, SETTING_ITEM_TYPE };

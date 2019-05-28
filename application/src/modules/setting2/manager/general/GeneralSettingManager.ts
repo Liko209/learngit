@@ -4,12 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISettingService, SETTING_ITEM_TYPE } from '@/interface/setting';
-import {
-  SETTING_PAGE_GENERAL,
-  SETTING_SECTION_GENERAL,
-  SETTING_ITEM_PLACE_HOLDER,
-} from './constant';
+import { ISettingService } from '@/interface/setting';
+import { SETTING_PAGE__GENERAL, SETTING_SECTION__GENERAL } from './constant';
 
 class GeneralSettingManager {
   private _scope = Symbol('GeneralSettingManager');
@@ -17,26 +13,17 @@ class GeneralSettingManager {
 
   init() {
     this._settingService.registerPage(this._scope, {
-      id: SETTING_PAGE_GENERAL,
+      id: SETTING_PAGE__GENERAL,
       icon: 'settings',
       title: 'setting.general',
       path: '/general',
       weight: 0,
       sections: [
         {
-          id: SETTING_SECTION_GENERAL,
+          id: SETTING_SECTION__GENERAL,
           title: 'General',
           weight: 0,
-          items: [
-            {
-              id: SETTING_ITEM_PLACE_HOLDER,
-              title: 'placeholder',
-              description:
-                'placeholder placeholder placeholder placeholder placeholder',
-              type: SETTING_ITEM_TYPE.TOGGLE,
-              weight: 0,
-            },
-          ],
+          items: [],
         },
       ],
     });

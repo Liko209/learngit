@@ -6,8 +6,10 @@
 import { Component } from 'react';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
+import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
 import { ENTITY_NAME } from '@/store/constants';
 import { getEntity } from '@/store/utils/entities';
+import PhoneNumberModel from '@/store/models/PhoneNumber';
 
 @observer
 class PhoneFormatter extends Component<{ children: string }> {
@@ -16,8 +18,10 @@ class PhoneFormatter extends Component<{ children: string }> {
     const { children: phoneNumber } = this.props;
     let result = phoneNumber;
     if (phoneNumber) {
-      result = getEntity(ENTITY_NAME.PHONE_NUMBER, phoneNumber)
-        .formattedPhoneNumber;
+      result = getEntity<PhoneNumber, PhoneNumberModel, string>(
+        ENTITY_NAME.PHONE_NUMBER,
+        phoneNumber,
+      ).formattedPhoneNumber;
     }
     return result;
   }

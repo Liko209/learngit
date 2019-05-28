@@ -5,15 +5,13 @@
  */
 
 import { SelectSettingItem } from '@/interface/setting';
-import SettingModel from '@/store/models/UserSetting';
-import { SettingItemProps } from '../types';
+import { BaseSettingItemProps, BaseSettingItemViewProps } from '../Base/types';
 
-type SelectSettingItemProps = SettingItemProps;
+type SelectSettingItemProps = BaseSettingItemProps;
 
-type SelectSettingItemViewProps<T> = {
+type SelectSettingItemViewProps<T> = BaseSettingItemViewProps & {
   settingItem: SelectSettingItem<T>;
-  settingItemEntity: SettingModel;
-  automationId: string;
+  saveSetting(valueId: string): Promise<void> | void;
 };
 
 export { SelectSettingItemProps, SelectSettingItemViewProps };
