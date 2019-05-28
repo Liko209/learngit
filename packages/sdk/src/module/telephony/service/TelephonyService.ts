@@ -131,6 +131,10 @@ class TelephonyService extends EntityBaseService<IdModel> {
       .replyWithMessage(callId, message);
   }
 
+  park = async (callId: string) => {
+    return await this.telephonyController.getAccountController().park(callId);
+  }
+
   replyWithPattern = (
     callId: string,
     pattern: RTC_REPLY_MSG_PATTERN,
