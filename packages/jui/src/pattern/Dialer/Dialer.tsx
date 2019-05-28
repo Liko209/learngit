@@ -25,7 +25,7 @@ const StyledDialer = styled('div')`
 
 class JuiDialer extends PureComponent<Props> {
   render() {
-    return <StyledDialer {...this.props} />;
+    return <StyledDialer {...this.props} data-test-automation-id="dialer-container"/>;
   }
 }
 
