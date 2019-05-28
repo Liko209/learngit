@@ -128,4 +128,5 @@ class ZoomInFadeOut extends React.PureComponent<JuiZoomProps> {
   }
 }
 // @ts-ignore
-export const JuiZoomInFadeOut = withTheme(ZoomInFadeOut);
+const JuiZoomInFadeOut = withTheme(ZoomInFadeOut);
+export { JuiZoomProps, JuiZoomInFadeOut };
