@@ -7,7 +7,6 @@ import { parse } from 'qs';
 import ReactDOM from 'react-dom';
 import React from 'react';
 import { Sdk, LogControlManager, service } from 'sdk';
-import { SectionUnread, UMI_SECTION_TYPE } from 'sdk/module/state';
 import { AbstractModule, inject } from 'framework';
 import config from '@/config';
 import storeManager from '@/store';
@@ -46,7 +45,6 @@ import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 class AppModule extends AbstractModule {
   @inject(RouterService) private _routerService: RouterService;
   @inject(AppStore) private _appStore: AppStore;
-  private _umiEventKeyMap: Map<UMI_SECTION_TYPE, GLOBAL_KEYS>;
   private _logControlManager: LogControlManager = LogControlManager.instance();
 
   async bootstrap() {
@@ -165,33 +163,6 @@ class AppModule extends AbstractModule {
     notificationCenter.on(SOCKET.NETWORK_CHANGE, (data: any) => {
       globalStore.set(GLOBAL_KEYS.NETWORK, data.state);
     });
-
-    // subscribe total_unread_count notification to global store
-    this._umiEventKeyMap = new Map<UMI_SECTION_TYPE, GLOBAL_KEYS>();
-    this._umiEventKeyMap.set(UMI_SECTION_TYPE.ALL, GLOBAL_KEYS.TOTAL_UNREAD);
-    this._umiEventKeyMap.set(
-      UMI_SECTION_TYPE.FAVORITE,
-      GLOBAL_KEYS.FAVORITE_UNREAD,
-    );
-    this._umiEventKeyMap.set(
-      UMI_SECTION_TYPE.DIRECT_MESSAGE,
-      GLOBAL_KEYS.DIRECT_MESSAGE_UNREAD,
-    );
-    this._umiEventKeyMap.set(UMI_SECTION_TYPE.TEAM, GLOBAL_KEYS.TEAM_UNREAD);
-    const setTotalUnread = (
-      totalUnreadMap: Map<UMI_SECTION_TYPE, SectionUnread>,
-    ) => {
-      totalUnreadMap.forEach((sectionUnread: SectionUnread) => {
-        const eventKey = this._umiEventKeyMap.get(sectionUnread.section);
-        if (eventKey) {
-          globalStore.set(eventKey, {
-            unreadCount: sectionUnread.unreadCount,
-            mentionCount: sectionUnread.mentionCount,
-          });
-        }
-      });
-    };
-    notificationCenter.on(SERVICE.TOTAL_UNREAD, setTotalUnread);
 
     notificationCenter.on(SERVICE.START_LOADING, () => {
       this._appStore.setGlobalLoading(true);

@@ -15,13 +15,31 @@ import {
 import { ITelephonyCallDelegate } from '../service/ITelephonyCallDelegate';
 import { CallStateCallback } from '../types';
 
+interface IResultResolveFn {
+  (
+    value:
+      | RTCCallActionSuccessOptions
+      | PromiseLike<RTCCallActionSuccessOptions>
+      | '',
+  ): void;
+}
+
+interface IResultRejectFn {
+  (value: string | PromiseLike<string>): void;
+}
+
 class TelephonyCallController implements IRTCCallDelegate {
   private _callDelegate: ITelephonyCallDelegate;
   private _rtcCall: RTCCall;
   private _callback: CallStateCallback;
+  private _callActionCallbackMap: Map<
+    string,
+    { resolve: IResultResolveFn; reject: IResultRejectFn }[]
+  >;
 
   constructor(delegate: ITelephonyCallDelegate) {
     this._callDelegate = delegate;
+    this._callActionCallbackMap = new Map();
   }
 
   setRtcCall(call: RTCCall) {
@@ -46,11 +64,21 @@ class TelephonyCallController implements IRTCCallDelegate {
     callAction: RTC_CALL_ACTION,
     options: RTCCallActionSuccessOptions,
   ) {
-    this._callDelegate.onCallActionSuccess(callAction, options);
+    // TODO, waiting Lewi to refactor all the actions to have the same handling flow
+    if (callAction === RTC_CALL_ACTION.PARK) {
+      this._handleCallActionCallback(callAction, true, options);
+    } else {
+      this._callDelegate.onCallActionSuccess(callAction, options);
+    }
   }
 
   onCallActionFailed(callAction: RTC_CALL_ACTION) {
-    this._callDelegate.onCallActionFailed(callAction);
+    // TODO, waiting Lewi to refactor all the actions to have the same handling flow
+    if (callAction === RTC_CALL_ACTION.PARK) {
+      this._handleCallActionCallback(callAction, false);
+    } else {
+      this._callDelegate.onCallActionFailed(callAction);
+    }
   }
 
   hangUp() {
@@ -93,6 +121,13 @@ class TelephonyCallController implements IRTCCallDelegate {
     this._rtcCall.sendToVoicemail();
   }
 
+  park() {
+    return new Promise((resolve, reject) => {
+      this._saveCallActionCallback(RTC_CALL_ACTION.PARK, resolve, reject);
+      this._rtcCall.park();
+    });
+  }
+
   ignore() {
     this._rtcCall.ignore();
   }
@@ -111,6 +146,33 @@ class TelephonyCallController implements IRTCCallDelegate {
     timeUnit?: RTC_REPLY_MSG_TIME_UNIT,
   ) {
     this._rtcCall.replyWithPattern(pattern, time, timeUnit);
+  }
+
+  private _saveCallActionCallback(
+    key: RTC_CALL_ACTION,
+    resolve: IResultResolveFn,
+    reject: IResultRejectFn,
+  ) {
+    const promiseResolvers = this._callActionCallbackMap.get(key) || [];
+    promiseResolvers.push({ resolve, reject });
+    this._callActionCallbackMap.set(key, promiseResolvers);
+  }
+
+  private _handleCallActionCallback(
+    callAction: RTC_CALL_ACTION,
+    isSuccess: boolean,
+    options?: RTCCallActionSuccessOptions,
+  ) {
+    const promiseResolvers = this._callActionCallbackMap.get(callAction);
+    if (promiseResolvers) {
+      promiseResolvers.forEach(({ resolve, reject }) => {
+        if (isSuccess) {
+          resolve(options || '');
+        } else {
+          reject('');
+        }
+      });
+    }
   }
 }
 
