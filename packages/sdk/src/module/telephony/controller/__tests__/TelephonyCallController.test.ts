@@ -10,6 +10,7 @@ import {
   RTCCall,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
+  RTC_CALL_ACTION,
 } from 'voip';
 
 jest.mock('voip');
@@ -199,6 +200,26 @@ describe('TelephonyCallController', () => {
         callId,
         RTC_CALL_STATE.DISCONNECTED,
       );
+    });
+  });
+
+  describe('park', () => {
+    it('should resolve with park id', async () => {
+      const options = {
+        parkExtension: '801',
+      };
+      setTimeout(() => {
+        callController.onCallActionSuccess(RTC_CALL_ACTION.PARK, options);
+      }, 10);
+      const result = await callController.park();
+      expect(result).toEqual(options);
+    });
+    it('should reject with error', async () => {
+      setTimeout(() => {
+        callController.onCallActionFailed(RTC_CALL_ACTION.PARK);
+      }, 10);
+      const res = callController.park();
+      expect(res).rejects.toThrow();
     });
   });
 });
