@@ -5,21 +5,7 @@
  */
 
 import { IModuleSetting } from '../moduleSetting/types';
-
-async function findFirst<R, T>(
-  arr: R[],
-  transform: (rawItem: R) => Promise<T>,
-  filter: (it: T) => boolean,
-): Promise<T | null> {
-  for (let index = 0; index < arr.length; index++) {
-    const element = arr[index];
-    const transformElement = await transform(element);
-    if (filter(transformElement)) {
-      return transformElement;
-    }
-  }
-  return null;
-}
+import { findFirst } from '../utils';
 
 class SettingController {
   private _moduleSettings: IModuleSetting[] = [];
