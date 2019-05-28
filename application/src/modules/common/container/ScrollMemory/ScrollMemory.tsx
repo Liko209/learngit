@@ -3,16 +3,11 @@
  * @Date: 2019-05-28 16:05:06
  * Copyright © RingCentral. All rights reserved.
  */
-/*
- * @Author: Valor Lin (valor.lin@ringcentral.com)
- * @Date: 2019-05-27 10:14:04
- * Copyright © RingCentral. All rights reserved.
- */
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
 type ScrollMemoryProps = {
-  key: string | number;
+  id: string | number;
 };
 
 class ScrollMemory extends Component<ScrollMemoryProps> {
@@ -29,7 +24,7 @@ class ScrollMemory extends Component<ScrollMemoryProps> {
   private _scrollToLastPosition = () => {
     const scrollEl = ReactDOM.findDOMNode(this);
     if (scrollEl instanceof HTMLElement) {
-      const [top, left] = ScrollMemory._map.get(this.props.key) || [0, 0];
+      const [top, left] = ScrollMemory._map.get(this.props.id) || [0, 0];
       scrollEl.scrollTop = top;
       scrollEl.scrollLeft = left;
     }
@@ -38,7 +33,7 @@ class ScrollMemory extends Component<ScrollMemoryProps> {
   private _rememberCurrentPosition = () => {
     const scrollEl = ReactDOM.findDOMNode(this);
     if (scrollEl instanceof HTMLElement) {
-      ScrollMemory._map.set(this.props.key, [
+      ScrollMemory._map.set(this.props.id, [
         scrollEl.scrollTop,
         scrollEl.scrollLeft,
       ]);

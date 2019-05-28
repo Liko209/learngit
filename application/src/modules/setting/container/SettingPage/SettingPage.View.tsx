@@ -42,7 +42,7 @@ class SettingPageViewComponent extends Component<Props> {
         <StyledSettingPageContent>
           {this._renderSections(sections)}
         </StyledSettingPageContent>
-        <ScrollMemory key={`SETTING_PAGE_${id}`} />
+        <ScrollMemory id={`SETTING_PAGE_${id}`} />
       </StyledSettingPage>
     );
   }
