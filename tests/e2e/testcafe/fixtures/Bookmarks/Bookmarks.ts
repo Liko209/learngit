@@ -55,7 +55,11 @@ test.meta(<ITestMeta>{
   const bookmarkPage = app.homePage.messageTab.bookmarkPage;
   const conversationPage = app.homePage.messageTab.conversationPage;
 
-  await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      name: loginUser.company.number,
+      extension: loginUser.extension
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -65,7 +69,8 @@ test.meta(<ITestMeta>{
       await bookmarkEntry.enter();
     });
 
-    await h(t).withLog(`And I click the ${conversations[i].type} post. (except team name)`, async () => {
+    await h(t).withLog(`And I click the {type} post. (except team name)`, async (step) => {
+      step.setMetadata('conversationType', conversations[i].type)
       await bookmarkPage.postItemById(postIds[i]).clickSelf();
     });
 
@@ -137,7 +142,11 @@ test.meta(<ITestMeta>{
 
   const app = new AppRoot(t);
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      name: loginUser.company.number,
+      extension: loginUser.extension
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -160,7 +169,8 @@ test.meta(<ITestMeta>{
       conversationName = await bookmarkPage.postItemById(postIds[i]).conversationName.textContent
     });
 
-    await h(t).withLog(`and I click the conversation name ${conversationName} in one conversation card`, async () => {
+    await h(t).withLog(`and I click the conversation name {conversationName} in one conversation card`, async (step) => {
+      step.setMetadata('conversationName', conversationName);
       await bookmarkPage.postItemById(postIds[i]).jumpToConversationByClickName();
     });
 
@@ -182,9 +192,7 @@ test.meta(<ITestMeta>{
   const loginUser = users[7];
   const otherUser = users[5];
 
-  await h(t).withLog(`Given I have an extension: ${loginUser.company.number}#${loginUser.extension}, reset its profile`, async () => {
-    await h(t).scenarioHelper.resetProfile(loginUser);
-  });
+  await h(t).scenarioHelper.resetProfile(loginUser);
 
   let team = <IGroup>{
     type: "Team",
@@ -194,7 +202,8 @@ test.meta(<ITestMeta>{
   }
 
   let bookmarksPostTeamId1, bookmarksPostTeamId2, bookmarksPostTeamId3;
-  await h(t).withLog(`Given I have one team named ${team.name} and 3 post`, async () => {
+  await h(t).withLog(`Given I have one team named {name} and 3 post`, async (step) => {
+    step.setMetadata('name', team.name);
     await h(t).scenarioHelper.createTeam(team);
     await h(t).platform(otherUser).init();
     bookmarksPostTeamId1 = await h(t).scenarioHelper.sentAndGetTextPostId(uuid(), team, otherUser);
@@ -203,7 +212,11 @@ test.meta(<ITestMeta>{
   });
 
   const app = new AppRoot(t);
-  await h(t).withLog(`When I login Jupiter with this extension`, async () => {
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      name: loginUser.company.number,
+      extension: loginUser.extension
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -292,7 +305,11 @@ test.meta(<ITestMeta>{
   const bookmarkPage = app.homePage.messageTab.bookmarkPage;
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
 
-  await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      name: loginUser.company.number,
+      extension: loginUser.extension
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -365,7 +382,11 @@ test.meta(<ITestMeta>{
   });
 
   const app = new AppRoot(t);
-  await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      name: loginUser.company.number,
+      extension: loginUser.extension
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -466,7 +487,11 @@ test.meta(<ITestMeta>{
   });
 
   const app = new AppRoot(t);
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      name: loginUser.company.number,
+      extension: loginUser.extension
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -530,7 +555,11 @@ test.meta(<ITestMeta>{
   });
 
   const app = new AppRoot(t);
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      name: loginUser.company.number,
+      extension: loginUser.extension
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
