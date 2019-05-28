@@ -119,8 +119,8 @@ type ForwardingFlipNumberModel = {
 };
 
 enum EGetForwardingFlipNumberType {
-  FORWARDING,
-  FLIP,
+  FORWARDING = 'CallForwarding',
+  FLIP = 'CallFlip',
 }
 
 export {

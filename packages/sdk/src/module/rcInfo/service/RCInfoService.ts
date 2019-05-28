@@ -237,13 +237,13 @@ class RCInfoService extends EntityBaseService<IdModel>
   }
 
   async getForwardingNumberList(): Promise<ForwardingFlipNumberModel[]> {
-    return this.getRCInfoController()
+    return await this.getRCInfoController()
       .getRCInfoFetchController()
       .getForwardingFlipNumbers(EGetForwardingFlipNumberType.FORWARDING);
   }
 
   async getFlipNumberList(): Promise<ForwardingFlipNumberModel[]> {
-    return this.getRCInfoController()
+    return await this.getRCInfoController()
       .getRCInfoFetchController()
       .getForwardingFlipNumbers(EGetForwardingFlipNumberType.FLIP);
   }

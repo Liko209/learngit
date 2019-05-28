@@ -135,8 +135,11 @@ type DialingPlan = {
   navigation: INavigationInfo;
 };
 
-type IPhoneNumberRequest = {
+type IPhoneNumberRequest = IForwardingNumberRequest & {
   usageType?: string;
+};
+
+type IForwardingNumberRequest = {
   page?: number;
   perPage?: number;
 };
@@ -246,4 +249,5 @@ export {
   RCServiceFeature,
   RCBrandInfo,
   RCAuthCodeInfo,
+  IForwardingNumberRequest,
 };

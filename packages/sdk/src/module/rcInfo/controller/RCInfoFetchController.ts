@@ -33,6 +33,15 @@ import {
 } from '../types';
 import { AccountGlobalConfig } from 'sdk/module/account/config';
 
+const ForwardingNumberTypeMap = {
+  Home: EForwardingFlipNumberType.HOME,
+  Work: EForwardingFlipNumberType.WORK,
+  Mobile: EForwardingFlipNumberType.MOBILE,
+  PhoneLine: EForwardingFlipNumberType.PHONE_LINE,
+  Outage: EForwardingFlipNumberType.OUTAGE,
+  Other: EForwardingFlipNumberType.OTHER,
+};
+
 const OLD_EXIST_SPECIAL_NUMBER_COUNTRY = 1; // in old version, we only store US special number
 const EXTENSION_PHONE_NUMBER_LIST_COUNT = 1000;
 class RCInfoFetchController {
@@ -324,19 +333,14 @@ class RCInfoFetchController {
     type: EGetForwardingFlipNumberType,
     data: RCExtensionForwardingNumberRCList,
   ): ForwardingFlipNumberModel[] {
-    const filterKey =
-      type === EGetForwardingFlipNumberType.FLIP
-        ? 'CallFlip'
-        : 'CallForwarding';
     const result: ForwardingFlipNumberModel[] = [];
     if (data && data.records) {
-      const records = data.records.filter(
-        (record: RCExtensionForwardingNumberInfo) => {
-          return record.features && record.features.includes(filterKey);
-        },
-      );
-      records.forEach((record: RCExtensionForwardingNumberInfo) => {
-        if (record.phoneNumber) {
+      data.records.forEach((record: RCExtensionForwardingNumberInfo) => {
+        if (
+          record.features &&
+          record.features.includes(type) &&
+          record.phoneNumber
+        ) {
           const model = {
             phoneNumber: record.phoneNumber,
             flipNumber: Number(record.flipNumber) || 0,
@@ -351,16 +355,8 @@ class RCInfoFetchController {
   }
 
   private _convertForwardingNumberTypeToEnum(type: string) {
-    const map = {
-      Home: EForwardingFlipNumberType.HOME,
-      Work: EForwardingFlipNumberType.WORK,
-      Mobile: EForwardingFlipNumberType.MOBILE,
-      PhoneLine: EForwardingFlipNumberType.PHONE_LINE,
-      Outage: EForwardingFlipNumberType.OUTAGE,
-      Other: EForwardingFlipNumberType.OTHER,
-    };
-    return map.hasOwnProperty(type)
-      ? map[type]
+    return ForwardingNumberTypeMap.hasOwnProperty(type)
+      ? ForwardingNumberTypeMap[type]
       : EForwardingFlipNumberType.OTHER;
   }
 }

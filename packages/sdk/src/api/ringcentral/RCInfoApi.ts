@@ -21,6 +21,7 @@ import {
   DialingPlan,
   IPhoneNumberRequest,
   IExtensionPhoneNumberList,
+  IForwardingNumberRequest,
 } from './types/common';
 
 class RCInfoApi extends Api {
@@ -142,10 +143,7 @@ class RCInfoApi extends Api {
     return RCInfoApi.rcNetworkClient.http<AccountServiceInfo>(query);
   }
 
-  static getForwardingNumbers(request?: IPhoneNumberRequest) {
-    if (request && request.usageType) {
-      delete request.usageType;
-    }
+  static getForwardingNumbers(request?: IForwardingNumberRequest) {
     const query = {
       path: RINGCENTRAL_API.API_FORWARDING_NUMBERS,
       method: NETWORK_METHOD.GET,
