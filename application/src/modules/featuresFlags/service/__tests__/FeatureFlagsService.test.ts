@@ -10,8 +10,7 @@ import { featureModuleConfig } from '../../config/featureModuleConfig';
 import _ from 'lodash';
 
 const permission = {
-  hasPermission: jest.fn().mockResolvedValue(true),
-  isVoipCallingAvailable: jest.fn().mockResolvedValue(true),
+  getVoipCallPermission: jest.fn().mockResolvedValue(true),
 };
 ServiceLoader.getInstance = jest.fn().mockReturnValue(permission);
 
@@ -26,7 +25,7 @@ describe('FeaturesFlagsService', () => {
       const modules = await featuresFlagsService.getSupportFeatureModules();
       const featureModules = featureModuleConfig.reduce((modules, feature) => {
         return modules.concat(feature.depModules);
-      },                                                []);
+      }, []);
       expect(modules).toEqual(featureModules);
     });
   });

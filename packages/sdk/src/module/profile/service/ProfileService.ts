@@ -20,7 +20,6 @@ import { SettingOption } from '../types';
 import { ProfileSetting } from '../setting';
 import { SettingService } from 'sdk/module/setting';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { TelephonyService } from 'sdk/module/telephony';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {

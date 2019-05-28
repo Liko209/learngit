@@ -10,7 +10,6 @@ import {
   AbstractSettingEntityHandler,
   SettingEntityIds,
 } from 'sdk/module/setting';
-import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import { NotificationEntityUpdatePayload } from 'sdk/service/notificationCenter';
 import { SETTING_KEYS } from '../constants';
