@@ -31,7 +31,7 @@ describe('ExtensionSettingHandler', () => {
   function setUp() {
     jest.spyOn(notificationCenter, 'on');
     jest.spyOn(notificationCenter, 'off');
-    jest.spyOn(notificationCenter, 'emitEntityUpdate');
+    jest.spyOn(notificationCenter, 'emit');
     rcInfoService = {
       generateWebSettingUri: (type: any) => {},
       getCurrentCountry: () => {},
@@ -94,11 +94,7 @@ describe('ExtensionSettingHandler', () => {
       settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
 
-      notificationCenter.emitEntityUpdate(RC_INFO.CLIENT_INFO, [
-        {
-          id: 1,
-        },
-      ]);
+      notificationCenter.emit(RC_INFO.CLIENT_INFO);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
         expect(
@@ -111,11 +107,7 @@ describe('ExtensionSettingHandler', () => {
     it('should not emit when has no cache', (done: jest.DoneCallback) => {
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
 
-      notificationCenter.emitEntityUpdate(RC_INFO.CLIENT_INFO, [
-        {
-          id: 1,
-        },
-      ]);
+      notificationCenter.emit(RC_INFO.CLIENT_INFO);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
         expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();

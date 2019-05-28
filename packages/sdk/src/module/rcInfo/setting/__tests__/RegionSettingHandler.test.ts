@@ -30,7 +30,7 @@ describe('RegionSettingHandler', () => {
   function setUp() {
     jest.spyOn(notificationCenter, 'on');
     jest.spyOn(notificationCenter, 'off');
-    jest.spyOn(notificationCenter, 'emitEntityUpdate');
+    jest.spyOn(notificationCenter, 'emit');
     rcInfoService = {
       generateWebSettingUri: (type: any) => {},
       getCurrentCountry: () => {},
@@ -91,11 +91,7 @@ describe('RegionSettingHandler', () => {
       settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
 
-      notificationCenter.emitEntityUpdate(RC_INFO.RC_REGION_INFO, [
-        {
-          id: 1,
-        },
-      ]);
+      notificationCenter.emit(RC_INFO.RC_REGION_INFO);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
         expect(
@@ -108,11 +104,7 @@ describe('RegionSettingHandler', () => {
     it('should not emit when has no cache', (done: jest.DoneCallback) => {
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
 
-      notificationCenter.emitEntityUpdate(RC_INFO.RC_REGION_INFO, [
-        {
-          id: 1,
-        },
-      ]);
+      notificationCenter.emit(RC_INFO.RC_REGION_INFO);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
         expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
