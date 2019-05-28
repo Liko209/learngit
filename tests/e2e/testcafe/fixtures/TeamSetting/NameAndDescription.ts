@@ -9,7 +9,7 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { ITestMeta } from '../../v2/models';
+import { ITestMeta, IGroup } from '../../v2/models';
 
 fixture('TeamSetting/NameAndDescription')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -22,39 +22,43 @@ test.meta(<ITestMeta>{
   keywords: ['TeamSetting'],
   maintainers: ['Potar.He']
 })(`Show team settings page when admin clicks settings button in the profile`, async t => {
-  const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
-  const otherUser = h(t).rcData.mainCompany.users[5];
-  await h(t).platform(adminUser).init();
-  await h(t).platform(otherUser).init();
 
   const teamName = uuid();
   const description = uuid();
 
-  const teamSection = app.homePage.messageTab.teamsSection;
-  const profileDialog = app.homePage.profileDialog;
+  let team = <IGroup>{
+    type: "Team",
+    name: teamName,
+    owner: adminUser,
+    members: [adminUser],
+    description,
+  }
 
-  let teamId, postId;
-  await h(t).withLog(`Given I am admin of new team "${teamName}" and its description "${description}"`, async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: teamName,
-      description: description,
-      type: 'Team',
-      members: [adminUser.rcId, otherUser.rcId],
-    });
-    postId = await h(t).platform(otherUser).sentAndGetTextPostId(
-      `${uuid()}, ![:team](${teamId})`,
-      teamId,
-    );
+  await h(t).withLog(`Given I am admin of team named "{teamName}" and its description "{description}" `, async (step) => {
+    step.initMetadata({ teamName, description });
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with ${adminUser.company.number}#${adminUser.extension}`, async () => {
+  let postId;
+  await h(t).withLog(`And the team has team mention post`, async (step) => {
+    postId = await h(t).scenarioHelper.sentAndGetTextPostId(`${uuid()}, ![:team](${team.glipId})`, team, adminUser);
+  });
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: adminUser.company.number,
+      extension: adminUser.extension
+    });
     await h(t).directLoginWithUser(SITE_URL, adminUser);
     await app.homePage.ensureLoaded();
-  });
+  });;
 
-  await h(t).withLog(`When I open the the team profile from conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
+  const teamSection = app.homePage.messageTab.teamsSection;
+  const profileDialog = app.homePage.profileDialog;
+  await h(t).withLog(`When I open my team profile from conversation list`, async () => {
+    await teamSection.conversationEntryById(team.glipId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
 
@@ -76,7 +80,7 @@ test.meta(<ITestMeta>{
   const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog(`When I open the the team profile from post @team_mention`, async () => {
     await settingDialog.cancel();
-    await teamSection.conversationEntryById(teamId).enter();
+    await teamSection.conversationEntryById(team.glipId).enter();
     await conversationPage.postItemById(postId).clickNthMentions();
     await app.homePage.miniProfile.openProfile();
   });
@@ -102,38 +106,40 @@ test.meta(<ITestMeta>{
   keywords: ['TeamSetting'],
   maintainers: ['Potar.He']
 })(`Can cancel the update when update some field then click cancel`, async t => {
-  const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
-  const otherUser = h(t).rcData.mainCompany.users[5];
-  await h(t).platform(adminUser).init();
-  await h(t).platform(otherUser).init();
 
   const teamName = uuid();
   const description = "Hello";
   const newTeamName = uuid();
   const newDescription = "Hello, every one."
 
+  let team = <IGroup>{
+    type: "Team",
+    name: teamName,
+    owner: adminUser,
+    members: [adminUser],
+    description,
+  }
 
-  const teamSection = app.homePage.messageTab.teamsSection;
-  const profileDialog = app.homePage.profileDialog;
-
-  let teamId;
-  await h(t).withLog(`Given I am admin of team "${teamName}" and its description "${description}"`, async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: teamName,
-      description: description,
-      type: 'Team',
-      members: [adminUser.rcId, otherUser.rcId],
-    });
+  await h(t).withLog(`Given I am admin of team named "{teamName}" and its description "{description}" `, async (step) => {
+    step.initMetadata({ teamName, description });
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with ${adminUser.company.number}#${adminUser.extension}`, async () => {
+  const app = new AppRoot(t);
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: adminUser.company.number,
+      extension: adminUser.extension
+    });
     await h(t).directLoginWithUser(SITE_URL, adminUser);
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog(`When I open the the team profile from conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
+  const teamSection = app.homePage.messageTab.teamsSection;
+  const profileDialog = app.homePage.profileDialog;
+  await h(t).withLog(`When I open my team profile from conversation list`, async () => {
+    await teamSection.conversationEntryById(team.glipId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
 
@@ -152,7 +158,8 @@ test.meta(<ITestMeta>{
     await settingDialog.descriptionShouldBe(description);
   });
 
-  await h(t).withLog(`When I update team name to ${newTeamName} and description to ${newDescription}`, async () => {
+  await h(t).withLog(`When I update team name to "{newTeamName}" and description to "{newDescription}"`, async (step) => {
+    step.initMetadata({ newTeamName, newDescription })
     await settingDialog.updateTeamName(newTeamName, { replace: true });
     await settingDialog.updateDescription(newDescription, { replace: true });
   });
@@ -163,11 +170,11 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then The dialog dismissed and team name should be not changed on section list `, async () => {
     await t.expect(settingDialog.exists).notOk();
-    await teamSection.conversationEntryById(teamId).nameShouldBe(teamName);
+    await teamSection.conversationEntryById(team.glipId).nameShouldBe(teamName);
   });
 
   await h(t).withLog(`When I open team profile dialog again`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
+    await teamSection.conversationEntryById(team.glipId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
 
@@ -192,30 +199,37 @@ test.meta(<ITestMeta>{
   keywords: ['TeamSetting'],
   maintainers: ['Potar.He']
 })(`No team name,description and add team member field in settings page for non-admin roles`, async t => {
-  const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
-  const otherUser = h(t).rcData.mainCompany.users[5];
-  await h(t).platform(adminUser).init();
+  const loginUser = h(t).rcData.mainCompany.users[5];
+
+  let team = <IGroup>{
+    type: "Team",
+    name: uuid(),
+    owner: adminUser,
+    members: [adminUser, loginUser]
+  }
+
+  await h(t).withLog(`Given I am member of a team named "{name}"`, async (step) => {
+    step.setMetadata('name', team.name);
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  const app = new AppRoot(t);
+
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension
+    });
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
 
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;
 
-  let teamId;
-  await h(t).withLog(`Given I am member of new team`, async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [adminUser.rcId, otherUser.rcId],
-    });
-  });
-
-  await h(t).withLog(`And I login Jupiter with ${otherUser.company.number}#${otherUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, otherUser);
-    await app.homePage.ensureLoaded();
-  });
-
-  await h(t).withLog(`When I open the the team profile from conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
+  await h(t).withLog(`When I open the team profile from conversation list`, async () => {
+    await teamSection.conversationEntryById(team.glipId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
 
@@ -232,12 +246,9 @@ test.meta(<ITestMeta>{
     await settingDialog.shouldBePopup();
     await t.expect(settingDialog.teamNameDiv.exists).notOk();
     await t.expect(settingDialog.descriptionDiv.exists).notOk();
-    // TODO: check  add team members field
-
+    await t.expect(settingDialog.allowAddTeamMemberToggle.exists).notOk();
   });
-
 });
-
 
 test.meta(<ITestMeta>{
   priority: ['P0'],
@@ -245,37 +256,42 @@ test.meta(<ITestMeta>{
   keywords: ['TeamSetting'],
   maintainers: ['Potar.He']
 })(`Team name and description can be updated successfully`, async t => {
-  const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
-  const otherUser = h(t).rcData.mainCompany.users[5];
-  await h(t).platform(adminUser).init();
 
   const teamName = uuid();
   const description = "Hello";
   const newTeamName = uuid();
   const newDescription = "Hello, every one."
 
+  let team = <IGroup>{
+    type: "Team",
+    name: teamName,
+    owner: adminUser,
+    members: [adminUser],
+    description
+  }
+
+  await h(t).withLog(`Given I am admin of team named "{teamName}" and its description "{description}" `, async (step) => {
+    step.initMetadata({ teamName, description });
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: adminUser.company.number,
+      extension: adminUser.extension
+    });
+    await h(t).directLoginWithUser(SITE_URL, adminUser);
+    await app.homePage.ensureLoaded();
+  });;
 
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;
 
-  let teamId;
-  await h(t).withLog(`Given I am admin of team "${teamName}" and its description "${description}"`, async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: teamName,
-      description: description,
-      type: 'Team',
-      members: [adminUser.rcId, otherUser.rcId],
-    });
-  });
-
-  await h(t).withLog(`And I login Jupiter with ${adminUser.company.number}#${adminUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, adminUser);
-    await app.homePage.ensureLoaded();
-  });
-
-  await h(t).withLog(`When I open the the team profile from conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
+  await h(t).withLog(`When I open my team {name} profile from conversation list`, async (step) => {
+    step.setMetadata('name', team.name);
+    await teamSection.conversationEntryById(team.glipId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
 
@@ -294,7 +310,8 @@ test.meta(<ITestMeta>{
     await settingDialog.descriptionShouldBe(description);
   });
 
-  await h(t).withLog(`When I update team name to ${newTeamName} and description to "${newDescription}"`, async () => {
+  await h(t).withLog(`When I update team name to "{newTeamName}" and description to "{newDescription}"`, async (step) => {
+    step.initMetadata({ newTeamName, newDescription })
     await settingDialog.updateTeamName(newTeamName, { replace: true });
     await settingDialog.updateDescription(newDescription, { replace: true });
   });
@@ -303,13 +320,14 @@ test.meta(<ITestMeta>{
     await settingDialog.save();
   });
 
-  await h(t).withLog(`Then The dialog dismissed and team name should be changed to ${newTeamName} on section list `, async () => {
+  await h(t).withLog(`Then The dialog dismissed and team name should be changed to {newTeamName} on section list `, async (step) => {
+    step.setMetadata('newTeamName', newTeamName);
     await t.expect(settingDialog.exists).notOk();
-    await teamSection.conversationEntryById(teamId).nameShouldBe(newTeamName);
+    await teamSection.conversationEntryById(team.glipId).nameShouldBe(newTeamName);
   });
 
   await h(t).withLog(`When I open team profile dialog again`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
+    await teamSection.conversationEntryById(team.glipId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
 
@@ -335,33 +353,37 @@ test.meta(<ITestMeta>{
   keywords: ['TeamSetting'],
   maintainers: ['Potar.He']
 })(`Save button should be disabled when entering only blanks or clear team name in the Team name field`, async t => {
-  const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
-  const otherUser = h(t).rcData.mainCompany.users[5];
-  await h(t).platform(adminUser).init();
 
   const blankString = " ";
 
-  const teamSection = app.homePage.messageTab.teamsSection;
-  const profileDialog = app.homePage.profileDialog;
+  let team = <IGroup>{
+    type: "Team",
+    name: uuid(),
+    owner: adminUser,
+    members: [adminUser]
+  }
 
-  let teamId;
-  await h(t).withLog(`Given I am admin of team`, async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: uuid(),
-      description: uuid(),
-      type: 'Team',
-      members: [adminUser.rcId, otherUser.rcId],
-    });
+  await h(t).withLog(`Given I am admin of team named {name}`, async (step) => {
+    step.setMetadata('name', team.name);
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with ${adminUser.company.number}#${adminUser.extension}`, async () => {
+  const app = new AppRoot(t);
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: adminUser.company.number,
+      extension: adminUser.extension
+    });
     await h(t).directLoginWithUser(SITE_URL, adminUser);
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog(`When I open the the team profile from conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
+  const teamSection = app.homePage.messageTab.teamsSection;
+  const profileDialog = app.homePage.profileDialog;
+  await h(t).withLog(`When I open my team {name} profile from conversation list`, async (step) => {
+    step.setMetadata('name', team.name);
+    await teamSection.conversationEntryById(team.glipId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
 
@@ -401,40 +423,52 @@ test.meta(<ITestMeta>{
   keywords: ['TeamSetting'],
   maintainers: ['Potar.He']
 })(`The inline error should be displayed if the team is failed to be created due to the name is taken`, async t => {
-  const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
   await h(t).platform(adminUser).init();
 
   const teamName = uuid();
   const anotherTeamName = uuid();
-  const inlineError = 'The name is already taken, try choose another one.';
+  const inlineError = 'This name is already taken, try choosing another one.';
+
+  let team = <IGroup>{
+    type: "Team",
+    name: teamName,
+    owner: adminUser,
+    members: [adminUser]
+  }
+
+  let antherTeam = <IGroup>{
+    type: "Team",
+    name: anotherTeamName,
+    owner: otherUser,
+    members: [otherUser]
+  }
+
+  await h(t).withLog(`Given I am admin of team "{teamName}", a exists team {anotherTeamName}`, async (step) => {
+    step.initMetadata({
+      teamName, anotherTeamName
+    });
+    await h(t).scenarioHelper.createTeams([team, antherTeam]);
+  });
+
+  const app = new AppRoot(t);
 
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;
 
-  let teamId;
-  await h(t).withLog(`Given I am admin of team "${teamName}" and other team ${anotherTeamName} ,`, async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: teamName,
-      type: 'Team',
-      members: [adminUser.rcId, otherUser.rcId],
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: adminUser.company.number,
+      extension: adminUser.extension
     });
-
-    await h(t).platform(adminUser).createGroup({
-      name: anotherTeamName,
-      type: 'Team',
-      members: [adminUser.rcId, otherUser.rcId],
-    })
-  });
-
-  await h(t).withLog(`And I login Jupiter with ${adminUser.company.number}#${adminUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, adminUser);
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog(`When I open the the team profile from conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
+  await h(t).withLog(`When I open my team {teamName} profile from conversation list`, async (step) => {
+    step.setMetadata('teamName', teamName);
+    await teamSection.conversationEntryById(team.glipId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
 
@@ -452,7 +486,8 @@ test.meta(<ITestMeta>{
     await settingDialog.teamNameShouldBe(teamName);
   });
 
-  await h(t).withLog(`When I update team name to ${anotherTeamName}`, async () => {
+  await h(t).withLog(`When I update team name to {anotherTeamName}`, async (step) => {
+    step.setMetadata('teamName', teamName);
     await settingDialog.updateTeamName(anotherTeamName, { replace: true });
   });
 
@@ -460,7 +495,8 @@ test.meta(<ITestMeta>{
     await settingDialog.save();
   });
 
-  await h(t).withLog(`Then the inline error shows: ${inlineError}`, async () => {
+  await h(t).withLog(`Then the inline error shows: {inlineError}`, async (step) => {
+    step.setMetadata('inlineError', inlineError);
     await t.expect(settingDialog.teamNameInlineError.textContent).eql(inlineError);
   });
 });
