@@ -20,6 +20,7 @@ import {
   LoadingTimeDevelopSummaryDto,
   LoadingTimeReleaseSummaryDto
 } from "../models";
+import { DashboardService } from '.';
 
 class MetricService {
 
@@ -342,15 +343,14 @@ class MetricService {
       where: {
         name: {
           [Op.in]: [
-            // (await DashboardService.getVersionInfo(Config.jupiterDevelopHost)).jupiterVersion,
-            // (await DashboardService.getVersionInfo(Config.jupiterStageHost)).jupiterVersion
-            "1.3.1", "1.4.0"
+            (await DashboardService.getVersionInfo(Config.jupiterDevelopHost)).jupiterVersion,
+            (await DashboardService.getVersionInfo(Config.jupiterStageHost)).jupiterVersion
           ]
         }
       }
     });
     if (versions && versions.length > 0) {
-      await LoadingTimeDevelopSummaryDto.destroy({ where: { versionId: { [Op.notIn]: versions.map(a => a.id) }, isRelease: false } })
+      await LoadingTimeDevelopSummaryDto.destroy({ where: { versionId: { [Op.notIn]: versions.map(a => a.id) }, platform: platform, isRelease: false } })
     }
 
     const release = isRelease ? 1 : 0;
@@ -424,7 +424,7 @@ class MetricService {
     if ((!version.isRelease && isDevelop) || isRelease) {
       await LoadingTimeReleaseSummaryDto.destroy({
         where: {
-          name: summary.name, versionId: version.id
+          name: summary.name, version: versionName, platform: platform
         }
       });
 
@@ -432,7 +432,7 @@ class MetricService {
     }
 
     const where = {
-      name: summary.name, versionId: version.id, isRelease
+      name: summary.name, versionId: version.id, isRelease, platform: platform
     };
 
     await LoadingTimeDevelopSummaryDto.destroy({ where });
@@ -465,6 +465,7 @@ class MetricService {
         max = 0;
 
         maxHanleCount = -1;
+        minTime = maxTime = new Date(dtoArr[0]['start_time']).getTime();
         for (let dto of dtoArr) {
           time = new Date(dto['start_time']).getTime();
           minTime = minTime > time ? time : minTime;

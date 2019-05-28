@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ConversationList/UMI.ts"
+    ],
+    "include_tags": [
+      "JPT-128"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

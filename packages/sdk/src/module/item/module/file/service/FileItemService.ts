@@ -130,6 +130,10 @@ class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
   hasUploadingFiles() {
     return this.fileUploadController.hasUploadingFiles();
   }
+
+  async editFileName(itemId: number, newName: string): Promise<void> {
+    await this.fileActionController.editFileName(itemId, newName);
+  }
 }
 
 export { FileItemService };
