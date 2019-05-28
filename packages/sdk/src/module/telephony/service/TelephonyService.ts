@@ -125,6 +125,11 @@ class TelephonyService extends EntityBaseService<IdModel> {
     this.telephonyController.getAccountController().startReply(callId);
   }
 
+  flip = (callId: string, phoneNumber: string) => {
+    // return this.telephonyController
+  }
+  forward = (callId: string, phoneNumber: string) => {};
+
   replyWithMessage = (callId: string, message: string) => {
     this.telephonyController
       .getAccountController()

@@ -12,6 +12,7 @@ import { RCAccountInfo } from './types/RCAccountInfo';
 import { RCExtensionInfo } from './types/RCExtensionInfo';
 import { RCRolePermissions } from './types/RCRolePermissions';
 import { AccountServiceInfo } from './types/AccountServiceInfo';
+import { RCExtensionForwardingNumberRCList } from './types/RCForwardingNumbers';
 import {
   RCAPIVersion,
   ISpecialServiceRequest,
@@ -139,6 +140,22 @@ class RCInfoApi extends Api {
       HAPriority: HA_PRIORITY.HIGH,
     };
     return RCInfoApi.rcNetworkClient.http<AccountServiceInfo>(query);
+  }
+
+  static getForwardingNumbers(request?: IPhoneNumberRequest) {
+    if (request && request.usageType) {
+      delete request.usageType;
+    }
+    const query = {
+      path: RINGCENTRAL_API.API_FORWARDING_NUMBERS,
+      method: NETWORK_METHOD.GET,
+      authFree: false,
+      via: NETWORK_VIA.HTTP,
+      HAPriority: HA_PRIORITY.HIGH,
+    };
+    return RCInfoApi.rcNetworkClient.http<RCExtensionForwardingNumberRCList>(
+      query,
+    );
   }
 }
 

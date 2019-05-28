@@ -15,6 +15,8 @@ import {
   ISpecialServiceNumber,
   AccountServiceInfo,
   IExtensionPhoneNumberList,
+  RCExtensionForwardingNumberInfo,
+  RCExtensionForwardingNumberRCList,
 } from '../../../api/ringcentral';
 import { jobScheduler, JOB_KEY } from '../../../framework/utils/jobSchedule';
 import { mainLogger } from 'foundation';
@@ -23,7 +25,12 @@ import { RC_INFO } from '../../../service/eventKey';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { RCInfoService } from '../service';
 import { AccountService } from '../../account/service';
-import { SpecialNumberRuleModel } from '../types';
+import {
+  SpecialNumberRuleModel,
+  ForwardingFlipNumberModel,
+  EForwardingFlipNumberType,
+  EGetForwardingFlipNumberType,
+} from '../types';
 import { AccountGlobalConfig } from 'sdk/module/account/config';
 
 const OLD_EXIST_SPECIAL_NUMBER_COUNTRY = 1; // in old version, we only store US special number
@@ -93,6 +100,11 @@ class RCInfoFetchController {
       this.scheduleRCInfoJob(
         JOB_KEY.FETCH_RC_ACCOUNT_SERVICE_INFO,
         this.requestAccountServiceInfo,
+        false,
+      );
+      this.scheduleRCInfoJob(
+        JOB_KEY.FETCH_FORWARDING_NUMBER,
+        this.requestForwardingNumbers,
         false,
       );
       this._isRCInfoJobScheduled = true;
@@ -203,6 +215,12 @@ class RCInfoFetchController {
     notificationCenter.emit(RC_INFO.RC_SERVICE_INFO, accountServiceInfo);
   }
 
+  requestForwardingNumbers = async (): Promise<void> => {
+    const forwardingNumbers = await RCInfoApi.getForwardingNumbers();
+    await this.rcInfoUserConfig.setForwardingNumbers(forwardingNumbers);
+    notificationCenter.emit(RC_INFO.RC_FORWARDING_NUMBERS, forwardingNumbers);
+  }
+
   async requestRCAccountRelativeInfo(): Promise<void> {
     this._shouldIgnoreFirstTime = true;
     await this.requestRCClientInfo();
@@ -290,6 +308,60 @@ class RCInfoFetchController {
 
   async getAccountServiceInfo(): Promise<AccountServiceInfo | undefined> {
     return (await this.rcInfoUserConfig.getAccountServiceInfo()) || undefined;
+  }
+
+  async getForwardingFlipNumbers(
+    type: EGetForwardingFlipNumberType,
+  ): Promise<ForwardingFlipNumberModel[]> {
+    // sync, do not await
+    this.requestForwardingNumbers();
+    // convert data into model for UI
+    const rawData = await this.rcInfoUserConfig.getForwardingNumbers();
+    return this._extractForwardingFlipNumbers(type, rawData);
+  }
+
+  private _extractForwardingFlipNumbers(
+    type: EGetForwardingFlipNumberType,
+    data: RCExtensionForwardingNumberRCList,
+  ): ForwardingFlipNumberModel[] {
+    const filterKey =
+      type === EGetForwardingFlipNumberType.FLIP
+        ? 'CallFlip'
+        : 'CallForwarding';
+    const result: ForwardingFlipNumberModel[] = [];
+    if (data && data.records) {
+      const records = data.records.filter(
+        (record: RCExtensionForwardingNumberInfo) => {
+          return record.features && record.features.includes(filterKey);
+        },
+      );
+      records.forEach((record: RCExtensionForwardingNumberInfo) => {
+        if (record.phoneNumber) {
+          const model = {
+            phoneNumber: record.phoneNumber,
+            flipNumber: Number(record.flipNumber) || 0,
+            label: record.label,
+            type: this._convertForwardingNumberTypeToEnum(record.type),
+          };
+          result.push(model);
+        }
+      });
+    }
+    return result;
+  }
+
+  private _convertForwardingNumberTypeToEnum(type: string) {
+    const map = {
+      Home: EForwardingFlipNumberType.HOME,
+      Work: EForwardingFlipNumberType.WORK,
+      Mobile: EForwardingFlipNumberType.MOBILE,
+      PhoneLine: EForwardingFlipNumberType.PHONE_LINE,
+      Outage: EForwardingFlipNumberType.OUTAGE,
+      Other: EForwardingFlipNumberType.OTHER,
+    };
+    return map.hasOwnProperty(type)
+      ? map[type]
+      : EForwardingFlipNumberType.OTHER;
   }
 }
 
