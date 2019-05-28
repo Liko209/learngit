@@ -36,7 +36,7 @@ test.meta(<ITestMeta>{
     owner: loginUser
   }
 
-  await h(t).withLog(`Given I have a team named [name] before login`, async (step) => {
+  await h(t).withLog(`Given I have a team named {name} before login`, async (step) => {
     step.setMetadata('name', team.name);
     await h(t).scenarioHelper.createTeam(team);
   });
@@ -98,7 +98,7 @@ test.meta(<ITestMeta>{
     owner: loginUser
   }
 
-  await h(t).withLog(`Given I have a team named [name] before login`, async (step) => {
+  await h(t).withLog(`Given I have a team named {name} before login`, async (step) => {
     step.setMetadata('name', team.name);
     await h(t).scenarioHelper.createTeam(team);
   });
@@ -170,7 +170,7 @@ test.meta(<ITestMeta>{
     owner: loginUser
   }
 
-  await h(t).withLog(`Given I have a team named [name] before login`, async (step) => {
+  await h(t).withLog(`Given I have a team named {name} before login`, async (step) => {
     step.setMetadata('name', team.name);
     await h(t).scenarioHelper.createTeam(team);
   });
@@ -309,7 +309,7 @@ test.meta(<ITestMeta>{
     members: [loginUser],
   };
 
-  await h(t).withLog(`Given I have a team named [name] before login`, async (step) => {
+  await h(t).withLog(`Given I have a team named {name} before login`, async (step) => {
     step.setMetadata('name', team.name);
     await h(t).scenarioHelper.createTeam(team);
   });
