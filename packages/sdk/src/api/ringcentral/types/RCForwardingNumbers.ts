@@ -4,15 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RCURIInfo } from './RCURIInfo';
-import { RCNavigationInfo } from './RCNavigationInfo';
-import { RCPagingInfo } from './RCPagingInfo';
+import { IUriInfo, INavigationInfo, PagingInfo } from './common';
 type RCExtensionForwardingNumberRequest = {
   page?: string;
   perPage?: string;
 };
 
-type RCExtensionForwardingNumberInfo = RCURIInfo & {
+type RCExtensionForwardingNumberInfo = IUriInfo & {
   id: string;
   phoneNumber: string;
   label: string;
@@ -21,10 +19,10 @@ type RCExtensionForwardingNumberInfo = RCURIInfo & {
   flipNumber: string;
 };
 
-type RCExtensionForwardingNumberRCList = RCURIInfo & {
+type RCExtensionForwardingNumberRCList = IUriInfo & {
   records: RCExtensionForwardingNumberInfo[];
-  paging: RCPagingInfo;
-  navigation: RCNavigationInfo;
+  paging: PagingInfo;
+  navigation: INavigationInfo;
 };
 
 export {

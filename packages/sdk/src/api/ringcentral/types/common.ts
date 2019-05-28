@@ -95,6 +95,8 @@ type PagingInfo = {
 type INavigationInfo = {
   firstPage: IUriInfo;
   lastPage: IUriInfo;
+  nextPage?: IUriInfo;
+  previousPage?: IUriInfo;
 };
 
 type ISpecialServiceNumber = {
@@ -222,6 +224,9 @@ type RCBrandInfo = {
 };
 
 export {
+  IUriInfo,
+  INavigationInfo,
+  PagingInfo,
   RCCountryInfo,
   RCRegionalSetting,
   RCStatusInfo,
