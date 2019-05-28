@@ -9,6 +9,7 @@ import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { TelephonyStore } from '../../store';
 import { StoreViewModel } from '@/store/ViewModel';
 import { DialBtnProps, DialBtnViewProps } from './types';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 class DialBtnViewModel extends StoreViewModel<DialBtnProps>
   implements DialBtnViewProps {
@@ -34,11 +35,15 @@ class DialBtnViewModel extends StoreViewModel<DialBtnProps>
   _makeCall = async (val: string) => {
     // make sure line 30 run before end()
     if (!(await this._telephonyService.makeCall(val))) {
-      await new Promise((resolve) => {
+      await new Promise(resolve => {
         requestAnimationFrame(resolve);
       });
       this._telephonyStore.end();
     }
+  }
+
+  trackCall = (analysisSource: string) => {
+    analyticsCollector.makeOutboundCall(analysisSource);
   }
 }
 
