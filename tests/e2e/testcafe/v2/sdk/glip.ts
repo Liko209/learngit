@@ -399,7 +399,7 @@ export class GlipSdk {
       skip_close_conversation_confirmation: false,
       max_leftrail_group_tabs2: 20,
       favorite_post_ids: [],
-      calling_option:'ringcentral'
+      calling_option:'glip'
     }
     const data = _.assign(initData, ...groups.map(key => ({ [key]: false })));
     return await this.updateProfile(data, rcId);
