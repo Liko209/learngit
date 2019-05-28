@@ -6,18 +6,20 @@
 
 import { UmiViewModel } from '../Umi.ViewModel';
 import { UmiProps, UMI_SECTION_TYPE } from '../types';
-import { getEntity } from '@/store/utils';
+import * as utils from '@/store/utils';
+import { NEW_MESSAGE_BADGES_OPTIONS } from 'sdk/module/profile/constants';
 
 jest.mock('framework');
 
 describe('UmiViewModel', () => {
   let viewModel: UmiViewModel;
-
+  let currentSetting = NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS;
   beforeEach(() => {
     const props: UmiProps = {
       type: UMI_SECTION_TYPE.FAVORITE,
     };
     viewModel = new UmiViewModel(props);
+    jest.spyOn(utils, 'getSingleEntity').mockReturnValue(currentSetting);
   });
 
   describe('_unreadInfo', () => {
@@ -59,7 +61,7 @@ describe('UmiViewModel', () => {
         isTeam: false,
       };
       // @ts-ignore
-      getEntity = jest
+      utils.getEntity = jest
         .fn()
         .mockReturnValueOnce(mockState)
         .mockReturnValueOnce(mockGroup);
@@ -80,13 +82,35 @@ describe('UmiViewModel', () => {
         isTeam: true,
       };
       // @ts-ignore
-      getEntity = jest
+      utils.getEntity = jest
         .fn()
         .mockReturnValueOnce(mockState)
         .mockReturnValueOnce(mockGroup);
 
       expect(viewModel['_getSingleUnreadInfo']()).toEqual({
         unreadCount: 54,
+        important: true,
+      });
+    });
+    it('should get correct unread when id is valid and unreadCount > 0 and umi setting is to display all', () => {
+      currentSetting = NEW_MESSAGE_BADGES_OPTIONS.ALL;
+      jest.spyOn(utils, 'getSingleEntity').mockReturnValue(currentSetting);
+      viewModel['props'].id = 123;
+      const mockState = {
+        unreadCount: 12,
+        unreadMentionsCount: 54,
+      };
+      const mockGroup = {
+        isTeam: true,
+      };
+      // @ts-ignore
+      utils.getEntity = jest
+        .fn()
+        .mockReturnValueOnce(mockState)
+        .mockReturnValueOnce(mockGroup);
+
+      expect(viewModel['_getSingleUnreadInfo']()).toEqual({
+        unreadCount: 12,
         important: true,
       });
     });
