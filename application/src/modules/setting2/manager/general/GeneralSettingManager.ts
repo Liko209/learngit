@@ -33,7 +33,7 @@ class GeneralSettingManager {
               title: 'placeholder',
               description:
                 'placeholder placeholder placeholder placeholder placeholder',
-              type: SETTING_ITEM_TYPE.SELECT,
+              type: SETTING_ITEM_TYPE.TOGGLE,
               weight: 0,
             },
           ],

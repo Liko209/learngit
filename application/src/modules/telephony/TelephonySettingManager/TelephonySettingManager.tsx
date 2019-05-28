@@ -9,9 +9,13 @@ import {
   SETTING_ITEM_TYPE,
   SelectSettingItem,
 } from '@/interface/setting';
-import { CallerIdSettingItem } from './CallerIdSettingItem';
+import { CallerIdSelectSourceItem } from './CallerIdSettingItem';
 import { IPhoneNumberRecord } from 'sdk/api/ringcentral/types/common';
-import { SettingModuleIds } from 'sdk/module/setting/constants';
+import {
+  SETTING_PAGE__PHONE,
+  SETTING_SECTION__PHONE_GENERAL,
+  SETTING_ITEM__PHONE_CALLER_ID,
+} from './constant';
 // import { buildSettingItem } from '@/modules/setting/container/SettingItemBuild';
 // import { ExtensionsSettingItem } from './Extensions';
 // import { CallerIdSettingItem } from './CallerIdSettingItem';
@@ -19,9 +23,6 @@ import { SettingModuleIds } from 'sdk/module/setting/constants';
 // import { RegionSettingItem } from './RegionSettingItem';
 
 // const { CallerIdSetting, ExtensionSetting, RegionSetting } = SettingModuleIds;
-const SETTING_PAGE__PHONE = 'SETTING_PAGE__PHONE';
-const SETTING_SECTION__PHONE_GENERAL = 'SETTING_SECTION__PHONE_GENERAL';
-const SETTING_ITEM__PHONE_CALLER_ID = SettingModuleIds.CallerIdSetting.id;
 
 class TelephonySettingManager {
   private _scope = Symbol('TelephonySettingManager');
@@ -47,7 +48,7 @@ class TelephonySettingManager {
               type: SETTING_ITEM_TYPE.SELECT,
               weight: 0,
               // valueRenderer: (value: IPhoneNumberRecord) => <div>value</div>,
-              sourceRenderer: CallerIdSettingItem,
+              sourceRenderer: CallerIdSelectSourceItem,
             } as SelectSettingItem<IPhoneNumberRecord>,
           ],
         },
