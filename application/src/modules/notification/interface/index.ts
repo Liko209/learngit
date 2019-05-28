@@ -35,4 +35,5 @@ export type Global = {
 export enum NOTIFICATION_PRIORITY {
   INCOMING_CALL = 1,
   MESSAGE,
+  INFORMATION,
 }

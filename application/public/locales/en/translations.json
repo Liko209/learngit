@@ -607,7 +607,13 @@
     "ConversationClosed": "You removed the conversation."
   },
   "notification": {
-    "mentioned": "You were mentioned"
+    "mentioned": "You were mentioned",
+    "notificationEnabled": "Notifications are now enabled.",
+    "topBanner": {
+      "enablePermissionMessage": "RingCentral needs your permission to enable desktop notifications.",
+      "enablePermissionAction": "Enable notifications",
+      "blockedPermissionMessage": "RingCentral notifications are blocked. Go to your browser settings to allow RingCentral to send notifications."
+    }
   },
   "feedback": {
     "name": "Feedback",
