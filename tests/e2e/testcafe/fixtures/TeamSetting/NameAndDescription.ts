@@ -5,18 +5,23 @@
  */
 
 import { v4 as uuid } from 'uuid';
-import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { ITestMeta } from '../../v2/models';
 
 fixture('TeamSetting/NameAndDescription')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 
-test(formalName(`Show team settings page when admin clicks settings button in the profile`, ['P1', 'JPT-874', 'TeamSetting', 'Potar.He']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-874'],
+  keywords: ['TeamSetting'],
+  maintainers: ['Potar.He']
+})(`Show team settings page when admin clicks settings button in the profile`, async t => {
   const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
@@ -91,7 +96,12 @@ test(formalName(`Show team settings page when admin clicks settings button in th
   });
 });
 
-test(formalName(`Can cancel the update when update some field then click cancel`, ['P2', 'JPT-923', 'TeamSetting', 'Potar.He']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-923'],
+  keywords: ['TeamSetting'],
+  maintainers: ['Potar.He']
+})(`Can cancel the update when update some field then click cancel`, async t => {
   const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
@@ -176,7 +186,12 @@ test(formalName(`Can cancel the update when update some field then click cancel`
   });
 });
 
-test(formalName(`No team name,description and add team member field in settings page for non-admin roles`, ['P1', 'JPT-883', 'TeamSetting', 'Potar.He']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-883'],
+  keywords: ['TeamSetting'],
+  maintainers: ['Potar.He']
+})(`No team name,description and add team member field in settings page for non-admin roles`, async t => {
   const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
@@ -224,7 +239,12 @@ test(formalName(`No team name,description and add team member field in settings 
 });
 
 
-test(formalName(`Team name and description can be updated successfully`, ['P0', 'JPT-919', 'TeamSetting', 'Potar.He']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P0'],
+  caseIds: ['JPT-919'],
+  keywords: ['TeamSetting'],
+  maintainers: ['Potar.He']
+})(`Team name and description can be updated successfully`, async t => {
   const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
@@ -309,7 +329,12 @@ test(formalName(`Team name and description can be updated successfully`, ['P0', 
 
 });
 
-test(formalName(`Save button should be disabled when entering only blanks or clear team name in the Team name field`, ['P2', 'JPT-895', 'TeamSetting', 'Potar.He']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-895'],
+  keywords: ['TeamSetting'],
+  maintainers: ['Potar.He']
+})(`Save button should be disabled when entering only blanks or clear team name in the Team name field`, async t => {
   const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
@@ -370,7 +395,12 @@ test(formalName(`Save button should be disabled when entering only blanks or cle
   });
 });
 
-test(formalName(`The inline error should be displayed if the team is failed to be created due to the name is taken`, ['P2', 'JPT-890', 'TeamSetting', 'Potar.He']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-890'],
+  keywords: ['TeamSetting'],
+  maintainers: ['Potar.He']
+})(`The inline error should be displayed if the team is failed to be created due to the name is taken`, async t => {
   const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
@@ -378,7 +408,7 @@ test(formalName(`The inline error should be displayed if the team is failed to b
 
   const teamName = uuid();
   const anotherTeamName = uuid();
-  const inlineError = 'The name is already taken, choose another one.';
+  const inlineError = 'The name is already taken, try choose another one.';
 
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;
