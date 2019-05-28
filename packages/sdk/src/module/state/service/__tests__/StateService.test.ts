@@ -33,7 +33,7 @@ describe('StateService', () => {
   const mockHandleGroup = jest.fn();
   const mockHandleGroupState = jest.fn();
   const mockHandleProfile = jest.fn();
-  const mockGetSingleUnreadInfo = jest.fn();
+  const mockGetSingleGroupBadge = jest.fn();
   const mockStateActionController = jest.fn().mockReturnValue({
     updateReadStatus: mockUpdateReadStatus,
     updateLastGroup: mockUpdateLastGroup,
@@ -52,7 +52,7 @@ describe('StateService', () => {
     handleGroup: mockHandleGroup,
     handleGroupState: mockHandleGroupState,
     handleProfile: mockHandleProfile,
-    getSingleUnreadInfo: mockGetSingleUnreadInfo,
+    getSingleGroupBadge: mockGetSingleGroupBadge,
   });
   const mockStateController = {
     getStateActionController: mockStateActionController,
@@ -172,11 +172,11 @@ describe('StateService', () => {
     });
   });
 
-  describe('getSingleUnreadInfo()', () => {
+  describe('getSingleGroupBadge()', () => {
     it('should call with correct params', async () => {
       const id: number = 55668833;
-      await stateService.getSingleUnreadInfo(id);
-      expect(mockGetSingleUnreadInfo).toBeCalledWith(id);
+      await stateService.getSingleGroupBadge(id);
+      expect(mockGetSingleGroupBadge).toBeCalledWith(id);
     });
   });
 
