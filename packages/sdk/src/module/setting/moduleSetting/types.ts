@@ -13,7 +13,8 @@ interface IUserSettingHandler<T = any> {
     listener: (e: E) => Promise<void>,
     filter?: (e: E) => boolean,
   ): void;
-  getUserSettingEntity(disableCache?: boolean): Promise<UserSettingEntity<T>>;
+  getUserSettingEntity(enableCache?: boolean): Promise<UserSettingEntity<T>>;
+  fetchUserSettingEntity(): Promise<UserSettingEntity<T>>;
   updateValue(value: T): Promise<void>;
   notifyUserSettingEntityUpdate(newEntity: UserSettingEntity<T>): void;
   updateUserSettingEntityCache(entity: UserSettingEntity<T>): void;

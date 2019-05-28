@@ -13,7 +13,7 @@ import notificationCenter, {
 } from 'sdk/service/notificationCenter';
 import { ModelIdType } from 'sdk/framework/model';
 
-export abstract class AbstractUserSettingHandler<T>
+export abstract class AbstractSettingEntityHandler<T>
   implements IUserSettingHandler<T> {
   id: number;
   userSettingEntityCache: UserSettingEntity<T>;
@@ -47,9 +47,19 @@ export abstract class AbstractUserSettingHandler<T>
         listener(e);
     });
   }
-  abstract getUserSettingEntity(
-    disableCache?: boolean,
-  ): Promise<UserSettingEntity<T>>;
+  async getUserSettingEntity(
+    enableCache: boolean = false,
+  ): Promise<UserSettingEntity<T>> {
+    if (enableCache && this.userSettingEntityCache) {
+      return this.userSettingEntityCache;
+    }
+    const result = await this.fetchUserSettingEntity();
+    this.updateUserSettingEntityCache(result);
+    return result;
+  }
+
+  abstract fetchUserSettingEntity(): Promise<UserSettingEntity<T>>;
+
   abstract updateValue(value: T): Promise<void>;
 
   notifyUserSettingEntityUpdate(newEntity: UserSettingEntity<T>): void {

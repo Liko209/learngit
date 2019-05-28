@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { RCExtensionInfo } from 'sdk/api';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import {
-  AbstractUserSettingHandler,
+  AbstractSettingEntityHandler,
   ESettingValueType,
   SettingEntityIds,
   UserSettingEntity,
@@ -17,7 +17,7 @@ import { RC_INFO } from 'sdk/service';
 import { IRCInfoService } from '../service/IRCInfoService';
 import { ERCWebSettingUri } from '../types';
 
-export class ExtensionSettingHandler extends AbstractUserSettingHandler<
+export class ExtensionSettingHandler extends AbstractSettingEntityHandler<
   string
 > {
   id = SettingEntityIds.Phone_Region;
@@ -35,10 +35,7 @@ export class ExtensionSettingHandler extends AbstractUserSettingHandler<
 
   async updateValue(value: string) {}
 
-  async getUserSettingEntity(enableCache: boolean = false) {
-    if (enableCache && this.userSettingEntityCache) {
-      return this.userSettingEntityCache;
-    }
+  async fetchUserSettingEntity() {
     return this._getExtensionSetting();
   }
 
