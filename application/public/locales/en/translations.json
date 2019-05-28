@@ -460,7 +460,8 @@
       "markAsUnread": "Failed to mark this conversation as unread. Try again later.",
       "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later.",
       "conversationDeleted": "The team was deleted. To know more, contact the team administrator.",
-      "conversationArchived": "The team was archived. To know more, contact the team administrator."
+      "conversationArchived": "The team was archived. To know more, contact the team administrator.",
+      "youHaveBeenRemovedFromTeam": "You have been removed from the team."
     }
   },
   "contact": {
