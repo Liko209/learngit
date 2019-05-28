@@ -20,7 +20,7 @@ import { ProfileService } from 'sdk/module/profile/service/ProfileService';
 import { TelephonyService } from 'sdk/module/telephony/service/TelephonyService';
 import { AccountService } from 'sdk/module/account';
 import { Profile } from '../../entity';
-import { CALLING_OPTIONS } from '../../constants';
+import { CALLING_OPTIONS, SETTING_KEYS } from '../../constants';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 
 function clearMocks() {
@@ -232,11 +232,15 @@ describe('DefaultAppSettingHandler', () => {
       cleanUp();
     });
 
-    it('should do nothing', async () => {
-      await settingHandler.updateValue({
-        id: 111,
-      } as any);
-      expect(1).toEqual(1);
+    it('should call profileService.updateSettingOptions', async () => {
+      const value = {};
+      await settingHandler.updateValue(value as any);
+      expect(profileService.updateSettingOptions).toBeCalledWith([
+        {
+          value,
+          key: SETTING_KEYS.CALL_OPTION,
+        },
+      ]);
     });
   });
 });
