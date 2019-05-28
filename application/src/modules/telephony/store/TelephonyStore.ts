@@ -542,6 +542,7 @@ class TelephonyStore {
     return this.recordDisabledState === RECORD_DISABLED_STATE.DISABLED;
   }
 
+  @action
   directReply = () => {
     this.incomingState = INCOMING_STATE.REPLY;
     if (!this._intervalReplyId) {
