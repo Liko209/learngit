@@ -121,7 +121,7 @@ describe('RegionSettingHandler', () => {
     });
   });
 
-  describe('getUserSettingEntity()', () => {
+  describe('fetchUserSettingEntity()', () => {
     beforeEach(() => {
       clearMocks();
       setUp();
@@ -136,7 +136,7 @@ describe('RegionSettingHandler', () => {
         .fn()
         .mockResolvedValue({ id: 1, callingCode: 'us' });
       rcInfoService.getCountryList = jest.fn().mockReturnValue([]);
-      const res = await settingHandler.getUserSettingEntity();
+      const res = await settingHandler.fetchUserSettingEntity();
       expect(res).toEqual({
         id: SettingEntityIds.Phone_Region,
         parentModelId: SettingModuleIds.PhoneSetting_General.id,

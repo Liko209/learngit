@@ -7,7 +7,7 @@ import _ from 'lodash';
 import {
   ESettingValueType,
   UserSettingEntity,
-  AbstractUserSettingHandler,
+  AbstractSettingEntityHandler,
   SettingEntityIds,
 } from 'sdk/module/setting';
 import { SettingModuleIds } from 'sdk/module/setting/constants';
@@ -22,7 +22,7 @@ import { IProfileService } from '../service/IProfileService';
 import { AccountService } from 'sdk/module/account';
 import { ENTITY } from 'sdk/service';
 
-export class CallerIdSettingHandler extends AbstractUserSettingHandler<
+export class CallerIdSettingHandler extends AbstractSettingEntityHandler<
   PhoneNumberModel
 > {
   id = SettingEntityIds.Phone_CallerId;
@@ -44,10 +44,7 @@ export class CallerIdSettingHandler extends AbstractUserSettingHandler<
     ]);
   }
 
-  async getUserSettingEntity(enableCache: boolean = false) {
-    if (enableCache && this.userSettingEntityCache) {
-      return this.userSettingEntityCache;
-    }
+  async fetchUserSettingEntity() {
     const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
       ServiceConfig.RC_INFO_SERVICE,
     );

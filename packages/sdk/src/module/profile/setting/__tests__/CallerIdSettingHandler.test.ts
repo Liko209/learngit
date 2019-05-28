@@ -26,7 +26,6 @@ function clearMocks() {
 }
 
 describe('CallerIdSettingHandler ', () => {
-  // let profileSetting: ProfileSetting;
   let iProfileService: ProfileService;
   let rcInfoService: RCInfoService;
   const profileId = 111;
@@ -142,7 +141,7 @@ describe('CallerIdSettingHandler ', () => {
     });
   });
 
-  describe('getUserSettingEntity()', () => {
+  describe('fetchUserSettingEntity()', () => {
     beforeEach(() => {
       clearMocks();
       setUp();
@@ -152,7 +151,7 @@ describe('CallerIdSettingHandler ', () => {
       cleanUp();
     });
     it('should return all setting entity', async () => {
-      const res = await callerIdSettingHandler.getUserSettingEntity(false);
+      const res = await callerIdSettingHandler.fetchUserSettingEntity();
       expect(res).toEqual({
         id: SettingEntityIds.Phone_CallerId,
         parentModelId: SettingModuleIds.PhoneSetting_General.id,

@@ -3,18 +3,19 @@
  * @Date: 2019-05-26 21:42:27
  * Copyright © RingCentral. All rights reserved.
  */
-
+import _ from 'lodash';
+import { RC_INFO } from 'sdk/service';
 import notificationCenter from '../../../../service/notificationCenter';
-import { IRCInfoService } from '../../service/IRCInfoService';
-import { SettingModuleIds } from '../../../setting/constants';
 import {
   ESettingValueType,
-  UserSettingEntity,
   SettingEntityIds,
+  UserSettingEntity,
 } from '../../../setting';
+import { SettingModuleIds } from '../../../setting/constants';
+import { IRCInfoService } from '../../service/IRCInfoService';
 import { ERCWebSettingUri } from '../../types';
 import { ExtensionSettingHandler } from '../ExtensionSettingHandler';
-import { RC_INFO } from 'sdk/service';
+import { spyOnTarget } from 'sdk/__tests__/utils';
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -47,7 +48,9 @@ describe('ExtensionSettingHandler', () => {
       state: 0,
     };
     settingHandler = new ExtensionSettingHandler(rcInfoService);
-    settingHandler.notifyUserSettingEntityUpdate = jest.fn();
+    // settingHandler.notifyUserSettingEntityUpdate = jest.fn();
+    spyOnTarget(settingHandler);
+    settingHandler.notifyUserSettingEntityUpdate.mockImplementation(() => {});
   }
 
   function cleanUp() {
@@ -121,7 +124,7 @@ describe('ExtensionSettingHandler', () => {
     });
   });
 
-  describe('getUserSettingEntity()', () => {
+  describe('fetchUserSettingEntity()', () => {
     beforeEach(() => {
       clearMocks();
       setUp();
@@ -134,7 +137,9 @@ describe('ExtensionSettingHandler', () => {
       rcInfoService.generateWebSettingUri = jest
         .fn()
         .mockResolvedValue('glip.com');
-      const res = await settingHandler.getUserSettingEntity();
+
+      const res = await settingHandler.fetchUserSettingEntity();
+      // expect(settingHandler.updateUserSettingEntityCache).toBeCalledWith(res);
       expect(res).toEqual({
         id: SettingEntityIds.Phone_Extension,
         parentModelId: SettingModuleIds.PhoneSetting_General.id,
