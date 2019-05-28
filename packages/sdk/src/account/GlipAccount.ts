@@ -21,6 +21,7 @@ class GlipAccount extends AbstractAccount {
       ServiceConfig.RC_INFO_SERVICE,
       ServiceConfig.SETTING_SERVICE,
       ServiceConfig.SEARCH_SERVICE,
+      ServiceConfig.BADGE_SERVICE,
     ]);
   }
 }

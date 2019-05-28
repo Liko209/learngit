@@ -42,6 +42,7 @@ import {
 } from './module/config';
 import { ServiceConfig } from './module/serviceLoader';
 import { PhoneNumberService } from './module/phoneNumber';
+import { BadgeService } from './module/badge';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -92,6 +93,7 @@ const registerConfigs = {
     { name: ServiceConfig.SEARCH_SERVICE, value: SearchService },
     { name: ServiceConfig.SETTING_SERVICE, value: SettingService },
     { name: ServiceConfig.PHONE_NUMBER_SERVICE, value: PhoneNumberService },
+    { name: ServiceConfig.BADGE_SERVICE, value: BadgeService },
 
     // Manager
     {
