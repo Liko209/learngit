@@ -110,6 +110,16 @@ class Context {
         return "mr-${subDomain}".toString()
     }
 
+    String getMessageChannel() {
+        if (isMerge)
+            return "jupiter_mr_ci@ringcentral.glip.com"
+        switch (gitlabSourceBranch) {
+            case "master": return "jupiter_master_ci@ringcentral.glip.com"
+            case "develop": return "jupiter_develop_ci@ringcentral.glip.com"
+            default: return "jupiter_push_ci@ringcentral.glip.com"
+        }
+    }
+
     String getAppStageLinkDir() {
         "${deployBaseDir}/stage".toString()
     }
@@ -138,18 +148,17 @@ class Context {
         "https://${subDomain}-rcui.${DOMAIN}".toString()
     }
 
-    String getAppHeadHashTarball() {
-        "${deployBaseDir}/app${isBuildRelease? '-release' : ''}-${appHeadHash}.tar.gz".toString()
+    String getAppHeadHashDir() {
+        "${deployBaseDir}/app${isBuildRelease? '-release' : ''}-${appHeadHash}".toString()
     }
 
-    String getJuiHeadHashTarball() {
-        "${deployBaseDir}/jui-${juiHeadHash}.tar.gz".toString()
+    String getJuiHeadHashDir() {
+        "${deployBaseDir}/jui-${juiHeadHash}".toString()
     }
 
-    String getRcuiHeadHashTarball() {
-        "${deployBaseDir}/rcui-${rcuiHeadHash}.tar.gz".toString()
+    String getRcuiHeadHashDir() {
+        "${deployBaseDir}/rcui-${rcuiHeadHash}".toString()
     }
-
 }
 
 class BaseJob {
@@ -198,11 +207,45 @@ class BaseJob {
         }
     }
 
+    void mail(addresses, String subject, String body) {
+        jenkins.echo addresses.join(',')
+        addresses.each {
+            try {
+                jenkins.mail to: it, subject: subject, body: body
+            } catch (e) { println e }
+        }
+    }
+
     // git utils
     String getStableHash(String treeish) {
         String cmd = "git cat-file commit ${treeish} | grep -e ^tree | cut -d ' ' -f 2".toString()
         jenkins.sh(returnStdout: true, script: cmd).trim()
     }
+
+    // ssh utils
+    String ssh(URI remoteUri, String cmd) {
+        String sshCmd = "ssh -q -o StrictHostKeyChecking=no -p ${remoteUri.getPort()?: 22} ${remoteUri.getUserInfo()}@${remoteUri.getHost()}".toString()
+        jenkins.sh(returnStdout: true, script: "${sshCmd} \"${cmd}\"").trim()
+    }
+
+    void scp(String source, URI targetUri, String target) {
+        String remoteTarget = "${targetUri.getUserInfo()}@${targetUri.getHost()}:${target}".toString()
+        sh "scp -o StrictHostKeyChecking=no -P ${targetUri.getPort()} ${source} ${remoteTarget}"
+    }
+
+    void deployToRemote(String sourceDir, URI targetUri, String targetDir) {
+        deployToRemote(sourceDir, targetUri, targetDir, "tmp-${Math.random()}.tar.gz".toString())
+    }
+
+    void deployToRemote(String sourceDir, URI targetUri, String targetDir, String tarball) {
+        jenkins.sh "tar -czvf ${tarball} -C ${sourceDir} ."  // pack
+        ssh(targetUri, "rm -rf ${targetDir} || true && mkdir -p ${targetDir}".toString())  // clean target dir
+        scp(tarball, targetUri, targetDir)
+        ssh(targetUri, "tar -xvf ${targetDir}/${tarball} -C ${targetDir} && rm ${targetDir}/${tarball}".toString()) // unpack and clean
+    }
+
+    // ssh based distributed file lock
+
 }
 
 class JupiterJob extends BaseJob {
