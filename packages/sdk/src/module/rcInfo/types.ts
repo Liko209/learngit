@@ -102,6 +102,27 @@ enum ERCWebSettingUri {
   ANALYTIC_PORTAL_URI,
 }
 
+enum EForwardingFlipNumberType {
+  HOME,
+  WORK,
+  MOBILE,
+  PHONE_LINE,
+  OUTAGE,
+  OTHER,
+}
+
+type ForwardingFlipNumberModel = {
+  label: string;
+  phoneNumber: string;
+  flipNumber: number;
+  type: EForwardingFlipNumberType;
+};
+
+enum EGetForwardingFlipNumberType {
+  FORWARDING = 'CallForwarding',
+  FLIP = 'CallFlip',
+}
+
 export {
   RCServiceFeatureName,
   PermissionId,
@@ -112,4 +133,7 @@ export {
   ERCWebSettingUri,
   GlobalStationLocationSetting,
   RegionInfo,
+  EForwardingFlipNumberType,
+  ForwardingFlipNumberModel,
+  EGetForwardingFlipNumberType,
 };
