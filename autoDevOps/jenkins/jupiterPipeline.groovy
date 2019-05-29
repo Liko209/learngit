@@ -73,9 +73,9 @@ class Context {
     String feedbackUrl
 
     // runtime
-    String appHeadSha
-    String juiHeadSha
-    String rcuiHeadSha
+    String appHeadHash
+    String juiHeadHash
+    String rcuiHeadHash
 
     List<String> failedStages = [] as List<String>
 
@@ -138,16 +138,16 @@ class Context {
         "https://${subDomain}-rcui.${DOMAIN}".toString()
     }
 
-    String getAppHeadShaTarball() {
-        "${deployBaseDir}/app${isBuildRelease? '-release' : ''}-${appHeadSha}.tar.gz".toString()
+    String getAppHeadHashTarball() {
+        "${deployBaseDir}/app${isBuildRelease? '-release' : ''}-${appHeadHash}.tar.gz".toString()
     }
 
-    String getJuiHeadShaTarball() {
-        "${deployBaseDir}/jui-${juiHeadSha}.tar.gz".toString()
+    String getJuiHeadHashTarball() {
+        "${deployBaseDir}/jui-${juiHeadHash}.tar.gz".toString()
     }
 
-    String getRcuiHeadShaTarball() {
-        "${deployBaseDir}/rcui-${rcuiHeadSha}.tar.gz".toString()
+    String getRcuiHeadHashTarball() {
+        "${deployBaseDir}/rcui-${rcuiHeadHash}.tar.gz".toString()
     }
 
 }
@@ -155,8 +155,10 @@ class Context {
 class BaseJob {
     def jenkins
 
+    // abstract method
     void addFailedStage(String name) {}
 
+    // jenkins utils
     void cancelOldBuildOfSameCause() {
         GitLabWebHookCause currentBuildCause = jenkins.currentBuild.rawBuild.getCause(GitLabWebHookCause.class)
         if (null == currentBuildCause)
@@ -195,9 +197,17 @@ class BaseJob {
             }
         }
     }
+
+    // git utils
+    String getStableHash(String treeish) {
+        String cmd = "git cat-file commit ${treeish} | grep -e ^tree | cut -d ' ' -f 2".toString()
+        jenkins.sh(returnStdout: true, script: cmd).trim()
+    }
 }
 
 class JupiterJob extends BaseJob {
+    final static String DEPENDENCY_LOCK = 'dependency.lock'
+
     Context context
 
     void addFailedStage(String name) {
@@ -222,6 +232,56 @@ class JupiterJob extends BaseJob {
         }
     }
 
+    void checkout() {
+        jenkins.checkout ([
+            $class: 'GitSCM',
+            branches: [[name: "${context.gitlabSourceNamespace}/${context.gitlabSourceBranch}"]],
+            extensions: [
+                [$class: 'PruneStaleBranch'],
+                [
+                    $class: 'PreBuildMerge',
+                    options: [
+                        fastForwardMode: 'FF',
+                        mergeRemote: context.gitlabTargetNamespace,
+                        mergeTarget: context.gitlabTargetBranch,
+                    ]
+                ]
+            ],
+            userRemoteConfigs: [
+                [
+                    credentialsId: context.scmCredentialId,
+                    name: context.gitlabTargetNamespace,
+                    url: context.gitlabTargetRepoSshURL,
+                ],
+                [
+                    credentialsId: context.scmCredentialId,
+                    name: context.gitlabSourceNamespace,
+                    url: context.gitlabSourceRepoSshURL,
+                ]
+            ]
+        ])
+        // keep node_modules to speed up build process
+        // keep a lock file to help us decide if we need to upgrade dependencies
+        jenkins.sh "git clean -xdf -e node_modules -e ${DEPENDENCY_LOCK}"
+
+        // update runtime context
+        // change in tests and autoDevOps directory should not trigger application build
+        // for git 1.9, there is an easy way to exclude files
+        // but most slaves are centos, whose git's version is still 1.8, we use a cmd pipeline here for compatibility
+        // the reason to use stableSha here is if HEAD is generate via fast-forward, the commit will be changed when re-running the job due to timestamp changed
+        context.appHeadHash = getStableHash(
+            jenkins.sh(returnStdout: true, script: '''ls -1 | grep -Ev '^(tests|autoDevOps)$' | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- ''').trim()
+        )
+
+        context.juiHeadHash = getStableHash(
+            jenkins.sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/jui''').trim()
+        )
+
+        context.rcuiHeadHash = getStableHash(
+            jenkins.sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/rcui''').trim()
+        )
+    }
+
     void run() {
         context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'running')
         cancelOldBuildOfSameCause()
@@ -234,8 +294,10 @@ class JupiterJob extends BaseJob {
                 'SENTRYCLI_CDNURL=https://cdn.npm.taobao.org/dist/sentry-cli',
             ]) {
                 stage(name: 'collect facts'){ collectFacts() }
+                stage(name: 'checkout'){ checkout() }
             }
         }
+        jenkins.echo context.dump()
     }
 }
 
