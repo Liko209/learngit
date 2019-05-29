@@ -13,7 +13,23 @@ class SelectSettingItemViewModel extends BaseSettingItemViewModel<
   @action
   saveSetting = (valueId: string) => {
     const { valueSetter, source = [] } = this.settingItemEntity;
-    const value = source.find(sourceItem => sourceItem.id === Number(valueId));
+    const value = source.find(sourceItem => {
+      if (typeof sourceItem === 'number') {
+        return sourceItem === Number(valueId);
+      }
+      if (typeof sourceItem === 'string') {
+        return sourceItem === valueId;
+      }
+      if (typeof sourceItem.id === 'number') {
+        return sourceItem.id === Number(valueId);
+      }
+      if (typeof sourceItem.id === 'string') {
+        return sourceItem.id === valueId;
+      }
+      throw new Error(
+        'Error: Unknown source type, for special source type you must provide a transformFunc.',
+      );
+    });
     return valueSetter && valueSetter(value);
   }
 }

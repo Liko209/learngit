@@ -13,17 +13,20 @@ import { JuiSettingSectionItem } from 'jui/pattern/SettingSectionItem';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { catchError } from '@/common/catchError';
 
-type BaseItemType = {
-  id: number;
-};
+type SourceItemType =
+  | {
+      id: number | string;
+    }
+  | string
+  | number;
 type Props<T> = SelectSettingItemViewProps<T> &
   SelectSettingItemProps &
   WithTranslation;
 
 @observer
-class SelectSettingItemViewComponent<T extends BaseItemType> extends Component<
-  Props<T>
-> {
+class SelectSettingItemViewComponent<
+  T extends SourceItemType
+> extends Component<Props<T>> {
   @catchError.flash({
     // TODO move the keys out of setting.phone
     network: 'setting.phone.general.callerID.errorText',
@@ -68,11 +71,28 @@ class SelectSettingItemViewComponent<T extends BaseItemType> extends Component<
   }
 
   private _renderSourceItem(sourceItem: T) {
-    const { sourceRenderer: ItemComponent } = this.props.settingItem;
+    const itemValue = this._extractValue(sourceItem);
+    return (
+      <JuiMenuItem
+        value={itemValue}
+        key={itemValue}
+        automationId={'SettingSelectItem'}
+      >
+        {this._renderMenuItemChildren(sourceItem)}
+      </JuiMenuItem>
+    );
+  }
 
+  private _renderMenuItemChildren(sourceItem: T) {
+    const { sourceRenderer: ItemComponent } = this.props.settingItem;
     let node: React.ReactNode;
     if (ItemComponent) {
-      node = <ItemComponent key={sourceItem.id} value={sourceItem} />;
+      node = (
+        <ItemComponent
+          key={this._extractValue(sourceItem)}
+          value={sourceItem}
+        />
+      );
     } else if (
       typeof sourceItem === 'string' ||
       typeof sourceItem === 'number'
@@ -81,16 +101,19 @@ class SelectSettingItemViewComponent<T extends BaseItemType> extends Component<
     } else {
       node = JSON.stringify(sourceItem);
     }
+    return node;
+  }
 
-    return (
-      <JuiMenuItem
-        value={sourceItem.id}
-        key={sourceItem.id}
-        automationId={'SettingSelectItem'}
-      >
-        {node}
-      </JuiMenuItem>
-    );
+  private _extractValue(sourceItem: T) {
+    let result: string | number;
+    if (typeof sourceItem === 'string' || typeof sourceItem === 'number') {
+      result = sourceItem;
+    } else if (typeof sourceItem === 'object') {
+      result = (sourceItem as { id: string | number }).id;
+    } else {
+      throw new Error('Error: Can not extract value of source');
+    }
+    return result.toString();
   }
 }
 
