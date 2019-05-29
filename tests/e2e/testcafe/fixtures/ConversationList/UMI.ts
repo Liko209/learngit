@@ -244,7 +244,7 @@ test(formalName('Should not display UMI when section is expended & Should displa
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-
+    await h(t).glip(loginUser).resetProfileAndState();
     const otherUser = users[5];
     await h(t).platform(otherUser).init();
 

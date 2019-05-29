@@ -50,6 +50,12 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
 
     return unreadInfo;
   }
+  private get _onlyIncludeTeamMention() {
+    return (
+      getSingleEntity(ENTITY_NAME.PROFILE, 'newMessageBadges') ===
+      NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS
+    );
+  }
 
   private _getSingleUnreadInfo() {
     if (!this.props.id) {
@@ -61,12 +67,9 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
       this.props.id,
     );
     const group: GroupModel = getEntity(ENTITY_NAME.GROUP, this.props.id);
-    const onlyIncludeTeamMention =
-      getSingleEntity(ENTITY_NAME.PROFILE, 'newMessageBadges') ===
-      NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS;
 
     const unreadCount =
-      (group.isTeam && onlyIncludeTeamMention
+      (group.isTeam && this._onlyIncludeTeamMention
         ? groupState.unreadMentionsCount
         : groupState.unreadCount) || 0;
 
@@ -113,16 +116,13 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   }
 
   private _getMergedUnreadCounts(ids: string[]): UnreadCounts {
-    const onlyIncludeTeamMention =
-      getSingleEntity(ENTITY_NAME.PROFILE, 'newMessageBadges') ===
-      NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS;
     const counts: UnreadCounts = { unreadCount: 0, mentionCount: 0 };
     ids.forEach((id: string) => {
       const badge: BadgeModel = getEntity(ENTITY_NAME.BADGE, id);
       if (
         (id === GROUP_BADGE_TYPE.TEAM ||
           id === GROUP_BADGE_TYPE.FAVORITE_TEAM) &&
-        onlyIncludeTeamMention
+        this._onlyIncludeTeamMention
       ) {
         counts.unreadCount += badge.mentionCount;
       } else {
