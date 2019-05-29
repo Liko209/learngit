@@ -410,7 +410,6 @@ describe('TelephonyService', () => {
   });
 
   describe('TelephonyService', () => {
-
     it('should call answer', () => {
       const callId = 'id_0';
       telephonyService.answer();
@@ -627,26 +626,29 @@ describe('TelephonyService', () => {
       (telephonyService as TelephonyService)._telephonyStore.inputString,
     ).toBe('');
   });
-      describe(`onReceiveIncomingCall`, () => {
-        beforeEach(() => {
-          jest.clearAllMocks();
-          defaultPhoneApp = 'glip';
-          jest
-            .spyOn(telephonyService._telephonyStore, 'incomingCall')
-            .mockImplementation();
-        });
-        it(`should not response when there's incoming call and default phone setting is RC phone`, () => {
-          defaultPhoneApp = 'rcphone';
-          telephonyService._onReceiveIncomingCall();
-          expect(
-            elephonyService._telephonyStore.incomingCall,
-          ).not.toBeCalled();
-        });
-        it(`should show ui when there's incoming call and default phone setting is Ringcentral App`, () => {
-          telephonyService._onReceiveIncomingCall();
-          expect(
-            elephonyService._telephonyStore.incomingCall,
-          ).toBeCalled();
-        });
-      });
+  describe(`onReceiveIncomingCall`, () => {
+    const params = {
+      fromName: 'test',
+      fromNum: '456',
+      callId: v4(),
+    };
+    beforeEach(() => {
+      jest.clearAllMocks();
+      defaultPhoneApp = 'glip';
+      jest
+        .spyOn(telephonyService._telephonyStore, 'incomingCall')
+        .mockImplementation();
+    });
+    it(`should not response when there's incoming call and default phone setting is RC phone`, () => {
+      defaultPhoneApp = 'ringcentral';
+      jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
+      telephonyService._onReceiveIncomingCall(params);
+      expect(telephonyService._telephonyStore.incomingCall).not.toBeCalled();
+    });
+    it(`should show ui when there's incoming call and default phone setting is Ringcentral App`, () => {
+      jest.spyOn(utils, 'getSingleEntity').mockReturnValue('glip');
+      telephonyService._onReceiveIncomingCall(params);
+      expect(telephonyService._telephonyStore.incomingCall).toBeCalled();
+    });
+  });
 });
