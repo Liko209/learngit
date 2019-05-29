@@ -12,12 +12,18 @@ import SettingModel from '@/store/models/UserSetting';
 import { ENTITY_NAME } from '@/store/constants';
 import { SettingStore } from '../../../store';
 import { SettingItemProps } from '../types';
+import { ESettingItemState } from 'sdk/src/framework/model/setting';
 
 class BaseSettingItemViewModel<
   T extends SettingItemProps
 > extends StoreViewModel<T> {
   get _settingStore(): SettingStore {
     return container.get(SettingStore);
+  }
+
+  @computed
+  get disabled() {
+    return this.settingItemEntity.state === ESettingItemState.DISABLE;
   }
 
   @computed

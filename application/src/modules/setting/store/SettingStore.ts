@@ -34,25 +34,24 @@ class SettingStore {
     this._storeScopes.forEach(store => {
       resultPages.push(...store.pages);
     });
-    return resultPages.sort(compareWeight);
+    return resultPages;
   }
 
   @computed
   get sections() {
-    return this.pages
-      .reduce((result: SettingSection[], page: SettingPage) => {
-        return result.concat(page.sections);
-      },      [])
-      .sort(compareWeight);
+    return this.pages.reduce((result: SettingSection[], page: SettingPage) => {
+      return result.concat(page.sections);
+    },                       []);
   }
 
   @computed
   get items() {
-    return this.sections
-      .reduce((result: SettingItem[], section: SettingSection) => {
+    return this.sections.reduce(
+      (result: SettingItem[], section: SettingSection) => {
         return result.concat(section.items);
-      },      [])
-      .sort(compareWeight);
+      },
+      [],
+    );
   }
 
   @action
@@ -87,4 +86,4 @@ class SettingStore {
   }
 }
 
-export { SettingStore, SettingStoreScope };
+export { SettingStore, SettingStoreScope, compareWeight };

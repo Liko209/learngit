@@ -11,19 +11,19 @@ import {
 } from '@/interface/setting';
 import { SettingStoreScope } from '../SettingStore';
 
-const SETTING_PAGE_GENERAL = 'SETTING_PAGE.GENERAL';
-const SETTING_SECTION_GENERAL = 'SETTING_SECTION.GENERAL';
-const SETTING_ITEM_TEST = 'SETTING_ITEM.TEST';
+const SETTING_PAGE__GENERAL = 'SETTING_PAGE.GENERAL';
+const SETTING_SECTION__GENERAL = 'SETTING_SECTION.GENERAL';
+const SETTING_ITEM__TEST = 0;
 
 function getGeneralPage() {
   return {
-    id: SETTING_PAGE_GENERAL,
+    id: SETTING_PAGE__GENERAL,
     title: 'setting.general',
     path: 'general',
     weight: 0,
     sections: [
       {
-        id: SETTING_SECTION_GENERAL,
+        id: SETTING_SECTION__GENERAL,
         title: 'setting.general',
         weight: 0,
         items: [],
@@ -44,23 +44,23 @@ describe('SettingStoreScope', () => {
       const page = getGeneralPage();
       const store = new SettingStoreScope();
       store.addPage(page);
-      expect(store.getPageById(SETTING_PAGE_GENERAL)).toEqual(page);
+      expect(store.getPageById(SETTING_PAGE__GENERAL)).toEqual(page);
     });
   });
 
   describe('addSection()', () => {
     it('should add a new section to the page', () => {
       const section: SettingSection = {
-        id: SETTING_SECTION_GENERAL,
+        id: SETTING_SECTION__GENERAL,
         title: 'setting.general',
         description: 'setting.generalDescription',
         weight: 0,
         items: [],
       };
       const store = setupWithPage(getGeneralPage());
-      store.addSection(SETTING_PAGE_GENERAL, section);
+      store.addSection(SETTING_PAGE__GENERAL, section);
 
-      expect(store.getSectionsByPageId(SETTING_PAGE_GENERAL)).toContainEqual(
+      expect(store.getSectionsByPageId(SETTING_PAGE__GENERAL)).toContainEqual(
         section,
       );
     });
@@ -69,17 +69,17 @@ describe('SettingStoreScope', () => {
   describe('addItem()', () => {
     it('should add a new section to the page', () => {
       const item: SettingItem = {
-        id: SETTING_ITEM_TEST,
+        id: SETTING_ITEM__TEST,
         title: 'setting.testItem',
         description: 'setting.testItemDescription',
         type: SETTING_ITEM_TYPE.SELECT,
         weight: 0,
       };
       const store = setupWithPage(getGeneralPage());
-      store.addItem(SETTING_SECTION_GENERAL, item);
-      expect(store.getItemsBySectionId(SETTING_SECTION_GENERAL)).toContainEqual(
-        item,
-      );
+      store.addItem(SETTING_SECTION__GENERAL, item);
+      expect(
+        store.getItemsBySectionId(SETTING_SECTION__GENERAL),
+      ).toContainEqual(item);
     });
   });
 });

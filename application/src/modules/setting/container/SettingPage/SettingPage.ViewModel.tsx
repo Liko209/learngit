@@ -7,7 +7,7 @@ import { computed } from 'mobx';
 import { container } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
 import { SettingSection } from '@/interface/setting';
-import { SettingStore, emptySectionFilter } from '../../store';
+import { SettingStore, emptySectionFilter, compareWeight } from '../../store';
 
 class SettingPageViewModel extends StoreViewModel {
   get _settingStore(): SettingStore {
@@ -25,7 +25,7 @@ class SettingPageViewModel extends StoreViewModel {
     if (this.page) {
       result = this.page.sections;
     }
-    return result.filter(emptySectionFilter);
+    return result.filter(emptySectionFilter).sort(compareWeight);
   }
 }
 

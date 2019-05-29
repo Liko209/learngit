@@ -34,8 +34,7 @@ class SelectSettingItemViewComponent<T extends BaseItemType> extends Component<
   }
 
   render() {
-    const { t, id, automationKey, settingItem, settingItemEntity } = this.props;
-
+    const { t, id, automationKey, settingItem } = this.props;
     return (
       <JuiSettingSectionItem
         id={id}
@@ -43,16 +42,23 @@ class SelectSettingItemViewComponent<T extends BaseItemType> extends Component<
         label={t(settingItem.title || '')}
         description={t(settingItem.description || '')}
       >
-        {
-          <JuiBoxSelect
-            onChange={this._handleChange}
-            value={settingItemEntity.value ? settingItemEntity.value.id : ''}
-            automationId={'SettingSelectBox'}
-          >
-            {this._renderSource()}
-          </JuiBoxSelect>
-        }
+        {this._renderSelect()}
       </JuiSettingSectionItem>
+    );
+  }
+
+  private _renderSelect() {
+    const { disabled, settingItemEntity } = this.props;
+
+    return (
+      <JuiBoxSelect
+        onChange={this._handleChange}
+        disabled={disabled}
+        value={settingItemEntity.value ? settingItemEntity.value.id : ''}
+        automationId={'SettingSelectBox'}
+      >
+        {this._renderSource()}
+      </JuiBoxSelect>
     );
   }
 

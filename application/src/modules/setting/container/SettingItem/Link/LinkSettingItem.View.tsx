@@ -37,7 +37,7 @@ class LinkSettingItemViewComponent extends Component<Props> {
   }
 
   render() {
-    const { t, id, automationKey, settingItem } = this.props;
+    const { t, id, automationKey, disabled, settingItem } = this.props;
 
     return (
       <JuiSettingSectionItem
@@ -48,6 +48,7 @@ class LinkSettingItemViewComponent extends Component<Props> {
       >
         <JuiButton
           color="primary"
+          disabled={disabled}
           data-test-automation-id={'settingPhoneGeneralExtensionSetting'}
           onClick={this._handleClick}
           loading={this._loading}

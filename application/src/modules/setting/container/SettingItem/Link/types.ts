@@ -7,10 +7,11 @@
 import { LinkSettingItem } from '@/interface/setting';
 import SettingModel from '@/store/models/UserSetting';
 import { SettingItemProps } from '../types';
+import { BaseSettingItemViewProps } from '../Base/types';
 
 type LinkSettingItemProps = SettingItemProps;
 
-type LinkSettingItemViewProps = {
+type LinkSettingItemViewProps = BaseSettingItemViewProps & {
   settingItem: LinkSettingItem;
   settingItemEntity: SettingModel;
   loading: boolean;

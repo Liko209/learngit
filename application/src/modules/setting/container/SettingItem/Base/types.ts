@@ -12,6 +12,7 @@ type BaseSettingItemProps = {
 };
 
 type BaseSettingItemViewProps = {
+  disabled: boolean;
   settingItem: SettingItem;
   settingItemEntity: SettingModel;
 };

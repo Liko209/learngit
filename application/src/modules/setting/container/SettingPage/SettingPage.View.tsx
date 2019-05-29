@@ -13,6 +13,7 @@ import { JuiSettingSection } from 'jui/pattern/SettingSection';
 import { SettingSection, SettingItem } from '@/interface/setting';
 import { ScrollMemory } from '@/modules/common/container/ScrollMemory';
 import { SettingItemProxy } from './SettingItemProxy';
+import { compareWeight } from '../../store/SettingStore';
 
 // TODO move to jui
 const StyledSettingPage = styled.div`
@@ -56,7 +57,7 @@ class SettingPageViewComponent extends Component<Props> {
           title={t(section.title)}
           data-test-automation-id="SettingSectionContainer"
         >
-          {this._renderSettingItems(section.items)}
+          {this._renderSettingItems(section.items.sort(compareWeight))}
         </JuiSettingSection>
       );
     });
