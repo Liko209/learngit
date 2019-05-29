@@ -19,9 +19,7 @@ type JuiButtonBarProps = {
 };
 
 const padding = (theme: Theme, overlapSize?: number) => {
-  return overlapSize && overlapSize > 0
-    ? `-${spacing(overlapSize)({ theme })}`
-    : `${spacing(2)({ theme })}`;
+  return overlapSize ? `${spacing(-overlapSize)({ theme })}` : '0';
 };
 
 const StyledButtonBar = styled<JuiButtonBarProps, 'div'>('div')`
@@ -32,20 +30,13 @@ const StyledButtonBar = styled<JuiButtonBarProps, 'div'>('div')`
   flex-wrap: nowrap;
   flex-shrink: 0;
 
-  ${({ overlapSize }) => {
-    return (
-      overlapSize > 0 &&
-      css`
-        && > *:nth-child(n + 2) {
-          margin-left: ${({ theme, direction = 'horizontal', overlapSize }) =>
-            direction === 'horizontal' && padding(theme, overlapSize)};
+  && > *:nth-child(n + 2) {
+    margin-left: ${({ theme, direction = 'horizontal', overlapSize }) =>
+      direction === 'horizontal' && padding(theme, overlapSize)};
 
-          margin-top: ${({ theme, direction = 'horizontal', overlapSize }) =>
-            direction === 'vertical' && padding(theme, overlapSize)};
-        }
-      `
-    );
-  }}
+    margin-top: ${({ theme, direction = 'horizontal', overlapSize }) =>
+      direction === 'vertical' && padding(theme, overlapSize)};
+  }
 `;
 
 type IButtonBar = React.SFC<JuiButtonBarProps>;
