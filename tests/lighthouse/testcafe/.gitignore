@@ -12,3 +12,5 @@ targets
 .vscode
 
 benchmark.json
+.testcafe-electron-rc
+capabilities.json
