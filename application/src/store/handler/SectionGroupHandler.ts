@@ -41,6 +41,8 @@ import {
 import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
 import { TDelta } from '../base/fetch/types';
 import preFetchConversationDataHandler from './PreFetchConversationDataHandler';
+import { Notification } from '@/containers/Notification';
+import { defaultNotificationOptions } from '@/common/catchError';
 
 function groupTransformFunc(data: Group): ISortableModel {
   const {
@@ -277,6 +279,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           );
           if (payload.body.ids && payload.body.ids.includes(currentGroupId)) {
             ids = [currentGroupId];
+            Notification.flashToast({
+              ...defaultNotificationOptions,
+              message: 'people.prompt.conversationPrivate',
+            });
             mainLogger
               .tags(LOG_TAG)
               .info('subscribe notification|user was removed from current conversation(a private team)');
