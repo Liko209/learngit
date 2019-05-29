@@ -51,7 +51,7 @@ const blinkAnimation = () =>
   `;
 
 type JuiDialpadBtnProps = {
-  shouldAnimationStart: boolean;
+  startMinimizeAnimation: boolean;
   id: string;
   ariaLabel: string;
   onClick: () => void;
@@ -59,7 +59,7 @@ type JuiDialpadBtnProps = {
 };
 
 const JuiDialpadBtn = ({
-  shouldAnimationStart,
+  startMinimizeAnimation,
   id,
   ariaLabel,
   onClick,
@@ -67,10 +67,10 @@ const JuiDialpadBtn = ({
 }: JuiDialpadBtnProps) => {
   const StyleContainer = styled.div`
     && {
-      margin-right: ${spacing(5)};
+      margin-right: ${spacing(3)};
 
       button {
-        animation: ${shouldAnimationStart ? blinkAnimation : undefined};
+        animation: ${startMinimizeAnimation ? blinkAnimation : undefined};
       }
     }
   `;
@@ -79,7 +79,7 @@ const JuiDialpadBtn = ({
     <StyleContainer aria-label={ariaLabel}>
       <JuiFabButton
         size="medium"
-        iconName="keypad"
+        iconName="dialer"
         disableRipple={true}
         onClick={onClick}
         tooltipTitle={tooltipTitle}

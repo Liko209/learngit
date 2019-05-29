@@ -19,9 +19,6 @@ import { FavoriteProps } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class FavoriteViewModel extends StoreViewModel<FavoriteProps> {
-  private _groupService = ServiceLoader.getInstance<GroupService>(
-    ServiceConfig.GROUP_SERVICE,
-  );
   private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   @observable
   conversationId: number;
@@ -51,7 +48,9 @@ class FavoriteViewModel extends StoreViewModel<FavoriteProps> {
     }
 
     if (this._type === TypeDictionary.TYPE_ID_PERSON) {
-      const group = await this._groupService.getLocalGroup([this._id]);
+      const group = await ServiceLoader.getInstance<GroupService>(
+        ServiceConfig.GROUP_SERVICE,
+      ).getLocalGroup([this._id]);
       if (group) {
         this.conversationId = group.id;
       } else {

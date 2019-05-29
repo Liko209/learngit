@@ -16,7 +16,7 @@ import { IEntitySourceController } from '../../../../framework/controller/interf
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { Raw } from '../../../../framework/model';
 import { buildRequestController } from '../../../../framework/controller';
-import { AccountUserConfig } from '../../../../module/account/config';
+import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ProfileService } from '../../../profile';
 import { PostService } from '../../../post';
@@ -153,6 +153,7 @@ describe('GroupFetchDataController', () => {
 
   describe('createTeam()', () => {
     const data = {
+      is_team: true,
       set_abbreviation: 'some team',
       members: [1323],
       description: 'abc',
@@ -292,6 +293,7 @@ describe('GroupFetchDataController', () => {
       members: [1, 2, 3],
       description: 'abc',
       privacy: 'private',
+      is_team: true,
       permissions: {
         admin: {
           uids: [1],

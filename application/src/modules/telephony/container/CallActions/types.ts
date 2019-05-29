@@ -3,16 +3,18 @@
  * @Date: 2018-11-07 17:56:52
  * Copyright © RingCentral. All rights reserved.
  */
-
 type CallActionsProps = {
   showLabel?: boolean;
   shouldPersistBg?: boolean;
 };
 
 type CallActionsViewProps = {
-  directReply: () => void;
   showLabel?: boolean;
   shouldPersistBg?: boolean;
+  callActionsMap: {
+    [key: string]: { shouldShowAction?: boolean };
+  };
+  shouldDisableCallActions: boolean;
 };
 
 export { CallActionsProps, CallActionsViewProps };

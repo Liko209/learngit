@@ -9,6 +9,7 @@ import { width, spacing } from '../../foundation/utils/styles';
 
 type Props = {
   children: React.ReactNode;
+  id?: string;
 };
 
 const StyledDialer = styled('div')`
@@ -18,6 +19,7 @@ const StyledDialer = styled('div')`
     box-shadow: ${({ theme }) => theme.boxShadow.val16};
     border-radius: ${({ theme }) => theme.radius.xl};
     overflow: auto;
+    outline: none;
   }
 `;
 

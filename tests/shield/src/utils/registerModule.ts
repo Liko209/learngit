@@ -5,6 +5,13 @@
  */
 import { container, Jupiter } from 'framework';
 
+beforeEach(() => {
+  container.snapshot();
+});
+afterEach(() => {
+  container.restore();
+});
+
 function registerModule(config: Object) {
   const jupiter = container.get(Jupiter);
   jupiter.registerModule(config);

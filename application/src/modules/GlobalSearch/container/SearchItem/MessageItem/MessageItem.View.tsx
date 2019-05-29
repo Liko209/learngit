@@ -13,10 +13,11 @@ import { ViewProps } from './types';
 
 @observer
 class MessageItemComponent extends React.Component<
-  ViewProps & WithTranslation
+ViewProps & WithTranslation
 > {
   render() {
     const {
+      t,
       terms,
       onMouseEnter,
       onMouseLeave,
@@ -42,6 +43,7 @@ class MessageItemComponent extends React.Component<
         terms={terms}
         data-test-automation-id="search-message-item"
         data-id={groupId}
+        joinedStatusText={t('people.team.joinedStatus')}
       />
     );
   }

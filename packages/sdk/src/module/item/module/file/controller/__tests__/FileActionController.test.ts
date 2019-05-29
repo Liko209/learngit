@@ -7,17 +7,21 @@
 import { Api } from '../../../../../../api';
 import { FileActionController } from '../FileActionController';
 import { GlobalConfigService } from '../../../../../config';
-import { AuthUserConfig } from '../../../../../account/config';
+import { AuthUserConfig } from '../../../../../account/config/AuthUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../../../serviceLoader';
-
+import { PartialModifyController } from '../../../../../../framework/controller/impl/PartialModifyController';
+import { Item } from '../../../../entity';
+import { EntitySourceController } from '../../../../../../framework/controller/impl/EntitySourceController';
+import {
+  GlipTypeUtil,
+  TypeDictionary,
+} from '../../../../../../utils/glip-type-dictionary';
+import { RequestController } from 'sdk/framework/controller/impl/RequestController';
+jest.mock('../../../../../../api');
 jest.mock('../../../../../config');
 jest.mock('../../../../../account/config');
-
 jest.mock('../../../../../../dao');
-jest.mock(
-  '../../../../../../framework/controller/interface/IEntitySourceController',
-);
-jest.mock('../../../../../../api');
+jest.mock('../../../../../../framework/controller');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -26,12 +30,19 @@ function clearMocks() {
 }
 
 describe('FileActionController', () => {
-  const entitySourceController = {
-    get: jest.fn(),
-  };
-  const fileActionController = new FileActionController(entitySourceController);
+  let entitySourceController: EntitySourceController<Item>;
+  let partialModifyController: PartialModifyController<Item>;
 
+  let fileActionController: FileActionController;
+  let requestController: RequestController<Item>;
   function setUp() {
+    entitySourceController = new EntitySourceController<Item>(null, null);
+    partialModifyController = new PartialModifyController<Item>(null);
+
+    fileActionController = new FileActionController(
+      partialModifyController,
+      entitySourceController,
+    );
     ServiceLoader.getInstance = jest
       .fn()
       .mockImplementation((config: string) => {
@@ -47,6 +58,11 @@ describe('FileActionController', () => {
       },
       configurable: true,
     });
+    requestController = new RequestController<Item>(null);
+    requestController.put = jest.fn();
+    entitySourceController.getRequestController = jest
+      .fn()
+      .mockReturnValue(requestController);
   }
 
   beforeEach(() => {
@@ -203,6 +219,34 @@ describe('FileActionController', () => {
         'cacheServer.com/modify-image?id=852746252&source_type=files&source_id=10&t=token',
       );
       expect(entitySourceController.get).toBeCalledWith(11);
+    });
+  });
+
+  describe('editFileName()', () => {
+    it('should update filename when no error', async () => {
+      const normalId = Math.abs(
+        GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_FILE),
+      );
+
+      entitySourceController.get = jest.fn().mockResolvedValue(1);
+      partialModifyController.updatePartially = jest
+        .fn()
+        .mockImplementation(
+          (itemId: number, prehandleFunc: any, doUpdateFunc: any) => {
+            expect(itemId).toBe(normalId);
+            expect(prehandleFunc({ id: normalId }, { id: normalId })).toEqual({
+              id: normalId,
+              name: 'newName',
+            });
+            doUpdateFunc({ id: normalId, name: 'newName' });
+          },
+        );
+      await fileActionController.editFileName(normalId, 'newName');
+      expect(partialModifyController.updatePartially).toBeCalledTimes(1);
+      expect(requestController.put).toBeCalledWith({
+        id: normalId,
+        name: 'newName',
+      });
     });
   });
 });

@@ -47,7 +47,9 @@ describe('ListSearchResult', () => {
     wrapper.instance().setState({ searchResult: [] });
     wrapper.update();
     expect(wrapper.find(JuiListSubheader).text()).toEqual('Results (0)');
-    expect(wrapper.find(JuiTabPageEmptyScreen).props().text).toEqual('No matches found');
+    expect(wrapper.find(JuiTabPageEmptyScreen).props().text).toEqual(
+      'No matches found',
+    );
   });
 
   it('component\'s title should be "Results" with the count of the matching records displayed', () => {

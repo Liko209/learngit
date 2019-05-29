@@ -3,7 +3,8 @@
  * @Date: 2018-10-30 18:39:43
  * Copyright © RingCentral. All rights reserved.
  */
-import { test, mockEntity, testable, mockGlobalValue } from 'shield';
+import { test, testable } from 'shield';
+import { mockEntity, mockGlobalValue } from 'shield/application';
 import { registerModule } from 'shield/utils';
 import { config } from '@/modules/GlobalSearch/module.config';
 import { ConversationCardViewModel } from '../ConversationCard.ViewModel';
@@ -41,7 +42,7 @@ describe('TestConversationCardViewModel', () => {
 
   @testable
   class post {
-    @test('get post')
+    @test('should return post if entity has value')
     @mockEntity(mockPostValue)
     t1() {
       const conversationCardVM = new ConversationCardViewModel();
@@ -53,7 +54,7 @@ describe('TestConversationCardViewModel', () => {
 
   @testable
   class creator {
-    @test('get creator')
+    @test('should return creator if has creatorId')
     @mockEntity({
       createdAt: 1540279718268,
       creatorId: 107913219,
@@ -78,9 +79,7 @@ describe('TestConversationCardViewModel', () => {
       const conversationCardVM = new ConversationCardViewModel();
       global.Date.now = jest.fn(() => DATE_2019_1_4);
       conversationCardVM.props.mode = 'navigation';
-      expect(await conversationCardVM.createTime.fetch()).toBe(
-        'Fri, 1/4/2019 9:21 AM',
-      );
+      expect(await conversationCardVM.createTime).toBe('Fri, 1/4/2019 9:21 AM');
       conversationCardVM.props.mode = undefined;
       done();
     }
@@ -93,7 +92,7 @@ describe('TestConversationCardViewModel', () => {
     async t2(done: jest.DoneCallback) {
       const conversationCardVM = new ConversationCardViewModel();
       global.Date.now = jest.fn(() => DATE_2019_1_4);
-      expect(await conversationCardVM.createTime.fetch()).toBe('9:21 AM');
+      expect(await conversationCardVM.createTime).toBe('9:21 AM');
       done();
     }
 
@@ -107,7 +106,7 @@ describe('TestConversationCardViewModel', () => {
     async t3(done: jest.DoneCallback) {
       const conversationCardVM = new ConversationCardViewModel();
       global.Date.now = jest.fn(() => DATE_2019_1_4);
-      expect(await conversationCardVM.createTime.fetch()).toBe('Thu, 9:21 AM');
+      expect(await conversationCardVM.createTime).toBe('Thu, 9:21 AM');
       done();
     }
 
@@ -119,9 +118,7 @@ describe('TestConversationCardViewModel', () => {
     async t4(done: jest.DoneCallback) {
       const conversationCardVM = new ConversationCardViewModel();
       global.Date.now = jest.fn(() => DATE_2019_1_4);
-      expect(await conversationCardVM.createTime.fetch()).toBe(
-        'Sat, 1/5/2019 9:21 AM',
-      );
+      expect(await conversationCardVM.createTime).toBe('Sat, 1/5/2019 9:21 AM');
       done();
     }
 
@@ -139,7 +136,7 @@ describe('TestConversationCardViewModel', () => {
     async t5({ expected }) {
       const conversationCardVM = new ConversationCardViewModel();
       global.Date.now = jest.fn(() => DATE_2019_1_4);
-      expect(await conversationCardVM.createTime.fetch()).toBe(expected);
+      expect(await conversationCardVM.createTime).toBe(expected);
     }
 
     @(test.each`
@@ -154,13 +151,13 @@ describe('TestConversationCardViewModel', () => {
     async t6({ expected }) {
       const conversationCardVM = new ConversationCardViewModel();
       global.Date.now = jest.fn(() => DATE_2019_1_4);
-      expect(await conversationCardVM.createTime.fetch()).not.toBe(expected);
+      expect(await conversationCardVM.createTime).not.toBe(expected);
     }
   }
 
   @testable
   class isArchivedGroup {
-    @test('isArchived()')
+    @test('should be true if isArchived is true')
     @mockEntity({
       isArchived: true,
     })
@@ -193,7 +190,7 @@ describe('TestConversationCardViewModel', () => {
 
   @testable
   class hideText {
-    @test('should hideText be false when no activity')
+    @test('should be false when no activity')
     @mockEntity({
       activityData: null,
     })
@@ -202,7 +199,7 @@ describe('TestConversationCardViewModel', () => {
       expect(conversationCardVM.hideText).toBeFalsy();
     }
 
-    @test('should hideText be true when activity have object_id or key')
+    @test('should be true when activity have object_id or key')
     @mockEntity.multi([
       {
         activityData: { object_id: 1 },
@@ -219,7 +216,7 @@ describe('TestConversationCardViewModel', () => {
 
   @testable
   class itemTypeIds {
-    @test('should return itemTypeIds')
+    @test('should return itemTypeIds if entity has value')
     @mockEntity({
       itemTypeIds: [1],
     })
@@ -231,7 +228,7 @@ describe('TestConversationCardViewModel', () => {
 
   @testable
   class isEditMode {
-    @test('if value [1] should be true or [2] should be false')
+    @test('should be true or false if value [1] or [2]')
     @mockGlobalValue.multi([[1], [2]])
     t1() {
       const conversationCardVM = new ConversationCardViewModel({ id: 1 });

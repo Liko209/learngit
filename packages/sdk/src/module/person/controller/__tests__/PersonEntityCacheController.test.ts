@@ -5,7 +5,7 @@
  */
 
 import { PersonEntityCacheController } from '../PersonEntityCacheController';
-import { AccountUserConfig } from '../../../../module/account/config';
+import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
 import { Person } from '../../entity';
 import { PersonService } from '../../service/PersonService';
 const soundex = require('soundex-code');

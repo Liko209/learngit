@@ -22,7 +22,7 @@ const sslOptions = RUNNER_OPTS.ENABLE_SSL ? {
 
 async function runTests(runnerOpts) {
   let failed = 0;
-  const testCafe = await createTestCafe(undefined, undefined, undefined, sslOptions);
+  const testCafe = await createTestCafe(runnerOpts.TESTCAFE_HOST, undefined, undefined, sslOptions);
   const runner = testCafe.createRunner();
   logger.info(`runner options: ${JSON.stringify(runnerOpts, null, 2)}`);
 

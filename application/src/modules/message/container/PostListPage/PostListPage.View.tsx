@@ -11,6 +11,7 @@ import { PostListPageViewProps } from './types';
 import { Stream } from './Stream';
 import { ConversationPageContext } from '../ConversationPage/types';
 import { withTranslation } from 'react-i18next';
+import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 
 // app top bar header & stream header
 const USED_HEIGHT = 64 + 48;
@@ -19,25 +20,27 @@ class PostListPageViewComponent extends Component<PostListPageViewProps> {
   componentWillUnmount() {
     this.props.unsetCurrentPostListValue();
   }
+  state = { height: 0 };
+  handleSizeChanged = (size: Size) => {
+    this.setState({ height: size.height - USED_HEIGHT });
+  }
   render() {
-    const { type, caption, ids, t, postFetcher } = this.props;
+    const { kind, caption, ids, t, postFetcher } = this.props;
     return (
-      <ConversationPageContext.Provider value={{ disableMoreAction: true }}>
+      <ConversationPageContext.Provider
+        value={{ disableMoreAction: true, height: this.state.height }}
+      >
         <JuiConversationPage
           data-test-automation-id="post-list-page"
-          data-type={type}
+          data-type={kind}
         >
+          <JuiSizeDetector handleSizeChanged={this.handleSizeChanged} />
           <JuiConversationPageHeader
             data-test-automation-id="post-list-page-header"
             title={t(caption)}
           />
           {ids ? (
-            <Stream
-              postIds={ids}
-              key={type}
-              postFetcher={postFetcher}
-              usedHeight={USED_HEIGHT}
-            />
+            <Stream postIds={ids} key={kind} postFetcher={postFetcher} />
           ) : null}
         </JuiConversationPage>
       </ConversationPageContext.Provider>

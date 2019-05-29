@@ -15,7 +15,7 @@ enum POST_LIST_TYPE {
 }
 
 type PostListPageViewProps = WithTranslation & {
-  type: POST_LIST_TYPE;
+  kind: POST_LIST_TYPE;
   caption: string;
   ids: number[];
   unsetCurrentPostListValue: Function;

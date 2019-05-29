@@ -8,7 +8,7 @@ import { Post } from '../entity';
 import { EntityNotificationController } from '../../../framework/controller/impl/EntityNotificationController';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { GroupService } from '../../group';
-import { AccountUserConfig } from '../../account/config/AccountUserConfig';
+import { AccountService } from 'sdk/module/account';
 
 class PostNotificationController extends EntityNotificationController<Post> {
   constructor() {
@@ -17,7 +17,9 @@ class PostNotificationController extends EntityNotificationController<Post> {
   }
 
   private _postNotificationFilter() {
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,

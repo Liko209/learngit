@@ -4,10 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { configMigrator } from '../ConfigMigrator';
 import { CONFIG_TYPE } from '../../../module/config/constants';
 import { IConfigHistory } from '../IConfigHistory';
 import { ConfigChangeHistory } from '../types';
+import { configMigrator } from '../ConfigMigrator';
+import { daoManager } from 'sdk/dao';
+import { AccountGlobalConfig } from 'sdk/module/account/config';
 
 describe('ConfigMigrator', () => {
   const clearAll = () => {
@@ -18,10 +20,14 @@ describe('ConfigMigrator', () => {
 
   beforeEach(() => {
     clearAll();
-    configMigrator['_isReady'] = false;
+    configMigrator['_dbConfigReady'] = false;
+    configMigrator['_userConfigReady'] = false;
     configMigrator['_histories'] = [];
+    jest.spyOn(configMigrator, 'onDBInitialized');
+    jest.spyOn(configMigrator, 'onUserDictionaryUpdate');
     jest.spyOn(configMigrator, 'init');
     jest.spyOn(configMigrator, '_doDataMigration');
+    jest.spyOn(configMigrator, '_getConfig');
   });
 
   describe('_doDataMigration', () => {
@@ -126,7 +132,7 @@ describe('ConfigMigrator', () => {
   });
 
   describe('init', () => {
-    it('should be called when DB is initialized', async () => {
+    it('should init when DB and user config is ready', async () => {
       const history: IConfigHistory = {
         getHistoryDetail: jest.fn().mockReturnValue({
           version: 1,
@@ -135,18 +141,36 @@ describe('ConfigMigrator', () => {
         }),
       };
       configMigrator['_histories'].push(history);
+      configMigrator['_dbConfigReady'] = true;
+      configMigrator['_userConfigReady'] = true;
 
       await configMigrator.init();
       expect(configMigrator['_doDataMigration']).toBeCalledWith(
         history.getHistoryDetail(),
       );
-      expect(configMigrator['_isReady']).toBeTruthy();
       expect(configMigrator['_histories']).toEqual([]);
+    });
+
+    it('should do nothing when DB and user config is not ready', async () => {
+      const history: IConfigHistory = {
+        getHistoryDetail: jest.fn().mockReturnValue({
+          version: 1,
+          moduleName: 'test',
+          changes: [],
+        }),
+      };
+      configMigrator['_histories'].push(history);
+      configMigrator['_dbConfigReady'] = false;
+      configMigrator['_userConfigReady'] = false;
+
+      await configMigrator.init();
+      expect(configMigrator['_doDataMigration']).not.toBeCalled();
+      expect(configMigrator['_histories']).toEqual([history]);
     });
   });
 
-  describe('addDataMigration', () => {
-    it('should add to histories when isReady is false', () => {
+  describe('addHistory', () => {
+    it('should add to histories when DB and user config is not ready', () => {
       const history: IConfigHistory = {
         getHistoryDetail: jest.fn().mockReturnValue({
           version: 1,
@@ -157,11 +181,10 @@ describe('ConfigMigrator', () => {
 
       configMigrator.addHistory(history);
       expect(configMigrator['_doDataMigration']).not.toBeCalled();
-      expect(configMigrator['_isReady']).toBeFalsy();
       expect(configMigrator['_histories'].length).toEqual(1);
     });
 
-    it('should do migration when isReady is true', () => {
+    it('should do migration when DB and user config is ready', () => {
       const history: IConfigHistory = {
         getHistoryDetail: jest.fn().mockReturnValue({
           version: 1,
@@ -169,14 +192,55 @@ describe('ConfigMigrator', () => {
           changes: [],
         }),
       };
-      configMigrator['_isReady'] = true;
+      configMigrator['_dbConfigReady'] = true;
+      configMigrator['_userConfigReady'] = true;
 
       configMigrator.addHistory(history);
       expect(configMigrator['_doDataMigration']).toBeCalledWith(
         history.getHistoryDetail(),
       );
-      expect(configMigrator['_isReady']).toBeTruthy();
       expect(configMigrator['_histories'].length).toEqual(0);
+    });
+  });
+
+  describe('onDBInitialized', () => {
+    it('should call init', () => {
+      configMigrator.init.mockImplementationOnce(() => {});
+      daoManager['_notifyDBInitialized']();
+      expect(configMigrator.onDBInitialized).toBeCalled();
+      expect(configMigrator['_dbConfigReady']).toBeTruthy();
+      expect(configMigrator.init).toBeCalled();
+    });
+  });
+
+  describe('observeUserDictionaryStatus', () => {
+    it('should call onUserDictionaryUpdate when UD is valid', () => {
+      AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValue('557');
+      configMigrator.onUserDictionaryUpdate.mockImplementationOnce(() => {});
+      configMigrator.observeUserDictionaryStatus();
+      expect(configMigrator.onUserDictionaryUpdate).toBeCalledWith('557');
+    });
+
+    it('should call observeUserDictionary when UD is invalid', () => {
+      AccountGlobalConfig.getUserDictionary = jest
+        .fn()
+        .mockReturnValue(undefined);
+      AccountGlobalConfig.observeUserDictionary = jest.fn();
+      configMigrator.observeUserDictionaryStatus();
+      expect(AccountGlobalConfig.observeUserDictionary).toBeCalled();
+    });
+  });
+
+  describe('onUserDictionaryUpdate', () => {
+    it('should call setUserId and init', () => {
+      configMigrator.init.mockImplementationOnce(() => {});
+      const mockFunc = jest.fn();
+      configMigrator['_getConfig'].mockReturnValue({ setUserId: mockFunc });
+      configMigrator.onUserDictionaryUpdate('4556');
+      expect(configMigrator['_getConfig']).toBeCalledWith(CONFIG_TYPE.USER);
+      expect(mockFunc).toBeCalledWith('4556');
+      expect(configMigrator['_userConfigReady']).toBeTruthy();
+      expect(configMigrator.init).toBeCalled();
     });
   });
 });

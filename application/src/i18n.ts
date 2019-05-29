@@ -5,15 +5,14 @@ import intervalPlural from 'i18next-intervalplural-postprocessor';
 import moment from 'moment';
 import { initReactI18next } from 'react-i18next';
 import { toTitleCase } from '@/utils/string';
+import Pseudo from '@/utils/i18next-pseudo';
 import enLngJson from '../public/locales/en/translations.json';
 
 const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
   const letters = ['a', 'e', 'i', 'o', 'u', 'h'];
   const lastDotChar = value.lastIndexOf('.');
   const actualValue =
-    lastDotChar > 0 && lastDotChar !== value.length - 1
-      ? value.substring(lastDotChar + 1)
-      : value;
+    lastDotChar > 0 && lastDotChar !== value.length - 1 ? value.substring(lastDotChar + 1) : value;
   const firstLetter = actualValue.substring(0, 1);
   let correctWordForm = '';
   if (
@@ -54,6 +53,7 @@ const config = {
   debug: true,
   react: { wait: true, useSuspense: false },
   whitelist: ['en', 'zh'],
+  postProcess: ['pseudo'],
 };
 
 const ready = () => {
@@ -65,9 +65,9 @@ i18next
   .use(i18nextBrowserLanguagedetector)
   .use(initReactI18next)
   .use(intervalPlural)
+  .use(new Pseudo())
   .init(config, ready);
 
-i18next
-  .addResourceBundle('en', 'translations', enLngJson);
+i18next.addResourceBundle('en', 'translations', enLngJson);
 
 export default i18next;

@@ -37,7 +37,9 @@ class TelephonyService extends EntityBaseService<IdModel> {
 
   protected get telephonyController() {
     if (!this._telephonyEngineController) {
-      this._telephonyEngineController = new TelephonyEngineController();
+      this._telephonyEngineController = new TelephonyEngineController(
+        this.userConfig,
+      );
     }
     return this._telephonyEngineController;
   }
@@ -127,6 +129,10 @@ class TelephonyService extends EntityBaseService<IdModel> {
     this.telephonyController
       .getAccountController()
       .replyWithMessage(callId, message);
+  }
+
+  park = async (callId: string) => {
+    return await this.telephonyController.getAccountController().park(callId);
   }
 
   replyWithPattern = (

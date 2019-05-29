@@ -16,6 +16,7 @@ type JuiChipProps = {
   GroupAvatar?: React.ComponentType<any>;
   onDelete?: (event: any) => void;
   isError?: boolean;
+  deleteTooltip?: string;
 } & Omit<MuiChipProps, 'innerRef'>;
 
 const WrappedChip = ({ isError, ...rest }: JuiChipProps) => (
@@ -59,7 +60,7 @@ const StyledChip = styled<JuiChipProps>(WrappedChip)`
 
 export const JuiChip: React.SFC<JuiChipProps> = React.memo(
   (props: JuiChipProps) => {
-    const { onDelete, PersonAvatar, GroupAvatar, isError, id, ...rest } = props;
+    const { onDelete, PersonAvatar, GroupAvatar, isError, id, deleteTooltip, ...rest } = props;
     const getAvatar = () => {
       if (PersonAvatar) {
         return <PersonAvatar size="small" uid={id} />;
@@ -85,7 +86,7 @@ export const JuiChip: React.SFC<JuiChipProps> = React.memo(
         deleteIcon={
           <JuiIconButton
             variant="plain"
-            tooltipTitle="Remove"
+            tooltipTitle={deleteTooltip}
             color={isError ? 'semantic.negative' : 'grey.500'}
           >
             remove

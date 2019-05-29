@@ -13,13 +13,13 @@ import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 import { DialerViewModel } from '../Dialer.ViewModel';
 import { GlobalConfigService } from 'sdk/module/config';
-import { AuthUserConfig } from 'sdk/module/account/config';
+import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
 
 jest.mock('sdk/module/config');
-jest.mock('sdk/module/account/config');
+jest.mock('sdk/module/account/config/AuthUserConfig');
 
 GlobalConfigService.getInstance = jest.fn();
 
@@ -49,7 +49,7 @@ describe('DialerViewModel', () => {
     expect(dialerViewModel.keypadEntered).toEqual(false);
   });
   it('should initialize without fade animation', async () => {
-    expect(dialerViewModel.shouldAnimationStart).toEqual(false);
+    expect(dialerViewModel.startMinimizeAnimation).toEqual(false);
   });
   it('should initialize with dialerId', async () => {
     expect(typeof dialerViewModel.dialerId).toBe('string');
