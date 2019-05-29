@@ -6,7 +6,7 @@
 import history from '@/history';
 import { service } from 'sdk';
 import { GroupService } from 'sdk/module/group';
-import { JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
+import { JNetworkError, ERROR_CODES_NETWORK, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import {
   goToConversationWithLoading,
@@ -14,6 +14,7 @@ import {
 } from '@/common/goToConversation';
 import { PostService } from 'sdk/module/post';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { ERROR_TYPES } from '@/common/catchError';
 import { MessageRouterChangeHelper } from '../../modules/message/container/Message/helper';
 
 jest.mock('sdk/module/post');
@@ -83,6 +84,7 @@ describe('goToConversation()', () => {
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: 1 },
       error: true,
+      errorType: ERROR_TYPES.UNKNOWN
     });
   });
 });
@@ -114,6 +116,7 @@ describe('getConversationId() with person type conversationId', () => {
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: 1 },
       error: true,
+      errorType: ERROR_TYPES.UNKNOWN
     });
   });
 });
@@ -143,6 +146,7 @@ describe('getConversationId() with  multiple person type conversationId', () => 
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: [1, 2, 3] },
       error: true,
+      errorType: ERROR_TYPES.UNKNOWN
     });
   });
 });
@@ -194,12 +198,15 @@ describe('getConversationId() with message', () => {
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: [1, 2, 3], message: 'hahahah' },
       error: true,
+      errorType: ERROR_TYPES.UNKNOWN
     });
   });
 
-  it('should show loading then show error page if failed [JPT-280]', async () => {
+  it('should show loading then show error page if failed(network error) [JPT-280]', async () => {
     postService.sendPost = jest.fn();
-    (postService.sendPost as jest.Mock).mockRejectedValue(new Error());
+    (postService.sendPost as jest.Mock).mockRejectedValue(
+      new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK')
+    );
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue({
       id: 2,
     });
@@ -222,8 +229,50 @@ describe('getConversationId() with message', () => {
       text: 'hahahah',
     });
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
-      params: { id: [1, 2, 3], message: 'hahahah' },
+      params: {
+        id: [1, 2, 3],
+        message: 'hahahah',
+        hasBeforeJumpFun: true,
+      },
       error: true,
+      errorType: ERROR_TYPES.NETWORK
+    });
+  });
+
+  it('should show loading then show error page if failed(server error) [JPT-280]', async () => {
+    postService.sendPost = jest.fn();
+    (postService.sendPost as jest.Mock).mockRejectedValue(
+      new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL')
+    );
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue({
+      id: 2,
+    });
+    const beforeJump = (id: number) =>
+      postService.sendPost({ text: 'hahahah', groupId: 2 });
+    expect(
+      await goToConversationWithLoading({
+        beforeJump,
+        id: [1, 2, 3],
+        message: 'hahahah',
+      }),
+    ).toEqual(false);
+    expect(groupService.getOrCreateGroupByMemberList).toHaveBeenCalledWith([
+      1,
+      2,
+      3,
+    ]);
+    expect(postService.sendPost).toHaveBeenCalledWith({
+      groupId: 2,
+      text: 'hahahah',
+    });
+    expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
+      params: {
+        id: [1, 2, 3],
+        message: 'hahahah',
+        hasBeforeJumpFun: true,
+      },
+      error: true,
+      errorType: ERROR_TYPES.BACKEND
     });
   });
 });
