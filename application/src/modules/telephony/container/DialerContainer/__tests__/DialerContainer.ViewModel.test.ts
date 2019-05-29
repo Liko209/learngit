@@ -47,7 +47,7 @@ describe('DialerContainerViewModel', () => {
   });
 
   it('Should initialize with dialer input being available', async () => {
-    expect(dialerContainerViewModel.canTypeString).toBe(true);
+    expect(dialerContainerViewModel.canclickToInput).toBe(true);
   });
 
   it('Should should call setCallerPhoneNumber', async () => {
@@ -63,7 +63,7 @@ describe('DialerContainerViewModel', () => {
   });
 
   it('Should call concatInputString on the telphony service', () => {
-    dialerContainerViewModel.typeString('1');
+    dialerContainerViewModel.clickToInput('1');
     expect(
       dialerContainerViewModel._telephonyService.concatInputString,
     ).toBeCalled();

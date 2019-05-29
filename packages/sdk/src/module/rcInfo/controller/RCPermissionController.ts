@@ -133,6 +133,12 @@ class RCPermissionController {
         },
       ],
       [
+        ERCServiceFeaturePermission.CALL_FORWARDING,
+        {
+          featureName: RCServiceFeatureName.CALL_FORWARDING,
+        },
+      ],
+      [
         ERCServiceFeaturePermission.INTERNAL_CALLS,
         {
           permissionId: PermissionId.INTERNAL_CALLS,

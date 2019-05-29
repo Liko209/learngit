@@ -42,6 +42,7 @@ enum ERCServiceFeaturePermission {
   CALL_SWITCH,
   RC_PRESENCE,
   MOBILE_VOIP_EMERGENCY_CALLING,
+  CALL_FORWARDING,
 }
 
 enum PermissionId {
@@ -63,6 +64,7 @@ enum RCServiceFeatureName {
   PAGER = 'Pager',
   FAX = 'Fax',
   VIDEO_CONFERENCING = 'VideoConferencing',
+  CALL_FORWARDING = 'CallForwarding',
 }
 
 enum RCBrandType {

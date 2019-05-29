@@ -27,7 +27,7 @@ const THROTTLE_TIME = 30;
 const throttledHandler = (f: any) =>
   _.debounce(f, THROTTLE_TIME, {
     trailing: true,
-    leading: false,
+    leading: true,
   });
 
 export class DialPad extends React.Component<

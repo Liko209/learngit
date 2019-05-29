@@ -15,6 +15,7 @@ import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { RefObject } from 'react';
 import ReactDOM from 'react-dom';
 import { focusCampo } from '../../helpers';
+import { debounce } from 'lodash';
 
 const sleep = function () {
   return new Promise((resolve: (args: any) => any) => {
@@ -85,7 +86,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   @computed
-  get canTypeString() {
+  get canclickToInput() {
     return (
       this._telephonyStore.inputString.length <
       this._telephonyStore.maximumInputLength
@@ -156,7 +157,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   playAudio = (digit: string) => {
-    if (!this.canTypeString) {
+    if (!this.canclickToInput) {
       return;
     }
     this._playAudio(digit === '+' ? '0' : digit);
@@ -170,8 +171,13 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
     }
   }
 
-  typeString = (str: string) => {
-    if (!this.canTypeString) {
+  private _focusCampo = debounce(focusCampo, 30, {
+    leading: false,
+    trailing: true,
+  });
+
+  clickToInput = (str: string) => {
+    if (!this.canclickToInput) {
       return;
     }
     this.playAudio(str);
@@ -185,7 +191,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
     ) as HTMLDivElement).querySelector('input');
 
     if (input && this._telephonyStore.inputString) {
-      focusCampo(input);
+      this._focusCampo(input);
     }
   }
 

@@ -5,7 +5,7 @@ import { ClientFunction } from 'testcafe';
 
 export class TelephonyDialog extends BaseWebComponent {
   get self() {
-    return this.getSelectorByAutomationId('dialer-move-animation-container');
+    return this.getSelectorByAutomationId('dialer');
   }
 
   get title() {

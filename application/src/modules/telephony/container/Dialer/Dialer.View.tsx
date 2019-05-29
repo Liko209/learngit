@@ -32,7 +32,7 @@ class DialerViewComponent extends React.Component<DialerViewProps> {
       ...rest
     } = this.props;
     return (
-      <JuiDialer {...rest} id={dialerId}>
+      <JuiDialer {...rest} id={dialerId} data-test-automation-id="dialer">
         {callState === CALL_STATE.INCOMING &&
           (incomingState === INCOMING_STATE.REPLY ? <Reply /> : <Incoming />)}
         {// Dialer view here
