@@ -15,8 +15,6 @@ import {
   ISpecialServiceNumber,
   AccountServiceInfo,
   IExtensionPhoneNumberList,
-  RCExtensionForwardingNumberInfo,
-  RCExtensionForwardingNumberRCList,
 } from '../../../api/ringcentral';
 import { jobScheduler, JOB_KEY } from '../../../framework/utils/jobSchedule';
 import { mainLogger } from 'foundation';
@@ -27,30 +25,24 @@ import { RCInfoService } from '../service';
 import { AccountService } from '../../account/service';
 import {
   SpecialNumberRuleModel,
-  ForwardingFlipNumberModel,
-  EForwardingFlipNumberType,
   EGetForwardingFlipNumberType,
+  ForwardingFlipNumberModel,
 } from '../types';
 import { AccountGlobalConfig } from 'sdk/module/account/config';
 
-const ForwardingNumberTypeMap = {
-  Home: EForwardingFlipNumberType.HOME,
-  Work: EForwardingFlipNumberType.WORK,
-  Mobile: EForwardingFlipNumberType.MOBILE,
-  PhoneLine: EForwardingFlipNumberType.PHONE_LINE,
-  Outage: EForwardingFlipNumberType.OUTAGE,
-  Other: EForwardingFlipNumberType.OTHER,
-};
-
 const OLD_EXIST_SPECIAL_NUMBER_COUNTRY = 1; // in old version, we only store US special number
 const EXTENSION_PHONE_NUMBER_LIST_COUNT = 1000;
+
+import { RCInfoForwardingNumberController } from './RCInfoForwardingNumberController';
 class RCInfoFetchController {
   private _isRCInfoJobScheduled: boolean;
   private _shouldIgnoreFirstTime: boolean;
+  private _forwardingNumberController: RCInfoForwardingNumberController;
 
   constructor() {
     this._isRCInfoJobScheduled = false;
     this._shouldIgnoreFirstTime = false;
+    this._forwardingNumberController = new RCInfoForwardingNumberController();
   }
 
   private get rcInfoUserConfig() {
@@ -113,7 +105,7 @@ class RCInfoFetchController {
       );
       this.scheduleRCInfoJob(
         JOB_KEY.FETCH_FORWARDING_NUMBER,
-        this.requestForwardingNumbers,
+        this._getForwardingNumberController().requestForwardingNumbers,
         false,
       );
       this._isRCInfoJobScheduled = true;
@@ -224,15 +216,6 @@ class RCInfoFetchController {
     notificationCenter.emit(RC_INFO.RC_SERVICE_INFO, accountServiceInfo);
   }
 
-  requestForwardingNumbers = async (): Promise<void> => {
-    const forwardingNumbers = await RCInfoApi.getForwardingNumbers({
-      perPage: 1000,
-    });
-    forwardingNumbers &&
-      (await this.rcInfoUserConfig.setForwardingNumbers(forwardingNumbers));
-    notificationCenter.emit(RC_INFO.RC_FORWARDING_NUMBERS, forwardingNumbers);
-  }
-
   async requestRCAccountRelativeInfo(): Promise<void> {
     this._shouldIgnoreFirstTime = true;
     await this.requestRCClientInfo();
@@ -325,42 +308,16 @@ class RCInfoFetchController {
   async getForwardingFlipNumbers(
     type: EGetForwardingFlipNumberType,
   ): Promise<ForwardingFlipNumberModel[]> {
-    // sync, do not await
-    this.requestForwardingNumbers();
-    // convert data into model for UI
-    const rawData = await this.rcInfoUserConfig.getForwardingNumbers();
-    return this._extractForwardingFlipNumbers(type, rawData);
+    return await this._getForwardingNumberController().getForwardingFlipNumbers(
+      type,
+    );
   }
 
-  private _extractForwardingFlipNumbers(
-    type: EGetForwardingFlipNumberType,
-    data: RCExtensionForwardingNumberRCList,
-  ): ForwardingFlipNumberModel[] {
-    const result: ForwardingFlipNumberModel[] = [];
-    if (data && data.records) {
-      data.records.forEach((record: RCExtensionForwardingNumberInfo) => {
-        if (
-          record.features &&
-          record.features.includes(type) &&
-          record.phoneNumber
-        ) {
-          const model = {
-            phoneNumber: record.phoneNumber,
-            flipNumber: Number(record.flipNumber) || 0,
-            label: record.label,
-            type: this._convertForwardingNumberTypeToEnum(record.type),
-          };
-          result.push(model);
-        }
-      });
+  private _getForwardingNumberController() {
+    if (!this._forwardingNumberController) {
+      this._forwardingNumberController = new RCInfoForwardingNumberController();
     }
-    return result;
-  }
-
-  private _convertForwardingNumberTypeToEnum(type: string) {
-    return ForwardingNumberTypeMap.hasOwnProperty(type)
-      ? ForwardingNumberTypeMap[type]
-      : EForwardingFlipNumberType.OTHER;
+    return this._forwardingNumberController;
   }
 }
 

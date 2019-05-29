@@ -13,11 +13,6 @@ import { RC_INFO } from '../../../../service/eventKey';
 import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
 import { AccountGlobalConfig } from '../../../account/config/AccountGlobalConfig';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
-import {
-  EGetForwardingFlipNumberType,
-  EForwardingFlipNumberType,
-} from '../../types';
-import { ForwardingNumberJsonData } from './ForwardingNumberJsonData';
 
 jest.mock('../../../account/config/AccountGlobalConfig');
 jest.mock('../../../permission');
@@ -499,58 +494,6 @@ describe('RCInfoFetchController', () => {
       expect(await rcInfoFetchController.getAccountServiceInfo()).toEqual(
         'test',
       );
-    });
-  });
-  describe('getForwardingFlipNumbers', () => {
-    it('should return empty if there is not data', async () => {
-      rcInfoFetchController[
-        'rcInfoUserConfig'
-      ].getForwardingNumbers = jest.fn().mockResolvedValue(undefined);
-      rcInfoFetchController[
-        'requestForwardingNumbers'
-      ] = jest.fn().mockResolvedValueOnce({});
-      const result = await rcInfoFetchController.getForwardingFlipNumbers(
-        EGetForwardingFlipNumberType.FLIP,
-      );
-      expect(result.length).toEqual(0);
-    });
-    it('should return correct forwarding numbers', async () => {
-      rcInfoFetchController[
-        'rcInfoUserConfig'
-      ].getForwardingNumbers = jest
-        .fn()
-        .mockResolvedValue(ForwardingNumberJsonData);
-      rcInfoFetchController[
-        'requestForwardingNumbers'
-      ] = jest.fn().mockResolvedValueOnce({});
-      const result = await rcInfoFetchController.getForwardingFlipNumbers(
-        EGetForwardingFlipNumberType.FORWARDING,
-      );
-      expect(result.map(item => item.phoneNumber)).toEqual([
-        '+16502095678',
-        '+16502096235',
-      ]);
-      expect(result[1].type).toEqual(EForwardingFlipNumberType.WORK);
-      expect(result[1].flipNumber).toEqual(3);
-    });
-    it('should return correct flip numbers', async () => {
-      rcInfoFetchController[
-        'rcInfoUserConfig'
-      ].getForwardingNumbers = jest
-        .fn()
-        .mockResolvedValue(ForwardingNumberJsonData);
-      rcInfoFetchController[
-        'requestForwardingNumbers'
-      ] = jest.fn().mockResolvedValueOnce({});
-      const result = await rcInfoFetchController.getForwardingFlipNumbers(
-        EGetForwardingFlipNumberType.FLIP,
-      );
-      expect(result.map(item => item.phoneNumber)).toEqual([
-        '+16502095678',
-        '+16502090011',
-      ]);
-      expect(result[1].type).toEqual(EForwardingFlipNumberType.HOME);
-      expect(result[1].flipNumber).toEqual(2);
     });
   });
 });
