@@ -15,6 +15,7 @@ enum ENTITY_NAME {
   'USER_PERMISSION' = 'userPermission',
   'USER_SETTING' = 'userSetting',
   'PHONE_NUMBER' = 'phoneNumber',
+  'CALL' = 'call',
 }
 
 enum HANDLER_TYPE {

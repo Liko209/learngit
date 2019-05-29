@@ -15,7 +15,7 @@ class InteractiveMessageItemService extends EntityBaseService<
   private _interactiveMessageItemController: InteractiveMessageItemController;
 
   constructor() {
-    super(false);
+    super({ isSupportedCache: false });
     this.setCheckTypeFunc((id: number) => {
       return GlipTypeUtil.isExpectedType(
         id,

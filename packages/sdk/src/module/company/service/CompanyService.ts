@@ -21,7 +21,7 @@ class CompanyService extends EntityBaseService<Company> {
   private _companyController: CompanyController;
 
   constructor() {
-    super(true, daoManager.getDao(CompanyDao), {
+    super({ isSupportedCache: true }, daoManager.getDao(CompanyDao), {
       basePath: '/company',
       networkClient: Api.glipNetworkClient,
     });

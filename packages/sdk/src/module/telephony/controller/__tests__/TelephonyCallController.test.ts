@@ -11,12 +11,29 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip';
+import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
+import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
+import { IdModel, ModelIdType } from 'sdk/framework/model';
+import { Call, HOLD_STATE, CALL_STATE } from '../../entity';
+import notificationCenter from 'sdk/service/notificationCenter';
+import { ENTITY } from 'sdk/service/eventKey';
+import { clear } from 'store2';
 
 jest.mock('voip');
+jest.mock('sdk/service/notificationCenter');
 
 describe('TelephonyCallController', () => {
   class MockDelegate implements ITelephonyCallDelegate {
     onCallStateChange(callId: string, state: RTC_CALL_STATE) {}
+  }
+
+  class MockEntitySource {
+    put() {}
+    update() {}
+  }
+
+  class MockEntityCache {
+    getSynchronously() {}
   }
 
   function clearMocks() {
@@ -28,11 +45,20 @@ describe('TelephonyCallController', () => {
   let mockDelegate;
   let callController: TelephonyCallController;
   let rtcCall: RTCCall;
+  let mockEntitySource: MockEntitySource;
+  let mockEntityCache: MockEntityCache;
   const callId = '123';
 
   function setup() {
     mockDelegate = new MockDelegate();
-    callController = new TelephonyCallController(mockDelegate);
+    mockEntitySource = new MockEntitySource();
+    mockEntityCache = new MockEntityCache();
+    callController = new TelephonyCallController(
+      1,
+      mockDelegate,
+      mockEntitySource,
+      mockEntityCache,
+    );
 
     rtcCall = new RTCCall(false, '', null, null, null);
     Object.assign(callController, {
@@ -41,7 +67,7 @@ describe('TelephonyCallController', () => {
     jest.spyOn(mockDelegate, 'onCallStateChange');
   }
 
-  beforeAll(() => {
+  beforeEach(() => {
     clearMocks();
     setup();
   });
@@ -73,6 +99,7 @@ describe('TelephonyCallController', () => {
   describe('hold', () => {
     it('should call rtc hold when controller hold is called', () => {
       jest.spyOn(rtcCall, 'hold');
+      callController._updateCallHoldState = jest.fn();
       callController.hold();
       expect(rtcCall.hold).toBeCalled();
     });
@@ -81,6 +108,7 @@ describe('TelephonyCallController', () => {
   describe('unhold', () => {
     it('should call rtc unhold when controller unhold is called', () => {
       jest.spyOn(rtcCall, 'unhold');
+      callController._updateCallHoldState = jest.fn();
       callController.unhold();
       expect(rtcCall.unhold).toBeCalled();
     });
@@ -164,10 +192,11 @@ describe('TelephonyCallController', () => {
   });
 
   describe('onCallStateChange', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       jest.spyOn(rtcCall, 'getCallInfo').mockReturnValue({
         uuid: callId,
       });
+      callController._handleCallStateChanged = jest.fn();
     });
     it('should pass the idle state to call controller', () => {
       callController.onCallStateChange(RTC_CALL_STATE.IDLE);
@@ -199,6 +228,86 @@ describe('TelephonyCallController', () => {
         callId,
         RTC_CALL_STATE.DISCONNECTED,
       );
+    });
+  });
+
+  describe('_updateCallHoldState', () => {
+    it('should update and notify entity changes ', () => {
+      const call = {
+        hold_state: 0,
+      };
+      callController._getCallEntity = jest.fn().mockReturnValue(call);
+      const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
+      callController._updateCallHoldState(HOLD_STATE.DISABLE);
+      expect(spy).toBeCalledWith(ENTITY.CALL, [
+        {
+          hold_state: HOLD_STATE.DISABLE,
+        },
+      ]);
+    });
+
+    it('should not update and notify when no entity is got', () => {
+      clearMocks();
+      callController._getCallEntity = jest.fn().mockReturnValue(null);
+      const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
+      callController._updateCallHoldState(HOLD_STATE.DISABLE);
+      expect(spy).not.toBeCalled();
+    });
+  });
+
+  describe('_handleCallStateChanged', () => {
+    it('should update call state and hold when state is connected', () => {
+      callController._getCallEntity = jest.fn().mockReturnValue({});
+      const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
+      callController._handleCallStateChanged(RTC_CALL_STATE.CONNECTED);
+      expect(spy).toBeCalledWith(ENTITY.CALL, [
+        {
+          call_state: CALL_STATE.CONNECTED,
+          hold_state: HOLD_STATE.IDLE,
+        },
+      ]);
+    });
+    it('should update call state and hold when state is connecting', () => {
+      callController._getCallEntity = jest.fn().mockReturnValue({});
+      const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
+      callController._handleCallStateChanged(RTC_CALL_STATE.CONNECTING);
+      expect(spy).toBeCalledWith(ENTITY.CALL, [
+        {
+          call_state: CALL_STATE.CONNECTING,
+        },
+      ]);
+    });
+
+    it('should update call state and hold when state is disconnected', () => {
+      callController._getCallEntity = jest.fn().mockReturnValue({});
+      const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
+      callController._handleCallStateChanged(RTC_CALL_STATE.DISCONNECTED);
+      expect(spy).toBeCalledWith(ENTITY.CALL, [
+        {
+          call_state: CALL_STATE.DISCONNECTED,
+        },
+      ]);
+    });
+  });
+
+  describe('setRtcCall', () => {
+    it('should update call info to entity', () => {
+      const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
+      callController._getCallEntity = jest.fn().mockReturnValue({});
+      callController.setRtcCall({
+        getCallInfo: jest.fn().mockReturnValue({
+          toNum: '1',
+          fromNum: '2',
+          uuid: '3',
+        }),
+      });
+      expect(spy).toBeCalledWith(ENTITY.CALL, [
+        {
+          to_num: '1',
+          from_num: '2',
+          call_id: '3',
+        },
+      ]);
     });
   });
 });

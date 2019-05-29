@@ -26,7 +26,7 @@ class RCInfoService extends EntityBaseService<IdModel>
   private _DBConfig: RCInfoUserConfig;
 
   constructor() {
-    super(false);
+    super({ isSupportedCache: false });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SERVICE.LOGIN]: this.requestRCInfo,

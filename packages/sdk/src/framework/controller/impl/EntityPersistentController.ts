@@ -180,7 +180,7 @@ class EntityPersistentController<
   }
 
   private _subscribeEntityChange() {
-    if (this.dao && this.entityCacheController) {
+    if (this.entityCacheController) {
       const eventKey: string = this.getEntityNotificationKey();
       notificationCenter.on(
         eventKey,

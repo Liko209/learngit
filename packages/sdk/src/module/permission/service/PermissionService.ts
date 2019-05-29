@@ -21,7 +21,7 @@ class PermissionService extends EntityBaseService<UserPermission>
   private permissionController: PermissionController;
 
   constructor() {
-    super(false);
+    super({ isSupportedCache: false });
     this.permissionController = new PermissionController();
   }
 
