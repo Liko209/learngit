@@ -129,7 +129,7 @@ class Jupiter {
     newable: interfaces.Newable<T>,
   ) {
     this._ensureInjectable(newable);
-    return this._container.bind<T>(this._getRealId(identifier)).to(newable);
+    return this._container.bind<T>(this._getRealId<T>(identifier)).to(newable);
   }
 
   registerClass<T>(newable: interfaces.Newable<T>) {
@@ -233,7 +233,7 @@ class Jupiter {
     }
   }
 
-  private _getRealId(identifier: interfaces.ServiceIdentifier<T>) {
+  private _getRealId<T>(identifier: interfaces.ServiceIdentifier<T>) {
     return identifier[IS_DECORATOR] ? identifier.toString() : identifier;
   }
 

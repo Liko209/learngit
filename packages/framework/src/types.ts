@@ -17,6 +17,7 @@ type Provide<T> =
 
 type ModuleConfig = {
   entry?: interfaces.Newable<AbstractModule>;
+  provides: Provide<any>[];
   binding?: (jupiter: Jupiter) => void;
 };
 
