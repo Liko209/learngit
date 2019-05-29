@@ -137,10 +137,10 @@ class TelephonyCallController implements IRTCCallDelegate {
     });
   }
 
-  flip(phoneNumber: string) {
+  flip(flipNumber: number) {
     return new Promise((resolve, reject) => {
       this._saveCallActionCallback(RTC_CALL_ACTION.FLIP, resolve, reject);
-      this._rtcCall.flip(phoneNumber);
+      this._rtcCall.flip(flipNumber);
     });
   }
 

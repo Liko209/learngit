@@ -107,7 +107,7 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     });
   }
 
-  flip(target: string) {
+  flip(target: number) {
     this._eventQueue.push(
       { name: CallFsmEvent.FLIP, params: target },
       (params: any) => {

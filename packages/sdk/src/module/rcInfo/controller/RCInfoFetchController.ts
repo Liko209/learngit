@@ -225,8 +225,11 @@ class RCInfoFetchController {
   }
 
   requestForwardingNumbers = async (): Promise<void> => {
-    const forwardingNumbers = await RCInfoApi.getForwardingNumbers();
-    await this.rcInfoUserConfig.setForwardingNumbers(forwardingNumbers);
+    const forwardingNumbers = await RCInfoApi.getForwardingNumbers({
+      perPage: 1000,
+    });
+    forwardingNumbers &&
+      (await this.rcInfoUserConfig.setForwardingNumbers(forwardingNumbers));
     notificationCenter.emit(RC_INFO.RC_FORWARDING_NUMBERS, forwardingNumbers);
   }
 

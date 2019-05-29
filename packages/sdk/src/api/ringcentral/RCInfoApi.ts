@@ -25,70 +25,56 @@ import {
 } from './types/common';
 
 class RCInfoApi extends Api {
-  static requestRCAPIVersion() {
-    const query = {
-      path: RINGCENTRAL_API.API_VERSION,
+  private static _requestParameters(options: any) {
+    return {
       method: NETWORK_METHOD.GET,
       authFree: false,
       via: NETWORK_VIA.HTTP,
       HAPriority: HA_PRIORITY.HIGH,
+      ...options,
     };
+  }
+  static requestRCAPIVersion() {
+    const query = this._requestParameters({
+      path: RINGCENTRAL_API.API_VERSION,
+    });
+
     return RCInfoApi.rcNetworkClient.http<RCAPIVersion>(query);
   }
 
   static requestRCClientInfo() {
-    const query = {
+    const query = this._requestParameters({
       path: RINGCENTRAL_API.API_CLIENT_INFO,
-      method: NETWORK_METHOD.GET,
-      authFree: false,
-      via: NETWORK_VIA.HTTP,
-      HAPriority: HA_PRIORITY.HIGH,
-    };
+    });
     return RCInfoApi.rcNetworkClient.http<RCClientInfo>(query);
   }
 
   static requestRCAccountInfo() {
-    const query = {
+    const query = this._requestParameters({
       path: RINGCENTRAL_API.API_ACCOUNT_INFO,
-      method: NETWORK_METHOD.GET,
-      authFree: false,
-      via: NETWORK_VIA.HTTP,
-      HAPriority: HA_PRIORITY.HIGH,
-    };
+    });
     return RCInfoApi.rcNetworkClient.http<RCAccountInfo>(query);
   }
 
   static requestRCExtensionInfo() {
-    const query = {
+    const query = this._requestParameters({
       path: RINGCENTRAL_API.API_EXTENSION_INFO,
-      method: NETWORK_METHOD.GET,
-      authFree: false,
-      via: NETWORK_VIA.HTTP,
-      HAPriority: HA_PRIORITY.HIGH,
-    };
+    });
     return RCInfoApi.rcNetworkClient.http<RCExtensionInfo>(query);
   }
 
   static requestRCRolePermissions() {
-    const query = {
+    const query = this._requestParameters({
       path: RINGCENTRAL_API.API_ROLE_PERMISSIONS,
-      method: NETWORK_METHOD.GET,
-      authFree: false,
-      via: NETWORK_VIA.HTTP,
-      HAPriority: HA_PRIORITY.HIGH,
-    };
+    });
     return RCInfoApi.rcNetworkClient.http<RCRolePermissions>(query);
   }
 
   static getSpecialNumbers(request?: ISpecialServiceRequest) {
-    const query = {
+    const query = this._requestParameters({
       path: RINGCENTRAL_API.API_SPECIAL_SERVICE_NUMBER,
-      method: NETWORK_METHOD.GET,
-      authFree: false,
-      via: NETWORK_VIA.HTTP,
       params: request,
-      HAPriority: HA_PRIORITY.HIGH,
-    };
+    });
     return RCInfoApi.rcNetworkClient.http<ISpecialServiceNumber>(query);
   }
 
@@ -97,60 +83,41 @@ class RCInfoApi extends Api {
     const localDataVersionWithQuote = `\"${localDataVersion}\"`;
     extraHeaders[HTTP_HEADER_KEY.ACCEPT] = CONTENT_TYPE.XML;
     extraHeaders[HTTP_HEADER_KEY.IF_NONE_MATCH] = localDataVersionWithQuote;
-    const query = {
+    const query = this._requestParameters({
       path: RINGCENTRAL_API.API_PHONE_PARSER_DATA,
-      method: NETWORK_METHOD.GET,
-      authFree: false,
-      via: NETWORK_VIA.HTTP,
       headers: extraHeaders,
-      HAPriority: HA_PRIORITY.HIGH,
-    };
+    });
     return RCInfoApi.rcNetworkClient.http<string>(query);
   }
 
   static getDialingPlan(request?: IDialingPlanRequest) {
-    const query = {
+    const query = this._requestParameters({
       path: RINGCENTRAL_API.API_DIALING_PLAN,
-      method: NETWORK_METHOD.GET,
-      authFree: false,
-      via: NETWORK_VIA.HTTP,
       params: request,
-      HAPriority: HA_PRIORITY.HIGH,
-    };
+    });
     return RCInfoApi.rcNetworkClient.http<DialingPlan>(query);
   }
 
   static getExtensionPhoneNumberList(request?: IPhoneNumberRequest) {
-    const query = {
+    const query = this._requestParameters({
       path: RINGCENTRAL_API.API_EXTENSION_PHONE_NUMBER,
-      method: NETWORK_METHOD.GET,
-      authFree: false,
-      via: NETWORK_VIA.HTTP,
       params: request,
-      HAPriority: HA_PRIORITY.HIGH,
-    };
+    });
     return RCInfoApi.rcNetworkClient.http<IExtensionPhoneNumberList>(query);
   }
 
   static getAccountServiceInfo() {
-    const query = {
+    const query = this._requestParameters({
       path: RINGCENTRAL_API.API_SERVICE_INFO,
-      method: NETWORK_METHOD.GET,
-      authFree: false,
-      via: NETWORK_VIA.HTTP,
-      HAPriority: HA_PRIORITY.HIGH,
-    };
+    });
     return RCInfoApi.rcNetworkClient.http<AccountServiceInfo>(query);
   }
 
   static getForwardingNumbers(request?: IForwardingNumberRequest) {
-    const query = {
+    const query = this._requestParameters({
       path: RINGCENTRAL_API.API_FORWARDING_NUMBERS,
-      method: NETWORK_METHOD.GET,
-      authFree: false,
-      via: NETWORK_VIA.HTTP,
-      HAPriority: HA_PRIORITY.HIGH,
-    };
+      params: request,
+    });
     return RCInfoApi.rcNetworkClient.http<RCExtensionForwardingNumberRCList>(
       query,
     );
