@@ -58,6 +58,7 @@ class Context {
 
     // deployment
     URI deployUri
+    URI lockUri
     String deployCredentialId
     String deployBaseDir
 
@@ -76,6 +77,17 @@ class Context {
     String appHeadHash
     String juiHeadHash
     String rcuiHeadHash
+
+    String buildResult
+    String buildDescription
+    String saSummary
+    String coverageSummary
+    String coverageDiff
+    String coverageDiffDetail
+    String e2eReport
+    Boolean buildAppSuccess = false
+    Boolean buildJuiSuccess = false
+    Boolean buildRcuiSuccess = false
 
     List<String> failedStages = [] as List<String>
 
@@ -245,7 +257,13 @@ class BaseJob {
     }
 
     // ssh based distributed file lock
+    void lockKey(URI lockUri, String key) {
+        ssh(lockUri, "touch ${lockUri.getPath()}/${key}".toString())
+    }
 
+    Boolean hasKeyBeenLocked(URI lockUri, String key) {
+        'true' == ssh(remoteUri, "[ -f ${lockUri.getPath()}/${key} ] && echo 'true' || echo 'false'".toString())
+    }
 }
 
 class JupiterJob extends BaseJob {
@@ -258,11 +276,13 @@ class JupiterJob extends BaseJob {
     }
 
     void collectFacts() {
+        // test commands
         jenkins.sh 'env'
-        jenkins.sh 'df -h'
         jenkins.sh 'uptime'
-        jenkins.sh 'git --version'
+        jenkins.sh 'df -h'
         jenkins.sh 'node -v'
+        jenkins.sh 'tar --version'
+        jenkins.sh 'git --version'
         jenkins.sh 'rsync --version'
         jenkins.sh 'grep --version'
         jenkins.sh 'which tr'
@@ -311,7 +331,8 @@ class JupiterJob extends BaseJob {
         // change in tests and autoDevOps directory should not trigger application build
         // for git 1.9, there is an easy way to exclude files
         // but most slaves are centos, whose git's version is still 1.8, we use a cmd pipeline here for compatibility
-        // the reason to use stableSha here is if HEAD is generate via fast-forward, the commit will be changed when re-running the job due to timestamp changed
+        // the reason to use stableHash is if HEAD is generate via fast-forward,
+        // the commit will be changed when re-running the job due to timestamp changed
         context.appHeadHash = getStableHash(
             jenkins.sh(returnStdout: true, script: '''ls -1 | grep -Ev '^(tests|autoDevOps)$' | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- ''').trim()
         )
@@ -324,6 +345,8 @@ class JupiterJob extends BaseJob {
             jenkins.sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/rcui''').trim()
         )
     }
+
+
 
     void run() {
         context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'running')
@@ -366,6 +389,7 @@ Context context = new Context(
     deployCredentialId          : params.DEPLOY_CREDENTIAL,
     deployUri                   : new URI(params.DEPLOY_CREDENTIAL),
     deployBaseDir               : params.DEPLOY_BASE_DIR,
+    lockUri                     : new URI(params.LOCK_URI),
 
     rcCredentialId              : params.E2E_RC_CREDENTIAL,
     e2eSiteEnv                  : params.E2E_SITE_ENV,
