@@ -209,6 +209,9 @@
       "NewMessageError": "We are having trouble creating this new message. Please try again later.",
       "disabledText": "This team is read-only"
     },
+    "fileOptionMenu": {
+      "deleteFile": "Delete File"
+    },
     "Messages": "Messages",
     "message": "Message"
   },
