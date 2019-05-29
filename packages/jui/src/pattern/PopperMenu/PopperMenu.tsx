@@ -23,8 +23,10 @@ type JuiPopperMenuProps = {
   open: boolean;
   value?: number;
   noTransition?: boolean;
-  onClose: any;
+  onClose: (event?: React.ChangeEvent<{}>) => void;
   disablePortal?: boolean;
+  onMouseEnter?: (event: React.MouseEvent) => void;
+  onMouseLeave?: (event: React.MouseEvent) => void;
 };
 
 class JuiPopperMenu extends React.PureComponent<JuiPopperMenuProps> {
@@ -40,6 +42,8 @@ class JuiPopperMenu extends React.PureComponent<JuiPopperMenuProps> {
       anchorEl,
       onClose,
       disablePortal,
+      onMouseEnter,
+      onMouseLeave,
     } = this.props;
     const id = open ? 'popper-menu' : '';
     return (
@@ -48,7 +52,7 @@ class JuiPopperMenu extends React.PureComponent<JuiPopperMenuProps> {
        ClickAwayListener only finds the first child
        so must be use div include Anchor and JuiPopper
       https://github.com/mui-org/material-ui/blob/master/packages/material-ui/src/ClickAwayListener/ClickAwayListener.js#L19-L22 */}
-        <div>
+        <div onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
           <Anchor aria-describedby={id} tooltipForceHide={open} />
           <JuiPopper
             id={id}

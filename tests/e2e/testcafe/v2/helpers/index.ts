@@ -15,9 +15,11 @@ import { ScenarioHelper } from './scenario-helper';
 import { H } from './utils';
 
 import { IUser, IStep, IStepOptions, INotification } from '../models';
+import { Step } from './log-helper'
 import { AppRoot } from '../page-models/AppRoot';
 import { SITE_URL, SITE_ENV } from '../../config';
 import { WebphoneHelper } from './webphone-helper';
+import { NetworkHelper } from './network-helper';
 import { NotificationHelper } from './notification';
 import { UpgradeHelper } from './upgrade';
 import { WebphoneSession } from '../webphone/session';
@@ -80,6 +82,10 @@ class Helper {
     return new WebphoneHelper(this.t);
   }
 
+  get networkHelper() {
+    return new NetworkHelper(this.t);
+  }
+
   get scenarioHelper() {
     return new ScenarioHelper(this.t, this.sdkHelper);
   }
@@ -122,7 +128,7 @@ class Helper {
   }
 
   async withLog(step: IStep | string,
-    cb: (step?: IStep) => Promise<any>,
+    cb: (step?: Step) => Promise<any>,
     options?: boolean | IStepOptions) {
     return await this.logHelper.withLog(step, cb, options);
   }
@@ -236,6 +242,13 @@ class Helper {
     return ClientFunction((key, val) => localStorage.setItem(key, val));
   }
 
+  async scrollBy(selector: Selector | any, x: number, y: number) {
+    await ClientFunction((_x, _y) => {
+      selector().scrollBy(_x, _y);
+    },
+      { dependencies: { selector } })(x, y);
+  }
+
   async userRole(user: IUser, cb?: (appRoot) => Promise<any>) {
     return await Role(SITE_URL, async (t) => {
       const app = new AppRoot(t);
@@ -246,6 +259,19 @@ class Helper {
         await cb(app);
       }
     }, { preserveUrl: true, });
+  }
+
+  async withNetworkOff(cb: () => Promise<any>) {
+    await this.networkHelper.withNetworkOff(cb);
+  }
+
+  turnOnNetwork(suppressError: boolean = true) {
+    this.networkHelper.setNetwork(true, suppressError);
+    this.networkHelper.waitUntilReachable();
+  }
+
+  turnOffNetwork(suppressError: boolean = true) {
+    this.networkHelper.setNetwork(false, suppressError);
   }
 
   // a temporary method:  need time to wait back-end and front-end sync umi data.

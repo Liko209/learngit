@@ -190,14 +190,14 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
       if (errorHelper.isNetworkConnectionError(error)) {
         Notification.flashToast({
           ...defaultNotificationOptions,
-          message: 'people.prompt.SorryWeWereNotAbleToSaveTheUpdate',
+          message: 'people.prompt.SaveTeamUpdateErrorForNetworkIssue',
         });
         return false;
       }
       if (errorHelper.isBackEndError(error)) {
         Notification.flashToast({
           ...defaultNotificationOptions,
-          message: 'people.prompt.SorryWeWereNotAbleToSaveTheUpdateTryAgain',
+          message: 'people.prompt.SaveTeamUpdateErrorForServerIssue',
         });
         return false;
       }

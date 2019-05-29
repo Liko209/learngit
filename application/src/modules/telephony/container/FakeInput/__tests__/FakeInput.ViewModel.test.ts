@@ -20,10 +20,28 @@ beforeAll(() => {
     matchContactByPhoneNumber: jest.fn(),
   });
   fakeInputViewModel = new FakeInputViewModel();
+  fakeInputViewModel._telephonyStore.onDialerFocus = jest.fn();
+  fakeInputViewModel._telephonyStore.onDialerBlur = jest.fn();
 });
 
 describe('KeypadViewModel', () => {
   it('Should return empty string', async () => {
     expect(fakeInputViewModel.enteredKeys).toBe('');
+  });
+
+  it('should call onDialerFocus()', async () => {
+    fakeInputViewModel.onFocus();
+    const _telephonyStore: TelephonyStore = container.get(TelephonyStore);
+    expect(_telephonyStore.onDialerFocus).toBeCalled();
+  });
+
+  it('should call onDialerBlur()', async () => {
+    fakeInputViewModel.onBlur();
+    const _telephonyStore: TelephonyStore = container.get(TelephonyStore);
+    expect(_telephonyStore.onDialerBlur).toBeCalled();
+  });
+
+  it('Should return empty undefined', async () => {
+    expect(fakeInputViewModel.showCursor).toBe(undefined);
   });
 });

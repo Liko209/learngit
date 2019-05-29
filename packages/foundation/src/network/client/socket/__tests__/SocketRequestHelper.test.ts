@@ -67,19 +67,37 @@ describe('SocketManager', () => {
       clearMocks();
       setUp();
     });
-    it('should call removeRequestTimer and handleRegisteredRequest', () => {
+    it('should call removeRequestTimer when socket disconnect and requestTimerMap is not empty', done => {
       const spy1 = jest.spyOn(manager, '_setRequestTimer');
       const spy2 = jest.spyOn(manager, '_setRequestTimer');
       const spy3 = jest.spyOn(manager, '_removeRequestTimer');
-      const spy4 = jest.spyOn(manager, '_handleRegisteredRequest');
-      manager.newRequest(getFakeRequest());
-      manager.newRequest(getFakeRequest());
-      manager.newRequest(getFakeRequest());
-      expect(spy1).toBeCalledTimes(3);
-      expect(spy2).toBeCalledTimes(3);
+      manager.newRequest(getFakeRequest()).catch(() => {});
+      manager.newRequest(getFakeRequest()).catch(() => {});
+      manager.newRequest(getFakeRequest()).catch(() => {});
       manager.onSocketDisconnect();
-      expect(spy3).toBeCalledTimes(3);
-      expect(spy4).toBeCalledTimes(3);
+      setTimeout(() => {
+        expect(spy1).toBeCalledTimes(3);
+        expect(spy2).toBeCalledTimes(3);
+        expect(spy3).toBeCalledTimes(3);
+        done();
+      });
+    });
+
+    it('should not call removeRequestTimer when socket disconnect but requestTimerMap is empty', done => {
+      const spy1 = jest.spyOn(manager, '_setRequestTimer');
+      const spy2 = jest.spyOn(manager, '_setRequestTimer');
+      const spy3 = jest.spyOn(manager, '_removeRequestTimer');
+      manager.newRequest(getFakeRequest()).catch(() => {});
+      manager.newRequest(getFakeRequest()).catch(() => {});
+      manager.newRequest(getFakeRequest()).catch(() => {});
+      manager['requestTimerMap'].clear();
+      manager.onSocketDisconnect();
+      setTimeout(() => {
+        expect(spy1).toBeCalledTimes(3);
+        expect(spy2).toBeCalledTimes(3);
+        expect(spy3).toBeCalledTimes(0);
+        done();
+      });
     });
   });
 });

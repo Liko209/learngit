@@ -26,6 +26,7 @@ jest.mock('sdk/module/env', () => {
 });
 
 describe('config', () => {
+  const OLD_ENV = process.env;
   beforeEach(() => {
     jest.clearAllMocks();
     const mockDirectoryConfig: DirectoryConfig = {
@@ -42,12 +43,53 @@ describe('config', () => {
     };
     (parseDirectoryConfig as jest.Mock).mockReturnValue(mockDirectoryConfig);
   });
+  afterEach(() => {
+    process.env = OLD_ENV;
+  });
   describe('getEnv()', () => {
     it('should return env ', () => {
       (AppEnvSetting.getEnv as jest.Mock).mockReturnValue('xm1');
       const config = new Config();
       expect(config.getEnv()).toEqual('xm1');
       expect(AppEnvSetting.getEnv).toBeCalled();
+    });
+  });
+  describe('isProductionAccount()', () => {
+    afterEach(() => {
+      jest.resetAllMocks();
+      jest.resetAllMocks();
+      jest.clearAllMocks();
+    });
+    it('should return true if is public build ', () => {
+      process.env = {
+        JUPITER_ENV: 'public',
+        ...OLD_ENV,
+      };
+      const config = new Config();
+      expect(config.isProductionAccount()).toBeTruthy();
+    });
+    it('should return true if production server config is selected in production build', () => {
+      process.env = {
+        JUPITER_ENV: 'production',
+        ...OLD_ENV,
+      };
+      const config = new Config();
+      expect(config.isProductionAccount()).toBeTruthy();
+    });
+
+    it('should return true if production server config is selected if is not production build', () => {
+      process.env = {
+        JUPITER_ENV: 'test',
+        ...OLD_ENV,
+      };
+      (AppEnvSetting.getEnv as jest.Mock).mockReturnValue('production');
+      const config = new Config();
+      expect(config.isProductionAccount()).toBeTruthy();
+    });
+    it('should return false in other cases', () => {
+      (AppEnvSetting.getEnv as jest.Mock).mockReturnValue('xm1');
+      const config = new Config();
+      expect(config.isProductionAccount()).toBeFalsy();
     });
   });
   describe('getAllEnv()', () => {
