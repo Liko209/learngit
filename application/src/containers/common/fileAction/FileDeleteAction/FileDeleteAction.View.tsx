@@ -11,6 +11,7 @@ import { Dialog } from '@/containers/Dialog';
 import { withTranslation, Trans } from 'react-i18next';
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
 import { observer } from 'mobx-react';
+import { JuiIconography } from 'jui/foundation/Iconography';
 
 @observer
 class FileDeleteActionViewComponent extends Component<
@@ -40,8 +41,19 @@ class FileDeleteActionViewComponent extends Component<
 
   render() {
     const { canDelete, t } = this.props;
+    const Icon = (
+      <JuiIconography iconColor={['grey', '500']} iconSize="small">
+        delete
+      </JuiIconography>
+    );
+
     return (
-      <JuiMenuItem disabled={!canDelete} color="red" onClick={this.deleteFile}>
+      <JuiMenuItem
+        icon={Icon}
+        disabled={!canDelete}
+        color="red"
+        onClick={this.deleteFile}
+      >
         {t('message..deleteFile')}
       </JuiMenuItem>
     );

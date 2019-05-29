@@ -32,7 +32,7 @@ class Component extends React.Component<Props, State> {
         onClick={this.openPopper}
         tooltipForceHide={tooltipForceHide}
       >
-        more_horiz
+        more_vert
       </JuiIconButton>
     );
   }
