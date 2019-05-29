@@ -80,10 +80,10 @@ class TelephonyService {
   }
 
   private _onReceiveIncomingCall = async (callInfo: TelephonyCallInfo) => {
-    const isDefaultPhoneApp =
+    const _isJupiterDefaultApp =
       getSingleEntity(ENTITY_NAME.PROFILE, 'callOption') ===
       CALLING_OPTIONS.GLIP;
-    if (!isDefaultPhoneApp) {
+    if (!_isJupiterDefaultApp) {
       return;
     }
     const { fromName, fromNum, callId } = callInfo;
@@ -456,12 +456,15 @@ class TelephonyService {
       this._telephonyStore.closeDialer();
     }
   }
+  private get _isJupiterDefaultApp() {
+    return (
+      getSingleEntity(ENTITY_NAME.PROFILE, 'callOption') ===
+      CALLING_OPTIONS.GLIP
+    );
+  }
 
   makeCall = async (toNumber: string) => {
-    const isJupiterDefaultPhoneApp =
-      getSingleEntity(ENTITY_NAME.PROFILE, 'callOption') ===
-      CALLING_OPTIONS.GLIP;
-    if (!isJupiterDefaultPhoneApp) {
+    if (!this._isJupiterDefaultApp) {
       return this.makeRCPhoneCall(toNumber);
     }
     // FIXME: move this logic to SDK and always using callerID
