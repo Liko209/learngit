@@ -7,7 +7,7 @@
 import { ForwardingNumberJsonData } from './ForwardingNumberJsonData';
 import { RCInfoForwardingNumberController } from '../RCInfoForwardingNumberController';
 import {
-  EGetForwardingFlipNumberType,
+  EForwardingNumberFeatureType,
   EForwardingFlipNumberType,
 } from '../../types';
 import notificationCenter from '../../../../service/notificationCenter';
@@ -41,7 +41,7 @@ describe('RCInfoForwardingNumberController', () => {
         'requestForwardingNumbers'
       ] = jest.fn().mockResolvedValueOnce({});
       const result = await forwardingController.getForwardingFlipNumbers(
-        EGetForwardingFlipNumberType.FLIP,
+        EForwardingNumberFeatureType.FLIP,
       );
       expect(result.length).toEqual(0);
     });
@@ -55,7 +55,7 @@ describe('RCInfoForwardingNumberController', () => {
         'requestForwardingNumbers'
       ] = jest.fn().mockResolvedValueOnce({});
       const result = await forwardingController.getForwardingFlipNumbers(
-        EGetForwardingFlipNumberType.FORWARDING,
+        EForwardingNumberFeatureType.FORWARDING,
       );
       expect(result.map(item => item.phoneNumber)).toEqual([
         '+16502095678',
@@ -74,7 +74,7 @@ describe('RCInfoForwardingNumberController', () => {
         'requestForwardingNumbers'
       ] = jest.fn().mockResolvedValueOnce({});
       const result = await forwardingController.getForwardingFlipNumbers(
-        EGetForwardingFlipNumberType.FLIP,
+        EForwardingNumberFeatureType.FLIP,
       );
       expect(result.map(item => item.phoneNumber)).toEqual([
         '+16502095678',

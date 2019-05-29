@@ -25,7 +25,7 @@ import { RCInfoService } from '../service';
 import { AccountService } from '../../account/service';
 import {
   SpecialNumberRuleModel,
-  EGetForwardingFlipNumberType,
+  EForwardingNumberFeatureType,
   ForwardingFlipNumberModel,
 } from '../types';
 import { AccountGlobalConfig } from 'sdk/module/account/config';
@@ -306,7 +306,7 @@ class RCInfoFetchController {
   }
 
   async getForwardingFlipNumbers(
-    type: EGetForwardingFlipNumberType,
+    type: EForwardingNumberFeatureType,
   ): Promise<ForwardingFlipNumberModel[]> {
     return await this._getForwardingNumberController().getForwardingFlipNumbers(
       type,
