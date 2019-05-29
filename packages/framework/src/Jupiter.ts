@@ -31,11 +31,17 @@ class Jupiter {
   private _disposedListenerMap = new Map<interfaces.ServiceIdentifier<any>[], any[]>();
 
   registerModule(
-    { entry, binding }: ModuleConfig,
+    { entry, provides, binding }: ModuleConfig,
     afterBootstrap?: () => void,
   ): void {
     if (binding) {
       binding(this);
+    }
+
+    if (provides) {
+      provides.forEach((provide: Provide<any>) => {
+        this.bindProvide(provide);
+      });
     }
 
     if (entry) {
