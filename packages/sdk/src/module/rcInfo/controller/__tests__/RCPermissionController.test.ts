@@ -152,7 +152,7 @@ describe('RCInfoFetchController', () => {
       );
       expect(res).toBeTruthy();
     });
-    it('should return false when user has flip permission', async () => {
+    it('should return false when user has not flip permission', async () => {
       mockFetchController.getRCExtensionInfo.mockReturnValueOnce({
         serviceFeatures: FULL_RC_PERMISSION_JSON.serviceFeatures,
       });

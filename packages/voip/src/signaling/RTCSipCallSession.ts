@@ -260,7 +260,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     }
   }
 
-  flip(target: number) {
+  flip(target: string) {
     this._session.flip(target).then(
       () => {
         this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.FLIP);
