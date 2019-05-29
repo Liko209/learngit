@@ -16,27 +16,19 @@ import { withDialogOrNewWindow } from '../../HOC';
 import { Incoming } from '../Incoming';
 import { CALL_STATE } from '../../FSM';
 import { DialerKeypadHeader } from '../DialerKeypadHeader';
-import { Reply } from '../Reply';
-import { INCOMING_STATE } from '../../store';
 
 @observer
 class DialerViewComponent extends React.Component<DialerViewProps> {
   dialerHeaderRef: RefObject<any> = createRef();
 
-  render() {
-    const {
-      callState,
-      keypadEntered,
-      incomingState,
-      dialerId,
-      ...rest
-    } = this.props;
-    return (
-      <JuiDialer {...rest} id={dialerId} data-test-automation-id="dialer">
-        {callState === CALL_STATE.INCOMING &&
-          (incomingState === INCOMING_STATE.REPLY ? <Reply /> : <Incoming />)}
-        {// Dialer view here
-        callState !== CALL_STATE.INCOMING && (
+  renderDialer = () => {
+    const { callState, keypadEntered } = this.props;
+    switch (callState) {
+      case CALL_STATE.INCOMING:
+        <Incoming />;
+
+      default:
+        return (
           <>
             <JuiHeaderContainer>
               <DialerTitleBar />
@@ -48,7 +40,15 @@ class DialerViewComponent extends React.Component<DialerViewProps> {
             </JuiHeaderContainer>
             <DialerContainer dialerHeaderRef={this.dialerHeaderRef} />
           </>
-        )}
+        );
+    }
+  }
+
+  render() {
+    const { dialerId, ...rest } = this.props;
+    return (
+      <JuiDialer {...rest} id={dialerId} data-test-automation-id="dialer">
+        {this.renderDialer()}
       </JuiDialer>
     );
   }
