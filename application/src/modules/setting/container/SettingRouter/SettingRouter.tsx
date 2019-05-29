@@ -1,17 +1,22 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-05-29 17:09:48
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React, { Component } from 'react';
+import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import {
   Switch,
-  Route,
   Redirect,
   withRouter,
   RouteComponentProps,
 } from 'react-router-dom';
 import { jupiter } from 'framework';
-import { SettingStore, emptyPageFilter } from '../../store';
-import { SETTING_ROUTE_ROOT } from '../../constant';
-import { SettingPage } from '../SettingPage';
 import { ISettingService } from '@/interface/setting';
+import { SettingStore } from '../../store';
+import { SETTING_ROUTE_ROOT } from '../../constant';
+import { SettingRoute } from './SettingRoute';
 
 @observer
 class SettingRouterComponent extends Component<RouteComponentProps> {
@@ -23,24 +28,18 @@ class SettingRouterComponent extends Component<RouteComponentProps> {
     return jupiter.get<ISettingService>(ISettingService);
   }
 
-  componentDidMount() {
-    if (!this._settingStore.currentPage) {
-      this._settingService.goToSettingPage(
-        this._settingStore.pages.filter(emptyPageFilter)[0].id,
-      );
-    }
+  @computed
+  get pageIds() {
+    return this._settingStore.getNoEmptyPages();
   }
 
-  private _renderRoutes() {
-    return this._settingStore.pages.filter(emptyPageFilter).map(page => {
-      return (
-        <Route
-          key={page.id}
-          path={`${SETTING_ROUTE_ROOT}${page.path}`}
-          component={() => <SettingPage id={page.id} />}
-        />
-      );
-    });
+  componentDidMount() {
+    if (!this._settingStore.currentPage) {
+      const defaultPage = this.pageIds[0];
+      if (defaultPage) {
+        this._settingService.goToSettingPage(defaultPage);
+      }
+    }
   }
 
   render() {
@@ -55,6 +54,12 @@ class SettingRouterComponent extends Component<RouteComponentProps> {
         {this._renderRoutes()}
       </Switch>
     );
+  }
+
+  private _renderRoutes() {
+    return this.pageIds.map(pageId => (
+      <SettingRoute key={pageId} pageId={pageId} />
+    ));
   }
 }
 

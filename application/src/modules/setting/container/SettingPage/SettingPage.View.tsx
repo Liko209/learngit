@@ -6,14 +6,11 @@
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { SettingPageViewProps, SettingPageProps } from './types';
 import styled from 'jui/foundation/styled-components';
 import { JuiConversationPageHeader } from 'jui/pattern/ConversationPageHeader';
-import { JuiSettingSection } from 'jui/pattern/SettingSection';
-import { SettingSection, SettingItem } from '@/interface/setting';
 import { ScrollMemory } from '@/modules/common/container/ScrollMemory';
-import { SettingItemProxy } from './SettingItemProxy';
-import { compareWeight } from '../../store/SettingStore';
+import { SettingSection } from '../SettingSection';
+import { SettingPageViewProps, SettingPageProps } from './types';
 
 // TODO move to jui
 const StyledSettingPage = styled.div`
@@ -33,7 +30,7 @@ class SettingPageViewComponent extends Component<Props> {
   render() {
     if (!this.props.page) return null;
 
-    const { t, id, page, sections } = this.props;
+    const { t, id, page } = this.props;
     return (
       <StyledSettingPage data-test-automation-id="SettingContainer">
         <JuiConversationPageHeader
@@ -41,31 +38,16 @@ class SettingPageViewComponent extends Component<Props> {
           title={t(page.title)}
         />
         <StyledSettingPageContent>
-          {this._renderSections(sections)}
+          {this._renderSections()}
         </StyledSettingPageContent>
         <ScrollMemory id={`SETTING_PAGE_${id}`} />
       </StyledSettingPage>
     );
   }
 
-  private _renderSections(sections: SettingSection[]) {
-    const { t } = this.props;
-    return sections.map(section => {
-      return (
-        <JuiSettingSection
-          key={section.id}
-          title={t(section.title)}
-          data-test-automation-id="SettingSectionContainer"
-        >
-          {this._renderSettingItems(section.items.sort(compareWeight))}
-        </JuiSettingSection>
-      );
-    });
-  }
-
-  private _renderSettingItems(items: SettingItem[]) {
-    return items.map(item => (
-      <SettingItemProxy key={item.id} id={item.id} type={item.type} />
+  private _renderSections() {
+    return this.props.sectionIds.map(sectionId => (
+      <SettingSection key={sectionId} sectionId={sectionId} />
     ));
   }
 }

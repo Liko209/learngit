@@ -3,15 +3,16 @@
  * @Date: 2019-05-27 10:48:36
  * Copyright © RingCentral. All rights reserved.
  */
-import { SettingPage, SettingSection } from '@/interface/setting';
+import { SettingSection } from '@/interface/setting';
+import { StorePage } from '../../store/SettingStoreScope';
 
 type SettingPageProps = {
   id: string;
 };
 
 type SettingPageViewProps = {
-  page?: SettingPage;
-  sections: SettingSection[];
+  page?: StorePage;
+  sectionIds: SettingSection['id'][];
 };
 
 export { SettingPageProps, SettingPageViewProps };

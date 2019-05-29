@@ -7,11 +7,7 @@ import { computed, action } from 'mobx';
 import { jupiter } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ISettingService } from '@/interface/setting';
-import {
-  SettingStore,
-  emptyPageFilter,
-  compareWeight,
-} from '@/modules/setting/store';
+import { SettingStore } from '@/modules/setting/store';
 
 class SettingLeftRailViewModel extends StoreViewModel {
   private get _settingStore(): SettingStore {
@@ -24,7 +20,9 @@ class SettingLeftRailViewModel extends StoreViewModel {
 
   @computed
   get pages() {
-    return this._settingStore.pages.filter(emptyPageFilter).sort(compareWeight);
+    return this._settingStore
+      .getNoEmptyPages()
+      .map(pageId => this._settingStore.getPageById(pageId));
   }
 
   @computed

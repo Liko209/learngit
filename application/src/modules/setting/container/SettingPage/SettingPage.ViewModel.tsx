@@ -6,10 +6,11 @@
 import { computed } from 'mobx';
 import { container } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
-import { SettingSection } from '@/interface/setting';
-import { SettingStore, emptySectionFilter, compareWeight } from '../../store';
+import { SettingStore } from '../../store';
+import { SettingPageViewProps } from './types';
 
-class SettingPageViewModel extends StoreViewModel {
+class SettingPageViewModel extends StoreViewModel
+  implements SettingPageViewProps {
   get _settingStore(): SettingStore {
     return container.get(SettingStore);
   }
@@ -20,12 +21,11 @@ class SettingPageViewModel extends StoreViewModel {
   }
 
   @computed
-  get sections() {
-    let result: SettingSection[] = [];
-    if (this.page) {
-      result = this.page.sections;
+  get sectionIds() {
+    if (!this.page) {
+      return [];
     }
-    return result.filter(emptySectionFilter).sort(compareWeight);
+    return this._settingStore.getNoEmptyPageSections(this.page.id);
   }
 }
 
