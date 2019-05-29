@@ -153,8 +153,7 @@ class NetworkRequestHandler
         this.pendingTasks.get(REQUEST_PRIORITY.NORMAL),
       );
       const requestBuilder = task.request as NetworkRequestBuilder;
-      requestBuilder.via = via;
-      task.request = requestBuilder.build();
+      task.request = requestBuilder.build(via);
       return task.request;
     }
 

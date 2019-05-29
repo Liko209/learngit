@@ -228,6 +228,12 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       this._telephonyCallDelegate.sendToVoiceMail();
   }
 
+  async park(callId: string) {
+    return (
+      this._telephonyCallDelegate && (await this._telephonyCallDelegate.park())
+    );
+  }
+
   ignore(callId: string) {
     this._telephonyCallDelegate && this._telephonyCallDelegate.ignore();
   }

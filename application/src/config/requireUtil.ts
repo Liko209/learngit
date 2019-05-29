@@ -5,7 +5,13 @@
  */
 
 import { DirectoryConfig } from './types';
+import _ from 'lodash';
+
 function parseDirectoryConfig(): DirectoryConfig {
+  if (process.env.NODE_ENV === 'test' && !_.isFunction(require.context)) {
+    return {} as DirectoryConfig;
+  }
+
   const requireContext = require.context(
     './',
     true,

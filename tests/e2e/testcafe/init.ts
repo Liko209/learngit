@@ -137,6 +137,7 @@ export async function finishRun() {
 // inject external service into test case
 export function setupCase(accountType: string) {
   return async (t: TestController) => {
+    h(t).turnOnNetwork();
     t.ctx.runnerOpts = RUNNER_OPTS;
 
     h(t).allureHelper.initReporter();
@@ -196,6 +197,7 @@ export function setupCase(accountType: string) {
 
 export function teardownCase() {
   return async (t: TestController) => {
+    h(t).turnOnNetwork();
     if (mockClient)
       await mockClient.releaseBrowser(h(t).mockRequestId);
 

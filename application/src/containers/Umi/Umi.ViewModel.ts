@@ -8,14 +8,20 @@ import _ from 'lodash';
 import { container } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getEntity, getGlobalValue } from '@/store/utils';
-import { UmiProps, UmiViewProps, UMI_SECTION_TYPE } from './types';
+import {
+  UmiProps,
+  UmiViewProps,
+  UMI_SECTION_TYPE,
+  UnreadCounts,
+} from './types';
 import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { AppStore } from '@/modules/app/store';
-import { StateService } from 'sdk/module/state';
+import { StateService, GROUP_BADGE_TYPE } from 'sdk/module/state';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import BadgeModel from '@/store/models/Badge';
 
 class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   private _appStore = container.get(AppStore);
@@ -32,7 +38,7 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   private get _unreadInfo() {
     let unreadInfo = {
       unreadCount: 0,
-      mentionCount: 0,
+      important: false,
     };
 
     if (this.props.type === UMI_SECTION_TYPE.SINGLE) {
@@ -41,15 +47,12 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
       unreadInfo = this._getSectionUnreadInfo();
     }
 
-    return {
-      unreadCount: unreadInfo.unreadCount,
-      important: !!unreadInfo.mentionCount,
-    };
+    return unreadInfo;
   }
 
   private _getSingleUnreadInfo() {
     if (!this.props.id) {
-      return { unreadCount: 0, mentionCount: 0 };
+      return { unreadCount: 0, important: false };
     }
 
     const groupState: GroupStateModel = getEntity(
@@ -62,32 +65,66 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
         ? groupState.unreadMentionsCount
         : groupState.unreadCount) || 0;
 
-    return { unreadCount, mentionCount: groupState.unreadMentionsCount || 0 };
+    return {
+      unreadCount,
+      important: unreadCount ? !!groupState.unreadMentionsCount : false,
+    };
   }
 
   private _getSectionUnreadInfo() {
-    let unreadInfo = {
+    let counts: UnreadCounts = {
       unreadCount: 0,
       mentionCount: 0,
     };
 
-    if (this.props.type === UMI_SECTION_TYPE.FAVORITE) {
-      unreadInfo = getGlobalValue(GLOBAL_KEYS.FAVORITE_UNREAD);
-    } else if (this.props.type === UMI_SECTION_TYPE.DIRECT_MESSAGE) {
-      unreadInfo = getGlobalValue(GLOBAL_KEYS.DIRECT_MESSAGE_UNREAD);
-    } else if (this.props.type === UMI_SECTION_TYPE.TEAM) {
-      unreadInfo = getGlobalValue(GLOBAL_KEYS.TEAM_UNREAD);
-    } else {
-      unreadInfo = getGlobalValue(GLOBAL_KEYS.TOTAL_UNREAD);
+    switch (this.props.type) {
+      case UMI_SECTION_TYPE.ALL: {
+        counts = this._getMergedUnreadCounts([
+          GROUP_BADGE_TYPE.TEAM,
+          GROUP_BADGE_TYPE.DIRECT_MESSAGE,
+          GROUP_BADGE_TYPE.FAVORITE_DM,
+          GROUP_BADGE_TYPE.FAVORITE_TEAM,
+        ]);
+        break;
+      }
+      case UMI_SECTION_TYPE.FAVORITE: {
+        counts = this._getMergedUnreadCounts([
+          GROUP_BADGE_TYPE.FAVORITE_DM,
+          GROUP_BADGE_TYPE.FAVORITE_TEAM,
+        ]);
+        break;
+      }
+      case UMI_SECTION_TYPE.DIRECT_MESSAGE: {
+        counts = this._getMergedUnreadCounts([GROUP_BADGE_TYPE.DIRECT_MESSAGE]);
+        break;
+      }
+      case UMI_SECTION_TYPE.TEAM: {
+        counts = this._getMergedUnreadCounts([GROUP_BADGE_TYPE.TEAM]);
+        break;
+      }
     }
 
-    return this._removeCurrentUmiFromSection(unreadInfo);
+    return this._removeCurrentUmiFromSection(counts);
   }
 
-  private _removeCurrentUmiFromSection(unreadInfo: {
-    unreadCount: number;
-    mentionCount: number;
-  }) {
+  private _getMergedUnreadCounts(ids: string[]): UnreadCounts {
+    const counts: UnreadCounts = { unreadCount: 0, mentionCount: 0 };
+    ids.forEach((id: string) => {
+      const badge: BadgeModel = getEntity(ENTITY_NAME.BADGE, id);
+      if (
+        id === GROUP_BADGE_TYPE.TEAM ||
+        id === GROUP_BADGE_TYPE.FAVORITE_TEAM
+      ) {
+        counts.unreadCount += badge.mentionCount;
+      } else {
+        counts.unreadCount += badge.unreadCount;
+      }
+      counts.mentionCount += badge.mentionCount;
+    });
+    return counts;
+  }
+
+  private _removeCurrentUmiFromSection(counts: UnreadCounts) {
     untracked(() => {
       const shouldShowUMI = getGlobalValue(GLOBAL_KEYS.SHOULD_SHOW_UMI);
       if (!shouldShowUMI) {
@@ -97,26 +134,51 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
         const stateService = ServiceLoader.getInstance<StateService>(
           ServiceConfig.STATE_SERVICE,
         );
-        const currentUnreadInfo = stateService.getSingleUnreadInfo(
+        const currentUnreadInfo = stateService.getSingleGroupBadge(
           currentConversationId,
         );
         if (
           currentUnreadInfo &&
-          (this.props.type === UMI_SECTION_TYPE.ALL ||
-            this.props.type === currentUnreadInfo.section)
+          currentUnreadInfo.unreadCount &&
+          this._isInThisSection(currentUnreadInfo.id)
         ) {
-          if (currentUnreadInfo.unreadCount > 0) {
-            if (currentUnreadInfo.isTeam) {
-              unreadInfo.unreadCount -= currentUnreadInfo.mentionCount;
-            } else {
-              unreadInfo.unreadCount -= currentUnreadInfo.unreadCount;
-            }
+          if (currentUnreadInfo.isTeam) {
+            counts.unreadCount =
+              counts.unreadCount - currentUnreadInfo.mentionCount;
+          } else {
+            counts.unreadCount =
+              counts.unreadCount - currentUnreadInfo.unreadCount;
           }
-          unreadInfo.mentionCount -= currentUnreadInfo.mentionCount;
+          counts.mentionCount =
+            (counts.mentionCount || 0) - currentUnreadInfo.mentionCount;
         }
       }
     });
-    return unreadInfo;
+    return {
+      unreadCount: counts.unreadCount,
+      important: !!counts.mentionCount,
+    };
+  }
+
+  private _isInThisSection(badgeType: string): boolean {
+    if (this.props.type === UMI_SECTION_TYPE.ALL) {
+      return true;
+    }
+    switch (badgeType) {
+      case GROUP_BADGE_TYPE.TEAM: {
+        return this.props.type === UMI_SECTION_TYPE.TEAM;
+      }
+      case GROUP_BADGE_TYPE.DIRECT_MESSAGE: {
+        return this.props.type === UMI_SECTION_TYPE.DIRECT_MESSAGE;
+      }
+      case GROUP_BADGE_TYPE.FAVORITE_TEAM: {
+        return this.props.type === UMI_SECTION_TYPE.FAVORITE;
+      }
+      case GROUP_BADGE_TYPE.FAVORITE_DM: {
+        return this.props.type === UMI_SECTION_TYPE.FAVORITE;
+      }
+    }
+    return false;
   }
 
   updateAppUmi() {
