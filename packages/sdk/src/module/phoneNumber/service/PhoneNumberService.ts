@@ -8,6 +8,11 @@ import { PhoneNumber } from '../entity';
 import { PhoneNumberController } from '../controller/PhoneNumberController';
 class PhoneNumberService extends EntityBaseService<PhoneNumber, string> {
   private _phoneNumberController: PhoneNumberController;
+
+  constructor() {
+    super({ isSupportedCache: false });
+  }
+
   async getById(id: string): Promise<PhoneNumber | null> {
     const phoneNumber: PhoneNumber = { id };
     return phoneNumber;

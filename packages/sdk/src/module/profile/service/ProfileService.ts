@@ -24,7 +24,7 @@ class ProfileService extends EntityBaseService<Profile>
   private profileController: ProfileController;
   private _profileSetting: ProfileSetting;
   constructor() {
-    super(true, daoManager.getDao(ProfileDao), {
+    super({ isSupportedCache: true }, daoManager.getDao(ProfileDao), {
       basePath: '/profile',
       networkClient: Api.glipNetworkClient,
     });

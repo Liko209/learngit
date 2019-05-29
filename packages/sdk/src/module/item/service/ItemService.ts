@@ -34,7 +34,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   private _itemServiceController: ItemServiceController;
 
   constructor() {
-    super(false, daoManager.getDao(ItemDao), {
+    super({ isSupportedCache: false }, daoManager.getDao(ItemDao), {
       basePath: '/item',
       networkClient: Api.glipNetworkClient,
     });

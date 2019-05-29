@@ -14,15 +14,15 @@ import { ITelephonyAccountDelegate } from './ITelephonyAccountDelegate';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SERVICE } from '../../../service/eventKey';
 import { MAKE_CALL_ERROR_CODE } from '../types';
-import { IdModel } from '../../../framework/model';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
+import { Call } from '../entity';
 
-class TelephonyService extends EntityBaseService<IdModel> {
+class TelephonyService extends EntityBaseService<Call> {
   private _telephonyEngineController: TelephonyEngineController;
   private _userConfig: TelephonyUserConfig;
 
   constructor() {
-    super(false);
+    super({ isSupportedCache: true, entityName: 'CALL' });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SERVICE.LOGOUT]: this.handleLogOut,
@@ -60,6 +60,9 @@ class TelephonyService extends EntityBaseService<IdModel> {
     callDelegate: ITelephonyCallDelegate,
   ) => {
     this.telephonyController.createAccount(accountDelegate, callDelegate);
+    this.telephonyController
+      .getAccountController()
+      .setDependentController(this.getEntityCacheController());
   }
 
   getAllCallCount = () => {

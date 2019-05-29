@@ -30,7 +30,7 @@ class PersonService extends EntityBaseService<Person>
   implements IPersonService {
   private _personController: PersonController;
   constructor() {
-    super(true, daoManager.getDao(PersonDao), {
+    super({ isSupportedCache: true }, daoManager.getDao(PersonDao), {
       basePath: '/person',
       networkClient: Api.glipNetworkClient,
     });

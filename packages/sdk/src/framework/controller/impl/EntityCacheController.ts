@@ -22,7 +22,7 @@ class EntityCacheController<
 
   private _initialStatus: CACHE_INITIAL_STATUS;
 
-  constructor() {
+  constructor(private _entityName?: string) {
     this._initialStatus = CACHE_INITIAL_STATUS.NONE;
   }
 
@@ -104,7 +104,7 @@ class EntityCacheController<
   }
 
   getEntityName(): string {
-    return '';
+    return this._entityName ? this._entityName : '';
   }
 
   async getAll(): Promise<T[]> {

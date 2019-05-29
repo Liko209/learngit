@@ -31,6 +31,8 @@ import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { TelephonyService } from '../service';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { PhoneNumberAnonymous } from 'sdk/module/phoneNumber/types';
+import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
+import { Call } from '../entity';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
   private _telephonyAccountDelegate: ITelephonyAccountDelegate;
@@ -40,6 +42,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   private _makeCallController: MakeCallController;
   private _isDisposing: boolean = false;
   private _logoutCallback: LogoutCallback;
+  private _entityCacheController: IEntityCacheController<Call>;
 
   constructor(
     rtcEngine: RTCEngine,
@@ -51,6 +54,10 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this._rtcAccount.handleProvisioning();
     this._callDelegate = callDelegate;
     this._makeCallController = new MakeCallController();
+  }
+
+  setDependentController(entityCacheController: IEntityCacheController<Call>) {
+    this._entityCacheController = entityCacheController;
   }
 
   private _checkVoipStatus(): MAKE_CALL_ERROR_CODE {
@@ -131,7 +138,9 @@ class TelephonyAccountController implements IRTCAccountDelegate {
         return MAKE_CALL_ERROR_CODE.MAX_CALLS_REACHED;
       }
       this._telephonyCallDelegate = new TelephonyCallController(
+        Date.now(),
         this._callDelegate,
+        this._entityCacheController,
       );
       this._telephonyCallDelegate.setCallStateCallback(this.callStateChanged);
 
@@ -157,21 +166,16 @@ class TelephonyAccountController implements IRTCAccountDelegate {
         );
       }
 
-      if (!call && this._telephonyCallDelegate) {
-        delete this._telephonyCallDelegate;
-      }
-
-      // if (makeCallResult === RTC_STATUS_CODE.NUMBER_INVALID) {
-      //   result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
-      //   break;
-      // } else if (makeCallResult === RTC_STATUS_CODE.MAX_CALLS_REACHED) {
-      //   result = MAKE_CALL_ERROR_CODE.MAX_CALLS_REACHED;
-      //   break;
-      // } else
       if (!call) {
-        result = MAKE_CALL_ERROR_CODE.INVALID_STATE;
+        result = MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE;
+        this._telephonyCallDelegate && delete this._telephonyCallDelegate;
         break;
       }
+
+      this._telephonyCallDelegate.setRtcCall(call);
+      this._telephonyAccountDelegate.onMadeOutgoingCall(
+        this._telephonyCallDelegate.getEntityId().toString(),
+      );
     } while (false);
 
     if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
@@ -307,7 +311,9 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       return;
     }
     this._telephonyCallDelegate = new TelephonyCallController(
+      Date.now(),
       this._callDelegate,
+      this._entityCacheController,
     );
     this._telephonyCallDelegate.setRtcCall(call);
     this._telephonyCallDelegate.setCallStateCallback(this.callStateChanged);

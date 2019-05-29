@@ -185,7 +185,7 @@ describe('TelephonyAccountController', () => {
       });
       jest.spyOn(rtcAccount, 'makeCall').mockReturnValueOnce(null);
       const res = await accountController.makeCall(toNum);
-      expect(res).toBe(MAKE_CALL_ERROR_CODE.INVALID_STATE);
+      expect(res).toBe(MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE);
       expect(rtcAccount.makeCall).toBeCalled();
       expect(spy).toBeCalledWith('', RTC_CALL_STATE.DISCONNECTED);
     });

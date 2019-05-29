@@ -18,7 +18,7 @@ class PresenceService extends EntityBaseService<Presence> {
   private _presenceController: PresenceController;
 
   constructor(threshold: number = 29, interval: number = 200) {
-    super(false);
+    super({ isSupportedCache: false });
     this._presenceController = new PresenceController(threshold, interval);
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
