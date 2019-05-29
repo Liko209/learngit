@@ -2,7 +2,6 @@ import jenkins.model.*
 import java.net.URI
 
 class Context {
-    // jupiter
     final static String domain = 'fiji.gliprc.com'
     final static String releaseBranch = 'master'
     final static String integrationBranch = 'develop'
@@ -130,8 +129,43 @@ class Context {
     }
 }
 
+// Get started!
+Context context = new Context(
+    buildNode                   : params.BUILD_NODE?: env.BUILD_NODE,
+    buildUrl                    : env.BUILD_URL,
 
+    nodejsTool                  : params.NODEJS_TOOL,
+    npmRegistry                 : params.NPM_REGISTRY,
 
+    scmCredentialId             : params.SCM_CREDENTIAL,
+    gitlabSourceBranch          : env.gitlabSourceBranch,
+    gitlabTargetBranch          : env.gitlabTargetBranch,
+    gitlabSourceNamespace       : env.gitlabSourceNamespace,
+    gitlabTargetNamespace       : env.gitlabTargetNamespace,
+    gitlabSourceRepoSshURL      : env.gitlabSourceRepoSshURL,
+    gitlabTargetRepoSshURL      : env.gitlabTargetRepoSshURL,
+    gitlabUserEmail             : env.gitlabUserEmail,
+    gitlabMergeRequestLastCommit: env.gitlabMergeRequestLastCommit,
 
+    deployCredentialId          : params.DEPLOY_CREDENTIAL,
+    deployUri                   : new URI(params.DEPLOY_CREDENTIAL),
+    deployBaseDir               : params.DEPLOY_BASE_DIR,
+
+    rcCredentialId              : params.E2E_RC_CREDENTIAL,
+    e2eSiteEnv                  : params.E2E_SITE_ENV,
+    e2eSeleniumServer           : params.E2E_SELENIUM_SERVER,
+    e2eBrowsers                 : params.E2E_BROWSERS,
+    e2eConcurrency              : params.E2E_CONCURRENCY,
+    e2eExcludeTags              : params.E2E_EXCLUDE_TAGS?: '',
+    e2eEnableRemoteDashboard    : params.E2E_ENABLE_REMOTE_DASHBOARD,
+    e2eEnableMockServer         : params.E2E_ENABLE_MOCK_SERVER,
+)
+
+context.gitlabSourceBranch     = context.gitlabSourceBranch?: params.GITLAB_BRANCH
+context.gitlabTargetBranch     = context.gitlabTargetBranch?: context.gitlabSourceBranch
+context.gitlabSourceNamespace  = context.gitlabSourceNamespace?: params.GITLAB_NAMESPACE
+context.gitlabTargetNamespace  = context.gitlabTargetNamespace?: context.gitlabSourceNamespace
+context.gitlabSourceRepoSshURL = context.gitlabSourceRepoSshURL?: params.GITLAB_SSH_URL
+context.gitlabTargetRepoSshURL = context.gitlabTargetRepoSshURL?: context.gitlabSourceRepoSshURL
 
 
