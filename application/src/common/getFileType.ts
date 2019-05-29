@@ -74,4 +74,9 @@ function documentType(item: FileItemModel) {
   return doc;
 }
 
-export { getFileType, image, documentType };
+const VIEWER_SUPPORT_TYPE = ['doc', 'docx', 'ppt', 'pptx'];
+function isSupportFileViewer(type: string): boolean {
+  return VIEWER_SUPPORT_TYPE.some(v => type === v);
+}
+
+export { getFileType, image, documentType, isSupportFileViewer };
