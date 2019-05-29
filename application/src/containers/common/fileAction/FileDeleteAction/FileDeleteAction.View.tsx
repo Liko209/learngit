@@ -6,15 +6,15 @@
 
 import React, { Component } from 'react';
 import { JuiMenuItem } from 'jui/components/Menus';
-import { FileDeleteOptionViewProps } from './types';
+import { FileDeleteActionViewProps } from './types';
 import { Dialog } from '@/containers/Dialog';
 import { withTranslation, Trans } from 'react-i18next';
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
 import { observer } from 'mobx-react';
 
 @observer
-class FileDeleteOptionViewComponent extends Component<
-  FileDeleteOptionViewProps
+class FileDeleteActionViewComponent extends Component<
+  FileDeleteActionViewProps
 > {
   deleteFile = () => {
     const { t, fileName, handleDeleteFile } = this.props;
@@ -42,13 +42,13 @@ class FileDeleteOptionViewComponent extends Component<
     const { canDelete, t } = this.props;
     return (
       <JuiMenuItem disabled={!canDelete} color="red" onClick={this.deleteFile}>
-        {t('message.fileOptionMenu.deleteFile')}
+        {t('message..deleteFile')}
       </JuiMenuItem>
     );
   }
 }
 
-const FileDeleteOptionView = withTranslation('translations')(
-  FileDeleteOptionViewComponent,
+const FileDeleteActionView = withTranslation('translations')(
+  FileDeleteActionViewComponent,
 );
-export { FileDeleteOptionView };
+export { FileDeleteActionView };

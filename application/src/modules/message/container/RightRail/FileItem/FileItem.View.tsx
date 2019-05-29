@@ -18,7 +18,7 @@ import { FileItemViewProps } from './types';
 import { Download } from '@/containers/common/Download';
 import { SecondaryText } from '../common/SecondaryText.View';
 import { JuiButtonBar } from 'jui/components/Buttons';
-import { FileOptionMenu } from '@/containers/common/fileOptions';
+import { FileActionMenu } from '@/containers/common/fileAction';
 
 @observer
 class FileItemView extends Component<FileItemViewProps> {
@@ -40,7 +40,7 @@ class FileItemView extends Component<FileItemViewProps> {
           <JuiListItemSecondaryAction>
             <JuiButtonBar overlapSize={-2}>
               <Download url={downloadUrl} />
-              <FileOptionMenu fileId={id} disablePortal={true} />
+              <FileActionMenu fileId={id} disablePortal={true} />
             </JuiButtonBar>
           </JuiListItemSecondaryAction>
         )}

@@ -8,4 +8,4 @@ export * from './Favorite';
 export * from './Member';
 export * from './Privacy';
 export * from './PreloadImg';
-export * from './fileOptions';
+export * from './fileAction';

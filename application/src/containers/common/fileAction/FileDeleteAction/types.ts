@@ -6,12 +6,12 @@
 
 import { WithTranslation } from 'react-i18next';
 
-export type FileDeleteOptionProps = {
+export type FileDeleteActionProps = {
   fileId: number;
   postId?: number;
 };
 
-export type FileDeleteOptionViewProps = {
+export type FileDeleteActionViewProps = {
   canDelete: boolean;
   fileName: string;
   handleDeleteFile: Function;

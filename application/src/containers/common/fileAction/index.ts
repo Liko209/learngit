@@ -4,4 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export * from './FileOptionMenu';
+export * from './FileDeleteAction';
+export * from './FileActionMenu';

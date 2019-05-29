@@ -5,22 +5,19 @@
  */
 import React from 'react';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { FileDeleteOption } from '../FileDeleteOption';
+import { FileDeleteAction } from '../FileDeleteAction';
 import { JuiMenuList } from 'jui/components/Menus';
 import { JuiPopperMenu, AnchorProps } from 'jui/pattern/PopperMenu';
 import { WithTranslation, withTranslation } from 'react-i18next';
 
-type FileOptionMenuProps = {
+type Props = {
   fileId: number;
   postId?: number;
   disablePortal?: boolean;
 } & WithTranslation;
 
 type State = { open: boolean; anchorEl: EventTarget | null };
-class FileOptionMenuComponent extends React.Component<
-  FileOptionMenuProps,
-  State
-> {
+class Component extends React.Component<Props, State> {
   state = {
     open: false,
     anchorEl: null,
@@ -64,13 +61,13 @@ class FileOptionMenuComponent extends React.Component<
         disablePortal={disablePortal}
       >
         <JuiMenuList>
-          <FileDeleteOption fileId={fileId} postId={postId} />
+          <FileDeleteAction fileId={fileId} postId={postId} />
         </JuiMenuList>
       </JuiPopperMenu>
     );
   }
 }
 
-const FileOptionMenu = withTranslation('translations')(FileOptionMenuComponent);
+const FileActionMenu = withTranslation('translations')(Component);
 
-export { FileOptionMenu, FileOptionMenuProps };
+export { FileActionMenu, Props };

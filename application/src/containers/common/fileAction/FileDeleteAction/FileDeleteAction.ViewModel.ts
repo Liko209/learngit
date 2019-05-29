@@ -14,9 +14,9 @@ import { ENTITY_NAME } from '@/store';
 import { StoreViewModel } from '@/store/ViewModel';
 // import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 // import { AccountService } from 'sdk/module/account';
-import { FileDeleteOptionProps } from './types';
+import { FileDeleteActionProps } from './types';
 
-class FileDeleteOptionViewModel extends StoreViewModel<FileDeleteOptionProps> {
+class FileDeleteActionViewModel extends StoreViewModel<FileDeleteActionProps> {
   @observable
   conversationId: number;
 
@@ -74,4 +74,4 @@ class FileDeleteOptionViewModel extends StoreViewModel<FileDeleteOptionProps> {
   }
 }
 
-export { FileDeleteOptionViewModel };
+export { FileDeleteActionViewModel };

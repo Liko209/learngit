@@ -25,7 +25,7 @@ import { UploadFileTracker } from './UploadFileTracker';
 import { Download } from '@/containers/common/Download';
 import { accelerateURL } from '@/common/accelerateURL';
 import moize from 'moize';
-import { FileOptionMenu } from '@/containers/common/fileOptions';
+import { FileActionMenu } from '@/containers/common/fileAction';
 
 const SQUARE_SIZE = 180;
 const FutureAttachmentItem = withFuture(AttachmentItem);
@@ -109,7 +109,7 @@ class FilesView extends React.Component<FilesViewProps> {
     (downloadUrl: string, fileId: number, postId: number) => {
       return [
         <Download key="download-action" url={downloadUrl} />,
-        <FileOptionMenu key="more-action" fileId={fileId} postId={postId} />,
+        <FileActionMenu key="more-action" fileId={fileId} postId={postId} />,
       ];
     },
   );
