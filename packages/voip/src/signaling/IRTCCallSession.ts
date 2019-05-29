@@ -12,7 +12,7 @@ interface IRTCCallSession extends EventEmitter2 {
   setSession(session: any): void;
   getInviteResponse(): any;
   hangup(): void;
-  flip(target: string): void;
+  flip(target: number): void;
   transfer(target: string): void;
   forward(target: string): void;
   startRecord(): void;

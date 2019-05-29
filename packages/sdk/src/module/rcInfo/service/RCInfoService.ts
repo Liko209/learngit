@@ -12,7 +12,7 @@ import {
   ERCServiceFeaturePermission,
   ERCWebSettingUri,
   ForwardingFlipNumberModel,
-  EGetForwardingFlipNumberType,
+  EForwardingNumberFeatureType,
 } from '../types';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { AccountService } from '../../account/service';
@@ -239,13 +239,13 @@ class RCInfoService extends EntityBaseService<IdModel>
   async getForwardingNumberList(): Promise<ForwardingFlipNumberModel[]> {
     return await this.getRCInfoController()
       .getRCInfoFetchController()
-      .getForwardingFlipNumbers(EGetForwardingFlipNumberType.FORWARDING);
+      .getForwardingFlipNumbers(EForwardingNumberFeatureType.FORWARDING);
   }
 
   async getFlipNumberList(): Promise<ForwardingFlipNumberModel[]> {
     return await this.getRCInfoController()
       .getRCInfoFetchController()
-      .getForwardingFlipNumbers(EGetForwardingFlipNumberType.FLIP);
+      .getForwardingFlipNumbers(EForwardingNumberFeatureType.FLIP);
   }
 }
 
