@@ -195,7 +195,6 @@ class BaseJob {
             }
         }
     }
-
 }
 
 class JupiterJob extends BaseJob {
@@ -224,9 +223,18 @@ class JupiterJob extends BaseJob {
     }
 
     void run() {
+        context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'running')
         cancelOldBuildOfSameCause()
+
         jenkins.node(context.buildNode) {
-            stage(name: 'collect facts'){ collectFacts() }
+            String nodejsHome = jenkins.tool context.nodejsTool
+            jenkins.withEnv([
+                "PATH+NODEJS=${nodejsHome}/bin",
+                'TZ=UTC-8',
+                'SENTRYCLI_CDNURL=https://cdn.npm.taobao.org/dist/sentry-cli',
+            ]) {
+                stage(name: 'collect facts'){ collectFacts() }
+            }
         }
     }
 }
