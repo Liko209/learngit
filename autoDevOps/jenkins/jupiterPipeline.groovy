@@ -1,21 +1,40 @@
 import jenkins.model.*
+import com.dabsquared.gitlabjenkins.cause.GitLabWebHookCause
 import java.net.URI
 
 class Context {
-    final static String domain = 'fiji.gliprc.com'
-    final static String releaseBranch = 'master'
-    final static String integrationBranch = 'develop'
+    final static String SUCCESS_EMOJI  = ':white_check_mark:'
+    final static String FAILURE_EMOJI  = ':negative_squared_cross_mark:'
+    final static String ABORTED_EMOJI  = ':no_entry:'
+    final static String UPWARD_EMOJI   = ':chart_with_upwards_trend:'
+    final static String DOWNWARD_EMOJI = ':chart_with_downwards_trend:'
+
+    final static String DOMAIN             = 'fiji.gliprc.com'
+    final static String RELEASE_BRANCH     = 'master'
+    final static String INTEGRATION_BRANCH = 'develop'
 
     static Boolean isStableBranch(String branch) {
         branch ==~ /^(develop)|(master)|(release.*)|(stage.*)|(hotfix.*)$/
     }
 
     static Boolean isIntegrationBranch(String branch) {
-        branch == integrationBranch
+        branch == INTEGRATION_BRANCH
     }
 
     static Boolean isReleaseBranch(String branch) {
-        branch == releaseBranch
+        branch == RELEASE_BRANCH
+    }
+
+    static String tagToGlipLink(String text) {
+        text.replaceAll(/<a\b[^>]*?href="(.*?)"[^>]*?>(.*?)<\/a>/, '[$2]($1)')
+    }
+
+    static String tagToUrl(String text) {
+        text.replaceAll(/<a\b[^>]*?href="(.*?)"[^>]*?>(.*?)<\/a>/, '$1')
+    }
+
+    static String urlToTag(String url) {
+        """<a href="${url}">${url}</a>""".toString()
     }
 
     // jenkins
@@ -53,9 +72,11 @@ class Context {
     Boolean e2eEnableMockServer
 
     // runtime
-    String appHeadSha = null
-    String juiHeadSha = null
-    String rcuiHeadSha = null
+    String appHeadSha
+    String juiHeadSha
+    String rcuiHeadSha
+
+    List<String> failedStages = [] as List<String>
 
     Boolean getIsMerge() {
         gitlabSourceBranch != gitlabTargetBranch
@@ -105,15 +126,15 @@ class Context {
     }
 
     String getAppUrl() {
-        "https://${subDomain}.${domain}".toString()
+        "https://${subDomain}.${DOMAIN}".toString()
     }
 
     String getJuiUrl() {
-        "https://${subDomain}-jui.${domain}".toString()
+        "https://${subDomain}-jui.${DOMAIN}".toString()
     }
 
     String getRcuiUrl() {
-        "https://${subDomain}-rcui.${domain}".toString()
+        "https://${subDomain}-rcui.${DOMAIN}".toString()
     }
 
     String getAppHeadShaTarball() {
@@ -127,7 +148,68 @@ class Context {
     String getRcuiHeadShaTarball() {
         "${deployBaseDir}/rcui-${rcuiHeadSha}.tar.gz".toString()
     }
+
 }
+
+class BaseJob {
+    def jenkins
+
+    void addFailedStage(String name) {}
+
+    void cancelOldBuildOfSameCause() {
+        jenkins.GitLabWebHookCause currentBuildCause = jenkins.currentBuild.rawBuild.getCause(jenkins.GitLabWebHookCause.class)
+        if (null == currentBuildCause)
+            return
+        def currentCauseData = currentBuildCause.getData()
+
+        jenkins.currentBuild.rawBuild.getParent().getBuilds().each { build ->
+            if (!build.isBuilding() || jenkins.currentBuild.rawBuild.getNumber() <= build.getNumber())
+                return
+            jenkins.GitLabWebHookCause cause = build.getCause(jenkins.GitLabWebHookCause.class)
+            if (null == cause)
+                return
+            def causeData = cause.getData()
+
+            if (currentCauseData.sourceBranch == causeData.sourceBranch
+                && currentCauseData.sourceRepoName == causeData.sourceRepoName
+                && currentCauseData.targetBranch == causeData.targetBranch
+                && currentCauseData.targetRepoName == causeData.targetRepoName) {
+                build.doStop()
+                jenkins.echo "build ${build.getFullDisplayName()} is terminated"
+            }
+        }
+    }
+
+    def stage(Map args, Closure block) {
+        assert args.name, 'stage name is required'
+        String  name     = args.name
+        int     time  = (null == args.timeout) ? 1800: args.timeout
+        Boolean activity = (null == args.activity) ? true: args.activity
+        jenkins.timeout(time: time, activity: activity, unit: 'SECONDS') {
+            try {
+                jenkins.stage(name, block)
+            } catch (e) {
+                addFailedStage(name)
+                throw e
+            }
+        }
+    }
+
+}
+
+
+class JupiterJob extends BaseJob {
+    Context context
+
+    void addFailedStage(String name) {
+        context.failedStages.add(name)
+    }
+
+    void run() {
+
+    }
+}
+
 
 // Get started!
 Context context = new Context(
@@ -169,3 +251,5 @@ context.gitlabSourceRepoSshURL = context.gitlabSourceRepoSshURL?: params.GITLAB_
 context.gitlabTargetRepoSshURL = context.gitlabTargetRepoSshURL?: context.gitlabSourceRepoSshURL
 
 
+JupiterJob job = new JupiterJob(jenkins: this, context: context)
+job.run()
