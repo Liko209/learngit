@@ -5,10 +5,10 @@
  */
 import { uniq } from 'lodash';
 import { observable, action, computed, createAtom } from 'mobx';
+import { ESettingItemState } from 'sdk/framework/model/setting/types';
 import { SettingPage, SettingSection, SettingItem } from '@/interface/setting';
 import { SettingStoreScope } from './SettingStoreScope';
 import { getSettingItemEntity } from './utils';
-import { ESettingItemState } from 'sdk/src/framework/model/setting/types';
 
 function compareWeight<T extends { weight: number }>(left: T, right: T) {
   return left.weight - right.weight;

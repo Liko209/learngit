@@ -5,6 +5,7 @@
  */
 import { computed } from 'mobx';
 import { container } from 'framework';
+import { ESettingItemState } from 'sdk/framework/model/setting';
 import { UserSettingEntity } from 'sdk/module/setting';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getEntity } from '@/store/utils';
@@ -12,7 +13,6 @@ import SettingModel from '@/store/models/UserSetting';
 import { ENTITY_NAME } from '@/store/constants';
 import { SettingStore } from '../../../store';
 import { SettingItemProps } from '../types';
-import { ESettingItemState } from 'sdk/src/framework/model/setting';
 
 class BaseSettingItemViewModel<
   T extends SettingItemProps
