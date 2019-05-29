@@ -20,7 +20,10 @@ import { showImageViewer } from '@/containers/Viewer';
 import { getFileSize } from './helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
-import { isSupportFileViewer } from '@/common/getFileType';
+import {
+  isSupportFileViewer,
+  isFileReadyForViewer,
+} from '@/common/getFileType';
 import { withFuture, FutureCreator } from 'jui/hoc/withFuture';
 import { UploadFileTracker } from './UploadFileTracker';
 import { Download } from '@/containers/common/Download';
@@ -181,6 +184,8 @@ class FilesView extends React.Component<FilesViewProps> {
           const { status } = versions[getCurrentVersionIndex(id)];
           const iconType = getFileIcon(type);
           const supportFileViewer = isSupportFileViewer(type);
+          console.log('looper1', status);
+          const fileReadyForViewer = isFileReadyForViewer(status);
           if (id < 0) {
             return this._renderItem(id, progresses, name);
           }
@@ -191,7 +196,7 @@ class FilesView extends React.Component<FilesViewProps> {
               size={`${getFileSize(size)}`}
               url={accelerateURL(previewUrl)!}
               iconType={iconType}
-              isLoading={true || (supportFileViewer && status !== 'ready')}
+              disabled={supportFileViewer && !fileReadyForViewer}
               Actions={<Download url={downloadUrl} />}
             />
           );

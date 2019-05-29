@@ -79,4 +79,14 @@ function isSupportFileViewer(type: string): boolean {
   return VIEWER_SUPPORT_TYPE.some(v => type === v);
 }
 
-export { getFileType, image, documentType, isSupportFileViewer };
+function isFileReadyForViewer(status?: string): boolean {
+  return status === 'ready';
+}
+
+export {
+  getFileType,
+  image,
+  documentType,
+  isSupportFileViewer,
+  isFileReadyForViewer,
+};

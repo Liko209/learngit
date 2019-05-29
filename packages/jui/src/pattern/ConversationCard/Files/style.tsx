@@ -12,7 +12,11 @@ import {
   JuiTypography,
   JuiTypographyProps,
 } from '../../../foundation/Typography';
-import { JuiCardMedia, JuiCard } from '../../../components/Cards';
+import {
+  JuiCardMedia,
+  JuiCard,
+  JuiCardMediaProps,
+} from '../../../components/Cards';
 import styled from '../../../foundation/styled-components';
 import {
   spacing,
@@ -92,9 +96,18 @@ const FileCard = styled(JuiCard)`
   margin: ${spacing(0, 3, 3, 0)};
 `;
 
-const FileCardMedia = styled(JuiCardMedia)`
+type FileCardMediaWrapperProps = JuiCardMediaProps & { disabled?: boolean };
+
+const FileCardMediaWrapper = ({
+  disabled,
+  ...rest
+}: FileCardMediaWrapperProps) => <JuiCardMedia {...rest} />;
+
+const FileCardMedia = styled(FileCardMediaWrapper)`
   height: ${height(50)};
   background-color: ${palette('accent', 'ash')};
+  opacity: ${({ disabled, theme }) =>
+    disabled ? theme.palette.action.hoverOpacity * 3 : 1};
 `;
 
 const FileCardContent = styled(MuiCardContent)`
@@ -107,12 +120,6 @@ const CardFileName = styled.div`
   && {
     ${typography('body1')};
     color: ${palette('grey', '900')};
-  }
-`;
-
-const LoadingContainer = styled.div`
-  && {
-    position: relative;
   }
 `;
 
@@ -225,5 +232,4 @@ export {
   ImageMedia,
   FileExpandItem,
   FileExpandItemWrapper,
-  LoadingContainer,
 };
