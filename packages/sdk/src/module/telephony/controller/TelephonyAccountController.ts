@@ -234,6 +234,20 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     );
   }
 
+  async flip(callId: string, flipNumber: number) {
+    return (
+      this._telephonyCallDelegate &&
+      (await this._telephonyCallDelegate.flip(flipNumber))
+    );
+  }
+
+  async forward(callId: string, phoneNumber: string) {
+    return (
+      this._telephonyCallDelegate &&
+      (await this._telephonyCallDelegate.forward(phoneNumber))
+    );
+  }
+
   ignore(callId: string) {
     this._telephonyCallDelegate && this._telephonyCallDelegate.ignore();
   }

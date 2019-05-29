@@ -313,22 +313,90 @@ describe('TelephonyCallController', () => {
   });
 
   describe('park', () => {
-    it('should resolve with park id', async () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+    it('should resolve with park id', async (done: jest.DoneCallback) => {
       const options = {
         parkExtension: '801',
       };
-      setTimeout(() => {
-        callController.onCallActionSuccess(RTC_CALL_ACTION.PARK, options);
-      }, 10);
-      const result = await callController.park();
-      expect(result).toEqual(options);
+      expect.assertions(1);
+      callController.park().then(result => {
+        expect(result).toEqual(options);
+        done();
+      });
+      callController.onCallActionSuccess(RTC_CALL_ACTION.PARK, options);
     });
-    it('should reject with error', async () => {
-      setTimeout(() => {
-        callController.onCallActionFailed(RTC_CALL_ACTION.PARK);
-      }, 10);
-      const res = callController.park();
-      expect(res).rejects.toThrow();
+    it('should reject with error', (done: jest.DoneCallback) => {
+      expect.assertions(1);
+      callController
+        .park()
+        .then(result => {
+          done();
+        })
+        .catch(result => {
+          expect(result).toEqual('');
+          done();
+        });
+      callController.onCallActionFailed(RTC_CALL_ACTION.PARK);
+    });
+  });
+
+  describe('flip', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+    it('should resolve with success', (done: jest.DoneCallback) => {
+      const options = {};
+      expect.assertions(1);
+      callController.flip('number').then(result => {
+        expect(result).toEqual(options);
+        done();
+      });
+      callController.onCallActionSuccess(RTC_CALL_ACTION.FLIP, options);
+    });
+    it('should reject with error', (done: jest.DoneCallback) => {
+      expect.assertions(1);
+      callController
+        .flip('number')
+        .then(result => {
+          done();
+        })
+        .catch(result => {
+          expect(result).toEqual('');
+          done();
+        });
+      callController.onCallActionFailed(RTC_CALL_ACTION.FLIP);
+    });
+  });
+  describe('forward', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+    it('should resolve with success', (done: jest.DoneCallback) => {
+      const options = {};
+      expect.assertions(1);
+      callController.forward('number').then(result => {
+        expect(result).toEqual(options);
+        done();
+      });
+      callController.onCallActionSuccess(RTC_CALL_ACTION.FORWARD, options);
+    });
+    it('should reject with error', (done: jest.DoneCallback) => {
+      expect.assertions(1);
+      callController
+        .forward('number')
+        .then(result => {
+          done();
+        })
+        .catch(result => {
+          expect(result).toEqual('');
+          done();
+        });
+      callController.onCallActionFailed(RTC_CALL_ACTION.FORWARD);
     });
   });
 });
