@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity } from '../../../../store/utils';
+import { getEntity } from '@/store/utils';
 import { ViewerTitleViewModel } from '../Title.ViewModel';
 import { ViewerTitleViewModelProps } from '../types';
-jest.mock('../../../../store/utils');
+jest.mock('@/store/utils');
 const props: ViewerTitleViewModelProps = {
   groupId: 1,
   itemId: 1,
