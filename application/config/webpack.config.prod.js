@@ -347,6 +347,30 @@ module.exports = {
               },
             ],
           },
+          {
+            test: /jui\/src\/assets\/jupiter-icon\/(.+)\.svg$/,
+            use: [
+              {
+                loader: 'svg-sprite-loader',
+                options: {
+                  extract: true,
+                  spriteFilename: 'static/media/jupiter-icon.[hash:6].svg',
+                  symbolId: 'jupiter-[name]',
+                },
+              },
+              {
+                loader: 'svgo-loader',
+                options: {
+                  plugins: [
+                    { removeTitle: true },
+                    { convertColors: { shorthex: false } },
+                    { convertPathDtata: true },
+                    { reusePaths: true },
+                  ],
+                },
+              },
+            ],
+          },
           // "file" loader makes sure assets end up in the `build` folder.
           // When you `import` an asset, you get its filename.
           // This loader doesn't use a "test" so it will catch all modules
