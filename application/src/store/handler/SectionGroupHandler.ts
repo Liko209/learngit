@@ -271,6 +271,17 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
             );
           });
         }
+        if (payload.type === EVENT_TYPES.DELETE) {
+          const currentGroupId = getGlobalValue(
+            GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
+          );
+          if (payload.body.ids && payload.body.ids.includes(currentGroupId)) {
+            ids = [currentGroupId];
+            mainLogger
+              .tags(LOG_TAG)
+              .info('subscribe notification|user was removed from current conversation(a private team)');
+          }
+        }
         // update url
         this._updateUrl(EVENT_TYPES.DELETE, ids);
         this._handleGroupsChanges(true);
