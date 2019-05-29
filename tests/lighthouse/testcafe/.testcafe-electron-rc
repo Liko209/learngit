@@ -1,5 +1,0 @@
-{
-    "mainWindowUrl": "https://jupiter.fiji.gliprc.com/",
-    "electronPath": "/Applications/RingCentral2.app/Contents/MacOS/RingCentral",
-    "appArgs": ["--remote-debugging-port=8871"]
-}
