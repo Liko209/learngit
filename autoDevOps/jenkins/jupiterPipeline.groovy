@@ -70,6 +70,7 @@ class Context {
     String e2eExcludeTags
     Boolean e2eEnableRemoteDashboard
     Boolean e2eEnableMockServer
+    String feedbackUrl
 
     // runtime
     String appHeadSha
@@ -157,7 +158,7 @@ class BaseJob {
     void addFailedStage(String name) {}
 
     void cancelOldBuildOfSameCause() {
-        jenkins.GitLabWebHookCause currentBuildCause = jenkins.currentBuild.rawBuild.getCause(jenkins.GitLabWebHookCause.class)
+        GitLabWebHookCause currentBuildCause = jenkins.currentBuild.rawBuild.getCause(GitLabWebHookCause.class)
         if (null == currentBuildCause)
             return
         def currentCauseData = currentBuildCause.getData()
@@ -165,7 +166,7 @@ class BaseJob {
         jenkins.currentBuild.rawBuild.getParent().getBuilds().each { build ->
             if (!build.isBuilding() || jenkins.currentBuild.rawBuild.getNumber() <= build.getNumber())
                 return
-            jenkins.GitLabWebHookCause cause = build.getCause(jenkins.GitLabWebHookCause.class)
+            GitLabWebHookCause cause = build.getCause(GitLabWebHookCause.class)
             if (null == cause)
                 return
             def causeData = cause.getData()
@@ -197,7 +198,6 @@ class BaseJob {
 
 }
 
-
 class JupiterJob extends BaseJob {
     Context context
 
@@ -205,8 +205,29 @@ class JupiterJob extends BaseJob {
         context.failedStages.add(name)
     }
 
-    void run() {
+    void collectFacts() {
+        jenkins.sh 'env'
+        jenkins.sh 'df -h'
+        jenkins.sh 'uptime'
+        jenkins.sh 'git --version'
+        jenkins.sh 'node -v'
+        jenkins.sh 'rsync --version'
+        jenkins.sh 'grep --version'
+        jenkins.sh 'which tr'
+        jenkins.sh 'which xargs'
 
+        // clean npm cache when its size exceed 6G, the unit of default du command is K, so we need to >> 20 to get G
+        long npmCacheSize = Long.valueOf(jenkins.sh(returnStdout: true, script: 'du -s $(npm config get cache) | cut -f1').trim()) >> 20
+        if (npmCacheSize > 6) {
+            jenkins.sh 'npm cache clean --force'
+        }
+    }
+
+    void run() {
+        cancelOldBuildOfSameCause()
+        jenkins.node(context.buildNode) {
+            stage(name: 'collect facts'){ collectFacts() }
+        }
     }
 }
 
@@ -241,6 +262,8 @@ Context context = new Context(
     e2eExcludeTags              : params.E2E_EXCLUDE_TAGS?: '',
     e2eEnableRemoteDashboard    : params.E2E_ENABLE_REMOTE_DASHBOARD,
     e2eEnableMockServer         : params.E2E_ENABLE_MOCK_SERVER,
+
+    feedbackUrl                 : params.FEEDBACK_URL,
 )
 
 context.gitlabSourceBranch     = context.gitlabSourceBranch?: params.GITLAB_BRANCH
