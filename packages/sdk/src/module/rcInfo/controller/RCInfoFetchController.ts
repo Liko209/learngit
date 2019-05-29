@@ -23,18 +23,26 @@ import { RC_INFO } from '../../../service/eventKey';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { RCInfoService } from '../service';
 import { AccountService } from '../../account/service';
-import { SpecialNumberRuleModel } from '../types';
+import {
+  SpecialNumberRuleModel,
+  EGetForwardingFlipNumberType,
+  ForwardingFlipNumberModel,
+} from '../types';
 import { AccountGlobalConfig } from 'sdk/module/account/config';
 
 const OLD_EXIST_SPECIAL_NUMBER_COUNTRY = 1; // in old version, we only store US special number
 const EXTENSION_PHONE_NUMBER_LIST_COUNT = 1000;
+
+import { RCInfoForwardingNumberController } from './RCInfoForwardingNumberController';
 class RCInfoFetchController {
   private _isRCInfoJobScheduled: boolean;
   private _shouldIgnoreFirstTime: boolean;
+  private _forwardingNumberController: RCInfoForwardingNumberController;
 
   constructor() {
     this._isRCInfoJobScheduled = false;
     this._shouldIgnoreFirstTime = false;
+    this._forwardingNumberController = new RCInfoForwardingNumberController();
   }
 
   private get rcInfoUserConfig() {
@@ -93,6 +101,11 @@ class RCInfoFetchController {
       this.scheduleRCInfoJob(
         JOB_KEY.FETCH_RC_ACCOUNT_SERVICE_INFO,
         this.requestAccountServiceInfo,
+        false,
+      );
+      this.scheduleRCInfoJob(
+        JOB_KEY.FETCH_FORWARDING_NUMBER,
+        this._getForwardingNumberController().requestForwardingNumbers,
         false,
       );
       this._isRCInfoJobScheduled = true;
@@ -290,6 +303,21 @@ class RCInfoFetchController {
 
   async getAccountServiceInfo(): Promise<AccountServiceInfo | undefined> {
     return (await this.rcInfoUserConfig.getAccountServiceInfo()) || undefined;
+  }
+
+  async getForwardingFlipNumbers(
+    type: EGetForwardingFlipNumberType,
+  ): Promise<ForwardingFlipNumberModel[]> {
+    return await this._getForwardingNumberController().getForwardingFlipNumbers(
+      type,
+    );
+  }
+
+  private _getForwardingNumberController() {
+    if (!this._forwardingNumberController) {
+      this._forwardingNumberController = new RCInfoForwardingNumberController();
+    }
+    return this._forwardingNumberController;
   }
 }
 
