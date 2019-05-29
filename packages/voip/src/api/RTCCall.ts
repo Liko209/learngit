@@ -573,7 +573,7 @@ class RTCCall {
     this._callSession.hangup();
   }
 
-  private _onFlipAction(target: string) {
+  private _onFlipAction(target: number) {
     this._callSession.flip(target);
   }
 
