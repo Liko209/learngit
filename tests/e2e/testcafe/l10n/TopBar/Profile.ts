@@ -28,6 +28,8 @@ test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'Profile', 'V1.4', 'Han
   })
   await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_SettingMenu'});
 
+  const profileDialog = app.homePage.profileDialog;
+
   await h(t).withLog('When I click "Profile" button', async() => {
     await settingMenu.clickViewYourProfile();
   });
@@ -36,12 +38,11 @@ test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'Profile', 'V1.4', 'Han
   });
   await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_ProfilePage'});
 
-  const profileDialog = app.homePage.profileDialog;
-  const favoriteStatusIcon = profileDialog.favoriteStatusIcon;
+  const favoriteButton = profileDialog.favoriteButton;
   const unFavoriteStatusIcon = profileDialog.unFavoriteStatusIcon;
 
   await h(t).withLog('When I hover "Favorites" button', async() => {
-    await t.hover(favoriteStatusIcon);
+    await t.hover(favoriteButton);
   });
   await h(t).withLog('Then "favorite" icon should be displayed', async() => {
     await t.expect(unFavoriteStatusIcon.exists).notOk();
@@ -49,8 +50,8 @@ test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'Profile', 'V1.4', 'Han
   await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_RemoveFromFavorites'});
 
   await h(t).withLog('When I click "Favorites" button and hover it', async() => {
-    await t.click(favoriteStatusIcon);
-    await t.hover(favoriteStatusIcon);
+    await t.click(favoriteButton);
+    await t.hover(favoriteButton);
   });
   await h(t).withLog('Then "favorite" icon change to "unFavorite" icon', async() => {
     await t.expect(unFavoriteStatusIcon.exists).ok();
