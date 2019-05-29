@@ -138,7 +138,8 @@
     "messageTypeNameSMS": "text",
     "jumpToConversation": "Jump to conversation",
     "emoji": {
-      "emojiDefaultTitle": "Pick your emoji"
+      "emojiDefaultTitle": "Pick your emoji",
+      "toggleButtonLabel": "Keep open"
     },
     "sharedItems": "shared items",
     "initialPost": {

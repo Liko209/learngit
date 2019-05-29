@@ -12,10 +12,11 @@ storiesOf('Pattern/Emoji', module).add('Emoji Button', () => {
   return (
     <JuiEmoji
       handleEmojiClick={() => {}}
-      title="Pick your emoji"
+      title=""
       set="emojione"
       sheetSize={64}
       handlerIcon="emoji"
+      toggleButtonLabel="Keep open"
     />
   );
 });

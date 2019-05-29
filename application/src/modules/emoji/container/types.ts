@@ -5,7 +5,7 @@
  */
 type EmojiProps = {
   handleEmojiClick?: any;
-  title: string;
+  title?: string;
   sheetSize: 16 | 20 | 32 | 64 | undefined;
   set:
     | 'apple'
@@ -18,17 +18,8 @@ type EmojiProps = {
 };
 
 type EmojiViewProps = {
-  handleEmojiClick: any;
-  title: string;
-  sheetSize: 16 | 20 | 32 | 64 | undefined;
-  set:
-    | 'apple'
-    | 'google'
-    | 'twitter'
-    | 'emojione'
-    | 'messenger'
-    | 'facebook'
-    | undefined;
+  setEmojiOpenStatus: Function;
+  emojiOpenStatus: boolean;
 };
 
 export { EmojiProps, EmojiViewProps };

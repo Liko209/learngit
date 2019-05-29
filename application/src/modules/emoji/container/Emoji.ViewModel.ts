@@ -7,7 +7,20 @@
 
 import { EmojiProps } from './types';
 import { StoreViewModel } from '@/store/ViewModel';
+import { EmojiGlobalUserConfig } from '../service/EmojiGlobalUserConfig';
+import { action, observable } from 'mobx';
 
-class EmojiViewModel extends StoreViewModel<EmojiProps> {}
+class EmojiViewModel extends StoreViewModel<EmojiProps> {
+  @observable
+  emojiOpenStatus: boolean = EmojiGlobalUserConfig.getEmojiKeepOpen();
+
+  @action
+  setEmojiOpenStatus = () => {
+    EmojiGlobalUserConfig.setEmojiKeepOpen(
+      !EmojiGlobalUserConfig.getEmojiKeepOpen(),
+    );
+    this.emojiOpenStatus = EmojiGlobalUserConfig.getEmojiKeepOpen();
+  }
+}
 
 export { EmojiViewModel };
