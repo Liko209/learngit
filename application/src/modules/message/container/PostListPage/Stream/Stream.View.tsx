@@ -21,14 +21,20 @@ import _ from 'lodash';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
 
+const POST_PRELOAD_COUNT = 20;
+const POST_PRELOAD_DIRECTION = 'up';
+
 @observer
 class StreamViewComponent extends Component<Props> {
   static contextType = ConversationPageContext;
   listRef: React.RefObject<HTMLElement> = React.createRef();
-  private _loadMoreStrategy = new ThresholdStrategy({
-    threshold: 60,
-    minBatchCount: 10,
-  });
+  private _loadMoreStrategy = new ThresholdStrategy(
+    {
+      threshold: 60,
+      minBatchCount: 10,
+    },
+    { direction: POST_PRELOAD_DIRECTION, count: POST_PRELOAD_COUNT },
+  );
   private _jumpToPostRef: React.RefObject<
     JuiConversationCard
   > = React.createRef();

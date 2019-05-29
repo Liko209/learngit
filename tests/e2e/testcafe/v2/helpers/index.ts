@@ -242,6 +242,13 @@ class Helper {
     return ClientFunction((key, val) => localStorage.setItem(key, val));
   }
 
+  async scrollBy(selector: Selector | any, x: number, y: number) {
+    await ClientFunction((_x, _y) => {
+      selector().scrollBy(_x, _y);
+    },
+      { dependencies: { selector } })(x, y);
+  }
+
   async userRole(user: IUser, cb?: (appRoot) => Promise<any>) {
     return await Role(SITE_URL, async (t) => {
       const app = new AppRoot(t);
