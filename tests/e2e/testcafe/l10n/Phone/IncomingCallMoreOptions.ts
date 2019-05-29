@@ -27,18 +27,24 @@ test(formalName('Check More options in an incoming call', ['P2', 'Phone', 'Outgo
   })
 
   const telephonyDialog = app.homePage.telephonyDialog;
-  await h(t).withLog('When I click More options', async () => {
+  await h(t).withLog('When I receive incoming call and hover More option button', async () => {
     await telephonyDialog.ensureLoaded();
+    await telephonyDialog.hoverMoreOptionsButton();
+  })
+  await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_Phone_MoreOptions'})
+
+  await h(t).withLog('When I click More options', async () => {
     await telephonyDialog.clickMoreOptionsButton();
+    await telephonyDialog.hoverReplyActionButton();
   })
 
   await h(t).withLog('Then I can see Reply option', async () => {
-    await t.expect(telephonyDialog.replyActionMenuItem.exists).ok();
+    await t.expect(telephonyDialog.replyActionMenuItem.visible).ok();
   })
 
   await h(t).log('And I capture screenshot', { screenshotPath: 'Jupiter_Phone_MoreOptionsReply'})
 
-  await h(t).withLog('When I click Reply button', async () => {
+  await h(t).withLog('When I click Reply item', async () => {
     await telephonyDialog.clickReplyActionButton();
   })
 
@@ -53,17 +59,17 @@ test(formalName('Check More options in an incoming call', ['P2', 'Phone', 'Outgo
   })
 
   await h(t).withLog('Then I can see Will call you back options', async () => {
-    await t.expect(telephonyDialog.replyWithWillCallBack5Min.exists).ok();
+    await t.expect(telephonyDialog.replyWithWillCallBackEntry.exists).ok();
   })
 
   await h(t).log('And I capture screenshot', { screenshotPath: 'Jupiter_Phone_ReplyWithWillCallBack'})
 
   await h(t).withLog('When I click in a meeting option', async () => {
-    await telephonyDialog.clickReplyWithWillCallBackEntryButton();
+    await telephonyDialog.clickReplyInMeetingButton();
     await telephonyDialog.clickReplyInMeetingButton();
   })
 
-  await h(t).withLog('Then I can see alert message', async () => {
+  await h(t).withLog('Then I can see prompt message', async () => {
     await t.expect(app.homePage.alertDialog.shouldBePopUp).ok();
   })
 
