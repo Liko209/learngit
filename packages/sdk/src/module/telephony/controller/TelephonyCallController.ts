@@ -45,7 +45,6 @@ class TelephonyCallController implements IRTCCallDelegate {
     { resolve: IResultResolveFn; reject: IResultRejectFn }[]
   >;
 
-
   constructor(
     entityId: number,
     delegate: ITelephonyCallDelegate,

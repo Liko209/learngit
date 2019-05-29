@@ -12,7 +12,7 @@ class BadgeService extends EntityBaseService<Badge, string> {
   private _badgeMap = new Map<string, () => Badge>();
 
   constructor() {
-    super(false);
+    super({ isSupportedCache: false });
   }
 
   async getById(id: string): Promise<Badge | null> {
