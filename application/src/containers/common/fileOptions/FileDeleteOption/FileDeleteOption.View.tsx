@@ -40,10 +40,6 @@ class FileDeleteOptionViewComponent extends Component<
 
   render() {
     const { canDelete } = this.props;
-    console.log('-------- [FileDeleteOption.View Log] --------');
-    // @ts-ignore
-    console.log(this.props.item);
-    console.log('---------------- [Log End] ----------------');
     return (
       <JuiMenuItem disabled={canDelete} color="red" onClick={this.deleteFile}>
         delete

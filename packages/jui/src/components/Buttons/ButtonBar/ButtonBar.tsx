@@ -5,7 +5,7 @@
  */
 
 import * as React from 'react';
-import styled, { css } from '../../../foundation/styled-components';
+import styled from '../../../foundation/styled-components';
 import { Theme } from '../../../foundation/theme/theme';
 import { spacing } from '../../../foundation/utils/styles';
 
