@@ -3,6 +3,7 @@
  * @Date: 2019-04-02 17:28:54
  * Copyright © RingCentral. All rights reserved.
  */
+
 import { TelephonyService } from '../TelephonyService';
 import * as utils from '@/store/utils';
 import { CLIENT_SERVICE } from '@/modules/common/interface';
@@ -21,6 +22,7 @@ import { ToastCallError } from '../ToastCallError';
 import { container, injectable, decorate } from 'framework';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ClientService } from '@/modules/common';
+import { CALLING_OPTIONS } from 'sdk/module/profile';
 const testProcedureWaitingTime = 20;
 const mockedDelay = 10;
 
@@ -54,7 +56,7 @@ function initializeCallerId() {
     { id: '123', phoneNumber: '123', usageType: 'companyNumber' },
   ];
 }
-let defaultPhoneApp = 'glip';
+let defaultPhoneApp = CALLING_OPTIONS.GLIP;
 describe('TelephonyService', () => {
   beforeEach(() => {
     let cachedOnMadeOutgoingCall: any;
@@ -626,7 +628,7 @@ describe('TelephonyService', () => {
       (telephonyService as TelephonyService)._telephonyStore.inputString,
     ).toBe('');
   });
-  describe(`onReceiveIncomingCall`, () => {
+  describe(`onReceiveIncomingCall()`, () => {
     const params = {
       fromName: 'test',
       fromNum: '456',
@@ -634,13 +636,13 @@ describe('TelephonyService', () => {
     };
     beforeEach(() => {
       jest.clearAllMocks();
-      defaultPhoneApp = 'glip';
+      defaultPhoneApp = CALLING_OPTIONS.GLIP;
       jest
         .spyOn(telephonyService._telephonyStore, 'incomingCall')
         .mockImplementation();
     });
     it(`should not response when there's incoming call and default phone setting is RC phone`, () => {
-      defaultPhoneApp = 'ringcentral';
+      defaultPhoneApp = CALLING_OPTIONS.RINGCENTRAL;
       jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
       telephonyService._onReceiveIncomingCall(params);
       expect(telephonyService._telephonyStore.incomingCall).not.toBeCalled();
@@ -650,5 +652,30 @@ describe('TelephonyService', () => {
       telephonyService._onReceiveIncomingCall(params);
       expect(telephonyService._telephonyStore.incomingCall).toBeCalled();
     });
+  });
+
+  describe(`makeRCPhoneCall()`, () => {
+    let testedFn;
+    beforeEach(() => {
+      jest.clearAllMocks();
+      const clientService = container.get(CLIENT_SERVICE);
+      testedFn = jest.spyOn(clientService, 'invokeApp').mockImplementation();
+    });
+    ['RC', 'ATT', 'TELUS'].forEach((i) =>
+      it(`should build correct url for ${i}`, () => {
+        const RCPhoneCallURL = {
+          RC: 'rcmobile',
+          ATT: 'attvr20',
+          TELUS: 'rctelus',
+        };
+        jest
+          .spyOn(utils, 'getEntity')
+          .mockImplementation(() => ({ rcBrand: i }));
+        telephonyService.makeRCPhoneCall(666);
+        expect(testedFn).toBeCalledWith(
+          `${RCPhoneCallURL[i]}://call?number=${encodeURIComponent('666')}`,
+        );
+      }),
+    );
   });
 });
