@@ -7,6 +7,7 @@ import React from 'react';
 import { JuiIconButton } from '../../../components/Buttons/IconButton/IconButton';
 import { JuiFileWithExpand } from './FileWithExpand';
 import { JuiPreviewImage } from './PreviewImage';
+import moize from 'moize';
 
 type Props = {
   icon: string;
@@ -45,6 +46,32 @@ class JuiExpandImage extends React.PureComponent<Props, State> {
     onSwitchExpand(!expand);
   }
 
+  _Actions = moize((tooltip: string, ImageActions?: JSX.Element) => {
+    if (ImageActions) {
+      return [
+        ImageActions,
+        <JuiIconButton
+          onClick={this.switchExpand}
+          variant="plain"
+          tooltipTitle={tooltip}
+          key="unfoldAction"
+        >
+          unfold_less
+        </JuiIconButton>,
+      ];
+    }
+    return [
+      <JuiIconButton
+        onClick={this.switchExpand}
+        variant="plain"
+        tooltipTitle={tooltip}
+        key="unfoldAction"
+      >
+        unfold_less
+      </JuiIconButton>,
+    ];
+  });
+
   render() {
     const {
       Actions,
@@ -81,18 +108,7 @@ class JuiExpandImage extends React.PureComponent<Props, State> {
           handleImageClick={handleImageClick}
           width={360}
           height={202}
-          Actions={
-            <>
-              {ImageActions}
-              <JuiIconButton
-                onClick={this.switchExpand}
-                variant="plain"
-                tooltipTitle={i18UnfoldLess}
-              >
-                unfold_less
-              </JuiIconButton>
-            </>
-          }
+          Actions={this._Actions(i18UnfoldLess, ImageActions)}
         />
       </JuiFileWithExpand>
     );
