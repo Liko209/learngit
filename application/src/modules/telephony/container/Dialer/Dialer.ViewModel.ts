@@ -27,11 +27,6 @@ class DialerViewModel extends StoreViewModel<DialerProps>
   }
 
   @computed
-  get incomingState() {
-    return this._telephonyStore.incomingState;
-  }
-
-  @computed
   get keypadEntered() {
     return this._telephonyStore.keypadEntered;
   }

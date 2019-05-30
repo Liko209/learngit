@@ -16,7 +16,7 @@ import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import {
   ForwardingFlipNumberModel,
   EForwardingFlipNumberType,
-  EGetForwardingFlipNumberType,
+  EForwardingNumberFeatureType,
 } from '../types';
 const ForwardingNumberTypeMap = {
   Home: EForwardingFlipNumberType.HOME,
@@ -46,7 +46,7 @@ class RCInfoForwardingNumberController {
   }
 
   async getForwardingFlipNumbers(
-    type: EGetForwardingFlipNumberType,
+    type: EForwardingNumberFeatureType,
   ): Promise<ForwardingFlipNumberModel[]> {
     // sync, do not await
     this.requestForwardingNumbers();
@@ -56,7 +56,7 @@ class RCInfoForwardingNumberController {
   }
 
   private _extractForwardingFlipNumbers(
-    type: EGetForwardingFlipNumberType,
+    type: EForwardingNumberFeatureType,
     data: RCExtensionForwardingNumberRCList,
   ): ForwardingFlipNumberModel[] {
     const result: ForwardingFlipNumberModel[] = [];

@@ -191,6 +191,7 @@ class RTCCall {
   }
 
   hangup(): void {
+    this._account.removeCallFromCallManager(this._callInfo.uuid);
     this._fsm.hangup();
   }
 
@@ -368,7 +369,7 @@ class RTCCall {
     this._fsm.on(CALL_FSM_NOTIFY.CREATE_OUTGOING_CALL_SESSION, () => {
       this._onCreateOutingCallSession();
     });
-    this._fsm.on(CALL_FSM_NOTIFY.FLIP_ACTION, (target: string) => {
+    this._fsm.on(CALL_FSM_NOTIFY.FLIP_ACTION, (target: number) => {
       this._onFlipAction(target);
     });
     this._fsm.on(CALL_FSM_NOTIFY.TRANSFER_ACTION, (target: string) => {
@@ -573,7 +574,7 @@ class RTCCall {
     this._callSession.hangup();
   }
 
-  private _onFlipAction(target: string) {
+  private _onFlipAction(target: number) {
     this._callSession.flip(target);
   }
 

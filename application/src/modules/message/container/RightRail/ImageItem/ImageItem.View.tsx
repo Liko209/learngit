@@ -13,7 +13,7 @@ import {
   JuiListItemSecondaryAction,
 } from 'jui/components/Lists';
 import { Thumbnail } from '../../Thumbnail';
-import { showImageViewer } from '@/containers/Viewer';
+import { showImageViewer } from '@/modules/viewer/container/Viewer';
 import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
 import { ImageItemViewProps, ImageItemProps } from './types';
 import { Download } from '@/containers/common/Download';

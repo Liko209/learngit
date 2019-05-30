@@ -20,7 +20,7 @@ class FileDeleteActionViewComponent extends Component<
   deleteFile = () => {
     const { t, fileName, handleDeleteFile } = this.props;
     Dialog.confirm({
-      title: t('message.prompt.deleteFile'),
+      title: t('message.prompt.deleteFileTitle'),
       content: (
         <JuiDialogContentText>
           <Trans
