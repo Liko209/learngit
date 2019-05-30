@@ -58,13 +58,13 @@ test(formalName('Check More options in an incoming call', ['P2', 'Phone', 'Outgo
     await telephonyDialog.clickReplyWithWillCallBackEntryButton();
   })
 
-  await h(t).withLog('Then I can see Will call you back options', async () => {
-    await t.expect(telephonyDialog.replyWithWillCallBackEntry.exists).ok();
+  await h(t).withLog('Then I can see "Will call you back" options', async () => {
+    await t.expect(telephonyDialog.replyWithWillCallBack5Min.exists).ok();
   })
 
   await h(t).log('And I capture screenshot', { screenshotPath: 'Jupiter_Phone_ReplyWithWillCallBack'})
 
-  await h(t).withLog('When I click in a meeting option', async () => {
+  await h(t).withLog('When I click "in a meeting" option', async () => {
     await telephonyDialog.clickReplyInMeetingButton();
     await telephonyDialog.clickReplyInMeetingButton();
   })
