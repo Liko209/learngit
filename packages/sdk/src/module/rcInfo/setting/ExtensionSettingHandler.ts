@@ -28,7 +28,7 @@ export class ExtensionSettingHandler extends AbstractSettingEntityHandler<
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<RCExtensionInfo>(RC_INFO.CLIENT_INFO, async () => {
+    this.on<RCExtensionInfo>(RC_INFO.CLIENT_INFO, async () => {
       this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
     });
   }

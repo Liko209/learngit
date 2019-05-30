@@ -7,13 +7,21 @@ import _ from 'lodash';
 import { SettingEntityIds, BaseModuleSetting } from 'sdk/module/setting';
 import { IProfileService } from '../service/IProfileService';
 import { CallerIdSettingHandler } from './CallerIdSettingHandler';
+import { DefaultAppSettingHandler } from './DefaultAppSettingHandler';
+import { TelephonyService } from 'sdk/module/telephony';
+import { AccountService } from 'sdk/module/account';
 
 type HandlerMap = {
   [SettingEntityIds.Phone_CallerId]: CallerIdSettingHandler;
+  [SettingEntityIds.Phone_DefaultApp]: DefaultAppSettingHandler;
 };
 
 class ProfileSetting extends BaseModuleSetting<HandlerMap> {
-  constructor(private _profileService: IProfileService) {
+  constructor(
+    private _profileService: IProfileService,
+    private _telephonyService: TelephonyService,
+    private _accountService: AccountService,
+  ) {
     super();
   }
 
@@ -21,6 +29,11 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
     return {
       [SettingEntityIds.Phone_CallerId]: new CallerIdSettingHandler(
         this._profileService,
+      ),
+      [SettingEntityIds.Phone_DefaultApp]: new DefaultAppSettingHandler(
+        this._accountService,
+        this._profileService,
+        this._telephonyService,
       ),
     };
   }
