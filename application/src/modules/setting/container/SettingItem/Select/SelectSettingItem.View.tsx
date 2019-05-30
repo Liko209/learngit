@@ -59,6 +59,7 @@ class SelectSettingItemViewComponent<
         disabled={disabled}
         value={settingItemEntity.value ? settingItemEntity.value.id : ''}
         automationId={'SettingSelectBox'}
+        isFullWidth={true}
       >
         {this._renderSource()}
       </JuiBoxSelect>

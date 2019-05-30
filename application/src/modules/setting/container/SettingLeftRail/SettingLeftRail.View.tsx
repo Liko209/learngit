@@ -52,11 +52,7 @@ class SettingLeftRailViewComponent extends Component<Props> {
       return (
         <JuiListNavItem
           data-name="sub-setting"
-          //
-          // TODO data-test-automation-id
           data-test-automation-id={`entry-${page.automationId}`}
-          // TODO
-          //
           selected={currentPage && page.id === currentPage.id}
           classes={{ selected: 'selected' }}
           onClick={() => goToSettingPage(page.id)}
