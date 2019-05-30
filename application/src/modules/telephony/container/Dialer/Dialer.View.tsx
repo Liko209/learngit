@@ -25,7 +25,7 @@ class DialerViewComponent extends React.Component<DialerViewProps> {
     const { callState, keypadEntered } = this.props;
     switch (callState) {
       case CALL_STATE.INCOMING:
-        <Incoming />;
+        return <Incoming />;
 
       default:
         return (
