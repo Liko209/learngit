@@ -7,8 +7,8 @@ import { ModuleConfig } from 'framework';
 import { NotificationModule } from './notificationModule';
 import { NotificationService } from './service';
 import { INotificationService } from './interface';
-import { Permission } from './Permission';
 import { PERMISSION } from './interface/constant';
+import { Permission } from './Permission';
 
 const config: ModuleConfig = {
   entry: NotificationModule,
