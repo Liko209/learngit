@@ -14,7 +14,6 @@ type Types = EmojiViewProps & EmojiProps;
 class EmojiView extends Component<Types> {
   handleKeepOpenChange = () => {
     this.props.setEmojiOpenStatus();
-    console.log('nye emoji changed');
   }
   render() {
     const {
