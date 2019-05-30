@@ -177,7 +177,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get ignoreButton() {
-    return this.buttonOfIcon('close');
+    return this.getSelectorByAutomationId('telephony-ignore-btn');
   }
 
   get deleteButton() {
@@ -294,6 +294,10 @@ export class TelephonyDialog extends BaseWebComponent {
 
   async clickReplyActionButton() {
     await this.t.click(this.replyActionMenuItem);
+  }
+
+  async hoverReplyActionButton() {
+    await this.t.hover(this.replyActionMenuItem);
   }
 
   async clickReplyInMeetingButton() {
