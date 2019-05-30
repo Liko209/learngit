@@ -106,6 +106,7 @@ interface IRequest {
   timeout: number;
   requestConfig: object;
   readonly authFree: boolean;
+  startTime?: number;
 
   callback?: (response: IResponse) => void;
   needAuth(): boolean;
