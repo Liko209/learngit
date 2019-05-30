@@ -52,7 +52,7 @@ class SelectSettingItemViewComponent<
 
   private _renderSelect() {
     const { disabled, settingItemEntity } = this.props;
-
+    console.log('andy hu', settingItemEntity);
     return (
       <JuiBoxSelect
         onChange={this._handleChange}

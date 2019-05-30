@@ -17,8 +17,11 @@ import {
   SETTING_ITEM__PHONE_CALLER_ID,
   SETTING_ITEM__PHONE_REGION,
   SETTING_ITEM__PHONE_EXTENSIONS,
+  SETTING_ITEM__PHONE_DEFAULT_PHONE_APP,
 } from './constant';
 import { RegionSettingItem } from './RegionSettingItem';
+import { DefaultPhoneAppSelectItem } from './DefaultPhoneAppSettingItem';
+import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
 
 class TelephonySettingManager {
   private _scope = Symbol('TelephonySettingManager');
@@ -38,24 +41,32 @@ class TelephonySettingManager {
           weight: 0,
           items: [
             {
+              id: SETTING_ITEM__PHONE_DEFAULT_PHONE_APP,
+              title: 'setting.phone.general.defaultPhoneApp.label',
+              description: 'setting.phone.general.defaultPhoneApp.description',
+              type: SETTING_ITEM_TYPE.SELECT,
+              weight: 0,
+              sourceRenderer: DefaultPhoneAppSelectItem,
+            } as SelectSettingItem<CALLING_OPTIONS>,
+            {
               id: SETTING_ITEM__PHONE_CALLER_ID,
               title: 'setting.phone.general.callerID.label',
               description: 'setting.phone.general.callerID.description',
               type: SETTING_ITEM_TYPE.SELECT,
-              weight: 0,
+              weight: 100,
               sourceRenderer: CallerIdSelectSourceItem,
             } as SelectSettingItem<IPhoneNumberRecord>,
             {
               id: SETTING_ITEM__PHONE_REGION,
               type: RegionSettingItem,
-              weight: 100,
+              weight: 200,
             },
             {
               id: SETTING_ITEM__PHONE_EXTENSIONS,
               title: 'setting.phone.general.extensions.label',
               description: 'setting.phone.general.extensions.description',
               type: SETTING_ITEM_TYPE.LINK,
-              weight: 200,
+              weight: 300,
             },
           ],
         },

@@ -579,6 +579,14 @@
       "title": "Phone",
       "general": {
         "title": "General",
+        "defaultPhoneApp": {
+          "label": "Default Phone app (calling, voicemail, SMS/MMS, fax)",
+          "description": "Choose which app you would like to use to receive phone notifications",
+          "option": {
+            "glip": "Use RingCentral App (this app)",
+            "ringcentral": "Use RingCentral Phone"
+          }
+        },
         "callerID": {
           "label": "Caller ID",
           "description": "Choose your default Caller ID for making RingCentral phone calls",
