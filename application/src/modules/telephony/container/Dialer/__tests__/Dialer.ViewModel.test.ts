@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { CLIENT_SERVICE } from '@/modules/common/interface';
+import { ClientService } from '@/modules/common';
 import { container, decorate, injectable } from 'framework';
 import { TelephonyStore } from '../../../store';
 import { CALL_STATE } from '../../../FSM';
@@ -17,6 +19,7 @@ import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
+decorate(injectable(), ClientService);
 
 jest.mock('sdk/module/config');
 jest.mock('sdk/module/account/config/AuthUserConfig');
@@ -25,6 +28,7 @@ GlobalConfigService.getInstance = jest.fn();
 
 container.bind(TelephonyStore).to(TelephonyStore);
 container.bind(TELEPHONY_SERVICE).to(TelephonyService);
+container.bind(CLIENT_SERVICE).to(ClientService);
 
 let dialerViewModel: DialerViewModel;
 
@@ -35,6 +39,7 @@ beforeAll(() => {
   jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
     matchContactByPhoneNumber: jest.fn(),
   });
+
   dialerViewModel = new DialerViewModel();
 });
 
