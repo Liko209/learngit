@@ -32,7 +32,7 @@ const expectResult = [
     phoneNumber: 'Blocked',
     label: 'Blocked',
   },
-  { id: 3, usageType: 'CompanyNumber', phoneNumber: '1', label: 'nickname' },
+  { id: 3, usageType: 'NickName', phoneNumber: '1', label: 'nickname' },
   {
     id: 4,
     usageType: 'CompanyNumber',
