@@ -1,23 +1,57 @@
 /*
- * @Author: looper wang (looper.wang@ringcentral.com)
- * @Date: 2019-04-23 09:12:51
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-05-19 18:23:21
  * Copyright © RingCentral. All rights reserved.
  */
-
 import { inject } from 'framework';
+import { mainLogger } from 'sdk';
+import {
+  ISettingService,
+  SettingPage,
+  SettingSection,
+  SettingItem,
+} from '@/interface/setting';
+import history from '@/history';
 import { SettingStore } from '../store';
-import { SettingItemType } from '../type';
-import { ISettingService } from '../interface';
+import { SETTING_ROUTE_ROOT } from '../constant';
 
 class SettingService implements ISettingService {
-  @inject(SettingStore) private _SettingStore: SettingStore;
+  @inject(SettingStore) private _settingStore: SettingStore;
 
-  registerSettingItem(item: SettingItemType) {
-    this._SettingStore.addSettingItem(item);
+  registerPage(scope: symbol, page: SettingPage): void {
+    this._settingStore.useScope(scope).addPage(page);
   }
 
-  unRegisterSettingItem(key: string) {
-    this._SettingStore.removeSettingItem(key);
+  registerSection(
+    scope: symbol,
+    pageId: SettingPage['id'],
+    section: SettingSection,
+  ): void {
+    this._settingStore.useScope(scope).addSection(pageId, section);
+  }
+
+  registerItem(
+    scope: symbol,
+    sectionId: SettingSection['id'],
+    item: SettingItem,
+  ): void {
+    this._settingStore.useScope(scope).addItem(sectionId, item);
+  }
+
+  unRegisterAll(scope: symbol): void {
+    this._settingStore.useScope(scope).clear();
+  }
+
+  goToSettingPage(pageId: SettingPage['id']) {
+    const page = this._settingStore.getPageById(pageId);
+
+    if (!page) {
+      mainLogger.error('Trying to open a non-existed setting page');
+      return;
+    }
+
+    history.push(`${SETTING_ROUTE_ROOT}${page.path}`);
+    this._settingStore.setCurrentPageId(pageId);
   }
 }
 

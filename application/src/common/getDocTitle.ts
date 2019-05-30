@@ -4,7 +4,6 @@ import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { POST_LIST_TYPE } from '@/modules/message/container/PostListPage/types';
 import { toTitleCase } from '@/utils/string';
-import { SETTING_LIST_TYPE } from '@/modules/setting/container/SettingLeftRail/types';
 import i18nT, { i18nTValueProps } from '@/utils/i18nT';
 
 function getMessagesTitle(messagePath?: string): i18nTValueProps {
@@ -25,6 +24,14 @@ function getMessagesTitle(messagePath?: string): i18nTValueProps {
 
 function getSettingsTitle(settingPath: string): i18nTValueProps {
   const settingI18N = i18nT('setting.Settings');
+  enum SETTING_LIST_TYPE {
+    GENERAL = 'general',
+    NOTIFICATION_AND_SOUNDS = 'notification_and_sounds',
+    MESSAGES = 'messages',
+    PHONE = 'phone',
+    MEETINGS = 'meetings',
+    CALENDAR = 'calendar',
+  }
   if (
     settingPath &&
     new RegExp(`^(${Object.values(SETTING_LIST_TYPE).join('|')})$`).test(

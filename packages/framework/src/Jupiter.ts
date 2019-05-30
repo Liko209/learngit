@@ -13,6 +13,7 @@ import {
   interfaces,
 } from './ioc';
 import { ModuleConfig, Provide } from './types';
+import { IS_DECORATOR } from './constants';
 
 /**
  * Jupiter Framework
@@ -30,9 +31,13 @@ class Jupiter {
   private _disposedListenerMap = new Map<interfaces.ServiceIdentifier<any>[], any[]>();
 
   registerModule(
-    { provides, entry }: ModuleConfig,
+    { entry, provides, binding }: ModuleConfig,
     afterBootstrap?: () => void,
   ): void {
+    if (binding) {
+      binding(this);
+    }
+
     if (provides) {
       provides.forEach((provide: Provide<any>) => {
         this.bindProvide(provide);
@@ -40,7 +45,7 @@ class Jupiter {
     }
 
     if (entry) {
-      this.bindProvide(entry);
+      this.registerService(entry, entry);
       this.addEntry(entry);
       if (this._running) {
         // async module
@@ -96,8 +101,8 @@ class Jupiter {
       return !!provide.value;
     };
 
-    let identifier;
-    let creator;
+    let identifier: string | interfaces.Newable<T>;
+    let creator: interfaces.Newable<T>;
 
     if (hasNameValue(provide)) {
       identifier = provide.name;
@@ -112,11 +117,7 @@ class Jupiter {
 
   bindProvide<T>(provide: Provide<T>) {
     const { identifier, creator } = this._parseProvide(provide);
-
-    if (!Reflect.hasOwnMetadata(METADATA_KEY.PARAM_TYPES, creator)) {
-      decorate(injectable(), creator);
-    }
-
+    this._ensureInjectable(creator);
     this._container.bind(identifier).to(creator);
     this._identifiersMap.set(identifier, null);
   }
@@ -129,10 +130,20 @@ class Jupiter {
     this._container.unbind(identifier);
   }
 
-  get<T>(
-    name: string | symbol | interfaces.Newable<T> | interfaces.Abstract<T>,
+  registerService<T>(
+    identifier: interfaces.ServiceIdentifier<T>,
+    newable: interfaces.Newable<T>,
   ) {
-    return this._container.get<T>(name);
+    this._ensureInjectable(newable);
+    return this._container.bind<T>(this._getRealId<T>(identifier)).to(newable);
+  }
+
+  registerClass<T>(newable: interfaces.Newable<T>) {
+    return this.registerService(newable, newable);
+  }
+
+  get<T>(identifier: interfaces.ServiceIdentifier<T>) {
+    return this._container.get<T>(this._getRealId(identifier));
   }
 
   async bootstrapModule<T extends AbstractModule>(
@@ -225,6 +236,16 @@ class Jupiter {
         callback,
         this._disposedListenerMap,
       );
+    }
+  }
+
+  private _getRealId<T>(identifier: interfaces.ServiceIdentifier<T>) {
+    return identifier[IS_DECORATOR] ? identifier.toString() : identifier;
+  }
+
+  private _ensureInjectable(creator: interfaces.Newable<any>) {
+    if (!Reflect.hasOwnMetadata(METADATA_KEY.PARAM_TYPES, creator)) {
+      decorate(injectable(), creator);
     }
   }
 
@@ -346,5 +367,6 @@ class Jupiter {
 }
 
 container.bind<Jupiter>(Jupiter).to(Jupiter);
+const jupiter = container.get<Jupiter>(Jupiter);
 
-export { Jupiter };
+export { jupiter, Jupiter };

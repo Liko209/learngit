@@ -6,6 +6,7 @@
 
 import { interfaces } from './ioc';
 import { AbstractModule } from './AbstractModule';
+import { Jupiter } from './Jupiter';
 
 type Provide<T> =
   | {
@@ -17,6 +18,7 @@ type Provide<T> =
 type ModuleConfig = {
   entry?: interfaces.Newable<AbstractModule>;
   provides?: Provide<any>[];
+  binding?: (jupiter: Jupiter) => void;
 };
 
 export { Provide, ModuleConfig };

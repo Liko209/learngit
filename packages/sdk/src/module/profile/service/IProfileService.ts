@@ -6,10 +6,12 @@
 
 import { PhoneNumberModel } from 'sdk/module/person/entity';
 import { SettingOption } from '../types';
+import { Profile } from '../entity';
 
 interface IProfileService {
   getDefaultCaller(): Promise<PhoneNumberModel | undefined>;
   updateSettingOptions(options: SettingOption[]): Promise<void>;
+  getProfile(): Promise<Profile>;
 }
 
 export { IProfileService };

@@ -3,12 +3,15 @@
  * @Date: 2019-01-09 12:36:13
  * Copyright © RingCentral. All rights reserved.
  */
+import { ModuleConfig, Jupiter } from 'framework';
 import { ElectronModule } from './ElectronModule';
 import { ElectronService } from './service';
 
-const config = {
+const config: ModuleConfig = {
   entry: ElectronModule,
-  provides: [ElectronService],
+  binding: (jupiter: Jupiter) => {
+    jupiter.registerClass(ElectronService);
+  },
 };
 
 export { config };

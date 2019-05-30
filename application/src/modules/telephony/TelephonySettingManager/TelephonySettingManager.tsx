@@ -3,50 +3,68 @@
  * @Date: 2019-04-23 09:12:51
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
-import { inject } from 'framework';
-import { ISettingService, SETTING_SERVICE } from '@/modules/setting/interface';
-import { buildSettingItem } from '@/modules/setting/container/SettingItemBuild';
-import { SETTING_ITEM_ID } from './constants';
-import { ExtensionsSettingItem } from './Extensions';
-import { CallerIdSettingItem } from './CallerIdSettingItem';
-import i18nT from '@/utils/i18nT';
+// import React from 'react';
+import {
+  ISettingService,
+  SETTING_ITEM_TYPE,
+  SelectSettingItem,
+} from '@/interface/setting';
+import { CallerIdSelectSourceItem } from './CallerIdSettingItem';
+import { IPhoneNumberRecord } from 'sdk/api/ringcentral/types/common';
+import {
+  SETTING_PAGE__PHONE,
+  SETTING_SECTION__PHONE_GENERAL,
+  SETTING_ITEM__PHONE_CALLER_ID,
+  SETTING_ITEM__PHONE_REGION,
+  SETTING_ITEM__PHONE_EXTENSIONS,
+} from './constant';
 import { RegionSettingItem } from './RegionSettingItem';
 
 class TelephonySettingManager {
-  @inject(SETTING_SERVICE) private _settingService: ISettingService;
-  init = async () => {
-    const {
-      id,
-      label,
-      automationKey,
-      description,
-    } = SETTING_ITEM_ID.SETTING_PHONE_EXTENSIONS_SETTINGS;
-    const {
-      id: CallerID,
-      label: CallerIDLabel,
-      automationKey: CallerIDAutomationKey,
-      description: CallerIDDescription,
-    } = SETTING_ITEM_ID.SETTING_PHONE_CALLERID_SETTINGS;
-    this._settingService.registerSettingItem({
-      [CallerID]: buildSettingItem({
-        label: await i18nT(CallerIDLabel),
-        automationKey: CallerIDAutomationKey,
-        description: await i18nT(CallerIDDescription),
-        Right: CallerIdSettingItem,
-      }),
-      [id]: buildSettingItem({
-        automationKey,
-        label: await i18nT(label),
-        description: await i18nT(description),
-        Right: ExtensionsSettingItem,
-      }),
-    });
+  private _scope = Symbol('TelephonySettingManager');
+  @ISettingService private _settingService: ISettingService;
 
-    const { id: regionId } = SETTING_ITEM_ID.SETTING_PHONE_REGION_SETTINGS;
-    this._settingService.registerSettingItem({
-      [regionId]: props => <RegionSettingItem {...props} />,
+  async init() {
+    this._settingService.registerPage(this._scope, {
+      id: SETTING_PAGE__PHONE,
+      icon: 'phone',
+      title: 'setting.phone.title',
+      path: '/phone',
+      weight: 300,
+      sections: [
+        {
+          id: SETTING_SECTION__PHONE_GENERAL,
+          title: 'setting.phone.general.title',
+          weight: 0,
+          items: [
+            {
+              id: SETTING_ITEM__PHONE_CALLER_ID,
+              title: 'setting.phone.general.callerID.label',
+              description: 'setting.phone.general.callerID.description',
+              type: SETTING_ITEM_TYPE.SELECT,
+              weight: 0,
+              sourceRenderer: CallerIdSelectSourceItem,
+            } as SelectSettingItem<IPhoneNumberRecord>,
+            {
+              id: SETTING_ITEM__PHONE_REGION,
+              type: RegionSettingItem,
+              weight: 100,
+            },
+            {
+              id: SETTING_ITEM__PHONE_EXTENSIONS,
+              title: 'setting.phone.general.extensions.label',
+              description: 'setting.phone.general.extensions.description',
+              type: SETTING_ITEM_TYPE.LINK,
+              weight: 200,
+            },
+          ],
+        },
+      ],
     });
+  }
+
+  dispose() {
+    this._settingService.unRegisterAll(this._scope);
   }
 }
 

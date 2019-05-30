@@ -3,20 +3,24 @@
  * @Date: 2019-04-23 09:12:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { SettingService } from './service';
-import { SettingStore } from './store';
+import { Jupiter, ModuleConfig } from 'framework';
+import { ISettingService } from '@/interface/setting';
+import { SettingStore } from './store/SettingStore';
+import { SettingService } from './service/SettingService';
+import { GeneralSettingManager } from './manager/general';
+import { NotificationSoundSettingManager } from './manager/notificationSound';
 import { SettingModule } from './SettingModule';
-import { SETTING_SERVICE } from './interface';
 
-const config = {
+// import { ISettingService } from '@/interface/setting';
+
+const config: ModuleConfig = {
   entry: SettingModule,
-  provides: [
-    {
-      name: SETTING_SERVICE,
-      value: SettingService,
-    },
-    SettingStore,
-  ],
+  binding: (jupiter: Jupiter) => {
+    jupiter.registerClass(SettingStore);
+    jupiter.registerClass(GeneralSettingManager);
+    jupiter.registerClass(NotificationSoundSettingManager);
+    jupiter.registerService(ISettingService, SettingService);
+  },
 };
 
 export { config };

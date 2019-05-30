@@ -3,12 +3,15 @@
  * @Date: 2019-01-17 09:57:41
  * Copyright © RingCentral. All rights reserved.
  */
+import { ModuleConfig, Jupiter } from 'framework';
 import { AppModule } from './AppModule';
 import { AppStore } from './store';
 
-const config = {
+const config: ModuleConfig = {
   entry: AppModule,
-  provides: [AppStore],
+  binding(jupiter: Jupiter) {
+    jupiter.registerClass(AppStore);
+  },
 };
 
 export { config };
