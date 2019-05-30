@@ -470,7 +470,6 @@
       "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later.",
       "conversationDeleted": "The team was deleted. To know more, contact the team administrator.",
       "conversationArchived": "The team was archived. To know more, contact the team administrator.",
-      "youHaveBeenRemovedFromTeam": "You have been removed from the team.",
       "conversationPrivate": "Sorry, you're not a member of this Team. To join, contact the team administrator."
     }
   },
