@@ -46,6 +46,7 @@ class SelectsView<T extends BaseItemType> extends Component<
       <JuiBoxSelect
         onChange={this.handleOnChange}
         value={valueId}
+        isFullWidth={true}
         automationId={'SettingSelectBox'}
       >
         {source.map((item: T) => (

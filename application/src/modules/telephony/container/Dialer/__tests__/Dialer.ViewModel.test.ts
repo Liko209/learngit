@@ -7,7 +7,7 @@
 import { CLIENT_SERVICE } from '@/modules/common/interface';
 import { ClientService } from '@/modules/common';
 import { container, decorate, injectable } from 'framework';
-import { TelephonyStore, INCOMING_STATE } from '../../../store';
+import { TelephonyStore } from '../../../store';
 import { CALL_STATE } from '../../../FSM';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import { TelephonyService } from '../../../service/TelephonyService';
@@ -46,9 +46,6 @@ beforeAll(() => {
 describe('DialerViewModel', () => {
   it('should return call state', async () => {
     expect(dialerViewModel.callState).toEqual(CALL_STATE.IDLE);
-  });
-  it('should return incoming state', async () => {
-    expect(dialerViewModel.incomingState).toEqual(INCOMING_STATE.IDLE);
   });
   it('should initialize with keypad not entered', async () => {
     expect(dialerViewModel.keypadEntered).toEqual(false);

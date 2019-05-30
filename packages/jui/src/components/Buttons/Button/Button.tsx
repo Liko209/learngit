@@ -8,7 +8,7 @@ import MuiButton, {
   ButtonProps as MuiButtonProps,
 } from '@material-ui/core/Button';
 import { RuiCircularProgress } from 'rcui/components/Progress';
-import { Palette } from '../../../foundation/theme/theme';
+import { Palette, Theme } from '../../../foundation/theme/theme';
 import styled, { css } from '../../../foundation/styled-components';
 import {
   typography,
@@ -79,6 +79,16 @@ const shadow = (n: number) => {
   `;
 };
 
+const ButtonColor = ({
+  theme,
+  color = 'primary',
+}: {
+  theme: Theme;
+  color: JuiButtonColor;
+}) =>
+  theme.palette.getContrastText(
+    palette(ColorMap[color][0], ColorMap[color][1])({ theme }),
+  );
 const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
   && {
     min-width: ${({ theme }) => width(26)({ theme })};
@@ -88,7 +98,7 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
     color: ${palette('primary', 'main')};
     text-align: center;
     &.containedButtonStyle {
-      color: ${palette('common', 'white')};
+      color: ${ButtonColor};
       ${shadow(3)}
       background-color: ${({ color = 'primary' }) =>
         palette(ColorMap[color][0], ColorMap[color][1])};
@@ -98,7 +108,7 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
       &.disabled {
         background-color: ${({ theme, loading }) =>
           loading ? '' : palette('accent', 'ash')({ theme })};
-        color: ${palette('common', 'while')};
+        color: ${ButtonColor};
       }
       &:active {
         ${shadow(1)}
@@ -123,7 +133,8 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
       height: ${({ theme }) => height(7)({ theme })};
       border-radius: ${({ theme }) => spacing(7)({ theme })};
       padding: ${({ theme }) => spacing(0, 4)({ theme })};
-      background-color: ${palette('common', 'white')};
+      background-color: ${({ theme }) =>
+        theme.palette.getContrastText(primary('700')({ theme }))};
       color:${primary('700')};
       ${typography('caption1')};
       min-height:unset;

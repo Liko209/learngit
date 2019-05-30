@@ -135,6 +135,8 @@ const name2icon = {
   dialer: 'dialer',
   deletenumber: 'deletenumber',
   arrow_right: 'arrow_right',
+  pause: 'pause',
+  play: 'play',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

@@ -20,6 +20,7 @@ const StyledDialer = styled('div')`
     border-radius: ${({ theme }) => theme.radius.xl};
     overflow: auto;
     outline: none;
+    cursor: move;
   }
 `;
 

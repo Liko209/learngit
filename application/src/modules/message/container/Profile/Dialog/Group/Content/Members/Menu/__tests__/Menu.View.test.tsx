@@ -19,8 +19,78 @@ const someProps = {
 Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
 
 describe('AddMembersView', () => {
-  describe('render()', () => {
-    it('should display flash toast notification content removeMemberBackendError when remove from team fail in backend error.', (done: jest.DoneCallback) => {
+  describe('error handling', () => {
+    it('should display flash toast notification with content revokeTeamAdminNetworkError when revoke team admin fail in network error.', async () => {
+      const props: any = {
+        ...someProps,
+        isThePersonAdmin: true,
+        toggleTeamAdmin: () => {
+          throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, '');
+        },
+      };
+      const Wrapper = shallow(<MenuViewComponent {...props} />);
+      await Wrapper.find('[data-test-automation-id="revokeTeamAdmin"]').simulate(
+        'click',
+      );
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'people.prompt.revokeTeamAdminNetworkError',
+        }),
+      );
+    });
+    it('should display flash toast notification content revokeTeamAdminBackendError when revoke team admin fail in backend error.', async () => {
+      const props: any = {
+        ...someProps,
+        isThePersonAdmin: true,
+        toggleTeamAdmin: () => {
+          throw new JServerError(ERROR_CODES_NETWORK.BAD_REQUEST, '');
+        },
+      };
+      const Wrapper = shallow(<MenuViewComponent {...props} />);
+      await Wrapper.find('[data-test-automation-id="revokeTeamAdmin"]').simulate(
+        'click',
+      );
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'people.prompt.revokeTeamAdminBackendError',
+        }),
+      );
+    });
+    it('should display flash toast notification with content makeTeamAdminNetworkError when make team admin fail in network error.', async () => {
+      const props: any = {
+        ...someProps,
+        toggleTeamAdmin: () => {
+          throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, '');
+        },
+      };
+      const Wrapper = shallow(<MenuViewComponent {...props} />);
+      await Wrapper.find('[data-test-automation-id="makeTeamAdmin"]').simulate(
+        'click',
+      );
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'people.prompt.makeTeamAdminNetworkError',
+        }),
+      );
+    });
+    it('should display flash toast notification content makeTeamAdminBackendError when make team admin fail in backend error.', async () => {
+      const props: any = {
+        ...someProps,
+        toggleTeamAdmin: () => {
+          throw new JServerError(ERROR_CODES_NETWORK.BAD_REQUEST, '');
+        },
+      };
+      const Wrapper = shallow(<MenuViewComponent {...props} />);
+      await Wrapper.find('[data-test-automation-id="makeTeamAdmin"]').simulate(
+        'click',
+      );
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'people.prompt.makeTeamAdminBackendError',
+        }),
+      );
+    });
+    it('should display flash toast notification content removeMemberBackendError when remove from team fail in backend error.', async () => {
       const props: any = {
         ...someProps,
         removeFromTeam: () => {
@@ -28,19 +98,16 @@ describe('AddMembersView', () => {
         },
       };
       const Wrapper = shallow(<MenuViewComponent {...props} />);
-      Wrapper.find('[data-test-automation-id="removeFromTeam"]').simulate(
+      await Wrapper.find('[data-test-automation-id="removeFromTeam"]').simulate(
         'click',
       );
-      setTimeout(() => {
-        expect(Notification.flashToast).toHaveBeenCalledWith(
-          expect.objectContaining({
-            message: 'people.prompt.removeMemberBackendError',
-          }),
-        );
-        done();
-      },         0);
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'people.prompt.removeMemberBackendError',
+        }),
+      );
     });
-    it('should display flash toast notification with content removeMemberNetworkError when remove from team fail in network error.', (done: jest.DoneCallback) => {
+    it('should display flash toast notification with content removeMemberNetworkError when remove from team fail in network error.', async () => {
       const props: any = {
         ...someProps,
         removeFromTeam: () => {
@@ -48,17 +115,14 @@ describe('AddMembersView', () => {
         },
       };
       const Wrapper = shallow(<MenuViewComponent {...props} />);
-      Wrapper.find('[data-test-automation-id="removeFromTeam"]').simulate(
+      await Wrapper.find('[data-test-automation-id="removeFromTeam"]').simulate(
         'click',
       );
-      setTimeout(() => {
-        expect(Notification.flashToast).toHaveBeenCalledWith(
-          expect.objectContaining({
-            message: 'people.prompt.removeMemberNetworkError',
-          }),
-        );
-        done();
-      },         0);
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'people.prompt.removeMemberNetworkError',
+        }),
+      );
     });
   });
 });
