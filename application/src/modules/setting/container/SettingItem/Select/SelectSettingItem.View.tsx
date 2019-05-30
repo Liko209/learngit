@@ -105,8 +105,14 @@ class SelectSettingItemViewComponent<
   }
 
   private _extractValue(sourceItem: T) {
+    const { valueExtractor } = this.props.settingItem;
     let result: string | number;
-    if (typeof sourceItem === 'string' || typeof sourceItem === 'number') {
+    if (valueExtractor) {
+      result = valueExtractor(sourceItem);
+    } else if (
+      typeof sourceItem === 'string' ||
+      typeof sourceItem === 'number'
+    ) {
       result = sourceItem;
     } else if (typeof sourceItem === 'object') {
       result = (sourceItem as { id: string | number }).id;
