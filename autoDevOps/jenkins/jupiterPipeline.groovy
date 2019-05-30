@@ -422,7 +422,7 @@ class JupiterJob extends BaseJob {
         jenkins.sh "npm config set registry ${context.npmRegistry}"
         jenkins.sh 'npm run fixed:version pre || true'  // suppress error
         jenkins.sshagent (credentials: [context.scmCredentialId]) {
-            jenkins.sh 'npm install --ignore-scripts --unsafe-perm && npm install --unsafe-perm'
+            jenkins.sh 'npm install --unsafe-perm'
         }
         jenkins.sh 'npm run fixed:version check || true'  // suppress error
         jenkins.sh 'npm run fixed:version cache || true'  // suppress error
@@ -493,6 +493,19 @@ class JupiterJob extends BaseJob {
         }
         lockKey(context.deployCredentialId, context.lockUri, context.unitTestLockKey)
     }
+
+    void buildApp() {
+
+    }
+
+    void buildJui() {
+
+    }
+
+    void buildRcui() {
+
+    }
+
 
     Boolean getIsSkipInstallDependency() {
         isSkipUnitTest && false
