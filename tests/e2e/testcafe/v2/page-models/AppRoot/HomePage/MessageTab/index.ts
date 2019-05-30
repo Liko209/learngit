@@ -79,6 +79,10 @@ class MoreMenu extends Entry {
     return this.getToggler('favToggler');
   }
 
+  get markAsReadOrUnread(){
+    return this.getToggler('readOrUnreadConversation');
+  }
+
   get profile() {
     return this.getToggler('profileEntry');
   }

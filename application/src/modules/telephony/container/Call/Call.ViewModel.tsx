@@ -96,7 +96,7 @@ class CallViewModel extends AbstractViewModel<CallProps>
   }
 
   @action
-  directCall = () => {
+  call = () => {
     if (this.phoneNumber) {
       this._telephonyService.directCall(this.phoneNumber);
     }

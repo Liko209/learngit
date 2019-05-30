@@ -15,8 +15,23 @@ const CALLER_ID_ORDER = {
   [PhoneNumberType.Blocked]: 2,
   [PhoneNumberType.NickName]: 3,
   [PhoneNumberType.CompanyNumber]: 4,
-  [PhoneNumberType.CompanyFaxNumber]: 5,
+  [PhoneNumberType.AdditionalCompanyNumber]: 5,
+  [PhoneNumberType.CompanyFaxNumber]: 6,
 };
+const CALLER_ID_LABEL = {
+  [PhoneNumberType.DirectNumber]: 'Direct Number',
+  [PhoneNumberType.MainCompanyNumber]: 'Main Company Number',
+  [PhoneNumberType.Blocked]: 'Blocked',
+  [PhoneNumberType.CompanyNumber]: 'Company Number',
+  [PhoneNumberType.AdditionalCompanyNumber]: 'Company Number',
+  [PhoneNumberType.CompanyFaxNumber]: 'Company Fax Number',
+};
+const CALLER_ID_FILTER_TYPE = [
+  PhoneNumberType.ForwardedNumber,
+  PhoneNumberType.ForwardedCompanyNumber,
+  PhoneNumberType.ContactCenterNumber,
+  PhoneNumberType.ConferencingNumber,
+];
 
 const BLOCKED_NUMBER_CALLER_ID = 0;
 
@@ -30,24 +45,36 @@ class RCCallerIdController {
     if (!records.length) {
       result = await this._getNumberFromUserInfo();
     } else {
-      result = records.map(item => {
-        const { id, phoneNumber, usageType, label } = item;
-        return {
-          id,
-          phoneNumber,
-          usageType,
-          label,
-        };
-      });
+      result = records;
     }
-
-    result = this._addBlockedNumber(result);
-    return result.sort(this._recordsSortFn.bind(this));
+    return this._handleCallerIdList(result);
+  }
+  private _handleCallerIdList(callerIdList: PhoneNumberModel[]) {
+    let result = [];
+    result = this._addBlockedNumber(callerIdList);
+    result = result.filter(
+      (item) =>
+        !CALLER_ID_FILTER_TYPE.includes(item.usageType as PhoneNumberType),
+    );
+    result = result.map((item) => {
+      const { id, phoneNumber, usageType, label } = item;
+      return {
+        id,
+        phoneNumber,
+        usageType:
+          label && usageType === PhoneNumberType.CompanyNumber
+            ? PhoneNumberType.NickName
+            : usageType,
+        label: label ? label : CALLER_ID_LABEL[usageType],
+      };
+    });
+    result.sort(this._recordsSortFn.bind(this));
+    return result;
   }
 
   async getCallerById(id: number) {
     const callerIds = await this.getCallerIdList();
-    const index = callerIds.findIndex(caller => caller.id === id);
+    const index = callerIds.findIndex((caller) => caller.id === id);
     return index !== -1 ? callerIds[index] : undefined;
   }
 

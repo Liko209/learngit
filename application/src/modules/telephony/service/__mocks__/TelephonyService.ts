@@ -4,6 +4,7 @@ class TelephonyService {
   replyWithPattern = jest.fn();
   replyWithMessage = jest.fn();
   startReply = jest.fn();
+  hangUp = jest.fn();
 }
 
 export { TelephonyService };
