@@ -1,16 +1,20 @@
+import { generateLocalizationKey } from './generateLocalizationKey';
+
 type Parameter = {
   verb: string;
-  adjectives: string;
+  adjective: string;
   noun: string;
 };
 
-export default ({ verb, adjectives, noun }: Parameter) => {
+export default ({ verb, adjective, noun }: Parameter) => {
+  const parameter = {
+    verb,
+    noun,
+    adjective,
+  };
+
   return {
-    parameter: {
-      verb,
-      noun,
-      adjectives,
-    },
-    key: 'item.activity.verb-noun-adjectives',
+    parameter,
+    key: generateLocalizationKey('verb-noun-adjective', parameter),
   };
 };
