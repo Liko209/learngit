@@ -7,13 +7,14 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { EmojiViewProps, EmojiProps } from './types';
 import { JuiEmoji } from 'jui/pattern/Emoji';
-import i18nT from '@/utils/i18nT';
+import i18nP from '@/utils/i18nT';
 
 type Types = EmojiViewProps & EmojiProps;
 @observer
 class EmojiView extends Component<Types> {
   handleKeepOpenChange = () => {
     this.props.setEmojiOpenStatus();
+    console.log('nye emoji changed');
   }
   render() {
     const {
@@ -32,7 +33,7 @@ class EmojiView extends Component<Types> {
         handleEmojiClick={handleEmojiClick}
         handleKeepOpenChange={this.handleKeepOpenChange}
         isKeepOpen={emojiOpenStatus}
-        toggleButtonLabel={i18nT('message.emoji.toggleButtonLabel') as string}
+        toggleButtonLabel={i18nP('message.emoji.toggleButtonLabel') as string}
       />
     );
   }
