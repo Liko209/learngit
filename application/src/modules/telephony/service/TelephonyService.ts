@@ -80,10 +80,7 @@ class TelephonyService {
   }
 
   private _onReceiveIncomingCall = async (callInfo: TelephonyCallInfo) => {
-    const _isJupiterDefaultApp =
-      getSingleEntity(ENTITY_NAME.PROFILE, 'callOption') ===
-      CALLING_OPTIONS.GLIP;
-    if (!_isJupiterDefaultApp) {
+    if (!this._isJupiterDefaultApp) {
       return;
     }
     const { fromName, fromNum, callId } = callInfo;

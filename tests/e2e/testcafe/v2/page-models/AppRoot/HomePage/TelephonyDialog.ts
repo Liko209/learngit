@@ -5,7 +5,7 @@ import { ClientFunction } from 'testcafe';
 
 export class TelephonyDialog extends BaseWebComponent {
   get self() {
-    return this.getSelectorByAutomationId('dialer');
+    return this.getSelectorByAutomationId('dialer-container');
   }
 
   get title() {
