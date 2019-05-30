@@ -31,6 +31,34 @@ npm run storybook
     4. Developer makes sure pipeline is successed and designer checking is passed
   - Admin merges `hotfix/bug1` into `master` and `dev`, then tagged it. 
 
+## Commit Policy
+  - Purpose
+    - Code quality when merging code
+    - Easy to code review
+    - Clean code history
+  - Policy
+    - Always merge to which branch it base on
+    - All merge should have code review
+    - One merge, one ticket
+    - Commit what is need commit
+      - One commit, one issue
+      - Use the same code format plugin
+        - Prettier
+    - Criteria for merge into develop branch
+      - No p0/p1 bugs
+      - No p2 bugs
+        - If have to merge into develop with remain P2 bugs, get agreement from QA and Leader
+      - Owner: QA
+    - Conflict
+      - Should talk to the original code author
+  - Commit message format
+    - Commit message format should follow:
+      - feat(JIRA-ticket): Ticket title
+      - feat(JIRA-ticket): [Ticket title] Description
+    - Merge request title
+      - feat(JIRA-ticket): Ticket title
+    - Post both the CR link and title in Jupiter Code Review team
+
 ## Continuous Integration
   ### Trigger point
     1. commit

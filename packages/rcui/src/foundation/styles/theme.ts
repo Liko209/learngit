@@ -5,7 +5,6 @@ import radius from './theme/radius.json';
 import spacing from './theme/spacing.json';
 import zIndex from './theme/zIndex.json';
 import breakpoints from './theme/breakpoints.json';
-import boxShadow from './theme/boxShadow.json';
 
 import {
   Theme as MuiTheme,
@@ -19,6 +18,8 @@ import { Typography as MuiTypography } from '@material-ui/core/styles/createTypo
 import {
   Palette as MuiPalette,
   PaletteColor,
+  ColorPartial,
+  SimplePaletteColorOptions,
 } from '@material-ui/core/styles/createPalette';
 
 export type Palette = { [P in keyof typeof palette]: PaletteColor } &
@@ -28,7 +29,6 @@ export type Opacity = typeof opacity;
 export type Radius = typeof radius;
 export type Spacing = typeof spacing & MuiSpacing;
 export type ZIndex = typeof zIndex & MuiZIndex;
-export type boxShadow = typeof boxShadow;
 export type size = {
   width: number;
   height: number;
@@ -43,11 +43,7 @@ export type Theme = {
   radius: Radius;
   spacing: Spacing;
   zIndex: ZIndex;
-  tooltip: {
-    dark: string;
-  };
   size: size;
-  boxShadow: boxShadow;
 } & MuiTheme;
 
 export type PaletteOptions = typeof palette;
@@ -57,6 +53,10 @@ export type RadiusOptions = Radius;
 export type SpacingOptions = typeof spacing;
 export type ZIndexOptions = typeof zIndex;
 export type BreakpointsOptions = typeof breakpoints;
+export type Color = [
+  keyof PaletteOptions | 'grey',
+  keyof ColorPartial | keyof SimplePaletteColorOptions
+];
 
 export type ThemeOptions = {
   palette: PaletteOptions;

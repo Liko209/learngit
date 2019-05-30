@@ -15,7 +15,6 @@ import {
   Radius,
   Spacing,
   ZIndex,
-  boxShadow,
   size,
 } from 'rcui/foundation/styles/theme';
 
@@ -25,7 +24,6 @@ export {
   Radius,
   Spacing,
   ZIndex,
-  boxShadow,
   size,
 } from 'rcui/foundation/styles/theme';
 

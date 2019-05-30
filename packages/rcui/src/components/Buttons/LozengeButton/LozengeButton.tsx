@@ -10,22 +10,20 @@ type RuiLozengeButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const Arrow = Styled('span')<{ direction?: Direction }>`
-   border: ${spacing('xxxs')} solid transparent;
+   border: ${spacing(1)} solid transparent;
   ${({ direction }) =>
     direction === 'down'
       ? 'border-top-color: white; top: 2px;'
       : 'border-bottom-color: white; top: -2px;'};
   position: relative;
-  margin: ${spacing('xxxs')} ${spacing('xxxs')} ${spacing('xxxs')} ${spacing(
-  'xxs',
-)};
+  margin: ${spacing(1, 1, 1, 2)};
   display: inline-block;
   vertical-align: middle;
 `;
 
 const StyledLozengeButton = Styled.button`
   ${typography('body1')};
-  padding: ${spacing('xxs')} ${spacing('m')};
+  padding: ${spacing(2, 5)};
   height: 32px;
   line-height: 0;
   border-radius: 32px;
@@ -42,7 +40,7 @@ const StyledLozengeButton = Styled.button`
   &.lozengeButtonLoading {
     pointer-events: none;
     ${RuiCircularProgress} {
-      margin-left: ${({ theme }) => theme.spacing['xxxs']};
+      margin-left: ${spacing(1)};
     }
   };
   &.lozengeButtonLoading,

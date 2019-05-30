@@ -11,7 +11,7 @@ exports[`<Button /> should render contained type button 1`] = `
   height: 36px;
 }
 
-.c0.c0 > span[class*="label"] {
+.c0.c0 > span[class*='label'] {
   min-width: 64px;
 }
 
@@ -135,7 +135,7 @@ exports[`<Button /> should render outlined type button 1`] = `
   height: 36px;
 }
 
-.c0.c0 > span[class*="label"] {
+.c0.c0 > span[class*='label'] {
   min-width: 64px;
 }
 
@@ -259,7 +259,7 @@ exports[`<Button /> should render round type button 1`] = `
   height: 36px;
 }
 
-.c0.c0 > span[class*="label"] {
+.c0.c0 > span[class*='label'] {
   min-width: 64px;
 }
 
@@ -380,7 +380,7 @@ exports[`<Button /> should render text type button 1`] = `
   height: 36px;
 }
 
-.c0.c0 > span[class*="label"] {
+.c0.c0 > span[class*='label'] {
   min-width: 64px;
 }
 

@@ -16,9 +16,5 @@
   },
   "warning": {
     "main": "#8C8C8C"
-  },
-  "tooltip": {
-    "main": "#616161",
-    "dark": "#616161"
   }
 }

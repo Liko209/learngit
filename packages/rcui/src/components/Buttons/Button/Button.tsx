@@ -90,11 +90,7 @@ const RuiButton = (props: RuiButtonProps) => {
     restProps.disableRipple = true;
     restProps.disabled = false;
   }
-  const loadingCom = loading ? (
-    <RuiCircularProgress size={20} />
-  ) : (
-      children
-    );
+  const loadingCom = loading ? <RuiCircularProgress size={20} /> : children;
   return (
     <StyledButton
       classes={classes}
@@ -110,14 +106,14 @@ const RuiButton = (props: RuiButtonProps) => {
   );
 };
 
-const StyledButton = styled(MuiButton) <RuiButtonProps>`
+const StyledButton = styled(MuiButton)<RuiButtonProps>`
   && {
-    padding-right: ${spacing('s')};
-    padding-left: ${spacing('s')};
+    padding-right: ${spacing(4)};
+    padding-left: ${spacing(4)};
     ${typography('button')};
     color: ${palette('primary', 'main')};
     height: ${({ size = 'large' }) => sizes[size]};
-    & > span[class*="label"] {
+    & > span[class*='label'] {
       min-width: ${({ size = 'large' }) => minWith[size]};
     }
     &.root {
@@ -147,10 +143,10 @@ const StyledButton = styled(MuiButton) <RuiButtonProps>`
       }
       &:hover {
         background-color: ${({ theme, color }) =>
-    fade(
-      theme.palette[`${color}`].main,
-      theme.palette.action.hoverOpacity,
-    )};
+          fade(
+            theme.palette[`${color}`].main,
+            theme.palette.action.hoverOpacity,
+          )};
       }
     }
     &.outlineButtonStyle {
@@ -164,10 +160,10 @@ const StyledButton = styled(MuiButton) <RuiButtonProps>`
       }
       &:hover {
         background-color: ${({ theme, color }) =>
-    fade(
-      theme.palette[`${color}`].main,
-      theme.palette.action.hoverOpacity,
-    )};
+          fade(
+            theme.palette[`${color}`].main,
+            theme.palette.action.hoverOpacity,
+          )};
       }
     }
     &.roundButtonStyle {

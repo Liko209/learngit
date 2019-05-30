@@ -14,7 +14,7 @@
     "postinstall": "npm run bt",
     "start:ui": "cd packages/jui && npm run storybook",
     "start:app": "cd application && npm run start",
-    "clean:build": "rm -rf ./packages/*/build ./packages/*/build-es ./application/build",
+    "clean:build": "rm -rf ./packages/**/*/build ./packages/**/*/build-es ./application/build",
     "clean:all": "lerna clean --yes && rm -rf ./node_modules && npm run clean:build",
     "build:packages": "node ./scripts/build.js",
     "build:app": "cd application && npm run build",
@@ -28,7 +28,7 @@
     "test:watch": "npm run test -- --watch",
     "test:dev": "npm run test -- --coverage --watch --bail",
     "lint": "tslint",
-    "lint-all": "concurrently \"tslint -p application/tsconfig.dev.json\"  \"tslint -p packages/foundation/tsconfig.dev.json\" \"tslint -p packages/sdk/tsconfig.dev.json\" \"tslint -p packages/jui/tsconfig.dev.json\" \"tslint -p packages/voip/tsconfig.dev.json\"",
+    "lint-all": "concurrently --kill-others-on-fail -r \"tslint -p application/tsconfig.dev.json\"  \"tslint -p packages/foundation/tsconfig.dev.json\" \"tslint -p packages/sdk/tsconfig.dev.json\" \"tslint -p packages/jui/tsconfig.dev.json\" \"tslint -p packages/voip/tsconfig.dev.json\"",
     "publish": "npm run clean:build && npm run build && lerna publish --silent",
     "watch": "node scripts/watch.js",
     "commits": "git-cz",
@@ -36,7 +36,7 @@
     "bt": "lerna bootstrap --hoist --no-ci -- --cache-min 9999999",
     "raise-coverage": "node scripts/raise-coverage",
     "generate": "plop --plopfile scripts/generators/index.js",
-    "tsc": "tsc -v && concurrently \"./node_modules/.bin/tsc -p application/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/sdk/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/jui/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/voip/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/foundation/tsconfig.dev.json\"",
+    "tsc": "tsc -v && concurrently --kill-others-on-fail -r \"./node_modules/.bin/tsc -p application/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/sdk/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/jui/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/voip/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/foundation/tsconfig.dev.json\"",
     "version": "npx lerna version --no-git-tag-version --exact --yes",
     "webpack": "cd application && npm run webpack",
     "fixed:version": "ts-node fixedVersion.ts",
@@ -101,7 +101,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "concurrently \"npm run tsc && npm run clean:build\" \"npm run lint-all\" &&  npm run test:changed",
+      "pre-push": "concurrently --kill-others-on-fail -r  \"npm run tsc && npm run clean:build\" \"npm run lint-all\" &&  npm run test:changed",
       "commit-msg": "node scripts/validate-commit-msg.js",
       "post-merge": "node scripts/update-dependencies.js"
     }
