@@ -100,14 +100,16 @@ class JuiEmoji extends React.PureComponent<Props, State> {
   }
 
   componentWillUnmount() {
-    emojiMartContainer[0].removeEventListener(
-      'mouseenter',
-      this._handleMouseEnter,
-    );
-    emojiMartContainer[0].removeEventListener(
-      'mouseleave',
-      this._handleMouseEnter,
-    );
+    if (emojiMartContainer[0]) {
+      emojiMartContainer[0].removeEventListener(
+        'mouseenter',
+        this._handleMouseEnter,
+      );
+      emojiMartContainer[0].removeEventListener(
+        'mouseleave',
+        this._handleMouseEnter,
+      );
+    }
   }
 
   private _handleMouseEnter = () => {
