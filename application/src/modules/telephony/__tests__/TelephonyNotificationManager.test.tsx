@@ -25,6 +25,10 @@ const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 jupiter.registerModule(notification.config);
 
+global.Notification = {
+  permission: 'defalut',
+};
+
 beforeAll(() => {
   (getEntity as jest.Mock).mockReturnValue({
     userDisplayName: 'belle',
