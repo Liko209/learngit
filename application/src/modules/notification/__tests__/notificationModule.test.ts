@@ -5,6 +5,11 @@ import { config as leaveBlockerConfig } from '../../leave-blocker/module.config'
 import { ILeaveBlockerService } from '@/modules/leave-blocker/interface';
 import { INotificationService } from '../interface';
 
+global.Notification = {
+  requestPermission: jest.fn(),
+  permission: 'default',
+};
+
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(leaveBlockerConfig);
 jupiter.registerModule(config);
