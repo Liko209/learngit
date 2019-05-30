@@ -122,6 +122,7 @@ class JuiEmoji extends React.PureComponent<Props, State> {
   handleClose = () => {
     this.setState({
       open: false,
+      isToggleWrapShow: true,
     });
   }
 
