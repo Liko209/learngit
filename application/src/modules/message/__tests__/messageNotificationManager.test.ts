@@ -133,7 +133,7 @@ describe('messageNotificationManager', () => {
       expect(result).toBeTruthy();
     });
   });
-  describe.only('enqueueVm()', () => {
+  describe('enqueueVm()', () => {
     let manager;
     const crushVmIntoManager = (times: number) => {
       [...Array(times)].forEach(() => {

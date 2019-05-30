@@ -10,8 +10,10 @@ type Hooks = {
 };
 
 class MessageNotificationViewModel extends AbstractViewModel {
+  onDispose: Function;
   constructor(id: number, { onCreate, onUpdate, onDispose }: Hooks) {
     super();
+    this.onDispose = onDispose;
     onCreate(id);
     if (onUpdate) {
       this.reaction(
@@ -25,6 +27,10 @@ class MessageNotificationViewModel extends AbstractViewModel {
       () => !!getEntity<Post, PostModel>(ENTITY_NAME.POST, id).deactivated,
       onDispose,
     );
+  }
+  dispose() {
+    super.dispose();
+    this.onDispose();
   }
 }
 export { MessageNotificationViewModel };
