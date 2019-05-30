@@ -197,7 +197,7 @@ describe('ItemSyncController', () => {
       });
     });
 
-    it('should throw error when request sync item failed', async () => {
+    it('should not throw error when request sync item failed', async () => {
       const error = new JServerError(ERROR_CODES_SERVER.GENERAL, 'error');
       const groupConfig = {
         id: 10,
@@ -213,7 +213,7 @@ describe('ItemSyncController', () => {
 
       expect(
         itemSyncController.requestSyncGroupItems(groupConfig.id),
-      ).resolves.toThrow();
+      ).resolves.not.toThrow();
 
       expect(
         (groupConfigService.saveAndDoNotify = jest.fn()),

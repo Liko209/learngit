@@ -14,14 +14,36 @@ class DialerViewModel extends StoreViewModel<DialerProps>
   implements DialerViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
 
+  dialerId = this._telephonyStore.dialerId;
+
   @computed
   get callState() {
     return this._telephonyStore.callState;
   }
 
   @computed
+  get callWindowState() {
+    return this._telephonyStore.callWindowState;
+  }
+
+  @computed
   get keypadEntered() {
     return this._telephonyStore.keypadEntered;
+  }
+
+  @computed
+  get startMinimizeAnimation() {
+    return this._telephonyStore.startMinimizeAnimation;
+  }
+
+  @computed
+  get dialerMinimizeTranslateX() {
+    return this._telephonyStore.dialerMinimizeTranslateX;
+  }
+
+  @computed
+  get dialerMinimizeTranslateY() {
+    return this._telephonyStore.dialerMinimizeTranslateY;
   }
 }
 

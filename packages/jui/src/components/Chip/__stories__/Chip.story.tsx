@@ -29,6 +29,7 @@ storiesOf('Components/Chip', module)
         label="Basic Chip"
         PersonAvatar={Avatar}
         onDelete={handleDelete}
+        deleteTooltip="Remove"
       />
     );
   })
@@ -36,5 +37,5 @@ storiesOf('Components/Chip', module)
     return <JuiChip label="Basic Chip" PersonAvatar={Avatar} />;
   })
   .add('with DeleteIcon', () => {
-    return <JuiChip label="Basic Chip" onDelete={handleDelete} />;
+    return <JuiChip label="Basic Chip" onDelete={handleDelete} deleteTooltip="Remove" />;
   });

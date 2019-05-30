@@ -3,6 +3,8 @@
     "dialog": {
       "OK": "OK",
       "cancel": "Cancel",
+      "update": "Update",
+      "create": "Create",
       "done": "Done",
       "save": "Save",
       "send": "Send",
@@ -13,6 +15,9 @@
       "NoInternetConnection": "No Internet Connection",
       "Network Error": "Network disconnected. Please try again when the network is resumed.",
       "tryAgain": "Try again."
+    },
+    "preposition": {
+      "in": "in"
     },
     "time": {
       "at": "at",
@@ -39,6 +44,7 @@
     },
     "more": "More",
     "copy": "Copy",
+    "remove": "Remove",
     "pin": "Pin",
     "ariaCopy": "Copy this {{value}}",
     "call": "Call",
@@ -49,7 +55,9 @@
     "back": "Back",
     "forward": "Forward",
     "You": "You",
-    "Connecting": "Connecting"
+    "Connecting": "Connecting",
+    "deactivatedUsers": "Deactivated Users",
+    "team": "team"
   },
   "auth": {
     "signIn": "Sign in",
@@ -69,12 +77,15 @@
     "version": "Version",
     "lastCommit": "Last Commit",
     "deployedTime": "Date",
-    "allRightsReserved": "All rights reserved"
+    "allRightsReserved": "All rights reserved",
+    "dialer": "Dialer",
+    "openDialer": "Open the dialer"
   },
   "globalSearch": {
     "search": "Search",
     "showMore": "Show more",
     "ClearHistory": "Clear history",
+    "clear": "Clear",
     "RecentSearches": "Recent searches",
     "contentSearch": "Content search",
     "inThisConversation": "in this conversation",
@@ -109,8 +120,7 @@
     },
     "Results": "Results ({{count}})",
     "NoMatchesFound": "No matches found",
-    "SearchForContactsAndKeywords": "Search for contacts and keywords",
-    "in": "in"
+    "SearchForContactsAndKeywords": "Search for contacts and keywords"
   },
   "dashboard": {
     "Dashboard": "Dashboard"
@@ -126,6 +136,7 @@
     "directGroups": "direct messages",
     "teamGroups": "teams",
     "messageTypeNameSMS": "text",
+    "jumpToConversation": "Jump to conversation",
     "emoji": {
       "emojiDefaultTitle": "Pick your emoji"
     },
@@ -135,7 +146,6 @@
       "createATeam": "created a team",
       "on": "on",
       "postInitialTitle": "Get Started",
-      "postInitialContent": "Having a home based business is a wonderful asset to your life.",
       "shareFile": "Share a file",
       "createTask": "Create a task",
       "integrateApps": "Integrate apps"
@@ -173,7 +183,9 @@
       "contentLength": "A maximum of 10000 characters can be sent",
       "contentIllegal": "Javascript not allowed",
       "deletePostTitle": "Delete Post?",
+      "deleteFileTitle": "Delete the file?",
       "deletePostContent": "Are you sure you want to delete this post?",
+      "deleteFileContent": "Are you sure you want to delete this file <0>{{fileName}}</0>?",
       "SorryWeWereNotAbleToSendTheMessage": "Sorry, we weren't able to send the message. Try again.",
       "notAbleToUnlikeForNetworkIssue": "We weren't able to unlike this message. Check your network connection, then try again.",
       "notAbleToUnlikeForServerIssue": "Sorry, something went wrong on our end and we weren't able to unlike this message. Try again later.",
@@ -196,6 +208,9 @@
       "newMessageTipLink": "create a Team instead.",
       "NewMessageError": "We are having trouble creating this new message. Please try again later.",
       "disabledText": "This team is read-only"
+    },
+    "": {
+      "deleteFile": "Delete file"
     },
     "Messages": "Messages",
     "message": "Message"
@@ -391,6 +406,7 @@
       "joinTeamTitle": "Join team?",
       "joinTeamContent": "You are not currently a member of the <0>{{teamName}}</0> team. Would you like to join the team?",
       "joinTeamSubmit": "Join",
+      "joinedStatus": "Joined",
       "ariaGoToTeam": "Go to the conversation with team {{name}}",
       "ariaGoToGroup": "Go to the conversation with group",
       "favorite": "Favorite",
@@ -419,37 +435,38 @@
       "JoinTeamErrorForServerIssue": "Sorry, something went wrong on our end and you weren't able to join the team. Try again later.",
       "alreadyTaken": "This name is already taken, try choosing another one.",
       "CreateTeamError": "We are having trouble creating this team. Please try again later.",
-      "SorryWeWereNotAbleToSaveTheUpdate": "We weren't able to save the update. Check your network connection, then try again.",
-      "SorryWeWereNotAbleToSaveTheUpdateTryAgain": "Sorry, something went wrong on our end and we weren't able to save the update. Try again later.",
+      "SaveTeamUpdateErrorForNetworkIssue": "We weren't able to save the update. Check your network connection, then try again.",
+      "SaveTeamUpdateErrorForServerIssue": "Sorry, something went wrong on our end and we weren't able to save the update. Try again later.",
       "YouAreAnAdminToThisTeam": "You are an admin to this team.",
       "LearnAboutTeamAdministration": "Learn about team administration.",
       "WeWerentAbleToCreateTheTeamTryAgain": "We weren't able to create the team. Try again.",
-      "teamNetError": "Sorry, we weren't able to update the team.",
-      "markPrivateServerErrorForTeam": "Sorry, we weren't able to update the team. Try again.",
+      "changeTeamPrivateTypeErrorForNetworkIssue": "We weren't able to change the team type. Check your network connection, then try again.",
+      "changeTeamPrivateTypeErrorForServerIssue": "Sorry, something went wrong on our end and we weren't able to change the team type. Try again later.",
       "notAbleToUnFavoriteForNetworkIssue": "We weren't able to remove this conversation from favorites. Check your network connection, then try again.",
       "notAbleToUnFavoriteForServerIssue": "Sorry, something went wrong on our end and we weren't able to remove this conversation from favorites. Try again later.",
       "notAbleToFavoriteThisMessageForNetworkIssue": "Sorry, we weren't able to favorite this conversation. Check your network connection, then try again.",
       "notAbleToFavoriteThisMessageForServerIssue": "Sorry, something went wrong on our end and we weren't able to favorite this conversation. Try again later.",
-      "leaveTeamServerErrorContent": "Sorry, we weren't able to let you leave the team. Try again.",
-      "leaveTeamNetworkErrorContent": "Sorry, we weren't able to let you leave the team.",
-      "deleteTeamServerErrorContent": "Sorry, we weren't able to delete this team. Try again.",
-      "deleteTeamNetworkErrorContent": "Sorry, we weren't able to delete this team.",
-      "archiveTeamServerErrorContent": "Sorry, we weren't able to archive this team. Try again.",
-      "archiveTeamNetworkErrorContent": "Sorry, we weren't able to archive this team.",
-      "AddTeamMembersNetworkError": "Sorry, we weren't able to add team members.",
-      "AddTeamMembersBackendError": "Sorry, we weren't able to add team members. Try again.",
-      "removeMemberNetworkError": "Sorry, we weren't able to remove this team member.",
-      "removeMemberBackendError": "Sorry, we weren't able to remove this team member. Try again.",
-      "makeTeamAdminNetworkError": "Sorry, we weren't able to make this member team admin.",
-      "revokeTeamAdminNetworkError": "Sorry, we weren't able to revoke team admin for this member.",
-      "makeTeamAdminBackendError": "Sorry, we weren't able to make this member team admin. Try again.",
-      "revokeTeamAdminBackendError": "Sorry, we weren't able to revoke team admin for this member. Try again.",
+      "leaveTeamServerErrorContent": "Sorry, something went wrong on our end and you weren't able to leave the team. Try again later.",
+      "leaveTeamNetworkErrorContent": "We are having an issue reaching your network connection so you weren't able to leave the team. Check your connectivity, then try again.",
+      "deleteTeamServerErrorContent": "Sorry, something went wrong on our end and we weren't able to delete this team. Try again later.",
+      "deleteTeamNetworkErrorContent": "Sorry, we weren't able to delete this team. Check your network connection, then try again.",
+      "archiveTeamServerErrorContent": "Sorry, something went wrong on our end and we weren't able to archive this team. Try again later.",
+      "archiveTeamNetworkErrorContent": "Sorry, we weren't able to archive this team. Check your network connection, then try again.",
+      "AddTeamMembersBackendError": "Sorry, something went wrong on our end and we weren't able to add team members. Try again later.",
+      "AddTeamMembersNetworkError": "We weren't able to add team members. Check your network connection, then try again.",
+      "removeMemberNetworkError": "We weren't able to remove this team member. Check your network connection, then try again.",
+      "removeMemberBackendError": "Sorry, something went wrong on our end and we weren't able to remove this team member. Try again later.",
+      "makeTeamAdminNetworkError": "We weren't able to make this member a team admin. Check your network connection, then try again.",
+      "makeTeamAdminBackendError": "Sorry, something went wrong on our end and we weren't able to make this member a team admin. Try again later.",
+      "revokeTeamAdminBackendError": "Sorry, something went wrong on our end and we weren't able to revoke team admin permissions for this team member. Try again later.",
+      "revokeTeamAdminNetworkError": "We weren't able to revoke team admin permissions for this member. Check your network connection, then try again.",
       "InvalidEmail": "Invalid Email",
       "markAsRead": "Failed to mark this conversation as read. Try again later.",
       "markAsUnread": "Failed to mark this conversation as unread. Try again later.",
       "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later.",
       "conversationDeleted": "The team was deleted. To know more, contact the team administrator.",
-      "conversationArchived": "The team was archived. To know more, contact the team administrator."
+      "conversationArchived": "The team was archived. To know more, contact the team administrator.",
+      "youHaveBeenRemovedFromTeam": "You have been removed from the team."
     }
   },
   "contact": {
@@ -474,11 +491,30 @@
       "record": "Record",
       "stopRecord": "Stop",
       "callActions": "Call Actions",
+      "reply": "Reply",
       "end": "End call",
-      "Answer": "Answer"
+      "Answer": "Answer",
+      "back": "Back"
     },
+    "customReplyMessagePlaceholder": "Type a custom message",
+    "customReplyLabel": "Custom message",
+    "predefinedMessage": {
+      "inMeeting": "In a meeting",
+      "onMyWay": "On my way",
+      "callMeBack": "Call me back in...",
+      "willCallBack": "Will call you back in..."
+    },
+    "predefinedTime": {
+      "5min": "5 min",
+      "10min": "10 min",
+      "30min": "30 min",
+      "1hour": "1 hour"
+    },
+    "countText": "Reply in ",
+    "countdownUnit": "s",
     "ignoreTheCall": "Ignore the call",
     "sendToVoicemail": "Send to voicemail",
+    "moreOptions": "More options",
     "answerTheCall": "Answer the call",
     "unknownCaller": "Unknown Caller",
     "prompt": {
@@ -494,7 +530,10 @@
       "FailedToStopRecording": "Sorry, we weren't able to stop recording the call. Try again later.",
       "LackOfRecordingPermission": "Sorry, your account does not have the feature to record a call. To enable the feature, contact your account administrator.",
       "RecordOnServiceWeb": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
-      "RecordAutomatically": "Cannot start call recording."
+      "RecordAutomatically": "Cannot start call recording.",
+      "InvalidNumber": "The phone number entered is invalid. Check the number and try again.",
+      "ReplyCustomMessageEmpty": "Sorry, you cannot send an empty message.",
+      "ReplyMessageSuccess": "Your voice message was sent successfully."
     },
     "notification": {
       "incomingCall": "Incoming Call",
@@ -505,7 +544,22 @@
       "hold": "Hold the call",
       "resume": "Resume the call",
       "record": "Record the call",
-      "stopRecord": "Stop recording"
+      "stopRecord": "Stop recording",
+      "minimize": "Minimize the dialog"
+    },
+    "dialerPlaceholder": "Enter a number",
+    "delete": "Delete",
+    "callFrom": "Call from:",
+    "phoneNumberType": {
+      "directNumber": "Direct Number",
+      "mainCompanyNumber": "Main Company Number",
+      "blocked": "Blocked",
+      "nickName": "Nick Name",
+      "companyNumber": "Company Number",
+      "companyFaxNumber": "Company Fax Number"
+    },
+    "callerIdSelector": {
+      "tooltip": "You can change this default Caller ID in settings."
     }
   },
   "meeting": {
@@ -518,9 +572,34 @@
     "general": "General",
     "notificationAndSounds": "Notification and Sounds",
     "messages": "Messages",
-    "phone": "Phone",
     "meetings": "Meetings",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "update": "Update",
+    "phone": {
+      "title": "Phone",
+      "general": {
+        "title": "General",
+        "callerID": {
+          "label": "Caller ID",
+          "description": "Choose your default Caller ID for making RingCentral phone calls",
+          "errorText": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later."
+        },
+        "extensions": {
+          "label": "Extension settings",
+          "description": "Customize your RingCentral extension settings (call routing, voicemail greetings and more)",
+          "errorText": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later"
+        },
+        "regionSetting": {
+          "label": "Region",
+          "region": "Region",
+          "country": "Country",
+          "areaCode": "Area Code",
+          "areaCodeErrorText": "Invalid area code",
+          "saveSuccessText": "Your region is updated successfully.",
+          "regionChangeDesc": "Set the country and area code for your region. This will be used for local and emergency dialing and phone number formatting."
+        }
+      }
+    }
   },
   "viewer": {
     "ZoomIn": "Scale file up",
@@ -528,7 +607,6 @@
     "ZoomReset": "Reset zoom",
     "PreviousFile": "View previous file",
     "NextFile": "View next file",
-    "DismissTip": "Sorry, the image you were viewing is deleted.",
     "ImageDeleted": "Sorry, the image you were viewing is deleted.",
     "TeamDeleted": "The team was deleted. To know more, contact the team administrator.",
     "TeamArchived": "The team was archived. To know more, contact the team administrator.",
@@ -567,5 +645,8 @@
       "noUpgradeDialogOk": "OK",
       "topBannerWarning": "Your desktop app is out-of-date. Please upgrade immediately."
     }
+  },
+  "dialer": {
+    "newCall": "New Call"
   }
 }

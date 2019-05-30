@@ -178,8 +178,12 @@ describe.skip('i18next-en', () => {
     expect(i18next.t('created')).toEqual('created');
     expect(i18next.t('delete')).toEqual('Delete');
     expect(i18next.t('deletePostTitle')).toEqual('Delete Post?');
+    expect(i18next.t('deleteFile')).toEqual('Delete File?');
     expect(i18next.t('deletePostContent')).toEqual(
       'Are you sure you want to delete this post?',
+    );
+    expect(i18next.t('deleteFileContent')).toEqual(
+      'Are you sure you want to delete this file',
     );
     expect(i18next.t('via')).toEqual('via');
     expect(i18next.t('marked')).toEqual('marked');
@@ -327,10 +331,10 @@ describe.skip('i18next-en', () => {
     expect(i18next.t('edit')).toEqual('Edit post');
     expect(i18next.t('AboutRingCentral')).toEqual('About RingCentral');
     expect(i18next.t('newActions')).toEqual('New actions');
-    expect(i18next.t('SorryWeWereNotAbleToSaveTheUpdate')).toEqual(
+    expect(i18next.t('SaveTeamUpdateErrorForNetworkIssue')).toEqual(
       "Sorry, we weren't able to save the update.",
     );
-    expect(i18next.t('SorryWeWereNotAbleToSaveTheUpdateTryAgain')).toEqual(
+    expect(i18next.t('SaveTeamUpdateErrorForServerIssue')).toEqual(
       "Sorry, we weren't able to save the update. Try again.",
     );
   });

@@ -12,12 +12,14 @@ jest.mock('../service/GlobalConfigService');
 
 describe('GlobalConfig', () => {
   const TEST = 'test';
-  let mockConfigService;
+  let mockConfigService: any;
   beforeAll(() => {
     mockConfigService = {
       get: jest.fn(),
       put: jest.fn(),
       remove: jest.fn(),
+      on: jest.fn(),
+      off: jest.fn(),
     };
     ServiceLoader.getInstance = jest.fn().mockReturnValue(mockConfigService);
   });
@@ -34,5 +36,17 @@ describe('GlobalConfig', () => {
   it('should call remove when try to remove config', () => {
     GlobalConfig.remove(TEST);
     expect(mockConfigService.remove).toHaveBeenCalled();
+  });
+
+  it('should call on when try to subscribe notification', () => {
+    const mockListener = () => {};
+    GlobalConfig.on(TEST, mockListener);
+    expect(mockConfigService.on).toHaveBeenCalled();
+  });
+
+  it('should call off when try to unsubscribe notification', () => {
+    const mockListener = () => {};
+    GlobalConfig.off(TEST, mockListener);
+    expect(mockConfigService.off).toHaveBeenCalled();
   });
 });

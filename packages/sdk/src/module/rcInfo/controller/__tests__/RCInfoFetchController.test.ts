@@ -11,7 +11,10 @@ import { jobScheduler, JOB_KEY } from '../../../../framework/utils/jobSchedule';
 import notificationCenter from '../../../../service/notificationCenter';
 import { RC_INFO } from '../../../../service/eventKey';
 import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
+import { AccountGlobalConfig } from '../../../account/config/AccountGlobalConfig';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
+jest.mock('../../../account/config/AccountGlobalConfig');
 jest.mock('../../../permission');
 jest.mock('../../../account/config/AccountUserConfig');
 jest.mock('../../config');
@@ -25,7 +28,19 @@ describe('RCInfoFetchController', () => {
 
   beforeEach(() => {
     clearMocks();
+    AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValue(1);
     rcInfoFetchController = new RCInfoFetchController();
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: AccountUserConfig.prototype };
+        }
+        if (config === ServiceConfig.RC_INFO_SERVICE) {
+          return { DBConfig: RCInfoUserConfig.prototype };
+        }
+        return;
+      });
   });
 
   describe('requestRCInfo()', () => {
@@ -309,7 +324,9 @@ describe('RCInfoFetchController', () => {
         .mockReturnValue('extensionPhoneNumberList');
       notificationCenter.emit.mockImplementationOnce(() => {});
       await rcInfoFetchController.requestExtensionPhoneNumberList();
-      expect(RCInfoApi.getExtensionPhoneNumberList).toBeCalledTimes(1);
+      expect(RCInfoApi.getExtensionPhoneNumberList).toBeCalledWith({
+        perPage: 1000,
+      });
       expect(
         RCInfoUserConfig.prototype.setExtensionPhoneNumberList,
       ).toBeCalledWith('extensionPhoneNumberList');
@@ -361,7 +378,7 @@ describe('RCInfoFetchController', () => {
   describe('getSpecialNumberRule()', () => {
     beforeEach(() => {
       clearMocks();
-      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(1);
+      AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValue(1);
     });
     it('should get value from config when value is valid', async () => {
       RCInfoGlobalConfig.getStationLocation = jest

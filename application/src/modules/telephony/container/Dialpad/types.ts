@@ -8,9 +8,12 @@ type Props = {};
 
 type ViewProps = {
   showMinimized: boolean;
-  name: string;
+  name?: string;
   maximize: () => void;
   timing: string | { key: string };
+  id: string;
+  canUseTelephony: boolean;
+  startMinimizeAnimation: boolean;
 };
 
 export { Props, ViewProps };

@@ -4,9 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { createRef, RefObject } from 'react';
 import { observer } from 'mobx-react';
 import { JuiDialer, JuiHeaderContainer } from 'jui/pattern/Dialer';
+// import ReactDOM from 'react-dom';
 import { DialerTitleBar } from '../DialerTitleBar';
 import { DialerHeader } from '../DialerHeader';
 import { DialerContainer } from '../DialerContainer';
@@ -18,35 +19,37 @@ import { DialerKeypadHeader } from '../DialerKeypadHeader';
 
 @observer
 class DialerViewComponent extends React.Component<DialerViewProps> {
-  shouldComponentUpdate(nextProps: DialerViewProps) {
-    const { callState } = nextProps;
-    if (callState === CALL_STATE.IDLE) {
-      return false;
+  dialerHeaderRef: RefObject<any> = createRef();
+
+  renderDialer = () => {
+    const { callState, keypadEntered } = this.props;
+    switch (callState) {
+      case CALL_STATE.INCOMING:
+        return <Incoming />;
+
+      default:
+        return (
+          <>
+            <JuiHeaderContainer>
+              <DialerTitleBar />
+              {keypadEntered ? (
+                <DialerKeypadHeader />
+              ) : (
+                <DialerHeader ref={this.dialerHeaderRef} />
+              )}
+            </JuiHeaderContainer>
+            <DialerContainer dialerHeaderRef={this.dialerHeaderRef} />
+          </>
+        );
     }
-    return true;
   }
+
   render() {
-    const { callState } = this.props;
+    const { dialerId, ...rest } = this.props;
     return (
-      <JuiDialer>
-        {callState === CALL_STATE.INCOMING && <Incoming />}
-        {
-          callState !== CALL_STATE.INCOMING && (
-            <>
-              <JuiHeaderContainer>
-                <DialerTitleBar />
-                {
-                  this.props.keypadEntered ?
-                    <DialerKeypadHeader />
-                    :
-                    <DialerHeader />
-                }
-              </JuiHeaderContainer>
-              <DialerContainer />
-            </>
-          )
-        }
-      </JuiDialer >
+      <JuiDialer {...rest} id={dialerId} data-test-automation-id="dialer">
+        {this.renderDialer()}
+      </JuiDialer>
     );
   }
 }

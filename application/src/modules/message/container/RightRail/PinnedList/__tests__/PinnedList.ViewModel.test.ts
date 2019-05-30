@@ -5,11 +5,12 @@
  */
 import { getEntity } from '@/store/utils';
 import { PinnedListViewModel } from '../PinnedList.ViewModel';
-// import { ENTITY_NAME } from '../../../../store';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 
+jest.mock('sdk/dao');
 jest.mock('sdk/api');
 jest.mock('@/store/utils');
+jest.mock('@/store/handler/DiscontinuousPosListHandler');
 
 function setup(groupModel: any) {
   (getEntity as jest.Mock).mockReturnValue(groupModel);

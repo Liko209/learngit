@@ -111,16 +111,11 @@ describe('SegAnalysisController', () => {
   });
   describe('isProduction', () => {
     it('should be true when is public', () => {
-      process.env = { JUPITER_ENV: 'public' };
-      expect(segAnalysisController.isProductionBuild()).toBeTruthy();
-    });
-    it('should be true when is production', () => {
-      process.env = { JUPITER_ENV: 'production' };
-      expect(segAnalysisController.isProductionBuild()).toBeTruthy();
+      segAnalysisController.setProduction(true);
+      expect(segAnalysisController.isProduction()).toBeTruthy();
     });
     it('should be false when is not production or public', () => {
-      process.env = { JUPITER_ENV: 'XMN-UP' };
-      expect(segAnalysisController.isProductionBuild()).toBeFalsy();
+      expect(segAnalysisController.isProduction()).toBeFalsy();
     });
   });
 });

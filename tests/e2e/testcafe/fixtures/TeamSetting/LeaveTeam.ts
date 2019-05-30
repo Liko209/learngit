@@ -214,7 +214,7 @@ test(formalName(`Only team members are allowed to leave team`, ['P2', 'JPT-932',
   const teamSettingDialog = app.homePage.teamSettingDialog;
   await h(t).withLog(`Then team admin can't see the 'Leave Team' option`, async () => {
     await teamSettingDialog.shouldBePopup();
-    await t.expect(teamSettingDialog.leaveTeamButton.visible).notOk();
+    await t.expect(teamSettingDialog.leaveTeamButton.exists).notOk();
     await teamSettingDialog.cancel();
   });
 
@@ -230,7 +230,7 @@ test(formalName(`Only team members are allowed to leave team`, ['P2', 'JPT-932',
 
   await h(t).withLog(`Then team admin can see the 'Leave Team' option`, async () => {
     await teamSettingDialog.shouldBePopup();
-    await t.expect(teamSettingDialog.leaveTeamButton.visible).ok();
+    await t.expect(teamSettingDialog.leaveTeamButton.exists).ok();
   });
 
 });
@@ -270,7 +270,7 @@ test(formalName(`User should not be allowed to leave the all hands team`, ['P1',
   const teamSettingDialog = app.homePage.teamSettingDialog;
   await h(t).withLog(`Then team member can't see the 'Leave Team' option`, async () => {
     await teamSettingDialog.shouldBePopup();
-    await t.expect(teamSettingDialog.leaveTeamButton.visible).notOk();
+    await t.expect(teamSettingDialog.leaveTeamButton.exists).notOk();
   });
 });
 

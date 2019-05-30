@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import { promisedComputed } from 'computed-async-mobx';
 
 function hasLoadedNamespace() {
   const lng = i18next.languages[0];
@@ -21,6 +22,7 @@ function hasLoadedNamespace() {
 
   return false;
 }
+
 function i18nT(key: string, options?: i18next.TOptions | string) {
   if (i18next.isInitialized && hasLoadedNamespace()) {
     return i18next.t(key, options);
@@ -33,6 +35,17 @@ function i18nT(key: string, options?: i18next.TOptions | string) {
   });
 }
 
+function i18nP(key: string, options?: i18next.TOptions | string): string {
+  if (i18next.isInitialized && hasLoadedNamespace()) {
+    return i18next.t(key, options);
+  }
+  return promisedComputed('', async () => {
+    return await i18nT(key, options);
+  }).get();
+}
+
 export type i18nTValueProps = string | Promise<string>;
+
+export { i18nP };
 
 export default i18nT;

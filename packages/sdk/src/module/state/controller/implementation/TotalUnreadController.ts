@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { UMI_SECTION_TYPE, TASK_DATA_TYPE } from '../../constants';
+import { GROUP_BADGE_TYPE, TASK_DATA_TYPE } from '../../constants';
 import {
-  SectionUnread,
+  GroupBadge,
   GroupStateHandleTask,
   GroupEntityHandleTask,
   ProfileEntityHandleTask,
@@ -17,27 +17,30 @@ import { GroupState } from '../../entity';
 import { IGroupService } from '../../../group/service/IGroupService';
 import { ProfileService } from '../../../profile/service/ProfileService';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
-import { AccountUserConfig } from '../../../../module/account/config';
-import notificationCenter, {
-  NotificationEntityPayload,
-} from '../../../../service/notificationCenter';
+import { AccountService } from '../../../account/service';
+import { NotificationEntityPayload } from '../../../../service/notificationCenter';
 import { EVENT_TYPES } from '../../../../service/constants';
-import { SERVICE } from '../../../../service/eventKey';
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { BadgeService } from 'sdk/module/badge';
+import { UndefinedAble } from 'sdk/types';
+import { Badge } from 'sdk/module/badge/entity';
 
 type DataHandleTask =
   | GroupStateHandleTask
   | GroupEntityHandleTask
   | ProfileEntityHandleTask;
 
+const LOG_TAG = 'TotalUnreadController';
+
 class TotalUnreadController {
   private _taskArray: DataHandleTask[];
   private _unreadInitialized: boolean;
-  private _groupSectionUnread: Map<number, SectionUnread>;
-  private _totalUnreadMap: Map<UMI_SECTION_TYPE, SectionUnread>;
+  private _singleGroupBadges: Map<number, GroupBadge>;
+  private _badgeMap: Map<string, GroupBadge>;
   private _favoriteGroupIds: number[];
+  private _changedBadges: Set<string>;
   constructor(
     private _groupService: IGroupService,
     private _entitySourceController: IEntitySourceController<GroupState>,
@@ -49,32 +52,33 @@ class TotalUnreadController {
   }
 
   async reset() {
-    this._groupSectionUnread = new Map<number, SectionUnread>();
-    this._totalUnreadMap = new Map<UMI_SECTION_TYPE, SectionUnread>();
-    this._totalUnreadMap.set(UMI_SECTION_TYPE.ALL, {
-      section: UMI_SECTION_TYPE.ALL,
+    this._singleGroupBadges = new Map<number, GroupBadge>();
+    this._badgeMap = new Map<string, GroupBadge>();
+    this._badgeMap.set(GROUP_BADGE_TYPE.FAVORITE_TEAM, {
+      id: GROUP_BADGE_TYPE.FAVORITE_TEAM,
       unreadCount: 0,
       mentionCount: 0,
     });
-    this._totalUnreadMap.set(UMI_SECTION_TYPE.FAVORITE, {
-      section: UMI_SECTION_TYPE.FAVORITE,
+    this._badgeMap.set(GROUP_BADGE_TYPE.FAVORITE_DM, {
+      id: GROUP_BADGE_TYPE.FAVORITE_DM,
       unreadCount: 0,
       mentionCount: 0,
     });
-    this._totalUnreadMap.set(UMI_SECTION_TYPE.DIRECT_MESSAGE, {
-      section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
+    this._badgeMap.set(GROUP_BADGE_TYPE.DIRECT_MESSAGE, {
+      id: GROUP_BADGE_TYPE.DIRECT_MESSAGE,
       unreadCount: 0,
       mentionCount: 0,
     });
-    this._totalUnreadMap.set(UMI_SECTION_TYPE.TEAM, {
-      section: UMI_SECTION_TYPE.TEAM,
+    this._badgeMap.set(GROUP_BADGE_TYPE.TEAM, {
+      id: GROUP_BADGE_TYPE.TEAM,
       unreadCount: 0,
       mentionCount: 0,
     });
+    this._changedBadges = new Set();
   }
 
-  getSingleUnreadInfo(id: number): SectionUnread | undefined {
-    return this._groupSectionUnread.get(id);
+  getSingleGroupBadge(id: number): UndefinedAble<GroupBadge> {
+    return this._singleGroupBadges.get(id);
   }
 
   handleGroupState(payload: NotificationEntityPayload<GroupState>): void {
@@ -112,6 +116,7 @@ class TotalUnreadController {
 
   private async _startDataHandleTask(task: DataHandleTask): Promise<void> {
     try {
+      this._changedBadges.clear();
       if (!this._unreadInitialized) {
         await this._initializeTotalUnread();
       } else {
@@ -123,7 +128,7 @@ class TotalUnreadController {
           await this._updateTotalUnreadByProfileChanges(task.data);
         }
       }
-      this._doNotification();
+      this._updateBadge();
     } catch (err) {
       mainLogger.error(`TotalUnreadController, handle task error, ${err}`);
     }
@@ -139,7 +144,7 @@ class TotalUnreadController {
   ): Promise<void> {
     if (payload.type === EVENT_TYPES.UPDATE) {
       payload.body.entities.forEach((groupState: GroupState) => {
-        const groupUnread = this._groupSectionUnread.get(groupState.id);
+        const groupUnread = this._singleGroupBadges.get(groupState.id);
         if (groupUnread) {
           this._updateToTotalUnread(groupUnread, groupState);
           groupUnread.unreadCount = groupState.unread_count || 0;
@@ -153,7 +158,9 @@ class TotalUnreadController {
     payload: NotificationEntityPayload<Group>,
   ): Promise<void> {
     if (payload.type === EVENT_TYPES.UPDATE) {
-      const userConfig = new AccountUserConfig();
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
       const glipId = userConfig.getGlipUserId();
       const groupsMap = new Map<number, Group>();
       payload.body.ids.map(async (id: number) => {
@@ -161,14 +168,14 @@ class TotalUnreadController {
         if (!group) {
           return;
         }
-        const groupUnread = this._groupSectionUnread.get(id);
+        const groupUnread = this._singleGroupBadges.get(id);
         if (
           !this._groupService.isValid(group) ||
           !group.members.includes(glipId)
         ) {
           if (groupUnread) {
             this._deleteFromTotalUnread(groupUnread);
-            this._groupSectionUnread.delete(id);
+            this._singleGroupBadges.delete(id);
           }
         } else {
           if (!groupUnread) {
@@ -206,49 +213,41 @@ class TotalUnreadController {
     isAdd: boolean,
   ): void {
     ids.forEach((id: number) => {
-      const groupUnread = this._groupSectionUnread.get(id);
+      const groupUnread = this._singleGroupBadges.get(id);
       if (!groupUnread) {
         return;
       }
       if (isAdd) {
-        if (groupUnread.section !== UMI_SECTION_TYPE.FAVORITE) {
-          this._deleteFromTotalUnread(groupUnread);
-          if (groupUnread.isTeam) {
-            this._modifyTotalUnread(
-              UMI_SECTION_TYPE.FAVORITE,
-              groupUnread.unreadCount > 0 ? groupUnread.mentionCount : 0,
-              groupUnread.mentionCount,
-            );
-          } else {
-            this._modifyTotalUnread(
-              UMI_SECTION_TYPE.FAVORITE,
-              groupUnread.unreadCount,
-              groupUnread.mentionCount,
-            );
-          }
-          groupUnread.section = UMI_SECTION_TYPE.FAVORITE;
-        }
+        this._moveSingleUnread(
+          groupUnread,
+          groupUnread.isTeam
+            ? GROUP_BADGE_TYPE.FAVORITE_TEAM
+            : GROUP_BADGE_TYPE.FAVORITE_DM,
+        );
       } else {
-        if (groupUnread.section === UMI_SECTION_TYPE.FAVORITE) {
-          this._deleteFromTotalUnread(groupUnread);
-          if (!groupUnread.isTeam) {
-            this._modifyTotalUnread(
-              UMI_SECTION_TYPE.DIRECT_MESSAGE,
-              groupUnread.unreadCount,
-              groupUnread.mentionCount,
-            );
-            groupUnread.section = UMI_SECTION_TYPE.DIRECT_MESSAGE;
-          } else {
-            this._modifyTotalUnread(
-              UMI_SECTION_TYPE.TEAM,
-              groupUnread.unreadCount > 0 ? groupUnread.mentionCount : 0,
-              groupUnread.mentionCount,
-            );
-            groupUnread.section = UMI_SECTION_TYPE.TEAM;
-          }
-        }
+        this._moveSingleUnread(
+          groupUnread,
+          groupUnread.isTeam
+            ? GROUP_BADGE_TYPE.TEAM
+            : GROUP_BADGE_TYPE.DIRECT_MESSAGE,
+        );
       }
     });
+  }
+
+  private _moveSingleUnread(groupUnread: GroupBadge, to: string) {
+    if (groupUnread.id === to) {
+      return;
+    }
+    if (groupUnread.unreadCount) {
+      this._deleteFromTotalUnread(groupUnread);
+      this._modifyTotalUnread(
+        to,
+        groupUnread.unreadCount,
+        groupUnread.mentionCount,
+      );
+    }
+    groupUnread.id = to;
   }
 
   private async _initializeTotalUnread(): Promise<void> {
@@ -259,7 +258,9 @@ class TotalUnreadController {
     );
     const groups = await this._groupService.getEntities();
     this._favoriteGroupIds = (await profileService.getFavoriteGroupIds()) || [];
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const glipId = userConfig.getGlipUserId();
 
     const groupsMap = new Map<number, Group>();
@@ -269,6 +270,7 @@ class TotalUnreadController {
       }
     });
     await this._addNewGroupsUnread(groupsMap);
+    this._registerBadge();
     this._unreadInitialized = true;
   }
 
@@ -276,16 +278,18 @@ class TotalUnreadController {
     const groupStates = await this._entitySourceController.batchGet(
       Array.from(groupsMap.keys()),
     );
-    groupStates.forEach((groupState: GroupState) => {
-      const group = groupsMap.get(groupState.id);
-      if (group) {
-        this._addNewGroupUnread(group, groupState);
-      }
+    const statesMap = new Map<number, GroupState>(
+      groupStates.map(state => [state.id, state]),
+    );
+
+    groupsMap.forEach((group: Group) => {
+      const state = statesMap.get(group.id);
+      this._addNewGroupUnread(group, state);
     });
   }
 
-  private _addNewGroupUnread(group: Group, groupState: GroupState) {
-    let section: UMI_SECTION_TYPE;
+  private _addNewGroupUnread(group: Group, groupState?: GroupState) {
+    let id: string;
     let unreadCount: number = 0;
     let mentionCount: number = 0;
     if (groupState) {
@@ -294,103 +298,122 @@ class TotalUnreadController {
     }
 
     if (this._favoriteGroupIds && this._favoriteGroupIds.includes(group.id)) {
-      section = UMI_SECTION_TYPE.FAVORITE;
-    } else if (!group.is_team) {
-      section = UMI_SECTION_TYPE.DIRECT_MESSAGE;
+      id = group.is_team
+        ? GROUP_BADGE_TYPE.FAVORITE_TEAM
+        : GROUP_BADGE_TYPE.FAVORITE_DM;
     } else {
-      section = UMI_SECTION_TYPE.TEAM;
+      id = group.is_team
+        ? GROUP_BADGE_TYPE.TEAM
+        : GROUP_BADGE_TYPE.DIRECT_MESSAGE;
     }
 
-    this._groupSectionUnread.set(group.id, {
-      section,
+    this._singleGroupBadges.set(group.id, {
+      id,
       unreadCount,
       mentionCount,
       isTeam: group.is_team,
     });
 
-    if (group.is_team && unreadCount > 0) {
-      unreadCount = mentionCount;
+    if (unreadCount) {
+      this._modifyTotalUnread(id, unreadCount, mentionCount);
     }
-    this._modifyTotalUnread(section, unreadCount, mentionCount);
   }
 
-  private _deleteFromTotalUnread(groupUnread: SectionUnread): void {
-    let unreadUpdate = -groupUnread.unreadCount;
-    if (groupUnread.isTeam) {
-      if (groupUnread.unreadCount === 0) {
-        unreadUpdate = 0;
-      } else {
-        unreadUpdate = -groupUnread.mentionCount;
-      }
+  private _deleteFromTotalUnread(groupUnread: GroupBadge): void {
+    if (groupUnread.unreadCount) {
+      this._modifyTotalUnread(
+        groupUnread.id,
+        -groupUnread.unreadCount,
+        -groupUnread.mentionCount,
+      );
     }
-
-    this._modifyTotalUnread(
-      groupUnread.section,
-      unreadUpdate,
-      -groupUnread.mentionCount,
-    );
   }
 
   private _updateToTotalUnread(
-    groupUnread: SectionUnread,
+    groupUnread: GroupBadge,
     groupState: GroupState,
   ): void {
-    let unreadUpdate = (groupState.unread_count || 0) - groupUnread.unreadCount;
-    if (groupUnread.isTeam) {
-      if (groupUnread.unreadCount === 0) {
-        if ((groupState.unread_count || 0) > 0) {
-          unreadUpdate = groupState.unread_mentions_count || 0;
-        } else {
-          unreadUpdate = 0;
-        }
+    let unreadUpdate = 0;
+    let mentionUpdate = 0;
+    if (groupUnread.unreadCount) {
+      if (groupState.unread_count) {
+        unreadUpdate = groupState.unread_count - groupUnread.unreadCount;
+        mentionUpdate =
+          (groupState.unread_mentions_count || 0) - groupUnread.mentionCount;
       } else {
-        if ((groupState.unread_count || 0) === 0) {
-          unreadUpdate = -groupUnread.mentionCount;
-        } else {
-          unreadUpdate =
-            (groupState.unread_mentions_count || 0) - groupUnread.mentionCount;
-        }
+        unreadUpdate = -groupUnread.unreadCount;
+        mentionUpdate = -groupUnread.mentionCount;
+      }
+    } else {
+      if (groupState.unread_count) {
+        unreadUpdate = groupState.unread_count;
+        mentionUpdate = groupState.unread_mentions_count || 0;
+      } else {
+        unreadUpdate = 0;
+        mentionUpdate = 0;
       }
     }
 
-    this._modifyTotalUnread(
-      groupUnread.section,
-      unreadUpdate,
-      (groupState.unread_mentions_count || 0) - groupUnread.mentionCount,
-    );
+    this._modifyTotalUnread(groupUnread.id, unreadUpdate, mentionUpdate);
   }
 
   private _modifyTotalUnread(
-    section: UMI_SECTION_TYPE,
+    id: string,
     unreadUpdate: number,
     mentionUpdate: number,
   ): void {
-    let target = this._totalUnreadMap.get(section);
+    let target = this._badgeMap.get(id);
     if (!target) {
       target = {
-        section,
+        id,
         unreadCount: 0,
         mentionCount: 0,
       };
-      this._totalUnreadMap.set(section, target);
+      this._badgeMap.set(id, target);
     }
-    let totalUnread = this._totalUnreadMap.get(UMI_SECTION_TYPE.ALL);
-    if (!totalUnread) {
-      totalUnread = {
-        section: UMI_SECTION_TYPE.ALL,
-        unreadCount: 0,
-        mentionCount: 0,
-      };
-      this._totalUnreadMap.set(UMI_SECTION_TYPE.ALL, totalUnread);
-    }
+    this._changedBadges.add(id);
     target.unreadCount += unreadUpdate;
     target.mentionCount += mentionUpdate;
-    totalUnread.unreadCount += unreadUpdate;
-    totalUnread.mentionCount += mentionUpdate;
   }
 
-  private _doNotification(): void {
-    notificationCenter.emit(SERVICE.TOTAL_UNREAD, this._totalUnreadMap);
+  private _updateBadge(): void {
+    if (this._changedBadges.size === 0) {
+      return;
+    }
+    const badgeService = ServiceLoader.getInstance<BadgeService>(
+      ServiceConfig.BADGE_SERVICE,
+    );
+    this._changedBadges.forEach((id: string) => {
+      const badge = this._getBadge(id);
+      badgeService.updateBadge(badge);
+      mainLogger.tags(LOG_TAG).info('update badge: ', badge);
+    });
+  }
+
+  private _getBadge(id: string): Badge {
+    const badge = this._badgeMap.get(id);
+    if (!badge) {
+      return { id, unreadCount: 0 };
+    }
+    return badge;
+  }
+
+  private _registerBadge() {
+    const badgeService = ServiceLoader.getInstance<BadgeService>(
+      ServiceConfig.BADGE_SERVICE,
+    );
+    badgeService.registerBadge(GROUP_BADGE_TYPE.DIRECT_MESSAGE, () => {
+      return this._getBadge(GROUP_BADGE_TYPE.DIRECT_MESSAGE);
+    });
+    badgeService.registerBadge(GROUP_BADGE_TYPE.TEAM, () => {
+      return this._getBadge(GROUP_BADGE_TYPE.TEAM);
+    });
+    badgeService.registerBadge(GROUP_BADGE_TYPE.FAVORITE_DM, () => {
+      return this._getBadge(GROUP_BADGE_TYPE.FAVORITE_DM);
+    });
+    badgeService.registerBadge(GROUP_BADGE_TYPE.FAVORITE_TEAM, () => {
+      return this._getBadge(GROUP_BADGE_TYPE.FAVORITE_TEAM);
+    });
   }
 }
 

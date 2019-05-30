@@ -10,7 +10,14 @@ enum PhoneNumberType {
   Blocked = 'Blocked',
   NickName = 'NickName',
   CompanyNumber = 'CompanyNumber',
+  AdditionalCompanyNumber = 'AdditionalCompanyNumber',
   CompanyFaxNumber = 'CompanyFaxNumber',
+  ForwardedNumber = 'ForwardedNumber',
+  ForwardedCompanyNumber = 'ForwardedCompanyNumber',
+  ContactCenterNumber = 'ContactCenterNumber',
+  ConferencingNumber = 'ConferencingNumber',
 }
 
-export { PhoneNumberType };
+const PhoneNumberAnonymous = 'anonymous';
+
+export { PhoneNumberType, PhoneNumberAnonymous };

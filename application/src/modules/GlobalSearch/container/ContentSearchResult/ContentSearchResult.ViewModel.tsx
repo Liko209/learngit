@@ -78,7 +78,7 @@ class ContentSearchResultViewModel
   }
 
   @computed
-  private get _searchKey(): string {
+  get searchKey(): string {
     return this._globalSearchStore.searchKey;
   }
 
@@ -96,11 +96,6 @@ class ContentSearchResultViewModel
           : { ...acc, [key]: this.searchOptions[key] },
       {},
     );
-  }
-
-  @computed
-  get searchTerms(): string[] {
-    return this._searchKey.split(' ');
   }
 
   @action
@@ -141,7 +136,7 @@ class ContentSearchResultViewModel
 
   @action
   private _onSearchInit() {
-    const q = this._searchKey;
+    const q = this.searchKey;
     const currentGroupId = this._globalSearchStore.groupId;
 
     const group_id =
@@ -178,9 +173,7 @@ class ContentSearchResultViewModel
       asyncPosts,
     ]);
 
-    contentsCount[TYPE_ALL] = _.sum(
-      Object.values(_.pick(contentsCount, ...TYPE_MAP.map(({ id }) => id))),
-    );
+    contentsCount[TYPE_ALL] = _.sum(Object.values(contentsCount));
 
     this._setSearchState({ contentsCount, requestId: result.requestId });
 

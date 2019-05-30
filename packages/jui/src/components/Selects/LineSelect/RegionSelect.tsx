@@ -5,7 +5,10 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { JuiIconography } from '../../../foundation/Iconography';
+import {
+  JuiIconography,
+  JuiIconographyProps,
+} from '../../../foundation/Iconography';
 import { JuiLineSelect } from '../../Selects/LineSelect';
 import { JuiMenuItem } from '../../Menus';
 import { JuiListItemText } from '../../Lists';
@@ -17,13 +20,18 @@ type JuiRegionSelectProps = {
   label: string;
   selectStyle?: React.CSSProperties;
   regionList: RegionType[];
+  onChange?: React.ChangeEventHandler<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >;
+  automationId?: string;
 };
 
 type RegionType = {
   id: string | number;
-  value: string;
-  regionIcon: any;
-  regionCode?: string | number;
+  label: string;
+  value: string | number;
+  regionIcon: JuiIconographyProps['symbol'];
+  regionCode?: string;
   desc?: string;
 };
 
@@ -40,18 +48,34 @@ const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       const { value } = event.target;
+      props.onChange && props.onChange(event);
       setValue(value);
     },
     [],
   );
 
-  const { label, selectStyle, regionList } = props;
+  const { label, selectStyle, regionList = [], automationId } = props;
 
   const renderValue = useCallback(
     (value: string) => {
-      const selectRegion = regionList.filter(
+      const selectedItem = regionList.find(
         regionItem => regionItem.value === value,
-      )[0];
+      );
+      const selectRegion: RegionType = selectedItem || {
+        id: 0,
+        label: '',
+        value: '',
+        regionIcon: {
+          id: '',
+          url: '',
+          viewBox: '',
+        },
+        regionCode: '',
+      };
+      let renderLabel = selectRegion.label;
+      if (selectRegion.regionCode !== '') {
+        renderLabel += ` (+${selectRegion.regionCode})`;
+      }
       return (
         <StyledRegionSelectWrap>
           <MuiListItemIcon>
@@ -61,7 +85,7 @@ const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
               desc={selectRegion.desc}
             />
           </MuiListItemIcon>
-          <JuiListItemText>{value}</JuiListItemText>
+          <JuiListItemText>{renderLabel}</JuiListItemText>
         </StyledRegionSelectWrap>
       );
     },
@@ -75,6 +99,7 @@ const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
       label={label}
       style={selectStyle}
       renderValue={renderValue}
+      automationId={automationId}
     >
       {regionList.map((item: RegionType) => {
         const regionIcon = (
@@ -85,8 +110,16 @@ const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
           />
         );
         return (
-          <JuiMenuItem value={item.value} key={item.id} icon={regionIcon}>
-            <JuiListItemText primary={item.value} secondary={item.regionCode} />
+          <JuiMenuItem
+            value={item.value}
+            key={item.id}
+            icon={regionIcon}
+            automationId={`${automationId}Item`}
+          >
+            <JuiListItemText
+              primary={item.label}
+              secondary={`(+${item.regionCode})`}
+            />
           </JuiMenuItem>
         );
       })}

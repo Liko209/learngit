@@ -11,6 +11,10 @@ import { ENTITY } from '../../../service/eventKey';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { buildPartialModifyController } from '../../../framework/controller';
 import { Raw } from '../../../framework/model';
+import { mainLogger } from 'foundation';
+import _ from 'lodash';
+
+const LOG_TAG = 'GroupConfigController';
 class GroupConfigController {
   static serviceName = 'GroupConfigService';
 
@@ -96,7 +100,10 @@ class GroupConfigController {
   async getGroupSendFailurePostIds(id: number): Promise<number[]> {
     try {
       const group = (await this.entitySourceController.get(id)) as GroupConfig;
-      return (group && group.send_failure_post_ids) || [];
+      if (group && group.send_failure_post_ids) {
+        return _.cloneDeep(group.send_failure_post_ids);
+      }
+      return [];
     } catch (error) {
       throw ErrorParserHolder.getErrorParser().parse(error);
     }
@@ -121,6 +128,18 @@ class GroupConfigController {
       id: groupId,
       send_failure_post_ids: newIds,
     });
+  }
+
+  async recordMyLastPostTime(groupId: number, timeStamp: number) {
+    const updateData = {
+      id: groupId,
+      my_last_post_time: timeStamp,
+    };
+    try {
+      await this.entitySourceController.update(updateData);
+    } catch (error) {
+      mainLogger.tags(LOG_TAG).log('recordMyLastPostTime failed', updateData);
+    }
   }
 }
 

@@ -125,6 +125,13 @@ describe('ItemService', () => {
         expect(res).toBe('a');
       });
     });
+    describe('editFileName()', () => {
+      it('should call with correct parameter', async () => {
+        fileItemService.editFileName = jest.fn();
+        await itemService.editFileName(1, 'newName');
+        expect(fileItemService.editFileName).toBeCalledWith(1, 'newName');
+      });
+    });
 
     describe('sendItemFile()', () => {
       it('should call file item service with correct parameter', async () => {
@@ -331,6 +338,13 @@ describe('ItemService', () => {
         3,
         5,
       ]);
+    });
+
+    it('should call dao method with item_ids have invalid id', async () => {
+      await itemService.getByPosts([
+        postFactory.build({ item_ids: [1, 2, 3, -1, -2, null] }),
+      ]);
+      expect(entitySourceController.batchGet).toHaveBeenCalledWith([1, 2, 3]);
     });
   });
 

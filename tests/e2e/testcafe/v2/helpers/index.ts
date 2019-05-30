@@ -1,7 +1,7 @@
 import 'testcafe';
 import { MockClient } from 'mock-client';
 
-import { ClientFunction, Role } from 'testcafe';
+import { ClientFunction, Role, t } from 'testcafe';
 import { getLogger } from 'log4js';
 
 import { DataHelper } from './data-helper'
@@ -15,12 +15,17 @@ import { ScenarioHelper } from './scenario-helper';
 import { H } from './utils';
 
 import { IUser, IStep, IStepOptions, INotification } from '../models';
+import { Step } from './log-helper'
 import { AppRoot } from '../page-models/AppRoot';
 import { SITE_URL, SITE_ENV } from '../../config';
 import { WebphoneHelper } from './webphone-helper';
+import { NetworkHelper } from './network-helper';
 import { NotificationHelper } from './notification';
 import { UpgradeHelper } from './upgrade';
 import { WebphoneSession } from '../webphone/session';
+
+import * as _ from 'lodash';
+import * as assert from 'assert';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -77,6 +82,10 @@ class Helper {
     return new WebphoneHelper(this.t);
   }
 
+  get networkHelper() {
+    return new NetworkHelper(this.t);
+  }
+
   get scenarioHelper() {
     return new ScenarioHelper(this.t, this.sdkHelper);
   }
@@ -119,7 +128,7 @@ class Helper {
   }
 
   async withLog(step: IStep | string,
-    cb: (step?: IStep) => Promise<any>,
+    cb: (step?: Step) => Promise<any>,
     options?: boolean | IStepOptions) {
     return await this.logHelper.withLog(step, cb, options);
   }
@@ -210,8 +219,34 @@ class Helper {
       .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
   }
 
+  async isConsoleLogIncludesText(text: string, type?: string) {
+    const logs: any = await this.t.getBrowserConsoleMessages();
+    if (type) {
+      if (_.includes(logs[type], text)) return true;
+    } else {
+      for (const key in logs) {
+        if (_.includes(logs[key], text)) return true;
+      }
+    }
+    return false;
+  }
+
+  async checkConsoleLogIncludesText(text: string, type?: string) {
+    await H.retryUntilPass(async () => {
+      const result = await this.isConsoleLogIncludesText(text, type);
+      assert.ok(result, `console log ${type || ""} does not includes: ${text}`);
+    })
+  }
+
   get setLocalStorage(): (k: string, v: string) => Promise<any> {
     return ClientFunction((key, val) => localStorage.setItem(key, val));
+  }
+
+  async scrollBy(selector: Selector | any, x: number, y: number) {
+    await ClientFunction((_x, _y) => {
+      selector().scrollBy(_x, _y);
+    },
+      { dependencies: { selector } })(x, y);
   }
 
   async userRole(user: IUser, cb?: (appRoot) => Promise<any>) {
@@ -224,6 +259,19 @@ class Helper {
         await cb(app);
       }
     }, { preserveUrl: true, });
+  }
+
+  async withNetworkOff(cb: () => Promise<any>) {
+    await this.networkHelper.withNetworkOff(cb);
+  }
+
+  turnOnNetwork(suppressError: boolean = true) {
+    this.networkHelper.setNetwork(true, suppressError);
+    this.networkHelper.waitUntilReachable();
+  }
+
+  turnOffNetwork(suppressError: boolean = true) {
+    this.networkHelper.setNetwork(false, suppressError);
   }
 
   // a temporary method:  need time to wait back-end and front-end sync umi data.

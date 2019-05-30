@@ -4,12 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export type PerformanceItem = {
-  startTime: number;
-  endTime: number;
-  count?: number;
-};
-
 export enum PERFORMANCE_KEYS {
   GROUP_SECTION_FETCH_FAVORITES = 'group_section_fetch_favorites',
   GROUP_SECTION_FETCH_DIRECT_MESSAGES = 'group_section_fetch_direct_messages',
@@ -45,4 +39,14 @@ export enum PERFORMANCE_KEYS {
   FETCH_LEFT_RAIL = 'fetch_left_rail',
   UNIFIED_LOGIN = 'unified_login',
   FIRST_LOGIN = 'first_login',
+  INIT_GROUP_MEMBERS = 'init_group_members',
+  LOAD_PHONE_PARSER = 'load_phone_parser',
+  INIT_PHONE_PARSER = 'init_phone_parser',
 }
+
+export type PerformanceInfo = {
+  key: string;
+  time?: number;
+  count?: number;
+  infos?: any;
+};

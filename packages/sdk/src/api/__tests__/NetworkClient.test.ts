@@ -13,6 +13,9 @@ import {
   OAuthTokenManager,
   IRequest,
   DEFAULT_TIMEOUT_INTERVAL,
+  NETWORK_FAIL_TEXT,
+  BaseResponse,
+  RESPONSE_STATUS_CODE,
 } from 'foundation';
 import NetworkClient from '../NetworkClient';
 import { HandleByRingCentral } from '../handlers';
@@ -22,7 +25,6 @@ import { RequestHolder } from '../glip/item';
 jest.mock('foundation/src/network', () =>
   jest.genMockFromModule<any>('foundation/src/network'),
 );
-
 const networkManager = new NetworkManager(new OAuthTokenManager());
 const mockRequest: any = {};
 
@@ -59,6 +61,7 @@ const setup = () => {
 
   const postRequest = {
     path: '/',
+    via: NETWORK_VIA.ALL,
     data: {
       username: 'test',
     },
@@ -171,6 +174,10 @@ describe('NetworkClient', () => {
   });
 
   describe('request()', () => {
+    const mockResponse: BaseResponse = {
+      statusText: NETWORK_FAIL_TEXT.SOCKET_DISCONNECTED,
+      status: RESPONSE_STATUS_CODE.LOCAL_NOT_NETWORK_CONNECTION,
+    };
     it('networkManager addApiRequest should be called with request', () => {
       const { postRequest, rcNetworkClient } = setup();
       rcNetworkClient.request(postRequest);
@@ -183,6 +190,68 @@ describe('NetworkClient', () => {
       expect(
         rcNetworkClient.request(postRequest, requestHolder),
       ).toBeInstanceOf(Promise);
+    });
+
+    it('should switch to http if statusText is SOCKET_DISCONNECTED and NETWORK_VIA is All', done => {
+      const { postRequest, rcNetworkClient } = setup();
+      mockResponse.request = postRequest;
+      jest
+        .spyOn(rcNetworkClient, 'rawRequest')
+        .mockResolvedValueOnce(mockResponse);
+      const spy = jest.spyOn(rcNetworkClient, 'request');
+      const requestHolder: RequestHolder = { request: undefined };
+      rcNetworkClient.request(postRequest, requestHolder);
+      setTimeout(() => {
+        expect(spy).toBeCalledTimes(2);
+        done();
+      });
+    });
+
+    it('should not switch to http if statusText is SOCKET_DISCONNECTED but NETWORK_VIA is SOCKET', async () => {
+      const { postRequest, rcNetworkClient } = setup();
+      postRequest.via = NETWORK_VIA.SOCKET;
+      mockResponse.request = postRequest;
+      const rawSpy = jest
+        .spyOn(rcNetworkClient, 'rawRequest')
+        .mockResolvedValueOnce(mockResponse);
+      const spy = jest.spyOn(rcNetworkClient, 'request');
+      const requestHolder: RequestHolder = { request: undefined };
+      try {
+        await rcNetworkClient.request(postRequest, requestHolder);
+      } catch (error) {}
+      expect(spy).toBeCalledTimes(1);
+      expect(rawSpy).toBeCalledTimes(1);
+    });
+
+    it('should not switch to http if statusText is not SOCKET_DISCONNECTED but NETWORK_VIA is ALL', async () => {
+      const { postRequest, rcNetworkClient } = setup();
+      mockResponse.request = postRequest;
+      mockResponse.statusText = NETWORK_FAIL_TEXT.BAD_REQUEST;
+      const rawSpy = jest
+        .spyOn(rcNetworkClient, 'rawRequest')
+        .mockResolvedValueOnce(mockResponse);
+      const spy = jest.spyOn(rcNetworkClient, 'request');
+      const requestHolder: RequestHolder = { request: undefined };
+      try {
+        await rcNetworkClient.request(postRequest, requestHolder);
+      } catch (error) {}
+      expect(spy).toBeCalledTimes(1);
+      expect(rawSpy).toBeCalledTimes(1);
+    });
+
+    it('should not switch to http if statusText is SOCKET_DISCONNECTED but request in response is undefined', async () => {
+      const { postRequest, rcNetworkClient } = setup();
+      mockResponse.statusText = NETWORK_FAIL_TEXT.BAD_REQUEST;
+      const rawSpy = jest
+        .spyOn(rcNetworkClient, 'rawRequest')
+        .mockResolvedValueOnce(mockResponse);
+      const spy = jest.spyOn(rcNetworkClient, 'request');
+      const requestHolder: RequestHolder = { request: undefined };
+      try {
+        await rcNetworkClient.request(postRequest, requestHolder);
+      } catch (error) {}
+      expect(spy).toBeCalledTimes(1);
+      expect(rawSpy).toBeCalledTimes(1);
     });
   });
 

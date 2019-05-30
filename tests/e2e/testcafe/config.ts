@@ -62,6 +62,7 @@ const configLoader = new ConfigLoader(
 
 configLoader.load();
 
+const TESTCAFE_HOST = process.env.TESTCAFE_HOST;
 const LANGUAGE_CODE = process.env.LANGUAGE_CODE || 'en' // ref: https://www.w3schools.com/tags/ref_language_codes.asp
 const REPORTER = process.env.REPORTER || 'spec';
 const SCREENSHOTS_PATH = path.join(process.env.SCREENSHOTS_PATH || '/tmp', LANGUAGE_CODE);
@@ -90,6 +91,7 @@ const GIT_TARGET_BRANCH = process.env.TARGET_BRANCH;
 const NEW_VERSION_SITE = process.env.NEW_VERSION_SITE;
 
 const RUNNER_OPTS = {
+  TESTCAFE_HOST,
   REPORTER,
   SCREENSHOT_ON_FAIL,
   SCREENSHOTS_PATH,
@@ -123,7 +125,11 @@ enum BrandTire {
   "RCOFFICE" = "kamino(Fiji,Jupiter,1210,4488)",
   "RC_PROFESSIONAL_TIER" = "kamino(Fiji,Jupiter,1210,4442)",
   "RC_FIJI_GUEST" = "kamino(Fiji-with-guest,Jupiter,1210,4488)",
-  "RC_USERS_20" = "kamino(FIJI-Users-20,Jupiter,1210,4488)"
+  "RC_USERS_20" = "kamino(FIJI-Users-20,Jupiter,1210,4488)",
+  "RC_WITH_DID" = "kamino(FIJI-With-2-DirectNumber,Jupiter,1210,4488)",
+  "RC_VOIP_DISABLE" = "kamino(RC_VOIP_DISABLE,Jupiter,1210,4488)",
+  "RC_WITH_GUESS_DID" = "kamino(RC_WITH_GUESS_DID,Jupiter,1210,4488)",
+  "SORTED_LAST_NAME" = "kamino(Sorted_Last_Name,Jupiter,1210,4488)",
 };
 
 const WebphoneConfig = {

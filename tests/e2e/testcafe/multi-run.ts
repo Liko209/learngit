@@ -9,38 +9,35 @@ const logger = getLogger(__filename);
 logger.level = 'info';
 
 class PrefixTransform extends Transform {
-    private prefix: Buffer;
-    private rest: Buffer;
+  private prefix: Buffer;
+  private rest: Buffer;
 
-    constructor(prefix: string) {
-        super();
-        this.prefix = Buffer.from(prefix);
-    }
+  constructor(prefix: string) {
+    super();
+    this.prefix = Buffer.from(prefix);
+  }
 
-    _transform(chunk, encoding, callback) {
-        this.rest =
-            this.rest && this.rest.length ? Buffer.concat([this.rest, chunk]) : chunk;
-        let index;
-        while ((index = this.rest.indexOf("\n")) !== -1) {
-            const line = this.rest.slice(0, ++index);
-            this.rest = this.rest.slice(index);
-            this.push(Buffer.concat([this.prefix, line]));
-        }
-        return void callback();
+  _transform(chunk, encoding, callback) {
+    this.rest = this.rest && this.rest.length ? Buffer.concat([this.rest, chunk]) : chunk;
+    const lines = this.rest.toString().split('\n');
+    for (const line of lines) {
+      console.log(this.prefix.toString(), line);
     }
+    return void callback();
+  }
 
-    _flush(callback) {
-        if (this.rest && this.rest.length) {
-            return void callback(null, Buffer.concat([this.prefix, this.rest]));
-        }
+  _flush(callback) {
+    if (this.rest && this.rest.length) {
+      return void callback(null, Buffer.concat([this.prefix, this.rest]));
     }
+  }
 }
 
 Promise.all(
-  RUNNER_OPTS.BROWSERS.map((browser: string) =>{
+  RUNNER_OPTS.BROWSERS.map((browser: string) => {
     // create worker process by overwrite the BROWSERS env
     const child = child_process.spawn("npm", ['run', 'e2e'], {
-        env: { ...process.env, BROWSERS: browser },
+      env: { ...process.env, BROWSERS: browser },
     });
 
     child.stdout.pipe(new PrefixTransform(`[${browser}] `)).pipe(process.stdout);
@@ -55,6 +52,6 @@ Promise.all(
   })
 ).then(codes => {
   logger.info(`all child process exists`, codes);
-  const code = codes.some(c => c > 0) ? 1: 0;
+  const code = codes.some(c => c > 0) ? 1 : 0;
   process.exit(code);
 });

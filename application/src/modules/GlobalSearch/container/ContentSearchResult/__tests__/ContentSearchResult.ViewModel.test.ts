@@ -254,7 +254,7 @@ describe('ContentSearchResult fix(FIJI-4870)', () => {
     ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
   });
 
-  it('Should add new property to the contentCounts from service, the value should be sum of counts of all displayed types', async () => {
+  it('Should add new property to the contentCounts from service, the value should be sum of counts of all types', async () => {
     config.TYPE_MAP = [
       {
         id: TypeDictionary.TYPE_ID_POST,
@@ -276,7 +276,7 @@ describe('ContentSearchResult fix(FIJI-4870)', () => {
     const vm = new ContentSearchResultViewModel({});
     await vm.onPostsFetch();
 
-    expect(vm.searchState.contentsCount[-1]).toBe(18);
+    expect(vm.searchState.contentsCount[-1]).toBe(21);
   });
 });
 

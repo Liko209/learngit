@@ -10,6 +10,11 @@ type DialerProps = {};
 type DialerViewProps = {
   callState: CALL_STATE;
   keypadEntered: boolean;
+  dialerId: string;
+  dialerMinimizeTranslateX: number;
+  dialerMinimizeTranslateY: number;
+  startMinimizeAnimation: boolean;
+  callWindowState: string;
 };
 
 export { DialerProps, DialerViewProps };

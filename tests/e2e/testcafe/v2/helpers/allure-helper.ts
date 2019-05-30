@@ -119,7 +119,7 @@ export class AllureHelper {
 
   writeSteps(steps: IStep[]) {
     for (const step of steps) {
-      this.startStep(step.text, step.startTime);
+      this.startStep(step.description || step.text, step.startTime);
       if (step.screenshotPath) {
         this.addAttachment(step.screenshotPath, 'screenshot');
       }
@@ -127,6 +127,9 @@ export class AllureHelper {
         for (const attachment of step.attachments) {
           this.addAttachment(attachment);
         }
+      }
+      if (step.children && step.children.length > 0) {
+        this.writeSteps(step.children)
       }
       this.endStep(step.status, step.endTime);
     }

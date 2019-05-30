@@ -5,14 +5,14 @@
  */
 
 import {
-  SectionUnread,
+  GroupBadge,
   GroupStateHandleTask,
   GroupEntityHandleTask,
   ProfileEntityHandleTask,
 } from '../../../types';
 import { Group } from '../../../../group/entity';
 import { Profile } from '../../../../profile/entity';
-import { UMI_SECTION_TYPE, TASK_DATA_TYPE } from '../../../constants';
+import { GROUP_BADGE_TYPE, TASK_DATA_TYPE } from '../../../constants';
 import { GroupState } from '../../../entity';
 import { GroupStateDao } from '../../../dao';
 import { GroupService } from '../../../../group';
@@ -26,8 +26,8 @@ import {
 } from '../../../../../service';
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
-import { AccountUserConfig } from '../../../../account/config';
-import { ServiceLoader } from '../../../../serviceLoader';
+import { AccountUserConfig } from '../../../../account/config/AccountUserConfig';
+import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
 import { EntityPersistentController } from 'sdk/framework/controller/impl/EntityPersistentController';
 import { TestDatabase } from 'sdk/framework/controller/__tests__/TestTypes';
 
@@ -46,6 +46,10 @@ describe('TotalUnreadController', () => {
   let mockEntitySourceController: EntitySourceController<GroupState>;
   let mockEntityPersistentController: EntityPersistentController<GroupState>;
   const mockGroupService = new GroupService();
+  const mockProfileService = {
+    getFavoriteGroupIds: jest.fn(),
+  };
+  const mockBadgeService = { updateBadge: jest.fn(), registerBadge: jest.fn() };
   beforeEach(() => {
     jest.clearAllMocks();
     mockEntityPersistentController = new EntityPersistentController<GroupState>(
@@ -59,88 +63,98 @@ describe('TotalUnreadController', () => {
       mockGroupService,
       mockEntitySourceController,
     );
+
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.PROFILE_SERVICE) {
+          return mockProfileService;
+        }
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: AccountUserConfig.prototype };
+        }
+        if (config === ServiceConfig.BADGE_SERVICE) {
+          return mockBadgeService;
+        }
+        return;
+      });
   });
 
   describe('reset()', () => {
     it('should reset all unread', () => {
-      totalUnreadController['_groupSectionUnread'].set(5683, {
-        section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
+      totalUnreadController['_singleGroupBadges'].set(5683, {
+        id: GROUP_BADGE_TYPE.DIRECT_MESSAGE,
         unreadCount: 16,
         mentionCount: 16,
       });
-      totalUnreadController['_totalUnreadMap'].set(UMI_SECTION_TYPE.ALL, {
-        section: UMI_SECTION_TYPE.FAVORITE,
+      totalUnreadController['_badgeMap'].set(GROUP_BADGE_TYPE.FAVORITE_DM, {
+        id: GROUP_BADGE_TYPE.DIRECT_MESSAGE,
         unreadCount: 16,
         mentionCount: 16,
       });
-      totalUnreadController['_totalUnreadMap'].set(UMI_SECTION_TYPE.FAVORITE, {
-        section: UMI_SECTION_TYPE.ALL,
+      totalUnreadController['_badgeMap'].set(GROUP_BADGE_TYPE.FAVORITE_TEAM, {
+        id: GROUP_BADGE_TYPE.TEAM,
         unreadCount: 16,
         mentionCount: 16,
       });
-      totalUnreadController['_totalUnreadMap'].set(
-        UMI_SECTION_TYPE.DIRECT_MESSAGE,
-        {
-          section: UMI_SECTION_TYPE.ALL,
-          unreadCount: 16,
-          mentionCount: 16,
-        },
-      );
-      totalUnreadController['_totalUnreadMap'].set(UMI_SECTION_TYPE.TEAM, {
-        section: UMI_SECTION_TYPE.ALL,
+      totalUnreadController['_badgeMap'].set(GROUP_BADGE_TYPE.DIRECT_MESSAGE, {
+        id: GROUP_BADGE_TYPE.FAVORITE_DM,
+        unreadCount: 16,
+        mentionCount: 16,
+      });
+      totalUnreadController['_badgeMap'].set(GROUP_BADGE_TYPE.TEAM, {
+        id: GROUP_BADGE_TYPE.FAVORITE_TEAM,
         unreadCount: 16,
         mentionCount: 16,
       });
       totalUnreadController.reset();
-      expect(totalUnreadController['_groupSectionUnread'].size).toEqual(0);
+      expect(totalUnreadController['_singleGroupBadges'].size).toEqual(0);
       expect(
-        totalUnreadController['_totalUnreadMap'].get(UMI_SECTION_TYPE.ALL),
+        totalUnreadController['_badgeMap'].get(GROUP_BADGE_TYPE.FAVORITE_DM),
       ).toEqual({
-        section: UMI_SECTION_TYPE.ALL,
+        id: GROUP_BADGE_TYPE.FAVORITE_DM,
         unreadCount: 0,
         mentionCount: 0,
       });
       expect(
-        totalUnreadController['_totalUnreadMap'].get(UMI_SECTION_TYPE.FAVORITE),
+        totalUnreadController['_badgeMap'].get(GROUP_BADGE_TYPE.FAVORITE_TEAM),
       ).toEqual({
-        section: UMI_SECTION_TYPE.FAVORITE,
+        id: GROUP_BADGE_TYPE.FAVORITE_TEAM,
         unreadCount: 0,
         mentionCount: 0,
       });
       expect(
-        totalUnreadController['_totalUnreadMap'].get(
-          UMI_SECTION_TYPE.DIRECT_MESSAGE,
-        ),
+        totalUnreadController['_badgeMap'].get(GROUP_BADGE_TYPE.DIRECT_MESSAGE),
       ).toEqual({
-        section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
+        id: GROUP_BADGE_TYPE.DIRECT_MESSAGE,
         unreadCount: 0,
         mentionCount: 0,
       });
       expect(
-        totalUnreadController['_totalUnreadMap'].get(UMI_SECTION_TYPE.TEAM),
+        totalUnreadController['_badgeMap'].get(GROUP_BADGE_TYPE.TEAM),
       ).toEqual({
-        section: UMI_SECTION_TYPE.TEAM,
+        id: GROUP_BADGE_TYPE.TEAM,
         unreadCount: 0,
         mentionCount: 0,
       });
     });
   });
 
-  describe('getSingleUnreadInfo()', () => {
+  describe('getSingleGroupBadge()', () => {
     it('should return correct unread info', () => {
       const id: number = 55668833;
-      const unread: SectionUnread = {
-        section: UMI_SECTION_TYPE.ALL,
+      const unread: GroupBadge = {
+        id: GROUP_BADGE_TYPE.DIRECT_MESSAGE,
         unreadCount: 16,
         mentionCount: 16,
       };
-      totalUnreadController['_groupSectionUnread'].set(id, unread);
-      expect(totalUnreadController.getSingleUnreadInfo(id)).toEqual(unread);
+      totalUnreadController['_singleGroupBadges'].set(id, unread);
+      expect(totalUnreadController.getSingleGroupBadge(id)).toEqual(unread);
     });
 
-    it('should return undefind when the unread info is not in map', () => {
+    it('should return undefined when the unread info is not in map', () => {
       const id: number = 55668833;
-      expect(totalUnreadController.getSingleUnreadInfo(id)).toEqual(undefined);
+      expect(totalUnreadController.getSingleGroupBadge(id)).toEqual(undefined);
     });
   });
 
@@ -216,14 +230,18 @@ describe('TotalUnreadController', () => {
         type: TASK_DATA_TYPE.GROUP_STATE,
         data: 'data' as any,
       };
+      totalUnreadController['_changedBadges'].add(
+        GROUP_BADGE_TYPE.DIRECT_MESSAGE,
+      );
       totalUnreadController['_unreadInitialized'] = false;
       totalUnreadController['_initializeTotalUnread'] = jest.fn();
       totalUnreadController['_updateTotalUnreadByStateChanges'] = jest.fn();
       totalUnreadController['_updateTotalUnreadByGroupChanges'] = jest.fn();
       totalUnreadController['_updateTotalUnreadByProfileChanges'] = jest.fn();
-      totalUnreadController['_doNotification'] = jest.fn();
+      totalUnreadController['_updateBadge'] = jest.fn();
 
       await totalUnreadController['_startDataHandleTask'](task);
+      expect(totalUnreadController['_changedBadges'].size).toEqual(0);
       expect(totalUnreadController['_initializeTotalUnread']).toBeCalledTimes(
         1,
       );
@@ -236,7 +254,7 @@ describe('TotalUnreadController', () => {
       expect(
         totalUnreadController['_updateTotalUnreadByProfileChanges'],
       ).toBeCalledTimes(0);
-      expect(totalUnreadController['_doNotification']).toBeCalledTimes(1);
+      expect(totalUnreadController['_updateBadge']).toBeCalledTimes(1);
     });
 
     it('should handle task and stop the queue when _unreadInitialized === true', async () => {
@@ -249,7 +267,7 @@ describe('TotalUnreadController', () => {
       totalUnreadController['_updateTotalUnreadByStateChanges'] = jest.fn();
       totalUnreadController['_updateTotalUnreadByGroupChanges'] = jest.fn();
       totalUnreadController['_updateTotalUnreadByProfileChanges'] = jest.fn();
-      totalUnreadController['_doNotification'] = jest.fn();
+      totalUnreadController['_updateBadge'] = jest.fn();
 
       await totalUnreadController['_startDataHandleTask'](task);
       expect(totalUnreadController['_initializeTotalUnread']).toBeCalledTimes(
@@ -264,7 +282,7 @@ describe('TotalUnreadController', () => {
       expect(
         totalUnreadController['_updateTotalUnreadByProfileChanges'],
       ).toBeCalledTimes(0);
-      expect(totalUnreadController['_doNotification']).toBeCalledTimes(1);
+      expect(totalUnreadController['_updateBadge']).toBeCalledTimes(1);
     });
 
     it('should continue handle next task and when crash', async () => {
@@ -285,7 +303,7 @@ describe('TotalUnreadController', () => {
       });
       totalUnreadController['_updateTotalUnreadByGroupChanges'] = jest.fn();
       totalUnreadController['_updateTotalUnreadByProfileChanges'] = jest.fn();
-      totalUnreadController['_doNotification'] = jest.fn();
+      totalUnreadController['_updateBadge'] = jest.fn();
 
       await totalUnreadController['_startDataHandleTask'](task);
       expect(totalUnreadController['_initializeTotalUnread']).toBeCalledTimes(
@@ -300,46 +318,62 @@ describe('TotalUnreadController', () => {
       expect(
         totalUnreadController['_updateTotalUnreadByProfileChanges'],
       ).toBeCalledTimes(0);
-      expect(totalUnreadController['_doNotification']).toBeCalledTimes(1);
+      expect(totalUnreadController['_updateBadge']).toBeCalledTimes(1);
     });
   });
 
   describe('_updateTotalUnreadByStateChanges()', () => {
     it('should update correctly', async () => {
       totalUnreadController['_modifyTotalUnread'] = jest.fn();
-      totalUnreadController['_groupSectionUnread'].set(1, {
-        section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
+      totalUnreadController['_singleGroupBadges'].set(1, {
+        id: GROUP_BADGE_TYPE.DIRECT_MESSAGE,
         unreadCount: 8,
         mentionCount: 2,
       });
+      totalUnreadController['_singleGroupBadges'].set(3, {
+        id: GROUP_BADGE_TYPE.TEAM,
+        unreadCount: 5,
+        mentionCount: 2,
+      });
       const entityMap = new Map<number, GroupState>();
-      entityMap.set(1, { id: 1, unread_count: 17, unread_mentions_count: 1 });
+      entityMap.set(1, { id: 1, unread_count: 17 });
       entityMap.set(2, { id: 2 });
+      entityMap.set(3, { id: 3, unread_count: 0 });
       const payload: NotificationEntityPayload<GroupState> = {
         type: EVENT_TYPES.UPDATE,
         body: {
-          ids: [1, 2],
+          ids: [1, 2, 3],
           entities: entityMap,
         },
       };
       await totalUnreadController['_updateTotalUnreadByStateChanges'](payload);
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
-        UMI_SECTION_TYPE.DIRECT_MESSAGE,
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(2);
+      expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledWith(
+        GROUP_BADGE_TYPE.DIRECT_MESSAGE,
         9,
-        -1,
+        -2,
       );
-      expect(totalUnreadController['_groupSectionUnread'].get(1)).toEqual({
-        section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
+      expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledWith(
+        GROUP_BADGE_TYPE.TEAM,
+        -5,
+        -2,
+      );
+      expect(totalUnreadController['_singleGroupBadges'].get(1)).toEqual({
+        id: GROUP_BADGE_TYPE.DIRECT_MESSAGE,
         unreadCount: 17,
-        mentionCount: 1,
+        mentionCount: 0,
+      });
+      expect(totalUnreadController['_singleGroupBadges'].get(3)).toEqual({
+        id: GROUP_BADGE_TYPE.TEAM,
+        unreadCount: 0,
+        mentionCount: 0,
       });
     });
 
     it('should update correctly when current unread count != 0 and update unread count = 0', async () => {
       totalUnreadController['_modifyTotalUnread'] = jest.fn();
-      totalUnreadController['_groupSectionUnread'].set(1, {
-        section: UMI_SECTION_TYPE.TEAM,
+      totalUnreadController['_singleGroupBadges'].set(1, {
+        id: GROUP_BADGE_TYPE.TEAM,
         unreadCount: 8,
         mentionCount: 2,
         isTeam: true,
@@ -357,12 +391,12 @@ describe('TotalUnreadController', () => {
       await totalUnreadController['_updateTotalUnreadByStateChanges'](payload);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
-        UMI_SECTION_TYPE.TEAM,
+        GROUP_BADGE_TYPE.TEAM,
+        -8,
         -2,
-        -1,
       );
-      expect(totalUnreadController['_groupSectionUnread'].get(1)).toEqual({
-        section: UMI_SECTION_TYPE.TEAM,
+      expect(totalUnreadController['_singleGroupBadges'].get(1)).toEqual({
+        id: GROUP_BADGE_TYPE.TEAM,
         unreadCount: 0,
         mentionCount: 1,
         isTeam: true,
@@ -371,14 +405,14 @@ describe('TotalUnreadController', () => {
 
     it('should update correctly when current unread count = 0 and update unread count != 0', async () => {
       totalUnreadController['_modifyTotalUnread'] = jest.fn();
-      totalUnreadController['_groupSectionUnread'].set(1, {
-        section: UMI_SECTION_TYPE.TEAM,
+      totalUnreadController['_singleGroupBadges'].set(1, {
+        id: GROUP_BADGE_TYPE.TEAM,
         unreadCount: 0,
         mentionCount: 2,
         isTeam: true,
       });
       const entityMap = new Map<number, GroupState>();
-      entityMap.set(1, { id: 1, unread_count: 6, unread_mentions_count: 17 });
+      entityMap.set(1, { id: 1, unread_count: 6 });
       entityMap.set(2, { id: 2 });
       const payload: NotificationEntityPayload<GroupState> = {
         type: EVENT_TYPES.UPDATE,
@@ -390,22 +424,22 @@ describe('TotalUnreadController', () => {
       await totalUnreadController['_updateTotalUnreadByStateChanges'](payload);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
-        UMI_SECTION_TYPE.TEAM,
-        17,
-        15,
+        GROUP_BADGE_TYPE.TEAM,
+        6,
+        0,
       );
-      expect(totalUnreadController['_groupSectionUnread'].get(1)).toEqual({
-        section: UMI_SECTION_TYPE.TEAM,
+      expect(totalUnreadController['_singleGroupBadges'].get(1)).toEqual({
+        id: GROUP_BADGE_TYPE.TEAM,
         unreadCount: 6,
-        mentionCount: 17,
+        mentionCount: 0,
         isTeam: true,
       });
     });
 
     it('should update correctly when current unread count = 0 and update unread count = 0 and mention count changed', async () => {
       totalUnreadController['_modifyTotalUnread'] = jest.fn();
-      totalUnreadController['_groupSectionUnread'].set(1, {
-        section: UMI_SECTION_TYPE.TEAM,
+      totalUnreadController['_singleGroupBadges'].set(1, {
+        id: GROUP_BADGE_TYPE.TEAM,
         unreadCount: 0,
         mentionCount: 2,
         isTeam: true,
@@ -423,12 +457,12 @@ describe('TotalUnreadController', () => {
       await totalUnreadController['_updateTotalUnreadByStateChanges'](payload);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
-        UMI_SECTION_TYPE.TEAM,
+        GROUP_BADGE_TYPE.TEAM,
         0,
-        15,
+        0,
       );
-      expect(totalUnreadController['_groupSectionUnread'].get(1)).toEqual({
-        section: UMI_SECTION_TYPE.TEAM,
+      expect(totalUnreadController['_singleGroupBadges'].get(1)).toEqual({
+        id: GROUP_BADGE_TYPE.TEAM,
         unreadCount: 0,
         mentionCount: 17,
         isTeam: true,
@@ -445,8 +479,8 @@ describe('TotalUnreadController', () => {
         .mockReturnValue(5683);
       totalUnreadController['_modifyTotalUnread'] = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
-      totalUnreadController['_groupSectionUnread'].set(1, {
-        section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
+      totalUnreadController['_singleGroupBadges'].set(1, {
+        id: GROUP_BADGE_TYPE.DIRECT_MESSAGE,
         unreadCount: 8,
         mentionCount: 2,
       });
@@ -462,15 +496,18 @@ describe('TotalUnreadController', () => {
         .mockReturnValueOnce([{ id: 3, deactivated: false, members: [5683] }]);
       const entityMap = new Map<number, Group>();
       entityMap.set(1, {
+        id: 1,
         deactivated: true,
         members: [5683],
       } as Group);
       entityMap.set(2, {
+        id: 2,
         deactivated: false,
         is_archived: false,
         members: [112233],
       } as Group);
       entityMap.set(3, {
+        id: 3,
         deactivated: false,
         members: [5683],
       } as Group);
@@ -485,13 +522,14 @@ describe('TotalUnreadController', () => {
       expect(AccountUserConfig.prototype.getGlipUserId).toBeCalledTimes(1);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
-        UMI_SECTION_TYPE.DIRECT_MESSAGE,
+        GROUP_BADGE_TYPE.DIRECT_MESSAGE,
         -8,
         -2,
       );
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledWith(
         {
+          id: 3,
           deactivated: false,
           members: [5683],
         },
@@ -501,7 +539,7 @@ describe('TotalUnreadController', () => {
           members: [5683],
         },
       );
-      expect(totalUnreadController['_groupSectionUnread'].size).toEqual(0);
+      expect(totalUnreadController['_singleGroupBadges'].size).toEqual(0);
     });
   });
 
@@ -565,8 +603,8 @@ describe('TotalUnreadController', () => {
     });
 
     it('should do nothing when group unread is not in map or is already added to favorite', () => {
-      totalUnreadController['_groupSectionUnread'].set(1, {
-        section: UMI_SECTION_TYPE.FAVORITE,
+      totalUnreadController['_singleGroupBadges'].set(1, {
+        id: GROUP_BADGE_TYPE.FAVORITE_TEAM,
         unreadCount: 2,
         mentionCount: 1,
         isTeam: true,
@@ -576,8 +614,8 @@ describe('TotalUnreadController', () => {
         true,
       );
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(0);
-      expect(totalUnreadController['_groupSectionUnread'].get(1)).toEqual({
-        section: UMI_SECTION_TYPE.FAVORITE,
+      expect(totalUnreadController['_singleGroupBadges'].get(1)).toEqual({
+        id: GROUP_BADGE_TYPE.FAVORITE_TEAM,
         unreadCount: 2,
         mentionCount: 1,
         isTeam: true,
@@ -585,16 +623,16 @@ describe('TotalUnreadController', () => {
     });
 
     it('should do nothing when group is already removed from favorite', () => {
-      totalUnreadController['_groupSectionUnread'].set(1, {
-        section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
+      totalUnreadController['_singleGroupBadges'].set(1, {
+        id: GROUP_BADGE_TYPE.DIRECT_MESSAGE,
         unreadCount: 2,
         mentionCount: 1,
         isTeam: false,
       });
       totalUnreadController['_updateTotalUnreadByFavoriteChanges']([1], false);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(0);
-      expect(totalUnreadController['_groupSectionUnread'].get(1)).toEqual({
-        section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
+      expect(totalUnreadController['_singleGroupBadges'].get(1)).toEqual({
+        id: GROUP_BADGE_TYPE.DIRECT_MESSAGE,
         unreadCount: 2,
         mentionCount: 1,
         isTeam: false,
@@ -602,33 +640,33 @@ describe('TotalUnreadController', () => {
     });
 
     it('should update correctly when adding group to favorite', () => {
-      totalUnreadController['_groupSectionUnread'].set(1, {
-        section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
+      totalUnreadController['_singleGroupBadges'].set(1, {
+        id: GROUP_BADGE_TYPE.DIRECT_MESSAGE,
         unreadCount: 7,
         mentionCount: 3,
       });
       totalUnreadController['_updateTotalUnreadByFavoriteChanges']([1], true);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(2);
       expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledWith(
-        UMI_SECTION_TYPE.DIRECT_MESSAGE,
+        GROUP_BADGE_TYPE.DIRECT_MESSAGE,
         -7,
         -3,
       );
       expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledWith(
-        UMI_SECTION_TYPE.FAVORITE,
+        GROUP_BADGE_TYPE.FAVORITE_DM,
         7,
         3,
       );
-      expect(totalUnreadController['_groupSectionUnread'].get(1)).toEqual({
-        section: UMI_SECTION_TYPE.FAVORITE,
+      expect(totalUnreadController['_singleGroupBadges'].get(1)).toEqual({
+        id: GROUP_BADGE_TYPE.FAVORITE_DM,
         unreadCount: 7,
         mentionCount: 3,
       });
     });
 
     it('should update correctly when removing group from favorite', () => {
-      totalUnreadController['_groupSectionUnread'].set(1, {
-        section: UMI_SECTION_TYPE.FAVORITE,
+      totalUnreadController['_singleGroupBadges'].set(1, {
+        id: GROUP_BADGE_TYPE.FAVORITE_DM,
         unreadCount: 9,
         mentionCount: 6,
         isTeam: true,
@@ -636,17 +674,17 @@ describe('TotalUnreadController', () => {
       totalUnreadController['_updateTotalUnreadByFavoriteChanges']([1], false);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(2);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
-        UMI_SECTION_TYPE.FAVORITE,
-        -6,
+        GROUP_BADGE_TYPE.FAVORITE_DM,
+        -9,
         -6,
       );
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
-        UMI_SECTION_TYPE.TEAM,
-        6,
+        GROUP_BADGE_TYPE.TEAM,
+        9,
         6,
       );
-      expect(totalUnreadController['_groupSectionUnread'].get(1)).toEqual({
-        section: UMI_SECTION_TYPE.TEAM,
+      expect(totalUnreadController['_singleGroupBadges'].get(1)).toEqual({
+        id: GROUP_BADGE_TYPE.TEAM,
         unreadCount: 9,
         mentionCount: 6,
         isTeam: true,
@@ -658,6 +696,7 @@ describe('TotalUnreadController', () => {
     it('should initialize correctly when profile is invalid', async () => {
       totalUnreadController.reset = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
+      totalUnreadController['_registerBadge'] = jest.fn();
 
       AccountUserConfig.prototype.getGlipUserId = jest
         .fn()
@@ -675,17 +714,14 @@ describe('TotalUnreadController', () => {
         .mockReturnValueOnce(true)
         .mockReturnValueOnce(false);
 
-      const profileService = {
-        getFavoriteGroupIds: jest.fn().mockReturnValue(undefined),
-      };
+      mockProfileService.getFavoriteGroupIds.mockReturnValue(undefined);
       mockEntitySourceController.batchGet = jest
         .fn()
         .mockReturnValue([{ id: 2 }]);
-      ServiceLoader.getInstance = jest.fn().mockReturnValue(profileService);
 
       await totalUnreadController['_initializeTotalUnread']();
       expect(totalUnreadController.reset).toBeCalledTimes(1);
-      expect(profileService.getFavoriteGroupIds).toBeCalledTimes(1);
+      expect(mockProfileService.getFavoriteGroupIds).toBeCalledTimes(1);
       expect(mockGroupService.getEntities).toBeCalledTimes(1);
       expect(mockGroupService.isValid).toBeCalledTimes(3);
       expect(AccountUserConfig.prototype.getGlipUserId).toBeCalledTimes(1);
@@ -699,11 +735,13 @@ describe('TotalUnreadController', () => {
       );
       expect(totalUnreadController['_unreadInitialized']).toEqual(true);
       expect(totalUnreadController['_favoriteGroupIds']).toEqual([]);
+      expect(totalUnreadController['_registerBadge']).toBeCalledTimes(1);
     });
 
     it('should initialize correctly', async () => {
       totalUnreadController.reset = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
+      totalUnreadController['_registerBadge'] = jest.fn();
 
       AccountUserConfig.prototype.getGlipUserId = jest
         .fn()
@@ -720,16 +758,13 @@ describe('TotalUnreadController', () => {
         .mockReturnValueOnce(true)
         .mockReturnValueOnce(true)
         .mockReturnValueOnce(false);
-      const profileService = {
-        getFavoriteGroupIds: jest.fn().mockReturnValue([123, 456]),
-      };
+      mockProfileService.getFavoriteGroupIds.mockReturnValue([123, 456]);
       mockEntitySourceController.batchGet = jest
         .fn()
         .mockReturnValueOnce([{ id: 2 }]);
-      ServiceLoader.getInstance = jest.fn().mockReturnValue(profileService);
       await totalUnreadController['_initializeTotalUnread']();
       expect(totalUnreadController.reset).toBeCalledTimes(1);
-      expect(profileService.getFavoriteGroupIds).toBeCalledTimes(1);
+      expect(mockProfileService.getFavoriteGroupIds).toBeCalledTimes(1);
       expect(mockGroupService.getEntities).toBeCalledTimes(1);
       expect(mockGroupService.isValid).toBeCalledTimes(3);
       expect(AccountUserConfig.prototype.getGlipUserId).toBeCalledTimes(1);
@@ -745,11 +780,12 @@ describe('TotalUnreadController', () => {
       );
       expect(totalUnreadController['_unreadInitialized']).toEqual(true);
       expect(totalUnreadController['_favoriteGroupIds']).toEqual([123, 456]);
+      expect(totalUnreadController['_registerBadge']).toBeCalledTimes(1);
     });
   });
 
   describe('_addNewGroupUnread()', () => {
-    it('should add new group unread to favorite section when group is favorite', async () => {
+    it('should add new group unread to favorite id when group is favorite', async () => {
       const groupId: number = 55668833;
       const group = { id: groupId, is_team: true } as Group;
       const groupState: GroupState = {
@@ -761,21 +797,19 @@ describe('TotalUnreadController', () => {
       totalUnreadController['_modifyTotalUnread'] = jest.fn();
       await totalUnreadController['_addNewGroupUnread'](group, groupState);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
-        UMI_SECTION_TYPE.FAVORITE,
-        6,
+        GROUP_BADGE_TYPE.FAVORITE_TEAM,
+        15,
         6,
       );
-      expect(totalUnreadController['_groupSectionUnread'].get(groupId)).toEqual(
-        {
-          section: UMI_SECTION_TYPE.FAVORITE,
-          unreadCount: 15,
-          mentionCount: 6,
-          isTeam: true,
-        },
-      );
+      expect(totalUnreadController['_singleGroupBadges'].get(groupId)).toEqual({
+        id: GROUP_BADGE_TYPE.FAVORITE_TEAM,
+        unreadCount: 15,
+        mentionCount: 6,
+        isTeam: true,
+      });
     });
 
-    it('should add new group unread to team section when team is not favorite', async () => {
+    it('should add new group unread to team id when team is not favorite', async () => {
       const groupId: number = 55668833;
       const group = { id: groupId, is_team: true } as Group;
       const groupState: GroupState = {
@@ -786,77 +820,105 @@ describe('TotalUnreadController', () => {
       totalUnreadController['_modifyTotalUnread'] = jest.fn();
       await totalUnreadController['_addNewGroupUnread'](group, groupState);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
-        UMI_SECTION_TYPE.TEAM,
-        0,
+        GROUP_BADGE_TYPE.TEAM,
+        15,
         0,
       );
-      expect(totalUnreadController['_groupSectionUnread'].get(groupId)).toEqual(
-        {
-          section: UMI_SECTION_TYPE.TEAM,
-          unreadCount: 15,
-          mentionCount: 0,
-          isTeam: true,
-        },
-      );
+      expect(totalUnreadController['_singleGroupBadges'].get(groupId)).toEqual({
+        id: GROUP_BADGE_TYPE.TEAM,
+        unreadCount: 15,
+        mentionCount: 0,
+        isTeam: true,
+      });
     });
 
-    it('should set empty unread when group state is null', async () => {
+    it('should not modify totalUnread when group state is null', async () => {
       const groupId: number = 55668833;
       const group = { id: groupId } as Group;
       totalUnreadController['_favoriteGroupIds'] = [11223344];
       totalUnreadController['_modifyTotalUnread'] = jest.fn();
       await totalUnreadController['_addNewGroupUnread'](group, { id: 3 });
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
-        UMI_SECTION_TYPE.DIRECT_MESSAGE,
-        0,
-        0,
-      );
-      expect(totalUnreadController['_groupSectionUnread'].get(groupId)).toEqual(
-        {
-          section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
-          unreadCount: 0,
-          mentionCount: 0,
-          isTeam: undefined,
-        },
-      );
+      expect(totalUnreadController['_modifyTotalUnread']).not.toBeCalled();
+      expect(totalUnreadController['_singleGroupBadges'].get(groupId)).toEqual({
+        id: GROUP_BADGE_TYPE.DIRECT_MESSAGE,
+        unreadCount: 0,
+        mentionCount: 0,
+        isTeam: undefined,
+      });
     });
   });
 
-  describe('_updateTotalUnread()', () => {
+  describe('_modifyTotalUnread()', () => {
     it('should update correct', () => {
-      const section = UMI_SECTION_TYPE.FAVORITE;
+      const id = GROUP_BADGE_TYPE.FAVORITE_DM;
       const unreadUpdate = 15;
       const mentionUpdate = -2;
       totalUnreadController['_modifyTotalUnread'](
-        section,
+        id,
         unreadUpdate,
         mentionUpdate,
       );
       expect(
-        totalUnreadController['_totalUnreadMap'].get(UMI_SECTION_TYPE.FAVORITE),
+        totalUnreadController['_badgeMap'].get(GROUP_BADGE_TYPE.FAVORITE_DM),
       ).toEqual({
-        section: UMI_SECTION_TYPE.FAVORITE,
-        unreadCount: unreadUpdate,
-        mentionCount: mentionUpdate,
-      });
-      expect(
-        totalUnreadController['_totalUnreadMap'].get(UMI_SECTION_TYPE.ALL),
-      ).toEqual({
-        section: UMI_SECTION_TYPE.ALL,
+        id: GROUP_BADGE_TYPE.FAVORITE_DM,
         unreadCount: unreadUpdate,
         mentionCount: mentionUpdate,
       });
     });
   });
 
-  describe('_doNotification()', () => {
-    it('should do notification with correct params', () => {
-      notificationCenter.emit = jest.fn();
-      totalUnreadController['_doNotification']();
-      expect(notificationCenter.emit).toBeCalledWith(
-        SERVICE.TOTAL_UNREAD,
-        totalUnreadController['_totalUnreadMap'],
+  describe('_updateBadge()', () => {
+    it('should _updateBadge when _changedBadges has data', () => {
+      totalUnreadController['_changedBadges'].add(
+        GROUP_BADGE_TYPE.DIRECT_MESSAGE,
       );
+      const mockData = 'mockData';
+      totalUnreadController['_getBadge'] = jest.fn().mockReturnValue(mockData);
+
+      totalUnreadController['_updateBadge']();
+      expect(mockBadgeService.updateBadge).toBeCalledWith(mockData);
+    });
+
+    it('should do noting when _changedBadges does not have data', () => {
+      totalUnreadController['_changedBadges'].clear();
+      totalUnreadController['_updateBadge']();
+      expect(mockBadgeService.updateBadge).not.toBeCalled();
+    });
+  });
+
+  describe('_getBadge()', () => {
+    it('should return correct value when _badgeMap has valid data', () => {
+      const mockData = {
+        id: GROUP_BADGE_TYPE.TEAM,
+        unreadCount: 11,
+        mentionCount: 1,
+      };
+      totalUnreadController['_badgeMap'].set(GROUP_BADGE_TYPE.TEAM, mockData);
+      expect(totalUnreadController['_getBadge'](GROUP_BADGE_TYPE.TEAM)).toEqual(
+        { id: GROUP_BADGE_TYPE.TEAM, unreadCount: 11, mentionCount: 1 },
+      );
+    });
+
+    it('should do noting when _badgeMap does not have valid data', () => {
+      totalUnreadController['_badgeMap'].clear();
+      expect(
+        totalUnreadController['_getBadge'](GROUP_BADGE_TYPE.FAVORITE_TEAM),
+      ).toEqual({ id: GROUP_BADGE_TYPE.FAVORITE_TEAM, unreadCount: 0 });
+    });
+  });
+
+  describe('_registerBadge()', () => {
+    it('should register badge', () => {
+      totalUnreadController['_getBadge'] = jest.fn();
+      mockBadgeService.registerBadge.mockImplementation(
+        (id: string, func: () => any) => {
+          func();
+        },
+      );
+
+      totalUnreadController['_registerBadge']();
+      expect(mockBadgeService.registerBadge).toBeCalledTimes(4);
     });
   });
 });

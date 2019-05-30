@@ -25,7 +25,7 @@ import { Profile } from '../../profile/entity';
 import { StateService } from '../../state';
 import { Group } from '../entity';
 import { IGroupService } from '../service/IGroupService';
-import { AccountUserConfig } from '../../../module/account/config';
+import { AccountService } from '../../account/service';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
@@ -137,7 +137,9 @@ class GroupHandleDataController {
         }
         /* eslint-enable no-underscore-dangle */
         const transformed: Group = transform<Group>(finalItem);
-        const userConfig = new AccountUserConfig();
+        const userConfig = ServiceLoader.getInstance<AccountService>(
+          ServiceConfig.ACCOUNT_SERVICE,
+        ).userConfig;
         const beRemovedAsGuest =
           transformed.removed_guest_user_ids &&
           transformed.removed_guest_user_ids.includes(
@@ -413,8 +415,10 @@ class GroupHandleDataController {
                 _id: post.group_id,
                 most_recent_post_created_at: post.created_at,
                 most_recent_content_modified_at: post.modified_at,
-                most_recent_post_id: post.id,
               };
+              if (post.id > 0) {
+                pg['most_recent_post_id'] = post.id;
+              }
               return pg;
             }
           } catch (error) {
@@ -433,10 +437,10 @@ class GroupHandleDataController {
   }
 
   getGroupTime = (group: Group) => {
-    return (
-      group.__last_accessed_at ||
-      group.most_recent_post_created_at ||
-      group.created_at
+    return Math.max(
+      group.__last_accessed_at || 0,
+      group.most_recent_post_created_at || 0,
+      group.created_at,
     );
   }
 
@@ -459,7 +463,9 @@ class GroupHandleDataController {
    */
   filterGroups = async (groups: Group[], limit: number) => {
     let sortedGroups = groups;
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
     sortedGroups = groups.filter((model: Group) => {
       if (model.is_team) {
@@ -489,10 +495,7 @@ class GroupHandleDataController {
         (group: Group, i) => this.getGroupTime(group) >= oldestUnreadGroupTime,
       );
       if (filteredGroups.length > limit) {
-        const result = [];
-        for (let i = 0; i < limit; i++) {
-          result.push(filteredGroups[i]);
-        }
+        const result = filteredGroups.slice(0, limit);
         for (let i = limit; i < filteredGroups.length; i++) {
           if (unreadGroupIds.indexOf(filteredGroups[i].id) !== -1) {
             result.push(filteredGroups[i]);

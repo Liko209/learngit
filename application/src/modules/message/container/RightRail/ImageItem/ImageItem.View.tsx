@@ -13,12 +13,15 @@ import {
   JuiListItemSecondaryAction,
 } from 'jui/components/Lists';
 import { Thumbnail } from '../../Thumbnail';
-import { showImageViewer } from '@/containers/Viewer';
+import { showImageViewer } from '@/modules/viewer/container/Viewer';
 import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
 import { ImageItemViewProps, ImageItemProps } from './types';
 import { Download } from '@/containers/common/Download';
 import { SecondaryText } from '../common/SecondaryText.View';
 const SQUARE_SIZE = 36;
+import { JuiButtonBar } from 'jui/components/Buttons';
+import { FileActionMenu } from '@/containers/common/fileAction';
+
 @observer
 class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
   private _thumbnailRef: React.RefObject<any> = React.createRef();
@@ -40,7 +43,10 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
         />
         {hover && (
           <JuiListItemSecondaryAction>
-            <Download url={downloadUrl} />
+            <JuiButtonBar overlapSize={-2}>
+              <Download url={downloadUrl} />
+              <FileActionMenu fileId={id} disablePortal={true} />
+            </JuiButtonBar>
           </JuiListItemSecondaryAction>
         )}
       </>

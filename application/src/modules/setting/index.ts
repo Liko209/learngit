@@ -4,4 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+export * from './SettingModule';
+export * from './service';
+export * from './store';
+export * from './module.config';
+export * from './type';
 export * from './container';

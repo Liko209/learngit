@@ -48,7 +48,7 @@ const moduleRules = [
   },
   {
     test: /\.svg$/,
-    include: path.resolve(__dirname, '../src/assets/country-svg'),
+    include: path.resolve(__dirname, '../src/assets/country-flag'),
     use: [
       {
         loader: 'svg-sprite-loader',
@@ -57,6 +57,32 @@ const moduleRules = [
           publicPath: '/static/',
           spriteFilename: 'country-flag-[hash:6].svg',
           symbolId: 'country-flag-[name]',
+        },
+      },
+      {
+        loader: 'svgo-loader',
+        options: {
+          plugins: [
+            { removeTitle: true },
+            { convertColors: { shorthex: false } },
+            { convertPathData: true },
+            { reusePaths: true },
+          ],
+        },
+      },
+    ],
+  },
+  {
+    test: /\.svg$/,
+    include: path.resolve(__dirname, '../src/assets/jupiter-icon'),
+    use: [
+      {
+        loader: 'svg-sprite-loader',
+        options: {
+          extract: true,
+          publicPath: '/static/',
+          spriteFilename: 'jupiter-icon-[hash:6].svg',
+          symbolId: 'jupiter-[name]',
         },
       },
       {
@@ -113,7 +139,7 @@ const resolveExtensions = ['.ts', '.tsx'];
 module.exports = async ({ config }) => {
   // modify the default svg rule
   const fileLoader = config.module.rules[3];
-  fileLoader.exclude = [path.resolve(__dirname, '../src/assets/country-svg')];
+  fileLoader.exclude = [path.resolve(__dirname, '../src/assets/country-flag')];
 
   // Make whatever fine-grained changes you need
   moduleRules.forEach(rule => {

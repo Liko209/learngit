@@ -5,14 +5,20 @@
  */
 
 import { IEntitySourceController } from '../../../../../framework/controller/interface/IEntitySourceController';
-import { Item } from '../../../entity';
+import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
+import { Raw } from '../../../../../framework/model';
+import { Item, ItemFile } from '../../../entity';
 import { FileItemUtils } from '../utils';
 import { Api } from '../../../../../api';
 import { FileItem } from '../entity';
-import { AuthUserConfig } from '../../../../account/config';
+import { AccountService } from '../../../../account/service';
+import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
 
 class FileActionController {
-  constructor(private _sourceController: IEntitySourceController<Item>) {}
+  constructor(
+    private _partialModifyController: IPartialModifyController<Item>,
+    private _sourceController: IEntitySourceController<Item>,
+  ) {}
 
   async getThumbsUrlWithSize(itemId: number, width?: number, height?: number) {
     const file = (await this._sourceController.get(itemId)) as FileItem;
@@ -40,7 +46,9 @@ class FileActionController {
       if (storageId === 0) {
         break;
       }
-      const authConfig = new AuthUserConfig();
+      const authConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).authUserConfig;
       const glipAccessToken = authConfig.getGlipToken();
       if (!glipAccessToken) {
         break;
@@ -69,6 +77,26 @@ class FileActionController {
     } while (false);
 
     return url;
+  }
+  async editFileName(itemId: number, newName: string) {
+    const preHandlePartial = (
+      partialItem: Partial<Raw<ItemFile>>,
+      originalItem: ItemFile,
+    ): Partial<Raw<ItemFile>> => {
+      return {
+        ...partialItem,
+        name: newName,
+      };
+    };
+
+    await this._partialModifyController.updatePartially(
+      itemId,
+      preHandlePartial,
+      async (newItem: ItemFile) => {
+        const requestController = this._sourceController.getRequestController();
+        return await requestController!.put(newItem);
+      },
+    );
   }
 
   private _replaceHostWithProxy(url: string) {

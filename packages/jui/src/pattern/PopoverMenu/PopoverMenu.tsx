@@ -26,6 +26,7 @@ type PopoverMenuProps = {
 
 const StyledAnchorWrapper = styled.div`
   display: inline-flex;
+  width: 100%;
 `;
 
 class JuiPopoverMenu extends React.PureComponent<
@@ -44,6 +45,10 @@ class JuiPopoverMenu extends React.PureComponent<
     this.setState({
       anchorEl: event.currentTarget,
     });
+  }
+
+  handleMouseDown = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
   }
 
   handleClose = (event: React.MouseEvent<HTMLElement>) => {
@@ -67,7 +72,10 @@ class JuiPopoverMenu extends React.PureComponent<
     } = this.props;
     return (
       <div className={className}>
-        <StyledAnchorWrapper onClick={this.handleToggle}>
+        <StyledAnchorWrapper
+          onClick={this.handleToggle}
+          onMouseDown={this.handleMouseDown}
+        >
           <Anchor />
         </StyledAnchorWrapper>
         <JuiPopover

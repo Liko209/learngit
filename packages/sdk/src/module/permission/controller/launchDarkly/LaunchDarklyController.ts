@@ -6,7 +6,7 @@
 
 import { LaunchDarklyClient } from './LaunchDarklyClient';
 import { notificationCenter, SERVICE } from '../../../../service';
-import { AccountUserConfig } from '../../../../module/account/config';
+import { AccountService } from '../../../account/service';
 import { LaunchDarklyDefaultPermissions } from './LaunchDarklyDefaultPermissions';
 import UserPermissionType from '../../types';
 import { LDFlagSet } from 'ldclient-js';
@@ -26,7 +26,7 @@ class LaunchDarklyController {
   }
 
   hasPermission(type: UserPermissionType): boolean {
-    return this.isClientReady
+    return this.isClientReady && this.launchDarklyClient.hasFlags()
       ? this.launchDarklyClient.hasPermission(type)
       : this._defaultPermission(type);
   }
@@ -58,7 +58,9 @@ class LaunchDarklyController {
     if (this.isIniting || this.isClientReady) {
       return;
     }
-    const userConfig = new AccountUserConfig();
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const userId: number = userConfig.getGlipUserId();
     if (!userId) {
       return;

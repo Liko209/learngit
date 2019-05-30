@@ -1,9 +1,12 @@
 import { ACCOUNT_TYPE_ENUM } from './constants';
 import { ITokenModel } from '../api';
-import { AuthUserConfig, AccountUserConfig } from '../module/account/config';
+import { AccountService } from '../module/account/service';
+import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
 
 const setAccountType = async (type: any) => {
-  const userConfig = new AccountUserConfig();
+  const userConfig = ServiceLoader.getInstance<AccountService>(
+    ServiceConfig.ACCOUNT_SERVICE,
+  ).userConfig;
   await userConfig.setAccountType(type);
   return true;
 };
@@ -12,7 +15,9 @@ const setRCToken = async (token: ITokenModel) => {
   if (!token.timestamp) {
     token.timestamp = Date.now();
   }
-  const authConfig = new AuthUserConfig();
+  const authConfig = ServiceLoader.getInstance<AccountService>(
+    ServiceConfig.ACCOUNT_SERVICE,
+  ).authUserConfig;
   await authConfig.setRCToken(token);
   return true;
 };
@@ -22,7 +27,9 @@ const setRCAccountType = async () => {
 };
 
 const setGlipToken = async (token: string) => {
-  const authConfig = new AuthUserConfig();
+  const authConfig = ServiceLoader.getInstance<AccountService>(
+    ServiceConfig.ACCOUNT_SERVICE,
+  ).authUserConfig;
   await authConfig.setGlipToken(token);
   return true;
 };

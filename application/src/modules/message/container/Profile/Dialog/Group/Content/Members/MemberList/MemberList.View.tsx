@@ -8,7 +8,7 @@ import React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiProfileDialogContentMemberList } from 'jui/pattern/Profile/Dialog';
 import { withDelay } from 'jui/hoc/withDelay';
-import { JuiVirtualizedList } from 'jui/components/VirtualizedList';
+import { JuiInfiniteList } from 'jui/components/VirtualizedList';
 import { JuiMemberListEmptyView } from 'jui/pattern/EmptyScreen';
 import empty from './noresult.svg';
 import { MemberListProps, MemberListViewProps } from './types';
@@ -37,7 +37,15 @@ class MemberList extends React.Component<
   }
 
   render() {
-    const { height, t, showEmpty, filteredMemberIds } = this.props;
+    const {
+      height,
+      t,
+      showEmpty,
+      filteredMemberIds,
+      loadInitialData,
+      loadMore,
+      hasMore,
+    } = this.props;
     const minHeight = showEmpty ? Math.max(EMPTY_HEIGHT, height) : height;
     return (
       <JuiProfileDialogContentMemberList
@@ -50,18 +58,19 @@ class MemberList extends React.Component<
             delay={100}
           />
         )}
-        {filteredMemberIds.length > 0 && (
-          <JuiVirtualizedList
-            height={height}
-            minRowHeight={ITEM_HEIGHT}
-            onScroll={this.onScroll}
-            data-test-automation-id="profileDialogMemberList"
-          >
-            {filteredMemberIds.map((id: number, index: number) => {
-              return this.rowRenderer(id);
-            })}
-          </JuiVirtualizedList>
-        )}
+        <JuiInfiniteList
+          loadInitialData={loadInitialData}
+          loadMore={loadMore}
+          hasMore={hasMore}
+          height={height}
+          minRowHeight={ITEM_HEIGHT}
+          onScroll={this.onScroll}
+          data-test-automation-id="profileDialogMemberList"
+          loadingMoreRenderer={<></>}
+          loadingRenderer={<></>}
+        >
+          {filteredMemberIds.map((id: number) => this.rowRenderer(id))}
+        </JuiInfiniteList>
       </JuiProfileDialogContentMemberList>
     );
   }

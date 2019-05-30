@@ -3,7 +3,7 @@ import 'testcafe';
 import { Selector, ClientFunction } from 'testcafe';
 
 import * as assert from 'assert';
-import { H } from '../helpers'
+import { h, H } from '../helpers'
 import { getLogger } from 'log4js';
 
 const logger = getLogger('BaseWebComponent');
@@ -13,6 +13,10 @@ export abstract class BaseWebComponent {
 
   public self: Selector;
   constructor(protected t: TestController) { }
+
+  get h() {
+    return h(this.t);
+  }
 
   async ensureLoaded(timeout: number = 10e3) {
     await this.t.expect(this.exists).ok({ timeout });
@@ -117,7 +121,7 @@ export abstract class BaseWebComponent {
       // it's ok if spinner doesn't exist
     }
     finally {
-      await this.t.expect(this.spinners.count).eql(0, { timeout });
+      await this.t.expect(this.spinners.exists).notOk({ timeout });
     }
   }
 

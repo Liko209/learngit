@@ -15,6 +15,16 @@ class DetachOrAttachViewModel extends StoreViewModel<DialerTitleBarProps>
   implements DialerTitleBarViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
 
+  constructor(props: DialerTitleBarProps) {
+    super(props);
+    this.reaction(
+      () => this.isDialer,
+      isDialer => {
+        isDialer && this.dispose();
+      },
+    );
+  }
+
   @observable
   private _seconds = 0;
 
@@ -53,8 +63,14 @@ class DetachOrAttachViewModel extends StoreViewModel<DialerTitleBarProps>
     return this._timing;
   }
 
+  @computed
+  get isDialer() {
+    return this._telephonyStore.shouldDisplayDialer;
+  }
+
   dispose = () => {
     this._intervalId && clearInterval(this._intervalId);
+    this._intervalId = undefined;
   }
 }
 

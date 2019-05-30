@@ -77,7 +77,7 @@ const RecordDisableFSM = StateMachine.factory({
   transitions: [
     {
       name: RECORD_DISABLED_STATE_TRANSITION_NAMES.DISABLE,
-      from: RECORD_DISABLED_STATE.ENABLED,
+      from: [RECORD_DISABLED_STATE.ENABLED, RECORD_DISABLED_STATE.DISABLED],
       to: RECORD_DISABLED_STATE.DISABLED,
     },
     {

@@ -5,11 +5,11 @@
  */
 import { IRequest, IResponse, RESPONSE_STATUS_CODE } from '../../network';
 
-abstract class NetworkResponseBuilder {
+abstract class NetworkResponseBuilder<R extends IRequest> {
   data: any = {};
   statusText: string = '';
   headers: object = {};
-  request: IRequest;
+  request: R;
   status: RESPONSE_STATUS_CODE;
   retryAfter: number = 6000;
 
@@ -62,7 +62,7 @@ abstract class NetworkResponseBuilder {
    * Setter request
    * @param {Request} value
    */
-  public setRequest(value: IRequest) {
+  public setRequest(value: R) {
     this.request = value;
     return this;
   }

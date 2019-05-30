@@ -3,10 +3,7 @@
  * @Date: 2018-06-04 15:43:44
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  SocketRequestParamsType,
-  default as SocketRequest,
-} from './SocketRequest';
+import SocketRequest from './SocketRequest';
 import { SocketResponseBuilder } from './SocketResponseBuilder';
 import { EventEmitter2 } from 'eventemitter2';
 import { NETWORK_FAIL_TEXT, RESPONSE_STATUS_CODE } from '../../network';
@@ -20,7 +17,10 @@ interface ISocketRequestManager {
 
 class SocketRequestHelper implements ISocketRequestManager {
   private emitter: EventEmitter2;
-  private requestTimerMap: Map<string, number>;
+  private requestTimerMap: Map<
+    string,
+    { timerId: number; request: SocketRequest; reject: any }
+  >;
   constructor() {
     this.emitter = new EventEmitter2();
     this.requestTimerMap = new Map();
@@ -37,9 +37,8 @@ class SocketRequestHelper implements ISocketRequestManager {
     const socketResponse = new SocketResponseBuilder()
       .options(response)
       .build();
-    if (socketResponse.request && socketResponse.request.params) {
-      const requestId = (socketResponse.request
-        .params as SocketRequestParamsType).request_id;
+    if (socketResponse.request && socketResponse.request.parameters) {
+      const requestId = socketResponse.request.parameters.request_id;
       this._removeRequestTimer(requestId);
       this._handleRegisteredRequest(requestId, socketResponse);
     }
@@ -61,22 +60,25 @@ class SocketRequestHelper implements ISocketRequestManager {
       request.id,
       reject,
     );
-    this.requestTimerMap.set(request.id, timerId);
+    this.requestTimerMap.set(request.id, { timerId, request, reject });
   }
 
   private _removeRequestTimer(requestId: string) {
-    const timerId = this.requestTimerMap.get(requestId);
-    window.clearTimeout(timerId);
-    this.requestTimerMap.delete(requestId);
+    const value = this.requestTimerMap.get(requestId);
+    if (value) {
+      window.clearTimeout(value.timerId);
+      this.requestTimerMap.delete(requestId);
+    }
   }
 
   private _onRequestTimeout(requestId: string, reject: any) {
     mainLogger.info('[Socket]: request timeout');
-    const response = new SocketResponseBuilder()
+    const value = this.requestTimerMap.get(requestId);
+    const builder = new SocketResponseBuilder()
       .setStatus(RESPONSE_STATUS_CODE.LOCAL_TIME_OUT)
-      .setStatusText(NETWORK_FAIL_TEXT.TIME_OUT)
-      .build();
-    reject(response);
+      .setStatusText(NETWORK_FAIL_TEXT.TIME_OUT);
+    value && builder.setRequest(value.request);
+    reject(builder.build());
   }
 
   public onSocketDisconnect() {
@@ -84,12 +86,16 @@ class SocketRequestHelper implements ISocketRequestManager {
       mainLogger.info(
         `[Socket]: socket disconnect, return SOCKET_DISCONNECTED error for request id:${requestId}`,
       );
-      const response = new SocketResponseBuilder()
+
+      const value = this.requestTimerMap.get(requestId);
+      const builder = new SocketResponseBuilder()
         .setStatus(RESPONSE_STATUS_CODE.LOCAL_NOT_NETWORK_CONNECTION)
-        .setStatusText(NETWORK_FAIL_TEXT.SOCKET_DISCONNECTED)
-        .build();
-      this._removeRequestTimer(requestId);
-      this._handleRegisteredRequest(requestId, response);
+        .setStatusText(NETWORK_FAIL_TEXT.SOCKET_DISCONNECTED);
+      if (value) {
+        builder.setRequest(value.request);
+        this._removeRequestTimer(requestId);
+        value && value.reject(builder.build());
+      }
     }
   }
 }
