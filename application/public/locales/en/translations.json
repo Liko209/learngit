@@ -494,7 +494,9 @@
       "reply": "Reply",
       "end": "End call",
       "Answer": "Answer",
-      "back": "Back"
+      "back": "Back",
+      "forward": "Forward",
+      "customForward": "Custom..."
     },
     "customReplyMessagePlaceholder": "Type a custom message",
     "customReplyLabel": "Custom message",
@@ -533,7 +535,9 @@
       "RecordAutomatically": "Cannot start call recording.",
       "InvalidNumber": "The phone number entered is invalid. Check the number and try again.",
       "ReplyCustomMessageEmpty": "Sorry, you cannot send an empty message.",
-      "ReplyMessageSuccess": "Your voice message was sent successfully."
+      "ReplyMessageSuccess": "Your voice message was sent successfully.",
+      "ForwardBackendError": "Sorry, something went wrong on our end, we weren't able to forward the call.",
+      "ForwardCallSuccess": "Your call was forwarded successfully."
     },
     "notification": {
       "incomingCall": "Incoming Call",
