@@ -18,7 +18,7 @@ type EmojiProps = {
 };
 
 type EmojiViewProps = {
-  setEmojiOpenStatus: Function;
+  setEmojiOpenStatus: () => void;
   emojiOpenStatus: boolean;
 };
 

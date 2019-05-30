@@ -28,10 +28,8 @@ type Props = {
     | 'facebook'
     | undefined;
   defaultSelector?: string;
-  leftContent?: any;
-  rightContent?: any;
   toggleButtonLabel?: string;
-  handleKeepOpenChange?: any;
+  handleKeepOpenChange?: () => void;
   isKeepOpen?: boolean;
 };
 
@@ -53,9 +51,6 @@ const StyledCutomizedComponentContainer = styled.span<{
     margin-left: ${spacing(5)};
   }
   && .custom-root {
-    margin-right: ${spacing(2.5)};
-  }
-  && .eElpNP {
     margin-right: ${spacing(2.5)};
   }
   && .rightContainer {
@@ -83,21 +78,37 @@ const StyledEmojiWrapper = styled.div`
     }
   }
 `;
-
-const emojiMartContainer =
-  document.getElementsByClassName('emoji-mart-scroll') || [];
-
+let emojiMartContainer: HTMLCollectionOf<Element>;
 type State = {
   open: boolean;
   anchorEl: EventTarget & Element | null;
   isToggleWrapShow: boolean;
 };
 class JuiEmoji extends React.PureComponent<Props, State> {
-  state = {
-    anchorEl: null,
-    open: false,
-    isToggleWrapShow: true,
-  };
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      anchorEl: null,
+      open: false,
+      isToggleWrapShow: true,
+    };
+  }
+
+  componentDidMount() {
+    emojiMartContainer =
+      document.getElementsByClassName('emoji-mart-scroll') || [];
+  }
+
+  componentWillUnmount() {
+    emojiMartContainer[0].removeEventListener(
+      'mouseenter',
+      this._handleMouseEnter,
+    );
+    emojiMartContainer[0].removeEventListener(
+      'mouseleave',
+      this._handleMouseEnter,
+    );
+  }
 
   private _handleMouseEnter = () => {
     this.setState({ isToggleWrapShow: false });
@@ -158,9 +169,9 @@ class JuiEmoji extends React.PureComponent<Props, State> {
     return isIndex;
   }
   handleClick = (emoji: EmojiData) => {
-    const { handleEmojiClick } = this.props;
+    const { handleEmojiClick, isKeepOpen } = this.props;
     handleEmojiClick(emoji, () => {
-      if (!this.props.isKeepOpen) {
+      if (!isKeepOpen) {
         this.handleClose();
       }
     });
@@ -196,8 +207,8 @@ class JuiEmoji extends React.PureComponent<Props, State> {
           <StyledEmojiWrapper>
             <Picker
               sheetSize={sheetSize}
-              title={title ? title : ''}
-              emoji={defaultSelector ? defaultSelector : ''}
+              title={title || ''}
+              emoji={defaultSelector || ''}
               set={set}
               onClick={this.handleClick}
               emojisToShowFilter={(emoji: any) => {

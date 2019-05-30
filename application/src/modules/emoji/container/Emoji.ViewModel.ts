@@ -16,10 +16,9 @@ class EmojiViewModel extends StoreViewModel<EmojiProps> {
 
   @action
   setEmojiOpenStatus = () => {
-    EmojiGlobalUserConfig.setEmojiKeepOpen(
-      !EmojiGlobalUserConfig.getEmojiKeepOpen(),
-    );
-    this.emojiOpenStatus = EmojiGlobalUserConfig.getEmojiKeepOpen();
+    const status = EmojiGlobalUserConfig.getEmojiKeepOpen();
+    EmojiGlobalUserConfig.setEmojiKeepOpen(!status);
+    this.emojiOpenStatus = !status;
   }
 }
 
