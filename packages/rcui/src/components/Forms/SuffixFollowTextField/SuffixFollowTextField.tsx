@@ -3,14 +3,13 @@
  * @Date: 2019-05-27 08:00:00
  * Copyright © RingCentral. All rights reserved.
  */
-
-import React from 'react';
-import styled from '../../../foundation/styled-components';
-import MuiTextField from '@material-ui/core/TextField';
-import { FormHelperTextProps } from '@material-ui/core/FormHelperText';
-import { InputLabelProps } from '@material-ui/core/InputLabel';
+import styled from '@foundation/styled-components';
 import { PropTypes } from '@material-ui/core';
+import { FormHelperTextProps } from '@material-ui/core/FormHelperText';
 import { InputProps } from '@material-ui/core/Input';
+import { InputLabelProps } from '@material-ui/core/InputLabel';
+import MuiTextField from '@material-ui/core/TextField';
+import React from 'react';
 import RO from 'resize-observer-polyfill';
 
 const SuffixFollowTextFieldWarp = styled('div')`
