@@ -37,7 +37,7 @@ class MemberListViewModel extends StoreViewModel<MemberListProps> {
 
   @computed
   get totalMemberCount() {
-    return this.group.members.length;
+    return this.group.members ? this.group.members.length : 0;
   }
 
   @computed

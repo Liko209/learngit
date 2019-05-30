@@ -13,13 +13,14 @@ import { JuiIconButton } from 'jui/components/Buttons';
 import { JuiKeypadAction } from 'jui/pattern/Dialer';
 import { JuiMenuList } from 'jui/components/Menus';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
+import { Forward } from './Forward';
 import { Reply } from './Reply';
 
 type Props = CallActionsViewProps & WithTranslation;
 
 const callActions = {
+  [CALL_ACTION.FORWARD]: Forward,
   [CALL_ACTION.REPLY]: Reply,
-  // [CALL_ACTION.FORWARD]: Forward,
 };
 
 @observer

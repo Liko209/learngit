@@ -36,10 +36,8 @@ const LeftWrap = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: center;
-    flex-grow: 1;
     overflow: hidden;
-    width: 100%;
-    flex-shrink: 1;
+    flex: 2;
     padding-right: ${spacing(2.5)};
   }
 `;
@@ -74,8 +72,9 @@ const RightWrap = styled.div`
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
+    overflow: hidden;
     width: 100%;
-    flex-shrink: 2;
+    flex: 1;
     padding-left: ${spacing(2.5)};
   }
 `;

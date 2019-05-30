@@ -19,16 +19,16 @@ class CallActionsViewModel extends StoreViewModel<CallActionsProps>
   get callActionsMap() {
     return {
       [CALL_ACTION.REPLY]: {
-        shouldShowAction: this._shouldShowReplyOption,
+        shouldShowAction: this._isIncomingPage,
       },
-      // [CALL_ACTION.FORWARD]: {
-      //   shouldShowAction: !this._isEventOrTask,
-      // },
+      [CALL_ACTION.FORWARD]: {
+        shouldShowAction: this._isIncomingPage,
+      },
     };
   }
 
   @computed
-  private get _shouldShowReplyOption() {
+  private get _isIncomingPage() {
     return this._telephonyStore.callState === CALL_STATE.INCOMING;
   }
 

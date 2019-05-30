@@ -470,7 +470,8 @@
       "markAsUnread": "Failed to mark this conversation as unread. Try again later.",
       "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later.",
       "conversationDeleted": "The team was deleted. To know more, contact the team administrator.",
-      "conversationArchived": "The team was archived. To know more, contact the team administrator."
+      "conversationArchived": "The team was archived. To know more, contact the team administrator.",
+      "youHaveBeenRemovedFromTeam": "You have been removed from the team."
     }
   },
   "contact": {
@@ -498,7 +499,9 @@
       "reply": "Reply",
       "end": "End call",
       "Answer": "Answer",
-      "back": "Back"
+      "back": "Back",
+      "forward": "Forward",
+      "customForward": "Custom..."
     },
     "customReplyMessagePlaceholder": "Type a custom message",
     "customReplyLabel": "Custom message",
@@ -537,7 +540,9 @@
       "RecordAutomatically": "Cannot start call recording.",
       "InvalidNumber": "The phone number entered is invalid. Check the number and try again.",
       "ReplyCustomMessageEmpty": "Sorry, you cannot send an empty message.",
-      "ReplyMessageSuccess": "Your voice message was sent successfully."
+      "ReplyMessageSuccess": "Your voice message was sent successfully.",
+      "ForwardBackendError": "Sorry, something went wrong on our end, we weren't able to forward the call.",
+      "ForwardCallSuccess": "Your call was forwarded successfully."
     },
     "notification": {
       "incomingCall": "Incoming Call",
@@ -573,11 +578,21 @@
   "setting": {
     "Settings": "Settings",
     "teamSettings": "Settings",
-    "general": "General",
-    "notificationAndSounds": "Notification and Sounds",
-    "messages": "Messages",
-    "meetings": "Meetings",
-    "calendar": "Calendar",
+    "general": {
+      "title": "General"
+    },
+    "notificationAndSounds": {
+      "title": "Notification and Sounds"
+    },
+    "messages": {
+      "title": "Messages"
+    },
+    "meetings": {
+      "title": "Meetings"
+    },
+    "calendar": {
+      "title": "Calendar"
+    },
     "update": "Update",
     "phone": {
       "title": "Phone",
