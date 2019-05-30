@@ -4,22 +4,21 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ProfileService } from '../../../service/ProfileService';
-import notificationCenter from '../../../../../service/notificationCenter';
-import { NewMessagesSettingHandler } from '../NewMessagesSettingHandler';
-import {
-  UserSettingEntity,
-  SettingEntityIds,
-  SettingService,
-} from '../../../../setting';
-import {
-  SETTING_KEYS,
-  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
-} from '../../../constants';
-import { ENTITY } from 'sdk/service';
+import { ENTITY, notificationCenter } from 'sdk/service';
 import { AccountService } from 'sdk/module/account';
 import { PlatformUtils } from 'sdk/utils/PlatformUtils';
-jest.mock('../../../service/ProfileService');
+import {
+  ProfileService,
+  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
+  SETTING_KEYS,
+} from 'sdk/module/profile';
+import { NewMessagesSettingHandler } from '../NewMessagesSettingHandler';
+import {
+  SettingService,
+  UserSettingEntity,
+  SettingEntityIds,
+} from 'sdk/module/setting';
+jest.mock('sdk/module/profile');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -103,9 +102,14 @@ describe('NewMessagesSettingHandler', () => {
   });
   describe('updateValue()', () => {
     it('should call updateSettingOptions with correct parameters', async () => {
-      await newMessagesSettingHandler.updateValue(1);
+      await newMessagesSettingHandler.updateValue(
+        DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF,
+      );
       expect(profileService.updateSettingOptions).toBeCalledWith([
-        { value: 1, key: SETTING_KEYS.DESKTOP_MESSAGE },
+        {
+          value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF,
+          key: SETTING_KEYS.DESKTOP_MESSAGE,
+        },
       ]);
     });
   });

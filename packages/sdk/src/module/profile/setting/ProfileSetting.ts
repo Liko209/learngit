@@ -10,17 +10,19 @@ import {
   SettingService,
 } from 'sdk/module/setting';
 import { IProfileService } from '../service/IProfileService';
-import { CallerIdSettingHandler } from './CallerIdSettingHandler';
 import { NotificationsSettingHandler } from './itemHandler/NotificationsSettingHandler';
 import { NewMessagesSettingHandler } from './itemHandler/NewMessagesSettingHandler';
 import { IncomingCallsSettingHandler } from './itemHandler/IncomingCallsSettingHandler';
 import { NewVoicemailsSettingHandler } from './itemHandler/NewVoicemailsSettingHandler';
-import { DefaultAppSettingHandler } from './DefaultAppSettingHandler';
 import { TelephonyService } from 'sdk/module/telephony';
 import { AccountService } from 'sdk/module/account';
+import { CallerIdSettingHandler } from './itemHandler/CallerIdSettingHandler';
+import { DefaultAppSettingHandler } from './itemHandler/DefaultAppSettingHandler';
+import { MessageBadgeSettingHandler } from './itemHandler/MessageBadgeSettingHandler';
 type HandlerMap = {
   [SettingEntityIds.Phone_CallerId]: CallerIdSettingHandler;
   [SettingEntityIds.Phone_DefaultApp]: DefaultAppSettingHandler;
+  [SettingEntityIds.Notification_NewMessageBadgeCount]: MessageBadgeSettingHandler;
   [SettingEntityIds.Notification_Browser]: NotificationsSettingHandler;
   [SettingEntityIds.Notification_NewMessages]: NewMessagesSettingHandler;
   [SettingEntityIds.Notification_IncomingCalls]: IncomingCallsSettingHandler;
@@ -46,6 +48,9 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
         this._accountService,
         this._profileService,
         this._telephonyService,
+      ),
+      [SettingEntityIds.Notification_NewMessageBadgeCount]: new MessageBadgeSettingHandler(
+        this._profileService,
       ),
       [SettingEntityIds.Notification_Browser]: new NotificationsSettingHandler(
         this._profileService,

@@ -16,11 +16,12 @@ import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import { NotificationEntityUpdatePayload } from 'sdk/service/notificationCenter';
-import { SETTING_KEYS } from '../constants';
-import { Profile } from '../entity';
-import { IProfileService } from '../service/IProfileService';
+
 import { AccountService } from 'sdk/module/account';
 import { ENTITY } from 'sdk/service';
+import { Profile } from '../../entity';
+import { IProfileService } from '../../service/IProfileService';
+import { SETTING_KEYS } from 'sdk/module/profile/constants';
 
 export class CallerIdSettingHandler extends AbstractSettingEntityHandler<
   PhoneNumberModel
