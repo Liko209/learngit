@@ -61,6 +61,9 @@ const StyledCutomizedComponentContainer = styled.span<{
 
 const StyledEmojiWrapper = styled.div`
   && {
+    .conversation-chatbar-emoji-menu {
+      z-index: ${({ theme }) => theme.zIndex.moreMenu};
+    }
     .emoji-mart-title-label {
       font-size: ${({ theme }) => theme.typography.title1.fontSize};
     }
@@ -196,17 +199,17 @@ class JuiEmoji extends React.PureComponent<Props, State> {
           esc: this.handleClose,
         }}
       >
-        <JuiPopperMenu
-          automationId="conversation-chatbar-emoji-menu"
-          open={open}
-          anchorEl={anchorEl}
-          onClose={this.handleClose}
-          Anchor={this._IconButton}
-          placement="bottom-start"
-          noTransition={true}
-          disablePortal={true}
-        >
-          <StyledEmojiWrapper>
+        <StyledEmojiWrapper>
+          <JuiPopperMenu
+            automationId="conversation-chatbar-emoji-menu"
+            open={open}
+            anchorEl={anchorEl}
+            onClose={this.handleClose}
+            Anchor={this._IconButton}
+            placement="bottom-start"
+            noTransition={true}
+            disablePortal={true}
+          >
             <Picker
               sheetSize={sheetSize}
               title={title || ''}
@@ -232,8 +235,8 @@ class JuiEmoji extends React.PureComponent<Props, State> {
                 />
               </div>
             </StyledCutomizedComponentContainer>
-          </StyledEmojiWrapper>
-        </JuiPopperMenu>
+          </JuiPopperMenu>
+        </StyledEmojiWrapper>
       </HotKeys>
     );
   }
