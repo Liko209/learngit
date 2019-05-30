@@ -74,6 +74,7 @@ class Context {
     String feedbackUrl
 
     // runtime
+    String head
     String appHeadHash
     String juiHeadHash
     String rcuiHeadHash
@@ -93,6 +94,12 @@ class Context {
 
     Boolean getIsMerge() {
         gitlabSourceBranch != gitlabTargetBranch
+    }
+
+    Boolean getIsSkipUnitTestAndStaticAnalysis() {
+        // for a merge event, if target branch is not an integration branch, skip unit test
+        // for a push event, skip if not an integration branch
+        isMerge? !isIntegrationBranch(gitlabTargetBranch) : !isIntegrationBranch(gitlabSourceBranch)
     }
 
     Boolean getIsSkipEndToEnd() {
@@ -170,6 +177,26 @@ class Context {
 
     String getRcuiHeadHashDir() {
         "${deployBaseDir}/rcui-${rcuiHeadHash}".toString()
+    }
+
+    String getStaticAnalysisLockKey() {
+        "staticanalysis-${appHeadHash}".toString()
+    }
+
+    String getUnitTestLockKey() {
+        "unittest-${appHeadHash}".toString()
+    }
+
+    String getAppLockKey() {
+        "app-${appHeadHash}".toString()
+    }
+
+    String getJuiLockKey() {
+        "jui-${juiHeadHash}".toString()
+    }
+
+    String getRcuiLockKey() {
+        "rcui-${rcuiHeadHash}".toString()
     }
 }
 
@@ -251,18 +278,22 @@ class BaseJob {
 
     void deployToRemote(String sourceDir, URI targetUri, String targetDir, String tarball) {
         jenkins.sh "tar -czvf ${tarball} -C ${sourceDir} ."  // pack
-        ssh(targetUri, "rm -rf ${targetDir} || true && mkdir -p ${targetDir}".toString())  // clean target dir
+        ssh(targetUri, "rm -rf ${targetDir} || true && mkdir -p ${targetDir}".toString())  // clean target
         scp(tarball, targetUri, targetDir)
-        ssh(targetUri, "tar -xvf ${targetDir}/${tarball} -C ${targetDir} && rm ${targetDir}/${tarball}".toString()) // unpack and clean
+        ssh(targetUri, "tar -xvf ${targetDir}/${tarball} -C ${targetDir} && rm ${targetDir}/${tarball}".toString()) // unpack
     }
 
     // ssh based distributed file lock
-    void lockKey(URI lockUri, String key) {
-        ssh(lockUri, "touch ${lockUri.getPath()}/${key}".toString())
+    void lockKey(String credentialId, URI lockUri, String key) {
+        jenkins.sshagent (credentials: [credentialId]) {
+            ssh(lockUri, "mkdir -p ${lockUri.getPath()} && touch ${lockUri.getPath()}/${key}".toString())
+        }
     }
 
-    Boolean hasKeyBeenLocked(URI lockUri, String key) {
-        'true' == ssh(remoteUri, "[ -f ${lockUri.getPath()}/${key} ] && echo 'true' || echo 'false'".toString())
+    Boolean hasBeenLocked(String credentialId, URI lockUri, String key) {
+        jenkins.sshagent (credentials: [credentialId]) {
+            return 'true' == ssh(lockUri, "[ -f ${lockUri.getPath()}/${key} ] && echo 'true' || echo 'false'".toString())
+        }
     }
 }
 
@@ -274,6 +305,34 @@ class JupiterJob extends BaseJob {
     void addFailedStage(String name) {
         context.failedStages.add(name)
     }
+
+    void run() {
+        context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'running')
+        cancelOldBuildOfSameCause()
+
+        jenkins.node(context.buildNode) {
+            String nodejsHome = jenkins.tool context.nodejsTool
+            jenkins.withEnv([
+                "PATH+NODEJS=${nodejsHome}/bin",
+                'TZ=UTC-8',
+                'SENTRYCLI_CDNURL=https://cdn.npm.taobao.org/dist/sentry-cli',
+            ]) {
+                stage(name: 'Collect Facts'){ collectFacts() }
+                stage(name: 'Checkout'){ checkout() }
+                stage(name: 'Install Dependencies') { installDependencies() }
+                jenkins.parallel (
+                    'Unit Test' : {
+                        stage(name: 'Unit Test') { unitTest() }
+                    },
+                    'Static Analysis': {
+                        stage(name: 'Static Analysis') { staticAnalysis() }
+                    }
+                )
+            }
+        }
+        jenkins.echo context.dump()
+    }
+
 
     void collectFacts() {
         // test commands
@@ -328,6 +387,10 @@ class JupiterJob extends BaseJob {
         jenkins.sh "git clean -xdf -e node_modules -e ${DEPENDENCY_LOCK}"
 
         // update runtime context
+
+        // get head
+        context.head = jenkins.sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+
         // change in tests and autoDevOps directory should not trigger application build
         // for git 1.9, there is an easy way to exclude files
         // but most slaves are centos, whose git's version is still 1.8, we use a cmd pipeline here for compatibility
@@ -344,26 +407,103 @@ class JupiterJob extends BaseJob {
         context.rcuiHeadHash = getStableHash(
             jenkins.sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/rcui''').trim()
         )
+        assert context.head && context.appHeadHash && context.juiHeadHash && context.rcuiHeadHash
     }
 
+    void installDependencies() {
+        if(isSkipInstallDependency) return
 
+        String dependencyLock = jenkins.sh(returnStdout: true, script: '''git ls-files | grep package.json | grep -v tests | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- | xargs git cat-file commit | grep -e ^tree | cut -d ' ' -f 2 ''').trim()
+        if (jenkins.fileExists(DEPENDENCY_LOCK) && jenkins.readFile(file: DEPENDENCY_LOCK, encoding: 'utf-8').trim() == dependencyLock) {
+            jenkins.echo "${DEPENDENCY_LOCK} doesn't change, no need to update: ${dependencyLock}"
+            return
+        }
 
-    void run() {
-        context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'running')
-        cancelOldBuildOfSameCause()
+        jenkins.sh "npm config set registry ${context.npmRegistry}"
+        jenkins.sh 'npm run fixed:version pre || true'  // suppress error
+        jenkins.sshagent (credentials: [context.scmCredentialId]) {
+            jenkins.sh 'npm install --ignore-scripts --unsafe-perm && npm install --unsafe-perm'
+        }
+        jenkins.sh 'npm run fixed:version check || true'  // suppress error
+        jenkins.sh 'npm run fixed:version cache || true'  // suppress error
 
-        jenkins.node(context.buildNode) {
-            String nodejsHome = jenkins.tool context.nodejsTool
-            jenkins.withEnv([
-                "PATH+NODEJS=${nodejsHome}/bin",
-                'TZ=UTC-8',
-                'SENTRYCLI_CDNURL=https://cdn.npm.taobao.org/dist/sentry-cli',
-            ]) {
-                stage(name: 'collect facts'){ collectFacts() }
-                stage(name: 'checkout'){ checkout() }
+        jenkins.writeFile(file: DEPENDENCY_LOCK, text: dependencyLock, encoding: 'utf-8')
+    }
+
+    void staticAnalysis() {
+        if (isSkipStaticAnalysis) return
+
+        jenkins.sh 'mkdir -p lint'
+        try {
+            jenkins.sh 'npm run lint-all > lint/report.txt'
+            context.saSummary = "${context.SUCCESS_EMOJI} no tslint error".toString()
+            lockKey(context.deployCredentialId, context.lockUri, context.staticAnalysisLockKey)
+        } catch (e) {
+            String stdout = jenkins.sh(returnStdout: true, script: 'cat lint/report.txt').trim()
+            context.saSummary = "${context.FAILURE_EMOJI} ${stdout}".toString()
+            throw e
+        }
+    }
+
+    void unitTest() {
+        if (isSkipUnitTest) return
+
+        jenkins.sh 'npm run test -- --coverage'
+        jenkins.publishHTML([
+            reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: 'Coverage', reportTitles: 'Coverage',
+            allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true,
+        ])
+        context.coverageSummary = "${context.buildUrl}Coverage".toString()
+
+        if (!context.isMerge) {
+            jenkins.sshagent (credentials: [context.scmCredentialId]) {
+                // attach coverage report as git note when new commits are pushed to integration branch
+                jenkins.sh "git notes add -f -F coverage/coverage-summary.json ${context.head}"
+                // push git notes to remote
+                jenkins.sh "git push -f ${context.gitlabSourceNamespace} refs/notes/* --no-verify"
+            }
+        } else {
+            // compare coverage report with baseline branch's
+            // step 1: fetch git notes
+            jenkins.sshagent (credentials: [context.scmCredentialId]) {
+                jenkins.sh "git fetch -f ${context.gitlabTargetNamespace} ${context.gitlabTargetBranch}"
+                jenkins.sh "git fetch -f ${context.gitlabTargetNamespace} refs/notes/*:refs/notes/*"
+            }
+            // step 2: get latest commit on baseline branch with notes
+            jenkins.sh "git rev-list ${context.gitlabTargetNamespace}/${context.gitlabTargetBranch} > commit-sha.txt"
+            jenkins.sh "git notes | cut -d ' ' -f 2 > note-sha.txt"
+            String latestCommitWithNote = jenkins.sh(returnStdout: true, script: "grep -Fx -f note-sha.txt commit-sha.txt | head -1").trim()
+            // step 3: compare with baseline
+            if (latestCommitWithNote) {
+                // read baseline
+                jenkins.sh "git notes show ${latestCommitWithNote} > baseline-coverage-summary.json"
+                // create diff report
+                jenkins.sh "npx ts-node scripts/report-diff.ts baseline-coverage-summary.json coverage/coverage-summary.json > coverage-diff.csv"
+                jenkins.archiveArtifacts artifacts: 'coverage-diff.csv', fingerprint: true
+                context.coverageDiffDetail = "${context.buildUrl}artifact/coverage-diff.csv".toString()
+                // ensure increasing
+                int exitCode = jenkins.sh(
+                    returnStatus: true,
+                    script: "node scripts/coverage-diff.js baseline-coverage-summary.json coverage/coverage-summary.json > coverage-diff",
+                )
+                context.coverageDiff = "${exitCode > 0 ? FAILURE_EMOJI : SUCCESS_EMOJI} ${jenkins.sh(returnStdout: true, script: 'cat coverage-diff').trim()}".toString()
+                // throw error on coverage drop
+                if (exitCode > 0) jenkins.sh 'echo "coverage drop!" && false'
             }
         }
-        jenkins.echo context.dump()
+        lockKey(context.deployCredentialId, context.lockUri, context.unitTestLockKey)
+    }
+
+    Boolean getIsSkipInstallDependency() {
+        isSkipUnitTest && false
+    }
+
+    Boolean getIsSkipUnitTest() {
+        context.isSkipUnitTestAndStaticAnalysis || (context.isMerge && hasBeenLocked(context.deployCredentialId, context.lockUri, context.unitTestLockKey))
+    }
+
+    Boolean getIsSkipStaticAnalysis() {
+        context.isSkipUnitTestAndStaticAnalysis || hasBeenLocked(context.deployCredentialId, context.lockUri, context.staticAnalysisLockKey)
     }
 }
 
