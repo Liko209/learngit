@@ -6,12 +6,17 @@
 import { ModuleConfig, Jupiter } from 'framework';
 import { NotificationModule } from './notificationModule';
 import { NotificationService } from './service';
-import { INotificationService } from './interface';
+import { INotificationService, INotificationSettingManager } from './interface';
+import { NotificationSettingManager } from './notificationSettingManager/notificationSettingManager';
 
 const config: ModuleConfig = {
   entry: NotificationModule,
   binding: (jupiter: Jupiter) => {
     jupiter.registerService(INotificationService, NotificationService);
+    jupiter.registerService(
+      INotificationSettingManager,
+      NotificationSettingManager,
+    );
   },
 };
 

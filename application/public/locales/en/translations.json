@@ -564,7 +564,28 @@
     "Settings": "Settings",
     "teamSettings": "Settings",
     "general": "General",
-    "notificationAndSounds": "Notification and Sounds",
+    "notificationAndSounds": {
+      "title": "Notification and Sounds",
+      "desktopNotifications": {
+        "title": "Desktop Notifications",
+        "notificationsForBrowser": {
+          "label": "Desktop notifications for browser",
+          "description": "Turn on/off desktop notifications on your web browser. Browser permission is needed for desktop notifications."
+        },
+        "newMessages": {
+          "label": "New Messages",
+          "description": "Choose your preference for desktop notifications for new messages"
+        },
+        "incomingCalls": {
+          "label": "Incoming Calls",
+          "description": "Choose your preference for desktop notifications for incoming calls"
+        },
+        "callsAndVoicemails": {
+          "label": "Missed Calls and New Voicemails",
+          "description": "Choose your preference for desktop notifications for missed calls and new voicemails"
+        }
+      }
+    },
     "sounds": "Sounds",
     "messages": "Messages",
     "meetings": "Meetings",
@@ -608,7 +629,12 @@
     "ConversationClosed": "You removed the conversation."
   },
   "notification": {
-    "mentioned": "You were mentioned"
+    "mentioned": "You were mentioned",
+    "notificationBlockedDialog": {
+      "title": "Notifications not allowed",
+      "content": "You currently have desktop notifications for RingCentral turned off. Update your browser settings to allow desktop notifications.",
+      "button": "OK"
+    }
   },
   "feedback": {
     "name": "Feedback",

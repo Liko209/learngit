@@ -19,7 +19,7 @@ class NotificationSoundSettingManager {
       id: SETTING_PAGE__NOTIFICATION_SOUND,
       automationId: 'notificationAndSounds',
       icon: 'bell',
-      title: 'setting.notificationAndSounds',
+      title: 'setting.notificationAndSounds.title',
       path: '/notification_and_sounds',
       weight: 100,
       sections: [

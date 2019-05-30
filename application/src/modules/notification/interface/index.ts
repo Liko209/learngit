@@ -40,6 +40,14 @@ enum NOTIFICATION_PRIORITY {
   MESSAGE,
 }
 
+const INotificationSettingManager = createDecorator(
+  'NOTIFICATION_SETTING_MANAGER',
+);
+interface INotificationSettingManager {
+  init: Function;
+  dispose: Function;
+}
+
 export {
   INotificationService,
   NotificationActionHandler,
@@ -47,4 +55,5 @@ export {
   NotificationOpts,
   Global,
   NOTIFICATION_PRIORITY,
+  INotificationSettingManager,
 };

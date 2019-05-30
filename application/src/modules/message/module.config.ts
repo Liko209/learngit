@@ -12,6 +12,8 @@ import { MessageService } from './service';
 import { MessageStore } from './store';
 import { MessageModule } from './MessageModule';
 import { MessageNotificationManager } from './MessageNotificationManager';
+import { IMessageSettingManager } from './interface';
+import { MessageSettingManager } from './MessageSettingManager';
 
 const config: ModuleConfig = {
   entry: MessageModule,
@@ -22,6 +24,7 @@ const config: ModuleConfig = {
       MESSAGE_NOTIFICATION_MANAGER,
       MessageNotificationManager,
     );
+    jupiter.registerService(IMessageSettingManager, MessageSettingManager);
   },
 };
 
