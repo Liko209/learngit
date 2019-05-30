@@ -15,6 +15,7 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'sdk/module/telephony';
+import { RCInfoService } from 'sdk/module/rcInfo';
 import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
 import { PersonService } from 'sdk/module/person';
 import { TelephonyStore } from '../../store/TelephonyStore';
@@ -49,6 +50,7 @@ const sleep = (time: number): Promise<void> => {
 };
 
 let mockedServerTelephonyService: any;
+let mockedRCInfoService: any;
 
 function initializeCallerId() {
   telephonyService._telephonyStore.chosenCallerPhoneNumber = '123';
@@ -64,6 +66,13 @@ describe('TelephonyService', () => {
     let cachedOnCallActionFailed: any;
     let cachedOnCallStateChange: any;
     let callId: string | null = null;
+
+    mockedRCInfoService = {
+      get: jest.fn(),
+      getCallerIdList: jest.fn(),
+      getForwardingNumberList: jest.fn(),
+    };
+
     jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
     mockedServerTelephonyService = {
       hold: jest.fn().mockImplementation(() => {
@@ -132,9 +141,10 @@ describe('TelephonyService', () => {
       startReply: jest.fn(),
       replyWithMessage: jest.fn(),
       replyWithPattern: jest.fn(),
+      forward: jest.fn(),
     };
 
-    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation((conf) => {
+    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
       switch (conf) {
         case ServiceConfig.TELEPHONY_SERVICE:
           telephonyService = mockedServerTelephonyService;
@@ -149,7 +159,7 @@ describe('TelephonyService', () => {
         case ServiceConfig.USER_CONFIG_SERVICE:
           return { get: jest.fn() };
         case ServiceConfig.RC_INFO_SERVICE:
-          return { get: jest.fn(), getCallerIdList: jest.fn() };
+          return mockedRCInfoService as RCInfoService;
         case ServiceConfig.ACCOUNT_SERVICE:
           return { userConfig: { getGlipUserId: jest.fn() } };
         default:
@@ -628,6 +638,27 @@ describe('TelephonyService', () => {
       (telephonyService as TelephonyService)._telephonyStore.inputString,
     ).toBe('');
   });
+
+  it('should get forward number list from RC info service', () => {
+    telephonyService.getForwardingNumberList();
+
+    expect(mockedRCInfoService.getForwardingNumberList).toHaveBeenCalled();
+  });
+
+  it('should call forward', () => {
+    const callId = 'id_0';
+    const phoneNumber = '123456789';
+    telephonyService.forward(phoneNumber);
+    expect(mockedServerTelephonyService.forward).not.toBeCalled();
+    telephonyService._callId = callId;
+    telephonyService.forward(phoneNumber);
+    expect(mockedServerTelephonyService.forward).toBeCalledWith(
+      callId,
+      phoneNumber,
+    );
+    telephonyService._callId = undefined;
+  });
+
   describe(`onReceiveIncomingCall()`, () => {
     const params = {
       fromName: 'test',
@@ -661,7 +692,7 @@ describe('TelephonyService', () => {
       const clientService = container.get(CLIENT_SERVICE);
       testedFn = jest.spyOn(clientService, 'invokeApp').mockImplementation();
     });
-    ['RC', 'ATT', 'TELUS'].forEach((i) =>
+    ['RC', 'ATT', 'TELUS'].forEach(i =>
       it(`should build correct url for ${i}`, () => {
         const RCPhoneCallURL = {
           RC: 'rcmobile',
