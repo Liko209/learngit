@@ -3,17 +3,19 @@
  * @Date: 2019-04-01 14:33:10
  * Copyright Â© RingCentral. All rights reserved.
  */
-
+import { inject } from 'framework';
 import { DeskTopNotification } from '../agent/DesktopNotification';
 import _ from 'lodash';
-import { Permission } from '../Permission';
 import { INotificationService, NotificationOpts } from '../interface';
 import { AbstractNotification } from '../agent/AbstractNotification';
 import { SWNotification } from '../agent/SWNotification';
 import { isFirefox } from '@/common/isUserAgent';
+import { PERMISSION } from '../interface/constant';
+import { INotificationPermission, Pal } from 'sdk/pal';
 
 class NotificationService implements INotificationService {
-  private _permission = new Permission();
+  @inject(PERMISSION)
+  private _permission: INotificationPermission;
   private _notificationDistributors: Map<string, AbstractNotification<any>>;
   private _notificationDistributor: AbstractNotification<any>;
   private _maximumFirefoxTxtLength = 40;
@@ -25,6 +27,7 @@ class NotificationService implements INotificationService {
   }
 
   init() {
+    Pal.instance.setNotificationPermission(this._permission);
     for (const _distributor of this._notificationDistributors.values()) {
       const distributor = _distributor as AbstractNotification<any>;
       if (distributor.isSupported()) {

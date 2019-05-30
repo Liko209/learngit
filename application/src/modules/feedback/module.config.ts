@@ -3,15 +3,13 @@
  * @Date: 2019-03-27 19:47:44
  * Copyright © RingCentral. All rights reserved.
  */
-import { ModuleConfig, Jupiter } from 'framework';
+import { ModuleConfig } from 'framework';
 import { FeedbackModule } from './FeedbackModule';
 import { FeedbackService } from './service';
 
 const config: ModuleConfig = {
   entry: FeedbackModule,
-  binding: (jupiter: Jupiter) => {
-    jupiter.registerClass(FeedbackService);
-  },
+  provides: [FeedbackService],
 };
 
 export { config };
