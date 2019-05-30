@@ -3,9 +3,11 @@ import _ from 'lodash';
 import { IRTCMediaDeviceDelegate, RTCEngine } from 'voip';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 import { TELEPHONY_KEYS } from '../config/configKeys';
+import { notificationCenter } from 'sdk/service';
 
 const LOG_TAG = '[MediaDevicesController]';
 const MAX_DEVICE_HISTORY_SIZE = 5;
+const DEFAULT_VOLUME = 50;
 
 enum SOURCE_TYPE {
   EMPTY,
@@ -44,8 +46,11 @@ export class MediaDevicesController implements IRTCMediaDeviceDelegate {
 
   private _init() {
     telephonyLogger.tags(LOG_TAG).info('init');
-    const volume = this._userConfig.getCurrentVolume();
-    volume && this._rtcEngine.setVolume(Number(volume));
+    let volume = Number(this._userConfig.getCurrentVolume());
+    if (Number.isNaN(volume)) {
+      volume = DEFAULT_VOLUME;
+    }
+    this._rtcEngine.setVolume(volume);
     const speakerStorage: IStorage = {
       get: () => this._userConfig.getCurrentSpeaker(),
       set: (deviceId: string) => this._userConfig.setCurrentSpeaker(deviceId),
@@ -99,17 +104,21 @@ export class MediaDevicesController implements IRTCMediaDeviceDelegate {
 
   private _handlerDeviceChange(
     manager: DeviceSyncManger,
-    added: MediaDeviceInfo[],
-    deleted: MediaDeviceInfo[],
+    devices: MediaDeviceInfo[],
+    delta: {
+      added: MediaDeviceInfo[];
+      deleted: MediaDeviceInfo[];
+    },
   ) {
-    telephonyLogger.tags(LOG_TAG).info('device change', { added, deleted });
-    if (deleted.length) {
+    telephonyLogger.tags(LOG_TAG).info('device change', delta);
+
+    if (delta.deleted.length) {
       manager.ensureDevice();
     }
-    if (added.length) {
+    if (delta.added.length) {
       manager.setDevice({
         source: SOURCE_TYPE.NEW_DEVICE,
-        deviceId: _.last(added)!.deviceId,
+        deviceId: _.last(delta.added)!.deviceId,
       });
     }
   }
@@ -126,13 +135,13 @@ export class MediaDevicesController implements IRTCMediaDeviceDelegate {
   ): void {
     this._handlerDeviceChange(
       this._microphoneConfigManager,
-      audioInputs.delta.added,
-      audioInputs.delta.deleted,
+      audioInputs.devices,
+      audioInputs.delta,
     );
     this._handlerDeviceChange(
       this._speakerConfigManager,
-      audioOutputs.delta.added,
-      audioOutputs.delta.deleted,
+      audioOutputs.devices,
+      audioOutputs.delta,
     );
   }
 }

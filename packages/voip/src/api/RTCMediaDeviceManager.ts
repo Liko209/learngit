@@ -254,8 +254,10 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     rtcLogger.debug(LOG_TAG, `${kind} updated: ${JSON.stringify(newDevices)}`);
     if (kind === RTC_MEDIA_DEVICE_KIND.AUDIO_INPUT) {
       this._audioInputs = newDevices;
+      this.emit(RTC_MEDIA_ACTION.INPUT_DEVICES_CHANGED, newDevices);
     } else {
       this._audioOutputs = newDevices;
+      this.emit(RTC_MEDIA_ACTION.OUTPUT_DEVICES_CHANGED, newDevices);
     }
   }
 

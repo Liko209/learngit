@@ -38,7 +38,7 @@ export abstract class AbstractSettingEntityHandler<T>
 
   on<E>(
     eventName: string,
-    listener: (e: E) => Promise<void>,
+    listener: (e: E) => Promise<void> | void,
     filter?: (e: E) => boolean,
   ): void {
     this._on(eventName, (e: E) => {
@@ -47,6 +47,7 @@ export abstract class AbstractSettingEntityHandler<T>
         listener(e);
     });
   }
+
   async getUserSettingEntity(
     enableCache: boolean = false,
   ): Promise<UserSettingEntity<T>> {
