@@ -82,7 +82,7 @@ describe('goToConversation()', () => {
     );
     expect(await goToConversationWithLoading({ id: 1 })).toEqual(false);
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
-      params: { id: 1 },
+      params: undefined,
       error: true,
       errorType: ERROR_TYPES.UNKNOWN
     });

@@ -27,6 +27,7 @@ type GoToConversationParams = {
 };
 
 const goToConversationCallBackName = Symbol('goToConversationCallBackName');
+const ERROR_CONVERSATION_NOT_FOUND = 'ERROR_CONVERSATION_NOT_FOUND';
 const DELAY_LOADING = 500;
 
 const getConversationId = async (id: number | number[]) => {
@@ -69,12 +70,12 @@ async function goToConversationWithLoading(params: GoToConversationParams) {
     beforeJumpFun = beforeJump;
   } else {
     beforeJumpFun = window[goToConversationCallBackName];
-    window[goToConversationCallBackName] = null;
   }
+
   try {
     const conversationId = await getConversationId(id);
     if (!conversationId) {
-      throw new Error('Conversation not found.');
+      throw new Error(ERROR_CONVERSATION_NOT_FOUND);
     }
     clearTimeout(timer);
     (beforeJump || hasBeforeJumpFun) && (await beforeJumpFun(conversationId));
@@ -83,6 +84,7 @@ async function goToConversationWithLoading(params: GoToConversationParams) {
       jumpToPostId,
       replaceHistory: needReplaceHistory,
     });
+    window[goToConversationCallBackName] = null;
     return true;
   } catch (err) {
     if (beforeJump) {
@@ -91,7 +93,7 @@ async function goToConversationWithLoading(params: GoToConversationParams) {
       params.hasBeforeJumpFun = true;
     }
     history.replace('/messages/loading', {
-      params,
+      params: err.message === ERROR_CONVERSATION_NOT_FOUND ? undefined : params,
       error: true,
       errorType: getErrorType(err),
     });

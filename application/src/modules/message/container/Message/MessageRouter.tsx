@@ -109,7 +109,10 @@ class MessageRouterComponent extends Component<Props, State> {
 
   private get _getLoadingTip() {
     const { t } = this.props;
-    const { errorType } = this.state;
+    const { retryParams, errorType } = this.state;
+    if (!retryParams) {
+      return t('message.prompt.MessageLoadingErrorTip');
+    }
     if (errorType === ERROR_TYPES.NETWORK) {
       return t('message.prompt.MessageLoadingErrorTipForNetworkIssue');
     }
@@ -124,12 +127,12 @@ class MessageRouterComponent extends Component<Props, State> {
 
   private get _getLoadingLinkText() {
     const { t } = this.props;
-    const { errorType } = this.state;
+    const { retryParams, errorType } = this.state;
+    if (!retryParams || errorType === ERROR_TYPES.NOT_AUTHORIZED) {
+      return '';
+    }
     if (errorType === ERROR_TYPES.NETWORK) {
       return t('common.prompt.thenTryAgain');
-    }
-    if (errorType === ERROR_TYPES.NOT_AUTHORIZED) {
-      return '';
     }
     if (errorType === ERROR_TYPES.BACKEND) {
       return t('common.prompt.tryAgainLater');
