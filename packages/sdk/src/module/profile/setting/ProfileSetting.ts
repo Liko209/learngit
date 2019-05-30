@@ -19,6 +19,10 @@ import { AccountService } from 'sdk/module/account';
 import { CallerIdSettingHandler } from './itemHandler/CallerIdSettingHandler';
 import { DefaultAppSettingHandler } from './itemHandler/DefaultAppSettingHandler';
 import { MessageBadgeSettingHandler } from './itemHandler/MessageBadgeSettingHandler';
+import { DirectMessagesSettingHandler } from './itemHandler/DirectMessagesSettingHandler';
+import { MentionsSettingHandler } from './itemHandler/MentionsSettingHandler';
+import { TeamsSettingHandler } from './itemHandler/TeamsSettingHandler';
+import { DailyDigestSettingHandler } from './itemHandler/DailyDigestSettingHandler';
 type HandlerMap = {
   [SettingEntityIds.Phone_CallerId]: CallerIdSettingHandler;
   [SettingEntityIds.Phone_DefaultApp]: DefaultAppSettingHandler;
@@ -27,6 +31,10 @@ type HandlerMap = {
   [SettingEntityIds.Notification_NewMessages]: NewMessagesSettingHandler;
   [SettingEntityIds.Notification_IncomingCalls]: IncomingCallsSettingHandler;
   [SettingEntityIds.Notification_MissCallAndNewVoiceMails]: NewVoicemailsSettingHandler;
+  [SettingEntityIds.Notification_DirectMessages]: DirectMessagesSettingHandler;
+  [SettingEntityIds.Notification_Mentions]: MentionsSettingHandler;
+  [SettingEntityIds.Notification_Teams]: TeamsSettingHandler;
+  [SettingEntityIds.Notification_DailyDigest]: DailyDigestSettingHandler;
 };
 
 class ProfileSetting extends BaseModuleSetting<HandlerMap> {
@@ -70,6 +78,18 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
         this._profileService,
         this._accountService,
         this._settingService,
+      ),
+      [SettingEntityIds.Notification_DirectMessages]: new DirectMessagesSettingHandler(
+        this._profileService,
+      ),
+      [SettingEntityIds.Notification_Mentions]: new MentionsSettingHandler(
+        this._profileService,
+      ),
+      [SettingEntityIds.Notification_Teams]: new TeamsSettingHandler(
+        this._profileService,
+      ),
+      [SettingEntityIds.Notification_DailyDigest]: new DailyDigestSettingHandler(
+        this._profileService,
       ),
     };
   }
