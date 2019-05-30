@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { EmojiViewProps, EmojiProps } from './types';
 import { JuiEmoji } from 'jui/pattern/Emoji';
-import i18nP from '@/utils/i18nT';
+import { i18nP } from '@/utils/i18nT';
 
 type Types = EmojiViewProps & EmojiProps;
 @observer
