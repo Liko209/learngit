@@ -27,6 +27,11 @@ type SettingPage = {
   icon?: string;
 
   /**
+   * automationId for E2E
+   */
+  automationId?: string;
+
+  /**
    * The weight of this item which can
    * be used for sorting setting items
    */

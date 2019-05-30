@@ -30,7 +30,7 @@ class SettingStore {
     return this._storeScopes_;
   }
 
-  @observable private _currentPageId: SettingPage['id'];
+  @observable private _currentPageId: SettingPage['id'] = '';
 
   @computed
   get currentPage() {

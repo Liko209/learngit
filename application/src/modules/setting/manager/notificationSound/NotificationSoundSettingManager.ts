@@ -17,6 +17,7 @@ class NotificationSoundSettingManager {
   init() {
     this._settingService.registerPage(this._scope, {
       id: SETTING_PAGE__NOTIFICATION_SOUND,
+      automationId: 'notificationAndSounds',
       icon: 'bell',
       title: 'setting.notificationAndSounds',
       path: '/notification_and_sounds',

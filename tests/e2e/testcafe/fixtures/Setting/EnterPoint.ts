@@ -1,8 +1,7 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-04-08 14:34:14
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-08 19:13:30
+ * Copyright © RingCentral. All rights reserved.
  */
 
 import * as _ from 'lodash';

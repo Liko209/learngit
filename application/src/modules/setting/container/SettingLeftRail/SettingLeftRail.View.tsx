@@ -54,7 +54,7 @@ class SettingLeftRailViewComponent extends Component<Props> {
           data-name="sub-setting"
           //
           // TODO data-test-automation-id
-          data-test-automation-id={'testId'}
+          data-test-automation-id={`entry-${page.automationId}`}
           // TODO
           //
           selected={currentPage && page.id === currentPage.id}

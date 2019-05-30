@@ -42,7 +42,7 @@ class SettingService implements ISettingService {
     this._settingStore.useScope(scope).clear();
   }
 
-  goToSettingPage(pageId: SettingPage['id']) {
+  goToSettingPage(pageId: SettingPage['id'], { replace = false } = {}) {
     const page = this._settingStore.getPageById(pageId);
 
     if (!page) {
@@ -50,7 +50,14 @@ class SettingService implements ISettingService {
       return;
     }
 
-    history.push(`${SETTING_ROUTE_ROOT}${page.path}`);
+    const path = `${SETTING_ROUTE_ROOT}${page.path}`;
+
+    if (replace) {
+      history.replace(path);
+    } else {
+      history.push(path);
+    }
+
     this._settingStore.setCurrentPageId(pageId);
   }
 }

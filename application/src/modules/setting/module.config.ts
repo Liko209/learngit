@@ -11,8 +11,6 @@ import { GeneralSettingManager } from './manager/general';
 import { NotificationSoundSettingManager } from './manager/notificationSound';
 import { SettingModule } from './SettingModule';
 
-// import { ISettingService } from '@/interface/setting';
-
 const config: ModuleConfig = {
   entry: SettingModule,
   binding: (jupiter: Jupiter) => {
