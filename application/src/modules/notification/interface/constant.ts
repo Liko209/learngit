@@ -4,4 +4,5 @@
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
 const NOTIFICATION_SERVICE = 'NOTIFICATION_SERVICE';
-export { NOTIFICATION_SERVICE };
+const PERMISSION = 'PERMISSION';
+export { NOTIFICATION_SERVICE, PERMISSION };

@@ -5,11 +5,15 @@
  */
 import { NotificationModule } from './notificationModule';
 import { NotificationService } from './service';
-import { NOTIFICATION_SERVICE } from './interface/constant';
+import { Permission } from './Permission';
+import { NOTIFICATION_SERVICE, PERMISSION } from './interface/constant';
 
 const config = {
   entry: NotificationModule,
-  provides: [{ name: NOTIFICATION_SERVICE, value: NotificationService }],
+  provides: [
+    { name: NOTIFICATION_SERVICE, value: NotificationService },
+    { name: PERMISSION, value: Permission },
+  ],
 };
 
 export { config };

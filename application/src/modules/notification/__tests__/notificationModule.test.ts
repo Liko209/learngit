@@ -9,6 +9,11 @@ import {
 import { INotificationService } from '../interface';
 import { NOTIFICATION_SERVICE } from '../interface/constant';
 
+global.Notification = {
+  requestPermission: jest.fn(),
+  permission: 'default',
+};
+
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(LeaveBlockerConfig);
 jupiter.registerModule(config);
