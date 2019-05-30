@@ -6,6 +6,7 @@
 import React from 'react';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { FileDeleteAction } from '../FileDeleteAction';
+import { FileNameEditAction } from '../FileNameEditAction';
 import { JuiMenuList } from 'jui/components/Menus';
 import { JuiPopperMenu, AnchorProps } from 'jui/pattern/PopperMenu';
 import { WithTranslation, withTranslation } from 'react-i18next';
@@ -59,8 +60,10 @@ class Component extends React.Component<Props, State> {
         anchorEl={this.state.anchorEl}
         onClose={this.closePopper}
         disablePortal={disablePortal}
+        data-test-automation-id={'fileActionMenu'}
       >
         <JuiMenuList>
+          <FileNameEditAction fileId={fileId} postId={postId} />
           <FileDeleteAction fileId={fileId} postId={postId} />
         </JuiMenuList>
       </JuiPopperMenu>

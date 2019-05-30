@@ -30,6 +30,7 @@ type JuiModalProps = {
   modalProps?: Object;
   title: string | JSX.Element;
   footer?: string | JSX.Element;
+  automationId?: string;
   contentBefore?: string | JSX.Element | boolean | null;
   contentAfter?: string | JSX.Element | boolean | null;
   okText?: string;
@@ -64,6 +65,7 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
       okBtnProps,
       cancelBtnProps,
       loading,
+      automationId,
     } = this.props;
     return (
       <>
@@ -72,6 +74,7 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
             onClick={onCancel}
             color="primary"
             variant={cancelVariant}
+            data-test-automation-id={`${automationId}DialogCancelButton`}
             autoFocus={false}
             disabled={loading}
             {...cancelBtnProps}
@@ -84,6 +87,7 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
           color={okType}
           variant={okVariant}
           autoFocus={false}
+          data-test-automation-id={`${automationId}DialogOKButton`}
           disabled={loading}
           {...okBtnProps}
           loading={loading}
@@ -118,21 +122,37 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
       contentAfter,
       modalProps,
       fillContent,
+      automationId,
     } = this.props;
 
     return (
-      <JuiDialog open={open!} size={size} {...modalProps}>
+      <JuiDialog
+        open={open!}
+        size={size}
+        {...modalProps}
+        data-test-automation-id={`${automationId}DialogContainer`}
+      >
         {typeof title === 'string' ? (
-          <JuiDialogTitle>{title}</JuiDialogTitle>
+          <JuiDialogTitle
+            data-test-automation-id={`${automationId}DialogTitle`}
+          >
+            {title}
+          </JuiDialogTitle>
         ) : (
           title
         )}
         {contentBefore}
-        <JuiDialogContent fill={fillContent}>
+        <JuiDialogContent
+          data-test-automation-id={`${automationId}DialogContent`}
+          fill={fillContent}
+        >
           {this.renderContent()}
         </JuiDialogContent>
         {contentAfter}
-        <StyledActions className="modal-actions">
+        <StyledActions
+          className="modal-actions"
+          data-test-automation-id={`${automationId}DialogActions`}
+        >
           {footer ? footer : this.renderDefaultFooter()}
         </StyledActions>
       </JuiDialog>

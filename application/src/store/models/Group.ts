@@ -296,7 +296,7 @@ export default class GroupModel extends Base<Group> {
       : false;
   }
 
-  isThePersonGuest(personId: number) {
+  isThePersonGuest = (personId: number) => {
     if (this.guestUserCompanyIds && this.guestUserCompanyIds.length > 0) {
       const person = getEntity(ENTITY_NAME.PERSON, personId);
       if (person) {
