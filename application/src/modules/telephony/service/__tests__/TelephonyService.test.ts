@@ -3,7 +3,10 @@
  * @Date: 2019-04-02 17:28:54
  * Copyright © RingCentral. All rights reserved.
  */
+
 import { TelephonyService } from '../TelephonyService';
+import * as utils from '@/store/utils';
+import { CLIENT_SERVICE } from '@/modules/common/interface';
 import { v4 } from 'uuid';
 import {
   TelephonyService as ServerTelephonyService,
@@ -18,16 +21,18 @@ import { TelephonyStore } from '../../store/TelephonyStore';
 import { ToastCallError } from '../ToastCallError';
 import { container, injectable, decorate } from 'framework';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-
+import { ClientService } from '@/modules/common';
+import { CALLING_OPTIONS } from 'sdk/module/profile';
 const testProcedureWaitingTime = 20;
 const mockedDelay = 10;
 
 // HACK: flag for changing the call action result dynamically
 let count = 0;
-let telephonyService: TelephonyService | null;
+let telephonyService: TelephonyService;
 
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
+decorate(injectable(), ClientService);
 
 jest.mock('../ToastCallError');
 
@@ -51,7 +56,7 @@ function initializeCallerId() {
     { id: '123', phoneNumber: '123', usageType: 'companyNumber' },
   ];
 }
-
+let defaultPhoneApp = CALLING_OPTIONS.GLIP;
 describe('TelephonyService', () => {
   beforeEach(() => {
     let cachedOnMadeOutgoingCall: any;
@@ -59,7 +64,7 @@ describe('TelephonyService', () => {
     let cachedOnCallActionFailed: any;
     let cachedOnCallStateChange: any;
     let callId: string | null = null;
-
+    jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
     mockedServerTelephonyService = {
       hold: jest.fn().mockImplementation(() => {
         sleep(mockedDelay).then(() =>
@@ -151,6 +156,7 @@ describe('TelephonyService', () => {
           return {} as PersonService;
       }
     });
+    container.bind(CLIENT_SERVICE).to(ClientService);
     container.bind(TelephonyStore).to(TelephonyStore);
     container.bind(TelephonyService).to(TelephonyService);
     telephonyService = container.get(TelephonyService);
@@ -621,5 +627,55 @@ describe('TelephonyService', () => {
     expect(
       (telephonyService as TelephonyService)._telephonyStore.inputString,
     ).toBe('');
+  });
+  describe(`onReceiveIncomingCall()`, () => {
+    const params = {
+      fromName: 'test',
+      fromNum: '456',
+      callId: v4(),
+    };
+    beforeEach(() => {
+      jest.clearAllMocks();
+      defaultPhoneApp = CALLING_OPTIONS.GLIP;
+      jest
+        .spyOn(telephonyService._telephonyStore, 'incomingCall')
+        .mockImplementation();
+    });
+    it(`should not response when there's incoming call and default phone setting is RC phone`, () => {
+      defaultPhoneApp = CALLING_OPTIONS.RINGCENTRAL;
+      jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
+      telephonyService._onReceiveIncomingCall(params);
+      expect(telephonyService._telephonyStore.incomingCall).not.toBeCalled();
+    });
+    it(`should show ui when there's incoming call and default phone setting is Ringcentral App`, () => {
+      jest.spyOn(utils, 'getSingleEntity').mockReturnValue('glip');
+      telephonyService._onReceiveIncomingCall(params);
+      expect(telephonyService._telephonyStore.incomingCall).toBeCalled();
+    });
+  });
+
+  describe(`makeRCPhoneCall()`, () => {
+    let testedFn;
+    beforeEach(() => {
+      jest.clearAllMocks();
+      const clientService = container.get(CLIENT_SERVICE);
+      testedFn = jest.spyOn(clientService, 'invokeApp').mockImplementation();
+    });
+    ['RC', 'ATT', 'TELUS'].forEach((i) =>
+      it(`should build correct url for ${i}`, () => {
+        const RCPhoneCallURL = {
+          RC: 'rcmobile',
+          ATT: 'attvr20',
+          TELUS: 'rctelus',
+        };
+        jest
+          .spyOn(utils, 'getEntity')
+          .mockImplementation(() => ({ rcBrand: i }));
+        telephonyService.makeRCPhoneCall(666);
+        expect(testedFn).toBeCalledWith(
+          `${RCPhoneCallURL[i]}://call?number=${encodeURIComponent('666')}`,
+        );
+      }),
+    );
   });
 });
