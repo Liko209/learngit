@@ -49,7 +49,7 @@ const getConversationId = async (id: number | number[]) => {
       );
       return result.id;
     } catch (error) {
-      return null;
+      throw error;
     }
   }
   return null;
