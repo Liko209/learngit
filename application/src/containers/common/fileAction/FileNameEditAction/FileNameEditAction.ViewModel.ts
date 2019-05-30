@@ -21,11 +21,8 @@ class FileNameEditActionViewModel extends FileActionViewModel {
   get canEditFileName() {
     const groupId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     const personId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-    const { isThePersonGuest } = getEntity<Group, GroupModel>(
-      ENTITY_NAME.GROUP,
-      groupId,
-    );
-    return !isThePersonGuest(personId);
+    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, groupId);
+    return !group.isThePersonGuest(personId);
   }
 
   @catchError.flash({
@@ -44,7 +41,9 @@ class FileNameEditActionViewModel extends FileActionViewModel {
   @computed
   get fileNameRemoveSuffix() {
     const fileNameArray = this.fileName.split('.');
-    fileNameArray[fileNameArray.length - 1] = '';
+    if (fileNameArray.length > 1) {
+      fileNameArray[fileNameArray.length - 1] = '';
+    }
     return fileNameArray.join('');
   }
 

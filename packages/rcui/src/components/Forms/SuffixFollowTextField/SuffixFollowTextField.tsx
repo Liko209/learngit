@@ -3,7 +3,7 @@
  * @Date: 2019-05-27 08:00:00
  * Copyright © RingCentral. All rights reserved.
  */
-import styled from '@foundation/styled-components';
+import styled from '../../../foundation/styled-components';
 import { PropTypes } from '@material-ui/core';
 import { FormHelperTextProps } from '@material-ui/core/FormHelperText';
 import { InputProps } from '@material-ui/core/Input';
