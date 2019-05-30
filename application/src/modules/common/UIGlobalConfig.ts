@@ -7,7 +7,7 @@
 import { GlobalConfig } from 'sdk/module/config';
 
 class UIGlobalConfig extends GlobalConfig {
-  static subModuleName = '';
+  static subModuleName: string;
   static moduleName = 'UI';
 }
 
