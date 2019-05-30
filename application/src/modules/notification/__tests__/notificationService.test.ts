@@ -1,9 +1,15 @@
 import { NotificationService } from '../service';
+import { Jupiter, container } from 'framework';
+import * as notification from '@/modules/notification/module.config';
+import { NOTIFICATION_SERVICE } from '../interface/constant';
 
 global.Notification = {
   requestPermission: jest.fn(),
   permission: 'default',
 };
+
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(notification.config);
 
 describe('NotificationService', () => {
   let service: NotificationService;
@@ -30,7 +36,7 @@ describe('NotificationService', () => {
     jest.mock('../agent/DesktopNotification', () => ({
       DeskTopNotification: () => mockedDT,
     }));
-    service = new NotificationService();
+    service = jupiter.get(NOTIFICATION_SERVICE);
     service.init();
     service._notificationDistributor = mockedDT;
   });

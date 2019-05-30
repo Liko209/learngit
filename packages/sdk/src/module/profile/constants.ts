@@ -59,6 +59,11 @@ enum SETTING_KEYS {
   // conversation settings
   MAX_LEFTRAIL_GROUP = 'max_leftrail_group_tabs2',
 }
+type DesktopNotificationsSettingModel = {
+  browserPermission: NotificationPermission;
+  wantNotifications: boolean;
+  desktopNotifications: boolean;
+};
 
 export {
   CALLING_OPTIONS,
@@ -67,4 +72,5 @@ export {
   MOBILE_TEAM_NOTIFICATION_OPTIONS,
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   SETTING_KEYS,
+  DesktopNotificationsSettingModel,
 };
