@@ -14,6 +14,7 @@ class GeneralSettingManager {
   init() {
     this._settingService.registerPage(this._scope, {
       id: SETTING_PAGE__GENERAL,
+      automationId: 'general',
       icon: 'settings',
       title: 'setting.general',
       path: '/general',

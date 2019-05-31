@@ -7,6 +7,7 @@ import { ENTITY_NAME } from '@/store';
 import { TextMessageViewModel } from '../TextMessage.ViewModel';
 import * as telephony from '@/modules/telephony/module.config';
 import * as featuresFlags from '@/modules/featuresFlags/module.config';
+import * as commonModule from '@/modules/common/module.config';
 import { Jupiter, container } from 'framework';
 import * as utils from '@/store/utils';
 import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
@@ -48,6 +49,7 @@ let vm: TextMessageViewModel;
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 jupiter.registerModule(featuresFlags.config);
+jupiter.registerModule(commonModule.config);
 const phoneNumber = '(650)419-1505';
 const phoneLink = `<a href='javascript:;' color='#18a4de' class=${PHONE_LINKS_CLS} data-test-automation-id='phoneNumberLink' data-id='${phoneNumber}'>${phoneNumber}</a>`;
 describe('TextMessageViewModel', () => {

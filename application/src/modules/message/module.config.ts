@@ -3,7 +3,7 @@
  * @Date: 2019-01-17 14:20:22
  * Copyright © RingCentral. All rights reserved.
  */
-import { ModuleConfig, Jupiter } from 'framework';
+import { ModuleConfig } from 'framework';
 import {
   MESSAGE_NOTIFICATION_MANAGER,
   MESSAGE_SERVICE,
@@ -15,14 +15,17 @@ import { MessageNotificationManager } from './MessageNotificationManager';
 
 const config: ModuleConfig = {
   entry: MessageModule,
-  binding: (jupiter: Jupiter) => {
-    jupiter.registerClass(MessageStore);
-    jupiter.registerService(MESSAGE_SERVICE, MessageService);
-    jupiter.registerService(
-      MESSAGE_NOTIFICATION_MANAGER,
-      MessageNotificationManager,
-    );
-  },
+  provides: [
+    MessageStore,
+    {
+      name: MESSAGE_SERVICE,
+      value: MessageService,
+    },
+    {
+      name: MESSAGE_NOTIFICATION_MANAGER,
+      value: MessageNotificationManager,
+    },
+  ],
 };
 
 export { config };

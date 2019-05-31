@@ -3,16 +3,19 @@
  * @Date: 2019-03-04 16:12:23
  * Copyright Â© RingCentral. All rights reserved.
  */
-import { ModuleConfig, Jupiter } from 'framework';
+import { ModuleConfig } from 'framework';
 import { CommonModule } from './CommonModule';
 import { ClientService } from './service';
 import { CLIENT_SERVICE } from './interface';
 
 const config: ModuleConfig = {
   entry: CommonModule,
-  binding: (jupiter: Jupiter) => {
-    jupiter.registerService(CLIENT_SERVICE, ClientService);
-  },
+  provides: [
+    {
+      name: CLIENT_SERVICE,
+      value: ClientService,
+    },
+  ],
 };
 
 export { config };

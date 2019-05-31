@@ -6,6 +6,7 @@
 import React from 'react';
 import { IPhoneNumberRecord } from 'sdk/api/ringcentral/types/common';
 import { PhoneFormatter } from '@/modules/common/container/PhoneFormatter';
+import JuiText from 'jui/components/Text/Text';
 
 type CallerIdSelectItemProps = {
   value: IPhoneNumberRecord;
@@ -13,11 +14,13 @@ type CallerIdSelectItemProps = {
 
 const CallerIdSelectSourceItem = ({ value }: CallerIdSelectItemProps) => {
   const { usageType, phoneNumber } = value;
-  return usageType !== 'Blocked' ? (
-    <PhoneFormatter>{phoneNumber}</PhoneFormatter>
-  ) : (
-    phoneNumber
-  );
+  const formattedPhoneNumber =
+    usageType !== 'Blocked' ? (
+      <PhoneFormatter>{phoneNumber}</PhoneFormatter>
+    ) : (
+      phoneNumber
+    );
+  return <JuiText>{formattedPhoneNumber}</JuiText>;
 };
 
 export { CallerIdSelectSourceItem, CallerIdSelectItemProps };

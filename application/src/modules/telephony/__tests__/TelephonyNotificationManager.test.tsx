@@ -8,6 +8,8 @@ import { TelephonyNotificationManager } from '../TelephonyNotificationManager';
 import * as i18nT from '@/utils/i18nT';
 import * as telephony from '@/modules/telephony/module.config';
 import * as notification from '@/modules/notification/module.config';
+import * as common from '@/modules/common/module.config';
+
 import { NOTIFICATION_PRIORITY } from '@/modules/notification/interface';
 import { TelephonyStore } from '../store';
 import { getEntity } from '@/store/utils';
@@ -25,6 +27,11 @@ const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 jupiter.registerModule(notification.config);
 
+global.Notification = {
+  permission: 'defalut',
+};
+
+jupiter.registerModule(common.config);
 beforeAll(() => {
   (getEntity as jest.Mock).mockReturnValue({
     userDisplayName: 'belle',

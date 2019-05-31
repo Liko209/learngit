@@ -30,6 +30,7 @@ class TelephonySettingManager {
   async init() {
     this._settingService.registerPage(this._scope, {
       id: SETTING_PAGE__PHONE,
+      automationId: 'phone',
       icon: 'phone',
       title: 'setting.phone.title',
       path: '/phone',

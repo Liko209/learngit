@@ -7,9 +7,9 @@ import { computed } from 'mobx';
 import { container } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
 import { SettingStore } from '../../store';
-import { SettingPageViewProps } from './types';
+import { SettingPageProps, SettingPageViewProps } from './types';
 
-class SettingPageViewModel extends StoreViewModel
+class SettingPageViewModel extends StoreViewModel<SettingPageProps>
   implements SettingPageViewProps {
   get _settingStore(): SettingStore {
     return container.get(SettingStore);
@@ -17,7 +17,7 @@ class SettingPageViewModel extends StoreViewModel
 
   @computed
   get page() {
-    return this._settingStore.currentPage;
+    return this._settingStore.getPageById(this.props.id);
   }
 
   @computed
@@ -25,7 +25,7 @@ class SettingPageViewModel extends StoreViewModel
     if (!this.page) {
       return [];
     }
-    return this._settingStore.getNoEmptyPageSections(this.page.id);
+    return this._settingStore.getNoEmptyPageSections(this.props.id);
   }
 }
 

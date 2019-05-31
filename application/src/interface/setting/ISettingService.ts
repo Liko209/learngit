@@ -47,7 +47,7 @@ interface ISettingService {
    */
   unRegisterAll(scope: symbol): void;
 
-  goToSettingPage(pageId: string): void;
+  goToSettingPage(pageId: string, options?: { replace?: boolean }): void;
 }
 
 export { ISettingService };
