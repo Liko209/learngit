@@ -79,10 +79,6 @@ class RTCEngine {
     return RTCMediaDeviceManager.instance().getAudioOutputs();
   }
 
-  public updateMediaDevices(): void {
-    RTCMediaDeviceManager.instance()._updateMediaDevices();
-  }
-
   public getCurrentAudioInput() {
     return RTCMediaDeviceManager.instance().getCurrentAudioInput();
   }
@@ -98,14 +94,7 @@ class RTCEngine {
   public setCurrentAudioOutput(deviceId: string) {
     return RTCMediaDeviceManager.instance().setAudioOutputDevice(deviceId);
   }
-
-  public getCurrentAudioInput() {
-    return RTCMediaDeviceManager.instance().getCurrentAudioInput();
-  }
-
-  public getCurrentAudioInput() {
-    return RTCMediaDeviceManager.instance().getCurrentAudioInput();
-  }
+  
 }
 
 export { RTCEngine };

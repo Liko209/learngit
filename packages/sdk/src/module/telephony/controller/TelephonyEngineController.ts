@@ -9,7 +9,7 @@ import {
   ITelephonyDaoDelegate,
   telephonyLogger,
 } from 'foundation';
-import { RTCEngine, IRTCMediaDeviceDelegate } from 'voip';
+import { RTCEngine } from 'voip';
 import { Api } from '../../../api';
 import { TelephonyAccountController } from './TelephonyAccountController';
 import { ITelephonyAccountDelegate } from '../service/ITelephonyAccountDelegate';
@@ -25,7 +25,7 @@ import { ENTITY } from 'sdk/service/eventKey';
 import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 import { AccountService } from 'sdk/module/account';
 import _ from 'lodash';
-import { MediaDevicesController } from './MediaDevicesController';
+import { VoIPMediaDevicesDelegate } from './mediaDeviceDelegate/VoIPMediaDevicesDelegate';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -62,7 +62,7 @@ class TelephonyEngineController {
   rtcEngine: RTCEngine;
   voipNetworkDelegate: VoIPNetworkClient;
   voipDaoDelegate: VoIPDaoClient;
-  mediaDevicesController: MediaDevicesController;
+  mediaDevicesController: VoIPMediaDevicesDelegate;
   private _accountController: TelephonyAccountController;
   private _preCallingPermission: boolean = false;
 
@@ -130,7 +130,7 @@ class TelephonyEngineController {
   initEngine() {
     RTCEngine.setLogger(new TelephonyLogController());
     this.rtcEngine = RTCEngine.getInstance();
-    this.mediaDevicesController = new MediaDevicesController(
+    this.mediaDevicesController = new VoIPMediaDevicesDelegate(
       this.telephonyConfig,
       this.rtcEngine,
     );

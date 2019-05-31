@@ -30,7 +30,7 @@ export class VolumeSettingHandler extends AbstractSettingEntityHandler<number> {
   private _onVolumeUpdate = (value: number) => {
     const volume = Number(value);
     if (
-      this.userSettingEntityCache.value &&
+      this.userSettingEntityCache &&
       this.userSettingEntityCache.value !== volume
     ) {
       this.getUserSettingEntity().then(entity =>

@@ -38,8 +38,8 @@ export class SpeakerSourceSettingHandler extends AbstractSettingEntityHandler<
 
   private _onSelectedDeviceUpdate = (value: MediaDeviceInfo) => {
     if (
-      this.userSettingEntityCache.value &&
-      this.userSettingEntityCache.value.deviceId !== value.deviceId
+      this.userSettingEntityCache &&
+      this.getCacheValue('deviceId') !== value.deviceId
     ) {
       this.getUserSettingEntity().then(entity =>
         this.notifyUserSettingEntityUpdate(entity),
