@@ -4,11 +4,22 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISettingService } from '@/interface/setting';
+import {
+  ISettingService,
+  SETTING_ITEM_TYPE,
+  SelectSettingItem,
+} from '@/interface/setting';
+import { MediaDeviceSourceItem } from './audioSource/MediaDeviceSourceItem';
 import {
   SETTING_PAGE__NOTIFICATION_SOUND,
   SETTING_SECTION__SOUNDS,
+  SETTING_SECTION__AUDIO_SOURCE,
+  SETTING_ITEM__MICROPHONE_SOURCE,
+  SETTING_ITEM__SPEAKER_SOURCE,
 } from './constant';
+
+const deviceIdExtractor = (device?: MediaDeviceInfo) =>
+  device && device.deviceId;
 
 class NotificationSoundSettingManager {
   private _scope = Symbol('NotificationSoundSettingManager');
@@ -29,6 +40,35 @@ class NotificationSoundSettingManager {
           title: 'setting.sounds',
           weight: 200,
           items: [],
+        },
+
+        {
+          id: SETTING_SECTION__AUDIO_SOURCE,
+          automationId: 'audioSource',
+          title: 'setting.audioSource.title',
+          weight: 300,
+          items: [
+            {
+              id: SETTING_ITEM__MICROPHONE_SOURCE,
+              automationId: 'microphoneSource',
+              title: 'setting.audioSource.microphoneSource.label',
+              description: 'setting.audioSource.microphoneSource.description',
+              valueExtractor: deviceIdExtractor,
+              sourceRenderer: MediaDeviceSourceItem,
+              type: SETTING_ITEM_TYPE.SELECT,
+              weight: 0,
+            } as SelectSettingItem<MediaDeviceInfo>,
+            {
+              id: SETTING_ITEM__SPEAKER_SOURCE,
+              automationId: 'speakerSource',
+              title: 'setting.audioSource.speakerSource.label',
+              description: 'setting.audioSource.speakerSource.description',
+              valueExtractor: deviceIdExtractor,
+              sourceRenderer: MediaDeviceSourceItem,
+              type: SETTING_ITEM_TYPE.SELECT,
+              weight: 100,
+            } as SelectSettingItem<MediaDeviceInfo>,
+          ],
         },
       ],
     });

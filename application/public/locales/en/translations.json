@@ -608,7 +608,21 @@
           "regionChangeDesc": "Set the country and area code for your region. This will be used for local and emergency dialing and phone number formatting."
         }
       }
-    }
+    },
+    "audioSource": {
+      "title": "Audio sources",
+      "microphoneSource": {
+        "label": "Microphone source",
+        "description": "Update your microphone source for RingCentral voice calls"
+      },
+      "speakerSource": {
+        "label": "Speaker source",
+        "description": "Update your speaker source for RingCentral voice calls"
+      }
+    },
+    "default": "Default",
+    "builtInMicrophone": "Built-in microphone",
+    "builtInSpeaker": "Built-in speaker"
   },
   "viewer": {
     "ZoomIn": "Scale file up",

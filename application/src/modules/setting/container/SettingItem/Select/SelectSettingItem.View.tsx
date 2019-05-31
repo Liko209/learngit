@@ -54,7 +54,7 @@ class SelectSettingItemViewComponent<
   private _renderSelect() {
     const { disabled, settingItem, settingItemEntity } = this.props;
 
-    const value = this._extractValue(settingItemEntity.value);
+    const value = this.props.extractValue(settingItemEntity.value);
     return (
       <JuiBoxSelect
         onChange={this._handleChange}
@@ -75,7 +75,7 @@ class SelectSettingItemViewComponent<
   }
 
   private _renderSourceItem(sourceItem: T) {
-    const itemValue = this._extractValue(sourceItem);
+    const itemValue = this.props.extractValue(sourceItem);
     return (
       <JuiMenuItem
         value={itemValue}
@@ -92,44 +92,21 @@ class SelectSettingItemViewComponent<
   }
 
   private _renderMenuItemChildren(sourceItem: T) {
-    const { sourceRenderer: ItemComponent } = this.props.settingItem;
+    const { extractValue, settingItem } = this.props;
+    const { sourceRenderer: ItemComponent } = settingItem;
+    const key = extractValue(sourceItem);
     let node: React.ReactNode;
     if (ItemComponent) {
-      node = (
-        <ItemComponent
-          key={this._extractValue(sourceItem)}
-          value={sourceItem}
-        />
-      );
+      node = <ItemComponent key={key} value={sourceItem} />;
     } else if (
       typeof sourceItem === 'string' ||
       typeof sourceItem === 'number'
     ) {
       node = sourceItem;
     } else {
-      node = JSON.stringify(sourceItem);
+      node = key;
     }
     return node;
-  }
-
-  private _extractValue(sourceItem: T) {
-    const { valueExtractor } = this.props.settingItem;
-    let result: string | number;
-    if (valueExtractor) {
-      result = valueExtractor(sourceItem);
-    } else if (
-      typeof sourceItem === 'string' ||
-      typeof sourceItem === 'number'
-    ) {
-      result = sourceItem;
-    } else if (typeof sourceItem === 'object') {
-      result = (sourceItem as { id: string | number }).id;
-    } else if (sourceItem === undefined) {
-      result = '';
-    } else {
-      throw new Error('Error: Can not extract value of source');
-    }
-    return result.toString();
   }
 }
 

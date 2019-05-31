@@ -5,32 +5,48 @@
  */
 import { action } from 'mobx';
 import { BaseSettingItemViewModel } from '../Base/BaseSettingItem.ViewModel';
+import { SelectSettingItem } from '@/interface/setting';
 import { SelectSettingItemProps } from './types';
 
-class SelectSettingItemViewModel extends BaseSettingItemViewModel<
-  SelectSettingItemProps
+class SelectSettingItemViewModel<T> extends BaseSettingItemViewModel<
+  SelectSettingItemProps,
+  SelectSettingItem<T>
 > {
   @action
-  saveSetting = (valueId: string) => {
+  saveSetting = (newValue: string) => {
     const { valueSetter, source = [] } = this.settingItemEntity;
-    const value = source.find(sourceItem => {
-      if (typeof sourceItem === 'number') {
-        return sourceItem === Number(valueId);
-      }
-      if (typeof sourceItem === 'string') {
-        return sourceItem === valueId;
-      }
-      if (typeof sourceItem.id === 'number') {
-        return sourceItem.id === Number(valueId);
-      }
-      if (typeof sourceItem.id === 'string') {
-        return sourceItem.id === valueId;
-      }
-      throw new Error(
-        'Error: Unknown source type, for special source type you must provide a transformFunc.',
-      );
-    });
+    const value = source.find(
+      sourceItem => this.extractValue(sourceItem) === newValue,
+    );
     return valueSetter && valueSetter(value);
+  }
+
+  extractValue = (sourceItem: T) => {
+    const { valueExtractor } = this.settingItem;
+    let result: string | number;
+    if (valueExtractor) {
+      result = valueExtractor(sourceItem) || '';
+    } else if (
+      typeof sourceItem === 'string' ||
+      typeof sourceItem === 'number'
+    ) {
+      result = sourceItem;
+    } else if (this._isObjectSourceItem(sourceItem)) {
+      result = sourceItem.id;
+    } else if (sourceItem === undefined) {
+      result = '';
+    } else {
+      throw new Error('Error: Can not extract value of source');
+    }
+    return result.toString();
+  }
+
+  private _isObjectSourceItem(
+    value: any,
+  ): value is {
+    id: number | string;
+  } {
+    return value && value.id !== undefined;
   }
 }
 
