@@ -60,32 +60,34 @@ if (process.env.NODE_ENV === 'test') {
   });
 
   // mock console for jest
-  global.console = {
-    assert: jest.fn(),
-    clear: jest.fn(),
-    context: jest.fn(),
-    count: jest.fn(),
-    countReset: jest.fn(),
-    debug: jest.fn(),
-    error: jest.fn(),
-    group: jest.fn(),
-    groupCollapsed: jest.fn(),
-    groupEnd: jest.fn(),
-    info: jest.fn(),
-    log: jest.fn(),
-    time: jest.fn(),
-    timeEnd: jest.fn(),
-    timeLog: jest.fn(),
-    timeStamp: jest.fn(),
-    trace: jest.fn(),
-    warn: jest.fn(),
-  };
+  // global.console = {
+  //   assert: jest.fn(),
+  //   clear: jest.fn(),
+  //   context: jest.fn(),
+  //   count: jest.fn(),
+  //   countReset: jest.fn(),
+  //   debug: jest.fn(),
+  //   error: jest.fn(),
+  //   group: jest.fn(),
+  //   groupCollapsed: jest.fn(),
+  //   groupEnd: jest.fn(),
+  //   info: jest.fn(),
+  //   log: jest.fn(),
+  //   time: jest.fn(),
+  //   timeEnd: jest.fn(),
+  //   timeLog: jest.fn(),
+  //   timeStamp: jest.fn(),
+  //   trace: jest.fn(),
+  //   warn: jest.fn(),
+  // };
 
-  global.fetch = require("jest-fetch-mock");
+  global.fetch = require('jest-fetch-mock');
 }
 
 if (!process.env.LISTENING_TO_UNHANDLED_REJECTION) {
-  process.on('unhandledRejection', reason => { throw reason; });
+  process.on('unhandledRejection', reason => {
+    throw reason;
+  });
   // Avoid memory leak by adding too many listeners
   process.env.LISTENING_TO_UNHANDLED_REJECTION = true;
 }
