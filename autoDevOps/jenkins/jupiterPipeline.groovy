@@ -386,7 +386,7 @@ class JupiterJob extends BaseJob {
             doRun()
             context.buildStatus = true
         } finally {
-            context.buildDescription = currentBuild.getDescription()
+            context.buildDescription = jenkins.currentBuild.getDescription()
             jenkins.currentBuild.setDescription(context.jenkinsReport)
 
             if (context.buildStatus) {
