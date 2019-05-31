@@ -486,6 +486,7 @@
       "stopRecord": "Stop",
       "callActions": "Call Actions",
       "reply": "Reply",
+      "park": "Park",
       "end": "End call",
       "Answer": "Answer",
       "back": "Back"
@@ -526,6 +527,8 @@
       "RecordOnServiceWeb": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
       "RecordAutomatically": "Cannot start call recording.",
       "InvalidNumber": "The phone number entered is invalid. Check the number and try again.",
+      "ParkErrorStopRecording": "Sorry, your call recording is being saved. Try to park the call later.",
+      "ParkError": "Sorry, something went wrong on our end and we weren't able to park the call. Try again later.",
       "ReplyCustomMessageEmpty": "Sorry, you cannot send an empty message.",
       "ReplyMessageSuccess": "Your voice message was sent successfully."
     },

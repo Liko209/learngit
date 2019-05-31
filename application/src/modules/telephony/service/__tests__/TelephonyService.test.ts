@@ -7,6 +7,7 @@ import { TelephonyService } from '../TelephonyService';
 import { v4 } from 'uuid';
 import {
   TelephonyService as ServerTelephonyService,
+  RTCCallActionSuccessOptions,
   RTC_CALL_ACTION,
   RTC_CALL_STATE,
   RTC_REPLY_MSG_PATTERN,
@@ -18,6 +19,7 @@ import { TelephonyStore } from '../../store/TelephonyStore';
 import { ToastCallError } from '../ToastCallError';
 import { container, injectable, decorate } from 'framework';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { Notification } from '@/containers/Notification';
 
 const testProcedureWaitingTime = 20;
 const mockedDelay = 10;
@@ -30,6 +32,7 @@ decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
 
 jest.mock('../ToastCallError');
+jest.mock('@/containers/Notification');
 
 // mock media element methods
 window.HTMLMediaElement.prototype.load = jest.fn();
@@ -97,6 +100,20 @@ describe('TelephonyService', () => {
       hangUp: jest.fn().mockImplementation(() => {
         cachedOnCallStateChange(callId, RTC_CALL_STATE.DISCONNECTED);
       }),
+      park: (callUuid: string) => {
+        if ('failed' === callUuid) {
+          return new Promise((resolve, reject) => {
+            reject();
+          });
+        } else {
+          return new Promise((resolve, reject) => {
+            let callOptions: RTCCallActionSuccessOptions = {
+              parkExtension: '987',
+            };
+            resolve(callOptions);
+          });
+        }
+      },
       createAccount: (
         accountDelegate: { onMadeOutgoingCall: () => void },
         callDelegate: {
@@ -129,7 +146,7 @@ describe('TelephonyService', () => {
       replyWithPattern: jest.fn(),
     };
 
-    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation((conf) => {
+    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
       switch (conf) {
         case ServiceConfig.TELEPHONY_SERVICE:
           telephonyService = mockedServerTelephonyService;
@@ -621,5 +638,18 @@ describe('TelephonyService', () => {
     expect(
       (telephonyService as TelephonyService)._telephonyStore.inputString,
     ).toBe('');
+  });
+
+  it('should prompt the toast when park during the call recording is being saved [JPT-2179]', async () => {
+    telephonyService._callId = '123';
+    telephonyService._telephonyStore.isStopRecording = true;
+    await (telephonyService as TelephonyService).park();
+    expect(ToastCallError.toastParkErrorStopRecording).toHaveBeenCalledTimes(1);
+  });
+
+  it('should prompt the toast when park run into unexpected error [JPT-2180 JPT-2163]', async () => {
+    telephonyService._callId = 'failed';
+    await (telephonyService as TelephonyService).park();
+    expect(ToastCallError.toastParkError).toHaveBeenCalledTimes(1);
   });
 });

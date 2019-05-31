@@ -74,6 +74,8 @@ class TelephonyStore {
   callType: CALL_TYPE = CALL_TYPE.NULL;
   @observable
   holdState: HOLD_STATE = this._holdFSM.state;
+  @observable
+  isStopRecording: boolean = false;
 
   @observable
   recordState: RECORD_STATE = this._recordFSM.state;

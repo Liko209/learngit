@@ -14,12 +14,14 @@ import { JuiKeypadAction } from 'jui/pattern/Dialer';
 import { JuiMenuList } from 'jui/components/Menus';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import { Reply } from './Reply';
+import { Park } from './Park';
 
 type Props = CallActionsViewProps & WithTranslation;
 
 const callActions = {
   [CALL_ACTION.REPLY]: Reply,
   // [CALL_ACTION.FORWARD]: Forward,
+  [CALL_ACTION.PARK]: Park,
 };
 
 @observer
@@ -68,9 +70,16 @@ class CallActionsViewComponent extends Component<Props> {
           >
             <JuiMenuList data-test-automation-id="telephony-more-option-menu">
               {Object.keys(callActions).map((key: string) => {
-                const { shouldShowAction } = callActionsMap[key];
+                const {
+                  shouldShowAction,
+                  shouldDisableAction,
+                } = callActionsMap[key];
                 const Component = callActions[key];
-                return shouldShowAction && <Component key={key} />;
+                return (
+                  shouldShowAction && (
+                    <Component key={key} disabled={shouldDisableAction} />
+                  )
+                );
               })}
             </JuiMenuList>
           </JuiPopoverMenu>
