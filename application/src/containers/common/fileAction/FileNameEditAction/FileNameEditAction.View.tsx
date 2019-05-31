@@ -56,8 +56,10 @@ class FileNameEditActionViewComponent extends Component<
         />
       ),
       okText: t('common.dialog.save'),
-      automationId: 'fileNameEdit',
       cancelText: t('common.dialog.cancel'),
+      modalProps: {
+        'data-test-automation-id': 'fileNameEditDialog',
+      },
       onOK: async () => {
         dialog.startLoading();
         const result = await handleEditFileName();
