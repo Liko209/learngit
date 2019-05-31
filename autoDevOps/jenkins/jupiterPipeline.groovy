@@ -58,9 +58,11 @@ class Context {
 
     // deployment
     URI deployUri
-    URI lockUri
     String deployCredentialId
     String deployBaseDir
+
+    URI lockUri
+    String lockCredentialId
 
     // automation
     String rcCredentialId
@@ -74,11 +76,13 @@ class Context {
     String feedbackUrl
 
     // runtime
+    Long timestamp = System.currentTimeMillis()
     String head
     String appHeadHash
     String juiHeadHash
     String rcuiHeadHash
 
+    Boolean buildStatus = false
     String buildResult
     String buildDescription
     String saSummary
@@ -86,11 +90,13 @@ class Context {
     String coverageDiff
     String coverageDiffDetail
     String e2eReport
+
     Boolean buildAppSuccess = false
     Boolean buildJuiSuccess = false
     Boolean buildRcuiSuccess = false
 
-    List<String> failedStages = [] as List<String>
+    Set<String> addresses = []
+    List<String> failedStages = []
 
     Boolean getIsMerge() {
         gitlabSourceBranch != gitlabTargetBranch
@@ -115,6 +121,10 @@ class Context {
             isReleaseBranch(gitlabTargetBranch) ||
             gitlabSourceBranch ==~ /.*release.*/ ||
             gitlabTargetBranch ==~ /.*release.*/
+    }
+
+    Boolean getIsStageBuild() {
+        !isMerge && gitlabSourceBranch.startsWith('stage')
     }
 
     String getSubDomain() {
@@ -241,7 +251,7 @@ class BaseJob {
                 jenkins.stage(name, block)
             } catch (e) {
                 addFailedStage(name)
-                throw e
+                jenkins.error "Failed on stage ${name}\n${e.dump()}"
             }
         }
     }
@@ -251,7 +261,7 @@ class BaseJob {
         addresses.each {
             try {
                 jenkins.mail to: it, subject: subject, body: body
-            } catch (e) { println e }
+            } catch (e) { println e.dump() }
         }
     }
 
@@ -269,7 +279,7 @@ class BaseJob {
 
     void scp(String source, URI targetUri, String target) {
         String remoteTarget = "${targetUri.getUserInfo()}@${targetUri.getHost()}:${target}".toString()
-        sh "scp -o StrictHostKeyChecking=no -P ${targetUri.getPort()} ${source} ${remoteTarget}"
+        jenkins.sh "scp -o StrictHostKeyChecking=no -P ${targetUri.getPort()} ${source} ${remoteTarget}"
     }
 
     void deployToRemote(String sourceDir, URI targetUri, String targetDir) {
@@ -281,6 +291,10 @@ class BaseJob {
         ssh(targetUri, "rm -rf ${targetDir} || true && mkdir -p ${targetDir}".toString())  // clean target
         scp(tarball, targetUri, targetDir)
         ssh(targetUri, "tar -xvf ${targetDir}/${tarball} -C ${targetDir} && rm ${targetDir}/${tarball}".toString()) // unpack
+    }
+
+    void copyRemoteDir(URI remoteUri, String sourceDir, String targetDir) {
+        ssh(remoteUri, "mkdir -p ${targetDir} && cp -rf ${sourceDir}/* ${targetDir}/".toString())
     }
 
     // ssh based distributed file lock
@@ -306,7 +320,17 @@ class JupiterJob extends BaseJob {
         context.failedStages.add(name)
     }
 
+
     void run() {
+        try {
+            doRun()
+        } finally {
+            jenkins.echo context.dump()
+        }
+
+    }
+
+    void doRun() {
         context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'running')
         cancelOldBuildOfSameCause()
 
@@ -326,11 +350,13 @@ class JupiterJob extends BaseJob {
                     },
                     'Static Analysis': {
                         stage(name: 'Static Analysis') { staticAnalysis() }
-                    }
+                    },
+                    'Build Application' : {
+                        stage(name: 'Build Application') { buildApp() }
+                    },
                 )
             }
         }
-        jenkins.echo context.dump()
     }
 
 
@@ -408,6 +434,17 @@ class JupiterJob extends BaseJob {
             jenkins.sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/rcui''').trim()
         )
         assert context.head && context.appHeadHash && context.juiHeadHash && context.rcuiHeadHash
+
+        // update email address
+        context.addresses.add(context.messageChannel)
+        if (context.gitlabUserEmail)
+            context.addresses.add(context.gitlabUserEmail)
+
+        String getAuthorsCmd =
+            "git rev-list '${context.gitlabTargetNamespace}/${context.gitlabTargetBranch}'..'${context.gitlabSourceNamespace}/${context.gitlabSourceBranch}' | xargs git show -s --format='%ae' | sort | uniq | grep -E -o '\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}\\b'".toString()
+        List<String> authors = jenkins.sh(returnStdout: true, script:getAuthorsCmd).trim().split('\n')
+        List<String> glipAddresses = authors.collect{ it.replaceAll('ringcentral.com', 'ringcentral.glip.com')}
+        context.addresses.addAll(glipAddresses)
     }
 
     void installDependencies() {
@@ -437,11 +474,11 @@ class JupiterJob extends BaseJob {
         try {
             jenkins.sh 'npm run lint-all > lint/report.txt'
             context.saSummary = "${context.SUCCESS_EMOJI} no tslint error".toString()
-            lockKey(context.deployCredentialId, context.lockUri, context.staticAnalysisLockKey)
+            lockKey(context.lockCredentialId, context.lockUri, context.staticAnalysisLockKey)
         } catch (e) {
             String stdout = jenkins.sh(returnStdout: true, script: 'cat lint/report.txt').trim()
             context.saSummary = "${context.FAILURE_EMOJI} ${stdout}".toString()
-            throw e
+            jenkins.error "Static Analysis Failed!\n${e.dump()}"
         }
     }
 
@@ -488,14 +525,46 @@ class JupiterJob extends BaseJob {
                 )
                 context.coverageDiff = "${exitCode > 0 ? FAILURE_EMOJI : SUCCESS_EMOJI} ${jenkins.sh(returnStdout: true, script: 'cat coverage-diff').trim()}".toString()
                 // throw error on coverage drop
-                if (exitCode > 0) jenkins.sh 'echo "coverage drop!" && false'
+                if (exitCode > 0) jenkins.error 'coverage drop!'
             }
         }
-        lockKey(context.deployCredentialId, context.lockUri, context.unitTestLockKey)
+        lockKey(context.lockCredentialId, context.lockUri, context.unitTestLockKey)
     }
 
     void buildApp() {
+        if (!isSkipBuildApp) {
+            // FIXME: move this part to build script
+            jenkins.sh 'npx ts-node application/src/containers/VersionInfo/GitRepo.ts'
+            jenkins.sh 'mv commitInfo.ts application/src/containers/VersionInfo/'
+            jenkins.sh "sed 's/{{buildCommit}}/${context.head.substring(0, 9)}/;s/{{buildTime}}/${context.timestamp}/' application/src/containers/VersionInfo/versionInfo.json > versionInfo.json || true"
+            jenkins.sh 'mv versionInfo.json application/src/containers/VersionInfo/versionInfo.json || true'
 
+            if (context.isBuildRelease) {
+                jenkins.sh 'npm run build:release'
+            } else {
+                jenkins.dir('application') {
+                    jenkins.sh 'npm run build'
+                }
+            }
+            String sourceDir = 'application/build/'
+            jenkins.sshagent(credentials: [context.deployCredentialId]) {
+                deployToRemote(sourceDir, context.deployUri, context.appHeadHashDir)
+            }
+            lockKey(context.lockCredentialId, context.lockUri, context.appLockKey)
+        }
+        // deploy a user friendly domain directory
+        jenkins.sshagent(credentials: [context.deployCredentialId]) {
+            // update precache revision
+            updateRemotePrecacheRevision()
+            // and create copy to branch name based folder, for release build, use replace instead of delete
+            copyRemoteDir(context.deployUri, context.appHeadHashDir, context.appLinkDir)
+            // and update version info
+            updateRemoteVersionInfo()
+            // for stage build, also create link to stage folder
+            if (context.isStageBuild) {
+                copyRemoteDir(context.deployUri, context.appLinkDir, context.appStageLinkDir)
+            }
+        }
     }
 
     void buildJui() {
@@ -504,6 +573,27 @@ class JupiterJob extends BaseJob {
 
     void buildRcui() {
 
+    }
+
+    void e2eAutomation() {
+
+    }
+
+    void updateRemotePrecacheRevision() {
+        long timestamp = context.timestamp
+        URI remoteUri = context.deployUri
+        String appHeadHashDir = context.appHeadHashDir
+        String cmd = """rm -f ${appHeadHashDir}/precache-manifest.js.bak || true && cp -f ${appHeadHashDir}/precache-manifest.*.js ${appHeadHashDir}/precache-manifest.js.bak &&  awk -v rev='    \\"revision\\": \\"${timestamp}\\",' '/versionInfo/{sub(/.+/,rev,last)} NR>1{print last} {last=\\\$0} END {print last}' ${appHeadHashDir}/precache-manifest.js.bak > ${appHeadHashDir}/precache-manifest.*.js""".toString()
+        ssh(remoteUri, cmd)
+    }
+
+    void updateRemoteVersionInfo() {
+        long timestamp = context.timestamp
+        URI remoteUri = context.deployUri
+        String appLinkDir = context.appLinkDir
+        String sha = context.head
+        String cmd = "sed -i 's/{{deployedCommit}}/${sha.substring(0,9)}/;s/{{deployedTime}}/${timestamp}/' ${appLinkDir}/static/js/versionInfo.*.chunk.js || true".toString()
+        ssh(remoteUri, cmd)
     }
 
 
@@ -518,6 +608,11 @@ class JupiterJob extends BaseJob {
     Boolean getIsSkipStaticAnalysis() {
         context.isSkipUnitTestAndStaticAnalysis || hasBeenLocked(context.deployCredentialId, context.lockUri, context.staticAnalysisLockKey)
     }
+
+    Boolean getIsSkipBuildApp() {
+        hasBeenLocked(context.deployCredentialId, context.lockUri, context.appLockKey)
+    }
+
 }
 
 
@@ -540,9 +635,10 @@ Context context = new Context(
     gitlabMergeRequestLastCommit: env.gitlabMergeRequestLastCommit,
 
     deployCredentialId          : params.DEPLOY_CREDENTIAL,
-    deployUri                   : new URI(params.DEPLOY_CREDENTIAL),
+    deployUri                   : new URI(params.DEPLOY_URI),
     deployBaseDir               : params.DEPLOY_BASE_DIR,
     lockUri                     : new URI(params.LOCK_URI),
+    lockCredentialId            : params.LOCK_CREDENTIAL,
 
     rcCredentialId              : params.E2E_RC_CREDENTIAL,
     e2eSiteEnv                  : params.E2E_SITE_ENV,
