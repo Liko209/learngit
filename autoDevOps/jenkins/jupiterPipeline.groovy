@@ -71,6 +71,7 @@ class Context {
     String e2eBrowsers
     String e2eConcurrency
     String e2eExcludeTags
+    String e2eCapabilities
     Boolean e2eEnableRemoteDashboard
     Boolean e2eEnableMockServer
     String feedbackUrl
@@ -290,7 +291,7 @@ class BaseJob {
         jenkins.sh "tar -czvf ${tarball} -C ${sourceDir} ."  // pack
         ssh(targetUri, "rm -rf ${targetDir} || true && mkdir -p ${targetDir}".toString())  // clean target
         scp(tarball, targetUri, targetDir)
-        ssh(targetUri, "tar -xvf ${targetDir}/${tarball} -C ${targetDir} && rm ${targetDir}/${tarball}".toString()) // unpack
+        ssh(targetUri, "tar -xvf ${targetDir}/${tarball} -C ${targetDir} && rm ${targetDir}/${tarball} && chmod -R 755 ${targetDir}".toString()) // unpack
     }
 
     void copyRemoteDir(URI remoteUri, String sourceDir, String targetDir) {
@@ -324,10 +325,10 @@ class JupiterJob extends BaseJob {
     void run() {
         try {
             doRun()
+            context.buildStatus = true
         } finally {
             jenkins.echo context.dump()
         }
-
     }
 
     void doRun() {
@@ -364,6 +365,7 @@ class JupiterJob extends BaseJob {
                         stage(name: 'Build RCUI') { buildRcui() }
                     },
                 )
+                stage(name: 'E2E Automation') { e2eAutomation() }
             }
         }
     }
@@ -610,8 +612,64 @@ class JupiterJob extends BaseJob {
     }
 
     void e2eAutomation() {
+        String hostname  = jenkins.sh(returnStdout: true, script: 'hostname -f').trim()
+        String startTime = jenkins.sh(returnStdout: true, script: "TZ=UTC-8 date +'%F %T'").trim()
 
+        jenkins.withEnv([
+            "HOST_NAME=${hostname}",
+            "SITE_URL=${context.appUrl}",
+            "SITE_ENV=${context.e2eSiteEnv}",
+            "SELENIUM_SERVER=${context.e2eSeleniumServer}",
+            "ENABLE_REMOTE_DASHBOARD=${context.e2eEnableRemoteDashboard}",
+            "ENABLE_MOCK_SERVER=${context.e2eEnableMockServer}",
+            "BROWSERS=${context.e2eBrowsers}",
+            "CONCURRENCY=${context.e2eConcurrency}",
+            "EXCLUDE_TAGS=${context.e2eExcludeTags}",
+            "BRANCH=${context.gitlabSourceBranch}",
+            "ACTION=ON_MERGE",
+            "SCREENSHOTS_PATH=./screenshots",
+            "TMPFILE_PATH=./tmp",
+            "DEBUG_MODE=false",
+            "STOP_ON_FIRST_FAIL=true",
+            "SKIP_JS_ERROR=true",
+            "SKIP_CONSOLE_ERROR=true",
+            "SKIP_CONSOLE_WARN=true",
+            "SCREENSHOT_WEBP_QUALITY=80",
+            "QUARANTINE_MODE=true",
+            "QUARANTINE_FAILED_THRESHOLD=4",
+            "QUARANTINE_PASSED_THRESHOLD=1",
+            "DEBUG=axios",
+            "ENABLE_SSL=true",
+            "RUN_NAME=[Jupiter][Pipeline][Merge][${startTime}][${context.gitlabSourceBranch}][${context.head}]",
+        ]) {
+            jenkins.dir("tests/e2e/testcafe") {
+                jenkins.sh 'env'  // for debug
+                jenkins.writeFile file: 'capabilities.json', text: context.e2eCapabilities, encoding: 'utf-8'
+                jenkins.sh "mkdir -p screenshots tmp"
+                jenkins.sh "npm config set registry ${context.npmRegistry}"
+                jenkins.sshagent(credentials: [context.scmCredentialId]) {
+                    jenkins.sh 'npm install --unsafe-perm'
+                }
 
+                if (context.e2eEnableRemoteDashboard) {
+                    jenkins.sh 'npx ts-node create-run-id.ts'
+                    context.e2eReport = jenkins.sh(returnStdout: true, script: 'cat reportUrl || true').trim()
+                }
+                jenkins.withCredentials([jenkins.usernamePassword(
+                    credentialsId: context.rcCredentialId,
+                    usernameVariable: 'RC_PLATFORM_APP_KEY',
+                    passwordVariable: 'RC_PLATFORM_APP_SECRET')]) {
+                    try {
+                        jenkins.sh "npm run e2e"
+                    } finally {
+                        if (!context.e2eEnableRemoteDashboard) {
+                            jenkins.sh "tar -czvf allure.tar.gz -C ./allure/allure-results . || true"
+                            jenkins.archiveArtifacts artifacts: 'allure.tar.gz', fingerprint: true
+                        }
+                    }
+                }
+            }
+        }
     }
 
     void updateRemotePrecacheRevision() {
@@ -689,7 +747,7 @@ Context context = new Context(
     e2eExcludeTags              : params.E2E_EXCLUDE_TAGS?: '',
     e2eEnableRemoteDashboard    : params.E2E_ENABLE_REMOTE_DASHBOARD,
     e2eEnableMockServer         : params.E2E_ENABLE_MOCK_SERVER,
-
+    e2eCapabilities             : params.E2E_CAPABILITIES,
     feedbackUrl                 : params.FEEDBACK_URL,
 )
 
