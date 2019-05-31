@@ -116,9 +116,14 @@ class RuiSuffixFollowTextField extends React.PureComponent<
     }
 
     const defaultValue = this.inputEl.value;
-    this.setState({
-      inputValue: defaultValue,
-    });
+    this.setState(
+      {
+        inputValue: defaultValue,
+      },
+      () => {
+        this.syncHolderStyle();
+      },
+    );
   }
 
   componentWillUnmount() {
