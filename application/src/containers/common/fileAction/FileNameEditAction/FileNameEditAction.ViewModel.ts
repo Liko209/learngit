@@ -30,11 +30,11 @@ class FileNameEditActionViewModel extends FileActionViewModel {
     server: 'message.prompt.editFileNameBackendError',
   })
   handleEditFileName = async () => {
-    const { id } = this.item;
+    const { id, type } = this.item;
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
     );
-    await itemService.editFileName(id, this.newFileName);
+    await itemService.editFileName(id, `${this.newFileName}.${type}`);
     return true;
   }
 

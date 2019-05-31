@@ -38,6 +38,7 @@ class FileNameEditActionViewComponent extends Component<
       content: (
         <RuiSuffixFollowTextField
           data-test-automation-id={'fileNameEditSuffixFollowTextField'}
+          id={'fileNameEdit'}
           label={t('message.prompt.editFileNameInputLabel')}
           fullWidth={true}
           InputProps={{
