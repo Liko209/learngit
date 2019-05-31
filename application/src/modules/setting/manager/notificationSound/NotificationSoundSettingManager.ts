@@ -25,6 +25,7 @@ class NotificationSoundSettingManager {
       sections: [
         {
           id: SETTING_SECTION__SOUNDS,
+          automationId: 'sounds',
           title: 'setting.sounds',
           weight: 200,
           items: [],

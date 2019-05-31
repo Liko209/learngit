@@ -12,7 +12,7 @@ type NotificationBrowserSettingItemProps = {
 };
 
 type NotificationBrowserSettingItemViewProps = {
-  settingItemEntity: SettingModel<DesktopNotificationsSettingModel>;
+  settingItemEntity: SettingModel<Partial<DesktopNotificationsSettingModel>>;
   setToggleState: (checked: boolean) => void;
 };
 

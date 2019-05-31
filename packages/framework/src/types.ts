@@ -10,7 +10,7 @@ import { Jupiter } from './Jupiter';
 
 type Provide<T> =
   | {
-      name: string | interfaces.Newable<T>;
+      name: interfaces.ServiceIdentifier<T>;
       value: interfaces.Newable<T>;
     }
   | interfaces.Newable<T>;

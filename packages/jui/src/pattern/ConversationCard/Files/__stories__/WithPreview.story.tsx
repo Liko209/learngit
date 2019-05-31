@@ -12,51 +12,43 @@ import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconBut
 
 storiesOf('Pattern/ConversationCard', module)
   .addDecorator(withInfoDecorator(JuiFileWithPreview, { inline: true }))
-  .add('FileWithPreview', () => (
-    <div>
-      <JuiFileWithPreview
-        url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
-        fileName="fileName"
-        size="2.3Mb"
-        iconType={'pdf'}
-        Actions={
-          <JuiIconButton variant="plain" tooltipTitle="download">
-            download
-          </JuiIconButton>
-        }
-      />
-      <JuiFileWithPreview
-        url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
-        fileName="fileName"
-        size="2.3Mb"
-        iconType={'pdf'}
-        Actions={
-          <JuiIconButton variant="plain" tooltipTitle="download">
-            download
-          </JuiIconButton>
-        }
-      />
-      <JuiFileWithPreview
-        url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
-        fileName="fileName"
-        size="2.3Mb"
-        iconType={'pdf'}
-        Actions={
-          <JuiIconButton variant="plain" tooltipTitle="download">
-            download
-          </JuiIconButton>
-        }
-      />
-      <JuiFileWithPreview
-        url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
-        fileName="fileName"
-        size="2.3Mb"
-        iconType={'pdf'}
-        Actions={
-          <JuiIconButton variant="plain" tooltipTitle="download">
-            download
-          </JuiIconButton>
-        }
-      />
-    </div>
-  ));
+  .add('FileWithPreview', () => {
+    const actions = [
+      <JuiIconButton key="download" variant="plain" tooltipTitle="download">
+        download
+      </JuiIconButton>,
+    ];
+
+    return (
+      <div>
+        <JuiFileWithPreview
+          url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
+          fileName="fileName"
+          size="2.3Mb"
+          iconType={'pdf'}
+          Actions={actions}
+        />
+        <JuiFileWithPreview
+          url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
+          fileName="fileName"
+          size="2.3Mb"
+          iconType={'pdf'}
+          Actions={actions}
+        />
+        <JuiFileWithPreview
+          url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
+          fileName="fileName"
+          size="2.3Mb"
+          iconType={'pdf'}
+          Actions={actions}
+        />
+        <JuiFileWithPreview
+          url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
+          fileName="fileName"
+          size="2.3Mb"
+          iconType={'pdf'}
+          Actions={actions}
+        />
+      </div>
+    );
+  });

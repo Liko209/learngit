@@ -95,13 +95,13 @@ class Jupiter {
     const hasNameValue = (
       provide: any,
     ): provide is {
-      name: string | interfaces.Newable<T>;
+      name: interfaces.ServiceIdentifier<T>;
       value: interfaces.Newable<T>;
     } => {
       return !!provide.value;
     };
 
-    let identifier: string | interfaces.Newable<T>;
+    let identifier: interfaces.ServiceIdentifier<T>;
     let creator: interfaces.Newable<T>;
 
     if (hasNameValue(provide)) {
@@ -112,7 +112,10 @@ class Jupiter {
       creator = provide;
     }
 
-    return { identifier, creator };
+    return {
+      creator,
+      identifier: this._getRealId<T>(identifier),
+    };
   }
 
   bindProvide<T>(provide: Provide<T>) {

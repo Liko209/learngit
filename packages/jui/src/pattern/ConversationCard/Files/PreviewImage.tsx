@@ -15,6 +15,7 @@ import { JuiIconography } from '../../../foundation/Iconography';
 import styled from '../../../foundation/styled-components';
 import { grey } from '../../../foundation/utils';
 import { withDelay } from '../../../hoc/withDelay';
+import { JuiButtonBar } from '../../../components/Buttons';
 
 type SizeType = {
   width: number;
@@ -22,7 +23,7 @@ type SizeType = {
 };
 
 type JuiPreviewImageProps = {
-  Actions?: JSX.Element;
+  Actions?: JSX.Element[];
   fileName: string;
   forceSize?: boolean;
   squareSize?: number;
@@ -150,14 +151,24 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
           />
         )}
         {this._loaded && (
-          <Jui.ImageCard width={width} height={height} onClick={this._handleImageClick}>
-            <StyledImg
-              style={imageStyle}
-              src={url}
-            />
-            <Jui.ImageFileInfo width={width} height={height} component="div" onClick={this._handleInfoClick}>
+          <Jui.ImageCard
+            width={width}
+            height={height}
+            onClick={this._handleImageClick}
+          >
+            <StyledImg style={imageStyle} src={url} />
+            <Jui.ImageFileInfo
+              width={width}
+              height={height}
+              component="div"
+              onClick={this._handleInfoClick}
+            >
               <FileName filename={fileName} />
-              <Jui.FileActionsWrapper>{Actions}</Jui.FileActionsWrapper>
+              {Actions && (
+                <Jui.FileActionsWrapper>
+                  <JuiButtonBar overlapSize={-2}>{Actions}</JuiButtonBar>
+                </Jui.FileActionsWrapper>
+              )}
             </Jui.ImageFileInfo>
           </Jui.ImageCard>
         )}

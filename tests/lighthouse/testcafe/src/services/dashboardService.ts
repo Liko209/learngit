@@ -471,6 +471,9 @@ class DashboardService {
   }
 
   static async buildReport() {
+    if (Globals.skipTest) {
+      return;
+    }
     let glipMessage = [], merticWarnArr = [], merticBlockArr = [];
     let htmlArray = ['<!doctype html><html><head><title>Performance Dashboard</title><style>'];
     htmlArray.push('*{margin:0;padding:0;border:0}');
@@ -556,8 +559,8 @@ class DashboardService {
       glipMessage.push(...merticWarnArr);
     }
 
-    glipMessage.push(`\n**Dashboard:**\n${Config.buildURL}Electron`);
-    glipMessage.push(`\n${Config.buildURL}Firefox`);
+    glipMessage.push(`\n**Dashboard:**\n${Config.buildURL}Electron\n`);
+    glipMessage.push(`${Config.buildURL}Firefox`);
 
     FileService.saveDashboardIntoDisk(htmlArray.join(''), Globals.browserName);
     FileService.saveGlipMessageIntoDisk(glipMessage.join('\n'), Globals.browserName);

@@ -53,18 +53,19 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
         descriptionText += `, ${areaCodeText}: ${areaCode}`;
       }
     }
-
+    const disabled = state === ESettingItemState.DISABLE;
     return (
       <JuiSettingSectionItem
         id="regionSetting"
         label={regionText}
         description={descriptionText}
+        disabled={disabled}
       >
         <JuiButton
           color="primary"
           onClick={this.handleClicked}
-          disabled={state === ESettingItemState.DISABLE}
-          data-test-automation-id="regionSettingDialogOpenButton"
+          disabled={disabled}
+          data-test-automation-id="settingItemButton-regionSetting"
         >
           {t('setting.update')}
         </JuiButton>
@@ -111,8 +112,11 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
     return (
       this.state.dialogOpen && (
         <JuiModal
+          modalProps={{
+            'data-test-automation-id': 'dialog-regionSetting',
+          }}
           title={
-            <JuiDialogTitle data-test-automation-id="regionSettingDialogHeader">
+            <JuiDialogTitle data-test-automation-id="dialog-header-regionSetting">
               {regionText}
             </JuiDialogTitle>
           }
@@ -124,16 +128,16 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
           onCancel={this._onCancel}
           okBtnProps={{
             disabled: disabledOkBtn,
-            'data-test-automation-id': 'saveRegionSettingOkButton',
+            'data-test-automation-id': 'dialog-okButton-regionSetting',
           }}
           cancelBtnProps={{
-            'data-test-automation-id': 'saveRegionSettingCancelButton',
+            'data-test-automation-id': 'dialog-cancelButton-regionSetting',
           }}
         >
           <JuiTypography
             variant={'caption'}
             gutterBottom={true}
-            data-test-automation-id="regionSettingDialogContentDescription"
+            data-test-automation-id="dialog-contentDescription-regionSetting"
           >
             {regionChangeDesc}
           </JuiTypography>
@@ -153,11 +157,11 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
               error={areaCodeError}
               inputProps={{
                 maxLength: 200,
-                'data-test-automation-id': 'areaCodeInput',
+                'data-test-automation-id': 'dialog-regionSetting-areaCodeInput',
               }}
               helperText={areaCodeError && errorMsg}
               onChange={handleAreaCodeChange}
-              data-test-automation-id="areaCodeTextField"
+              data-test-automation-id="dialog-regionSetting-areaCodeTextField"
             />
           )}
         </JuiModal>

@@ -24,6 +24,7 @@ class NotificationSettingManager implements INotificationSettingManager {
     if (!isElectron) {
       notificationItems.push({
         id: SETTING_ITEM__NOTIFICATION_BROWSER,
+        automationId: 'notificationBrowser',
         type: NotificationBrowserSettingItem,
         weight: 100,
       });
@@ -33,6 +34,7 @@ class NotificationSettingManager implements INotificationSettingManager {
       SETTING_PAGE__NOTIFICATION_SOUND,
       {
         id: SETTING_SECTION__DESKTOP_NOTIFICATIONS,
+        automationId: 'desktopNotifications',
         title: 'setting.notificationAndSounds.desktopNotifications.title',
         weight: 100,
         items: notificationItems,

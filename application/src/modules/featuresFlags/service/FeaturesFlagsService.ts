@@ -4,14 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { PermissionService, UserPermissionType } from 'sdk/module/permission';
+import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { featureModuleConfig } from '../config/featureModuleConfig';
 import _ from 'lodash';
-import { TelephonyService } from 'sdk/module/telephony';
 
 class FeaturesFlagsService {
-  private _telephonyService = ServiceLoader.getInstance<TelephonyService>(
-    ServiceConfig.TELEPHONY_SERVICE,
+  private _permissionService = ServiceLoader.getInstance<PermissionService>(
+    ServiceConfig.PERMISSION_SERVICE,
+  );
+  private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+    ServiceConfig.RC_INFO_SERVICE,
   );
   private _featureModuleMap = new Map();
 
@@ -23,7 +27,12 @@ class FeaturesFlagsService {
   }
 
   canUseTelephony = async () => {
-    return await this._telephonyService.getVoipCallPermission();
+    return (
+      (await this._rcInfoService.isVoipCallingAvailable()) &&
+      (await this._permissionService.hasPermission(
+        UserPermissionType.JUPITER_CAN_USE_TELEPHONY,
+      ))
+    );
   }
 
   getSupportFeatureModules = async () => {

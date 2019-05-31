@@ -18,7 +18,7 @@ class NotificationBrowserSettingItemViewModel extends StoreViewModel
   implements NotificationBrowserSettingItemViewProps {
   @computed
   get settingItemEntity() {
-    return getEntity<UserSettingEntity, SettingModel<DNSM>>(
+    return getEntity<UserSettingEntity, SettingModel<Partial<DNSM>>>(
       ENTITY_NAME.USER_SETTING,
       SETTING_ITEM__NOTIFICATION_BROWSER,
     );

@@ -38,7 +38,7 @@ function getSettingsTitle(settingPath: string): i18nTValueProps {
       settingPath,
     )
   ) {
-    const pathI18NKey = `setting.${getI18NKeyByRoutePath(settingPath)}`;
+    const pathI18NKey = `setting.${getI18NKeyByRoutePath(settingPath)}.title`;
     return `${settingI18N} - ${i18nT(pathI18NKey)}`;
   }
   return settingI18N;

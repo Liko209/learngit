@@ -16,7 +16,8 @@ fixture('Setting/EnterPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test.meta(<ITestMeta>{
+// TODO skipped because user story updated
+test.skip.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-1585'],
   maintainers: ['Potar.He'],
@@ -75,7 +76,8 @@ test.meta(<ITestMeta>{
 });
 
 
-test.meta(<ITestMeta>{
+// TODO skipped because user story updated
+test.skip.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-1586'],
   maintainers: ['Potar.He'],
@@ -140,7 +142,8 @@ test.meta(<ITestMeta>{
   }
 });
 
-test.meta(<ITestMeta>{
+// TODO skipped because user story updated
+test.skip.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-1587'],
   maintainers: ['Potar.He'],

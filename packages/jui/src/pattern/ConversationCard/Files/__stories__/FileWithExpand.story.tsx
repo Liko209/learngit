@@ -15,6 +15,11 @@ storiesOf('Pattern/ConversationCard', module)
   .add('JuiFileWithExpand', () => {
     const fileName = text('fileName', '土asd豆你个马拉松sdsds.jpg');
     const expand = boolean('expand', false);
+    const actions = [
+      <JuiIconButton key="download" variant="plain" tooltipTitle="download">
+        download
+      </JuiIconButton>,
+    ];
     return (
       <div>
         <JuiFileWithExpand
@@ -34,11 +39,7 @@ storiesOf('Pattern/ConversationCard', module)
             fileName={fileName}
             width={360}
             height={202}
-            Actions={
-              <JuiIconButton variant="plain" tooltipTitle="download">
-                download
-              </JuiIconButton>
-            }
+            Actions={actions}
           />
         </JuiFileWithExpand>
         <JuiFileWithExpand
@@ -58,11 +59,7 @@ storiesOf('Pattern/ConversationCard', module)
             fileName={fileName}
             width={360}
             height={202}
-            Actions={
-              <JuiIconButton variant="plain" tooltipTitle="download">
-                download
-              </JuiIconButton>
-            }
+            Actions={actions}
           />
         </JuiFileWithExpand>
         <JuiFileWithExpand
@@ -82,11 +79,7 @@ storiesOf('Pattern/ConversationCard', module)
             fileName={fileName}
             width={360}
             height={202}
-            Actions={
-              <JuiIconButton variant="plain" tooltipTitle="download">
-                download
-              </JuiIconButton>
-            }
+            Actions={actions}
           />
         </JuiFileWithExpand>
         <JuiFileWithExpand
@@ -106,11 +99,7 @@ storiesOf('Pattern/ConversationCard', module)
             fileName={fileName}
             width={360}
             height={202}
-            Actions={
-              <JuiIconButton variant="plain" tooltipTitle="download">
-                download
-              </JuiIconButton>
-            }
+            Actions={actions}
           />
         </JuiFileWithExpand>
         <JuiFileWithExpand
@@ -130,11 +119,7 @@ storiesOf('Pattern/ConversationCard', module)
             fileName={fileName}
             width={360}
             height={202}
-            Actions={
-              <JuiIconButton variant="plain" tooltipTitle="download">
-                download
-              </JuiIconButton>
-            }
+            Actions={actions}
           />
         </JuiFileWithExpand>
       </div>

@@ -24,6 +24,9 @@ const theme = {
   },
   overrides: {},
   palette: {
+    getContrastText() {
+      return '#e1f4fb';
+    },
     common: { black: '#000', white: '#fff' },
     type: 'light',
     primary: {

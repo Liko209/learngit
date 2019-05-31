@@ -18,11 +18,12 @@ class SettingSectionComponent extends Component<Props> {
     if (!this.props.section) return null;
 
     const { t, section } = this.props;
+
     return (
       <JuiSettingSection
         key={section.id}
         title={t(section.title)}
-        data-test-automation-id="SettingSectionContainer"
+        automationId={section.automationId}
       >
         {this._renderSettingItems()}
       </JuiSettingSection>

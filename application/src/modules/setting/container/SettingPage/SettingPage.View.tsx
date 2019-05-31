@@ -9,6 +9,8 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import styled from 'jui/foundation/styled-components';
 import { JuiConversationPageHeader } from 'jui/pattern/ConversationPageHeader';
 import { ScrollMemory } from '@/modules/common/container/ScrollMemory';
+import { JuiSettingSectionContainer } from 'jui/pattern/SettingSection';
+import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 import { SettingSection } from '../SettingSection';
 import { SettingPageViewProps, SettingPageProps } from './types';
 
@@ -18,28 +20,49 @@ const StyledSettingPage = styled.div`
   height: 100%;
 `;
 
-// TODO move to jui
-const StyledSettingPageContent = styled.div`
-  padding: 16px;
-`;
-
 type Props = SettingPageProps & SettingPageViewProps & WithTranslation;
 
 @observer
 class SettingPageViewComponent extends Component<Props> {
+  state: Size = {
+    width: 0,
+    height: 0,
+  };
+  source: HTMLElement[];
+  private _wrapRef: React.RefObject<any> = React.createRef();
+  private _handleSizeUpdate = (size: Size) => {
+    this.setState({
+      ...size,
+    });
+  }
+
   render() {
     if (!this.props.page) return null;
+    const { width } = this.state;
+    if (this._wrapRef.current && !this.source) {
+      this.source = [this._wrapRef.current];
+    }
 
     const { t, id, page } = this.props;
     return (
-      <StyledSettingPage data-test-automation-id="SettingContainer">
+      <StyledSettingPage
+        ref={this._wrapRef}
+        data-test-automation-id={`settingPage-${page.automationId}`}
+        data-test-automation-class={'settingPage'}
+      >
         <JuiConversationPageHeader
-          data-test-automation-id="SettingPageHeader"
+          data-test-automation-id={`settingPageHeader-${page.automationId}`}
+          data-test-automation-class={'settingPageHeader'}
+          data-test-automation-value={page.title}
           title={t(page.title)}
         />
-        <StyledSettingPageContent>
+        <JuiSizeDetector
+          handleSizeChanged={this._handleSizeUpdate}
+          sources={this.source}
+        />
+        <JuiSettingSectionContainer containerWidth={width}>
           {this._renderSections()}
-        </StyledSettingPageContent>
+        </JuiSettingSectionContainer>
         <ScrollMemory id={`SETTING_PAGE_${id}`} />
       </StyledSettingPage>
     );

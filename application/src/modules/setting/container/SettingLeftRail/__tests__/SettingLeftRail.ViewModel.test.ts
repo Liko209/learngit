@@ -30,7 +30,7 @@ describe('SettingLeftRailViewModel', () => {
     it('should return valid pages ', () => {
       const { vm, settingStore } = setup();
       jest
-        .spyOn(settingStore, 'getNoEmptyPages')
+        .spyOn(settingStore, 'getAllPages')
         .mockReturnValue(['PAGE_1', 'PAGE_2']);
       jest
         .spyOn<SettingStore, any>(settingStore, 'getPageById')
