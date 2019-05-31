@@ -13,6 +13,7 @@ export enum PERFORMANCE_KEYS {
   SEARCH_GROUP = 'search_group',
   SEARCH_TEAM = 'search_team',
   SEARCH_ALL_GROUP = 'search_all_group',
+  SEARCH_PHONE_NUMBER = 'search_phone_number',
   GOTO_CONVERSATION_SHELF_FETCH_ITEMS = 'goto_conversation_shelf_fetch_items',
   GOTO_CONVERSATION_FETCH_POSTS = 'goto_conversation_fetch_posts',
   GOTO_CONVERSATION_FETCH_ITEMS = 'goto_conversation_fetch_items',
