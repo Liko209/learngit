@@ -340,6 +340,7 @@ class JupiterJob extends BaseJob {
                 "PATH+NODEJS=${nodejsHome}/bin",
                 'TZ=UTC-8',
                 'SENTRYCLI_CDNURL=https://cdn.npm.taobao.org/dist/sentry-cli',
+                'NODE_OPTIONS=--max_old_space_size=12000',
             ]) {
                 stage(name: 'Collect Facts'){ collectFacts() }
                 stage(name: 'Checkout'){ checkout() }
@@ -351,14 +352,21 @@ class JupiterJob extends BaseJob {
                     'Static Analysis': {
                         stage(name: 'Static Analysis') { staticAnalysis() }
                     },
+                )
+                jenkins.parallel(
                     'Build Application' : {
                         stage(name: 'Build Application') { buildApp() }
+                    },
+                    'Build JUI': {
+                        stage(name: 'Build JUI') { buildJui() }
+                    },
+                    'Build RCUI': {
+                        stage(name: 'Build RCUI') { buildRcui() }
                     },
                 )
             }
         }
     }
-
 
     void collectFacts() {
         // test commands
@@ -538,7 +546,6 @@ class JupiterJob extends BaseJob {
             jenkins.sh 'mv commitInfo.ts application/src/containers/VersionInfo/'
             jenkins.sh "sed 's/{{buildCommit}}/${context.head.substring(0, 9)}/;s/{{buildTime}}/${context.timestamp}/' application/src/containers/VersionInfo/versionInfo.json > versionInfo.json || true"
             jenkins.sh 'mv versionInfo.json application/src/containers/VersionInfo/versionInfo.json || true'
-
             if (context.isBuildRelease) {
                 jenkins.sh 'npm run build:release'
             } else {
@@ -546,7 +553,12 @@ class JupiterJob extends BaseJob {
                     jenkins.sh 'npm run build'
                 }
             }
-            String sourceDir = 'application/build/'
+            String sourceDir = 'application/build'
+            // The reason we add this check is sometimes the build package is incomplete
+            // The root cause maybe the improperly error handling in build script (maybe always exit with 0)
+            if (!jenkins.fileExists("${sourceDir}/index.html"))
+                jenkins.error "Build application is incomplete!"
+
             jenkins.sshagent(credentials: [context.deployCredentialId]) {
                 deployToRemote(sourceDir, context.deployUri, context.appHeadHashDir)
             }
@@ -568,14 +580,37 @@ class JupiterJob extends BaseJob {
     }
 
     void buildJui() {
-
+        if (!isSkipBuildJui) {
+            jenkins.sh 'npm run build:ui'
+            String sourceDir = "packages/jui/storybook-static"
+            jenkins.sshagent(credentials: [context.deployCredentialId]) {
+                deployToRemote(sourceDir, context.deployUri, context.juiHeadHashDir)
+            }
+            lockKey(context.lockCredentialId, context.lockUri, context.juiLockKey)
+        }
+        jenkins.sshagent(credentials: [context.deployCredentialId]) {
+            copyRemoteDir(context.deployUri, context.juiHeadHashDir, context.juiLinkDir)
+        }
     }
 
     void buildRcui() {
-
+        if (!isSkipBuildRcui) {
+            jenkins.dir('packages/rcui') {
+                jenkins.sh 'npm run build:storybook'
+            }
+            String sourceDir = "packages/rcui/public"
+            jenkins.sshagent(credentials: [context.deployCredentialId]) {
+                deployToRemote(sourceDir, context.deployUri, context.rcuiHeadHashDir)
+            }
+            lockKey(context.lockCredentialId, context.lockUri, context.rcuiLockKey)
+        }
+        jenkins.sshagent(credentials: [context.deployCredentialId]) {
+            copyRemoteDir(context.deployUri, context.rcuiHeadHashDir, context.rcuiLinkDir)
+        }
     }
 
     void e2eAutomation() {
+
 
     }
 
@@ -596,9 +631,8 @@ class JupiterJob extends BaseJob {
         ssh(remoteUri, cmd)
     }
 
-
     Boolean getIsSkipInstallDependency() {
-        isSkipUnitTest && false
+        isSkipUnitTest && isSkipStaticAnalysis && isSkipBuildApp && isSkipBuildJui && isSkipBuildRcui
     }
 
     Boolean getIsSkipUnitTest() {
@@ -613,6 +647,13 @@ class JupiterJob extends BaseJob {
         hasBeenLocked(context.deployCredentialId, context.lockUri, context.appLockKey)
     }
 
+    Boolean getIsSkipBuildJui() {
+        hasBeenLocked(context.deployCredentialId, context.lockUri, context.juiLockKey)
+    }
+
+    Boolean getIsSkipBuildRcui() {
+        hasBeenLocked(context.deployCredentialId, context.lockUri, context.rcuiLockKey)
+    }
 }
 
 
