@@ -61,9 +61,6 @@ const StyledCutomizedComponentContainer = styled.span<{
 
 const StyledEmojiWrapper = styled.div`
   && {
-    .conversation-chatbar-emoji-menu {
-      z-index: ${({ theme }) => theme.zIndex.moreMenu};
-    }
     .emoji-mart-title-label {
       font-size: ${({ theme }) => theme.typography.title1.fontSize};
     }
@@ -79,6 +76,9 @@ const StyledEmojiWrapper = styled.div`
     .emoji-mart-preview-skins {
       z-index: ${({ theme }) => theme.zIndex.popup};
     }
+  }
+  && {
+    z-index: ${({ theme }) => theme.zIndex.moreMenu};
   }
 `;
 let emojiMartContainer: HTMLCollectionOf<Element>;
