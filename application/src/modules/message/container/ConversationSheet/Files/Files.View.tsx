@@ -119,13 +119,7 @@ class FilesView extends React.Component<FilesViewProps> {
   );
 
   render() {
-    const {
-      files,
-      progresses,
-      urlMap,
-      getCurrentVersionIndex,
-      postId,
-    } = this.props;
+    const { files, progresses, urlMap, postId } = this.props;
     const singleImage = files[FileType.image].length === 1;
     return (
       <>
@@ -196,7 +190,7 @@ class FilesView extends React.Component<FilesViewProps> {
         {files[FileType.document].map((file: ExtendFileItem) => {
           const { item, previewUrl } = file;
           const { size, type, id, name, downloadUrl, versions } = item;
-          const { status } = versions[getCurrentVersionIndex(id)];
+          const { status } = versions[0];
           const iconType = getFileIcon(type);
           const supportFileViewer = isSupportFileViewer(type);
           const fileReadyForViewer = isFileReadyForViewer(status);

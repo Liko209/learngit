@@ -186,11 +186,6 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.props.postId);
   }
 
-  getCurrentVersionIndex = (itemId: number) => {
-    const { itemData } = this.post;
-    return itemData ? itemData['version_map'][itemId] - 1 : 0;
-  }
-
   private _getPostStatus() {
     const progress = getEntity<Progress, ProgressModel>(
       ENTITY_NAME.PROGRESS,
