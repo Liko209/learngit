@@ -9,6 +9,7 @@ import { GlobalConfigService } from '../../../config';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { AuthUserConfig } from '../../../account/config/AuthUserConfig';
 import { AccountService } from 'sdk/module/account';
+import { TelephonyUserConfig } from '../../config/TelephonyUserConfig';
 
 jest.mock('../../../config');
 

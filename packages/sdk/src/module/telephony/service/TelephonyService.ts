@@ -16,10 +16,14 @@ import { SERVICE } from '../../../service/eventKey';
 import { MAKE_CALL_ERROR_CODE } from '../types';
 import { IdModel } from '../../../framework/model';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { SettingService } from 'sdk/module/setting';
+import { PhoneSetting } from '../setting';
 
 class TelephonyService extends EntityBaseService<IdModel> {
   private _telephonyEngineController: TelephonyEngineController;
   private _userConfig: TelephonyUserConfig;
+  private _phoneSetting: PhoneSetting;
 
   constructor() {
     super(false);
@@ -29,6 +33,23 @@ class TelephonyService extends EntityBaseService<IdModel> {
       }),
     );
     this._init();
+  }
+
+  protected onStarted() {
+    super.onStarted();
+    ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    ).registerModuleSetting(this.phoneSetting);
+  }
+
+  protected onStopped() {
+    super.onStopped();
+    if (this._phoneSetting) {
+      ServiceLoader.getInstance<SettingService>(
+        ServiceConfig.SETTING_SERVICE,
+      ).unRegisterModuleSetting(this._phoneSetting);
+      delete this._phoneSetting;
+    }
   }
 
   handleLogOut = async () => {
@@ -165,6 +186,13 @@ class TelephonyService extends EntityBaseService<IdModel> {
   getLastCalledNumber = () => {
     const accountController = this.telephonyController.getAccountController();
     return accountController ? accountController.getLastCalledNumber() : '';
+  }
+
+  get phoneSetting() {
+    if (!this._phoneSetting) {
+      this._phoneSetting = new PhoneSetting(this.userConfig);
+    }
+    return this._phoneSetting;
   }
 }
 

@@ -24,6 +24,8 @@ import { PermissionService, UserPermissionType } from '../../permission';
 import { ENTITY } from 'sdk/service/eventKey';
 import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 import { AccountService } from 'sdk/module/account';
+import _ from 'lodash';
+import { VoIPMediaDevicesDelegate } from './mediaDeviceDelegate/VoIPMediaDevicesDelegate';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -60,13 +62,13 @@ class TelephonyEngineController {
   rtcEngine: RTCEngine;
   voipNetworkDelegate: VoIPNetworkClient;
   voipDaoDelegate: VoIPDaoClient;
+  mediaDevicesController: VoIPMediaDevicesDelegate;
   private _accountController: TelephonyAccountController;
   private _preCallingPermission: boolean = false;
 
-  constructor(telephonyConfig: TelephonyUserConfig) {
+  constructor(public telephonyConfig: TelephonyUserConfig) {
     this.voipNetworkDelegate = new VoIPNetworkClient();
     this.voipDaoDelegate = new VoIPDaoClient(telephonyConfig);
-
     this.subscribeNotifications();
   }
 
@@ -128,8 +130,13 @@ class TelephonyEngineController {
   initEngine() {
     RTCEngine.setLogger(new TelephonyLogController());
     this.rtcEngine = RTCEngine.getInstance();
+    this.mediaDevicesController = new VoIPMediaDevicesDelegate(
+      this.telephonyConfig,
+      this.rtcEngine,
+    );
     this.rtcEngine.setNetworkDelegate(this.voipNetworkDelegate);
     this.rtcEngine.setTelephonyDaoDelegate(this.voipDaoDelegate);
+    this.rtcEngine.setMediaDeviceDelegate(this.mediaDevicesController);
   }
 
   createAccount(

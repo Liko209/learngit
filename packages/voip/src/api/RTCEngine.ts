@@ -28,7 +28,7 @@ class RTCEngine {
   }
 
   protected constructor() {
-    RTCMediaDeviceManager.instance().updateMediaDevices();
+    RTCMediaDeviceManager.instance().initMediaDevices();
     RTCMediaDeviceManager.instance().subscribeDeviceChange();
   }
 
@@ -79,9 +79,22 @@ class RTCEngine {
     return RTCMediaDeviceManager.instance().getAudioOutputs();
   }
 
-  public updateMediaDevices(): void {
-    RTCMediaDeviceManager.instance().updateMediaDevices();
+  public getCurrentAudioInput() {
+    return RTCMediaDeviceManager.instance().getCurrentAudioInput();
   }
+
+  public setCurrentAudioInput(deviceId: string) {
+    return RTCMediaDeviceManager.instance().setAudioInputDevice(deviceId);
+  }
+
+  public getCurrentAudioOutput() {
+    return RTCMediaDeviceManager.instance().getCurrentAudioOutput();
+  }
+
+  public setCurrentAudioOutput(deviceId: string) {
+    return RTCMediaDeviceManager.instance().setAudioOutputDevice(deviceId);
+  }
+  
 }
 
 export { RTCEngine };
