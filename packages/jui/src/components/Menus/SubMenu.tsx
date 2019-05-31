@@ -38,7 +38,10 @@ const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
   };
 
   const Anchor = useRef(() => {
-    const { title, ...rest } = props;
+    const { title, disabled, ...rest } = props;
+    if (disabled) {
+      return <StyledMenuItem disabled={true}>{title}</StyledMenuItem>;
+    }
     return (
       <StyledSubMenuItem {...rest}>
         {title}

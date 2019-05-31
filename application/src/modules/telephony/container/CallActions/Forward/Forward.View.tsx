@@ -25,14 +25,12 @@ class ForwardViewComponent extends React.Component<Props> {
   }
 
   render() {
-    const { t } = this.props;
-    const disabled = this.props.shouldDisableForwardButton.get();
-    const forwardCalls = this.props.forwardCalls.get();
+    const { t, shouldDisableForwardButton, forwardCalls } = this.props;
     return (
       <JuiSubMenu
         data-test-automation-id="telephony-forward-menu-item"
         title={t('telephony.action.forward')}
-        disabled={disabled}
+        disabled={shouldDisableForwardButton}
       >
         {forwardCalls &&
           forwardCalls.map(({ phoneNumber, label }) => {
