@@ -184,7 +184,6 @@ class FilesView extends React.Component<FilesViewProps> {
           const { status } = versions[getCurrentVersionIndex(id)];
           const iconType = getFileIcon(type);
           const supportFileViewer = isSupportFileViewer(type);
-          console.log('looper1', status);
           const fileReadyForViewer = isFileReadyForViewer(status);
           if (id < 0) {
             return this._renderItem(id, progresses, name);
