@@ -34,7 +34,7 @@ test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'Profile', 'V1.4', 'Han
     await settingMenu.clickViewYourProfile();
   });
   await h(t).withLog('Then "Profile" page should be displayed', async() => {
-    await t.expect(settingMenu.viewYourProfileButton.exists).ok();
+    await t.expect(profileDialog.profileTitle.exists).ok();
   });
   await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_ProfilePage'});
 
