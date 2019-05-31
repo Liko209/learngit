@@ -315,9 +315,6 @@ class BaseJob {
     }
 
     void mail(addresses, String subject, String body) {
-        jenkins.echo addresses.join(',')
-        jenkins.echo subject
-        jenkins.echo body
         addresses.each {
             try {
                 jenkins.mail to: it, subject: subject, body: body
