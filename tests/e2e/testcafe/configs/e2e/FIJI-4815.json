@@ -1,0 +1,15 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./telephony/ToVoiceMail.ts"
+    ],
+    "include_tags": [
+      "JPT-1599",
+      "JPT-1510",
+      "JPT-1595"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

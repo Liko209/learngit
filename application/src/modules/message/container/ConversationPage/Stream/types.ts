@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ISortableModelWithData } from '@/store/base/fetch/types';
+import { ERROR_TYPES } from '@/common/catchError';
 import PostModel from '@/store/models/Post';
 import { STATUS } from '../types';
 
@@ -56,6 +57,7 @@ type StreamProps = {
 };
 
 type StreamViewProps = {
+  errorType: ERROR_TYPES;
   mostRecentPostId: number;
   firstHistoryUnreadInPage: boolean;
   postIds: number[];

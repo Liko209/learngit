@@ -45,12 +45,14 @@ class RCInfoService extends EntityBaseService<IdModel>
   }
 
   protected onStarted() {
+    super.onStarted();
     ServiceLoader.getInstance<SettingService>(
       ServiceConfig.SETTING_SERVICE,
     ).registerModuleSetting(this.rcInfoSettings);
   }
 
   protected onStopped() {
+    super.onStopped();
     if (this._rcInfoController) {
       this._rcInfoController.dispose();
       delete this._rcInfoController;
@@ -62,7 +64,6 @@ class RCInfoService extends EntityBaseService<IdModel>
       ).unRegisterModuleSetting(this._rcInfoSettings);
       delete this._rcInfoSettings;
     }
-    super.onStopped();
   }
 
   protected getRCInfoController(): RCInfoController {
