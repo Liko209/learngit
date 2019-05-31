@@ -58,7 +58,7 @@ class SelectSettingItemViewComponent<
       <JuiBoxSelect
         onChange={this._handleChange}
         disabled={disabled}
-        value={settingItemEntity.value ? settingItemEntity.value.id : ''}
+        value={this._extractValue(settingItemEntity.value)}
         automationId={`settingItemSelectBox-${settingItem.automationId}`}
         data-test-automation-class={'settingItemSelectBox'}
         isFullWidth={true}
@@ -123,6 +123,8 @@ class SelectSettingItemViewComponent<
       result = sourceItem;
     } else if (typeof sourceItem === 'object') {
       result = (sourceItem as { id: string | number }).id;
+    } else if (sourceItem === undefined) {
+      result = '';
     } else {
       throw new Error('Error: Can not extract value of source');
     }
