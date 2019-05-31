@@ -37,11 +37,12 @@ class SelectSettingItemViewComponent<
   }
 
   render() {
-    const { t, id, settingItem } = this.props;
+    const { t, id, disabled, settingItem } = this.props;
     return (
       <JuiSettingSectionItem
         id={id}
         automationId={settingItem.automationId}
+        disabled={disabled}
         label={t(settingItem.title || '')}
         description={t(settingItem.description || '')}
       >

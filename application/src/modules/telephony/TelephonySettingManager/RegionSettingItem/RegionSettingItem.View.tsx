@@ -53,17 +53,18 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
         descriptionText += `, ${areaCodeText}: ${areaCode}`;
       }
     }
-
+    const disabled = state === ESettingItemState.DISABLE;
     return (
       <JuiSettingSectionItem
         id="regionSetting"
         label={regionText}
         description={descriptionText}
+        disabled={disabled}
       >
         <JuiButton
           color="primary"
           onClick={this.handleClicked}
-          disabled={state === ESettingItemState.DISABLE}
+          disabled={disabled}
           data-test-automation-id="settingItemButton-regionSetting"
         >
           {t('setting.update')}

@@ -42,6 +42,7 @@ class LinkSettingItemViewComponent extends Component<Props> {
     return (
       <JuiSettingSectionItem
         id={id}
+        disabled={disabled}
         automationId={settingItem.automationId}
         label={t(settingItem.title || '')}
         description={t(settingItem.description || '')}

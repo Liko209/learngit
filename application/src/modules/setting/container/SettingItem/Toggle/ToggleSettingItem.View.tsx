@@ -27,11 +27,12 @@ class ToggleSettingItemViewComponent extends Component<Props> {
   }
 
   render() {
-    const { t, id, settingItem } = this.props;
+    const { t, id, settingItem, disabled } = this.props;
     return (
       <JuiSettingSectionItem
         id={id}
         automationId={settingItem.automationId}
+        disabled={disabled}
         label={t(settingItem.title || '')}
         description={t(settingItem.description || '')}
       >
