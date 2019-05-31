@@ -12,13 +12,18 @@ import {
   RTC_REPLY_MSG_TIME_UNIT,
   RTC_CALL_ACTION,
 } from 'voip';
+import {
+  Call,
+  HOLD_STATE,
+  CALL_STATE,
+  RECORD_STATE,
+  MUTE_STATE,
+} from '../../entity';
+import notificationCenter from 'sdk/service/notificationCenter';
+import { ENTITY } from 'sdk/service/eventKey';
 import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import { IdModel, ModelIdType } from 'sdk/framework/model';
-import { Call, HOLD_STATE, CALL_STATE } from '../../entity';
-import notificationCenter from 'sdk/service/notificationCenter';
-import { ENTITY } from 'sdk/service/eventKey';
-import { clear } from 'store2';
 
 jest.mock('voip');
 jest.mock('sdk/service/notificationCenter');
@@ -76,7 +81,11 @@ describe('TelephonyCallController', () => {
   describe('hangUp', () => {
     it('should call rtc hangup when controller hangup is called', () => {
       jest.spyOn(rtcCall, 'hangup');
+      callController._handleCallStateChanged = jest.fn();
       callController.hangUp();
+      expect(callController._handleCallStateChanged).toBeCalledWith(
+        RTC_CALL_STATE.DISCONNECTED,
+      );
       expect(rtcCall.hangup).toBeCalled();
     });
   });
@@ -84,7 +93,11 @@ describe('TelephonyCallController', () => {
   describe('mute', () => {
     it('should call rtc mute when controller mute is called', () => {
       jest.spyOn(rtcCall, 'mute');
+      callController._updateCallMuteState = jest.fn();
       callController.mute();
+      expect(callController._updateCallMuteState).toBeCalledWith(
+        MUTE_STATE.MUTED,
+      );
       expect(rtcCall.mute).toBeCalled();
     });
   });
@@ -92,42 +105,160 @@ describe('TelephonyCallController', () => {
   describe('unmute', () => {
     it('should call rtc unmute when controller unmute is called', () => {
       jest.spyOn(rtcCall, 'unmute');
+      callController._updateCallMuteState = jest.fn();
       callController.unmute();
+      expect(callController._updateCallMuteState).toBeCalledWith(
+        MUTE_STATE.IDLE,
+      );
       expect(rtcCall.unmute).toBeCalled();
     });
   });
 
   describe('hold', () => {
-    it('should call rtc hold when controller hold is called', () => {
-      jest.spyOn(rtcCall, 'hold');
+    it('should resolve when call is held successfully', (done: jest.DoneCallback) => {
+      const options = {};
+      expect.assertions(2);
       callController._updateCallHoldState = jest.fn();
-      callController.hold();
-      expect(rtcCall.hold).toBeCalled();
+      callController.hold().then(result => {
+        expect(result).toEqual(options);
+        done();
+      });
+      expect(callController._updateCallHoldState).toBeCalledWith(
+        HOLD_STATE.HELD,
+      );
+      callController.onCallActionSuccess(RTC_CALL_ACTION.HOLD, options);
+    });
+
+    it('should reject when call hold is failed', (done: jest.DoneCallback) => {
+      callController._updateCallHoldState = jest.fn();
+      expect.assertions(3);
+      callController
+        .hold()
+        .then(result => {
+          done();
+        })
+        .catch(result => {
+          expect(result).toEqual('');
+          done();
+        });
+      expect(callController._updateCallHoldState).toBeCalledWith(
+        HOLD_STATE.HELD,
+      );
+      callController.onCallActionFailed(RTC_CALL_ACTION.HOLD);
+      expect(callController._updateCallHoldState).toBeCalledWith(
+        HOLD_STATE.IDLE,
+      );
     });
   });
 
   describe('unhold', () => {
-    it('should call rtc unhold when controller unhold is called', () => {
-      jest.spyOn(rtcCall, 'unhold');
+    it('should resolve when call is unhold successfully', (done: jest.DoneCallback) => {
+      const options = {};
+      expect.assertions(2);
       callController._updateCallHoldState = jest.fn();
-      callController.unhold();
-      expect(rtcCall.unhold).toBeCalled();
+      callController.unhold().then(result => {
+        expect(result).toEqual(options);
+        done();
+      });
+      expect(callController._updateCallHoldState).toBeCalledWith(
+        HOLD_STATE.IDLE,
+      );
+      callController.onCallActionSuccess(RTC_CALL_ACTION.UNHOLD, options);
+    });
+
+    it('should reject when call unhold is failed', (done: jest.DoneCallback) => {
+      callController._updateCallHoldState = jest.fn();
+      expect.assertions(3);
+      callController
+        .unhold()
+        .then(result => {
+          done();
+        })
+        .catch(result => {
+          expect(result).toEqual('');
+          done();
+        });
+      expect(callController._updateCallHoldState).toBeCalledWith(
+        HOLD_STATE.IDLE,
+      );
+      callController.onCallActionFailed(RTC_CALL_ACTION.UNHOLD);
+      expect(callController._updateCallHoldState).toBeCalledWith(
+        HOLD_STATE.HELD,
+      );
     });
   });
 
   describe('startRecord', () => {
-    it('should call rtc startRecord when controller startRecord is called', () => {
-      jest.spyOn(rtcCall, 'startRecord');
-      callController.startRecord();
-      expect(rtcCall.startRecord).toBeCalled();
+    it('should resolve when startRecord is successfully', (done: jest.DoneCallback) => {
+      const options = {};
+      expect.assertions(2);
+      callController._updateCallRecordState = jest.fn();
+      callController.startRecord().then(result => {
+        expect(result).toEqual(options);
+        done();
+      });
+      expect(callController._updateCallRecordState).toBeCalledWith(
+        RECORD_STATE.RECORDING,
+      );
+      callController.onCallActionSuccess(RTC_CALL_ACTION.START_RECORD, options);
+    });
+
+    it('should reject when startRecord is failed', (done: jest.DoneCallback) => {
+      callController._updateCallRecordState = jest.fn();
+      expect.assertions(3);
+      callController
+        .startRecord()
+        .then(result => {
+          done();
+        })
+        .catch(result => {
+          expect(result).toEqual('');
+          done();
+        });
+      expect(callController._updateCallRecordState).toBeCalledWith(
+        RECORD_STATE.RECORDING,
+      );
+      callController.onCallActionFailed(RTC_CALL_ACTION.START_RECORD);
+      expect(callController._updateCallRecordState).toBeCalledWith(
+        RECORD_STATE.IDLE,
+      );
     });
   });
 
   describe('stopRecord', () => {
-    it('should call rtc stopRecord when controller stopRecord is called', () => {
-      jest.spyOn(rtcCall, 'stopRecord');
-      callController.stopRecord();
-      expect(rtcCall.stopRecord).toBeCalled();
+    it('should resolve when stopRecord is successfully', (done: jest.DoneCallback) => {
+      const options = {};
+      expect.assertions(2);
+      callController._updateCallRecordState = jest.fn();
+      callController.stopRecord().then(result => {
+        expect(result).toEqual(options);
+        done();
+      });
+      expect(callController._updateCallRecordState).toBeCalledWith(
+        RECORD_STATE.IDLE,
+      );
+      callController.onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD, options);
+    });
+
+    it('should reject when stopRecord is failed', (done: jest.DoneCallback) => {
+      callController._updateCallRecordState = jest.fn();
+      expect.assertions(3);
+      callController
+        .stopRecord()
+        .then(result => {
+          done();
+        })
+        .catch(result => {
+          expect(result).toEqual('');
+          done();
+        });
+      expect(callController._updateCallRecordState).toBeCalledWith(
+        RECORD_STATE.IDLE,
+      );
+      callController.onCallActionFailed(RTC_CALL_ACTION.STOP_RECORD);
+      expect(callController._updateCallRecordState).toBeCalledWith(
+        RECORD_STATE.RECORDING,
+      );
     });
   });
 
@@ -258,6 +389,8 @@ describe('TelephonyCallController', () => {
 
   describe('_handleCallStateChanged', () => {
     it('should update call state and hold when state is connected', () => {
+      jest.spyOn(rtcCall, 'getCallInfo').mockReturnValue({ sessionId: '123' });
+      Date.now = jest.fn().mockReturnValue(1);
       callController._getCallEntity = jest.fn().mockReturnValue({});
       const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
       callController._handleCallStateChanged(RTC_CALL_STATE.CONNECTED);
@@ -265,6 +398,9 @@ describe('TelephonyCallController', () => {
         {
           call_state: CALL_STATE.CONNECTED,
           hold_state: HOLD_STATE.IDLE,
+          record_state: RECORD_STATE.IDLE,
+          connectTime: 1,
+          session_id: '123',
         },
       ]);
     });
@@ -286,6 +422,7 @@ describe('TelephonyCallController', () => {
       expect(spy).toBeCalledWith(ENTITY.CALL, [
         {
           call_state: CALL_STATE.DISCONNECTED,
+          disconnectTime: 1,
         },
       ]);
     });
@@ -301,12 +438,14 @@ describe('TelephonyCallController', () => {
           fromNum: '2',
           uuid: '3',
         }),
+        isIncomingCall: jest.fn().mockReturnValue(true),
       });
       expect(spy).toBeCalledWith(ENTITY.CALL, [
         {
           to_num: '1',
           from_num: '2',
           call_id: '3',
+          direction: 'inbound',
         },
       ]);
     });

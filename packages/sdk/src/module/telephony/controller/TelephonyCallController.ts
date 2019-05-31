@@ -14,7 +14,14 @@ import {
 } from 'voip';
 import { ITelephonyCallDelegate } from '../service/ITelephonyCallDelegate';
 import { CallStateCallback } from '../types';
-import { Call, CALL_STATE, HOLD_STATE } from '../entity';
+import {
+  Call,
+  CALL_STATE,
+  HOLD_STATE,
+  RECORD_STATE,
+  CALL_DIRECTION,
+  MUTE_STATE,
+} from '../entity';
 import { ENTITY } from 'sdk/service/eventKey';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { telephonyLogger } from 'foundation';
@@ -65,6 +72,13 @@ class TelephonyCallController implements IRTCCallDelegate {
       call_id: '',
       call_state: CALL_STATE.IDLE,
       hold_state: HOLD_STATE.DISABLE,
+      record_state: RECORD_STATE.DISABLE,
+      startTime: Date.now(),
+      connectTime: 0,
+      disconnectTime: 0,
+      session_id: '',
+      direction: CALL_DIRECTION.OUTBOUND,
+      mute_state: MUTE_STATE.IDLE,
     };
     notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
   }
@@ -80,6 +94,9 @@ class TelephonyCallController implements IRTCCallDelegate {
       callEntity.to_num = call.getCallInfo().toNum;
       callEntity.from_num = call.getCallInfo().fromNum;
       callEntity.call_id = call.getCallInfo().uuid;
+      if (call.isIncomingCall()) {
+        callEntity.direction = CALL_DIRECTION.INBOUND;
+      }
       notificationCenter.emitEntityUpdate(ENTITY.CALL, [callEntity]);
     }
   }
@@ -105,9 +122,15 @@ class TelephonyCallController implements IRTCCallDelegate {
         case RTC_CALL_STATE.CONNECTED:
           call.call_state = CALL_STATE.CONNECTED;
           call.hold_state = HOLD_STATE.IDLE;
+          call.record_state = RECORD_STATE.IDLE;
+          call.connectTime = Date.now();
+          call.session_id = this._rtcCall.getCallInfo().sessionId;
           break;
         case RTC_CALL_STATE.DISCONNECTED:
           call.call_state = CALL_STATE.DISCONNECTED;
+          if (!call.disconnectTime) {
+            call.disconnectTime = Date.now();
+          }
           break;
       }
       notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
@@ -131,11 +154,18 @@ class TelephonyCallController implements IRTCCallDelegate {
     callAction: RTC_CALL_ACTION,
     options: RTCCallActionSuccessOptions,
   ) {
-    // TODO, waiting Lewi to refactor all the actions to have the same handling flow
-    if (this._isSupportNewFlow(callAction)) {
-      this._handleCallActionCallback(callAction, true, options);
-    } else {
-      this._callDelegate.onCallActionSuccess(callAction, options);
+    switch (callAction) {
+      case RTC_CALL_ACTION.HOLD:
+      case RTC_CALL_ACTION.UNHOLD:
+      case RTC_CALL_ACTION.START_RECORD:
+      case RTC_CALL_ACTION.STOP_RECORD:
+      case RTC_CALL_ACTION.PARK:
+      case RTC_CALL_ACTION.FLIP:
+      case RTC_CALL_ACTION.FORWARD:
+        this._handleCallActionCallback(callAction, true, options);
+        break;
+      default:
+        telephonyLogger.info(`CallActionSuccess: ${callAction} is not handled`);
     }
   }
 
@@ -151,10 +181,31 @@ class TelephonyCallController implements IRTCCallDelegate {
 
   private _handleHoldActionFailed() {
     this._updateCallHoldState(HOLD_STATE.IDLE);
+    this._handleCallActionCallback(RTC_CALL_ACTION.HOLD, false);
   }
 
   private _handleUnHoldActionFailed() {
     this._updateCallHoldState(HOLD_STATE.HELD);
+    this._handleCallActionCallback(RTC_CALL_ACTION.UNHOLD, false);
+  }
+
+  private _updateCallRecordState(state: RECORD_STATE) {
+    const call = this._getCallEntity();
+    if (call) {
+      call.record_state = state;
+      notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
+    } else {
+      telephonyLogger.warn(`No entity is found for call: ${this._entityId}`);
+    }
+  }
+  private _handleStartRecordActionFailed() {
+    this._updateCallRecordState(RECORD_STATE.IDLE);
+    this._handleCallActionCallback(RTC_CALL_ACTION.START_RECORD, false);
+  }
+
+  private _handleStopRecordActionFailed() {
+    this._updateCallRecordState(RECORD_STATE.RECORDING);
+    this._handleCallActionCallback(RTC_CALL_ACTION.STOP_RECORD, false);
   }
 
   onCallActionFailed(callAction: RTC_CALL_ACTION) {
@@ -165,53 +216,87 @@ class TelephonyCallController implements IRTCCallDelegate {
       case RTC_CALL_ACTION.UNHOLD:
         this._handleUnHoldActionFailed();
         break;
+      case RTC_CALL_ACTION.START_RECORD:
+        this._handleStartRecordActionFailed();
+        break;
+      case RTC_CALL_ACTION.STOP_RECORD:
+        this._handleStopRecordActionFailed();
+        break;
       case RTC_CALL_ACTION.PARK:
       case RTC_CALL_ACTION.FLIP:
       case RTC_CALL_ACTION.FORWARD:
         this._handleCallActionCallback(callAction, false);
         break;
       default:
-        this._callDelegate.onCallActionFailed(callAction);
+        telephonyLogger.info(
+          `onCallActionFailed: ${callAction} is not handled`,
+        );
     }
   }
 
-  private _isSupportNewFlow(callAction: RTC_CALL_ACTION) {
-    // this function should be removed after refactoring by Lewi
-    return (
-      callAction === RTC_CALL_ACTION.PARK ||
-      callAction === RTC_CALL_ACTION.FLIP ||
-      callAction === RTC_CALL_ACTION.FORWARD
-    );
-  }
-
   hangUp() {
+    this._handleCallStateChanged(RTC_CALL_STATE.DISCONNECTED);
     this._rtcCall.hangup();
   }
 
+  private _updateCallMuteState(state: MUTE_STATE) {
+    const call = this._getCallEntity();
+    if (call) {
+      call.mute_state = state;
+      notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
+    } else {
+      telephonyLogger.warn(`No entity is found for call: ${this._entityId}`);
+    }
+  }
+
   mute() {
+    this._updateCallMuteState(MUTE_STATE.MUTED);
     this._rtcCall.mute();
   }
 
   unmute() {
+    this._updateCallMuteState(MUTE_STATE.IDLE);
     this._rtcCall.unmute();
   }
 
   hold() {
     this._updateCallHoldState(HOLD_STATE.HELD);
-    this._rtcCall.hold();
+    return new Promise((resolve, reject) => {
+      this._saveCallActionCallback(RTC_CALL_ACTION.HOLD, resolve, reject);
+      this._rtcCall.hold();
+    });
   }
 
   unhold() {
     this._updateCallHoldState(HOLD_STATE.IDLE);
-    this._rtcCall.unhold();
+    return new Promise((resolve, reject) => {
+      this._saveCallActionCallback(RTC_CALL_ACTION.UNHOLD, resolve, reject);
+      this._rtcCall.unhold();
+    });
   }
 
   startRecord() {
-    this._rtcCall.startRecord();
+    this._updateCallRecordState(RECORD_STATE.RECORDING);
+    return new Promise((resolve, reject) => {
+      this._saveCallActionCallback(
+        RTC_CALL_ACTION.START_RECORD,
+        resolve,
+        reject,
+      );
+      this._rtcCall.startRecord();
+    });
   }
 
   stopRecord() {
-    this._rtcCall.stopRecord();
+    this._updateCallRecordState(RECORD_STATE.IDLE);
+    return new Promise((resolve, reject) => {
+      this._saveCallActionCallback(
+        RTC_CALL_ACTION.STOP_RECORD,
+        resolve,
+        reject,
+      );
+      this._rtcCall.stopRecord();
+    });
   }
 
   dtmf(digits: string) {

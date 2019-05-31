@@ -5,16 +5,32 @@
  */
 
 enum CALL_STATE {
-  IDLE,
-  CONNECTING,
-  CONNECTED,
-  DISCONNECTED,
+  IDLE = 'idle',
+  CONNECTING = 'connecting',
+  CONNECTED = 'connected',
+  DISCONNECTED = 'disconnected',
 }
 
 enum HOLD_STATE {
-  IDLE,
-  HELD,
-  DISABLE,
+  IDLE = 'idle',
+  HELD = 'held',
+  DISABLE = 'disable',
 }
 
-export { CALL_STATE, HOLD_STATE };
+enum RECORD_STATE {
+  IDLE = 'idle',
+  RECORDING = 'recording',
+  DISABLE = 'disable',
+}
+
+enum CALL_DIRECTION {
+  OUTBOUND = 'outbound',
+  INBOUND = 'inbound',
+}
+
+enum MUTE_STATE {
+  IDLE = 'idle',
+  MUTED = 'muted',
+}
+
+export { CALL_STATE, HOLD_STATE, RECORD_STATE, CALL_DIRECTION, MUTE_STATE };

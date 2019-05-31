@@ -92,20 +92,24 @@ class TelephonyService extends EntityBaseService<Call> {
     this.telephonyController.getAccountController().unmute(callId);
   }
 
-  hold = (callId: string) => {
-    this.telephonyController.getAccountController().hold(callId);
+  hold = async (callId: string) => {
+    return await this.telephonyController.getAccountController().hold(callId);
   }
 
-  unhold = (callId: string) => {
-    this.telephonyController.getAccountController().unhold(callId);
+  unhold = async (callId: string) => {
+    return await this.telephonyController.getAccountController().unhold(callId);
   }
 
-  startRecord = (callId: string) => {
-    this.telephonyController.getAccountController().startRecord(callId);
+  startRecord = async (callId: string) => {
+    return await this.telephonyController
+      .getAccountController()
+      .startRecord(callId);
   }
 
-  stopRecord = (callId: string) => {
-    this.telephonyController.getAccountController().stopRecord(callId);
+  stopRecord = async (callId: string) => {
+    return await this.telephonyController
+      .getAccountController()
+      .stopRecord(callId);
   }
 
   dtmf = (callId: string, digits: string) => {
