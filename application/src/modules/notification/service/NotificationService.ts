@@ -13,8 +13,6 @@ import {
 import { AbstractNotification } from '../agent/AbstractNotification';
 import { SWNotification } from '../agent/SWNotification';
 import { isFirefox } from '@/common/isUserAgent';
-// alessia[todo]:
-// import { PERMISSION } from '../interface/constant';
 import { Pal } from 'sdk/pal';
 
 class NotificationService implements INotificationService {

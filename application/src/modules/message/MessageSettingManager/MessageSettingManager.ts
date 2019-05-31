@@ -26,6 +26,7 @@ class MessageSettingManager implements IMessageSettingManager {
       SETTING_SECTION__DESKTOP_NOTIFICATIONS,
       {
         id: SETTING_ITEM__NOTIFICATION_NEW_MESSAGES,
+        automationId: 'newMessages',
         title:
           'setting.notificationAndSounds.desktopNotifications.newMessages.label',
         description:

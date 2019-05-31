@@ -120,11 +120,12 @@ class NotificationBrowserSettingItemViewComponent extends Component<
     return (
       <JuiSettingSectionItem
         id="notificationBrowserSetting"
+        automationId="notificationBrowser"
         label={label}
         description={description}
       >
         <JuiToggleButton
-          data-test-automation-id="notificationBrowserSettingToggleButton"
+          data-test-automation-id="settingItemToggleButton-notificationBrowser"
           checked={this.state.isPending || desktopNotifications || false}
           onChange={this.handleToggleChange}
         />

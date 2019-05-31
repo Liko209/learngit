@@ -19,7 +19,6 @@ class NotificationSettingManager implements INotificationSettingManager {
   @ISettingService private _settingService: ISettingService;
 
   init = async () => {
-    // alessia[todo]: register section and one item for browser
     const notificationItems: SettingItem[] = [];
     if (!isElectron) {
       notificationItems.push({
