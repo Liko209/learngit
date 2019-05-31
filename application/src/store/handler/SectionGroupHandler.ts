@@ -19,7 +19,6 @@ import { GroupService } from 'sdk/module/group';
 import { Group } from 'sdk/module/group/entity';
 import { Profile } from 'sdk/module/profile/entity';
 import { GroupState } from 'sdk/module/state/entity';
-
 import { SECTION_TYPE } from '@/modules/message/container/LeftRail/Section/types';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import GroupStateModel from '@/store/models/GroupState';
@@ -285,7 +284,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
             });
             mainLogger
               .tags(LOG_TAG)
-              .info('subscribe notification|user was removed from current conversation(a private team)');
+              .info('subscribe notification|user was removed from current conversation');
           }
         }
         // update url
