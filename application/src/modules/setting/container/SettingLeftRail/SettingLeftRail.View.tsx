@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import {
@@ -30,7 +31,9 @@ const StyledList = styled(JuiList)`
   }
 `;
 
-type Props = SettingLeftRailViewProps & WithTranslation;
+type Props = SettingLeftRailViewProps &
+  WithTranslation &
+  RouteComponentProps<{ subPath: string }>;
 
 @observer
 class SettingLeftRailViewComponent extends Component<Props> {
@@ -47,13 +50,17 @@ class SettingLeftRailViewComponent extends Component<Props> {
   }
 
   private _renderNavItems() {
-    const { t, pages, currentPage, goToSettingPage } = this.props;
+    const { t, match, pages, currentPage, goToSettingPage } = this.props;
+
     return pages.map(page => {
       return (
         <JuiListNavItem
           data-name="sub-setting"
           data-test-automation-id={`entry-${page.automationId}`}
-          selected={currentPage && page.id === currentPage.id}
+          selected={
+            (currentPage && page.id === currentPage.id) ||
+            page.path === `/${match.params.subPath}`
+          }
           classes={{ selected: 'selected' }}
           onClick={() => goToSettingPage(page.id)}
           key={page.id}
@@ -69,7 +76,7 @@ class SettingLeftRailViewComponent extends Component<Props> {
 }
 
 const SettingLeftRailView = withTranslation('translations')(
-  SettingLeftRailViewComponent,
+  withRouter(SettingLeftRailViewComponent),
 );
 
 export { SettingLeftRailView };

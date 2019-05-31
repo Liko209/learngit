@@ -21,7 +21,7 @@ class SettingLeftRailViewModel extends StoreViewModel {
   @computed
   get pages() {
     return this._settingStore
-      .getNoEmptyPages()
+      .getAllPages()
       .map(pageId => this._settingStore.getPageById(pageId));
   }
 
