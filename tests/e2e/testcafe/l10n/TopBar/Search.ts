@@ -88,9 +88,21 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
   });
   await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_TopBar_CallButton' });
 
+  const theTeamWhichWithoutMe = searchDialog.instantPage.nthTeam(0)
+  const joinTeamDialog = app.homePage.joinTeamDialog;
+
+  await h(t).withLog(`When I search with ${publicTeamWithoutMe.name} and click it `, async () => {
+    await searchDialog.typeSearchKeyword(publicTeamWithoutMe.name);
+    await t.click(theTeamWhichWithoutMe.self);
+  });
+  await h(t).withLog('Then "Join team" popup should be displayed', async () => {
+    await t.expect(joinTeamDialog.cancelButton.exists).ok();
+  });
+  await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_JoinTeamPopup' });
+
   await h(t).withLog('When I click the "search" box again', async () => {
     const searchBar = app.homePage.header.searchBar;
-    await searchDialog.closeButton();
+    await joinTeamDialog.clickCancelButton();
     await searchBar.enter();
   });
   await h(t).withLog('Then search history should be displayed', async () => {
