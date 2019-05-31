@@ -350,7 +350,7 @@ class MetricService {
       }
     });
     if (versions && versions.length > 0) {
-      await LoadingTimeDevelopSummaryDto.destroy({ where: { versionId: { [Op.notIn]: versions.map(a => a.id) }, platform: platform, isRelease: false } })
+      await LoadingTimeDevelopSummaryDto.destroy({ where: { versionId: { [Op.notIn]: versions.map(a => a.id) }, platform: platform, name: summary.name, isRelease: false } })
     }
 
     const release = isRelease ? 1 : 0;
@@ -421,7 +421,7 @@ class MetricService {
       time: DateUtils.getTimeRange(minTime, maxTime)
     }
 
-    if ((!version.isRelease && isDevelop) || isRelease) {
+    if (isDevelop || isRelease) {
       await LoadingTimeReleaseSummaryDto.destroy({
         where: {
           name: summary.name, version: versionName, platform: platform

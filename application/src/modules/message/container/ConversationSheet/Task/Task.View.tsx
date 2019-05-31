@@ -20,7 +20,7 @@ import {
   JuiExpandImage,
   JuiFileWrapper,
 } from 'jui/pattern/ConversationCard/Files';
-import { showImageViewer } from '@/containers/Viewer';
+import { showImageViewer } from '@/modules/viewer/container/Viewer';
 
 import { AvatarName } from './AvatarName';
 import { ViewProps, FileType, ExtendFileItem } from './types';

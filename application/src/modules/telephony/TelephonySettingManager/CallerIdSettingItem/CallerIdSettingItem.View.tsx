@@ -8,6 +8,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { SettingItemProps } from '@/modules/setting/container/SettingItemBuild';
 import { SelectsView } from '@/modules/setting/container/SettingItems';
+import { JuiText } from 'jui/components/Text';
 import { IPhoneNumberRecord } from 'sdk/api/ringcentral/types/common';
 import { CallerIdSettingItemViewModelProps } from './types';
 
@@ -19,7 +20,7 @@ class CallerIdSettingItemViewComponent extends Component<
     const parsedItem = this.props.parsedSource.find(
       item => item.id === sourceItem.id,
     );
-    return parsedItem!.phoneNumber;
+    return <JuiText>{parsedItem!.phoneNumber}</JuiText>;
   }
 
   render() {

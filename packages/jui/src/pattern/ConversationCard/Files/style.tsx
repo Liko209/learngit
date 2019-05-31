@@ -67,7 +67,7 @@ const FileInfo = styled(MuiListItemText)`
     padding: ${spacing(0, 0, 0, 3)};
     .file-item-primary {
       ${typography('body1')};
-      width: ${width(57)};
+      width: 100%;
       color: ${palette('grey', '900')};
     }
     .file-item-secondary {

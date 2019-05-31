@@ -6,5 +6,6 @@
 const CLIENT_SERVICE = 'window_service';
 interface IClientService {
   focus: () => void;
+  invokeApp: (url: string) => void;
 }
 export { CLIENT_SERVICE, IClientService };

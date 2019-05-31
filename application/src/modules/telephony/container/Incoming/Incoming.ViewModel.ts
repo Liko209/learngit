@@ -34,6 +34,11 @@ class IncomingViewModel extends StoreViewModel<IncomingProps>
     return this._telephonyStore.isExt;
   }
 
+  @computed
+  get incomingState() {
+    return this._telephonyStore.incomingState;
+  }
+
   @observable
   didHitAutoPolicy: boolean = false;
 
