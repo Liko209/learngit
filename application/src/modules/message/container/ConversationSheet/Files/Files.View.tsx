@@ -24,6 +24,8 @@ import { withFuture, FutureCreator } from 'jui/hoc/withFuture';
 import { UploadFileTracker } from './UploadFileTracker';
 import { Download } from '@/containers/common/Download';
 import { accelerateURL } from '@/common/accelerateURL';
+import moize from 'moize';
+import { FileActionMenu } from '@/containers/common/fileAction';
 
 const SQUARE_SIZE = 180;
 const FutureAttachmentItem = withFuture(AttachmentItem);
@@ -96,17 +98,24 @@ class FilesView extends React.Component<FilesViewProps> {
     );
   }
 
-  // async componentDidMount() {
-  // await this.props.getCropImage();
-  // }
-
   private _handleImageDidLoad = (id: number, callback: Function) => {
     UploadFileTracker.tracker().clear(this.props.ids);
     callback();
   }
 
+  handleFileMoreIconClicked = () => {};
+
+  private _getActions = moize(
+    (downloadUrl: string, fileId: number, postId: number) => {
+      return [
+        <Download key="download-action" url={downloadUrl} />,
+        <FileActionMenu key="more-action" fileId={fileId} postId={postId} />,
+      ];
+    },
+  );
+
   render() {
-    const { files, progresses, urlMap } = this.props;
+    const { files, progresses, urlMap, postId } = this.props;
     const singleImage = files[FileType.image].length === 1;
     return (
       <>
@@ -142,7 +151,7 @@ class FilesView extends React.Component<FilesViewProps> {
                   squareSize={SQUARE_SIZE}
                   fileName={name}
                   url={accelerateURL(urlMap.get(id)) || ''}
-                  Actions={<Download url={downloadUrl} />}
+                  Actions={this._getActions(downloadUrl, id, postId)}
                 />
               ),
             );
@@ -170,7 +179,7 @@ class FilesView extends React.Component<FilesViewProps> {
               squareSize={SQUARE_SIZE}
               fileName={name}
               url={accelerateURL(urlMap.get(id)) || ''}
-              Actions={<Download url={downloadUrl} />}
+              Actions={this._getActions(downloadUrl, id, postId)}
             />
           );
         })}
@@ -188,7 +197,7 @@ class FilesView extends React.Component<FilesViewProps> {
               size={`${getFileSize(size)}`}
               url={accelerateURL(previewUrl)!}
               iconType={iconType}
-              Actions={<Download url={downloadUrl} />}
+              Actions={this._getActions(downloadUrl, id, postId)}
             />
           );
         })}
@@ -205,7 +214,7 @@ class FilesView extends React.Component<FilesViewProps> {
               fileName={name}
               size={`${getFileSize(size)}`}
               iconType={iconType}
-              Actions={<Download url={downloadUrl} />}
+              Actions={this._getActions(downloadUrl, id, postId)}
             />
           );
         })}
