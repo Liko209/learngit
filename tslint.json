@@ -19,6 +19,7 @@
     "jsx-no-lambda": false,
     "no-increment-decrement": false,
     "max-line-length": [true, 200],
+    "jsx-wrap-multiline": false,
     "function-name": [
       true,
       {

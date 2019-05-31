@@ -17,7 +17,7 @@ type Props = WithTranslation & CallViewProps & CallProps;
 class CallViewComponent extends Component<Props> {
   private _handleClick = (evt: React.MouseEvent) => {
     evt.stopPropagation();
-    const { directCall, onClick, trackCall } = this.props;
+    const { call, onClick, trackCall } = this.props;
     if (onClick) {
       onClick();
     } else {
@@ -26,7 +26,7 @@ class CallViewComponent extends Component<Props> {
     /**
      * TODO: move this call making & state changing logic down to SDK
      */
-    directCall();
+    call();
     trackCall(this.props.analysisSource);
   }
 

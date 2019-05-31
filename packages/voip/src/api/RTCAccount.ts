@@ -43,12 +43,14 @@ class RTCAccount implements IRTCAccount {
   private _provManager: RTCProvManager;
   private _callManager: RTCCallManager;
   private _networkListener: Listener;
+  private _userAgentInfo: RTCUserAgentInfo;
   private _sleepModeListener: Listener;
 
   constructor(listener: IRTCAccountDelegate, userAgentInfo: RTCUserAgentInfo) {
     this._state = RTC_ACCOUNT_STATE.IDLE;
     this._delegate = listener;
     this._regManager = new RTCRegistrationManager(userAgentInfo);
+    this._userAgentInfo = userAgentInfo;
     this._provManager = new RTCProvManager();
     this._callManager = new RTCCallManager();
     this._networkListener = (params: any) => {
@@ -106,7 +108,15 @@ class RTCAccount implements IRTCAccount {
       callOption = {};
     }
     this._regManager.makeCall(toNumber, delegate, callOption);
-    const call = new RTCCall(false, toNumber, null, this, delegate, callOption);
+    const call = new RTCCall(
+      false,
+      toNumber,
+      null,
+      this,
+      delegate,
+      callOption,
+      this._userAgentInfo,
+    );
     this._callManager.addCall(call);
     if (this.isReady()) {
       call.onAccountReady();
@@ -246,7 +256,15 @@ class RTCAccount implements IRTCAccount {
       );
       return;
     }
-    const call = new RTCCall(true, '', session, this, null);
+    const call = new RTCCall(
+      true,
+      '',
+      session,
+      this,
+      null,
+      undefined,
+      this._userAgentInfo,
+    );
     this._callManager.addCall(call);
     this._delegate.onReceiveIncomingCall(call);
   }

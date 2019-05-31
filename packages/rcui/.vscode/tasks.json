@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Open debug browser",
+      "type": "shell",
+      // /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --new-window http://localhost:6006
+      "command": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --new-window http://localhost:6006",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Storybook",
+      "type": "npm",
+      "script": "start",
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}
