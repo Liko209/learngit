@@ -35,11 +35,13 @@ class TelephonySettingManager {
       sections: [
         {
           id: SETTING_SECTION__PHONE_GENERAL,
+          automationId: 'phoneGeneral',
           title: 'setting.phone.general.title',
           weight: 0,
           items: [
             {
               id: SETTING_ITEM__PHONE_CALLER_ID,
+              automationId: 'callerID',
               title: 'setting.phone.general.callerID.label',
               description: 'setting.phone.general.callerID.description',
               type: SETTING_ITEM_TYPE.SELECT,
@@ -53,6 +55,7 @@ class TelephonySettingManager {
             },
             {
               id: SETTING_ITEM__PHONE_EXTENSIONS,
+              automationId: 'extensions',
               title: 'setting.phone.general.extensions.label',
               description: 'setting.phone.general.extensions.description',
               type: SETTING_ITEM_TYPE.LINK,

@@ -8,7 +8,6 @@ import SettingModel from '@/store/models/UserSetting';
 
 type BaseSettingItemProps = {
   id: SettingItem['id'];
-  automationKey?: string;
 };
 
 type BaseSettingItemViewProps = {

@@ -21,6 +21,7 @@ import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
 import { toTitleCase } from '@/utils/string';
 import { SettingLeftRailViewProps } from './types';
+import { observable } from 'mobx';
 
 // TODO move to jui
 const StyledList = styled(JuiList)`
@@ -37,6 +38,19 @@ type Props = SettingLeftRailViewProps &
 
 @observer
 class SettingLeftRailViewComponent extends Component<Props> {
+  @observable
+  selectedPath: string = `/${window.location.pathname.split('/').pop()}`;
+
+  componentDidMount() {
+    const { history } = this.props;
+    history.listen(location => {
+      const newSelectedPath = location.pathname.split('/').pop();
+      if (this.selectedPath !== newSelectedPath) {
+        this.selectedPath = `/${newSelectedPath}`;
+      }
+    });
+  }
+
   render() {
     return (
       <JuiLeftRail>
@@ -50,17 +64,14 @@ class SettingLeftRailViewComponent extends Component<Props> {
   }
 
   private _renderNavItems() {
-    const { t, match, pages, currentPage, goToSettingPage } = this.props;
+    const { t, pages, goToSettingPage } = this.props;
 
     return pages.map(page => {
       return (
         <JuiListNavItem
           data-name="sub-setting"
           data-test-automation-id={`entry-${page.automationId}`}
-          selected={
-            (currentPage && page.id === currentPage.id) ||
-            page.path === `/${match.params.subPath}`
-          }
+          selected={page.path === this.selectedPath}
           classes={{ selected: 'selected' }}
           onClick={() => goToSettingPage(page.id)}
           key={page.id}

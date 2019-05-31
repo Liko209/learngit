@@ -18,6 +18,11 @@ type SettingItem = {
   id: number;
 
   /**
+   * automationId for E2E
+   */
+  automationId?: string;
+
+  /**
    * The i18n key of title
    */
   title?: string;

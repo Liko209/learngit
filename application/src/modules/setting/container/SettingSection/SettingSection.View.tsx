@@ -23,7 +23,9 @@ class SettingSectionComponent extends Component<Props> {
       <JuiSettingSection
         key={section.id}
         title={t(section.title)}
-        data-test-automation-id="SettingSectionContainer"
+        data-test-automation-id={`SettingSectionContainer-${
+          section.automationId
+        }`}
       >
         {this._renderSettingItems()}
       </JuiSettingSection>

@@ -12,6 +12,11 @@ type SettingPage = {
   id: string;
 
   /**
+   * automationId for E2E
+   */
+  automationId: string;
+
+  /**
    * The i18n key of title
    */
   title: string;
@@ -25,11 +30,6 @@ type SettingPage = {
    * The icon of this page
    */
   icon?: string;
-
-  /**
-   * automationId for E2E
-   */
-  automationId?: string;
 
   /**
    * The weight of this item which can

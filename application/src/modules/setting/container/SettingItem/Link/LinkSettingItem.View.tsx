@@ -37,12 +37,12 @@ class LinkSettingItemViewComponent extends Component<Props> {
   }
 
   render() {
-    const { t, id, automationKey, disabled, settingItem } = this.props;
+    const { t, id, disabled, settingItem } = this.props;
 
     return (
       <JuiSettingSectionItem
         id={id}
-        automationId={automationKey}
+        automationId={settingItem.automationId}
         label={t(settingItem.title || '')}
         description={t(settingItem.description || '')}
       >

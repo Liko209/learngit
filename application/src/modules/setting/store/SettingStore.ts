@@ -7,7 +7,7 @@ import { uniq } from 'lodash';
 import { observable, action, computed, createAtom } from 'mobx';
 import { ESettingItemState } from 'sdk/framework/model/setting/types';
 import { SettingPage, SettingSection, SettingItem } from '@/interface/setting';
-import { SettingStoreScope } from './SettingStoreScope';
+import { SettingStoreScope, StorePage } from './SettingStoreScope';
 import { getSettingItemEntity } from './utils';
 
 function compareWeight<T extends { weight: number }>(left: T, right: T) {
@@ -46,11 +46,11 @@ class SettingStore {
 
   @action
   getAllPages() {
-    const result: SettingPage['id'][] = [];
+    const pages: StorePage[] = [];
     this._storeScopes.forEach(storeScope => {
-      result.push(...storeScope.pages.map(page => page.id));
+      pages.push(...storeScope.pages);
     });
-    return uniq(result);
+    return uniq(pages.sort(compareWeight).map(page => page.id));
   }
 
   @action
