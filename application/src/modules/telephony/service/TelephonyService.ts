@@ -868,7 +868,9 @@ class TelephonyService {
     return this._serverTelephonyService
       .park(this._callId)
       .then((callOptions: RTCCallActionSuccessOptions) => {
-        const message = i18next.t('telephony.prompt.ParkOk') + callOptions.parkExtension;
+        const message = `${i18next.t('telephony.prompt.ParkOk')}*${
+          callOptions.parkExtension
+        }`;
         Notification.flagToast({
           message,
           type: ToastType.SUCCESS,
