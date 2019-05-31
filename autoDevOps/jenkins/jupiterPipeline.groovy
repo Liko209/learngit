@@ -583,7 +583,7 @@ class JupiterJob extends BaseJob {
                 jenkins.sh "git fetch -f ${context.gitlabTargetNamespace} refs/notes/*:refs/notes/*"
             }
             // step 2: get latest commit on baseline branch with notes
-            jenkins.sh "git rev-list ${context.gitlabTargetNamespace}/${context.gitlabTargetBranch} > commit-sha.txt"
+            jenkins.sh "git rev-list HEAD > commit-sha.txt"
             jenkins.sh "git notes | cut -d ' ' -f 2 > note-sha.txt"
             String latestCommitWithNote = jenkins.sh(returnStdout: true, script: "grep -Fx -f note-sha.txt commit-sha.txt | head -1").trim()
             // step 3: compare with baseline
