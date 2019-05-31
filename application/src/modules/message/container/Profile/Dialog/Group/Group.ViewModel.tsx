@@ -30,7 +30,7 @@ class ProfileDialogGroupViewModel
           portalManager.dismissLast();
           Notification.flashToast({
             ...defaultNotificationOptions,
-            message: i18nP('people.prompt.youHaveBeenRemovedFromTeam'),
+            message: i18nP('people.prompt.conversationPrivate'),
           });
         }
       },
