@@ -10,7 +10,8 @@ import { featureModuleConfig } from '../../config/featureModuleConfig';
 import _ from 'lodash';
 
 const permission = {
-  getVoipCallPermission: jest.fn().mockResolvedValue(true),
+  hasPermission: jest.fn().mockResolvedValue(true),
+  isVoipCallingAvailable: jest.fn().mockResolvedValue(true),
 };
 ServiceLoader.getInstance = jest.fn().mockReturnValue(permission);
 

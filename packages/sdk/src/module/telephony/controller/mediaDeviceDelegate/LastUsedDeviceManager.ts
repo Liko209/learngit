@@ -29,7 +29,7 @@ export class LastUsedDeviceManager implements ILastUsedDeviceManager {
     const histories = this._getHistories().filter(id => deviceId !== id);
     histories.push(deviceId);
     if (histories.length > MAX_DEVICE_HISTORY_SIZE) {
-      histories.splice(0, MAX_DEVICE_HISTORY_SIZE - histories.length);
+      histories.splice(0, histories.length - MAX_DEVICE_HISTORY_SIZE);
     }
     this._storage.set(histories.join(','));
   }

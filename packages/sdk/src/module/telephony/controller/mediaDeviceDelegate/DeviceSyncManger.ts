@@ -22,12 +22,11 @@ export class DeviceSyncManger {
   ) {}
 
   private _ensureDevice = (): { source: SOURCE_TYPE; deviceId: string } => {
-    const EMPTY_ID = 'EMPTY_ID';
     const devices = this._deviceManager.getDevices();
     if (!devices.length) {
       return {
         source: SOURCE_TYPE.EMPTY,
-        deviceId: EMPTY_ID,
+        deviceId: '',
       };
     }
     const storageDeviceId = this._storage.get();
@@ -55,6 +54,12 @@ export class DeviceSyncManger {
 
   setDevice(info: { source: SOURCE_TYPE; deviceId: string }) {
     const { source, deviceId } = info;
+    if (source === SOURCE_TYPE.EMPTY || _.isEmpty(deviceId)) {
+      telephonyLogger
+        .tags(LOG_TAG)
+        .info('setDevice as empty', { source, deviceId });
+      return;
+    }
     const device = this._deviceManager
       .getDevices()
       .find(device => device.deviceId === deviceId);

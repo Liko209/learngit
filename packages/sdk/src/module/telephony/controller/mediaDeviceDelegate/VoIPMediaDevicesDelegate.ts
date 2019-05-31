@@ -27,7 +27,6 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
   }
 
   private _init() {
-    this._rtcEngine.setMediaDeviceDelegate(this);
     telephonyLogger.tags(LOG_TAG).info('init');
     let volume = Number(this._userConfig.getCurrentVolume());
     if (Number.isNaN(volume)) {

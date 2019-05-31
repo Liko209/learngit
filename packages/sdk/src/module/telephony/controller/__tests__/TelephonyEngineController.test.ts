@@ -112,25 +112,4 @@ describe('', () => {
       expect(result).toBe('test');
     });
   });
-
-  describe('ensureDevices', () => {
-    let controller: TelephonyEngineController;
-    let userConfig: TelephonyUserConfig;
-    beforeEach(() => {
-      userConfig = new TelephonyUserConfig();
-      controller = new TelephonyEngineController(userConfig);
-    })
-    afterEach(() => {
-      jest.clearAllMocks();
-      jest.resetAllMocks();
-      jest.restoreAllMocks();
-    })
-
-    it('should use EMPTY when devices is empty', () => {})
-    it('should use storage when storage device available(exist && in devices)', () => {})
-    it('should use lastUsed when storage devices not available(not exist)', () => {})
-    it('should use lastUsed when storage devices not available(not in devices)', () => {})
-    it('should use default device when (storage device, lastUsed device) not available', () => {})
-    // it('should use new devices when delta.add exist', () => {})
-  })
 });
