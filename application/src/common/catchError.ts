@@ -15,6 +15,7 @@ import {
 } from '@/containers/Notification';
 import { generalErrorHandler } from '@/utils/error';
 import { errorHelper } from 'sdk/error';
+import { mainLogger } from 'sdk';
 
 enum NOTIFICATION_TYPE {
   CUSTOM,
@@ -39,7 +40,7 @@ type StrategyProps = {
   condition: Function;
   action: StrategyActionProps;
   /* config below when action is NOTIFICATION_TYPE */
-  message?: string,
+  message?: string;
   notificationOpts?: ShowNotificationOptions;
 };
 
@@ -96,22 +97,31 @@ const getDebounceNotify = (actionName: ErrorActionConfig) => {
 };
 
 function notifyFunc(isDebounce: boolean, actionName: ErrorActionConfig) {
-  return isDebounce
-    ? getDebounceNotify(actionName)
-    : notify;
+  return isDebounce ? getDebounceNotify(actionName) : notify;
 }
 
 function performAction(option: StrategyProps, error: Error, ctx: any) {
-  const { action, message, isDebounce = false, notificationOpts = defaultNotificationOptions } = option;
+  const {
+    action,
+    message,
+    isDebounce = false,
+    notificationOpts = defaultNotificationOptions,
+  } = option;
   if (typeof action === 'function') {
     return action(error, ctx);
   }
 
-  return notifyFunc(isDebounce, message || '')(ctx, action, message, notificationOpts, error);
+  return notifyFunc(isDebounce, message || '')(
+    ctx,
+    action,
+    message,
+    notificationOpts,
+    error,
+  );
 }
 
 function perform(options: StrategyProps[], error: Error, ctx: any) {
-  const result = options.some((opt) => {
+  const result = options.some(opt => {
     if (opt.condition(error, ctx)) {
       performAction(opt, error, ctx);
       return true;
@@ -129,6 +139,7 @@ function handleError(
   ctx: any,
   options: CatchOptionsProps,
 ) {
+  mainLogger.error(error);
   if (Array.isArray(options)) {
     return perform(options, error, ctx);
   }
@@ -142,16 +153,34 @@ function handleError(
   } = options;
 
   if (network && errorHelper.isNetworkConnectionError(error)) {
-    notifyFunc(isDebounce, network)(ctx, notificationType, network, notificationOpts, error);
+    notifyFunc(isDebounce, network)(
+      ctx,
+      notificationType,
+      network,
+      notificationOpts,
+      error,
+    );
     return false;
   }
 
   if (authentication && errorHelper.isAuthenticationError(error)) {
-    return notifyFunc(isDebounce, authentication)(ctx, notificationType, authentication, notificationOpts, error);
+    return notifyFunc(isDebounce, authentication)(
+      ctx,
+      notificationType,
+      authentication,
+      notificationOpts,
+      error,
+    );
   }
 
   if (server && errorHelper.isBackEndError(error)) {
-    notifyFunc(isDebounce, server)(ctx, notificationType, server, notificationOpts, error);
+    notifyFunc(isDebounce, server)(
+      ctx,
+      notificationType,
+      server,
+      notificationOpts,
+      error,
+    );
     return false;
   }
 
@@ -250,4 +279,9 @@ catchError.flag = function (options: NotifyErrorProps) {
   return decorate(NOTIFICATION_TYPE.FLAG, options);
 };
 
-export { catchError, defaultNotificationOptions, handleError, NOTIFICATION_TYPE };
+export {
+  catchError,
+  defaultNotificationOptions,
+  handleError,
+  NOTIFICATION_TYPE,
+};
