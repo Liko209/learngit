@@ -30,7 +30,7 @@ abstract class BaseRequest implements IRequest {
   requestConfig: object;
   authFree: boolean;
   HAPriority: HA_PRIORITY;
-  startTime?: number;
+  startTime: number = Date.now();
   callback?: (response: IResponse) => void;
 
   needAuth(): boolean {

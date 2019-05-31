@@ -69,7 +69,6 @@ class NetworkRequestHandler
       }
     }
 
-    request.startTime = Date.now();
     const task = new RequestTask(request);
 
     this.appendTask(task, isTail);

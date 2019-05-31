@@ -10,9 +10,9 @@ export function doResponseLog(response: IResponse) {
   networkLogger.info(
     'requestConsumeTime:',
     consumeTime,
-    '==request==: ',
+    ' <<request>>: ',
     request,
-    '     ======response=====:    ',
+    '     <<response>>:    ',
     _.omit(response, 'request'),
   );
 }
