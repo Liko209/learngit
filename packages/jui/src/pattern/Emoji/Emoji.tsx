@@ -192,6 +192,7 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
       toggleButtonLabel,
       handleKeepOpenChange,
       isKeepOpen,
+      theme,
     } = this.props;
     return (
       <HotKeys
@@ -211,7 +212,7 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
         >
           <StyledEmojiWrapper>
             <Picker
-              color={this.props.theme.palette.primary.main}
+              color={theme && theme.palette.primary.main}
               sheetSize={sheetSize}
               title={title || ''}
               emoji={defaultSelector || ''}
