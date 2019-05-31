@@ -39,6 +39,7 @@ import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { JuiConversationCard } from 'jui/pattern/ConversationCard';
+import { ERROR_TYPES } from '@/common/catchError';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
 
@@ -374,14 +375,44 @@ class StreamViewComponent extends Component<Props> {
     this._watchUnreadCount();
   }
 
-  private _onInitialDataFailed = (
-    <JuiStreamLoading
-      showTip={true}
-      tip={this.props.t('translations:message.prompt.MessageLoadingErrorTip')}
-      linkText={this.props.t('translations:common.prompt.tryAgain')}
-      onClick={this._loadInitialPosts}
-    />
-  );
+  private get _getFailedTip() {
+    const { errorType, t } = this.props;
+    if (errorType === ERROR_TYPES.NETWORK) {
+      return t('message.prompt.MessageLoadingErrorTipForNetworkIssue');
+    }
+    if (errorType === ERROR_TYPES.NOT_AUTHORIZED) {
+      return t('people.prompt.conversationPrivate');
+    }
+    if (errorType === ERROR_TYPES.BACKEND) {
+      return t('message.prompt.MessageLoadingErrorTipForServerIssue');
+    }
+    return t('message.prompt.MessageLoadingErrorTip');
+  }
+
+  private get _getFailedLinkText() {
+    const { errorType, t } = this.props;
+    if (errorType === ERROR_TYPES.NETWORK) {
+      return t('common.prompt.thenTryAgain');
+    }
+    if (errorType === ERROR_TYPES.NOT_AUTHORIZED) {
+      return '';
+    }
+    if (errorType === ERROR_TYPES.BACKEND) {
+      return t('common.prompt.tryAgainLater');
+    }
+    return t('common.prompt.tryAgain');
+  }
+
+  private get _onInitialDataFailed() {
+    return (
+      <JuiStreamLoading
+        showTip={true}
+        tip={this._getFailedTip}
+        linkText={this._getFailedLinkText}
+        onClick={this._loadInitialPosts}
+      />
+    );
+  }
 
   render() {
     const { loadMore, hasMore, items, loadingStatus } = this.props;

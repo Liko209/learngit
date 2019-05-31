@@ -8,6 +8,10 @@ enum CALLING_OPTIONS {
   GLIP = 'glip',
   RINGCENTRAL = 'ringcentral',
 }
+enum NEW_MESSAGE_BADGES_OPTIONS {
+  GROUPS_AND_MENTIONS = 'groups_and_mentions',
+  ALL = 'all',
+}
 
 enum NOTIFICATION_OPTIONS {
   OFF = 0,
@@ -58,6 +62,7 @@ enum SETTING_KEYS {
 
   // conversation settings
   MAX_LEFTRAIL_GROUP = 'max_leftrail_group_tabs2',
+  NEW_MESSAGE_BADGES = 'new_message_badges',
 }
 type DesktopNotificationsSettingModel = {
   browserPermission: NotificationPermission;
@@ -73,4 +78,5 @@ export {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   SETTING_KEYS,
   DesktopNotificationsSettingModel,
+  NEW_MESSAGE_BADGES_OPTIONS,
 };
