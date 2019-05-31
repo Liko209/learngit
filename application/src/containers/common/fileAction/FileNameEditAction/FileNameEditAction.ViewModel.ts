@@ -44,7 +44,7 @@ class FileNameEditActionViewModel extends FileActionViewModel {
     if (fileNameArray.length > 1) {
       fileNameArray[fileNameArray.length - 1] = '';
     }
-    return fileNameArray.join('');
+    return fileNameArray.join('.');
   }
 
   formatFileName = (name: string) => {

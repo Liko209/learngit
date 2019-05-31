@@ -213,7 +213,7 @@
       "NewMessageError": "We are having trouble creating this new message. Please try again later.",
       "disabledText": "This team is read-only",
       "editFileNameTitle": "Rename file",
-      "editFileNameInputLabel": "input field",
+      "editFileNameInputLabel": "Filename",
       "editFileNameBackendError": "Sorry, something went wrong on our end and we aren't able to save the edit. Try again later.",
       "editFileNameNetworkError": "We aren't able to save the edit. Check your network connection, then try again."
     },
