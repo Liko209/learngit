@@ -5,4 +5,10 @@
  */
 export { Call } from './Call';
 
-export { CALL_STATE, HOLD_STATE } from './types';
+export {
+  CALL_STATE,
+  HOLD_STATE,
+  RECORD_STATE,
+  CALL_DIRECTION,
+  MUTE_STATE,
+} from './types';

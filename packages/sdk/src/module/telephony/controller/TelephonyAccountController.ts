@@ -199,20 +199,31 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this._telephonyCallDelegate && this._telephonyCallDelegate.unmute();
   }
 
-  hold(callId: string) {
-    this._telephonyCallDelegate && this._telephonyCallDelegate.hold();
+  async hold(callId: string) {
+    return (
+      this._telephonyCallDelegate && (await this._telephonyCallDelegate.hold())
+    );
   }
 
-  unhold(callId: string) {
-    this._telephonyCallDelegate && this._telephonyCallDelegate.unhold();
+  async unhold(callId: string) {
+    return (
+      this._telephonyCallDelegate &&
+      (await this._telephonyCallDelegate.unhold())
+    );
   }
 
-  startRecord(callId: string) {
-    this._telephonyCallDelegate && this._telephonyCallDelegate.startRecord();
+  async startRecord(callId: string) {
+    return (
+      this._telephonyCallDelegate &&
+      (await this._telephonyCallDelegate.startRecord())
+    );
   }
 
-  stopRecord(callId: string) {
-    this._telephonyCallDelegate && this._telephonyCallDelegate.stopRecord();
+  async stopRecord(callId: string) {
+    return (
+      this._telephonyCallDelegate &&
+      (await this._telephonyCallDelegate.stopRecord())
+    );
   }
 
   dtmf(callId: string, digits: string) {
