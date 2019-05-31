@@ -84,7 +84,6 @@ class Context {
     String rcuiHeadHash
 
     Boolean buildStatus = false
-    String buildResult
     String buildDescription
     String saSummary
     String coverageSummary
@@ -210,16 +209,20 @@ class Context {
         "rcui-${rcuiHeadHash}".toString()
     }
 
-    String getFailedStages() {
+    String getErrorMessage() {
         failedStages.join(', ')
+    }
+
+    String getBuildResult() {
+        buildStatus? "${SUCCESS_EMOJI} Success".toString() :"${FAILURE_EMOJI} Failed".toString()
     }
 
     String getGlipReport() {
         List<String> lines = []
         if (buildResult)
             lines.push("**Build Result**: ${buildResult}")
-        if (failedStages)
-            lines.push("**Failed Stages**: ${failedStages}")
+        if (errorMessage)
+            lines.push("**Failed Stages**: ${errorMessage}")
         if (buildDescription)
             lines.push("**Description**: ${tagToGlipLink(buildDescription)}")
         if (buildUrl)
@@ -263,8 +266,6 @@ class Context {
             lines.push("E2E Report: ${urlToTag(e2eReport)}")
         lines.join('<br>')
     }
-
-
 }
 
 class BaseJob {
@@ -315,6 +316,8 @@ class BaseJob {
 
     void mail(addresses, String subject, String body) {
         jenkins.echo addresses.join(',')
+        jenkins.echo subject
+        jenkins.echo body
         addresses.each {
             try {
                 jenkins.mail to: it, subject: subject, body: body
@@ -379,18 +382,31 @@ class JupiterJob extends BaseJob {
 
     void run() {
         try {
+            context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'pending')
             doRun()
             context.buildStatus = true
         } finally {
-            jenkins.echo context.dump()
+            context.buildDescription = currentBuild.getDescription()
+            jenkins.currentBuild.setDescription(context.jenkinsReport)
+
+            if (context.buildStatus) {
+                context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'success')
+            } else {
+                context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'failed')
+                jenkins.echo context.dump()
+                jenkins.echo jenkins.currentBuild.dump()
+                jenkins.echo jenkins.currentBuild.rawBuild.dump()
+            }
+            mail(context.addresses, "Jenkins Build Result: ${context.buildResult}".toString(), context.glipReport)
         }
     }
 
     void doRun() {
-        context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'running')
         cancelOldBuildOfSameCause()
 
         jenkins.node(context.buildNode) {
+            context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'running')
+
             String nodejsHome = jenkins.tool context.nodejsTool
             jenkins.withEnv([
                 "PATH+NODEJS=${nodejsHome}/bin",
@@ -490,11 +506,9 @@ class JupiterJob extends BaseJob {
         context.appHeadHash = getStableHash(
             jenkins.sh(returnStdout: true, script: '''ls -1 | grep -Ev '^(tests|autoDevOps)$' | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- ''').trim()
         )
-
         context.juiHeadHash = getStableHash(
             jenkins.sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/jui''').trim()
         )
-
         context.rcuiHeadHash = getStableHash(
             jenkins.sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/rcui''').trim()
         )
@@ -696,6 +710,7 @@ class JupiterJob extends BaseJob {
             "QUARANTINE_MODE=true",
             "QUARANTINE_FAILED_THRESHOLD=4",
             "QUARANTINE_PASSED_THRESHOLD=1",
+            "FIXTURES=./fixtures/LeftNav/LeftNavigator.ts",
             "DEBUG=axios",
             "ENABLE_SSL=true",
             "RUN_NAME=[Jupiter][Pipeline][Merge][${startTime}][${context.gitlabSourceBranch}][${context.head}]",
@@ -705,6 +720,7 @@ class JupiterJob extends BaseJob {
                 jenkins.writeFile file: 'capabilities.json', text: context.e2eCapabilities, encoding: 'utf-8'
                 jenkins.sh "mkdir -p screenshots tmp"
 
+                String dependencyLock = jenkins.sh(returnStdout: true, script: '''git rev-list -1 HEAD -- package.json | xargs git cat-file commit | grep -e ^tree | cut -d ' ' -f 2 ''').trim()
                 if (jenkins.fileExists(DEPENDENCY_LOCK) && jenkins.readFile(file: DEPENDENCY_LOCK, encoding: 'utf-8').trim() == dependencyLock) {
                     jenkins.echo "${DEPENDENCY_LOCK} doesn't change, no need to update: ${dependencyLock}"
                 } else {
@@ -778,7 +794,6 @@ class JupiterJob extends BaseJob {
         hasBeenLocked(context.deployCredentialId, context.lockUri, context.rcuiLockKey)
     }
 }
-
 
 // Get started!
 Context context = new Context(
