@@ -6,7 +6,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { EmojiViewProps, EmojiProps } from './types';
-import { JuiEmoji } from 'jui/pattern/Emoji';
+import { JuiEmojiWithTheme } from 'jui/pattern/Emoji';
 import { i18nP } from '@/utils/i18nT';
 
 type Types = EmojiViewProps & EmojiProps;
@@ -24,7 +24,7 @@ class EmojiView extends Component<Types> {
       emojiOpenStatus,
     } = this.props;
     return (
-      <JuiEmoji
+      <JuiEmojiWithTheme
         set={set}
         sheetSize={sheetSize}
         title={title}
