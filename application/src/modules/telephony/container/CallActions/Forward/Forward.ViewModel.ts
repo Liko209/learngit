@@ -18,6 +18,7 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { promisedComputed } from 'computed-async-mobx';
 
 class ForwardViewModel extends StoreViewModel<Props> implements ViewProps {
   private _telephonyService: TelephonyService = container.get(
@@ -36,7 +37,8 @@ class ForwardViewModel extends StoreViewModel<Props> implements ViewProps {
       dismissible: false,
     });
   }
-  getForwardCalls = async () => {
+
+  forwardCalls = promisedComputed([], async () => {
     const list = await this._telephonyService.getForwardingNumberList();
     return (
       list &&
@@ -45,7 +47,8 @@ class ForwardViewModel extends StoreViewModel<Props> implements ViewProps {
         label: forwardCall.label,
       }))
     );
-  }
+  });
+
   forward = async (phoneNumber: string) => {
     try {
       await this._telephonyService.forward(phoneNumber);
@@ -62,6 +65,10 @@ class ForwardViewModel extends StoreViewModel<Props> implements ViewProps {
     }
     return true;
   }
+
+  shouldDisableForwardButton = promisedComputed(false, async () => {
+    return !this._telephonyService.getForwardPermission();
+  });
 }
 
 export { ForwardViewModel };

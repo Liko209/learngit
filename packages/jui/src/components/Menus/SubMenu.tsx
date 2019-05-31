@@ -6,6 +6,7 @@
 import React, { useState, useRef } from 'react';
 import { StyledMenuItem } from '../Menus/MenuItem';
 import { JuiMenuList } from '../Menus/MenuList';
+import { MenuItemProps as MuiMenuItemProps } from '@material-ui/core/MenuItem';
 import { JuiPopperMenu } from '../../pattern/PopperMenu';
 import { JuiIconography } from '../../foundation/Iconography';
 import styled from '../../foundation/styled-components';
@@ -13,7 +14,7 @@ import styled from '../../foundation/styled-components';
 type JuiSubMenuProps = {
   title: string;
   children: React.ReactNode;
-};
+} & MuiMenuItemProps;
 
 const StyledSubMenuItem = styled(StyledMenuItem)`
   && {
@@ -26,7 +27,10 @@ const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
   const [anchorEl, setAnchorEl] = useState<EventTarget & Element | null>(null);
 
   const openPopper = (event: React.MouseEvent) => {
-    setAnchorEl(event.currentTarget);
+    const { disabled } = props;
+    if (!disabled) {
+      setAnchorEl(event.currentTarget);
+    }
   };
 
   const closePopper = () => {
@@ -34,9 +38,9 @@ const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
   };
 
   const Anchor = useRef(() => {
-    const { title } = props;
+    const { title, ...rest } = props;
     return (
-      <StyledSubMenuItem>
+      <StyledSubMenuItem {...rest}>
         {title}
         <JuiIconography iconSize="medium" iconColor={['grey', '600']}>
           arrow_right

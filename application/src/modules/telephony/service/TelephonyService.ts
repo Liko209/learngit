@@ -37,6 +37,7 @@ import { CALL_WINDOW_STATUS, CALL_STATE } from '../FSM';
 import { AccountService } from 'sdk/module/account';
 import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
 import { CALLING_OPTIONS } from 'sdk/module/profile';
+import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -857,6 +858,12 @@ class TelephonyService {
     return this._serverTelephonyService.forward(
       this._callId as string,
       phoneNumber,
+    );
+  }
+
+  getForwardPermission = () => {
+    return this._rcInfoService.isRCFeaturePermissionEnabled(
+      ERCServiceFeaturePermission.CALL_FORWARDING,
     );
   }
 }
