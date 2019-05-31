@@ -7,21 +7,22 @@ import { IGroup } from "../../v2/models";
 
 fixture('ContentPanel/Emoji')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
-.afterEach(teardownCase())
+.afterEach(teardownCase());
+
 test(formalName('Check the Emoji feature on conversation', ['P2','ContentPane', 'Messages', 'Emoji', 'V1.4', 'Hanny.Han']),
 async (t: TestController) => {
 
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
-  const anotherUser = users[5];
+  const otherUser = users[5];
   let chat = <IGroup>{
     type: "DirectMessage",
     owner: loginUser,
-    members: [loginUser, users[1]]
+    members: [loginUser, otherUser]
   }
 
   const app = new AppRoot(t);
-  await h(t).withLog(`Given I have a chat with ${anotherUser.extension}`, async () => {
+  await h(t).withLog(`Given I have a chat with ${otherUser.extension}`, async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 

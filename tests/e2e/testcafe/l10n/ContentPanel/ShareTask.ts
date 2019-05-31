@@ -65,7 +65,7 @@ test(formalName('Open team conversation and shared task', ['P2', 'Messages', 'Co
 
   const filePath = './sources/1.png';
   const fileNames = '1.png';
-  await h(t).withLog('When the team has a task, its contain attach', async () => {
+  await h(t).withLog('When the team has a task with attachment', async () => {
     const fileId = await h(t).scenarioHelper.uploadFile({ filePath, name: fileNames, operator: loginUser }).then(res => res.data[0].id);
     await h(t).glip(loginUser).createSimpleTask(team.glipId, loginUser.rcId, uuid(), {
       attachment_ids: [+fileId],

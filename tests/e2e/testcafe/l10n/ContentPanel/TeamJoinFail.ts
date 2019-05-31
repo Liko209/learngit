@@ -8,7 +8,7 @@ import { v4 as uuid } from 'uuid';
 
 fixture('ContentPanel/TeamJoinFail')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
-.afterEach(teardownCase())
+.afterEach(teardownCase());
 
 test(formalName('Check the fail alert on join team page', ['P2','ContentPane', 'Messages', 'TeamJoinFail', 'V1.4', 'Hanny.Han']),
 async (t: TestController) => {
@@ -60,5 +60,5 @@ async (t: TestController) => {
   await h(t).withLog('And I click the join team button', async () => {
      await t.click(joinTeamDialog.joinButton)
   });
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_JoinTeamFail'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_JoinTeamFail'});
 });

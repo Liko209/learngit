@@ -8,7 +8,7 @@ import { v4 as uuid } from 'uuid';
 
 fixture('ContentPanel/JoinPublicTeam')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
-.afterEach(teardownCase())
+.afterEach(teardownCase());
 
 test(formalName('Check the unlock tip on team conversation', ['P2','ContentPane', 'Messages', 'JoinPublicTeam', 'V1.4', 'Hanny.Han']),
 async (t: TestController) => {
@@ -21,15 +21,15 @@ async (t: TestController) => {
     name: uuid(),
     type: "Team",
     isPublic: true,
-    owner: loginUser,
+    owner: otherUser,
     members: [loginUser, otherUser]
   }
   await h(t).withLog(`Given other create a team: "${team.name}"`, async () =>  {
     await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with ${otherUser.company.number}#${otherUser.extension}`,async()=>{
-    await h(t).directLoginWithUser(SITE_URL, otherUser);
+  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`,async()=>{
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   })
   const conversationPage = app.homePage.messageTab.conversationPage;
@@ -42,5 +42,5 @@ async (t: TestController) => {
     await t.hover(conversationPage.publicTeamIcon);
   });
 
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_PublicTeam'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_PublicTeam'});
 });
