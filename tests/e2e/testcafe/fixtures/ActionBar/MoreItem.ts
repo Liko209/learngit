@@ -71,6 +71,10 @@ test(formalName('Jump to post position when click button or clickable area of po
     await t.expect(conversationPage.messageInputArea.textContent).match(reg);
   });
 
+  await h(t).withLog('And the cursor should keep in input box', async () => {
+    await t.expect(conversationPage.messageInputArea.focused).ok();
+  });
+
   await h(t).withLog('When I delete the post', async () => {
     await conversationPage.postItemById(postId).clickMoreItemOnActionBar();
     await conversationPage.postItemById(postId).actionBarMoreMenu.deletePost.enter();
