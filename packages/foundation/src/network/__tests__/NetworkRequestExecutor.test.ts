@@ -8,10 +8,13 @@ import {
   IResponse,
 } from '../network';
 import { SERVER_ERROR_CODE } from '../Constants';
-import { HttpResponseBuilder } from '../client';
+import { HttpResponseBuilder, NetworkRequestBuilder } from '../client';
 
-function setupExecutor() {
-  return new NetworkRequestExecutor(getFakeRequest(), getFakeClient());
+function setupExecutor(request?: NetworkRequestBuilder) {
+  return new NetworkRequestExecutor(
+    request ? request : getFakeRequest(),
+    getFakeClient(),
+  );
 }
 
 describe('NetworkRequestExecutor', () => {
@@ -121,8 +124,9 @@ describe('NetworkRequestExecutor', () => {
 
   describe('getRequest', () => {
     it('should return the request', () => {
-      const networkExecutor: NetworkRequestExecutor = setupExecutor();
-      expect(networkExecutor.getRequest()).toEqual(getFakeRequest());
+      const request = getFakeRequest();
+      const networkExecutor: NetworkRequestExecutor = setupExecutor(request);
+      expect(networkExecutor.getRequest()).toEqual(request);
     });
   });
 
@@ -277,12 +281,11 @@ describe('NetworkRequestExecutor', () => {
 
   describe('_cancelClientRequest', () => {
     it('should call client.cancelRequest', () => {
-      const networkExecutor: NetworkRequestExecutor = setupExecutor();
+      const request = getFakeRequest();
+      const networkExecutor: NetworkRequestExecutor = setupExecutor(request);
       networkExecutor.client.cancelRequest = jest.fn();
       networkExecutor['_cancelClientRequest']();
-      expect(networkExecutor.client.cancelRequest).toBeCalledWith(
-        getFakeRequest(),
-      );
+      expect(networkExecutor.client.cancelRequest).toBeCalledWith(request);
     });
   });
 
