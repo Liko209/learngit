@@ -60,7 +60,6 @@ class SelectSettingItemViewComponent<
         disabled={disabled}
         value={this._extractValue(settingItemEntity.value)}
         automationId={`settingItemSelectBox-${settingItem.automationId}`}
-        data-test-automation-class={'settingItemSelectBox'}
         isFullWidth={true}
       >
         {this._renderSource()}
