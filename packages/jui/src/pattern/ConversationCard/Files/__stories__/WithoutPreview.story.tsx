@@ -11,47 +11,38 @@ import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconBut
 
 storiesOf('Pattern/ConversationCard', module)
   .addDecorator(withInfoDecorator(JuiFileWithoutPreview, { inline: true }))
-  .add('FileWithoutPreview', () => (
-    <div>
-      <JuiFileWithoutPreview
-        fileName="Conversation Card VxD.pdf"
-        size="3.5MB"
-        iconType={'pdf'}
-        Actions={
-          <JuiIconButton variant="plain" tooltipTitle="download">
-            download
-          </JuiIconButton>
-        }
-      />
-      <JuiFileWithoutPreview
-        fileName="Conversation Card VxD.pdf"
-        size="3.5MB"
-        iconType={'pdf'}
-        Actions={
-          <JuiIconButton variant="plain" tooltipTitle="download">
-            download
-          </JuiIconButton>
-        }
-      />
-      <JuiFileWithoutPreview
-        fileName="Conversation Card VxD.pdf"
-        size="3.5MB"
-        iconType={'pdf'}
-        Actions={
-          <JuiIconButton variant="plain" tooltipTitle="download">
-            download
-          </JuiIconButton>
-        }
-      />
-      <JuiFileWithoutPreview
-        fileName="Conversation Card VxD.pdf"
-        size="3.5MB"
-        iconType={'pdf'}
-        Actions={
-          <JuiIconButton variant="plain" tooltipTitle="download">
-            download
-          </JuiIconButton>
-        }
-      />
-    </div>
-  ));
+  .add('FileWithoutPreview', () => {
+    const actions = [
+      <JuiIconButton key="download" variant="plain" tooltipTitle="download">
+        download
+      </JuiIconButton>,
+    ];
+    return (
+      <div>
+        <JuiFileWithoutPreview
+          fileName="Conversation Card VxD.pdf"
+          size="3.5MB"
+          iconType={'pdf'}
+          Actions={actions}
+        />
+        <JuiFileWithoutPreview
+          fileName="Conversation Card VxD.pdf"
+          size="3.5MB"
+          iconType={'pdf'}
+          Actions={actions}
+        />
+        <JuiFileWithoutPreview
+          fileName="Conversation Card VxD.pdf"
+          size="3.5MB"
+          iconType={'pdf'}
+          Actions={actions}
+        />
+        <JuiFileWithoutPreview
+          fileName="Conversation Card VxD.pdf"
+          size="3.5MB"
+          iconType={'pdf'}
+          Actions={actions}
+        />
+      </div>
+    );
+  });

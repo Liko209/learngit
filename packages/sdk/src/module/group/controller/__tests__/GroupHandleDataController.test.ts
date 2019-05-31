@@ -494,6 +494,159 @@ describe('GroupHandleDataController', () => {
   });
 
   describe('filterGroups()', () => {
+    const group1 = [
+      {
+        id: 1,
+        creator_id: 2,
+        __last_accessed_at: 10,
+        most_recent_post_created_at: 9,
+        created_at: 8,
+      },
+      {
+        id: 2,
+        creator_id: 3,
+        __last_accessed_at: 12,
+        most_recent_post_created_at: 10,
+        created_at: 9,
+      },
+      {
+        id: 3,
+        creator_id: 3,
+        __last_accessed_at: 11,
+        most_recent_post_created_at: 8,
+        created_at: 7,
+      },
+    ] as Group[];
+
+    const group2 = [
+      {
+        id: 1,
+        creator_id: 2,
+        most_recent_post_created_at: 9,
+        created_at: 8,
+      },
+      {
+        id: 2,
+        creator_id: 3,
+        most_recent_post_created_at: 10,
+        created_at: 9,
+      },
+      {
+        id: 3,
+        creator_id: 3,
+        most_recent_post_created_at: 15,
+        created_at: 7,
+      },
+    ] as Group[];
+
+    const group3 = [
+      {
+        id: 1,
+        creator_id: 2,
+        created_at: 12,
+      },
+      {
+        id: 2,
+        creator_id: 3,
+        created_at: 9,
+      },
+      {
+        id: 3,
+        creator_id: 3,
+        created_at: 7,
+      },
+    ] as Group[];
+
+    const group4 = [
+      {
+        id: 1,
+        creator_id: 2,
+        __last_accessed_at: 10,
+        most_recent_post_created_at: 18,
+        created_at: 8,
+      },
+      {
+        id: 2,
+        creator_id: 3,
+        __last_accessed_at: 12,
+        most_recent_post_created_at: 10,
+        created_at: 9,
+      },
+      {
+        id: 3,
+        creator_id: 3,
+        created_at: 20,
+      },
+    ] as Group[];
+
+    const group5 = [
+      {
+        id: 1,
+        creator_id: 2,
+        __last_accessed_at: 10,
+        most_recent_post_created_at: 26,
+        created_at: 8,
+      },
+      {
+        id: 2,
+        creator_id: 3,
+        __last_accessed_at: 23,
+        most_recent_post_created_at: 10,
+        created_at: 9,
+      },
+      {
+        id: 3,
+        creator_id: 3,
+        __last_accessed_at: 22,
+        most_recent_post_created_at: 21,
+        created_at: 20,
+      },
+    ] as Group[];
+
+    const group6 = [
+      {
+        id: 1,
+        creator_id: 2,
+        most_recent_post_created_at: 22,
+        created_at: 8,
+      },
+      {
+        id: 2,
+        creator_id: 2,
+        __last_accessed_at: 23,
+        created_at: 9,
+      },
+      {
+        id: 3,
+        creator_id: 3,
+        __last_accessed_at: 21,
+        most_recent_post_created_at: 20,
+        created_at: 19,
+      },
+    ] as Group[];
+
+    const group7 = [
+      {
+        id: 1,
+        creator_id: 2,
+        created_at: 28,
+      },
+      {
+        id: 2,
+        creator_id: 2,
+        __last_accessed_at: 23,
+        most_recent_post_created_at: 20,
+        created_at: 9,
+      },
+      {
+        id: 3,
+        creator_id: 3,
+        __last_accessed_at: 21,
+        most_recent_post_created_at: 20,
+        created_at: 19,
+      },
+    ] as Group[];
+
     beforeEach(() => {
       AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(99);
     });
@@ -721,6 +874,31 @@ describe('GroupHandleDataController', () => {
       expect(ids.indexOf(3) !== -1).toBe(true);
       expect(ids.length).toBe(2);
     });
+
+    it.each`
+      groups    | limit | result
+      ${group1} | ${2}  | ${[group1[1], group1[2]]}
+      ${group2} | ${3}  | ${[group2[2], group2[1], group2[0]]}
+      ${group2} | ${4}  | ${[group2[2], group2[1], group2[0]]}
+      ${group3} | ${1}  | ${[group3[0]]}
+      ${group4} | ${4}  | ${[group4[0], group4[1]]}
+      ${group5} | ${3}  | ${group5}
+      ${group6} | ${6}  | ${[group6[1], group6[0], group6[2]]}
+      ${group7} | ${2}  | ${[group7[0], group7[1]]}
+    `(
+      'should return $result, for filter $groups',
+      async ({ groups, limit, result }) => {
+        stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
+        AccountUserConfig.prototype.getGlipUserId = jest
+          .fn()
+          .mockReturnValue(2);
+        const filteredGroups = await groupHandleDataController.filterGroups(
+          groups,
+          limit,
+        );
+        expect(filteredGroups).toEqual(result);
+      },
+    );
   });
 
   describe('isNeedToUpdateMostRecent4Group', () => {

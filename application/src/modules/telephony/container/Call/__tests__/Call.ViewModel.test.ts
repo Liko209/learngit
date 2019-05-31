@@ -12,6 +12,8 @@ import { TelephonyService } from '../../../service/TelephonyService';
 import { CallViewModel } from '../Call.ViewModel';
 import { GlobalConfigService } from 'sdk/module/config';
 import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
+import { ClientService } from '@/modules/common';
+import { CLIENT_SERVICE } from '@/modules/common/interface';
 
 jest.mock('sdk/module/config');
 jest.mock('sdk/module/account/config/AuthUserConfig');
@@ -22,10 +24,12 @@ AuthUserConfig.prototype.getRCToken = jest.fn().mockReturnValue({
 decorate(injectable(), FeaturesFlagsService);
 decorate(injectable(), TelephonyService);
 decorate(injectable(), TelephonyStore);
+decorate(injectable(), ClientService);
 
 container.bind(FeaturesFlagsService).to(FeaturesFlagsService);
 container.bind(TELEPHONY_SERVICE).to(TelephonyService);
 container.bind(TelephonyStore).to(TelephonyStore);
+container.bind(CLIENT_SERVICE).to(ClientService);
 
 let callViewModel: CallViewModel;
 

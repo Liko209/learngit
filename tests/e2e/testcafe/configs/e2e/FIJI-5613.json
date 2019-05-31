@@ -1,0 +1,14 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/CreateTeam/CreateTeam.ts"
+    ],
+    "include_tags": [
+      "JPT-104",
+      "JPT-115"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
