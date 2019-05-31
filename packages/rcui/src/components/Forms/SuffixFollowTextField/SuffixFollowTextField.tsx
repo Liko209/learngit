@@ -234,7 +234,10 @@ class RuiSuffixFollowTextField extends React.PureComponent<
     const suffixHolder = (
       <SuffixHolderWarp ref={this.suffixHolder as any}>
         <SuffixHolderInputEl>{this.state.inputValue}</SuffixHolderInputEl>
-        <SuffixHolderSuffixEl ref={this.suffixValue as any}>
+        <SuffixHolderSuffixEl
+          ref={this.suffixValue as any}
+          data-test-automation-id={'followSuffixText'}
+        >
           {suffixValue}
         </SuffixHolderSuffixEl>
       </SuffixHolderWarp>
