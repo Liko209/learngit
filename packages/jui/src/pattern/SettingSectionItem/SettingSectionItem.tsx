@@ -115,6 +115,7 @@ class JuiSettingSectionItem extends React.PureComponent<
       <SettingSectionItemWrap
         className="setting-section-item"
         data-test-automation-id={`settingItem-${testId}`}
+        data-disabled={disabled}
       >
         <SettingSectionItemContentWrap className="setting-section-item-content">
           <LeftWrap className="setting-section-item-left">
