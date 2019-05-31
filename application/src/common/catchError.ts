@@ -5,14 +5,8 @@
  */
 
 import _ from 'lodash';
-import {
-  ToastType,
-  ToastMessageAlign,
-} from '@/containers/ToastWrapper/Toast/types';
-import {
-  Notification,
-  ShowNotificationOptions,
-} from '@/containers/Notification';
+import { ToastType, ToastMessageAlign } from '@/containers/ToastWrapper/Toast/types';
+import { Notification, ShowNotificationOptions } from '@/containers/Notification';
 import { generalErrorHandler } from '@/utils/error';
 import { errorHelper } from 'sdk/error';
 import { mainLogger } from 'sdk';
@@ -21,6 +15,13 @@ enum NOTIFICATION_TYPE {
   CUSTOM,
   FLASH,
   FLAG,
+}
+
+enum ERROR_TYPES {
+  UNKNOWN,
+  NETWORK,
+  BACKEND,
+  NOT_AUTHORIZED,
 }
 
 type ErrorActionConfig = string | Function;
@@ -55,6 +56,19 @@ const defaultNotificationOptions = {
   dismissible: false,
   autoHideDuration: AUTO_HIDE_AFTER_3_SECONDS,
 };
+
+function getErrorType(error: Error) {
+  if (errorHelper.isNetworkConnectionError(error)) {
+    return ERROR_TYPES.NETWORK;
+  }
+  if (errorHelper.isAuthenticationError(error)) {
+    return ERROR_TYPES.NOT_AUTHORIZED;
+  }
+  if (errorHelper.isBackEndError(error)) {
+    return ERROR_TYPES.BACKEND;
+  }
+  return ERROR_TYPES.UNKNOWN;
+}
 
 function notify(
   ctx: any,
@@ -210,10 +224,7 @@ function wrapHandleError(
   };
 }
 
-function decorate(
-  notificationType: NOTIFICATION_TYPE,
-  options: CatchOptionsProps,
-): any {
+function decorate(notificationType: NOTIFICATION_TYPE, options: CatchOptionsProps): any {
   return function (target: any, propertyName: string, descriptor?: any) {
     // bound instance methods
     if (!descriptor) {
@@ -243,11 +254,7 @@ function decorate(
         writable: true,
         initializer() {
           // N.B: we can't immediately invoke initializer; this would be wrong
-          return wrapHandleError(
-            descriptor.initializer!.call(this),
-            notificationType,
-            options,
-          );
+          return wrapHandleError(descriptor.initializer!.call(this), notificationType, options);
         },
       };
     }
@@ -284,4 +291,6 @@ export {
   defaultNotificationOptions,
   handleError,
   NOTIFICATION_TYPE,
+  ERROR_TYPES,
+  getErrorType,
 };

@@ -18,7 +18,6 @@ export const showImageViewer = (
   mode?: string,
   postId?: number,
 ) => {
-  // const { thumbnailSrc, originElement, origWidth, origHeight} = options;
   const { dismiss } = Dialog.simple(
     <Viewer
       itemId={imageId}
@@ -35,12 +34,8 @@ export const showImageViewer = (
       fullScreen: true,
       hideBackdrop: true,
       TransitionComponent: JuiDialogOpenTransition,
-      onKeyDown: (event: React.KeyboardEvent) => {
-        // if ESC typed, just dismiss
-        if (event.keyCode === 27) {
-          dismiss();
-        }
-      },
+      enableEscapeClose: true,
+      onClose: () => dismiss(),
     },
   );
 };
