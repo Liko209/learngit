@@ -77,7 +77,7 @@ class Context {
     String feedbackUrl
 
     // runtime
-    Long timestamp = System.currentTimeMillis()
+    long timestamp = System.currentTimeMillis()
     String head
     String appHeadHash
     String juiHeadHash
@@ -209,6 +209,62 @@ class Context {
     String getRcuiLockKey() {
         "rcui-${rcuiHeadHash}".toString()
     }
+
+    String getFailedStages() {
+        failedStages.join(', ')
+    }
+
+    String getGlipReport() {
+        List<String> lines = []
+        if (buildResult)
+            lines.push("**Build Result**: ${buildResult}")
+        if (failedStages)
+            lines.push("**Failed Stages**: ${failedStages}")
+        if (buildDescription)
+            lines.push("**Description**: ${tagToGlipLink(buildDescription)}")
+        if (buildUrl)
+            lines.push("**Job**: ${buildUrl}")
+        if (saSummary)
+            lines.push("**Static Analysis**: ${saSummary}")
+        if (coverageSummary)
+            lines.push("**Coverage Report**: ${coverageSummary}")
+        if (coverageDiff)
+            lines.push("**Coverage Changes**: ${coverageDiff}")
+        if (coverageDiffDetail)
+            lines.push("**Coverage Changes Detail**: ${coverageDiffDetail}")
+        if (appUrl && buildAppSuccess)
+            lines.push("**Application**: ${appUrl}")
+        if (juiUrl && buildJuiSuccess)
+            lines.push("**Storybook**: ${juiUrl}")
+        if (rcuiUrl && buildRcuiSuccess)
+            lines.push("**RCUI Storybook**: ${rcuiUrl}")
+        if (e2eReport)
+            lines.push("**E2E Report**: ${e2eReport}")
+        if (feedbackUrl)
+            lines.push("**Note**: Feel free to submit [form](${feedbackUrl}) if you have problems.".toString())
+        lines.join(' \n')
+    }
+
+    String getJenkinsReport() {
+        List<String> lines = []
+        if (buildDescription)
+            lines.push("Description: ${buildDescription}")
+        if (saSummary)
+            lines.push("Static Analysis: ${saSummary}")
+        if (coverageDiff)
+            lines.push("Coverage Changes: ${coverageDiff}")
+        if (appUrl && buildAppSuccess)
+            lines.push("Application: ${urlToTag(appUrl)}")
+        if (juiUrl && buildJuiSuccess)
+            lines.push("Storybook: ${urlToTag(juiUrl)}")
+        if (rcuiUrl && buildRcuiSuccess)
+            lines.push("RCUI Storybook: ${urlToTag(rcuiUrl)}")
+        if (e2eReport)
+            lines.push("E2E Report: ${urlToTag(e2eReport)}")
+        lines.join('<br>')
+    }
+
+
 }
 
 class BaseJob {
@@ -320,7 +376,6 @@ class JupiterJob extends BaseJob {
     void addFailedStage(String name) {
         context.failedStages.add(name)
     }
-
 
     void run() {
         try {
@@ -579,6 +634,7 @@ class JupiterJob extends BaseJob {
                 copyRemoteDir(context.deployUri, context.appLinkDir, context.appStageLinkDir)
             }
         }
+        context.buildAppSuccess = true
     }
 
     void buildJui() {
@@ -593,6 +649,7 @@ class JupiterJob extends BaseJob {
         jenkins.sshagent(credentials: [context.deployCredentialId]) {
             copyRemoteDir(context.deployUri, context.juiHeadHashDir, context.juiLinkDir)
         }
+        context.buildJuiSuccess = true
     }
 
     void buildRcui() {
@@ -609,6 +666,7 @@ class JupiterJob extends BaseJob {
         jenkins.sshagent(credentials: [context.deployCredentialId]) {
             copyRemoteDir(context.deployUri, context.rcuiHeadHashDir, context.rcuiLinkDir)
         }
+        context.buildRcuiSuccess = true
     }
 
     void e2eAutomation() {
@@ -646,15 +704,22 @@ class JupiterJob extends BaseJob {
                 jenkins.sh 'env'  // for debug
                 jenkins.writeFile file: 'capabilities.json', text: context.e2eCapabilities, encoding: 'utf-8'
                 jenkins.sh "mkdir -p screenshots tmp"
-                jenkins.sh "npm config set registry ${context.npmRegistry}"
-                jenkins.sshagent(credentials: [context.scmCredentialId]) {
-                    jenkins.sh 'npm install --unsafe-perm'
+
+                if (jenkins.fileExists(DEPENDENCY_LOCK) && jenkins.readFile(file: DEPENDENCY_LOCK, encoding: 'utf-8').trim() == dependencyLock) {
+                    jenkins.echo "${DEPENDENCY_LOCK} doesn't change, no need to update: ${dependencyLock}"
+                } else {
+                    jenkins.sh "npm config set registry ${context.npmRegistry}"
+                    jenkins.sshagent(credentials: [context.scmCredentialId]) {
+                        jenkins.sh 'npm install --unsafe-perm'
+                    }
+                    jenkins.writeFile(file: DEPENDENCY_LOCK, text: dependencyLock, encoding: 'utf-8')
                 }
 
                 if (context.e2eEnableRemoteDashboard) {
                     jenkins.sh 'npx ts-node create-run-id.ts'
                     context.e2eReport = jenkins.sh(returnStdout: true, script: 'cat reportUrl || true').trim()
                 }
+
                 jenkins.withCredentials([jenkins.usernamePassword(
                     credentialsId: context.rcCredentialId,
                     usernameVariable: 'RC_PLATFORM_APP_KEY',
