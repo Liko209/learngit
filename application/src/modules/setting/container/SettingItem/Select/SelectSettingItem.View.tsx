@@ -51,14 +51,15 @@ class SelectSettingItemViewComponent<
   }
 
   private _renderSelect() {
-    const { disabled, settingItemEntity } = this.props;
+    const { disabled, settingItem, settingItemEntity } = this.props;
 
     return (
       <JuiBoxSelect
         onChange={this._handleChange}
         disabled={disabled}
         value={settingItemEntity.value ? settingItemEntity.value.id : ''}
-        automationId={'SettingSelectBox'}
+        automationId={`settingItemSelectBox-${settingItem.automationId}`}
+        data-test-automation-class={'settingItemSelectBox'}
         isFullWidth={true}
       >
         {this._renderSource()}
@@ -77,7 +78,11 @@ class SelectSettingItemViewComponent<
       <JuiMenuItem
         value={itemValue}
         key={itemValue}
-        automationId={'SettingSelectItem'}
+        automationId={`settingItemSelectBoxItem-${
+          this.props.settingItem.automationId
+        }`}
+        data-test-automation-class={'settingItemSelectBoxItem'}
+        data-test-automation-value={itemValue}
       >
         {this._renderMenuItemChildren(sourceItem)}
       </JuiMenuItem>

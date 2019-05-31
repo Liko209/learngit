@@ -50,6 +50,7 @@ class TelephonySettingManager {
             } as SelectSettingItem<IPhoneNumberRecord>,
             {
               id: SETTING_ITEM__PHONE_REGION,
+              automationId: 'regionSetting',
               type: RegionSettingItem,
               weight: 100,
             },

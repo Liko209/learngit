@@ -49,7 +49,9 @@ class LinkSettingItemViewComponent extends Component<Props> {
         <JuiButton
           color="primary"
           disabled={disabled}
-          data-test-automation-id={'settingPhoneGeneralExtensionSetting'}
+          data-test-automation-id={`settingItemButton-${
+            settingItem.automationId
+          }`}
           onClick={this._handleClick}
           loading={this._loading}
         >

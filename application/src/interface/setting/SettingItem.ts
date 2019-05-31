@@ -20,7 +20,7 @@ type SettingItem = {
   /**
    * automationId for E2E
    */
-  automationId?: string;
+  automationId: string;
 
   /**
    * The i18n key of title

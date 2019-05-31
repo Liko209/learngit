@@ -110,23 +110,26 @@ class JuiSettingSectionItem extends React.PureComponent<
       automationId,
     } = this.props;
     const disabledClass = disabled ? 'disabled' : '';
-    const testId = automationId ? `-${automationId}` : `-${id}`;
+    const testId = automationId ? automationId : id;
     return (
       <SettingSectionItemWrap
         className="setting-section-item"
-        data-test-automation-id={`SettingSectionItem${testId}`}
+        data-test-automation-id={`settingItem-${testId}`}
+        data-test-automation-class={'settingItem'}
       >
         <SettingSectionItemContentWrap className="setting-section-item-content">
           <LeftWrap className="setting-section-item-left">
             <LabelWrap
-              data-test-automation-id={`SettingSectionItemLabel${testId}`}
+              data-test-automation-id={`settingItemLabel-${testId}`}
+              data-test-automation-class={'settingItemLabel'}
               className={`setting-section-item-label ${disabledClass}`}
             >
               {label}
             </LabelWrap>
             {description && (
               <DescriptionWrap
-                data-test-automation-id={`SettingSectionItemDescription${testId}`}
+                data-test-automation-id={`settingItemDescription-${testId}`}
+                data-test-automation-class={'settingItemDescription'}
                 className={`setting-section-item-description ${disabledClass}`}
               >
                 {description}

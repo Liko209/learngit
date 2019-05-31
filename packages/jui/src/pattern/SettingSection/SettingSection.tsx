@@ -21,6 +21,7 @@ import {
 } from '../../foundation/utils/styles';
 
 type JuiSettingSectionProps = {
+  automationId: string;
   title?: ReactNode;
 };
 
@@ -56,14 +57,21 @@ const SettingSectionWrap = styled.div`
 
 class JuiSettingSection extends React.PureComponent<JuiSettingSectionProps> {
   render() {
-    const { children, title } = this.props;
+    const { children, title, automationId } = this.props;
     return (
-      <SettingSectionWrap className="setting-section">
-        <TitleHeaderWrap
-          component="div"
-          data-test-automation-id="SettingSectionHeader"
-        >
-          <TitleWrap className="setting-section-title">{title}</TitleWrap>
+      <SettingSectionWrap
+        className="setting-section"
+        data-test-automation-id={`settingSection-${automationId}`}
+        data-test-automation-class={'settingSection'}
+      >
+        <TitleHeaderWrap component="div">
+          <TitleWrap
+            className="setting-section-title"
+            data-test-automation-id={`settingSectionTitle-${automationId}`}
+            data-test-automation-class={'settingSectionTitle'}
+          >
+            {title}
+          </TitleWrap>
         </TitleHeaderWrap>
         <JuiCard>
           <ContentWrap className="setting-section-content">
