@@ -73,6 +73,7 @@ const sceneMap = {
   } finally {
     await testCafe.close();
     await closeDB();
+    process.exit(0);
   }
 })()
 
