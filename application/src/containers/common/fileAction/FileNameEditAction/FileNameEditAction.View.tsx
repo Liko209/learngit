@@ -50,6 +50,7 @@ class FileNameEditActionViewComponent extends Component<
           defaultValue={fileNameRemoveSuffix}
           inputProps={{
             maxLength: MAX_INPUT_LENGTH,
+            'data-test-automation-id': 'fileNameEditInput',
           }}
           suffix={`.${type}`}
           onChange={this.handleTextChange}
