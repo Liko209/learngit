@@ -48,11 +48,9 @@ class SettingPageViewComponent extends Component<Props> {
       <StyledSettingPage
         ref={this._wrapRef}
         data-test-automation-id={`settingPage-${page.automationId}`}
-        data-test-automation-class={'settingPage'}
       >
         <JuiConversationPageHeader
           data-test-automation-id={`settingPageHeader-${page.automationId}`}
-          data-test-automation-class={'settingPageHeader'}
           data-test-automation-value={page.title}
           title={t(page.title)}
         />

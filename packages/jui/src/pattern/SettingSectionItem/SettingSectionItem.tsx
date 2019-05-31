@@ -115,13 +115,11 @@ class JuiSettingSectionItem extends React.PureComponent<
       <SettingSectionItemWrap
         className="setting-section-item"
         data-test-automation-id={`settingItem-${testId}`}
-        data-test-automation-class={'settingItem'}
       >
         <SettingSectionItemContentWrap className="setting-section-item-content">
           <LeftWrap className="setting-section-item-left">
             <LabelWrap
               data-test-automation-id={`settingItemLabel-${testId}`}
-              data-test-automation-class={'settingItemLabel'}
               className={`setting-section-item-label ${disabledClass}`}
             >
               {label}
@@ -129,7 +127,6 @@ class JuiSettingSectionItem extends React.PureComponent<
             {description && (
               <DescriptionWrap
                 data-test-automation-id={`settingItemDescription-${testId}`}
-                data-test-automation-class={'settingItemDescription'}
                 className={`setting-section-item-description ${disabledClass}`}
               >
                 {description}
