@@ -7,12 +7,8 @@ import { uniq } from 'lodash';
 import { observable, action, computed, createAtom } from 'mobx';
 import { ESettingItemState } from 'sdk/framework/model/setting/types';
 import { SettingPage, SettingSection, SettingItem } from '@/interface/setting';
-import { SettingStoreScope, StorePage } from './SettingStoreScope';
+import { SettingStoreScope } from './SettingStoreScope';
 import { getSettingItemEntity } from './utils';
-
-function compareWeight<T extends { weight: number }>(left: T, right: T) {
-  return left.weight - right.weight;
-}
 
 class SettingStore {
   // NOTE
@@ -46,11 +42,11 @@ class SettingStore {
 
   @action
   getAllPages() {
-    const pages: StorePage[] = [];
+    const pagesIds: SettingPage['id'][] = [];
     this._storeScopes.forEach(storeScope => {
-      pages.push(...storeScope.pages);
+      pagesIds.push(...storeScope.pages.map(page => page.id));
     });
-    return uniq(pages.sort(compareWeight).map(page => page.id));
+    return uniq(pagesIds).sort(this._comparePageWeight);
   }
 
   @action
@@ -60,7 +56,9 @@ class SettingStore {
 
   @action
   getPageSections(pageId: SettingPage['id']) {
-    return this._getAll(storeScope => storeScope.getPageSections(pageId));
+    return this._getAll(storeScope => storeScope.getPageSections(pageId)).sort(
+      this._compareSectionWeight,
+    );
   }
 
   @action
@@ -81,7 +79,9 @@ class SettingStore {
 
   @action
   getSectionItems(sectionId: SettingSection['id']) {
-    return this._getAll(storeScope => storeScope.getSectionItems(sectionId));
+    return this._getAll(storeScope =>
+      storeScope.getSectionItems(sectionId),
+    ).sort(this._compareItemWeight);
   }
 
   @action
@@ -142,6 +142,29 @@ class SettingStore {
   private _isItemVisible(id: SettingItem['id']) {
     return getSettingItemEntity(id).state !== ESettingItemState.INVISIBLE;
   }
+
+  private _comparePageWeight = (
+    leftId: SettingPage['id'],
+    rightId: SettingPage['id'],
+  ) => {
+    return this.getPageById(leftId)!.weight - this.getPageById(rightId)!.weight;
+  }
+
+  private _compareSectionWeight = (
+    leftId: SettingSection['id'],
+    rightId: SettingSection['id'],
+  ) => {
+    return (
+      this.getSectionById(leftId)!.weight - this.getSectionById(rightId)!.weight
+    );
+  }
+
+  private _compareItemWeight = (
+    leftId: SettingItem['id'],
+    rightId: SettingItem['id'],
+  ) => {
+    return this.getItemById(leftId)!.weight - this.getItemById(rightId)!.weight;
+  }
 }
 
-export { SettingStore, SettingStoreScope, compareWeight };
+export { SettingStore, SettingStoreScope };
