@@ -7,6 +7,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiIconography } from '..';
+import Star from '../../../assets/jupiter-icon/icon-star.svg';
 
 storiesOf('Foundation', module)
   .addDecorator(
@@ -18,6 +19,6 @@ storiesOf('Foundation', module)
   )
   .add('Iconography', () => (
     <div>
-      <JuiIconography iconColor={['primary', '500']}>star</JuiIconography>
+      <JuiIconography iconColor={['primary', '500']} symbol={Star} />
     </div>
   ));

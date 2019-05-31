@@ -4,7 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { storiesOf, configure, addDecorator } from '@storybook/react';
+import {
+  storiesOf,
+  configure,
+  addDecorator,
+  addParameters,
+} from '@storybook/react';
 import {
   Global,
   ThemeProvider,
@@ -37,6 +42,12 @@ const ThemeDecorator = storyFn => {
 };
 
 addDecorator(ThemeDecorator);
+
+addParameters({
+  info: {
+    disable: true,
+  },
+});
 
 let previousExports = {};
 if (module && module.hot && module.hot.dispose) {
@@ -99,7 +110,7 @@ function importAll(context) {
 }
 
 function loadStories() {
-  const req = require.context('../src/', true, /\.story\.tsx?$/);
+  const req = require.context('../src/foundation', true, /\.story\.tsx?$/);
   importAll(req);
 }
 

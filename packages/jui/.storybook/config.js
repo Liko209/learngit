@@ -171,7 +171,7 @@ function importAll(context) {
 }
 
 function loadStories() {
-  const req = require.context('../src/components/Animation', true, /\.story\.tsx?$/);
+  const req = require.context('../src/foundation', true, /\.story\.tsx?$/);
   importAll(req);
 }
 
