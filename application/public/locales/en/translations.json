@@ -574,7 +574,12 @@
         },
         "newMessages": {
           "label": "New Messages",
-          "description": "Choose your preference for desktop notifications for new messages"
+          "description": "Choose your preference for desktop notifications for new messages",
+          "options": {
+            "always": "All new messages",
+            "mentions_or_dms": "Direct messages and mentions",
+            "never": "Off"
+          }
         },
         "incomingCalls": {
           "label": "Incoming Calls",

@@ -6,10 +6,17 @@
 
 import SettingModel from '@/store/models/UserSetting';
 import { DesktopNotificationsSettingModel } from 'sdk/module/profile';
+
+type NotificationBrowserSettingItemProps = {
+  id: number;
+};
+
 type NotificationBrowserSettingItemViewProps = {
   settingItemEntity: SettingModel<DesktopNotificationsSettingModel>;
-  settingValue: DesktopNotificationsSettingModel;
   setToggleState: (checked: boolean) => void;
 };
 
-export { NotificationBrowserSettingItemViewProps };
+export {
+  NotificationBrowserSettingItemProps,
+  NotificationBrowserSettingItemViewProps,
+};

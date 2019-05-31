@@ -24,14 +24,9 @@ class NotificationBrowserSettingItemViewModel extends StoreViewModel
     );
   }
 
-  @computed
-  get settingValue() {
-    return this.settingItemEntity.value;
-  }
-
-  setToggleState(checked: boolean) {
+  setToggleState = (checked: boolean) => {
     const { valueSetter } = this.settingItemEntity;
-    (valueSetter as Function)({ desktopNotifications: checked });
+    valueSetter && valueSetter({ desktopNotifications: checked });
   }
 }
 

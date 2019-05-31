@@ -14,10 +14,10 @@ import { SettingModule } from './SettingModule';
 const config: ModuleConfig = {
   entry: SettingModule,
   binding: (jupiter: Jupiter) => {
+    jupiter.registerService(ISettingService, SettingService);
     jupiter.registerClass(SettingStore);
     jupiter.registerClass(GeneralSettingManager);
     jupiter.registerClass(NotificationSoundSettingManager);
-    jupiter.registerService(ISettingService, SettingService);
   },
 };
 

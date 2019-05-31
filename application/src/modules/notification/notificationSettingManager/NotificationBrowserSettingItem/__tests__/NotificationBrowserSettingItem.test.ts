@@ -8,3 +8,9 @@ import { NotificationBrowserSettingItemViewModel } from '../NotificationBrowserS
 jest.mock('@/utils/i18nT', () => (key: string) => key);
 
 // alessia[todo]: mock getEntity 的值，判断是否去 request 或者 openDialog
+
+describe('ClassName', () => {
+  describe('functionName()', () => {
+    it('should expected behavior when scenario/context [CASE_ID]');
+  });
+});

@@ -28,7 +28,7 @@ export default class SettingModel<T = any> extends Base<UserSettingEntity<T>> {
   @observable
   valueGetter?: () => Promise<T> | T;
   @observable
-  valueSetter?: (value: T) => Promise<void> | void;
+  valueSetter?: (value: Partial<T>) => Promise<void> | void;
 
   constructor(data: UserSettingEntity) {
     super(data);

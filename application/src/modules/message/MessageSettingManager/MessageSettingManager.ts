@@ -4,14 +4,19 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISettingService, SETTING_ITEM_TYPE } from '@/interface/setting';
+import {
+  ISettingService,
+  SETTING_ITEM_TYPE,
+  SelectSettingItem,
+} from '@/interface/setting';
 import { SETTING_SECTION__DESKTOP_NOTIFICATIONS } from '@/modules/notification/notificationSettingManager/constant';
 import {
   MESSAGE_SETTING_SCOPE,
   SETTING_ITEM__NOTIFICATION_NEW_MESSAGES,
-} from './interface/constant';
-import { IMessageSettingManager } from './interface';
-
+} from '../interface/constant';
+import { IMessageSettingManager } from '../interface';
+import { DESKTOP_MESSAGE_NOTIFICATION_OPTIONS } from 'sdk/module/profile';
+import { NewMessageSelectSourceItem } from './NewMessageSelectSourceItem';
 class MessageSettingManager implements IMessageSettingManager {
   @ISettingService private _settingService: ISettingService;
 
@@ -26,8 +31,9 @@ class MessageSettingManager implements IMessageSettingManager {
         description:
           'setting.notificationAndSounds.desktopNotifications.newMessages.description',
         type: SETTING_ITEM_TYPE.SELECT,
+        sourceRenderer: NewMessageSelectSourceItem,
         weight: 200,
-      },
+      } as SelectSettingItem<DESKTOP_MESSAGE_NOTIFICATION_OPTIONS>,
     );
   }
 

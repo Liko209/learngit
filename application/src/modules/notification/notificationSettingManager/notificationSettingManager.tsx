@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISettingService } from '@/interface/setting';
+import { ISettingService, SettingItem } from '@/interface/setting';
 import { SETTING_PAGE__NOTIFICATION_SOUND } from '@/modules/setting/manager/notificationSound/constant';
 import {
   NOTIFICATION_SETTING_SCOPE,
@@ -13,13 +13,14 @@ import {
 } from './constant';
 import { NotificationBrowserSettingItem } from './NotificationBrowserSettingItem';
 import { isElectron } from '@/common/isUserAgent';
+import { INotificationSettingManager } from '../interface';
 
-class NotificationSettingManager {
+class NotificationSettingManager implements INotificationSettingManager {
   @ISettingService private _settingService: ISettingService;
 
   init = async () => {
     // alessia[todo]: register section and one item for browser
-    const notificationItems = [];
+    const notificationItems: SettingItem[] = [];
     if (!isElectron) {
       notificationItems.push({
         id: SETTING_ITEM__NOTIFICATION_BROWSER,

@@ -3,18 +3,22 @@
  * @Date: 2019-04-01 14:33:10
  * Copyright Â© RingCentral. All rights reserved.
  */
-import { inject } from 'framework';
 import { DeskTopNotification } from '../agent/DesktopNotification';
 import _ from 'lodash';
-import { INotificationService, NotificationOpts } from '../interface';
+import {
+  INotificationService,
+  NotificationOpts,
+  INotificationPermission,
+} from '../interface';
 import { AbstractNotification } from '../agent/AbstractNotification';
 import { SWNotification } from '../agent/SWNotification';
 import { isFirefox } from '@/common/isUserAgent';
-import { PERMISSION } from '../interface/constant';
-import { INotificationPermission, Pal } from 'sdk/pal';
+// alessia[todo]:
+// import { PERMISSION } from '../interface/constant';
+import { Pal } from 'sdk/pal';
 
 class NotificationService implements INotificationService {
-  @inject(PERMISSION)
+  @INotificationPermission
   private _permission: INotificationPermission;
   private _notificationDistributors: Map<string, AbstractNotification<any>>;
   private _notificationDistributor: AbstractNotification<any>;

@@ -11,7 +11,8 @@ import { JuiSettingSectionItem } from 'jui/pattern/SettingSectionItem';
 import { JuiToggleButton } from 'jui/components/Buttons';
 import { JuiModal } from 'jui/components/Dialog';
 import { PERMISSION } from '@/modules/notification/Permission';
-import { IPermission } from '@/modules/notification/interface';
+import { INotificationPermission } from '@/modules/notification/interface';
+import { jupiter } from 'framework';
 
 type Props = WithTranslation & NotificationBrowserSettingItemViewProps;
 type State = {
@@ -23,8 +24,9 @@ class NotificationBrowserSettingItemViewComponent extends Component<
   Props,
   State
 > {
-  @IPermission
-  private _permission: IPermission;
+  get _permission(): INotificationPermission {
+    return jupiter.get(INotificationPermission);
+  }
 
   constructor(props: Props) {
     super(props);
@@ -38,7 +40,8 @@ class NotificationBrowserSettingItemViewComponent extends Component<
     e: React.ChangeEvent<HTMLInputElement>,
     checked: boolean,
   ) => {
-    const { browserPermission } = this.props.settingValue;
+    const browserPermission = this.props.settingItemEntity.value!
+      .browserPermission;
     if (browserPermission !== PERMISSION.DEFAULT) {
       this.props.setToggleState(checked);
     }
@@ -104,8 +107,9 @@ class NotificationBrowserSettingItemViewComponent extends Component<
   render() {
     const {
       t,
-      settingValue: { desktopNotifications },
+      settingItemEntity: { value },
     } = this.props;
+    const desktopNotifications = value && value.desktopNotifications;
     const label = t(
       'setting.notificationAndSounds.desktopNotifications.notificationsForBrowser.label',
     );
@@ -121,7 +125,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
       >
         <JuiToggleButton
           data-test-automation-id="notificationBrowserSettingToggleButton"
-          checked={this.state.isPending || desktopNotifications}
+          checked={this.state.isPending || desktopNotifications || false}
           onChange={this.handleToggleChange}
         />
         {this._renderDialog()}

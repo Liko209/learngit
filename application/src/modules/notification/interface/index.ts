@@ -5,6 +5,7 @@
  */
 import { Omit } from 'jui/foundation/utils/typeHelper';
 import { createDecorator } from 'framework';
+import { INotificationPermission as permissionInterface } from 'sdk/pal';
 
 type NotificationId = number | string;
 const INotificationService = createDecorator('NOTIFICATION_SERVICE');
@@ -48,6 +49,8 @@ interface INotificationSettingManager {
   dispose: Function;
 }
 
+const INotificationPermission = createDecorator('NOTIFICATION_PERMISSION');
+interface INotificationPermission extends permissionInterface {}
 export {
   INotificationService,
   NotificationActionHandler,
@@ -56,4 +59,5 @@ export {
   Global,
   NOTIFICATION_PRIORITY,
   INotificationSettingManager,
+  INotificationPermission,
 };

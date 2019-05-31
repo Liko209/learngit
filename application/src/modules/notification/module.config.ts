@@ -3,13 +3,16 @@
  * @Date: 2019-04-01 15:16:45
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
-import { ModuleConfig } from 'framework';
+import { ModuleConfig, Jupiter } from 'framework';
 import { NotificationModule } from './notificationModule';
 import { NotificationService } from './service';
-import { INotificationService, INotificationSettingManager } from './interface';
+import {
+  INotificationService,
+  INotificationSettingManager,
+  INotificationPermission,
+} from './interface';
 import { NotificationSettingManager } from './notificationSettingManager/notificationSettingManager';
 import { Permission } from './Permission';
-import { PERMISSION } from './interface/constant';
 const config: ModuleConfig = {
   entry: NotificationModule,
   binding: (jupiter: Jupiter) => {
@@ -18,7 +21,7 @@ const config: ModuleConfig = {
       INotificationSettingManager,
       NotificationSettingManager,
     );
-    jupiter.registerService(PERMISSION, Permission);
+    jupiter.registerService(INotificationPermission, Permission);
   },
 };
 
