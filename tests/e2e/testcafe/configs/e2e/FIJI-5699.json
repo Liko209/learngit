@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/SendNewMessage/SendNewMessage.ts"
+    ],
+    "include_tags": [
+      "JPT-289"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

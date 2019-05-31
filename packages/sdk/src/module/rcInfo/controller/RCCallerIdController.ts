@@ -53,15 +53,18 @@ class RCCallerIdController {
     let result = [];
     result = this._addBlockedNumber(callerIdList);
     result = result.filter(
-      item =>
+      (item) =>
         !CALLER_ID_FILTER_TYPE.includes(item.usageType as PhoneNumberType),
     );
-    result = result.map(item => {
+    result = result.map((item) => {
       const { id, phoneNumber, usageType, label } = item;
       return {
         id,
         phoneNumber,
-        usageType,
+        usageType:
+          label && usageType === PhoneNumberType.CompanyNumber
+            ? PhoneNumberType.NickName
+            : usageType,
         label: label ? label : CALLER_ID_LABEL[usageType],
       };
     });
@@ -71,7 +74,7 @@ class RCCallerIdController {
 
   async getCallerById(id: number) {
     const callerIds = await this.getCallerIdList();
-    const index = callerIds.findIndex(caller => caller.id === id);
+    const index = callerIds.findIndex((caller) => caller.id === id);
     return index !== -1 ? callerIds[index] : undefined;
   }
 

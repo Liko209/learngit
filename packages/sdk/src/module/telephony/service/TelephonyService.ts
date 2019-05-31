@@ -135,6 +135,18 @@ class TelephonyService extends EntityBaseService<IdModel> {
     return await this.telephonyController.getAccountController().park(callId);
   }
 
+  flip = async (callId: string, flipNumber: number) => {
+    return await this.telephonyController
+      .getAccountController()
+      .flip(callId, flipNumber);
+  }
+
+  forward = async (callId: string, phoneNumber: string) => {
+    return await this.telephonyController
+      .getAccountController()
+      .forward(callId, phoneNumber);
+  }
+
   replyWithPattern = (
     callId: string,
     pattern: RTC_REPLY_MSG_PATTERN,

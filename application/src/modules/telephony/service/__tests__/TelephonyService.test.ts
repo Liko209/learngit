@@ -3,7 +3,10 @@
  * @Date: 2019-04-02 17:28:54
  * Copyright © RingCentral. All rights reserved.
  */
+
 import { TelephonyService } from '../TelephonyService';
+import * as utils from '@/store/utils';
+import { CLIENT_SERVICE } from '@/modules/common/interface';
 import { v4 } from 'uuid';
 import {
   TelephonyService as ServerTelephonyService,
@@ -13,6 +16,7 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'sdk/module/telephony';
+import { RCInfoService } from 'sdk/module/rcInfo';
 import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
 import { PersonService } from 'sdk/module/person';
 import { TelephonyStore } from '../../store/TelephonyStore';
@@ -20,16 +24,19 @@ import { ToastCallError } from '../ToastCallError';
 import { container, injectable, decorate } from 'framework';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { Notification } from '@/containers/Notification';
+import { ClientService } from '@/modules/common';
+import { CALLING_OPTIONS } from 'sdk/module/profile';
 
 const testProcedureWaitingTime = 20;
 const mockedDelay = 10;
 
 // HACK: flag for changing the call action result dynamically
 let count = 0;
-let telephonyService: TelephonyService | null;
+let telephonyService: TelephonyService;
 
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
+decorate(injectable(), ClientService);
 
 jest.mock('../ToastCallError');
 jest.mock('@/containers/Notification');
@@ -47,6 +54,7 @@ const sleep = (time: number): Promise<void> => {
 };
 
 let mockedServerTelephonyService: any;
+let mockedRCInfoService: any;
 
 function initializeCallerId() {
   telephonyService._telephonyStore.chosenCallerPhoneNumber = '123';
@@ -54,7 +62,7 @@ function initializeCallerId() {
     { id: '123', phoneNumber: '123', usageType: 'companyNumber' },
   ];
 }
-
+let defaultPhoneApp = CALLING_OPTIONS.GLIP;
 describe('TelephonyService', () => {
   beforeEach(() => {
     let cachedOnMadeOutgoingCall: any;
@@ -63,6 +71,13 @@ describe('TelephonyService', () => {
     let cachedOnCallStateChange: any;
     let callId: string | null = null;
 
+    mockedRCInfoService = {
+      get: jest.fn(),
+      getCallerIdList: jest.fn(),
+      getForwardingNumberList: jest.fn(),
+    };
+
+    jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
     mockedServerTelephonyService = {
       hold: jest.fn().mockImplementation(() => {
         sleep(mockedDelay).then(() =>
@@ -144,6 +159,7 @@ describe('TelephonyService', () => {
       startReply: jest.fn(),
       replyWithMessage: jest.fn(),
       replyWithPattern: jest.fn(),
+      forward: jest.fn(),
     };
 
     jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
@@ -161,13 +177,14 @@ describe('TelephonyService', () => {
         case ServiceConfig.USER_CONFIG_SERVICE:
           return { get: jest.fn() };
         case ServiceConfig.RC_INFO_SERVICE:
-          return { get: jest.fn(), getCallerIdList: jest.fn() };
+          return mockedRCInfoService as RCInfoService;
         case ServiceConfig.ACCOUNT_SERVICE:
           return { userConfig: { getGlipUserId: jest.fn() } };
         default:
           return {} as PersonService;
       }
     });
+    container.bind(CLIENT_SERVICE).to(ClientService);
     container.bind(TelephonyStore).to(TelephonyStore);
     container.bind(TelephonyService).to(TelephonyService);
     telephonyService = container.get(TelephonyService);
@@ -651,5 +668,76 @@ describe('TelephonyService', () => {
     telephonyService._callId = 'failed';
     await (telephonyService as TelephonyService).park();
     expect(ToastCallError.toastParkError).toHaveBeenCalledTimes(1);
+  });
+
+  it('should get forward number list from RC info service', () => {
+    telephonyService.getForwardingNumberList();
+
+    expect(mockedRCInfoService.getForwardingNumberList).toHaveBeenCalled();
+  });
+
+  it('should call forward', () => {
+    const callId = 'id_0';
+    const phoneNumber = '123456789';
+    telephonyService.forward(phoneNumber);
+    expect(mockedServerTelephonyService.forward).not.toBeCalled();
+    telephonyService._callId = callId;
+    telephonyService.forward(phoneNumber);
+    expect(mockedServerTelephonyService.forward).toBeCalledWith(
+      callId,
+      phoneNumber,
+    );
+    telephonyService._callId = undefined;
+  });
+
+  describe(`onReceiveIncomingCall()`, () => {
+    const params = {
+      fromName: 'test',
+      fromNum: '456',
+      callId: v4(),
+    };
+    beforeEach(() => {
+      jest.clearAllMocks();
+      defaultPhoneApp = CALLING_OPTIONS.GLIP;
+      jest
+        .spyOn(telephonyService._telephonyStore, 'incomingCall')
+        .mockImplementation();
+    });
+    it(`should not response when there's incoming call and default phone setting is RC phone`, () => {
+      defaultPhoneApp = CALLING_OPTIONS.RINGCENTRAL;
+      jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
+      telephonyService._onReceiveIncomingCall(params);
+      expect(telephonyService._telephonyStore.incomingCall).not.toBeCalled();
+    });
+    it(`should show ui when there's incoming call and default phone setting is Ringcentral App`, () => {
+      jest.spyOn(utils, 'getSingleEntity').mockReturnValue('glip');
+      telephonyService._onReceiveIncomingCall(params);
+      expect(telephonyService._telephonyStore.incomingCall).toBeCalled();
+    });
+  });
+
+  describe(`makeRCPhoneCall()`, () => {
+    let testedFn;
+    beforeEach(() => {
+      jest.clearAllMocks();
+      const clientService = container.get(CLIENT_SERVICE);
+      testedFn = jest.spyOn(clientService, 'invokeApp').mockImplementation();
+    });
+    ['RC', 'ATT', 'TELUS'].forEach(i =>
+      it(`should build correct url for ${i}`, () => {
+        const RCPhoneCallURL = {
+          RC: 'rcmobile',
+          ATT: 'attvr20',
+          TELUS: 'rctelus',
+        };
+        jest
+          .spyOn(utils, 'getEntity')
+          .mockImplementation(() => ({ rcBrand: i }));
+        telephonyService.makeRCPhoneCall(666);
+        expect(testedFn).toBeCalledWith(
+          `${RCPhoneCallURL[i]}://call?number=${encodeURIComponent('666')}`,
+        );
+      }),
+    );
   });
 });

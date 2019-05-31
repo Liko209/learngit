@@ -56,6 +56,18 @@ storiesOf('Components/Menus', module)
           <JuiMenuItem disabled={true}>Profile</JuiMenuItem>
           <JuiMenuItem>My account</JuiMenuItem>
           <JuiMenuItem>Logout</JuiMenuItem>
+          <JuiMenuItem disabled={true}>Profile</JuiMenuItem>
+          <JuiMenuItem>My account</JuiMenuItem>
+          <JuiMenuItem>Logout</JuiMenuItem>
+          <JuiMenuItem disabled={true}>Profile</JuiMenuItem>
+          <JuiMenuItem>My account</JuiMenuItem>
+          <JuiMenuItem>Logout</JuiMenuItem>
+          <JuiMenuItem disabled={true}>Profile</JuiMenuItem>
+          <JuiMenuItem>My account</JuiMenuItem>
+          <JuiMenuItem>Logout</JuiMenuItem>
+          <JuiMenuItem disabled={true}>Profile</JuiMenuItem>
+          <JuiMenuItem>My account</JuiMenuItem>
+          <JuiMenuItem>Logout</JuiMenuItem>
         </JuiSubMenu>
         <JuiMenuItem onClick={action('onClick My account')}>
           My account

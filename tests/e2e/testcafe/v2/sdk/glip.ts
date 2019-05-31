@@ -378,6 +378,7 @@ export class GlipSdk {
     const meChatId = await this.getMeChatId();
 
     const initData = {
+      new_message_badges:"groups_and_mentions",
       model_size: 0,
       is_new: false,
       want_email_people: 900000,
@@ -388,7 +389,6 @@ export class GlipSdk {
       want_push_mentions: true,
       want_push_video_chat: true,
       want_email_glip_today: true,
-      new_message_badges: 'all',
       want_push_missed_calls_and_voicemails: 1,
       send_push_notifications_ignoring_presence: 0,
       send_email_notifications_ignoring_presence: 0,
@@ -398,7 +398,8 @@ export class GlipSdk {
       me_tab: true,
       skip_close_conversation_confirmation: false,
       max_leftrail_group_tabs2: 20,
-      favorite_post_ids: []
+      favorite_post_ids: [],
+      calling_option:'glip'
     }
     const data = _.assign(initData, ...groups.map(key => ({ [key]: false })));
     return await this.updateProfile(data, rcId);
@@ -409,6 +410,10 @@ export class GlipSdk {
       favorite_post_ids: H.toNumberArray(postIds)
     }
     await this.updateProfile(data, rcId);
+  }
+
+  async setDefaultPhoneApp(val:'ringcentral'|'glip',rcId?:string) {
+      await this.updateProfile({calling_option:val}, rcId);
   }
 
   /* state */
