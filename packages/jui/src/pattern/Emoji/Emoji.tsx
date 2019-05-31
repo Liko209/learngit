@@ -12,7 +12,9 @@ import { ExcludeList } from './excludeList';
 import { JuiPopperMenu, AnchorProps } from '../../pattern/PopperMenu';
 import { HotKeys } from '../../hoc/HotKeys';
 import styled from '../../foundation/styled-components';
-import { grey, spacing, height } from '../../foundation/utils/styles';
+import { grey, spacing, height } from '../../foundation/utils';
+import { withTheme } from 'styled-components';
+import { ThemeProps } from '../../foundation/theme/theme';
 
 type Props = {
   handlerIcon: string;
@@ -84,8 +86,9 @@ type State = {
   anchorEl: EventTarget & Element | null;
   isToggleWrapShow: boolean;
 };
-class JuiEmoji extends React.PureComponent<Props, State> {
-  constructor(props: Props) {
+type EmojiProps = Props & ThemeProps;
+class JuiEmoji extends React.PureComponent<EmojiProps, State> {
+  constructor(props: EmojiProps) {
     super(props);
     this.state = {
       anchorEl: null,
@@ -208,6 +211,7 @@ class JuiEmoji extends React.PureComponent<Props, State> {
         >
           <StyledEmojiWrapper>
             <Picker
+              color={this.props.theme.palette.primary.main}
               sheetSize={sheetSize}
               title={title || ''}
               emoji={defaultSelector || ''}
@@ -238,5 +242,5 @@ class JuiEmoji extends React.PureComponent<Props, State> {
     );
   }
 }
-
-export { JuiEmoji };
+const JuiEmojiWithTheme = withTheme(JuiEmoji);
+export { JuiEmoji, JuiEmojiWithTheme };
