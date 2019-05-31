@@ -378,6 +378,7 @@ export class GlipSdk {
     const meChatId = await this.getMeChatId();
 
     const initData = {
+      new_message_badges:"groups_and_mentions",
       model_size: 0,
       is_new: false,
       want_email_people: 900000,
@@ -388,7 +389,6 @@ export class GlipSdk {
       want_push_mentions: true,
       want_push_video_chat: true,
       want_email_glip_today: true,
-      new_message_badges: 'all',
       want_push_missed_calls_and_voicemails: 1,
       send_push_notifications_ignoring_presence: 0,
       send_email_notifications_ignoring_presence: 0,
