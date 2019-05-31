@@ -10,7 +10,7 @@ fixture('Phone/IncomingCallMoreOptions')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Check More options in an incoming call', ['P2', 'Phone', 'OutgoingCall', 'V1.4', 'Jenny.Cai']), async (t) => {
+test(formalName('Check More options in an incoming call', ['P2', 'Phone', 'IncomingCallMoreOptions', 'V1.4', 'Jenny.Cai']), async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
   const app = new AppRoot(t);
