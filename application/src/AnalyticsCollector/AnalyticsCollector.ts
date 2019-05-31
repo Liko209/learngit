@@ -7,8 +7,11 @@ import { dataAnalysis } from 'sdk';
 import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
-
+import config from '@/config';
 class AnalyticsCollector {
+  constructor() {
+    dataAnalysis.setProduction(config.isProductionAccount());
+  }
   async identify() {
     const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     if (!userId) {

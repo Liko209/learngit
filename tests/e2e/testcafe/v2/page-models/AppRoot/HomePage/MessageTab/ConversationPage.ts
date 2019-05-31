@@ -253,15 +253,16 @@ export class BaseConversationPage extends BaseWebComponent {
     return await this.scrollDiv.scrollHeight;
   }
 
-  async scrollUpToViewPostById(postId: string) {
+  async scrollUpToViewPostById(postId: string, maxRetry: number = 10, retryInterval: number = 1e3) {
     const postItem = this.postItemById(postId)
-    for (const i of _.range(10)) {
+    for (const i of _.range(maxRetry)) {
       if (await postItem.exists) {
         await postItem.scrollIntoView()
         break
       } else {
+        await this.h.scrollBy(this.scrollDiv, 0, -1); // FIXME: work around scrollUp bug
         await this.scrollUpOnePage();
-        await this.t.wait(1e3);
+        await this.t.wait(retryInterval);
       }
     }
     assert(await postItem.visible, "this post does not exist");
@@ -524,7 +525,7 @@ export class ConversationPage extends BaseConversationPage {
 
   /* 1:1 */
   get telephonyButton() {
-    return this.telephonyIcon.parent('button'); //TODO: add automationId
+    return this.getSelectorByAutomationId('telephony-call-btn');
   }
 
   get telephonyIcon() {

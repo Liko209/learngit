@@ -187,11 +187,11 @@ describe('Telephony store', () => {
 
   it('switch animation', () => {
     const store = createStore();
-    expect(store.shouldAnimationStart).toBe(false);
+    expect(store.startMinimizeAnimation).toBe(false);
     store.startAnimation();
-    expect(store.shouldAnimationStart).toBe(true);
+    expect(store.startMinimizeAnimation).toBe(true);
     store.stopAnimation();
-    expect(store.shouldAnimationStart).toBe(false);
+    expect(store.startMinimizeAnimation).toBe(false);
   });
 
   it('switch dialer focus', () => {

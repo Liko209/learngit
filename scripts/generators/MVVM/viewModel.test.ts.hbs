@@ -5,12 +5,12 @@
  */
 import { {{ properCase name }}ViewModel } from '../{{ properCase name }}.ViewModel';
 
-let ViewModel: FormViewModel;
+let vm: {{ properCase name }}ViewModel;
 
-describe('{{ properCase name }}VM', () => {
-  beforeAll(() => {
+describe('{{ properCase name }}ViewModel', () => {
+  beforeEach(() => {
     jest.resetAllMocks();
-    ViewModel = new {{ properCase name }}ViewModel();
+    vm = new {{ properCase name }}ViewModel();
   });
 
   it('Expect to have unit tests specified', () => {

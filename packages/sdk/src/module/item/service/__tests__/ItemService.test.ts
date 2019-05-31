@@ -125,6 +125,13 @@ describe('ItemService', () => {
         expect(res).toBe('a');
       });
     });
+    describe('editFileName()', () => {
+      it('should call with correct parameter', async () => {
+        fileItemService.editFileName = jest.fn();
+        await itemService.editFileName(1, 'newName');
+        expect(fileItemService.editFileName).toBeCalledWith(1, 'newName');
+      });
+    });
 
     describe('sendItemFile()', () => {
       it('should call file item service with correct parameter', async () => {
