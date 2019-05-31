@@ -20,7 +20,7 @@ import {
   GlobalStationLocationSetting,
   RegionInfo,
 } from '../types';
-import { PhoneNumberType } from 'sdk/module/phoneNumber/types';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 import { AccountServiceInfoController } from './AccountServiceInfoController';
 import { mainLogger } from 'foundation';
 import { notificationCenter, RC_INFO, SERVICE } from 'sdk/service';

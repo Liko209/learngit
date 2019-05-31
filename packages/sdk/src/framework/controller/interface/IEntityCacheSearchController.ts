@@ -5,9 +5,20 @@
  */
 
 import { IdModel, SortableModel, ModelIdType } from '../../model';
+type FormattedKey = {
+  original: string;
+  formatted: string;
+};
+
+type FormattedTerms = {
+  formattedKeys: FormattedKey[];
+  validFormattedKeys: FormattedKey[];
+};
+
 type Terms = {
   searchKeyTerms: string[];
   searchKeyTermsToSoundex: string[];
+  searchKeyFormattedTerms: FormattedTerms;
 };
 interface IEntityCacheSearchController<
   T extends IdModel<IdType>,
@@ -24,13 +35,14 @@ interface IEntityCacheSearchController<
 
   searchEntities(
     genSortableModelFunc: (entity: T, terms: Terms) => SortableModel<T> | null,
+    genFormattedTermsFunc?: (originalTerms: string[]) => FormattedTerms,
     searchKey?: string,
     arrangeIds?: IdType[],
     sortFunc?: (entityA: SortableModel<T>, entityB: SortableModel<T>) => number,
   ): Promise<{
-    terms: string[];
+    terms: Terms;
     sortableModels: SortableModel<T>[];
-  } | null>;
+  }>;
 
   isFuzzyMatched(srcText: string, terms: string[]): boolean;
   isSoundexMatched(
@@ -44,4 +56,4 @@ interface IEntityCacheSearchController<
   isInitialized(): boolean;
 }
 
-export { IEntityCacheSearchController, Terms };
+export { IEntityCacheSearchController, Terms, FormattedKey, FormattedTerms };

@@ -69,7 +69,7 @@ class GroupSearchViewModel extends StoreViewModel<GroupSearchProps> {
       true,
     );
 
-    return result ? result.sortableModels : null;
+    return result.sortableModels;
   }
 
   @action
