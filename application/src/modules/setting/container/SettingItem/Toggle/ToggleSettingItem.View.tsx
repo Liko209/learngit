@@ -45,7 +45,7 @@ class ToggleSettingItemViewComponent extends Component<Props> {
     const { disabled, settingItemEntity } = this.props;
     return (
       <JuiToggleButton
-        checked={settingItemEntity.value}
+        checked={Boolean(settingItemEntity.value)}
         disabled={disabled}
         onChange={this._handleChange}
       />
