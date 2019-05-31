@@ -88,7 +88,6 @@ class FileNameEditActionViewComponent extends Component<
       <JuiMenuItem
         icon={this.iconCom}
         disabled={!canEditFileName}
-        color="red"
         data-test-automation-id={'fileNameEditItem'}
         onClick={this.handleClick}
       >

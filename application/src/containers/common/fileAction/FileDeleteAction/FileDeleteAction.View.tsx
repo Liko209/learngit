@@ -52,7 +52,6 @@ class FileDeleteActionViewComponent extends Component<
       <JuiMenuItem
         icon={this.iconCom}
         disabled={!canDelete}
-        color="red"
         onClick={this.deleteFile}
       >
         {t('message.fileAction.deleteFile')}
