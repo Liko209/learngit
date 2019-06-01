@@ -89,9 +89,11 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
     if (!profile) {
       return;
     }
+    const state = await this._getItemState();
     if (
       profile[SETTING_KEYS.DESKTOP_VOICEMAIL] !==
-      this.userSettingEntityCache.value
+        this.userSettingEntityCache.value ||
+      state !== this.userSettingEntityCache.state
     ) {
       this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
     }
