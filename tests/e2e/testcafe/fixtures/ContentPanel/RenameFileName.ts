@@ -63,7 +63,7 @@ test.meta(<ITestMeta>{
   for(let i = 0 ; i < Entries.length; i++ ){
 
     if( i == 0 ){   
-      await h(t).withLog(`And I click the more button of the file`, async() => {
+      await h(t).withLog(`When I click the more button of the file`, async() => {
         await moreActionOnFile.clickMore();
       },true);
     }else if( i == 1 ){
@@ -72,7 +72,7 @@ test.meta(<ITestMeta>{
         await rightRail.filesEntry.shouldBeOpened();
       },true);
 
-      await h(t).withLog(`When I hover the file item`, async () => {
+      await h(t).withLog(`And I hover the file item`, async () => {
         await filesTabItem.nameShouldBe(filenames[0]);
         await t.hover(filesTabItem.self)
       },true);
@@ -193,7 +193,7 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-2057','JPT-2074','JPT-2060'], // TODO case id ????
   maintainers: ['Mia.cai'],
   keywords: ['ContentPanel/RenameFileName']
-})(`Unsupported characters should be replaced by_ when saving the file name;Show 'More' tooltip for the more icon;Rename file option is enabled to every member except guests;`, async (t) => {
+})(`Unsupported characters should be replaced by_ when saving the file name;Show 'More' tooltip for the more icon;Rename file option is disabled to guests`, async (t) => {
   const renameFileMenu = 'Edit filename';
   const filesPath = ['../../sources/1.psd'];
     // TODO
@@ -231,12 +231,12 @@ test.meta(<ITestMeta>{
     await conversationPage.nthPostItem(-1).waitForPostToSend();
   });
 
-  await h(t).withLog(`When I am on hover the file`, async () => {
-    await t.hover(postItem.img);
-  })  
+  await h(t).withLog(`When I am on hover more icon`, async () => {
+    await t.hover(moreActionOnFile.more);
+  },true); 
 
   await h(t).withLog(`Then show '${moreTooltip}' tooltip`, async () => {
-    await postItem.showTooltip(moreTooltip);
+    await moreActionOnFile.showTooltip(moreTooltip);
   },true);
 
   await h(t).withLog(`When I click the more button of the file`, async() => {
