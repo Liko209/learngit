@@ -9,6 +9,8 @@ type FakeInputProps = {};
 type FakeInputViewProps = {
   enteredKeys: string;
   showCursor: boolean;
+  onFocus?: () => void;
+  onBlur?: () => void;
 };
 
 export { FakeInputProps, FakeInputViewProps };

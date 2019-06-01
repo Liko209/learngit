@@ -6,20 +6,25 @@
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { CallActionsProps, CallActionsViewProps } from './types';
+import { CALL_ACTION } from '../../interface/constant';
 import { container } from 'framework';
 import { TelephonyStore } from '../../store';
 import { CALL_STATE } from '../../FSM';
-
-enum CALL_ACTION {
-  REPLY = 'reply',
-}
 
 class CallActionsViewModel extends StoreViewModel<CallActionsProps>
   implements CallActionsViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
 
-  private _directReply = () => {
-    this._telephonyStore.directReply();
+  @computed
+  get callActionsMap() {
+    return {
+      [CALL_ACTION.REPLY]: {
+        shouldShowAction: this._shouldShowReplyOption,
+      },
+      // [CALL_ACTION.FORWARD]: {
+      //   shouldShowAction: !this._isEventOrTask,
+      // },
+    };
   }
 
   @computed
@@ -28,19 +33,10 @@ class CallActionsViewModel extends StoreViewModel<CallActionsProps>
   }
 
   @computed
-  get callActions() {
-    return [
-      {
-        label: CALL_ACTION.REPLY,
-        handleClick: this._directReply,
-        disabled: !this._shouldShowReplyOption,
-      },
-    ];
-  }
-
-  @computed
   get shouldDisableCallActions() {
-    return this.callActions.every(action => action.disabled);
+    return Object.values(this.callActionsMap).every(
+      action => !action.shouldShowAction,
+    );
   }
 }
 

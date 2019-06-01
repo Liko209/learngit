@@ -182,9 +182,6 @@ export class NetworkRequestExecutor
       case RESPONSE_STATUS_CODE.SERVICE_UNAVAILABLE:
         this._handle503XApiCompletionCallback(response);
         break;
-      case RESPONSE_STATUS_CODE.DEFAULT:
-        response.request = this.request;
-        break;
     }
 
     this._callXApiCompletionCallback(response);

@@ -829,6 +829,189 @@ test.meta(<ITestMeta>{
   });
 });
 
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-128'],
+  maintainers: ['alexander.zaverukha'],
+  keywords: ['UMI']
+})('should update UMI in the sections/conversations when mark conversations as read/unread.', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
+
+  const favoritesSection = app.homePage.messageTab.favoritesSection;
+  const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+  const teamsSection = app.homePage.messageTab.teamsSection;
+
+
+  let favoriteDirectMessageWithUmiId;
+  let favoriteTeamWithUmiId;
+  let directMessageWithUmiId;
+  let teamWithUmiId;
+
+  await h(t).withLog(`Given I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    },
+  );
+
+  await h(t).withLog('And Fav/DM/Team section is expanded', async () => {
+    await t.expect(directMessagesSection.isExpand).ok();
+    await t.expect(teamsSection.isExpand).ok();
+    await t.expect(favoritesSection.isExpand).ok();
+  });
+
+  await h(t).withLog('And Fav/DM/Team section has multiple conversations with UMI and without UMI', async () => {
+
+    const chats = [
+      { name: 'F1', umi: 1, type: 'DirectMessage' }, { name: 'F2', umi: 1, type: 'Team' }, { name: 'F3', umi: 0, type: 'DirectMessage' }, { name: 'F4', umi: 0, type: 'Team' },
+      { name: 'DM1', umi: 1, type: 'DirectMessage' },
+      { name: 'TM1', umi: 1, type: 'Team' },
+    ];
+    await createChats(t, chats, loginUser);
+    favoriteDirectMessageWithUmiId = getChatByName(chats,'F1').id;
+    favoriteTeamWithUmiId = getChatByName(chats,'F2').id;
+    directMessageWithUmiId = getChatByName(chats,'DM1').id;
+    teamWithUmiId = getChatByName(chats,'TM1').id;
+
+    await favoritesSection.conversationEntryById(favoriteDirectMessageWithUmiId).umi.shouldBeNumber(1);
+    await favoritesSection.conversationEntryById(favoriteTeamWithUmiId).umi.shouldBeNumber(1);
+    await directMessagesSection.conversationEntryById(directMessageWithUmiId).umi.shouldBeNumber(1);
+    await teamsSection.conversationEntryById(teamWithUmiId).umi.shouldBeNumber(1);
+
+    await favoritesSection.fold();
+    await directMessagesSection.fold();
+    await teamsSection.fold();
+
+    await favoritesSection.headerUmi.shouldBeNumber(2);
+    await directMessagesSection.headerUmi.shouldBeNumber(1);
+    await directMessagesSection.headerUmi.shouldBeNumber(1);
+
+    await favoritesSection.expand();
+    await directMessagesSection.expand();
+    await teamsSection.expand();
+  });
+
+  // Fav entry
+  await h(t).withLog('When I mark DM Fav conversation as read', async () => {
+    await favoritesSection.conversationEntryById(favoriteDirectMessageWithUmiId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
+    await favoritesSection.conversationEntryById(favoriteTeamWithUmiId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
+  });
+
+  await h(t).withLog('Then no UMI in the Fav conversation', async () => {
+    await favoritesSection.conversationEntryById(favoriteDirectMessageWithUmiId).umi.shouldBeNumber(0);
+    await teamsSection.conversationEntryById(favoriteTeamWithUmiId).umi.shouldBeNumber(0);
+  });
+
+  await h(t).withLog('When I collapsed Fav section', async () => {
+    await favoritesSection.fold();
+  });
+
+  await h(t).withLog('Then UMI sum minus 1 for Fav section', async () => {
+    await favoritesSection.headerUmi.shouldBeNumber(0);
+  });
+
+  await h(t).withLog('When I mark DM/TM Fav conversations as unread', async () => {
+    await favoritesSection.expand();
+    await favoritesSection.conversationEntryById(favoriteDirectMessageWithUmiId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
+    await favoritesSection.conversationEntryById(favoriteTeamWithUmiId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
+  });
+
+  await h(t).withLog('Then UMI=1 for DM in Fav conversation', async () => {
+    await favoritesSection.conversationEntryById(favoriteDirectMessageWithUmiId).umi.shouldBeNumber(1);
+  });
+
+  await h(t).withLog('And no change for TM in Fav conversation', async () => {
+    await favoritesSection.conversationEntryById(favoriteTeamWithUmiId).umi.shouldBeNumber(0);
+  });
+
+  await h(t).withLog('When I collapsed Fav section', async () => {
+    await favoritesSection.fold();
+  });
+
+  await h(t).withLog('Then UMI=1 for DM  and no UMI change for TM in Fav section', async () => {
+    await favoritesSection.headerUmi.shouldBeNumber(1);
+  });
+
+  // DM entry
+  await h(t).withLog('When I mark DM conversation as read', async () => {
+    await directMessagesSection.conversationEntryById(directMessageWithUmiId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
+  });
+
+  await h(t).withLog('Then no UMI in the DM conversation', async () => {
+    await directMessagesSection.conversationEntryById(directMessageWithUmiId).umi.shouldBeNumber(0);
+  });
+
+  await h(t).withLog('When I collapsed DM section', async () => {
+    await directMessagesSection.fold();
+  });
+
+  await h(t).withLog('Then DM section UMI sum minus 1', async () => {
+    await directMessagesSection.headerUmi.shouldBeNumber(0);
+  });
+
+  await h(t).withLog('When I mark DM conversation as unread', async () => {
+    await directMessagesSection.expand();
+    await directMessagesSection.conversationEntryById(directMessageWithUmiId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
+  });
+
+  await h(t).withLog('Then UMI=1 for DM conversation', async () => {
+    await directMessagesSection.conversationEntryById(directMessageWithUmiId).umi.shouldBeNumber(1);
+  });
+
+  await h(t).withLog('When I collapsed DM section', async () => {
+    await directMessagesSection.fold();
+  });
+
+  await h(t).withLog('Then UMI=1 for DM conversation', async () => {
+    await directMessagesSection.headerUmi.shouldBeNumber(1);
+  });
+
+  // Team entry
+  await h(t).withLog('When I mark Team conversation as read', async () => {
+    await teamsSection.conversationEntryById(teamWithUmiId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
+  });
+
+  await h(t).withLog('Then no UMI in the Team conversation', async () => {
+    await teamsSection.conversationEntryById(teamWithUmiId).umi.shouldBeNumber(0);
+  });
+
+  await h(t).withLog('When I collapsed Team section', async () => {
+    await teamsSection.fold();
+  });
+
+  await h(t).withLog('Then Team section UMI sum minus 1', async () => {
+    await teamsSection.headerUmi.shouldBeNumber(0);
+  });
+
+  await h(t).withLog('When I mark Team conversation as unread', async () => {
+    await teamsSection.expand();
+    await teamsSection.conversationEntryById(teamWithUmiId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
+  });
+
+  await h(t).withLog('Then no change for UMI sum for Team conversation', async () => {
+    await teamsSection.conversationEntryById(teamWithUmiId).umi.shouldBeNumber(0);
+  });
+
+  await h(t).withLog('When I collapsed Team section', async () => {
+    await teamsSection.fold();
+  });
+
+  await h(t).withLog('Then no change for UMI sum for Team conversation', async () => {
+    await teamsSection.headerUmi.shouldBeNumber(0);
+  });
+});
+
 const createChats = async (t: TestController, chats: any, loginUser: IUser) => {
   const users = h(t).rcData.mainCompany.users.filter(user => user.rcId !== loginUser.rcId);
   for (let chatIndex = 0; chatIndex < chats.length; chatIndex++) {

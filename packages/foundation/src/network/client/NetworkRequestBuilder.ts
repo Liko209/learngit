@@ -204,8 +204,9 @@ class NetworkRequestBuilder implements IRequest {
     return this;
   }
 
-  build(): BaseRequest {
-    switch (this.via) {
+  build(requestVia?: NETWORK_VIA): BaseRequest {
+    const via = requestVia === undefined ? this.via : requestVia;
+    switch (via) {
       case NETWORK_VIA.SOCKET:
         this.id = generateIncrementId.get();
         return new SocketRequest(this);

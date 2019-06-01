@@ -16,7 +16,7 @@ import {
   AttachmentItem,
   ITEM_STATUS,
 } from 'jui/pattern/MessageInput/AttachmentItem';
-import { showImageViewer } from '@/containers/Viewer';
+import { showImageViewer } from '@/modules/viewer/container/Viewer';
 import { getFileSize } from './helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';

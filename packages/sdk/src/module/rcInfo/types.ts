@@ -42,6 +42,7 @@ enum ERCServiceFeaturePermission {
   CALL_SWITCH,
   RC_PRESENCE,
   MOBILE_VOIP_EMERGENCY_CALLING,
+  CALL_FORWARDING,
 }
 
 enum PermissionId {
@@ -63,6 +64,7 @@ enum RCServiceFeatureName {
   PAGER = 'Pager',
   FAX = 'Fax',
   VIDEO_CONFERENCING = 'VideoConferencing',
+  CALL_FORWARDING = 'CallForwarding',
 }
 
 enum RCBrandType {
@@ -100,6 +102,27 @@ enum ERCWebSettingUri {
   ANALYTIC_PORTAL_URI,
 }
 
+enum EForwardingFlipNumberType {
+  HOME,
+  WORK,
+  MOBILE,
+  PHONE_LINE,
+  OUTAGE,
+  OTHER,
+}
+
+type ForwardingFlipNumberModel = {
+  label: string;
+  phoneNumber: string;
+  flipNumber: number;
+  type: EForwardingFlipNumberType;
+};
+
+enum EForwardingNumberFeatureType {
+  FORWARDING = 'CallForwarding',
+  FLIP = 'CallFlip',
+}
+
 export {
   RCServiceFeatureName,
   PermissionId,
@@ -110,4 +133,7 @@ export {
   ERCWebSettingUri,
   GlobalStationLocationSetting,
   RegionInfo,
+  EForwardingFlipNumberType,
+  ForwardingFlipNumberModel,
+  EForwardingNumberFeatureType,
 };
