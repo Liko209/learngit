@@ -65,54 +65,54 @@ test.meta(<ITestMeta>{
     if( i == 0 ){   
       await h(t).withLog(`When I click the more button of the file`, async() => {
         await moreActionOnFile.clickMore();
-      },true);
+      });
     }else if( i == 1 ){
       await h(t).withLog(`When I click Files Tab on the right self(Entry2:right self)`, async () => {
         await rightRail.filesEntry.enter();
         await rightRail.filesEntry.shouldBeOpened();
-      },true);
+      });
 
       await h(t).withLog(`And I hover the file item`, async () => {
         await filesTabItem.nameShouldBe(filenames[0]);
         await t.hover(filesTabItem.self)
-      },true);
+      });
 
       await h(t).withLog(`And I click the more button of the file`, async() => {
         await filesTabItem.clickMore();
-      },true);
+      });
 
     }else{
 
       await h(t).withLog('When I click the file(Entry3:file viewer)', async () => {
         await t.click(posts.nth(-1).find('img'));
         await viewerDialog.ensureLoaded();
-      },true);
+      });
       await h(t).withLog(`And I click the more button of the file`, async() => {
         await moreActionOnFile.clickMore();
-      },true);
+      });
 
     }
   
     await h(t).withLog(`Then will show ${renameFileMenu} menu at the top`, async() => {
       await moreActionOnFile.renameFileMenuAtTop(renameFileMenu);
-    },true);
+    });
 
     await h(t).withLog(`When I click the ${renameFileMenu} menu of the file`, async() => {
       await moreActionOnFile.clickRenameFileMenu();
-    },true);
+    });
   
     await h(t).withLog(`Then will show the rename file dialog`, async() => {
       await moreActionOnFile.ensureLoaded();
-    },true);
+    });
   
     await h(t).withLog(`And pre-populate in the input field the existing file name with the suffix`, async() => {
       await renameFileDialog.existFileNameWithSuffix(filenames[0],suffixs[0]);
-    },true);
+    });
   
     let newFileName = `file name ${i}`;
     await h(t).withLog(`When I update the file name`, async() => {
       await renameFileDialog.updateFileName(newFileName);
-    },true);
+    });
   
     await h(t).withLog(`And I click the Cancel button`, async() => {
       await renameFileDialog.clickCancelButton();
@@ -120,56 +120,56 @@ test.meta(<ITestMeta>{
   
     await h(t).withLog(`Then the dialog should be closed`, async() => {
       await renameFileDialog.ensureDismiss();
-    },true);
+    });
 
     await h(t).withLog(`And the filename should remain unchanged`, async() => {
       await Entries[i].nameShouldBe(filenames[0]);
-    },true);
+    });
 
     if( i == 0 ){
 
       await h(t).withLog(`When I click the more button of the file`, async() => {
         await moreActionOnFile.clickMore();
-      },true);
+      });
 
     }else if( i == 1 ){
 
       await h(t).withLog(`When I hover the file ${filenames[0]} item(Entry2:right self)`, async () => {
         await filesTabItem.nameShouldBe(filenames[0]);
         await t.hover(filesTabItem.self)
-      },true);
+      });
       await h(t).withLog(`And I click the more button of the file`, async() => {
         await filesTabItem.clickMore();
-      },true);
+      });
 
     }else{
 
       await h(t).withLog('When I click the file(Entry3:file viewer)', async () => {
         await t.click(posts.nth(-1).find('img'));
         await viewerDialog.ensureLoaded();
-      },true);
+      });
 
       await h(t).withLog(`And I click the more button of the file`, async() => {
         await moreActionOnFile.clickMore();
-      },true);
+      });
 
     }
   
     await h(t).withLog(`Then will show ${renameFileMenu} menu at the top`, async() => {
       await moreActionOnFile.renameFileMenuAtTop(renameFileMenu);
-    },true);
+    });
 
     await h(t).withLog(`When I click the ${renameFileMenu} menu of the file`, async() => {
       await moreActionOnFile.clickRenameFileMenu();
-    },true);
+    });
   
     await h(t).withLog(`Then will show the rename file dialog`, async() => {
       await moreActionOnFile.ensureLoaded();
-    },true);
+    });
 
     await h(t).withLog(`When I update the file name`, async() => {
       await renameFileDialog.updateFileName(newFileName);
-    },true);
+    });
   
     await h(t).withLog(`And I click the Save button`, async() => {
       await renameFileDialog.clickSaveButton();
@@ -177,11 +177,11 @@ test.meta(<ITestMeta>{
   
     await h(t).withLog(`Then the dialog should be closed`, async() => {
       await renameFileDialog.ensureDismiss();
-    },true);
+    });
 
     await h(t).withLog(`And show the new file name`, async() => {
         await Entries[i].nameShouldBe(newFileName);
-    },true);
+    });
     filenames[0] = newFileName;
 
   }
@@ -233,11 +233,11 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`When I am on hover more icon`, async () => {
     await t.hover(moreActionOnFile.more);
-  },true); 
+  }); 
 
   await h(t).withLog(`Then show '${moreTooltip}' tooltip`, async () => {
     await moreActionOnFile.showTooltip(moreTooltip);
-  },true);
+  });
 
   await h(t).withLog(`When I click the more button of the file`, async() => {
     await moreActionOnFile.clickMore();
@@ -245,7 +245,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then will show ${renameFileMenu} menu at the top`, async() => {
     await moreActionOnFile.renameFileMenuAtTop(renameFileMenu);
-  },true);
+  });
 
   await h(t).withLog(`When I click the ${renameFileMenu} menu of the file`, async() => {
     await moreActionOnFile.clickRenameFileMenu();
@@ -253,28 +253,28 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then will show the rename file dialog`, async() => {
     await moreActionOnFile.ensureLoaded();
-  },true);
+  });
 
   await h(t).withLog(`When I update the file name`, async() => {
     await renameFileDialog.updateFileName(nameWithUnSupportChar);
-  },true);
+  });
 
   await h(t).withLog(`And I click the Save button`, async() => {
     await renameFileDialog.clickSaveButton();
-  },true);
+  });
 
   await h(t).withLog(`Then the dialog should be closed`, async() => {
     await renameFileDialog.ensureDismiss();
-  },true);
+  });
 
   await h(t).withLog(`And show the new file name`, async() => {
     await postItem.nameShouldBe(newFileName);
-  },true);
+  });
 
   await h(t).withLog(`And I login Jupiter with guest ${guest.company.number}#${guest.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, guest);
     await app.homePage.ensureLoaded();
-  },true);
+  });
 
   await h(t).withLog('And I open the team', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
@@ -282,11 +282,11 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`And I click the more button of the file`, async() => {
     await moreActionOnFile.clickMore();
-  },true);
+  });
 
   await h(t).withLog(`Then ${renameFileMenu} menu will be disabled`, async() => {
     await moreActionOnFile.renameFileMenuShouldDisabled();
-  },true);
+  });
 
 });
 
