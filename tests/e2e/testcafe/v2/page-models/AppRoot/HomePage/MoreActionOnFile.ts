@@ -19,6 +19,10 @@ export class MoreActionOnFile extends BaseWebComponent{
     return this.getComponent(RenameFileDialog);
   }
 
+  async renameFileMenuShouldDisabled(){
+    await this.t.expect(this.renameFileMenu.hasAttribute('disabled')).ok();
+  }
+
   async clickMore(){
     await this.t.click(this.more);
   }
@@ -28,7 +32,6 @@ export class MoreActionOnFile extends BaseWebComponent{
   }
 
   async renameFileMenuAtTop(menu:string){
-    // await this.t.expect(this.renameFileMenu.withText(menu)).ok();
     await this.t.expect(this.renameFileMenu.find('li').nth(0).withText(menu)).ok();
   }
 

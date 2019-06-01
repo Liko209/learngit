@@ -11,7 +11,7 @@ fixture('ContentPanel/RenameFileName')
   .afterEach(teardownCase());
 
 // todo
-test.only.meta(<ITestMeta>{
+test.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-2061'],
   maintainers: ['Mia.cai'],
@@ -60,8 +60,7 @@ test.only.meta(<ITestMeta>{
   // const Entries =[postItem,filesTabItem,viewerDialog];
   const Entries =[postItem,filesTabItem];
 
-  // todo debug for filesTab
-  for(let i = 1 ; i < Entries.length; i++ ){
+  for(let i = 0 ; i < Entries.length; i++ ){
 
     if( i == 0 ){   
       await h(t).withLog(`And I click the more button of the file`, async() => {
@@ -236,9 +235,9 @@ test.meta(<ITestMeta>{
     await t.hover(postItem.img);
   })  
 
-  await h(t).withLog(`Then show ${moreTooltip} tooltip`, async () => {
+  await h(t).withLog(`Then show '${moreTooltip}' tooltip`, async () => {
     await postItem.showTooltip(moreTooltip);
-  }); 
+  },true);
 
   await h(t).withLog(`When I click the more button of the file`, async() => {
     await moreActionOnFile.clickMore();
@@ -246,7 +245,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then will show ${renameFileMenu} menu at the top`, async() => {
     await moreActionOnFile.renameFileMenuAtTop(renameFileMenu);
-  });
+  },true);
 
   await h(t).withLog(`When I click the ${renameFileMenu} menu of the file`, async() => {
     await moreActionOnFile.clickRenameFileMenu();
@@ -254,29 +253,28 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then will show the rename file dialog`, async() => {
     await moreActionOnFile.ensureLoaded();
-  });
+  },true);
 
   await h(t).withLog(`When I update the file name`, async() => {
     await renameFileDialog.updateFileName(nameWithUnSupportChar);
-  });
+  },true);
 
   await h(t).withLog(`And I click the Save button`, async() => {
     await renameFileDialog.clickSaveButton();
-  });
+  },true);
 
   await h(t).withLog(`Then the dialog should be closed`, async() => {
     await renameFileDialog.ensureDismiss();
-  });
+  },true);
 
   await h(t).withLog(`And show the new file name`, async() => {
     await postItem.nameShouldBe(newFileName);
-  });
+  },true);
 
-  //
-  await h(t).withLog(`And I login Jupiter with guest`, async () => {
+  await h(t).withLog(`And I login Jupiter with guest ${guest.company.number}#${guest.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, guest);
     await app.homePage.ensureLoaded();
-  });
+  },true);
 
   await h(t).withLog('And I open the team', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
@@ -284,11 +282,11 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`And I click the more button of the file`, async() => {
     await moreActionOnFile.clickMore();
-  });
+  },true);
 
   await h(t).withLog(`Then ${renameFileMenu} menu will be disabled`, async() => {
-    // todo check menu disabled
-  });
+    await moreActionOnFile.renameFileMenuShouldDisabled();
+  },true);
 
 });
 
