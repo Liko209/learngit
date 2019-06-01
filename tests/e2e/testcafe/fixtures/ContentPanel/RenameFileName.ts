@@ -56,61 +56,63 @@ test.only.meta(<ITestMeta>{
   const filesTabItem = rightRail.filesTab.nthItem(0);
   const viewerDialog = app.homePage.viewerDialog;
   const postItem = app.homePage.messageTab.conversationPage.nthPostItem(0);
-  const Entries =[postItem,filesTabItem,viewerDialog];
+  // TODO wait for file viewer feature merged
+  // const Entries =[postItem,filesTabItem,viewerDialog];
+  const Entries =[postItem,filesTabItem];
 
   for(let i = 0 ; i < Entries.length; i++ ){
 
     if( i == 0 ){   
       await h(t).withLog(`And I click the more button of the file`, async() => {
         await moreActionOnFile.clickMore();
-      });
+      },true);
     }else if( i == 1 ){
       await h(t).withLog(`When I click Files Tab on the right self(Entry2:right self)`, async () => {
         await rightRail.filesEntry.enter();
         await rightRail.filesEntry.shouldBeOpened();
-      })
+      },true);
 
       await h(t).withLog(`When I hover the file item`, async () => {
         await filesTabItem.nameShouldBe(filenames[0]);
         await t.hover(filesTabItem.self)
-      });
+      },true);
 
       await h(t).withLog(`And I click the more button of the file`, async() => {
         await filesTabItem.clickMore();
-      });
+      },true);
 
     }else{
 
       await h(t).withLog('When I click the file(Entry3:file viewer)', async () => {
         await t.click(posts.nth(-1).find('img'));
         await viewerDialog.ensureLoaded();
-      });
+      },true);
       await h(t).withLog(`And I click the more button of the file`, async() => {
         await moreActionOnFile.clickMore();
-      });
+      },true);
 
     }
   
     await h(t).withLog(`Then will show ${renameFileMenu} menu at the top`, async() => {
       await moreActionOnFile.renameFileMenuAtTop(renameFileMenu);
-    });
+    },true);
 
     await h(t).withLog(`When I click the ${renameFileMenu} menu of the file`, async() => {
       await moreActionOnFile.clickRenameFileMenu();
-    });
+    },true);
   
     await h(t).withLog(`Then will show the rename file dialog`, async() => {
       await moreActionOnFile.ensureLoaded();
-    });
+    },true);
   
     await h(t).withLog(`And pre-populate in the input field the existing file name with the suffix`, async() => {
       await renameFileDialog.existFileNameWithSuffix(filenames[0],suffixs[0]);
-    });
+    },true);
   
     let newFileName = `file name ${i}`;
     await h(t).withLog(`When I update the file name`, async() => {
       await renameFileDialog.updateFileName(newFileName);
-    });
+    },true);
   
     await h(t).withLog(`And I click the Cancel button`, async() => {
       await renameFileDialog.clickCancelButton();
@@ -118,62 +120,56 @@ test.only.meta(<ITestMeta>{
   
     await h(t).withLog(`Then the dialog should be closed`, async() => {
       await renameFileDialog.ensureDismiss();
-    });
+    },true);
 
     await h(t).withLog(`And the filename should remain unchanged`, async() => {
-      if( i == 1){
-        await filesTabItem.nameShouldBe(filenames[0]);
-      }else{
-        await postItem.nameShouldBe(filenames[0]);
-      }
-    });
-
-    return
+      await Entries[i].nameShouldBe(filenames[0]);
+    },true);
 
     if( i == 0 ){
 
       await h(t).withLog(`When I click the more button of the file`, async() => {
         await moreActionOnFile.clickMore();
-      });
+      },true);
 
     }else if( i == 1 ){
 
       await h(t).withLog(`When I hover the file ${filenames[0]} item(Entry2:right self)`, async () => {
         await filesTabItem.nameShouldBe(filenames[0]);
         await t.hover(filesTabItem.self)
-      });
+      },true);
       await h(t).withLog(`And I click the more button of the file`, async() => {
         await filesTabItem.clickMore();
-      });
+      },true);
 
     }else{
 
       await h(t).withLog('When I click the file(Entry3:file viewer)', async () => {
         await t.click(posts.nth(-1).find('img'));
         await viewerDialog.ensureLoaded();
-      });
+      },true);
 
       await h(t).withLog(`And I click the more button of the file`, async() => {
         await moreActionOnFile.clickMore();
-      });
+      },true);
 
     }
   
     await h(t).withLog(`Then will show ${renameFileMenu} menu at the top`, async() => {
       await moreActionOnFile.renameFileMenuAtTop(renameFileMenu);
-    });
+    },true);
 
     await h(t).withLog(`When I click the ${renameFileMenu} menu of the file`, async() => {
       await moreActionOnFile.clickRenameFileMenu();
-    });
+    },true);
   
     await h(t).withLog(`Then will show the rename file dialog`, async() => {
       await moreActionOnFile.ensureLoaded();
-    });
+    },true);
 
     await h(t).withLog(`When I update the file name`, async() => {
       await renameFileDialog.updateFileName(newFileName);
-    });
+    },true);
   
     await h(t).withLog(`And I click the Save button`, async() => {
       await renameFileDialog.clickSaveButton();
@@ -181,15 +177,11 @@ test.only.meta(<ITestMeta>{
   
     await h(t).withLog(`Then the dialog should be closed`, async() => {
       await renameFileDialog.ensureDismiss();
-    });
+    },true);
 
     await h(t).withLog(`And show the new file name`, async() => {
-      if( i == 1){
-        await filesTabItem.nameShouldBe(newFileName);
-      }else{
-        await postItem.nameShouldBe(newFileName);
-      }
-    });
+        await Entries[i].nameShouldBe(newFileName);
+    },true);
     filenames[0] = newFileName;
 
   }
@@ -198,15 +190,15 @@ test.only.meta(<ITestMeta>{
 
 test.meta(<ITestMeta>{
   priority: ['P2'],
-  caseIds: ['JPT-2057','JPT-2074','JPT-2057'], // TODO case id ????
+  caseIds: ['JPT-2057','JPT-2074','JPT-2060'], // TODO case id ????
   maintainers: ['Mia.cai'],
   keywords: ['ContentPanel/RenameFileName']
 })(`Unsupported characters should be replaced by_ when saving the file name;Show 'More' tooltip for the more icon;Rename file option is enabled to every member except guests;`, async (t) => {
   const renameFileMenu = 'Edit filename';
   const filesPath = ['../../sources/1.psd'];
     // TODO
-  const nameWithUnSupportChar = 'file*/';
-  const newFileName = 'file__';
+  const nameWithUnSupportChar = 'file/1?2,3*4:5&';
+  const newFileName = 'file_1_2_3_4_5_';
   const moreTooltip = 'More';
   const message = uuid();
   const loginUser = h(t).rcData.mainCompany.users[4];
