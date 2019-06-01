@@ -1,13 +1,13 @@
-import { IStorage, IDeviceManager, SOURCE_TYPE } from '../types';
-import { LastUsedDeviceManager } from '../LastUsedDeviceManager';
-import { DeviceSyncManger } from '../DeviceSyncManger';
-import { spyOnTarget } from 'sdk/__tests__/utils';
-
 /*
  * @Author: Paynter Chen
  * @Date: 2019-05-26 21:42:27
  * Copyright © RingCentral. All rights reserved.
  */
+import { IStorage, IDeviceManager, SOURCE_TYPE } from '../types';
+import { LastUsedDeviceManager } from '../LastUsedDeviceManager';
+import { DeviceSyncManger } from '../DeviceSyncManger';
+import { spyOnTarget } from 'sdk/__tests__/utils';
+import { defaultAudioID } from 'voip/src/account/constants';
 
 describe('DeviceSyncManger', () => {
   function clearMocks() {
@@ -79,6 +79,14 @@ describe('DeviceSyncManger', () => {
       });
       expect(mockStorage.set).not.toBeCalled();
       expect(mockDeviceManager.setDeviceId).not.toBeCalled();
+    });
+    it('should not save to storage when device is DEFAULT_AUDIO_ID', () => {
+      deviceSyncManager.setDevice({
+        source: SOURCE_TYPE.NEW_DEVICE,
+        deviceId: defaultAudioID,
+      });
+      expect(mockStorage.set).not.toBeCalled();
+      expect(mockLatUsedDeviceManager.record).not.toBeCalled();
     });
     it('should not save to storage again when deviceId not change', () => {
       mockStorage.get.mockReturnValue('AAA');
@@ -173,6 +181,7 @@ describe('DeviceSyncManger', () => {
       });
       expect(mockLatUsedDeviceManager.getLastAvailableUsedDevice).toBeCalled();
     });
+    // should save current device id = 'default' when real device id not found. [JPT-1731]
     it('should use default device when (storage device, lastUsed device) not available', () => {
       mockDeviceManager.getDevices.mockReturnValue([
         {

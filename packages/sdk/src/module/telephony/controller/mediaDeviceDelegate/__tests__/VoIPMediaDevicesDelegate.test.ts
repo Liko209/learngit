@@ -10,6 +10,7 @@ import { SOURCE_TYPE } from '../types';
 import { TELEPHONY_KEYS } from 'sdk/module/telephony/config/configKeys';
 
 jest.mock('voip/src/api/RTCEngine');
+jest.mock('sdk/module/telephony/config/TelephonyUserConfig');
 
 describe('VoIPMediaDevicesDelegate', () => {
   function clearMocks() {
@@ -24,16 +25,8 @@ describe('VoIPMediaDevicesDelegate', () => {
   let mockRtcEngine: RTCEngine;
 
   function setUp() {
-    mockUserConfig = {
-      getCurrentSpeaker: jest.fn().mockReturnValue(1),
-      setCurrentSpeaker: jest.fn(),
-      getCurrentMicrophone: jest.fn().mockReturnValue(1),
-      setCurrentMicrophone: jest.fn(),
-      getCurrentVolume: jest.fn().mockReturnValue(1),
-      setCurrentVolume: jest.fn(),
-      on: jest.fn(),
-      off: jest.fn(),
-    } as any;
+    mockUserConfig = new TelephonyUserConfig();
+    mockUserConfig.getCurrentVolume.mockReturnValue('22');
     mockSource = [{ deviceId: 1 }, { deviceId: 2 }] as any;
 
     mockRtcEngine = new RTCEngine();
@@ -75,10 +68,18 @@ describe('VoIPMediaDevicesDelegate', () => {
     });
 
     it('should init value from storage', () => {
-      expect(mockRtcEngine.setVolume).toBeCalledWith(
-        mockUserConfig.getCurrentVolume(),
-      );
+      expect(mockRtcEngine.setVolume).toBeCalledWith(22);
     });
+
+    it('should init value from DEFAULT when storage not exists', () => {
+      mockUserConfig.getCurrentVolume.mockReturnValue(undefined);
+      deviceDelegate = new VoIPMediaDevicesDelegate(
+        mockUserConfig,
+        mockRtcEngine,
+      );
+      expect(mockRtcEngine.setVolume).toBeCalledWith(50);
+    });
+
     it('should subscribe to key change', () => {
       expect(mockUserConfig.on).toHaveBeenNthCalledWith(
         1,
@@ -129,8 +130,8 @@ describe('VoIPMediaDevicesDelegate', () => {
 
     it('should re ensure device', () => {
       const deviceIds = ['a', 'b', 'c'];
-      deviceDelegate['_speakerConfigManager'].ensureDevice = jest.fn();
-      deviceDelegate['_microphoneConfigManager'].ensureDevice = jest.fn();
+      jest.spyOn(deviceDelegate['_speakerConfigManager'], 'ensureDevice');
+      jest.spyOn(deviceDelegate['_microphoneConfigManager'], 'ensureDevice');
       deviceDelegate.onMediaDevicesChanged(
         createDevicesChangeInfo(deviceIds, { deleted: ['d'] }),
         createDevicesChangeInfo(deviceIds, { deleted: ['e'] }),
@@ -139,6 +140,48 @@ describe('VoIPMediaDevicesDelegate', () => {
       expect(
         deviceDelegate['_microphoneConfigManager'].ensureDevice,
       ).toBeCalled();
+    });
+  });
+
+  describe('onMediaDevicesInitialed', () => {
+    beforeEach(() => {
+      setUp();
+    });
+
+    afterEach(() => {
+      cleanUp();
+    });
+
+    it('should call onMediaDevicesInitialed', () => {
+      jest.clearAllMocks();
+      jest.spyOn(deviceDelegate, '_initDevicesState');
+      deviceDelegate.onMediaDevicesInitialed();
+      expect(deviceDelegate['_initDevicesState']).toBeCalled();
+    });
+  });
+
+  describe('DeviceSyncManager', () => {
+    beforeEach(() => {
+      setUp();
+    });
+
+    afterEach(() => {
+      cleanUp();
+    });
+
+    it('should create DeviceSyncManager correctly', () => {
+      deviceDelegate['_speakerConfigManager'].setDevice({
+        deviceId: 'a',
+      } as any);
+      expect(mockRtcEngine.setCurrentAudioOutput).toBeCalledWith('a');
+      expect(mockUserConfig.setCurrentSpeaker).toBeCalledWith('a');
+    });
+    it('should create DeviceSyncManager correctly', () => {
+      deviceDelegate['_microphoneConfigManager'].setDevice({
+        deviceId: 'a',
+      } as any);
+      expect(mockRtcEngine.setCurrentAudioInput).toBeCalledWith('a');
+      expect(mockUserConfig.setCurrentMicrophone).toBeCalledWith('a');
     });
   });
 });

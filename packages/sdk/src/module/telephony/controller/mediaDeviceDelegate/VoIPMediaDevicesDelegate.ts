@@ -23,16 +23,6 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
     private _userConfig: TelephonyUserConfig,
     private _rtcEngine: RTCEngine = RTCEngine.getInstance(),
   ) {
-    this._init();
-  }
-
-  private _init() {
-    telephonyLogger.tags(LOG_TAG).info('init');
-    let volume = Number(this._userConfig.getCurrentVolume());
-    if (Number.isNaN(volume)) {
-      volume = DEFAULT_VOLUME;
-    }
-    this._rtcEngine.setVolume(volume);
     const speakerStorage: IStorage = {
       get: () => this._userConfig.getCurrentSpeaker(),
       set: (deviceId: string) => this._userConfig.setCurrentSpeaker(deviceId),
@@ -73,9 +63,22 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
         set: (value: string) => this._userConfig.setUsedSpeakerHistory(value),
       }),
     );
+    this._initDevicesState();
+    this._subscribe();
+  }
 
+  private _initDevicesState() {
+    telephonyLogger.tags(LOG_TAG).info('init');
+    let volume = Number(this._userConfig.getCurrentVolume());
+    if (Number.isNaN(volume)) {
+      volume = DEFAULT_VOLUME;
+    }
+    this._rtcEngine.setVolume(volume);
     this._microphoneConfigManager.ensureDevice();
     this._speakerConfigManager.ensureDevice();
+  }
+
+  private _subscribe() {
     this._userConfig.on(TELEPHONY_KEYS.CURRENT_MICROPHONE, () =>
       this._microphoneConfigManager.ensureDevice(),
     );
@@ -106,6 +109,14 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
         deviceId: _.last(delta.added)!.deviceId,
       });
     }
+  }
+
+  onMediaDevicesInitialed(
+    audioOutputs: MediaDeviceInfo[],
+    audioInputs: MediaDeviceInfo[],
+  ): void {
+    // if RTCEngine is init after Delegate, should init again
+    this._initDevicesState();
   }
 
   onMediaDevicesChanged(

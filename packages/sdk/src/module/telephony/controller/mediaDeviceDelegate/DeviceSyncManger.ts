@@ -5,6 +5,7 @@
  */
 
 import { telephonyLogger } from 'foundation';
+import { defaultAudioID as DEFAULT_AUDIO_ID } from 'voip/src/account/constants';
 import _ from 'lodash';
 import {
   IDeviceManager,
@@ -69,7 +70,7 @@ export class DeviceSyncManger {
         .info('setDevice to deviceManager', { source, deviceId, device });
       this._deviceManager.setDeviceId(deviceId);
     }
-    if (deviceId !== this._storage.get()) {
+    if (deviceId !== this._storage.get() && deviceId !== DEFAULT_AUDIO_ID) {
       telephonyLogger
         .tags(LOG_TAG)
         .info('setDevice to storage', { source, deviceId, device });

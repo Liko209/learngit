@@ -153,14 +153,14 @@ describe('CallerIdSettingHandler ', () => {
     it('should return all setting entity', async () => {
       const res = await callerIdSettingHandler.fetchUserSettingEntity();
       expect(res).toEqual({
-        id: SettingEntityIds.Phone_CallerId,
-        parentModelId: SettingModuleIds.PhoneSetting_General.id,
-        source: [{ id: 1 }, { id: 2 }],
+        parentModelId: 0,
+        weight: 0,
+        valueType: 0,
         state: 0,
+        id: SettingEntityIds.Phone_CallerId,
+        source: [{ id: 1 }, { id: 2 }],
         value: { id: 2 },
         valueSetter: expect.any(Function),
-        valueType: 4,
-        weight: SettingModuleIds.CallerIdSetting.weight,
       });
     });
   });

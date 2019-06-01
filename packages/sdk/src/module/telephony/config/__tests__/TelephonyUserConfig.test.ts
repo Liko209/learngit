@@ -17,7 +17,7 @@ describe('TelephonyUserConfig', () => {
     jest.resetAllMocks();
     jest.restoreAllMocks();
   }
-  let telephonyConfig;
+  let telephonyConfig: TelephonyUserConfig;
   const mockConfigService = {
     put: jest.fn(),
     setUserId: jest.fn(),
@@ -82,6 +82,139 @@ describe('TelephonyUserConfig', () => {
     it('Should call user config to get last called number', () => {
       jest.spyOn(mockConfigService, 'get').mockReturnValueOnce(VALUE);
       const res = telephonyConfig.getLastCalledNumber();
+      expect(res).toBe(VALUE);
+    });
+  });
+
+  describe('setCurrentMicrophone', () => {
+    it('Should call user config to set last called number', () => {
+      telephonyConfig.setCurrentMicrophone('test');
+      expect(mockConfigService.put).toHaveBeenCalledWith(
+        MODULE,
+        TELEPHONY_KEYS.CURRENT_MICROPHONE,
+        'test',
+      );
+    });
+  });
+
+  describe('getCurrentMicrophone', () => {
+    it('Should call user config to get last called number', () => {
+      jest.spyOn(mockConfigService, 'get').mockReturnValueOnce(VALUE);
+      const res = telephonyConfig.getCurrentMicrophone();
+      expect(res).toBe(VALUE);
+    });
+  });
+
+  describe('setCurrentSpeaker', () => {
+    it('Should call user config to set last called number', () => {
+      telephonyConfig.setCurrentSpeaker('test');
+      expect(mockConfigService.put).toHaveBeenCalledWith(
+        MODULE,
+        TELEPHONY_KEYS.CURRENT_SPEAKER,
+        'test',
+      );
+    });
+  });
+
+  describe('getCurrentSpeaker', () => {
+    it('Should call user config to get last called number', () => {
+      jest.spyOn(mockConfigService, 'get').mockReturnValueOnce(VALUE);
+      const res = telephonyConfig.getCurrentSpeaker();
+      expect(res).toBe(VALUE);
+    });
+  });
+
+  describe('setCurrentRinger', () => {
+    it('Should call user config to set last called number', () => {
+      telephonyConfig.setCurrentRinger('test');
+      expect(mockConfigService.put).toHaveBeenCalledWith(
+        MODULE,
+        TELEPHONY_KEYS.CURRENT_RINGER,
+        'test',
+      );
+    });
+  });
+
+  describe('getCurrentRinger', () => {
+    it('Should call user config to get last called number', () => {
+      jest.spyOn(mockConfigService, 'get').mockReturnValueOnce(VALUE);
+      const res = telephonyConfig.getCurrentRinger();
+      expect(res).toBe(VALUE);
+    });
+  });
+
+  describe('setCurrentVolume', () => {
+    it('Should call user config to set last called number', () => {
+      telephonyConfig.setCurrentVolume('test');
+      expect(mockConfigService.put).toHaveBeenCalledWith(
+        MODULE,
+        TELEPHONY_KEYS.CURRENT_VOLUME,
+        'test',
+      );
+    });
+  });
+
+  describe('getCurrentVolume', () => {
+    it('Should call user config to get last called number', () => {
+      jest.spyOn(mockConfigService, 'get').mockReturnValueOnce(VALUE);
+      const res = telephonyConfig.getCurrentVolume();
+      expect(res).toBe(VALUE);
+    });
+  });
+
+  describe('setUsedMicrophoneHistory', () => {
+    it('Should call user config to set last called number', () => {
+      telephonyConfig.setUsedMicrophoneHistory('test');
+      expect(mockConfigService.put).toHaveBeenCalledWith(
+        MODULE,
+        TELEPHONY_KEYS.USED_MICROPHONE_HISTORY,
+        'test',
+      );
+    });
+  });
+
+  describe('getUsedMicrophoneHistory', () => {
+    it('Should call user config to get last called number', () => {
+      jest.spyOn(mockConfigService, 'get').mockReturnValueOnce(VALUE);
+      const res = telephonyConfig.getUsedMicrophoneHistory();
+      expect(res).toBe(VALUE);
+    });
+  });
+
+  describe('setUsedSpeakerHistory', () => {
+    it('Should call user config to set last called number', () => {
+      telephonyConfig.setUsedSpeakerHistory('test');
+      expect(mockConfigService.put).toHaveBeenCalledWith(
+        MODULE,
+        TELEPHONY_KEYS.USED_SPEAKER_HISTORY,
+        'test',
+      );
+    });
+  });
+
+  describe('getUsedSpeakerHistory', () => {
+    it('Should call user config to get last called number', () => {
+      jest.spyOn(mockConfigService, 'get').mockReturnValueOnce(VALUE);
+      const res = telephonyConfig.getUsedSpeakerHistory();
+      expect(res).toBe(VALUE);
+    });
+  });
+
+  describe('setUsedRingerHistory', () => {
+    it('Should call user config to set last called number', () => {
+      telephonyConfig.setUsedRingerHistory('test');
+      expect(mockConfigService.put).toHaveBeenCalledWith(
+        MODULE,
+        TELEPHONY_KEYS.USED_RINGER_HISTORY,
+        'test',
+      );
+    });
+  });
+
+  describe('getUsedRingerHistory', () => {
+    it('Should call user config to get last called number', () => {
+      jest.spyOn(mockConfigService, 'get').mockReturnValueOnce(VALUE);
+      const res = telephonyConfig.getUsedRingerHistory();
       expect(res).toBe(VALUE);
     });
   });
