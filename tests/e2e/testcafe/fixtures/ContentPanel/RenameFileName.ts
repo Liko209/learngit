@@ -19,9 +19,9 @@ test.only.meta(<ITestMeta>{
 })(`Can rename file/file successfully`, async (t) => {
   const renameFileMenu = 'Edit filename';
   const filenames = ['1'];
-  const suffixs = ['psd']
+  const suffixs = ['docx']
   // todo  should check source
-  const filesPath = ['../../sources/1.psd'];
+  const filesPath = ['../../sources/1.docx'];
   const message = uuid();
   const loginUser = h(t).rcData.mainCompany.users[4];
 
@@ -60,7 +60,8 @@ test.only.meta(<ITestMeta>{
   // const Entries =[postItem,filesTabItem,viewerDialog];
   const Entries =[postItem,filesTabItem];
 
-  for(let i = 0 ; i < Entries.length; i++ ){
+  // todo debug for filesTab
+  for(let i = 1 ; i < Entries.length; i++ ){
 
     if( i == 0 ){   
       await h(t).withLog(`And I click the more button of the file`, async() => {
