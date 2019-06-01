@@ -82,7 +82,7 @@ const moduleRules = [
           extract: true,
           publicPath: '/static/',
           spriteFilename: 'jupiter-icon-[hash:6].svg',
-          symbolId: 'jupiter-[name]',
+          symbolId: 'jupiter-icon-[name]',
         },
       },
       {
@@ -139,7 +139,10 @@ const resolveExtensions = ['.ts', '.tsx'];
 module.exports = async ({ config }) => {
   // modify the default svg rule
   const fileLoader = config.module.rules[3];
-  fileLoader.exclude = [path.resolve(__dirname, '../src/assets/country-flag')];
+  fileLoader.exclude = [
+    path.resolve(__dirname, '../src/assets/country-flag'),
+    path.resolve(__dirname, '../src/assets/jupiter-icon'),
+  ];
 
   // Make whatever fine-grained changes you need
   moduleRules.forEach(rule => {

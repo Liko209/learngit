@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg viewBox="null" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg   viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <title>people</title>
 <path d="M16 3c-3.591 0-6.5 2.909-6.5 6.5s2.909 6.5 6.5 6.5c3.591 0 6.5-2.909 6.5-6.5s-2.909-6.5-6.5-6.5zM16 17.625c-4.339 0-13 2.178-13 6.5v4.875h26v-4.875c0-4.322-8.661-6.5-13-6.5z"></path>
 </svg>
