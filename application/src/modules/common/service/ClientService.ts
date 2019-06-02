@@ -8,12 +8,17 @@ import { ElectronService } from '@/modules/electron';
 import { IClientService } from '../interface';
 
 class ClientService implements IClientService {
+  private get _electronService() {
+    return container.get(ElectronService);
+  }
   focus() {
     if (window.jupiterElectron) {
-      const electronService = container.get(ElectronService);
-      electronService.bringAppToFront();
+      this._electronService.bringAppToFront();
     }
     window.focus();
+  }
+  invokeApp(urlScheme: string) {
+    window.location.href = urlScheme;
   }
 }
 export { ClientService };
