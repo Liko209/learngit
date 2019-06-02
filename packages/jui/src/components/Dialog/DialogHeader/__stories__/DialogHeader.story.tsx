@@ -20,6 +20,10 @@ import {
   JuiDialogHeaderMetaRight,
 } from '../DialogHeaderMeta';
 import { JuiButtonBar } from '../../../Buttons/ButtonBar';
+import close from '../../../../assets/jupiter-icon/icon-close.svg';
+import star from '../../../../assets/jupiter-icon/icon-star.svg';
+import settings from '../../../../assets/jupiter-icon/icon-settings.svg';
+import moreHoriz from '../../../../assets/jupiter-icon/icon-more_horiz.svg';
 
 storiesOf('Components/Dialog/DialogHeader', module)
   .addDecorator(withInfoDecorator(JuiDialogHeader))
@@ -38,7 +42,7 @@ storiesOf('Components/Dialog/DialogHeader', module)
           <JuiDialogHeaderTitle>{title}</JuiDialogHeaderTitle>
           <JuiDialogHeaderActions>
             <JuiButtonBar overlapSize={2.5}>
-              <JuiIconButton tooltipTitle="Close">close</JuiIconButton>
+              <JuiIconButton tooltipTitle="Close" symbol={close} />
             </JuiButtonBar>
           </JuiDialogHeaderActions>
         </JuiDialogHeader>
@@ -60,13 +64,15 @@ storiesOf('Components/Dialog/DialogHeader', module)
           <JuiDialogHeaderTitle>{title}</JuiDialogHeaderTitle>
           <JuiDialogHeaderActions>
             <JuiButtonBar overlapSize={2.5}>
-              <JuiIconButton color="accent.gold" tooltipTitle="Favorite">
-                star
-              </JuiIconButton>
-              <JuiIconButton tooltipTitle="Settings">settings</JuiIconButton>
+              <JuiIconButton
+                color="accent.gold"
+                tooltipTitle="Favorite"
+                symbol={star}
+              />
+              <JuiIconButton tooltipTitle="Settings" symbol={settings} />
               <JuiPopoverMenu
                 Anchor={() => (
-                  <JuiIconButton tooltipTitle="More">more_horiz</JuiIconButton>
+                  <JuiIconButton tooltipTitle="More" symbol={moreHoriz} />
                 )}
                 anchorOrigin={{
                   vertical: 'bottom',
@@ -82,7 +88,7 @@ storiesOf('Components/Dialog/DialogHeader', module)
                   <JuiMenuItem>Copy email</JuiMenuItem>
                 </JuiMenuList>
               </JuiPopoverMenu>
-              <JuiIconButton tooltipTitle="Close">close</JuiIconButton>
+              <JuiIconButton tooltipTitle="Close" symbol={close} />
             </JuiButtonBar>
           </JuiDialogHeaderActions>
         </JuiDialogHeader>
@@ -118,13 +124,15 @@ storiesOf('Components/Dialog/DialogHeader', module)
           </JuiDialogHeaderTitle>
           <JuiDialogHeaderActions>
             <JuiButtonBar overlapSize={2.5}>
-              <JuiIconButton color="accent.gold" tooltipTitle="Favorite">
-                star
-              </JuiIconButton>
-              <JuiIconButton tooltipTitle="Settings">settings</JuiIconButton>
+              <JuiIconButton
+                color="accent.gold"
+                tooltipTitle="Favorite"
+                symbol={star}
+              />
+              <JuiIconButton tooltipTitle="Settings" symbol={settings} />
               <JuiPopoverMenu
                 Anchor={() => (
-                  <JuiIconButton tooltipTitle="More">more_horiz</JuiIconButton>
+                  <JuiIconButton tooltipTitle="More" symbol={moreHoriz} />
                 )}
                 anchorOrigin={{
                   vertical: 'bottom',
@@ -140,7 +148,7 @@ storiesOf('Components/Dialog/DialogHeader', module)
                   <JuiMenuItem>Copy email</JuiMenuItem>
                 </JuiMenuList>
               </JuiPopoverMenu>
-              <JuiIconButton tooltipTitle="Close">close</JuiIconButton>
+              <JuiIconButton tooltipTitle="Close" symbol={close} />
             </JuiButtonBar>
           </JuiDialogHeaderActions>
         </JuiDialogHeader>
@@ -162,13 +170,15 @@ storiesOf('Components/Dialog/DialogHeader', module)
           </JuiDialogHeaderTitle>
           <JuiDialogHeaderActions>
             <JuiButtonBar overlapSize={2.5}>
-              <JuiIconButton color="accent.gold" tooltipTitle="Favorite">
-                star
-              </JuiIconButton>
-              <JuiIconButton tooltipTitle="Settings">settings</JuiIconButton>
+              <JuiIconButton
+                color="accent.gold"
+                tooltipTitle="Favorite"
+                symbol={star}
+              />
+              <JuiIconButton tooltipTitle="Settings" symbol={settings} />
               <JuiPopoverMenu
                 Anchor={() => (
-                  <JuiIconButton tooltipTitle="More">more_horiz</JuiIconButton>
+                  <JuiIconButton tooltipTitle="More" symbol={moreHoriz} />
                 )}
                 anchorOrigin={{
                   vertical: 'bottom',
@@ -184,7 +194,7 @@ storiesOf('Components/Dialog/DialogHeader', module)
                   <JuiMenuItem>Copy email</JuiMenuItem>
                 </JuiMenuList>
               </JuiPopoverMenu>
-              <JuiIconButton tooltipTitle="Close">close</JuiIconButton>
+              <JuiIconButton tooltipTitle="Close" symbol={close} />
             </JuiButtonBar>
           </JuiDialogHeaderActions>
         </JuiDialogHeader>

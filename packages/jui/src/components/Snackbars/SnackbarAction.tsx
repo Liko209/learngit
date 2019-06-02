@@ -1,26 +1,21 @@
 import React, { memo } from 'react';
 import { ButtonBaseProps as MuiButtonBaseProps } from '@material-ui/core/ButtonBase';
 import styled from '../../foundation/styled-components';
-import { JuiIconography } from '../../foundation/Iconography';
+import { JuiIconography, SvgSymbol } from '../../foundation/Iconography';
 import { StyledIconButton, StyledTextButton } from './style';
-
-// Close icon size is smaller than font-size,
-// Let's use transform to make it looks right.
-const CLOSE_ICON_SIZE_FIX = { transform: 'scale(1.7142857142857142)' };
 
 type JuiSnackbarActionProps = MuiButtonBaseProps & {
   variant?: 'text' | 'icon';
-  children: string;
+  children?: string;
+  icon?: SvgSymbol;
 };
 
 const JuiSnackbarAction = styled(
-  memo(({ children, variant, ...rest }: JuiSnackbarActionProps) => {
+  memo(({ children, variant, icon, ...rest }: JuiSnackbarActionProps) => {
     if (variant === 'icon') {
-      const style = children === 'close' ? CLOSE_ICON_SIZE_FIX : undefined;
-
       return (
         <StyledIconButton {...rest}>
-          <JuiIconography iconSize="inherit" style={style}>
+          <JuiIconography iconSize="large" symbol={icon}>
             {children}
           </JuiIconography>
         </StyledIconButton>

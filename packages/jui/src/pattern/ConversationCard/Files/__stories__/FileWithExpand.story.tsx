@@ -9,6 +9,7 @@ import { text, boolean } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 import { JuiFileWithExpand, JuiPreviewImage } from '../';
 import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconButton';
+import download from '../../../../assets/jupiter-icon/icon-download.svg';
 
 storiesOf('Pattern/ConversationCard', module)
   .addDecorator(withInfoDecorator(JuiFileWithExpand, { inline: true }))
@@ -16,9 +17,12 @@ storiesOf('Pattern/ConversationCard', module)
     const fileName = text('fileName', '土asd豆你个马拉松sdsds.jpg');
     const expand = boolean('expand', false);
     const actions = [
-      <JuiIconButton key="download" variant="plain" tooltipTitle="download">
-        download
-      </JuiIconButton>,
+      <JuiIconButton
+        key="download"
+        variant="plain"
+        tooltipTitle="download"
+        symbol={download}
+      />,
     ];
     return (
       <div>
@@ -28,9 +32,11 @@ storiesOf('Pattern/ConversationCard', module)
           expand={expand}
           Actions={
             <div>
-              <JuiIconButton variant="plain" tooltipTitle="download">
-                download
-              </JuiIconButton>
+              <JuiIconButton
+                variant="plain"
+                tooltipTitle="download"
+                symbol={download}
+              />
             </div>
           }
         >
@@ -48,9 +54,11 @@ storiesOf('Pattern/ConversationCard', module)
           expand={expand}
           Actions={
             <div>
-              <JuiIconButton variant="plain" tooltipTitle="download">
-                download
-              </JuiIconButton>
+              <JuiIconButton
+                variant="plain"
+                tooltipTitle="download"
+                symbol={download}
+              />
             </div>
           }
         >
@@ -68,9 +76,12 @@ storiesOf('Pattern/ConversationCard', module)
           expand={expand}
           Actions={
             <div>
-              <JuiIconButton variant="plain" tooltipTitle="download">
-                download
-              </JuiIconButton>
+              <JuiIconButton
+                variant="plain"
+                tooltipTitle="download"
+                symbol={download}
+              />
+              >
             </div>
           }
         >
@@ -88,9 +99,11 @@ storiesOf('Pattern/ConversationCard', module)
           expand={expand}
           Actions={
             <div>
-              <JuiIconButton variant="plain" tooltipTitle="download">
-                download
-              </JuiIconButton>
+              <JuiIconButton
+                variant="plain"
+                tooltipTitle="download"
+                symbol={download}
+              />
             </div>
           }
         >
@@ -108,9 +121,12 @@ storiesOf('Pattern/ConversationCard', module)
           expand={expand}
           Actions={
             <div>
-              <JuiIconButton variant="plain" tooltipTitle="download">
-                download
-              </JuiIconButton>
+              <JuiIconButton
+                variant="plain"
+                tooltipTitle="download"
+                symbol={download}
+              />
+              >
             </div>
           }
         >

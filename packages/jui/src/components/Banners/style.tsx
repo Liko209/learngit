@@ -10,7 +10,7 @@ import MuiSnackbarContent, {
 
 import styled from '../../foundation/styled-components';
 import { spacing, palette, grey } from '../../foundation/utils/styles';
-import { JuiIconography } from '../../foundation/Iconography';
+import { JuiIconography, SvgSymbol } from '../../foundation/Iconography';
 import { SnackbarContentColor } from './SnackbarContent';
 
 type JuiSnackbarContentProps = {
@@ -19,11 +19,11 @@ type JuiSnackbarContentProps = {
 
 type JuiSnackbarIcon = {
   color: SnackbarContentColor;
-  children: string;
+  icon: SvgSymbol;
 };
 
-const WrapperSnackbarIcon = ({ color, ...rest }: JuiSnackbarIcon) => (
-  <JuiIconography {...rest} />
+const WrapperSnackbarIcon = ({ color, icon, ...rest }: JuiSnackbarIcon) => (
+  <JuiIconography symbol={icon} {...rest} />
 );
 
 const SnackbarIcon = styled<JuiSnackbarIcon>(WrapperSnackbarIcon)`

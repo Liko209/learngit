@@ -20,14 +20,19 @@ import {
   JuiHistoryOperation,
   OPERATION,
 } from '../../../pattern/HistoryOperation';
+import bulletedMenu from '../../../assets/jupiter-icon/icon-bubble_lines.svg';
+import newActions from '../../../assets/jupiter-icon/icon-zoom-in.svg';
 
 const fakeHandler = () => null;
 
 const MainMenu = (props: JuiIconButtonProps) => {
   return (
-    <JuiIconButton size="medium" tooltipTitle="Main menu" {...props}>
-      bulleted_menu
-    </JuiIconButton>
+    <JuiIconButton
+      size="medium"
+      tooltipTitle="Main menu"
+      {...props}
+      symbol={bulletedMenu}
+    />
   );
 };
 
@@ -37,9 +42,12 @@ const Logo = () => {
 
 const AddIconButton = (props: JuiIconButtonProps) => {
   return (
-    <JuiIconButton size="medium" tooltipTitle="Add" {...props}>
-      new_actions
-    </JuiIconButton>
+    <JuiIconButton
+      size="medium"
+      tooltipTitle="Add"
+      {...props}
+      symbol={newActions}
+    />
   );
 };
 

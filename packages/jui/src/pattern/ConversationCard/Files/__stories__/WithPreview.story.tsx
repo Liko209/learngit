@@ -9,14 +9,18 @@ import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 import { JuiFileWithPreview } from '../';
 import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconButton';
+import download from '../../../../assets/jupiter-icon/icon-download.svg';
 
 storiesOf('Pattern/ConversationCard', module)
   .addDecorator(withInfoDecorator(JuiFileWithPreview, { inline: true }))
   .add('FileWithPreview', () => {
     const actions = [
-      <JuiIconButton key="download" variant="plain" tooltipTitle="download">
-        download
-      </JuiIconButton>,
+      <JuiIconButton
+        key="download"
+        variant="plain"
+        tooltipTitle="download"
+        symbol={download}
+      />,
     ];
 
     return (

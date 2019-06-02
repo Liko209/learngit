@@ -6,13 +6,15 @@
 import React from 'react';
 import * as Jui from './style';
 import { Palette } from '../../foundation/theme/theme';
+import info from '../../assets/jupiter-icon/icon-info.svg';
+import { SvgSymbol } from '../../foundation/Iconography';
 
 type JuiSnackbarsType = 'warn' | 'success' | 'error' | 'info';
 
 type SnackbarContentColor = [keyof Palette, string];
 
 type IconAndColor = {
-  icon: string;
+  icon: SvgSymbol;
   color: SnackbarContentColor;
 };
 
@@ -26,22 +28,23 @@ type IconAndColorMap = {
   [key: string]: IconAndColor;
 };
 
+// MTODO: ask design for icon
 function getIconAndColor(type: JuiSnackbarsType): IconAndColor {
   const ICON_AND_COLOR: IconAndColorMap = {
     warn: {
-      icon: 'warning',
+      icon: info,
       color: ['semantic', 'critical'],
     },
     success: {
-      icon: 'check_circle',
+      icon: info,
       color: ['semantic', 'positive'],
     },
     error: {
-      icon: 'error',
+      icon: info,
       color: ['semantic', 'negative'],
     },
     info: {
-      icon: 'info',
+      icon: info,
       color: ['primary', 'main'],
     },
   };
@@ -55,7 +58,7 @@ const JuiSnackbarContent: React.SFC<JuiSnackbarsProps> = (
   const { icon, color } = getIconAndColor(type);
   const message = (
     <Jui.MessageWrapper>
-      {<Jui.SnackbarIcon color={color}>{icon}</Jui.SnackbarIcon>}
+      {<Jui.SnackbarIcon color={color} icon={icon} />}
       {children}
     </Jui.MessageWrapper>
   );

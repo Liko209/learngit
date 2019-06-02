@@ -8,6 +8,7 @@ import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiConversationActionBar } from '..';
 import { JuiIconButton } from '../../../components/Buttons';
+import thumbup from '../../../assets/jupiter-icon/icon-thumbup.svg';
 
 const Action = () => (
   <JuiIconButton
@@ -17,9 +18,8 @@ const Action = () => (
     onClick={() => ''}
     variant="plain"
     data-name="actionBarLike"
-  >
-    thumbup
-  </JuiIconButton>
+    symbol={thumbup}
+  />
 );
 
 storiesOf('Pattern', module)

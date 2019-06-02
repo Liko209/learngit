@@ -13,6 +13,9 @@ import {
 import { JuiButtonBar, JuiButtonBarProps } from '../index';
 import { JuiIconButton } from '../../IconButton/IconButton';
 import { JuiCheckboxButton } from '../../CheckboxButton/CheckboxButton';
+import refresh from '../../../../assets/jupiter-icon/icon-refresh.svg';
+import star from '../../../../assets/jupiter-icon/icon-star.svg';
+import starBorder from '../../../../assets/jupiter-icon/icon-star_border.svg';
 
 const getKnobs = () => {
   const direction = select<JuiButtonBarProps['direction']>(
@@ -52,18 +55,10 @@ storiesOf('Components/ButtonBar', module)
     return (
       <div>
         <JuiButtonBar {...getKnobs()}>
-          <JuiIconButton variant="plain" tooltipTitle="like">
-            refresh
-          </JuiIconButton>
-          <JuiIconButton variant="plain" tooltipTitle="like">
-            refresh
-          </JuiIconButton>
-          <JuiIconButton variant="plain" tooltipTitle="like">
-            refresh
-          </JuiIconButton>
-          <JuiIconButton variant="plain" tooltipTitle="like">
-            refresh
-          </JuiIconButton>
+          <JuiIconButton variant="plain" tooltipTitle="like" symbol={refresh} />
+          <JuiIconButton variant="plain" tooltipTitle="like" symbol={refresh} />
+          <JuiIconButton variant="plain" tooltipTitle="like" symbol={refresh} />
+          <JuiIconButton variant="plain" tooltipTitle="like" symbol={refresh} />
         </JuiButtonBar>
       </div>
     );
@@ -72,18 +67,10 @@ storiesOf('Components/ButtonBar', module)
     return (
       <div>
         <JuiButtonBar {...getKnobs()}>
-          <JuiIconButton variant="round" tooltipTitle="like">
-            refresh
-          </JuiIconButton>
-          <JuiIconButton variant="round" tooltipTitle="like">
-            refresh
-          </JuiIconButton>
-          <JuiIconButton variant="round" tooltipTitle="like">
-            refresh
-          </JuiIconButton>
-          <JuiIconButton variant="round" tooltipTitle="like">
-            refresh
-          </JuiIconButton>
+          <JuiIconButton variant="round" tooltipTitle="like" symbol={refresh} />
+          <JuiIconButton variant="round" tooltipTitle="like" symbol={refresh} />
+          <JuiIconButton variant="round" tooltipTitle="like" symbol={refresh} />
+          <JuiIconButton variant="round" tooltipTitle="like" symbol={refresh} />
         </JuiButtonBar>
       </div>
     );
@@ -94,23 +81,23 @@ storiesOf('Components/ButtonBar', module)
         <JuiButtonBar {...getKnobs()}>
           <JuiCheckboxButton
             tooltipTitle="favorite"
-            iconName="star_border"
-            checkedIconName="star"
+            icon={starBorder}
+            checkedIcon={star}
           />
           <JuiCheckboxButton
             tooltipTitle="favorite"
-            iconName="star_border"
-            checkedIconName="star"
+            icon={starBorder}
+            checkedIcon={star}
           />
           <JuiCheckboxButton
             tooltipTitle="favorite"
-            iconName="star_border"
-            checkedIconName="star"
+            icon={starBorder}
+            checkedIcon={star}
           />
           <JuiCheckboxButton
             tooltipTitle="favorite"
-            iconName="star_border"
-            checkedIconName="star"
+            icon={starBorder}
+            checkedIcon={star}
           />
         </JuiButtonBar>
       </div>

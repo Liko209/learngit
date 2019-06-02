@@ -12,6 +12,10 @@ import {
 } from '../../../../foundation/utils/decorators';
 import { JuiCheckboxButton, JuiCheckboxButtonProps } from '..';
 import styled from '../../../../foundation/styled-components';
+import star from '../../../../assets/jupiter-icon/icon-star.svg';
+import starBorder from '../../../../assets/jupiter-icon/icon-star_border.svg';
+import lock from '../../../../assets/jupiter-icon/icon-lock.svg';
+import unlock from '../../../../assets/jupiter-icon/icon-unlock.svg';
 
 const Wrapper = styled.div`
   .checkboxButtonWrapper {
@@ -62,23 +66,17 @@ storiesOf('Components/CheckboxButton', module)
       <Wrapper>
         <JuiCheckboxButton
           className="checkboxButtonWrapper"
-          iconName="favorite_border"
-          checkedIconName="favorite"
+          icon={starBorder}
+          checkedIcon={star}
           tooltipTitle="like"
+          checked={true}
           {...rest}
         />
         <JuiCheckboxButton
           className="checkboxButtonWrapper"
-          iconName="unlock"
-          checkedIconName="lock"
+          icon={unlock}
+          checkedIcon={lock}
           tooltipTitle="lock"
-          {...rest}
-        />
-        <JuiCheckboxButton
-          className="checkboxButtonWrapper"
-          iconName="star_border"
-          checkedIconName="star"
-          tooltipTitle="favorite"
           {...rest}
         />
       </Wrapper>

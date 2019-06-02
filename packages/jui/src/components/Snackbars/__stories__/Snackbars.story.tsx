@@ -14,6 +14,7 @@ import {
   JuiSnackbarAction,
   JuiSnackbarContentProps,
 } from '..';
+import close from '../../../assets/jupiter-icon/icon-close.svg';
 
 const Wrapper = styled.div`
   text-align: center;
@@ -95,9 +96,7 @@ storiesOf('Components/Snackbars', module)
         action={[
           <JuiSnackbarAction key="action1">Action</JuiSnackbarAction>,
           <JuiSnackbarAction key="action2">Action</JuiSnackbarAction>,
-          <JuiSnackbarAction key="action2" variant="icon">
-            close
-          </JuiSnackbarAction>,
+          <JuiSnackbarAction key="action2" variant="icon" icon={close} />,
         ]}
       />
     </Wrapper>

@@ -11,6 +11,9 @@ import { JuiIconButton } from '../../../components/Buttons';
 import { JuiDraggableDialog } from '../../../components/Dialog';
 import avatarImg from '../../../components/Avatar/__stories__/img/avatar.jpg';
 import { boolean } from '@storybook/addon-knobs';
+import minimize from '../../../assets/jupiter-icon/icon-minimize.svg';
+import previous from '../../../assets/jupiter-icon/icon-previous.svg';
+import tearOff from '../../../assets/jupiter-icon/icon-tear-off.svg';
 
 import {
   JuiReply,
@@ -36,9 +39,8 @@ const MinimizeAction = () => (
     tooltipTitle="Minimize"
     variant="plain"
     color="common.white"
-  >
-    minimize
-  </JuiIconButton>
+    symbol={minimize}
+  />
 );
 
 const DetachOrAttachAction = () => (
@@ -47,9 +49,8 @@ const DetachOrAttachAction = () => (
     tooltipTitle="Detach"
     variant="plain"
     color="common.white"
-  >
-    tear_off
-  </JuiIconButton>
+    symbol={tearOff}
+  />
 );
 
 const Actions = [DetachOrAttachAction, MinimizeAction];
@@ -60,9 +61,8 @@ const Back = () => (
     tooltipTitle="Back"
     variant="plain"
     color="common.white"
-  >
-    previous
-  </JuiIconButton>
+    symbol={previous}
+  />
 );
 
 const handleClick = () => {};
@@ -155,28 +155,24 @@ const CustomReplyTextarea = () => (
 
 const PreDefines = [InMeeting, OnMyWay, CallBack, WillCallBack];
 
-storiesOf('Pattern', module)
-  .addDecorator(withInfoDecorator(JuiReply, { inline: true }))
-  .add('Reply Call', () => {
-    return (
-      <JuiDraggableDialog open={knobs.open()} x={0} y={0}>
-        <JuiDialer>
-          <JuiHeaderContainer>
-            <JuiTitleBar Actions={Actions} />
-            <JuiHeader
-              Avatar={Avatar}
-              name="Terry Webster"
-              phone="(650) 555-12345"
-              Back={Back}
-            />
-          </JuiHeaderContainer>
-          <JuiReply
-            count={{ time: 55, unit: 's' }}
-            countText="Reply in "
-            PreDefines={PreDefines}
-            CustomReply={CustomReplyTextarea}
-          />
-        </JuiDialer>
-      </JuiDraggableDialog>
-    );
-  });
+storiesOf('Pattern', module).add('Reply Call', () => {
+  return (
+    <JuiDialer>
+      <JuiHeaderContainer>
+        <JuiTitleBar Actions={Actions} />
+        <JuiHeader
+          Avatar={Avatar}
+          name="Terry Webster"
+          phone="(650) 555-12345"
+          Back={Back}
+        />
+      </JuiHeaderContainer>
+      <JuiReply
+        count={{ time: 55, unit: 's' }}
+        countText="Reply in "
+        PreDefines={PreDefines}
+        CustomReply={CustomReplyTextarea}
+      />
+    </JuiDialer>
+  );
+});

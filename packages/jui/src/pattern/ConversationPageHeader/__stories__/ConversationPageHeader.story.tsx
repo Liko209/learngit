@@ -11,6 +11,9 @@ import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiConversationPageHeader } from '../ConversationPageHeader';
 import { JuiButtonBar } from '../../../components/Buttons/ButtonBar';
 import { JuiCheckboxButton } from '../../../components/Buttons/CheckboxButton';
+import phone from '../../../assets/jupiter-icon/icon-phone.svg';
+import meetings from '../../../assets/jupiter-icon/icon-videocam.svg';
+import setting from '../../../assets/jupiter-icon/icon-settings.svg';
 
 const getTitleKnob = () => text('title', 'Global UXD');
 const getStatusKnob = () => text('status', '🏝on vacation 10/16-10/24');
@@ -38,15 +41,15 @@ storiesOf('Pattern', module)
           </JuiButtonBar>}
         Right={
           <JuiButtonBar overlapSize={1}>
-            <JuiIconButton tooltipTitle="Start Conference Call">
-              phone
-            </JuiIconButton>
-            <JuiIconButton tooltipTitle="Start Video Call">
-              meetings
-            </JuiIconButton>
-            <JuiIconButton tooltipTitle="Conversation Settings">
-              settings
-            </JuiIconButton>
+            <JuiIconButton
+              tooltipTitle="Start Conference Call"
+              symbol={phone}
+            />
+            <JuiIconButton tooltipTitle="Start Video Call" symbol={meetings} />
+            <JuiIconButton
+              tooltipTitle="Conversation Settings"
+              symbol={setting}
+            />
           </JuiButtonBar>}
       />
     );

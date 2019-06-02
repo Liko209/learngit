@@ -6,13 +6,14 @@
 import React from 'react';
 import styled, { keyframes } from '../../../foundation/styled-components';
 import MuiCheckbox, { CheckboxProps } from '@material-ui/core/Checkbox';
-import { JuiIconography } from '../../../foundation/Iconography';
+import { JuiIconography, SvgSymbol } from '../../../foundation/Iconography';
 import { palette, grey, width } from '../../../foundation/utils/styles';
 import tinycolor from 'tinycolor2';
 import { Theme, Palette } from '../../../foundation/theme/theme';
 import { RuiTooltip } from 'rcui/components/Tooltip';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+
 type CheckboxButtonProps = {
   tooltipTitle?: string;
   invisible?: boolean;
@@ -20,9 +21,12 @@ type CheckboxButtonProps = {
   size?: 'small' | 'medium' | 'large';
   color?: string;
 } & Omit<CheckboxProps, 'color'>;
+
 type JuiCheckboxButtonProps = CheckboxButtonProps & {
   iconName: string;
   checkedIconName: string;
+  checkedIcon?: SvgSymbol;
+  icon?: SvgSymbol;
 };
 
 const iconSizes = {
@@ -160,6 +164,8 @@ class JuiCheckboxButton extends React.PureComponent<JuiCheckboxButtonProps> {
       innerRef,
       onChange,
       color,
+      checkedIcon,
+      icon,
       ...rest
     } = this.props;
 
@@ -182,10 +188,11 @@ class JuiCheckboxButton extends React.PureComponent<JuiCheckboxButtonProps> {
           <StyledCheckboxButton
             onChange={this.changeHandler}
             checked={this.state.checked}
-            icon={<StyledIcon>{iconName}</StyledIcon>}
+            icon={<StyledIcon symbol={icon}>{iconName}</StyledIcon>}
             colorScope={colorScope}
             colorName={colorName}
-            checkedIcon={<StyledIcon>{checkedIconName}</StyledIcon>}
+            checkedIcon={
+              <StyledIcon symbol={checkedIcon}>{checkedIconName}</StyledIcon>}
             {...rest}
           />
         </WrapperForTooltip>

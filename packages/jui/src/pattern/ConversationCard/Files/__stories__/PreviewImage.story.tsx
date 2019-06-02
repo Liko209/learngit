@@ -9,15 +9,19 @@ import { text } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 import { JuiPreviewImage, JuiDelayPlaceholder } from '../';
 import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconButton';
+import download from '../../../../assets/jupiter-icon/icon-download.svg';
 
 storiesOf('Pattern/ConversationCard', module)
   .addDecorator(withInfoDecorator(JuiPreviewImage, { inline: true }))
   .add('JuiPreviewImage', () => {
     const fileName = text('fileName', '123.jpg');
     const actions = [
-      <JuiIconButton key="download" variant="plain" tooltipTitle="download">
-        download
-      </JuiIconButton>,
+      <JuiIconButton
+        key="download"
+        variant="plain"
+        tooltipTitle="download"
+        symbol={download}
+      />,
     ];
     return (
       <div>

@@ -19,6 +19,7 @@ import {
 } from '../';
 import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconButton';
 import { getThumbnailSize } from '../../../../foundation/utils/calculateImageSize';
+import download from '../../../../assets/jupiter-icon/icon-download.svg';
 
 storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
   const fileName = text(
@@ -27,9 +28,12 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
   );
 
   const actions = [
-    <JuiIconButton key="download" variant="plain" tooltipTitle="download">
-      download
-    </JuiIconButton>,
+    <JuiIconButton
+      key="download"
+      variant="plain"
+      tooltipTitle="download"
+      symbol={download}
+    />,
   ];
 
   return (
@@ -70,9 +74,12 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
               key={id}
               fileName={fileName}
               Actions={
-                <JuiIconButton variant="plain" tooltipTitle="download">
-                  download
-                </JuiIconButton>
+                <JuiIconButton
+                  key="download"
+                  variant="plain"
+                  tooltipTitle="download"
+                  symbol={download}
+                />
               }
             />
           );
@@ -90,9 +97,12 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
               previewUrl="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
               Actions={
                 <>
-                  <JuiIconButton variant="plain" tooltipTitle="download">
-                    download
-                  </JuiIconButton>
+                  <JuiIconButton
+                    key="download"
+                    variant="plain"
+                    tooltipTitle="download"
+                    symbol={download}
+                  />
                 </>
               }
             />

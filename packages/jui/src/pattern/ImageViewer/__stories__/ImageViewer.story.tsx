@@ -11,6 +11,9 @@ import {
   alignCenterDecorator,
 } from '../../../foundation/utils/decorators';
 import { JuiIconButton } from '../../../components/Buttons';
+import zoomIn from '../../../assets/jupiter-icon/icon-zoom-in.svg';
+import zoomOut from '../../../assets/jupiter-icon/icon-zoom-out.svg';
+import resetZoom from '../../../assets/jupiter-icon/icon-reset-zoom.svg';
 
 storiesOf('Pattern/ImageViewer', module)
   .addDecorator(alignCenterDecorator)
@@ -21,19 +24,25 @@ storiesOf('Pattern/ImageViewer', module)
         centerText={'100%'}
         resetMode={true}
         ZoomIn={
-          <JuiIconButton variant="plain" tooltipTitle="zoom_in">
-            zoom_in
-          </JuiIconButton>
+          <JuiIconButton
+            variant="plain"
+            tooltipTitle="zoom_in"
+            symbol={zoomIn}
+          />
         }
         ZoomOut={
-          <JuiIconButton variant="plain" tooltipTitle="zoom_out">
-            zoom_out
-          </JuiIconButton>
+          <JuiIconButton
+            variant="plain"
+            tooltipTitle="zoom_out"
+            symbol={zoomOut}
+          />
         }
         ZoomReset={
-          <JuiIconButton variant="plain" tooltipTitle="zoom_out">
-            reset_zoom
-          </JuiIconButton>
+          <JuiIconButton
+            variant="plain"
+            tooltipTitle="reset zoom"
+            symbol={resetZoom}
+          />
         }
       />
     );

@@ -19,6 +19,9 @@ import {
   JuiListItemSecondaryAction,
 } from '../index';
 import avatar from '../../Avatar/__stories__/img/avatar.jpg';
+import download from '../../../assets/jupiter-icon/icon-download.svg';
+import info from '../../../assets/jupiter-icon/icon-info.svg';
+import star from '../../../assets/jupiter-icon/icon-star.svg';
 
 class TwoLineItem extends React.PureComponent {
   state = {
@@ -61,16 +64,13 @@ class TwoLineItem extends React.PureComponent {
                 variant="plain"
                 tooltipTitle="Download"
                 disabled={disabled}
-              >
-                get_app
-              </JuiIconButton>
+                symbol={download}
+              />
             </JuiListItemIcon>
           </JuiListItemSecondaryAction>
         ) : (
           <JuiListItemSecondaryAction>
-            <JuiIconButton variant="plain" disabled={disabled}>
-              info
-            </JuiIconButton>
+            <JuiIconButton variant="plain" disabled={disabled} symbol={info} />
           </JuiListItemSecondaryAction>
         )}
       </JuiListItem>
@@ -104,9 +104,11 @@ storiesOf('Components/Lists/ListItem', module)
       <JuiList>
         <JuiListItem singleLine={true}>
           <JuiListItemIcon>
-            <JuiIconButton variant="plain" tooltipTitle="favorite">
-              favorite
-            </JuiIconButton>
+            <JuiIconButton
+              variant="plain"
+              tooltipTitle="favorite"
+              symbol={star}
+            />
           </JuiListItemIcon>
           <JuiListItemText primary={primary} />
         </JuiListItem>

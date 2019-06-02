@@ -18,6 +18,7 @@ import JuiConversationCardFrom from '../ConversationCardFrom';
 import JuiConversationCardBody from '../ConversationCardBody';
 import { JuiIconography } from 'src/foundation/Iconography';
 import { noop } from 'src/foundation/utils';
+import team from '../../../assets/jupiter-icon/icon-team.svg';
 
 storiesOf('Pattern', module)
   .addDecorator(withInfoDecorator(JuiConversationCard, { inline: true }))
@@ -33,7 +34,7 @@ storiesOf('Pattern', module)
         preposition={<>in</>}
         onClick={noop}
         name={groupName}
-        prefix={<JuiIconography iconSize="small">team</JuiIconography>}
+        prefix={<JuiIconography iconSize="small" symbol={team} />}
         disabled={disabled}
       />
     );
