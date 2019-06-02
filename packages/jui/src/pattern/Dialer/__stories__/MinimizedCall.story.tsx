@@ -6,7 +6,6 @@
 
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiFabButton } from '../../../components/Buttons';
 
 import { JuiMinimizedCall } from '..';
@@ -39,10 +38,8 @@ Mute.displayName = 'Mute';
 
 const Actions = [End, Mute];
 
-storiesOf('Pattern', module)
-  .addDecorator(withInfoDecorator(JuiMinimizedCall, { inline: true }))
-  .add('Minimized Call', () => {
-    return (
-      <JuiMinimizedCall name="Terry Webster" label="02:32" Actions={Actions} />
-    );
-  });
+storiesOf('Pattern', module).add('Minimized Call', () => {
+  return (
+    <JuiMinimizedCall name="Terry Webster" label="02:32" Actions={Actions} />
+  );
+});

@@ -7,7 +7,6 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { text, boolean } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiMenu, JuiMenuList, JuiMenuItem, JuiSubMenu } from '..';
 
 import { JuiAvatar } from '../../Avatar';
@@ -18,7 +17,6 @@ import { JuiListItemText } from '../../Lists';
 const Avatar = <JuiAvatar src={avatar} />;
 
 storiesOf('Components/Menus', module)
-  .addDecorator(withInfoDecorator(JuiMenu, { inline: true }))
   .add('Simple Menu', () => (
     <JuiMenu open={boolean('open', true)}>
       <JuiMenuList>

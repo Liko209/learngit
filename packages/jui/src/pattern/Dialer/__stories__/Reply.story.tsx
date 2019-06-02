@@ -5,7 +5,6 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiAvatar } from '../../../components/Avatar';
 import { JuiIconButton } from '../../../components/Buttons';
 import { JuiDraggableDialog } from '../../../components/Dialog';

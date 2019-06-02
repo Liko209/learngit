@@ -7,7 +7,6 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiIconography } from '../../../foundation/Iconography';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiAvatar } from '../../../components/Avatar';
 import { JuiIconButton, JuiFabButton } from '../../../components/Buttons';
 import avatarImg from '../../../components/Avatar/__stories__/img/avatar.jpg';
@@ -191,22 +190,20 @@ const KeypadActions = [
   CallActionsAction,
 ];
 
-storiesOf('Pattern', module)
-  .addDecorator(withInfoDecorator(JuiTitleBar, { inline: true }))
-  .add('Dialer', () => {
-    return (
-      <JuiDialer>
-        <JuiHeaderContainer>
-          <JuiTitleBar label="02:32" Actions={Actions} Status={Status} />
-          <JuiHeader
-            Avatar={Avatar}
-            name="Terry Webster"
-            phone="(650) 555-12345"
-            Back={Back}
-            HoverActions={HoverActions}
-          />
-        </JuiHeaderContainer>
-        <JuiContainer CallAction={End} KeypadActions={KeypadActions} />
-      </JuiDialer>
-    );
-  });
+storiesOf('Pattern', module).add('Dialer', () => {
+  return (
+    <JuiDialer>
+      <JuiHeaderContainer>
+        <JuiTitleBar label="02:32" Actions={Actions} Status={Status} />
+        <JuiHeader
+          Avatar={Avatar}
+          name="Terry Webster"
+          phone="(650) 555-12345"
+          Back={Back}
+          HoverActions={HoverActions}
+        />
+      </JuiHeaderContainer>
+      <JuiContainer CallAction={End} KeypadActions={KeypadActions} />
+    </JuiDialer>
+  );
+});

@@ -79,7 +79,6 @@ class TwoLineItem extends React.PureComponent {
 }
 
 storiesOf('Components/Lists/ListItem', module)
-  // .addDecorator(withInfoDecorator(JuiListItem, { inline: true }))
   .add('Single-line item with Avatar and controls', () => {
     const primary = text('primary', 'Single-line item name');
 

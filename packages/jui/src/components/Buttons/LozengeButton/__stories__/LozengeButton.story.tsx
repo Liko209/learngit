@@ -6,10 +6,7 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean, select, text } from '@storybook/addon-knobs';
-import {
-  withInfoDecorator,
-  alignCenterDecorator,
-} from '../../../../foundation/utils/decorators';
+import { alignCenterDecorator } from '../../../../foundation/utils/decorators';
 import { JuiLozengeButton, JuiLozengeButtonProps } from '../';
 
 function getKnobs() {
@@ -32,7 +29,6 @@ function getKnobs() {
 
 storiesOf('Components/Buttons', module)
   .addDecorator(alignCenterDecorator)
-  .addDecorator(withInfoDecorator(JuiLozengeButton, { inline: true }))
   .add('Lozenge Button', () => {
     const { content, ...rest } = getKnobs();
     return <JuiLozengeButton {...rest}>{content}</JuiLozengeButton>;

@@ -7,7 +7,6 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { select } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiPopperMenu, JuiPopperMenuProps } from '../index';
 import { JuiMenuList, JuiMenuItem } from '../../../components/Menus';
 import { JuiButton } from '../../../components/Buttons';
@@ -80,6 +79,4 @@ class PopperMenu extends React.PureComponent<{}, State> {
   }
 }
 
-storiesOf('Pattern/PopperMenu', module)
-  .addDecorator(withInfoDecorator(JuiPopperMenu, { inline: true }))
-  .add('PopperMenu', () => <PopperMenu />);
+storiesOf('Pattern/PopperMenu', module).add('PopperMenu', () => <PopperMenu />);

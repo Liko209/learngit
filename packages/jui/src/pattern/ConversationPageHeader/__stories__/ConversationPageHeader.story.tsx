@@ -7,7 +7,6 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
 import { JuiIconButton } from '../../../components/Buttons/IconButton';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiConversationPageHeader } from '../ConversationPageHeader';
 import { JuiButtonBar } from '../../../components/Buttons/ButtonBar';
 import { JuiCheckboxButton } from '../../../components/Buttons/CheckboxButton';
@@ -17,40 +16,35 @@ import setting from '../../../assets/jupiter-icon/icon-settings.svg';
 
 const getTitleKnob = () => text('title', 'Global UXD');
 const getStatusKnob = () => text('status', '🏝on vacation 10/16-10/24');
-storiesOf('Pattern', module)
-  .addDecorator(withInfoDecorator(JuiConversationPageHeader, { inline: true }))
-  .add('ConversationPageHeader', () => {
-    return (
-      <JuiConversationPageHeader
-        title={getTitleKnob()}
-        status={getStatusKnob()}
-        SubTitle={
-          <JuiButtonBar overlapSize={2}>
-            <JuiCheckboxButton
-              tooltipTitle="This is a public team"
-              checkedIconName="lock"
-              color="grey.500"
-              iconName="lock_open"
-            />
-            <JuiCheckboxButton
-              tooltipTitle="Add to Favorite"
-              color="accent.gold"
-              checkedIconName="star"
-              iconName="star_border"
-            />
-          </JuiButtonBar>}
-        Right={
-          <JuiButtonBar overlapSize={1}>
-            <JuiIconButton
-              tooltipTitle="Start Conference Call"
-              symbol={phone}
-            />
-            <JuiIconButton tooltipTitle="Start Video Call" symbol={meetings} />
-            <JuiIconButton
-              tooltipTitle="Conversation Settings"
-              symbol={setting}
-            />
-          </JuiButtonBar>}
-      />
-    );
-  });
+storiesOf('Pattern', module).add('ConversationPageHeader', () => {
+  return (
+    <JuiConversationPageHeader
+      title={getTitleKnob()}
+      status={getStatusKnob()}
+      SubTitle={
+        <JuiButtonBar overlapSize={2}>
+          <JuiCheckboxButton
+            tooltipTitle="This is a public team"
+            checkedIconName="lock"
+            color="grey.500"
+            iconName="lock_open"
+          />
+          <JuiCheckboxButton
+            tooltipTitle="Add to Favorite"
+            color="accent.gold"
+            checkedIconName="star"
+            iconName="star_border"
+          />
+        </JuiButtonBar>}
+      Right={
+        <JuiButtonBar overlapSize={1}>
+          <JuiIconButton tooltipTitle="Start Conference Call" symbol={phone} />
+          <JuiIconButton tooltipTitle="Start Video Call" symbol={meetings} />
+          <JuiIconButton
+            tooltipTitle="Conversation Settings"
+            symbol={setting}
+          />
+        </JuiButtonBar>}
+    />
+  );
+});

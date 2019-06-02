@@ -5,7 +5,6 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 import { JuiChip } from '..';
 
@@ -19,7 +18,6 @@ const Avatar = (props: JuiAvatarProps) => {
 const handleDelete = () => {};
 
 storiesOf('Components/Chip', module)
-  .addDecorator(withInfoDecorator(JuiChip, { inline: true }))
   .add('with nothing', () => {
     return <JuiChip label="Basic Chip" />;
   })
@@ -37,5 +35,11 @@ storiesOf('Components/Chip', module)
     return <JuiChip label="Basic Chip" PersonAvatar={Avatar} />;
   })
   .add('with DeleteIcon', () => {
-    return <JuiChip label="Basic Chip" onDelete={handleDelete} deleteTooltip="Remove" />;
+    return (
+      <JuiChip
+        label="Basic Chip"
+        onDelete={handleDelete}
+        deleteTooltip="Remove"
+      />
+    );
   });

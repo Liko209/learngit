@@ -6,7 +6,6 @@
 
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiAvatar } from '../../../components/Avatar';
 import { JuiFabButton } from '../../../components/Buttons';
 import { JuiDraggableDialog } from '../../../components/Dialog';
@@ -81,20 +80,18 @@ const Avatar = () => (
   </JuiAvatar>
 );
 
-storiesOf('Pattern', module)
-  .addDecorator(withInfoDecorator(JuiIncomingCall, { inline: true }))
-  .add('Incoming Call', () => {
-    return (
-      <JuiDraggableDialog open={knobs.open()} x={0} y={0}>
-        <JuiDialer>
-          <JuiIncomingCall
-            name="Terry Webster"
-            phone="(650) 555-1234"
-            Actions={Actions}
-            Ignore={Ignore}
-            Avatar={Avatar}
-          />
-        </JuiDialer>
-      </JuiDraggableDialog>
-    );
-  });
+storiesOf('Pattern', module).add('Incoming Call', () => {
+  return (
+    <JuiDraggableDialog open={knobs.open()} x={0} y={0}>
+      <JuiDialer>
+        <JuiIncomingCall
+          name="Terry Webster"
+          phone="(650) 555-1234"
+          Actions={Actions}
+          Ignore={Ignore}
+          Avatar={Avatar}
+        />
+      </JuiDialer>
+    </JuiDraggableDialog>
+  );
+});

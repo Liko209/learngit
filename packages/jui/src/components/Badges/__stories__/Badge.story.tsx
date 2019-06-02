@@ -7,14 +7,12 @@ import React from 'react';
 import styled from 'styled-components';
 import { storiesOf } from '@storybook/react';
 import { JuiBadge } from '../index';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 const Wrapper = styled.div`
   margin-left: 20px;
 `;
 
 storiesOf('Components/Badges', module)
-  .addDecorator(withInfoDecorator(JuiBadge, { inline: true }))
   .add('Simple Badge', () => (
     <div>
       <div>

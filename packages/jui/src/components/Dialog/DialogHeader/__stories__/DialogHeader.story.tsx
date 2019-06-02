@@ -9,7 +9,6 @@ import { text, number, boolean } from '@storybook/addon-knobs';
 import { JuiDialogHeader } from '../DialogHeader';
 import { JuiDialogHeaderTitle } from '../DialogHeaderTitle';
 import { JuiDialogHeaderActions } from '../DialogHeaderActions';
-import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 import { JuiIconButton } from '../../../Buttons/IconButton/IconButton';
 import { JuiMenuList, JuiMenuItem } from '../../../Menus';
 import { JuiPopoverMenu } from '../../../../pattern/PopoverMenu/PopoverMenu';
@@ -26,7 +25,6 @@ import settings from '../../../../assets/jupiter-icon/icon-settings.svg';
 import moreHoriz from '../../../../assets/jupiter-icon/icon-more_horiz.svg';
 
 storiesOf('Components/Dialog/DialogHeader', module)
-  .addDecorator(withInfoDecorator(JuiDialogHeader))
   .add('Title only', () => {
     const title = text('title', 'Title');
     const width = number('width', 640);

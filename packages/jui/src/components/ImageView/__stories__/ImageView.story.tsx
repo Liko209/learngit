@@ -8,7 +8,6 @@ import React from 'react';
 import { boolean, number, text } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiImageView } from '../ImageView';
 
 const knobs = {
@@ -18,15 +17,13 @@ const knobs = {
   containerWidth: () => number('containerWidth', 600),
   containerHeight: () => number('containerHeight', 400),
 };
-storiesOf('Components/ImageView', module)
-  .addDecorator(withInfoDecorator(JuiImageView, { inline: true }))
-  .add('ImageView', () => (
-    <div
-      style={{
-        width: knobs.containerWidth(),
-        height: knobs.containerHeight(),
-      }}
-    >
-      <JuiImageView src={knobs.src()} width="100%" />
-    </div>
-  ));
+storiesOf('Components/ImageView', module).add('ImageView', () => (
+  <div
+    style={{
+      width: knobs.containerWidth(),
+      height: knobs.containerHeight(),
+    }}
+  >
+    <JuiImageView src={knobs.src()} width="100%" />
+  </div>
+));

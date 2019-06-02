@@ -5,7 +5,6 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiIconography } from '../../../foundation/Iconography';
 import { JuiDivider } from '../../Divider';
 import { JuiIconButton } from '../../Buttons/IconButton';
@@ -20,7 +19,6 @@ import inbox from '../../../assets/jupiter-icon/icon-inbox.svg';
 import draft from '../../../assets/jupiter-icon/icon-draft.svg';
 
 storiesOf('Components/Lists', module)
-  .addDecorator(withInfoDecorator(JuiList, { inline: true }))
   .add('Simple List', () => (
     <div>
       <JuiList>

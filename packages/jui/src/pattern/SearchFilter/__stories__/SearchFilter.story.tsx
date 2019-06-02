@@ -6,7 +6,6 @@
 
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiSearchFilter } from '..';
 import { differenceBy } from 'lodash';
 import { JuiDownshift } from '../../../components/Downshift';
@@ -97,13 +96,11 @@ const MultipleDownshift = () => {
   );
 };
 
-storiesOf('Pattern/SearchFilter', module)
-  .addDecorator(withInfoDecorator(JuiSearchFilter, { inline: true }))
-  .add('SearchFilter', () => {
-    return (
-      <JuiSearchFilter title="Filter">
-        <MultipleDownshift />
-        <MultipleDownshift />
-      </JuiSearchFilter>
-    );
-  });
+storiesOf('Pattern/SearchFilter', module).add('SearchFilter', () => {
+  return (
+    <JuiSearchFilter title="Filter">
+      <MultipleDownshift />
+      <MultipleDownshift />
+    </JuiSearchFilter>
+  );
+});

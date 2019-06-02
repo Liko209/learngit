@@ -5,24 +5,11 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiIconography } from '..';
 import star from '../../../assets/jupiter-icon/icon-star.svg';
 
-storiesOf('Foundation', module)
-  .addDecorator(
-    withInfoDecorator(JuiIconography, {
-      inline: true,
-      text:
-        'for complete list of icons, visit [jira](https://jira.ringcentral.com/browse/FIJI-2311?filter=-1)',
-    }),
-  )
-  .add('Iconography', () => (
-    <div>
-      <JuiIconography
-        iconColor={['primary', '500']}
-        symbol={star}
-        desc={'ha'}
-      />
-    </div>
-  ));
+storiesOf('Foundation', module).add('Iconography', () => (
+  <div>
+    <JuiIconography iconColor={['primary', '500']} symbol={star} desc={'ha'} />
+  </div>
+));

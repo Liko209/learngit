@@ -6,10 +6,7 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean, select, text } from '@storybook/addon-knobs';
-import {
-  withInfoDecorator,
-  alignCenterDecorator,
-} from '../../../../foundation/utils/decorators';
+import { alignCenterDecorator } from '../../../../foundation/utils/decorators';
 import { JuiCheckboxButton, JuiCheckboxButtonProps } from '..';
 import styled from '../../../../foundation/styled-components';
 import star from '../../../../assets/jupiter-icon/icon-star.svg';
@@ -59,7 +56,6 @@ function getKnobs() {
 
 storiesOf('Components/CheckboxButton', module)
   .addDecorator(alignCenterDecorator)
-  .addDecorator(withInfoDecorator(JuiCheckboxButton, { inline: true }))
   .add('CheckboxButton', () => {
     const { content, ...rest } = getKnobs();
     return (

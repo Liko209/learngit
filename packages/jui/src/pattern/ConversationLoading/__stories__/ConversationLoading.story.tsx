@@ -11,12 +11,11 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiConversationLoading } from '../';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { text, boolean } from '@storybook/addon-knobs';
 
-storiesOf('Pattern/ConversationLoading', module)
-  .addDecorator(withInfoDecorator(JuiConversationLoading, { inline: true }))
-  .add('JuiConversationLoading', () => {
+storiesOf('Pattern/ConversationLoading', module).add(
+  'JuiConversationLoading',
+  () => {
     const tip = text('tip', 'loading');
     const linkText = text('linkText', 'www.google.com');
     const showTip = boolean('showTip', true);
@@ -35,4 +34,5 @@ storiesOf('Pattern/ConversationLoading', module)
       }
     }
     return <Test />;
-  });
+  },
+);

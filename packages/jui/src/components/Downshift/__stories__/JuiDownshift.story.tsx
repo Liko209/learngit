@@ -7,7 +7,6 @@
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { differenceBy } from 'lodash';
 import { JuiDownshift } from '..';
 import { JuiSearchItem } from '../../../pattern/ContactSearch';
@@ -113,8 +112,6 @@ const MultipleDownshift = () => {
   );
 };
 
-storiesOf('Components/Downshift', module)
-  .addDecorator(withInfoDecorator(JuiDownshift, { inline: true }))
-  .add('Downshift', () => {
-    return <MultipleDownshift />;
-  });
+storiesOf('Components/Downshift', module).add('Downshift', () => {
+  return <MultipleDownshift />;
+});

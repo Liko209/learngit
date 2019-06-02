@@ -6,10 +6,7 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean, select, text } from '@storybook/addon-knobs';
-import {
-  withInfoDecorator,
-  alignCenterDecorator,
-} from '../../../../foundation/utils/decorators';
+import { alignCenterDecorator } from '../../../../foundation/utils/decorators';
 import { JuiFabButton, JuiButton, JuiButtonProps } from '../';
 import styled from '../../../../foundation/styled-components';
 import previous from '../../../../assets/jupiter-icon/icon-previous.svg';
@@ -53,7 +50,6 @@ const Wrapper = styled.div`
 
 storiesOf('Components/Buttons', module)
   .addDecorator(alignCenterDecorator)
-  .addDecorator(withInfoDecorator(JuiButton, { inline: true }))
   .add('Contained Button', () => {
     const { content, ...rest } = getKnobs();
     return (

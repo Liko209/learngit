@@ -8,7 +8,6 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import styled from '../../../foundation/styled-components';
 import { select, boolean } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import {
   JuiSnackbarContent,
   JuiSnackbarAction,
@@ -61,43 +60,41 @@ const knobs = {
     ),
 };
 
-storiesOf('Components/Snackbars', module)
-  .addDecorator(withInfoDecorator(JuiSnackbarContent, { inline: true }))
-  .add('toast', () => (
-    <Wrapper>
-      <JuiSnackbarContent
-        type={knobs.type()}
-        fullWidth={boolean('fullWidth', false)}
-        message={knobs.message()}
-        messageAlign={knobs.messageAlign()}
-      />
-      <JuiSnackbarContent
-        type="error"
-        message="This is an error message."
-        messageAlign={knobs.messageAlign()}
-        fullWidth={boolean('fullWidth', false)}
-        action={<JuiSnackbarAction key="action1">Action</JuiSnackbarAction>}
-      />
-      <JuiSnackbarContent
-        type="warn"
-        message="This is an warning message."
-        messageAlign={knobs.messageAlign()}
-        fullWidth={boolean('fullWidth', false)}
-        action={[
-          <JuiSnackbarAction key="action1">Action</JuiSnackbarAction>,
-          <JuiSnackbarAction key="action2">Action</JuiSnackbarAction>,
-        ]}
-      />
-      <JuiSnackbarContent
-        type="info"
-        message="This is an informational message."
-        messageAlign={knobs.messageAlign()}
-        fullWidth={boolean('fullWidth', false)}
-        action={[
-          <JuiSnackbarAction key="action1">Action</JuiSnackbarAction>,
-          <JuiSnackbarAction key="action2">Action</JuiSnackbarAction>,
-          <JuiSnackbarAction key="action2" variant="icon" icon={close} />,
-        ]}
-      />
-    </Wrapper>
-  ));
+storiesOf('Components/Snackbars', module).add('toast', () => (
+  <Wrapper>
+    <JuiSnackbarContent
+      type={knobs.type()}
+      fullWidth={boolean('fullWidth', false)}
+      message={knobs.message()}
+      messageAlign={knobs.messageAlign()}
+    />
+    <JuiSnackbarContent
+      type="error"
+      message="This is an error message."
+      messageAlign={knobs.messageAlign()}
+      fullWidth={boolean('fullWidth', false)}
+      action={<JuiSnackbarAction key="action1">Action</JuiSnackbarAction>}
+    />
+    <JuiSnackbarContent
+      type="warn"
+      message="This is an warning message."
+      messageAlign={knobs.messageAlign()}
+      fullWidth={boolean('fullWidth', false)}
+      action={[
+        <JuiSnackbarAction key="action1">Action</JuiSnackbarAction>,
+        <JuiSnackbarAction key="action2">Action</JuiSnackbarAction>,
+      ]}
+    />
+    <JuiSnackbarContent
+      type="info"
+      message="This is an informational message."
+      messageAlign={knobs.messageAlign()}
+      fullWidth={boolean('fullWidth', false)}
+      action={[
+        <JuiSnackbarAction key="action1">Action</JuiSnackbarAction>,
+        <JuiSnackbarAction key="action2">Action</JuiSnackbarAction>,
+        <JuiSnackbarAction key="action2" variant="icon" icon={close} />,
+      ]}
+    />
+  </Wrapper>
+));

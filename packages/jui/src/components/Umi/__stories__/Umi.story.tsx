@@ -5,27 +5,21 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfo } from '@storybook/addon-info';
 import { number, boolean, select } from '@storybook/addon-knobs';
 import { JuiUmi } from '..';
 
-storiesOf('Components/UMI', module).add(
-  'Umi',
-  withInfo({ inline: true })(() => {
-    return (
-      <JuiUmi
-        unreadCount={number('unreadCount', 10)}
-        variant={select(
-          'variant',
-          {
-            count: 'count',
-            dot: 'dot',
-            auto: 'auto',
-          },
-          'count',
-        )}
-        important={boolean('important', false)}
-      />
-    );
-  }),
-);
+storiesOf('Components/UMI', module).add('Umi', () => (
+  <JuiUmi
+    unreadCount={number('unreadCount', 10)}
+    variant={select(
+      'variant',
+      {
+        count: 'count',
+        dot: 'dot',
+        auto: 'auto',
+      },
+      'count',
+    )}
+    important={boolean('important', false)}
+  />
+));

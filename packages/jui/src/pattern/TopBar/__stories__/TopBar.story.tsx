@@ -6,7 +6,6 @@
 
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiTopBar, JuiLogo, JuiAvatarActions } from '..';
 import {
   JuiIconButton,
@@ -124,21 +123,19 @@ const BackNForward = () => {
   );
 };
 
-storiesOf('Pattern/TopBar', module)
-  .addDecorator(withInfoDecorator(JuiTopBar, { inline: true }))
-  .add('TopBar', () => (
-    <div style={{ padding: '20px', background: 'silver' }}>
-      <JuiTopBar
-        openGlobalSearch={() => {}}
-        searchKey={''}
-        searchPlaceholder={'search'}
-        onClear={() => {}}
-        NewActions={NewActions}
-        MainMenu={MainMenu}
-        Dialpad={NewActions}
-        Logo={Logo}
-        BackNForward={BackNForward}
-        AvatarActions={AvatarActions}
-      />
-    </div>
-  ));
+storiesOf('Pattern/TopBar', module).add('TopBar', () => (
+  <div style={{ padding: '20px', background: 'silver' }}>
+    <JuiTopBar
+      openGlobalSearch={() => {}}
+      searchKey={''}
+      searchPlaceholder={'search'}
+      onClear={() => {}}
+      NewActions={NewActions}
+      MainMenu={MainMenu}
+      Dialpad={NewActions}
+      Logo={Logo}
+      BackNForward={BackNForward}
+      AvatarActions={AvatarActions}
+    />
+  </div>
+));

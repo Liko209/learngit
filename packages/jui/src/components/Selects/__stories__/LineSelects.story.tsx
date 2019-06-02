@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import {
-  withInfoDecorator,
-  alignCenterDecorator,
-} from '../../../foundation/utils/decorators';
+import { alignCenterDecorator } from '../../../foundation/utils/decorators';
 import { JuiLineSelect } from '../LineSelect';
 import { JuiMenuItem } from '../../Menus';
 import { JuiRegionSelect } from '../LineSelect/RegionSelect';
@@ -82,7 +79,6 @@ const RegionLineSelect = () => {
 
 storiesOf('Components/Selects', module)
   .addDecorator(alignCenterDecorator)
-  .addDecorator(withInfoDecorator(JuiLineSelect, { inline: true }))
   .add('LineSelect', () => {
     return (
       <div>

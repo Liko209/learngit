@@ -8,7 +8,6 @@ import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
 import { BrowserRouter } from 'react-router-dom';
 import { JuiLeftNav } from '../index';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiIconography } from '../../../foundation/Iconography';
 import dashboardBorder from '../../../assets/jupiter-icon/icon-dashboard_border.svg';
 import dashboard from '../../../assets/jupiter-icon/icon-dashboard.svg';
@@ -106,18 +105,16 @@ const icons = [
   ],
 ];
 
-storiesOf('Pattern', module)
-  .addDecorator(withInfoDecorator(JuiLeftNav, { inline: true }))
-  .add('LeftNav', () => {
-    const isExpand = boolean('expand', false);
-    return (
-      <BrowserRouter>
-        <JuiLeftNav
-          selectedPath={'a'}
-          icons={icons}
-          expand={isExpand}
-          onRouteChange={() => {}}
-        />
-      </BrowserRouter>
-    );
-  });
+storiesOf('Pattern', module).add('LeftNav', () => {
+  const isExpand = boolean('expand', false);
+  return (
+    <BrowserRouter>
+      <JuiLeftNav
+        selectedPath={'a'}
+        icons={icons}
+        expand={isExpand}
+        onRouteChange={() => {}}
+      />
+    </BrowserRouter>
+  );
+});

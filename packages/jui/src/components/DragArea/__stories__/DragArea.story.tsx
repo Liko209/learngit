@@ -8,7 +8,6 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 
 import styled from '../../../foundation/styled-components';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { DragArea, WithDragProps } from '../DragArea';
 
 const ImageView = styled.img`
@@ -34,7 +33,6 @@ const Image = styled.img<{ dragState: WithDragProps }>`
 `;
 
 storiesOf('Components/DragArea', module)
-  .addDecorator(withInfoDecorator(DragArea, { inline: true }))
   .add('Demo1', () => (
     <div>
       <DragArea
