@@ -19,21 +19,34 @@ import { Download } from '@/containers/common/Download';
 import { SecondaryText } from '../common/SecondaryText.View';
 import { JuiButtonBar } from 'jui/components/Buttons';
 import { FileActionMenu } from '@/containers/common/fileAction';
+import {
+  postParser,
+  SearchHighlightContext,
+  HighlightContextInfo,
+} from '@/common/postParser';
 
 @observer
 class FileItemView extends Component<FileItemViewProps> {
+  static contextType = SearchHighlightContext;
+  context: HighlightContextInfo;
   private _renderItem = (hover: boolean) => {
     const { file, personName, modifiedTime, downloadUrl, id } = this.props;
     const fileInfo = file || {};
     const { name } = fileInfo;
-
     return (
       <>
         <JuiListItemIcon>
           <Thumbnail id={id} type="file" />
         </JuiListItemIcon>
         <JuiListItemText
-          primary={<FileName filename={name} />}
+          primary={
+            <FileName>
+              {postParser(name, {
+                fileName: true,
+                keyword: this.context.keyword,
+              })}
+            </FileName>
+          }
           secondary={<SecondaryText name={personName} time={modifiedTime} />}
         />
         {hover && (

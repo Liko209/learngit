@@ -17,10 +17,17 @@ import {
   JuiEventCollapseContent,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardFooter';
 import { EventUpdateViewProps } from './types';
+import {
+  postParser,
+  HighlightContextInfo,
+  SearchHighlightContext,
+} from '@/common/postParser';
 
 type Props = WithTranslation & EventUpdateViewProps;
 @observer
 class EventUpdate extends React.Component<Props> {
+  static contextType = SearchHighlightContext;
+  context: HighlightContextInfo;
   private _isShowTime = (value: any) => {
     return (
       value.start ||
@@ -56,7 +63,7 @@ class EventUpdate extends React.Component<Props> {
 
     return (
       <EventUpdateViewCard
-        title={text}
+        title={postParser(text, { keyword: this.context.keyword })}
         titleColor={color}
         iconColor={color}
         Icon="event"
@@ -72,9 +79,9 @@ class EventUpdate extends React.Component<Props> {
                 </JuiEventCollapseContent>
               )}
               {oldLocation && (
-                <JuiEventCollapseContent
-                  dangerouslySetInnerHTML={{ __html: oldLocation }}
-                />
+                <JuiEventCollapseContent>
+                  {postParser(oldLocation, { keyword: this.context.keyword })}
+                </JuiEventCollapseContent>
               )}
             </JuiEventCollapse>
           )
@@ -87,7 +94,9 @@ class EventUpdate extends React.Component<Props> {
         )}
         {newLocation && (
           <JuiLabelWithContent label={t('item.locationTitle')}>
-            <JuiEventLocation location={newLocation} />
+            <JuiEventLocation>
+              {postParser(newLocation, { keyword: this.context.keyword })}
+            </JuiEventLocation>
           </JuiLabelWithContent>
         )}
       </EventUpdateViewCard>

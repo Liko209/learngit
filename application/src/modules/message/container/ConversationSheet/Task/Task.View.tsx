@@ -3,7 +3,7 @@
  * @Date: 2018-11-08 19:18:07
  * Copyright © RingCentral. All rights reserved.
  */
-import * as React from 'react';
+import React, { useContext } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
@@ -26,10 +26,13 @@ import { AvatarName } from './AvatarName';
 import { ViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
 import { Download } from '@/containers/common/Download';
-import { phoneParserHoc } from '@/modules/common/container/PhoneParser/PhoneParserHoc';
+import {
+  postParser,
+  HighlightContextInfo,
+  SearchHighlightContext,
+} from '@/common/postParser';
 
 type taskViewProps = WithTranslation & ViewProps;
-const PhoneNumberHoc = phoneParserHoc(JuiTaskSectionOrDescription);
 
 const FILE_COMPS = {
   [FileType.image]: (
@@ -56,13 +59,18 @@ const FILE_COMPS = {
       deactivated,
       type,
     } = item;
+    const context = useContext(SearchHighlightContext);
+
     return (
       !deactivated && (
         <JuiExpandImage
           icon={getFileIcon(type)}
           key={id}
           previewUrl={previewUrl}
-          fileName={name}
+          fileName={postParser(name, {
+            fileName: true,
+            keyword: context.keyword,
+          })}
           i18UnfoldLess={t('common.collapse')}
           i18UnfoldMore={t('common.expand')}
           defaultExpansionStatus={initialExpansionStatus}
@@ -83,12 +91,16 @@ const FILE_COMPS = {
   [FileType.others]: (file: ExtendFileItem) => {
     const { item } = file;
     const { name, downloadUrl, id, deactivated, type } = item;
+    const context = useContext(SearchHighlightContext);
     return (
       !deactivated && (
         <JuiFileWithExpand
           icon={getFileIcon(type)}
           key={id}
-          fileName={name}
+          fileName={postParser(name, {
+            fileName: true,
+            keyword: context.keyword,
+          })}
           Actions={<Download url={downloadUrl} />}
         />
       )
@@ -98,6 +110,8 @@ const FILE_COMPS = {
 
 @observer
 class Task extends React.Component<taskViewProps> {
+  static contextType = SearchHighlightContext;
+  context: HighlightContextInfo;
   private get _taskAvatarNames() {
     const { effectiveIds } = this.props;
 
@@ -167,7 +181,9 @@ class Task extends React.Component<taskViewProps> {
     return (
       <JuiConversationItemCard
         complete={complete}
-        title={this._getTitleText(text)}
+        title={postParser(this._getTitleText(text), {
+          keyword: this.context.keyword,
+        })}
         titleColor={color}
         contentHasPadding={!!hasContent}
         Icon={
@@ -198,12 +214,19 @@ class Task extends React.Component<taskViewProps> {
           )}
           {section && (
             <JuiLabelWithContent label={t('item.section')}>
-              {section}
+              <JuiTaskSectionOrDescription>
+                {postParser(section, { keyword: this.context.keyword })}
+              </JuiTaskSectionOrDescription>
             </JuiLabelWithContent>
           )}
           {notes && (
             <JuiLabelWithContent label={t('item.descriptionNotes')}>
-              <PhoneNumberHoc description={notes} />
+              <JuiTaskSectionOrDescription>
+                {postParser(notes, {
+                  keyword: this.context.keyword,
+                  phoneNumber: true,
+                })}
+              </JuiTaskSectionOrDescription>
             </JuiLabelWithContent>
           )}
           {files && files.length > 0 && (

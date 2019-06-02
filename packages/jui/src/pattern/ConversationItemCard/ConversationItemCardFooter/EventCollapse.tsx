@@ -11,7 +11,6 @@ import {
   primary,
   spacing,
 } from '../../../foundation/utils/styles';
-import { withHighlight } from '../../../hoc/withHighlight';
 
 type Props = {
   children?: React.ReactNode;
@@ -23,13 +22,11 @@ type States = {
   isShow: boolean;
 };
 
-const JuiEventCollapseContent = withHighlight([
-  'dangerouslySetInnerHTML.__html',
-])(styled.div`
+const JuiEventCollapseContent = styled.div`
   ${typography('body1')};
   color: ${grey('500')};
   margin-bottom: ${spacing(1)};
-`);
+`;
 
 const StyledToggle = styled.div`
   display: inline-block;

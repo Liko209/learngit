@@ -80,7 +80,7 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
         <NameList>
           {duplicateFiles.map((file: File, index: number) => (
             <Item key={file.name}>
-              <FileName filename={file.name} />
+              <FileName>{file.name}</FileName>
             </Item>
           ))}
         </NameList>

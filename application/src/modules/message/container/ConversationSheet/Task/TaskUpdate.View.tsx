@@ -18,11 +18,18 @@ import {
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardFooter';
 import { AvatarName } from './AvatarName';
 import { TaskUpdateViewProps } from './types';
+import {
+  postParser,
+  HighlightContextInfo,
+  SearchHighlightContext,
+} from '@/common/postParser';
 
 @observer
 class TaskUpdate extends React.Component<
   TaskUpdateViewProps & WithTranslation
 > {
+  static contextType = SearchHighlightContext;
+  context: HighlightContextInfo;
   private _getTaskAvatarNames = (assignedIds: number[]) =>
     assignedIds.map((assignedId: number) => (
       <AvatarName key={assignedId} id={assignedId} />
@@ -50,7 +57,9 @@ class TaskUpdate extends React.Component<
 
     return (
       <TaskUpdateViewCard
-        title={this._getTitleText(text)}
+        title={postParser(this._getTitleText(text), {
+          keyword: this.context.keyword,
+        })}
         titleColor={color}
         Icon={
           <JuiTaskCheckbox customColor={color} checked={complete || false} />}

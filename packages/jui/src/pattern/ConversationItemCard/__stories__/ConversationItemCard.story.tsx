@@ -220,7 +220,7 @@ storiesOf('Pattern/ConversationItemCard', module)
             <JuiTimeMessage time={`${new Date().toLocaleDateString()}`} />
           </JuiLabelWithContent>
           <JuiLabelWithContent label={'hahaha'}>
-            <JuiEventLocation location={'no local'} />
+            <JuiEventLocation>no local</JuiEventLocation>
           </JuiLabelWithContent>
           <JuiEventDescription> this is a test event</JuiEventDescription>
         </JuiSectionDivider>

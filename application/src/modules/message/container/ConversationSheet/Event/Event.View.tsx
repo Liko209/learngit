@@ -15,19 +15,24 @@ import {
   JuiSectionDivider,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 import { EventViewProps } from './types';
-import { phoneParserHoc } from '@/modules/common/container/PhoneParser/PhoneParserHoc';
+import {
+  postParser,
+  HighlightContextInfo,
+  SearchHighlightContext,
+} from '@/common/postParser';
 type Props = WithTranslation & EventViewProps;
 
-const HocDescription = phoneParserHoc(JuiEventDescription);
 @observer
 class Event extends React.Component<Props, {}> {
+  static contextType = SearchHighlightContext;
+  context: HighlightContextInfo;
   render() {
     const { event, t, color, timeContent } = this.props;
     const { text, description, location } = event;
 
     return (
       <JuiConversationItemCard
-        title={text}
+        title={postParser(text, { keyword: this.context.keyword })}
         iconColor={color}
         titleColor={color}
         Icon="event"
@@ -38,10 +43,19 @@ class Event extends React.Component<Props, {}> {
           </JuiLabelWithContent>
           {location && (
             <JuiLabelWithContent label={t('item.locationTitle')}>
-              <JuiEventLocation location={location} />
+              <JuiEventLocation>
+                {postParser(location, { keyword: this.context.keyword })}
+              </JuiEventLocation>
             </JuiLabelWithContent>
           )}
-          {description && <HocDescription description={description} />}
+          {description && (
+            <JuiEventDescription>
+              {postParser(description, {
+                keyword: this.context.keyword,
+                phoneNumber: true,
+              })}
+            </JuiEventDescription>
+          )}
         </JuiSectionDivider>
       </JuiConversationItemCard>
     );

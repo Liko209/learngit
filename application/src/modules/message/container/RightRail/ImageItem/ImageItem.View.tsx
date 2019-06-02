@@ -18,12 +18,20 @@ import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
 import { ImageItemViewProps, ImageItemProps } from './types';
 import { Download } from '@/containers/common/Download';
 import { SecondaryText } from '../common/SecondaryText.View';
+import {
+  postParser,
+  SearchHighlightContext,
+  HighlightContextInfo,
+} from '@/common/postParser';
+
 const SQUARE_SIZE = 36;
 import { JuiButtonBar } from 'jui/components/Buttons';
 import { FileActionMenu } from '@/containers/common/fileAction';
 
 @observer
 class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
+  static contextType = SearchHighlightContext;
+  context: HighlightContextInfo;
   private _thumbnailRef: React.RefObject<any> = React.createRef();
   private _renderItem = (hover: boolean) => {
     const { fileName, id, personName, modifiedTime, downloadUrl } = this.props;
@@ -38,7 +46,14 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
           />
         </JuiListItemIcon>
         <JuiListItemText
-          primary={<FileName filename={fileName} />}
+          primary={
+            <FileName>
+              {postParser(fileName, {
+                fileName: true,
+                keyword: this.context.keyword,
+              })}
+            </FileName>
+          }
           secondary={<SecondaryText name={personName} time={modifiedTime} />}
         />
         {hover && (

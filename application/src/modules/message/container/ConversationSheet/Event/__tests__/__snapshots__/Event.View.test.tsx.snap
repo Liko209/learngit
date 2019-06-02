@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`render() render correctly 1`] = `
-<ForwardRef
+<JuiConversationItemCard
   Icon="event"
   iconColor="color"
   title="text"
@@ -20,13 +20,13 @@ exports[`render() render correctly 1`] = `
     <JuiLabelWithContent
       label="item.locationTitle"
     >
-      <ForwardRef
-        location="location"
-      />
+      <styled.div>
+        location
+      </styled.div>
     </JuiLabelWithContent>
-    <ComponentWithLink
-      description="description"
-    />
+    <styled.div>
+      description
+    </styled.div>
   </JuiSectionDivider>
-</ForwardRef>
+</JuiConversationItemCard>
 `;

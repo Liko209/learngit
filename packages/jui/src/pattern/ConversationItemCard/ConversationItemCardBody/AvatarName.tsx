@@ -7,11 +7,10 @@
 import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import { spacing, ellipsis, width } from '../../../foundation/utils/styles';
-import { withHighlight } from '../../../hoc/withHighlight';
 
 type Props = {
   Avatar: JSX.Element;
-  name: string;
+  name: React.ReactChild | (React.ReactChild | null)[] | null;
 };
 
 const StyledAvatarName = styled.div`
@@ -30,12 +29,12 @@ const StyledName = styled.span`
 
 const JuiAvatarNameComponent = ({ name, Avatar }: Props) => (
   <StyledAvatarName>
-    {Avatar} <StyledName dangerouslySetInnerHTML={{ __html: name }} />
+    {Avatar} <StyledName>{name}</StyledName>
   </StyledAvatarName>
 );
 
 JuiAvatarNameComponent.displayName = 'JuiAvatarName';
 
-const JuiAvatarName = withHighlight(['name'])(memo(JuiAvatarNameComponent));
+const JuiAvatarName = memo(JuiAvatarNameComponent);
 
 export { JuiAvatarName };
