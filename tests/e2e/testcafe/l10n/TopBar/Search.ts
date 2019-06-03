@@ -89,21 +89,11 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
   await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_TopBar_CallButton' });
 
   const theTeamWhichWithoutMe = searchDialog.instantPage.nthTeam(0)
-
-  await h(t).withLog(`When I search with ${publicTeamWithoutMe.name} and hover "join" button of ${publicTeamWithoutMe.name}`, async () => {
-    await searchDialog.typeSearchKeyword(publicTeamWithoutMe.name);
-    await t.hover(theTeamWhichWithoutMe.self);
-    await t.hover(theTeamWhichWithoutMe.joinButton());
-  });
-  await h(t).withLog('Then "join" button should be displayed', async () => {
-    await t.expect(theTeamWhichWithoutMe.joinButton.exists).ok();
-  });
-  await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_JoinButton' });
-
   const joinTeamDialog = app.homePage.joinTeamDialog;
 
-  await h(t).withLog('When I hover "the team which without me" and click "join" button', async () => {
-    await t.click(theTeamWhichWithoutMe.joinButton());
+  await h(t).withLog(`When I search with ${publicTeamWithoutMe.name} and click it `, async () => {
+    await searchDialog.typeSearchKeyword(publicTeamWithoutMe.name);
+    await t.click(theTeamWhichWithoutMe.self);
   });
   await h(t).withLog('Then "Join team" popup should be displayed', async () => {
     await t.expect(joinTeamDialog.cancelButton.exists).ok();
