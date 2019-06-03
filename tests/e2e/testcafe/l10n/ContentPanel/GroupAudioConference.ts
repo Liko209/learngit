@@ -42,6 +42,6 @@ test(formalName('The audio conference message displayed in the conversation.', [
       await t.expect(postCard.AudioConferenceHeaderNotification.exists).ok();
     });
 
-    await h(t).log('Then I capture screenshot', {screenshotPath: 'Jupiter_ContentPanel_GroupAudioConference'})
+    await h(t).log('Then I capture screenshot', {screenshotPath: 'Jupiter_ContentPanel_GroupAudioConference'});
 
   });
