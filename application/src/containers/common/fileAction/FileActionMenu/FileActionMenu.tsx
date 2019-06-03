@@ -24,12 +24,14 @@ class Component extends React.Component<Props, State> {
     anchorEl: null,
   };
   private _Anchor = ({ tooltipForceHide }: AnchorProps) => {
+    const { t } = this.props;
     return (
       <JuiIconButton
         size="medium"
         variant="plain"
+        ariaLabel={t('common.more')}
         data-test-automation-id="fileActionMore"
-        tooltipTitle={this.props.t('common.more')}
+        tooltipTitle={t('common.more')}
         onClick={this.openPopper}
         tooltipForceHide={tooltipForceHide}
       >
