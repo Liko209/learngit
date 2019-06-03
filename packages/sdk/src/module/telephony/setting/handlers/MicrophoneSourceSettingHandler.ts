@@ -29,7 +29,7 @@ export class MicrophoneSourceSettingHandler extends AbstractSettingEntityHandler
   }
 
   private _subscribe() {
-    this.on(RTC_MEDIA_ACTION.INPUT_DEVICES_CHANGED, this._onDevicesChange);
+    this.on(RTC_MEDIA_ACTION.INPUT_DEVICE_LIST_CHANGED, this._onDevicesChange);
     this._userConfig.on(
       TELEPHONY_KEYS.CURRENT_MICROPHONE,
       this._onSelectedDeviceUpdate,

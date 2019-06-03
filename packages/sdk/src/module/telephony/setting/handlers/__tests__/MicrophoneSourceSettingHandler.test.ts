@@ -78,7 +78,7 @@ describe('MicrophoneSourceSettingHandler', () => {
       settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
 
-      notificationCenter.emit(RTC_MEDIA_ACTION.INPUT_DEVICES_CHANGED, [{}]);
+      notificationCenter.emit(RTC_MEDIA_ACTION.INPUT_DEVICE_LIST_CHANGED, [{}]);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
         expect(
