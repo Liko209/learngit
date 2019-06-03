@@ -16,6 +16,7 @@ import { RefObject } from 'react';
 import ReactDOM from 'react-dom';
 import { focusCampo } from '../../helpers';
 import { debounce } from 'lodash';
+import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
 const sleep = function () {
   return new Promise((resolve: (args: any) => any) => {
@@ -68,15 +69,15 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
 
   @computed
   get chosenCallerPhoneNumber() {
-    return this._telephonyStore.chosenCallerPhoneNumber;
+    return formatPhoneNumber(this._telephonyStore.chosenCallerPhoneNumber);
   }
 
   @computed
   get callerPhoneNumberList() {
     return this._telephonyStore.callerPhoneNumberList.map((el) => ({
-      value: el.phoneNumber,
+      value: formatPhoneNumber(el.phoneNumber),
       usageType: el.usageType,
-      phoneNumber: el.phoneNumber,
+      phoneNumber: formatPhoneNumber(el.phoneNumber),
       label: el.label,
     }));
   }

@@ -37,6 +37,7 @@ import { CALL_WINDOW_STATUS, CALL_STATE } from '../FSM';
 import { AccountService } from 'sdk/module/account';
 import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
 import { CALLING_OPTIONS } from 'sdk/module/profile';
+import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -466,8 +467,8 @@ class TelephonyService {
     }
     // FIXME: move this logic to SDK and always using callerID
     const idx = this._telephonyStore.callerPhoneNumberList.findIndex(
-      phone =>
-        phone.phoneNumber === this._telephonyStore.chosenCallerPhoneNumber,
+      (phone) =>
+        formatPhoneNumber(phone.phoneNumber) === formatPhoneNumber(this._telephonyStore.chosenCallerPhoneNumber),
     );
     if (idx === -1) {
       return mainLogger.error(
