@@ -62,7 +62,7 @@ class Component extends React.Component<Props, State> {
         disablePortal={disablePortal}
         data-test-automation-id={'fileActionMenu'}
       >
-        <JuiMenuList>
+        <JuiMenuList data-test-automation-id={'fileActionMenuList'}>
           <FileNameEditAction fileId={fileId} postId={postId} />
           <FileDeleteAction fileId={fileId} postId={postId} />
         </JuiMenuList>
