@@ -8,7 +8,6 @@
 import React, { PureComponent } from 'react';
 import styled, { css } from '../../foundation/styled-components';
 import {
-  palette,
   secondary,
   grey,
   width,
@@ -67,8 +66,10 @@ const StyledUmi = styled<JuiUmiProps, 'span'>('span').attrs({
   background: ${({ important }) => {
     return important ? secondary('main') : grey('500');
   }};
-  color: ${() => {
-    return palette('common', 'white');
+  color: ${({ important, theme }) => {
+    return theme.palette.getContrastText(
+      (important ? secondary('main') : grey('500'))({ theme }),
+    );
   }};
   ${({ variant = 'count' }) => styles[variant]};
 `;

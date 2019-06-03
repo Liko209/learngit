@@ -30,6 +30,10 @@ type JuiPopperMenuProps = {
 };
 
 class JuiPopperMenu extends React.PureComponent<JuiPopperMenuProps> {
+  stopRippleEffect(e: React.MouseEvent<HTMLElement, MouseEvent>) {
+    e.stopPropagation();
+  }
+
   render() {
     const {
       Anchor,
@@ -53,7 +57,9 @@ class JuiPopperMenu extends React.PureComponent<JuiPopperMenuProps> {
        so must be use div include Anchor and JuiPopper
       https://github.com/mui-org/material-ui/blob/master/packages/material-ui/src/ClickAwayListener/ClickAwayListener.js#L19-L22 */}
         <div onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-          <Anchor aria-describedby={id} tooltipForceHide={open} />
+          <span onMouseDown={this.stopRippleEffect}>
+            <Anchor aria-describedby={id} tooltipForceHide={open} />
+          </span>
           <JuiPopper
             id={id}
             open={open}

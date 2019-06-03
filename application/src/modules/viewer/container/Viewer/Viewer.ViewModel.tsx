@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed, observable, action, transaction } from 'mobx';
-import { PreloadController } from '@/containers/Viewer/Preload';
+import { PreloadController } from '@/modules/viewer/container/Viewer/Preload';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { ItemNotification } from 'sdk/module/item';
 import { FileItem } from 'sdk/module/item/module/file/entity';
