@@ -12,16 +12,13 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text, array } from '@storybook/addon-knobs';
 import { JuiSearchItemValue } from '../';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
-storiesOf('Pattern/SearchBar', module)
-  .addDecorator(withInfoDecorator(JuiSearchItemValue, { inline: true }))
-  .add('JuiSearchItemValue', () => {
-    const value = text('value', 'abcdefg');
-    const terms = array('array', ['a', 'c', 'fg']);
-    return (
-      <div>
-        <JuiSearchItemValue value={value} terms={terms} />
-      </div>
-    );
-  });
+storiesOf('Pattern/SearchBar', module).add('JuiSearchItemValue', () => {
+  const value = text('value', 'abcdefg');
+  const terms = array('array', ['a', 'c', 'fg']);
+  return (
+    <div>
+      <JuiSearchItemValue value={value} terms={terms} />
+    </div>
+  );
+});

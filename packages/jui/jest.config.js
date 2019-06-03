@@ -1,9 +1,13 @@
 module.exports = {
   preset: 'ts-jest/presets/js-with-ts',
   verbose: true,
-  setupFiles: ['<rootDir>/config/jest/polyfills.js'],
+  setupFiles: [
+    '<rootDir>/config/jest/polyfills.js',
+    '<rootDir>/config/jest/enzymeTestAdapterSetup.js',
+  ],
+  testMatch: [`**/*/__tests__/**/*.test?(s).[jt]s?(x)`],
   setupFilesAfterEnv: ['<rootDir>/config/jest/setupTest.js'],
-  testPathIgnorePatterns: ['/node_modules/', 'build'],
+  testPathIgnorePatterns: ['/node_modules/', 'build', 'snapshot'],
   testURL: 'http://localhost',
   globals: {
     'ts-jest': {

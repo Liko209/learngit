@@ -11,37 +11,34 @@
 import React, { ChangeEvent } from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiSearchInput } from '../';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { boolean } from '@storybook/addon-knobs';
 
-storiesOf('Pattern/SearchBar', module)
-  .addDecorator(withInfoDecorator(JuiSearchInput, { inline: true }))
-  .add('SearchInput', () => {
-    const focus = boolean('focus', false);
+storiesOf('Pattern/SearchBar', module).add('SearchInput', () => {
+  const focus = boolean('focus', false);
 
-    class Test extends React.PureComponent {
-      state = {
-        value: '',
-      };
-      onChange = (e: ChangeEvent<HTMLInputElement>) => {
-        this.setState({
-          value: e.target.value,
-        });
-      }
-      render() {
-        return (
-          <div>
-            <JuiSearchInput
-              focus={focus}
-              value={this.state.value}
-              placeholder="search"
-              onChange={this.onChange}
-              onClear={() => {}}
-              showCloseBtn={true}
-            />
-          </div>
-        );
-      }
+  class Test extends React.PureComponent {
+    state = {
+      value: '',
+    };
+    onChange = (e: ChangeEvent<HTMLInputElement>) => {
+      this.setState({
+        value: e.target.value,
+      });
     }
-    return <Test />;
-  });
+    render() {
+      return (
+        <div>
+          <JuiSearchInput
+            focus={focus}
+            value={this.state.value}
+            placeholder="search"
+            onChange={this.onChange}
+            onClear={() => {}}
+            showCloseBtn={true}
+          />
+        </div>
+      );
+    }
+  }
+  return <Test />;
+});

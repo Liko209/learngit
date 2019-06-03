@@ -11,22 +11,19 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiSearchTitle } from '../';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { text, boolean } from '@storybook/addon-knobs';
 
-storiesOf('Pattern/SearchBar', module)
-  .addDecorator(withInfoDecorator(JuiSearchTitle, { inline: true }))
-  .add('SearchTitle', () => {
-    const title = text('title', 'People');
-    const isShowMore = boolean('isShowMore', true);
-    const showMore = text('showMore', 'text');
-    return (
-      <div>
-        <JuiSearchTitle
-          isShowMore={isShowMore}
-          title={title}
-          showMore={showMore}
-        />
-      </div>
-    );
-  });
+storiesOf('Pattern/SearchBar', module).add('SearchTitle', () => {
+  const title = text('title', 'People');
+  const isShowMore = boolean('isShowMore', true);
+  const showMore = text('showMore', 'text');
+  return (
+    <div>
+      <JuiSearchTitle
+        isShowMore={isShowMore}
+        title={title}
+        showMore={showMore}
+      />
+    </div>
+  );
+});
