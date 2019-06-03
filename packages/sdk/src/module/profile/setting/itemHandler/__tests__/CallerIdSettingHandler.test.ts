@@ -4,20 +4,22 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RCInfoService } from '../../../rcInfo';
-import { ENTITY } from '../../../../service';
-import { ServiceConfig, ServiceLoader } from '../../../serviceLoader';
-import { ProfileService } from '../../service/ProfileService';
-import notificationCenter from '../../../../service/notificationCenter';
-import { SettingModuleIds } from '../../../setting/constants';
 import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
 import { AccountService } from 'sdk/module/account';
 import { CallerIdSettingHandler } from '../CallerIdSettingHandler';
-import { SettingEntityIds, UserSettingEntity } from 'sdk/module/setting';
+import {
+  SettingEntityIds,
+  UserSettingEntity,
+  SettingModuleIds,
+} from 'sdk/module/setting';
+import { ProfileService } from 'sdk/module/profile';
+import { RCInfoService } from 'sdk/module/rcInfo';
+import { notificationCenter, ENTITY } from 'sdk/service';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/account/config/AccountUserConfig');
-jest.mock('../../service/ProfileService');
-jest.mock('../../../rcInfo');
+jest.mock('sdk/module/profile');
+jest.mock('sdk/module/rcInfo');
 
 function clearMocks() {
   jest.clearAllMocks();
