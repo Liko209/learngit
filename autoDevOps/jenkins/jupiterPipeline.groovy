@@ -393,8 +393,8 @@ class JupiterJob extends BaseJob {
             } else {
                 context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'failed')
                 jenkins.echo context.dump()
-                jenkins.echo jenkins.currentBuild.dump()
-                jenkins.echo jenkins.currentBuild.rawBuild.dump()
+                // jenkins.echo jenkins.currentBuild.dump()
+                // jenkins.echo jenkins.currentBuild.rawBuild.dump()
             }
             mail(context.addresses, "Jenkins Build Result: ${context.buildResult}".toString(), context.glipReport)
         }
@@ -625,7 +625,7 @@ class JupiterJob extends BaseJob {
                     returnStatus: true,
                     script: "node scripts/coverage-diff.js baseline-coverage-summary.json coverage/coverage-summary.json > coverage-diff",
                 )
-                context.coverageDiff = "${exitCode > 0 ? FAILURE_EMOJI : SUCCESS_EMOJI} ${jenkins.sh(returnStdout: true, script: 'cat coverage-diff').trim()}".toString()
+                context.coverageDiff = "${exitCode > 0 ? context.FAILURE_EMOJI : context.SUCCESS_EMOJI} ${jenkins.sh(returnStdout: true, script: 'cat coverage-diff').trim()}".toString()
                 // throw error on coverage drop
                 if (exitCode > 0) jenkins.error 'coverage drop!'
             }
