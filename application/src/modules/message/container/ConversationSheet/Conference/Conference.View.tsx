@@ -14,6 +14,7 @@ import {
   JuiItemConjunctionText,
   JuiAudioConferenceDescription,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
+import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
 import { JuiLink } from 'jui/components/Link';
 
@@ -31,8 +32,8 @@ class Conference extends React.Component<conferenceViewProps> {
   static contextType = SearchHighlightContext;
   context: HighlightContextInfo;
   render() {
-    const { conference, isHostByMe, globalNumber, t } = this.props;
-    const { phoneNumber, hostCode, participantCode } = conference;
+    const { conference, isHostByMe, globalNumber, phoneNumber, t } = this.props;
+    const { hostCode, participantCode } = conference;
 
     return (
       <JuiConversationItemCard
@@ -44,7 +45,7 @@ class Conference extends React.Component<conferenceViewProps> {
       >
         <JuiItemContent title={t('item.dialInNumber')}>
           <JuiAudioConferenceDescription data-test-automation-id="conferencePhoneNumber">
-            {postParser(phoneNumber, {
+            {postParser(formatPhoneNumber(phoneNumber), {
               keyword: this.context.keyword,
               phoneNumber: true,
             })}

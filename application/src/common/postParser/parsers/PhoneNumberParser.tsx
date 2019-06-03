@@ -9,6 +9,7 @@ import { IPostParser, ParserType, PhoneNumberParserOption } from '../types';
 import { ParseContent } from '../ParseContent';
 import { PostParser } from './PostParser';
 import { PhoneLink } from '@/modules/message/container/ConversationSheet/PhoneLink';
+import { isValidPhoneNumber } from '../utils';
 
 class PhoneNumberParser extends PostParser implements IPostParser {
   type = ParserType.PHONE_NUMBER;
@@ -39,29 +40,8 @@ class PhoneNumberParser extends PostParser implements IPostParser {
     return FILTER_NUMBER_STRING_REGEX;
   }
 
-  isValidMatch(value: string) {
-    const IS_PHONE_NUMBER = /\+?(\d{1,4} ?)?((\(\d{1,4}\)|\d(( |\-)?\d){0,3})(( |\-)?\d){2,}|(\(\d{2,4}\)|\d(( |\-)?\d){1,3})(( |\-)?\d){1,})(( x| ext.?)\d{1,5}){0,1}/g.test(
-      value,
-    );
-    const NUMBER_WITH_PLUS = 10;
-    const MIN_PHONE_NUMBER_LENGTH = 7;
-    const MAX_PHONE_NUMBER_LENGTH = 15;
-    if (!value) return false;
-    const noneSpecialChar = value.replace(/\+|\-|\(|\)|\s+/g, '');
-    const phoneNumberLength = noneSpecialChar.length;
-    if (value.indexOf('+') === 0 && IS_PHONE_NUMBER) {
-      return (
-        phoneNumberLength >= NUMBER_WITH_PLUS &&
-        phoneNumberLength <= MAX_PHONE_NUMBER_LENGTH
-      );
-    }
-    if (
-      phoneNumberLength < MIN_PHONE_NUMBER_LENGTH ||
-      phoneNumberLength > MAX_PHONE_NUMBER_LENGTH
-    ) {
-      return false;
-    }
-    return IS_PHONE_NUMBER;
+  isValidMatch(match: string) {
+    return isValidPhoneNumber(match);
   }
 }
 

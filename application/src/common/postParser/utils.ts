@@ -123,6 +123,31 @@ const EMOJI_ONE_PATH = '/emoji/emojione/png/{{unicode}}.png?v=2.2.7';
 // tslint:disable-next-line:max-line-length
 const URL_REGEX = /(([a-zA-Z0-9\!\#\$\%\&\'\*\+\-\/\=\?\%\_\`\{\|\}\~\.]+@)?)(((ftp|https?):\/\/)?[-\w]+\.?([-\w]+\.)*(\d+\.\d+\.\d+|[-A-Za-z]+)(:\d+)?(((\/([A-Za-z0-9-\._~:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=])*)+)\??([A-Za-z0-9-\._~:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\%])*)?)([^A-Za-z]|$)/gi;
 
+const isValidPhoneNumber = (value: string) => {
+  const IS_PHONE_NUMBER = /\+?(\d{1,4} ?)?((\(\d{1,4}\)|\d(( |\-)?\d){0,3})(( |\-)?\d){2,}|(\(\d{2,4}\)|\d(( |\-)?\d){1,3})(( |\-)?\d){1,})(( x| ext.?)\d{1,5}){0,1}/g.test(
+    value,
+  );
+  const NUMBER_WITH_PLUS = 10;
+  const MIN_PHONE_NUMBER_LENGTH = 7;
+  const MAX_PHONE_NUMBER_LENGTH = 15;
+  if (!value) return false;
+  const noneSpecialChar = value.replace(/\+|\-|\(|\)|\s+/g, '');
+  const phoneNumberLength = noneSpecialChar.length;
+  if (value.indexOf('+') === 0 && IS_PHONE_NUMBER) {
+    return (
+      phoneNumberLength >= NUMBER_WITH_PLUS &&
+      phoneNumberLength <= MAX_PHONE_NUMBER_LENGTH
+    );
+  }
+  if (
+    phoneNumberLength < MIN_PHONE_NUMBER_LENGTH ||
+    phoneNumberLength > MAX_PHONE_NUMBER_LENGTH
+  ) {
+    return false;
+  }
+  return IS_PHONE_NUMBER;
+};
+
 export {
   isInRange,
   containsRange,
@@ -132,6 +157,7 @@ export {
   HTMLUnescape,
   HTMLEscape,
   EMOJI_ONE_PATH,
+  isValidPhoneNumber,
 };
 
 // regex
