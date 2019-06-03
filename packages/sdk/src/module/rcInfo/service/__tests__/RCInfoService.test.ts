@@ -9,7 +9,17 @@ import { RCInfoController } from '../../controller/RCInfoController';
 import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { CompanyService } from 'sdk/module/company';
+import { SettingService } from 'sdk/module/setting/service/SettingService';
 
+jest.mock('sdk/module/setting/service/SettingService', () => {
+  const mock: SettingService = {
+    registerModuleSetting: jest.fn(),
+    unRegisterModuleSetting: jest.fn(),
+  } as any;
+  return {
+    SettingService: () => mock,
+  };
+});
 jest.mock('../../controller/RCInfoFetchController');
 jest.mock('../../controller/RCAccountInfoController');
 jest.mock('../../controller/RCCallerIdController');
@@ -28,6 +38,7 @@ describe('RCInfoService', () => {
   let rcInfoService: RCInfoService;
   let rcInfoController: RCInfoController;
   let userConfig: AccountUserConfig;
+  let mockSettingService: SettingService;
   let companyService: CompanyService;
 
   function setup() {
@@ -38,11 +49,24 @@ describe('RCInfoService', () => {
         if (serviceName === ServiceConfig.COMPANY_SERVICE) {
           return companyService;
         }
+        if (serviceName === ServiceConfig.SETTING_SERVICE) {
+          return mockSettingService;
+        }
       });
   }
 
   beforeEach(() => {
     clearMocks();
+
+    mockSettingService = new SettingService();
+    let rawGetInstance = (key: string) => ServiceLoader.getInstance(key);
+    ServiceLoader.getInstance = jest.fn().mockImplementation((key: any) => {
+      console.log('TCL: key', key);
+      if (key === ServiceConfig.SETTING_SERVICE) {
+        return mockSettingService;
+      }
+      return rawGetInstance(key);
+    });
     rcInfoService = new RCInfoService();
     rcInfoController = new RCInfoController();
     setup();
@@ -264,6 +288,24 @@ describe('RCInfoService', () => {
       await rcInfoService.loadRegionInfo();
       expect(regionInfoController.loadRegionInfo).not.toHaveBeenCalled();
       expect(rcInfoService.isVoipCallingAvailable).toHaveBeenCalled();
+    });
+  });
+
+  describe('onStart', () => {
+    it('should call registerModuleSetting', () => {
+      rcInfoService['_rcInfoSettings'] = {} as any;
+      // mockProfileSetting.unsubscribe = jest.fn();
+      rcInfoService['onStarted']();
+      expect(mockSettingService.registerModuleSetting).toBeCalledWith({});
+    });
+  });
+
+  describe('onStop', () => {
+    it('should call unRegisterModuleSetting', () => {
+      rcInfoService['_rcInfoSettings'] = {} as any;
+      // mockProfileSetting.unsubscribe = jest.fn();
+      rcInfoService['onStopped']();
+      expect(mockSettingService.unRegisterModuleSetting).toBeCalledWith({});
     });
   });
 });

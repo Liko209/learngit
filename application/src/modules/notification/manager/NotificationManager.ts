@@ -3,14 +3,13 @@
  * @Date: 2019-04-01 15:16:45
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
-import { inject } from 'framework';
-import { NOTIFICATION_SERVICE } from '../interface/constant';
-import { INotificationService, NotificationOpts } from './../interface/index';
+import { INotificationService, NotificationOpts } from './../interface';
 import { mainLogger } from 'sdk';
 const logger = mainLogger.tags('AbstractNotificationManager');
 type NotificationId = number | string;
+
 export abstract class AbstractNotificationManager {
-  @inject(NOTIFICATION_SERVICE)
+  @INotificationService
   private _notificationService: INotificationService;
 
   constructor(protected _scope: string) {}

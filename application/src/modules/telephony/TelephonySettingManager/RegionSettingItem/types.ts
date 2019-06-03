@@ -4,18 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { DialingCountryInfo } from 'sdk/api';
+import { RegionSettingInfo } from 'sdk/module/rcInfo/setting/types';
 import { JuiRegionSelectProps } from 'jui/components/Selects';
+import SettingModel from '@/store/models/UserSetting';
 
 type RegionSettingItemViewProps = {
-  description: string | JSX.Element;
-  onChange: Function;
-  value: any;
-  state: number; // change
-  canUseRegionSetting: boolean;
+  settingItemEntity: SettingModel<RegionSettingInfo>;
   currentCountryInfo: DialingCountryInfo;
   countriesList: CountriesListType;
   loadRegionSetting: () => void;
-  hasAreaCode: () => boolean;
   dialPlanISOCode: string;
   areaCode: string | undefined;
   areaCodeError: boolean;
@@ -32,7 +29,9 @@ type RegionSettingItemViewProps = {
 
 type CountriesListType = JuiRegionSelectProps['regionList'];
 
-type RegionSettingItemProps = {};
+type RegionSettingItemProps = {
+  id: number;
+};
 
 export {
   RegionSettingItemViewProps,

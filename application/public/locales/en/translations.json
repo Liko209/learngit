@@ -579,21 +579,12 @@
   "setting": {
     "Settings": "Settings",
     "teamSettings": "Settings",
-    "general": {
-      "title": "General"
-    },
-    "notificationAndSounds": {
-      "title": "Notification and Sounds"
-    },
-    "messages": {
-      "title": "Messages"
-    },
-    "meetings": {
-      "title": "Meetings"
-    },
-    "calendar": {
-      "title": "Calendar"
-    },
+    "general": "General",
+    "notificationAndSounds": "Notification and Sounds",
+    "sounds": "Sounds",
+    "messages": "Messages",
+    "meetings": "Meetings",
+    "calendar": "Calendar",
     "update": "Update",
     "phone": {
       "title": "Phone",
