@@ -6,7 +6,9 @@
     "storybook": "STORYBOOK_DISPLAY_WARNING=true DISPLAY_WARNING=true start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "test": "jest",
-    "build-test-storybook": "BUILD_TARGET='test'  npm run build-storybook"
+    "build-test-storybook": "BUILD_TARGET='test'  npm run build-storybook",
+    "storyImageShot": "npx jest packages/jui/src/__tests__/snapshot/storyImageShot.test.jsx",
+    "updateStoryImageShot": "npx jest --updateSnapshot packages/jui/src/__tests__/snapshot/storyImageShot.test.jsx"
   },
   "dependencies": {
     "@material-ui/core": "3.9.3",

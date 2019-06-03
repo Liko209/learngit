@@ -293,7 +293,7 @@ module.exports = {
                   plugins: [
                     { removeTitle: true },
                     { convertColors: { shorthex: false } },
-                    { convertPathDtata: true },
+                    { convertPathData: true },
                     { reusePaths: true },
                   ],
                 },
@@ -317,7 +317,7 @@ module.exports = {
                   plugins: [
                     { removeTitle: true },
                     { convertColors: { shorthex: false } },
-                    { convertPathDtata: true },
+                    { convertPathData: true },
                     { reusePaths: true },
                   ],
                 },

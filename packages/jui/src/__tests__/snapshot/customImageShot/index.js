@@ -30,6 +30,17 @@ const defaultConfig = {
   getCustomBrowser: undefined,
 };
 
+function isExcluded(kind, name, config) {
+  if (
+    config.name.includes(name) ||
+    config.kind.includes(kind) ||
+    config.matchFunction({ kind, name })
+  ) {
+    console.log(`skip story ${kind} ${name}`);
+    return true;
+  }
+}
+
 export const imageSnapshot = (customConfig = {}) => {
   const {
     storybookUrl,
@@ -39,6 +50,7 @@ export const imageSnapshot = (customConfig = {}) => {
     beforeScreenshot,
     getGotoOptions,
     customizePage,
+    excludeImageSnapshot,
     getCustomBrowser,
   } = { ...defaultConfig, ...customConfig };
 
@@ -47,6 +59,10 @@ export const imageSnapshot = (customConfig = {}) => {
 
   const testFn = async ({ context }) => {
     const { kind, framework, name } = context;
+    if (isExcluded(kind, name, excludeImageSnapshot)) return;
+
+    console.log(kind, name);
+
     if (framework === 'rn') {
       // Skip tests since we de not support RN image snapshots.
       logger.error(
@@ -71,7 +87,6 @@ export const imageSnapshot = (customConfig = {}) => {
     try {
       await customizePage(page);
       await page.goto(url, {
-        waitUntil: 'domcontentloaded',
         ...getGotoOptions({ context, url }),
       });
       await beforeScreenshot(page, { context, url });
@@ -82,8 +97,7 @@ export const imageSnapshot = (customConfig = {}) => {
         getScreenshotOptions({ context, url }),
       );
     } catch (e) {
-      console.log(e);
-
+      logger.error(e);
       logger.error(
         `Error when connecting to ${url}, did you start or build the storybook first? A storybook instance should be running or a static version should be built when using image snapshot feature.`,
         e,
@@ -96,23 +110,32 @@ export const imageSnapshot = (customConfig = {}) => {
 
   // take minimum area that contain the component to make screenshot
   async function screenshotDOMElement(page, selector, padding = 0, option) {
+    // wait for component to load
     await page.waitFor(selector);
-    const rect = await page.evaluate(selector => {
-      const element = document.querySelector(selector);
-      const { x, y, width, height } = element.getBoundingClientRect();
-      return { left: x, top: y, width, height, id: element.id };
-    }, selector);
 
-    console.log(option);
-    return await page.screenshot({
-      clip: {
-        x: rect.left - padding,
-        y: rect.top - padding,
-        width: rect.width + padding * 2,
-        height: rect.height + padding * 2,
-      },
-      ...option,
-    });
+    if (option.fullPage) {
+      console.log('full page screenshot');
+
+      return await page.screenshot({
+        ...option,
+      });
+    } else {
+      const rect = await page.evaluate(selector => {
+        const element = document.querySelector(selector);
+        const { x, y, width, height } = element.getBoundingClientRect();
+        return { left: x, top: y, width, height, id: element.id };
+      }, selector);
+
+      return await page.screenshot({
+        clip: {
+          x: rect.left - padding,
+          y: rect.top - padding,
+          width: rect.width + padding * 2,
+          height: rect.height + padding * 2,
+        },
+        ...option,
+      });
+    }
   }
 
   testFn.afterAll = () => {

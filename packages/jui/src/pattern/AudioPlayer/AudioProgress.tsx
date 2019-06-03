@@ -6,7 +6,7 @@
 import React, { Fragment } from 'react';
 import moment from 'moment';
 import JuiSlider from '@material-ui/lab/Slider';
-import styled from 'src/foundation/styled-components';
+import styled from '../../foundation/styled-components';
 import { width, spacing, palette, typography } from '../../foundation/utils';
 import { JuiAudioMode, JuiAudioProgressProps } from './types';
 

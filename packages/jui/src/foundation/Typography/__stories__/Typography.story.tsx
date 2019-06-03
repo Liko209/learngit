@@ -84,6 +84,7 @@ storiesOf('Foundation', module).add('Typography', () => (
   <JuiPaper
     style={{
       padding: '4rem',
+      width: '1000px',
     }}
   >
     <StyledContainer>

@@ -9,6 +9,7 @@ import { storiesOf } from '@storybook/react';
 import { JuiFileWithPreview } from '../';
 import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconButton';
 import download from '../../../../assets/jupiter-icon/icon-download.svg';
+import image from './contemplative-reptile.jpg';
 
 storiesOf('Pattern/ConversationCard', module).add('FileWithPreview', () => {
   const actions = [
@@ -23,28 +24,28 @@ storiesOf('Pattern/ConversationCard', module).add('FileWithPreview', () => {
   return (
     <div>
       <JuiFileWithPreview
-        url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
+        url={image}
         fileName="fileName"
         size="2.3Mb"
         iconType={'pdf'}
         Actions={actions}
       />
       <JuiFileWithPreview
-        url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
+        url={image}
         fileName="fileName"
         size="2.3Mb"
         iconType={'pdf'}
         Actions={actions}
       />
       <JuiFileWithPreview
-        url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
+        url={image}
         fileName="fileName"
         size="2.3Mb"
         iconType={'pdf'}
         Actions={actions}
       />
       <JuiFileWithPreview
-        url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
+        url={image}
         fileName="fileName"
         size="2.3Mb"
         iconType={'pdf'}

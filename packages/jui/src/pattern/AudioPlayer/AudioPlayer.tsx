@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import styled from 'src/foundation/styled-components';
+import styled from '../../foundation/styled-components';
 import { JuiAudioAction } from './AudioAction';
 import { JuiAudioProgress } from './AudioProgress';
 import {

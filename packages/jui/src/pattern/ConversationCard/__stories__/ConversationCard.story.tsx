@@ -15,8 +15,8 @@ import {
 import { JuiAvatar } from '../../../components/Avatar';
 import JuiConversationCardFrom from '../ConversationCardFrom';
 import JuiConversationCardBody from '../ConversationCardBody';
-import { JuiIconography } from 'src/foundation/Iconography';
-import { noop } from 'src/foundation/utils';
+import { JuiIconography } from '../../../foundation/Iconography';
+import { noop } from '../../../foundation/utils';
 import team from '../../../assets/jupiter-icon/icon-team.svg';
 
 storiesOf('Pattern', module).add('ConversationCard', () => {

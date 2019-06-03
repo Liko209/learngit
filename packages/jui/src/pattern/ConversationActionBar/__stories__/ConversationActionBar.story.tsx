@@ -40,7 +40,7 @@ storiesOf('Pattern', module).add('ConversationActionBar', () => {
     handleRemoveBookmark: () => alert('handleRemoveBookmark'),
   };
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative', width: '150px', height: '50px' }}>
       <JuiConversationActionBar {...props} />
     </div>
   );

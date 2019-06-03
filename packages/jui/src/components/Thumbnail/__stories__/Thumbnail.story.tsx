@@ -5,14 +5,14 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { select, text } from '@storybook/addon-knobs';
-
+import { select } from '@storybook/addon-knobs';
 import { JuiThumbnail } from '../Thumbnail';
+import image from '../../../assets/contemplative-reptile.jpg';
 
 storiesOf('Components/Thumbnail', module).add('Thumbnail', () => {
   return (
     <JuiThumbnail
-      url={text('url', 'ppt')}
+      url={image}
       size={select('size', { small: 'small', large: 'large' }, 'large')}
     />
   );

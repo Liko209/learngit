@@ -82,16 +82,14 @@ const Avatar = () => (
 
 storiesOf('Pattern', module).add('Incoming Call', () => {
   return (
-    <JuiDraggableDialog open={knobs.open()} x={0} y={0}>
-      <JuiDialer>
-        <JuiIncomingCall
-          name="Terry Webster"
-          phone="(650) 555-1234"
-          Actions={Actions}
-          Ignore={Ignore}
-          Avatar={Avatar}
-        />
-      </JuiDialer>
-    </JuiDraggableDialog>
+    <JuiDialer>
+      <JuiIncomingCall
+        name="Terry Webster"
+        phone="(650) 555-1234"
+        Actions={Actions}
+        Ignore={Ignore}
+        Avatar={Avatar}
+      />
+    </JuiDialer>
   );
 });
