@@ -66,7 +66,9 @@ class FilesView extends React.Component<FilesViewProps> {
         fileIcon={getFileIcon(name)}
         status={realStatus}
         key={id}
-        name={name}
+        name={postParser(name, {
+          fileName: true,
+        })}
         progress={progress}
         onClickDeleteButton={() => this.props.removeFile(id)}
         future={future}

@@ -9,14 +9,10 @@ import { observer } from 'mobx-react';
 import { JuiPinnedItem } from 'jui/pattern/RightShelf/PinnedItem';
 import {
   postParser,
-  SearchHighlightContext,
-  HighlightContextInfo,
 } from '@/common/postParser';
 
 @observer
 class PinnedItemView extends Component<PinnedItemViewProps> {
-  static contextType = SearchHighlightContext;
-  context: HighlightContextInfo;
   render() {
     const { id, icon, text, isFile } = this.props;
     return (
@@ -25,7 +21,6 @@ class PinnedItemView extends Component<PinnedItemViewProps> {
         icon={icon}
         text={postParser(text, {
           fileName: isFile,
-          keyword: this.context.keyword,
         })}
         isFile={isFile}
       />
