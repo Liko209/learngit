@@ -21,7 +21,7 @@ import {
 } from '../../foundation/utils/styles';
 
 type JuiSettingSectionProps = {
-  automationId: string;
+  automationId?: string;
   title?: ReactNode;
 };
 

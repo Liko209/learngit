@@ -54,12 +54,14 @@ class SelectSettingItemViewComponent<
   private _renderSelect() {
     const { disabled, settingItem, settingItemEntity } = this.props;
 
+    const value = this._extractValue(settingItemEntity.value);
     return (
       <JuiBoxSelect
         onChange={this._handleChange}
         disabled={disabled}
-        value={this._extractValue(settingItemEntity.value)}
+        value={value}
         automationId={`settingItemSelectBox-${settingItem.automationId}`}
+        data-test-automation-value={value}
         isFullWidth={true}
       >
         {this._renderSource()}

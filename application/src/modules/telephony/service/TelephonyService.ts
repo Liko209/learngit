@@ -37,6 +37,7 @@ import { CALL_WINDOW_STATUS, CALL_STATE } from '../FSM';
 import { AccountService } from 'sdk/module/account';
 import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
 import { CALLING_OPTIONS } from 'sdk/module/profile';
+import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -129,7 +130,7 @@ class TelephonyService {
       switch (e.code) {
         case 0:
           this._pauseRingtone();
-          ['mousedown', 'keydown'].forEach((evt) => {
+          ['mousedown', 'keydown'].forEach(evt => {
             const cb = () => {
               if (!this._telephonyStore.hasIncomingCall) {
                 return;
@@ -328,7 +329,7 @@ class TelephonyService {
       () =>
         this._telephonyStore.shouldDisplayDialer &&
         this._telephonyStore.callWindowState !== CALL_WINDOW_STATUS.MINIMIZED,
-      (shouldDisplayDialer) => {
+      shouldDisplayDialer => {
         if (!shouldDisplayDialer) {
           return;
         }
@@ -390,7 +391,7 @@ class TelephonyService {
           return;
         }
         const defaultPhoneNumber = callerPhoneNumberList.find(
-          (callerPhoneNumber) => callerPhoneNumber.id === defaultNumberId,
+          callerPhoneNumber => callerPhoneNumber.id === defaultNumberId,
         );
         if (defaultPhoneNumber) {
           this._telephonyStore.updateDefaultChosenNumber(
@@ -403,7 +404,7 @@ class TelephonyService {
 
     this._incomingCallDisposer = reaction(
       () => this._telephonyStore.hasIncomingCall,
-      (hasIncomingCall) => {
+      hasIncomingCall => {
         if (hasIncomingCall) {
           this._playRingtone();
         } else {
@@ -467,7 +468,7 @@ class TelephonyService {
     // FIXME: move this logic to SDK and always using callerID
     const idx = this._telephonyStore.callerPhoneNumberList.findIndex(
       (phone) =>
-        phone.phoneNumber === this._telephonyStore.chosenCallerPhoneNumber,
+        formatPhoneNumber(phone.phoneNumber) === formatPhoneNumber(this._telephonyStore.chosenCallerPhoneNumber),
     );
     if (idx === -1) {
       return mainLogger.error(
@@ -843,6 +844,20 @@ class TelephonyService {
       pattern,
       time,
       timeUnit,
+    );
+  }
+
+  getForwardingNumberList = () => {
+    return this._rcInfoService.getForwardingNumberList();
+  }
+
+  forward = (phoneNumber: string) => {
+    if (!this._callId) {
+      return;
+    }
+    return this._serverTelephonyService.forward(
+      this._callId as string,
+      phoneNumber,
     );
   }
 }
