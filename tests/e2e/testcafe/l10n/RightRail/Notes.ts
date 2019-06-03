@@ -32,7 +32,7 @@ test(formalName('Notes display on the right rail', ['P2', 'Messages', 'RightRail
 
   const rightRail = app.homePage.messageTab.rightRail;
 
-  await h(t).withLog('When I open the created team conversation and click "Notes" tab on right rail', async () => {
+  await h(t).withLog('When I open the created team conversation and open "Notes" tab on right rail', async () => {
     const teamsSection = app.homePage.messageTab.teamsSection;
     await teamsSection.conversationEntryById(team.glipId).enter();
     await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
