@@ -249,4 +249,37 @@ describe('FileActionController', () => {
       });
     });
   });
+
+  describe('deleteFile()', () => {
+    it('should update filename when no error', async () => {
+      const normalId = Math.abs(
+        GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_FILE),
+      );
+
+      entitySourceController.get = jest.fn().mockResolvedValue(1);
+      partialModifyController.updatePartially = jest
+        .fn()
+        .mockImplementation(
+          (itemId: number, prehandleFunc: any, doUpdateFunc: any) => {
+            expect(itemId).toBe(normalId);
+            expect(
+              prehandleFunc(
+                { id: normalId, versions: [{ deactivated: false }] },
+                { id: normalId },
+              ),
+            ).toEqual({
+              id: normalId,
+              versions: [{ deactivated: true }],
+            });
+            doUpdateFunc({ id: normalId, versions: [{ deactivated: true }] });
+          },
+        );
+      await fileActionController.deleteFile(normalId, 0);
+      expect(partialModifyController.updatePartially).toBeCalledTimes(1);
+      expect(requestController.put).toBeCalledWith({
+        id: normalId,
+        versions: [{ deactivated: true }],
+      });
+    });
+  });
 });
