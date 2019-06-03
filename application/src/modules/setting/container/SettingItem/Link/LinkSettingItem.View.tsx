@@ -37,19 +37,22 @@ class LinkSettingItemViewComponent extends Component<Props> {
   }
 
   render() {
-    const { t, id, automationKey, disabled, settingItem } = this.props;
+    const { t, id, disabled, settingItem } = this.props;
 
     return (
       <JuiSettingSectionItem
         id={id}
-        automationId={automationKey}
+        disabled={disabled}
+        automationId={settingItem.automationId}
         label={t(settingItem.title || '')}
         description={t(settingItem.description || '')}
       >
         <JuiButton
           color="primary"
           disabled={disabled}
-          data-test-automation-id={'settingPhoneGeneralExtensionSetting'}
+          data-test-automation-id={`settingItemButton-${
+            settingItem.automationId
+          }`}
           onClick={this._handleClick}
           loading={this._loading}
         >

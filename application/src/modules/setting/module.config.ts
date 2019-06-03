@@ -10,17 +10,20 @@ import { SettingService } from './service/SettingService';
 import { GeneralSettingManager } from './manager/general';
 import { NotificationSoundSettingManager } from './manager/notificationSound';
 import { SettingModule } from './SettingModule';
+import { PlaceholderSettingManager } from './manager/placeholder/PlaceholderSettingManager';
 
 const config: ModuleConfig = {
   entry: SettingModule,
   provides: [
     SettingStore,
-    GeneralSettingManager,
-    NotificationSoundSettingManager,
     {
       name: ISettingService,
       value: SettingService,
     },
+    // build in settings
+    GeneralSettingManager,
+    NotificationSoundSettingManager,
+    PlaceholderSettingManager,
   ],
 };
 

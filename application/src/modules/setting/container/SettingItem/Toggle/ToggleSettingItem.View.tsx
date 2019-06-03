@@ -27,11 +27,12 @@ class ToggleSettingItemViewComponent extends Component<Props> {
   }
 
   render() {
-    const { t, id, automationKey, settingItem } = this.props;
+    const { t, id, settingItem, disabled } = this.props;
     return (
       <JuiSettingSectionItem
         id={id}
-        automationId={automationKey}
+        automationId={settingItem.automationId}
+        disabled={disabled}
         label={t(settingItem.title || '')}
         description={t(settingItem.description || '')}
       >
@@ -41,10 +42,15 @@ class ToggleSettingItemViewComponent extends Component<Props> {
   }
 
   private _renderToggle() {
-    const { disabled, settingItemEntity } = this.props;
+    const { disabled, settingItem, settingItemEntity } = this.props;
+    const value = Boolean(settingItemEntity.value);
     return (
       <JuiToggleButton
-        checked={settingItemEntity.value}
+        data-test-automation-id={`settingItemToggleButton-${
+          settingItem.automationId
+        }`}
+        data-test-automation-value={value}
+        checked={value}
         disabled={disabled}
         onChange={this._handleChange}
       />
