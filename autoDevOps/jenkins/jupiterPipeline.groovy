@@ -295,9 +295,12 @@ class BaseJob {
                 && currentCauseData.targetBranch == causeData.targetBranch
                 && currentCauseData.targetRepoName == causeData.targetRepoName) {
                 build.doStop()
-                for (i = 0; i < 10; i++) {
+                int i = 10
+                while(i > 0) {
+                    i--
                     if (!build.isBuilding())
                         break
+                    jenkins.echo "wait for ${build.getFullDisplayName()} to stop"
                     jenkins.sleep 10
                 }
                 jenkins.echo "build ${build.getFullDisplayName()} is terminated"
@@ -592,7 +595,7 @@ class JupiterJob extends BaseJob {
     void unitTest() {
         if (isSkipUnitTest) return
 
-        jenkins.sh 'npm run test -- --coverage'
+        jenkins.sh 'npm run test -- --coverage -w 12'
         jenkins.publishHTML([
             reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: 'Coverage', reportTitles: 'Coverage',
             allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true,
