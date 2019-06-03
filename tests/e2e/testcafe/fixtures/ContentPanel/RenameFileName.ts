@@ -15,10 +15,10 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-2061'],
   maintainers: ['Mia.cai'],
   keywords: ['ContentPanel/RenameFileName']
-})(`Can rename file/file successfully`, async (t) => {
-  const renameFileMenu = 'Edit filename';
+})(`Can rename image/file successfully`, async (t) => {
+  const renameFileMenu = 'Rename file';
   const filenames = ['1'];
-  const suffixs = ['docx']
+  const suffixs = ['.docx']
   // todo  should check source
   const filesPath = ['../../sources/1.docx'];
   const message = uuid();
@@ -44,7 +44,7 @@ test.meta(<ITestMeta>{
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog('And I open the team and upload a file file', async () => {
+  await h(t).withLog('And I open the team and upload a file', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.uploadFilesToMessageAttachment(filesPath[0]);
     await conversationPage.sendMessage(message);
@@ -189,11 +189,11 @@ test.meta(<ITestMeta>{
 
 test.meta(<ITestMeta>{
   priority: ['P2'],
-  caseIds: ['JPT-2057','JPT-2074','JPT-2060'], 
+  caseIds: ['JPT-2057','JPT-2074','JPT-2060','JPT-2080'], 
   maintainers: ['Mia.cai'],
   keywords: ['ContentPanel/RenameFileName']
-})(`Unsupported characters should be replaced by_ when saving the file name;Show 'More' tooltip for the more icon;Rename file option is disabled to guests`, async (t) => {
-  const renameFileMenu = 'Edit filename';
+})(`Unsupported characters should be replaced by_ when saving the file name;Show 'More' tooltip for the more icon;Rename file option is disabled to guests;Save button should be disabled on filename dialog if filename input is blank`, async (t) => {
+  const renameFileMenu = 'Rename file';
   const filesPath = ['../../sources/1.psd'];
   const nameWithUnSupportChar = 'file/1?2,3*4:5&';
   const newFileName = 'file_1_2_3_4_5_';
@@ -256,6 +256,16 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`Then will show the rename file dialog`, async() => {
     await moreActionOnFile.ensureLoaded();
   });
+
+  // TODO bug id FIJI-6407
+  // const blankFileName = '';
+  // await h(t).withLog(`When I update the file name to blank`, async() => {
+  //   await renameFileDialog.updateFileName(blankFileName);
+  // });
+
+  // await h(t).withLog(`The Save button should be disabled`, async() => {
+  //   await renameFileDialog.saveButtonShouldDisabled();
+  // });
 
   await h(t).withLog(`When I update the file name`, async() => {
     await renameFileDialog.updateFileName(nameWithUnSupportChar);

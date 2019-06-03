@@ -1,5 +1,5 @@
 import { BaseWebComponent } from "../../BaseWebComponent";
-
+import { H } from '../../../helpers';
 
 export class MoreActionOnFile extends BaseWebComponent{
 
@@ -13,6 +13,10 @@ export class MoreActionOnFile extends BaseWebComponent{
 
   get renameFileMenu(){
     return this.getSelectorByAutomationId('fileNameEditItem');
+  }
+
+  get fileActionMenuList(){
+    return this.getSelectorByAutomationId('fileActionMenuList');
   }
 
   get renameFileDialog(){
@@ -33,7 +37,7 @@ export class MoreActionOnFile extends BaseWebComponent{
   }
 
   async renameFileMenuAtTop(menu:string){
-    await this.t.expect(this.renameFileMenu.find('li').nth(0).withText(menu)).ok();
+    await this.t.expect(this.fileActionMenuList.nth(0).withText(menu).exists).ok();
   }
 
 }
@@ -41,7 +45,7 @@ export class MoreActionOnFile extends BaseWebComponent{
 export class RenameFileDialog extends BaseWebComponent{
 
     get self(){
-      return this.getSelectorByAutomationId('fileNameEditDialogContainer');
+      return this.getSelectorByAutomationId('fileNameEditDialog');  
     }
   
     get cancelButton(){
@@ -53,11 +57,16 @@ export class RenameFileDialog extends BaseWebComponent{
     }
    
     get fileNameInput(){
-      return this.getSelectorByAutomationId('fileNameEditSuffixFollowTextField').find('textarea').nth(2);
+      return this.getSelectorByAutomationId('fileNameEditInput');
+    }
+
+    // todo
+    get fileNameInputValue(){
+      return this.getSelectorByAutomationId('followSuffixTextFieldInputValue');
     }
   
     get fileNameSuffix(){
-      return this.getSelectorByAutomationId('followSuffixText');
+      return this.getSelectorByAutomationId('followSuffixTextFieldSuffixEl');
     }
   
     async clickCancelButton(){
@@ -66,6 +75,7 @@ export class RenameFileDialog extends BaseWebComponent{
   
     async clickSaveButton(){
       await this.t.click(this.saveButton);
+      await this.waitForAllSpinnersToDisappear();
     }
   
     async updateFileName(text:string){
@@ -73,8 +83,13 @@ export class RenameFileDialog extends BaseWebComponent{
     }
   
     async existFileNameWithSuffix(name:string, suffix:string){
-      await this.t.expect(this.fileNameInput.withText(name)).ok();
-      await this.t.expect(this.fileNameSuffix.withText(suffix)).ok();
+      await this.t.expect(this.fileNameInputValue.withExactText(name).exists).ok();
+      await this.t.expect(this.fileNameSuffix.withExactText(H.escapePostText(suffix)).exists).ok();
+    }
+
+    // todo
+    async saveButtonShouldDisabled(){
+      await this.t.expect(this.saveButton.hasAttribute('disabled')).ok();
     }
   
   }
