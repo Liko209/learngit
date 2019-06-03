@@ -6,12 +6,17 @@ const MESSAGE_SERVICE = 'MESSAGE_SERVICE';
 
 const MESSAGE_SETTING_SCOPE = Symbol('MessageSetting');
 
-const SETTING_ITEM__NOTIFICATION_NEW_MESSAGES =
-  SettingEntityIds.Notification_NewMessages;
+enum MESSAGE_SETTING_ITEM {
+  NOTIFICATION_DIRECT_MESSAGES = SettingEntityIds.Notification_DirectMessages,
+  NOTIFICATION_NEW_MESSAGES = SettingEntityIds.Notification_NewMessages,
+  NOTIFICATION_MENTIONS = SettingEntityIds.Notification_Mentions,
+  NOTIFICATION_TEAMS = SettingEntityIds.Notification_Teams,
+  NOTIFICATION_DAILY_DIGEST = SettingEntityIds.Notification_DailyDigest,
+}
 
 export {
   MESSAGE_NOTIFICATION_MANAGER,
   MESSAGE_SERVICE,
   MESSAGE_SETTING_SCOPE,
-  SETTING_ITEM__NOTIFICATION_NEW_MESSAGES,
+  MESSAGE_SETTING_ITEM,
 };

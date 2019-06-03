@@ -5,18 +5,23 @@
  */
 
 import {
+  SettingItem,
   ISettingService,
   SETTING_ITEM_TYPE,
   SelectSettingItem,
 } from '@/interface/setting';
-import { SETTING_SECTION__DESKTOP_NOTIFICATIONS } from '@/modules/notification/notificationSettingManager/constant';
+import {
+  SETTING_SECTION__DESKTOP_NOTIFICATIONS,
+  SETTING_SECTION__EMAIL_NOTIFICATIONS,
+} from '@/modules/notification/notificationSettingManager/constant';
 import {
   MESSAGE_SETTING_SCOPE,
-  SETTING_ITEM__NOTIFICATION_NEW_MESSAGES,
+  MESSAGE_SETTING_ITEM,
 } from '../interface/constant';
 import { IMessageSettingManager } from '../interface';
 import { DESKTOP_MESSAGE_NOTIFICATION_OPTIONS } from 'sdk/module/profile';
 import { NewMessageSelectSourceItem } from './NewMessageSelectSourceItem';
+import { buildTitleAndDesc } from '@/modules/setting/utils';
 class MessageSettingManager implements IMessageSettingManager {
   @ISettingService private _settingService: ISettingService;
 
@@ -25,7 +30,7 @@ class MessageSettingManager implements IMessageSettingManager {
       MESSAGE_SETTING_SCOPE,
       SETTING_SECTION__DESKTOP_NOTIFICATIONS,
       {
-        id: SETTING_ITEM__NOTIFICATION_NEW_MESSAGES,
+        id: MESSAGE_SETTING_ITEM.NOTIFICATION_NEW_MESSAGES,
         automationId: 'newMessages',
         title:
           'setting.notificationAndSounds.desktopNotifications.newMessages.label',
@@ -35,6 +40,49 @@ class MessageSettingManager implements IMessageSettingManager {
         sourceRenderer: NewMessageSelectSourceItem,
         weight: 200,
       } as SelectSettingItem<DESKTOP_MESSAGE_NOTIFICATION_OPTIONS>,
+    );
+    const emailNotificationTitleAndDescBuilder = buildTitleAndDesc(
+      'notificationAndSounds',
+      'emailNotifications',
+    );
+    const emailNotificationSettingItems: SettingItem[] = [
+      {
+        id: MESSAGE_SETTING_ITEM.NOTIFICATION_DIRECT_MESSAGES,
+        automationId: 'notificationDirectMessages',
+        weight: 100,
+        type: SETTING_ITEM_TYPE.SELECT,
+
+        ...emailNotificationTitleAndDescBuilder('directMessages'),
+      },
+      {
+        id: MESSAGE_SETTING_ITEM.NOTIFICATION_MENTIONS,
+        automationId: 'notificationMentions',
+        weight: 200,
+        type: SETTING_ITEM_TYPE.TOGGLE,
+        ...emailNotificationTitleAndDescBuilder('mentions'),
+      },
+      {
+        id: MESSAGE_SETTING_ITEM.NOTIFICATION_TEAMS,
+        automationId: 'notificationTeams',
+        type: SETTING_ITEM_TYPE.SELECT,
+        weight: 300,
+        ...emailNotificationTitleAndDescBuilder('teams'),
+      },
+      {
+        id: MESSAGE_SETTING_ITEM.NOTIFICATION_DAILY_DIGEST,
+        automationId: 'notificationDailyDigest',
+        weight: 400,
+        type: SETTING_ITEM_TYPE.TOGGLE,
+        ...emailNotificationTitleAndDescBuilder('dailyDigest'),
+      },
+    ];
+
+    emailNotificationSettingItems.forEach((i) =>
+      this._settingService.registerItem(
+        MESSAGE_SETTING_SCOPE,
+        SETTING_SECTION__EMAIL_NOTIFICATIONS,
+        i,
+      ),
     );
   }
 
