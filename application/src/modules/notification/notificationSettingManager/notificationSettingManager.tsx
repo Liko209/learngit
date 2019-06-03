@@ -53,7 +53,6 @@ class NotificationSettingManager implements INotificationSettingManager {
       },
     );
   }
-  //
   dispose() {
     this._settingService.unRegisterAll(NOTIFICATION_SETTING_SCOPE);
   }
