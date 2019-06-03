@@ -33,7 +33,7 @@ test(formalName('Integrations display on the right rail', ['P2', 'Messages', 'Ri
 
   const rightRail = app.homePage.messageTab.rightRail;
 
-  await h(t).withLog('When I open the created team conversation and open "Notes" tab on right rail', async() => {
+  await h(t).withLog('When I open the created team conversation and open "Integrations" tab on right rail', async() => {
     const teamsSection = app.homePage.messageTab.teamsSection;
     await teamsSection.conversationEntryByName(team.name);
     await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
