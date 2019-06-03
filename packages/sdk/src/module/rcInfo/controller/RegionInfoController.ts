@@ -13,7 +13,11 @@ import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { RCInfoFetchController } from './RCInfoFetchController';
 import { RCAccountInfoController } from './RCAccountInfoController';
 import { RCCallerIdController } from './RCCallerIdController';
-import { SELLING_COUNTRY_LIST, SUPPORT_AREA_CODE_COUNTRIES } from './constants';
+import {
+  SELLING_COUNTRY_LIST,
+  SUPPORT_AREA_CODE_COUNTRIES,
+  RC_BRAND_NAME_TO_BRAND_ID,
+} from './constants';
 import {
   RCBrandType,
   StationLocationSetting,
@@ -41,7 +45,7 @@ const DefaultCountryInfo = {
   isoCode: 'US',
   callingCode: '1',
 };
-const DefaultBrandId = '1210';
+const DefaultBrandId = RC_BRAND_NAME_TO_BRAND_ID.RC;
 
 class RegionInfoController {
   private _currentCountryInfo: DialingCountryInfo;

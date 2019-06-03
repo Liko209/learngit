@@ -104,6 +104,24 @@ class RCInfoService extends EntityBaseService<IdModel>
       .getRCClientInfo();
   }
 
+  async getRCBrandId() {
+    return await this.getRCInfoController()
+      .getRCAccountInfoController()
+      .getAccountBrandId();
+  }
+
+  async getRCAccountId() {
+    return await this.getRCInfoController()
+      .getRCAccountInfoController()
+      .getRCAccountId();
+  }
+
+  async getRCExtensionId() {
+    return await this.getRCInfoController()
+      .getRCInfoFetchController()
+      .getRCExtensionId();
+  }
+
   async getRCAccountInfo() {
     return await this.getRCInfoController()
       .getRCInfoFetchController()

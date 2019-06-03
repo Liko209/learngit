@@ -27,6 +27,7 @@ describe('', () => {
   let rcInfoFetchController: RCInfoFetchController;
 
   const validAccountInfo = {
+    id: 1008,
     outboundCallPrefix: '7',
     mainNumber: '18801785164',
     serviceInfo: {
@@ -110,6 +111,21 @@ describe('', () => {
       companyService.getBrandType = jest.fn().mockResolvedValue(undefined);
       const result = await rcAccountInfoController.getAccountBrandId();
       expect(result).toBeUndefined();
+    });
+  });
+
+  describe('getRCAccountId', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should return account id in account info', async () => {
+      rcInfoFetchController.getRCAccountInfo = jest
+        .fn()
+        .mockResolvedValue(validAccountInfo);
+      const result = await rcAccountInfoController.getRCAccountId();
+      expect(result).toEqual(validAccountInfo.id);
     });
   });
 

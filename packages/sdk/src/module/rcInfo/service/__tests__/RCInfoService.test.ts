@@ -7,12 +7,16 @@
 import { RCInfoService } from '../RCInfoService';
 import { RCInfoController } from '../../controller/RCInfoController';
 import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { CompanyService } from 'sdk/module/company';
 
 jest.mock('../../controller/RCInfoFetchController');
+jest.mock('../../controller/RCAccountInfoController');
 jest.mock('../../controller/RCCallerIdController');
 jest.mock('../../controller/RCPermissionController');
 jest.mock('../../controller/RegionInfoController');
 jest.mock('../../../../module/account/config');
+jest.mock('sdk/module/company');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -24,11 +28,24 @@ describe('RCInfoService', () => {
   let rcInfoService: RCInfoService;
   let rcInfoController: RCInfoController;
   let userConfig: AccountUserConfig;
+  let companyService: CompanyService;
+
+  function setup() {
+    companyService = new CompanyService();
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.COMPANY_SERVICE) {
+          return companyService;
+        }
+      });
+  }
 
   beforeEach(() => {
     clearMocks();
     rcInfoService = new RCInfoService();
     rcInfoController = new RCInfoController();
+    setup();
     Object.assign(rcInfoService, {
       _rcInfoController: rcInfoController,
     });
@@ -69,6 +86,34 @@ describe('RCInfoService', () => {
       ).toBeCalled();
     });
   });
+
+  describe('getRCBrandId()', () => {
+    it('should call controller with correct parameter', async () => {
+      await rcInfoService.getRCBrandId();
+      expect(
+        rcInfoController.getRCAccountInfoController().getAccountBrandId,
+      ).toBeCalled();
+    });
+  });
+
+  describe('getRCAccountId()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.getRCAccountId();
+      expect(
+        rcInfoController.getRCAccountInfoController().getRCAccountId,
+      ).toBeCalled();
+    });
+  });
+
+  describe('getRCExtensionId()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.getRCExtensionId();
+      expect(
+        rcInfoController.getRCInfoFetchController().getRCExtensionId,
+      ).toBeCalled();
+    });
+  });
+
   describe('getRCExtensionInfo()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.getRCExtensionInfo();
