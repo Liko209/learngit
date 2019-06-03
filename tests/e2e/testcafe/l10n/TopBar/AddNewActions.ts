@@ -61,7 +61,7 @@ test(formalName('Check "New actions" menu', ['P2', 'TopBar', 'AddNewActions', 'V
     await createTeamModal.typeTeamName(publicTeamWithMe.name);
     await createTeamModal.clickCreateButton();
   });
-  await h(t).log('Then I take screenshot' , {screenshotPath: 'Jupiter_TopBar_CreateTeamWithDuplicateNames'});
+  await h(t).log('Then I take screenshot' , {screenshotPath: 'Jupiter_TopBar_CreateDuplicatedTeam'});
 
   await h(t).withLog('When I open "Send New Message" in "News actions"', async() => {
     await createTeamModal.clickCancelButton();
