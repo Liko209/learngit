@@ -19,7 +19,6 @@ test.meta(<ITestMeta>{
   const renameFileMenu = 'Rename file';
   const filenames = ['1'];
   const suffixs = ['.docx']
-  // todo  should check source
   const filesPath = ['../../sources/1.docx'];
   const message = uuid();
   const loginUser = h(t).rcData.mainCompany.users[4];
@@ -62,7 +61,7 @@ test.meta(<ITestMeta>{
   for(let i = 0 ; i < Entries.length; i++ ){
 
     if( i == 0 ){   
-      await h(t).withLog(`When I click the more button of the file`, async() => {
+      await h(t).withLog(`When I click the more button of the file(Entry1: conversation history)`, async() => {
         await moreActionOnFile.clickMore();
       });
     }else if( i == 1 ){
@@ -127,13 +126,13 @@ test.meta(<ITestMeta>{
 
     if( i == 0 ){
 
-      await h(t).withLog(`When I click the more button of the file`, async() => {
+      await h(t).withLog(`When I click the more button of the file(Entry1: conversation history`, async() => {
         await moreActionOnFile.clickMore();
       });
 
     }else if( i == 1 ){
 
-      await h(t).withLog(`When I hover the file ${filenames[0]} item(Entry2:right self)`, async () => {
+      await h(t).withLog(`When I hover the file item(Entry2:right self)`, async () => {
         await filesTabItem.nameShouldBe(filenames[0]);
         await t.hover(filesTabItem.self)
       });
@@ -283,11 +282,11 @@ test.meta(<ITestMeta>{
     await postItem.nameShouldBe(newFileName);
   });
 
-  await h(t).withLog(`And I logout and login Jupiter with guest ${guest.company.number}#${guest.extension}`, async () => {
+  await h(t).withLog(`Given I logout and login Jupiter with guest ${guest.company.number}#${guest.extension}`, async () => {
     await app.homePage.logoutThenLoginWithUser(SITE_URL, guest);
   });
 
-  await h(t).withLog('And I open the team', async () => {
+  await h(t).withLog('When I open the team', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
   });
 
