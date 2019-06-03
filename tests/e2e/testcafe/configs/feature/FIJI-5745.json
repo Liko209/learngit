@@ -1,8 +1,5 @@
 {
   "on_merge": {
-    "fixtures": [
-      "./fixtures/MessageInput/Emoji.ts"
-    ],
     "include_tags": [
       "P0",
       "P1",
