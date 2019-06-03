@@ -19,9 +19,10 @@ import { spyOnTarget } from 'sdk/__tests__/utils';
 import { ProfileService } from 'sdk/module/profile/service/ProfileService';
 import { TelephonyService } from 'sdk/module/telephony/service/TelephonyService';
 import { AccountService } from 'sdk/module/account';
-import { Profile } from '../../entity';
-import { CALLING_OPTIONS, SETTING_KEYS } from '../../constants';
+
 import { ESettingItemState } from 'sdk/framework/model/setting';
+import { CALLING_OPTIONS, SETTING_KEYS } from 'sdk/module/profile';
+import { Profile } from 'sdk/module/profile/entity';
 
 function clearMocks() {
   jest.clearAllMocks();
