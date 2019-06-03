@@ -7,11 +7,11 @@
 import { WithTranslation } from 'react-i18next';
 import FileItemModel from '@/store/models/FileItem';
 import GroupModel from '@/store/models/Group';
-import { FileActionProps } from '../common/types';
+import { FileActionProps } from '../../common/types';
 
-export type FileNameEditActionProps = FileActionProps;
+export type FileNameEditDialogProps = FileActionProps;
 
-export type FileNameEditActionViewProps = FileActionProps & {
+export type FileNameEditDialogViewProps = {
   canEditFileName: boolean;
   newFileName: string;
   updateNewFileName: (newFileName: string) => void;
@@ -19,5 +19,5 @@ export type FileNameEditActionViewProps = FileActionProps & {
   group: GroupModel;
   fileNameRemoveSuffix: string;
   isLoading: boolean;
-  handleEditFileName: () => boolean;
+  handleEditFileName: () => void;
 } & WithTranslation;
