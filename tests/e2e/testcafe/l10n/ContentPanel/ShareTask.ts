@@ -12,8 +12,8 @@ fixture('ContentPanel/ShareTask')
 
 test(formalName('Open team conversation and shared task', ['P2', 'Messages', 'ContentPanel', 'ShareTask', 'V1.4', 'hanny.han']), async (t) => {
   const app = new AppRoot(t);
-  const loginUser = h(t).rcData.mainCompany.users[5];
-  const otherUser = h(t).rcData.mainCompany.users[4];
+  const loginUser = h(t).rcData.mainCompany.users[4];
+  const otherUser = h(t).rcData.mainCompany.users[5];
   await h(t).glip(loginUser).init();
 
   const team = <IGroup>{

@@ -53,6 +53,11 @@ test(formalName('Make a call from a conversation', ['P2', 'Phone', 'OutgoingCall
 
   await h(t).log('Then I capture screenshot', {screenshotPath: 'Jupiter_Phone_OutgoingCall_01'})
 
+  await h(t).withLog('When I click the record button', async () => {
+    await telephonyDialog.clickRecordButton();
+  })
+  await h(t).log('Then I capture screenshot', {screenshotPath: 'Jupiter_Phone_CallRecordFail'})
+
   await h(t).withLog('When the callee answers the call', async () => {
     await session.answer();
     await session.waitForStatus('accepted');
