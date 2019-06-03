@@ -42,6 +42,9 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
     this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
       this.onProfileEntityUpdate(payload),
     );
+    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload =>
+      this.onSettingEntityUpdate(payload),
+    );
   }
 
   async updateValue(value: NOTIFICATION_OPTIONS) {
@@ -89,12 +92,18 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
     if (!profile) {
       return;
     }
-    const state = await this._getItemState();
     if (
       profile[SETTING_KEYS.DESKTOP_VOICEMAIL] !==
-        this.userSettingEntityCache.value ||
-      state !== this.userSettingEntityCache.state
+      this.userSettingEntityCache.value
     ) {
+      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+    }
+  }
+  async onSettingEntityUpdate(
+    payload: NotificationEntityUpdatePayload<UserSettingEntity>,
+  ) {
+    const model = payload.body.entities.get(this.id);
+    if (this.userSettingEntityCache.state !== (model && model.state)) {
       this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
     }
   }
