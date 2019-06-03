@@ -8,26 +8,22 @@ import { shallow, mount } from 'enzyme';
 import { NotificationEnableBannerView } from '../NotificationEnableBanner.View';
 import { ThemeProvider } from 'styled-components';
 import { theme } from '@/__tests__/utils';
-// import { Jupiter, container } from 'framework';
-// import { config } from '@/modules/notification/module.config';
-// import { PERMISSION } from '@/modules/notification/interface/constant';
+import { Jupiter, container } from 'framework';
+import { config } from '@/modules/notification/module.config';
+// import { INotificationPermission } from '@/modules/notification/interface/constant';
 
-// const jupiter = container.get(Jupiter);
-// jupiter.registerModule(config);
-// const permission = jupiter.get(PERMISSION);
-// permission.request = jest.fn()
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(config);
 
-// alessia-todo
-const translations = {
-  'notification.topBanner.enablePermissionMessage':
-    'RingCentral needs your permission to enable desktop notifications.',
-  'notification.topBanner.enablePermissionAction': 'Enable notifications',
-  'notification.topBanner.blockedPermissionMessage':
-    'RingCentral notifications are blocked. Go to your browser settings to allow RingCentral to send notifications.',
-};
+// 下面两个应该不需要引入
+// const permission: INotificationPermission = jupiter.get(
+//   INotificationPermission,
+// );
+// permission.request = jest.fn();
 
+// alessia-todo：其他文件更新后再跑一遍 ut，确保 pass，然后把多余的注释删掉
 const baseProps = {
-  t: (key: string) => translations[key],
+  t: (key: string) => key,
   isBlocked: false,
   handleClose: () => {},
 };
@@ -53,7 +49,7 @@ describe('NotificationEnableBannerView', () => {
       };
       const wrapper = shallow(<NotificationEnableBannerView {...props} />);
       expect(wrapper.find('JuiSnackbarContent').prop('message')).toEqual(
-        'RingCentral needs your permission to enable desktop notifications.',
+        'notification.topBanner.enablePermissionMessage',
       );
       expect(wrapper.find('JuiSnackbarContent').prop('action')[0]).not.toEqual(
         null,
@@ -64,6 +60,7 @@ describe('NotificationEnableBannerView', () => {
         requestPermission: jest.fn(),
         permission: 'default',
       };
+
       const props = {
         ...baseProps,
         isShow: true,
@@ -78,7 +75,7 @@ describe('NotificationEnableBannerView', () => {
         .find('button')
         .at(0)
         .simulate('click');
-      // expect(Notification.requestPermission).toHaveBeenCalled();
+      expect(Notification.requestPermission).toHaveBeenCalled();
     });
     it('should render view with certain text when isShow is true and isBlocked is true [JPT-2085] 3', () => {
       const props = {
@@ -88,7 +85,7 @@ describe('NotificationEnableBannerView', () => {
       };
       const wrapper = shallow(<NotificationEnableBannerView {...props} />);
       expect(wrapper.find('JuiSnackbarContent').prop('message')).toEqual(
-        'RingCentral notifications are blocked. Go to your browser settings to allow RingCentral to send notifications.',
+        'notification.topBanner.blockedPermissionMessage',
       );
       expect(wrapper.find('JuiSnackbarContent').prop('action')[0]).toEqual(
         null,

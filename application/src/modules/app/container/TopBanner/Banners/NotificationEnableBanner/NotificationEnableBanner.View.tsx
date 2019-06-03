@@ -3,7 +3,7 @@
  * @Date: 2019-05-28 10:29:29
  * Copyright © RingCentral. All rights reserved.
  */
-// alessia-todo
+// alessia-todo: 合并有 sdk 最新代码的分支（我自己的分支）后，自测一下
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import {
@@ -13,15 +13,13 @@ import {
 import { observer } from 'mobx-react';
 import { ToastType } from '@/containers/ToastWrapper/Toast/types';
 import { NotificationEnableBannerViewProps } from './types';
-import { container } from 'framework';
-import { NOTIFICATION_SERVICE } from '@/modules/notification/interface/constant';
-// import { NOTIFICATION_SERVICE, PERMISSION as PERMISSION_CONSTANT } from '@/modules/notification/interface/constant';
+import { jupiter } from 'framework';
 import {
+  INotificationPermission,
   INotificationService,
   NOTIFICATION_PRIORITY,
-} from '@/modules/notification/interface/index';
-// import { INotificationPermission } from 'sdk/pal';
-import { Permission, PERMISSION } from '@/modules/notification/Permission';
+} from '@/modules/notification/interface';
+import { PERMISSION } from '@/modules/notification/Permission';
 import i18nT from '@/utils/i18nT';
 
 const NOTIFICATION_BANNER = 'NotificationEnableBanner';
@@ -30,22 +28,17 @@ const NOTIFICATION_BANNER = 'NotificationEnableBanner';
 class NotificationEnableBannerViewComponent extends React.Component<
   NotificationEnableBannerViewProps
 > {
-  // @inject(PERMISSION_CONSTANT)
-  // private _permission: INotificationPermission;
-  private get _notificationService(): INotificationService {
-    return container.get(NOTIFICATION_SERVICE);
+  private get _permission(): INotificationPermission {
+    return jupiter.get(INotificationPermission);
   }
-  private _permission = new Permission();
+  private get _notificationService(): INotificationService {
+    return jupiter.get(INotificationService);
+  }
 
   enableNotification = async () => {
     const permission = await this._permission.request();
     if (permission === PERMISSION.GRANTED) {
       const title = await i18nT('notification.notificationEnabled');
-      console.log('alessia, ', title, {
-        id: NOTIFICATION_BANNER,
-        scope: NOTIFICATION_BANNER,
-        priority: NOTIFICATION_PRIORITY.INFORMATION,
-      });
       this._notificationService.show(title, {
         data: {
           id: NOTIFICATION_BANNER,

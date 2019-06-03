@@ -3,24 +3,25 @@
  * @Date: 2019-05-28 10:30:06
  * Copyright © RingCentral. All rights reserved.
  */
-// alessia-todo
+// alessia-todo: 合并后测试，删除注释掉的内容即可
 import { AbstractViewModel } from '@/base';
 import { computed, observable, action } from 'mobx';
 import { isElectron } from '@/common/isUserAgent';
-// import { ENTITY_NAME } from '@/store';
-// import { getEntity } from '@/store/utils';
-// import { UserSettingEntity } from 'sdk/module/setting/entity';
-// import SettingModel from '@/store/models/UserSetting';
+import { UserSettingEntity } from 'sdk/module/setting';
+import { getEntity } from '@/store/utils/entities';
+import { ENTITY_NAME } from '@/store/constants';
+import SettingModel from '@/store/models/UserSetting';
 import { PERMISSION } from '@/modules/notification/Permission';
+import { DesktopNotificationsSettingModel as DNSM } from 'sdk/module/profile';
+import { SETTING_ITEM__NOTIFICATION_BROWSER } from '@/modules/notification/notificationSettingManager/NotificationBrowserSettingItem/constants';
 
-// todo: import from sdk types
 // const id = 1;
-(<any>window).test = observable({
-  value: {
-    browserPermission: 'denied',
-    wantNotifications: true,
-  },
-}) as any;
+// (<any>window).test = observable({
+//   value: {
+//     browserPermission: 'denied',
+//     wantNotifications: true,
+//   },
+// }) as any;
 
 class NotificationEnableBannerViewModel extends AbstractViewModel {
   @observable
@@ -28,12 +29,20 @@ class NotificationEnableBannerViewModel extends AbstractViewModel {
 
   @computed
   get notificationSettingItem() {
-    return (<any>window).test;
-    // return getEntity<UserSettingEntity, SettingModel>(
-    //   ENTITY_NAME.USER_SETTING,
-    //   id,
-    // );
+    return getEntity<UserSettingEntity, SettingModel<Partial<DNSM>>>(
+      ENTITY_NAME.USER_SETTING,
+      SETTING_ITEM__NOTIFICATION_BROWSER,
+    );
   }
+
+  // @computed
+  // get notificationSettingItem() {
+  //   return (<any>window).test;
+  //   // return getEntity<UserSettingEntity, SettingModel>(
+  //   //   ENTITY_NAME.USER_SETTING,
+  //   //   id,
+  //   // );
+  // }
 
   @computed
   get isShow() {
