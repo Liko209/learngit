@@ -91,7 +91,7 @@ class FileNameEditActionViewComponent extends Component<
         data-test-automation-id={'fileNameEditItem'}
         onClick={this.handleClick}
       >
-        {t('message.fileAction.editFileName')}
+        {t('message.prompt.editFileNameTitle')}
       </JuiMenuItem>
     );
   }
