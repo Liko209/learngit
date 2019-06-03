@@ -41,7 +41,7 @@ class ToggleSettingItemViewComponent extends Component<Props> {
   }
 
   private _renderToggle() {
-    const { disabled, settingItem, settingItemEntity } = this.props;
+    const { disabled, settingItem, settingItemEntity, t } = this.props;
     const value = Boolean(settingItemEntity.value);
     return (
       <JuiToggleButton
@@ -50,6 +50,11 @@ class ToggleSettingItemViewComponent extends Component<Props> {
         }`}
         data-test-automation-value={value}
         checked={value}
+        aria-label={
+          value
+            ? t('common.button.ariaToggleOn')
+            : t('common.button.ariaToggleOff')
+        }
         disabled={disabled}
         onChange={this._handleChange}
       />

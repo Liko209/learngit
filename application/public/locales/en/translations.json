@@ -1,5 +1,9 @@
 {
   "common": {
+    "button": {
+      "ariaToggleOn": "On, click to turn off",
+      "ariaToggleOff": "Off, click to turn on"
+    },
     "dialog": {
       "OK": "OK",
       "cancel": "Cancel",

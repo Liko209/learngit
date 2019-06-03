@@ -141,6 +141,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
       'setting.notificationAndSounds.desktopNotifications.notificationsForBrowser.description',
     );
 
+    const checked = this.state.isPending || desktopNotifications || false;
     return (
       <JuiSettingSectionItem
         id="notificationBrowserSetting"
@@ -150,8 +151,13 @@ class NotificationBrowserSettingItemViewComponent extends Component<
       >
         <JuiToggleButton
           data-test-automation-id="settingItemToggleButton-notificationBrowser"
-          checked={this.state.isPending || desktopNotifications || false}
+          checked={checked}
           onChange={this.handleToggleChange}
+          aria-label={
+            checked
+              ? t('common.button.ariaToggleOn')
+              : t('common.button.ariaToggleOff')
+          }
         />
         {this._renderDialog()}
       </JuiSettingSectionItem>
