@@ -80,7 +80,7 @@ class EventUpdate extends React.Component<Props> {
               )}
               {oldLocation && (
                 <JuiEventCollapseContent>
-                  {postParser(oldLocation, { keyword: this.context.keyword })}
+                  {postParser(oldLocation, { keyword: this.context.keyword, url: true })}
                 </JuiEventCollapseContent>
               )}
             </JuiEventCollapse>
@@ -95,7 +95,10 @@ class EventUpdate extends React.Component<Props> {
         {newLocation && (
           <JuiLabelWithContent label={t('item.locationTitle')}>
             <JuiEventLocation>
-              {postParser(newLocation, { keyword: this.context.keyword })}
+              {postParser(newLocation, {
+                keyword: this.context.keyword,
+                url: true,
+              })}
             </JuiEventLocation>
           </JuiLabelWithContent>
         )}

@@ -19,7 +19,12 @@ class AtMentionParser extends PostParser implements IPostParser {
   }
 
   getReplaceElement(strValue: string) {
-    const { map = {}, customReplaceFunc, innerContentParser } = this.options;
+    const {
+      map = {},
+      customReplaceFunc,
+      innerContentParser,
+      textEncoded,
+    } = this.options;
     const result = this.getRegexp().exec(strValue);
     if (!result) {
       return strValue;
@@ -27,7 +32,7 @@ class AtMentionParser extends PostParser implements IPostParser {
     const id = result[1];
     const user = map[id] || {};
     const { name, isCurrent } = user;
-    const text = name || result[2];
+    const text = name || (textEncoded ? atob(result[2]) : result[2]);
     if (customReplaceFunc) {
       return customReplaceFunc(strValue, id, text, !!isCurrent);
     }

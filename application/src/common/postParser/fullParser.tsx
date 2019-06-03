@@ -68,7 +68,7 @@ const parsersConfig = [
               options,
               {
                 html: false, // inner text node does not need to use html parser anymore
-                atMentions: { isEscaped: false }, // inner text node is already unescaped
+                atMentions: { isEscaped: false, textEncoded: true }, // inner text node is already unescaped
                 emoji: { isEscaped: false }, // inner text node is already unescaped
               },
             ),
@@ -175,7 +175,8 @@ const parsersConfig = [
       { keyword }: PostParserOptions,
     ): KeywordHighlightParserOption => ({
       keyword,
-      innerContentParser: postParser,
+      innerContentParser: (text: string) =>
+        postParser(text, { phoneNumber: true }),
     }),
   },
   {

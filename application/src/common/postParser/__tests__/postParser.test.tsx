@@ -295,7 +295,7 @@ describe('non-glipdown text', () => {
     });
 
     describe('conflicting', () => {
-      it('should return array with Highlight and no PhoneNumberLink when there is phone number inside highlight', () => {
+      it('should return array with Highlight and PhoneNumberLink when there is phone number inside highlight', () => {
         expect(
           postParser(`  13abby123456789abc`, {
             keyword: 'by123456789ab',
@@ -303,7 +303,13 @@ describe('non-glipdown text', () => {
           }),
         ).toEqual([
           '  13ab',
-          <JuiTextWithHighlight key={0}>by123456789ab</JuiTextWithHighlight>,
+          <JuiTextWithHighlight key={0}>
+            by
+            <PhoneLink text={'123456789'} key={0}>
+              123456789
+            </PhoneLink>
+            ab
+          </JuiTextWithHighlight>,
           'c',
         ]);
       });
@@ -655,6 +661,26 @@ describe('glipdown text', () => {
         ).toEqual([
           'sdds',
           <JuiAtMention key={0} id='122' isCurrent={false} name=':joy:' />,
+          '123  ss',
+        ]);
+      });
+    });
+
+    describe('html and at mention and url', () => {
+      it('should only render at mention when there is url in at mention', () => {
+        expect(
+          postParser(`sdds${atmention('122334', 'www.baidu.com')}123  ss`, {
+            atMentions: { map },
+            html: true,
+          }),
+        ).toEqual([
+          'sdds',
+          <JuiAtMention
+            key={0}
+            id='122334'
+            isCurrent={false}
+            name='@www.baidu.com'
+          />,
           '123  ss',
         ]);
       });

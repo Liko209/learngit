@@ -26,6 +26,12 @@ const JuiEventCollapseContent = styled.div`
   ${typography('body1')};
   color: ${grey('500')};
   margin-bottom: ${spacing(1)};
+  a {
+    color: ${primary('500')};
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 
 const StyledToggle = styled.div`

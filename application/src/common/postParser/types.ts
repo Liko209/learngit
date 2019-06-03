@@ -30,6 +30,7 @@ type AtMentionParserOption = ParserOption & {
     name: string,
     isCurrent: boolean,
   ) => ChildrenType;
+  textEncoded?: boolean;
 };
 
 enum EmojiConvertType {

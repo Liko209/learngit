@@ -6,7 +6,11 @@
 import { IPostParser, ParserType, Replacer, HTMLParserOption } from '../types';
 import { ParseContent } from '../ParseContent';
 import { PostParser } from './PostParser';
-import { getComplementRanges, MATCH_ALL_REGEX } from '../utils';
+import {
+  getComplementRanges,
+  MATCH_ALL_REGEX,
+  AT_MENTION_GROUPED_REGEXP,
+} from '../utils';
 import React from 'react';
 import { Markdown, Remove_Markdown } from 'glipdown';
 import _ from 'lodash';
@@ -33,9 +37,14 @@ class HTMLParser extends PostParser implements IPostParser {
       let match = str.substr(startIndex, length);
       if (withGlipdown && exclude) {
         // remove markdown inside atmention, emoji etc if they are handle after markdown
-        match = match.replace(exclude, atMention => {
-          return Remove_Markdown(atMention, { dont_escape: true });
-        });
+        match = match
+          .replace(exclude, atMention => {
+            return Remove_Markdown(atMention, { dont_escape: true });
+          })
+          .replace(
+            AT_MENTION_GROUPED_REGEXP, // we need to encode the text inside atmention so it won't get parsed first, for example when some crazy user name is a url
+            (full, g1, g2, g3) => `${g1}${btoa(g2)}${g3}`,
+          );
       }
       const htmlText = withGlipdown ? Markdown(match) : match;
       replacers.push({

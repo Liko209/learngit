@@ -11,6 +11,9 @@ import { palette } from '../../foundation/utils/styles';
 const StyledSpan = styled.span`
   color: ${palette('text', 'primary')};
   background-color: ${palette('secondary', '100')};
+  a {
+    color: inherit;
+  }
 `;
 
 const JuiTextWithHighlight = (props: {
