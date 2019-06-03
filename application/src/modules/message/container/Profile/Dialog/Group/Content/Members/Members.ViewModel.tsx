@@ -76,12 +76,10 @@ class MembersViewModel extends ProfileDialogGroupViewModel
         fetchAllIfSearchKeyEmpty: true,
         asIdsOrder: true,
       });
-      if (result !== null) {
-        const ids = result.sortableModels.map(
-          (person: SortableModel<Person>) => person.id,
-        );
-        this._filteredMemberIds = ids;
-      }
+      const ids = result.sortableModels.map(
+        (person: SortableModel<Person>) => person.id,
+      );
+      this._filteredMemberIds = ids;
       return result;
     }
 

@@ -14,7 +14,9 @@
     "prompt": {
       "NoInternetConnection": "No Internet Connection",
       "Network Error": "Network disconnected. Please try again when the network is resumed.",
-      "tryAgain": "Try again."
+      "tryAgain": "Try again.",
+      "tryAgainLater": "Try again later.",
+      "thenTryAgain": "then try again."
     },
     "preposition": {
       "in": "in"
@@ -203,6 +205,8 @@
       "notAbleToLoadOlderMessagesForServerIssue": "Sorry, something went wrong on our end and we weren't able to load older messages. Try again later.",
       "SorryWeWereNotAbleToLoadNewerMessages": "Sorry, we weren't able to load newer messages. Try again.",
       "MessageLoadingErrorTip": "We weren't able to open this conversation.",
+      "MessageLoadingErrorTipForNetworkIssue": "We aren't able to open this conversation. Check your network connection, ",
+      "MessageLoadingErrorTipForServerIssue": "Sorry, something went wrong on our end and we aren't able to open this conversation. ",
       "NewMessage": "New Message",
       "newMessageTip": "Conversations with one or more specific people are great for informal chat. For projects, departments, or even topic-based discussion, you should ",
       "newMessageTipLink": "create a Team instead.",
@@ -413,6 +417,7 @@
       "addToFavorites": "Add to Favorites",
       "removeFromFavorites": "Remove from Favorites",
       "profile": "Profile",
+      "teamDetails": "Team details",
       "close": "Close",
       "markAsRead": "Mark as read",
       "markAsUnread": "Mark as unread",
@@ -420,7 +425,8 @@
       "convertToTeamNamePrefix": "Team: ",
       "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content.",
       "noMatchesFound": "No matches found",
-      "archivedSuffix": " - Archived"
+      "archivedSuffix": " - Archived",
+      "adminActions": "Admin actions"
     },
     "company": {},
     "prompt": {
@@ -466,7 +472,7 @@
       "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later.",
       "conversationDeleted": "The team was deleted. To know more, contact the team administrator.",
       "conversationArchived": "The team was archived. To know more, contact the team administrator.",
-      "youHaveBeenRemovedFromTeam": "You have been removed from the team."
+      "conversationPrivate": "Sorry, you're not a member of this Team. To join, contact the team administrator."
     }
   },
   "contact": {
