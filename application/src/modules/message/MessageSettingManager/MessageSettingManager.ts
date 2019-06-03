@@ -98,7 +98,7 @@ class MessageSettingManager implements IMessageSettingManager {
         automationId: 'newMessageBadgeCount',
         weight: 100,
         type: SETTING_ITEM_TYPE.SELECT,
-        valueRenderer: BadgeCountSourceItem,
+        sourceRenderer: BadgeCountSourceItem,
         ...buildTitleAndDesc(
           'notificationAndSounds',
           'otherNotificationSettings',
