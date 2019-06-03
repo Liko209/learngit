@@ -127,26 +127,6 @@ describe('IncomingCallsSettingHandler', () => {
     it('should emit update when has subscribe update and DESKTOP_CALL change', (done: jest.DoneCallback) => {
       settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
-      settingHandler['_getItemState'] = jest.fn().mockReturnValue(0);
-      notificationCenter.emitEntityUpdate<Profile>(ENTITY.PROFILE, [
-        {
-          id: mockUserId,
-          [SETTING_KEYS.DESKTOP_CALL]: NOTIFICATION_OPTIONS.ON,
-        } as Profile,
-      ]);
-      setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
-        done();
-      });
-    });
-
-    it('should emit update when has subscribe update and state change', (done: jest.DoneCallback) => {
-      settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
-      settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
-      settingHandler['_getItemState'] = jest.fn().mockReturnValue(1);
       notificationCenter.emitEntityUpdate<Profile>(ENTITY.PROFILE, [
         {
           id: mockUserId,
@@ -165,13 +145,43 @@ describe('IncomingCallsSettingHandler', () => {
     it('should not emit update when no change', (done: jest.DoneCallback) => {
       settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
-      settingHandler['_getItemState'] = jest.fn().mockReturnValue(0);
       notificationCenter.emitEntityUpdate<Profile>(ENTITY.PROFILE, [
         {
           id: mockUserId,
           [SETTING_KEYS.DESKTOP_CALL]: NOTIFICATION_OPTIONS.OFF,
         } as Profile,
       ]);
+      setTimeout(() => {
+        expect(settingHandler.getUserSettingEntity).not.toBeCalled();
+        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
+        done();
+      });
+    });
+  });
+  describe('handleSettingModelUpdated', () => {
+    it('should emit update when has subscribe update and state change', (done: jest.DoneCallback) => {
+      settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
+      settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
+      notificationCenter.emitEntityUpdate<UserSettingEntity>(
+        ENTITY.USER_SETTING,
+        [{ ...mockDefaultSettingItem, state: 1 }],
+      );
+      setTimeout(() => {
+        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        expect(
+          settingHandler.notifyUserSettingEntityUpdate,
+        ).toHaveBeenCalledWith({});
+        done();
+      });
+    });
+
+    it('should not emit update when no change', (done: jest.DoneCallback) => {
+      settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
+      settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
+      notificationCenter.emitEntityUpdate<UserSettingEntity>(
+        ENTITY.USER_SETTING,
+        [mockDefaultSettingItem],
+      );
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
         expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
