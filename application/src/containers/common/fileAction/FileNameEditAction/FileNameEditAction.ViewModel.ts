@@ -42,7 +42,7 @@ class FileNameEditActionViewModel extends FileActionViewModel {
   get fileNameRemoveSuffix() {
     const fileNameArray = this.fileName.split('.');
     if (fileNameArray.length > 1) {
-      fileNameArray[fileNameArray.length - 1] = '';
+      fileNameArray.pop();
     }
     return fileNameArray.join('.');
   }
