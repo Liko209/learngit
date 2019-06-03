@@ -295,6 +295,11 @@ class BaseJob {
                 && currentCauseData.targetBranch == causeData.targetBranch
                 && currentCauseData.targetRepoName == causeData.targetRepoName) {
                 build.doStop()
+                for (i = 0; i < 10; i++) {
+                    if (!build.isBuilding())
+                        break
+                    jenkins.sleep 10
+                }
                 jenkins.echo "build ${build.getFullDisplayName()} is terminated"
             }
         }
