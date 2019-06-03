@@ -12,7 +12,9 @@ import { ExcludeList } from './excludeList';
 import { JuiPopperMenu, AnchorProps } from '../../pattern/PopperMenu';
 import { HotKeys } from '../../hoc/HotKeys';
 import styled from '../../foundation/styled-components';
-import { grey, spacing, height } from '../../foundation/utils/styles';
+import { grey, spacing, height } from '../../foundation/utils';
+import { withTheme } from 'styled-components';
+import { ThemeProps } from '../../foundation/theme/theme';
 
 type Props = {
   handlerIcon: string;
@@ -77,6 +79,9 @@ const StyledEmojiWrapper = styled.div`
       z-index: ${({ theme }) => theme.zIndex.popup};
     }
   }
+  && {
+    z-index: ${({ theme }) => theme.zIndex.moreMenu};
+  }
 `;
 let emojiMartContainer: HTMLCollectionOf<Element>;
 type State = {
@@ -84,8 +89,9 @@ type State = {
   anchorEl: EventTarget & Element | null;
   isToggleWrapShow: boolean;
 };
-class JuiEmoji extends React.PureComponent<Props, State> {
-  constructor(props: Props) {
+type EmojiProps = Props & ThemeProps;
+class JuiEmoji extends React.PureComponent<EmojiProps, State> {
+  constructor(props: EmojiProps) {
     super(props);
     this.state = {
       anchorEl: null,
@@ -189,6 +195,7 @@ class JuiEmoji extends React.PureComponent<Props, State> {
       toggleButtonLabel,
       handleKeepOpenChange,
       isKeepOpen,
+      theme,
     } = this.props;
     return (
       <HotKeys
@@ -196,18 +203,19 @@ class JuiEmoji extends React.PureComponent<Props, State> {
           esc: this.handleClose,
         }}
       >
-        <JuiPopperMenu
-          automationId="conversation-chatbar-emoji-menu"
-          open={open}
-          anchorEl={anchorEl}
-          onClose={this.handleClose}
-          Anchor={this._IconButton}
-          placement="bottom-start"
-          noTransition={true}
-          disablePortal={true}
-        >
-          <StyledEmojiWrapper>
+        <StyledEmojiWrapper>
+          <JuiPopperMenu
+            automationId="conversation-chatbar-emoji-menu"
+            open={open}
+            anchorEl={anchorEl}
+            onClose={this.handleClose}
+            Anchor={this._IconButton}
+            placement="bottom-start"
+            noTransition={true}
+            disablePortal={true}
+          >
             <Picker
+              color={theme && theme.palette.primary.main}
               sheetSize={sheetSize}
               title={title || ''}
               emoji={defaultSelector || ''}
@@ -232,11 +240,11 @@ class JuiEmoji extends React.PureComponent<Props, State> {
                 />
               </div>
             </StyledCutomizedComponentContainer>
-          </StyledEmojiWrapper>
-        </JuiPopperMenu>
+          </JuiPopperMenu>
+        </StyledEmojiWrapper>
       </HotKeys>
     );
   }
 }
-
-export { JuiEmoji };
+const JuiEmojiWithTheme = withTheme(JuiEmoji);
+export { JuiEmoji, JuiEmojiWithTheme };
