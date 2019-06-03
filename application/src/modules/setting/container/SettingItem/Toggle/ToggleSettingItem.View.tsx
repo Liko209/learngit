@@ -18,9 +18,8 @@ type Props = ToggleSettingItemViewProps &
 @observer
 class ToggleSettingItemViewComponent extends Component<Props> {
   @catchError.flash({
-    // TODO move the keys out of setting.phone
-    network: 'setting.phone.general.callerID.errorText',
-    server: 'setting.phone.general.callerID.errorText',
+    network: 'setting.errorText.network',
+    server: 'setting.errorText.server',
   })
   private _handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
     await this.props.saveSetting(event.target.checked);

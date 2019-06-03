@@ -39,6 +39,7 @@ type Global = {
 enum NOTIFICATION_PRIORITY {
   INCOMING_CALL = 1,
   MESSAGE,
+  INFORMATION,
 }
 
 const INotificationSettingManager = createDecorator(

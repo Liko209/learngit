@@ -575,6 +575,10 @@
   },
   "integration": {},
   "setting": {
+    "errorText": {
+      "server": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later.",
+      "network": "We weren't able to save your settings. Check your network connection, then try again."
+    },
     "Settings": "Settings",
     "teamSettings": "Settings",
     "general": "General",
@@ -616,13 +620,11 @@
         "title": "General",
         "callerID": {
           "label": "Caller ID",
-          "description": "Choose your default Caller ID for making RingCentral phone calls",
-          "errorText": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later."
+          "description": "Choose your default Caller ID for making RingCentral phone calls"
         },
         "extensions": {
           "label": "Extension settings",
-          "description": "Customize your RingCentral extension settings (call routing, voicemail greetings and more)",
-          "errorText": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later"
+          "description": "Customize your RingCentral extension settings (call routing, voicemail greetings and more)"
         },
         "regionSetting": {
           "label": "Region",
