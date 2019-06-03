@@ -18,9 +18,8 @@ type Props = ToggleSettingItemViewProps &
 @observer
 class ToggleSettingItemViewComponent extends Component<Props> {
   @catchError.flash({
-    // TODO move the keys out of setting.phone
-    network: 'setting.phone.general.callerID.errorText',
-    server: 'setting.phone.general.callerID.errorText',
+    network: 'setting.errorText.network',
+    server: 'setting.errorText.server',
   })
   private _handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
     await this.props.saveSetting(event.target.checked);
@@ -42,13 +41,20 @@ class ToggleSettingItemViewComponent extends Component<Props> {
   }
 
   private _renderToggle() {
-    const { disabled, settingItem, settingItemEntity } = this.props;
+    const { disabled, settingItem, settingItemEntity, t } = this.props;
+    const value = Boolean(settingItemEntity.value);
     return (
       <JuiToggleButton
         data-test-automation-id={`settingItemToggleButton-${
           settingItem.automationId
         }`}
-        checked={Boolean(settingItemEntity.value)}
+        data-test-automation-value={value}
+        checked={value}
+        aria-label={
+          value
+            ? t('common.button.ariaToggleOn')
+            : t('common.button.ariaToggleOff')
+        }
         disabled={disabled}
         onChange={this._handleChange}
       />

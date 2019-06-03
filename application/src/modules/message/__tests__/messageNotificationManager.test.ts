@@ -6,6 +6,9 @@
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import * as utils from '@/store/utils';
 import { MessageNotificationManager } from '../MessageNotificationManager';
+import * as VM from '../MessageNotificationViewModel';
+import GroupModel from '@/store/models/Group';
+import PostModel from '../../../store/models/Post';
 
 jest.mock('sdk/module/config');
 describe('messageNotificationManager', () => {
@@ -71,7 +74,7 @@ describe('messageNotificationManager', () => {
     jest.clearAllMocks();
     notificationManager = new MessageNotificationManager();
     jest.spyOn(utils, 'getGlobalValue').mockReturnValue(currentUserId);
-    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(type => {
+    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation((type) => {
       switch (type) {
         case ServiceConfig.POST_SERVICE:
           return mockedPostService;
@@ -130,14 +133,40 @@ describe('messageNotificationManager', () => {
       expect(result).toBeTruthy();
     });
   });
-  describe('handleDeletedPost()', () => {
+  describe('enqueueVm()', () => {
+    let manager;
+    const crushVmIntoManager = (times: number) => {
+      [...Array(times)].forEach(() => {
+        notificationManager.enqueueVM({} as PostModel, {} as GroupModel);
+      });
+    };
+
     beforeEach(() => {
-      jest.clearAllMocks();
-      jest.spyOn(notificationManager, 'close').mockImplementation();
+      notificationManager.close = jest.fn();
+      jest
+        .spyOn(VM, 'MessageNotificationViewModel')
+        .mockImplementation(function(
+          _: number,
+          hooks: { onDispose: Function },
+        ) {
+          return {
+            dispose: hooks.onDispose,
+          };
+        });
     });
-    it('should close notification if exists when post is deleted', async () => {
-      await notificationManager.handlePostEntityChanged([mockedDeletedPost]);
-      expect(notificationManager.close).toBeCalledWith(mockedDeletedPost.id);
+    it('should enqueue the vm into the vmQueue when called', () => {
+      crushVmIntoManager(1);
+      expect(notificationManager._vmQueue.length).toEqual(1);
+    });
+    it('should cut off vmQueue when exceeds', () => {
+      crushVmIntoManager(51);
+      expect(notificationManager._vmQueue.length).toEqual(50);
+    });
+    it('should remove the vm from vmQueue when disposed', () => {
+      notificationManager._vmQueue = [];
+      crushVmIntoManager(1);
+      notificationManager._vmQueue[0].vm.dispose();
+      expect(notificationManager._vmQueue.length).toEqual(0);
     });
   });
 });

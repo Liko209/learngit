@@ -28,9 +28,8 @@ class SelectSettingItemViewComponent<
   T extends SourceItemType
 > extends Component<Props<T>> {
   @catchError.flash({
-    // TODO move the keys out of setting.phone
-    network: 'setting.phone.general.callerID.errorText',
-    server: 'setting.phone.general.callerID.errorText',
+    network: 'setting.errorText.network',
+    server: 'setting.errorText.server',
   })
   private _handleChange = async (event: ChangeEvent<HTMLSelectElement>) => {
     await this.props.saveSetting(event.target.value);
@@ -54,12 +53,14 @@ class SelectSettingItemViewComponent<
   private _renderSelect() {
     const { disabled, settingItem, settingItemEntity } = this.props;
 
+    const value = this._extractValue(settingItemEntity.value);
     return (
       <JuiBoxSelect
         onChange={this._handleChange}
         disabled={disabled}
-        value={this._extractValue(settingItemEntity.value)}
+        value={value}
         automationId={`settingItemSelectBox-${settingItem.automationId}`}
+        data-test-automation-value={value}
         isFullWidth={true}
       >
         {this._renderSource()}

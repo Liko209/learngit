@@ -17,6 +17,7 @@ import _ from 'lodash';
 import history from '@/history';
 import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { getErrorType } from '@/common/catchError';
 
 class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
   private _groupService = ServiceLoader.getInstance<GroupService>(
@@ -37,9 +38,11 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
   }
   private _syncLastGroupId = async (groupId: number) => {
     let group;
+    let errorType;
     try {
       group = await this._groupService.getById(groupId);
     } catch (error) {
+      errorType = getErrorType(error);
       group = null;
       mainLogger
         .tags('ConversationPageViewModel')
@@ -47,6 +50,7 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
     }
     if (!group || !this._groupService.isValid(group!)) {
       history.replace('/messages/loading', {
+        errorType,
         error: true,
         params: {
           id: groupId,
