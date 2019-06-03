@@ -5,27 +5,12 @@
  */
 
 import { NotificationBrowserSettingItemView } from '../NotificationBrowserSettingItem.View';
-jest.mock('@/utils/i18nT', () => (key: string) => key);
 import React from 'react';
-import {
-  ERROR_CODES_NETWORK,
-  JNetworkError,
-  JServerError,
-  ERROR_CODES_SERVER,
-} from 'sdk/error';
 import SettingModel from '@/store/models/UserSetting';
 import { DesktopNotificationsSettingModel } from 'sdk/module/profile';
-import { JuiToggleButton } from 'jui/components/Buttons';
-// import { mountWithTheme } from 'shield/utils';
 import { shallow } from 'enzyme';
-import { catchError } from '@/common/catchError';
-import { Notification } from '@/containers/Notification';
-jest.mock('@/containers/Notification');
-// alessia[todo]: mock getEntity 的值，判断是否去 request 或者 openDialog
-function setUpMock(
-  browserPermission: NotificationPermission,
-  errorType?: 'network' | 'server',
-) {
+
+function setUpMock(browserPermission: NotificationPermission) {
   return {
     settingItemEntity: {
       value: {
@@ -33,8 +18,8 @@ function setUpMock(
         wantNotifications: true,
         desktopNotifications: browserPermission === 'granted',
       },
-    } as SettingModel<Partial<DesktopNotificationsSettingModel>>,
-    setToggleState: jest.fn().mockImplementationOnce(() => {}),
+    } as SettingModel<DesktopNotificationsSettingModel>,
+    setToggleState: jest.fn().mockImplementation(() => {}),
   };
 }
 
@@ -42,7 +27,6 @@ describe('NotificationBrowserSettingItemView', () => {
   describe('render()', () => {
     beforeEach(() => {
       jest.clearAllMocks();
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
     });
     it('Given that browser permission is "default", should call _requestPermission when user try to switch the toggle from off to on', async () => {
       const props = setUpMock('default');
