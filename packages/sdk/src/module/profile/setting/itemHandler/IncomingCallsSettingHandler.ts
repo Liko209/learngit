@@ -101,7 +101,10 @@ class IncomingCallsSettingHandler extends AbstractSettingEntityHandler<
   async onSettingEntityUpdate(
     payload: NotificationEntityUpdatePayload<UserSettingEntity>,
   ) {
-    if (payload.body.entities.has(SettingEntityIds.Notification_Browser)) {
+    if (
+      payload.body.entities.has(SettingEntityIds.Notification_Browser) ||
+      payload.body.entities.has(SettingEntityIds.Phone_DefaultApp)
+    ) {
       this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
     }
   }

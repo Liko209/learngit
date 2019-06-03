@@ -159,12 +159,37 @@ describe('IncomingCallsSettingHandler', () => {
     });
   });
   describe('handleSettingModelUpdated', () => {
-    it('should emit update when has subscribe update and state change', (done: jest.DoneCallback) => {
+    it('should emit update when has subscribe update and Notification_Browser change', (done: jest.DoneCallback) => {
       settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
       notificationCenter.emitEntityUpdate<UserSettingEntity>(
         ENTITY.USER_SETTING,
-        [{ ...mockDefaultSettingItem, state: 1 }],
+        [
+          {
+            id: SettingEntityIds.Notification_Browser,
+            value: true,
+          } as UserSettingEntity,
+        ],
+      );
+      setTimeout(() => {
+        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        expect(
+          settingHandler.notifyUserSettingEntityUpdate,
+        ).toHaveBeenCalledWith({});
+        done();
+      });
+    });
+    it('should emit update when has subscribe update and Phone_DefaultApp change', (done: jest.DoneCallback) => {
+      settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
+      settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
+      notificationCenter.emitEntityUpdate<UserSettingEntity>(
+        ENTITY.USER_SETTING,
+        [
+          {
+            id: SettingEntityIds.Phone_DefaultApp,
+            value: true,
+          } as UserSettingEntity,
+        ],
       );
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
@@ -180,7 +205,7 @@ describe('IncomingCallsSettingHandler', () => {
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
       notificationCenter.emitEntityUpdate<UserSettingEntity>(
         ENTITY.USER_SETTING,
-        [mockDefaultSettingItem],
+        [],
       );
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
