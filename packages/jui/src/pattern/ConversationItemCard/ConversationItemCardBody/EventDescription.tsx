@@ -4,11 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import styled from '../../../foundation/styled-components';
-import { typography, grey } from '../../../foundation/utils/styles';
+import { typography, grey, primary } from '../../../foundation/utils/styles';
 
 const JuiEventDescription = styled.div`
   ${typography('body1')};
   color: ${grey('500')};
+  a {
+    color: ${primary('500')};
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 
 export { JuiEventDescription };

@@ -20,6 +20,7 @@ class KeywordHighlightParser extends PostParser implements IPostParser {
     ParserType.EMOJI,
     ParserType.PHONE_NUMBER,
     ParserType.FILE_NAME,
+    ParserType.URL,
   ];
   content: ParseContent;
   constructor(public options: KeywordHighlightParserOption) {

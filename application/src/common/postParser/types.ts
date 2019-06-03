@@ -6,9 +6,6 @@
 
 import { ParseContent } from './ParseContent';
 import { createContext } from 'react';
-// import { AtMentionsMapType } from './parsers/AtMentionParser';
-// import { EmojiParserOption } from './parsers/EmojiParser';
-// import { FileNameParserOption } from './parsers/FileNameParser';
 import { CustomEmojiMap } from '../emojiHelpers';
 
 type ChildrenType = React.ReactChild | null | (React.ReactChild | null)[];

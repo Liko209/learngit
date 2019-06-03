@@ -8,7 +8,6 @@ import { postParser } from '..';
 import { JuiAtMention } from 'jui/components/AtMention';
 import { JuiTextWithHighlight } from 'jui/components/TextWithHighlight';
 import { PhoneLink } from '@/modules/message/container/ConversationSheet/PhoneLink';
-import util from 'util';
 
 const hostName = 'https://d2rbro28ib85bu.cloudfront.net';
 const customEmoji = {
@@ -41,11 +40,11 @@ describe('non-glipdown text', () => {
       it('should return array with url when text contains url', () => {
         expect(
           postParser(
-            'abchttp://www.baidu.com www.google.com chris.zhan@ringcentral.com',
+            'abc http://www.baidu.com www.google.com chris.zhan@ringcentral.com',
             { url: true },
           ),
         ).toEqual([
-          'abc',
+          'abc ',
           <a
             key={0}
             rel='noreferrer'
@@ -54,6 +53,7 @@ describe('non-glipdown text', () => {
           >
             http://www.baidu.com
           </a>,
+          ' ',
           <a
             key={1}
             rel='noreferrer'
@@ -62,6 +62,7 @@ describe('non-glipdown text', () => {
           >
             www.google.com
           </a>,
+          ' ',
           <a
             key={2}
             rel='noreferrer'
@@ -350,6 +351,24 @@ describe('non-glipdown text', () => {
         ).toEqual([
           '  13abby123456',
           <JuiTextWithHighlight key={0}>789abc</JuiTextWithHighlight>,
+        ]);
+      });
+
+      it('should return array with link without phone number if they conflict', () => {
+        expect(
+          postParser(`https://develop.fiji.gliprc.com/messages/3504234502`, {
+            phoneNumber: true,
+            url: true,
+          }),
+        ).toEqual([
+          <a
+            key={0}
+            rel='noreferrer'
+            target='_blank'
+            href='https://develop.fiji.gliprc.com/messages/3504234502'
+          >
+            https://develop.fiji.gliprc.com/messages/3504234502
+          </a>,
         ]);
       });
     });

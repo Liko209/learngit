@@ -17,6 +17,7 @@ class PhoneNumberParser extends PostParser implements IPostParser {
     ParserType.KEYWORD_HIGHLIGHT,
     ParserType.HTML,
     ParserType.EMOJI,
+    ParserType.URL,
   ];
   content: ParseContent;
   constructor(public options: PhoneNumberParserOption) {

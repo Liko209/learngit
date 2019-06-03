@@ -36,13 +36,22 @@ class URLParser extends PostParser implements IPostParser {
         ? `mailto:${maybeEmail}${link}`
         : (protocol ? '' : 'http://') + link;
     const text = (maybeEmail ? maybeEmail : '') + link;
-    return (
+    const linkElem = (
       <a href={fullLink} target="_blank" rel="noreferrer">
         {this.options.innerContentParser
           ? this.options.innerContentParser(text)
           : text}
       </a>
     );
+    return execResult[14] ? [linkElem, execResult[14]] : linkElem;
+  }
+
+  isValidMatch(match: string, execResult?: RegExpExecArray) {
+    if (execResult) {
+      return !!execResult[3];
+    }
+
+    return !!match;
   }
 
   getRegexp() {

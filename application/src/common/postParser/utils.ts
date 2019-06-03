@@ -119,6 +119,10 @@ const EMOJI_CUSTOM_REGEX = (
 
 const EMOJI_ONE_PATH = '/emoji/emojione/png/{{unicode}}.png?v=2.2.7';
 
+// modified from Markdown.global_url_regex
+// tslint:disable-next-line:max-line-length
+const URL_REGEX = /(([a-zA-Z0-9\!\#\$\%\&\'\*\+\-\/\=\?\%\_\`\{\|\}\~\.]+@)?)(((ftp|https?):\/\/)?[-\w]+\.?([-\w]+\.)*(\d+\.\d+\.\d+|[-A-Za-z]+)(:\d+)?(((\/([A-Za-z0-9-\._~:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=])*)+)\??([A-Za-z0-9-\._~:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\%])*)?)([^A-Za-z]|$)/gi;
+
 export {
   isInRange,
   containsRange,
@@ -143,4 +147,5 @@ export {
   EMOJI_ONE_REGEX,
   EMOJI_ONE_REGEX_ESCAPED,
   EMOJI_CUSTOM_REGEX,
+  URL_REGEX,
 };

@@ -67,7 +67,7 @@ abstract class PostParser implements IPostParser {
         length: matchedStr.length,
         parserType: this.type,
       };
-      if (this.isValidMatch(matchedStr) && this.isValidRange(range)) {
+      if (this.isValidMatch(matchedStr, result) && this.isValidRange(range)) {
         replacers.push({
           ...range,
           element: this.getReplaceElement(matchedStr),
@@ -82,7 +82,7 @@ abstract class PostParser implements IPostParser {
 
   getIgnoredRanges() {
     return this.content
-      .parseToReplacers()
+      .getReplacers()
       .filter(
         ({ parserType }) =>
           parserType !== undefined &&
@@ -97,7 +97,7 @@ abstract class PostParser implements IPostParser {
     );
   }
 
-  isValidMatch(value: string) {
+  isValidMatch(value: string, execResult?: RegExpExecArray) {
     return true;
   }
 

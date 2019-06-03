@@ -3,7 +3,7 @@
  * @Date: 2018-11-08 19:18:07
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { useContext } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
@@ -38,6 +38,7 @@ const FILE_COMPS = {
   [FileType.image]: (
     file: ExtendFileItem,
     props: taskViewProps,
+    keyword: string,
     handleImageClick: (
       groupId: number,
       id: number,
@@ -59,7 +60,6 @@ const FILE_COMPS = {
       deactivated,
       type,
     } = item;
-    const context = useContext(SearchHighlightContext);
 
     return (
       !deactivated && (
@@ -68,8 +68,8 @@ const FILE_COMPS = {
           key={id}
           previewUrl={previewUrl}
           fileName={postParser(name, {
+            keyword,
             fileName: true,
-            keyword: context.keyword,
           })}
           i18UnfoldLess={t('common.collapse')}
           i18UnfoldMore={t('common.expand')}
@@ -82,24 +82,27 @@ const FILE_COMPS = {
             origHeight,
           )}
           Actions={<Download url={downloadUrl} />}
-          ImageActions={<Download url={downloadUrl} />}
+          ImageActions={<Download url={downloadUrl} key="downloadAction" />}
           onSwitchExpand={switchExpandHandler}
         />
       )
     );
   },
-  [FileType.others]: (file: ExtendFileItem) => {
+  [FileType.others]: (
+    file: ExtendFileItem,
+    props: taskViewProps,
+    keyword: string,
+  ) => {
     const { item } = file;
     const { name, downloadUrl, id, deactivated, type } = item;
-    const context = useContext(SearchHighlightContext);
     return (
       !deactivated && (
         <JuiFileWithExpand
           icon={getFileIcon(type)}
           key={id}
           fileName={postParser(name, {
+            keyword,
             fileName: true,
-            keyword: context.keyword,
           })}
           Actions={<Download url={downloadUrl} />}
         />
@@ -215,7 +218,10 @@ class Task extends React.Component<taskViewProps> {
           {section && (
             <JuiLabelWithContent label={t('item.section')}>
               <JuiTaskSectionOrDescription>
-                {postParser(section, { keyword: this.context.keyword })}
+                {postParser(section, {
+                  keyword: this.context.keyword,
+                  url: true,
+                })}
               </JuiTaskSectionOrDescription>
             </JuiLabelWithContent>
           )}
@@ -225,6 +231,7 @@ class Task extends React.Component<taskViewProps> {
                 {postParser(notes, {
                   keyword: this.context.keyword,
                   phoneNumber: true,
+                  url: true,
                 })}
               </JuiTaskSectionOrDescription>
             </JuiLabelWithContent>
@@ -236,6 +243,7 @@ class Task extends React.Component<taskViewProps> {
                   return FILE_COMPS[file.type](
                     file,
                     this.props,
+                    this.context.keyword,
                     this._handleImageClick,
                     initialExpansionStatus,
                     switchExpandHandler,

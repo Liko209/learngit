@@ -44,7 +44,10 @@ class Event extends React.Component<Props, {}> {
           {location && (
             <JuiLabelWithContent label={t('item.locationTitle')}>
               <JuiEventLocation>
-                {postParser(location, { keyword: this.context.keyword })}
+                {postParser(location, {
+                  keyword: this.context.keyword,
+                  url: true,
+                })}
               </JuiEventLocation>
             </JuiLabelWithContent>
           )}
@@ -53,6 +56,7 @@ class Event extends React.Component<Props, {}> {
               {postParser(description, {
                 keyword: this.context.keyword,
                 phoneNumber: true,
+                url: true,
               })}
             </JuiEventDescription>
           )}

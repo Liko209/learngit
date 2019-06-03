@@ -64,7 +64,7 @@ class ParseContent {
     return children;
   }
 
-  parseToReplacers() {
+  getReplacers() {
     return this._replacers;
   }
 
