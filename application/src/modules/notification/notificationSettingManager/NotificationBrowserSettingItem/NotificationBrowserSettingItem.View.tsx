@@ -85,9 +85,11 @@ class NotificationBrowserSettingItemViewComponent extends Component<
       isPending: true,
     });
     const permission = await this._permission.request();
-    this.setState({
-      isPending: false,
-    });
+    setTimeout(() => {
+      this.setState({
+        isPending: false,
+      });
+    },         0);
     return permission;
   }
 
