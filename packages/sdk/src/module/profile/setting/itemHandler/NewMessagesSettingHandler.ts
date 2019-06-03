@@ -101,8 +101,7 @@ class NewMessagesSettingHandler extends AbstractSettingEntityHandler<
   async onSettingEntityUpdate(
     payload: NotificationEntityUpdatePayload<UserSettingEntity>,
   ) {
-    const model = payload.body.entities.get(this.id);
-    if (this.userSettingEntityCache.state !== (model && model.state)) {
+    if (payload.body.entities.has(SettingEntityIds.Notification_Browser)) {
       this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
     }
   }
