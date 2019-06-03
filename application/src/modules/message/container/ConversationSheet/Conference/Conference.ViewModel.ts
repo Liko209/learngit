@@ -12,6 +12,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
 import ConferenceItemModel from '@/store/models/ConferenceItem';
 import { Item } from 'sdk/module/item/entity';
+import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
 // TO-DO: This definition need to be moved to brand config once Brand is supported.
 const GLOBAL_NUMBER_RC = 'https://ringcentr.al/2L14jqL';
@@ -35,6 +36,10 @@ class ConferenceViewModel extends StoreViewModel<Props> implements ViewProps {
       this.conference.creatorId &&
       currentUserId === this.conference.creatorId
     );
+  }
+  @computed
+  get phoneNumber() {
+    return formatPhoneNumber(this.conference.phoneNumber);
   }
 
   @computed

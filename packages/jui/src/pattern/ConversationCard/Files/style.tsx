@@ -8,7 +8,10 @@ import MuiListItem from '@material-ui/core/ListItem';
 import MuiListItemText from '@material-ui/core/ListItemText';
 import MuiCardContent from '@material-ui/core/CardContent';
 import MuiCardActions from '@material-ui/core/CardActions';
-import { JuiTypography, JuiTypographyProps } from '../../../foundation/Typography';
+import {
+  JuiTypography,
+  JuiTypographyProps,
+} from '../../../foundation/Typography';
 import { JuiCardMedia, JuiCard } from '../../../components/Cards';
 import styled from '../../../foundation/styled-components';
 import {
@@ -19,7 +22,10 @@ import {
   palette,
   typography,
 } from '../../../foundation/utils/styles';
-import { JuiIconography, JuiIconographyProps } from '../../../foundation/Iconography';
+import {
+  JuiIconography,
+  JuiIconographyProps,
+} from '../../../foundation/Iconography';
 
 const ITEM_WIDTH = 84;
 const FILE_CARD_HEIGHT = 68;
@@ -39,7 +45,10 @@ const FileItem = styled(MuiListItem)`
 `;
 
 const FileIcon = styled<FileIconProps>(({ size, ...rest }) => (
-  <JuiIconography iconSize={size === 'small' ? 'medium' : 'extraLarge'} {...rest} />
+  <JuiIconography
+    iconSize={size === 'small' ? 'medium' : 'extraLarge'}
+    {...rest}
+  />
 ))`
   && {
     margin: ${({ size }) => (size === 'small' ? spacing(0, 2, 0, 0) : null)};
@@ -54,7 +63,7 @@ const FileInfo = styled(MuiListItemText)`
     padding: ${spacing(0, 0, 0, 3)};
     .file-item-primary {
       ${typography('body1')};
-      width: ${width(57)};
+      width: 100%;
       color: ${palette('grey', '900')};
     }
     .file-item-secondary {
@@ -126,7 +135,9 @@ type ImageCardProps = {
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
-const WrapperImageCard = ({ width, height, ...rest }: ImageCardProps) => <JuiCard {...rest} />;
+const WrapperImageCard = ({ width, height, ...rest }: ImageCardProps) => (
+  <JuiCard {...rest} />
+);
 
 type ImageFileInfoProps = ImageCardProps & JuiTypographyProps;
 

@@ -5,7 +5,8 @@
  */
 
 import FileItemModel from '../FileItem';
-
+import { AccountService } from 'sdk/module/account';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 describe('FileItemModel', () => {
   describe('new FileItem', () => {
     const fileItemModel = FileItemModel.fromJS({
@@ -203,6 +204,43 @@ describe('FileItemModel', () => {
     it('should return null if versions not exist', () => {
       const fileItemModel = FileItemModel.fromJS({} as any);
       expect(fileItemModel.origWidth).toBeNull();
+    });
+  });
+
+  describe('canDeleteFile()', () => {
+    beforeEach(() => {
+      const mockAccountService = ({
+        userConfig: {
+          getGlipUserId: jest.fn().mockReturnValue(1),
+        },
+      } as any) as AccountService;
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(mockAccountService);
+    });
+    it('should return false when currentUserId is not creatorId', () => {
+      const fileItemModel = FileItemModel.fromJS({
+        versions: [
+          {
+            creator_id: 2,
+          },
+        ],
+      } as any);
+      expect(fileItemModel.canDeleteFile).toBeFalsy();
+    });
+
+    it('should return true when currentUserId is creatorId', () => {
+      const fileItemModel = FileItemModel.fromJS({
+        versions: [
+          {
+            creator_id: 1,
+          },
+        ],
+      } as any);
+      expect(fileItemModel.canDeleteFile).toBeTruthy();
+    });
+
+    it('should return null if versions not exist', () => {
+      const fileItemModel = FileItemModel.fromJS({} as any);
+      expect(fileItemModel.canDeleteFile).toBeNull();
     });
   });
 });

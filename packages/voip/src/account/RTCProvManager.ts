@@ -55,8 +55,11 @@ class RTCProvManager extends EventEmitter2 {
   async acquireSipProv() {
     const localSipProvisionInfo = RTCDaoManager.instance().readProvisioning();
     if (localSipProvisionInfo) {
+      rtcLogger.info(LOG_TAG, 'SIP provisioning info FOUND in DAO');
       this._sipProvisionInfo = localSipProvisionInfo;
       this.emit(RTC_PROV_EVENT.NEW_PROV, { info: this._sipProvisionInfo });
+    } else {
+      rtcLogger.info(LOG_TAG, "There's no SIP provisioning info in DAO");
     }
     if (!this._canAcquireSipProv) {
       return;
@@ -116,6 +119,7 @@ class RTCProvManager extends EventEmitter2 {
   }
 
   clearProvInfo() {
+    rtcLogger.debug(LOG_TAG, 'clear provisioning info');
     this._clearFreshTimer();
     this._sipProvisionInfo = null;
     RTCDaoManager.instance().removeProvisioning();
@@ -161,15 +165,26 @@ class RTCProvManager extends EventEmitter2 {
 
     this._resetFreshTimer();
     this._requestErrorRetryInterval = kRTCProvRequestErrorRetryTimerMin;
+    rtcLogger.info(
+      LOG_TAG,
+      `Reset SIP provisioning info error retry interval to ${
+        this._requestErrorRetryInterval
+      }`,
+    );
 
     if (
       !this._sipProvisionInfo ||
       !_.isEqual(responseData, this._sipProvisionInfo)
     ) {
-      rtcLogger.info(LOG_TAG, 'emit new prov');
+      rtcLogger.info(LOG_TAG, 'Received new SIP provisioning info from server');
       this._sipProvisionInfo = responseData;
       RTCDaoManager.instance().saveProvisionInfo(this._sipProvisionInfo);
       this.emit(RTC_PROV_EVENT.NEW_PROV, { info: responseData });
+    } else {
+      rtcLogger.info(
+        LOG_TAG,
+        'New SIP provisioning info from server is same as old one. Ignore it',
+      );
     }
   }
 

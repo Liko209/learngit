@@ -14,12 +14,43 @@ function clearMocks() {
   jest.restoreAllMocks();
 }
 const expectResult = [
-  { id: 1, usageType: 'DirectNumber', phoneNumber: '1' },
-  { id: 2, usageType: 'MainCompanyNumber', phoneNumber: '1' },
-  { id: 0, usageType: 'Blocked', phoneNumber: 'Blocked' },
-  { id: 3, usageType: 'CompanyNumber', phoneNumber: '1', label: 'nickname' },
-  { id: 4, usageType: 'CompanyNumber', phoneNumber: '1' },
-  { id: 5, usageType: 'CompanyFaxNumber', phoneNumber: '1' },
+  {
+    id: 1,
+    usageType: 'DirectNumber',
+    phoneNumber: '1',
+    label: 'Direct Number',
+  },
+  {
+    id: 2,
+    usageType: 'MainCompanyNumber',
+    phoneNumber: '1',
+    label: 'Main Company Number',
+  },
+  {
+    id: 0,
+    usageType: 'Blocked',
+    phoneNumber: 'Blocked',
+    label: 'Blocked',
+  },
+  { id: 3, usageType: 'NickName', phoneNumber: '1', label: 'nickname' },
+  {
+    id: 4,
+    usageType: 'CompanyNumber',
+    phoneNumber: '1',
+    label: 'Company Number',
+  },
+  {
+    id: 5,
+    usageType: 'AdditionalCompanyNumber',
+    phoneNumber: '1',
+    label: 'Company Number',
+  },
+  {
+    id: 6,
+    usageType: 'CompanyFaxNumber',
+    phoneNumber: '1',
+    label: 'Company Fax Number',
+  },
 ];
 describe('RCInfoFetchController', () => {
   let rcCallerIdController: RCCallerIdController;
@@ -43,7 +74,9 @@ describe('RCInfoFetchController', () => {
         .mockResolvedValue({
           records: [
             { id: 2, usageType: 'MainCompanyNumber', phoneNumber: '1' },
-            { id: 5, usageType: 'CompanyFaxNumber', phoneNumber: '1' },
+            { id: 6, usageType: 'CompanyFaxNumber', phoneNumber: '1' },
+            { id: 10, usageType: 'ConferencingNumber', phoneNumber: '1' },
+            { id: 7, usageType: 'ForwardedNumber', phoneNumber: '1' },
             {
               id: 3,
               usageType: 'CompanyNumber',
@@ -51,6 +84,9 @@ describe('RCInfoFetchController', () => {
               label: 'nickname',
             },
             { id: 1, usageType: 'DirectNumber', phoneNumber: '1' },
+            { id: 8, usageType: 'ForwardedCompanyNumber', phoneNumber: '1' },
+            { id: 5, usageType: 'AdditionalCompanyNumber', phoneNumber: '1' },
+            { id: 9, usageType: 'ContactCenterNumber', phoneNumber: '1' },
             { id: 4, usageType: 'CompanyNumber', phoneNumber: '1' },
           ],
         });
@@ -74,9 +110,24 @@ describe('RCInfoFetchController', () => {
       });
       const result = await rcCallerIdController.getCallerIdList();
       expect(result).toEqual([
-        { id: 2, usageType: 'DirectNumber', phoneNumber: '1' },
-        { id: 1, usageType: 'MainCompanyNumber', phoneNumber: '1' },
-        { id: 0, usageType: 'Blocked', phoneNumber: 'Blocked' },
+        {
+          id: 2,
+          usageType: 'DirectNumber',
+          phoneNumber: '1',
+          label: 'Direct Number',
+        },
+        {
+          id: 1,
+          usageType: 'MainCompanyNumber',
+          phoneNumber: '1',
+          label: 'Main Company Number',
+        },
+        {
+          id: 0,
+          usageType: 'Blocked',
+          phoneNumber: 'Blocked',
+          label: 'Blocked',
+        },
       ]);
     });
 
@@ -94,9 +145,24 @@ describe('RCInfoFetchController', () => {
       });
       const result = await rcCallerIdController.getCallerIdList();
       expect(result).toEqual([
-        { id: 2, usageType: 'DirectNumber', phoneNumber: '1' },
-        { id: 1, usageType: 'MainCompanyNumber', phoneNumber: '1' },
-        { id: 0, usageType: 'Blocked', phoneNumber: 'Blocked' },
+        {
+          id: 2,
+          usageType: 'DirectNumber',
+          phoneNumber: '1',
+          label: 'Direct Number',
+        },
+        {
+          id: 1,
+          usageType: 'MainCompanyNumber',
+          phoneNumber: '1',
+          label: 'Main Company Number',
+        },
+        {
+          id: 0,
+          usageType: 'Blocked',
+          phoneNumber: 'Blocked',
+          label: 'Blocked',
+        },
       ]);
     });
 
@@ -113,6 +179,7 @@ describe('RCInfoFetchController', () => {
           id: 0,
           usageType: 'Blocked',
           phoneNumber: 'Blocked',
+          label: 'Blocked',
         },
       ]);
     });

@@ -8,13 +8,18 @@ import { getEntity } from '@/store/utils';
 import { ProfileDialogPersonContentViewModel } from '../Content.ViewModel';
 import { ENTITY_NAME } from '@/store';
 import { PHONE_NUMBER_TYPE } from 'sdk/module/person/entity';
+import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
 jest.mock('@/store/utils');
+jest.mock('foundation');
+jest.mock('sdk/module/phoneNumber/service/PhoneNumberService');
+jest.mock('@/store/models/PhoneNumber');
+jest.mock('@/modules/common/container/PhoneNumberFormat');
 
 const mockCompanyData = {
   name: 'RingCentral',
 };
-
+const phoneNumber = '650-123-641';
 const mockPersonData = {
   id: 1,
   companyId: 111,
@@ -83,6 +88,12 @@ describe('MemberListItemViewModel', () => {
   describe('directNumbers', () => {
     it('should be get an array when invoke class instance property directNumbers [JPT-441]', () => {
       expect(vm.directNumbers).toEqual([mockPersonData.phoneNumbers[1]]);
+    });
+    it('should return formatted phone number while call formatPhoneNumber', () => {
+      (formatPhoneNumber as jest.Mock).mockImplementationOnce(() => {
+        return phoneNumber;
+      });
+      expect(vm.directNumbers).toMatchObject( [{"phoneNumber": phoneNumber, "type": 0}])
     });
   });
 });

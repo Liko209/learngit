@@ -8,9 +8,9 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { FilesView } from '../Files.View';
 import { JuiPreviewImage, StyledImg } from 'jui/pattern/ConversationCard/Files';
-import * as Viewer from '@/containers/Viewer';
+import * as Viewer from '@/modules/viewer/container/Viewer';
 
-jest.mock('@/containers/Viewer');
+jest.mock('@/modules/viewer/container/Viewer');
 describe('FilesView', () => {
   const mockEvent = {
     stopPropagation: () => undefined,
@@ -60,7 +60,7 @@ describe('FilesView', () => {
       setTimeout(() => {
         expect(Viewer.showImageViewer).toHaveBeenCalled();
         done();
-      },         0);
+      }, 0);
     }
 
     @test('should not call showImageViewer function when has postId < 0')
@@ -80,7 +80,7 @@ describe('FilesView', () => {
       setTimeout(() => {
         expect(Viewer.showImageViewer).not.toHaveBeenCalled();
         done();
-      },         0);
+      }, 0);
     }
   }
 });

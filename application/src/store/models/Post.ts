@@ -35,7 +35,7 @@ export default class PostModel extends Base<Post> {
   @observable
   groupId: number;
   @observable
-  itemData?: object;
+  itemData?: { version_map: {} };
   @observable
   source?: string;
   @observable

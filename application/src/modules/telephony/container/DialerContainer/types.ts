@@ -9,6 +9,7 @@ interface ICallerPhoneNumber {
   phoneNumber: string;
   value: string;
   usageType: string;
+  label?: string;
 }
 
 type DialerContainerProps = {
