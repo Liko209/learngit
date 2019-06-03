@@ -7,8 +7,8 @@
 import { telephonyLogger } from 'foundation';
 import _ from 'lodash';
 import { IRTCMediaDeviceDelegate, RTCEngine } from 'voip';
-import { TelephonyUserConfig } from '../../config/TelephonyUserConfig';
-import { TELEPHONY_KEYS } from '../../config/configKeys';
+import { TelephonyGlobalConfig } from '../../config/TelephonyGlobalConfig';
+import { TELEPHONY_GLOBAL_KEYS } from '../../config/configKeys';
 import { DeviceSyncManger } from './DeviceSyncManger';
 import { LastUsedDeviceManager } from './LastUsedDeviceManager';
 import { SOURCE_TYPE, IStorage } from './types';
@@ -19,18 +19,16 @@ const DEFAULT_VOLUME = 50;
 export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
   private _microphoneConfigManager: DeviceSyncManger;
   private _speakerConfigManager: DeviceSyncManger;
-  constructor(
-    private _userConfig: TelephonyUserConfig,
-    private _rtcEngine: RTCEngine = RTCEngine.getInstance(),
-  ) {
+  constructor(private _rtcEngine: RTCEngine = RTCEngine.getInstance()) {
     const speakerStorage: IStorage = {
-      get: () => this._userConfig.getCurrentSpeaker(),
-      set: (deviceId: string) => this._userConfig.setCurrentSpeaker(deviceId),
+      get: () => TelephonyGlobalConfig.getCurrentSpeaker(),
+      set: (deviceId: string) =>
+        TelephonyGlobalConfig.setCurrentSpeaker(deviceId),
     };
     const microphoneStorage: IStorage = {
-      get: () => this._userConfig.getCurrentMicrophone(),
+      get: () => TelephonyGlobalConfig.getCurrentMicrophone(),
       set: (deviceId: string) =>
-        this._userConfig.setCurrentMicrophone(deviceId),
+        TelephonyGlobalConfig.setCurrentMicrophone(deviceId),
     };
     this._microphoneConfigManager = new DeviceSyncManger(
       microphoneStorage,
@@ -43,9 +41,9 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
           this._rtcEngine.getCurrentAudioInput(), // todo
       },
       new LastUsedDeviceManager({
-        get: () => this._userConfig.getUsedMicrophoneHistory(),
+        get: () => TelephonyGlobalConfig.getUsedMicrophoneHistory(),
         set: (value: string) =>
-          this._userConfig.setUsedMicrophoneHistory(value),
+          TelephonyGlobalConfig.setUsedMicrophoneHistory(value),
       }),
     );
     this._speakerConfigManager = new DeviceSyncManger(
@@ -59,8 +57,9 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
           this._rtcEngine.getCurrentAudioOutput(), // todo
       },
       new LastUsedDeviceManager({
-        get: () => this._userConfig.getUsedSpeakerHistory(),
-        set: (value: string) => this._userConfig.setUsedSpeakerHistory(value),
+        get: () => TelephonyGlobalConfig.getUsedSpeakerHistory(),
+        set: (value: string) =>
+          TelephonyGlobalConfig.setUsedSpeakerHistory(value),
       }),
     );
     this._initDevicesState();
@@ -69,7 +68,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
 
   private _initDevicesState() {
     telephonyLogger.tags(LOG_TAG).info('init');
-    let volume = Number(this._userConfig.getCurrentVolume());
+    let volume = Number(TelephonyGlobalConfig.getCurrentVolume());
     if (Number.isNaN(volume)) {
       volume = DEFAULT_VOLUME;
     }
@@ -79,14 +78,16 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
   }
 
   private _subscribe() {
-    this._userConfig.on(TELEPHONY_KEYS.CURRENT_MICROPHONE, () =>
+    TelephonyGlobalConfig.on(TELEPHONY_GLOBAL_KEYS.CURRENT_MICROPHONE, () =>
       this._microphoneConfigManager.ensureDevice(),
     );
-    this._userConfig.on(TELEPHONY_KEYS.CURRENT_SPEAKER, () =>
+    TelephonyGlobalConfig.on(TELEPHONY_GLOBAL_KEYS.CURRENT_SPEAKER, () =>
       this._speakerConfigManager.ensureDevice(),
     );
-    this._userConfig.on(TELEPHONY_KEYS.CURRENT_VOLUME, () =>
-      this._rtcEngine.setVolume(Number(this._userConfig.getCurrentVolume())),
+    TelephonyGlobalConfig.on(TELEPHONY_GLOBAL_KEYS.CURRENT_VOLUME, () =>
+      this._rtcEngine.setVolume(
+        Number(TelephonyGlobalConfig.getCurrentVolume()),
+      ),
     );
   }
 

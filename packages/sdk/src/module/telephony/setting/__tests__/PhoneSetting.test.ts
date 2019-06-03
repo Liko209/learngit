@@ -8,7 +8,9 @@ import { PhoneSetting } from '../PhoneSetting';
 import { SettingEntityIds } from 'sdk/module/setting';
 import { MicrophoneSourceSettingHandler } from '../handlers/MicrophoneSourceSettingHandler';
 import { SpeakerSourceSettingHandler, VolumeSettingHandler } from '../handlers';
-import { TelephonyUserConfig } from '../../config/TelephonyUserConfig';
+import { TelephonyGlobalConfig } from '../../config/TelephonyGlobalConfig';
+
+jest.mock('sdk/module/telephony/config/TelephonyGlobalConfig');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -31,9 +33,7 @@ describe('PhoneSetting ', () => {
     });
 
     it('should return handlerMap correctly', async () => {
-      const phoneSetting = new PhoneSetting(({
-        on: jest.fn(),
-      } as any) as TelephonyUserConfig);
+      const phoneSetting = new PhoneSetting();
       const handlerMap = phoneSetting.getHandlerMap();
       expect(
         handlerMap[SettingEntityIds.Phone_MicrophoneSource],

@@ -5,12 +5,12 @@
  */
 import { VoIPMediaDevicesDelegate } from '../VoIPMediaDevicesDelegate';
 import RTCEngine from 'voip';
-import { TelephonyUserConfig } from 'sdk/module/telephony/config/TelephonyUserConfig';
+import { TelephonyGlobalConfig } from 'sdk/module/telephony/config/TelephonyGlobalConfig';
 import { SOURCE_TYPE } from '../types';
-import { TELEPHONY_KEYS } from 'sdk/module/telephony/config/configKeys';
+import { TELEPHONY_GLOBAL_KEYS } from 'sdk/module/telephony/config/configKeys';
 
 jest.mock('voip/src/api/RTCEngine');
-jest.mock('sdk/module/telephony/config/TelephonyUserConfig');
+jest.mock('sdk/module/telephony/config/TelephonyGlobalConfig');
 
 describe('VoIPMediaDevicesDelegate', () => {
   function clearMocks() {
@@ -20,23 +20,25 @@ describe('VoIPMediaDevicesDelegate', () => {
   }
 
   let deviceDelegate: VoIPMediaDevicesDelegate;
-  let mockUserConfig: TelephonyUserConfig;
   let mockSource: MediaDeviceInfo;
   let mockRtcEngine: RTCEngine;
-
   function setUp() {
-    mockUserConfig = new TelephonyUserConfig();
-    mockUserConfig.getCurrentVolume.mockReturnValue('22');
+    TelephonyGlobalConfig.prototype = {
+      getCurrentSpeaker: jest.fn().mockReturnValue(1),
+      setCurrentSpeaker: jest.fn(),
+      getCurrentMicrophone: jest.fn().mockReturnValue(1),
+      setCurrentMicrophone: jest.fn(),
+      getCurrentVolume: jest.fn().mockReturnValue('22'),
+      setCurrentVolume: jest.fn(),
+      on: jest.fn(),
+      off: jest.fn(),
+    };
     mockSource = [{ deviceId: 1 }, { deviceId: 2 }] as any;
-
     mockRtcEngine = new RTCEngine();
     mockRtcEngine.getAudioInputs.mockReturnValue(mockSource);
     mockRtcEngine.getAudioOutputs.mockReturnValue(mockSource);
 
-    deviceDelegate = new VoIPMediaDevicesDelegate(
-      mockUserConfig,
-      mockRtcEngine,
-    );
+    deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
   }
 
   function cleanUp() {
@@ -68,32 +70,31 @@ describe('VoIPMediaDevicesDelegate', () => {
     });
 
     it('should init value from storage', () => {
+      TelephonyGlobalConfig.getCurrentVolume.mockReturnValue('22');
+      deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
       expect(mockRtcEngine.setVolume).toBeCalledWith(22);
     });
 
     it('should init value from DEFAULT when storage not exists', () => {
-      mockUserConfig.getCurrentVolume.mockReturnValue(undefined);
-      deviceDelegate = new VoIPMediaDevicesDelegate(
-        mockUserConfig,
-        mockRtcEngine,
-      );
+      TelephonyGlobalConfig.getCurrentVolume.mockReturnValue(undefined);
+      deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
       expect(mockRtcEngine.setVolume).toBeCalledWith(50);
     });
 
     it('should subscribe to key change', () => {
-      expect(mockUserConfig.on).toHaveBeenNthCalledWith(
+      expect(TelephonyGlobalConfig.on).toHaveBeenNthCalledWith(
         1,
-        TELEPHONY_KEYS.CURRENT_MICROPHONE,
+        TELEPHONY_GLOBAL_KEYS.CURRENT_MICROPHONE,
         expect.any(Function),
       );
-      expect(mockUserConfig.on).toHaveBeenNthCalledWith(
+      expect(TelephonyGlobalConfig.on).toHaveBeenNthCalledWith(
         2,
-        TELEPHONY_KEYS.CURRENT_SPEAKER,
+        TELEPHONY_GLOBAL_KEYS.CURRENT_SPEAKER,
         expect.any(Function),
       );
-      expect(mockUserConfig.on).toHaveBeenNthCalledWith(
+      expect(TelephonyGlobalConfig.on).toHaveBeenNthCalledWith(
         3,
-        TELEPHONY_KEYS.CURRENT_VOLUME,
+        TELEPHONY_GLOBAL_KEYS.CURRENT_VOLUME,
         expect.any(Function),
       );
     });
@@ -174,14 +175,14 @@ describe('VoIPMediaDevicesDelegate', () => {
         deviceId: 'a',
       } as any);
       expect(mockRtcEngine.setCurrentAudioOutput).toBeCalledWith('a');
-      expect(mockUserConfig.setCurrentSpeaker).toBeCalledWith('a');
+      expect(TelephonyGlobalConfig.setCurrentSpeaker).toBeCalledWith('a');
     });
     it('should create DeviceSyncManager correctly', () => {
       deviceDelegate['_microphoneConfigManager'].setDevice({
         deviceId: 'a',
       } as any);
       expect(mockRtcEngine.setCurrentAudioInput).toBeCalledWith('a');
-      expect(mockUserConfig.setCurrentMicrophone).toBeCalledWith('a');
+      expect(TelephonyGlobalConfig.setCurrentMicrophone).toBeCalledWith('a');
     });
   });
 });

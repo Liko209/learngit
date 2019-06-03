@@ -4,30 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { RC_INFO, ENTITY, SERVICE } from 'sdk/service';
 import notificationCenter from 'sdk/service/notificationCenter';
-import {
-  ESettingValueType,
-  SettingEntityIds,
-  UserSettingEntity,
-} from 'sdk/module/setting';
-import { SettingModuleIds } from 'sdk/module/setting/constants';
-import { DefaultAppSettingHandler } from '../handlers/VolumeSettingHandler';
+import { SettingEntityIds, UserSettingEntity } from 'sdk/module/setting';
 import 'sdk/module/profile/service/ProfileService';
 import 'sdk/module/telephony/service/TelephonyService';
-import { spyOnTarget } from 'sdk/__tests__/utils';
-import { ProfileService } from 'sdk/module/profile/service/ProfileService';
-import { TelephonyService } from 'sdk/module/telephony/service/TelephonyService';
-import { AccountService } from 'sdk/module/account';
-import { Profile } from '../../entity';
-import { CALLING_OPTIONS, SETTING_KEYS } from '../../constants';
 import { ESettingItemState } from 'sdk/framework/model/setting';
-import { TelephonyUserConfig } from 'sdk/module/telephony/config/TelephonyUserConfig';
-import RTCEngine from 'voip/src';
-import { MicrophoneSourceSettingHandler } from '..';
+import { TelephonyGlobalConfig } from 'sdk/module/telephony/config/TelephonyGlobalConfig';
 import { VolumeSettingHandler } from '../VolumeSettingHandler';
-import { TELEPHONY_KEYS } from 'sdk/module/telephony/config/configKeys';
+import { TELEPHONY_GLOBAL_KEYS } from 'sdk/module/telephony/config/configKeys';
 
+jest.mock('sdk/module/telephony/config/TelephonyGlobalConfig');
 function clearMocks() {
   jest.clearAllMocks();
   jest.resetAllMocks();
@@ -35,8 +21,6 @@ function clearMocks() {
 }
 
 describe('DefaultAppSettingHandler', () => {
-  let mockUserConfig: TelephonyUserConfig;
-  let mockRtcEngine: RTCEngine;
   let mockDefaultSettingItem: UserSettingEntity;
   let settingHandler: VolumeSettingHandler;
   function setUp() {
@@ -51,13 +35,18 @@ describe('DefaultAppSettingHandler', () => {
       state: ESettingItemState.ENABLE,
       valueSetter: expect.any(Function),
     };
-    mockUserConfig = {
+
+    TelephonyGlobalConfig.prototype = {
+      getCurrentSpeaker: jest.fn().mockReturnValue(1),
+      setCurrentSpeaker: jest.fn(),
+      getCurrentMicrophone: jest.fn().mockReturnValue(1),
+      setCurrentMicrophone: jest.fn(),
       getCurrentVolume: jest.fn().mockReturnValue(1),
       setCurrentVolume: jest.fn(),
       on: jest.fn(),
       off: jest.fn(),
-    } as any;
-    settingHandler = new VolumeSettingHandler(mockUserConfig);
+    };
+    settingHandler = new VolumeSettingHandler();
     settingHandler.notifyUserSettingEntityUpdate = jest.fn();
   }
 
@@ -75,8 +64,8 @@ describe('DefaultAppSettingHandler', () => {
       cleanUp();
     });
     it('should subscribe notification when create self', () => {
-      expect(mockUserConfig.on).toHaveBeenCalledWith(
-        TELEPHONY_KEYS.CURRENT_VOLUME,
+      expect(TelephonyGlobalConfig.on).toHaveBeenCalledWith(
+        TELEPHONY_GLOBAL_KEYS.CURRENT_VOLUME,
         expect.any(Function),
       );
     });
@@ -138,7 +127,7 @@ describe('DefaultAppSettingHandler', () => {
       cleanUp();
     });
     it('should fetch entity correctly', async () => {
-      mockUserConfig.getCurrentVolume.mockReturnValue(22);
+      TelephonyGlobalConfig.getCurrentVolume.mockReturnValue(22);
       const res = await settingHandler.fetchUserSettingEntity();
       expect(res).toEqual({
         valueType: 0,
@@ -163,7 +152,7 @@ describe('DefaultAppSettingHandler', () => {
 
     it('should call userConfig.set', async () => {
       await settingHandler.updateValue(33);
-      expect(mockUserConfig.setCurrentVolume).toBeCalledWith('33');
+      expect(TelephonyGlobalConfig.setCurrentVolume).toBeCalledWith('33');
     });
   });
 
@@ -178,7 +167,7 @@ describe('DefaultAppSettingHandler', () => {
 
     it('should call off userConfig', () => {
       settingHandler.dispose();
-      expect(mockUserConfig.off).toBeCalled();
+      expect(TelephonyGlobalConfig.off).toBeCalled();
     });
   });
 });

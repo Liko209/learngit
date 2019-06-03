@@ -174,7 +174,7 @@ class TelephonyService extends EntityBaseService<IdModel> {
 
   get phoneSetting() {
     if (!this._phoneSetting) {
-      this._phoneSetting = new PhoneSetting(this.userConfig);
+      this._phoneSetting = new PhoneSetting();
     }
     return this._phoneSetting;
   }

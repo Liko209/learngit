@@ -12,26 +12,23 @@ import {
 } from 'sdk/module/setting';
 import { RTCEngine, RTC_MEDIA_ACTION } from 'voip';
 
-import { TELEPHONY_KEYS } from '../../config/configKeys';
-import { TelephonyUserConfig } from '../../config/TelephonyUserConfig';
+import { TELEPHONY_GLOBAL_KEYS } from '../../config/configKeys';
+import { TelephonyGlobalConfig } from '../../config/TelephonyGlobalConfig';
 
 export class MicrophoneSourceSettingHandler extends AbstractSettingEntityHandler<
   MediaDeviceInfo
 > {
   id = SettingEntityIds.Phone_MicrophoneSource;
 
-  constructor(
-    private _userConfig: TelephonyUserConfig,
-    private _rtcEngine: RTCEngine,
-  ) {
+  constructor(private _rtcEngine: RTCEngine) {
     super();
     this._subscribe();
   }
 
   private _subscribe() {
     this.on(RTC_MEDIA_ACTION.INPUT_DEVICE_LIST_CHANGED, this._onDevicesChange);
-    this._userConfig.on(
-      TELEPHONY_KEYS.CURRENT_MICROPHONE,
+    TelephonyGlobalConfig.on(
+      TELEPHONY_GLOBAL_KEYS.CURRENT_MICROPHONE,
       this._onSelectedDeviceUpdate,
     );
   }
@@ -53,14 +50,14 @@ export class MicrophoneSourceSettingHandler extends AbstractSettingEntityHandler
 
   dispose() {
     super.dispose();
-    this._userConfig.off(
-      TELEPHONY_KEYS.CURRENT_MICROPHONE,
+    TelephonyGlobalConfig.off(
+      TELEPHONY_GLOBAL_KEYS.CURRENT_MICROPHONE,
       this._onSelectedDeviceUpdate,
     );
   }
 
   async updateValue(value: MediaDeviceInfo) {
-    await this._userConfig.setCurrentMicrophone(value.deviceId);
+    TelephonyGlobalConfig.setCurrentMicrophone(value.deviceId);
   }
 
   async fetchUserSettingEntity() {
@@ -72,7 +69,8 @@ export class MicrophoneSourceSettingHandler extends AbstractSettingEntityHandler
       id: SettingEntityIds.Phone_MicrophoneSource,
       source: devices,
       value: devices.find(
-        device => device.deviceId === this._userConfig.getCurrentMicrophone(),
+        device =>
+          device.deviceId === TelephonyGlobalConfig.getCurrentMicrophone(),
       ),
       state: ESettingItemState.ENABLE,
       valueSetter: value => this.updateValue(value),

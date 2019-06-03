@@ -7,7 +7,6 @@ import _ from 'lodash';
 import { BaseModuleSetting, SettingEntityIds } from 'sdk/module/setting';
 import RTCEngine from 'voip';
 
-import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 import {
   MicrophoneSourceSettingHandler,
   SpeakerSourceSettingHandler,
@@ -21,26 +20,19 @@ type HandlerMap = {
 };
 
 export class PhoneSetting extends BaseModuleSetting<HandlerMap> {
-  constructor(
-    private _userConfig: TelephonyUserConfig,
-    private _rtcEngine: RTCEngine = RTCEngine.getInstance(),
-  ) {
+  constructor(private _rtcEngine: RTCEngine = RTCEngine.getInstance()) {
     super();
   }
 
   getHandlerMap() {
     return {
       [SettingEntityIds.Phone_MicrophoneSource]: new MicrophoneSourceSettingHandler(
-        this._userConfig,
         this._rtcEngine,
       ),
       [SettingEntityIds.Phone_SpeakerSource]: new SpeakerSourceSettingHandler(
-        this._userConfig,
         this._rtcEngine,
       ),
-      [SettingEntityIds.Phone_Volume]: new VolumeSettingHandler(
-        this._userConfig,
-      ),
+      [SettingEntityIds.Phone_Volume]: new VolumeSettingHandler(),
     };
   }
 }

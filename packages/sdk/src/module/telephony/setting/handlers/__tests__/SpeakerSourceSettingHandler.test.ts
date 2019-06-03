@@ -7,8 +7,10 @@
 import notificationCenter from 'sdk/service/notificationCenter';
 import { SpeakerSourceSettingHandler } from '..';
 import { SettingEntityIds, UserSettingEntity } from 'sdk/module/setting';
-import { TelephonyUserConfig } from 'sdk/module/telephony/config/TelephonyUserConfig';
 import RTCEngine, { RTC_MEDIA_ACTION } from 'voip/src';
+import { TelephonyGlobalConfig } from 'sdk/module/telephony/config/TelephonyGlobalConfig';
+
+jest.mock('sdk/module/telephony/config/TelephonyGlobalConfig');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -17,7 +19,6 @@ function clearMocks() {
 }
 
 describe('SpeakerSourceSettingHandler', () => {
-  let mockUserConfig: TelephonyUserConfig;
   let mockRtcEngine: RTCEngine;
   let mockDefaultSettingItem: UserSettingEntity;
   let settingHandler: SpeakerSourceSettingHandler;
@@ -36,35 +37,38 @@ describe('SpeakerSourceSettingHandler', () => {
       value: { deviceId: 2 },
       valueSetter: expect.any(Function),
     };
-    mockUserConfig = {
+
+    TelephonyGlobalConfig.prototype = {
       getCurrentSpeaker: jest.fn().mockReturnValue(1),
       setCurrentSpeaker: jest.fn(),
+      getCurrentMicrophone: jest.fn().mockReturnValue(1),
+      setCurrentMicrophone: jest.fn(),
+      getCurrentVolume: jest.fn().mockReturnValue(1),
+      setCurrentVolume: jest.fn(),
       on: jest.fn(),
       off: jest.fn(),
-    } as any;
+    };
     mockRtcEngine = {
       getAudioInputs: jest.fn().mockReturnValue(mockSource),
       getAudioOutputs: jest.fn().mockReturnValue(mockSource),
     } as any;
-    settingHandler = new SpeakerSourceSettingHandler(
-      mockUserConfig,
-      mockRtcEngine,
-    );
+    settingHandler = new SpeakerSourceSettingHandler(mockRtcEngine);
     settingHandler.notifyUserSettingEntityUpdate = jest.fn();
   }
 
   function cleanUp() {
-    clearMocks();
     settingHandler.dispose();
+    notificationCenter.removeAllListeners();
+    clearMocks();
   }
 
-  beforeEach(() => {
-    setUp();
-  });
+  // beforeEach(() => {
+  //   setUp();
+  // });
 
-  afterEach(() => {
-    cleanUp();
-  });
+  // afterEach(() => {
+  //   cleanUp();
+  // });
 
   describe('onDevicesChange()', () => {
     beforeEach(() => {
@@ -148,7 +152,7 @@ describe('SpeakerSourceSettingHandler', () => {
       cleanUp();
     });
     it('should fetch entity correctly', async () => {
-      mockUserConfig.getCurrentSpeaker.mockReturnValue('a');
+      TelephonyGlobalConfig.getCurrentSpeaker.mockReturnValue('a');
       const devices = [{ deviceId: 'a' }, { deviceId: 'b' }];
       mockRtcEngine.getAudioOutputs.mockReturnValue(devices);
       const res = await settingHandler.fetchUserSettingEntity();
@@ -178,7 +182,7 @@ describe('SpeakerSourceSettingHandler', () => {
       await settingHandler.updateValue({
         deviceId: 111,
       } as any);
-      expect(mockUserConfig.setCurrentSpeaker).toBeCalledWith(111);
+      expect(TelephonyGlobalConfig.setCurrentSpeaker).toBeCalledWith(111);
     });
   });
 
@@ -193,7 +197,7 @@ describe('SpeakerSourceSettingHandler', () => {
 
     it('should call off userConfig', () => {
       settingHandler.dispose();
-      expect(mockUserConfig.off).toBeCalled();
+      expect(TelephonyGlobalConfig.off).toBeCalled();
     });
   });
 });

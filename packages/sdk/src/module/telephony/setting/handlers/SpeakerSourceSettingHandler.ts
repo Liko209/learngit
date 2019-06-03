@@ -12,26 +12,23 @@ import {
 } from 'sdk/module/setting';
 import { RTC_MEDIA_ACTION, RTCEngine } from 'voip';
 
-import { TELEPHONY_KEYS } from '../../config/configKeys';
-import { TelephonyUserConfig } from '../../config/TelephonyUserConfig';
+import { TELEPHONY_GLOBAL_KEYS } from '../../config/configKeys';
+import { TelephonyGlobalConfig } from '../../config/TelephonyGlobalConfig';
 
 export class SpeakerSourceSettingHandler extends AbstractSettingEntityHandler<
   MediaDeviceInfo
 > {
   id = SettingEntityIds.Phone_SpeakerSource;
 
-  constructor(
-    private _userConfig: TelephonyUserConfig,
-    private _rtcEngine: RTCEngine,
-  ) {
+  constructor(private _rtcEngine: RTCEngine) {
     super();
     this._subscribe();
   }
 
   private _subscribe() {
     this.on(RTC_MEDIA_ACTION.OUTPUT_DEVICE_LIST_CHANGED, this._onDevicesChange);
-    this._userConfig.on(
-      TELEPHONY_KEYS.CURRENT_SPEAKER,
+    TelephonyGlobalConfig.on(
+      TELEPHONY_GLOBAL_KEYS.CURRENT_SPEAKER,
       this._onSelectedDeviceUpdate,
     );
   }
@@ -53,14 +50,14 @@ export class SpeakerSourceSettingHandler extends AbstractSettingEntityHandler<
 
   dispose() {
     super.dispose();
-    this._userConfig.off(
-      TELEPHONY_KEYS.CURRENT_SPEAKER,
+    TelephonyGlobalConfig.off(
+      TELEPHONY_GLOBAL_KEYS.CURRENT_SPEAKER,
       this._onSelectedDeviceUpdate,
     );
   }
 
   async updateValue(value: MediaDeviceInfo) {
-    await this._userConfig.setCurrentSpeaker(value.deviceId);
+    await TelephonyGlobalConfig.setCurrentSpeaker(value.deviceId);
   }
 
   async fetchUserSettingEntity() {
@@ -72,7 +69,7 @@ export class SpeakerSourceSettingHandler extends AbstractSettingEntityHandler<
       id: SettingEntityIds.Phone_SpeakerSource,
       source: devices,
       value: devices.find(
-        device => device.deviceId === this._userConfig.getCurrentSpeaker(),
+        device => device.deviceId === TelephonyGlobalConfig.getCurrentSpeaker(),
       ),
       state: ESettingItemState.ENABLE,
       valueSetter: value => this.updateValue(value),

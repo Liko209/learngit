@@ -12,19 +12,22 @@ import {
   UserSettingEntity,
 } from 'sdk/module/setting';
 
-import { TELEPHONY_KEYS } from '../../config/configKeys';
-import { TelephonyUserConfig } from '../../config/TelephonyUserConfig';
+import { TELEPHONY_GLOBAL_KEYS } from '../../config/configKeys';
+import { TelephonyGlobalConfig } from '../../config/TelephonyGlobalConfig';
 
 export class VolumeSettingHandler extends AbstractSettingEntityHandler<number> {
   id = SettingEntityIds.Phone_Volume;
 
-  constructor(private _userConfig: TelephonyUserConfig) {
+  constructor() {
     super();
     this._subscribe();
   }
 
   private _subscribe() {
-    this._userConfig.on(TELEPHONY_KEYS.CURRENT_VOLUME, this._onVolumeUpdate);
+    TelephonyGlobalConfig.on(
+      TELEPHONY_GLOBAL_KEYS.CURRENT_VOLUME,
+      this._onVolumeUpdate,
+    );
   }
 
   private _onVolumeUpdate = (value: number) => {
@@ -41,15 +44,18 @@ export class VolumeSettingHandler extends AbstractSettingEntityHandler<number> {
 
   dispose() {
     super.dispose();
-    this._userConfig.off(TELEPHONY_KEYS.CURRENT_VOLUME, this._onVolumeUpdate);
+    TelephonyGlobalConfig.off(
+      TELEPHONY_GLOBAL_KEYS.CURRENT_VOLUME,
+      this._onVolumeUpdate,
+    );
   }
 
   async updateValue(value: number) {
-    await this._userConfig.setCurrentVolume(String(value));
+    await TelephonyGlobalConfig.setCurrentVolume(String(value));
   }
 
   async fetchUserSettingEntity() {
-    const volume = Number(this._userConfig.getCurrentVolume());
+    const volume = Number(TelephonyGlobalConfig.getCurrentVolume());
 
     const settingItem: UserSettingEntity<number> = {
       weight: 0,

@@ -5,6 +5,9 @@
  */
 const TELEPHONY_KEYS = {
   LAST_CALLED_NUMBER: 'last_called_number',
+};
+
+const TELEPHONY_GLOBAL_KEYS = {
   CURRENT_MICROPHONE: 'current_microphone',
   CURRENT_SPEAKER: 'current_speaker',
   CURRENT_RINGER: 'current_ringer',
@@ -14,4 +17,4 @@ const TELEPHONY_KEYS = {
   CURRENT_VOLUME: 'current_volume',
 };
 
-export { TELEPHONY_KEYS };
+export { TELEPHONY_KEYS, TELEPHONY_GLOBAL_KEYS };
