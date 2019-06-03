@@ -191,7 +191,7 @@ export class GroupFetchDataController {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null> {
+  }> {
     const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
@@ -200,6 +200,7 @@ export class GroupFetchDataController {
         myGroupsOnly,
         recentFirst,
       ),
+      undefined,
       searchKey,
       undefined,
       (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
@@ -220,7 +221,10 @@ export class GroupFetchDataController {
       },
     );
     performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_ALL_GROUP });
-    return result;
+    return {
+      terms: result.terms.searchKeyTerms,
+      sortableModels: result.sortableModels,
+    };
   }
 
   private get _currentUserId() {
@@ -318,11 +322,12 @@ export class GroupFetchDataController {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null> {
+  }> {
     const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
       this._getTransformGroupFunc(fetchAllIfSearchKeyEmpty, recentFirst),
+      undefined,
       searchKey,
       undefined,
       (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
@@ -350,7 +355,10 @@ export class GroupFetchDataController {
       },
     );
     performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_GROUP });
-    return result;
+    return {
+      terms: result.terms.searchKeyTerms,
+      sortableModels: result.sortableModels,
+    };
   }
 
   private _getRecentSearchGroups(types: RecentSearchTypes[]) {
@@ -586,11 +594,12 @@ export class GroupFetchDataController {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null> {
+  }> {
     const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
       this._getTransformTeamsFunc(fetchAllIfSearchKeyEmpty, recentFirst),
+      undefined,
       searchKey,
       undefined,
       (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
@@ -619,7 +628,10 @@ export class GroupFetchDataController {
       },
     );
     performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_TEAM });
-    return result;
+    return {
+      terms: result.terms.searchKeyTerms,
+      sortableModels: result.sortableModels,
+    };
   }
 
   getAllPersonOfGroup(members: number[], currentUserId: number) {

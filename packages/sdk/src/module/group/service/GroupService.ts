@@ -310,7 +310,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null> {
+  }> {
     return await this._groupFetchDataController.doFuzzySearchGroups(
       searchKey,
       fetchAllIfSearchKeyEmpty,
@@ -326,7 +326,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null> {
+  }> {
     return await this._groupFetchDataController.doFuzzySearchAllGroups(
       searchKey,
       fetchAllIfSearchKeyEmpty,
@@ -342,7 +342,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null> {
+  }> {
     return await this._groupFetchDataController.doFuzzySearchTeams(
       searchKey,
       fetchAllIfSearchKeyEmpty,
