@@ -559,16 +559,14 @@ class JupiterJob extends BaseJob {
             jenkins.echo "${DEPENDENCY_LOCK} doesn't change, no need to update: ${dependencyLock}"
             return
         }
-
         jenkins.sh "npm config set registry ${context.npmRegistry}"
         jenkins.sh 'npm run fixed:version pre || true'  // suppress error
         jenkins.sshagent (credentials: [context.scmCredentialId]) {
             jenkins.sh 'npm install --unsafe-perm'
         }
+        jenkins.writeFile(file: DEPENDENCY_LOCK, text: dependencyLock, encoding: 'utf-8')
         jenkins.sh 'npm run fixed:version check || true'  // suppress error
         jenkins.sh 'npm run fixed:version cache || true'  // suppress error
-
-        jenkins.writeFile(file: DEPENDENCY_LOCK, text: dependencyLock, encoding: 'utf-8')
     }
 
     void staticAnalysis() {
