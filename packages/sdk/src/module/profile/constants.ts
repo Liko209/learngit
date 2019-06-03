@@ -79,5 +79,4 @@ export {
   SETTING_KEYS,
   NEW_MESSAGE_BADGES_OPTIONS,
   DesktopNotificationsSettingModel,
-  NEW_MESSAGE_BADGES_OPTIONS,
 };
