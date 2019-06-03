@@ -38,7 +38,6 @@ class FileNameEditDialogViewComponent extends Component<
       isLoading,
     } = this.props;
     const { type } = item;
-    console.log('looper', isLoading);
     return (
       <JuiModal
         open={true}
