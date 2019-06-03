@@ -20,9 +20,14 @@ import {
   MESSAGE_SETTING_ITEM,
 } from '../interface/constant';
 import { IMessageSettingManager } from '../interface';
-import { DESKTOP_MESSAGE_NOTIFICATION_OPTIONS } from 'sdk/module/profile';
+import {
+  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
+  NEW_MESSAGE_BADGES_OPTIONS,
+} from 'sdk/module/profile';
 import { NewMessageSelectSourceItem } from './NewMessageSelectSourceItem';
 import { buildTitleAndDesc } from '@/modules/setting/utils';
+import { BadgeCountSourceItem } from './NewMessageBadgeCountSelectSouceItem';
+
 class MessageSettingManager implements IMessageSettingManager {
   @ISettingService private _settingService: ISettingService;
 
@@ -92,13 +97,14 @@ class MessageSettingManager implements IMessageSettingManager {
         id: MESSAGE_SETTING_ITEM.NEW_MESSAGE_BADGE_COUNT,
         automationId: 'newMessageBadgeCount',
         weight: 100,
-        type: SETTING_ITEM_TYPE.TOGGLE,
+        type: SETTING_ITEM_TYPE.SELECT,
+        valueRenderer: BadgeCountSourceItem,
         ...buildTitleAndDesc(
           'notificationAndSounds',
           'otherNotificationSettings',
           'newMessageBadgeCount',
         ),
-      },
+      } as SelectSettingItem<NEW_MESSAGE_BADGES_OPTIONS>,
     );
   }
 

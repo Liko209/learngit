@@ -583,6 +583,10 @@
       "otherNotificationSettings": {
         "title": "Other notification settings",
         "newMessageBadgeCount": {
+          "options": {
+            "groups_and_mentions": "Direct messages and mentions only",
+            "all": "All new messages"
+          },
           "description": "Choose how the app will count new messages in the app badge count",
           "label": "New message badge count"
         }
