@@ -6,7 +6,7 @@
 
 import { ProfileSetting } from '../ProfileSetting';
 import { SettingEntityIds } from 'sdk/module/setting';
-import { CallerIdSettingHandler } from '../CallerIdSettingHandler';
+import { CallerIdSettingHandler } from '../itemHandler/CallerIdSettingHandler';
 
 function clearMocks() {
   jest.clearAllMocks();

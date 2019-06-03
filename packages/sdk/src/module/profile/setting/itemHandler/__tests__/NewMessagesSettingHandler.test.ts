@@ -4,10 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ProfileService } from '../../../service/ProfileService';
-import notificationCenter from '../../../../../service/notificationCenter';
+import { ENTITY, notificationCenter } from 'sdk/service';
+import { AccountService } from 'sdk/module/account';
+import { PlatformUtils } from 'sdk/utils/PlatformUtils';
+import {
+  ProfileService,
+  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
+  SETTING_KEYS,
+} from 'sdk/module/profile';
 import { NewMessagesSettingHandler } from '../NewMessagesSettingHandler';
 import {
+  SettingService,
   UserSettingEntity,
   SettingEntityIds,
   SettingService,
@@ -21,7 +28,7 @@ import { ENTITY } from 'sdk/service';
 import { AccountService } from 'sdk/module/account';
 import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 import { Profile } from 'sdk/module/profile/entity';
-jest.mock('../../../service/ProfileService');
+jest.mock('sdk/module/profile');
 
 function clearMocks() {
   jest.clearAllMocks();
