@@ -9,7 +9,6 @@ import { HoldProps, HoldViewProps } from './types';
 import { TelephonyService } from '../../service';
 import { TelephonyStore } from '../../store';
 import { computed } from 'mobx';
-import { HOLD_STATE } from '../../FSM';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 
 class HoldViewModel extends StoreViewModel<HoldProps> implements HoldViewProps {
@@ -20,12 +19,12 @@ class HoldViewModel extends StoreViewModel<HoldProps> implements HoldViewProps {
 
   @computed
   get disabled() {
-    return this._telephonyStore.holdState === HOLD_STATE.DISABLED;
+    return this._telephonyStore.holdDisabled;
   }
 
   @computed
   get held() {
-    return this._telephonyStore.holdState === HOLD_STATE.HOLDED;
+    return this._telephonyStore.held;
   }
 
   get isOnline() {

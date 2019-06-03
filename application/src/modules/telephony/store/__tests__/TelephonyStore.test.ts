@@ -5,17 +5,29 @@
  */
 
 import { TelephonyStore, INCOMING_STATE } from '../TelephonyStore';
-import { CALL_STATE, CALL_WINDOW_STATUS, HOLD_STATE } from '../../FSM';
+import { CALL_STATE, CALL_WINDOW_STATUS } from '../../FSM';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+
+import { getEntity } from '@/store/utils';
+import { HOLD_STATE, RECORD_STATE } from 'sdk/module/telephony/entity';
+import CallModel from '@/store/models/Call';
+
+jest.mock('@/store/utils');
+
+const mockState = (prop: keyof CallModel, value: any) =>
+  (getEntity as jest.Mock).mockReturnValue({
+    [prop]: value,
+  });
 
 jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
   matchContactByPhoneNumber: jest.fn(),
 });
+
 function createStore() {
   return new TelephonyStore();
 }
 
-describe('Telephony store', () => {
+describe.only('Telephony store', () => {
   it('callWindowState should to be CALL_WINDOW_STATUS.MINIMIZED and callState should to be CALL_STATE.IDLE when instantiated TelephonyStore', () => {
     const store = createStore();
     expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.MINIMIZED);
@@ -25,6 +37,7 @@ describe('Telephony store', () => {
   /* tslint:disable:max-line-length */
   it('callState should to be correct state when call openDialer function or closeDialer function', () => {
     const store = createStore();
+    mockState('recordState', RECORD_STATE.IDLE);
     store.openDialer();
     expect(store.callState).toBe(CALL_STATE.DIALING);
     store.closeDialer();
@@ -125,19 +138,25 @@ describe('Telephony store', () => {
   it('holdState should to be HOLD_STATE.DISABLED when instantiated TelephonyStore [JPT-1545]', () => {
     const store = createStore();
     store.directCall();
-    expect(store.holdState).toBe(HOLD_STATE.DISABLED);
+    (getEntity as jest.Mock).mockReturnValue({
+      holdState: HOLD_STATE.DISABLE,
+    });
+
+    expect(store.holdState).toBe(HOLD_STATE.DISABLE);
   });
 
   it('holdState should change to HOLD_STATE.IDLE when connected', () => {
     const store = createStore();
     store.directCall();
     store.connected();
+    mockState('holdState', HOLD_STATE.IDLE);
     expect(store.holdState).toBe(HOLD_STATE.IDLE);
   });
 
   it('recordDisabled should to be RECORD_DISABLED_STATE.DISABLED when instantiated TelephonyStore', () => {
     const store = createStore();
     store.directCall();
+    mockState('recordState', RECORD_STATE.DISABLE);
     expect(store.recordDisabled).toBe(true);
   });
 
@@ -145,6 +164,7 @@ describe('Telephony store', () => {
     const store = createStore();
     store.directCall();
     store.connected();
+    mockState('recordState', RECORD_STATE.IDLE);
     expect(store.recordDisabled).toBe(false);
   });
 
