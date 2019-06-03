@@ -9,7 +9,7 @@ import { container } from 'framework';
 import { TelephonyStore } from '../../store';
 import { StoreViewModel } from '@/store/ViewModel';
 import { IncomingProps, IncomingViewProps } from './types';
-import _ from 'lodash';
+import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
 class IncomingViewModel extends StoreViewModel<IncomingProps>
   implements IncomingViewProps {
@@ -17,7 +17,11 @@ class IncomingViewModel extends StoreViewModel<IncomingProps>
 
   @computed
   get phone() {
-    return this._telephonyStore.phoneNumber;
+    const phoneNumber = this._telephonyStore.phoneNumber;
+    if (phoneNumber) {
+      return formatPhoneNumber(phoneNumber);
+    }
+    return phoneNumber;
   }
 
   @computed
@@ -32,6 +36,11 @@ class IncomingViewModel extends StoreViewModel<IncomingProps>
   @computed
   get isExt() {
     return this._telephonyStore.isExt;
+  }
+
+  @computed
+  get incomingState() {
+    return this._telephonyStore.incomingState;
   }
 
   @observable

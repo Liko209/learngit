@@ -2,9 +2,9 @@ import * as assert from 'assert';
 import * as querystring from 'querystring';
 import * as _ from 'lodash';
 import axios, { AxiosInstance } from 'axios';
-
 import { RcPlatformSdk } from './platform';
 import { H } from '../helpers';
+import { MiscUtils } from '../utils';
 
 interface Person {
   _id: number;
@@ -91,6 +91,7 @@ export class GlipSdk {
     this.axiosClient = axios.create({
       baseURL: this.glipServerUrl,
     });
+    MiscUtils.addDebugLog(this.axiosClient, 'glip');
     this.glipDb = glipDb || new GlipDb();
   }
 
@@ -377,6 +378,7 @@ export class GlipSdk {
     const meChatId = await this.getMeChatId();
 
     const initData = {
+      new_message_badges:"groups_and_mentions",
       model_size: 0,
       is_new: false,
       want_email_people: 900000,
@@ -387,7 +389,6 @@ export class GlipSdk {
       want_push_mentions: true,
       want_push_video_chat: true,
       want_email_glip_today: true,
-      new_message_badges: 'all',
       want_push_missed_calls_and_voicemails: 1,
       send_push_notifications_ignoring_presence: 0,
       send_email_notifications_ignoring_presence: 0,
@@ -397,7 +398,8 @@ export class GlipSdk {
       me_tab: true,
       skip_close_conversation_confirmation: false,
       max_leftrail_group_tabs2: 20,
-      favorite_post_ids: []
+      favorite_post_ids: [],
+      calling_option:'glip'
     }
     const data = _.assign(initData, ...groups.map(key => ({ [key]: false })));
     return await this.updateProfile(data, rcId);
@@ -408,6 +410,10 @@ export class GlipSdk {
       favorite_post_ids: H.toNumberArray(postIds)
     }
     await this.updateProfile(data, rcId);
+  }
+
+  async setDefaultPhoneApp(val:'ringcentral'|'glip',rcId?:string) {
+      await this.updateProfile({calling_option:val}, rcId);
   }
 
   /* state */
@@ -699,7 +705,7 @@ export class GlipSdk {
     });
   }
 
-  async createSimpleEvent(data: { groupIds: string[] | string, title: string, rcIds?, start?: number, end?: number, description?: string, location?: string }, options?: object) {
+  async createSimpleEvent(data: { groupIds: string[] | string, title: string, rcIds?, start?: number, end?: number, description?: string, location?: string, repeat?: string, color?: string }, options?: object) {
     const rcIds = data.rcIds ? this.toPersonId(data.rcIds) : this.myPersonId;
     const neededData = _.assign({
       text: data.title,
@@ -707,7 +713,10 @@ export class GlipSdk {
       invitee_ids: H.toNumberArray(rcIds),
       start: data.start || new Date().getTime() + 1800000, // start time after 30 minutes from now
       end: data.end || new Date().getTime() + 3600000, // end time after 60 minutes from now
-      description: data.description
+      repeat: data.repeat || 'none',
+      location: data.location,
+      description: data.description,
+      color: data.color || 'black',
     },
       options
     )

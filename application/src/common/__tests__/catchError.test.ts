@@ -10,7 +10,11 @@ import {
   JServerError,
   ERROR_CODES_SERVER,
 } from 'sdk/error';
-import { catchError } from '../catchError';
+import {
+  catchError,
+  ERROR_TYPES,
+  getErrorType,
+} from '../catchError';
 
 jest.mock('@/containers/Notification');
 
@@ -262,5 +266,29 @@ describe('catchError.flag: decorate a simple synchronous func', () => {
 
   it('success scenario', () => {
     expect(MockFunc.syncFunc('success')).toBe(true);
+  });
+});
+
+describe('getErrorType', () => {
+  it('getErrorType: UNKNOWN', () => {
+    expect(getErrorType(new Error('UNKNOWN'))).toEqual(ERROR_TYPES.UNKNOWN);
+  });
+  it('getErrorType: NETWORK', () => {
+    expect(
+      getErrorType(new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK'))
+    )
+    .toEqual(ERROR_TYPES.NETWORK);
+  });
+  it('getErrorType: NOT_AUTHORIZED', () => {
+    expect(
+      getErrorType(new JServerError(ERROR_CODES_SERVER.NOT_AUTHORIZED, 'NOT_AUTHORIZED'))
+    )
+    .toEqual(ERROR_TYPES.NOT_AUTHORIZED);
+  });
+  it('getErrorType: BACKEND', () => {
+    expect(
+      getErrorType(new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL'))
+    )
+    .toEqual(ERROR_TYPES.BACKEND);
   });
 });

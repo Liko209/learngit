@@ -79,12 +79,16 @@ class MoreMenu extends Entry {
     return this.getToggler('favToggler');
   }
 
+  get markAsReadOrUnread(){
+    return this.getToggler('readOrUnreadConversation');
+  }
+
   get profile() {
-    return this.getEntry('Profile');
+    return this.getToggler('profileEntry');
   }
 
   get close() {
-    return this.getComponent(MenuItem, this.self.find('li').withText('Close'));
+    return this.getComponent(MenuItem, this.self.find('*[data-test-automation-id="closeConversation"]'));
   }
 
   async openProfile() {

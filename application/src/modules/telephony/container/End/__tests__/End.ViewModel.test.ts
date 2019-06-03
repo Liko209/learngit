@@ -11,23 +11,25 @@ import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import * as telephony from '@/modules/telephony/module.config';
 
 jest.mock('../../../service/TelephonyService');
+jest.useFakeTimers();
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 
 let endViewModel: EndViewModel;
 
-beforeAll(() => {
-  endViewModel = new EndViewModel();
-  endViewModel._telephonyService.hangUp = jest.fn();
-});
-
 describe('EndViewModel', () => {
   it('should call hangUp function', () => {
+    endViewModel = new EndViewModel({});
+    expect(setTimeout).toHaveBeenCalledTimes(1);
+    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1000);
     endViewModel.end();
     const _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,
     );
+    expect(_telephonyService.hangUp).not.toBeCalled();
+    jest.advanceTimersByTime(1000);
+    endViewModel.end();
     expect(_telephonyService.hangUp).toBeCalled();
   });
 });

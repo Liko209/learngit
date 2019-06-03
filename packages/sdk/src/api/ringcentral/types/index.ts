@@ -16,6 +16,11 @@ export { AccountServiceInfo } from './AccountServiceInfo';
 export { RCExtensionInfo, RCServiceFeature } from './RCExtensionInfo';
 export { RCRolePermissions, RCRolePermission } from './RCRolePermissions';
 export {
+  RCExtensionForwardingNumberRequest,
+  RCExtensionForwardingNumberInfo,
+  RCExtensionForwardingNumberRCList,
+} from './RCForwardingNumbers';
+export {
   RCAPIVersion,
   ISpecialServiceNumber,
   ITokenModel,

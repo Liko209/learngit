@@ -8,6 +8,7 @@ import { IdModel, SortableModel, ModelIdType } from '../../../framework/model';
 import {
   IEntityCacheSearchController,
   Terms,
+  FormattedTerms,
 } from '../interface/IEntityCacheSearchController';
 
 import { IEntityCacheController } from '../interface/IEntityCacheController';
@@ -50,27 +51,39 @@ class EntityCacheSearchController<
 
   async searchEntities(
     genSortableModelFunc: (entity: T, terms: Terms) => SortableModel<T> | null,
+    genFormattedTermsFunc?: (originalTerms: string[]) => FormattedTerms,
     searchKey?: string,
     arrangeIds?: IdType[],
     sortFunc?: (entityA: SortableModel<T>, entityB: SortableModel<T>) => number,
   ): Promise<{
-    terms: string[];
+    terms: Terms;
     sortableModels: SortableModel<T>[];
-  } | null> {
-    const searchTerms: Terms = {
+  }> {
+    const terms: Terms = {
       searchKeyTerms: [],
       searchKeyTermsToSoundex: [],
+      searchKeyFormattedTerms: {
+        formattedKeys: [],
+        validFormattedKeys: [],
+      },
     };
     let entities: T[];
     const sortableEntities: SortableModel<T>[] = [];
     const isUseSoundex = await SearchUtils.isUseSoundex();
     if (searchKey) {
-      searchTerms.searchKeyTerms = this.getTermsFromSearchKey(
+      terms.searchKeyTerms = this.getTermsFromSearchKey(
         searchKey.toLowerCase().trim(),
       );
+
+      if (genFormattedTermsFunc) {
+        terms.searchKeyFormattedTerms = genFormattedTermsFunc(
+          terms.searchKeyTerms,
+        );
+      }
+
       if (isUseSoundex) {
-        searchTerms.searchKeyTermsToSoundex = searchTerms.searchKeyTerms.map(
-          item => soundex(item),
+        terms.searchKeyTermsToSoundex = terms.searchKeyTerms.map(item =>
+          soundex(item),
         );
       }
     }
@@ -82,7 +95,7 @@ class EntityCacheSearchController<
     }
 
     entities.forEach((entity: T) => {
-      const result = genSortableModelFunc(entity, searchTerms);
+      const result = genSortableModelFunc(entity, terms);
       if (result) {
         sortableEntities.push(result);
       }
@@ -93,7 +106,7 @@ class EntityCacheSearchController<
     }
 
     return {
-      terms: searchTerms.searchKeyTerms,
+      terms,
       sortableModels: sortableEntities,
     };
   }

@@ -14,6 +14,11 @@ storiesOf('Pattern/ConversationCard', module)
   .addDecorator(withInfoDecorator(JuiPreviewImage, { inline: true }))
   .add('JuiPreviewImage', () => {
     const fileName = text('fileName', '123.jpg');
+    const actions = [
+      <JuiIconButton key="download" variant="plain" tooltipTitle="download">
+        download
+      </JuiIconButton>,
+    ];
     return (
       <div>
         <JuiPreviewImage
@@ -21,44 +26,28 @@ storiesOf('Pattern/ConversationCard', module)
           width={360}
           height={202}
           fileName={fileName}
-          Actions={
-            <JuiIconButton variant="plain" tooltipTitle="download">
-              download
-            </JuiIconButton>
-          }
+          Actions={actions}
         />
         <JuiPreviewImage
           url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
           fileName={fileName}
           width={360}
           height={202}
-          Actions={
-            <JuiIconButton variant="plain" tooltipTitle="download">
-              download
-            </JuiIconButton>
-          }
+          Actions={actions}
         />
         <JuiPreviewImage
           url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
           fileName={fileName}
           width={360}
           height={202}
-          Actions={
-            <JuiIconButton variant="plain" tooltipTitle="download">
-              download
-            </JuiIconButton>
-          }
+          Actions={actions}
         />
         <JuiPreviewImage
           url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
           fileName={fileName}
           width={360}
           height={202}
-          Actions={
-            <JuiIconButton variant="plain" tooltipTitle="download">
-              download
-            </JuiIconButton>
-          }
+          Actions={actions}
         />
         <JuiDelayPlaceholder width={400} height={400} />
       </div>

@@ -9,9 +9,16 @@ import { dataAnalysis } from 'sdk';
 import { ENTITY_NAME } from '@/store/constants';
 import * as utils from '@/store/utils';
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
+
 jest.mock('@/store/utils');
 jest.mock('sdk');
 jest.mock('@/containers/VersionInfo/helper');
+
+jest.mock('@/config', () => ({
+  isProductionAccount: jest.fn(() => {
+    return true;
+  }),
+}));
 
 describe('analyticsCollector', () => {
   describe('makeOutboundCall', () => {

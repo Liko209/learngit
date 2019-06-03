@@ -6,9 +6,12 @@ import { Sequelize } from 'sequelize-typescript';
 import { TaskDto } from "./task";
 import { SceneDto } from "./scene";
 import { PerformanceDto, PerformanceItemDto } from "./performance";
-import { LoadingTimeSummaryDto, LoadingTimeItemDto } from "./loadingTime";
 import { FpsDto } from "./fps";
 import { VersionDto } from "./version";
+import {
+  LoadingTimeSummaryDto, LoadingTimeItemDto,
+  LoadingTimeReleaseSummaryDto, LoadingTimeDevelopSummaryDto
+} from "./loadingTime";
 import { Config } from "../config";
 import { LogUtils } from "../utils/logUtils";
 
@@ -46,7 +49,9 @@ const initModel = async () => {
     LoadingTimeSummaryDto,
     LoadingTimeItemDto,
     FpsDto,
-    VersionDto
+    VersionDto,
+    LoadingTimeReleaseSummaryDto,
+    LoadingTimeDevelopSummaryDto
   ];
 
   sequelize.addModels(models);
@@ -76,5 +81,7 @@ export {
   LoadingTimeSummaryDto,
   LoadingTimeItemDto,
   FpsDto,
-  VersionDto
+  VersionDto,
+  LoadingTimeReleaseSummaryDto,
+  LoadingTimeDevelopSummaryDto
 };

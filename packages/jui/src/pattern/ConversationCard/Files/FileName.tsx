@@ -61,7 +61,7 @@ class FileName extends React.Component<FileNameProps> {
 
     let left = '';
     let right = '';
-    if (filename.length > MAX_FILENAME_LENGTH) {
+    if (filename && filename.length > MAX_FILENAME_LENGTH) {
       [left, right] = getFileName(filename);
     } else {
       left = filename;

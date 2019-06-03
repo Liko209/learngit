@@ -22,6 +22,10 @@ class PlatformUtils {
     return userAgent && userAgent.indexOf('Firefox') > -1;
   }
 
+  static isElectron() {
+    return navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
+  }
+
   static getRCUserAgent() {
     const RC_JUPITER = 'RingCentral Jupiter';
     let userAgent = '';

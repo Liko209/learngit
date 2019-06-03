@@ -78,5 +78,7 @@ interface IItemService {
     itemId: number,
     options: ItemQueryOptions,
   ): Promise<{ index: number; totalCount: number }>;
+
+  editFileName(itemId: number, newName: string): Promise<void>;
 }
 export { IItemService };

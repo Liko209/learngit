@@ -35,6 +35,10 @@ class TelephonyService extends EntityBaseService<IdModel> {
     this.telephonyController.logout();
   }
 
+  getVoipCallPermission = async () => {
+    return this.telephonyController.getVoipCallPermission();
+  }
+
   protected get telephonyController() {
     if (!this._telephonyEngineController) {
       this._telephonyEngineController = new TelephonyEngineController(
@@ -129,6 +133,22 @@ class TelephonyService extends EntityBaseService<IdModel> {
     this.telephonyController
       .getAccountController()
       .replyWithMessage(callId, message);
+  }
+
+  park = async (callId: string) => {
+    return await this.telephonyController.getAccountController().park(callId);
+  }
+
+  flip = async (callId: string, flipNumber: number) => {
+    return await this.telephonyController
+      .getAccountController()
+      .flip(callId, flipNumber);
+  }
+
+  forward = async (callId: string, phoneNumber: string) => {
+    return await this.telephonyController
+      .getAccountController()
+      .forward(callId, phoneNumber);
   }
 
   replyWithPattern = (

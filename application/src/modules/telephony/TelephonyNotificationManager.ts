@@ -14,6 +14,7 @@ import { TelephonyStore } from './store';
 import { TelephonyService } from './service';
 import { TELEPHONY_SERVICE } from './interface/constant';
 import { CALL_STATE } from './FSM';
+import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
 class TelephonyNotificationManager extends AbstractNotificationManager {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
@@ -59,6 +60,10 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
   private async _showNotification() {
     const { phoneNumber, callId, displayName } = this._telephonyStore;
     let { callerName } = this._telephonyStore;
+    let formatNumber = phoneNumber;
+    if (phoneNumber) {
+      formatNumber = formatPhoneNumber(phoneNumber);
+    }
     if (!displayName) {
       callerName = await i18nT('telephony.notification.unknownCaller');
     }
@@ -81,7 +86,7 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
         scope: this._scope,
         priority: NOTIFICATION_PRIORITY.INCOMING_CALL,
       },
-      body: `${displayName || callerName} ${phoneNumber}`,
+      body: `${displayName || callerName} ${formatNumber}`,
       icon: '/icon/incomingCall.png',
     });
   }

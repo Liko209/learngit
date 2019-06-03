@@ -14,6 +14,8 @@ import { Ignore } from '../Ignore';
 import { Answer } from '../Answer';
 import { CallActions, CallActionsProps } from '../CallActions';
 import { VoiceMail } from '../VoiceMail';
+import { Reply } from '../Reply';
+import { INCOMING_STATE } from '../../store';
 
 const More = (props: CallActionsProps) => (
   <CallActions showLabel={false} {...props} shouldPersistBg={true} />
@@ -40,16 +42,22 @@ class IncomingViewComponent extends Component<Props> {
   }
 
   render() {
-    const { name, phone, t, isExt } = this.props;
-    return (
-      <JuiIncomingCall
-        name={name ? name : t('telephony.unknownCaller')}
-        phone={phone && isExt ? `${t('telephony.Ext')} ${phone}` : phone}
-        Actions={Actions}
-        Ignore={Ignore}
-        Avatar={this._Avatar}
-      />
-    );
+    const { name, phone, t, isExt, incomingState } = this.props;
+    switch (incomingState) {
+      case INCOMING_STATE.REPLY:
+        return <Reply />;
+
+      default:
+        return (
+          <JuiIncomingCall
+            name={name ? name : t('telephony.unknownCaller')}
+            phone={phone && isExt ? `${t('telephony.Ext')} ${phone}` : phone}
+            Actions={Actions}
+            Ignore={Ignore}
+            Avatar={this._Avatar}
+          />
+        );
+    }
   }
 }
 

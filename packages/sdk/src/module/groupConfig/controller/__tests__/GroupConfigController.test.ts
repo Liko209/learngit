@@ -120,6 +120,15 @@ describe('GroupConfigService', () => {
       const result = await groupConfigController.getGroupSendFailurePostIds(1);
       expect(result).toEqual([]);
     });
+
+    it('should not modified the original value', async () => {
+      const ids = [12, 13];
+      const mock = { id: 1, send_failure_post_ids: ids };
+      entitySourceController.get.mockResolvedValue(mock);
+      const result = await groupConfigController.getGroupSendFailurePostIds(1);
+      result.splice(1);
+      expect(mock.send_failure_post_ids).toEqual(ids);
+    });
   });
 
   describe('updateGroupSendFailurePostIds', () => {
