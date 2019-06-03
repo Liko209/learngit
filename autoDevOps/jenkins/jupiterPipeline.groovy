@@ -39,6 +39,7 @@ class Context {
 
     // jenkins
     String buildNode
+    String e2eNode
     String buildUrl
 
     // gitlab
@@ -347,7 +348,7 @@ class BaseJob {
         jenkins.sh "tar -czvf ${tarball} -C ${sourceDir} ."  // pack
         ssh(targetUri, "rm -rf ${targetDir} || true && mkdir -p ${targetDir}".toString())  // clean target
         scp(tarball, targetUri, targetDir)
-        ssh(targetUri, "tar -xvf ${targetDir}/${tarball} -C ${targetDir} && rm ${targetDir}/${tarball} && chmod -R 755 ${targetDir}".toString()) // unpack
+        ssh(targetUri, "tar -xzvf ${targetDir}/${tarball} -C ${targetDir} && rm ${targetDir}/${tarball} && chmod -R 755 ${targetDir}".toString()) // unpack
     }
 
     void copyRemoteDir(URI remoteUri, String sourceDir, String targetDir) {
@@ -370,6 +371,7 @@ class BaseJob {
 
 class JupiterJob extends BaseJob {
     final static String DEPENDENCY_LOCK = 'dependency.lock'
+    final static String E2E_DIRECTORY = 'tests/e2e/testcafe'
 
     Context context
 
@@ -400,7 +402,7 @@ class JupiterJob extends BaseJob {
 
     void doRun() {
         cancelOldBuildOfSameCause()
-
+        // using a high performance node to build
         jenkins.node(context.buildNode) {
             context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'running')
 
@@ -433,9 +435,35 @@ class JupiterJob extends BaseJob {
                         stage(name: 'Build RCUI') { buildRcui() }
                     },
                 )
+            }
+            stashEndToEnd()
+        }
+
+        // using an average node to run e2e
+        jenkins.node(context.e2eNode) {
+            unstashEndToEnd()
+            String nodejsHome = jenkins.tool context.nodejsTool
+            jenkins.withEnv([
+                "PATH+NODEJS=${nodejsHome}/bin",
+            ]) {
                 stage(name: 'E2E Automation') { e2eAutomation() }
             }
         }
+    }
+    void stashEndToEnd() {
+        String tarball = "testcafe-${context.head}.tar.gz".toString()
+        jenkins.dir(E2E_DIRECTORY) {
+            jenkins.sh 'git clean -xdf'
+        }
+        jenkins.sh "tar -czvf ${tarball} ${E2E_DIRECTORY}"
+        jenkins.stash name: tarball, includes: tarball
+    }
+
+    void unstashEndToEnd() {
+        String tarball = "testcafe-${context.head}.tar.gz".toString()
+        jenkins.sh "find ${E2E_DIRECTORY} -maxdepth 1 -not -name node_modules | xargs rm -rf"
+        jenkins.unstash name: tarball
+        jenkins.sh "tar -xzvf ${tarball}"
     }
 
     void collectFacts() {
@@ -681,6 +709,8 @@ class JupiterJob extends BaseJob {
     }
 
     void e2eAutomation() {
+        if (isSkipEndToEnd) return
+
         String hostname  = jenkins.sh(returnStdout: true, script: 'hostname -f').trim()
         String startTime = jenkins.sh(returnStdout: true, script: "TZ=UTC-8 date +'%F %T'").trim()
 
@@ -712,20 +742,13 @@ class JupiterJob extends BaseJob {
             "ENABLE_SSL=true",
             "RUN_NAME=[Jupiter][Pipeline][Merge][${startTime}][${context.gitlabSourceBranch}][${context.head}]",
         ]) {
-            jenkins.dir("tests/e2e/testcafe") {
+            jenkins.dir(E2E_DIRECTORY) {
                 jenkins.sh 'env'  // for debug
                 jenkins.writeFile file: 'capabilities.json', text: context.e2eCapabilities, encoding: 'utf-8'
                 jenkins.sh "mkdir -p screenshots tmp"
-
-                String dependencyLock = jenkins.sh(returnStdout: true, script: '''git rev-list -1 HEAD -- package.json | xargs git cat-file commit | grep -e ^tree | cut -d ' ' -f 2 ''').trim()
-                if (jenkins.fileExists(DEPENDENCY_LOCK) && jenkins.readFile(file: DEPENDENCY_LOCK, encoding: 'utf-8').trim() == dependencyLock) {
-                    jenkins.echo "${DEPENDENCY_LOCK} doesn't change, no need to update: ${dependencyLock}"
-                } else {
-                    jenkins.sh "npm config set registry ${context.npmRegistry}"
-                    jenkins.sshagent(credentials: [context.scmCredentialId]) {
-                        jenkins.sh 'npm install --unsafe-perm'
-                    }
-                    jenkins.writeFile(file: DEPENDENCY_LOCK, text: dependencyLock, encoding: 'utf-8')
+                jenkins.sh "npm config set registry ${context.npmRegistry}"
+                jenkins.sshagent(credentials: [context.scmCredentialId]) {
+                    jenkins.sh 'npm install --unsafe-perm'
                 }
 
                 if (context.e2eEnableRemoteDashboard) {
@@ -790,11 +813,16 @@ class JupiterJob extends BaseJob {
     Boolean getIsSkipBuildRcui() {
         hasBeenLocked(context.deployCredentialId, context.lockUri, context.rcuiLockKey)
     }
+
+    Boolean getIsSkipEndToEnd() {
+        context.isSkipEndToEnd
+    }
 }
 
 // Get started!
 Context context = new Context(
     buildNode                   : params.BUILD_NODE?: env.BUILD_NODE,
+    e2eNode                     : params.E2E_NODE?: env.E2E_NODE,
     buildUrl                    : env.BUILD_URL,
 
     nodejsTool                  : params.NODEJS_TOOL,
