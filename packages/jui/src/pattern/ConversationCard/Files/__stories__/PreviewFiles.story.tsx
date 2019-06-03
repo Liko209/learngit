@@ -25,6 +25,13 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
     'filename',
     'Conversation Card ConversationConversation Card VxD.pdf',
   );
+
+  const actions = [
+    <JuiIconButton key="download" variant="plain" tooltipTitle="download">
+      download
+    </JuiIconButton>,
+  ];
+
   return (
     <div>
       <div>
@@ -36,11 +43,7 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
               width={360}
               height={202}
               fileName={fileName}
-              Actions={
-                <JuiIconButton variant="plain" tooltipTitle="download">
-                  download
-                </JuiIconButton>
-              }
+              Actions={actions}
             />
           );
         })}
@@ -54,11 +57,7 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
               fileName={fileName}
               size="2.3Mb"
               iconType={'pdf'}
-              Actions={
-                <JuiIconButton variant="plain" tooltipTitle="download">
-                  download
-                </JuiIconButton>
-              }
+              Actions={actions}
             />
           );
         })}

@@ -437,10 +437,10 @@ class GroupHandleDataController {
   }
 
   getGroupTime = (group: Group) => {
-    return (
-      group.__last_accessed_at ||
-      group.most_recent_post_created_at ||
-      group.created_at
+    return Math.max(
+      group.__last_accessed_at || 0,
+      group.most_recent_post_created_at || 0,
+      group.created_at,
     );
   }
 
@@ -495,10 +495,7 @@ class GroupHandleDataController {
         (group: Group, i) => this.getGroupTime(group) >= oldestUnreadGroupTime,
       );
       if (filteredGroups.length > limit) {
-        const result = [];
-        for (let i = 0; i < limit; i++) {
-          result.push(filteredGroups[i]);
-        }
+        const result = filteredGroups.slice(0, limit);
         for (let i = limit; i < filteredGroups.length; i++) {
           if (unreadGroupIds.indexOf(filteredGroups[i].id) !== -1) {
             result.push(filteredGroups[i]);

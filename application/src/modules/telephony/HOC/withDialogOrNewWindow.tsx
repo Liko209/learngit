@@ -165,17 +165,18 @@ function withDialogOrNewWindow<T>(
       const dragEl = ReactDOM.findDOMNode(
         this._dragRef.current,
       ) as HTMLDivElement;
-      if (!dragEl) {
-        return;
-      }
-      if (startMinimizeAnimation) {
-        dragEl.style.overflow = 'visible';
-        (dragEl.children[0] as HTMLDivElement).style.overflow = 'visible';
-        return;
-      }
 
-      dragEl.style.overflow = '';
-      (dragEl.children[0] as HTMLDivElement).style.overflow = '';
+      // since it involves high order component <FadeInOut/>, the dragEl will be null in the first run.
+      if (dragEl) {
+        if (startMinimizeAnimation) {
+          dragEl.style.overflow = 'visible';
+          (dragEl.children[0] as HTMLDivElement).style.overflow = 'visible';
+          return;
+        }
+
+        dragEl.style.overflow = '';
+        (dragEl.children[0] as HTMLDivElement).style.overflow = '';
+      }
 
       setTimeout(() => {
         if (this._dragRef.current) {

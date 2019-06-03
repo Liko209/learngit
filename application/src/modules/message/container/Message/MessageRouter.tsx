@@ -22,6 +22,7 @@ import {
   goToConversationWithLoading,
   GoToConversationParams,
 } from '@/common/goToConversation';
+import { ERROR_TYPES } from '@/common/catchError';
 import { ConversationPage } from '../ConversationPage';
 import { LeftRail } from '../LeftRail';
 import { PostListPage } from '../PostListPage';
@@ -58,6 +59,7 @@ const RightRailResponsive = withResponsive(RightRail, {
 });
 
 type State = {
+  errorType: ERROR_TYPES | null;
   messageError: boolean;
   retryParams: GoToConversationParams | null;
 };
@@ -71,6 +73,7 @@ class MessageRouterComponent extends Component<Props, State> {
   state = {
     messageError: false,
     retryParams: null,
+    errorType: null,
   };
 
   componentDidMount() {
@@ -99,8 +102,42 @@ class MessageRouterComponent extends Component<Props, State> {
       this.setState({
         messageError: true,
         retryParams: state.params,
+        errorType: state.errorType,
       });
     }
+  }
+
+  private get _getLoadingTip() {
+    const { t } = this.props;
+    const { retryParams, errorType } = this.state;
+    if (!retryParams) {
+      return t('message.prompt.MessageLoadingErrorTip');
+    }
+    if (errorType === ERROR_TYPES.NETWORK) {
+      return t('message.prompt.MessageLoadingErrorTipForNetworkIssue');
+    }
+    if (errorType === ERROR_TYPES.NOT_AUTHORIZED) {
+      return t('people.prompt.conversationPrivate');
+    }
+    if (errorType === ERROR_TYPES.BACKEND) {
+      return t('message.prompt.MessageLoadingErrorTipForServerIssue');
+    }
+    return t('message.prompt.MessageLoadingErrorTip');
+  }
+
+  private get _getLoadingLinkText() {
+    const { t } = this.props;
+    const { retryParams, errorType } = this.state;
+    if (!retryParams || errorType === ERROR_TYPES.NOT_AUTHORIZED) {
+      return '';
+    }
+    if (errorType === ERROR_TYPES.NETWORK) {
+      return t('common.prompt.thenTryAgain');
+    }
+    if (errorType === ERROR_TYPES.BACKEND) {
+      return t('common.prompt.tryAgainLater');
+    }
+    return t('common.prompt.tryAgain');
   }
 
   retryMessage = async () => {
@@ -110,7 +147,7 @@ class MessageRouterComponent extends Component<Props, State> {
   }
 
   render() {
-    const { match, t } = this.props;
+    const { match } = this.props;
     const { messageError } = this.state;
 
     return (
@@ -122,8 +159,8 @@ class MessageRouterComponent extends Component<Props, State> {
             render={() => (
               <JuiConversationLoading
                 showTip={messageError}
-                tip={t('message.prompt.MessageLoadingErrorTip')}
-                linkText={t('common.prompt.tryAgain')}
+                tip={this._getLoadingTip}
+                linkText={this._getLoadingLinkText}
                 onClick={this.retryMessage}
               />
             )}

@@ -47,7 +47,7 @@ describe('DialerContainerViewModel', () => {
   });
 
   it('Should initialize with dialer input being available', async () => {
-    expect(dialerContainerViewModel.canclickToInput).toBe(true);
+    expect(dialerContainerViewModel.canClickToInput).toBe(true);
   });
 
   it('Should should call setCallerPhoneNumber', async () => {

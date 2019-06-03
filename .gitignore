@@ -11,6 +11,7 @@ node_modules
 /packages/*/build-es/
 /packages/*/coverage/
 /packages/*/node_modules/
+/packages/*/package-lock.json/
 /packages/jui/storybook-static
 /application/node_modules/
 /application/build/
