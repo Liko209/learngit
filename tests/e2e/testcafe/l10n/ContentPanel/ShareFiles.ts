@@ -51,7 +51,6 @@ test(formalName('Open team conversation and shared files', ['P2', 'Messages', 'C
     await conversationPage.uploadFilesToMessageAttachment(files);
     await duplicatePromptPage.clickUpdateButton();
     await t.pressKey('enter');
-    await t.pressKey('enter');
   });
   await h(t).withLog('Then text "shared 3 files" should be displayed', async () => {
     await t.expect(conversationPage.fileNotification.nth(1).exists).ok();
