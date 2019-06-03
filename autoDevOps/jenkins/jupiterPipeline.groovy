@@ -735,7 +735,6 @@ class JupiterJob extends BaseJob {
             "QUARANTINE_MODE=true",
             "QUARANTINE_FAILED_THRESHOLD=4",
             "QUARANTINE_PASSED_THRESHOLD=1",
-            "FIXTURES=./fixtures/LeftNav/LeftNavigator.ts",
             "DEBUG=axios",
             "ENABLE_SSL=true",
             "RUN_NAME=[Jupiter][Pipeline][Merge][${startTime}][${context.gitlabSourceBranch}][${context.head}]",
