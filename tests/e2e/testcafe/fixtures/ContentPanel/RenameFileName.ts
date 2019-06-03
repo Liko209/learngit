@@ -10,7 +10,6 @@ fixture('ContentPanel/RenameFileName')
   .beforeEach(setupCase(BrandTire.RC_FIJI_GUEST))
   .afterEach(teardownCase());
 
-// todo
 test.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-2061'],
@@ -190,13 +189,12 @@ test.meta(<ITestMeta>{
 
 test.meta(<ITestMeta>{
   priority: ['P2'],
-  caseIds: ['JPT-2057','JPT-2074','JPT-2060'], // TODO case id ????
+  caseIds: ['JPT-2057','JPT-2074','JPT-2060'], 
   maintainers: ['Mia.cai'],
   keywords: ['ContentPanel/RenameFileName']
 })(`Unsupported characters should be replaced by_ when saving the file name;Show 'More' tooltip for the more icon;Rename file option is disabled to guests`, async (t) => {
   const renameFileMenu = 'Edit filename';
   const filesPath = ['../../sources/1.psd'];
-    // TODO
   const nameWithUnSupportChar = 'file/1?2,3*4:5&';
   const newFileName = 'file_1_2_3_4_5_';
   const moreTooltip = 'More';
@@ -243,8 +241,12 @@ test.meta(<ITestMeta>{
     await moreActionOnFile.clickMore();
   });
 
-  await h(t).withLog(`Then will show ${renameFileMenu} menu at the top`, async() => {
+  await h(t).withLog(`Then show ${renameFileMenu} menu at the top`, async() => {
     await moreActionOnFile.renameFileMenuAtTop(renameFileMenu);
+  });
+
+  await h(t).withLog(`And the menu should be enabled`, async() => {
+    await moreActionOnFile.renameFileMenuDisabledOrNot(false);
   });
 
   await h(t).withLog(`When I click the ${renameFileMenu} menu of the file`, async() => {
@@ -271,9 +273,8 @@ test.meta(<ITestMeta>{
     await postItem.nameShouldBe(newFileName);
   });
 
-  await h(t).withLog(`And I login Jupiter with guest ${guest.company.number}#${guest.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, guest);
-    await app.homePage.ensureLoaded();
+  await h(t).withLog(`And I logout and login Jupiter with guest ${guest.company.number}#${guest.extension}`, async () => {
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, guest);
   });
 
   await h(t).withLog('And I open the team', async () => {
@@ -285,7 +286,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then ${renameFileMenu} menu will be disabled`, async() => {
-    await moreActionOnFile.renameFileMenuShouldDisabled();
+    await moreActionOnFile.renameFileMenuDisabledOrNot(true);
   });
 
 });

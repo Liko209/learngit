@@ -19,8 +19,9 @@ export class MoreActionOnFile extends BaseWebComponent{
     return this.getComponent(RenameFileDialog);
   }
 
-  async renameFileMenuShouldDisabled(){
-    await this.t.expect(this.renameFileMenu.hasAttribute('disabled')).ok();
+
+  async renameFileMenuDisabledOrNot(status:boolean){
+    await this.t.expect(this.renameFileMenu.attributes).contains({'data-disabled':`${status}`});
   }
 
   async clickMore(){
