@@ -13,6 +13,7 @@ import {
 import {
   SETTING_SECTION__DESKTOP_NOTIFICATIONS,
   SETTING_SECTION__EMAIL_NOTIFICATIONS,
+  SETTING_SECTION__OTHER_NOTIFICATION_SETTINGS,
 } from '@/modules/notification/notificationSettingManager/constant';
 import {
   MESSAGE_SETTING_SCOPE,
@@ -83,6 +84,21 @@ class MessageSettingManager implements IMessageSettingManager {
         SETTING_SECTION__EMAIL_NOTIFICATIONS,
         i,
       ),
+    );
+    this._settingService.registerItem(
+      MESSAGE_SETTING_SCOPE,
+      SETTING_SECTION__OTHER_NOTIFICATION_SETTINGS,
+      {
+        id: MESSAGE_SETTING_ITEM.NEW_MESSAGE_BADGE_COUNT,
+        automationId: 'newMessageBadgeCount',
+        weight: 100,
+        type: SETTING_ITEM_TYPE.TOGGLE,
+        ...buildTitleAndDesc(
+          'notificationAndSounds',
+          'otherNotificationSettings',
+          'newMessageBadgeCount',
+        ),
+      },
     );
   }
 

@@ -572,6 +572,13 @@
     "general": "General",
     "notificationAndSounds": {
       "title": "Notification and Sounds",
+      "otherNotificationSettings": {
+        "title": "Other notification settings",
+        "newMessageBadgeCount": {
+          "description": "Choose how the app will count new messages in the app badge count",
+          "label": "New message badge count"
+        }
+      },
       "desktopNotifications": {
         "title": "Desktop Notifications",
         "notificationsForBrowser": {
