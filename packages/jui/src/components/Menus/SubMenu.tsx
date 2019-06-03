@@ -3,7 +3,7 @@
  * @Date: 2019-05-23 14:10:03
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { useState, useRef } from 'react';
+import React, { useState, useCallback } from 'react';
 import { StyledMenuItem } from '../Menus/MenuItem';
 import { JuiMenuList } from '../Menus/MenuList';
 import { MenuItemProps as MuiMenuItemProps } from '@material-ui/core/MenuItem';
@@ -36,9 +36,9 @@ const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
   const closePopper = () => {
     setAnchorEl(null);
   };
+  const { title, disabled, ...rest } = props;
 
-  const Anchor = useRef(() => {
-    const { title, disabled, ...rest } = props;
+  const Anchor = useCallback(() => {
     if (disabled) {
       return <StyledMenuItem disabled={true}>{title}</StyledMenuItem>;
     }
@@ -50,7 +50,7 @@ const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
         </JuiIconography>
       </StyledSubMenuItem>
     );
-  }).current;
+  },                         [disabled]);
 
   const open = Boolean(anchorEl);
 

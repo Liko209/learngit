@@ -73,7 +73,7 @@ class ForwardViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   private _getForwardPermission = async () => {
-    this.shouldDisableForwardButton = await !this._telephonyService.getForwardPermission();
+    this.shouldDisableForwardButton = !(await this._telephonyService.getForwardPermission());
   }
 }
 
