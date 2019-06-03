@@ -4,17 +4,23 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
-import { PhoneNumber } from '../entity';
+import { PhoneNumber, PhoneNumberType } from '../entity';
 import { PhoneNumberController } from '../controller/PhoneNumberController';
 class PhoneNumberService extends EntityBaseService<PhoneNumber, string> {
   private _phoneNumberController: PhoneNumberController;
   async getById(id: string): Promise<PhoneNumber | null> {
-    const phoneNumber: PhoneNumber = { id };
+    const phoneNumber: PhoneNumber = {
+      id,
+      phoneNumberType: PhoneNumberType.Unknown,
+    };
     return phoneNumber;
   }
 
   getSynchronously(id: string): PhoneNumber | null {
-    const phoneNumber: PhoneNumber = { id };
+    const phoneNumber: PhoneNumber = {
+      id,
+      phoneNumberType: PhoneNumberType.Unknown,
+    };
     return phoneNumber;
   }
 

@@ -48,7 +48,10 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
 
   async delete(entity: T): Promise<void> {
     const originalEntityId = this._deleteEntity(entity);
-    originalEntityId && (await this.dao.delete(originalEntityId));
+    if (originalEntityId) {
+      await this.dao.delete(originalEntityId);
+      this._preInsertIdController.delete(originalEntityId.toString());
+    }
   }
 
   private _deleteEntity(entity: T): number | undefined {
@@ -59,13 +62,12 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
       progressEntity.id > 0 && (progressEntity.id = originalEntityId);
       this._notifyChange(entity, originalEntityId);
       this.updateStatus(progressEntity, PROGRESS_STATUS.SUCCESS);
-      this._preInsertIdController.delete(preInsertId);
       return originalEntityId;
     }
     mainLogger
       .tags(LOG_TAG)
       .info(`delete() ${entity.id} is not in pre-insert list`);
-    return undefined;
+    return entity.id < 0 ? entity.id : undefined;
   }
 
   updateStatus(entity: T, status: PROGRESS_STATUS): void {
