@@ -89,8 +89,11 @@ class IncomingCallsSettingHandler extends AbstractSettingEntityHandler<
     if (!profile) {
       return;
     }
+    const state = await this._getItemState();
     if (
-      profile[SETTING_KEYS.DESKTOP_CALL] !== this.userSettingEntityCache.value
+      profile[SETTING_KEYS.DESKTOP_CALL] !==
+        this.userSettingEntityCache.value ||
+      state !== this.userSettingEntityCache.state
     ) {
       this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
     }

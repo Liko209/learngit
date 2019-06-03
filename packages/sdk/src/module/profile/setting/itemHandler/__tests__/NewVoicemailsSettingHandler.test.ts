@@ -14,13 +14,13 @@ import {
 } from '../../../../setting';
 import {
   SETTING_KEYS,
-  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   NOTIFICATION_OPTIONS,
   CALLING_OPTIONS,
 } from '../../../constants';
 import { ENTITY } from 'sdk/service';
 import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 import { AccountService } from 'sdk/module/account';
+import { Profile } from 'sdk/module/profile/entity';
 jest.mock('../../../service/ProfileService');
 
 function clearMocks() {
@@ -31,9 +31,10 @@ function clearMocks() {
 
 describe('NewVoicemailsSettingHandler', () => {
   let profileService: ProfileService;
-  let newVoicemailsSettingHandler: NewVoicemailsSettingHandler;
+  let settingHandler: NewVoicemailsSettingHandler;
   let accoutService: AccountService;
   let settingService: SettingService;
+  const mockUserId = 123;
   let mockDefaultSettingItem: UserSettingEntity;
   function setUp() {
     jest.spyOn(notificationCenter, 'on');
@@ -52,13 +53,22 @@ describe('NewVoicemailsSettingHandler', () => {
     profileService = new ProfileService();
     settingService = new SettingService();
     accoutService = new AccountService(null);
+    accoutService = {
+      userConfig: {
+        getCurrentUserProfileId: jest.fn().mockReturnValue(mockUserId),
+      },
+    } as any;
+    profileService.getProfile = jest.fn().mockReturnValue({
+      [SETTING_KEYS.DESKTOP_VOICEMAIL]: NOTIFICATION_OPTIONS.OFF,
+      [SETTING_KEYS.CALL_OPTION]: CALLING_OPTIONS.RINGCENTRAL,
+    });
     profileService.updateSettingOptions = jest.fn();
-    newVoicemailsSettingHandler = new NewVoicemailsSettingHandler(
+    settingHandler = new NewVoicemailsSettingHandler(
       profileService,
       accoutService,
       settingService,
     );
-    newVoicemailsSettingHandler.notifyUserSettingEntityUpdate = jest.fn();
+    settingHandler.notifyUserSettingEntityUpdate = jest.fn();
   }
 
   beforeEach(() => {
@@ -98,7 +108,7 @@ describe('NewVoicemailsSettingHandler', () => {
           .fn()
           .mockReturnValue({ value: { desktopNotifications } });
         mockDefaultSettingItem.state = expectRes;
-        const result = await newVoicemailsSettingHandler.fetchUserSettingEntity();
+        const result = await settingHandler.fetchUserSettingEntity();
         expect(result).toEqual(mockDefaultSettingItem);
       },
     );
@@ -106,10 +116,67 @@ describe('NewVoicemailsSettingHandler', () => {
 
   describe('updateValue()', () => {
     it('should call updateSettingOptions with correct parameters', async () => {
-      await newVoicemailsSettingHandler.updateValue(1);
+      await settingHandler.updateValue(1);
       expect(profileService.updateSettingOptions).toBeCalledWith([
         { value: 1, key: SETTING_KEYS.DESKTOP_VOICEMAIL },
       ]);
+    });
+  });
+
+  describe('handleProfileUpdated', () => {
+    it('should emit update when has subscribe update and.DESKTOP_VOICEMAIL change', (done: jest.DoneCallback) => {
+      settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
+      settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
+      settingHandler['_getItemState'] = jest.fn().mockReturnValue(0);
+      notificationCenter.emitEntityUpdate<Profile>(ENTITY.PROFILE, [
+        {
+          id: mockUserId,
+          [SETTING_KEYS.DESKTOP_VOICEMAIL]: NOTIFICATION_OPTIONS.ON,
+        } as Profile,
+      ]);
+      setTimeout(() => {
+        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        expect(
+          settingHandler.notifyUserSettingEntityUpdate,
+        ).toHaveBeenCalledWith({});
+        done();
+      });
+    });
+
+    it('should emit update when has subscribe update and state change', (done: jest.DoneCallback) => {
+      settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
+      settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
+      settingHandler['_getItemState'] = jest.fn().mockReturnValue(1);
+      notificationCenter.emitEntityUpdate<Profile>(ENTITY.PROFILE, [
+        {
+          id: mockUserId,
+          [SETTING_KEYS.DESKTOP_VOICEMAIL]: NOTIFICATION_OPTIONS.OFF,
+        } as Profile,
+      ]);
+      setTimeout(() => {
+        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        expect(
+          settingHandler.notifyUserSettingEntityUpdate,
+        ).toHaveBeenCalledWith({});
+        done();
+      });
+    });
+
+    it('should not emit update when no change', (done: jest.DoneCallback) => {
+      settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
+      settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
+      settingHandler['_getItemState'] = jest.fn().mockReturnValue(0);
+      notificationCenter.emitEntityUpdate<Profile>(ENTITY.PROFILE, [
+        {
+          id: mockUserId,
+          [SETTING_KEYS.DESKTOP_VOICEMAIL]: NOTIFICATION_OPTIONS.OFF,
+        } as Profile,
+      ]);
+      setTimeout(() => {
+        expect(settingHandler.getUserSettingEntity).not.toBeCalled();
+        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
+        done();
+      });
     });
   });
 });
