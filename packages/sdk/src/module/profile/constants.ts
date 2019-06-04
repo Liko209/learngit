@@ -64,6 +64,11 @@ enum SETTING_KEYS {
   MAX_LEFTRAIL_GROUP = 'max_leftrail_group_tabs2',
   NEW_MESSAGE_BADGES = 'new_message_badges',
 }
+type DesktopNotificationsSettingModel = {
+  browserPermission: NotificationPermission;
+  wantNotifications: boolean;
+  desktopNotifications: boolean;
+};
 
 export {
   CALLING_OPTIONS,
@@ -73,4 +78,5 @@ export {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   SETTING_KEYS,
   NEW_MESSAGE_BADGES_OPTIONS,
+  DesktopNotificationsSettingModel,
 };

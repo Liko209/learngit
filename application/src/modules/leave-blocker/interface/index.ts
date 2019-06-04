@@ -4,4 +4,3 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './ILeaveBlockerService';
-export * from './constant';

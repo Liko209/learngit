@@ -1,8 +1,7 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-04-08 14:34:14
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-08 19:13:30
+ * Copyright © RingCentral. All rights reserved.
  */
 
 import * as _ from 'lodash';
@@ -17,7 +16,8 @@ fixture('Setting/EnterPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test.meta(<ITestMeta>{
+// TODO skipped because user story updated
+test.skip.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-1585'],
   maintainers: ['Potar.He'],
@@ -76,7 +76,8 @@ test.meta(<ITestMeta>{
 });
 
 
-test.meta(<ITestMeta>{
+// TODO skipped because user story updated
+test.skip.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-1586'],
   maintainers: ['Potar.He'],
@@ -141,7 +142,8 @@ test.meta(<ITestMeta>{
   }
 });
 
-test.meta(<ITestMeta>{
+// TODO skipped because user story updated
+test.skip.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-1587'],
   maintainers: ['Potar.He'],

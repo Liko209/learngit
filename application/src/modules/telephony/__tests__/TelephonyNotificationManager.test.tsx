@@ -28,6 +28,11 @@ jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 jupiter.registerModule(notification.config);
+
+global.Notification = {
+  permission: 'defalut',
+};
+
 jupiter.registerModule(common.config);
 beforeAll(() => {
   (getEntity as jest.Mock).mockReturnValue({
@@ -42,7 +47,7 @@ describe('TelephonyNotificationManager', () => {
   telephonyNotificationManager._disposer = jest.fn();
   const telephonyStore = jupiter.get(TelephonyStore);
   const title = 'Incoming Call';
-  jest.spyOn(i18nT, 'default').mockImplementation(async (i) => {
+  jest.spyOn(i18nT, 'default').mockImplementation(async i => {
     const translation = {
       'telephony.notification.incomingCall': 'Incoming Call',
       'telephony.notification.answer': 'Answer',
