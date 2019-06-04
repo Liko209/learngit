@@ -10,25 +10,24 @@ import { ColonEmojiViewProps } from './types';
 import { JuiMentionPanel } from 'jui/pattern/MessageInput/Mention/MentionPanel';
 import { JuiMentionPanelSection } from 'jui/pattern/MessageInput/Mention/MentionPanelSection';
 import { JuiMentionPanelSectionHeader } from 'jui/pattern/MessageInput/Mention/MentionPanelSectionHeader';
-import ReactResizeDetector from 'react-resize-detector';
-import {
-  JuiVirtualList,
-  IVirtualListDataSource,
-  JuiVirtualCellWrapper,
-  JuiVirtualCellProps,
-} from 'jui/pattern/VirtualList';
 import { EmojiItem } from './EmojiItem';
 import {
-  ITEM_HEIGHT,
-  MAX_ITEM_NUMBER,
-  TITLE_HEIGHT,
-  ITEM_DIFF,
-} from './constants';
+  JuiVirtualizedList,
+  JuiVirtualizedListHandles,
+} from 'jui/components/VirtualizedList';
+import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
+import { ITEM_HEIGHT, MAX_ITEM_NUMBER, TITLE_HEIGHT } from './constants';
+// import { EmojiData } from 'emoji-mart';
+
+type State = {
+  width?: number;
+  height?: number;
+};
 
 @observer
-class ColonEmojiView extends Component<ColonEmojiViewProps>
-  implements IVirtualListDataSource<any, number> {
-  _listRef: RefObject<JuiVirtualList<number, number>> = createRef();
+class ColonEmojiView extends Component<ColonEmojiViewProps, State> {
+  state: State = { width: 2000, height: ITEM_HEIGHT };
+  _listRef: RefObject<JuiVirtualizedListHandles> = createRef();
   get(index: number) {
     const { initIndex, ids } = this.props;
     return ids[index - initIndex];
@@ -39,42 +38,16 @@ class ColonEmojiView extends Component<ColonEmojiViewProps>
     return ids.length + initIndex;
   }
 
-  private _rowRenderer = (cellProps: JuiVirtualCellProps<number>) => {
-    const {
-      searchTerm,
-      currentIndex,
-      selectHandler,
-      isOneToOneGroup,
-    } = this.props;
-    const { item, index, style } = cellProps;
-    if (index === 0 && !isOneToOneGroup) {
-      return (
-        <JuiMentionPanelSectionHeader
-          key={index}
-          title={
-            searchTerm && searchTerm.trim()
-              ? 'message.suggestedPeople'
-              : 'message.teamMembers'
-          }
-        />
-      );
-    }
-    const newStyle = isOneToOneGroup
-      ? style
-      : {
-          ...style,
-          top: Number(style.top) - ITEM_DIFF, // every item has 40px but title is 32px
-        };
-    return (
-      <JuiVirtualCellWrapper key={item} style={newStyle}>
-        <EmojiItem
-          id={item}
-          index={index}
-          currentIndex={currentIndex}
-          selectHandler={selectHandler}
-        />
-      </JuiVirtualCellWrapper>
-    );
+  private _handleSizeUpdate = (size: Size) => {
+    const memberIdsLength = this.props.ids.length;
+    const colonEmojiHeight =
+      memberIdsLength >= MAX_ITEM_NUMBER
+        ? MAX_ITEM_NUMBER * ITEM_HEIGHT
+        : ITEM_HEIGHT * memberIdsLength;
+    const width = size.width;
+    const height = colonEmojiHeight;
+
+    this.setState({ height, width });
   }
 
   getSnapshotBeforeUpdate(prevProps: any) {
@@ -82,7 +55,15 @@ class ColonEmojiView extends Component<ColonEmojiViewProps>
   }
 
   render() {
-    const { open, ids, isEditMode, isOneToOneGroup } = this.props;
+    const {
+      open,
+      ids,
+      isEditMode,
+      members,
+      searchTerm,
+      currentIndex,
+      selectHandler,
+    } = this.props;
     const memberIdsLength = ids.length;
     if (open && memberIdsLength > 0) {
       const colonEmojiHeight =
@@ -91,26 +72,35 @@ class ColonEmojiView extends Component<ColonEmojiViewProps>
           : ITEM_HEIGHT * memberIdsLength;
       return (
         <JuiMentionPanel isEditMode={isEditMode}>
-          <ReactResizeDetector handleWidth={true}>
-            {({ width = 2000 }: { width: number }) => {
-              return (
-                <JuiMentionPanelSection>
-                  <JuiVirtualList
-                    ref={this._listRef}
-                    dataSource={this}
-                    overscan={5}
-                    rowRenderer={this._rowRenderer}
-                    width={width}
-                    height={
-                      colonEmojiHeight + (isOneToOneGroup ? 0 : TITLE_HEIGHT)
-                    }
-                    fixedCellHeight={ITEM_HEIGHT}
-                    data-test-automation-id="colon-emoji-list"
+          <JuiMentionPanelSection>
+            <JuiSizeDetector handleSizeChanged={this._handleSizeUpdate} />
+            <JuiVirtualizedList
+              minRowHeight={ITEM_HEIGHT}
+              ref={this._listRef}
+              height={colonEmojiHeight + TITLE_HEIGHT}
+              data-test-automation-id="colon-emoji-list"
+            >
+              <JuiMentionPanelSectionHeader
+                key={'test'}
+                title={
+                  searchTerm && searchTerm.trim()
+                    ? 'message.suggestedPeople'
+                    : 'message.teamMembers'
+                }
+              />
+              {members.map((emoji: any, index: number) => {
+                return (
+                  <EmojiItem
+                    key={emoji.id}
+                    id={emoji.id}
+                    index={index}
+                    currentIndex={currentIndex}
+                    selectHandler={selectHandler}
                   />
-                </JuiMentionPanelSection>
-              );
-            }}
-          </ReactResizeDetector>
+                );
+              })}
+            </JuiVirtualizedList>
+          </JuiMentionPanelSection>
         </JuiMentionPanel>
       );
     }

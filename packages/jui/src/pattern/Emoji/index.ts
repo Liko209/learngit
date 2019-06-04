@@ -24,12 +24,18 @@ type ColonEmojiOptions = {
   blankNoShow?: boolean;
 };
 
+type SelectType = {
+  id: number;
+  name: string;
+  denotationChar: string;
+};
+
 type Options = QuillOptionsStatic & ColonEmojiOptions;
 
 class ColonEmoji {
   private _quill: Quill;
   private _colonCharPos: number;
-  private _cursorPos: number;
+  private _cursorPos: number = 0;
   private _options: Options = {
     onColon: () => {},
     colonDenotationChars: [':'],
@@ -61,16 +67,13 @@ class ColonEmoji {
     }
   }
 
-  private _hasValidChars(s: string) {
-    return this._options.allowedChars!.test(s);
+  private _hasValidChars(textAfter: string) {
+    return (
+      this._options.allowedChars && this._options.allowedChars.test(textAfter)
+    );
   }
 
-  select(id: number, name: string, denotationChar: string) {
-    const data = {
-      id,
-      name,
-      denotationChar,
-    };
+  select(data: SelectType) {
     requestAnimationFrame(() => {
       this._quill.setSelection(this._cursorPos, 0);
       this._quill.deleteText(
@@ -86,23 +89,27 @@ class ColonEmoji {
 
   onSomethingChange = () => {
     const range = this._quill.getSelection();
-    if (range == null) return;
+    if (range === null) return;
     this._cursorPos = range.index;
-    const startPos = Math.max(0, this._cursorPos - this._options.maxChars!);
+    console.log('nye this._options', this._options);
+    let maxChar = 0;
+    if (this._options.maxChars) {
+      maxChar = this._cursorPos - this._options.maxChars;
+    }
+    const startPos = Math.max(0, maxChar);
     const beforeCursorPos = this._quill.getText(
       startPos,
       this._cursorPos - startPos,
     );
-    const colonCharIndex = this._options.colonDenotationChars!.reduce(
-      (prev, cur) => {
+    const colonCharIndex =
+      this._options.colonDenotationChars &&
+      this._options.colonDenotationChars.reduce((prev, cur) => {
         const previousIndex = prev;
         const colonIndex = beforeCursorPos.lastIndexOf(cur);
 
         return colonIndex > previousIndex ? colonIndex : previousIndex;
-      },
-      -1,
-    );
-    if (colonCharIndex > -1) {
+      },                                        -1);
+    if (colonCharIndex !== undefined && colonCharIndex > -1) {
       if (
         this._options.isolateCharacter &&
         !(
@@ -135,6 +142,7 @@ class ColonEmoji {
         this._options.onColon(false);
       }
     } else {
+      console.log('nye asdsadasdasd');
       this._options.onColon(false);
     }
   }

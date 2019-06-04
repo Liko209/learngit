@@ -12,10 +12,7 @@ import { CONVERSATION_TYPES } from '@/constants';
 import { emojiIndex, EmojiData } from 'emoji-mart';
 const DELAY = 300;
 const canTriggerDefaultEventHandler = (vm: ColonEmojiViewModel) => {
-  if (vm.members.length && vm.open) {
-    return false;
-  }
-  return true;
+  return vm.members.length && vm.open;
 };
 
 class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>

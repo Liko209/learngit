@@ -21,6 +21,7 @@ type ColonEmojiViewProps = {
   isEditMode?: boolean;
   isOneToOneGroup: boolean;
   initIndex: number;
+  members?: any;
 };
 
 export { ColonEmojiProps, ColonEmojiViewProps };
