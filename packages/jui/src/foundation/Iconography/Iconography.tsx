@@ -34,7 +34,7 @@ type JuiIconographyProps = {
   iconColor?: IconColor;
   iconSize?: IconSize;
   children?: string;
-  symbol?: svgSymbol;
+  symbol?: SvgSymbol;
   useLoading?: boolean;
   loadingSize?: number;
   desc?: string;

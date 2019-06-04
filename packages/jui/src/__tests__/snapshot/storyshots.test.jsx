@@ -11,7 +11,7 @@ import initStoryshots, {
 import * as renderer from 'react-test-renderer';
 import { styleSheetSerializer } from 'jest-styled-components/serializer';
 import { addSerializer } from 'jest-specific-snapshot';
-import { excludeDomSnapshot, excludeImageSnapshot } from './snapshotConfig';
+import { excludeDomSnapshot } from './snapshotConfig';
 
 addSerializer(styleSheetSerializer);
 
