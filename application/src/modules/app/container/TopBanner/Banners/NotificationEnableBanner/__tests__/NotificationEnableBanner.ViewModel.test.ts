@@ -28,6 +28,11 @@ describe('NotificationEnableBannerViewModel', () => {
     jest.clearAllMocks();
   });
   describe('isShow', () => {
+    it('should return false when value is undefined', () => {
+      getEntity.mockReturnValue({});
+      const viewModel = new NotificationEnableBannerViewModel();
+      expect(viewModel.isShow).toBe(false);
+    });
     it('should return false when in Electron [JPT-2093]', () => {
       setUpMock(true, 'default', true);
       const viewModel = new NotificationEnableBannerViewModel();
@@ -45,9 +50,28 @@ describe('NotificationEnableBannerViewModel', () => {
     });
     it('should return true when browserPermission is not "granted" and wantNotifications is true and not on Electron', () => {
       setUpMock(false, 'default', true);
-      console.log(223424);
       const viewModel = new NotificationEnableBannerViewModel();
       expect(viewModel.isShow).toBe(true);
+    });
+  });
+  describe('isBlocked', () => {
+    it('should return false when value is undefined', () => {
+      getEntity.mockReturnValue({});
+      const viewModel = new NotificationEnableBannerViewModel();
+      expect(viewModel.isBlocked).toBe(false);
+    });
+    it('should return true when browserPermission is "denied"', () => {
+      setUpMock(false, 'denied', false);
+      const viewModel = new NotificationEnableBannerViewModel();
+      expect(viewModel.isBlocked).toBe(true);
+    });
+  });
+  describe('handleClose()', () => {
+    it('should change isClose to true when call the function', () => {
+      const viewModel = new NotificationEnableBannerViewModel();
+      expect(viewModel.isClosed).toBeFalsy();
+      viewModel.handleClose();
+      expect(viewModel.isClosed).toBeTruthy();
     });
   });
 });
