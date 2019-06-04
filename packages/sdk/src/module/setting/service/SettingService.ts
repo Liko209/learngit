@@ -5,29 +5,33 @@
  */
 import { AbstractService } from 'sdk/framework';
 import { SettingController } from '../controller/SettingController';
+import { IModuleSetting } from '../moduleSetting/types';
+import { UserSettingEntity } from '../entity';
+import { Nullable } from 'sdk/types';
 
 class SettingService extends AbstractService {
   private _settingController: SettingController;
 
-  protected onStarted() {}
+  protected onStarted() {
+    this._settingController && this._settingController.init();
+  }
 
   protected onStopped() {
-    if (this._settingController) {
-      this._settingController.dispose();
-      delete this._settingController;
-    }
+    this._settingController && this._settingController.dispose();
   }
 
-  async getById(id: number) {
-    return this.settingController.getById(id);
+  async getById<T>(id: number): Promise<Nullable<UserSettingEntity<T>>> {
+    return (await this.settingController.getById(id)) as Nullable<
+      UserSettingEntity<T>
+    >;
   }
 
-  async getSettingsByParentId(id: number) {
-    return this.settingController.getSettingsByParentId(id);
+  registerModuleSetting(moduleSetting: IModuleSetting) {
+    this.settingController.registerModuleSetting(moduleSetting);
   }
 
-  async getModuleSettings() {
-    return this.settingController.getModuleSettings();
+  unRegisterModuleSetting(moduleSetting: IModuleSetting) {
+    this.settingController.unRegisterModuleSetting(moduleSetting);
   }
 
   private get settingController() {

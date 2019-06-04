@@ -9,6 +9,7 @@ interface ICallerPhoneNumber {
   phoneNumber: string;
   value: string;
   usageType: string;
+  label?: string;
 }
 
 type DialerContainerProps = {
@@ -20,7 +21,7 @@ type DialerContainerViewProps = {
   isDialer: boolean;
   dtmfThroughKeypad: (digit: string) => void;
   dtmfThroughKeyboard: (digit: string) => void;
-  typeString: (digit: string) => void;
+  clickToInput: (digit: string) => void;
   dialerInputFocused?: boolean;
   playAudio: (digit: string) => void;
   chosenCallerPhoneNumber: string;

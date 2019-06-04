@@ -1,20 +1,30 @@
 import { networkLogger } from '../log';
 import { IResponse } from '.';
 import { IRequest } from './network';
+import _ from 'lodash';
 
 export function doResponseLog(response: IResponse) {
   const request = response.request;
-  delete response.request;
+  const consumeTime = Date.now() - request.startTime;
 
   networkLogger.info(
-    'receiveResponse: ',
-    '==request==: ',
+    'requestConsumeTime:',
+    consumeTime,
+    ' <<request>>: ',
     request,
-    '\n==response==: ',
-    response,
+    '     <<response>>:    ',
+    _.omit(response, 'request'),
   );
 }
 
 export function doRequestLog(request: IRequest) {
-  networkLogger.info('startRequest: ', request);
+  const now = Date.now();
+  const consumeTime = now - request.startTime;
+  request.startTime = now;
+  networkLogger.info(
+    'inPendingQueueTime:',
+    consumeTime,
+    'startRequest: ',
+    request,
+  );
 }

@@ -7,9 +7,11 @@
 import { container, Jupiter, decorate, injectable } from 'framework';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
-
+import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 import { DialerContainerViewModel } from '../DialerContainer.ViewModel';
 import * as telephony from '@/modules/telephony/module.config';
+
+jest.mock('@/modules/common/container/PhoneNumberFormat');
 
 decorate(injectable(), TelephonyService);
 container.bind(TELEPHONY_SERVICE).to(TelephonyService);
@@ -27,6 +29,7 @@ beforeAll(() => {
     dialerFocused: false,
     inputString: '',
     maximumInputLength: 30,
+    chosenCallerPhoneNumber: '+44 650-123-641'
   });
   dialerContainerViewModel = new DialerContainerViewModel();
   dialerContainerViewModel._telephonyService.setCallerPhoneNumber = jest.fn();
@@ -47,7 +50,7 @@ describe('DialerContainerViewModel', () => {
   });
 
   it('Should initialize with dialer input being available', async () => {
-    expect(dialerContainerViewModel.canTypeString).toBe(true);
+    expect(dialerContainerViewModel.canClickToInput).toBe(true);
   });
 
   it('Should should call setCallerPhoneNumber', async () => {
@@ -63,9 +66,16 @@ describe('DialerContainerViewModel', () => {
   });
 
   it('Should call concatInputString on the telphony service', () => {
-    dialerContainerViewModel.typeString('1');
+    dialerContainerViewModel.clickToInput('1');
     expect(
       dialerContainerViewModel._telephonyService.concatInputString,
     ).toBeCalled();
+  });
+  it('should return  while', () => {
+    const phoneNumber = '650-123-641';
+    (formatPhoneNumber as jest.Mock).mockImplementationOnce(() => {
+      return phoneNumber
+    });
+    expect(dialerContainerViewModel.chosenCallerPhoneNumber).toBe(phoneNumber)
   });
 });

@@ -3,29 +3,37 @@
  * @Date: 2019-04-01 15:16:45
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
-enum PERMISSION {
-  GRANTED = 'granted',
-  DEFAULT = 'default',
-  DENIED = 'denied',
-}
+import { INotificationPermission, PERMISSION } from 'sdk/pal';
+import { APPLICATION } from 'sdk/service/eventKey';
+import { notificationCenter } from 'sdk/service';
 
-class Permission {
+class Permission implements INotificationPermission {
+  private _permissionCache: NotificationPermission = this.current;
   private _permissions = PERMISSION;
-  async request() {
-    const currentPermission = this.current;
-    const permissionAlreadySet =
-      currentPermission !== this._permissions.DEFAULT;
-    if (permissionAlreadySet) {
-      return currentPermission;
-    }
-    return Notification.requestPermission();
+  async request(): Promise<NotificationPermission> {
+    const requestedPermission = await Notification.requestPermission();
+    this.handlePermissionChange(requestedPermission);
+    return requestedPermission;
   }
+
   get current() {
-    return Notification.permission;
+    const permission = Notification.permission;
+    this.handlePermissionChange(permission);
+    return permission;
   }
 
   get isGranted() {
     return this.current === this._permissions.GRANTED;
+  }
+
+  handlePermissionChange(permission: NotificationPermission) {
+    if (this._permissionCache && permission !== this._permissionCache) {
+      this._permissionCache = permission;
+      notificationCenter.emit(
+        APPLICATION.NOTIFICATION_PERMISSION_CHANGE,
+        permission,
+      );
+    }
   }
 }
 

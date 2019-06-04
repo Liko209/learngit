@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ERCWebSettingUri } from '../types';
+import { ERCWebSettingUri, ForwardingFlipNumberModel } from '../types';
 import { DialingCountryInfo } from 'sdk/api/ringcentral/types';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
 
@@ -20,6 +20,10 @@ interface IRCInfoService {
   getCountryList(): Promise<DialingCountryInfo[]>;
 
   hasAreaCode(countryCallingCode: string): boolean;
+
+  getForwardingNumberList(): Promise<ForwardingFlipNumberModel[]>;
+
+  getFlipNumberList(): Promise<ForwardingFlipNumberModel[]>;
 }
 
 export { IRCInfoService };

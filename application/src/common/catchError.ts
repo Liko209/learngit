@@ -5,14 +5,8 @@
  */
 
 import _ from 'lodash';
-import {
-  ToastType,
-  ToastMessageAlign,
-} from '@/containers/ToastWrapper/Toast/types';
-import {
-  Notification,
-  ShowNotificationOptions,
-} from '@/containers/Notification';
+import { ToastType, ToastMessageAlign } from '@/containers/ToastWrapper/Toast/types';
+import { Notification, ShowNotificationOptions } from '@/containers/Notification';
 import { generalErrorHandler } from '@/utils/error';
 import { errorHelper } from 'sdk/error';
 
@@ -20,6 +14,13 @@ enum NOTIFICATION_TYPE {
   CUSTOM,
   FLASH,
   FLAG,
+}
+
+enum ERROR_TYPES {
+  UNKNOWN,
+  NETWORK,
+  BACKEND,
+  NOT_AUTHORIZED,
 }
 
 type ErrorActionConfig = string | Function;
@@ -39,7 +40,7 @@ type StrategyProps = {
   condition: Function;
   action: StrategyActionProps;
   /* config below when action is NOTIFICATION_TYPE */
-  message?: string,
+  message?: string;
   notificationOpts?: ShowNotificationOptions;
 };
 
@@ -54,6 +55,19 @@ const defaultNotificationOptions = {
   dismissible: false,
   autoHideDuration: AUTO_HIDE_AFTER_3_SECONDS,
 };
+
+function getErrorType(error: Error) {
+  if (errorHelper.isNetworkConnectionError(error)) {
+    return ERROR_TYPES.NETWORK;
+  }
+  if (errorHelper.isAuthenticationError(error)) {
+    return ERROR_TYPES.NOT_AUTHORIZED;
+  }
+  if (errorHelper.isBackEndError(error)) {
+    return ERROR_TYPES.BACKEND;
+  }
+  return ERROR_TYPES.UNKNOWN;
+}
 
 function notify(
   ctx: any,
@@ -96,13 +110,16 @@ const getDebounceNotify = (actionName: ErrorActionConfig) => {
 };
 
 function notifyFunc(isDebounce: boolean, actionName: ErrorActionConfig) {
-  return isDebounce
-    ? getDebounceNotify(actionName)
-    : notify;
+  return isDebounce ? getDebounceNotify(actionName) : notify;
 }
 
 function performAction(option: StrategyProps, error: Error, ctx: any) {
-  const { action, message, isDebounce = false, notificationOpts = defaultNotificationOptions } = option;
+  const {
+    action,
+    message,
+    isDebounce = false,
+    notificationOpts = defaultNotificationOptions,
+  } = option;
   if (typeof action === 'function') {
     return action(error, ctx);
   }
@@ -111,7 +128,7 @@ function performAction(option: StrategyProps, error: Error, ctx: any) {
 }
 
 function perform(options: StrategyProps[], error: Error, ctx: any) {
-  const result = options.some((opt) => {
+  const result = options.some(opt => {
     if (opt.condition(error, ctx)) {
       performAction(opt, error, ctx);
       return true;
@@ -147,7 +164,13 @@ function handleError(
   }
 
   if (authentication && errorHelper.isAuthenticationError(error)) {
-    return notifyFunc(isDebounce, authentication)(ctx, notificationType, authentication, notificationOpts, error);
+    return notifyFunc(isDebounce, authentication)(
+      ctx,
+      notificationType,
+      authentication,
+      notificationOpts,
+      error,
+    );
   }
 
   if (server && errorHelper.isBackEndError(error)) {
@@ -181,10 +204,7 @@ function wrapHandleError(
   };
 }
 
-function decorate(
-  notificationType: NOTIFICATION_TYPE,
-  options: CatchOptionsProps,
-): any {
+function decorate(notificationType: NOTIFICATION_TYPE, options: CatchOptionsProps): any {
   return function (target: any, propertyName: string, descriptor?: any) {
     // bound instance methods
     if (!descriptor) {
@@ -214,11 +234,7 @@ function decorate(
         writable: true,
         initializer() {
           // N.B: we can't immediately invoke initializer; this would be wrong
-          return wrapHandleError(
-            descriptor.initializer!.call(this),
-            notificationType,
-            options,
-          );
+          return wrapHandleError(descriptor.initializer!.call(this), notificationType, options);
         },
       };
     }
@@ -250,4 +266,11 @@ catchError.flag = function (options: NotifyErrorProps) {
   return decorate(NOTIFICATION_TYPE.FLAG, options);
 };
 
-export { catchError, defaultNotificationOptions, handleError, NOTIFICATION_TYPE };
+export {
+  catchError,
+  defaultNotificationOptions,
+  handleError,
+  NOTIFICATION_TYPE,
+  ERROR_TYPES,
+  getErrorType,
+};

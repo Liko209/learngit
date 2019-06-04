@@ -15,6 +15,8 @@ import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { RefObject } from 'react';
 import ReactDOM from 'react-dom';
 import { focusCampo } from '../../helpers';
+import { debounce } from 'lodash';
+import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
 const sleep = function () {
   return new Promise((resolve: (args: any) => any) => {
@@ -67,15 +69,16 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
 
   @computed
   get chosenCallerPhoneNumber() {
-    return this._telephonyStore.chosenCallerPhoneNumber;
+    return formatPhoneNumber(this._telephonyStore.chosenCallerPhoneNumber);
   }
 
   @computed
   get callerPhoneNumberList() {
     return this._telephonyStore.callerPhoneNumberList.map((el) => ({
-      value: el.phoneNumber,
+      value: formatPhoneNumber(el.phoneNumber),
       usageType: el.usageType,
-      phoneNumber: el.phoneNumber,
+      phoneNumber: formatPhoneNumber(el.phoneNumber),
+      label: el.label,
     }));
   }
 
@@ -85,7 +88,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   @computed
-  get canTypeString() {
+  get canClickToInput() {
     return (
       this._telephonyStore.inputString.length <
       this._telephonyStore.maximumInputLength
@@ -156,7 +159,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   playAudio = (digit: string) => {
-    if (!this.canTypeString) {
+    if (!this.canClickToInput) {
       return;
     }
     this._playAudio(digit === '+' ? '0' : digit);
@@ -170,8 +173,13 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
     }
   }
 
-  typeString = (str: string) => {
-    if (!this.canTypeString) {
+  private _focusCampo = debounce(focusCampo, 30, {
+    leading: false,
+    trailing: true,
+  });
+
+  clickToInput = (str: string) => {
+    if (!this.canClickToInput) {
       return;
     }
     this.playAudio(str);
@@ -185,7 +193,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
     ) as HTMLDivElement).querySelector('input');
 
     if (input && this._telephonyStore.inputString) {
-      focusCampo(input);
+      this._focusCampo(input);
     }
   }
 
