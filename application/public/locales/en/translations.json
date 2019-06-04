@@ -573,6 +573,17 @@
       "tooltip": "You can change this default Caller ID in settings."
     }
   },
+  "phone": {
+    "tab": {
+      "callHistory": "Call History"
+    },
+    "AllCalls": "All calls",
+    "MissedCalls": "Missed calls",
+    "callhistory": "Call history",
+    "voicemail": "Voicemail",
+    "faxes": "Faxes",
+    "recordings": "Recordings"
+  },
   "meeting": {
     "Meetings": "Meetings"
   },
