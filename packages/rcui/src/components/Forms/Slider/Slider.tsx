@@ -1,12 +1,11 @@
-import React, { ComponentType } from 'react';
-import MuiSlider, {
-  SliderProps as MuiSliderProps,
-} from '@material-ui/lab/Slider';
+import React, { PureComponent } from 'react';
+import MuiSlider from '@material-ui/lab/Slider';
 import Zoom from '@material-ui/core/Zoom';
 import styled from '../../../foundation/styled-components';
 import { palette, radius, spacing } from '../../../foundation/shared/theme';
 import { noop } from '../../../foundation/shared/tools';
 import { Palette } from '../../../foundation/styles';
+import { Omit } from '../../../foundation/utils/typeHelper';
 import { RuiTooltip } from '../../../components/Tooltip';
 
 type RuiSliderChildProps = {
@@ -15,26 +14,23 @@ type RuiSliderChildProps = {
   value: number;
   onChange: (event: React.ChangeEvent<HTMLElement>, value: number) => void;
 };
-type SliderChildComponent = ComponentType<RuiSliderChildProps>;
+type SliderChildComponent = React.ComponentType<RuiSliderChildProps>;
 
-type RuiSliderProps = Pick<
-  MuiSliderProps,
-  | 'className'
-  | 'disabled'
-  | 'vertical'
-  | 'max'
-  | 'min'
-  | 'step'
-  | 'value'
-  | 'valueReducer'
-  | 'onChange'
-  | 'onDragEnd'
-  | 'onDragStart'
-> & {
+type RuiSliderProps = {
+  disabled?: boolean;
+  vertical?: boolean;
+  max?: number;
+  min?: number;
+  step?: number;
+  value?: number;
+  thumb?: React.ReactElement<any>;
+  onChange?: (event: React.ChangeEvent<{}>, value: number) => void;
+  onDragEnd?: (event: React.ChangeEvent<{}>) => void;
+  onDragStart?: (event: React.ChangeEvent<{}>) => void;
   Left?: SliderChildComponent;
   Right?: SliderChildComponent;
   tipRenderer?: ({ value }: { value: number }) => React.ReactNode;
-};
+} & Omit<React.HTMLAttributes<HTMLElement>, 'onChange'>;
 
 const Thumb = styled.div`
   width: 12px;
@@ -86,13 +82,24 @@ const StyledSliderWrapper = styled.div`
   }
 `;
 
-const RuiSlider = styled(
-  ({ className, Left, Right, ...rest }: RuiSliderProps) => {
-    const hasWrapper = Left || Right;
+class RuiSliderNoStyled extends PureComponent<RuiSliderProps> {
+  render() {
+    return this._hasWrapper()
+      ? this._renderSliderWithWrapper()
+      : this._renderSlider();
+  }
 
-    const renderSlider = () => (
+  private _hasWrapper() {
+    const { Left, Right } = this.props;
+    return Left || Right;
+  }
+
+  private _renderSlider() {
+    const { className, Left, Right, ...rest } = this.props;
+
+    return (
       <MuiSlider
-        className={!hasWrapper ? className : ''}
+        className={!this._hasWrapper() ? className : ''}
         {...rest}
         thumb={
           rest.step || rest.tipRenderer ? (
@@ -103,34 +110,42 @@ const RuiSlider = styled(
         }
       />
     );
+  }
 
-    const renderSliderWithWrapper = () => {
-      const childProps: RuiSliderChildProps = {
-        value: rest.value || 0,
-        onChange: rest.onChange || noop,
-        color: ['text', 'secondary'],
-        size: 'm',
-      };
+  private _renderSliderWithWrapper() {
+    const { className, Left, Right, ...rest } = this.props;
 
-      return (
-        <StyledSliderWrapper className={className}>
-          {Left ? (
-            <StyledChildWrapper>
-              <Left {...childProps} />
-            </StyledChildWrapper>
-          ) : null}
-          {renderSlider()}
-          {Right ? (
-            <StyledChildWrapper>
-              <Right {...childProps} />
-            </StyledChildWrapper>
-          ) : null}
-        </StyledSliderWrapper>
-      );
+    const childProps: RuiSliderChildProps = {
+      value: rest.value || 0,
+      onChange: rest.onChange || noop,
+      color: ['text', 'secondary'],
+      size: 'm',
     };
 
-    return hasWrapper ? renderSliderWithWrapper() : renderSlider();
-  },
-)``;
+    return (
+      <StyledSliderWrapper className={className}>
+        {Left ? (
+          <StyledChildWrapper>
+            <Left {...childProps} />
+          </StyledChildWrapper>
+        ) : null}
+        {this._renderSlider()}
+        {Right ? (
+          <StyledChildWrapper>
+            <Right {...childProps} />
+          </StyledChildWrapper>
+        ) : null}
+      </StyledSliderWrapper>
+    );
+  }
+}
 
-export { RuiSlider, RuiSliderProps, RuiSliderChildProps };
+const RuiSlider = styled(RuiSliderNoStyled)``;
+
+export {
+  RuiSlider,
+  RuiSliderProps,
+  RuiSliderChildProps,
+  RuiSliderNoStyled,
+  RuiSliderProps as RuiSliderNoStyledProps,
+};
