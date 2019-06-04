@@ -38,6 +38,7 @@ class NetworkRequestBuilder implements IRequest {
   via: NETWORK_VIA = NETWORK_VIA.HTTP;
   method: NETWORK_METHOD = NETWORK_METHOD.GET;
   networkManager: NetworkManager;
+  startTime: number = Date.now();
 
   options(options: IRequest) {
     const {

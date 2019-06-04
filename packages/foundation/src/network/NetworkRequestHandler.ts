@@ -68,6 +68,7 @@ class NetworkRequestHandler
         return;
       }
     }
+
     const task = new RequestTask(request);
 
     this.appendTask(task, isTail);

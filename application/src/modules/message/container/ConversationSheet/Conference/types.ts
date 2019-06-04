@@ -14,6 +14,7 @@ type ViewProps = {
   conference: ConferenceItemModel;
   isHostByMe: boolean;
   globalNumber: string;
+  phoneNumber: string;
 };
 
 export { Props, ViewProps };

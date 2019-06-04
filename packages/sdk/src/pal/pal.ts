@@ -7,12 +7,14 @@
 import { IImageDownloader } from './downloader';
 import { IErrorReporter } from './errorReporter';
 import { IApplicationInfo } from './applicationInfo';
+import { INotificationPermission } from './notificationPermission';
 
 class Pal {
   private static _sPalInstance: Pal;
   private _imageDownloader: IImageDownloader;
   private _errorReporter: IErrorReporter;
   private _applicationInfo: IApplicationInfo;
+  private _notificationPermission: INotificationPermission;
 
   static get instance(): Pal {
     if (!this._sPalInstance) {
@@ -43,6 +45,14 @@ class Pal {
 
   getApplicationInfo(): IApplicationInfo {
     return this._applicationInfo;
+  }
+
+  setNotificationPermission(notificationPermission: INotificationPermission) {
+    this._notificationPermission = notificationPermission;
+  }
+
+  getNotificationPermission(): INotificationPermission {
+    return this._notificationPermission;
   }
 }
 
