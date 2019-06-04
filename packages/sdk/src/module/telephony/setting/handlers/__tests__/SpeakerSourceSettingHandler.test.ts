@@ -7,8 +7,17 @@
 import notificationCenter from 'sdk/service/notificationCenter';
 import { SpeakerSourceSettingHandler } from '..';
 import { SettingEntityIds, UserSettingEntity } from 'sdk/module/setting';
-import { TelephonyUserConfig } from 'sdk/module/telephony/config/TelephonyUserConfig';
 import RTCEngine, { RTC_MEDIA_ACTION } from 'voip/src';
+import { TelephonyGlobalConfig } from 'sdk/module/telephony/config/TelephonyGlobalConfig';
+import { TelephonyService } from 'sdk/module/telephony/service';
+import { RC_INFO, SERVICE } from 'sdk/service/eventKey';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { RCInfoService } from 'sdk/module/rcInfo';
+import { isChrome } from '../utils';
+import { ESettingItemState } from 'sdk/framework/model/setting/types';
+
+jest.mock('../utils');
+jest.mock('sdk/module/telephony/config/TelephonyGlobalConfig');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -17,10 +26,11 @@ function clearMocks() {
 }
 
 describe('SpeakerSourceSettingHandler', () => {
-  let mockUserConfig: TelephonyUserConfig;
   let mockRtcEngine: RTCEngine;
   let mockDefaultSettingItem: UserSettingEntity;
   let settingHandler: SpeakerSourceSettingHandler;
+  let mockTelephonyService: TelephonyService;
+  let rcInfoService: RCInfoService;
   function setUp() {
     jest.spyOn(notificationCenter, 'on');
     jest.spyOn(notificationCenter, 'off');
@@ -36,36 +46,75 @@ describe('SpeakerSourceSettingHandler', () => {
       value: { deviceId: 2 },
       valueSetter: expect.any(Function),
     };
-    mockUserConfig = {
+
+    TelephonyGlobalConfig.prototype = {
       getCurrentSpeaker: jest.fn().mockReturnValue(1),
       setCurrentSpeaker: jest.fn(),
+      getCurrentMicrophone: jest.fn().mockReturnValue(1),
+      setCurrentMicrophone: jest.fn(),
+      getCurrentVolume: jest.fn().mockReturnValue(1),
+      setCurrentVolume: jest.fn(),
       on: jest.fn(),
       off: jest.fn(),
+    };
+    rcInfoService = {
+      isRCFeaturePermissionEnabled: jest.fn().mockResolvedValue(true),
+    } as any;
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        return rcInfoService;
+      });
+
+    mockTelephonyService = {
+      getVoipCallPermission: jest.fn(),
     } as any;
     mockRtcEngine = {
       getAudioInputs: jest.fn().mockReturnValue(mockSource),
       getAudioOutputs: jest.fn().mockReturnValue(mockSource),
     } as any;
     settingHandler = new SpeakerSourceSettingHandler(
-      mockUserConfig,
+      mockTelephonyService,
       mockRtcEngine,
     );
     settingHandler.notifyUserSettingEntityUpdate = jest.fn();
+    // settingHandler.on = jest.fn();
   }
 
   function cleanUp() {
-    clearMocks();
     settingHandler.dispose();
+    notificationCenter.removeAllListeners();
+    clearMocks();
   }
 
-  beforeEach(() => {
-    setUp();
-  });
+  describe('constructor()', () => {
+    beforeEach(() => {
+      setUp();
+    });
 
-  afterEach(() => {
-    cleanUp();
-  });
+    afterEach(() => {
+      cleanUp();
+    });
 
+    it('should subscribe', () => {
+      expect(notificationCenter.on).toBeCalledWith(
+        RC_INFO.EXTENSION_INFO,
+        expect.any(Function),
+      );
+      expect(notificationCenter.on).toBeCalledWith(
+        RC_INFO.ROLE_PERMISSIONS,
+        expect.any(Function),
+      );
+      expect(notificationCenter.on).toBeCalledWith(
+        SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
+        expect.any(Function),
+      );
+      expect(notificationCenter.on).toBeCalledWith(
+        RTC_MEDIA_ACTION.OUTPUT_DEVICE_LIST_CHANGED,
+        expect.any(Function),
+      );
+    });
+  });
   describe('onDevicesChange()', () => {
     beforeEach(() => {
       setUp();
@@ -78,12 +127,41 @@ describe('SpeakerSourceSettingHandler', () => {
       settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
 
-      notificationCenter.emit(RTC_MEDIA_ACTION.OUTPUT_DEVICES_CHANGED, [{}]);
+      notificationCenter.emit(RTC_MEDIA_ACTION.OUTPUT_DEVICE_LIST_CHANGED, [
+        {},
+      ]);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
         expect(
           settingHandler.notifyUserSettingEntityUpdate,
         ).toHaveBeenCalledWith({});
+        done();
+      });
+    });
+  });
+
+  describe('onPermissionChange()', () => {
+    beforeEach(() => {
+      setUp();
+    });
+
+    afterEach(() => {
+      cleanUp();
+    });
+    it('should emit update when devices change', (done: jest.DoneCallback) => {
+      isChrome.mockReturnValue(false);
+      settingHandler['_onPermissionChange']();
+      setTimeout(() => {
+        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
+        done();
+      });
+    });
+
+    it('should emit update when devices change', (done: jest.DoneCallback) => {
+      isChrome.mockReturnValue(true);
+      settingHandler['_onPermissionChange']();
+      setTimeout(() => {
+        expect(settingHandler.notifyUserSettingEntityUpdate).toBeCalled();
         done();
       });
     });
@@ -146,7 +224,7 @@ describe('SpeakerSourceSettingHandler', () => {
       cleanUp();
     });
     it('should fetch entity correctly', async () => {
-      mockUserConfig.getCurrentSpeaker.mockReturnValue('a');
+      TelephonyGlobalConfig.getCurrentSpeaker.mockReturnValue('a');
       const devices = [{ deviceId: 'a' }, { deviceId: 'b' }];
       mockRtcEngine.getAudioOutputs.mockReturnValue(devices);
       const res = await settingHandler.fetchUserSettingEntity();
@@ -156,7 +234,7 @@ describe('SpeakerSourceSettingHandler', () => {
         parentModelId: 0,
         id: SettingEntityIds.Phone_SpeakerSource,
         source: devices,
-        state: 0,
+        state: expect.any(Number),
         value: { deviceId: 'a' },
         valueSetter: expect.any(Function),
       });
@@ -176,7 +254,7 @@ describe('SpeakerSourceSettingHandler', () => {
       await settingHandler.updateValue({
         deviceId: 111,
       } as any);
-      expect(mockUserConfig.setCurrentSpeaker).toBeCalledWith(111);
+      expect(TelephonyGlobalConfig.setCurrentSpeaker).toBeCalledWith(111);
     });
   });
 
@@ -191,7 +269,41 @@ describe('SpeakerSourceSettingHandler', () => {
 
     it('should call off userConfig', () => {
       settingHandler.dispose();
-      expect(mockUserConfig.off).toBeCalled();
+      expect(TelephonyGlobalConfig.off).toBeCalled();
+    });
+  });
+  describe('getEntityState()', () => {
+    beforeEach(() => {
+      setUp();
+    });
+
+    afterEach(() => {
+      cleanUp();
+    });
+
+    it('JPT-2094 Show "Audio sources" section only for chrome/electron with meeting/call/conference permission', async () => {
+      isChrome.mockRejectedValue(true);
+      mockTelephonyService.getVoipCallPermission.mockResolvedValue(true);
+      rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
+      expect(await settingHandler['_getEntityState']()).toEqual(
+        ESettingItemState.ENABLE,
+      );
+      mockTelephonyService.getVoipCallPermission.mockResolvedValue(false);
+      rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
+      expect(await settingHandler['_getEntityState']()).toEqual(
+        ESettingItemState.ENABLE,
+      );
+      mockTelephonyService.getVoipCallPermission.mockResolvedValue(false);
+      rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(false);
+      expect(await settingHandler['_getEntityState']()).toEqual(
+        ESettingItemState.INVISIBLE,
+      );
+      isChrome.mockRejectedValue(false);
+      mockTelephonyService.getVoipCallPermission.mockResolvedValue(true);
+      rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
+      expect(await settingHandler['_getEntityState']()).toEqual(
+        ESettingItemState.INVISIBLE,
+      );
     });
   });
 });

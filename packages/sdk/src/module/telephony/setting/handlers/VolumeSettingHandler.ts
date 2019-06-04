@@ -12,19 +12,52 @@ import {
   UserSettingEntity,
 } from 'sdk/module/setting';
 
-import { TELEPHONY_KEYS } from '../../config/configKeys';
-import { TelephonyUserConfig } from '../../config/TelephonyUserConfig';
+import { TELEPHONY_GLOBAL_KEYS } from '../../config/configKeys';
+import { TelephonyGlobalConfig } from '../../config/TelephonyGlobalConfig';
+import { RC_INFO, SERVICE } from 'sdk/service/eventKey';
+import { isChrome } from './utils';
+import { RCInfoService } from 'sdk/module/rcInfo';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
+import { ITelephonyService } from '../../service/ITelephonyService';
 
 export class VolumeSettingHandler extends AbstractSettingEntityHandler<number> {
   id = SettingEntityIds.Phone_Volume;
 
-  constructor(private _userConfig: TelephonyUserConfig) {
+  constructor(private _telephonyService: ITelephonyService) {
     super();
     this._subscribe();
   }
 
   private _subscribe() {
-    this._userConfig.on(TELEPHONY_KEYS.CURRENT_VOLUME, this._onVolumeUpdate);
+    this.on(RC_INFO.EXTENSION_INFO, this._onPermissionChange);
+    this.on(RC_INFO.ROLE_PERMISSIONS, this._onPermissionChange);
+    this.on(SERVICE.TELEPHONY_SERVICE.VOIP_CALLING, this._onPermissionChange);
+    TelephonyGlobalConfig.on(
+      TELEPHONY_GLOBAL_KEYS.CURRENT_VOLUME,
+      this._onVolumeUpdate,
+    );
+  }
+
+  private _getEntityState = async () => {
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+    const isEnable =
+      isChrome &&
+      ((await this._telephonyService.getVoipCallPermission()) ||
+        (await rcInfoService.isRCFeaturePermissionEnabled(
+          ERCServiceFeaturePermission.VIDEO_CONFERENCING,
+        )) ||
+        (await rcInfoService.isRCFeaturePermissionEnabled(
+          ERCServiceFeaturePermission.CONFERENCING,
+        )));
+    return isEnable ? ESettingItemState.ENABLE : ESettingItemState.INVISIBLE;
+  }
+
+  private _onPermissionChange = async () => {
+    isChrome() &&
+      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
   }
 
   private _onVolumeUpdate = (value: number) => {
@@ -41,15 +74,18 @@ export class VolumeSettingHandler extends AbstractSettingEntityHandler<number> {
 
   dispose() {
     super.dispose();
-    this._userConfig.off(TELEPHONY_KEYS.CURRENT_VOLUME, this._onVolumeUpdate);
+    TelephonyGlobalConfig.off(
+      TELEPHONY_GLOBAL_KEYS.CURRENT_VOLUME,
+      this._onVolumeUpdate,
+    );
   }
 
   async updateValue(value: number) {
-    await this._userConfig.setCurrentVolume(String(value));
+    await TelephonyGlobalConfig.setCurrentVolume(String(value));
   }
 
   async fetchUserSettingEntity() {
-    const volume = Number(this._userConfig.getCurrentVolume());
+    const volume = Number(TelephonyGlobalConfig.getCurrentVolume());
 
     const settingItem: UserSettingEntity<number> = {
       weight: 0,
@@ -57,7 +93,7 @@ export class VolumeSettingHandler extends AbstractSettingEntityHandler<number> {
       parentModelId: 0,
       id: SettingEntityIds.Phone_Volume,
       value: volume,
-      state: ESettingItemState.ENABLE,
+      state: await this._getEntityState(),
       valueSetter: value => this.updateValue(value),
     };
     return settingItem;

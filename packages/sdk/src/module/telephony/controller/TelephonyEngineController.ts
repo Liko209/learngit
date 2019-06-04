@@ -132,10 +132,7 @@ class TelephonyEngineController {
   initEngine() {
     RTCEngine.setLogger(new TelephonyLogController());
     this.rtcEngine = RTCEngine.getInstance();
-    this.mediaDevicesController = new VoIPMediaDevicesDelegate(
-      this.telephonyConfig,
-      this.rtcEngine,
-    );
+    this.mediaDevicesController = new VoIPMediaDevicesDelegate(this.rtcEngine);
     this.rtcEngine.setNetworkDelegate(this.voipNetworkDelegate);
     this.rtcEngine.setTelephonyDaoDelegate(this.voipDaoDelegate);
     this.rtcEngine.setMediaDeviceDelegate(this.mediaDevicesController);

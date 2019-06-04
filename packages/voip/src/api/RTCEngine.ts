@@ -94,7 +94,6 @@ class RTCEngine {
   public setCurrentAudioOutput(deviceId: string) {
     return RTCMediaDeviceManager.instance().setAudioOutputDevice(deviceId);
   }
-  
 }
 
 export { RTCEngine };

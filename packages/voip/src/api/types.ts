@@ -96,8 +96,9 @@ enum RTC_REPLY_MSG_TIME_UNIT {
 enum RTC_MEDIA_ACTION {
   INPUT_DEVICE_CHANGED = 'inputDeviceChanged',
   OUTPUT_DEVICE_CHANGED = 'outputDeviceChanged',
-  INPUT_DEVICES_CHANGED = 'inputDevicesChanged',
-  OUTPUT_DEVICES_CHANGED = 'outputDevicesChanged',
+  INPUT_DEVICE_LIST_CHANGED = 'inputDeviceListChanged',
+  OUTPUT_DEVICE_LIST_CHANGED = 'outputDeviceListChanged',
+  VOLUME_CHANGED = 'VOLUME_CHANGED',
 }
 
 export {
