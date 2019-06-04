@@ -63,7 +63,7 @@ class RecentSearchRecordController {
     records = records.filter((record: RecentSearchModel) => {
       return !toRemoveIds.has(record.id);
     });
-    this._updateRecentRecords(records);
+    await this._updateRecentRecords(records);
   }
 
   async getRecentSearchRecordsByType(
@@ -81,7 +81,7 @@ class RecentSearchRecordController {
   }
 
   private async _updateRecentRecords(records: RecentSearchModel[]) {
-    this._searchConfig.setRecentSearchRecords(records);
+    await this._searchConfig.setRecentSearchRecords(records);
   }
 }
 

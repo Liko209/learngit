@@ -41,7 +41,7 @@ describe('RecentSearchRecordController', () => {
         }
       });
     searchUserConfig = new SearchUserConfig();
-    controller = new RecentSearchRecordController();
+    controller = new RecentSearchRecordController(searchUserConfig);
     threeRecords = [buildRecord(1), buildRecord(2), buildRecord(3)];
   }
 
@@ -66,7 +66,7 @@ describe('RecentSearchRecordController', () => {
       setUp();
     });
 
-    it('should has at most 10 records', () => {
+    it('should has at most 10 records', async () => {
       const records = [];
       for (let i = 0; i < 10; i++) {
         records.push(buildRecord(i));
@@ -74,13 +74,13 @@ describe('RecentSearchRecordController', () => {
 
       searchUserConfig.getRecentSearchRecords = jest
         .fn()
-        .mockReturnValue(records);
+        .mockResolvedValue(records);
       let newRecords = _.cloneDeep(records);
       const newRecord: any = buildRecord(100);
       newRecords.pop();
       newRecords = [newRecord].concat(newRecords);
 
-      controller.addRecentSearchRecord(
+      await controller.addRecentSearchRecord(
         newRecord.type,
         newRecord.value,
         newRecord.query_params,
@@ -98,12 +98,12 @@ describe('RecentSearchRecordController', () => {
       );
     });
 
-    it('new record should be at first place', () => {
+    it('new record should be at first place', async () => {
       searchUserConfig.getRecentSearchRecords = jest
         .fn()
-        .mockReturnValue(threeRecords);
+        .mockResolvedValue(threeRecords);
       const newRecord: any = buildRecord(4);
-      controller.addRecentSearchRecord(
+      await controller.addRecentSearchRecord(
         newRecord.type,
         newRecord.value,
         newRecord.query_params,
@@ -122,12 +122,12 @@ describe('RecentSearchRecordController', () => {
       );
     });
 
-    it('new record should replace old records and put at first place', () => {
+    it('new record should replace old records and put at first place', async () => {
       searchUserConfig.getRecentSearchRecords = jest
         .fn()
-        .mockReturnValue(threeRecords);
+        .mockResolvedValue(threeRecords);
       const newRecord: any = buildRecord(2);
-      controller.addRecentSearchRecord(
+      await controller.addRecentSearchRecord(
         newRecord.type,
         newRecord.value,
         newRecord.query_params,
@@ -146,13 +146,13 @@ describe('RecentSearchRecordController', () => {
       );
     });
 
-    it('new record should not replace old records when params is no same', () => {
+    it('new record should not replace old records when params is no same', async () => {
       searchUserConfig.getRecentSearchRecords = jest
         .fn()
-        .mockReturnValue(threeRecords);
+        .mockResolvedValue(threeRecords);
       const newRecord: any = buildRecord(2);
       newRecord.query_params = { groupId: 11 };
-      controller.addRecentSearchRecord(newRecord.type, newRecord.value, {
+      await controller.addRecentSearchRecord(newRecord.type, newRecord.value, {
         groupId: 11,
       });
       const expectedRes = [
@@ -181,11 +181,11 @@ describe('RecentSearchRecordController', () => {
       setUp();
     });
 
-    it('should clear all records', () => {
+    it('should clear all records', async () => {
       searchUserConfig.getRecentSearchRecords = jest
         .fn()
         .mockReturnValue(threeRecords);
-      controller.clearRecentSearchRecords();
+      await controller.clearRecentSearchRecords();
       expect(searchUserConfig.setRecentSearchRecords).toBeCalledWith([]);
     });
   });
@@ -196,24 +196,24 @@ describe('RecentSearchRecordController', () => {
       setUp();
     });
 
-    it('should return all records', () => {
+    it('should return all records', async () => {
       searchUserConfig.getRecentSearchRecords = jest
         .fn()
-        .mockReturnValue(threeRecords);
-      const newRecords = controller.getRecentSearchRecords();
+        .mockResolvedValueOnce(threeRecords);
+      const newRecords = await controller.getRecentSearchRecords();
       expect(searchUserConfig.getRecentSearchRecords).toBeCalled();
       expect(newRecords).toEqual(threeRecords);
     });
   });
 
   describe('removeRecentSearchRecords', () => {
-    it('should remove record in the input id set', () => {
+    it('should remove record in the input id set', async () => {
       const ids = [1, 3];
       const idSet = new Set(ids);
       searchUserConfig.getRecentSearchRecords = jest
         .fn()
-        .mockReturnValue(threeRecords);
-      controller.removeRecentSearchRecords(idSet);
+        .mockResolvedValue(threeRecords);
+      await controller.removeRecentSearchRecords(idSet);
       const res = buildRecord(2);
       expect(searchUserConfig.setRecentSearchRecords).toBeCalledWith([
         {
@@ -239,30 +239,30 @@ describe('RecentSearchRecordController', () => {
       { id: 3, time_stamp: 3, type: 'group', value: 333 },
       { id: 4, time_stamp: 4, type: 'search', value: '444' },
     ];
-    it('should return expected records map', () => {
+    it('should return expected records map', async () => {
       searchUserConfig.getRecentSearchRecords = jest
         .fn()
-        .mockReturnValue(records);
+        .mockResolvedValue(records);
       expect(
-        controller.getRecentSearchRecordsByType(RecentSearchTypes.PEOPLE),
+        await controller.getRecentSearchRecordsByType(RecentSearchTypes.PEOPLE),
       ).toEqual(
         new Map([[111, { id: 1, time_stamp: 1, type: 'people', value: 111 }]]),
       );
 
       expect(
-        controller.getRecentSearchRecordsByType(RecentSearchTypes.TEAM),
+        await controller.getRecentSearchRecordsByType(RecentSearchTypes.TEAM),
       ).toEqual(
         new Map([[222, { id: 2, time_stamp: 2, type: 'team', value: 222 }]]),
       );
 
       expect(
-        controller.getRecentSearchRecordsByType(RecentSearchTypes.GROUP),
+        await controller.getRecentSearchRecordsByType(RecentSearchTypes.GROUP),
       ).toEqual(
         new Map([[333, { id: 3, time_stamp: 3, type: 'group', value: 333 }]]),
       );
 
       expect(
-        controller.getRecentSearchRecordsByType(RecentSearchTypes.SEARCH),
+        await controller.getRecentSearchRecordsByType(RecentSearchTypes.SEARCH),
       ).toEqual(
         new Map([
           ['444', { id: 4, time_stamp: 4, type: 'search', value: '444' }],
