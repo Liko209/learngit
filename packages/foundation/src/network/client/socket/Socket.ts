@@ -18,6 +18,7 @@ class Socket extends BaseClient {
       socket.request(socketRequest).then(
         (response: SocketResponse) => {
           this.tasks.delete(request.id);
+          response.request && (response.request.startTime = request.startTime);
           listener.onSuccess(response);
         },
         (response: SocketResponse) => {
@@ -26,6 +27,7 @@ class Socket extends BaseClient {
             statusText: response.statusText,
           });
           this.tasks.delete(request.id);
+          response.request && (response.request.startTime = request.startTime);
           listener.onFailure(response);
         },
       );

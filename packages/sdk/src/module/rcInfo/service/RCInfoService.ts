@@ -23,6 +23,7 @@ import { RcInfoSettings } from '../setting';
 import { IdModel } from '../../../framework/model';
 import { RCInfoUserConfig } from '../config';
 import { RC_INFO_HISTORY } from '../config/constants';
+import { SettingService } from 'sdk/module/setting';
 
 class RCInfoService extends EntityBaseService<IdModel>
   implements IRCInfoService {
@@ -43,18 +44,26 @@ class RCInfoService extends EntityBaseService<IdModel>
     return RC_INFO_HISTORY;
   }
 
+  protected onStarted() {
+    super.onStarted();
+    ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    ).registerModuleSetting(this.rcInfoSettings);
+  }
+
   protected onStopped() {
+    super.onStopped();
     if (this._rcInfoController) {
       this._rcInfoController.dispose();
       delete this._rcInfoController;
     }
 
     if (this._rcInfoSettings) {
-      this._rcInfoSettings.unsubscribe();
+      ServiceLoader.getInstance<SettingService>(
+        ServiceConfig.SETTING_SERVICE,
+      ).unRegisterModuleSetting(this._rcInfoSettings);
       delete this._rcInfoSettings;
     }
-
-    super.onStopped();
   }
 
   protected getRCInfoController(): RCInfoController {
@@ -62,14 +71,6 @@ class RCInfoService extends EntityBaseService<IdModel>
       this._rcInfoController = new RCInfoController();
     }
     return this._rcInfoController;
-  }
-
-  async getSettingsByParentId(settingId: number) {
-    return this.rcInfoSettings.getSettingsByParentId(settingId);
-  }
-
-  async getSettingItemById(settingId: number) {
-    return this.rcInfoSettings.getSettingById(settingId);
   }
 
   private get rcInfoSettings() {
@@ -102,6 +103,24 @@ class RCInfoService extends EntityBaseService<IdModel>
     return await this.getRCInfoController()
       .getRCInfoFetchController()
       .getRCClientInfo();
+  }
+
+  async getRCBrandId() {
+    return await this.getRCInfoController()
+      .getRCAccountInfoController()
+      .getAccountBrandId();
+  }
+
+  async getRCAccountId() {
+    return await this.getRCInfoController()
+      .getRCAccountInfoController()
+      .getRCAccountId();
+  }
+
+  async getRCExtensionId() {
+    return await this.getRCInfoController()
+      .getRCInfoFetchController()
+      .getRCExtensionId();
   }
 
   async getRCAccountInfo() {

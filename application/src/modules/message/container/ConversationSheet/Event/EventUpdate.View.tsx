@@ -57,7 +57,6 @@ class EventUpdate extends React.Component<Props> {
     return (
       <EventUpdateViewCard
         title={text}
-        titleColor={color}
         iconColor={color}
         Icon="event"
         Footer={

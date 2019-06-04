@@ -3,27 +3,35 @@
  * @Date: 2019-05-09 14:00:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { StoreViewModel } from '@/store/ViewModel';
+import _ from 'lodash';
 import { computed, observable, action } from 'mobx';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { DialingCountryInfo } from 'sdk/api';
-import { RegionSettingItemProps, CountriesListType } from './types';
+import { StoreViewModel } from '@/store/ViewModel';
 import { Notification } from '@/containers/Notification';
-import _ from 'lodash';
 import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import i18nT from '@/utils/i18nT';
 import { JuiIconographyProps } from 'jui/foundation/Iconography';
+import { UserSettingEntity } from 'sdk/module/setting';
+import { getEntity } from '@/store/utils/entities';
+import { ENTITY_NAME } from '@/store/constants';
+import SettingModel from '@/store/models/UserSetting';
+import {
+  RegionSettingItemProps,
+  CountriesListType,
+  RegionSettingItemViewProps,
+} from './types';
+import { RegionSettingInfo } from 'sdk/module/rcInfo/setting/types';
 
 const AVOID_AREA_CODE_BEGIN_NUM = '0';
 const AREA_CODE_ALLOW_LEN = 3;
 
-class RegionSettingItemViewModel extends StoreViewModel<
-  RegionSettingItemProps
-> {
+class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
+  implements RegionSettingItemViewProps {
   @observable
   dialPlanISOCode: string = '';
   @observable
@@ -47,6 +55,14 @@ class RegionSettingItemViewModel extends StoreViewModel<
     isoCode: '',
     callingCode: '',
   };
+
+  @computed
+  get settingItemEntity() {
+    return getEntity<UserSettingEntity, SettingModel<RegionSettingInfo>>(
+      ENTITY_NAME.USER_SETTING,
+      this.props.id,
+    );
+  }
 
   rcInfoService = ServiceLoader.getInstance<RCInfoService>(
     ServiceConfig.RC_INFO_SERVICE,
