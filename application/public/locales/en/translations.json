@@ -257,6 +257,20 @@
       "verb-numerals-noun": "$t({{verb}}) {{count}} $t({{noun}})",
       "verb-numerals-prepositions-noun": "$t({{verb}}) {{count}}% of $t({{noun}})"
     },
+    "meeting": {
+      "videoCallInProgress": "Video Call in progress",
+      "videoCallEnded": "Video Call ended",
+      "videoCallCancelled": "Video Call cancelled",
+      "videoCallDuration": "Duration",
+      "startVideoCall": "Starting Video Call...",
+      "meetingUrl": "Meeting URL",
+      "meetingId": "Meeting ID",
+      "duration": "Duration",
+      "help": "Help",
+      "installProblems": "Installation problems?",
+      "readThis": "Read this"
+    },
+    "dialInNumber": "Dial-in Number",
     "avatarNamesWithOthers": " and other {{count}} people",
     "attachments": "Attachments",
     "assignee": "Assignee",
@@ -286,7 +300,6 @@
     "theFollowingFilesAlreadyExist": "The following file(s) already exist.",
     "wouldYouLikeToUpdateTheExistingFileOrCreateANewOne": "Would you like to update the existing file(s) or create a new one?",
     "audioConferenceTitle": "Audio Conference",
-    "dialInNumber": "Dial-in Number",
     "or": "or",
     "globalNumber": "Global Number",
     "hostCode": "Host Access",
@@ -574,6 +587,17 @@
     "callerIdSelector": {
       "tooltip": "You can change this default Caller ID in settings."
     }
+  },
+  "phone": {
+    "tab": {
+      "callHistory": "Call History"
+    },
+    "AllCalls": "All calls",
+    "MissedCalls": "Missed calls",
+    "callhistory": "Call history",
+    "voicemail": "Voicemail",
+    "faxes": "Faxes",
+    "recordings": "Recordings"
   },
   "meeting": {
     "Meetings": "Meetings"
