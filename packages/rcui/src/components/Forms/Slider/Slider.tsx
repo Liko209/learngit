@@ -3,22 +3,23 @@ import MuiSlider, {
   SliderProps as MuiSliderProps,
 } from '@material-ui/lab/Slider';
 import Zoom from '@material-ui/core/Zoom';
-import styled from '@foundation/styled-components';
-import { palette, radius, spacing } from '@foundation/shared/theme';
+import styled from '../../../foundation/styled-components';
+import { palette, radius, spacing } from '../../../foundation/shared/theme';
+import { noop } from '../../../foundation/shared/tools';
+import { Palette } from '../../../foundation/styles';
 import { RuiTooltip } from '../../../components/Tooltip';
-import { Palette } from '@foundation/styles';
-import { noop } from 'react-select/lib/utils';
 
-type SliderChildProps = {
+type RuiSliderChildProps = {
   color: [keyof Palette, any];
   size: 's' | 'm' | 'l' | 'inherit' | 'xl';
   value: number;
-  onChange: (event: React.ChangeEvent<{}>, value: number) => void;
+  onChange: (event: React.ChangeEvent<HTMLElement>, value: number) => void;
 };
-type SliderChildComponent = ComponentType<SliderChildProps>;
+type SliderChildComponent = ComponentType<RuiSliderChildProps>;
 
 type RuiSliderProps = Pick<
   MuiSliderProps,
+  | 'className'
   | 'disabled'
   | 'vertical'
   | 'max'
@@ -85,46 +86,51 @@ const StyledSliderWrapper = styled.div`
   }
 `;
 
-const RuiSlider = styled(({ Left, Right, ...rest }: RuiSliderProps) => {
-  const sliderNode = (
-    <MuiSlider
-      {...rest}
-      thumb={
-        rest.step || rest.tipRenderer ? (
-          <TipThumb value={rest.value} tipRenderer={rest.tipRenderer} />
-        ) : (
-          undefined
-        )
-      }
-    />
-  );
+const RuiSlider = styled(
+  ({ className, Left, Right, ...rest }: RuiSliderProps) => {
+    const hasWrapper = Left || Right;
 
-  if (!Left && !Right) {
-    return sliderNode;
-  }
+    const renderSlider = () => (
+      <MuiSlider
+        className={!hasWrapper ? className : ''}
+        {...rest}
+        thumb={
+          rest.step || rest.tipRenderer ? (
+            <TipThumb value={rest.value} tipRenderer={rest.tipRenderer} />
+          ) : (
+            undefined
+          )
+        }
+      />
+    );
 
-  const childProps: SliderChildProps = {
-    value: rest.value || 0,
-    onChange: rest.onChange || noop,
-    color: ['text', 'secondary'],
-    size: 'm',
-  };
+    const renderSliderWithWrapper = () => {
+      const childProps: RuiSliderChildProps = {
+        value: rest.value || 0,
+        onChange: rest.onChange || noop,
+        color: ['text', 'secondary'],
+        size: 'm',
+      };
 
-  return (
-    <StyledSliderWrapper>
-      {Left ? (
-        <StyledChildWrapper>
-          <Left {...childProps} />
-        </StyledChildWrapper>
-      ) : null}
-      {sliderNode}
-      {Right ? (
-        <StyledChildWrapper>
-          <Right {...childProps} />
-        </StyledChildWrapper>
-      ) : null}
-    </StyledSliderWrapper>
-  );
-})``;
+      return (
+        <StyledSliderWrapper className={className}>
+          {Left ? (
+            <StyledChildWrapper>
+              <Left {...childProps} />
+            </StyledChildWrapper>
+          ) : null}
+          {renderSlider()}
+          {Right ? (
+            <StyledChildWrapper>
+              <Right {...childProps} />
+            </StyledChildWrapper>
+          ) : null}
+        </StyledSliderWrapper>
+      );
+    };
 
-export { RuiSlider, RuiSliderProps };
+    return hasWrapper ? renderSliderWithWrapper() : renderSlider();
+  },
+)``;
+
+export { RuiSlider, RuiSliderProps, RuiSliderChildProps };
