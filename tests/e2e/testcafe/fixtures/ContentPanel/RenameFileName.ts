@@ -17,8 +17,8 @@ test.meta(<ITestMeta>{
   keywords: ['ContentPanel/RenameFileName']
 })(`Can rename image/file successfully`, async (t) => {
   const renameFileMenu = 'Rename file';
-  const filenames = ['1'];
-  const suffixs = ['.docx']
+  let filename = '1';
+  const suffix = '.docx';
   const filesPath = ['../../sources/1.docx'];
   const message = uuid();
   const loginUser = h(t).rcData.mainCompany.users[4];
@@ -71,7 +71,7 @@ test.meta(<ITestMeta>{
       });
 
       await h(t).withLog(`And I hover the file item`, async () => {
-        await filesTabItem.nameShouldBe(filenames[0]);
+        await filesTabItem.nameShouldBe(filename);
         await t.hover(filesTabItem.self)
       });
 
@@ -104,7 +104,7 @@ test.meta(<ITestMeta>{
     });
   
     await h(t).withLog(`And pre-populate in the input field the existing file name with the suffix`, async() => {
-      await renameFileDialog.existFileNameWithSuffix(filenames[0],suffixs[0]);
+      await renameFileDialog.existFileNameWithSuffix(filename,suffix);
     });
   
     let newFileName = `file name ${i}`;
@@ -121,7 +121,7 @@ test.meta(<ITestMeta>{
     });
 
     await h(t).withLog(`And the filename should remain unchanged`, async() => {
-      await Entries[i].nameShouldBe(filenames[0]);
+      await Entries[i].nameShouldBe(filename);
     });
 
     if( i == 0 ){
@@ -133,7 +133,7 @@ test.meta(<ITestMeta>{
     }else if( i == 1 ){
 
       await h(t).withLog(`When I hover the file item(Entry2:right self)`, async () => {
-        await filesTabItem.nameShouldBe(filenames[0]);
+        await filesTabItem.nameShouldBe(filename);
         await t.hover(filesTabItem.self)
       });
       await h(t).withLog(`And I click the more button of the file`, async() => {
@@ -180,7 +180,7 @@ test.meta(<ITestMeta>{
     await h(t).withLog(`And show the new file name`, async() => {
         await Entries[i].nameShouldBe(newFileName);
     });
-    filenames[0] = newFileName;
+    filename = newFileName;
 
   }
   
