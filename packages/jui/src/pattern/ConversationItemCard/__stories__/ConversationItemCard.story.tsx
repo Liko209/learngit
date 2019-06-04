@@ -212,7 +212,6 @@ storiesOf('Pattern/ConversationItemCard', module)
       <JuiConversationItemCard
         title="event"
         iconColor={['primary', '500']}
-        titleColor={['primary', '500']}
         Icon="event"
       >
         <JuiSectionDivider gap={2}>
@@ -240,7 +239,6 @@ storiesOf('Pattern/ConversationItemCard', module)
         contentHasPadding={!!hasContent}
         complete={false}
         title={'a task'}
-        titleColor={['primary', '400']}
         Icon={<JuiTaskCheckbox checked={false} />}
       >
         <JuiSectionDivider gap={2}>

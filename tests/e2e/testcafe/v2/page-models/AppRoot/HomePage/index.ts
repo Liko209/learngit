@@ -24,6 +24,7 @@ import { ViewerDialog } from './ViewerDialog';
 import { SearchDialog, JoinTeamDialog } from './SearchDialog';
 import { SettingTab } from './SettingTab';
 import { LogoutDialog } from './LogoutDialog';
+import { PhoneTab } from './PhoneTab';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
@@ -55,6 +56,10 @@ export class HomePage extends BaseWebComponent {
 
   get messageTab() {
     return this.getComponent(MessageTab);
+  }
+
+  get phoneTab() {
+    return this.getComponent(PhoneTab);
   }
 
   get settingTab() {
