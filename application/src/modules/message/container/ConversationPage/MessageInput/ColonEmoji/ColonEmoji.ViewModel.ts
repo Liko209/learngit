@@ -21,19 +21,16 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
   currentIndex: number = 0;
   @observable
   open: boolean = false;
-  @computed
-  private get _id() {
-    return this.props.id;
-  }
+
   @observable
   searchTerm?: string;
   @observable
   members: any = [];
   private _denotationChar?: string;
   private get _group() {
-    return getEntity(ENTITY_NAME.GROUP, this._id) as GroupModel;
+    return getEntity(ENTITY_NAME.GROUP, this.props.id) as GroupModel;
   }
-
+  @observable
   private _keyboardEventHandlers = [
     {
       key: Keys.ENTER,

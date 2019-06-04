@@ -12,7 +12,7 @@ import { JuiMentionPanelSectionItem } from 'jui/pattern/MessageInput/Mention/Men
 import { EMOJI_SIZE } from '../constants';
 
 @observer
-class EmojiItemView extends Component<EmojiItemViewProps, {}> {
+class EmojiItemView extends Component<EmojiItemViewProps> {
   render() {
     const { currentIndex, selectHandler, index, id } = this.props;
 

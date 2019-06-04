@@ -17,7 +17,7 @@ import {
 } from 'jui/components/VirtualizedList';
 import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 import { ITEM_HEIGHT, MAX_ITEM_NUMBER, TITLE_HEIGHT } from './constants';
-// import { EmojiData } from 'emoji-mart';
+import { i18nP } from '@/utils/i18nT';
 
 type State = {
   width?: number;
@@ -81,12 +81,8 @@ class ColonEmojiView extends Component<ColonEmojiViewProps, State> {
               data-test-automation-id="colon-emoji-list"
             >
               <JuiMentionPanelSectionHeader
-                key={'test'}
-                title={
-                  searchTerm && searchTerm.trim()
-                    ? 'message.suggestedPeople'
-                    : 'message.teamMembers'
-                }
+                key={'emoji-select-header'}
+                title={`${i18nP('message.emoji.emojiMatching')} ${searchTerm}`}
               />
               {members.map((emoji: any, index: number) => {
                 return (
