@@ -76,13 +76,7 @@ describe('MeetingViewModel', () => {
       status: MEETING_STATUS.LIVE
     })
     t2() {
-      const title = 'Video Call in progress';
-      const wrapper = mountComponent({
-        title,
-        status: MEETING_STATUS.NOT_STARTED
-      });
       expect(i18next.t(meetingVM.meetingTitle)).toBe('Video Call in progress');
-      expect(wrapper).toMatchSnapshot();
     }
 
     @test(
