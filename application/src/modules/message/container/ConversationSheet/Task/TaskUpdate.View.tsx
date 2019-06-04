@@ -51,7 +51,6 @@ class TaskUpdate extends React.Component<
     return (
       <TaskUpdateViewCard
         title={this._getTitleText(text)}
-        titleColor={color}
         Icon={
           <JuiTaskCheckbox customColor={color} checked={complete || false} />}
         Footer={
