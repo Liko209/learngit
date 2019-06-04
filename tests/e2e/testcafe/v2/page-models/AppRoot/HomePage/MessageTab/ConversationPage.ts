@@ -835,6 +835,10 @@ export class PostItem extends BaseWebComponent {
   get fileSizes() {
     return this.getSelectorByAutomationId('file-no-preview-size', this.self);
   }
+  
+  async nameShouldBe(name: string) {
+    await this.t.expect(this.fileNames.withText(name).exists).ok();
+  }
 
   async nthFileNameShouldBe(n: number, name: string) {
     await this.t.expect(this.fileNames.nth(n).withText(name).exists).ok();
