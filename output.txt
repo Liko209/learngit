@@ -1,0 +1,1644 @@
+[999D[KPASS application/src/modules/message/container/RightRail/PinnedList/__tests__/PinnedList.ViewModel.test.ts (14.519s)
+  ● Console
+
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value PinnedListViewModel@3.pinnedPostIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value PinnedListViewModel@3.totalCount is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value PinnedListViewModel@14.pinnedPostIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value PinnedListViewModel@14.totalCount is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value PinnedListViewModel@25.pinnedPostIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value PinnedListViewModel@36.pinnedPostIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value PinnedListViewModel@47.pinnedPostIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value PinnedListViewModel@58.pinnedPostIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value PinnedListViewModel@69.pinnedPostIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value PinnedListViewModel@80.pinnedPostIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value PinnedListViewModel@91.pinnedPostIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value PinnedListViewModel@102.pinnedPostIds is being read outside a reactive context. Doing a full recompute
+
+PASS application/src/store/handler/cache/__tests__/PinnedPostCacheController.test.ts (14.936s)
+  ● Console
+
+    console.error node_modules/mobx/lib/mobx.js:1705
+      [mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: 'Reaction[Reaction@17]' TypeError: this.store.get is not a function
+          at UserConfigService.BaseConfigService.get (/Users/alvin.huang/Fiji/packages/sdk/src/module/config/service/BaseConfigService.ts:40:23)
+          at AccountUserConfig.UserConfig.get (/Users/alvin.huang/Fiji/packages/sdk/src/module/config/UserConfig.ts:28:32)
+          at AccountUserConfig.getGlipUserId (/Users/alvin.huang/Fiji/packages/sdk/src/module/account/config/AccountUserConfig.ts:59:17)
+          at GroupModel.get (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:200:38)
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.computeValue (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:938:19)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.trackAndCompute (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:923:29)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:883:26)
+          at ObservableObjectAdministration$$1.Object.<anonymous>.ObservableObjectAdministration$$1.read (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:3825:37)
+          at GroupModel.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:4089:68)
+          at GroupModel.mobx_1.reaction.fireImmediately (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:99:13)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2030:29
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.track (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1676:22)
+          at reactionRunner (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2029:11)
+          at Reaction$$1.onInvalidate (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2017:13)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.runReaction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1646:26)
+          at runReactionsHelper (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1779:35)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1757:47)
+          at runReactions$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1762:5)
+          at endBatch$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1469:9)
+          at endAction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:648:5)
+          at executeAction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:615:13)
+          at MultiEntityMapStore.res (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:595:16)
+          at MultiEntityMapStore.get (/Users/alvin.huang/Fiji/application/src/store/base/MultiEntityMapStore.ts:204:12)
+          at Object.getEntity (/Users/alvin.huang/Fiji/application/src/store/utils/entities.ts:22:16)
+          at PinnedPostCacheController._initPinnedPostHandler (/Users/alvin.huang/Fiji/application/src/store/handler/cache/PinnedPostCacheController.ts:48:24)
+          at PinnedPostCacheController.getPinnedPostHandler (/Users/alvin.huang/Fiji/application/src/store/handler/cache/PinnedPostCacheController.ts:41:12)
+          at Object.<anonymous> (/Users/alvin.huang/Fiji/application/src/store/handler/cache/__tests__/PinnedPostCacheController.test.ts:66:59)
+          at Object.asyncJestTest (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:102:37)
+          at resolve (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:43:12)
+          at new Promise (<anonymous>)
+          at mapper (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:26:19)
+          at promise.then (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:73:41)
+          at process._tickCallback (internal/process/next_tick.js:68:7)
+    console.error node_modules/mobx/lib/mobx.js:1705
+      [mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: 'Reaction[Reaction@43]' TypeError: this.store.get is not a function
+          at UserConfigService.BaseConfigService.get (/Users/alvin.huang/Fiji/packages/sdk/src/module/config/service/BaseConfigService.ts:40:23)
+          at AccountUserConfig.UserConfig.get (/Users/alvin.huang/Fiji/packages/sdk/src/module/config/UserConfig.ts:28:32)
+          at AccountUserConfig.getGlipUserId (/Users/alvin.huang/Fiji/packages/sdk/src/module/account/config/AccountUserConfig.ts:59:17)
+          at GroupModel.get (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:200:38)
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.computeValue (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:938:19)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.trackAndCompute (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:923:29)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:883:26)
+          at ObservableObjectAdministration$$1.Object.<anonymous>.ObservableObjectAdministration$$1.read (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:3825:37)
+          at GroupModel.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:4089:68)
+          at GroupModel.mobx_1.reaction.fireImmediately (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:99:13)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2030:29
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.track (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1676:22)
+          at reactionRunner (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2029:11)
+          at Reaction$$1.onInvalidate (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2017:13)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.runReaction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1646:26)
+          at runReactionsHelper (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1779:35)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1757:47)
+          at runReactions$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1762:5)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.schedule (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1630:13)
+          at Object.reaction$$1 [as reaction] (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2041:7)
+          at new PinnedPostListHandler (/Users/alvin.huang/Fiji/application/src/store/handler/PinnedPostListHandler.ts:36:30)
+          at Object.<anonymous> (/Users/alvin.huang/Fiji/application/src/store/handler/cache/__tests__/PinnedPostCacheController.test.ts:129:33)
+          at Object.asyncJestTest (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:102:37)
+          at resolve (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:43:12)
+          at new Promise (<anonymous>)
+          at mapper (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:26:19)
+          at promise.then (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:73:41)
+          at process._tickCallback (internal/process/next_tick.js:68:7)
+
+PASS application/src/modules/message/container/Profile/Dialog/Group/Content/Members/__tests__/Members.ViewModel.test.tsx (15.424s)
+  ● Console
+
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value MembersViewModel@19.filteredMemberIds is being read outside a reactive context. Doing a full recompute
+
+PASS application/src/modules/message/__tests__/messageNotificationManager.test.ts (15.586s)
+  ● Console
+
+    console.error node_modules/mobx/lib/mobx.js:1705
+      [mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: 'Reaction[Reaction@21]' TypeError: Cannot read property 'getGlipUserId' of undefined
+          at GroupModel.get (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:200:38)
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.computeValue (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:938:19)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.trackAndCompute (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:923:29)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:883:26)
+          at ObservableObjectAdministration$$1.Object.<anonymous>.ObservableObjectAdministration$$1.read (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:3825:37)
+          at GroupModel.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:4089:68)
+          at GroupModel.mobx_1.reaction.fireImmediately (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:99:13)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2030:29
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.track (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1676:22)
+          at reactionRunner (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2029:11)
+          at Reaction$$1.onInvalidate (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2017:13)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.runReaction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1646:26)
+          at runReactionsHelper (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1779:35)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1757:47)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:71
+          at batchedUpdates$1 (/Users/alvin.huang/Fiji/node_modules/react-dom/cjs/react-dom.development.js:20439:12)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:47)
+          at runReactions$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1762:5)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.schedule (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1630:13)
+          at Object.reaction$$1 [as reaction] (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2041:7)
+          at new GroupModel (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:98:5)
+          at MessageNotificationManager.<anonymous> (/Users/alvin.huang/Fiji/application/src/modules/message/MessageNotificationManager.ts:169:24)
+          at step (/Users/alvin.huang/Fiji/application/src/modules/message/MessageNotificationManager.ts:148:17)
+          at Object.next (/Users/alvin.huang/Fiji/application/src/modules/message/MessageNotificationManager.ts:79:14)
+          at fulfilled (/Users/alvin.huang/Fiji/application/src/modules/message/MessageNotificationManager.ts:31:24)
+          at process._tickCallback (internal/process/next_tick.js:68:7)
+    console.error node_modules/mobx/lib/mobx.js:1705
+      [mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: 'Reaction[Reaction@37]' TypeError: Cannot read property 'getGlipUserId' of undefined
+          at GroupModel.get (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:200:38)
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.computeValue (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:938:19)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.trackAndCompute (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:923:29)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:883:26)
+          at ObservableObjectAdministration$$1.Object.<anonymous>.ObservableObjectAdministration$$1.read (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:3825:37)
+          at GroupModel.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:4089:68)
+          at GroupModel.mobx_1.reaction.fireImmediately (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:99:13)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2030:29
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.track (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1676:22)
+          at reactionRunner (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2029:11)
+          at Reaction$$1.onInvalidate (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2017:13)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.runReaction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1646:26)
+          at runReactionsHelper (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1779:35)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1757:47)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:71
+          at batchedUpdates$1 (/Users/alvin.huang/Fiji/node_modules/react-dom/cjs/react-dom.development.js:20439:12)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:47)
+          at runReactions$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1762:5)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.schedule (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1630:13)
+          at Object.reaction$$1 [as reaction] (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2041:7)
+          at new GroupModel (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:98:5)
+          at MessageNotificationManager.<anonymous> (/Users/alvin.huang/Fiji/application/src/modules/message/MessageNotificationManager.ts:169:24)
+          at step (/Users/alvin.huang/Fiji/application/src/modules/message/MessageNotificationManager.ts:148:17)
+          at Object.next (/Users/alvin.huang/Fiji/application/src/modules/message/MessageNotificationManager.ts:79:14)
+          at fulfilled (/Users/alvin.huang/Fiji/application/src/modules/message/MessageNotificationManager.ts:31:24)
+          at process._tickCallback (internal/process/next_tick.js:68:7)
+    console.error node_modules/mobx/lib/mobx.js:1705
+      [mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: 'Reaction[Reaction@53]' TypeError: Cannot read property 'getGlipUserId' of undefined
+          at GroupModel.get (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:200:38)
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.computeValue (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:938:19)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.trackAndCompute (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:923:29)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:883:26)
+          at ObservableObjectAdministration$$1.Object.<anonymous>.ObservableObjectAdministration$$1.read (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:3825:37)
+          at GroupModel.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:4089:68)
+          at GroupModel.mobx_1.reaction.fireImmediately (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:99:13)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2030:29
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.track (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1676:22)
+          at reactionRunner (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2029:11)
+          at Reaction$$1.onInvalidate (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2017:13)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.runReaction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1646:26)
+          at runReactionsHelper (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1779:35)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1757:47)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:71
+          at batchedUpdates$1 (/Users/alvin.huang/Fiji/node_modules/react-dom/cjs/react-dom.development.js:20439:12)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:47)
+          at runReactions$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1762:5)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.schedule (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1630:13)
+          at Object.reaction$$1 [as reaction] (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2041:7)
+          at new GroupModel (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:98:5)
+          at MessageNotificationManager.<anonymous> (/Users/alvin.huang/Fiji/application/src/modules/message/MessageNotificationManager.ts:169:24)
+          at step (/Users/alvin.huang/Fiji/application/src/modules/message/MessageNotificationManager.ts:148:17)
+          at Object.next (/Users/alvin.huang/Fiji/application/src/modules/message/MessageNotificationManager.ts:79:14)
+          at fulfilled (/Users/alvin.huang/Fiji/application/src/modules/message/MessageNotificationManager.ts:31:24)
+          at process._tickCallback (internal/process/next_tick.js:68:7)
+    console.error node_modules/mobx/lib/mobx.js:1705
+      [mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: 'Reaction[Reaction@69]' TypeError: Cannot read property 'getGlipUserId' of undefined
+          at GroupModel.get (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:200:38)
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.computeValue (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:938:19)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.trackAndCompute (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:923:29)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:883:26)
+          at ObservableObjectAdministration$$1.Object.<anonymous>.ObservableObjectAdministration$$1.read (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:3825:37)
+          at GroupModel.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:4089:68)
+          at GroupModel.mobx_1.reaction.fireImmediately (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:99:13)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2030:29
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.track (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1676:22)
+          at reactionRunner (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2029:11)
+          at Reaction$$1.onInvalidate (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2017:13)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.runReaction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1646:26)
+          at runReactionsHelper (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1779:35)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1757:47)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:71
+          at batchedUpdates$1 (/Users/alvin.huang/Fiji/node_modules/react-dom/cjs/react-dom.development.js:20439:12)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:47)
+          at runReactions$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1762:5)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.schedule (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1630:13)
+          at Object.reaction$$1 [as reaction] (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2041:7)
+          at new GroupModel (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:98:5)
+          at MessageNotificationManager.<anonymous> (/Users/alvin.huang/Fiji/application/src/modules/message/MessageNotificationManager.ts:169:24)
+          at step (/Users/alvin.huang/Fiji/application/src/modules/message/MessageNotificationManager.ts:148:17)
+          at Object.next (/Users/alvin.huang/Fiji/application/src/modules/message/MessageNotificationManager.ts:79:14)
+          at fulfilled (/Users/alvin.huang/Fiji/application/src/modules/message/MessageNotificationManager.ts:31:24)
+          at process._tickCallback (internal/process/next_tick.js:68:7)
+
+PASS application/src/store/handler/__tests__/SectionGroupHandler.test.ts (16.767s)
+  ● Console
+
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@29.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@16.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@19.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@53.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@56.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@59.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@36.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@39.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@56.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@59.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@69.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@76.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@79.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@69.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@73.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@90.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@97.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@100.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@90.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@94.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@110.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@117.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@110.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@120.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@110.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@130.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@137.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@140.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@130.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@134.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@150.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@157.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@160.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@150.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@170.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@177.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@170.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@180.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@170.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@190.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@197.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@200.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@190.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@194.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@210.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@217.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@220.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@210.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@214.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@230.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@237.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@240.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@230.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@234.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@250.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@257.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@260.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@250.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@254.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@270.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@277.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@270.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@280.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@270.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@290.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@297.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@290.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@300.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@310.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@317.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@320.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@310.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@314.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@330.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@337.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@340.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@330.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@350.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@357.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@350.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@360.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@350.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@370.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@377.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@380.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@370.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@374.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@390.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@397.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@400.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@390.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@394.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@437.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@440.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@457.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@460.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@477.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@480.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@497.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@500.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@590.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@597.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@600.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SectionGroupHandler@610.groupIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@617.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@620.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@637.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@640.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@657.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@660.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@677.getIds is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value SortableListStore@680.getIds is being read outside a reactive context. Doing a full recompute
+
+PASS application/src/modules/message/container/Profile/Dialog/Group/__tests__/Group.ViewModel.test.tsx
+  ● Console
+
+    console.error node_modules/mobx/lib/mobx.js:1705
+      [mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: 'Reaction[Reaction@11]' Error: promisedComputed must be used inside reactions
+          at PromisedComputed.Object.<anonymous>.PromisedComputed.get (/Users/alvin.huang/Fiji/node_modules/computed-async-mobx/src/promisedComputed.ts:74:19)
+          at Object.i18nP (/Users/alvin.huang/Fiji/application/src/utils/i18nT.ts:44:6)
+          at ProfileDialogGroupViewModel._this.reaction.fireImmediately (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/Group.ViewModel.tsx:33:22)
+          at executeAction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:604:22)
+          at res (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:595:16)
+          at reactionRunner (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2035:13)
+          at Reaction$$1.onInvalidate (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2017:13)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.runReaction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1646:26)
+          at runReactionsHelper (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1779:35)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1757:47)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:71
+          at batchedUpdates$1 (/Users/alvin.huang/Fiji/node_modules/react-dom/cjs/react-dom.development.js:20439:12)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:47)
+          at runReactions$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1762:5)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.schedule (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1630:13)
+          at Object.reaction$$1 [as reaction] (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2041:7)
+          at ProfileDialogGroupViewModel.StoreViewModel.reaction (/Users/alvin.huang/Fiji/application/src/store/ViewModel.ts:89:22)
+          at new ProfileDialogGroupViewModel (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/Group.ViewModel.tsx:25:10)
+          at Object.<anonymous> (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/__tests__/Group.ViewModel.test.tsx:30:10)
+          at Object.asyncJestLifecycle (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:53:37)
+          at resolve (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:43:12)
+          at new Promise (<anonymous>)
+          at mapper (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:26:19)
+          at promise.then (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:73:41)
+          at process._tickCallback (internal/process/next_tick.js:68:7)
+    console.error node_modules/mobx/lib/mobx.js:1705
+      [mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: 'Reaction[Reaction@22]' Error: promisedComputed must be used inside reactions
+          at PromisedComputed.Object.<anonymous>.PromisedComputed.get (/Users/alvin.huang/Fiji/node_modules/computed-async-mobx/src/promisedComputed.ts:74:19)
+          at Object.i18nP (/Users/alvin.huang/Fiji/application/src/utils/i18nT.ts:44:6)
+          at ProfileDialogGroupViewModel._this.reaction.fireImmediately (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/Group.ViewModel.tsx:33:22)
+          at executeAction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:604:22)
+          at res (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:595:16)
+          at reactionRunner (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2035:13)
+          at Reaction$$1.onInvalidate (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2017:13)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.runReaction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1646:26)
+          at runReactionsHelper (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1779:35)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1757:47)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:71
+          at batchedUpdates$1 (/Users/alvin.huang/Fiji/node_modules/react-dom/cjs/react-dom.development.js:20439:12)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:47)
+          at runReactions$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1762:5)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.schedule (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1630:13)
+          at Object.reaction$$1 [as reaction] (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2041:7)
+          at ProfileDialogGroupViewModel.StoreViewModel.reaction (/Users/alvin.huang/Fiji/application/src/store/ViewModel.ts:89:22)
+          at new ProfileDialogGroupViewModel (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/Group.ViewModel.tsx:25:10)
+          at Object.<anonymous> (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/__tests__/Group.ViewModel.test.tsx:30:10)
+          at Object.asyncJestLifecycle (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:53:37)
+          at resolve (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:43:12)
+          at new Promise (<anonymous>)
+          at mapper (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:26:19)
+          at promise.then (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:73:41)
+          at process._tickCallback (internal/process/next_tick.js:68:7)
+    console.error node_modules/mobx/lib/mobx.js:1705
+      [mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: 'Reaction[Reaction@33]' Error: promisedComputed must be used inside reactions
+          at PromisedComputed.Object.<anonymous>.PromisedComputed.get (/Users/alvin.huang/Fiji/node_modules/computed-async-mobx/src/promisedComputed.ts:74:19)
+          at Object.i18nP (/Users/alvin.huang/Fiji/application/src/utils/i18nT.ts:44:6)
+          at ProfileDialogGroupViewModel._this.reaction.fireImmediately (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/Group.ViewModel.tsx:33:22)
+          at executeAction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:604:22)
+          at res (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:595:16)
+          at reactionRunner (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2035:13)
+          at Reaction$$1.onInvalidate (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2017:13)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.runReaction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1646:26)
+          at runReactionsHelper (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1779:35)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1757:47)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:71
+          at batchedUpdates$1 (/Users/alvin.huang/Fiji/node_modules/react-dom/cjs/react-dom.development.js:20439:12)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:47)
+          at runReactions$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1762:5)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.schedule (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1630:13)
+          at Object.reaction$$1 [as reaction] (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2041:7)
+          at ProfileDialogGroupViewModel.StoreViewModel.reaction (/Users/alvin.huang/Fiji/application/src/store/ViewModel.ts:89:22)
+          at new ProfileDialogGroupViewModel (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/Group.ViewModel.tsx:25:10)
+          at Object.<anonymous> (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/__tests__/Group.ViewModel.test.tsx:30:10)
+          at Object.asyncJestLifecycle (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:53:37)
+          at resolve (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:43:12)
+          at new Promise (<anonymous>)
+          at mapper (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:26:19)
+          at promise.then (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:73:41)
+          at process._tickCallback (internal/process/next_tick.js:68:7)
+
+PASS application/src/modules/message/container/ConversationSheet/Conference/__tests__/Conference.ViewModel.test.ts
+  ● Console
+
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value ConferenceViewModel@4.globalNumber is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value ConferenceViewModel@4.isHostByMe is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value ConferenceViewModel@4.isHostByMe is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value ConferenceViewModel@4.phoneNumber is being read outside a reactive context. Doing a full recompute
+
+PASS application/src/modules/message/container/Profile/Dialog/Person/Content/__tests__/Content.ViewModel.test.tsx
+  ● Console
+
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value ProfileDialogPersonContentViewModel@26.company is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value ProfileDialogPersonContentViewModel@37.company is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value ProfileDialogPersonContentViewModel@48.extensionNumbers is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value ProfileDialogPersonContentViewModel@59.directNumbers is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value ProfileDialogPersonContentViewModel@70.directNumbers is being read outside a reactive context. Doing a full recompute
+
+PASS packages/foundation/src/log/__tests__/Logger.test.ts
+  ● Console
+
+    console.log packages/foundation/src/log/Logger.ts:159
+      undefined
+    console.log packages/foundation/src/log/Logger.ts:159
+      undefined
+    console.log packages/foundation/src/log/Logger.ts:159
+      undefined
+    console.warn packages/foundation/src/log/Logger.ts:147
+      undefined
+    console.log packages/foundation/src/log/Logger.ts:159
+      undefined
+
+PASS application/src/modules/GlobalSearch/container/ListSearchResult/__tests__/ListSearchResult.ViewModel.test.ts
+  ● Console
+
+    console.error node_modules/mobx/lib/mobx.js:1705
+      [mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: 'Reaction[Reaction@26]' TypeError: Cannot read property 'userConfig' of null
+          at GroupModel.get (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:197:24)
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.computeValue (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:938:19)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.trackAndCompute (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:923:29)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:883:26)
+          at ObservableObjectAdministration$$1.Object.<anonymous>.ObservableObjectAdministration$$1.read (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:3825:37)
+          at GroupModel.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:4089:68)
+          at GroupModel.mobx_1.reaction.fireImmediately (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:99:13)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2030:29
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.track (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1676:22)
+          at reactionRunner (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2029:11)
+          at Reaction$$1.onInvalidate (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2017:13)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.runReaction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1646:26)
+          at runReactionsHelper (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1779:35)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1757:47)
+          at runReactions$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1762:5)
+          at endBatch$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1469:9)
+          at endAction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:648:5)
+          at executeAction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:615:13)
+          at ListSearchResultViewModel.res (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:595:16)
+          at ListSearchResultViewModel.<anonymous> (/Users/alvin.huang/Fiji/application/src/modules/GlobalSearch/container/ListSearchResult/ListSearchResult.ViewModel.ts:115:10)
+          at step (/Users/alvin.huang/Fiji/application/src/modules/GlobalSearch/container/ListSearchResult/ListSearchResult.ViewModel.ts:165:17)
+          at Object.next (/Users/alvin.huang/Fiji/application/src/modules/GlobalSearch/container/ListSearchResult/ListSearchResult.ViewModel.ts:96:14)
+          at fulfilled (/Users/alvin.huang/Fiji/application/src/modules/GlobalSearch/container/ListSearchResult/ListSearchResult.ViewModel.ts:48:24)
+          at process._tickCallback (internal/process/next_tick.js:68:7)
+
+PASS application/src/containers/TeamSettings/__tests__/TeamSettings.View.test.tsx (6.387s)
+  ● Console
+
+    console.error node_modules/react/cjs/react.development.js:188
+      Warning: React.createElement: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+    console.error node_modules/react/cjs/react.development.js:188
+      Warning: React.createElement: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+    console.error node_modules/react/cjs/react.development.js:188
+      Warning: React.createElement: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+
+PASS application/src/modules/message/container/Profile/Dialog/Group/Content/__tests__/Content.ViewModel.test.tsx
+  ● Console
+
+    console.error node_modules/mobx/lib/mobx.js:1705
+      [mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: 'Reaction[Reaction@59]' Error: promisedComputed must be used inside reactions
+          at PromisedComputed.Object.<anonymous>.PromisedComputed.get (/Users/alvin.huang/Fiji/node_modules/computed-async-mobx/src/promisedComputed.ts:74:19)
+          at Object.i18nP (/Users/alvin.huang/Fiji/application/src/utils/i18nT.ts:44:6)
+          at ProfileDialogGroupViewModel._this.reaction.fireImmediately (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/Group.ViewModel.tsx:33:22)
+          at executeAction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:604:22)
+          at res (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:595:16)
+          at reactionRunner (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2035:13)
+          at Reaction$$1.onInvalidate (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2017:13)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.runReaction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1646:26)
+          at runReactionsHelper (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1779:35)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1757:47)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:71
+          at batchedUpdates$1 (/Users/alvin.huang/Fiji/node_modules/react-dom/cjs/react-dom.development.js:20439:12)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:47)
+          at runReactions$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1762:5)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.schedule (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1630:13)
+          at Object.reaction$$1 [as reaction] (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2041:7)
+          at ProfileDialogGroupContentViewModel.StoreViewModel.reaction (/Users/alvin.huang/Fiji/application/src/store/ViewModel.ts:89:22)
+          at ProfileDialogGroupContentViewModel.ProfileDialogGroupViewModel [as constructor] (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/Group.ViewModel.tsx:25:10)
+          at new ProfileDialogGroupContentViewModel (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/Content/Content.ViewModel.tsx:64:38)
+          at Object.<anonymous> (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/Content/__tests__/Content.ViewModel.test.tsx:54:12)
+          at Object.asyncJestTest (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:102:37)
+          at resolve (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:43:12)
+          at new Promise (<anonymous>)
+          at mapper (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:26:19)
+          at promise.then (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:73:41)
+          at process._tickCallback (internal/process/next_tick.js:68:7)
+    console.error node_modules/mobx/lib/mobx.js:1705
+      [mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: 'Reaction[Reaction@74]' Error: promisedComputed must be used inside reactions
+          at PromisedComputed.Object.<anonymous>.PromisedComputed.get (/Users/alvin.huang/Fiji/node_modules/computed-async-mobx/src/promisedComputed.ts:74:19)
+          at Object.i18nP (/Users/alvin.huang/Fiji/application/src/utils/i18nT.ts:44:6)
+          at ProfileDialogGroupViewModel._this.reaction.fireImmediately (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/Group.ViewModel.tsx:33:22)
+          at executeAction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:604:22)
+          at res (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:595:16)
+          at reactionRunner (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2035:13)
+          at Reaction$$1.onInvalidate (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2017:13)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.runReaction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1646:26)
+          at runReactionsHelper (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1779:35)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1757:47)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:71
+          at batchedUpdates$1 (/Users/alvin.huang/Fiji/node_modules/react-dom/cjs/react-dom.development.js:20439:12)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:47)
+          at runReactions$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1762:5)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.schedule (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1630:13)
+          at Object.reaction$$1 [as reaction] (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2041:7)
+          at ProfileDialogGroupContentViewModel.StoreViewModel.reaction (/Users/alvin.huang/Fiji/application/src/store/ViewModel.ts:89:22)
+          at ProfileDialogGroupContentViewModel.ProfileDialogGroupViewModel [as constructor] (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/Group.ViewModel.tsx:25:10)
+          at new ProfileDialogGroupContentViewModel (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/Content/Content.ViewModel.tsx:64:38)
+          at Object.<anonymous> (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/Content/__tests__/Content.ViewModel.test.tsx:29:10)
+          at Object.asyncJestLifecycle (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:53:37)
+          at resolve (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:43:12)
+          at new Promise (<anonymous>)
+          at mapper (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:26:19)
+          at promise.then (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:73:41)
+          at process._tickCallback (internal/process/next_tick.js:68:7)
+    console.error node_modules/mobx/lib/mobx.js:1705
+      [mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: 'Reaction[Reaction@89]' Error: promisedComputed must be used inside reactions
+          at PromisedComputed.Object.<anonymous>.PromisedComputed.get (/Users/alvin.huang/Fiji/node_modules/computed-async-mobx/src/promisedComputed.ts:74:19)
+          at Object.i18nP (/Users/alvin.huang/Fiji/application/src/utils/i18nT.ts:44:6)
+          at ProfileDialogGroupViewModel._this.reaction.fireImmediately (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/Group.ViewModel.tsx:33:22)
+          at executeAction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:604:22)
+          at res (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:595:16)
+          at reactionRunner (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2035:13)
+          at Reaction$$1.onInvalidate (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2017:13)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.runReaction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1646:26)
+          at runReactionsHelper (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1779:35)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1757:47)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:71
+          at batchedUpdates$1 (/Users/alvin.huang/Fiji/node_modules/react-dom/cjs/react-dom.development.js:20439:12)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:47)
+          at runReactions$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1762:5)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.schedule (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1630:13)
+          at Object.reaction$$1 [as reaction] (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2041:7)
+          at ProfileDialogGroupContentViewModel.StoreViewModel.reaction (/Users/alvin.huang/Fiji/application/src/store/ViewModel.ts:89:22)
+          at ProfileDialogGroupContentViewModel.ProfileDialogGroupViewModel [as constructor] (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/Group.ViewModel.tsx:25:10)
+          at new ProfileDialogGroupContentViewModel (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/Content/Content.ViewModel.tsx:64:38)
+          at Object.<anonymous> (/Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/Dialog/Group/Content/__tests__/Content.ViewModel.test.tsx:64:12)
+          at Object.asyncJestTest (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:102:37)
+          at resolve (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:43:12)
+          at new Promise (<anonymous>)
+          at mapper (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:26:19)
+          at promise.then (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:73:41)
+          at process._tickCallback (internal/process/next_tick.js:68:7)
+
+PASS application/src/modules/telephony/container/DialerContainer/__tests__/DialerContainer.ViewModel.test.ts (24.332s)
+  ● Console
+
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value DialerContainerViewModel@6.keypadEntered is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value DialerContainerViewModel@6.isDialer is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value DialerContainerViewModel@6.dialerFocused is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value DialerContainerViewModel@6.canClickToInput is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value DialerContainerViewModel@6.canClickToInput is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value DialerContainerViewModel@6.canClickToInput is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value DialerContainerViewModel@6.canClickToInput is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value DialerContainerViewModel@6.chosenCallerPhoneNumber is being read outside a reactive context. Doing a full recompute
+
+PASS application/src/modules/telephony/__tests__/TelephonyNotificationManager.test.tsx (24.824s)
+  ● Console
+
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value TelephonyStore@7.displayName is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value TelephonyStore@7.displayName is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value TelephonyStore@7.displayName is being read outside a reactive context. Doing a full recompute
+    console.warn node_modules/mobx/lib/mobx.js:993
+      [mobx] Computed value TelephonyStore@7.displayName is being read outside a reactive context. Doing a full recompute
+
+PASS application/src/modules/setting/container/SettingItem/Select/__tests__/SelectSettingItem.ViewModel.test.ts
+PASS application/src/modules/setting/container/SettingLeftRail/__tests__/SettingLeftRail.ViewModel.test.ts
+PASS application/src/modules/setting/container/SettingPage/__tests__/SettingPage.ViewModel.test.ts
+PASS application/src/modules/setting/store/__tests__/SettingStoreScope.test.ts
+PASS application/src/modules/message/container/RightRail/ItemList/__tests__/GroupItemListHandler.test.ts (14.489s)
+PASS application/src/modules/message/container/ConversationSheet/TextMessage/__tests__/TextMessage.ViewModel.test.ts (10.896s)
+  ● Console
+
+    console.log node_modules/i18next/dist/commonjs/logger.js:33
+      i18next: languageChanged en
+    console.log node_modules/i18next/dist/commonjs/logger.js:33
+      i18next: initialized { debug: true,
+        initImmediate: true,
+        ns: [ 'translation' ],
+        defaultNS: [ 'translation' ],
+        fallbackLng: [ 'dev' ],
+        fallbackNS: false,
+        whitelist: false,
+        nonExplicitWhitelist: false,
+        load: 'all',
+        preload: false,
+        simplifyPluralSuffix: true,
+        keySeparator: '.',
+        nsSeparator: ':',
+        pluralSeparator: '_',
+        contextSeparator: '_',
+        partialBundledLanguages: false,
+        saveMissing: false,
+        updateMissing: false,
+        saveMissingTo: 'fallback',
+        saveMissingPlurals: true,
+        missingKeyHandler: false,
+        missingInterpolationHandler: false,
+        postProcess: false,
+        returnNull: true,
+        returnEmptyString: true,
+        returnObjects: false,
+        joinArrays: false,
+        returnedObjectHandler: [Function: returnedObjectHandler],
+        parseMissingKeyHandler: false,
+        appendNamespaceToMissingKey: false,
+        appendNamespaceToCIMode: false,
+        overloadTranslationOptionHandler: [Function: handle],
+        interpolation:
+         { escapeValue: true,
+           format: [Function: format],
+           prefix: '{{',
+           suffix: '}}',
+           formatSeparator: ',',
+           unescapePrefix: '-',
+           nestingPrefix: '$t(',
+           nestingSuffix: ')',
+           maxReplaces: 1000 },
+        lng: 'en',
+        resources: { en: { translation: [Object] } } }
+
+PASS application/src/modules/GlobalSearch/container/FullSearch/__tests__/FullSearch.View.test.tsx (18.037s)
+PASS application/src/modules/message/container/ConversationPage/Stream/__tests__/Stream.View.test.tsx (17.858s)
+PASS application/src/modules/setting/manager/general/__tests__/GeneralSettingManager.test.ts
+PASS packages/voip/src/signaling/__tests__/RTCSipCallSession.test.ts (11.362s)
+PASS application/src/modules/message/container/RightRail/ItemList/__tests__/utils.test.ts (14.958s)
+PASS packages/sdk/src/module/search/controller/__tests__/SearchPersonController.test.ts (14.039s)
+PASS application/src/modules/setting/container/SettingSection/__tests__/SettingSection.ViewModel.test.ts
+PASS application/src/modules/message/container/ConversationInitialPost/__tests__/ConversationInitialPost.View.test.tsx
+PASS packages/sdk/src/module/profile/setting/itemHandler/__tests__/MessageBadgeSettingHandler.test.ts
+PASS application/src/modules/common/container/PhoneParser/__tests__/parserNumber.test.tsx (7.351s)
+PASS application/src/modules/message/container/ConversationList/Menu/__tests__/Menu.View.test.tsx
+PASS packages/sdk/src/module/item/module/file/controller/__tests__/FileUploadController.test.ts (10.37s)
+PASS packages/voip/src/report/__tests__/Media.test.ts (8.29s)
+PASS application/src/modules/GlobalSearch/container/RecentSearch/__tests__/RecentSearch.ViewModel.test.ts (5.266s)
+PASS application/src/store/base/__tests__/StoreManager.test.ts
+PASS application/src/modules/GlobalSearch/container/InstantSearch/__tests__/InstantSearch.View.test.tsx (8.464s)
+PASS application/src/modules/GlobalSearch/container/InstantSearch/__tests__/InstantSearch.ViewModel.test.ts (5.211s)
+PASS application/src/modules/message/container/Profile/MiniCard/Group/__tests__/Group.ViewModel.test.tsx (5.221s)
+  ● Console
+
+    console.error node_modules/mobx/lib/mobx.js:1705
+      [mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: 'Reaction[Reaction@28]' TypeError: Cannot read property 'getGlipUserId' of undefined
+          at GroupModel.get (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:200:38)
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.computeValue (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:938:19)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.trackAndCompute (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:923:29)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:883:26)
+          at ObservableObjectAdministration$$1.Object.<anonymous>.ObservableObjectAdministration$$1.read (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:3825:37)
+          at GroupModel.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:4089:68)
+          at GroupModel.mobx_1.reaction.fireImmediately (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:99:13)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2030:29
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.track (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1676:22)
+          at reactionRunner (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2029:11)
+          at Reaction$$1.onInvalidate (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2017:13)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.runReaction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1646:26)
+          at runReactionsHelper (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1779:35)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1757:47)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:71
+          at batchedUpdates$1 (/Users/alvin.huang/Fiji/node_modules/react-dom/cjs/react-dom.development.js:20439:12)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:47)
+          at runReactions$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1762:5)
+          at endBatch$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1469:9)
+          at endAction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:648:5)
+          at executeAction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:615:13)
+          at MultiEntityMapStore.res (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:595:16)
+          at /Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/MiniCard/Group/Group.ViewModel.tsx:63:24
+          at process._tickCallback (internal/process/next_tick.js:68:7)
+    console.error node_modules/mobx/lib/mobx.js:1705
+      [mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: 'Reaction[Reaction@46]' TypeError: Cannot read property 'getGlipUserId' of undefined
+          at GroupModel.get (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:200:38)
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.computeValue (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:938:19)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.trackAndCompute (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:923:29)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:883:26)
+          at ObservableObjectAdministration$$1.Object.<anonymous>.ObservableObjectAdministration$$1.read (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:3825:37)
+          at GroupModel.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:4089:68)
+          at GroupModel.mobx_1.reaction.fireImmediately (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:99:13)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2030:29
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.track (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1676:22)
+          at reactionRunner (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2029:11)
+          at Reaction$$1.onInvalidate (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2017:13)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.runReaction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1646:26)
+          at runReactionsHelper (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1779:35)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1757:47)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:71
+          at batchedUpdates$1 (/Users/alvin.huang/Fiji/node_modules/react-dom/cjs/react-dom.development.js:20439:12)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:47)
+          at runReactions$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1762:5)
+          at endBatch$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1469:9)
+          at endAction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:648:5)
+          at executeAction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:615:13)
+          at MultiEntityMapStore.res (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:595:16)
+          at /Users/alvin.huang/Fiji/application/src/modules/message/container/Profile/MiniCard/Group/Group.ViewModel.tsx:63:24
+          at process._tickCallback (internal/process/next_tick.js:68:7)
+
+PASS application/src/modules/GlobalSearch/container/ItemList/__tests__/ItemList.ViewModel.test.ts
+PASS application/src/common/__tests__/goToConversation.test.ts
+PASS application/src/modules/telephony/container/VoiceMail/__tests__/VoiceMail.ViewModel.test.ts (5.788s)
+PASS application/src/modules/viewer/container/Viewer/__tests__/Viewer.DataSourceByPost.test.ts
+PASS application/src/modules/message/container/ConversationSheet/Files/__tests__/Files.View.test.tsx
+PASS application/src/modules/message/container/ConversationPage/Stream/__tests__/StreamController.test.ts
+PASS packages/sdk/src/framework/dao/impl/__tests__/Query.test.ts
+PASS application/src/modules/home/container/TopBar/AvatarActions/__tests__/AvatarActions.ViewModel.test.ts
+PASS application/src/common/__tests__/joinPublicTeam.test.ts (5.726s)
+PASS application/src/modules/message/__tests__/MessageNotificationViewModel.test.ts
+PASS application/src/modules/message/container/PostListPage/Stream/__tests__/Stream.ViewModel.test.ts
+PASS application/src/modules/message/container/ConversationPage/Header/__tests__/Header.ViewModel.test.ts
+PASS packages/sdk/src/module/group/controller/__tests__/GroupFetchDataController.test.ts (6.028s)
+PASS application/src/modules/telephony/container/Dialpad/__tests__/Dialpad.ViewModel.test.ts (5.561s)
+PASS application/src/modules/message/container/MiniCard/__tests__/Profile.test.ts (9.584s)
+PASS application/src/modules/telephony/container/DialerTitleBar/__tests__/DialerTitleBar.ViewModel.test.ts
+PASS application/src/modules/service-worker/upgrade/__tests__/Upgrade.test.ts
+PASS application/src/modules/telephony/container/Ignore/__tests__/Ignore.ViewModel.test.ts (6.024s)
+PASS application/src/modules/message/container/Message/__tests__/helper.test.ts (5.15s)
+PASS application/src/modules/telephony/HOC/__tests__/withDialogOrNewWindow.test.tsx
+PASS application/src/modules/message/container/ConversationSheet/Task/__tests__/TaskUpdate.ViewModel.test.ts
+PASS application/src/modules/message/container/ConversationCard/Footer/__tests__/withPostLike.test.tsx (5.512s)
+PASS application/src/modules/message/container/ConversationCard/Activity/__tests__/Activity.ViewModel.test.ts
+PASS application/src/modules/telephony/container/Record/__tests__/Record.ViewModel.test.ts (6.123s)
+PASS application/src/modules/GlobalSearch/container/SearchItem/MessageItem/__tests__/MessageItem.ViewModel.test.ts
+PASS application/src/containers/TeamSettings/__tests__/TeamSettings.ViewModel.test.tsx
+PASS application/src/modules/message/container/ConversationCard/Actions/Edit/__tests__/Edit.ViewModel.test.ts
+PASS packages/sdk/src/module/telephony/service/__tests__/TelephonyService.test.ts
+PASS application/src/modules/message/container/ConversationCard/Actions/More/__tests__/More.ViewModel.test.ts
+PASS application/src/modules/message/container/ConversationPage/Stream/__tests__/Stream.ViewModel.test.ts
+PASS application/src/modules/message/container/Profile/Dialog/Group/Title/__tests__/Title.View.test.tsx
+PASS application/src/modules/setting/container/SettingItem/Select/__tests__/SelectSettingItem.View.test.tsx
+PASS application/src/modules/message/container/Profile/Dialog/Group/Content/Members/MemberHeader/__tests__/MemberHeader.View.test.tsx
+PASS application/src/containers/common/Member/__tests__/Member.View.test.tsx
+PASS application/src/common/__tests__/getDocTitle.test.ts
+PASS application/src/containers/NewMessage/__tests__/NewMessage.View.test.tsx
+PASS application/src/modules/message/container/ConversationSheet/Task/__tests__/Task.View.test.tsx
+PASS application/src/modules/message/container/ConversationCard/ProgressActions/__tests__/ProgressActions.ViewModel.test.tsx
+PASS application/src/modules/telephony/container/End/__tests__/End.ViewModel.test.ts (5.819s)
+PASS application/src/modules/GlobalSearch/container/RecentSearch/__tests__/RecentSearch.View.test.tsx
+PASS application/src/modules/telephony/container/Reply/__tests__/Reply.ViewModel.test.ts
+PASS application/src/modules/GlobalSearch/container/ContentSearchResult/__tests__/ContentSearchResult.ViewModel.test.ts
+PASS application/src/store/base/__tests__/SingleEntityMapStore.test.ts
+PASS application/src/modules/message/container/ConversationList/ConversationListItem/__tests__/ConversationListItem.ViewModel.test.ts
+PASS application/src/modules/message/container/ConversationCard/Actions/Bookmark/__tests__/Bookmark.ViewModel.test.ts
+PASS application/src/modules/message/container/ConversationPage/MessageInput/Attachments/__tests__/Attachments.ViewModel.test.ts
+PASS application/src/modules/message/container/ConversationSheet/Event/__tests__/Event.View.test.tsx
+PASS application/src/modules/telephony/container/Mute/__tests__/Mute.ViewModel.test.ts
+PASS application/src/modules/feedback/service/__tests__/FeedbackService.test.ts
+PASS application/src/modules/telephony/service/__tests__/TelephonyService.test.ts
+PASS application/src/store/handler/__tests__/PreFetchConversationDataHandler.test.ts
+PASS application/src/containers/NewMessage/__tests__/NewMessage.ViewModel.test.ts
+PASS application/src/modules/viewer/container/Viewer/Title/__tests__/Title.ViewModel.test.ts
+PASS application/src/modules/message/container/RightRail/LinkItem/__tests__/LinkItem.ViewModel.test.ts
+PASS packages/sdk/src/module/group/controller/__tests__/GroupActionController.test.ts
+PASS application/src/modules/message/container/ConversationPost/Notification/__tests__/Notification.test.ts
+PASS application/src/modules/message/container/ConversationSheet/Link/__tests__/LinkItem.ViewModel.test.ts
+PASS application/src/modules/message/container/ConversationCard/Actions/Quote/__tests__/Quote.ViewModel.test.ts
+PASS application/src/containers/CreateTeam/__tests__/CreateTeam.ViewModel.test.ts
+PASS application/src/modules/message/container/ConversationSheet/Task/__tests__/Task.ViewModel.test.ts
+PASS application/src/store/handler/__tests__/SortableGroupMemberHandler.test.ts
+PASS application/src/store/handler/__tests__/PinnedPostListHandler.test.ts
+PASS application/src/containers/common/Privacy/__tests__/Privacy.ViewModel.test.ts
+PASS application/src/modules/message/container/ConversationSheet/__tests__/MessageAttachment.test.tsx
+PASS application/src/modules/GlobalSearch/container/common/__tests__/Search.ViewModel.test.ts
+PASS application/src/modules/notification/__tests__/notificationService.test.ts
+PASS application/src/modules/message/container/RightRail/EventItem/__tests__/EventItem.ViewModel.test.ts
+PASS application/src/modules/message/container/ConversationPost/Notification/Team/Join/__tests__/Join.ViewModel.test.ts
+PASS application/src/store/base/fetch/__tests__/IdListPagingDataProvider.test.ts
+PASS application/src/containers/Presence/__tests__/Presence.ViewModel.test.ts
+PASS application/src/modules/viewer/container/Viewer/Preload/__tests__/PreloadController.test.ts
+PASS application/src/modules/message/container/ConversationCard/Footer/__tests__/Footer.ViewModel.test.tsx
+PASS application/src/modules/GlobalSearch/container/common/__tests__/SearchCell.ViewModel.test.ts
+PASS application/src/modules/viewer/container/Viewer/__tests__/creator.test.ts
+PASS application/src/containers/Avatar/__tests__/Avatar.ViewModel.test.ts
+PASS packages/sdk/src/module/rcInfo/service/__tests__/RCInfoService.test.ts
+PASS application/src/modules/GlobalSearch/container/SearchItem/ContentItem/__tests__/ContentItem.ViewModel.test.ts
+PASS application/src/store/base/fetch/__tests__/FetchDataListHandler.test.ts
+PASS application/src/modules/GlobalSearch/service/__tests__/GlobalSearchService.test.ts
+PASS application/src/modules/GlobalSearch/container/ListSearchResult/__tests__/ListSearchResult.View.test.tsx
+PASS application/src/modules/GlobalSearch/container/ContentSearchResult/__tests__/ContentSearchResult.View.test.tsx
+PASS application/src/containers/CreateTeam/__tests__/CreateTeam.View.test.tsx
+PASS application/src/store/utils/__tests__/entities.test.ts
+PASS application/src/modules/GlobalSearch/container/common/__tests__/toSearchContent.test.ts
+PASS application/src/modules/setting/service/__tests__/SettingService.test.ts
+PASS application/src/modules/telephony/container/DialerTitleBar/__tests__/DialerTitleBar.View.test.tsx
+PASS application/src/modules/emoji/container/__tests__/Emoji.test.ts
+PASS application/src/modules/electron/container/ElectronUpgradeDialog/__tests__/ElectronUpgradeDialog.test.ts
+PASS application/src/modules/message/container/ConversationSheet/Files/__tests__/Files.ViewModel.test.ts
+PASS packages/sdk/src/service/uploadLogControl/__tests__/logControlManager.test.ts
+PASS application/src/modules/message/container/ConversationCard/Actions/Like/__tests__/Like.ViewModel.test.ts
+PASS packages/sdk/src/__tests__/index.test.ts
+PASS application/src/modules/telephony/container/Call/__tests__/Call.ViewModel.test.ts
+PASS application/src/modules/message/container/RightRail/TaskItem/__tests__/TaskItem.ViewModel.test.ts
+PASS application/src/modules/message/container/PostListPage/__tests__/PostListPage.ViewModel.test.ts
+PASS application/src/store/handler/__tests__/DiscontinuousPosListHandler.test.ts
+PASS packages/sdk/src/module/state/controller/__tests__/StateController.test.ts
+PASS application/src/containers/common/Favorite/__tests__/Favorite.ViewModel.test.ts
+PASS application/src/modules/telephony/container/Dialpad/__tests__/Dialpad.View.test.tsx
+PASS application/src/modules/message/container/ConversationPage/TimeNodeDivider/__tests__/TimeNodeDivider.ViewModel.test.ts
+PASS application/src/store/handler/cache/__tests__/PreFetchPostProcessor.test.ts
+PASS application/src/modules/message/container/ConversationCard/__tests__/ConversationCard.ViewModel.test.ts
+PASS packages/sdk/src/module/post/service/__tests__/PostService.test.ts
+PASS application/src/store/base/fetch/__tests__/SortableListStore.test.ts
+PASS application/src/modules/message/container/Profile/Dialog/Group/Content/AddMembers/__tests__/AddMembers.View.test.tsx
+PASS application/src/modules/viewer/container/Viewer/Preload/__tests__/PreloadProcessor.test.ts
+PASS application/src/modules/message/container/Profile/Dialog/Group/Content/Members/Menu/__tests__/Menu.View.test.tsx
+PASS application/src/common/__tests__/handleTeamAction.test.ts
+PASS application/src/modules/message/container/ConversationSheet/__tests__/IntegrationItem.test.tsx
+PASS application/src/containers/ToastWrapper/Toast/__tests__/Toast.ViewModel.test.ts
+PASS application/src/modules/telephony/container/DialerKeypadHeader/__tests__/DialerKeypadHeader.ViewModel.test.ts
+PASS application/src/modules/message/container/ConversationPage/MessageInput/__tests__/MessageInput.ViewModel.test.ts (5.19s)
+  ● Console
+
+    console.error node_modules/mobx/lib/mobx.js:1705
+      [mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: 'Reaction[Reaction@81]' TypeError: Cannot read property 'userConfig' of null
+          at GroupModel.get (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:197:24)
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.computeValue (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:938:19)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.trackAndCompute (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:923:29)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:883:26)
+          at ObservableObjectAdministration$$1.Object.<anonymous>.ObservableObjectAdministration$$1.read (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:3825:37)
+          at GroupModel.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:4089:68)
+          at GroupModel.mobx_1.reaction.fireImmediately (/Users/alvin.huang/Fiji/application/src/store/models/Group.ts:99:13)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2030:29
+          at trackDerivedFunction$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1145:24)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.track (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1676:22)
+          at reactionRunner (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2029:11)
+          at Reaction$$1.onInvalidate (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:2017:13)
+          at Reaction$$1.Object.<anonymous>.Reaction$$1.runReaction (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1646:26)
+          at runReactionsHelper (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1779:35)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1757:47)
+          at /Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:71
+          at batchedUpdates$1 (/Users/alvin.huang/Fiji/node_modules/react-dom/cjs/react-dom.development.js:20439:12)
+          at reactionScheduler (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1786:47)
+          at runReactions$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1762:5)
+          at endBatch$$1 (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:1469:9)
+          at ComputedValue$$1.Object.<anonymous>.ComputedValue$$1.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:877:17)
+          at ObservableObjectAdministration$$1.Object.<anonymous>.ObservableObjectAdministration$$1.read (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:3825:37)
+          at MessageInputViewModel.get (/Users/alvin.huang/Fiji/node_modules/mobx/lib/mobx.js:4089:68)
+          at MessageInputViewModel._trackSendPost (/Users/alvin.huang/Fiji/application/src/modules/message/container/ConversationPage/MessageInput/MessageInput.ViewModel.ts:321:12)
+          at MessageInputViewModel.<anonymous> (/Users/alvin.huang/Fiji/application/src/modules/message/container/ConversationPage/MessageInput/MessageInput.ViewModel.ts:284:12)
+          at step (/Users/alvin.huang/Fiji/application/src/modules/message/container/ConversationPage/MessageInput/MessageInput.ViewModel.ts:165:17)
+          at Object.next (/Users/alvin.huang/Fiji/application/src/modules/message/container/ConversationPage/MessageInput/MessageInput.ViewModel.ts:96:14)
+          at /Users/alvin.huang/Fiji/application/src/modules/message/container/ConversationPage/MessageInput/MessageInput.ViewModel.ts:68:67
+          at new Promise (<anonymous>)
+          at Object.<anonymous>.__awaiter (/Users/alvin.huang/Fiji/application/src/modules/message/container/ConversationPage/MessageInput/MessageInput.ViewModel.ts:45:10)
+          at MessageInputViewModel._sendPost (/Users/alvin.huang/Fiji/application/src/modules/message/container/ConversationPage/MessageInput/MessageInput.ViewModel.ts:489:12)
+          at Object.<anonymous> (/Users/alvin.huang/Fiji/application/src/modules/message/container/ConversationPage/MessageInput/__tests__/MessageInput.ViewModel.test.ts:159:37)
+          at step (/Users/alvin.huang/Fiji/application/src/modules/message/container/ConversationPage/MessageInput/__tests__/MessageInput.ViewModel.test.ts:135:17)
+          at Object.next (/Users/alvin.huang/Fiji/application/src/modules/message/container/ConversationPage/MessageInput/__tests__/MessageInput.ViewModel.test.ts:66:14)
+          at /Users/alvin.huang/Fiji/application/src/modules/message/container/ConversationPage/MessageInput/__tests__/MessageInput.ViewModel.test.ts:38:67
+          at new Promise (<anonymous>)
+          at Object.<anonymous>.__awaiter (/Users/alvin.huang/Fiji/application/src/modules/message/container/ConversationPage/MessageInput/__tests__/MessageInput.ViewModel.test.ts:15:10)
+          at Object.<anonymous> (/Users/alvin.huang/Fiji/application/src/modules/message/container/ConversationPage/MessageInput/__tests__/MessageInput.ViewModel.test.ts:153:89)
+          at Object.asyncJestTest (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:102:37)
+          at resolve (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:43:12)
+          at new Promise (<anonymous>)
+          at mapper (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:26:19)
+          at promise.then (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:73:41)
+          at process._tickCallback (internal/process/next_tick.js:68:7)
+
+PASS application/src/modules/telephony/container/Dialer/__tests__/Dialer.ViewModel.test.ts
+PASS application/src/common/__tests__/catchError.test.ts
+PASS application/src/__tests__/runner.test.node.tsx
+PASS application/src/modules/GlobalSearch/container/SearchItem/GroupItem/__tests__/GroupItem.ViewModel.test.ts
+PASS application/src/store/handler/cache/__tests__/ConversationPostCacheController.test.ts
+PASS application/src/containers/common/OpenProfileDialog/__tests__/OpenProfileDialog.ViewModel.test.ts
+PASS application/src/store/models/__tests__/Profile.test.ts
+PASS application/src/store/base/__tests__/MultiEntityMapStore.test.ts
+PASS application/src/modules/message/container/ConversationCard/Actions/Bookmark/__tests__/Bookmark.View.test.tsx
+PASS application/src/modules/GlobalSearch/store/__tests__/GlobalSearchStore.test.ts
+PASS application/src/modules/home/store/__tests__/HomeStore.test.ts
+PASS application/src/modules/telephony/container/Hold/__tests__/Hold.ViewModel.test.ts (5.633s)
+PASS application/src/modules/telephony/TelephonySettingManager/RegionSettingItem/__tests__/RegionSettingItem.test.ts
+PASS packages/sdk/src/module/rcInfo/controller/__tests__/RCAccountInfoController.test.ts
+PASS application/src/modules/viewer/container/Viewer/__tests__/Viewer.ViewModel.test.ts (5.422s)
+PASS application/src/modules/message/container/ConversationCard/EditMessageInput/__tests__/EditMessageInput.ViewModel.test.ts
+PASS application/src/store/handler/cache/__tests__/PostUsedItemCache.test.ts
+PASS application/src/modules/message/container/ConversationSheet/Event/__tests__/Event.ViewModel.test.ts
+PASS application/src/modules/electron/container/ElectronUpgradeDialog/__tests__/ElectronUpgradeDialog.View.test.tsx
+PASS application/src/modules/telephony/container/DetachOrAttach/__tests__/DetachOrAttach.ViewModel.test.ts
+PASS application/src/modules/setting/store/__tests__/SettingStore.test.ts
+PASS application/src/modules/message/container/ConversationPage/MessageInput/Mention/__tests__/Mention.ViewModel.test.ts
+PASS application/src/modules/message/container/ConversationList/Menu/__tests__/Menu.ViewModel.test.ts
+PASS application/src/store/handler/cache/__tests__/ThumbnailPreloadController.test.ts
+PASS application/src/modules/message/container/ConversationCard/Actions/Like/__tests__/Like.View.test.tsx
+PASS packages/sdk/src/module/item/dao/__tests__/itemDao.test.ts
+PASS packages/sdk/src/module/post/controller/__tests__/DiscontinuousPostController.test.ts
+PASS application/src/modules/message/container/ConversationSheet/Task/AvatarName/__tests__/AvatarName.ViewModel.test.ts
+PASS application/src/modules/message/container/RightRail/common/File/__tests__/File.ViewModel.test.ts
+PASS application/src/store/models/__tests__/Group.test.ts
+PASS application/src/modules/telephony/store/__tests__/TelephonyStore.test.ts
+PASS application/src/modules/message/container/ConversationPost/Notification/Team/Change/__tests__/Change.ViewModel.test.ts
+PASS packages/sdk/src/module/group/controller/__tests__/GroupHandleDataController.test.ts
+PASS application/src/store/base/fetch/__tests__/ListStore.test.ts
+PASS packages/sdk/src/__tests__/registerConfig.test.ts
+PASS application/src/modules/telephony/container/Minimize/__tests__/Minimize.ViewModel.test.ts
+PASS application/src/modules/viewer/container/Viewer/__tests__/Viewer.DataSource.test.ts
+PASS application/src/modules/viewer/container/Viewer/Content/Image/__tests__/ImageViewer.ViewModel.test.ts
+PASS application/src/AnalyticsCollector/__tests__/AnalyticsCollector.test.ts
+PASS application/src/modules/app/container/TopBanner/__tests__/TopBanner.View.test.tsx
+PASS application/src/modules/setting/container/SettingItem/Link/__tests__/LinkSettingItem.ViewModel.test.ts
+PASS application/src/modules/message/container/Profile/Dialog/Group/Content/Members/MemberHeader/__tests__/MemberHeader.ViewModel.test.tsx
+PASS application/src/modules/message/container/ConversationInitialPost/__tests__/ConversationInitialPost.ViewModel.test.ts
+PASS application/src/modules/notification/__tests__/AbstractNotification.test.ts
+PASS packages/sdk/src/module/setting/moduleSetting/__tests__/BaseModuleSetting.test.ts
+PASS application/src/modules/message/container/Thumbnail/__tests__/Thumbnail.ViewModel.test.ts
+PASS application/src/modules/telephony/container/CallActions/Forward/__tests__/Forward.ViewModel.test.ts
+PASS application/src/modules/message/container/ConversationPage/__tests__/ConversationPage.ViewModel.test.ts
+PASS application/src/modules/message/container/ConversationPage/Header/Menu/__tests__/Menu.ViewModel.test.tsx
+PASS packages/sdk/src/module/post/controller/__tests__/PostDataController.test.ts
+PASS application/src/modules/message/container/Profile/MiniCard/Person/__tests__/Person.ViewModel.test.tsx
+PASS application/src/modules/message/container/Profile/Dialog/Person/__tests__/Person.ViewModel.test.tsx
+PASS application/src/modules/setting/manager/notificationSound/__tests__/NotificationSoundSettingManager.test.ts
+PASS application/src/modules/message/container/ConversationSheet/Event/__tests__/EventUpdate.ViewModel.test.ts
+PASS application/src/containers/common/Member/__tests__/Member.ViewModel.test.ts
+PASS application/src/modules/message/container/RightRail/PinnedList/PinnedItem/__tests__/PinnedItem.ViewModel.test.ts
+PASS application/src/modules/message/container/Profile/Dialog/Group/Content/Members/MemberList/__tests__/MemberList.ViewModel.test.tsx
+PASS packages/sdk/src/module/profile/service/__tests__/ProfileService.test.ts
+PASS application/src/modules/message/container/Profile/MiniCard/Group/Footer/__tests__/Footer.ViewModel.test.tsx (9.055s)
+PASS application/src/store/handler/cache/__tests__/PostCacheController.test.ts (7.866s)
+PASS application/src/containers/Umi/__tests__/Umi.ViewModel.test.ts (6.507s)
+PASS application/src/store/base/fetch/__tests__/FetchSortableDataListHandler.test.ts (8.928s)
+PASS application/src/containers/Downshift/GroupSearch/__tests__/GroupSearch.ViewModel.test.ts (7.444s)
+PASS application/src/modules/message/container/ConversationCard/Actions/Pin/__tests__/Pin.View.test.tsx (7.258s)
+PASS application/src/modules/message/container/ConversationSheet/TextMessage/__tests__/Emoji/convertKeys.test.ts
+PASS packages/sdk/src/module/common/controller/__tests__/PreInsertController.test.ts
+PASS application/src/store/handler/cache/__tests__/ThumbnailPreloadProcessor.test.ts
+PASS packages/sdk/src/module/item/module/file/controller/__tests__/FileActionController.test.ts
+PASS packages/sdk/src/module/state/controller/implementation/__tests__/TotalUnreadController.test.ts
+PASS application/src/modules/message/container/Profile/Dialog/Group/Content/Members/MemberListItem/__tests__/MemberListItem.ViewModel.test.tsx
+PASS packages/sdk/src/module/sync/controller/__tests__/SyncController.test.ts
+PASS application/src/modules/message/container/ConversationList/Indicator/__tests__/Indicator.ViewModel.test.ts
+PASS application/src/containers/common/Privacy/__tests__/Privacy.View.test.tsx (5.166s)
+PASS application/src/containers/Downshift/ContactSearch/__tests__/ContactSearch.ViewModel.test.ts
+PASS application/src/modules/telephony/service/__tests__/ToastCallError.test.ts
+PASS packages/sdk/src/module/post/controller/__tests__/PostFetchController.test.ts
+PASS application/src/modules/message/container/ConversationPost/__tests__/ConversationPost.test.ts (5.772s)
+PASS application/src/modules/message/container/ConversationPost/Notification/Team/Added/__tests__/Added.ViewModel.test.ts
+PASS application/src/modules/message/container/ConversationPost/Notification/Team/__tests__/Team.ViewModel.test.ts
+PASS application/src/modules/telephony/container/DialBtn/__tests__/DialBtn.ViewModel.test.ts
+PASS application/src/modules/message/container/ConversationCard/Actions/Pin/__tests__/Pin.ViewModel.test.ts
+PASS application/src/containers/ConvertToTeam/__tests__/ConvertToTeam.ViewModel.test.tsx
+PASS application/src/containers/common/Favorite/__tests__/Favorite.View.test.tsx
+PASS application/src/modules/message/container/ConversationSheet/Note/__tests__/Note.ViewModel.test.ts
+PASS application/src/base/__tests__/buildContainer.test.tsx
+PASS application/src/modules/message/container/RightRail/NoteItem/__tests__/NoteItem.ViewModel.test.ts
+PASS application/src/store/base/__tests__/GlobalStore.test.ts
+PASS application/src/modules/home/container/TopBar/BackNForward/__tests__/BackNForward.ViewModel.test.ts
+PASS application/src/modules/telephony/container/DialerHeader/__tests__/DialerHeader.ViewModel.test.ts
+PASS packages/sdk/src/module/rcInfo/controller/__tests__/RegionInfoController.test.ts
+PASS packages/sdk/src/module/profile/setting/itemHandler/__tests__/DefaultAppSettingHandler.test.ts
+PASS packages/sdk/src/module/person/controller/__tests__/PersonController.test.ts
+PASS application/src/modules/app/container/TopBanner/Banners/NetworkBanner/__tests__/NetworkBanner.ViewModel.test.ts
+PASS packages/sdk/src/module/state/service/__tests__/StateService.test.ts
+PASS application/src/modules/message/container/ConversationCard/From/__tests__/From.ViewModel.test.ts
+PASS application/src/store/models/__tests__/Person.test.ts
+PASS packages/sdk/src/api/__tests__/NetworkClient.test.ts
+PASS packages/sdk/src/module/post/controller/implementation/__tests__/PostActionController.test.ts
+PASS packages/sdk/src/account/__tests__/RCAccount.test.ts
+PASS packages/sdk/src/module/groupConfig/dao/__tests__/GroupConfigDao.test.ts
+PASS application/src/modules/message/container/ConversationCard/Actions/Delete/__tests__/Delete.ViewModel.test.ts
+PASS application/src/modules/message/container/Profile/Dialog/Group/Content/AddMembers/__tests__/AddMembers.ViewModal.test.ts
+PASS application/src/containers/ToastWrapper/__tests__/ToastWrapper.ViewModel.test.ts
+PASS packages/sdk/src/module/progress/controller/__tests__/ProgressCacheController.test.ts
+PASS packages/jui/src/components/VirtualizedList/utils/__tests__/isRangeIn.test.node.ts
+PASS packages/sdk/src/module/state/dao/__tests__/StateDao.test.ts
+PASS application/src/modules/message/container/ConversationSheet/TextMessage/__tests__/Emoji/Emoji.test.ts
+PASS application/src/modules/telephony/container/Keypad/__tests__/Keypad.ViewModel.test.ts
+PASS packages/sdk/src/service/socket/__tests__/SocketManager.test.ts
+PASS packages/sdk/src/module/post/controller/implementation/__tests__/PostSearchController.test.ts
+PASS packages/sdk/src/module/post/controller/__tests__/PostController.test.ts
+PASS application/src/modules/featuresFlags/service/__tests__/FeatureFlagsService.test.ts
+PASS application/src/modules/message/container/ConversationSheet/CodeSnippet/__tests__/CodeSnippetItem.ViewModel.test.ts
+PASS application/src/modules/message/container/Profile/__tests__/Profile.ViewModel.test.tsx
+PASS application/src/modules/telephony/container/FakeInput/__tests__/FakeInput.ViewModel.test.ts
+PASS packages/sdk/src/module/groupConfig/service/__tests__/GroupConfigService.test.ts
+PASS packages/sdk/src/framework/service/__tests__/EntityBaseService.test.ts
+PASS packages/sdk/src/component/featureFlag/__tests__/FlagCalculator.test.ts
+PASS packages/sdk/src/module/profile/setting/itemHandler/__tests__/NewMessagesSettingHandler.test.ts
+PASS packages/sdk/src/api/glip/__tests__/post.test.ts
+PASS application/src/modules/message/container/RightRail/ItemList/__tests__/ItemList.ViewModel.test.ts
+PASS packages/sdk/src/api/glip/__tests__/presence.test.ts
+PASS packages/sdk/src/module/item/module/file/service/__tests__/FileItemService.test.ts
+PASS packages/sdk/src/module/item/service/__tests__/ItemService.test.ts
+PASS packages/sdk/src/component/featureFlag/__tests__/index.test.ts
+PASS packages/voip/src/api/__tests__/RTCCall.test.ts
+PASS packages/sdk/src/module/sync/service/__tests__/SyncService.test.ts
+PASS packages/sdk/src/module/item/module/file/controller/__tests__/FileItemController.test.ts
+PASS packages/sdk/src/service/uploadLogControl/__tests__/LogUploader.test.ts
+PASS application/src/common/__tests__/ImageDwonloader.test.ts
+PASS packages/sdk/src/module/telephony/controller/__tests__/TelephonyEngineController.test.ts
+PASS packages/sdk/src/module/telephony/controller/__tests__/TelephonyAccountController.test.ts
+PASS application/src/modules/GlobalSearch/container/FullSearch/__tests__/FullSearch.ViewModel.test.ts
+PASS packages/sdk/src/authenticator/__tests__/RCPasswordAuthenticator.test.ts
+PASS application/src/store/base/__tests__/BaseNotificationSubscribable.test.ts
+PASS application/src/modules/message/container/ConversationPage/Stream/StreamItemAssemblyLine/Assembler/__tests__/NewMessageSeparator.test.ts
+PASS packages/sdk/src/module/group/controller/__tests__/GroupController.test.ts
+PASS packages/sdk/src/module/badge/service/__tests__/BadgeService.test.ts
+PASS packages/sdk/src/module/item/controller/__tests__/ItemServiceController.test.ts
+PASS application/src/modules/telephony/container/CallActions/Reply/__tests__/Reply.ViewModel.test.ts
+PASS packages/sdk/src/module/item/module/link/service/__tests__/LinkItemService.test.ts
+PASS packages/sdk/src/framework/controller/__tests__/EntitySourceController.test.ts
+PASS application/src/containers/VersionInfo/LoginVersionStatus/__tests__/LoginVersionStatus.ViewModel.test.ts
+PASS packages/sdk/src/module/item/module/conference/service/__tests__/ConferenceItemService.test.ts
+PASS packages/sdk/src/service/socket/__tests__/index.test.ts
+PASS packages/sdk/src/module/account/service/__tests__/index.test.ts
+PASS packages/jui/src/components/VirtualizedList/utils/__tests__/createRange.test.node.ts
+PASS application/src/modules/setting/container/SettingItem/Toggle/__tests__/ToggleSettingItem.ViewModel.test.ts
+PASS packages/sdk/src/framework/controller/__tests__/EntityCacheController.test.ts
+PASS packages/sdk/src/service/__tests__/notificationCenter.test.ts
+PASS packages/sdk/src/module/account/controller/__tests__/index.test.ts
+PASS packages/sdk/src/dao/__tests__/DaoManager.test.ts
+PASS packages/sdk/src/framework/dao/impl/__tests__/BaseDao.test.ts
+PASS packages/sdk/src/module/item/controller/__tests__/ItemSyncController.test.ts
+PASS packages/sdk/src/module/item/module/interactiveMessage/service/__tests__/InteractiveMessageItemService.test.ts
+PASS packages/sdk/src/module/phoneNumber/controller/__tests__/PhoneNumberController.test.ts
+PASS packages/sdk/src/module/person/service/__tests__/PersonService.test.ts
+PASS packages/sdk/src/utils/phoneParser/__tests__/PhoneParserUtility.test.ts
+PASS packages/sdk/src/authenticator/__tests__/UnifiedLoginAuthenticator.test.ts
+PASS packages/sdk/src/component/DataDispatcher/__tests__/dataDispatcher.test.ts
+PASS packages/sdk/src/module/state/controller/implementation/__tests__/StateDataHandleController.test.ts
+PASS packages/sdk/src/module/account/service/__tests__/handleData.test.ts
+PASS packages/sdk/src/module/profile/controller/__tests__/ProfileController.test.ts
+PASS packages/sdk/src/authenticator/__tests__/utils.test.ts
+PASS packages/sdk/src/module/telephony/controller/__tests__/TelephonyCallController.test.ts
+PASS packages/sdk/src/module/company/service/__tests__/CompanyService.test.ts
+PASS application/src/containers/Notification/__tests__/Notification.test.ts
+PASS packages/sdk/src/module/profile/setting/__tests__/ProfileSetting.test.ts
+PASS packages/sdk/src/module/group/service/__tests__/GroupService.test.ts
+PASS packages/sdk/src/module/presence/controller/__tests__/PresenceController.test.ts
+PASS application/src/plugins/LoadingPlugin/__tests__/LoadingPlugin.test.tsx
+PASS packages/sdk/src/module/post/controller/__tests__/PostNotificationController.test.ts
+PASS packages/sdk/src/module/group/controller/__tests__/GroupEntityCacheController.test.ts
+PASS packages/sdk/src/module/post/dao/__tests__/PostViewDao.test.ts
+PASS packages/sdk/src/authenticator/__tests__/ReLoginAuthenticator.test.ts
+PASS packages/sdk/src/module/item/module/task/service/__tests__/TaskItemService.test.ts
+PASS packages/sdk/src/module/profile/setting/itemHandler/__tests__/CallerIdSettingHandler.test.ts
+PASS packages/sdk/src/module/item/controller/__tests__/ItemActionController.test.ts
+PASS packages/jui/src/components/VirtualizedList/utils/__tests__/isRangeEqual.test.node.ts
+PASS application/src/modules/GlobalSearch/container/GlobalSearch/__tests__/GlobalSearch.ViewModel.test.ts
+PASS packages/sdk/src/api/glip/__tests__/user.test.ts
+PASS application/src/plugins/LoadingMorePlugin/__tests__/LoadingMorePlugin.test.tsx
+PASS packages/sdk/src/service/uploadLogControl/consumer/__tests__/LogConsumer.test.ts
+PASS packages/sdk/src/module/post/dao/__tests__/PostDao.test.ts
+PASS packages/sdk/src/module/rcInfo/setting/__tests__/RcInfoSettings.test.ts
+PASS packages/sdk/src/module/state/controller/implementation/__tests__/StateActionController.test.ts
+PASS packages/sdk/src/module/rcInfo/controller/__tests__/RCWebSettingInfoController.test.ts
+PASS application/src/modules/notification/__tests__/notificationModule.test.ts
+PASS packages/sdk/src/module/person/dao/__tests__/PersonDao.test.ts
+PASS packages/sdk/src/module/item/module/integration/service/__tests__/IntegrationItemService.test.ts
+PASS packages/sdk/src/framework/config/__tests__/ConfigMigrator.test.ts
+PASS packages/sdk/src/module/setting/moduleSetting/__tests__/AbstractSettingEntityHandler.test.ts
+PASS packages/sdk/src/module/profile/setting/itemHandler/__tests__/NewVoicemailsSettingHandler.test.ts
+PASS packages/sdk/src/module/person/controller/__tests__/PersonDataController.test.ts
+PASS packages/sdk/src/module/post/controller/implementation/__tests__/SendPostControllerHelper.test.ts
+PASS packages/sdk/src/module/permission/controller/__tests__/PermissionController.test.ts
+PASS packages/sdk/src/framework/utils/__tests__/SearchUtils.test.ts
+PASS packages/sdk/src/module/profile/dao/__tests__/ProfileDao.test.ts
+PASS packages/sdk/src/service/socket/__tests__/SocketCanConnectController.test.ts
+PASS packages/sdk/src/__tests__/Sdk.test.ts
+PASS packages/voip/src/account/__tests__/RTCProvManager.test.ts
+PASS packages/voip/src/report/__tests__/Call.test.ts
+PASS packages/sdk/src/module/profile/setting/itemHandler/__tests__/NotificationsSettingHandler.test.ts
+PASS packages/sdk/src/module/search/service/__tests__/SearchService.test.ts
+PASS packages/sdk/src/framework/controller/__tests__/index.test.ts
+PASS packages/sdk/src/module/state/controller/implementation/__tests__/StateFetchDataController.test.ts
+PASS packages/voip/src/api/__tests__/RTCEngine.test.ts
+PASS packages/sdk/src/api/ringcentral/__tests__/RCInfoApi.test.ts
+PASS packages/sdk/src/module/rcInfo/controller/__tests__/RCInfoFetchController.test.ts
+PASS packages/sdk/src/api/glip/search/__tests__/search.test.ts
+PASS packages/sdk/src/framework/controller/__tests__/EntityCacheSearchController.test.ts
+PASS packages/sdk/src/module/common/controller/__tests__/PreInsertIdController.test.ts
+PASS packages/sdk/src/module/telephony/controller/__tests__/MakeCallController.test.ts
+PASS packages/sdk/src/module/profile/controller/__tests__/ProfileActionController.test.ts
+PASS packages/voip/src/account/__tests__/RTCCallManager.test.ts
+PASS packages/sdk/src/module/phoneNumber/service/__tests__/PhoneNumberService.test.ts
+PASS packages/sdk/src/module/post/controller/implementation/__tests__/PostItemController.test.ts
+PASS packages/sdk/src/module/rcInfo/controller/__tests__/RCCallerIdController.test.ts
+PASS packages/sdk/src/module/profile/setting/itemHandler/__tests__/IncomingCallsSettingHandler.test.ts
+PASS application/src/base/__tests__/AbstractViewModel.test.ts
+PASS packages/sdk/src/framework/account/__tests__/AccountManager.test.ts
+PASS packages/sdk/src/module/item/module/event/service/__tests__/EventItemService.test.ts
+PASS packages/sdk/src/module/group/controller/__tests__/TeamPermissionController.test.ts
+PASS packages/voip/src/utils/__tests__/RTCLoggerProxy.test.ts
+PASS packages/sdk/src/module/item/module/note/service/__tests__/NoteItemService.test.ts
+PASS packages/sdk/src/module/progress/service/__tests__/ProgressService.test.ts
+PASS packages/sdk/src/module/item/module/base/service/__tests__/BaseSubItemService.test.ts
+PASS packages/voip/src/api/__tests__/RTCAccount.test.ts
+PASS packages/sdk/src/api/__tests__/api.test.ts
+PASS packages/sdk/src/module/sync/config/__tests__/SyncUserConfig.test.ts
+PASS packages/sdk/src/module/item/module/base/dao/__tests__/SubItemDao.test.ts
+PASS packages/sdk/src/module/rcInfo/controller/__tests__/AccountServiceInfoController.test.ts
+PASS packages/sdk/src/module/presence/controller/__tests__/SubscribeRequestController.test.ts
+PASS packages/sdk/src/module/state/dao/__tests__/GroupStateDao.test.ts
+PASS packages/sdk/src/api/glip/__tests__/person.test.ts
+PASS packages/sdk/src/module/rcInfo/config/__tests__/RCInfoGlobalConfig.test.ts
+PASS packages/sdk/src/module/rcInfo/setting/__tests__/RegionSettingHandler.test.ts
+PASS application/src/store/__tests__/ViewModel.test.ts
+PASS packages/sdk/src/module/item/module/link/dao/__tests__/LinkItemDao.test.ts
+PASS application/src/modules/viewer/container/Viewer/Utils/__tests__/dataSourceUtils.test.ts
+PASS packages/sdk/src/module/rcInfo/controller/__tests__/RCInfoForwardingNumberController.test.ts
+PASS packages/sdk/src/dao/account/__tests__/account.test.ts
+PASS packages/sdk/src/api/handlers/__tests__/HandleByRingCentral.test.ts
+PASS packages/sdk/src/api/ringcentral/__tests__/RCAuthApi.test.ts
+PASS packages/sdk/src/framework/controller/__tests__/RequestController.test.ts
+PASS packages/sdk/src/module/item/utils/__tests__/ItemUtils.test.ts
+  ● Console
+
+    console.warn node_modules/moment/moment.js:293
+      Deprecation warning: value provided is not in a recognized RFC2822 or ISO format. moment construction falls back to js Date(), which is not reliable across all browsers and versions. Non RFC2822/ISO date formats are discouraged and will be removed in an upcoming major release. Please refer to http://momentjs.com/guides/#/warnings/js-date/ for more info.
+      Arguments: 
+      [0] _isAMomentObject: true, _isUTC: false, _useUTC: false, _l: undefined, _i: 6/6/2255, _f: undefined, _strict: undefined, _locale: [object Object]
+      Error
+          at Function.createFromInputFallback (/Users/alvin.huang/Fiji/node_modules/moment/moment.js:320:98)
+          at configFromString (/Users/alvin.huang/Fiji/node_modules/moment/moment.js:2368:15)
+          at configFromInput (/Users/alvin.huang/Fiji/node_modules/moment/moment.js:2594:13)
+          at prepareConfig (/Users/alvin.huang/Fiji/node_modules/moment/moment.js:2577:13)
+          at createFromConfig (/Users/alvin.huang/Fiji/node_modules/moment/moment.js:2544:44)
+          at createLocalOrUTC (/Users/alvin.huang/Fiji/node_modules/moment/moment.js:2631:16)
+          at createLocal (/Users/alvin.huang/Fiji/node_modules/moment/moment.js:2635:16)
+          at Object.hooks [as default] (/Users/alvin.huang/Fiji/node_modules/moment/moment.js:12:29)
+          at Function.ItemUtils._isTodayOrAfter (/Users/alvin.huang/Fiji/packages/sdk/src/module/item/utils/ItemUtils.ts:69:7)
+          at /Users/alvin.huang/Fiji/packages/sdk/src/module/item/utils/ItemUtils.ts:41:12
+          at Object.<anonymous> (/Users/alvin.huang/Fiji/packages/sdk/src/module/item/utils/__tests__/ItemUtils.test.ts:135:14)
+          at Object.asyncJestTest (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:102:37)
+          at resolve (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:43:12)
+          at new Promise (<anonymous>)
+          at mapper (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:26:19)
+          at promise.then (/Users/alvin.huang/Fiji/node_modules/jest-jasmine2/build/queueRunner.js:73:41)
+          at process._tickCallback (internal/process/next_tick.js:68:7)
+
+PASS packages/sdk/src/module/search/config/__tests__/SearchUserConfig.test.ts
+PASS packages/voip/src/call/__tests__/RTCCallFsm.test.ts
+PASS application/src/common/__tests__/getThumbnailURL.test.ts
+PASS packages/foundation/src/db/adapter/loki/__tests__/LokiCollection.test.ts
+PASS packages/sdk/src/framework/service/__tests__/ServiceManager.test.ts
+PASS packages/sdk/src/authenticator/__tests__/AutoAuthenticator.test.ts
+PASS application/src/store/utils/__tests__/ModelCreator.test.ts
+PASS packages/sdk/src/framework/controller/__tests__/PartialModelController.test.ts
+PASS packages/sdk/src/module/item/module/file/dao/__tests__/FileItemDao.test.ts
+PASS packages/sdk/src/framework/controller/__tests__/TaskController.test.ts
+PASS packages/sdk/src/module/presence/controller/__tests__/SubscribeController.test.ts
+PASS application/src/store/models/__tests__/FileItem.test.ts
+PASS application/src/modules/message/container/Profile/Dialog/Group/Title/More/__tests__/More.ViewModel.test.tsx
+PASS packages/sdk/src/api/glip/__tests__/state.test.ts
+PASS packages/sdk/src/component/featureFlag/__tests__/FeatureFlag.test.ts
+PASS packages/sdk/src/module/account/service/__tests__/clientConfig.test.ts
+PASS packages/sdk/src/module/telephony/config/__tests__/TelephonyUserConfig.test.ts
+PASS packages/sdk/src/framework/utils/jobSchedule/__tests__/JobScheduler.test.ts
+PASS packages/sdk/src/module/company/dao/__tests__/CompanyDao.test.ts
+PASS packages/sdk/src/module/presence/service/__tests__/PresenceService.test.ts
+PASS application/src/modules/GlobalSearch/container/SearchFilter/__tests__/SearchFilter.ViewModel.test.ts
+PASS application/src/modules/message/container/ConversationSheet/CodeSnippet/__tests__/CodeSnippetItem.View.test.tsx
+PASS packages/sdk/src/module/search/controller/__tests__/SearchServiceController.test.ts
+PASS packages/voip/src/account/__tests__/RTCRegistrationManager.test.ts
+PASS packages/sdk/src/api/glip/__tests__/profile.test.ts
+PASS packages/sdk/src/service/uploadLogControl/consumer/persistent/__tests__/LogPersistent.test.ts
+PASS application/src/common/__tests__/getThumbnail.test.ts
+PASS packages/sdk/src/service/uploadLogControl/__tests__/ZipLogZipItemProvider.test.ts
+PASS packages/sdk/src/module/item/config/__tests__/SubItemServiceRegister.test.ts
+PASS packages/sdk/src/module/permission/controller/launchDarkly/__tests__/LaunchDarklyController.test.ts
+PASS packages/sdk/src/module/post/controller/implementation/__tests__/SendPostController.test.ts
+PASS packages/sdk/src/api/parser/__tests__/GlipResponseParser.test.ts
+PASS packages/foundation/src/db/adapter/dexie/__tests__/DexieCollection.test.ts
+PASS packages/sdk/src/module/company/controller/__tests__/CompanyController.test.ts
+PASS packages/sdk/src/module/item/module/event/dao/__tests__/EventItemDao.test.ts
+PASS application/src/modules/telephony/container/Answer/__tests__/Answer.ViewModel.test.ts
+PASS packages/sdk/src/module/rcInfo/setting/__tests__/ExtensionSettingHandler.test.ts
+PASS packages/sdk/src/api/glip/__tests__/group.test.ts
+PASS packages/sdk/src/api/parser/__tests__/CommonResponseParser.test.ts
+PASS packages/sdk/src/api/glip/__tests__/company.test.ts
+PASS packages/sdk/src/api/glip/__tests__/item.test.ts
+PASS packages/sdk/src/module/item/module/note/dao/__tests__/NoteItemDao.test.ts
+PASS packages/sdk/src/dao/config/__tests__/DaoGlobalConfig.test.ts
+PASS packages/sdk/src/module/item/module/code/service/__tests__/CodeItemService.test.ts
+PASS packages/foundation/src/network/__tests__/NetworkRequestHandler.test.ts
+PASS packages/sdk/src/framework/processor/__tests__/SequenceProcessorHandler.test.ts
+PASS packages/sdk/src/api/handlers/__tests__/HandleByGlip.test.ts
+PASS packages/sdk/src/module/permission/controller/launchDarkly/__tests__/LaunchDarklyClient.test.ts
+PASS packages/sdk/src/api/handlers/__tests__/HandleByUpload.test.ts
+PASS packages/sdk/src/module/item/module/task/dao/__tests__/TaskItemDao.test.ts
+PASS packages/sdk/src/module/group/dao/__tests__/GroupDao.test.ts
+PASS packages/sdk/src/account/__tests__/GlipAccount.test.ts
+PASS packages/sdk/src/module/profile/controller/__tests__/ProfileDataController.test.ts
+PASS packages/voip/src/api/__tests__/RTCMediaDeviceManager.test.ts
+PASS packages/sdk/src/dao/deactivated/__tests__/index.test.ts
+PASS application/src/store/models/__tests__/Progress.test.ts
+PASS packages/sdk/src/module/account/config/__tests__/AccountGlobalConfig.test.ts
+PASS packages/sdk/src/module/person/controller/__tests__/PersonEntityCacheController.test.ts
+PASS application/src/modules/emoji/container/__tests__/Emoji.ViewModel.test.ts
+PASS packages/sdk/src/module/setting/service/__tests__/SettingService.test.ts
+PASS packages/sdk/src/service/socket/__tests__/GlipPingPong.test.ts
+PASS packages/sdk/src/api/parser/__tests__/types.test.ts
+PASS packages/sdk/src/module/env/config/__tests__/EnvConfig.test.ts
+PASS packages/sdk/src/service/uploadLogControl/collectors/memoryCollector/__tests__/MemoryCollector.test.ts
+PASS packages/voip/src/signaling/__tests__/RTCSipUserAgent.test.ts
+PASS packages/sdk/src/service/socket/__tests__/SocketFSM.test.ts
+PASS packages/sdk/src/error/db/__tests__/JDBError.test.ts
+PASS packages/sdk/src/error/db/__tests__/DBErrorParser.test.ts
+PASS packages/sdk/src/module/env/settings/__tests__/AppEnvSetting.test.ts
+PASS application/src/common/__tests__/getFileType.test.ts
+PASS packages/sdk/src/module/telephony/controller/__tests__/TelephonyLogController.test.ts
+PASS packages/voip/src/utils/__tests__/RTCMediaManager.test.ts
+PASS packages/foundation/src/db/adapter/dexie/__tests__/utils.test.ts
+PASS packages/sdk/src/module/setting/controller/__tests__/SettingController.test.ts
+PASS packages/sdk/src/module/rcInfo/controller/__tests__/RCPermissionController.test.ts
+PASS packages/sdk/src/module/state/config/__tests__/MyStateConfig.test.ts
+PASS packages/sdk/src/utils/error/__tests__/index.test.ts
+PASS packages/voip/src/utils/__tests__/RTCNetworkNotificationCenter.test.ts
+PASS packages/sdk/src/module/search/controller/__tests__/RecentSearchRecordController.test.ts
+PASS packages/sdk/src/utils/__tests__/index.test.ts
+PASS packages/sdk/src/module/sync/strategy/__tests__/IndexDataTaskStrategy.test.ts
+PASS packages/foundation/src/db/adapter/loki/__tests__/queryExecutor.test.ts
+PASS packages/voip/src/account/__tests__/RTCRegistrationFSM.test.ts
+PASS packages/sdk/src/module/company/controller/__tests__/CompanyEntityCacheController.test.ts
+PASS packages/sdk/src/framework/controller/__tests__/ErrorHandlingController.test.ts
+PASS packages/foundation/src/db/__tests__/DBManager.test.ts
+PASS packages/sdk/src/module/groupConfig/controller/__tests__/GroupConfigController.test.ts
+PASS packages/sdk/src/service/uploadLogControl/collectors/__tests__/FixSizeMemoryLogCollection.test.ts
+PASS packages/sdk/src/utils/__tests__/serialize.test.ts
+PASS packages/sdk/src/service/__tests__/utils.test.ts
+PASS packages/voip/src/utils/__tests__/utils.test.ts
+PASS packages/sdk/src/utils/performance/__tests__/PerformanceTracer.test.ts
+PASS packages/sdk/src/module/item/module/event/utils/__tests__/EventUtils.test.ts
+PASS packages/sdk/src/error/sdk/__tests__/JSdkError.test.ts
+PASS packages/foundation/src/db/adapter/dexie/__tests__/queryExecutor.test.ts
+PASS application/src/modules/message/container/ConversationSheet/Link/__tests__/LinkItem.Viem.test.ts
+PASS packages/sdk/src/dao/auth/__tests__/auth.test.ts
+PASS packages/sdk/src/module/profile/service/__tests__/ProfileUtils.test.ts
+PASS packages/sdk/src/service/uploadLogControl/collectors/consumerCollector/__tests__/ConsumerCollector.test.ts
+PASS packages/sdk/src/error/server/__tests__/JServerError.test.ts
+PASS application/src/containers/common/Download/__tests__/Download.View.test.tsx
+PASS packages/sdk/src/api/handlers/__tests__/HandleByCustom.test.ts
+PASS packages/sdk/src/framework/dao/impl/__tests__/BaseKVDao.test.ts
+PASS packages/sdk/src/module/config/__tests__/GlobalConfig.test.ts
+PASS packages/foundation/src/db/adapter/dexie/__tests__/DexieDB.test.ts
+PASS application/src/modules/app/container/TopBanner/Banners/NetworkBanner/__tests__/NetworkBanner.View.test.tsx
+PASS packages/foundation/src/db/adapter/__tests__/CriteraParser.test.ts
+PASS packages/sdk/src/service/uploadLogControl/consumer/task/__tests__/TaskQueueLoop.test.ts
+PASS packages/foundation/src/network/__tests__/NetworkManager.test.ts
+PASS packages/foundation/src/network/__tests__/NetworkRequestDecorator.test.ts
+PASS application/src/modules/home/container/LeftNav/__tests__/LeftNav.View.test.tsx
+PASS application/src/modules/login/container/UnifiedLogin/__tests__/getLanguage.test.ts
+PASS packages/foundation/src/network/client/http/__tests__/http.test.ts
+PASS packages/sdk/src/utils/glip-type-dictionary/__tests__/util.test.ts
+PASS packages/foundation/src/network/__tests__/NetworkSetup.test.ts
+PASS packages/foundation/src/network/consumer/__tests__/AbstractConsumer.test.ts
+PASS packages/framework/src/__tests__/Jupiter.test.ts
+PASS application/src/utils/date/__tests__/index.test.ts
+PASS packages/foundation/src/network/__tests__/OAuthTokenHandler.test.ts
+PASS application/src/store/models/__tests__/TaskItem.test.ts
+PASS application/src/modules/message/container/ConversationPage/Stream/StreamItemAssemblyLine/Assembler/__tests__/OrdinaryPostWrapper.test.ts
+PASS packages/foundation/src/network/__tests__/RequestTask.test.ts
+PASS application/src/modules/notification/__tests__/Permission.test.ts
+PASS packages/foundation/src/network/client/__tests__/NetworkRequestBuilder.test.ts
+PASS packages/sdk/src/utils/__tests__/ArrayUtils.test.ts
+PASS packages/jui/src/hoc/withHighlight/__tests__/utils.test.ts
+PASS application/src/modules/message/container/ConversationPage/Stream/StreamItemAssemblyLine/Assembler/__tests__/DateSeparator.test.ts
+PASS packages/foundation/src/network/__tests__/NetworkRequestExecutor.test.ts
+PASS packages/foundation/src/network/client/socket/__tests__/SocketRequestHelper.test.ts
+PASS packages/sdk/src/service/uploadLogControl/consumer/persistent/__tests__/LogMemoryPersistent.test.ts
+PASS application/src/modules/message/container/ConversationSheet/__tests__/helper.test.ts
+PASS application/src/modules/message/container/ConversationPage/Stream/__tests__/HistoryHandler.test.ts
+PASS packages/foundation/src/network/__tests__/OAuthTokenManager.test.ts
+PASS packages/sdk/src/module/item/utils/__tests__/ItemNotification.test.ts
+PASS packages/jui/src/foundation/utils/__tests__/calculateImageSize.test.ts
+PASS packages/sdk/src/module/item/module/file/utils/__tests__/FileItemUtils.test.ts
+PASS packages/foundation/src/network/consumer/__tests__/HttpConsumer.test.ts
+PASS packages/foundation/src/ioc/__tests__/Container.test.ts
+PASS packages/foundation/src/network/client/socket/__tests__/Soeket.test.ts
+PASS application/src/common/__tests__/HistoryStack.test.ts
+PASS application/src/utils/error/__tests__/SentryErrorReporter.test.ts
+PASS application/src/__tests__/history.test.ts
+PASS packages/foundation/src/network/consumer/__tests__/SocketConsumer.test.ts
+PASS packages/sdk/src/module/config/service/__tests__/DBConfigService.test.ts
+PASS application/src/config/__tests__/Config.test.ts
+PASS packages/jui/src/components/VirtualizedList/__tests__/RowManager.test.ts
+PASS packages/foundation/src/utils/checker/__tests__/SleepModeDector.test.ts
+PASS application/src/utils/function/__tests__/compose.test.ts
+PASS packages/foundation/src/error/__tests__/ErrorParser.test.ts
+PASS application/src/utils/date/__tests__/getDateMessage.test.ts
+PASS packages/foundation/src/network/client/__tests__/BaseClient.test.ts
+PASS packages/foundation/src/network/client/__tests__/manager.test.ts
+PASS application/src/utils/error/__tests__/RavenErrorReporter.test.ts
+PASS packages/sdk/src/module/setting/__tests__/utils.test.ts
+PASS packages/sdk/src/framework/utils/__tests__/SortUtils.test.ts
+PASS packages/jui/src/components/VirtualizedList/hooks/__tests__/usePrevious.test.ts
+PASS packages/sdk/src/framework/account/__tests__/AbstractAccount.test.ts
+PASS application/src/store/models/__tests__/ConferenceItem.test.ts
+PASS application/src/containers/VersionInfo/__tests__/helper.test.ts
+PASS packages/sdk/src/utils/progress/__tests__/ProgressManager.test.ts
+PASS packages/sdk/src/utils/__tests__/mathUtils.test.ts
+PASS packages/sdk/src/service/uploadLogControl/__tests__/ZipConsumer.test.ts
+PASS packages/foundation/src/analysis/__tests__/SegAnalysisController.test.ts
+PASS packages/foundation/src/log/__tests__/LogManager.test.ts
+PASS application/src/modules/viewer/container/Viewer/Utils/__tests__/ImageUtils.test.ts
+PASS application/src/store/models/__tests__/LinkItem.test.ts
+PASS packages/sdk/src/module/permission/controller/splitIO/__tests__/SplitIOController.test.ts
+PASS packages/jui/src/components/VirtualizedList/hooks/__tests__/useScroll.test.ts
+PASS application/src/modules/message/container/ConversationPage/Stream/StreamItemAssemblyLine/Assembler/__tests__/CalcItems.test.ts
+PASS packages/sdk/src/utils/progress/__tests__/index.test.ts
+PASS packages/sdk/src/framework/controller/__tests__/EntityNotificationController.test.ts
+PASS application/src/common/__tests__/getFileIcon.test.ts
+PASS packages/sdk/src/module/post/controller/implementation/__tests__/PostControllerUtils.test.ts
+PASS application/src/utils/error/__tests__/RavenErrorReporterProxy.test.ts
+PASS packages/foundation/src/db/adapter/loki/__tests__/LokiDB.test.ts
+PASS packages/sdk/src/framework/processor/__tests__/AbstractProcessor.test.ts
+PASS application/src/modules/message/container/ConversationCard/Activity/handler/__tests__/tesk.test.ts
+PASS packages/sdk/src/framework/controller/__tests__/ObservableController.test.ts
+PASS packages/jui/src/components/VirtualizedList/hooks/__tests__/useForceUpdate.test.ts
+PASS application/src/common/__tests__/memozeFunction.test.ts
+PASS packages/sdk/src/module/item/module/file/__tests__/constants.test.ts
+PASS packages/foundation/src/db/adapter/kv/__tests__/KVStorage.test.ts
+PASS application/src/modules/telephony/__tests__/helpers.test.ts
+PASS packages/jui/src/pattern/MessageInput/Mention/__tests__/handleAtMention.test.ts
+PASS packages/sdk/src/service/uploadLogControl/__tests__/zip.worker.test.ts
+PASS application/src/__tests__/icons.test.ts
+PASS packages/foundation/src/log/decorators/__tests__/TruncationDecorator.test.ts
+PASS packages/jui/src/pattern/DragZoom/__tests__/utils.test.ts
+PASS packages/sdk/src/service/uploadLogControl/consumer/task/__tests__/MemoryQueue.test.ts
+PASS application/src/store/models/__tests__/EventItem.test.ts
+PASS packages/foundation/src/log/decorators/__tests__/MessageDecorator.test.ts
+PASS application/src/common/__tests__/PortalManager.test.tsx
+PASS application/src/modules/message/container/ConversationSheet/Files/__tests__/helper.test.ts
+PASS packages/sdk/src/utils/__tests__/PlatformUtils.test.ts
+PASS packages/jui/src/components/VirtualizedList/hooks/__tests__/useRowManager.test.ts
+PASS packages/sdk/src/utils/__tests__/jsUtils.test.ts
+PASS packages/foundation/src/log/__tests__/LogEntityProcessor.test.ts
+PASS application/src/store/models/__tests__/InteractiveMessageItem.test.ts
+PASS packages/foundation/src/error/network/__tests__/JNetworkError.test.ts
+PASS application/src/modules/message/container/ConversationCard/Activity/handler/__tests__/link.test.ts
+PASS application/src/store/models/__tests__/GroupConfig.test.ts
+PASS application/src/store/models/__tests__/Item.test.ts
+PASS packages/sdk/src/component/featureFlag/__tests__/configChangeNotifier.test.ts
+PASS packages/foundation/src/network/__tests__/NetworkRequestSurvivalMode.test.ts
+PASS application/src/utils/string/__tests__/matchInvalidEmail.test.ts
+PASS packages/foundation/src/error/__tests__/utils.test.ts
+PASS application/src/modules/message/container/ConversationCard/Activity/handler/__tests__/video.test.ts
+PASS application/src/modules/setting/store/relation/__tests__/RelationMap.test.ts
+PASS application/src/modules/message/container/ConversationCard/Activity/handler/__tests__/file.test.ts
+PASS application/src/modules/message/container/ConversationCard/Activity/handler/__tests__/page.test.ts
+PASS packages/foundation/src/db/__tests__/KVStorageManager.test.ts
+PASS packages/sdk/src/module/rcInfo/controller/__tests__/RolePermissionController.test.ts
+PASS packages/jui/src/components/VirtualizedList/utils/__tests__/createKeyMapper.test.tsx
+PASS packages/sdk/src/service/uploadLogControl/__tests__/MemoryLogZipItemProvider.test.ts
+PASS packages/foundation/src/log/decorators/__tests__/TimestampDecorator.test.ts
+PASS packages/foundation/src/error/runtime/__tests__/RuntimeErrorParser.test.ts
+PASS application/src/modules/electron/__tests__/ElectronZipItemProvider.test.ts
+PASS packages/sdk/src/module/config/service/__tests__/GlobalConfigService.test.ts
+PASS packages/voip/src/report/__tests__/Accumulator.test.ts
+PASS packages/jui/src/components/VirtualizedList/utils/__tests__/getChildren.test.ts
+PASS application/src/store/models/__tests__/IntegrationItem.test.ts
+PASS application/src/modules/message/container/ConversationCard/Activity/handler/__tests__/code.test.ts
+PASS packages/sdk/src/utils/__tests__/TimeUtils.test.ts
+PASS packages/foundation/src/error/__tests__/JError.test.ts
+PASS application/src/common/__tests__/accelerateURL.test.ts
+PASS packages/jui/src/components/VirtualizedList/hooks/__tests__/useRange.test.ts
+PASS application/src/modules/login/container/UnifiedLogin/__tests__/getUrl.test.ts
+PASS packages/voip/src/report/__tests__/util.test.ts
+PASS packages/foundation/src/log/decorators/__tests__/StringifyDecorator.test.ts
+PASS packages/foundation/src/error/runtime/__tests__/JRuntimeError.test.ts
+PASS packages/foundation/src/log/decorators/__tests__/SessionDecorator.test.ts
+PASS packages/sdk/src/utils/__tests__/regexUtils.test.ts
+PASS packages/sdk/src/module/profile/controller/__tests__/SettingsActionController.test.ts
+PASS application/src/modules/message/container/ConversationCard/Activity/handler/__tests__/event.test.ts
+PASS packages/foundation/src/log/__tests__/config.test.ts
+PASS packages/foundation/src/utils/checker/__tests__/HeartBeatCheck.test.ts
+PASS packages/sdk/src/utils/file/__tests__/FileTypeUtils.test.ts
+PASS application/src/utils/string/__tests__/toTitleCase.test.ts
+PASS packages/sdk/src/service/__tests__/windowEventListener.test.ts
+PASS application/src/store/base/__tests__/BaseStore.test.ts
+PASS packages/sdk/src/framework/service/__tests__/AbstractService.test.ts
+PASS application/src/store/models/__tests__/NoteItem.test.ts
+PASS packages/voip/src/utils/__tests__/RTCRestApiManager.test.ts
+PASS application/src/plugins/__tests__/utils.test.ts
+PASS packages/sdk/src/module/permission/controller/splitIO/__tests__/SplitIODefaultPermissions.test.ts
+PASS packages/foundation/src/network/__tests__/util.test.ts
+PASS application/src/modules/message/container/ConversationCard/Activity/handler/__tests__/conference.test.ts
+PASS packages/sdk/src/__tests__/Manager.test.ts
+PASS application/src/modules/message/container/ConversationSheet/TextMessage/__tests__/handleAtMentionName.test.ts
+PASS packages/sdk/src/service/__tests__/UploadManager.test.ts
+PASS application/src/modules/message/container/ConversationSheet/TextMessage/__tests__/glipdown2Html.test.ts
+PASS packages/foundation/src/log/__tests__/ConsoleLogPrettier.test.ts
+PASS application/src/common/__tests__/renderPerson.test.ts
+PASS packages/rcui/src/components/Avatar/__tests__/Avatar.test.tsx
+  ● Console
+
+    console.error node_modules/warning/warning.js:34
+      Warning: Material-UI: you are using the deprecated typography variants that will be removed in the next major release.
+      Please read the migration guide under https://material-ui.com/style/typography#migration-to-typography-v2
+    console.error node_modules/warning/warning.js:34
+      Warning: Material-UI: you are using the deprecated typography variants that will be removed in the next major release.
+      Please read the migration guide under https://material-ui.com/style/typography#migration-to-typography-v2
+
+PASS packages/rcui/src/components/Tooltip/__tests__/Tooltip.test.tsx
+  ● Console
+
+    console.error node_modules/warning/warning.js:34
+      Warning: Material-UI: you are using the deprecated typography variants that will be removed in the next major release.
+      Please read the migration guide under https://material-ui.com/style/typography#migration-to-typography-v2
+
+PASS packages/rcui/src/components/Iconography/__tests__/icons.test.tsx
+  ● Console
+
+    console.error node_modules/warning/warning.js:34
+      Warning: Material-UI: you are using the deprecated typography variants that will be removed in the next major release.
+      Please read the migration guide under https://material-ui.com/style/typography#migration-to-typography-v2
+
+PASS packages/rcui/src/components/Buttons/Button/__tests__/Button.test.tsx
+  ● Console
+
+    console.error node_modules/warning/warning.js:34
+      Warning: Material-UI: you are using the deprecated typography variants that will be removed in the next major release.
+      Please read the migration guide under https://material-ui.com/style/typography#migration-to-typography-v2
+    console.error node_modules/warning/warning.js:34
+      Warning: Material-UI: you are using the deprecated typography variants that will be removed in the next major release.
+      Please read the migration guide under https://material-ui.com/style/typography#migration-to-typography-v2
+    console.error node_modules/warning/warning.js:34
+      Warning: Material-UI: you are using the deprecated typography variants that will be removed in the next major release.
+      Please read the migration guide under https://material-ui.com/style/typography#migration-to-typography-v2
+    console.error node_modules/warning/warning.js:34
+      Warning: Material-UI: you are using the deprecated typography variants that will be removed in the next major release.
+      Please read the migration guide under https://material-ui.com/style/typography#migration-to-typography-v2
+    console.error node_modules/prop-types/checkPropTypes.js:19
+      Warning: Failed prop type: Material-UI: the `fab` variant will be removed in the next major release. The `<Fab>` component is equivalent and should be used instead.
+          in Button (created by WithStyles(Button))
+          in WithStyles(Button) (created by Context.Consumer)
+          in StyledComponent (created by Styled(WithStyles(Button)))
+          in Styled(WithStyles(Button)) (created by RuiButton)
+          in RuiButton
+          in ThemeProvider (created by ThemeProvider)
+          in MuiThemeProviderOld (created by ThemeProvider)
+          in ThemeProvider
+
+PASS packages/rcui/src/components/Progress/__tests__/Progress.test.tsx
+  ● Console
+
+    console.error node_modules/warning/warning.js:34
+      Warning: Material-UI: you are using the deprecated typography variants that will be removed in the next major release.
+      Please read the migration guide under https://material-ui.com/style/typography#migration-to-typography-v2
+    console.error node_modules/warning/warning.js:34
+      Warning: Material-UI: you are using the deprecated typography variants that will be removed in the next major release.
+      Please read the migration guide under https://material-ui.com/style/typography#migration-to-typography-v2
+
+PASS packages/rcui/src/components/Buttons/LozengeButton/__tests__/LozengeButton.test.tsx
+  ● Console
+
+    console.error node_modules/warning/warning.js:34
+      Warning: Material-UI: you are using the deprecated typography variants that will be removed in the next major release.
+      Please read the migration guide under https://material-ui.com/style/typography#migration-to-typography-v2
+    console.error node_modules/warning/warning.js:34
+      Warning: Material-UI: you are using the deprecated typography variants that will be removed in the next major release.
+      Please read the migration guide under https://material-ui.com/style/typography#migration-to-typography-v2
+    console.error node_modules/warning/warning.js:34
+      Warning: Material-UI: you are using the deprecated typography variants that will be removed in the next major release.
+      Please read the migration guide under https://material-ui.com/style/typography#migration-to-typography-v2
+
+[999D[K
+Test Suites: 2 skipped, 655 passed, 655 of 657 total
+Tests:       12 skipped, 5022 passed, 5034 total
+Snapshots:   15 passed, 15 total
+Time:        316.147s
+Ran all test suites in 2 projects.
