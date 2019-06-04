@@ -657,6 +657,7 @@
   },
   "notification": {
     "mentioned": "You were mentioned",
+    "notificationEnabled": "Notifications are now enabled.",
     "notificationBlockedDialog": {
       "title": "Notifications not allowed",
       "content": "You currently have desktop notifications for RingCentral turned off. Update your browser settings to allow desktop notifications.",
