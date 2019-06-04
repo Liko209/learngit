@@ -63,6 +63,7 @@ enum RCServiceFeatureName {
   PAGER = 'Pager',
   FAX = 'Fax',
   VIDEO_CONFERENCING = 'VideoConferencing',
+  CONFERENCING = 'Conferencing',
 }
 
 enum RCBrandType {

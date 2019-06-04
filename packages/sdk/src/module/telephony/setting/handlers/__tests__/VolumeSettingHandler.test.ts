@@ -12,7 +12,14 @@ import { ESettingItemState } from 'sdk/framework/model/setting';
 import { TelephonyGlobalConfig } from 'sdk/module/telephony/config/TelephonyGlobalConfig';
 import { VolumeSettingHandler } from '../VolumeSettingHandler';
 import { TELEPHONY_GLOBAL_KEYS } from 'sdk/module/telephony/config/configKeys';
+import { RC_INFO, SERVICE } from 'sdk/service/eventKey';
+import { isChrome } from '../utils';
+import { RCInfoService } from 'sdk/module/rcInfo';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { TelephonyService } from 'sdk/module/telephony/service/TelephonyService';
+import { RTC_MEDIA_ACTION } from 'voip/src';
 
+jest.mock('../utils');
 jest.mock('sdk/module/telephony/config/TelephonyGlobalConfig');
 function clearMocks() {
   jest.clearAllMocks();
@@ -23,6 +30,8 @@ function clearMocks() {
 describe('DefaultAppSettingHandler', () => {
   let mockDefaultSettingItem: UserSettingEntity;
   let settingHandler: VolumeSettingHandler;
+  let mockTelephonyService: TelephonyService;
+  let rcInfoService: RCInfoService;
   function setUp() {
     jest.spyOn(notificationCenter, 'on');
     jest.spyOn(notificationCenter, 'off');
@@ -46,7 +55,19 @@ describe('DefaultAppSettingHandler', () => {
       on: jest.fn(),
       off: jest.fn(),
     };
-    settingHandler = new VolumeSettingHandler();
+    rcInfoService = {
+      isRCFeaturePermissionEnabled: jest.fn().mockResolvedValue(true),
+    } as any;
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        return rcInfoService;
+      });
+
+    mockTelephonyService = {
+      getVoipCallPermission: jest.fn(),
+    } as any;
+    settingHandler = new VolumeSettingHandler(mockTelephonyService);
     settingHandler.notifyUserSettingEntityUpdate = jest.fn();
   }
 
@@ -68,6 +89,45 @@ describe('DefaultAppSettingHandler', () => {
         TELEPHONY_GLOBAL_KEYS.CURRENT_VOLUME,
         expect.any(Function),
       );
+      expect(notificationCenter.on).toBeCalledWith(
+        RC_INFO.EXTENSION_INFO,
+        expect.any(Function),
+      );
+      expect(notificationCenter.on).toBeCalledWith(
+        RC_INFO.ROLE_PERMISSIONS,
+        expect.any(Function),
+      );
+      expect(notificationCenter.on).toBeCalledWith(
+        SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
+        expect.any(Function),
+      );
+    });
+  });
+
+  describe('onPermissionChange()', () => {
+    beforeEach(() => {
+      setUp();
+    });
+
+    afterEach(() => {
+      cleanUp();
+    });
+    it('should emit update when devices change', (done: jest.DoneCallback) => {
+      isChrome.mockReturnValue(false);
+      settingHandler['_onPermissionChange']();
+      setTimeout(() => {
+        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
+        done();
+      });
+    });
+
+    it('should emit update when devices change', (done: jest.DoneCallback) => {
+      isChrome.mockReturnValue(true);
+      settingHandler['_onPermissionChange']();
+      setTimeout(() => {
+        expect(settingHandler.notifyUserSettingEntityUpdate).toBeCalled();
+        done();
+      });
     });
   });
 
@@ -134,7 +194,7 @@ describe('DefaultAppSettingHandler', () => {
         weight: 0,
         parentModelId: 0,
         id: SettingEntityIds.Phone_Volume,
-        state: 0,
+        state: expect.any(Number),
         value: 22,
         valueSetter: expect.any(Function),
       });
@@ -168,6 +228,35 @@ describe('DefaultAppSettingHandler', () => {
     it('should call off userConfig', () => {
       settingHandler.dispose();
       expect(TelephonyGlobalConfig.off).toBeCalled();
+    });
+  });
+
+  describe('getEntityState()', () => {
+    beforeEach(() => {
+      setUp();
+    });
+
+    afterEach(() => {
+      cleanUp();
+    });
+
+    it('should return true when 1 of them(call, conference, meeting) meet', async () => {
+      isChrome.mockRejectedValue(true);
+      mockTelephonyService.getVoipCallPermission.mockResolvedValue(true);
+      rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
+      expect(await settingHandler['_getEntityState']()).toEqual(
+        ESettingItemState.ENABLE,
+      );
+      mockTelephonyService.getVoipCallPermission.mockResolvedValue(false);
+      rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
+      expect(await settingHandler['_getEntityState']()).toEqual(
+        ESettingItemState.ENABLE,
+      );
+      mockTelephonyService.getVoipCallPermission.mockResolvedValue(false);
+      rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(false);
+      expect(await settingHandler['_getEntityState']()).toEqual(
+        ESettingItemState.INVISIBLE,
+      );
     });
   });
 });

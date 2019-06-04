@@ -19,8 +19,10 @@ import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SettingService } from 'sdk/module/setting';
 import { PhoneSetting } from '../setting';
+import { ITelephonyService } from './ITelephonyService';
 
-class TelephonyService extends EntityBaseService<IdModel> {
+class TelephonyService extends EntityBaseService<IdModel>
+  implements ITelephonyService {
   private _telephonyEngineController: TelephonyEngineController;
   private _userConfig: TelephonyUserConfig;
   private _phoneSetting: PhoneSetting;
@@ -174,7 +176,7 @@ class TelephonyService extends EntityBaseService<IdModel> {
 
   get phoneSetting() {
     if (!this._phoneSetting) {
-      this._phoneSetting = new PhoneSetting();
+      this._phoneSetting = new PhoneSetting(this);
     }
     return this._phoneSetting;
   }

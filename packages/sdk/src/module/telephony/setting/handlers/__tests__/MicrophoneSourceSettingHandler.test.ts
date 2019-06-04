@@ -9,6 +9,14 @@ import { MicrophoneSourceSettingHandler } from '../';
 import { SettingEntityIds, UserSettingEntity } from 'sdk/module/setting';
 import { TelephonyGlobalConfig } from 'sdk/module/telephony/config/TelephonyGlobalConfig';
 import RTCEngine, { RTC_MEDIA_ACTION } from 'voip/src';
+import { RC_INFO, SERVICE } from 'sdk/service/eventKey';
+import { isChrome } from '../utils';
+import { RCInfoService } from 'sdk/module/rcInfo';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { ESettingItemState } from 'sdk/framework/model/setting/types';
+import { TelephonyService } from 'sdk/module/telephony/service/TelephonyService';
+
+jest.mock('../utils');
 jest.mock('sdk/module/telephony/config/TelephonyGlobalConfig');
 
 function clearMocks() {
@@ -21,6 +29,8 @@ describe('MicrophoneSourceSettingHandler', () => {
   let mockRtcEngine: RTCEngine;
   let mockDefaultSettingItem: UserSettingEntity;
   let settingHandler: MicrophoneSourceSettingHandler;
+  let mockTelephonyService: TelephonyService;
+  let rcInfoService: RCInfoService;
   function setUp() {
     jest.spyOn(notificationCenter, 'on');
     jest.spyOn(notificationCenter, 'off');
@@ -35,6 +45,17 @@ describe('MicrophoneSourceSettingHandler', () => {
       on: jest.fn(),
       off: jest.fn(),
     };
+    rcInfoService = {
+      isRCFeaturePermissionEnabled: jest.fn().mockResolvedValue(true),
+    } as any;
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        return rcInfoService;
+      });
+    mockTelephonyService = {
+      getVoipCallPermission: jest.fn(),
+    } as any;
     const mockSource = [{ deviceId: 1 }, { deviceId: 2 }];
     mockDefaultSettingItem = {
       parentModelId: 0,
@@ -46,17 +67,17 @@ describe('MicrophoneSourceSettingHandler', () => {
       value: { deviceId: 2 },
       valueSetter: expect.any(Function),
     };
-    // mockUserConfig = {
-    //   getCurrentMicrophone: jest.fn().mockReturnValue(1),
-    //   setCurrentMicrophone: jest.fn(),
-    //   on: jest.fn(),
-    //   off: jest.fn(),
-    // } as any;
+    mockTelephonyService = {
+      getVoipCallPermission: jest.fn(),
+    } as any;
     mockRtcEngine = {
       getAudioInputs: jest.fn().mockReturnValue(mockSource),
       getAudioOutputs: jest.fn().mockReturnValue(mockSource),
     } as any;
-    settingHandler = new MicrophoneSourceSettingHandler(mockRtcEngine);
+    settingHandler = new MicrophoneSourceSettingHandler(
+      mockTelephonyService,
+      mockRtcEngine,
+    );
     settingHandler.notifyUserSettingEntityUpdate = jest.fn();
   }
 
@@ -73,6 +94,34 @@ describe('MicrophoneSourceSettingHandler', () => {
     cleanUp();
   });
 
+  describe('constructor()', () => {
+    beforeEach(() => {
+      setUp();
+    });
+
+    afterEach(() => {
+      cleanUp();
+    });
+
+    it('should subscribe', () => {
+      expect(notificationCenter.on).toBeCalledWith(
+        RC_INFO.EXTENSION_INFO,
+        expect.any(Function),
+      );
+      expect(notificationCenter.on).toBeCalledWith(
+        RC_INFO.ROLE_PERMISSIONS,
+        expect.any(Function),
+      );
+      expect(notificationCenter.on).toBeCalledWith(
+        SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
+        expect.any(Function),
+      );
+      expect(notificationCenter.on).toBeCalledWith(
+        RTC_MEDIA_ACTION.INPUT_DEVICE_LIST_CHANGED,
+        expect.any(Function),
+      );
+    });
+  });
   describe('onDevicesChange()', () => {
     beforeEach(() => {
       setUp();
@@ -91,6 +140,33 @@ describe('MicrophoneSourceSettingHandler', () => {
         expect(
           settingHandler.notifyUserSettingEntityUpdate,
         ).toHaveBeenCalledWith({});
+        done();
+      });
+    });
+  });
+
+  describe('onPermissionChange()', () => {
+    beforeEach(() => {
+      setUp();
+    });
+
+    afterEach(() => {
+      cleanUp();
+    });
+    it('should emit update when devices change', (done: jest.DoneCallback) => {
+      isChrome.mockReturnValue(false);
+      settingHandler['_onPermissionChange']();
+      setTimeout(() => {
+        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
+        done();
+      });
+    });
+
+    it('should emit update when devices change', (done: jest.DoneCallback) => {
+      isChrome.mockReturnValue(true);
+      settingHandler['_onPermissionChange']();
+      setTimeout(() => {
+        expect(settingHandler.notifyUserSettingEntityUpdate).toBeCalled();
         done();
       });
     });
@@ -163,7 +239,7 @@ describe('MicrophoneSourceSettingHandler', () => {
         parentModelId: 0,
         id: SettingEntityIds.Phone_MicrophoneSource,
         source: devices,
-        state: 0,
+        state: expect.any(Number),
         value: { deviceId: 'a' },
         valueSetter: expect.any(Function),
       });
@@ -199,6 +275,34 @@ describe('MicrophoneSourceSettingHandler', () => {
     it('should call off userConfig', () => {
       settingHandler.dispose();
       expect(TelephonyGlobalConfig.off).toBeCalled();
+    });
+  });
+  describe('getEntityState()', () => {
+    beforeEach(() => {
+      setUp();
+    });
+
+    afterEach(() => {
+      cleanUp();
+    });
+
+    it('should return true when 1 of them(call, conference, meeting) meet', async () => {
+      isChrome.mockRejectedValue(true);
+      mockTelephonyService.getVoipCallPermission.mockResolvedValue(true);
+      rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
+      expect(await settingHandler['_getEntityState']()).toEqual(
+        ESettingItemState.ENABLE,
+      );
+      mockTelephonyService.getVoipCallPermission.mockResolvedValue(false);
+      rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
+      expect(await settingHandler['_getEntityState']()).toEqual(
+        ESettingItemState.ENABLE,
+      );
+      mockTelephonyService.getVoipCallPermission.mockResolvedValue(false);
+      rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(false);
+      expect(await settingHandler['_getEntityState']()).toEqual(
+        ESettingItemState.INVISIBLE,
+      );
     });
   });
 });

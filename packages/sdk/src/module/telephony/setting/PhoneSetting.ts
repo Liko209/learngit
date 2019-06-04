@@ -12,6 +12,7 @@ import {
   SpeakerSourceSettingHandler,
   VolumeSettingHandler,
 } from './handlers';
+import { ITelephonyService } from '../service/ITelephonyService';
 
 type HandlerMap = {
   [SettingEntityIds.Phone_MicrophoneSource]: MicrophoneSourceSettingHandler;
@@ -20,19 +21,26 @@ type HandlerMap = {
 };
 
 export class PhoneSetting extends BaseModuleSetting<HandlerMap> {
-  constructor(private _rtcEngine: RTCEngine = RTCEngine.getInstance()) {
+  constructor(
+    private _telephonyService: ITelephonyService,
+    private _rtcEngine: RTCEngine = RTCEngine.getInstance(),
+  ) {
     super();
   }
 
   getHandlerMap() {
     return {
       [SettingEntityIds.Phone_MicrophoneSource]: new MicrophoneSourceSettingHandler(
+        this._telephonyService,
         this._rtcEngine,
       ),
       [SettingEntityIds.Phone_SpeakerSource]: new SpeakerSourceSettingHandler(
+        this._telephonyService,
         this._rtcEngine,
       ),
-      [SettingEntityIds.Phone_Volume]: new VolumeSettingHandler(),
+      [SettingEntityIds.Phone_Volume]: new VolumeSettingHandler(
+        this._telephonyService,
+      ),
     };
   }
 }

@@ -14,20 +14,50 @@ import {
 
 import { TELEPHONY_GLOBAL_KEYS } from '../../config/configKeys';
 import { TelephonyGlobalConfig } from '../../config/TelephonyGlobalConfig';
+import { RC_INFO, SERVICE } from 'sdk/service/eventKey';
+import { isChrome } from './utils';
+import { RCInfoService } from 'sdk/module/rcInfo';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
+import { ITelephonyService } from '../../service/ITelephonyService';
 
 export class VolumeSettingHandler extends AbstractSettingEntityHandler<number> {
   id = SettingEntityIds.Phone_Volume;
 
-  constructor() {
+  constructor(private _telephonyService: ITelephonyService) {
     super();
     this._subscribe();
   }
 
   private _subscribe() {
+    this.on(RC_INFO.EXTENSION_INFO, this._onPermissionChange);
+    this.on(RC_INFO.ROLE_PERMISSIONS, this._onPermissionChange);
+    this.on(SERVICE.TELEPHONY_SERVICE.VOIP_CALLING, this._onPermissionChange);
     TelephonyGlobalConfig.on(
       TELEPHONY_GLOBAL_KEYS.CURRENT_VOLUME,
       this._onVolumeUpdate,
     );
+  }
+
+  private _getEntityState = async () => {
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+    const isEnable =
+      isChrome &&
+      ((await this._telephonyService.getVoipCallPermission()) ||
+        (await rcInfoService.isRCFeaturePermissionEnabled(
+          ERCServiceFeaturePermission.VIDEO_CONFERENCING,
+        )) ||
+        (await rcInfoService.isRCFeaturePermissionEnabled(
+          ERCServiceFeaturePermission.CONFERENCING,
+        )));
+    return isEnable ? ESettingItemState.ENABLE : ESettingItemState.INVISIBLE;
+  }
+
+  private _onPermissionChange = async () => {
+    isChrome() &&
+      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
   }
 
   private _onVolumeUpdate = (value: number) => {
@@ -63,7 +93,7 @@ export class VolumeSettingHandler extends AbstractSettingEntityHandler<number> {
       parentModelId: 0,
       id: SettingEntityIds.Phone_Volume,
       value: volume,
-      state: ESettingItemState.ENABLE,
+      state: await this._getEntityState(),
       valueSetter: value => this.updateValue(value),
     };
     return settingItem;
