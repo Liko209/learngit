@@ -6,7 +6,7 @@
 import _ from 'lodash';
 
 import { RecentSearchRecordController } from '../RecentSearchRecordController';
-import { SearchUserConfig } from '../../config/SearchUserConfig';
+import { SearchUserConfig } from '../../config';
 import { RecentSearchTypes } from '../../entity';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
