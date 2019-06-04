@@ -140,7 +140,8 @@
     "messageTypeNameSMS": "text",
     "jumpToConversation": "Jump to conversation",
     "emoji": {
-      "emojiDefaultTitle": "Pick your emoji"
+      "emojiDefaultTitle": "Pick your emoji",
+      "toggleButtonLabel": "Keep open"
     },
     "sharedItems": "shared items",
     "initialPost": {
@@ -259,6 +260,20 @@
       "verb-numerals-noun": "$t({{verb}}) {{count}} $t({{noun}})",
       "verb-numerals-prepositions-noun": "$t({{verb}}) {{count}}% of $t({{noun}})"
     },
+    "meeting": {
+      "videoCallInProgress": "Video Call in progress",
+      "videoCallEnded": "Video Call ended",
+      "videoCallCancelled": "Video Call cancelled",
+      "videoCallDuration": "Duration",
+      "startVideoCall": "Starting Video Call...",
+      "meetingUrl": "Meeting URL",
+      "meetingId": "Meeting ID",
+      "duration": "Duration",
+      "help": "Help",
+      "installProblems": "Installation problems?",
+      "readThis": "Read this"
+    },
+    "dialInNumber": "Dial-in Number",
     "avatarNamesWithOthers": " and other {{count}} people",
     "attachments": "Attachments",
     "assignee": "Assignee",
@@ -288,7 +303,6 @@
     "theFollowingFilesAlreadyExist": "The following file(s) already exist.",
     "wouldYouLikeToUpdateTheExistingFileOrCreateANewOne": "Would you like to update the existing file(s) or create a new one?",
     "audioConferenceTitle": "Audio Conference",
-    "dialInNumber": "Dial-in Number",
     "or": "or",
     "globalNumber": "Global Number",
     "hostCode": "Host Access",
@@ -422,6 +436,7 @@
       "addToFavorites": "Add to Favorites",
       "removeFromFavorites": "Remove from Favorites",
       "profile": "Profile",
+      "teamDetails": "Team details",
       "close": "Close",
       "markAsRead": "Mark as read",
       "markAsUnread": "Mark as unread",
@@ -429,7 +444,8 @@
       "convertToTeamNamePrefix": "Team: ",
       "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content.",
       "noMatchesFound": "No matches found",
-      "archivedSuffix": " - Archived"
+      "archivedSuffix": " - Archived",
+      "adminActions": "Admin actions"
     },
     "company": {},
     "prompt": {
@@ -575,6 +591,17 @@
       "tooltip": "You can change this default Caller ID in settings."
     }
   },
+  "phone": {
+    "tab": {
+      "callHistory": "Call History"
+    },
+    "AllCalls": "All calls",
+    "MissedCalls": "Missed calls",
+    "callhistory": "Call history",
+    "voicemail": "Voicemail",
+    "faxes": "Faxes",
+    "recordings": "Recordings"
+  },
   "meeting": {
     "Meetings": "Meetings"
   },
@@ -582,21 +609,12 @@
   "setting": {
     "Settings": "Settings",
     "teamSettings": "Settings",
-    "general": {
-      "title": "General"
-    },
-    "notificationAndSounds": {
-      "title": "Notification and Sounds"
-    },
-    "messages": {
-      "title": "Messages"
-    },
-    "meetings": {
-      "title": "Meetings"
-    },
-    "calendar": {
-      "title": "Calendar"
-    },
+    "general": "General",
+    "notificationAndSounds": "Notification and Sounds",
+    "sounds": "Sounds",
+    "messages": "Messages",
+    "meetings": "Meetings",
+    "calendar": "Calendar",
     "update": "Update",
     "phone": {
       "title": "Phone",

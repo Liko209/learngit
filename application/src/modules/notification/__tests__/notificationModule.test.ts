@@ -1,16 +1,17 @@
 import { Jupiter, container } from 'framework';
 import { NotificationModule } from '../notificationModule';
 import { config } from '../module.config';
-import { config as LeaveBlockerConfig } from '../../leave-blocker/module.config';
-import {
-  LEAVE_BLOCKER_SERVICE,
-  ILeaveBlockerService,
-} from '@/modules/leave-blocker/interface';
+import { config as leaveBlockerConfig } from '../../leave-blocker/module.config';
+import { ILeaveBlockerService } from '@/modules/leave-blocker/interface';
 import { INotificationService } from '../interface';
-import { NOTIFICATION_SERVICE } from '../interface/constant';
+
+global.Notification = {
+  requestPermission: jest.fn(),
+  permission: 'default',
+};
 
 const jupiter = container.get(Jupiter);
-jupiter.registerModule(LeaveBlockerConfig);
+jupiter.registerModule(leaveBlockerConfig);
 jupiter.registerModule(config);
 
 jest.mock('../agent/SWNotification', () => ({
@@ -33,8 +34,8 @@ describe('NotificationModule', () => {
 
   beforeAll(() => {
     module = jupiter.get(NotificationModule);
-    leaveBlockerService = jupiter.get(LEAVE_BLOCKER_SERVICE);
-    notificationService = jupiter.get(NOTIFICATION_SERVICE);
+    leaveBlockerService = jupiter.get(ILeaveBlockerService);
+    notificationService = jupiter.get(INotificationService);
     jest.spyOn(leaveBlockerService, 'onLeave').mockImplementation(() => {});
     jest.spyOn(leaveBlockerService, 'offLeave').mockImplementation(() => {});
     jest.spyOn(notificationService, 'clear').mockImplementation(() => {});

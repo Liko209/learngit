@@ -93,7 +93,7 @@ interface IGroupService {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null>;
+  }>;
 
   doFuzzySearchTeams(
     searchKey?: string,
@@ -101,7 +101,7 @@ interface IGroupService {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null>;
+  }>;
 
   getGroupEmail(groupId: number): Promise<string>;
 

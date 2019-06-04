@@ -1,0 +1,77 @@
+/*
+ * @Author: Rito.Xiao (rito.xiao@ringcentral.com)
+ * @Date: 2019-05-29 20:02:23
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import { MissedCallLogFetchController } from '../MissedCallLogFetchController';
+import { mainLogger } from 'foundation';
+import { daoManager } from 'sdk/dao';
+import { CALL_LOG_SOURCE } from '../../constants';
+import { RCItemApi } from 'sdk/api';
+import { SYNC_TYPE } from 'sdk/module/RCItems/sync';
+
+function clearMocks() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
+
+describe('MissedCallLogFetchController', () => {
+  let controller: MissedCallLogFetchController;
+  const mockSourceController = {
+    getEntityNotificationKey: jest.fn(),
+    bulkPut: jest.fn(),
+  } as any;
+
+  function setUp() {
+    mainLogger.tags = jest.fn().mockReturnValue({ info: jest.fn() });
+    controller = new MissedCallLogFetchController(
+      {} as any,
+      mockSourceController,
+    );
+  }
+
+  beforeEach(() => {
+    clearMocks();
+    setUp();
+  });
+
+  describe('handleDataAndSave', () => {
+    it('should return correct data', async () => {
+      const mockTime1 = '2011-10-05T14:48:00.000Z';
+      const mockTime2 = '2011-10-05T15:48:00.000Z';
+      const mockData = {
+        records: [
+          { id: '1', startTime: mockTime1 },
+          { id: '2', startTime: mockTime2 },
+        ],
+      } as any;
+      const mockQueryTime = jest.fn().mockReturnValue(1317826080001);
+      daoManager.getDao = jest.fn().mockReturnValue({
+        queryOldestTimestamp: mockQueryTime,
+      });
+
+      expect(await controller['handleDataAndSave'](mockData)).toEqual([
+        {
+          id: '1',
+          startTime: mockTime1,
+          __source: CALL_LOG_SOURCE.MISSED,
+          __timestamp: Date.parse(mockTime1),
+          __deactivated: false,
+        },
+      ]);
+    });
+  });
+
+  describe('sendSyncRequest', () => {
+    it('should call api', async () => {
+      RCItemApi.syncCallLog = jest.fn();
+      await controller['sendSyncRequest'](SYNC_TYPE.FSYNC);
+      expect(RCItemApi.syncCallLog).toBeCalledWith({
+        syncType: SYNC_TYPE.FSYNC,
+        statusGroup: CALL_LOG_SOURCE.MISSED,
+      });
+    });
+  });
+});

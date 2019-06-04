@@ -205,7 +205,7 @@ describe('PhoneParserUtility', () => {
     it('should do nothing when _initialized = true and force = false', async () => {
       PhoneParserUtility.loadModule.mockResolvedValueOnce(true);
       PhoneParserUtility['_initialized'] = true;
-      expect(PhoneParserUtility.initPhoneParser(false)).toBeTruthy();
+      expect(await PhoneParserUtility.initPhoneParser(false)).toBeTruthy();
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
       expect(PhoneParserUtility['_initialized']).toBeTruthy();
     });

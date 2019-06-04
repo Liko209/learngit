@@ -15,9 +15,11 @@ import { TelephonyStore } from '../store';
 import { getEntity } from '@/store/utils';
 import { ANONYMOUS } from '../interface/constant';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { formatPhoneNumber } from "@/modules/common/container/PhoneNumberFormat";
 
 jest.mock('@/store/utils');
 jest.mock('sdk/module/telephony');
+jest.mock('@/modules/common/container/PhoneNumberFormat');
 
 jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
   matchContactByPhoneNumber: jest.fn().mockResolvedValue({}),
@@ -26,6 +28,11 @@ jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 jupiter.registerModule(notification.config);
+
+global.Notification = {
+  permission: 'defalut',
+};
+
 jupiter.registerModule(common.config);
 beforeAll(() => {
   (getEntity as jest.Mock).mockReturnValue({
@@ -40,7 +47,7 @@ describe('TelephonyNotificationManager', () => {
   telephonyNotificationManager._disposer = jest.fn();
   const telephonyStore = jupiter.get(TelephonyStore);
   const title = 'Incoming Call';
-  jest.spyOn(i18nT, 'default').mockImplementation(async (i) => {
+  jest.spyOn(i18nT, 'default').mockImplementation(async i => {
     const translation = {
       'telephony.notification.incomingCall': 'Incoming Call',
       'telephony.notification.answer': 'Answer',
@@ -54,9 +61,12 @@ describe('TelephonyNotificationManager', () => {
     Object.assign(telephonyStore, {
       callState: 0,
       callId: '1',
-      phoneNumber: '123',
+      phoneNumber: '+44(650)-234-560',
       callerName: 'alex',
       uid: 1,
+    });
+    formatPhoneNumber.mockImplementationOnce(() => {
+      return '(650)-234-560'
     });
   });
 
@@ -74,7 +84,7 @@ describe('TelephonyNotificationManager', () => {
             scope: 'telephony',
             priority: NOTIFICATION_PRIORITY.INCOMING_CALL,
           },
-          body: 'belle 123',
+          body: 'belle (650)-234-560',
           icon: '/icon/incomingCall.png',
         }),
       );
@@ -94,7 +104,7 @@ describe('TelephonyNotificationManager', () => {
             scope: 'telephony',
             priority: NOTIFICATION_PRIORITY.INCOMING_CALL,
           },
-          body: 'alex 123',
+          body: 'alex (650)-234-560',
           icon: '/icon/incomingCall.png',
         }),
       );
@@ -115,7 +125,7 @@ describe('TelephonyNotificationManager', () => {
             scope: 'telephony',
             priority: NOTIFICATION_PRIORITY.INCOMING_CALL,
           },
-          body: 'Unknown Caller 123',
+          body: 'Unknown Caller (650)-234-560',
           icon: '/icon/incomingCall.png',
         }),
       );
@@ -135,7 +145,7 @@ describe('TelephonyNotificationManager', () => {
             scope: 'telephony',
             priority: NOTIFICATION_PRIORITY.INCOMING_CALL,
           },
-          body: 'Unknown Caller 123',
+          body: 'Unknown Caller (650)-234-560',
           icon: '/icon/incomingCall.png',
         }),
       );

@@ -8,7 +8,15 @@ export class ViewerDialog extends BaseWebComponent {
   get title(){
     return this.getSelectorByAutomationId('previewerTitle');
   }
-  
+
+  async shouldBePopup() {
+    await this.t.expect(this.exists).ok();
+  }
+
+  async shouldBeClosed() {
+    await this.t.expect(this.exists).notOk();
+  }
+
   async nameShouldBe(name:string){
     await this.t.expect(this.title.withText(name).exists).ok();
   }
