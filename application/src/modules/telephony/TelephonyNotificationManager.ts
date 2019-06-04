@@ -5,16 +5,25 @@
  */
 
 import { inject } from 'framework';
-import { reaction, comparer } from 'mobx';
+import { reaction, comparer, computed } from 'mobx';
 import { Disposer } from 'mobx-react';
 import { AbstractNotificationManager } from '@/modules/notification/manager';
 import { NOTIFICATION_PRIORITY } from '@/modules/notification/interface';
 import i18nT from '@/utils/i18nT';
 import { TelephonyStore } from './store';
 import { TelephonyService } from './service';
-import { TELEPHONY_SERVICE } from './interface/constant';
+import {
+  TELEPHONY_SERVICE,
+  SETTING_ITEM__NOTIFICATION_INCOMING_CALLS,
+} from './interface/constant';
 import { CALL_STATE } from './FSM';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
+
+import { UserSettingEntity } from 'sdk/module/setting';
+import { getEntity } from '@/store/utils/entities';
+import { ENTITY_NAME } from '@/store/constants';
+import SettingModel from '@/store/models/UserSetting';
+import { NOTIFICATION_OPTIONS } from 'sdk/module/profile';
 
 class TelephonyNotificationManager extends AbstractNotificationManager {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
@@ -22,6 +31,19 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
   private _disposer: Disposer;
   constructor() {
     super('telephony');
+  }
+
+  @computed
+  get incomingCallsSettingItem() {
+    return getEntity<UserSettingEntity, SettingModel<NOTIFICATION_OPTIONS>>(
+      ENTITY_NAME.USER_SETTING,
+      SETTING_ITEM__NOTIFICATION_INCOMING_CALLS,
+    );
+  }
+
+  @computed
+  get shouldShowNotification() {
+    return this.incomingCallsSettingItem.value === NOTIFICATION_OPTIONS.ON;
   }
 
   init() {
@@ -58,6 +80,9 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
   }
 
   private async _showNotification() {
+    if (!this.shouldShowNotification) {
+      return;
+    }
     const { phoneNumber, callId, displayName } = this._telephonyStore;
     let { callerName } = this._telephonyStore;
     let formatNumber = phoneNumber;
