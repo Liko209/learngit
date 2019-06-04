@@ -60,7 +60,7 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
         isContactMatched: boolean;
       }) => {
         if (callState === CALL_STATE.INCOMING && isContactMatched) {
-          this._showNotification();
+          this.shouldShowNotification && this._showNotification();
         } else {
           const shouldCloseNotification = [
             CALL_STATE.IDLE,
@@ -80,9 +80,6 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
   }
 
   private async _showNotification() {
-    if (!this.shouldShowNotification) {
-      return;
-    }
     const { phoneNumber, callId, displayName } = this._telephonyStore;
     let { callerName } = this._telephonyStore;
     let formatNumber = phoneNumber;
