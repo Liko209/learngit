@@ -19,7 +19,7 @@ import { IConfigHistory } from 'sdk/framework/config/IConfigHistory';
 import { ConfigChangeHistory } from 'sdk/framework/config/types';
 import { Nullable } from 'sdk/types';
 import { configMigrator } from 'sdk/framework/config';
-import { searchConfigHistory } from '../config/ConfigHistory';
+import { SearchConfigHistory } from '../config/ConfigHistory';
 
 class SearchService extends AbstractService
   implements ISearchService, IConfigHistory {
@@ -39,7 +39,7 @@ class SearchService extends AbstractService
   protected onStopped() {}
 
   getHistoryDetail(): Nullable<ConfigChangeHistory> {
-    return searchConfigHistory;
+    return SearchConfigHistory;
   }
 
   private get recentSearchRecordController() {

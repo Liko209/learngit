@@ -8,7 +8,7 @@ import { CONFIG_TYPE } from 'sdk/module/config/constants';
 import { ConfigChangeHistory } from 'sdk/framework/config/types';
 import { SEARCH_MODULE_NAME, SEARCH_CONFIG_KEYS } from './constants';
 
-const searchConfigHistory: ConfigChangeHistory = {
+const SearchConfigHistory: ConfigChangeHistory = {
   version: 1,
   moduleName: SEARCH_MODULE_NAME,
   changes: {
@@ -29,4 +29,4 @@ const searchConfigHistory: ConfigChangeHistory = {
   },
 };
 
-export { searchConfigHistory };
+export { SearchConfigHistory };
