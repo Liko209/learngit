@@ -91,7 +91,6 @@ class ColonEmoji {
     const range = this._quill.getSelection();
     if (range === null) return;
     this._cursorPos = range.index;
-    console.log('nye this._options', this._options);
     let maxChar = 0;
     if (this._options.maxChars) {
       maxChar = this._cursorPos - this._options.maxChars;
@@ -142,7 +141,6 @@ class ColonEmoji {
         this._options.onColon(false);
       }
     } else {
-      console.log('nye asdsadasdasd');
       this._options.onColon(false);
     }
   }
