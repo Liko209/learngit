@@ -27,13 +27,22 @@ const RINGCENTRAL_API = {
   API_GENERATE_CODE: `/${API_VERSION}/interop/generate-code`,
 };
 
+const RC_ITEM_API = {
+  CALL_LOG: `/${API_VERSION}/account/~/extension/~/call-log`,
+  CALL_LOG_SYNC: `/${API_VERSION}/account/~/extension/~/call-log-sync`,
+  MESSAGE_STORE: `/${API_VERSION}/account/~/extension/~/message-store`,
+  MESSAGE_SYNC: `/${API_VERSION}/account/~/extension/~/message-sync`,
+};
+
 const HTTP_HEADER_KEY = {
   ACCEPT: 'Accept',
   IF_NONE_MATCH: 'If-None-Match',
+  CONTENT_TYPE: 'Content-Type',
 };
 
 const CONTENT_TYPE = {
   XML: 'application/xml',
+  JSON: 'application/json',
 };
 
-export { RINGCENTRAL_API, HTTP_HEADER_KEY, CONTENT_TYPE };
+export { RINGCENTRAL_API, HTTP_HEADER_KEY, CONTENT_TYPE, RC_ITEM_API };

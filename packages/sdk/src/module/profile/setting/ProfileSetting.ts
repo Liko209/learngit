@@ -19,6 +19,12 @@ import { AccountService } from 'sdk/module/account';
 import { CallerIdSettingHandler } from './itemHandler/CallerIdSettingHandler';
 import { DefaultAppSettingHandler } from './itemHandler/DefaultAppSettingHandler';
 import { MessageBadgeSettingHandler } from './itemHandler/MessageBadgeSettingHandler';
+import { ProfileSubscribeEntityHandler } from './itemHandler/ProfileSubscribeEntityHandler';
+import {
+  SETTING_KEYS,
+  EMAIL_NOTIFICATION_OPTIONS,
+  NOTIFICATION_OPTIONS,
+} from '../constants';
 type HandlerMap = {
   [SettingEntityIds.Phone_CallerId]: CallerIdSettingHandler;
   [SettingEntityIds.Phone_DefaultApp]: DefaultAppSettingHandler;
@@ -27,6 +33,18 @@ type HandlerMap = {
   [SettingEntityIds.Notification_NewMessages]: NewMessagesSettingHandler;
   [SettingEntityIds.Notification_IncomingCalls]: IncomingCallsSettingHandler;
   [SettingEntityIds.Notification_MissCallAndNewVoiceMails]: NewVoicemailsSettingHandler;
+  [SettingEntityIds.Notification_DirectMessages]: ProfileSubscribeEntityHandler<
+    EMAIL_NOTIFICATION_OPTIONS
+  >;
+  [SettingEntityIds.Notification_Mentions]: ProfileSubscribeEntityHandler<
+    NOTIFICATION_OPTIONS
+  >;
+  [SettingEntityIds.Notification_Teams]: ProfileSubscribeEntityHandler<
+    EMAIL_NOTIFICATION_OPTIONS
+  >;
+  [SettingEntityIds.Notification_DailyDigest]: ProfileSubscribeEntityHandler<
+    NOTIFICATION_OPTIONS
+  >;
 };
 
 class ProfileSetting extends BaseModuleSetting<HandlerMap> {
@@ -70,6 +88,50 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
         this._profileService,
         this._accountService,
         this._settingService,
+      ),
+      // prettier-ignore
+      [SettingEntityIds.Notification_DirectMessages]: new ProfileSubscribeEntityHandler<EMAIL_NOTIFICATION_OPTIONS>(
+        this._profileService,
+        {
+          id: SettingEntityIds.Notification_DirectMessages,
+          setting_key: SETTING_KEYS.EMAIL_DM,
+          source: [
+            EMAIL_NOTIFICATION_OPTIONS.EVERY_15_MESSAGE,
+            EMAIL_NOTIFICATION_OPTIONS.EVERY_HOUR,
+            EMAIL_NOTIFICATION_OPTIONS.OFF,
+          ],
+        },
+      ),
+      [SettingEntityIds.Notification_Mentions]:
+        // prettier-ignore
+        new ProfileSubscribeEntityHandler<NOTIFICATION_OPTIONS>(
+        this._profileService,
+        {
+          id: SettingEntityIds.Notification_Mentions,
+          setting_key: SETTING_KEYS.EMAIL_MENTION,
+        },
+      ),
+      [SettingEntityIds.Notification_Teams]:
+        // prettier-ignore
+        new ProfileSubscribeEntityHandler<EMAIL_NOTIFICATION_OPTIONS>(
+        this._profileService,
+        {
+          id: SettingEntityIds.Notification_Teams,
+          setting_key: SETTING_KEYS.EMAIL_TEAM,
+          source: [
+            EMAIL_NOTIFICATION_OPTIONS.EVERY_15_MESSAGE,
+            EMAIL_NOTIFICATION_OPTIONS.EVERY_HOUR,
+            EMAIL_NOTIFICATION_OPTIONS.OFF,
+          ],
+        },
+      ),
+      // prettier-ignore
+      [SettingEntityIds.Notification_DailyDigest]: new ProfileSubscribeEntityHandler<NOTIFICATION_OPTIONS>(
+        this._profileService,
+        {
+          id: SettingEntityIds.Notification_DailyDigest,
+          setting_key: SETTING_KEYS.EMAIL_TODAY,
+        },
       ),
     };
   }

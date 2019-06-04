@@ -40,6 +40,26 @@ export enum PERFORMANCE_KEYS {
   INIT_GROUP_MEMBERS = 'init_group_members',
   LOAD_PHONE_PARSER = 'load_phone_parser',
   INIT_PHONE_PARSER = 'init_phone_parser',
+
+  // call log
+  INIT_CALL_LOG_BADGE = 'init_call_log_badge',
+  FETCH_CALL_LOG = 'fetch_call_log',
+  FETCH_CALL_LOG_FROM_DB = 'fetch_call_log_from_db',
+  CLEAR_ALL_CALL_LOG = 'clear_all_call_log',
+  CLEAR_ALL_CALL_LOG_FROM_SERVER = 'clear_all_call_log_from_server',
+  DELETE_CALL_LOG = 'delete_call_log',
+  DELETE_CALL_LOG_FROM_SERVER = 'delete_call_log_from_server',
+
+  // voicemail
+  FETCH_VOICEMAILS = 'fetch_voicemails',
+  FETCH_VOICEMAILS_FROM_DB = 'fetch_voicemails_from_db',
+  CLEAR_ALL_VOICEMAILS = 'clear_all_voicemails',
+  CLEAR_ALL_VOICEMAILS_FROM_SERVER = 'clear_all_voicemails_from_server',
+
+  // rc message
+  INIT_RC_MESSAGE_BADGE = 'init_rc_message_badge',
+  DELETE_RC_MESSAGE = 'delete_rc_message',
+  DELETE_RC_MESSAGE_FROM_SERVER = 'delete_rc_message_from_server',
 }
 
 export type PerformanceInfo = {
