@@ -227,6 +227,7 @@
       "completed task for {{user}}": "completed task for {{user}}",
       "created a event": "created an event",
       "updated a event": "updated an event",
+      "updated event": "updated event",
       "shared a note": "shared a note",
       "shared a file": "shared a file",
       "shared {{count}} file": "shared {{count}} files",
@@ -235,7 +236,7 @@
       "shared {{count}} link": "shared {{count}} links",
       "shared a snippet": "shared a snippet",
       "shared items": "shared items",
-      "started an audio conference": "started an audio conference",
+      "started a audio conference": "started an audio conference",
       "started a video chat": "started a video chat",
       "replied": "replied",
       "via": "via"
