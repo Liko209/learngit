@@ -5,14 +5,14 @@
  */
 
 import notificationCenter from 'sdk/service/notificationCenter';
-import { DailyDigestSettingHandler } from '../DailyDigestSettingHandler';
+import { ProfileSubscribeEntityHandler } from '../ProfileSubscribeEntityHandler';
 import { UserSettingEntity, SettingEntityIds } from 'sdk/module/setting';
 import { ENTITY } from 'sdk/service';
 import { AccountService } from 'sdk/module/account';
 import { ProfileService } from 'sdk/module/profile';
 import {
   SETTING_KEYS,
-  NOTIFICATION_OPTIONS,
+  EMAIL_NOTIFICATION_OPTIONS,
 } from 'sdk/module/profile/constants';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { Profile } from '../../../entity';
@@ -24,10 +24,10 @@ function clearMocks() {
   jest.restoreAllMocks();
 }
 
-describe('DailyDigestSettingHandler', () => {
+describe('ProfileSubscribeEntityHandler', () => {
   let profileService: ProfileService;
   let accountService: AccountService;
-  let settingHandler: DailyDigestSettingHandler;
+  let settingHandler: ProfileSubscribeEntityHandler<EMAIL_NOTIFICATION_OPTIONS>;
   let mockDefaultSettingItem: UserSettingEntity;
   const mockUserId = 123;
   function setUp() {
@@ -38,8 +38,13 @@ describe('DailyDigestSettingHandler', () => {
       weight: 1,
       parentModelId: 1,
       valueType: 1,
-      id: SettingEntityIds.Notification_DailyDigest,
-      value: NOTIFICATION_OPTIONS.OFF,
+      id: SettingEntityIds.Notification_Teams,
+      source: [
+        EMAIL_NOTIFICATION_OPTIONS.EVERY_15_MESSAGE,
+        EMAIL_NOTIFICATION_OPTIONS.EVERY_HOUR,
+        EMAIL_NOTIFICATION_OPTIONS.OFF,
+      ],
+      value: EMAIL_NOTIFICATION_OPTIONS.OFF,
       state: 0,
       valueSetter: expect.any(Function),
     };
@@ -59,7 +64,17 @@ describe('DailyDigestSettingHandler', () => {
       }
     });
     profileService.updateSettingOptions = jest.fn();
-    settingHandler = new DailyDigestSettingHandler(profileService);
+    settingHandler = new ProfileSubscribeEntityHandler<
+      EMAIL_NOTIFICATION_OPTIONS
+    >(profileService, {
+      id: SettingEntityIds.Notification_Teams,
+      setting_key: SETTING_KEYS.EMAIL_TEAM,
+      source: [
+        EMAIL_NOTIFICATION_OPTIONS.EVERY_15_MESSAGE,
+        EMAIL_NOTIFICATION_OPTIONS.EVERY_HOUR,
+        EMAIL_NOTIFICATION_OPTIONS.OFF,
+      ],
+    });
     settingHandler.notifyUserSettingEntityUpdate = jest.fn();
   }
 
@@ -80,7 +95,7 @@ describe('DailyDigestSettingHandler', () => {
   describe('fetchUserSettingEntity()', () => {
     it('should get new messages setting value ', async () => {
       profileService.getProfile = jest.fn().mockReturnValue({
-        [SETTING_KEYS.EMAIL_TODAY]: NOTIFICATION_OPTIONS.OFF,
+        [SETTING_KEYS.EMAIL_TEAM]: EMAIL_NOTIFICATION_OPTIONS.OFF,
       });
       const result = await settingHandler.fetchUserSettingEntity();
       expect(result).toEqual(mockDefaultSettingItem);
@@ -89,11 +104,11 @@ describe('DailyDigestSettingHandler', () => {
 
   describe('updateValue()', () => {
     it('should call updateSettingOptions with correct parameters', async () => {
-      await settingHandler.updateValue(NOTIFICATION_OPTIONS.OFF);
+      await settingHandler.updateValue(EMAIL_NOTIFICATION_OPTIONS.OFF);
       expect(profileService.updateSettingOptions).toBeCalledWith([
         {
-          value: NOTIFICATION_OPTIONS.OFF,
-          key: SETTING_KEYS.EMAIL_TODAY,
+          value: EMAIL_NOTIFICATION_OPTIONS.OFF,
+          key: SETTING_KEYS.EMAIL_TEAM,
         },
       ]);
     });
@@ -107,7 +122,7 @@ describe('DailyDigestSettingHandler', () => {
       notificationCenter.emitEntityUpdate<Profile>(ENTITY.PROFILE, [
         {
           id: mockUserId,
-          [SETTING_KEYS.EMAIL_TODAY]: NOTIFICATION_OPTIONS.ON,
+          [SETTING_KEYS.EMAIL_TEAM]: EMAIL_NOTIFICATION_OPTIONS.EVERY_HOUR,
         } as Profile,
       ]);
       setTimeout(() => {
@@ -126,7 +141,7 @@ describe('DailyDigestSettingHandler', () => {
       notificationCenter.emitEntityUpdate<Profile>(ENTITY.PROFILE, [
         {
           id: mockUserId,
-          [SETTING_KEYS.EMAIL_TODAY]: NOTIFICATION_OPTIONS.OFF,
+          [SETTING_KEYS.EMAIL_TEAM]: EMAIL_NOTIFICATION_OPTIONS.OFF,
         } as Profile,
       ]);
       setTimeout(() => {
