@@ -6,12 +6,13 @@
 
 import { telephonyLogger } from 'foundation';
 import _ from 'lodash';
-import { IRTCMediaDeviceDelegate, RTCEngine } from 'voip';
+import { IRTCMediaDeviceDelegate, RTCEngine, RTC_MEDIA_ACTION } from 'voip';
 import { TelephonyGlobalConfig } from '../../config/TelephonyGlobalConfig';
 import { TELEPHONY_GLOBAL_KEYS } from '../../config/configKeys';
 import { DeviceSyncManger } from './DeviceSyncManger';
 import { LastUsedDeviceManager } from './LastUsedDeviceManager';
 import { SOURCE_TYPE, IStorage } from './types';
+import { notificationCenter } from 'sdk/service';
 
 const LOG_TAG = '[MediaDevicesDelegate]';
 const DEFAULT_VOLUME = 50;
@@ -89,6 +90,16 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
         Number(TelephonyGlobalConfig.getCurrentVolume()),
       ),
     );
+    notificationCenter.on(
+      RTC_MEDIA_ACTION.VOLUME_CHANGED,
+      this._handleVolumeChanged,
+    );
+  }
+
+  private _handleVolumeChanged = (volume: number) => {
+    if (TelephonyGlobalConfig.getCurrentVolume() !== String(volume)) {
+      TelephonyGlobalConfig.setCurrentVolume(String(volume));
+    }
   }
 
   private _handlerDeviceChange(

@@ -95,6 +95,7 @@ enum RTC_MEDIA_ACTION {
   OUTPUT_DEVICE_CHANGED = 'outputDeviceChanged',
   INPUT_DEVICE_LIST_CHANGED = 'inputDeviceListChanged',
   OUTPUT_DEVICE_LIST_CHANGED = 'outputDeviceListChanged',
+  VOLUME_CHANGED = 'VOLUME_CHANGED',
 }
 
 export {

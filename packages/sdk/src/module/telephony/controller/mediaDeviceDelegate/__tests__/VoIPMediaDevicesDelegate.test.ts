@@ -4,13 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { VoIPMediaDevicesDelegate } from '../VoIPMediaDevicesDelegate';
-import RTCEngine from 'voip';
+import RTCEngine, { RTC_MEDIA_ACTION } from 'voip';
 import { TelephonyGlobalConfig } from 'sdk/module/telephony/config/TelephonyGlobalConfig';
 import { SOURCE_TYPE } from '../types';
 import { TELEPHONY_GLOBAL_KEYS } from 'sdk/module/telephony/config/configKeys';
+import notificationCenter from 'sdk/service/notificationCenter';
 
 jest.mock('voip/src/api/RTCEngine');
 jest.mock('sdk/module/telephony/config/TelephonyGlobalConfig');
+jest.mock('sdk/service/notificationCenter');
 
 describe('VoIPMediaDevicesDelegate', () => {
   function clearMocks() {
@@ -97,6 +99,30 @@ describe('VoIPMediaDevicesDelegate', () => {
         TELEPHONY_GLOBAL_KEYS.CURRENT_VOLUME,
         expect.any(Function),
       );
+      expect(notificationCenter.on).toBeCalledWith(
+        RTC_MEDIA_ACTION.VOLUME_CHANGED,
+        expect.any(Function),
+      );
+    });
+  });
+
+  describe('onVolumeChanged()', () => {
+    beforeEach(() => {
+      setUp();
+    });
+
+    afterEach(() => {
+      cleanUp();
+    });
+    it('should update volume to storage when volume change', () => {
+      TelephonyGlobalConfig.getCurrentVolume.mockReturnValue('1');
+      deviceDelegate['_handleVolumeChanged'](22);
+      expect(TelephonyGlobalConfig.setCurrentVolume).toBeCalledWith('22');
+    });
+    it('should not update volume to storage when volume not change', () => {
+      TelephonyGlobalConfig.getCurrentVolume.mockReturnValue('22');
+      deviceDelegate['_handleVolumeChanged'](22);
+      expect(TelephonyGlobalConfig.setCurrentVolume).not.toBeCalled();
     });
   });
 
