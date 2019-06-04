@@ -113,7 +113,7 @@ describe('messageNotificationManager', () => {
           .spyOn(utils, 'getSingleEntity')
           .mockReturnValue(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF);
       });
-      it('should show notification when post is from group', async () => {
+      it('should not show notification when post is from group', async () => {
         const result = await notificationManager.shouldEmitNotification(
           postFromGroup,
         );
