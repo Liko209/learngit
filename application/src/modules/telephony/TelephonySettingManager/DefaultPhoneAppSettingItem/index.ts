@@ -4,4 +4,4 @@
  * Copyright Â© RingCentral. All rights reserved.
  */
 
-export * from './DefaultPhoneAppSettingItem';
+export * from './DefaultPhoneAppSettingItem.View';
