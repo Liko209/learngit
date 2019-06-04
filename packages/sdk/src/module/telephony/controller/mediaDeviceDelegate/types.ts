@@ -9,6 +9,7 @@ enum SOURCE_TYPE {
   STORAGE,
   LAST_USED,
   NEW_DEVICE,
+  DEVICE_MANAGER,
   DEFAULT,
 }
 
@@ -21,7 +22,7 @@ interface IDeviceManager {
   getDevices(): MediaDeviceInfo[];
   setDeviceId(id: string): void;
   getDeviceId(): string;
-  getDefaultDeviceId(): string;
+  getDefaultDeviceId(devices: MediaDeviceInfo[]): string;
 }
 
 interface ILastUsedDeviceManager {

@@ -38,8 +38,8 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
         setDeviceId: (id: string): void =>
           this._rtcEngine.setCurrentAudioInput(id),
         getDeviceId: (): string => this._rtcEngine.getCurrentAudioInput(),
-        getDefaultDeviceId: (): string =>
-          this._rtcEngine.getCurrentAudioInput(), // todo
+        getDefaultDeviceId: (devices: MediaDeviceInfo[]): string =>
+          this._rtcEngine.getDefaultDeviceId(devices),
       },
       new LastUsedDeviceManager({
         get: () => TelephonyGlobalConfig.getUsedMicrophoneHistory(),
@@ -54,8 +54,8 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
         setDeviceId: (id: string): void =>
           this._rtcEngine.setCurrentAudioOutput(id),
         getDeviceId: (): string => this._rtcEngine.getCurrentAudioOutput(),
-        getDefaultDeviceId: (): string =>
-          this._rtcEngine.getCurrentAudioOutput(), // todo
+        getDefaultDeviceId: (devices: MediaDeviceInfo[]): string =>
+          this._rtcEngine.getDefaultDeviceId(devices),
       },
       new LastUsedDeviceManager({
         get: () => TelephonyGlobalConfig.getUsedSpeakerHistory(),
