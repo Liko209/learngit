@@ -166,7 +166,7 @@ export class MessageRouterChangeHelper {
     switch (reason) {
       case GROUP_CAN_NOT_SHOWN_REASON.NOT_AUTHORIZED:
         Notification.flashToast({
-          message: await i18nT('people.prompt.conversationPrivate'),
+          message: 'people.prompt.conversationPrivate',
           ...toastOpts,
         });
         break;
