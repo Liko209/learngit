@@ -298,10 +298,13 @@ class BaseJob {
                 && currentCauseData.sourceRepoName == causeData.sourceRepoName
                 && currentCauseData.targetBranch == causeData.targetBranch
                 && currentCauseData.targetRepoName == causeData.targetRepoName) {
+                jenkins.echo "build ${build.getFullDisplayName()} is terminating"
                 build.doStop()
-                jenkins.echo "wait for ${build.getFullDisplayName()} to stop"
-                jenkins.sleep 30
-                jenkins.echo "build ${build.getFullDisplayName()} is terminated"
+                for (int i = 0; i < 10; i++) {
+                    if (!build.isBuilding())
+                        break
+                    jenkins.sleep 10
+                }
             }
         }
     }
@@ -706,7 +709,7 @@ class JupiterJob extends BaseJob {
                 } finally {
                     String tarball = "jui-snapshots-diff-${context.head}.tar.gz".toString()
                     String snapshotDir = 'src/__tests__/snapshot/__image_snapshots__/__diff_output__'
-                    jenkins.sh "[-d ${snapshotDir} && tar -xzvf ${tarball} -C ${snapshotDir}"
+                    jenkins.sh "tar -czvf ${tarball} -C ${snapshotDir} || true"
                     if (jenkins.fileExists(tarball))
                         jenkins.archiveArtifacts artifacts: tarball, fingerprint: true
                 }
