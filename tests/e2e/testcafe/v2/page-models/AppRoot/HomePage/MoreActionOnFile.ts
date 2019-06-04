@@ -60,7 +60,6 @@ export class RenameFileDialog extends BaseWebComponent{
       return this.getSelectorByAutomationId('fileNameEditInput');
     }
 
-    // todo
     get fileNameInputValue(){
       return this.getSelectorByAutomationId('followSuffixTextFieldInputValue');
     }
@@ -87,9 +86,12 @@ export class RenameFileDialog extends BaseWebComponent{
       await this.t.expect(this.fileNameSuffix.withExactText(H.escapePostText(suffix)).exists).ok();
     }
 
-    // todo
     async saveButtonShouldDisabled(){
       await this.t.expect(this.saveButton.hasAttribute('disabled')).ok();
+    }
+
+    async clearFileNameInput(){
+      await this.t.selectTextAreaContent(this.fileNameInput).pressKey('delete');
     }
   
   }

@@ -54,7 +54,7 @@ test.meta(<ITestMeta>{
   const filesTabItem = rightRail.filesTab.nthItem(0);
   const viewerDialog = app.homePage.viewerDialog;
   const postItem = app.homePage.messageTab.conversationPage.nthPostItem(0);
-  // TODO wait for file viewer feature merged
+  // TODO wait for file viewer feature FIJI-5643 merged
   // const Entries =[postItem,filesTabItem,viewerDialog];
   const Entries =[postItem,filesTabItem];
 
@@ -256,15 +256,22 @@ test.meta(<ITestMeta>{
     await moreActionOnFile.ensureLoaded();
   });
 
-  // TODO bug id FIJI-6407
-  // const blankFileName = '';
-  // await h(t).withLog(`When I update the file name to blank`, async() => {
-  //   await renameFileDialog.updateFileName(blankFileName);
-  // });
+  await h(t).withLog(`When I clear the file name`, async() => {
+    await renameFileDialog.clearFileNameInput();
+  });
 
-  // await h(t).withLog(`The Save button should be disabled`, async() => {
-  //   await renameFileDialog.saveButtonShouldDisabled();
-  // });
+  await h(t).withLog(`The Save button should be disabled`, async() => {
+    await renameFileDialog.saveButtonShouldDisabled();
+  });
+
+  const blankFileName = ' ';
+  await h(t).withLog(`When I update the file name to a blank`, async() => {
+    await renameFileDialog.updateFileName(blankFileName);
+  });
+
+  await h(t).withLog(`The Save button should be disabled`, async() => {
+    await renameFileDialog.saveButtonShouldDisabled();
+  });
 
   await h(t).withLog(`When I update the file name`, async() => {
     await renameFileDialog.updateFileName(nameWithUnSupportChar);
