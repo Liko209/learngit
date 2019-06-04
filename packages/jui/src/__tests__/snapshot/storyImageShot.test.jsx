@@ -9,6 +9,8 @@ import initStoryshots from '@storybook/addon-storyshots';
 import { imageSnapshot } from './customImageShot';
 import { excludeImageSnapshot, fullScreenStory } from './snapshotConfig';
 
+let storybookUrl = process.env.JUI_RUL || 'http://localhost:8080';
+
 const getScreenshotOptions = ({ context }) => {
   const { kind, name } = context;
   if (fullScreenStory.includes(`${kind} ${name}`)) return { fullPage: true };
@@ -18,8 +20,8 @@ const getScreenshotOptions = ({ context }) => {
 initStoryshots({
   suite: 'image storyshots',
   test: imageSnapshot({
+    storybookUrl,
     getScreenshotOptions,
-    storybookUrl: 'http://localhost:8080',
     excludeImageSnapshot,
     fullScreenStory,
     getMatchOptions() {
