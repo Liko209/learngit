@@ -5,8 +5,7 @@
  */
 
 import { SettingController } from '../SettingController';
-import { SettingModuleIds } from '../../constants';
-import { ServiceLoader } from '../../../serviceLoader';
+import { IModuleSetting } from '../../moduleSetting';
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -16,96 +15,90 @@ function clearMocks() {
 
 describe('SettingController', () => {
   let settingController: SettingController;
-  const moduleSetting1 = {
-    buildSettingItem: () => {},
-  };
-  const moduleSetting2 = {
-    buildSettingItem: () => {},
-    dispose: () => {},
+  const createMockModuleSetting = (mockSettingEntity: any = {}) => {
+    return {
+      getById: jest.fn().mockResolvedValue(mockSettingEntity),
+      init: jest.fn(),
+      dispose: jest.fn(),
+    } as IModuleSetting;
   };
 
   function setUp() {
     settingController = new SettingController();
-    settingController['_moduleSettings'] = new Map([
-      [1, moduleSetting1],
-      [2, moduleSetting2],
-    ]) as any;
   }
 
   beforeEach(() => {
     clearMocks();
+    setUp();
   });
 
-  describe('getModuleSettings', () => {
-    beforeEach(() => {
-      clearMocks();
-      setUp();
+  describe('registerModuleSetting()', () => {
+    it('should register to _moduleSettings', () => {
+      const mockModuleSetting = createMockModuleSetting();
+      settingController.registerModuleSetting(mockModuleSetting);
+      expect(settingController['_moduleSettings']).toHaveLength(1);
     });
-
-    it('should return all module settings', async () => {
-      moduleSetting1.buildSettingItem = jest.fn().mockResolvedValue({ id: 1 });
-      moduleSetting2.buildSettingItem = jest.fn().mockResolvedValue({ id: 2 });
-      const res = await settingController.getModuleSettings();
-      expect(res).toEqual([{ id: 1 }, { id: 2 }]);
+    it('should init ModuleSetting when register', () => {
+      const mockModuleSetting = createMockModuleSetting();
+      settingController.registerModuleSetting(mockModuleSetting);
+      expect(mockModuleSetting.init).toBeCalled();
     });
   });
-
-  describe('getById', () => {
-    beforeEach(() => {
-      clearMocks();
-      setUp();
+  describe('unRegisterModuleSetting()', () => {
+    it('should unRegister from _moduleSettings', () => {
+      const mockModuleSetting = createMockModuleSetting();
+      settingController.registerModuleSetting(mockModuleSetting);
+      expect(settingController['_moduleSettings']).toHaveLength(1);
+      settingController.unRegisterModuleSetting(mockModuleSetting);
+      expect(settingController['_moduleSettings']).toHaveLength(0);
     });
-
-    it('should return module setting when id is module setting id', async () => {
-      moduleSetting1.buildSettingItem = jest.fn().mockResolvedValue({ id: 1 });
-      const res = await settingController.getById(1);
-      expect(res).toEqual({ id: 1 });
+    it('should dispose ModuleSetting when unregister', () => {
+      const mockModuleSetting = createMockModuleSetting();
+      settingController.registerModuleSetting(mockModuleSetting);
+      expect(settingController['_moduleSettings']).toHaveLength(1);
+      settingController.unRegisterModuleSetting(mockModuleSetting);
+      expect(settingController['_moduleSettings']).toHaveLength(0);
+      expect(mockModuleSetting.dispose).toBeCalled();
     });
-
-    it('should return service setting when id is service setting id', async () => {
-      const expectRes = { id: 6 };
-      ServiceLoader.getInstance = jest.fn().mockReturnValue({
-        getSettingItemById: jest.fn().mockResolvedValue(expectRes),
-      });
-      const res = await settingController.getById(
-        SettingModuleIds.RegionSetting.id,
+  });
+  describe('getById()', () => {
+    it('should get result from register modules', async () => {
+      const mockModuleSetting1 = createMockModuleSetting();
+      settingController.registerModuleSetting(mockModuleSetting1);
+      const mockModuleSetting2 = createMockModuleSetting();
+      settingController.registerModuleSetting(mockModuleSetting2);
+      mockModuleSetting1.getById.mockResolvedValue(null);
+      mockModuleSetting2.getById.mockResolvedValue('result');
+      expect(await settingController.getById(1)).toEqual(
+        await mockModuleSetting2.getById(1),
       );
-      expect(res).toEqual(expectRes);
     });
   });
-
-  describe('getSettingsByParentId', () => {
-    beforeEach(() => {
-      clearMocks();
-      setUp();
-    });
-
-    it('should combine result of sections and service settings', async () => {
-      const serviceSetting = { id: 6 };
-      const sectionSetting = [{ id: 1 }, { id: 2 }];
-      moduleSetting1['getSections'] = jest.fn().mockReturnValue(sectionSetting);
-      const service = {
-        getSettingsByParentId: jest
-          .fn()
-          .mockResolvedValueOnce([serviceSetting]),
-      };
-      ServiceLoader.getInstance = jest.fn().mockReturnValue(service);
-
-      const res = await settingController.getSettingsByParentId(1);
-      expect(res).toEqual([{ id: 6 }, { id: 1 }, { id: 2 }]);
+  describe('init()', () => {
+    it('should init all exist ModuleSettings', () => {
+      const mockModuleSetting1 = createMockModuleSetting();
+      const mockModuleSetting2 = createMockModuleSetting();
+      settingController['_moduleSettings'] = [
+        mockModuleSetting1,
+        mockModuleSetting2,
+      ];
+      settingController.init();
+      expect(mockModuleSetting1.init).toBeCalled();
+      expect(mockModuleSetting2.init).toBeCalled();
     });
   });
-
-  describe('dispose', () => {
-    beforeEach(() => {
-      clearMocks();
-      setUp();
-    });
-
-    it('should call dispose of setting module', () => {
-      moduleSetting2.dispose = jest.fn();
+  describe('dispose()', () => {
+    it('should dispose all ModuleSetting', (done: jest.DoneCallback) => {
+      const mockModuleSetting1 = createMockModuleSetting();
+      settingController.registerModuleSetting(mockModuleSetting1);
+      const mockModuleSetting2 = createMockModuleSetting();
+      settingController.registerModuleSetting(mockModuleSetting2);
       settingController.dispose();
-      expect(moduleSetting2.dispose).toBeCalled();
+      setTimeout(() => {
+        expect(mockModuleSetting1.dispose).toBeCalled();
+        expect(mockModuleSetting2.dispose).toBeCalled();
+        done();
+      });
     });
   });
 });

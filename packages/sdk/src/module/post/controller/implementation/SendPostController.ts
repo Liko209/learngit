@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { mainLogger, DEFAULT_RETRY_COUNT } from 'foundation';
+import { mainLogger, DEFAULT_RETRY_COUNT, REQUEST_PRIORITY } from 'foundation';
 import { daoManager } from '../../../../dao';
 import { PostDao } from '../../dao';
 import { Post } from '../../entity';
@@ -173,6 +173,7 @@ class SendPostController implements ISendPostController {
       const result = await this.postActionController.requestController.post(
         sendPost,
         {
+          priority: REQUEST_PRIORITY.HIGH,
           retryCount: DEFAULT_RETRY_COUNT,
         },
       );

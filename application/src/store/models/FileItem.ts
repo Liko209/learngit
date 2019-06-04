@@ -97,6 +97,12 @@ export default class FileItemModel extends ItemModel {
   }
 
   @computed
+  get status() {
+    if (!this.hasVersions()) return null;
+    return this._getVersionsValue('status');
+  }
+
+  @computed
   get origHeight() {
     if (!this.hasVersions()) return null;
     return this._getVersionsValue('orig_height');

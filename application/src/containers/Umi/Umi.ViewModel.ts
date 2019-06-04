@@ -7,7 +7,7 @@ import { computed, untracked } from 'mobx';
 import _ from 'lodash';
 import { container } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
-import { getEntity, getGlobalValue } from '@/store/utils';
+import { getEntity, getGlobalValue, getSingleEntity } from '@/store/utils';
 import {
   UmiProps,
   UmiViewProps,
@@ -22,6 +22,7 @@ import { AppStore } from '@/modules/app/store';
 import { StateService, GROUP_BADGE_TYPE } from 'sdk/module/state';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import BadgeModel from '@/store/models/Badge';
+import { NEW_MESSAGE_BADGES_OPTIONS } from 'sdk/module/profile/constants';
 
 class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   private _appStore = container.get(AppStore);
@@ -49,6 +50,12 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
 
     return unreadInfo;
   }
+  private get _onlyIncludeTeamMention() {
+    return (
+      getSingleEntity(ENTITY_NAME.PROFILE, 'newMessageBadges') ===
+      NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS
+    );
+  }
 
   private _getSingleUnreadInfo() {
     if (!this.props.id) {
@@ -60,8 +67,9 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
       this.props.id,
     );
     const group: GroupModel = getEntity(ENTITY_NAME.GROUP, this.props.id);
+
     const unreadCount =
-      (group.isTeam
+      (group.isTeam && this._onlyIncludeTeamMention
         ? groupState.unreadMentionsCount
         : groupState.unreadCount) || 0;
 
@@ -112,8 +120,9 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
     ids.forEach((id: string) => {
       const badge: BadgeModel = getEntity(ENTITY_NAME.BADGE, id);
       if (
-        id === GROUP_BADGE_TYPE.TEAM ||
-        id === GROUP_BADGE_TYPE.FAVORITE_TEAM
+        (id === GROUP_BADGE_TYPE.TEAM ||
+          id === GROUP_BADGE_TYPE.FAVORITE_TEAM) &&
+        this._onlyIncludeTeamMention
       ) {
         counts.unreadCount += badge.mentionCount;
       } else {

@@ -1,41 +1,16 @@
 /*
- * @Author: Conner (conner.kang@ringcentral.com)
- * @Date: 2019-04-02 10:29:39
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-05-27 10:48:36
  * Copyright © RingCentral. All rights reserved.
  */
+import { SettingPage } from '@/interface/setting';
 
-enum SETTING_LIST_TYPE {
-  GENERAL = 'general',
-  NOTIFICATION_AND_SOUNDS = 'notification_and_sounds',
-  MESSAGES = 'messages',
-  PHONE = 'phone',
-  MEETINGS = 'meetings',
-  CALENDAR = 'calendar',
-}
-
-type SettingLeftRailEntry = {
-  title: string;
-  icon: string;
-  type: SETTING_LIST_TYPE;
-  testId: string;
-};
-
-type SettingLeftRailProps = {
-  entries: SettingLeftRailEntry[];
-  currentSettingListType: string;
-  type: SETTING_LIST_TYPE;
-};
+type SettingLeftRailProps = {};
 
 type SettingLeftRailViewProps = {
-  onClick: (id: number) => void;
-  leftRailItemIds: number[];
-  entries: SettingLeftRailEntry[];
-  currentSettingListType: SETTING_LIST_TYPE;
+  pages: SettingPage[];
+  currentPage?: SettingPage;
+  goToSettingPage(pageId: string): void;
 };
 
-export {
-  SETTING_LIST_TYPE,
-  SettingLeftRailEntry,
-  SettingLeftRailProps,
-  SettingLeftRailViewProps,
-};
+export { SettingLeftRailProps, SettingLeftRailViewProps };
