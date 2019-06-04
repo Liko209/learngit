@@ -21,6 +21,7 @@ export {
   MOBILE_TEAM_NOTIFICATION_OPTIONS,
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   SETTING_KEYS,
+  DesktopNotificationsSettingModel,
 } from './constants';
 
 export { SettingValue, SettingOption } from './types';

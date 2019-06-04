@@ -150,6 +150,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
       arrangeIds: memberIds,
       fetchAllIfSearchKeyEmpty: true,
     });
+
     if (res) {
       runInAction(() => {
         this.currentIndex = this.initIndex;

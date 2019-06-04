@@ -40,6 +40,7 @@ enum SETTING_KEYS {
   // call settings
   CALL_OPTION = 'calling_option',
   DEFAULT_NUMBER = 'default_number',
+  LAST_READ_MISSED = 'last_read_missed',
 
   // mobile settings
   MOBILE_DM = 'want_push_people',
@@ -64,6 +65,11 @@ enum SETTING_KEYS {
   MAX_LEFTRAIL_GROUP = 'max_leftrail_group_tabs2',
   NEW_MESSAGE_BADGES = 'new_message_badges',
 }
+type DesktopNotificationsSettingModel = {
+  browserPermission: NotificationPermission;
+  wantNotifications: boolean;
+  desktopNotifications: boolean;
+};
 
 export {
   CALLING_OPTIONS,
@@ -73,4 +79,5 @@ export {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   SETTING_KEYS,
   NEW_MESSAGE_BADGES_OPTIONS,
+  DesktopNotificationsSettingModel,
 };

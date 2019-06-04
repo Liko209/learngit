@@ -110,7 +110,6 @@ class MessageInputViewComponent extends Component<
           handleEmojiClick={insertEmoji}
           sheetSize={64}
           set="emojione"
-          title={t('message.emoji.emojiDefaultTitle')}
           ref={this._emojiRef}
         />
       </MessageActionBar>
