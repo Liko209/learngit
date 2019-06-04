@@ -17,7 +17,17 @@ type SelectSettingItem<T> = SettingItem & {
   /**
    * Decide how the select renders source
    */
-  sourceRenderer?: ComponentType<{ value: T }>;
+  sourceRenderer?: ComponentType<{ value: T; source: T[] }>;
+
+  /**
+   * Default source when source not given by sdk
+   */
+  defaultSource?: T[];
+
+  /**
+   * Default value of this item
+   */
+  defaultValue?: string;
 
   /**
    * Used for figure out which property in

@@ -628,6 +628,9 @@
       }
     },
     "default": "Default",
+    "speaker": "Speaker",
+    "noDevices": "No devices",
+    "microphone": "Microphone",
     "builtInMicrophone": "Built-in microphone",
     "builtInSpeaker": "Built-in speaker"
   },

@@ -19,6 +19,11 @@ import {
   SETTING_ITEM__SPEAKER_SOURCE,
   SETTING_ITEM__VOLUME,
 } from './constant';
+import {
+  DEFAULT_AUDIO_INPUT_DEVICES,
+  DEFAULT_AUDIO_OUTPUT_DEVICES,
+  NO_DEVICES_ID,
+} from './audioSource/constant';
 
 const deviceIdExtractor = (device?: MediaDeviceInfo) =>
   device && device.deviceId;
@@ -55,6 +60,8 @@ class NotificationSoundSettingManager {
               title: 'setting.audioSource.microphoneSource.label',
               description: 'setting.audioSource.microphoneSource.description',
               valueExtractor: deviceIdExtractor,
+              defaultSource: DEFAULT_AUDIO_INPUT_DEVICES,
+              defaultValue: NO_DEVICES_ID,
               sourceRenderer: MediaDeviceSourceItem,
               type: SETTING_ITEM_TYPE.SELECT,
               weight: 0,
@@ -65,6 +72,8 @@ class NotificationSoundSettingManager {
               title: 'setting.audioSource.speakerSource.label',
               description: 'setting.audioSource.speakerSource.description',
               valueExtractor: deviceIdExtractor,
+              defaultSource: DEFAULT_AUDIO_OUTPUT_DEVICES,
+              defaultValue: NO_DEVICES_ID,
               sourceRenderer: MediaDeviceSourceItem,
               type: SETTING_ITEM_TYPE.SELECT,
               weight: 100,

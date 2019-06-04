@@ -12,6 +12,7 @@ import { SelectSettingItemViewProps, SelectSettingItemProps } from './types';
 import { JuiSettingSectionItem } from 'jui/pattern/SettingSectionItem';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { catchError } from '@/common/catchError';
+import { computed } from 'mobx';
 
 type SourceItemType =
   | {
@@ -27,6 +28,21 @@ type Props<T> = SelectSettingItemViewProps<T> &
 class SelectSettingItemViewComponent<
   T extends SourceItemType
 > extends Component<Props<T>> {
+  @computed
+  private get _source() {
+    const { settingItem, settingItemEntity } = this.props;
+    return settingItemEntity.source || settingItem.defaultSource || [];
+  }
+
+  @computed
+  private get _value() {
+    const { settingItem, settingItemEntity } = this.props;
+    return (
+      this.props.extractValue(settingItemEntity.value) ||
+      settingItem.defaultValue
+    );
+  }
+
   @catchError.flash({
     // TODO move the keys out of setting.phone
     network: 'setting.phone.general.callerID.errorText',
@@ -52,16 +68,15 @@ class SelectSettingItemViewComponent<
   }
 
   private _renderSelect() {
-    const { disabled, settingItem, settingItemEntity } = this.props;
+    const { disabled, settingItem } = this.props;
 
-    const value = this.props.extractValue(settingItemEntity.value);
     return (
       <JuiBoxSelect
         onChange={this._handleChange}
         disabled={disabled}
-        value={value}
+        value={this._value}
         automationId={`settingItemSelectBox-${settingItem.automationId}`}
-        data-test-automation-value={value}
+        data-test-automation-value={this._value}
         isFullWidth={true}
       >
         {this._renderSource()}
@@ -70,21 +85,19 @@ class SelectSettingItemViewComponent<
   }
 
   private _renderSource() {
-    const { source } = this.props.settingItemEntity;
-    return source ? source.map((item: T) => this._renderSourceItem(item)) : [];
+    return this._source.map((item: T) => this._renderSourceItem(item));
   }
 
   private _renderSourceItem(sourceItem: T) {
-    const itemValue = this.props.extractValue(sourceItem);
     return (
       <JuiMenuItem
-        value={itemValue}
-        key={itemValue}
+        value={this._value}
+        key={this._value}
         automationId={`settingItemSelectBoxItem-${
           this.props.settingItem.automationId
-        }`}
+        }-${this._value}`}
         data-test-automation-class={'settingItemSelectBoxItem'}
-        data-test-automation-value={itemValue}
+        data-test-automation-value={this._value}
       >
         {this._renderMenuItemChildren(sourceItem)}
       </JuiMenuItem>
@@ -97,7 +110,9 @@ class SelectSettingItemViewComponent<
     const key = extractValue(sourceItem);
     let node: React.ReactNode;
     if (ItemComponent) {
-      node = <ItemComponent key={key} value={sourceItem} />;
+      node = (
+        <ItemComponent key={key} value={sourceItem} source={this._source} />
+      );
     } else if (
       typeof sourceItem === 'string' ||
       typeof sourceItem === 'number'
