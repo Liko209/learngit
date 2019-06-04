@@ -15,7 +15,6 @@ import { COUNT_TO_SHOW_SEARCH } from './Content/Members/constants';
 import portalManager from '@/common/PortalManager';
 import { defaultNotificationOptions } from '@/common/catchError';
 import { Notification } from '@/containers/Notification';
-import { i18nP } from '@/utils/i18nT';
 
 class ProfileDialogGroupViewModel
   extends AbstractViewModel<ProfileDialogGroupProps>
@@ -30,7 +29,7 @@ class ProfileDialogGroupViewModel
           portalManager.dismissLast();
           Notification.flashToast({
             ...defaultNotificationOptions,
-            message: i18nP('people.prompt.conversationPrivate'),
+            message: 'people.prompt.conversationPrivate',
           });
         }
       },

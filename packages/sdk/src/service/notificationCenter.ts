@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { EventEmitter2 } from 'eventemitter2';
-import { EVENT_TYPES } from './constants';
+import { EVENT_TYPES, RELOAD_TARGET } from './constants';
 import _ from 'lodash';
 import { IdModel, Raw, ModelIdType } from '../framework/model';
 
@@ -61,8 +61,13 @@ export type NotificationEntityResetPayload = {
   type: EVENT_TYPES.RESET;
 };
 
-export type NotificationEntityReloadPayload = {
+export type NotificationEntityReloadPayload<
+  IdType extends ModelIdType = number
+> = {
   type: EVENT_TYPES.RELOAD;
+  target: RELOAD_TARGET;
+  isReloadAll: boolean;
+  body: NotificationEntityIds<IdType>;
 };
 
 // unify notification payload
@@ -71,7 +76,7 @@ export type NotificationEntityPayload<T, IdType extends ModelIdType = number> =
   | NotificationEntityDeletePayload<IdType>
   | NotificationEntityUpdatePayload<T, IdType>
   | NotificationEntityResetPayload
-  | NotificationEntityReloadPayload;
+  | NotificationEntityReloadPayload<IdType>;
 
 /**
  * transform array to map structure
@@ -209,6 +214,24 @@ class NotificationCenter extends EventEmitter2 {
     this._notifyEntityChange(key, notification);
   }
 
+  emitEntityReload<IdType extends ModelIdType = number>(
+    key: string,
+    target: RELOAD_TARGET,
+    ids: IdType[],
+    isReloadAll?: boolean,
+  ): void {
+    const notificationBody: NotificationEntityIds<IdType> = {
+      ids,
+    };
+    const notification: NotificationEntityReloadPayload<IdType> = {
+      target,
+      isReloadAll: isReloadAll ? isReloadAll : false,
+      body: notificationBody,
+      type: EVENT_TYPES.RELOAD,
+    };
+    this._notifyEntityChange(key, notification);
+  }
+
   onEntityReset(
     event: string | string[],
     listener: (payload: NotificationEntityResetPayload) => void,
@@ -217,13 +240,6 @@ class NotificationCenter extends EventEmitter2 {
       event,
       payload => payload.type === EVENT_TYPES.RESET && listener(payload),
     );
-  }
-
-  emitEntityReload(key: string): void {
-    const notification: NotificationEntityReloadPayload = {
-      type: EVENT_TYPES.RELOAD,
-    };
-    this._notifyEntityChange(key, notification);
   }
 
   onEntityReload(

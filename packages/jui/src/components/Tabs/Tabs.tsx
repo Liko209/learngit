@@ -40,6 +40,7 @@ type Props = {
   children: JSX.Element[];
   onChangeTab?: (index: number) => void;
   moreText?: string; // more tab support i18N
+  position?: 'left' | 'center' | 'right';
 };
 
 const CLASSES = {
@@ -410,6 +411,7 @@ class JuiTabs extends PureComponent<Props, States> {
   }
 
   renderTabs = () => {
+    const { position } = this.props;
     const { indexSelected, indexTabs } = this.state;
     // Notice:
     // 1. when first execute render, then indexTabs length equal 0
@@ -425,6 +427,7 @@ class JuiTabs extends PureComponent<Props, States> {
     }
     return (
       <StyledTabs
+        position={position}
         value={index}
         onChange={this._handleChangeTab}
         indicatorColor="primary"
