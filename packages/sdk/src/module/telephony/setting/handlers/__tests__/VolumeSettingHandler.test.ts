@@ -18,6 +18,7 @@ import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { TelephonyService } from 'sdk/module/telephony/service/TelephonyService';
 import { RTC_MEDIA_ACTION } from 'voip/src';
+import { CONFIG_EVENT_TYPE } from 'sdk/module/config/constants';
 
 jest.mock('../utils');
 jest.mock('sdk/module/telephony/config/TelephonyGlobalConfig');
@@ -143,7 +144,7 @@ describe('DefaultAppSettingHandler', () => {
       mockDefaultSettingItem.value = 50;
       settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
-      settingHandler['_onVolumeUpdate'](11);
+      settingHandler['_onVolumeUpdate'](CONFIG_EVENT_TYPE.UPDATE, '11');
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
         expect(
@@ -157,7 +158,7 @@ describe('DefaultAppSettingHandler', () => {
       mockDefaultSettingItem.value = 50;
       settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
-      settingHandler['_onVolumeUpdate'](50);
+      settingHandler['_onVolumeUpdate'](CONFIG_EVENT_TYPE.UPDATE, '50');
 
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
@@ -169,7 +170,7 @@ describe('DefaultAppSettingHandler', () => {
     it('should not emit when has no cache', (done: jest.DoneCallback) => {
       settingHandler['userSettingEntityCache'] = undefined;
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
-      settingHandler['_onVolumeUpdate'](11);
+      settingHandler['_onVolumeUpdate'](CONFIG_EVENT_TYPE.UPDATE, '11');
 
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
@@ -241,7 +242,7 @@ describe('DefaultAppSettingHandler', () => {
     });
 
     it('JPT-2094 Show "Audio sources" section only for chrome/electron with meeting/call/conference permission', async () => {
-      isChrome.mockRejectedValue(true);
+      isChrome.mockReturnValue(true);
       mockTelephonyService.getVoipCallPermission.mockResolvedValue(true);
       rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
       expect(await settingHandler['_getEntityState']()).toEqual(
@@ -257,7 +258,7 @@ describe('DefaultAppSettingHandler', () => {
       expect(await settingHandler['_getEntityState']()).toEqual(
         ESettingItemState.INVISIBLE,
       );
-      isChrome.mockRejectedValue(false);
+      isChrome.mockReturnValue(false);
       mockTelephonyService.getVoipCallPermission.mockResolvedValue(true);
       rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
       expect(await settingHandler['_getEntityState']()).toEqual(

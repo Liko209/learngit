@@ -182,13 +182,33 @@ describe('DeviceSyncManger', () => {
       expect(mockLatUsedDeviceManager.getLastAvailableUsedDevice).toBeCalled();
     });
     // should save current device id = 'default' when real device id not found. [JPT-1731]
-    it('should use default device when (storage device, lastUsed device) not available', () => {
+    it('should use current device(deviceManager) when (storage device, lastUsed device) not available', () => {
+      mockDeviceManager.getDevices.mockReturnValue([
+        {
+          deviceId: 'AAA',
+        },
+      ]);
+      mockDeviceManager.getDeviceId.mockReturnValue('AAA');
+      mockStorage.get.mockReturnValue('BBB');
+      mockLatUsedDeviceManager.getLastAvailableUsedDevice.mockReturnValue(
+        undefined,
+      );
+
+      expect(deviceSyncManager['_ensureDevice']()).toEqual({
+        source: SOURCE_TYPE.DEVICE_MANAGER,
+        deviceId: 'AAA',
+      });
+      expect(mockDeviceManager.getDeviceId).toBeCalled();
+      expect(mockDeviceManager.getDefaultDeviceId).not.toBeCalled();
+    });
+    it('should use default device(deviceManager) when (storage device, lastUsed device) not available', () => {
       mockDeviceManager.getDevices.mockReturnValue([
         {
           deviceId: 'AAA',
         },
       ]);
       mockStorage.get.mockReturnValue('BBB');
+      mockDeviceManager.getDeviceId.mockReturnValue('BBB');
       mockLatUsedDeviceManager.getLastAvailableUsedDevice.mockReturnValue(
         undefined,
       );
@@ -196,6 +216,7 @@ describe('DeviceSyncManger', () => {
         source: SOURCE_TYPE.DEFAULT,
         deviceId: mockDefaultDeviceId,
       });
+      expect(mockDeviceManager.getDeviceId).toBeCalled();
       expect(mockDeviceManager.getDefaultDeviceId).toBeCalled();
     });
   });

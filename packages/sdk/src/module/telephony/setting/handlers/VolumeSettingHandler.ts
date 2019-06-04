@@ -44,7 +44,7 @@ export class VolumeSettingHandler extends AbstractSettingEntityHandler<number> {
       ServiceConfig.RC_INFO_SERVICE,
     );
     const isEnable =
-      isChrome &&
+      isChrome() &&
       ((await this._telephonyService.getVoipCallPermission()) ||
         (await rcInfoService.isRCFeaturePermissionEnabled(
           ERCServiceFeaturePermission.VIDEO_CONFERENCING,
@@ -60,7 +60,7 @@ export class VolumeSettingHandler extends AbstractSettingEntityHandler<number> {
       this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
   }
 
-  private _onVolumeUpdate = (type: number, value: number) => {
+  private _onVolumeUpdate = (type: number, value: string) => {
     const volume = Number(value);
     if (
       this.userSettingEntityCache &&

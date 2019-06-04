@@ -53,7 +53,14 @@ export class DeviceSyncManger {
         deviceId: lastUsedDeviceId,
       };
     }
-    const defaultDeviceId = this._deviceManager.getDefaultDeviceId();
+    const currentDeviceId = this._deviceManager.getDeviceId();
+    if (devices.find(device => device.deviceId === currentDeviceId)) {
+      return {
+        source: SOURCE_TYPE.DEVICE_MANAGER,
+        deviceId: currentDeviceId,
+      };
+    }
+    const defaultDeviceId = this._deviceManager.getDefaultDeviceId(devices);
     telephonyLogger
       .tags(LOG_TAG)
       .debug('use default device id:', defaultDeviceId);

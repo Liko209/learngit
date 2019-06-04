@@ -50,7 +50,7 @@ export class MicrophoneSourceSettingHandler extends AbstractSettingEntityHandler
       ServiceConfig.RC_INFO_SERVICE,
     );
     const isEnable =
-      isChrome &&
+      isChrome() &&
       ((await this._telephonyService.getVoipCallPermission()) ||
         (await rcInfoService.isRCFeaturePermissionEnabled(
           ERCServiceFeaturePermission.VIDEO_CONFERENCING,
