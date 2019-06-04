@@ -241,7 +241,7 @@ describe('DefaultAppSettingHandler', () => {
     });
 
     it('JPT-2094 Show "Audio sources" section only for chrome/electron with meeting/call/conference permission', async () => {
-      isChrome.mockRejectedValue(true);
+      isChrome.mockReturnValue(true);
       mockTelephonyService.getVoipCallPermission.mockResolvedValue(true);
       rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
       expect(await settingHandler['_getEntityState']()).toEqual(
@@ -257,7 +257,7 @@ describe('DefaultAppSettingHandler', () => {
       expect(await settingHandler['_getEntityState']()).toEqual(
         ESettingItemState.INVISIBLE,
       );
-      isChrome.mockRejectedValue(false);
+      isChrome.mockReturnValue(false);
       mockTelephonyService.getVoipCallPermission.mockResolvedValue(true);
       rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
       expect(await settingHandler['_getEntityState']()).toEqual(

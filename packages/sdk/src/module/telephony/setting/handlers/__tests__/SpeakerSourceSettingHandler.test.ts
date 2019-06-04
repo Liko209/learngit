@@ -7,7 +7,7 @@
 import notificationCenter from 'sdk/service/notificationCenter';
 import { SpeakerSourceSettingHandler } from '..';
 import { SettingEntityIds, UserSettingEntity } from 'sdk/module/setting';
-import RTCEngine, { RTC_MEDIA_ACTION } from 'voip/src';
+import RTCEngine, { RTC_MEDIA_ACTION } from 'voip';
 import { TelephonyGlobalConfig } from 'sdk/module/telephony/config/TelephonyGlobalConfig';
 import { TelephonyService } from 'sdk/module/telephony/service';
 import { RC_INFO, SERVICE } from 'sdk/service/eventKey';
@@ -280,9 +280,8 @@ describe('SpeakerSourceSettingHandler', () => {
     afterEach(() => {
       cleanUp();
     });
-
     it('JPT-2094 Show "Audio sources" section only for chrome/electron with meeting/call/conference permission', async () => {
-      isChrome.mockRejectedValue(true);
+      isChrome.mockReturnValue(true);
       mockTelephonyService.getVoipCallPermission.mockResolvedValue(true);
       rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
       expect(await settingHandler['_getEntityState']()).toEqual(
@@ -298,7 +297,7 @@ describe('SpeakerSourceSettingHandler', () => {
       expect(await settingHandler['_getEntityState']()).toEqual(
         ESettingItemState.INVISIBLE,
       );
-      isChrome.mockRejectedValue(false);
+      isChrome.mockReturnValue(false);
       mockTelephonyService.getVoipCallPermission.mockResolvedValue(true);
       rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
       expect(await settingHandler['_getEntityState']()).toEqual(
