@@ -6,12 +6,14 @@
 
 const JUIGenerator = require("./JUI/index.js");
 const MVVMGenerator = require("./MVVM/index.js");
+const E2EGenerator = require("./E2E/index");
 const getGitUser = require("./utils/getGitUser");
 const getCurrentDate = require("./utils/getCurrentDate");
 
 const gitUser = getGitUser();
 
 module.exports = plop => {
+  plop.setGenerator("E2E", E2EGenerator);
   plop.setGenerator("MVVM", MVVMGenerator);
   plop.setGenerator("JUI", JUIGenerator);
 

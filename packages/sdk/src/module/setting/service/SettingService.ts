@@ -6,6 +6,8 @@
 import { AbstractService } from 'sdk/framework';
 import { SettingController } from '../controller/SettingController';
 import { IModuleSetting } from '../moduleSetting/types';
+import { UserSettingEntity } from '../entity';
+import { Nullable } from 'sdk/types';
 
 class SettingService extends AbstractService {
   private _settingController: SettingController;
@@ -18,8 +20,10 @@ class SettingService extends AbstractService {
     this._settingController && this._settingController.dispose();
   }
 
-  async getById(id: number) {
-    return this.settingController.getById(id);
+  async getById<T>(id: number): Promise<Nullable<UserSettingEntity<T>>> {
+    return (await this.settingController.getById(id)) as Nullable<
+      UserSettingEntity<T>
+    >;
   }
 
   registerModuleSetting(moduleSetting: IModuleSetting) {

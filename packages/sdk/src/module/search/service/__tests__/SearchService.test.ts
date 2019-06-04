@@ -8,10 +8,12 @@ import { RecentSearchRecordController } from '../../controller/RecentSearchRecor
 import { SearchServiceController } from '../../controller/SearchServiceController';
 import { RecentSearchTypes } from '../../entity';
 import { SearchUserConfig } from '../../config/SearchUserConfig';
+import { SearchPersonController } from '../../controller/SearchPersonController';
 
 jest.mock('../../config/SearchUserConfig');
 jest.mock('../../controller/SearchServiceController');
 jest.mock('../../controller/RecentSearchRecordController');
+jest.mock('../../controller/SearchPersonController');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -89,6 +91,30 @@ describe('SearchService', () => {
       expect(
         recentSearchRecordController.getRecentSearchRecordsByType,
       ).toBeCalledWith(RecentSearchTypes.GROUP);
+    });
+  });
+
+  describe('doFuzzySearchPhoneContacts', () => {
+    let searchPersonController: SearchPersonController;
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      searchPersonController = new SearchPersonController(searchService);
+      Object.defineProperty(searchService, 'searchPersonController', {
+        get: jest.fn(() => searchPersonController),
+      });
+    });
+
+    it('should call correct parameter', async () => {
+      const options = {
+        searchKey: 'test keys',
+        excludeSelf: true,
+      };
+      searchService.doFuzzySearchPhoneContacts(options);
+      expect(searchPersonController.doFuzzySearchPhoneContacts).toBeCalledWith({
+        searchKey: 'test keys',
+        excludeSelf: true,
+      });
     });
   });
 });

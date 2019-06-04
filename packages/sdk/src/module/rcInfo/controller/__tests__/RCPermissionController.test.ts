@@ -8,6 +8,7 @@ import { RCPermissionController } from '../RCPermissionController';
 import { ERCServiceFeaturePermission } from '../../types';
 import { RolePermissionController } from '../RolePermissionController';
 import { ServiceLoader } from '../../../serviceLoader';
+import { FULL_RC_PERMISSION_JSON } from './FullRCPermissionData';
 jest.mock('../../../permission');
 jest.mock('../../config');
 
@@ -141,6 +142,33 @@ describe('RCInfoFetchController', () => {
         ERCServiceFeaturePermission.FAX,
       );
       expect(res).toBe(false);
+    });
+    it('should return true when user has forward permission', async () => {
+      mockFetchController.getRCExtensionInfo.mockReturnValueOnce({
+        serviceFeatures: FULL_RC_PERMISSION_JSON.serviceFeatures,
+      });
+      const res = await rcPermissionController.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.CALL_FORWARDING,
+      );
+      expect(res).toBeTruthy();
+    });
+    it('should return false when user has not flip permission', async () => {
+      mockFetchController.getRCExtensionInfo.mockReturnValueOnce({
+        serviceFeatures: FULL_RC_PERMISSION_JSON.serviceFeatures,
+      });
+      const res = await rcPermissionController.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.CALL_FLIP,
+      );
+      expect(res).toBeFalsy();
+    });
+    it('should return true when user has park permission', async () => {
+      mockFetchController.getRCExtensionInfo.mockReturnValueOnce({
+        serviceFeatures: FULL_RC_PERMISSION_JSON.serviceFeatures,
+      });
+      const res = await rcPermissionController.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.CALL_PARK,
+      );
+      expect(res).toBeTruthy();
     });
   });
 });

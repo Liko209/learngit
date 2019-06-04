@@ -1,20 +1,16 @@
-import { INotificationService } from './interface/index';
 /*
  * @Author: Andy Hu (Andy.hu@ringcentral.com)
  * @Date: 2019-04-01 15:16:45
  * Copyright Â© RingCentral. All rights reserved.
  */
-import { AbstractModule, inject } from 'framework';
-import { NOTIFICATION_SERVICE } from './interface/constant';
-import {
-  LEAVE_BLOCKER_SERVICE,
-  ILeaveBlockerService,
-} from '../leave-blocker/interface';
+import { AbstractModule } from 'framework';
+import { INotificationService } from './interface';
+import { ILeaveBlockerService } from '../leave-blocker/interface';
 
 class NotificationModule extends AbstractModule {
-  @inject(NOTIFICATION_SERVICE)
+  @INotificationService
   private _notificationService: INotificationService;
-  @inject(LEAVE_BLOCKER_SERVICE)
+  @ILeaveBlockerService
   private _leaveBlockService: ILeaveBlockerService;
 
   async bootstrap() {

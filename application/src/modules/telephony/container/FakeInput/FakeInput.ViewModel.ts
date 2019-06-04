@@ -23,6 +23,13 @@ class FakeInputViewModel extends StoreViewModel<FakeInputProps>
     return reversed;
   }
 
+  onFocus = () => {
+    this._telephonyStore.onDialerFocus();
+  }
+  onBlur = () => {
+    this._telephonyStore.onDialerBlur();
+  }
+
   @computed
   get enteredKeys() {
     return FakeInputViewModel.reverse(this._telephonyStore.enteredKeys);

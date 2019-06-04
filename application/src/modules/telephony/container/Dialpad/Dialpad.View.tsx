@@ -24,7 +24,7 @@ class DialpadViewComponent extends React.Component<DialpadProps> {
       timing,
       t,
       id,
-      shouldAnimationStart,
+      startMinimizeAnimation,
       canUseTelephony,
     } = this.props;
 
@@ -44,7 +44,7 @@ class DialpadViewComponent extends React.Component<DialpadProps> {
         onClick={maximize}
         ariaLabel={t('home.openDialer')}
         id={id}
-        shouldAnimationStart={shouldAnimationStart}
+        startMinimizeAnimation={startMinimizeAnimation}
         tooltipTitle={t('home.dialer')}
       />
     );

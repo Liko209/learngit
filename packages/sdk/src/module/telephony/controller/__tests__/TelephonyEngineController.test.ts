@@ -10,12 +10,17 @@ import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { AuthUserConfig } from '../../../account/config/AuthUserConfig';
 import { AccountService } from 'sdk/module/account';
 import { TelephonyUserConfig } from '../../config/TelephonyUserConfig';
+import { RCInfoService } from 'sdk/module/rcInfo';
 
 jest.mock('../../../config');
 
+const mockIsVoipCallingAvailable = jest.fn();
+const mockGetRCBrandId = jest.fn();
+const mockGetRCAccountId = jest.fn();
+const mockGetRCExtensionId = jest.fn();
+
 describe('', () => {
   let engineController: TelephonyEngineController;
-  const mockIsVoipCallingAvailable = jest.fn();
   const mockHasPermission = jest.fn();
 
   function clearMocks() {
@@ -30,6 +35,9 @@ describe('', () => {
       if (service === ServiceConfig.RC_INFO_SERVICE) {
         return {
           isVoipCallingAvailable: mockIsVoipCallingAvailable,
+          getRCBrandId: mockGetRCBrandId,
+          getRCAccountId: mockGetRCAccountId,
+          getRCExtensionId: mockGetRCExtensionId,
         };
       }
       if (service === ServiceConfig.PERMISSION_SERVICE) {
@@ -110,6 +118,20 @@ describe('', () => {
       });
       const result = engineController.getEndpointId();
       expect(result).toBe('test');
+    });
+  });
+
+  describe('getUserInfo()', () => {
+    it('should call corresponding api when get user info', async () => {
+      AuthUserConfig.prototype.getRCToken = jest.fn().mockReturnValueOnce({
+        endpoint_id: 'test',
+      });
+      const spy = jest.spyOn(engineController, 'getEndpointId');
+      await engineController.getUserInfo();
+      expect(mockGetRCBrandId).toBeCalled();
+      expect(mockGetRCAccountId).toBeCalled();
+      expect(mockGetRCExtensionId).toBeCalled();
+      expect(spy).toBeCalled();
     });
   });
 });

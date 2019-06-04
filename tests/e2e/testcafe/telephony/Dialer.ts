@@ -265,6 +265,66 @@ test.meta(<ITestMeta>{
   });
 });
 
+
+test.meta(<ITestMeta>{
+  caseIds: ['JPT-1917'],
+  priority: ['P1'],
+  maintainers: ['Zack.Zheng'],
+  keywords: ['Dialer']
+})('Can save the last call number', async (t) => {
+  const loginUser = h(t).rcData.mainCompany.users[0];
+  const callee = h(t).rcData.guestCompany.users[0];
+  await h(t).platform(callee).init();
+  const phoneNumbers = await h(t).platform(callee).getExtensionPhoneNumberList();
+  const calleeDirectNumbers = phoneNumbers.data.records.filter(data => data.usageType == "DirectNumber").map(data => data.phoneNumber)
+  const app = new AppRoot(t);
+
+  let webphoneSession: WebphoneSession;
+  await h(t).withLog(`Given webphone seesion login with ${callee.company.number}#${callee.extension}`, async () => {
+    webphoneSession = await h(t).webphoneHelper.newWebphoneSession(callee);
+  });
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I click the to Dialpad button', async () => {
+    await app.homePage.openDialer();
+  });
+
+  const telephonyDialog = app.homePage.telephonyDialog;
+
+  await h(t).withLog('Then display the dialer', async () => {
+    await telephonyDialog.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I type a character in the input field`, async () => {
+    await telephonyDialog.typeTextInDialer(calleeDirectNumbers[0]);
+  });
+
+  await h(t).withLog('And I click the to Dialpad button', async () => {
+    await telephonyDialog.clickDialButton();
+  });
+
+  await h(t).withLog('Then a call should be initiated', async () => {
+    await t.expect(telephonyDialog.hangupButton.exists).ok();
+  });
+
+  await h(t).withLog('When I end the call and back to Dialpad', async () => {
+    //Add wait 2 seconds otherwise it wouldn't trigger clickHangupButton event.
+    await t.wait(2e3);
+    await telephonyDialog.clickHangupButton();
+  });
+
+  await h(t).withLog('And I click the Dialpad call button', async () => {
+    await telephonyDialog.clickDialButton();
+  });
+
+  await h(t).withLog('Then the Dialpad should populated last phone number', async () => {
+    await t.expect(app.homePage.telephonyDialog.dialerInput.value).eql(calleeDirectNumbers[0]);
+  });
+});
+
 test.meta(<ITestMeta>{
   caseIds: ['JPT-1964'],
   priority: ['P1'],

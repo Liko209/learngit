@@ -8,7 +8,12 @@ import { SERVICE } from '../../../service/eventKey';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { RCInfoController } from '../controller/RCInfoController';
-import { ERCServiceFeaturePermission, ERCWebSettingUri } from '../types';
+import {
+  ERCServiceFeaturePermission,
+  ERCWebSettingUri,
+  ForwardingFlipNumberModel,
+  EForwardingNumberFeatureType,
+} from '../types';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { AccountService } from '../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
@@ -98,6 +103,24 @@ class RCInfoService extends EntityBaseService<IdModel>
     return await this.getRCInfoController()
       .getRCInfoFetchController()
       .getRCClientInfo();
+  }
+
+  async getRCBrandId() {
+    return await this.getRCInfoController()
+      .getRCAccountInfoController()
+      .getAccountBrandId();
+  }
+
+  async getRCAccountId() {
+    return await this.getRCInfoController()
+      .getRCAccountInfoController()
+      .getRCAccountId();
+  }
+
+  async getRCExtensionId() {
+    return await this.getRCInfoController()
+      .getRCInfoFetchController()
+      .getRCExtensionId();
   }
 
   async getRCAccountInfo() {
@@ -230,6 +253,18 @@ class RCInfoService extends EntityBaseService<IdModel>
     return this.getRCInfoController()
       .getRCCallerIdController()
       .getCompanyMainCaller();
+  }
+
+  async getForwardingNumberList(): Promise<ForwardingFlipNumberModel[]> {
+    return await this.getRCInfoController()
+      .getRCInfoFetchController()
+      .getForwardingFlipNumbers(EForwardingNumberFeatureType.FORWARDING);
+  }
+
+  async getFlipNumberList(): Promise<ForwardingFlipNumberModel[]> {
+    return await this.getRCInfoController()
+      .getRCInfoFetchController()
+      .getForwardingFlipNumbers(EForwardingNumberFeatureType.FLIP);
   }
 }
 

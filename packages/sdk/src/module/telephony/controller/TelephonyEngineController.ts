@@ -8,6 +8,7 @@ import {
   IRequest,
   ITelephonyDaoDelegate,
   telephonyLogger,
+  mainLogger,
 } from 'foundation';
 import { RTCEngine } from 'voip';
 import { Api } from '../../../api';
@@ -58,6 +59,7 @@ class VoIPDaoClient implements ITelephonyDaoDelegate {
   }
 }
 
+const LOG_TAG = '[TelephonyEngineController]';
 class TelephonyEngineController {
   rtcEngine: RTCEngine;
   voipNetworkDelegate: VoIPNetworkClient;
@@ -136,21 +138,36 @@ class TelephonyEngineController {
     this.rtcEngine.setMediaDeviceDelegate(this.mediaDevicesController);
   }
 
-  createAccount(
+  async createAccount(
     accountDelegate: ITelephonyAccountDelegate,
     callDelegate: ITelephonyCallDelegate,
   ) {
     // Engine can hold multiple accounts for multiple calls
+    mainLogger.tags(LOG_TAG).info('createAccount()');
     this._preCallingPermission = true;
-    this.rtcEngine.setUserAgentInfo({
-      endpointId: this.getEndpointId(),
-      userAgent: PlatformUtils.getRCUserAgent(),
-    });
+    this.rtcEngine.setUserInfo(await this.getUserInfo());
+    mainLogger.tags(LOG_TAG).info('createAccount() setUserInfo');
     this._accountController = new TelephonyAccountController(
       this.rtcEngine,
       accountDelegate,
       callDelegate,
     );
+  }
+
+  async getUserInfo() {
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+    const rcBrandId = await rcInfoService.getRCBrandId();
+    const rcAccountId = await rcInfoService.getRCAccountId();
+    const rcExtensionId = await rcInfoService.getRCExtensionId();
+    return {
+      rcBrandId,
+      rcAccountId,
+      rcExtensionId,
+      endpointId: this.getEndpointId(),
+      userAgent: PlatformUtils.getRCUserAgent(),
+    };
   }
 
   getAccountController() {

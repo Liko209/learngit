@@ -1,0 +1,14 @@
+
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ActionBar/MoreItem.ts"
+    ],
+    "include_tags": [
+      "JPT-564"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

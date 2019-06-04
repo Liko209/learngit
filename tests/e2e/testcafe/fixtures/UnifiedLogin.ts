@@ -23,7 +23,11 @@ test.meta(<ITestMeta>{
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
 
-  await h(t).withLog('Given I login Jupiter interactively', async () => {
+  await h(t).withLog('Given I login Jupiter interactively with user {number}#{extension}', async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).jupiterHelper.selectEnvironment(SITE_URL, SITE_ENV);
     await app.loginPage.interactiveSignIn(loginUser.company.number, loginUser.extension, loginUser.password);
   });
