@@ -621,6 +621,10 @@
       "speakerSource": {
         "label": "Speaker source",
         "description": "Update your speaker source for RingCentral voice calls"
+      },
+      "volume": {
+        "label": "Volume control",
+        "description": "Update the volume"
       }
     },
     "default": "Default",

@@ -3,8 +3,8 @@
  * @Date: 2019-05-20 11:47:23
  * Copyright © RingCentral. All rights reserved.
  */
+import { ComponentType } from 'react';
 import { SettingItem, SETTING_ITEM_TYPE } from './SettingItem';
-import { ComponentType } from 'enzyme';
 
 type SelectSettingItem<T> = SettingItem & {
   type: SETTING_ITEM_TYPE.SELECT;

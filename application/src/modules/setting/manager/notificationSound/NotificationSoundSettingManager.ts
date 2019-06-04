@@ -3,19 +3,21 @@
  * @Date: 2019-05-27 11:31:21
  * Copyright © RingCentral. All rights reserved.
  */
-
 import {
   ISettingService,
   SETTING_ITEM_TYPE,
   SelectSettingItem,
+  SliderSettingItem,
 } from '@/interface/setting';
 import { MediaDeviceSourceItem } from './audioSource/MediaDeviceSourceItem';
+import { SpeakerMuteIcon, SpeakerIcon } from './audioSource/SpeakerIcon';
 import {
   SETTING_PAGE__NOTIFICATION_SOUND,
   SETTING_SECTION__SOUNDS,
   SETTING_SECTION__AUDIO_SOURCE,
   SETTING_ITEM__MICROPHONE_SOURCE,
   SETTING_ITEM__SPEAKER_SOURCE,
+  SETTING_ITEM__VOLUME,
 } from './constant';
 
 const deviceIdExtractor = (device?: MediaDeviceInfo) =>
@@ -41,7 +43,6 @@ class NotificationSoundSettingManager {
           weight: 200,
           items: [],
         },
-
         {
           id: SETTING_SECTION__AUDIO_SOURCE,
           automationId: 'audioSource',
@@ -68,6 +69,18 @@ class NotificationSoundSettingManager {
               type: SETTING_ITEM_TYPE.SELECT,
               weight: 100,
             } as SelectSettingItem<MediaDeviceInfo>,
+            {
+              id: SETTING_ITEM__VOLUME,
+              automationId: 'volume',
+              title: 'setting.audioSource.volume.label',
+              description: 'setting.audioSource.volume.description',
+              type: SETTING_ITEM_TYPE.SLIDER,
+              Left: SpeakerMuteIcon,
+              Right: SpeakerIcon,
+              min: 0,
+              max: 1,
+              weight: 200,
+            } as SliderSettingItem,
           ],
         },
       ],

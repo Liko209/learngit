@@ -5,6 +5,8 @@
  */
 import React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import { JuiText } from 'jui/components/Text';
+
 type MediaDeviceSourceItemProps = {
   value: MediaDeviceInfo;
 };
@@ -27,7 +29,7 @@ const MediaDeviceSourceItem = withTranslation('translations')(
         }
       }
     }
-    return <>{text}</>;
+    return <JuiText>{text}</JuiText>;
   },
 );
 
