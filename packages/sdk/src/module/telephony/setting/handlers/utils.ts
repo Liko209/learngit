@@ -4,4 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export const isChrome = () => true;
+export const isChrome = () => navigator.userAgent.indexOf('Chrome') > -1;
