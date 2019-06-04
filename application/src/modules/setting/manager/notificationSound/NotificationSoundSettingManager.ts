@@ -77,6 +77,7 @@ class NotificationSoundSettingManager {
               type: SETTING_ITEM_TYPE.SLIDER,
               Left: SpeakerMuteIcon,
               Right: SpeakerIcon,
+              tipRenderer: ({ value }) => `${Math.ceil(value * 100)}%`,
               min: 0,
               max: 1,
               weight: 200,

@@ -50,7 +50,7 @@ class SliderSettingItemViewComponent extends Component<Props> {
     const { disabled, settingItem, settingItemEntity } = this.props;
 
     const { value } = settingItemEntity;
-    const { min, max, step, Left, Right } = settingItem;
+    const { min, max, step, tipRenderer, Left, Right } = settingItem;
 
     return (
       <RuiSlider
@@ -59,6 +59,7 @@ class SliderSettingItemViewComponent extends Component<Props> {
         min={min}
         max={max}
         step={step}
+        tipRenderer={tipRenderer}
         Left={Left}
         Right={Right}
         value={value}
