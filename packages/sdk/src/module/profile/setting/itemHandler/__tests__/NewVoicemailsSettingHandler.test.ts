@@ -53,7 +53,7 @@ describe('NewVoicemailsSettingHandler', () => {
       valueType: 1,
       weight: 1,
       id: SettingEntityIds.Notification_MissCallAndNewVoiceMails,
-      state: 0,
+      state: 1,
       source: [NOTIFICATION_OPTIONS.OFF, NOTIFICATION_OPTIONS.ON],
       value: NOTIFICATION_OPTIONS.OFF,
       valueSetter: expect.any(Function),
@@ -124,6 +124,22 @@ describe('NewVoicemailsSettingHandler', () => {
         expect(result).toEqual(mockDefaultSettingItem);
       },
     );
+    it('should get value is 1 when DESKTOP_VOICEMAIL is undefined', async () => {
+      profileService.getProfile = jest.fn().mockReturnValue({
+        [SETTING_KEYS.DESKTOP_VOICEMAIL]: undefined,
+      });
+      mockDefaultSettingItem.value = 1;
+      const result = await settingHandler.fetchUserSettingEntity();
+      expect(result).toEqual(mockDefaultSettingItem);
+    });
+    it('should get value is 0 when DESKTOP_VOICEMAIL is off', async () => {
+      profileService.getProfile = jest.fn().mockReturnValue({
+        [SETTING_KEYS.DESKTOP_VOICEMAIL]: NOTIFICATION_OPTIONS.OFF,
+      });
+      mockDefaultSettingItem.value = 0;
+      const result = await settingHandler.fetchUserSettingEntity();
+      expect(result).toEqual(mockDefaultSettingItem);
+    });
   });
 
   describe('updateValue()', () => {
