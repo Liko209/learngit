@@ -5,7 +5,6 @@ exports[`render() render correctly 1`] = `
   Icon="event"
   iconColor="color"
   title="text"
-  titleColor="color"
 >
   <JuiSectionDivider
     gap={2}
