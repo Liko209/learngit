@@ -9,6 +9,7 @@ import { MessageNotificationManager } from '../MessageNotificationManager';
 import * as VM from '../MessageNotificationViewModel';
 import GroupModel from '@/store/models/Group';
 import PostModel from '../../../store/models/Post';
+import { DESKTOP_MESSAGE_NOTIFICATION_OPTIONS } from 'sdk/module/profile';
 
 jest.mock('sdk/module/config');
 describe('messageNotificationManager', () => {
@@ -88,39 +89,13 @@ describe('messageNotificationManager', () => {
   describe('shouldEmitNotification()', () => {
     beforeEach(() => {
       jest.clearAllMocks();
+      jest
+        .spyOn(utils, 'getSingleEntity')
+        .mockReturnValue(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE);
       jest.spyOn(notificationManager, 'show').mockImplementation();
     });
-    it('should not show notification when post is local', async () => {
-      const result = await notificationManager.shouldEmitNotification(
-        localPost,
-      );
-      expect(result).toBeFalsy();
-    });
-    it('should not show notification when post is deleted', async () => {
-      const result = await notificationManager.shouldEmitNotification(
-        mockedDeletedPost,
-      );
-      expect(result).toBeFalsy();
-    });
-    it('should not show notification when post is created by user', async () => {
-      const result = await notificationManager.shouldEmitNotification(
-        mockedPost,
-      );
-      expect(result).toBeFalsy();
-    });
-    it('should not show notification when post is from team with no @mention', async () => {
-      const result = await notificationManager.shouldEmitNotification(
-        postFromTeam,
-      );
-      expect(result).toBeFalsy();
-    });
-    it('should not show notification when post is from team with @mention other users', async () => {
-      const result = await notificationManager.shouldEmitNotification(
-        postFromWithMentionOthers,
-      );
-      expect(result).toBeFalsy();
-    });
-    it('should  show notification when post is from group', async () => {
+
+    it('should show notification when post is from group', async () => {
       const result = await notificationManager.shouldEmitNotification(
         postFromGroup,
       );
@@ -131,6 +106,59 @@ describe('messageNotificationManager', () => {
         postFromWithMentionMe,
       );
       expect(result).toBeTruthy();
+    });
+    describe('when notification settings turned to off', () => {
+      beforeEach(() => {
+        jest
+          .spyOn(utils, 'getSingleEntity')
+          .mockReturnValue(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF);
+      });
+      it('should show notification when post is from group', async () => {
+        const result = await notificationManager.shouldEmitNotification(
+          postFromGroup,
+        );
+        expect(result).toBeFalsy();
+      });
+    });
+    describe('when notification settings turned to @mention and direct message only', () => {
+      beforeEach(() => {
+        jest.clearAllMocks();
+        jest
+          .spyOn(utils, 'getSingleEntity')
+          .mockReturnValue(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF);
+      });
+      it('should not show notification when post is from team with no @mention', async () => {
+        const result = await notificationManager.shouldEmitNotification(
+          postFromTeam,
+        );
+        expect(result).toBeFalsy();
+      });
+      it('should not show notification when post is from team with @mention other users', async () => {
+        const result = await notificationManager.shouldEmitNotification(
+          postFromWithMentionOthers,
+        );
+        expect(result).toBeFalsy();
+      });
+    });
+    describe('when notification settings turned to @mention and direct message only', () => {
+      beforeEach(() => {
+        jest.clearAllMocks();
+        jest
+          .spyOn(utils, 'getSingleEntity')
+          .mockReturnValue(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION);
+      });
+      it('should show notification when post is from team with no @mention', async () => {
+        const result = await notificationManager.shouldEmitNotification(
+          postFromTeam,
+        );
+        expect(result).toBeFalsy();
+      });
+      it('should show notification when post is from team with @mention other users', async () => {
+        const result = await notificationManager.shouldEmitNotification(
+          postFromWithMentionOthers,
+        );
+        expect(result).toBeFalsy();
+      });
     });
   });
   describe('enqueueVm()', () => {
