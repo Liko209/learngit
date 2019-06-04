@@ -62,6 +62,7 @@ class SelectSettingItemViewComponent<
         automationId={`settingItemSelectBox-${settingItem.automationId}`}
         data-test-automation-value={value}
         isFullWidth={true}
+        name="settings"
       >
         {this._renderSource()}
       </JuiBoxSelect>
