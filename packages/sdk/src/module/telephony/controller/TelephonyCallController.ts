@@ -12,7 +12,6 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip';
-import { ITelephonyCallDelegate } from '../service/ITelephonyCallDelegate';
 import { CallStateCallback } from '../types';
 import {
   Call,
@@ -42,7 +41,6 @@ interface IResultRejectFn {
 }
 
 class TelephonyCallController implements IRTCCallDelegate {
-  private _callDelegate: ITelephonyCallDelegate;
   private _rtcCall: RTCCall;
   private _callback: CallStateCallback;
   private _entityId: number;
@@ -54,10 +52,8 @@ class TelephonyCallController implements IRTCCallDelegate {
 
   constructor(
     entityId: number,
-    delegate: ITelephonyCallDelegate,
     entityCacheController: IEntityCacheController<Call>,
   ) {
-    this._callDelegate = delegate;
     this._entityCacheController = entityCacheController;
     this._entityId = entityId;
     this._initCallEntity();
@@ -141,10 +137,6 @@ class TelephonyCallController implements IRTCCallDelegate {
 
   async onCallStateChange(state: RTC_CALL_STATE) {
     this._handleCallStateChanged(state);
-    this._callDelegate.onCallStateChange(
-      this._rtcCall.getCallInfo().uuid,
-      state,
-    );
     if (this._callback) {
       this._callback(this._rtcCall.getCallInfo().uuid, state);
     }
