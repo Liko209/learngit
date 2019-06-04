@@ -4,6 +4,8 @@ import { formalName } from "../../libs/filter";
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { h } from "../../v2/helpers";
 import { v4 as uuid } from 'uuid';
+import { IGroup } from "../../v2/models";
+import { Group } from "../../../../../packages/sdk/src/module/group/entity";
 
 fixture('ContentPanel/GroupAudioConference')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -15,17 +17,16 @@ test(formalName('The audio conference message displayed in the conversation.', [
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
     const otherUser = users[5];
-    await h(t).platform(loginUser).init();
-    await h(t).glip(loginUser).init();
 
-    let teamId;
+    let team = <IGroup>{
+     name: uuid(),
+     type: "Team",
+     owner: loginUser,
+     members: [loginUser, otherUser],
+   }
+
     await h(t).withLog('Given I have an extension with 1 team chat, and start a audio conference to the team', async () => {
-      teamId = await h(t).platform(loginUser).createAndGetGroupId({
-        name: uuid(),
-        type: 'Team',
-        members: [loginUser.rcId, otherUser.rcId],
-      });
-      await h(t).glip(loginUser).createSimpleAudioConference(teamId);
+      await h(t).glip(loginUser).createSimpleAudioConference(team.glipId);
     });
 
     await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -34,7 +35,7 @@ test(formalName('The audio conference message displayed in the conversation.', [
     });
 
     await h(t).withLog('When I enter the team', async () => {
-      await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+      await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     });
 
     const postCard = app.homePage.messageTab.conversationPage.nthPostItem(-1);
