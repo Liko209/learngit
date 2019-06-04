@@ -9,6 +9,7 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { MessageInputViewProps, MessageInputProps } from './types';
 import { JuiMessageInput } from 'jui/pattern/MessageInput';
 import { Mention } from './Mention';
+import { ColonEmoji } from './ColonEmoji';
 import keyboardEventDefaultHandler from 'jui/pattern/MessageInput/keyboardEventDefaultHandler';
 import { observer } from 'mobx-react';
 import { MessageActionBar } from 'jui/pattern/MessageInput/MessageActionBar';
@@ -67,7 +68,7 @@ class MessageInputViewComponent extends Component<
           },
         },
         mention: mention.vm.mentionOptions,
-        emoji: emoji.vm.emojiOptions,
+        emoji: emoji.vm.colonEmojiOptions,
       },
     });
   }
@@ -106,12 +107,7 @@ class MessageInputViewComponent extends Component<
           onFileChanged={this._autoUploadFile}
           data-test-automation-id="message-action-bar-attachment"
         />
-        <Emoji
-          handleEmojiClick={insertEmoji}
-          sheetSize={64}
-          set="emojione"
-          ref={this._emojiRef}
-        />
+        <Emoji handleEmojiClick={insertEmoji} sheetSize={64} set="emojione" />
       </MessageActionBar>
     );
     const attachmentsNode = (
@@ -129,6 +125,7 @@ class MessageInputViewComponent extends Component<
         didDropFile={this.handleCopyPasteFile}
       >
         <Mention id={id} ref={this._mentionRef} />
+        <ColonEmoji id={id} ref={this._emojiRef} />
       </JuiMessageInput>
     );
   }

@@ -1,13 +1,12 @@
 /*
- * @Author: Devin Lin (devin.lin@ringcentral.com)
- * @Date: 2018-09-28 16:06:55
+ * @Author: ken.li
+ * @Date: 2019-06-02 16:43:00
  * Copyright © RingCentral. All rights reserved.
  */
 
 import React, { Component, RefObject, createRef } from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
-import { MentionViewProps } from './types';
+import { ColonEmojiViewProps } from './types';
 import { JuiMentionPanel } from 'jui/pattern/MessageInput/Mention/MentionPanel';
 import { JuiMentionPanelSection } from 'jui/pattern/MessageInput/Mention/MentionPanelSection';
 import { JuiMentionPanelSectionHeader } from 'jui/pattern/MessageInput/Mention/MentionPanelSectionHeader';
@@ -18,7 +17,7 @@ import {
   JuiVirtualCellWrapper,
   JuiVirtualCellProps,
 } from 'jui/pattern/VirtualList';
-import { MentionItem } from './MentionItem';
+import { EmojiItem } from './EmojiItem';
 import {
   ITEM_HEIGHT,
   MAX_ITEM_NUMBER,
@@ -27,10 +26,9 @@ import {
 } from './constants';
 
 @observer
-class MentionViewComponent extends Component<MentionViewProps & WithTranslation>
+class ColonEmojiView extends Component<ColonEmojiViewProps>
   implements IVirtualListDataSource<any, number> {
   _listRef: RefObject<JuiVirtualList<number, number>> = createRef();
-
   get(index: number) {
     const { initIndex, ids } = this.props;
     return ids[index - initIndex];
@@ -43,7 +41,6 @@ class MentionViewComponent extends Component<MentionViewProps & WithTranslation>
 
   private _rowRenderer = (cellProps: JuiVirtualCellProps<number>) => {
     const {
-      t,
       searchTerm,
       currentIndex,
       selectHandler,
@@ -54,11 +51,11 @@ class MentionViewComponent extends Component<MentionViewProps & WithTranslation>
       return (
         <JuiMentionPanelSectionHeader
           key={index}
-          title={t(
+          title={
             searchTerm && searchTerm.trim()
               ? 'message.suggestedPeople'
-              : 'message.teamMembers',
-          )}
+              : 'message.teamMembers'
+          }
         />
       );
     }
@@ -70,7 +67,7 @@ class MentionViewComponent extends Component<MentionViewProps & WithTranslation>
         };
     return (
       <JuiVirtualCellWrapper key={item} style={newStyle}>
-        <MentionItem
+        <EmojiItem
           id={item}
           index={index}
           currentIndex={currentIndex}
@@ -80,19 +77,15 @@ class MentionViewComponent extends Component<MentionViewProps & WithTranslation>
     );
   }
 
-  componentDidUpdate(prevProps: MentionViewProps) {
-    const { currentIndex } = this.props;
-    if (currentIndex !== prevProps.currentIndex) {
-      this._listRef.current && this._listRef.current.scrollToCell(currentIndex);
-    }
+  getSnapshotBeforeUpdate(prevProps: any) {
+    return true;
   }
 
   render() {
     const { open, ids, isEditMode, isOneToOneGroup } = this.props;
     const memberIdsLength = ids.length;
-
     if (open && memberIdsLength > 0) {
-      const mentionHeight =
+      const colonEmojiHeight =
         memberIdsLength >= MAX_ITEM_NUMBER
           ? MAX_ITEM_NUMBER * ITEM_HEIGHT
           : ITEM_HEIGHT * memberIdsLength;
@@ -109,10 +102,10 @@ class MentionViewComponent extends Component<MentionViewProps & WithTranslation>
                     rowRenderer={this._rowRenderer}
                     width={width}
                     height={
-                      mentionHeight + (isOneToOneGroup ? 0 : TITLE_HEIGHT)
+                      colonEmojiHeight + (isOneToOneGroup ? 0 : TITLE_HEIGHT)
                     }
                     fixedCellHeight={ITEM_HEIGHT}
-                    data-test-automation-id="mention-list"
+                    data-test-automation-id="colon-emoji-list"
                   />
                 </JuiMentionPanelSection>
               );
@@ -125,6 +118,4 @@ class MentionViewComponent extends Component<MentionViewProps & WithTranslation>
   }
 }
 
-const MentionView = withTranslation('translations')(MentionViewComponent);
-
-export { MentionView };
+export { ColonEmojiView };
