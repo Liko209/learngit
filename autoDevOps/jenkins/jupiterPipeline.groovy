@@ -174,20 +174,24 @@ class Context {
         "https://${subDomain}-jui.${DOMAIN}".toString()
     }
 
+    String getJuiHashUrl() {
+        "https://${juiLockKey}.${DOMAIN}".toString()
+    }
+
     String getRcuiUrl() {
         "https://${subDomain}-rcui.${DOMAIN}".toString()
     }
 
     String getAppHeadHashDir() {
-        "${deployBaseDir}/app${isBuildRelease? '-release' : ''}-${appHeadHash}".toString()
+        "${deployBaseDir}/${appLockKey}".toString()
     }
 
     String getJuiHeadHashDir() {
-        "${deployBaseDir}/jui-${juiHeadHash}".toString()
+        "${deployBaseDir}/${juiLockKey}".toString()
     }
 
     String getRcuiHeadHashDir() {
-        "${deployBaseDir}/rcui-${rcuiHeadHash}".toString()
+        "${deployBaseDir}/${rcuiLockKey}".toString()
     }
 
     String getStaticAnalysisLockKey() {
@@ -199,7 +203,7 @@ class Context {
     }
 
     String getAppLockKey() {
-        "app-${appHeadHash}".toString()
+        "app${isBuildRelease? '-release' : ''}-${appHeadHash}".toString()
     }
 
     String getJuiLockKey() {
@@ -405,7 +409,7 @@ class JupiterJob extends BaseJob {
     void doRun() {
         cancelOldBuildOfSameCause()
         // using a high performance node to build
-        jenkins.node(context.buildNode) {
+        jenkins.node(context.isSkipUnitTestAndStaticAnalysis? context.e2eNode : context.buildNode) {
             context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'running')
 
             String nodejsHome = jenkins.tool context.nodejsTool
@@ -589,7 +593,7 @@ class JupiterJob extends BaseJob {
     void unitTest() {
         if (isSkipUnitTest) return
 
-        jenkins.sh 'npm run test -- --coverage -w 12'
+        jenkins.sh 'npm run test -- --coverage -w 16'
         jenkins.publishHTML([
             reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: 'Coverage', reportTitles: 'Coverage',
             allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true,
@@ -683,12 +687,31 @@ class JupiterJob extends BaseJob {
             jenkins.sshagent(credentials: [context.deployCredentialId]) {
                 deployToRemote(sourceDir, context.deployUri, context.juiHeadHashDir)
             }
+            juiAutomation()
             lockKey(context.lockCredentialId, context.lockUri, context.juiLockKey)
         }
         jenkins.sshagent(credentials: [context.deployCredentialId]) {
             copyRemoteDir(context.deployUri, context.juiHeadHashDir, context.juiLinkDir)
         }
         context.buildJuiSuccess = true
+    }
+
+    void juiAutomation() {
+        jenkins.dir('packages/jui') {
+            jenkins.withEnv([
+                "JUI_URL=${context.juiHashUrl}",
+            ]) {
+                try {
+                    jenkins.sh 'npm run test || true'
+                } finally {
+                    String tarball = "jui-snapshots-diff-${context.head}.tar.gz".toString()
+                    String snapshotDir = 'src/__tests__/snapshot/__image_snapshots__/__diff_output__'
+                    jenkins.sh "[-d ${snapshotDir} && tar -xzvf ${tarball} -C ${snapshotDir}"
+                    if (jenkins.fileExists(tarball))
+                        jenkins.archiveArtifacts artifacts: tarball, fingerprint: true
+                }
+            }
+        }
     }
 
     void buildRcui() {
