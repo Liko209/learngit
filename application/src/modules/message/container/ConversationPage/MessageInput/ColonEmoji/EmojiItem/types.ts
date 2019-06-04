@@ -13,12 +13,8 @@ type EmojiItemProps = {
   currentIndex: number;
 };
 
-type EmojiItemViewProps = {
-  selectHandler: Function;
-  index: number;
-  currentIndex: number;
+type EmojiItemViewProps = EmojiItemProps & {
   person: PersonModel;
-  id?: string;
 };
 
 export { EmojiItemProps, EmojiItemViewProps };
