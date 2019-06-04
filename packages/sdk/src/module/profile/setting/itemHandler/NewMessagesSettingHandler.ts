@@ -63,7 +63,6 @@ class NewMessagesSettingHandler extends AbstractSettingEntityHandler<
     return ESettingItemState.ENABLE;
   }
   async fetchUserSettingEntity() {
-    const profile = await this._profileService.getProfile();
     const settingItem: UserSettingEntity<
       DESKTOP_MESSAGE_NOTIFICATION_OPTIONS
     > = {
@@ -75,7 +74,7 @@ class NewMessagesSettingHandler extends AbstractSettingEntityHandler<
         DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION,
         DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF,
       ],
-      value: profile[SETTING_KEYS.DESKTOP_MESSAGE],
+      value: await this._getNewMessage(),
       id: SettingEntityIds.Notification_NewMessages,
       state: await this._getItemState(),
       valueSetter: value => this.updateValue(value),
@@ -107,6 +106,15 @@ class NewMessagesSettingHandler extends AbstractSettingEntityHandler<
     ) {
       this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
     }
+  }
+
+  private async _getNewMessage() {
+    const profile = await this._profileService.getProfile();
+    let desktopMessage = profile[SETTING_KEYS.DESKTOP_MESSAGE];
+    if (desktopMessage === undefined) {
+      desktopMessage = DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION;
+    }
+    return desktopMessage;
   }
 }
 export { NewMessagesSettingHandler };

@@ -69,12 +69,11 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
   }
 
   async fetchUserSettingEntity() {
-    const profile = await this._profileService.getProfile();
     const settingItem: UserSettingEntity<NOTIFICATION_OPTIONS> = {
       weight: 1,
       valueType: 1,
       parentModelId: 1,
-      value: profile[SETTING_KEYS.DESKTOP_VOICEMAIL],
+      value: await this._getVoiceMail(),
       source: [NOTIFICATION_OPTIONS.OFF, NOTIFICATION_OPTIONS.ON],
       id: SettingEntityIds.Notification_MissCallAndNewVoiceMails,
       state: await this._getItemState(),
@@ -107,6 +106,14 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
     ) {
       this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
     }
+  }
+  private async _getVoiceMail() {
+    const profile = await this._profileService.getProfile();
+    let voiceMail = profile[SETTING_KEYS.DESKTOP_VOICEMAIL];
+    if (voiceMail === undefined) {
+      voiceMail = NOTIFICATION_OPTIONS.ON;
+    }
+    return voiceMail;
   }
 }
 export { NewVoicemailsSettingHandler };
