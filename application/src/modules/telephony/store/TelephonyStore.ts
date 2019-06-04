@@ -30,14 +30,7 @@ import { ANONYMOUS } from '../interface/constant';
 const some = require('lodash/some');
 const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
 
-import {
-  Call,
-  HOLD_STATE,
-  RECORD_STATE,
-  // CALL_DIRECTION,
-  // CALL_STATE,
-  // MUTE_STATE,
-} from 'sdk/module/telephony/entity';
+import { Call, HOLD_STATE, RECORD_STATE } from 'sdk/module/telephony/entity';
 import CallModel from '@/store/models/Call';
 
 enum CALL_TYPE {

@@ -27,7 +27,7 @@ function createStore() {
   return new TelephonyStore();
 }
 
-describe.only('Telephony store', () => {
+describe('Telephony store', () => {
   it('callWindowState should to be CALL_WINDOW_STATUS.MINIMIZED and callState should to be CALL_STATE.IDLE when instantiated TelephonyStore', () => {
     const store = createStore();
     expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.MINIMIZED);
