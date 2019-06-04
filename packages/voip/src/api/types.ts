@@ -71,9 +71,12 @@ enum RTC_STATUS_CODE {
   INVALID_STATE = 1002,
 }
 
-type RTCUserAgentInfo = {
+type RTCUserInfo = {
   endpointId?: string;
   userAgent?: string;
+  rcBrandId?: string;
+  rcAccountId?: number;
+  rcExtensionId?: number;
 };
 
 enum RTC_REPLY_MSG_PATTERN {
@@ -100,7 +103,7 @@ enum RTC_MEDIA_ACTION {
 export {
   RTC_ACCOUNT_STATE,
   RTCCallInfo,
-  RTCUserAgentInfo,
+  RTCUserInfo,
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
   RTC_STATUS_CODE,

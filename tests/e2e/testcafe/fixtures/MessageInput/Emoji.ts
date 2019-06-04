@@ -325,3 +325,130 @@ test.meta(<ITestMeta>{
   });
 
 });
+
+test.meta(<ITestMeta>{
+  priority: ['P2'], caseIds: ['JPT-2034'], keywords: ['emoji'], maintainers: ['Skye.wang']
+})('Check can keep open the emoji library', async (t) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const anotherUser = users[5];
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, users[1]]
+  }
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`Given I have a chat with ${anotherUser.extension}`, async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I enter a chat conversation', async () => {
+    await app.homePage.messageTab.directMessagesSection.expand();
+    await app.homePage.messageTab.directMessagesSection.nthConversationEntry(0).enter();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog('And I click Emoji button', async () => {
+    await conversationPage.clickEmojiButton();
+  });
+
+  const emojiLibrary = app.homePage.messageTab.emojiLibrary;
+  await h(t).withLog('Then the emoji library should be open', async () => {
+    await emojiLibrary.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I make emoji library keep open`, async () => {
+    await emojiLibrary.turnOnKeepOpen();
+  });
+
+  await h(t).withLog('And I select emoji but can not close emoji library', async () => {
+    await emojiLibrary.smileysAndPeopleSection.clickEmojiByNth(0);
+  });
+
+  await h(t).withLog('Then can not close emoji library', async () => {
+    await emojiLibrary.ensureLoaded();
+  });
+
+  await h(t).withLog('When I close the emoji library then reopen', async () => {
+    await t.click(conversationPage.header);
+    await conversationPage.clickEmojiButton();
+  });
+
+  await h(t).withLog('Then the toggle of keep open in open status', async () => {
+    await t.expect(emojiLibrary.keepOpenStatus).ok;
+  });
+
+  await h(t).withLog(`When I switch to another conversation and open emoji library`, async () => {
+    await app.homePage.messageTab.directMessagesSection.nthConversationEntry(1).enter();
+    await conversationPage.clickEmojiButton();
+  });
+
+  await h(t).withLog('Then the toggle of keep open in open status', async () => {
+    await t.expect(emojiLibrary.keepOpenStatus).ok;
+  });
+
+});
+
+test.meta(<ITestMeta>{
+  priority: ['P2'], caseIds: ['JPT-2040'], keywords: ['emoji'], maintainers: ['Skye.wang']
+})('Check can display emoji information when hovering an emoji', async (t) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const anotherUser = users[5];
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, users[1]]
+  }
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`Given I have a chat with ${anotherUser.extension}`, async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I enter a chat conversation', async () => {
+    await app.homePage.messageTab.directMessagesSection.expand();
+    await app.homePage.messageTab.directMessagesSection.nthConversationEntry(0).enter();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+    await h(t).withLog('And I click Emoji button', async () => {
+    await conversationPage.clickEmojiButton();
+  });
+
+  const emojiLibrary = app.homePage.messageTab.emojiLibrary;
+  await h(t).withLog('Then the emoji library should be open', async () => {
+    await emojiLibrary.ensureLoaded();
+    await t.expect(emojiLibrary.smileysAndPeopleSection.list.exists).ok;
+  });
+
+  await h(t).withLog(`And has keep open toggle in the foot`, async () => {
+    await t.expect(emojiLibrary.keepOpenToggle.exists).ok;
+  });
+
+  await h(t).withLog('When I hover the first emoji', async () => {
+    await emojiLibrary.smileysAndPeopleSection.hoverEmojiByNth(0);
+  });
+
+  let emojiValue: string
+  const emojiName = 'Grinning Face';
+  const emojiShortName = ':grinning:';
+  emojiValue = await emojiLibrary.smileysAndPeopleSection.nthEmojiItem(0).getValue();
+  await h(t).withLog('Then keep open toggle change to emoji information priview', async () => {
+    await emojiLibrary.previewShouldBeKey(emojiValue);
+    await t.expect(emojiLibrary.previewName.textContent).eql(emojiName);
+    await t.expect(emojiLibrary.previewShortName.textContent).eql(emojiShortName);
+  });
+
+});

@@ -12,13 +12,13 @@ import {
 } from 'sdk/module/setting';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import { NotificationEntityUpdatePayload } from 'sdk/service/notificationCenter';
-import { SETTING_KEYS } from '../constants';
-import { Profile } from '../entity';
-import { IProfileService } from '../service/IProfileService';
+
 import { AccountService } from 'sdk/module/account';
 import { ENTITY, SERVICE } from 'sdk/service';
-import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
+import { CALLING_OPTIONS, SETTING_KEYS } from 'sdk/module/profile/constants';
 import { TelephonyService } from 'sdk/module/telephony';
+import { IProfileService } from '../../service/IProfileService';
+import { Profile } from '../../entity';
 
 export class DefaultAppSettingHandler extends AbstractSettingEntityHandler<
   CALLING_OPTIONS

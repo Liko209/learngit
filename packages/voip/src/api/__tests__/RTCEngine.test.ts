@@ -31,9 +31,9 @@ describe('Engine', () => {
       ).toBeCalled();
     });
 
-    it('should use customize user agent info when upper layer call setUserAgentInfo API. [JPT-1913]', async () => {
+    it('should use customize user agent info when upper layer call setUserInfo API. [JPT-1913]', async () => {
       RTCEngine.getInstance().destroy();
-      RTCEngine.getInstance().setUserAgentInfo({
+      RTCEngine.getInstance().setUserInfo({
         endpointId: 'endpointId',
         userAgent: 'userAgent',
       });
@@ -63,7 +63,7 @@ describe('Engine', () => {
       );
     });
 
-    it("should use 'RingCentral Jupiter' as user agent when upper layer doesn't call setUserAgentInfo API. [JPT-1912]", async () => {
+    it("should use 'RingCentral Jupiter' as user agent when upper layer doesn't call setUserInfo API. [JPT-1912]", async () => {
       RTCEngine.getInstance().destroy();
       const account = RTCEngine.getInstance().createAccount(null);
       expect(account).not.toBeNull();

@@ -77,6 +77,6 @@ export {
   MOBILE_TEAM_NOTIFICATION_OPTIONS,
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   SETTING_KEYS,
-  DesktopNotificationsSettingModel,
   NEW_MESSAGE_BADGES_OPTIONS,
+  DesktopNotificationsSettingModel,
 };
