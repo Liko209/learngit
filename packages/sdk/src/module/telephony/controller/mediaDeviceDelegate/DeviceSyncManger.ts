@@ -25,6 +25,7 @@ export class DeviceSyncManger {
   private _ensureDevice = (): { source: SOURCE_TYPE; deviceId: string } => {
     const devices = this._deviceManager.getDevices();
     if (!devices.length) {
+      telephonyLogger.tags(LOG_TAG).debug('devices is empty');
       return {
         source: SOURCE_TYPE.EMPTY,
         deviceId: '',
@@ -32,6 +33,9 @@ export class DeviceSyncManger {
     }
     const storageDeviceId = this._storage.get();
     if (devices.find(device => device.deviceId === storageDeviceId)) {
+      telephonyLogger
+        .tags(LOG_TAG)
+        .debug('find available deviceId in storage:', storageDeviceId);
       return {
         source: SOURCE_TYPE.STORAGE,
         deviceId: storageDeviceId,
@@ -41,12 +45,18 @@ export class DeviceSyncManger {
       devices,
     );
     if (lastUsedDeviceId) {
+      telephonyLogger
+        .tags(LOG_TAG)
+        .debug('find available deviceId in lastUsedDevices:', lastUsedDeviceId);
       return {
         source: SOURCE_TYPE.LAST_USED,
         deviceId: lastUsedDeviceId,
       };
     }
     const defaultDeviceId = this._deviceManager.getDefaultDeviceId();
+    telephonyLogger
+      .tags(LOG_TAG)
+      .debug('use default device id:', defaultDeviceId);
     return {
       source: SOURCE_TYPE.DEFAULT,
       deviceId: defaultDeviceId,
