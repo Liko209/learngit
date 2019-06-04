@@ -105,16 +105,14 @@ class FileActionController {
       originalItem: ItemFile,
     ): Partial<Raw<ItemFile>> => {
       const { versions } = originalItem;
-      const newVersions = [...versions];
-      const file = newVersions[version];
-      if (file) {
-        newVersions[version] = {
-          ...file,
-          deactivated: true,
-        };
+      const activatedItem = versions.filter(item => {
+        return !item.deactivated;
+      });
+      if (activatedItem.length > 1) {
+        partialItem.deactivate_version = version;
+      } else {
+        partialItem.deactivated = true;
       }
-      partialItem.deactivated = newVersions.every(item => !!item.deactivated);
-      partialItem.versions = newVersions;
       return partialItem;
     };
 
