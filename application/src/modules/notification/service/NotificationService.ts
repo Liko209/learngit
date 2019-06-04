@@ -3,18 +3,22 @@
  * @Date: 2019-04-01 14:33:10
  * Copyright Â© RingCentral. All rights reserved.
  */
-import { inject } from 'framework';
 import { DeskTopNotification } from '../agent/DesktopNotification';
 import _ from 'lodash';
-import { INotificationService, NotificationOpts } from '../interface';
+import {
+  INotificationService,
+  NotificationOpts,
+  INotificationPermission,
+} from '../interface';
 import { AbstractNotification } from '../agent/AbstractNotification';
 import { SWNotification } from '../agent/SWNotification';
 import { isFirefox } from '@/common/isUserAgent';
-import { PERMISSION } from '../interface/constant';
-import { INotificationPermission, Pal } from 'sdk/pal';
+import { Pal } from 'sdk/pal';
+import { mainLogger } from 'sdk';
+const logger = mainLogger.tags('AbstractNotificationManager');
 
 class NotificationService implements INotificationService {
-  @inject(PERMISSION)
+  @INotificationPermission
   private _permission: INotificationPermission;
   private _notificationDistributors: Map<string, AbstractNotification<any>>;
   private _notificationDistributor: AbstractNotification<any>;
@@ -40,23 +44,27 @@ class NotificationService implements INotificationService {
     return str && str.length > border ? `${str.substr(0, border)}...` : str;
   }
   async show(title: string, opts: NotificationOpts) {
+    const { id, scope } = opts.data;
+    const tag = `${scope}.${id}`;
+    const customOps = { ...opts, tag, silent: true };
+    logger.info(`prepare notification for ${tag}`);
     let titleFormatted = title;
-    if (document.hasFocus()) {
-      return;
-    }
     if (isFirefox) {
-      opts.body = this.addEllipsis(opts.body, this._maximumFirefoxTxtLength);
+      customOps.body = this.addEllipsis(
+        customOps.body,
+        this._maximumFirefoxTxtLength,
+      );
       titleFormatted = this.addEllipsis(title, this._maximumFirefoxTxtLength);
     }
-    opts.body = this.addEllipsis(opts.body, this._maximumTxtLength);
+    customOps.body = this.addEllipsis(customOps.body, this._maximumTxtLength);
     titleFormatted = this.addEllipsis(title, this._maximumTxtLength);
     if (!this._permission.isGranted) {
       await this._permission.request();
       if (this._permission.isGranted) {
-        this._notificationDistributor.create(titleFormatted, opts);
+        this._notificationDistributor.create(titleFormatted, customOps);
       }
     } else {
-      this._notificationDistributor.create(titleFormatted, opts);
+      this._notificationDistributor.create(titleFormatted, customOps);
     }
   }
 
