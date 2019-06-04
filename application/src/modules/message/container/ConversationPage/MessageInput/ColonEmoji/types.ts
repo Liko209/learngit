@@ -12,7 +12,7 @@ type ColonEmojiProps = {
 };
 
 type ColonEmojiViewProps = {
-  ids: number[];
+  ids: string[];
   open: boolean;
   currentIndex: number;
   searchTerm?: string;
@@ -24,4 +24,9 @@ type ColonEmojiViewProps = {
   members?: any;
 };
 
-export { ColonEmojiProps, ColonEmojiViewProps };
+type MemberData = {
+  displayName: string;
+  id?: string;
+};
+
+export { ColonEmojiProps, ColonEmojiViewProps, MemberData };

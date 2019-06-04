@@ -1,5 +1,5 @@
-import { action, observable, computed, comparer, runInAction } from 'mobx';
-import { ColonEmojiProps, ColonEmojiViewProps } from './types';
+import { action, observable, computed, comparer } from 'mobx';
+import { ColonEmojiProps, ColonEmojiViewProps, MemberData } from './types';
 import StoreViewModel from '@/store/ViewModel';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
@@ -11,6 +11,7 @@ import { INIT_CURRENT_INDEX } from '../Mention/constants';
 import { CONVERSATION_TYPES } from '@/constants';
 import { emojiIndex, EmojiData } from 'emoji-mart';
 const DELAY = 300;
+const QUILL_QUERY = '.conversation-page>div>div>.quill>.ql-container';
 const canTriggerDefaultEventHandler = (vm: ColonEmojiViewModel) => {
   return vm.members.length && vm.open;
 };
@@ -57,7 +58,7 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
     this.reaction(
       () => ({ searchTerm: this.searchTerm, memberIds: this._memberIds }),
       async (data: { searchTerm?: string; memberIds: number[] }) => {
-        if (this._canDoFuzzySearch || this.isEditMode) {
+        if (this._canDoFuzzySearch || this.props.isEditMode) {
           await this._doFuzzySearchPersons(data);
         }
         this._canDoFuzzySearch = true;
@@ -84,23 +85,19 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
     const term = searchTerm ? searchTerm.trim() : '';
     // @ts-ignore
     const res = emojiIndex.search(term) as EmojiData[];
-    this.currentIndex = this.initIndex;
-    this.members = this._formatEmojiData(res);
     if (res) {
       this.currentIndex = this.initIndex;
       this.members = this._formatEmojiData(res);
-      runInAction(() => {});
     }
   }
 
   private _formatEmojiData(res: EmojiData[]) {
-    const emojis: any = [];
+    const emojis: MemberData[] = [];
     if (res) {
-      res.forEach(emojiData => {
+      res.forEach(({ name, id }) => {
         emojis.push({
-          displayName: emojiData.name,
-          id: emojiData.id,
-          entity: { first_name: emojiData.name },
+          id,
+          displayName: name,
         });
       });
     }
@@ -174,9 +171,7 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
     return () => {
       this.currentIndex = selectIndex;
       const { pid } = this.props;
-      const query = pid
-        ? `[data-id='${pid}'] .ql-container`
-        : '.conversation-page>div>div>.quill>.ql-container';
+      const query = pid ? `[data-id='${pid}'] .ql-container` : QUILL_QUERY;
       this._selectHandler(this).apply({
         quill: (document.querySelector(query) as any).__quill,
       });
@@ -190,8 +185,7 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
     denotationChar: string,
   ) => {
     if (searchTerm !== undefined) {
-      this.searchTerm =
-        this.searchTerm === searchTerm ? `${searchTerm} ` : searchTerm;
+      this.searchTerm = searchTerm;
     }
     if (!match) {
       this.open = false;
@@ -215,11 +209,6 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
   @computed
   get ids() {
     return this.members.map((member: EmojiData) => member.id);
-  }
-
-  @computed
-  get isEditMode() {
-    return this.props.isEditMode;
   }
 
   @computed
