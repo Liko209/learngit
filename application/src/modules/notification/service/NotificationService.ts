@@ -12,11 +12,18 @@ import {
 } from '../interface';
 import { AbstractNotification } from '../agent/AbstractNotification';
 import { SWNotification } from '../agent/SWNotification';
-import { isFirefox } from '@/common/isUserAgent';
+import { isFirefox, isElectron } from '@/common/isUserAgent';
 import { Pal } from 'sdk/pal';
 import { mainLogger } from 'sdk';
+import { computed, autorun } from 'mobx';
+import { Disposer } from 'mobx-react';
 const logger = mainLogger.tags('AbstractNotificationManager');
-
+import { UserSettingEntity } from 'sdk/module/setting';
+import { getEntity } from '@/store/utils/entities';
+import { ENTITY_NAME } from '@/store/constants';
+import SettingModel from '@/store/models/UserSetting';
+import { DesktopNotificationsSettingModel as DNSM } from 'sdk/module/profile';
+import { SETTING_ITEM__NOTIFICATION_BROWSER } from '../notificationSettingManager/constant';
 class NotificationService implements INotificationService {
   @INotificationPermission
   private _permission: INotificationPermission;
@@ -30,7 +37,25 @@ class NotificationService implements INotificationService {
     this._notificationDistributors.set('desktop', new DeskTopNotification());
   }
 
+  private disposer: Disposer;
+  private shouldShowNotification: boolean;
+
+  @computed
+  get browserSettingItem() {
+    return getEntity<UserSettingEntity, SettingModel<DNSM>>(
+      ENTITY_NAME.USER_SETTING,
+      SETTING_ITEM__NOTIFICATION_BROWSER,
+    );
+  }
+
   init() {
+    this.disposer = autorun(() => {
+      this.shouldShowNotification =
+        isElectron ||
+        (!!this.browserSettingItem.value &&
+          this.browserSettingItem.value.wantNotifications);
+    });
+
     Pal.instance.setNotificationPermission(this._permission);
     for (const _distributor of this._notificationDistributors.values()) {
       const distributor = _distributor as AbstractNotification<any>;
@@ -44,6 +69,9 @@ class NotificationService implements INotificationService {
     return str && str.length > border ? `${str.substr(0, border)}...` : str;
   }
   async show(title: string, opts: NotificationOpts) {
+    if (!this.shouldShowNotification) {
+      return;
+    }
     const { id, scope } = opts.data;
     const tag = `${scope}.${id}`;
     const customOps = { ...opts, tag, silent: true };
@@ -75,6 +103,7 @@ class NotificationService implements INotificationService {
   clear = (scope?: string) => {
     // todo clear scope
     this._notificationDistributor.clear();
+    this.disposer && this.disposer();
   }
 }
 
