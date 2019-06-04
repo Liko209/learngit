@@ -28,6 +28,8 @@ class ConfigMigrator implements IDBObserver {
   }
 
   onDBInitialized() {
+    const userConfig = this._getConfig(CONFIG_TYPE.DB) as DBConfigService;
+    userConfig.setConfigDao(daoManager.getDBKVDao());
     this._dbConfigReady = true;
     this.init();
   }
