@@ -7,7 +7,7 @@
 import PersonModel from '@/store/models/Person';
 
 type EmojiItemProps = {
-  id: number | string;
+  id?: string;
   selectHandler: Function;
   index: number;
   currentIndex: number;
