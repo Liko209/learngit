@@ -96,13 +96,13 @@ describe('DeviceNameHelper', () => {
         const allSpeakers = [speaker1, speaker2];
         expect(
           DeviceNameHelper.getDeviceName(speaker1, allSpeakers, fakeT),
-        ).toBe('setting.speaker 1');
+        ).toBe('setting.speaker #1');
         expect(
           DeviceNameHelper.getDeviceName(speaker2, allSpeakers, fakeT),
-        ).toBe('setting.speaker 2');
+        ).toBe('setting.speaker #2');
       });
 
-      it('should ignore default device when counting speakers', () => {
+      it('should ignore default device when counting devices', () => {
         const speaker1: MediaDeviceInfo = {
           deviceId: DEVICE_1,
           groupId: '0',
@@ -124,10 +124,10 @@ describe('DeviceNameHelper', () => {
         const allSpeakers = [speaker1, defaultSpeaker, speaker2];
         expect(
           DeviceNameHelper.getDeviceName(speaker1, allSpeakers, fakeT),
-        ).toBe('setting.speaker 1');
+        ).toBe('setting.speaker #1');
         expect(
           DeviceNameHelper.getDeviceName(speaker2, allSpeakers, fakeT),
-        ).toBe('setting.speaker 2');
+        ).toBe('setting.speaker #2');
       });
     });
   });

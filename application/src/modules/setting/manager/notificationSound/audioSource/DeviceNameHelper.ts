@@ -77,7 +77,7 @@ class DeviceNameHelper {
       audiooutput: t('setting.speaker'),
     };
     text = MAP[device.kind] || UNKNOWN;
-    text = `${text} ${order}`;
+    text = `${text} #${order}`;
     return text;
   }
 }
