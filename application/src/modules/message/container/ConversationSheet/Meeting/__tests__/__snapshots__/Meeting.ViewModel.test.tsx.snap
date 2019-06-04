@@ -65,6 +65,13 @@ exports[`MeetingViewModel meetingTitle should displayed Video Call in progress w
           "minHeight": 56,
         },
       },
+      "opacity": Object {
+        "p05": 0.05,
+        "p10": 0.1,
+        "p50": 0.5,
+        "p60": 0.6,
+        "p80": 0.8,
+      },
       "overrides": Object {},
       "palette": Object {
         "accent": Object {
