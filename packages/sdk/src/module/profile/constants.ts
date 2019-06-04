@@ -40,6 +40,7 @@ enum SETTING_KEYS {
   // call settings
   CALL_OPTION = 'calling_option',
   DEFAULT_NUMBER = 'default_number',
+  LAST_READ_MISSED = 'last_read_missed',
 
   // mobile settings
   MOBILE_DM = 'want_push_people',
