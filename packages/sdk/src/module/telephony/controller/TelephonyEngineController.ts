@@ -14,7 +14,6 @@ import { Api } from '../../../api';
 import { TelephonyAccountController } from './TelephonyAccountController';
 import { ITelephonyAccountDelegate } from '../service/ITelephonyAccountDelegate';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
-import { ITelephonyCallDelegate } from '../service';
 import { TelephonyLogController } from './TelephonyLogController';
 import { notificationCenter } from '../../../service';
 import { RC_INFO, SERVICE } from '../../../service/eventKey';
@@ -24,6 +23,8 @@ import { PermissionService, UserPermissionType } from '../../permission';
 import { ENTITY } from 'sdk/service/eventKey';
 import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 import { AccountService } from 'sdk/module/account';
+import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
+import { Call } from '../entity';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -62,11 +63,16 @@ class TelephonyEngineController {
   voipDaoDelegate: VoIPDaoClient;
   private _accountController: TelephonyAccountController;
   private _preCallingPermission: boolean = false;
+  private _accountDelegate: ITelephonyAccountDelegate;
+  private _entityCacheController: IEntityCacheController<Call>;
 
-  constructor(telephonyConfig: TelephonyUserConfig) {
+  constructor(
+    telephonyConfig: TelephonyUserConfig,
+    entityCacheController: IEntityCacheController<Call>,
+  ) {
     this.voipNetworkDelegate = new VoIPNetworkClient();
     this.voipDaoDelegate = new VoIPDaoClient(telephonyConfig);
-
+    this._entityCacheController = entityCacheController;
     this.subscribeNotifications();
   }
 
@@ -104,6 +110,7 @@ class TelephonyEngineController {
         true,
       );
     } else {
+      telephonyLogger.info('voip calling permission is revoked');
       this.logout();
     }
   }
@@ -132,21 +139,28 @@ class TelephonyEngineController {
     this.rtcEngine.setTelephonyDaoDelegate(this.voipDaoDelegate);
   }
 
-  createAccount(
-    accountDelegate: ITelephonyAccountDelegate,
-    callDelegate: ITelephonyCallDelegate,
-  ) {
+  setAccountDelegate(delegate: ITelephonyAccountDelegate) {
+    this._accountDelegate = delegate;
+    this._accountController &&
+      this._accountController.setAccountDelegate(delegate);
+  }
+
+  async createAccount() {
     // Engine can hold multiple accounts for multiple calls
-    this._preCallingPermission = true;
+    this._preCallingPermission = await this.getVoipCallPermission();
     this.rtcEngine.setUserAgentInfo({
       endpointId: this.getEndpointId(),
       userAgent: PlatformUtils.getRCUserAgent(),
     });
-    this._accountController = new TelephonyAccountController(
-      this.rtcEngine,
-      accountDelegate,
-      callDelegate,
-    );
+    if (this._preCallingPermission) {
+      this._accountController = new TelephonyAccountController(this.rtcEngine);
+      this._accountDelegate &&
+        this._accountController.setAccountDelegate(this._accountDelegate);
+      this._entityCacheController &&
+        this._accountController.setDependentController(
+          this._entityCacheController,
+        );
+    }
   }
 
   getAccountController() {

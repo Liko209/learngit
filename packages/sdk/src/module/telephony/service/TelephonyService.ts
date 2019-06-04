@@ -39,6 +39,7 @@ class TelephonyService extends EntityBaseService<Call> {
     if (!this._telephonyEngineController) {
       this._telephonyEngineController = new TelephonyEngineController(
         this.userConfig,
+        this.getEntityCacheController(),
       );
     }
     return this._telephonyEngineController;
@@ -48,6 +49,16 @@ class TelephonyService extends EntityBaseService<Call> {
     this.telephonyController.initEngine();
   }
 
+  protected onStarted() {
+    super.onStarted();
+    this.telephonyController.createAccount();
+  }
+
+  protected onStopped() {
+    this.telephonyController.logout();
+    super.onStopped();
+  }
+
   get userConfig() {
     if (!this._userConfig) {
       this._userConfig = new TelephonyUserConfig();
@@ -55,15 +66,15 @@ class TelephonyService extends EntityBaseService<Call> {
     return this._userConfig;
   }
 
+  setTelephonyDelegate(accountDelegate: ITelephonyAccountDelegate) {
+    this.telephonyController.setAccountDelegate(accountDelegate);
+  }
+
+  // TODO remove
   createAccount = (
     accountDelegate: ITelephonyAccountDelegate,
     callDelegate: ITelephonyCallDelegate,
-  ) => {
-    this.telephonyController.createAccount(accountDelegate, callDelegate);
-    this.telephonyController
-      .getAccountController()
-      .setDependentController(this.getEntityCacheController());
-  }
+  ) => {}
 
   getAllCallCount = () => {
     const accountController = this.telephonyController.getAccountController();
