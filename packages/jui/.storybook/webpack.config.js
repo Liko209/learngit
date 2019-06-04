@@ -82,7 +82,7 @@ const moduleRules = [
           extract: true,
           publicPath: '/static/',
           spriteFilename: 'jupiter-icon-[hash:6].svg',
-          symbolId: 'jupiter-icon-[name]',
+          symbolId: 'jupiter-[name]',
         },
       },
       {
@@ -100,19 +100,6 @@ const moduleRules = [
   },
 ];
 
-let env;
-
-if (process.env.BUILD_TARGET === 'test') {
-  console.log('test');
-  env = {
-    build_env: JSON.stringify('test'),
-  };
-} else {
-  env = {
-    build_env: JSON.stringify(''),
-  };
-}
-
 const plugins = [
   new CopyWebpackPlugin([
     { from: '../../application/public/theme/', to: 'theme' },
@@ -125,7 +112,6 @@ const plugins = [
     Quill: 'quill/dist/quill.js',
   }),
   new SpriteLoaderPlugin(),
-  new webpack.DefinePlugin(env),
 ];
 
 const resolvePlugins = [

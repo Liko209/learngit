@@ -44,6 +44,7 @@
     "@storybook/addon-knobs": "5.0.10",
     "@storybook/addon-notes": "5.0.10",
     "@storybook/addon-storysource": "5.0.10",
+    "@storybook/addon-storyshots": "5.0.10",
     "@storybook/addons": "5.0.10",
     "@storybook/react": "5.0.10",
     "@storybook/theming": "5.0.10",
