@@ -632,6 +632,11 @@
         "dailyDigest": {
           "label": "Daily Digest",
           "description": "Receive Glip daily digest emails summarizing daily tasks and team events"
+        },
+        "options": {
+          "0": "Off",
+          "900000": "Every 15 minutes",
+          "3600000": "Every hour"
         }
       }
     },

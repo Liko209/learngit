@@ -23,10 +23,12 @@ import { IMessageSettingManager } from '../interface';
 import {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   NEW_MESSAGE_BADGES_OPTIONS,
+  EMAIL_NOTIFICATION_OPTIONS,
 } from 'sdk/module/profile';
 import { NewMessageSelectSourceItem } from './NewMessageSelectSourceItem';
 import { buildTitleAndDesc } from '@/modules/setting/utils';
 import { BadgeCountSourceItem } from './NewMessageBadgeCountSelectSouceItem';
+import { EmailNotificationTimeSourceItem } from './EmailNotificationTimeSelectSourceItem';
 
 class MessageSettingManager implements IMessageSettingManager {
   @ISettingService private _settingService: ISettingService;
@@ -57,13 +59,14 @@ class MessageSettingManager implements IMessageSettingManager {
         automationId: 'notificationDirectMessages',
         weight: 100,
         type: SETTING_ITEM_TYPE.SELECT,
-
+        sourceRenderer: EmailNotificationTimeSourceItem,
         ...emailNotificationTitleAndDescBuilder('directMessages'),
-      },
+      } as SelectSettingItem<EMAIL_NOTIFICATION_OPTIONS>,
       {
         id: MESSAGE_SETTING_ITEM.NOTIFICATION_MENTIONS,
         automationId: 'notificationMentions',
         weight: 200,
+
         type: SETTING_ITEM_TYPE.TOGGLE,
         ...emailNotificationTitleAndDescBuilder('mentions'),
       },
@@ -72,8 +75,9 @@ class MessageSettingManager implements IMessageSettingManager {
         automationId: 'notificationTeams',
         type: SETTING_ITEM_TYPE.SELECT,
         weight: 300,
+        sourceRenderer: EmailNotificationTimeSourceItem,
         ...emailNotificationTitleAndDescBuilder('teams'),
-      },
+      } as SelectSettingItem<EMAIL_NOTIFICATION_OPTIONS>,
       {
         id: MESSAGE_SETTING_ITEM.NOTIFICATION_DAILY_DIGEST,
         automationId: 'notificationDailyDigest',
