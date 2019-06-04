@@ -541,7 +541,7 @@
       "InvalidNumber": "The phone number entered is invalid. Check the number and try again.",
       "ParkErrorStopRecording": "Sorry, your call recording is being saved. Try to park the call later.",
       "ParkError": "Sorry, something went wrong on our end and we weren't able to park the call. Try again later.",
-      "ParkOk": "Your call is parked at location: ",
+      "ParkOk": "Your call is parked at location",
       "ReplyCustomMessageEmpty": "Sorry, you cannot send an empty message.",
       "ReplyMessageSuccess": "Your voice message was sent successfully.",
       "ForwardBackendError": "Sorry, something went wrong on our end, we weren't able to forward the call.",
