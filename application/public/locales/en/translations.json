@@ -1,5 +1,9 @@
 {
   "common": {
+    "button": {
+      "ariaToggleOn": "On, click to turn off",
+      "ariaToggleOff": "Off, click to turn on"
+    },
     "dialog": {
       "OK": "OK",
       "cancel": "Cancel",
@@ -417,6 +421,7 @@
       "addToFavorites": "Add to Favorites",
       "removeFromFavorites": "Remove from Favorites",
       "profile": "Profile",
+      "teamDetails": "Team details",
       "close": "Close",
       "markAsRead": "Mark as read",
       "markAsUnread": "Mark as unread",
@@ -424,7 +429,8 @@
       "convertToTeamNamePrefix": "Team: ",
       "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content.",
       "noMatchesFound": "No matches found",
-      "archivedSuffix": " - Archived"
+      "archivedSuffix": " - Archived",
+      "adminActions": "Admin actions"
     },
     "company": {},
     "prompt": {
@@ -575,6 +581,10 @@
   },
   "integration": {},
   "setting": {
+    "errorText": {
+      "server": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later.",
+      "network": "We weren't able to save your settings. Check your network connection, then try again."
+    },
     "Settings": "Settings",
     "teamSettings": "Settings",
     "general": "General",
@@ -651,13 +661,11 @@
         "title": "General",
         "callerID": {
           "label": "Caller ID",
-          "description": "Choose your default Caller ID for making RingCentral phone calls",
-          "errorText": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later."
+          "description": "Choose your default Caller ID for making RingCentral phone calls"
         },
         "extensions": {
           "label": "Extension settings",
-          "description": "Customize your RingCentral extension settings (call routing, voicemail greetings and more)",
-          "errorText": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later"
+          "description": "Customize your RingCentral extension settings (call routing, voicemail greetings and more)"
         },
         "regionSetting": {
           "label": "Region",
@@ -684,6 +692,7 @@
   },
   "notification": {
     "mentioned": "You were mentioned",
+    "notificationEnabled": "Notifications are now enabled.",
     "notificationBlockedDialog": {
       "title": "Notifications not allowed",
       "content": "You currently have desktop notifications for RingCentral turned off. Update your browser settings to allow desktop notifications.",

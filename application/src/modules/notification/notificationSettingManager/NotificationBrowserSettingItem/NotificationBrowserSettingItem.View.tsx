@@ -11,9 +11,15 @@ import { JuiSettingSectionItem } from 'jui/pattern/SettingSectionItem';
 import { JuiToggleButton } from 'jui/components/Buttons';
 import { JuiModal } from 'jui/components/Dialog';
 import { PERMISSION } from '@/modules/notification/Permission';
-import { INotificationPermission } from '@/modules/notification/interface';
+import {
+  INotificationPermission,
+  INotificationService,
+  NOTIFICATION_PRIORITY,
+} from '@/modules/notification/interface';
 import { jupiter } from 'framework';
+import i18nT from '@/utils/i18nT';
 
+const NOTIFICATION_BROWSER = 'NotificationBrowserSettingItem';
 type Props = WithTranslation & NotificationBrowserSettingItemViewProps;
 type State = {
   dialogOpen: boolean;
@@ -24,8 +30,11 @@ class NotificationBrowserSettingItemViewComponent extends Component<
   Props,
   State
 > {
-  get _permission(): INotificationPermission {
+  private get _permission(): INotificationPermission {
     return jupiter.get(INotificationPermission);
+  }
+  private get _notificationService(): INotificationService {
+    return jupiter.get(INotificationService);
   }
 
   constructor(props: Props) {
@@ -34,50 +43,6 @@ class NotificationBrowserSettingItemViewComponent extends Component<
       dialogOpen: false,
       isPending: false,
     };
-  }
-
-  handleToggleChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    checked: boolean,
-  ) => {
-    const browserPermission = this.props.settingItemEntity.value!
-      .browserPermission;
-    if (browserPermission !== PERMISSION.DEFAULT) {
-      this.props.setToggleState(checked);
-    }
-    if (checked) {
-      switch (browserPermission) {
-        case PERMISSION.DEFAULT:
-          this.setState({
-            isPending: true,
-          });
-          const permission = await this._permission.request();
-          this.setState({
-            isPending: false,
-          });
-          if (permission === PERMISSION.DENIED) {
-            this.setState({
-              dialogOpen: true,
-            });
-          }
-          if (permission === PERMISSION.GRANTED) {
-            this.props.setToggleState(checked);
-            // alessia[todo]: Trigger Notification: "Notifications are now enabled."
-          }
-          break;
-        case PERMISSION.GRANTED:
-          // alessia[todo]: Trigger Notification: "Notifications are now enabled."
-          break;
-        case PERMISSION.DENIED:
-          this.setState({
-            dialogOpen: true,
-          });
-          break;
-
-        default:
-          break;
-      }
-    }
   }
 
   private handleDialogClose = () => {
@@ -104,6 +69,67 @@ class NotificationBrowserSettingItemViewComponent extends Component<
     );
   }
 
+  private _showEnabledNotification = async () => {
+    const title = await i18nT('notification.notificationEnabled');
+    this._notificationService.show(title, {
+      data: {
+        id: NOTIFICATION_BROWSER,
+        scope: NOTIFICATION_BROWSER,
+        priority: NOTIFICATION_PRIORITY.INFORMATION,
+      },
+    });
+  }
+
+  private _requestPermission = async () => {
+    this.setState({
+      isPending: true,
+    });
+    const permission = await this._permission.request();
+    setTimeout(() => {
+      this.setState({
+        isPending: false,
+      });
+    },         0);
+    return permission;
+  }
+
+  handleToggleChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
+  ) => {
+    const browserPermission = this.props.settingItemEntity.value!
+      .browserPermission;
+    if (browserPermission !== PERMISSION.DEFAULT) {
+      this.props.setToggleState(checked);
+    }
+    if (checked) {
+      switch (browserPermission) {
+        case PERMISSION.DEFAULT:
+          const permission = await this._requestPermission();
+          if (permission === PERMISSION.DENIED) {
+            this.setState({
+              dialogOpen: true,
+            });
+          }
+          if (permission === PERMISSION.GRANTED) {
+            this.props.setToggleState(checked);
+            this._showEnabledNotification();
+          }
+          break;
+        case PERMISSION.GRANTED:
+          this._showEnabledNotification();
+          break;
+        case PERMISSION.DENIED:
+          this.setState({
+            dialogOpen: true,
+          });
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
   render() {
     const {
       t,
@@ -117,6 +143,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
       'setting.notificationAndSounds.desktopNotifications.notificationsForBrowser.description',
     );
 
+    const checked = this.state.isPending || desktopNotifications || false;
     return (
       <JuiSettingSectionItem
         id="notificationBrowserSetting"
@@ -126,8 +153,13 @@ class NotificationBrowserSettingItemViewComponent extends Component<
       >
         <JuiToggleButton
           data-test-automation-id="settingItemToggleButton-notificationBrowser"
-          checked={this.state.isPending || desktopNotifications || false}
+          checked={checked}
           onChange={this.handleToggleChange}
+          aria-label={
+            checked
+              ? t('common.button.ariaToggleOn')
+              : t('common.button.ariaToggleOff')
+          }
         />
         {this._renderDialog()}
       </JuiSettingSectionItem>
