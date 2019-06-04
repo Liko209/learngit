@@ -25,6 +25,7 @@ type Profile = ExtendedBaseModel & {
   // call settings
   [SETTING_KEYS.CALL_OPTION]?: CALLING_OPTIONS;
   [SETTING_KEYS.DEFAULT_NUMBER]?: number;
+  [SETTING_KEYS.LAST_READ_MISSED]?: number;
 
   // mobile settings
   [SETTING_KEYS.MOBILE_DM]?: NOTIFICATION_OPTIONS;
