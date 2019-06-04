@@ -140,7 +140,8 @@
     "messageTypeNameSMS": "text",
     "jumpToConversation": "Jump to conversation",
     "emoji": {
-      "emojiDefaultTitle": "Pick your emoji"
+      "emojiDefaultTitle": "Pick your emoji",
+      "toggleButtonLabel": "Keep open"
     },
     "sharedItems": "shared items",
     "initialPost": {
@@ -417,6 +418,7 @@
       "addToFavorites": "Add to Favorites",
       "removeFromFavorites": "Remove from Favorites",
       "profile": "Profile",
+      "teamDetails": "Team details",
       "close": "Close",
       "markAsRead": "Mark as read",
       "markAsUnread": "Mark as unread",
@@ -424,7 +426,8 @@
       "convertToTeamNamePrefix": "Team: ",
       "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content.",
       "noMatchesFound": "No matches found",
-      "archivedSuffix": " - Archived"
+      "archivedSuffix": " - Archived",
+      "adminActions": "Admin actions"
     },
     "company": {},
     "prompt": {

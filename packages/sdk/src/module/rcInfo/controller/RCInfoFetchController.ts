@@ -236,6 +236,11 @@ class RCInfoFetchController {
     return (await this.rcInfoUserConfig.getExtensionInfo()) || undefined;
   }
 
+  async getRCExtensionId(): Promise<number | undefined> {
+    const extensionInfo = await this.getRCExtensionInfo();
+    return extensionInfo && extensionInfo.id;
+  }
+
   async getRCRolePermissions(): Promise<RCRolePermissions | undefined> {
     return (await this.rcInfoUserConfig.getRolePermissions()) || undefined;
   }
