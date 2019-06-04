@@ -60,7 +60,7 @@ export class VolumeSettingHandler extends AbstractSettingEntityHandler<number> {
       this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
   }
 
-  private _onVolumeUpdate = (value: number) => {
+  private _onVolumeUpdate = (type: number, value: number) => {
     const volume = Number(value);
     if (
       this.userSettingEntityCache &&
@@ -81,7 +81,7 @@ export class VolumeSettingHandler extends AbstractSettingEntityHandler<number> {
   }
 
   async updateValue(value: number) {
-    await TelephonyGlobalConfig.setCurrentVolume(String(value));
+    TelephonyGlobalConfig.setCurrentVolume(String(value));
   }
 
   async fetchUserSettingEntity() {

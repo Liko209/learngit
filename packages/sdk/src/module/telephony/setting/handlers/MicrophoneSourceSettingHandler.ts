@@ -66,10 +66,10 @@ export class MicrophoneSourceSettingHandler extends AbstractSettingEntityHandler
       this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
   }
 
-  private _onSelectedDeviceUpdate = (value: MediaDeviceInfo) => {
+  private _onSelectedDeviceUpdate = (type: number, value: string) => {
     if (
       this.userSettingEntityCache &&
-      this.getCacheValue('deviceId') !== value.deviceId
+      this.getCacheValue('deviceId') !== value
     ) {
       this.getUserSettingEntity().then(entity =>
         this.notifyUserSettingEntityUpdate(entity),
