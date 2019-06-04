@@ -3,7 +3,7 @@
  * @Date: 2019-05-28 14:56:18
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { debounce } from 'lodash';
 import React, { Component, ChangeEvent } from 'react';
 import { observer } from 'mobx-react';
 import { RuiSlider } from 'rcui/components/Forms/Slider';
@@ -23,12 +23,13 @@ class SliderSettingItemViewComponent extends Component<Props> {
     network: 'setting.phone.general.callerID.errorText',
     server: 'setting.phone.general.callerID.errorText',
   })
-  private _handleChange = async (
-    event: ChangeEvent<HTMLInputElement>,
-    value: number,
-  ) => {
-    await this.props.saveSetting(value);
-  }
+  private _handleChange = debounce(
+    async (event: ChangeEvent<HTMLInputElement>, value: number) => {
+      await this.props.saveSetting(value);
+    },
+    10,
+    { maxWait: 1000 / 60 }, // Ensure 60FPS
+  );
 
   render() {
     const { t, id, disabled, settingItem } = this.props;
