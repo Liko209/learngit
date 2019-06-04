@@ -10,6 +10,7 @@ import { ENTITY_NAME } from '../constants';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import IUsedCache from './IUsedCache';
 import { EntityBaseService } from 'sdk/framework/service';
+import { RELOAD_TARGET } from 'sdk/service';
 
 const modelProvider = new ModelProvider();
 const { EVENT_TYPES } = service;
@@ -60,11 +61,19 @@ export default class MultiEntityMapStore<
     const existKeys: IdType[] = this._getDataKeys();
     switch (payload.type) {
       case EVENT_TYPES.RESET:
-        this.reset();
+        {
+          this.reset();
+        }
         break;
+
       case EVENT_TYPES.RELOAD:
-        this.reload();
+        {
+          if (payload.target === RELOAD_TARGET.STORE) {
+            this.reload();
+          }
+        }
         break;
+
       case EVENT_TYPES.DELETE:
         {
           const matchedKeys = _.intersection(payload.body.ids, existKeys);
