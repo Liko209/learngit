@@ -68,12 +68,12 @@ describe('SearchService', () => {
       ).toBeCalled();
     });
 
-    it('getRecentSearchRecords', () => {
+    it('getRecentSearchRecords', async () => {
       const models = [{ id: 11 }];
       recentSearchRecordController.getRecentSearchRecords = jest
         .fn()
-        .mockReturnValue(models);
-      const res = searchService.getRecentSearchRecords();
+        .mockResolvedValue(models);
+      const res = await searchService.getRecentSearchRecords();
       expect(recentSearchRecordController.getRecentSearchRecords).toBeCalled();
       expect(res).toEqual(models);
     });
