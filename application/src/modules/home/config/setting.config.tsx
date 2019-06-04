@@ -8,7 +8,6 @@ import i18nT from '@/utils/i18nT';
 import { SubModuleConfig } from '../types';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { lazyComponent } from '@/modules/common/util/lazyComponent';
-import * as setting from '@/modules/setting/module.config';
 
 const config: SubModuleConfig = {
   route: {
@@ -26,7 +25,6 @@ const config: SubModuleConfig = {
     title: await i18nT('setting.Settings'),
     placement: 'bottom',
   }),
-  moduleConfig: setting.config,
   // loader: () =>
   //   import(/*
   // webpackChunkName: "m.setting" */ '@/modules/setting'),

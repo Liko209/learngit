@@ -3,7 +3,6 @@
  * @Date: 2019-05-28 10:30:06
  * Copyright © RingCentral. All rights reserved.
  */
-// alessia-todo: 合并后测试，删除注释掉的内容即可
 import { AbstractViewModel } from '@/base';
 import { computed, observable, action } from 'mobx';
 import { isElectron } from '@/common/isUserAgent';
@@ -13,15 +12,7 @@ import { ENTITY_NAME } from '@/store/constants';
 import SettingModel from '@/store/models/UserSetting';
 import { PERMISSION } from '@/modules/notification/Permission';
 import { DesktopNotificationsSettingModel as DNSM } from 'sdk/module/profile';
-import { SETTING_ITEM__NOTIFICATION_BROWSER } from '@/modules/notification/notificationSettingManager/NotificationBrowserSettingItem/constants';
-
-// const id = 1;
-// (<any>window).test = observable({
-//   value: {
-//     browserPermission: 'denied',
-//     wantNotifications: true,
-//   },
-// }) as any;
+import { SETTING_ITEM__NOTIFICATION_BROWSER } from '@/modules/notification/notificationSettingManager/constant';
 
 class NotificationEnableBannerViewModel extends AbstractViewModel {
   @observable
@@ -35,33 +26,27 @@ class NotificationEnableBannerViewModel extends AbstractViewModel {
     );
   }
 
-  // @computed
-  // get notificationSettingItem() {
-  //   return (<any>window).test;
-  //   // return getEntity<UserSettingEntity, SettingModel>(
-  //   //   ENTITY_NAME.USER_SETTING,
-  //   //   id,
-  //   // );
-  // }
-
   @computed
   get isShow() {
-    const {
-      value: { browserPermission, wantNotifications },
-    } = this.notificationSettingItem;
-    return (
-      !this.isClosed &&
-      !isElectron &&
-      wantNotifications &&
-      browserPermission !== PERMISSION.GRANTED
-    );
+    if (this.notificationSettingItem.value) {
+      const {
+        value: { browserPermission, wantNotifications },
+      } = this.notificationSettingItem;
+      return (
+        !this.isClosed &&
+        !isElectron &&
+        wantNotifications &&
+        browserPermission !== PERMISSION.GRANTED
+      );
+    }
+    return false;
   }
 
   @computed
   get isBlocked() {
-    const {
-      value: { browserPermission },
-    } = this.notificationSettingItem;
+    const browserPermission =
+      this.notificationSettingItem.value &&
+      this.notificationSettingItem.value.browserPermission;
     return browserPermission === PERMISSION.DENIED;
   }
 

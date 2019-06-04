@@ -10,18 +10,10 @@ import { ThemeProvider } from 'styled-components';
 import { theme } from '@/__tests__/utils';
 import { Jupiter, container } from 'framework';
 import { config } from '@/modules/notification/module.config';
-// import { INotificationPermission } from '@/modules/notification/interface/constant';
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(config);
 
-// 下面两个应该不需要引入
-// const permission: INotificationPermission = jupiter.get(
-//   INotificationPermission,
-// );
-// permission.request = jest.fn();
-
-// alessia-todo：其他文件更新后再跑一遍 ut，确保 pass，然后把多余的注释删掉
 const baseProps = {
   t: (key: string) => key,
   isBlocked: false,

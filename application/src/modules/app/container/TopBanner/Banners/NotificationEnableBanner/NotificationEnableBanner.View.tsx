@@ -3,7 +3,6 @@
  * @Date: 2019-05-28 10:29:29
  * Copyright © RingCentral. All rights reserved.
  */
-// alessia-todo: 合并有 sdk 最新代码的分支（我自己的分支）后，自测一下
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import {
