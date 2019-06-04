@@ -20,10 +20,10 @@ class GroupItemViewModel extends SearchViewModel<Props>
 
     this.reaction(
       () => this.group,
-      (group: GroupModel) => {
+      async (group: GroupModel) => {
         this.props.didChange();
         if (group.isArchived || group.deactivated) {
-          this._getSearchService().removeRecentSearchRecords(
+          await this._getSearchService().removeRecentSearchRecords(
             new Set([group.id]),
           );
         }

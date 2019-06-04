@@ -20,10 +20,10 @@ class PersonItemViewModel extends SearchViewModel<Props>
 
     this.reaction(
       () => this.person,
-      () => (person: PersonModel) => {
+      async (person: PersonModel) => {
         this.props.didChange();
         if (person.deactivated) {
-          this._getSearchService().removeRecentSearchRecords(
+          await this._getSearchService().removeRecentSearchRecords(
             new Set([person.id]),
           );
         }
