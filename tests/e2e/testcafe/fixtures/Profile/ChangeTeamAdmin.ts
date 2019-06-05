@@ -45,9 +45,12 @@ test(formalName('Only admin has the ability to change team admins', ['P1', 'JPT-
     await app.homePage.ensureLoaded();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When admin u1 open team profile via team "More Menu"`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   // Case1: member 'u2' changed to admin
@@ -124,7 +127,6 @@ test(formalName('Only admin has the ability to change team admins', ['P1', 'JPT-
   await h(t).withLog(`Then won't "more" button`, async () => {
     await t.expect(profileDialog.memberEntryByName(u1Name).moreButton.exists).notOk();
   }, true);
-
 });
 
 test(formalName('The admin/non-admin roles should sync dynamically when the role changed', ['P1', 'JPT-1104', 'ChangeTeamAdmin', 'Mia.Cai']), async t => {
@@ -168,9 +170,12 @@ test(formalName('The admin/non-admin roles should sync dynamically when the role
     await app.homePage.ensureLoaded();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When u2 open team profile via team "More Menu"`, async () => {
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`When I open the team setting dialog`, async () => {
@@ -197,8 +202,9 @@ test(formalName('The admin/non-admin roles should sync dynamically when the role
   });
 
   await h(t).withLog(`And u2 open team profile via team "More Menu"`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`Then won't show label in member u2 row`, async () => {
@@ -212,8 +218,9 @@ test(formalName('The admin/non-admin roles should sync dynamically when the role
   });
 
   await h(t).withLog(`When u3 open team profile via team "More Menu"`, async () => {
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.memberEntryByName(u3Name).showMemberLabel();
   });
 
@@ -265,9 +272,12 @@ test(formalName(`The whole "More" menu will be hidden in non-admin side`, ['P1',
     await app.homePage.ensureLoaded();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When I open team profile via team "More Menu"`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`And hover on the admin himself/herself row`, async () => {
@@ -285,7 +295,6 @@ test(formalName(`The whole "More" menu will be hidden in non-admin side`, ['P1',
   await h(t).withLog(`Then the whole "More" menu will be hidden`, async () => {
     await t.expect(profileDialog.memberEntryByName(u2Name).moreButton.exists).notOk();
   });
-
 });
 
 test(formalName(`Can't revoke himself/herself when login user is the only admin in one team`, ['P2', 'JPT-1099', 'ChangeTeamAdmin', 'Mia.Cai']), async t => {
@@ -312,9 +321,12 @@ test(formalName(`Can't revoke himself/herself when login user is the only admin 
     await app.homePage.ensureLoaded();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When admin open team profile via team "More Menu"`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`And hover on the admin himself/herself row`, async () => {
@@ -324,7 +336,6 @@ test(formalName(`Can't revoke himself/herself when login user is the only admin 
   await h(t).withLog(`Then the whole "More" menu will be hidden`, async () => {
     await t.expect(profileDialog.memberEntryByName(u1Name).moreButton.exists).notOk();
   });
-
 });
 
 test(formalName(`The whole "More" menu will be hidden when this admin is the only one member in the team`, ['P2', 'JPT-1096', 'ChangeTeamAdmin', 'Mia.Cai']), async t => {
@@ -351,9 +362,12 @@ test(formalName(`The whole "More" menu will be hidden when this admin is the onl
     await app.homePage.ensureLoaded();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When admin open team profile via team "More Menu"`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`And hover on the admin himself/herself row`, async () => {
@@ -397,9 +411,12 @@ test(formalName(`Make all team members as admin of this team when no admin in th
     await app.homePage.ensureLoaded();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When I open team profile via team "More Menu"`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`And hover on the member 'u2' row`, async () => {
@@ -433,5 +450,4 @@ test(formalName(`Make all team members as admin of this team when no admin in th
   await h(t).withLog(`Then won't show "more" button`, async () => {
     await t.expect(profileDialog.memberEntryByName(u3Name).moreButton.exists).notOk();
   }, true);
-
-});  
+});
