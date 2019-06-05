@@ -268,18 +268,16 @@ describe('FileActionController', () => {
                 {
                   id: normalId,
                   deactivated: false,
-                  versions: [{ deactivated: false }, { deactivated: true }],
+                  versions: [{}, { deactivated: true }],
                 },
               ),
             ).toEqual({
               id: normalId,
               deactivated: true,
-              versions: [{ deactivated: true }, { deactivated: true }],
             });
             doUpdateFunc({
               id: normalId,
               deactivated: true,
-              versions: [{ deactivated: true }, { deactivated: true }],
             });
           },
         );
@@ -288,7 +286,6 @@ describe('FileActionController', () => {
       expect(requestController.put).toBeCalledWith({
         id: normalId,
         deactivated: true,
-        versions: [{ deactivated: true }, { deactivated: true }],
       });
     });
     it('should update deactivated of this version when other versions is not deleted', async () => {
@@ -307,19 +304,16 @@ describe('FileActionController', () => {
                 { id: normalId },
                 {
                   id: normalId,
-                  deactivated: false,
                   versions: [{ deactivated: false }, { deactivated: false }],
                 },
               ),
             ).toEqual({
               id: normalId,
-              deactivated: false,
-              versions: [{ deactivated: false }, { deactivated: true }],
+              deactivate_version: 1,
             });
             doUpdateFunc({
               id: normalId,
-              deactivated: false,
-              versions: [{ deactivated: false }, { deactivated: true }],
+              deactivate_version: 1,
             });
           },
         );
@@ -327,8 +321,7 @@ describe('FileActionController', () => {
       expect(partialModifyController.updatePartially).toBeCalledTimes(1);
       expect(requestController.put).toBeCalledWith({
         id: normalId,
-        deactivated: false,
-        versions: [{ deactivated: false }, { deactivated: true }],
+        deactivate_version: 1,
       });
     });
   });
