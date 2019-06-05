@@ -99,7 +99,7 @@ const ViewerDocument = () => {
           pages={getPages()}
           pageIndex={pageIndex}
           scale={scale}
-          onScaleChange={scale => scale && setCurrentScale(scale)}
+          onScaleChange={scale => scale && setCurrentScale(Number(scale))}
           onCurrentPageIdxChanged={idx => setCurrentPageIdx(idx)}
         />
       </div>
