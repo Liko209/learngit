@@ -519,7 +519,7 @@ export class GroupFetchDataController {
     const recentSearchedTeams = recentFirst
       ? this._getRecentSearchGroups([RecentSearchTypes.TEAM])
       : undefined;
-    const teamIdsIncludeMe = this.groupService.getTeamIdsIncludeMe();
+    const teamIdsIncludeMe = this._getTeamIdsIncludeMe();
     const currentUserId = this._currentUserId;
     return (team: Group, terms: Terms) => {
       let isMatched: boolean = false;
@@ -738,7 +738,13 @@ export class GroupFetchDataController {
   }
 
   private _isPublicTeamOrIncludeUser(team: Group, userId: number) {
-    return team.privacy === 'protected' || team.members.includes(userId);
+    return (
+      team.privacy === 'protected' || this._getTeamIdsIncludeMe().has(team.id)
+    );
+  }
+
+  private _getTeamIdsIncludeMe() {
+    return this.groupService.getTeamIdsIncludeMe();
   }
 
   private async _queryGroupByMemberList(ids: number[]): Promise<Group | null> {
