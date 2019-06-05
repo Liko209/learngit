@@ -31,22 +31,29 @@ import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
+import { ZipItemLevel } from 'sdk/src/service/uploadLogControl/types';
+
+const saveDebugLog = (level: ZipItemLevel = ZipItemLevel.NORMAL) => {
+  container
+    .get(FeedbackService)
+    .zipRecentLogs(level)
+    .then(zipResult => {
+      if (!zipResult) {
+        mainLogger.debug('Zip log fail.');
+        return;
+      }
+      saveBlob(zipResult.zipName, zipResult.zipBlob);
+    });
+};
 
 const DEBUG_COMMAND_MAP = {
   '/debug': () => UploadRecentLogs.show(),
+  '/debug-all': () => UploadRecentLogs.show({ level: ZipItemLevel.DEBUG_ALL }),
   '/debug-save': () => {
-    // todo use schema
-    // feedback://..., object;
-    container
-      .get(FeedbackService)
-      .zipRecentLogs()
-      .then(zipResult => {
-        if (!zipResult) {
-          mainLogger.debug('Zip log fail.');
-          return;
-        }
-        saveBlob(zipResult.zipName, zipResult.zipBlob);
-      });
+    saveDebugLog(ZipItemLevel.NORMAL);
+  },
+  '/debug-save-all': () => {
+    saveDebugLog(ZipItemLevel.DEBUG_ALL);
   },
 };
 

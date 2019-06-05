@@ -9,6 +9,7 @@ import {
   LocalZip,
   UploadedZip,
   IZipProducer,
+  ZipItemLevel,
 } from './types';
 import { LogEntity, SessionManager } from 'foundation';
 import { ZipConsumer } from './ZipConsumer';
@@ -17,6 +18,7 @@ import { createWorker } from './utils';
 const DEFAULT_LIMIT = 5;
 
 export class ZipLogZipItemProvider implements IZipItemProvider, IZipProducer {
+  level: ZipItemLevel = ZipItemLevel.NORMAL;
   zips: LocalZip[] = [];
   index: number = 0;
   uploaded: UploadedZip[] = [];
