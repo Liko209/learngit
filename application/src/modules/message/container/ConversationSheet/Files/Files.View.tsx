@@ -103,8 +103,7 @@ class FilesView extends React.Component<FilesViewProps> {
   }
 
   _handleFileClick = (item: FileItemModel) => () => {
-    const { postId } = this.props;
-    this._viewerService.showFileViewer(item, postId);
+    this._viewerService.showFileViewer(item);
   }
 
   private _handleImageDidLoad = (id: number, callback: Function) => {

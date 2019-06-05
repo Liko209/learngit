@@ -6,6 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
+import { container } from 'framework';
 import {
   JuiListItemText,
   JuiListItemWithHover,
@@ -19,9 +20,16 @@ import { Download } from '@/containers/common/Download';
 import { SecondaryText } from '../common/SecondaryText.View';
 import { JuiButtonBar } from 'jui/components/Buttons';
 import { FileActionMenu } from '@/containers/common/fileAction';
+import { IViewerService, VIEWER_SERVICE } from '@/modules/viewer/interface';
+import FileItemModel from '@/store/models/FileItem';
 
 @observer
 class FileItemView extends Component<FileItemViewProps> {
+  _viewerService: IViewerService = container.get(VIEWER_SERVICE);
+
+  private _handleFileClick = (item: FileItemModel) => () => {
+    this._viewerService.showFileViewer(item);
+  }
   private _renderItem = (hover: boolean) => {
     const { file, personName, modifiedTime, downloadUrl, id } = this.props;
     const fileInfo = file || {};
@@ -30,7 +38,11 @@ class FileItemView extends Component<FileItemViewProps> {
     return (
       <>
         <JuiListItemIcon>
-          <Thumbnail id={id} type="file" />
+          <Thumbnail
+            id={id}
+            type="file"
+            onClick={this._handleFileClick(file)}
+          />
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={name} />}

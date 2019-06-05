@@ -43,8 +43,9 @@ type svgSymbol = {
   viewBox: string;
 };
 
-const StyledSpan = styled('span')`
+const StyledSpan = styled('span')<React.HTMLAttributes<HTMLElement>>`
   display: inline-flex;
+  cursor: ${({ onClick }) => (onClick ? 'pointer' : 'default')};
 `;
 
 const StyledSvg = styled('svg')<{ iconColor?: IconColor; size?: IconSize }>`

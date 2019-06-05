@@ -7,7 +7,7 @@ import FileItemModel from '@/store/models/FileItem';
  */
 
 interface IViewerService {
-  showFileViewer: (item: FileItemModel, postId: number) => void;
+  showFileViewer: (item: FileItemModel) => void;
 }
 
 export { IViewerService };

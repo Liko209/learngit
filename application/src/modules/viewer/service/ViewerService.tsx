@@ -12,9 +12,9 @@ import { ViewerView } from '../container/ViewerView';
 import FileItemModel from '@/store/models/FileItem';
 
 class ViewerService implements IViewerService {
-  showFileViewer = (item: FileItemModel, postId: number) => {
+  showFileViewer = (item: FileItemModel) => {
     const { dismiss } = Dialog.simple(
-      <ViewerView dataModule={new FileViewerViewModel(item, postId)} />,
+      <ViewerView dataModule={new FileViewerViewModel(item, 0)} />,
       {
         fullScreen: true,
         hideBackdrop: true,

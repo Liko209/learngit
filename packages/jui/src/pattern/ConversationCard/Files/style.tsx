@@ -94,6 +94,7 @@ const FileCard = styled(JuiCard)`
 
 const FileCardMedia = styled(JuiCardMedia)`
   height: ${height(50)};
+  cursor: ${({ onClick }) => (onClick ? 'pointer' : 'default')};
   background-color: ${palette('accent', 'ash')};
 `;
 
