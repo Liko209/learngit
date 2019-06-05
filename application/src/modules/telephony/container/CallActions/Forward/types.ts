@@ -3,7 +3,6 @@
  * @Date: 2019-05-29 09:31:47
  * Copyright © RingCentral. All rights reserved.
  */
-
 type Props = {};
 
 type ForwardCall = {
@@ -12,9 +11,10 @@ type ForwardCall = {
 };
 
 type ViewProps = {
-  // forwardCalls: ForwardCall[];
-  getForwardCalls: () => Promise<ForwardCall[]>;
+  forwardCalls: ForwardCall[];
+  // getForwardCalls: () => Promise<ForwardCall[]>;
   forward: (phoneNumber: string) => void;
+  shouldDisableForwardButton: boolean;
 };
 
 export { Props, ViewProps, ForwardCall };

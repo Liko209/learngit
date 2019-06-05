@@ -3,10 +3,10 @@
  * @Date: 2019-05-29 09:31:47
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { TelephonyService } from '../../../service';
-import { Props, ViewProps } from './types';
+import { Props, ViewProps, ForwardCall } from './types';
 import { container } from 'framework';
 // import { TelephonyStore } from '../../../store';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
@@ -23,6 +23,15 @@ class ForwardViewModel extends StoreViewModel<Props> implements ViewProps {
   private _telephonyService: TelephonyService = container.get(
     TELEPHONY_SERVICE,
   );
+  @observable
+  forwardCalls: ForwardCall[];
+  @observable
+  shouldDisableForwardButton: boolean;
+  constructor() {
+    super();
+    this._getForwardCalls();
+    this._getForwardPermission();
+  }
   // private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
   // directForward = () => {
   //   this._telephonyStore.directForward();
@@ -36,15 +45,15 @@ class ForwardViewModel extends StoreViewModel<Props> implements ViewProps {
       dismissible: false,
     });
   }
-  getForwardCalls = async () => {
+
+  private _getForwardCalls = async () => {
     const list = await this._telephonyService.getForwardingNumberList();
-    return (
+    this.forwardCalls =
       list &&
       list.map(forwardCall => ({
         phoneNumber: forwardCall.phoneNumber,
         label: forwardCall.label,
-      }))
-    );
+      }));
   }
   forward = async (phoneNumber: string) => {
     try {
@@ -61,6 +70,10 @@ class ForwardViewModel extends StoreViewModel<Props> implements ViewProps {
       generalErrorHandler(error);
     }
     return true;
+  }
+
+  private _getForwardPermission = async () => {
+    this.shouldDisableForwardButton = !(await this._telephonyService.getForwardPermission());
   }
 }
 
