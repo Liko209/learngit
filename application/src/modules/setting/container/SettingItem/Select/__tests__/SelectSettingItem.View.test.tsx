@@ -25,6 +25,10 @@ function setup(customProps: any = {}) {
       source: [{ id: 'A' }, { id: 'B' }, { id: 'C' }],
     } as SettingModel,
     saveSetting: jest.fn().mockName('saveSetting()'),
+    extractValue: jest
+      .fn()
+      .mockName('extractValue()')
+      .mockImplementation(a => a),
     ...customProps,
   };
   const wrapper = mountWithTheme(<SelectSettingItemView {...props} />);
