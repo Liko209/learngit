@@ -19,6 +19,7 @@ import {
   JuiDialogHeaderActions,
   JuiDialogHeaderMeta,
 } from 'jui/components/Dialog/DialogHeader';
+import { dataAnalysis } from 'sdk';
 import { JuiZoomButtonGroup } from 'jui/pattern/DragZoom';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
@@ -126,6 +127,7 @@ class ViewerViewComponent extends Component<
   }
 
   componentDidMount() {
+    dataAnalysis.page('Jup_Web/DT_conversation_fullScreenViewer');
     window.addEventListener('keydown', this._handlerKeydown, {
       passive: false,
     });
