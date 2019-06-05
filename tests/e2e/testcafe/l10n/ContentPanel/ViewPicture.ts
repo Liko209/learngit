@@ -11,7 +11,7 @@ fixture('ContentPanel/ViewPicture')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Open team conversation and shared a picture then view it', ['P2', 'Messages', 'ContentPanel', 'ViewPicture', 'V1.4', 'hank.huang']), async (t) => {
+test(formalName('Open team conversation and shared a picture then view it', ['P2', 'Messages', 'ContentPanel', 'ViewPicture', 'V1.4', 'Hank.Huang']), async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[6];
   const team = <IGroup>{
@@ -34,7 +34,7 @@ test(formalName('Open team conversation and shared a picture then view it', ['P2
   });
 
   const imagePreviewer = app.homePage.fileAndImagePreviewer;
-  const conversationPage =app.homePage.messageTab.conversationPage;
+  const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog('When I send two picture  and click the image', async () => {
     const posts = conversationPage.posts;
