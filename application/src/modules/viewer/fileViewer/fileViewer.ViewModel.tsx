@@ -19,7 +19,7 @@ import FileItemModel from '@/store/models/FileItem';
 import { dateFormatter } from '@/utils/date';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { ItemVersionPage } from 'sdk/src/module/item/entity';
+import { ItemVersionPage } from 'sdk/module/item/entity';
 
 class FileViewerViewModel implements IViewerView {
   private _item: FileItemModel;
