@@ -25,7 +25,7 @@ export class ElectronCacheItemProvider implements IZipItemProvider {
         content: indexedDbZip,
       });
     }
-    if (getIndexedDBZip) {
+    if (getLocalStorageZip) {
       const localStorageZip = (await getLocalStorageZip()) as Blob;
       result.push({
         type: '.zip',

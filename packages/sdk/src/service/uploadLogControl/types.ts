@@ -51,7 +51,12 @@ interface IZipProducer {
   produce(): Nullable<LocalZip>;
 }
 
+interface IZipWorker {
+  zip(zipItems: ZipItem[]): Promise<Blob>;
+}
+
 export {
+  IZipWorker,
   ZipItemLevel,
   IZipItemProvider,
   ZipItem,

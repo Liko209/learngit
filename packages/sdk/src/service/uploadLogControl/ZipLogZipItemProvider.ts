@@ -10,10 +10,10 @@ import {
   UploadedZip,
   IZipProducer,
   ZipItemLevel,
+  IZipWorker,
 } from './types';
 import { LogEntity, SessionManager } from 'foundation';
 import { ZipConsumer } from './ZipConsumer';
-// import * as zipWorker from './zip.worker';
 import { createWorker } from './utils';
 const DEFAULT_LIMIT = 5;
 
@@ -23,7 +23,7 @@ export class ZipLogZipItemProvider implements IZipItemProvider, IZipProducer {
   index: number = 0;
   uploaded: UploadedZip[] = [];
   zipConsumer: ZipConsumer;
-  worker: any;
+  worker: IZipWorker;
   limit: number = DEFAULT_LIMIT;
 
   constructor() {

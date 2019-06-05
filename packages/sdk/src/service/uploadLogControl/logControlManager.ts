@@ -16,7 +16,7 @@ import {
 } from './collectors';
 import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { IZipItemProvider, ZipItemLevel } from './types';
+import { IZipItemProvider, ZipItemLevel, IZipWorker } from './types';
 import { ZipLogZipItemProvider } from './ZipLogZipItemProvider';
 import { MemoryLogZipItemProvider } from './MemoryLogZipItemProvider';
 import { createWorker } from './utils';
@@ -30,7 +30,7 @@ export class LogControlManager implements IAccessor {
   uploadLogConsumer: LogUploadConsumer;
   logUploadCollector: ConsumerCollector;
   memoryLogCollector: MemoryCollector;
-  worker: any;
+  worker: IZipWorker;
 
   private constructor() {
     this._isOnline = window.navigator.onLine;
