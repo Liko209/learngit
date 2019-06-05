@@ -146,9 +146,11 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     return opts;
   }
   get currentMessageNotificationSetting() {
-    return getEntity<UserSettingEntity, SettingModel<NOTIFICATION_OPTIONS>>(
-      ENTITY_NAME.USER_SETTING,
-      SETTING_ITEM__NOTIFICATION_NEW_MESSAGES,
+    return (
+      getEntity<UserSettingEntity, SettingModel<NOTIFICATION_OPTIONS>>(
+        ENTITY_NAME.USER_SETTING,
+        SETTING_ITEM__NOTIFICATION_NEW_MESSAGES,
+      ).value || ''
     );
   }
   async shouldEmitNotification(post: Post) {
