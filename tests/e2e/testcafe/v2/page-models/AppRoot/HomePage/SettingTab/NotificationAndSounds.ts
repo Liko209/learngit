@@ -68,6 +68,10 @@ export class NotificationAndSounds extends BaseWebComponent {
     return this.microphoneSourceByLabel(label).getAttribute('data-test-automation-value');
   }
 
+  getMicrophoneSourceIdByNth(n: number) {
+    return this.microphoneSourceItems.nth(n).getAttribute('data-test-automation-value');
+  }
+
   async clickMicrophoneSourceSelectBox() {
     await this.t.click(this.microphoneSourceSelectBox);
   }
@@ -104,12 +108,20 @@ export class NotificationAndSounds extends BaseWebComponent {
     return this.microphoneSourceByLabel(label).getAttribute('data-test-automation-value');
   }
 
+  getSpeakerSourceIdByNth(n: number) {
+    return this.speakerSourceItems.nth(n).getAttribute('data-test-automation-value');
+  }
+
   async selectMicrophoneSourceByLabel(label: string) {
     await this.t.click(this.microphoneSourceByLabel(label));
   }
 
   async selectMicrophoneSourceById(value: string) {
     await this.t.click(this.microphoneSourceById(value));
+  }
+
+  async selectMicrophoneSourceByNth(n: number) {
+    await this.t.click(this.microphoneSourceItems.nth(n));
   }
 
   async selectSpeakerSourceByLabel(label: string) {
@@ -120,5 +132,8 @@ export class NotificationAndSounds extends BaseWebComponent {
     await this.t.click(this.speakerSourceById(value));
   }
 
+  async selectSpeakerSourceByNth(n: number) {
+    await this.t.click(this.speakerSourceItems.nth(n));
+  }
 
 }
