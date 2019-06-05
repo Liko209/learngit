@@ -20,6 +20,7 @@ import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
 import { PersonService } from 'sdk/module/person';
 import { TelephonyStore } from '../../store/TelephonyStore';
 import { ToastCallError } from '../ToastCallError';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { container, injectable, decorate } from 'framework';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ClientService } from '@/modules/common';
@@ -52,6 +53,7 @@ const sleep = (time: number): Promise<void> => {
 
 let mockedServerTelephonyService: any;
 let mockedRCInfoService: any;
+let mockedPhoneNumberService: any;
 
 function initializeCallerId() {
   telephonyService._telephonyStore.chosenCallerPhoneNumber = '123';
@@ -73,6 +75,10 @@ describe('TelephonyService', () => {
       getCallerIdList: jest.fn(),
       getForwardingNumberList: jest.fn(),
       isRCFeaturePermissionEnabled: jest.fn(),
+    };
+
+    mockedPhoneNumberService = {
+      isValidNumber: jest.fn(),
     };
 
     jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
@@ -164,6 +170,8 @@ describe('TelephonyService', () => {
           return mockedRCInfoService as RCInfoService;
         case ServiceConfig.ACCOUNT_SERVICE:
           return { userConfig: { getGlipUserId: jest.fn() } };
+        case ServiceConfig.PHONE_NUMBER_SERVICE:
+          return mockedPhoneNumberService as PhoneNumberService;
         default:
           return {} as PersonService;
       }
@@ -667,6 +675,12 @@ describe('TelephonyService', () => {
       phoneNumber,
     );
     telephonyService._callId = undefined;
+  });
+
+  it('should call isValidNumber', () => {
+    let phoneNumber = '123';
+    telephonyService.isValidNumber(phoneNumber);
+    expect(mockedPhoneNumberService.isValidNumber).toHaveBeenCalled();
   });
 
   describe(`onReceiveIncomingCall()`, () => {

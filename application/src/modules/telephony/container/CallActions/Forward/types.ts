@@ -14,6 +14,7 @@ type ViewProps = {
   forwardCalls: ForwardCall[];
   // getForwardCalls: () => Promise<ForwardCall[]>;
   forward: (phoneNumber: string) => void;
+  directForward: () => void;
   shouldDisableForwardButton: boolean;
 };
 
