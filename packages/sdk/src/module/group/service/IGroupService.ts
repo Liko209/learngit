@@ -130,6 +130,8 @@ interface IGroupService {
   getEntities(): Promise<Group[]>;
 
   getSoundexById(id: number): string[];
+
+  getTeamIdsIncludeMe(): Set<number>;
 }
 
 export { IGroupService };

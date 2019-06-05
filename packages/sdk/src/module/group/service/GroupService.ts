@@ -394,6 +394,11 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     return cache.getIndividualGroups();
   }
 
+  getTeamIdsIncludeMe() {
+    const cache = this.getEntityCacheController() as GroupEntityCacheController;
+    return cache.getTeamIdsIncludeMe();
+  }
+
   private get _groupFetchDataController() {
     return this.getGroupController().getGroupFetchDataController();
   }

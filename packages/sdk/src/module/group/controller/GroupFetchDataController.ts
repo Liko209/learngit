@@ -45,6 +45,10 @@ import { SearchService } from '../../search';
 import { RecentSearchTypes, RecentSearchModel } from '../../search/entity';
 import { MY_LAST_POST_VALID_PERIOD } from '../../search/constants';
 
+const kTeamIncludeMe: number = 1;
+const kSortingRateWithFirstMatched: number = 1;
+const kSortingRateWithFirstAndPositionMatched: number = 1.1;
+
 function buildNewGroupInfo(members: number[]) {
   const userConfig = ServiceLoader.getInstance<AccountService>(
     ServiceConfig.ACCOUNT_SERVICE,
@@ -480,9 +484,6 @@ export class GroupFetchDataController {
   }
 
   private _getSortKeyWeight(lowerCaseName: string, searchKeyTerms: string[]) {
-    const kSortingRateWithFirstMatched: number = 1;
-    const kSortingRateWithFirstAndPositionMatched: number = 1.1;
-
     const splitNames = this.entityCacheSearchController.getTermsFromSearchKey(
       lowerCaseName,
     );
@@ -518,7 +519,7 @@ export class GroupFetchDataController {
     const recentSearchedTeams = recentFirst
       ? this._getRecentSearchGroups([RecentSearchTypes.TEAM])
       : undefined;
-
+    const teamIdsIncludeMe = this.groupService.getTeamIdsIncludeMe();
     const currentUserId = this._currentUserId;
     return (team: Group, terms: Terms) => {
       let isMatched: boolean = false;
@@ -562,7 +563,8 @@ export class GroupFetchDataController {
           lowerCaseAbbreviation,
           searchKeyTerms,
         );
-
+        const isMeInTeam = teamIdsIncludeMe.has(team.id) ? kTeamIncludeMe : 0;
+        sortValue += isMeInTeam;
         isMatched = true;
       } while (false);
 
