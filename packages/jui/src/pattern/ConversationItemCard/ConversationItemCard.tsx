@@ -140,7 +140,14 @@ class JuiConversationItemCard extends React.PureComponent<
           ) : (
             Icon
           )}
-          {title && <ItemTitle complete={complete}>{title}</ItemTitle>}
+          {title && (
+            <ItemTitle
+              data-test-automation-id="conversation-item-cards-title"
+              complete={complete}
+            >
+              {title}
+            </ItemTitle>
+          )}
           {showHeaderActions && headerActions && (
             <HeaderActionsWrapper overlapSize={2}>
               {headerActions.map((headerAction: HeaderAction) => (

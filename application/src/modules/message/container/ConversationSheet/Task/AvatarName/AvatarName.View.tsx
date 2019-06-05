@@ -32,6 +32,7 @@ class AvatarNameView extends React.Component<ViewProps> {
         name={postParser(person.userDisplayName, {
           keyword: this.context.keyword,
         })}
+        data-test-automation-id="avatar-name"
       />
     );
   }

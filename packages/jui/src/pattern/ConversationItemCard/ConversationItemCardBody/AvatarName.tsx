@@ -27,9 +27,10 @@ const StyledName = styled.span`
   margin-left: ${spacing(1)};
 `;
 
-const JuiAvatarNameComponent = ({ name, Avatar }: Props) => (
-  <StyledAvatarName>
-    {Avatar} <StyledName>{name}</StyledName>
+const JuiAvatarNameComponent = ({ name, Avatar, ...rest }: Props) => (
+  <StyledAvatarName {...rest}>
+    {Avatar}{' '}
+    <StyledName data-test-automation-id="avatar-name-name">{name}</StyledName>
   </StyledAvatarName>
 );
 

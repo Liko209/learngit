@@ -68,9 +68,10 @@ class TaskUpdate extends React.Component<
             <JuiEventCollapse
               showText={t('item.showEventHistory')}
               hideText={t('item.hideEventHistory')}
+              data-test-automation-id="task-show-old"
             >
               {
-                <JuiEventCollapseContent>
+                <JuiEventCollapseContent data-test-automation-id="task-old-assignees">
                   <JuiTaskAvatarNames>
                     {this._getTaskAvatarNames(old_value)}
                   </JuiTaskAvatarNames>
