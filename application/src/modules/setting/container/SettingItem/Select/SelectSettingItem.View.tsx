@@ -12,7 +12,6 @@ import { SelectSettingItemViewProps, SelectSettingItemProps } from './types';
 import { JuiSettingSectionItem } from 'jui/pattern/SettingSectionItem';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { catchError } from '@/common/catchError';
-import { computed } from 'mobx';
 
 type SourceItemType =
   | {
