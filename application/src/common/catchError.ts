@@ -9,6 +9,7 @@ import { ToastType, ToastMessageAlign } from '@/containers/ToastWrapper/Toast/ty
 import { Notification, ShowNotificationOptions } from '@/containers/Notification';
 import { generalErrorHandler } from '@/utils/error';
 import { errorHelper } from 'sdk/error';
+import { mainLogger } from 'sdk';
 
 enum NOTIFICATION_TYPE {
   CUSTOM,
@@ -124,7 +125,13 @@ function performAction(option: StrategyProps, error: Error, ctx: any) {
     return action(error, ctx);
   }
 
-  return notifyFunc(isDebounce, message || '')(ctx, action, message, notificationOpts, error);
+  return notifyFunc(isDebounce, message || '')(
+    ctx,
+    action,
+    message,
+    notificationOpts,
+    error,
+  );
 }
 
 function perform(options: StrategyProps[], error: Error, ctx: any) {
@@ -146,6 +153,7 @@ function handleError(
   ctx: any,
   options: CatchOptionsProps,
 ) {
+  mainLogger.error(error);
   if (Array.isArray(options)) {
     return perform(options, error, ctx);
   }
@@ -159,7 +167,13 @@ function handleError(
   } = options;
 
   if (network && errorHelper.isNetworkConnectionError(error)) {
-    notifyFunc(isDebounce, network)(ctx, notificationType, network, notificationOpts, error);
+    notifyFunc(isDebounce, network)(
+      ctx,
+      notificationType,
+      network,
+      notificationOpts,
+      error,
+    );
     return false;
   }
 
@@ -174,7 +188,13 @@ function handleError(
   }
 
   if (server && errorHelper.isBackEndError(error)) {
-    notifyFunc(isDebounce, server)(ctx, notificationType, server, notificationOpts, error);
+    notifyFunc(isDebounce, server)(
+      ctx,
+      notificationType,
+      server,
+      notificationOpts,
+      error,
+    );
     return false;
   }
 

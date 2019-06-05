@@ -3,19 +3,27 @@
  * @Date: 2019-04-23 09:12:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { SettingService } from './service';
-import { SettingStore } from './store';
+import { ModuleConfig } from 'framework';
+import { ISettingService } from '@/interface/setting';
+import { SettingStore } from './store/SettingStore';
+import { SettingService } from './service/SettingService';
+import { GeneralSettingManager } from './manager/general';
+import { NotificationSoundSettingManager } from './manager/notificationSound';
 import { SettingModule } from './SettingModule';
-import { SETTING_SERVICE } from './interface';
+import { PlaceholderSettingManager } from './manager/placeholder/PlaceholderSettingManager';
 
-const config = {
+const config: ModuleConfig = {
   entry: SettingModule,
   provides: [
+    SettingStore,
     {
-      name: SETTING_SERVICE,
+      name: ISettingService,
       value: SettingService,
     },
-    SettingStore,
+    // build in settings
+    GeneralSettingManager,
+    NotificationSoundSettingManager,
+    PlaceholderSettingManager,
   ],
 };
 

@@ -62,7 +62,7 @@ const ViewerSidebarWrap = styled(CustomSidebar)`
       position: relative;
       height: 100%;
       max-width: ${MaxWidth}px;
-      background-color: ${palette('common', 'white')};
+      background-color: ${props => props.theme.palette.background.paper};
       width: ${props => (props.open ? MaxWidth : MinWidth)}px;
       box-sizing: border-box;
     }
@@ -80,7 +80,7 @@ const ViewerSidebarContentWrap = styled.div`
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: ${spacing(5)} 0;
+    padding: ${spacing(5, 0)};
   }
 `;
 

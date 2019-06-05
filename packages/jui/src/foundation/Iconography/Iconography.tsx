@@ -8,6 +8,7 @@ import { name2icon } from './name2icon';
 import styled, { css } from '../../foundation/styled-components';
 import { Palette } from '../theme/theme';
 import { palette, width } from '../../foundation/utils/styles';
+import { RuiCircularProgress } from 'rcui/components/Progress';
 
 export type IconColor = [keyof Palette, string];
 
@@ -34,6 +35,8 @@ type JuiIconographyProps = {
   iconSize?: IconSize;
   children?: string;
   symbol?: svgSymbol;
+  useLoading?: boolean;
+  loadingSize?: number;
   desc?: string;
 } & React.HTMLAttributes<HTMLElement>;
 
@@ -80,12 +83,16 @@ const JuiIconographyComponent: React.SFC<JuiIconographyProps> = (
     iconSize,
     symbol,
     desc,
+    useLoading = false,
+    loadingSize = 16,
     ...rest
   } = props;
   const iconName = name2icon[children as string];
   const useHref = symbol ? symbol.url : `#icon-${iconName}`;
   const _className = `${className || ''} ${children || ''} icon`;
-  return (
+  return useLoading ? (
+    <RuiCircularProgress size={loadingSize} />
+  ) : (
     <StyledSpan className={_className} {...rest}>
       <StyledSvg role="img" iconColor={iconColor} size={iconSize}>
         {!!desc && <title>{desc}</title>}

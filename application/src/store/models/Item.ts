@@ -19,17 +19,21 @@ export default class ItemModel extends Base<Item> {
   @observable versions: Item['versions'];
 
   @observable
+  createdAt: number;
+
+  @observable
   atMentionPostIds?: number[];
 
   constructor(data: Item) {
     super(data);
-    const { type_id, modified_at, creator_id, name } = data;
+    const { type_id, modified_at, creator_id, name, created_at } = data;
     this.typeId = type_id;
     this.modifiedAt = modified_at;
     this.creatorId = creator_id;
     this.name = name;
     this.atMentionPostIds = data.at_mentioning_post_ids;
     this.versions = data.versions;
+    this.createdAt = created_at;
   }
 
   hasVersions() {
