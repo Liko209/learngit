@@ -320,7 +320,7 @@ export class MessageTab extends BaseWebComponent {
   }
 
   get teamsSection() {
-    return this.getSection('Teams');
+    return this.getSection('团队');
   }
 
   get mentionsEntry() {
