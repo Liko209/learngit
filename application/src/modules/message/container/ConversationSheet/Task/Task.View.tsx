@@ -219,7 +219,6 @@ class Task extends React.Component<taskViewProps> {
               <JuiTaskSectionOrDescription data-test-automation-id="task-section">
                 {postParser(section, {
                   keyword: this.context.keyword,
-                  url: true,
                 })}
               </JuiTaskSectionOrDescription>
             </JuiLabelWithContent>
