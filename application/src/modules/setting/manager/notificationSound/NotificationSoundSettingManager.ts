@@ -25,7 +25,7 @@ import {
 } from './audioSource/constant';
 
 const deviceIdExtractor = (device?: MediaDeviceInfo) =>
-  device && device.deviceId;
+  device ? device.deviceId : '';
 
 class NotificationSoundSettingManager {
   private _scope = Symbol('NotificationSoundSettingManager');

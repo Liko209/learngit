@@ -36,7 +36,8 @@ class SelectSettingItemViewComponent<
 
   @computed
   private get _value() {
-    return this.props.settingItemEntity.value || '';
+    const { extractValue, settingItemEntity } = this.props;
+    return extractValue(settingItemEntity.value);
   }
 
   @catchError.flash({

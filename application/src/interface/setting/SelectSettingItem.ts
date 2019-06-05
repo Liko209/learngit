@@ -28,7 +28,7 @@ type SelectSettingItem<T> = SettingItem & {
    * Used for figure out which property in
    * the sourceItem is the key value
    */
-  valueExtractor?: (value?: T) => string | undefined;
+  valueExtractor?: (value?: T) => string;
 };
 
 export { SelectSettingItem };
