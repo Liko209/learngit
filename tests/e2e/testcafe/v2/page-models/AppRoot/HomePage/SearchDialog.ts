@@ -554,6 +554,10 @@ export class JoinTeamDialog extends BaseWebComponent {
     return this.buttonOfText('Join');
   }
 
+  get joinButtonByClass(){
+    return this.self.find('.containedButtonStyle');
+  }
+
   get cancelButton() {
     return this.buttonOfText('Cancel');
   }
