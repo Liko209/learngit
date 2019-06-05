@@ -533,7 +533,7 @@ export class ConversationPage extends BaseConversationPage {
 
   /* 1:1 */
   get telephonyButton() {
-    return this.telephonyIcon.parent('button'); //TODO: add automationId
+    return this.getSelectorByAutomationId('telephony-call-btn');
   }
 
   get telephonyIcon() {
