@@ -33,6 +33,15 @@ const DefaultPhoneAppSelectItem: SFC<
     ) {
       e.stopPropagation();
       Dialog.confirm({
+        modalProps: {
+          'data-test-automation-id': 'defaultPhoneAppConfirmDialog',
+        },
+        okBtnProps: {
+          'data-test-automation-id': 'defaultPhoneAppOkButton',
+        },
+        cancelBtnProps: {
+          'data-test-automation-id': 'defaultPhoneAppCancelButton',
+        },
         title: t('message.prompt.changeDefaultPhoneAppTitle'),
         content: (
           <JuiDialogContentText>

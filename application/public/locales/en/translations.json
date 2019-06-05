@@ -214,7 +214,7 @@
       "NewMessageError": "We are having trouble creating this new message. Please try again later.",
       "disabledText": "This team is read-only",
       "changeDefaultPhoneAppTitle": "Change default phone app",
-      "changeDefaultPhoneAppContent": "You are about to choose RingCentral Phone for your default phone features. Install RingCentral Phone app before continuing. Are you sure you want to change your default to RingCentral Phone?"
+      "changeDefaultPhoneAppContent": "You are about to choose RingCentral Phone for your default phone features. Install RingCentral Phone app before continuing. Are you sure you want to change your default to RingCentral Phone?",
       "editFileNameTitle": "Rename file",
       "editFileNameInputLabel": "Filename",
       "editFileNameBackendError": "Sorry, something went wrong on our end and we aren't able to save the edit. Try again later.",

@@ -49,6 +49,7 @@ class TelephonySettingManager {
               type: SETTING_ITEM_TYPE.SELECT,
               weight: 100,
               sourceRenderer: DefaultPhoneAppSelectItem,
+              automationId: 'defaultPhoneApp',
             } as SelectSettingItem<CALLING_OPTIONS>,
             {
               id: SETTING_ITEM__PHONE_CALLER_ID,
