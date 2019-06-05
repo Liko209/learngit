@@ -59,6 +59,10 @@ class NotificationBrowserSettingItemViewComponent extends Component<
     }
   }
 
+  private _handleDialogClose = () => {
+    this._handleDialog(false);
+  }
+
   private _renderDialog() {
     const { t } = this.props;
     const dialogTitle = t('notification.notificationBlockedDialog.title');
@@ -71,7 +75,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
           content={dialogContent}
           okText={dialogButton}
           title={dialogTitle}
-          onOK={() => this._handleDialog(false)}
+          onOK={this._handleDialogClose}
         />
       )
     );
