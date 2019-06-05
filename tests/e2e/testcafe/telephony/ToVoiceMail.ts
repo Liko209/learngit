@@ -9,7 +9,7 @@ import { setupCase, teardownCase } from '../init';
 import { AppRoot } from '../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../config';
 import { ITestMeta } from '../v2/models';
-import { WebphoneSession } from '../v2/webphone/session';
+import { WebphoneSession } from 'webphone-client';
 
 fixture('Telephony/ToVoiceMail')
   .beforeEach(setupCase(BrandTire.RCOFFICE))

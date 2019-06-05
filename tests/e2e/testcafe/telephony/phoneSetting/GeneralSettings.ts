@@ -5,7 +5,7 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire, SITE_ENV } from '../../config';
 import { IGroup, ITestMeta } from "../../v2/models";
-import { WebphoneSession } from '../../v2/webphone/session';
+import { WebphoneSession } from 'webphone-client';
 
 fixture('Phone/GeneralSettings')
   .beforeEach(setupCase(BrandTire.RC_WITH_DID))

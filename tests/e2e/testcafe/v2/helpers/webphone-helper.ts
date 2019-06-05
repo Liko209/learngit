@@ -1,7 +1,6 @@
 
 import 'testcafe';
-import * as assert from 'assert';
-import { WebphoneSession } from '../webphone/session';
+import { WebphoneSession } from 'webphone-client';
 import { IUser } from '../models';
 import { ENV_OPTS } from '../../config';
 
@@ -20,7 +19,8 @@ export class WebphoneHelper {
   }
 
   async withSession(user: IUser, cb: (session: WebphoneSession) => Promise<any>) {
-    const session = new WebphoneSession(ENV_OPTS.WEBPHONE_ENV, user.company.number, user.extension, user.password);
+    const webphoneRequest = {phoneNumber: user.company.number, extension: user.extension, password: user.password};
+    const session = new WebphoneSession(ENV_OPTS.WEBPHONE_BASE_URL, ENV_OPTS.WEBPHONE_ENV, webphoneRequest);
     try {
       await session.init();
       await cb(session);
@@ -30,7 +30,8 @@ export class WebphoneHelper {
   }
 
   async newWebphoneSession(user: IUser) {
-    const session = new WebphoneSession(ENV_OPTS.WEBPHONE_ENV, user.company.number, user.extension, user.password);
+    const webphoneRequest = {phoneNumber: user.company.number, extension: user.extension, password: user.password};
+    const session = new WebphoneSession(ENV_OPTS.WEBPHONE_BASE_URL, ENV_OPTS.WEBPHONE_ENV, webphoneRequest);
     this.sessions.push(session);
     await session.init();
     return session;

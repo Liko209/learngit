@@ -22,7 +22,7 @@ import { WebphoneHelper } from './webphone-helper';
 import { NetworkHelper } from './network-helper';
 import { NotificationHelper } from './notification';
 import { UpgradeHelper } from './upgrade';
-import { WebphoneSession } from '../webphone/session';
+import { WebphoneSession } from 'webphone-client';
 
 import * as _ from 'lodash';
 import * as assert from 'assert';
