@@ -89,15 +89,16 @@ class SelectSettingItemViewComponent<
   }
 
   private _renderSourceItem(sourceItem: T) {
+    const value = this.props.extractValue(sourceItem);
     return (
       <JuiMenuItem
-        value={this._value}
-        key={this._value}
+        value={value}
+        key={value}
         automationId={`settingItemSelectBoxItem-${
           this.props.settingItem.automationId
-        }-${this._value}`}
+        }-${value}`}
         data-test-automation-class={'settingItemSelectBoxItem'}
-        data-test-automation-value={this._value}
+        data-test-automation-value={value}
       >
         {this._renderMenuItemChildren(sourceItem)}
       </JuiMenuItem>
