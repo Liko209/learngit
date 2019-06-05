@@ -6,22 +6,31 @@
 import React from 'react';
 import * as Jui from './style';
 import { FileName } from './FileName';
+import { JuiButtonBar } from '../../../components/Buttons';
 
 type JuiFileWithPreviewProps = {
   size: string;
-  Actions: JSX.Element;
+  Actions: JSX.Element[];
   fileName: string;
   url: string;
   iconType: string;
+  disabled?: boolean;
 };
 
 class JuiFileWithPreview extends React.PureComponent<JuiFileWithPreviewProps> {
   render() {
-    const { size, fileName, url, Actions, iconType } = this.props;
+    const {
+      size,
+      fileName,
+      url,
+      Actions,
+      iconType,
+      disabled = true,
+    } = this.props;
 
     return (
       <Jui.FileCard>
-        <Jui.FileCardMedia image={url} />
+        <Jui.FileCardMedia disabled={disabled} image={url} />
         <Jui.FileCardContent>
           <Jui.CardFileName>
             <FileName filename={fileName} />
@@ -31,7 +40,9 @@ class JuiFileWithPreview extends React.PureComponent<JuiFileWithPreviewProps> {
               <Jui.FileIcon size="small">{iconType}</Jui.FileIcon>
               {size}
             </Jui.CardSize>
-            <Jui.CardFileActions>{Actions}</Jui.CardFileActions>
+            <Jui.CardFileActions>
+              <JuiButtonBar overlapSize={-2}>{Actions}</JuiButtonBar>
+            </Jui.CardFileActions>
           </Jui.CardFileInfo>
         </Jui.FileCardContent>
       </Jui.FileCard>

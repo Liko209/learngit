@@ -20,11 +20,19 @@ describe('ErrorReporterProxy', () => {
     jest.clearAllMocks();
   });
   describe('constructor()', () => {
-    it('should create Raven instance', () => {
+    it('should create Sentry instance', () => {
       const mockErrorReporter = new SentryErrorReporter();
       const proxy = new ErrorReporterProxy(true);
       expect(mockErrorReporter.init).toBeCalled();
+      expect(proxy['_enabled']).toBeTruthy();
       expect(proxy['_reporter']).not.toBeUndefined();
+    });
+    it('should not create Sentry instance', () => {
+      const mockErrorReporter = new SentryErrorReporter();
+      const proxy = new ErrorReporterProxy(false);
+      expect(mockErrorReporter.init).not.toBeCalled();
+      expect(proxy['_enabled']).toBeFalsy();
+      expect(proxy['_reporter']).toBeUndefined();
     });
   });
   describe('directly call', () => {

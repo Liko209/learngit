@@ -9,8 +9,8 @@
       "@/*": ["src/*"],
       "sdk/*": ["../packages/sdk/src/*"],
       "jui/*": ["../packages/jui/src/*"],
-      "test-util/*": ["../packages/test-util/src/*"],
-      "tests/*": ["../tests/*"],
+      "framework/*": ["../packages/framework/src/*"],
+      "shield/*": ["../tests/shield/src/*"],
       "rcui/*": ["../packages/rcui/src/*"]
     }
   },

@@ -27,6 +27,7 @@ export default function register(
     inControl: boolean,
     byWaitingWorker: boolean,
   ) => void,
+  controllerChangedHandler: () => void,
   logInfo: (text: string) => void,
 ) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
@@ -58,6 +59,7 @@ export default function register(
           swUrl,
           registeredHandler,
           updateInstalledHandler,
+          controllerChangedHandler,
           logInfo,
         );
 
@@ -75,6 +77,7 @@ export default function register(
           swUrl,
           registeredHandler,
           updateInstalledHandler,
+          controllerChangedHandler,
           logInfo,
         );
       }
@@ -108,19 +111,21 @@ function registerValidSW(
     inControl: boolean,
     byWaitingWorker: boolean,
   ) => void,
+  controllerChangedHandler: () => void,
   logInfo: (text: string) => void,
 ) {
   console.log(`${logTag}registerValidSW: ${swUrl}`);
   navigator.serviceWorker
     .register(swUrl)
     .then((registration: ServiceWorkerRegistration) => {
-      logInfo(`registered ${swUrl}`);
-      const beforeunloadHandler = () => {
-        logInfo(`beforeunload, waiting ${!!registration.waiting}`);
-        registration.waiting &&
-          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-      };
-      window.addEventListener('beforeunload', beforeunloadHandler);
+      logInfo(
+        `registered ${swUrl}. controller: ${!!navigator.serviceWorker
+          .controller}`,
+      );
+
+      navigator.serviceWorker.addEventListener('controllerchange', event => {
+        controllerChangedHandler();
+      });
 
       registration.onupdatefound = () => {
         logInfo('onupdatefound');
@@ -186,7 +191,10 @@ function registerInstallingEvent(
     handleNewContentAvailable(true, updateInstalledHandler, logInfo);
   } else {
     installingWorker.onstatechange = () => {
-      logInfo(`onstatechange: ${installingWorker.state}`);
+      logInfo(
+        `onstatechange: ${installingWorker.state}, controller: ${!!navigator
+          .serviceWorker.controller}`,
+      );
       if (installingWorker.state === 'installed') {
         handleNewContentAvailable(false, updateInstalledHandler, logInfo);
       }
@@ -216,9 +224,7 @@ function handleNewContentAvailable(
   }
 
   const inControl = !!navigator.serviceWorker.controller;
-  setTimeout(() => {
-    updateInstalledHandler(inControl, byWaitingWorker);
-  },         5000);
+  updateInstalledHandler(inControl, byWaitingWorker);
 }
 
 function checkValidServiceWorker(
@@ -228,6 +234,7 @@ function checkValidServiceWorker(
     inControl: boolean,
     byWaitingWorker: boolean,
   ) => void,
+  controllerChangedHandler: () => void,
   logInfo: (text: string) => void,
 ) {
   // Check if the service worker can be found. If it can't reload the page.
@@ -252,6 +259,7 @@ function checkValidServiceWorker(
           swUrl,
           registeredHandler,
           updateInstalledHandler,
+          controllerChangedHandler,
           logInfo,
         );
       }

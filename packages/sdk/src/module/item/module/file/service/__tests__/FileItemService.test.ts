@@ -350,4 +350,16 @@ describe('FileItemService', () => {
       expect(fileUploadController.initialUploadItemsFromDraft).toBeCalled();
     });
   });
+
+  describe('editFileName()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call fileActionController', () => {
+      fileItemService.editFileName(1, 'newName');
+      expect(fileActionController.editFileName).toBeCalledWith(1, 'newName');
+    });
+  });
 });

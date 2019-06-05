@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { mount } from 'test-util/electron';
+import { mount } from 'shield/utils';
 import { Hello } from './Hello';
 
 describe('Electron Runner', () => {

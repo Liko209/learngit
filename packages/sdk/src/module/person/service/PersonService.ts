@@ -25,6 +25,7 @@ import { ContactType } from '../types';
 import { PersonEntityCacheController } from '../controller/PersonEntityCacheController';
 import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
+import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
 
 class PersonService extends EntityBaseService<Person>
   implements IPersonService {
@@ -105,8 +106,8 @@ class PersonService extends EntityBaseService<Person>
     return this.getPersonController().getName(person);
   }
 
-  isValidPerson(person: Person): boolean {
-    return this.getPersonController().isValid(person);
+  isVisiblePerson(person: Person): boolean {
+    return this.getPersonController().isVisible(person);
   }
 
   getEmailAsName(person: Person) {
@@ -150,6 +151,13 @@ class PersonService extends EntityBaseService<Person>
 
   isCacheValid(person: Person): boolean {
     return this.getPersonController().isCacheValid(person);
+  }
+
+  getPhoneNumbers(
+    person: Person,
+    eachPhoneNumber: (phoneNumber: PhoneNumber) => void,
+  ): void {
+    this.getPersonController().getPhoneNumbers(person, eachPhoneNumber);
   }
 }
 

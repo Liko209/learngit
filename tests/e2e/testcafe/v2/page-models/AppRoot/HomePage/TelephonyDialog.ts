@@ -1,14 +1,11 @@
 import * as _ from 'lodash';
 import { BaseWebComponent } from "../../BaseWebComponent";
+import { ClientFunction } from 'testcafe';
 
 
 export class TelephonyDialog extends BaseWebComponent {
   get self() {
-    return this.getSelector('[role="document"]');
-  }
-
-  get container() {
-    return this.getSelectorByAutomationId('dialer-move-animation-container');
+    return this.getSelectorByAutomationId('dialer-container');
   }
 
   get title() {
@@ -36,7 +33,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get hangupButton() {
-    return this.buttonOfIcon('hand_up');
+    return this.getSelectorByAutomationId('telephony-end-btn');
   }
 
   async clickHangupButton() {
@@ -192,7 +189,7 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-voice-mail-btn');
   }
 
-  get dialerInput(){
+  get dialerInput() {
     return this.getSelectorByAutomationId('telephony-dialer-header').find('input[type="text"]');
   }
 
@@ -224,6 +221,14 @@ export class TelephonyDialog extends BaseWebComponent {
     '#': 'hash'
   }
 
+  async focusKeypad(){
+    var focus = ClientFunction(() => {
+      document.querySelector('[data-test-automation-id="telephony-dialer-title"]').dispatchEvent(new Event('focus',{bubbles:true}))
+  });
+
+    await focus();
+  }
+
   async tapKeypad(keys: string | string[]) {
     for (const i of keys) {
       await this.t.wait(5e2);
@@ -239,6 +244,10 @@ export class TelephonyDialog extends BaseWebComponent {
     await this.t.click(this.answerButton);
   }
 
+  async hoverAnswerButton() {
+    await this.t.hover(this.answerButton);
+  }
+
   async clickMinimizeButton() {
     await this.t.click(this.minimizeButton);
   }
@@ -247,19 +256,23 @@ export class TelephonyDialog extends BaseWebComponent {
     await this.t.click(this.ignoreButton);
   }
 
+  async hoverIgnoreButton() {
+    await this.t.hover(this.ignoreButton);
+  }
+
   async hoverSendToVoiceMailButton() {
     await this.t.hover(this.sendToVoiceMailButton);
   }
 
-  async hoverMinimizeButton(){
+  async hoverMinimizeButton() {
     await this.t.hover(this.minimizeButton);
   }
 
-  async hoverDeleteButton(){
+  async hoverDeleteButton() {
     await this.t.hover(this.deleteButton);
   }
 
-  async clickDeleteButton(){
+  async clickDeleteButton() {
     await this.t.click(this.deleteButton);
   }
 
@@ -306,9 +319,51 @@ export class TelephonyDialog extends BaseWebComponent {
   async sendCustomReplyMessage() {
     await this.t.click(this.replyWithCustomMessage).pressKey('enter');
   }
+
+  get callerIdSelector() {
+    return this.getSelectorByAutomationId('callerIdSelector', this.self);
+  }
+
+  async currentCallerIdShoulebe(text: string) {
+    await this.t.expect(this.callerIdSelector.textContent).eql(text);
+  }
+
+  async clickCallerIdSelector() {
+    await this.t.click(this.callerIdSelector);
+  }
+
+  get callerIdList() {
+    return this.getComponent(CallerIdList);
+  }
+}
+class CallerIdList extends BaseWebComponent {
+  get self() {
+    return this.getSelector('[role="listbox"]')
+  }
+
+  get callerIds() {
+    return this.self.find('li').filter('[data-value]');
+  }
+
+  async selectByValue(value: string) {
+    await this.t.click(this.callerIds.filter(`[data-value="${value}"]`));
+  }
+
+  async selectNth(n: number) {
+    await this.t.click(this.callerIds.nth(n))
+  }
+
+  async selectBlocked() {
+    await this.selectByValue('Blocked');
+  }
+
+  async selectByText(text: string) {
+    await this.t.click(this.callerIds.withExactText(text));
+    return this.getSelectorByAutomationId('callerIdSelector');
+  }
 }
 
-export class TelephonyMinimizeWindow extends BaseWebComponent{
+export class TelephonyMinimizeWindow extends BaseWebComponent {
 
   get self() {
     return this.getSelectorByAutomationId('telephony-minimized-view');
@@ -342,5 +397,4 @@ export class TelephonyMinimizeWindow extends BaseWebComponent{
   async clickHangupButton() {
     await this.t.click(this.hangupButton);
   }
-
 }

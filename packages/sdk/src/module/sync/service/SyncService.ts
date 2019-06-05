@@ -10,7 +10,7 @@ import { SERVICE, SOCKET, WINDOW } from '../../../service/eventKey';
 import { SyncListener } from './SyncListener';
 import { SyncController } from '../controller/SyncController';
 import { IdModel } from '../../../framework/model';
-import { SyncUserConfig } from '../config';
+import { SyncUserConfig } from '../config/SyncUserConfig';
 
 class SyncService extends EntityBaseService<IdModel> {
   private _syncController: SyncController;

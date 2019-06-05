@@ -13,11 +13,9 @@ import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE } from '../../../service/eventKey';
 import { ProfileService } from '../../profile';
 import { setRCToken } from '../../../authenticator/utils';
-import {
-  AccountUserConfig,
-  AccountGlobalConfig,
-  AuthUserConfig,
-} from '../config';
+import { AccountGlobalConfig } from '../config';
+import { AuthUserConfig } from '../config/AuthUserConfig';
+import { AccountUserConfig } from '../config/AccountUserConfig';
 import {
   AuthController,
   IUnifiedLogin,

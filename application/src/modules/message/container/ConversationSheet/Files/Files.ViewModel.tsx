@@ -53,7 +53,12 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       notificationCenter.on(ENTITY.PROGRESS, this._handleItemChanged);
       UploadFileTracker.init();
     }
-    this.autorun(this.getCropImage);
+    this.autorun(() => {
+      const images = this.files[FileType.image];
+      if (images.length > 0) {
+        this.getCropImage();
+      }
+    });
   }
 
   isRecentlyUploaded = (id: number) => {
@@ -112,6 +117,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   }
 
   dispose = () => {
+    super.dispose();
     notificationCenter.off(ENTITY.PROGRESS, this._handleItemChanged);
   }
 

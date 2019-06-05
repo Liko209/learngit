@@ -16,6 +16,7 @@ type AuthorProps = {
 
 const Wrapper = styled.a`
   margin-bottom: ${spacing(5)};
+  /* copy from dThor */
   color: #2f2f2f;
   ${ellipsis()}
 `;

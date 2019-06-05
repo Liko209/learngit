@@ -10,12 +10,12 @@ export class RightRail extends BaseWebComponent {
 
   get expandStatusButton() {
     this.warnFlakySelector();
-    return this.getSelectorByIcon('chevron_right').parent('button[aria-label="Hide details"]');
+    return this.getSelectorByIcon('double_chevron_right').parent('button[aria-label="Hide details"]');
   }
 
   get foldStatusButton() {
     this.warnFlakySelector();
-    return this.getSelectorByIcon('chevron_left').parent('button[aria-label="Show details"]');
+    return this.getSelector('button[aria-label="Show details"]');
   }
 
   async expand() {
@@ -164,6 +164,10 @@ class BaseTab extends BaseWebComponent {
     return this.items.find('.list-item-secondary');
   }
 
+  get eventIcon() {
+    return this.getSelectorByIcon('event', this.items);
+  }
+
   async nthItemTitleShouldBe(n: number, title: string) {
     await this.t.expect(this.titles.nth(n).withText(title).exists).ok(
       `n: ${n} , title: ${title}`
@@ -172,6 +176,14 @@ class BaseTab extends BaseWebComponent {
 
   async shouldHasTitle(title: string) {
     await this.t.expect(this.titles.withText(title).exists).ok(title);
+  }
+
+  async shouldHasEventTime(text: string) {
+    await this.t.expect(this.secondaryTexts.withText(text).exists).ok(text);
+  }
+
+  async shouldHasEventIcon() {
+    await this.t.expect(this.eventIcon.exists).ok();
   }
 
   async shouldHasNoTitle(title: string) {
@@ -228,6 +240,11 @@ class NotesTab extends BaseTab {
   get items() {
     return this.getSelectorByAutomationId('rightRail-note-item');
   }
+
+  get secondaryText() {
+    return this.getSelectorByAutomationId('list-item-secondary-text', this.self);
+  }
+
 }
 
 class ImageAndFileItem extends BaseWebComponent {

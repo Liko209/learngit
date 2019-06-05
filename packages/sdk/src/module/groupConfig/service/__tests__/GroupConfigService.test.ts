@@ -7,6 +7,7 @@
 import { GroupConfigService } from '../GroupConfigService';
 import { GroupConfigController } from '../../controller/GroupConfigController';
 
+jest.mock('sdk/dao');
 jest.mock('../../controller/GroupConfigController');
 
 describe('GroupConfigService', () => {

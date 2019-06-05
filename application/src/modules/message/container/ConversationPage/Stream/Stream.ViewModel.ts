@@ -12,7 +12,6 @@ import { Post } from 'sdk/module/post/entity';
 import { StateService } from 'sdk/module/state';
 import { GroupState } from 'sdk/module/state/entity';
 import { Group } from 'sdk/module/group/entity';
-import { errorHelper } from 'sdk/error';
 import storeManager, { ENTITY_NAME } from '@/store';
 import StoreViewModel from '@/store/ViewModel';
 
@@ -30,7 +29,7 @@ import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { catchError } from '@/common/catchError';
+import { catchError, getErrorType, ERROR_TYPES } from '@/common/catchError';
 
 const BLACKLISTED_PROPS = ['viewRef'];
 
@@ -49,6 +48,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @observable
   loadingStatus: STATUS = STATUS.PENDING;
+
+  @observable
+  errorType: ERROR_TYPES;
 
   @observable loadInitialPostsError?: Error;
 
@@ -196,7 +198,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       }
       this.loadingStatus = STATUS.SUCCESS;
     } catch (err) {
-      this.loadingStatus = STATUS.FAILED;
       this._handleLoadInitialPostsError(err);
     }
   }
@@ -315,6 +316,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return firstUnreadPostId;
   }
 
+  @action
   initialize = (groupId: number) => {
     this._syncGroupItems();
     const globalStore = storeManager.getGlobalStore();
@@ -323,19 +325,21 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
   }
 
-  private _canHandleError(err: Error) {
+  private _canHandleError() {
     return (
-      errorHelper.isBackEndError(err) ||
-      errorHelper.isNetworkConnectionError(err)
+      this.errorType === ERROR_TYPES.BACKEND
+      || this.errorType === ERROR_TYPES.NETWORK
     );
   }
 
   private _handleLoadInitialPostsError(err: Error) {
-    if (this._canHandleError(err)) {
+    const errorType = getErrorType(err);
+    this.errorType = errorType;
+    this.loadingStatus = STATUS.FAILED;
+    if (this._canHandleError()) {
       throw err; // let view catch the error
-    } else {
-      generalErrorHandler(err);
     }
+    generalErrorHandler(err);
   }
 }
 

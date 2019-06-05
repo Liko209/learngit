@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { mainLogger, DEFAULT_RETRY_COUNT } from 'foundation';
+import { mainLogger, DEFAULT_RETRY_COUNT, REQUEST_PRIORITY } from 'foundation';
 import { daoManager } from '../../../../dao';
 import { PostDao } from '../../dao';
 import { Post } from '../../entity';
@@ -26,7 +26,6 @@ import { AccountService } from '../../../account/service';
 import { PostControllerUtils } from './PostControllerUtils';
 import { PROGRESS_STATUS } from '../../../progress';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
-import { PostUtils } from '../../utils/PostUtils';
 
 type PostData = {
   id: number;
@@ -166,6 +165,7 @@ class SendPostController implements ISendPostController {
       const result = await this.postActionController.requestController.post(
         sendPost,
         {
+          priority: REQUEST_PRIORITY.HIGH,
           retryCount: DEFAULT_RETRY_COUNT,
         },
       );
@@ -201,9 +201,7 @@ class SendPostController implements ISendPostController {
 
     // 1. change status
     // 2. delete from db
-    await this.preInsertController.delete(
-      PostUtils.transformToPreInsertPost(originalPost),
-    );
+    await this.preInsertController.delete(originalPost);
     await dao.put(post);
     return result;
   }

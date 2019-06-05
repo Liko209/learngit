@@ -28,7 +28,6 @@ class ZoomElementAnimation extends React.PureComponent<
   handleEntered = () => {
     const {
       targetElement,
-      originalElement,
       onEntered,
       theme,
       duration,
@@ -37,7 +36,6 @@ class ZoomElementAnimation extends React.PureComponent<
       if (targetElement) {
         targetElement.style.cssText = '';
       }
-      originalElement && (originalElement.style.visibility = 'visible');
       onEntered && onEntered();
     },         theme.transitions.duration[duration]);
     this.setState({ status: 'entered' });
@@ -116,7 +114,6 @@ class ZoomElementAnimation extends React.PureComponent<
     const originalTransform = targetElement.style.transform;
     this.handleEntered();
     requestAnimationFrame(() => {
-      originalElement.style.visibility = 'hidden';
       targetElement.style.cssText = this._computeCssTransform(
         endPosition,
         startPosition,

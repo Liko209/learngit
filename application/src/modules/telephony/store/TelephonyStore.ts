@@ -132,7 +132,7 @@ class TelephonyStore {
   dialerOpenedCount: number;
 
   @observable
-  shouldAnimationStart: boolean = false;
+  startMinimizeAnimation: boolean = false;
 
   @observable
   dialerMinimizeTranslateX: number = NaN;
@@ -151,6 +151,9 @@ class TelephonyStore {
 
   @observable
   incomingState: INCOMING_STATE = INCOMING_STATE.IDLE;
+
+  @observable
+  dialerFocused: boolean;
 
   constructor() {
     type FSM = '_callWindowFSM' | '_recordFSM' | '_recordDisableFSM';
@@ -171,10 +174,7 @@ class TelephonyStore {
     });
 
     this._holdFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
-      const { to, from } = lifecycle;
-      if (to === from) {
-        return;
-      }
+      const { to } = lifecycle;
       this.holdState = to as HOLD_STATE;
       switch (this.holdState) {
         case HOLD_STATE.HOLDED:
@@ -187,19 +187,24 @@ class TelephonyStore {
     });
 
     this._callFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
-      const { to } = lifecycle;
-
+      const { to, from } = lifecycle;
+      if (to === from) {
+        return;
+      }
       this.callState = to as CALL_STATE;
       switch (this.callState) {
         case CALL_STATE.CONNECTED:
           this.activeCallTime = Date.now();
           this.enableHold();
           break;
+        case CALL_STATE.DIALING:
         case CALL_STATE.IDLE:
           this.resetReply();
           this.quitKeypad();
           this._restoreButtonStates();
           this._clearEnteredKeys();
+          this.callerName = undefined;
+          this.isMute = false;
           this.phoneNumber = undefined;
           break;
         case CALL_STATE.CONNECTING:
@@ -493,12 +498,20 @@ class TelephonyStore {
     this.dialerInputFocused = false;
   }
 
+  onDialerFocus = () => {
+    this.dialerFocused = true;
+  }
+
+  onDialerBlur = () => {
+    this.dialerFocused = false;
+  }
+
   startAnimation = () => {
-    this.shouldAnimationStart = true;
+    this.startMinimizeAnimation = true;
   }
 
   stopAnimation = () => {
-    this.shouldAnimationStart = false;
+    this.startMinimizeAnimation = false;
   }
 
   @computed
@@ -529,6 +542,7 @@ class TelephonyStore {
     return this.recordDisabledState === RECORD_DISABLED_STATE.DISABLED;
   }
 
+  @action
   directReply = () => {
     this.incomingState = INCOMING_STATE.REPLY;
     if (!this._intervalReplyId) {

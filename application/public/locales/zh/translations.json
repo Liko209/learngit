@@ -4,7 +4,8 @@
       "OK": "好的",
       "cancel": "取消",
       "done": "完成"
-    }
+    },
+    "deactivatedUsers": "无效用户"
   },
   "auth": {
     "signOut": "退出"

@@ -7,7 +7,7 @@ import BaseRequest from '../../BaseRequest';
 import NetworkRequestBuilder from '../NetworkRequestBuilder';
 
 class SocketRequest extends BaseRequest {
-  parameters: object = {};
+  parameters: object & { request_id: string };
   uri: string = '';
   constructor(builder: NetworkRequestBuilder) {
     super(builder);
@@ -23,6 +23,5 @@ class SocketRequest extends BaseRequest {
     return !this.authFree;
   }
 }
-type SocketRequestParamsType = { request_id: string };
+
 export default SocketRequest;
-export { SocketRequestParamsType };

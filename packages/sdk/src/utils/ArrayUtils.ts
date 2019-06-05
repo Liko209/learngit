@@ -7,31 +7,31 @@
 import { QUERY_DIRECTION } from '../dao/constants';
 
 class ArrayUtils {
-  static sliceIdArray(
-    idArray: number[],
+  static sliceIdArray<T extends string | number>(
+    idArray: T[],
     limit: number,
-    anchorPostId?: number,
+    anchorId?: T,
     direction: QUERY_DIRECTION = QUERY_DIRECTION.NEWER,
   ) {
     let startIndex = 0;
     let endIndex = 0;
-    if (anchorPostId) {
-      const postIdIndex = idArray.indexOf(anchorPostId);
+    if (anchorId) {
+      const idIndex = idArray.indexOf(anchorId);
       if (direction === QUERY_DIRECTION.NEWER) {
-        startIndex = postIdIndex + 1;
+        startIndex = idIndex + 1;
         endIndex =
-          postIdIndex + limit >= idArray.length
+          idIndex + limit >= idArray.length
             ? idArray.length
             : startIndex + limit;
       } else if (direction === QUERY_DIRECTION.OLDER) {
-        startIndex = postIdIndex - limit <= 0 ? 0 : postIdIndex - limit;
-        endIndex = postIdIndex;
+        startIndex = idIndex - limit <= 0 ? 0 : idIndex - limit;
+        endIndex = idIndex;
       } else {
         const offset =
-          idArray[idArray.length - 1] !== anchorPostId
+          idArray[idArray.length - 1] !== anchorId
             ? Math.floor(limit / 2)
             : limit - 1;
-        startIndex = postIdIndex - offset > 0 ? postIdIndex - offset : 0;
+        startIndex = idIndex - offset > 0 ? idIndex - offset : 0;
         const difEnd = startIndex + limit;
         endIndex = difEnd >= idArray.length ? idArray.length : difEnd;
       }

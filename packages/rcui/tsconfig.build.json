@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "module": "esnext",
+    "target": "es5",
+    "sourceMap": false
+  },
+  "exclude": [
+    "node_modules",
+    "build",
+    "scripts",
+    "**/__stories__/*",
+    "**/__tests__/*",
+    "src/storybook/*"
+  ]
+}

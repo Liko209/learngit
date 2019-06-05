@@ -9,11 +9,11 @@ import { Group } from 'sdk/models';
 import { PERMISSION_ENUM } from 'sdk/service';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
-import { AccountUserConfig } from 'sdk/module/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
 
 jest.mock('sdk/dao');
 jest.mock('sdk/api');
-jest.mock('sdk/module/account/config');
+jest.mock('sdk/module/account/config/AccountUserConfig');
 jest.mock('@/store/utils/entities');
 jest.mock('sdk/module/config');
 
@@ -386,31 +386,80 @@ describe('GroupModel', () => {
       expect(gm.displayName).toBe('');
     });
 
-    it('should return userDisplayNameForGroupName if it is me conversation',
-       async (done: jest.DoneCallback) => {
-        const gm = observable(
-          GroupModel.fromJS({
-            members: [mockUserId],
-          } as Group),
-        );
-        (getEntity as jest.Mock).mockImplementation((name: string) => {
+    it('should return userDisplayNameForGroupName if it is me conversation', async (done: jest.DoneCallback) => {
+      const gm = observable(
+        GroupModel.fromJS({
+          members: [mockUserId],
+        } as Group),
+      );
+      (getEntity as jest.Mock).mockImplementation((name: string) => {
+        if (name === ENTITY_NAME.PERSON) {
+          return {
+            userDisplayNameForGroupName: 'Chris',
+          };
+        }
+        return {};
+      });
+      expect(gm.displayName).toBe('Chris (message.meGroup)');
+      when(
+        () => gm.translation !== {},
+        () => {
+          process.nextTick(() => {
+            expect(gm.displayName).toBe('Chris (meGroup)');
+            done();
+          });
+        },
+      );
+    });
+
+    it('should filter out when we have deacitvated users', () => {
+      const gm = GroupModel.fromJS({
+        members: [11, 22, 33],
+      } as Group);
+      (getEntity as jest.Mock).mockImplementation(
+        (name: string, id: number) => {
           if (name === ENTITY_NAME.PERSON) {
+            if (id === 22) {
+              return {
+                deactivated: true,
+                firstName: `${id}`,
+                isVisible: jest.fn().mockReturnValue(false),
+              };
+            }
             return {
-              userDisplayNameForGroupName: 'Chris',
+              firstName: `${id}`,
+              isVisible: jest.fn().mockReturnValue(true),
             };
           }
-          return {};
-        });
-        expect(gm.displayName).toBe('Chris (message.meGroup)');
-        when(
-          () => gm.translation !== {},
-          () => {
-            process.nextTick(() => {
-              expect(gm.displayName).toBe('Chris (meGroup)');
-              done();
-            });
-          },
-        );
-      });
+        },
+      );
+      expect(gm.displayName).toBe('11, 33');
+    });
+
+    it('should return default name when no one is activated', async (done: jest.DoneCallback) => {
+      const gm = GroupModel.fromJS({
+        members: [11, 22, 33],
+      } as Group);
+      (getEntity as jest.Mock).mockImplementation(
+        (name: string, id: number) => {
+          if (name === ENTITY_NAME.PERSON) {
+            return {
+              firstName: `${id}`,
+              isVisible: jest.fn().mockReturnValue(false),
+            };
+          }
+        },
+      );
+      expect(gm.displayName).toBe('common.deactivatedUsers');
+      when(
+        () => gm.translation !== {},
+        () => {
+          process.nextTick(() => {
+            expect(gm.displayName).toBe('deactivatedUsers');
+            done();
+          });
+        },
+      );
+    });
   });
 });

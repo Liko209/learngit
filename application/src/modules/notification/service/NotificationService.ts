@@ -3,21 +3,23 @@
  * @Date: 2019-04-01 14:33:10
  * Copyright Â© RingCentral. All rights reserved.
  */
-
+import { inject } from 'framework';
 import { DeskTopNotification } from '../agent/DesktopNotification';
 import _ from 'lodash';
-import { Permission } from '../Permission';
 import { INotificationService, NotificationOpts } from '../interface';
 import { AbstractNotification } from '../agent/AbstractNotification';
 import { SWNotification } from '../agent/SWNotification';
-import { isFirefox, isEdge } from '@/common/isUserAgent';
+import { isFirefox } from '@/common/isUserAgent';
+import { PERMISSION } from '../interface/constant';
+import { INotificationPermission, Pal } from 'sdk/pal';
 
 class NotificationService implements INotificationService {
-  private _permission = new Permission();
+  @inject(PERMISSION)
+  private _permission: INotificationPermission;
   private _notificationDistributors: Map<string, AbstractNotification<any>>;
   private _notificationDistributor: AbstractNotification<any>;
   private _maximumFirefoxTxtLength = 40;
-  private _maximumEdgeTxtLength = 700;
+  private _maximumTxtLength = 700;
   constructor() {
     this._notificationDistributors = new Map();
     this._notificationDistributors.set('sw', new SWNotification());
@@ -25,6 +27,7 @@ class NotificationService implements INotificationService {
   }
 
   init() {
+    Pal.instance.setNotificationPermission(this._permission);
     for (const _distributor of this._notificationDistributors.values()) {
       const distributor = _distributor as AbstractNotification<any>;
       if (distributor.isSupported()) {
@@ -45,11 +48,8 @@ class NotificationService implements INotificationService {
       opts.body = this.addEllipsis(opts.body, this._maximumFirefoxTxtLength);
       titleFormatted = this.addEllipsis(title, this._maximumFirefoxTxtLength);
     }
-
-    if (isEdge) {
-      opts.body = this.addEllipsis(opts.body, this._maximumEdgeTxtLength);
-      titleFormatted = this.addEllipsis(title, this._maximumEdgeTxtLength);
-    }
+    opts.body = this.addEllipsis(opts.body, this._maximumTxtLength);
+    titleFormatted = this.addEllipsis(title, this._maximumTxtLength);
     if (!this._permission.isGranted) {
       await this._permission.request();
       if (this._permission.isGranted) {

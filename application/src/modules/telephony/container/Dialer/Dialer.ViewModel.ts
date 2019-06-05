@@ -9,30 +9,10 @@ import { container } from 'framework';
 import { computed } from 'mobx';
 import { DialerProps, DialerViewProps } from './types';
 import { TelephonyStore } from '../../store';
-import { TelephonyService } from '@/modules/telephony/service';
-import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
-
-const RADIUS = 32;
 
 class DialerViewModel extends StoreViewModel<DialerProps>
   implements DialerViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
-  private _telephonyService: TelephonyService = container.get<TelephonyService>(
-    TELEPHONY_SERVICE,
-  );
-  private _animationPromise: Promise<any> | null = null;
-
-  setAnimationPromise = (p: Promise<any>) => {
-    if (this._animationPromise) {
-      delete this._animationPromise;
-    }
-    this._animationPromise = p;
-    Promise.resolve(this._animationPromise).then(
-      this._telephonyService.onAnimationEnd,
-    );
-  }
-
-  clearAnimationPromise = () => (this._animationPromise = null);
 
   dialerId = this._telephonyStore.dialerId;
 
@@ -47,18 +27,13 @@ class DialerViewModel extends StoreViewModel<DialerProps>
   }
 
   @computed
-  get incomingState() {
-    return this._telephonyStore.incomingState;
-  }
-
-  @computed
   get keypadEntered() {
     return this._telephonyStore.keypadEntered;
   }
 
   @computed
-  get shouldAnimationStart() {
-    return this._telephonyStore.shouldAnimationStart;
+  get startMinimizeAnimation() {
+    return this._telephonyStore.startMinimizeAnimation;
   }
 
   @computed
@@ -69,16 +44,6 @@ class DialerViewModel extends StoreViewModel<DialerProps>
   @computed
   get dialerMinimizeTranslateY() {
     return this._telephonyStore.dialerMinimizeTranslateY;
-  }
-
-  @computed
-  get xScale() {
-    return `calc(${RADIUS} / ${this._telephonyStore.dialerWidth})`;
-  }
-
-  @computed
-  get yScale() {
-    return `calc(${RADIUS} / ${this._telephonyStore.dialerHeight})`;
   }
 }
 

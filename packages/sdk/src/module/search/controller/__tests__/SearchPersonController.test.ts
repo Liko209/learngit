@@ -13,15 +13,16 @@ import { buildEntityCacheSearchController } from '../../../../framework/controll
 import { IEntityCacheController } from '../../../../framework/controller/interface/IEntityCacheController';
 import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
 import { SortableModel } from '../../../../framework/model';
-import { AccountUserConfig } from '../../../../module/account/config';
+import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
 import { GroupService } from '../../../group';
 import { SearchUtils } from '../../../../framework/utils/SearchUtils';
 import { PersonEntityCacheController } from '../../../person/controller/PersonEntityCacheController';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { GroupConfigService } from '../../../groupConfig';
-import { switchCase } from '@babel/types';
+import { AccountService } from 'sdk/module/account';
 
-jest.mock('../../../../module/account/config');
+jest.mock('sdk/module/config');
+jest.mock('sdk/module/account/config');
 jest.mock('../../../../api');
 jest.mock('../../../../dao/DaoManager');
 jest.mock('../../../group');
@@ -45,7 +46,7 @@ describe('SearchPersonController', () => {
   function setUp() {
     groupConfigService = new GroupConfigService();
     groupService = new GroupService();
-
+    personService = new PersonService();
     AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(1);
 
     entityCacheController = PersonEntityCacheController.buildPersonEntityCacheController(
@@ -55,7 +56,6 @@ describe('SearchPersonController', () => {
       entityCacheController,
     );
 
-    personService = new PersonService();
     jest
       .spyOn(personService, 'getEntityCacheSearchController')
       .mockReturnValue(cacheSearchController);
@@ -104,6 +104,7 @@ describe('SearchPersonController', () => {
     clearMocks();
     setUp();
   });
+
   async function prepareDataForSearchUTs() {
     await entityCacheController.clear();
     for (let i = 1; i <= 10000; i += 1) {
@@ -656,6 +657,137 @@ describe('SearchPersonController', () => {
       })) as SearchResultType;
       expect(result.sortableModels.length).toBe(0);
       expect(result.terms.length).toBe(0);
+    });
+  });
+
+  describe('duFuzzySearchPhoneContacts', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      personService['_entityCacheController'] = entityCacheController;
+    });
+
+    async function initTestData() {
+      await entityCacheController.clear();
+      for (let i = 1; i <= 10; i++) {
+        const person = {
+          id: i,
+          created_at: i,
+          modified_at: i,
+          creator_id: i,
+          is_new: false,
+          has_registered: true,
+          version: i,
+          company_id: 1,
+          email: `cat${i.toString()}@ringcentral.com`,
+          first_name: `cat${i.toString()}`,
+          last_name: `bruce${i.toString()}`,
+          display_name: `cat${i.toString()} bruce${i.toString()}`,
+          sanitized_rc_extension: {
+            extensionNumber: `666${i}`,
+            type: 'User',
+          },
+          rc_phone_numbers: [
+            { id: i, phoneNumber: `65022700${i}`, usageType: 'DirectNumber' },
+          ],
+        };
+        await entityCacheController.put(person as Person);
+      }
+    }
+    it('should return all phone numbers when is name matched', async () => {
+      await initTestData();
+
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
+      jest.spyOn(userConfig, 'getCurrentCompanyId').mockReturnValue(1);
+      jest.spyOn(userConfig, 'getGlipUserId').mockReturnValue(Infinity);
+
+      const result = await searchPersonController.doFuzzySearchPhoneContacts({
+        searchKey: 'cat bruce',
+        excludeSelf: false,
+      });
+
+      expect(result!.terms.length).toBe(2);
+      expect(result!.terms[0]).toBe('cat');
+      expect(result!.terms[1]).toBe('bruce');
+      expect(result!.phoneContacts.length).toBe(20);
+    });
+
+    it('should only return direct number when all are guests', async () => {
+      await initTestData();
+
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
+      jest.spyOn(userConfig, 'getCurrentCompanyId').mockReturnValue(2);
+
+      const result = await searchPersonController.doFuzzySearchPhoneContacts({
+        searchKey: 'cat bruce',
+        excludeSelf: false,
+      });
+      expect(result!.terms.length).toBe(2);
+      expect(result!.terms[0]).toBe('cat');
+      expect(result!.terms[1]).toBe('bruce');
+      expect(result!.phoneContacts.length).toBe(10);
+    });
+
+    it('should only return matched number when is name matched and phone number matched ', async () => {
+      await initTestData();
+
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
+      jest.spyOn(userConfig, 'getCurrentCompanyId').mockReturnValue(1);
+      jest.spyOn(userConfig, 'getGlipUserId').mockReturnValue(Infinity);
+
+      const result = await searchPersonController.doFuzzySearchPhoneContacts({
+        searchKey: 'cat 666',
+        excludeSelf: false,
+      });
+
+      expect(result!.terms.length).toBe(2);
+      expect(result!.terms[0]).toBe('cat');
+      expect(result!.terms[1]).toBe('666');
+      expect(result!.phoneContacts.length).toBe(10);
+      result!.phoneContacts.forEach(item => {
+        expect(item.phoneNumber.id.startsWith('666')).toBeTruthy();
+      });
+
+      const result2 = await searchPersonController.doFuzzySearchPhoneContacts({
+        searchKey: 'cat 65022700',
+        excludeSelf: false,
+      });
+
+      expect(result2!.terms.length).toBe(2);
+      expect(result2!.terms[0]).toBe('cat');
+      expect(result2!.terms[1]).toBe('65022700');
+      expect(result2!.phoneContacts.length).toBe(10);
+      result2!.phoneContacts.forEach(item => {
+        expect(item.phoneNumber.id.startsWith('65022700')).toBeTruthy();
+      });
+    });
+
+    it('should only return matched number when is phone number matched ', async () => {
+      await initTestData();
+
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
+      jest.spyOn(userConfig, 'getCurrentCompanyId').mockReturnValue(1);
+      jest.spyOn(userConfig, 'getGlipUserId').mockReturnValue(Infinity);
+      const result = await searchPersonController.doFuzzySearchPhoneContacts({
+        searchKey: '650 22700',
+        excludeSelf: false,
+      });
+
+      expect(result!.terms.length).toBe(2);
+      expect(result!.terms[0]).toBe('650');
+      expect(result!.terms[1]).toBe('22700');
+      expect(result!.phoneContacts.length).toBe(10);
+      result!.phoneContacts.forEach(item => {
+        expect(item.phoneNumber.id.startsWith('65022700')).toBeTruthy();
+      });
     });
   });
 });

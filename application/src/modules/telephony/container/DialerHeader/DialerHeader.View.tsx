@@ -11,10 +11,10 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { DialerHeaderViewProps } from './types';
 import { Avatar } from '@/containers/Avatar';
 
+type Props = DialerHeaderViewProps & WithTranslation;
+
 @observer
-class DialerHeaderViewComponent extends React.Component<
-  DialerHeaderViewProps & WithTranslation
-> {
+class DialerHeaderViewComponent extends React.Component<Props> {
   private _Avatar = () => {
     const { uid } = this.props;
     return (

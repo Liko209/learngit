@@ -14,7 +14,6 @@ jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
 function createStore() {
   return new TelephonyStore();
 }
-
 describe('Telephony store', () => {
   it('callWindowState should to be CALL_WINDOW_STATUS.MINIMIZED and callState should to be CALL_STATE.IDLE when instantiated TelephonyStore', () => {
     const store = createStore();
@@ -187,11 +186,11 @@ describe('Telephony store', () => {
 
   it('switch animation', () => {
     const store = createStore();
-    expect(store.shouldAnimationStart).toBe(false);
+    expect(store.startMinimizeAnimation).toBe(false);
     store.startAnimation();
-    expect(store.shouldAnimationStart).toBe(true);
+    expect(store.startMinimizeAnimation).toBe(true);
     store.stopAnimation();
-    expect(store.shouldAnimationStart).toBe(false);
+    expect(store.startMinimizeAnimation).toBe(false);
   });
 
   it('switch dialer focus', () => {
@@ -201,5 +200,17 @@ describe('Telephony store', () => {
     expect(store.dialerInputFocused).toBe(true);
     store.onDialerInputBlur();
     expect(store.dialerInputFocused).toBe(false);
+  });
+
+  it('reset status when the call status is idle', () => {
+    const store = createStore();
+    store.callerName = 'name';
+    store.phoneNumber = '112233';
+    store.isMute = true;
+    store.directCall();
+    store.end();
+    expect(store.callerName).toBeUndefined();
+    expect(store.phoneNumber).toBeUndefined();
+    expect(store.isMute).toBeFalsy();
   });
 });

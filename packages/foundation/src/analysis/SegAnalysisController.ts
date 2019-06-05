@@ -15,7 +15,7 @@ class SegAnalysisController extends AnalysisBaseController {
   }
 
   init() {
-    const key = this.isProductionBuild() ? keys.production : keys.develop;
+    const key = this.isProduction() ? keys.production : keys.develop;
     this._segment = Segment({ key });
   }
 

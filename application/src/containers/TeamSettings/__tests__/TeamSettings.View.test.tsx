@@ -15,8 +15,9 @@ import {
 } from 'jui/pattern/TeamSetting';
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
 import { Trans } from 'react-i18next';
+import { i18nP } from '@/utils/i18nT';
 
-const t_mock = (text: string, options?: object) => {
+const mockTransition = (text: string, options?: object) => {
   if (!options) {
     return text.substring(text.lastIndexOf('.') + 1);
   }
@@ -25,11 +26,35 @@ const t_mock = (text: string, options?: object) => {
   )}`;
 };
 
+jest.mock('sdk/module/serviceLoader', () => ({
+  ServiceLoader: {
+    getInstance: () => ({
+      onTeamDelete: jest.fn(),
+      onTeamArchive: jest.fn(),
+      setConfigDao: jest.fn(),
+    }),
+  },
+  ServiceConfig: {
+    GROUP_SERVICE: expect.any(String),
+  },
+}));
+
+jest.mock('@/store/utils', () => ({
+  getEntity: jest
+    .fn()
+    .mockReturnValue({ isTeam: true, displayName: 'my team' }),
+}));
+
+jest.mock('@/utils/i18nT');
+i18nP.mockImplementation(mockTransition);
+
+const spyDialogConfirm = jest.spyOn(Dialog, 'confirm');
+
 describe('TeamSettingsView', () => {
   describe('render()', () => {
     it('should pass correct max length attributes to the input fields [JPT-927]', () => {
       const props: any = {
-        t: t_mock,
+        t: mockTransition,
         initialData: {
           name: '',
           description: '',
@@ -59,7 +84,7 @@ describe('TeamSettingsView', () => {
 
     it('should display original name and description of team when first open setting [JPT-892]', () => {
       const props: any = {
-        t: t_mock,
+        t: mockTransition,
         initialData: {
           name: 'INITIAL NAME',
           description: 'SOME INITIAL DESC....',
@@ -90,9 +115,8 @@ describe('TeamSettingsView', () => {
 
   describe('Confirm dialog', () => {
     it('The Leave Team dialog display correctly after clicking leave team button [JPT-934]', (done: jest.DoneCallback) => {
-      jest.spyOn(Dialog, 'confirm');
       const props: any = {
-        t: t_mock,
+        t: mockTransition,
         initialData: {
           name: '',
           description: '',
@@ -111,13 +135,13 @@ describe('TeamSettingsView', () => {
       expect(leaveTeamButton.text()).toEqual('leaveTeam');
       expect(leaveTeamButton.simulate('click'));
       setTimeout(() => {
-        expect(Dialog.confirm).toHaveBeenCalledWith(
+        expect(spyDialogConfirm).toHaveBeenCalledWith(
           expect.objectContaining({
             content: (
               <JuiDialogContentText>
                 <Trans
-                  components={[<strong key="0" />]}
-                  i18nKey="people.team.leaveTeamConfirmContent"
+                  components={[<strong key='0' />]}
+                  i18nKey='people.team.leaveTeamConfirmContent'
                   values={{ teamName: 'my team' }}
                 />
               </JuiDialogContentText>
@@ -132,7 +156,7 @@ describe('TeamSettingsView', () => {
 
     it('Only team admins are allowed to delete team [JPT-1107]', () => {
       const props: any = {
-        t: t_mock,
+        t: mockTransition,
         initialData: {
           name: '',
           description: '',
@@ -150,7 +174,7 @@ describe('TeamSettingsView', () => {
         .filterWhere(
           wrapper => wrapper.find(ButtonListItemText).text() === 'deleteTeam',
         );
-      expect(deleteTeamButton.prop('hide')).toBeTruthy();
+      expect(deleteTeamButton.exists()).toBeFalsy();
       props.isAdmin = true;
       result = shallow(<TeamSettingsComponent {...props} />);
       deleteTeamButton = result
@@ -163,7 +187,7 @@ describe('TeamSettingsView', () => {
 
     it('There\'s no "Delete team" options in the "All Hands" team. [JPT-1115]', () => {
       const props: any = {
-        t: t_mock,
+        t: mockTransition,
         initialData: {
           name: '',
           description: '',
@@ -181,7 +205,7 @@ describe('TeamSettingsView', () => {
         .filterWhere(
           wrapper => wrapper.find(ButtonListItemText).text() === 'deleteTeam',
         );
-      expect(deleteTeamButton.prop('hide')).toBeTruthy();
+      expect(deleteTeamButton.exists()).toBeFalsy();
       props.isCompanyTeam = false;
       result = shallow(<TeamSettingsComponent {...props} />);
       deleteTeamButton = result
@@ -193,9 +217,8 @@ describe('TeamSettingsView', () => {
     });
 
     it('The Delete Team dialog display correctly after clicking "Delete team" button [JPT-1108]', (done: jest.DoneCallback) => {
-      jest.spyOn(Dialog, 'confirm');
       const props: any = {
-        t: t_mock,
+        t: mockTransition,
         initialData: {
           name: '',
           description: '',
@@ -219,7 +242,7 @@ describe('TeamSettingsView', () => {
       );
       expect(deleteTeamButton.simulate('click'));
       setTimeout(() => {
-        expect(Dialog.confirm).toHaveBeenCalledWith(
+        expect(spyDialogConfirm).toHaveBeenCalledWith(
           expect.objectContaining({
             okText: 'Deleteteamconfirmok',
             cancelText: 'Cancel',
@@ -231,7 +254,7 @@ describe('TeamSettingsView', () => {
 
     it('Only team admins are allowed to archive team [JPT-1126]', () => {
       const props: any = {
-        t: t_mock,
+        t: mockTransition,
         initialData: {
           name: '',
           description: '',
@@ -249,7 +272,7 @@ describe('TeamSettingsView', () => {
         .filterWhere(
           wrapper => wrapper.find(ButtonListItemText).text() === 'archiveTeam',
         );
-      expect(archiveTeamButton.prop('hide')).toBeTruthy();
+      expect(archiveTeamButton.exists()).toBeFalsy();
       props.isAdmin = true;
       result = shallow(<TeamSettingsComponent {...props} />);
       archiveTeamButton = result
@@ -262,7 +285,7 @@ describe('TeamSettingsView', () => {
 
     it('There\'s no "Archive team" options in the "All Hands" team. [JPT-1127]', () => {
       const props: any = {
-        t: t_mock,
+        t: mockTransition,
         initialData: {
           name: '',
           description: '',
@@ -280,7 +303,7 @@ describe('TeamSettingsView', () => {
         .filterWhere(
           wrapper => wrapper.find(ButtonListItemText).text() === 'archiveTeam',
         );
-      expect(archiveTeamButton.prop('hide')).toBeTruthy();
+      expect(archiveTeamButton.exists()).toBeFalsy();
       props.isCompanyTeam = false;
       result = shallow(<TeamSettingsComponent {...props} />);
       archiveTeamButton = result
@@ -292,9 +315,8 @@ describe('TeamSettingsView', () => {
     });
 
     it('The Archive Team dialog display correctly after clicking "Archive team" button [JPT-1128]', (done: jest.DoneCallback) => {
-      jest.spyOn(Dialog, 'confirm');
       const props: any = {
-        t: t_mock,
+        t: mockTransition,
         initialData: {
           name: '',
           description: '',
@@ -318,7 +340,7 @@ describe('TeamSettingsView', () => {
       );
       expect(archiveTeamButton.simulate('click'));
       setTimeout(() => {
-        expect(Dialog.confirm).toHaveBeenCalledWith(
+        expect(spyDialogConfirm).toHaveBeenCalledWith(
           expect.objectContaining({
             content: 'archiveTeamConfirmContent {"teamName":"my team"}',
             okText: 'Archiveteamconfirmok',

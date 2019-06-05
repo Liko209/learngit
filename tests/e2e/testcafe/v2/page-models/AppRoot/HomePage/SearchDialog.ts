@@ -173,8 +173,8 @@ class InstantSearch extends BaseSearchResultPage {
     return this.getComponent(SearchItem, this.teams.nth(n));
   }
 
-  searchPeopleWithText(text:string){
-    return this.getComponent(SearchItem,this.peoples.withText(text));
+  searchPeopleWithText(text: string) {
+    return this.getComponent(SearchItem, this.peoples.withText(text));
   }
 
   /* content search */
@@ -417,6 +417,11 @@ class TabEntry extends BaseWebComponent {
 class SearchItem extends BaseWebComponent {
   get avatar() {
     return this.getSelectorByAutomationId('search-item-avatar', this.self);
+  }
+
+  //recently content
+  get contentIcon() {
+    return this.getSelectorByIcon('history', this.avatar);
   }
 
   get name() {

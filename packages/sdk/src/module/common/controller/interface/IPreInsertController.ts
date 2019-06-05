@@ -13,7 +13,7 @@ interface IPreInsertController<
   delete(entity: T): void;
   bulkDelete(entities: T[]): Promise<void>;
   updateStatus(entity: T, status: PROGRESS_STATUS): void;
-  isInPreInsert(version: number): boolean;
+  isInPreInsert(preInsertId: string): boolean;
 }
 
 export { IPreInsertController };

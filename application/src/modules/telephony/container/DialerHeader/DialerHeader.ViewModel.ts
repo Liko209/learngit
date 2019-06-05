@@ -11,6 +11,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { DialerHeaderProps, DialerHeaderViewProps } from './types';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { ChangeEvent, KeyboardEvent } from 'react';
+import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
 class DialerHeaderViewModel extends StoreViewModel<DialerHeaderProps>
   implements DialerHeaderViewProps {
@@ -22,7 +23,11 @@ class DialerHeaderViewModel extends StoreViewModel<DialerHeaderProps>
 
   @computed
   get phone() {
-    return this._telephonyStore.phoneNumber;
+    const { phoneNumber } = this._telephonyStore;
+    if (phoneNumber) {
+      return formatPhoneNumber(phoneNumber);
+    }
+    return phoneNumber;
   }
 
   @computed

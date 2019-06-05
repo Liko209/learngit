@@ -253,15 +253,16 @@ export class BaseConversationPage extends BaseWebComponent {
     return await this.scrollDiv.scrollHeight;
   }
 
-  async scrollUpToViewPostById(postId: string) {
+  async scrollUpToViewPostById(postId: string, maxRetry: number = 10, retryInterval: number = 1e3) {
     const postItem = this.postItemById(postId)
-    for (const i of _.range(10)) {
+    for (const i of _.range(maxRetry)) {
       if (await postItem.exists) {
         await postItem.scrollIntoView()
         break
       } else {
+        await this.h.scrollBy(this.scrollDiv, 0, -1); // FIXME: work around scrollUp bug
         await this.scrollUpOnePage();
-        await this.t.wait(1e3);
+        await this.t.wait(retryInterval);
       }
     }
     assert(await postItem.visible, "this post does not exist");
@@ -640,6 +641,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
+  get href(){
+    return this.self.find(`[href]`)
+  }
+
   get img() {
     this.warnFlakySelector(); // todo: all specify item...
     return this.body.find('img');
@@ -861,6 +866,11 @@ export class PostItem extends BaseWebComponent {
   }
 
   async hoverPostAndClickJumpToConversationButton() {
+    await this.hoverPost();
+    await this.t.click(this.jumpToConversationButton);
+  }
+
+  async hoverPost() {
     const buttonElement = this.jumpToConversationButton;
     const displayJumpButton = ClientFunction(() => {
       buttonElement().style["opacity"] = "1";
@@ -868,9 +878,8 @@ export class PostItem extends BaseWebComponent {
         dependencies: { buttonElement }
       }
     );
-    await this.t.hover(this.self)
+    await this.t.hover(this.self);
     await displayJumpButton();
-    await this.t.click(this.jumpToConversationButton);
   }
 
   // audio conference
@@ -881,7 +890,7 @@ export class PostItem extends BaseWebComponent {
   }
 
   get audioConference() {
-    return this.getComponent(AudioConference, this.self);
+    return this.getComponent(AudioConference, this.getSelectorByAutomationId('conferenceItem', this.self));
   }
 
   async scrollIntoView() {
@@ -899,6 +908,13 @@ export class PostItem extends BaseWebComponent {
     await this.t.expect(this.isHighLight).ok();
   }
 
+  get phoneLink() {
+    return this.getSelectorByAutomationId('phoneNumberLink', this.self);
+  }
+
+  phoneLinkByDataId(dataId: string) {
+    return this.phoneLink.withAttribute('data-id', dataId);
+  }
   // be searched item
   get keyworkdsByHighLight() {
     return this.self.find('span.highlight-term');
@@ -909,14 +925,23 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('.conversation-item-cards');
   }
 
+  get eventIcon() {
+    return this.getSelectorByIcon('event', this.itemCard);
+  }
+
   get eventTitle() {
     this.warnFlakySelector();
-    return this.getSelectorByIcon('event', this.itemCard).nextSibling('span'); // todo: automation id
+    return this.eventIcon.nextSibling('span'); // todo: automation id
   }
 
   get eventLocation() {
     this.warnFlakySelector();
     return this.itemCard.find('div').withExactText('Location').nextSibling('div'); // todo: automation id
+  }
+
+  get eventDue() {
+    this.warnFlakySelector();
+    return this.itemCard.find('div').withExactText('Due').nextSibling('div'); // todo: automation id
   }
 
   get eventDescripton() {
@@ -959,29 +984,25 @@ export class PostItem extends BaseWebComponent {
 }
 
 class AudioConference extends BaseWebComponent {
-  get container() {
-    return this.self.find('.conversation-item-cards');
-  }
-
   get icon() {
     return this.getSelectorByIcon('conference');
   }
 
   get title() {
     this.warnFlakySelector();
-    return this.icon.parent('div').find('span').withText('Audio Conference');
+    return this.icon.parent('div').find('span').withText('Audio Conference'); // todo i18n
   }
 
   get dialInNumber() {
-    return this.self.find('div').withText('Dial-in Number');
+    return this.self.find('div').withText('Dial-in Number'); // todo i18n
   }
 
   get phoneNumber() {
-    return this.getSelectorByAutomationId('conferencePhoneNumber', this.self.find('a'));
+    return this.getSelectorByAutomationId('phoneNumberLink', this.self);
   }
 
   get globalNumber() {
-    return this.getSelectorByAutomationId('conferenceGlobalNumber', this.self.find('a'));
+    return this.getSelectorByAutomationId('conferenceGlobalNumber', this.self);
   }
 
   // only host can see

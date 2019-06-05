@@ -100,7 +100,10 @@ class GroupConfigController {
   async getGroupSendFailurePostIds(id: number): Promise<number[]> {
     try {
       const group = (await this.entitySourceController.get(id)) as GroupConfig;
-      return (group && group.send_failure_post_ids) || [];
+      if (group && group.send_failure_post_ids) {
+        return _.cloneDeep(group.send_failure_post_ids);
+      }
+      return [];
     } catch (error) {
       throw ErrorParserHolder.getErrorParser().parse(error);
     }

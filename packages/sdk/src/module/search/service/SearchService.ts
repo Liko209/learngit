@@ -9,12 +9,13 @@ import {
   RecentSearchTypes,
   RecentSearchModel,
   FuzzySearchPersonOptions,
+  PhoneContactEntity,
 } from '../entity';
 import { SearchServiceController } from '../controller/SearchServiceController';
 import { container } from '../../../container';
 import { Person } from '../../person/entity';
 import { SortableModel } from '../../../framework/model';
-import { SearchUserConfig } from '../config';
+import { SearchUserConfig } from '../config/SearchUserConfig';
 
 class SearchService extends AbstractService implements ISearchService {
   private _searchServiceController: SearchServiceController = new SearchServiceController(
@@ -80,8 +81,19 @@ class SearchService extends AbstractService implements ISearchService {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Person>[];
-  } | null> {
+  }> {
     return await this.searchPersonController.doFuzzySearchPersons(options);
+  }
+
+  async doFuzzySearchPhoneContacts(
+    options: FuzzySearchPersonOptions,
+  ): Promise<{
+    terms: string[];
+    phoneContacts: PhoneContactEntity[];
+  }> {
+    return await this.searchPersonController.doFuzzySearchPhoneContacts(
+      options,
+    );
   }
 }
 

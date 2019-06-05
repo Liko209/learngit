@@ -16,8 +16,8 @@ type Props = PrivacyViewProps & WithTranslation & PrivacyProps;
 @observer
 class PrivacyViewComponent extends Component<Props> {
   @catchError.flash({
-    network: 'people.prompt.teamNetError',
-    server: 'people.prompt.markPrivateServerErrorForTeam',
+    network: 'people.prompt.changeTeamPrivateTypeErrorForNetworkIssue',
+    server: 'people.prompt.changeTeamPrivateTypeErrorForServerIssue',
   })
   onClickPrivacy = async () => {
     const { handlePrivacy } = this.props;

@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { CompanyEntityCacheController } from '../CompanyEntityCacheController';
-import { AccountUserConfig } from '../../../account/config';
+import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
-jest.mock('../../../account/config', () => {
+jest.mock('../../../account/config/AccountUserConfig', () => {
   const xx = {
     getCurrentCompanyId: jest.fn(),
   };
