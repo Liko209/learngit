@@ -13,7 +13,7 @@ import {
 } from './types';
 import { LogEntity, SessionManager } from 'foundation';
 import { ZipConsumer } from './ZipConsumer';
-import * as zipWorker from './zip.worker';
+// import * as zipWorker from './zip.worker';
 import { createWorker } from './utils';
 const DEFAULT_LIMIT = 5;
 
@@ -23,7 +23,7 @@ export class ZipLogZipItemProvider implements IZipItemProvider, IZipProducer {
   index: number = 0;
   uploaded: UploadedZip[] = [];
   zipConsumer: ZipConsumer;
-  worker: typeof zipWorker = createWorker(zipWorker);
+  worker: any;
   limit: number = DEFAULT_LIMIT;
 
   constructor() {
@@ -79,6 +79,11 @@ export class ZipLogZipItemProvider implements IZipItemProvider, IZipProducer {
         content: logContent,
       },
     ];
+    if (!this.worker) {
+      const zipWorker = import('./zip.worker') as any;
+      this.worker = createWorker(zipWorker.default);
+    }
+
     const zipBlob = await this.worker.zip(zipItems);
     this.zips.push({
       index,
