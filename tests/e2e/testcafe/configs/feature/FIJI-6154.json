@@ -3,7 +3,11 @@
         "fixtures": [
             "./fixtures/Setting/NotificationAndSounds/OtherNotificationSettings.ts"
         ],
-
+        "include_tags": [
+            "P0",
+            "P1",
+            "P2"
+        ],
         "browsers": [
             "selenium:chrome"
         ]
