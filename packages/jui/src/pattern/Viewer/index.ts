@@ -6,3 +6,4 @@
 
 export * from './ViewerSidebar';
 export * from './ViewerDocument';
+export { isSameScale } from './ui_utils';

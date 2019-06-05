@@ -226,7 +226,7 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
   render() {
     const { open } = this.props;
     const transitionDuration = {
-      enter: 0,
+      enter: duration.enteringScreen,
       exit: duration.enteringScreen,
     };
     return (

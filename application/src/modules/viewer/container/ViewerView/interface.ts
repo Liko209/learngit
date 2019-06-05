@@ -5,6 +5,10 @@
  */
 import { ReactNode } from 'react';
 
+type UpdateParamsType = {
+  scale?: number;
+  pageIdx?: number;
+};
 interface IViewerView {
   pages?: {
     cmp: ReactNode;
@@ -18,6 +22,9 @@ interface IViewerView {
   actions?: ReactNode;
 
   viewerDestroyer: Function;
+  currentPageIdx: number;
+  currentScale: number;
+  onUpdate: (opts: UpdateParamsType) => void;
 }
 
-export { IViewerView };
+export { IViewerView, UpdateParamsType };

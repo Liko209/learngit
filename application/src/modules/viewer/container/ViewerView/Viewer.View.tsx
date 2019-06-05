@@ -27,9 +27,23 @@ import {
   JuiTransition,
   imageViewerHeaderAnimation,
 } from 'jui/components/Animation';
-import { JuiViewerSidebar, JuiViewerDocument } from 'jui/pattern/Viewer';
+import {
+  JuiViewerSidebar,
+  JuiViewerDocument,
+  isSameScale,
+} from 'jui/pattern/Viewer';
 import ViewerContext, { ViewerContextType } from './ViewerContext';
 import { IViewerView } from './interface';
+import _ from 'lodash';
+
+const MAX_SCALE = 10.0;
+const MIN_SCALE = 0.1;
+const SCALE_UNIT = 0.1;
+
+type updateParamsType = {
+  scale?: number;
+  pageIdx?: number;
+};
 
 type ViewerViewType = {
   dataModule: IViewerView;
@@ -64,7 +78,6 @@ const DocumentResponsive = withResponsive(
 
 type State = {
   contextValue: ViewerContextType;
-  scale: number;
 };
 
 @observer
@@ -72,6 +85,9 @@ class ViewerViewComponent extends Component<
   ViewerViewType & WithTranslation,
   State
 > {
+  // private _isBarChanged: boolean = false;
+  // private _isDocChanged: boolean = false;
+
   constructor(props: ViewerViewType & WithTranslation) {
     super(props);
     this.state = {
@@ -82,7 +98,6 @@ class ViewerViewComponent extends Component<
         onTransitionEntered: this.onTransitionEntered,
         isAnimating: true,
       },
-      scale: 100,
     };
   }
 
@@ -148,6 +163,82 @@ class ViewerViewComponent extends Component<
     this.props.dataModule.viewerDestroyer();
   }
 
+  private _handleZoomOut = () => {
+    const { dataModule } = this.props;
+    const { currentScale } = dataModule;
+    this._setScale(currentScale - 1 * SCALE_UNIT);
+  }
+
+  private _handleZoomIn = () => {
+    const { dataModule } = this.props;
+    const { currentScale } = dataModule;
+    this._setScale(currentScale + 1 * SCALE_UNIT);
+  }
+
+  private _handleScaleChanged = (newScale: number) => {
+    this._setScale(newScale);
+  }
+
+  private _setScale = _.debounce((newScale: number) => {
+    const { dataModule } = this.props;
+    const { currentScale } = dataModule;
+    if (
+      isSameScale(currentScale, newScale) ||
+      newScale < MIN_SCALE ||
+      newScale > MAX_SCALE
+    ) {
+      return;
+    }
+    this._update({
+      scale: newScale,
+    });
+  },                             100);
+
+  // private _handlePageIdxChanged = _.debounce((toIdx: number) => {
+  //   const { dataModule } = this.props;
+  //   const { currentPageIdx } = dataModule;
+  //   if (currentPageIdx === toIdx) {
+  //     return;
+  //   }
+  //   this._update({
+  //     pageIdx: toIdx,
+  //   });
+  // },                                         100);
+
+  private _update = ({ scale, pageIdx }: updateParamsType) => {
+    const { dataModule } = this.props;
+    const { onUpdate } = dataModule;
+    onUpdate &&
+      onUpdate({
+        scale,
+        pageIdx,
+      });
+  }
+
+  private _handleBarPageIdxChanged = (idx: number) => {
+    // if (this._isDocChanged) {
+    //   this._isDocChanged = false;
+    //   return;
+    // }
+    console.log('--- _handleBarPageIdxChanged', idx);
+    // this._isBarChanged = true;
+    this._update({
+      pageIdx: idx,
+    });
+  }
+
+  private _handleDocPageIdxChanged = (idx: number) => {
+    // if (this._isBarChanged) {
+    //   this._isBarChanged = false;
+    //   return;
+    // }
+    // this._isDocChanged = true;
+    console.log('--- _handleDocPageIdxChanged', idx);
+    this._update({
+      pageIdx: idx,
+    });
+  }
+
   renderThumbnailBar = () => {
     const { dataModule } = this.props;
     if (dataModule.pages) {
@@ -158,8 +249,8 @@ class ViewerViewComponent extends Component<
         <JuiViewerSidebar
           open={true}
           items={items}
-          selectedIndex={2}
-          onSelectedChanged={() => {}}
+          selectedIndex={dataModule.currentPageIdx}
+          onSelectedChanged={this._handleBarPageIdxChanged}
         />
       );
     }
@@ -181,9 +272,25 @@ class ViewerViewComponent extends Component<
           },
         };
       });
-      return <JuiViewerDocument pages={pages} pageFit={true} />;
+      return (
+        <JuiViewerDocument
+          pages={pages}
+          scale={dataModule.currentScale}
+          pageIndex={dataModule.currentPageIdx}
+          pageFit={true}
+          onScaleChange={this._handleScaleChanged}
+          onCurrentPageIdxChanged={this._handleDocPageIdxChanged}
+        />
+      );
     }
     return null;
+  }
+
+  private _getScaleDisplayString = () => {
+    const { dataModule } = this.props;
+    const { currentScale } = dataModule;
+    const scaleStr = parseInt(`${currentScale * 100}`, 10);
+    return `${scaleStr}%`;
   }
 
   render() {
@@ -235,14 +342,14 @@ class ViewerViewComponent extends Component<
             <JuiZoomButtonGroup
               className="zoomGroup"
               resetMode={true}
-              centerText={'100%'}
+              centerText={this._getScaleDisplayString()}
               ZoomOut={
                 <JuiIconButton
                   variant="plain"
                   tooltipTitle={t('viewer.ZoomOut')}
                   ariaLabel={t('viewer.ZoomOut')}
                   disabled={false}
-                  onClick={() => {}}
+                  onClick={() => this._handleZoomOut()}
                 >
                   zoom_out
                 </JuiIconButton>
@@ -253,7 +360,7 @@ class ViewerViewComponent extends Component<
                   tooltipTitle={t('viewer.ZoomIn')}
                   ariaLabel={t('viewer.ZoomIn')}
                   disabled={false}
-                  onClick={() => {}}
+                  onClick={() => this._handleZoomIn()}
                 >
                   zoom_in
                 </JuiIconButton>

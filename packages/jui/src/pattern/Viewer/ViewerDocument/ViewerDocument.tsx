@@ -129,7 +129,15 @@ class JuiViewerDocument extends React.Component<Props, States> {
   }
 
   componentDidMount() {
-    const { pageIndex, pages, pageFit = true } = this.props;
+    const {
+      pageIndex,
+      pages,
+      pageFit = true,
+      onScaleChange,
+      onCurrentPageIdxChanged,
+    } = this.props;
+    const { currentPageIndex, currentScale } = this.state;
+
     const containerEl = this.container.current;
     if (containerEl) {
       containerEl.addEventListener('wheel', this.handleContainerWheel, {
@@ -140,7 +148,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
         this._scrollUpdate.bind(this),
       );
     }
-    if (pageIndex !== undefined) {
+    if (pageIndex !== undefined && pageIndex !== currentPageIndex) {
       this.setState({
         currentPageIndex: pageIndex,
       });
@@ -156,6 +164,8 @@ class JuiViewerDocument extends React.Component<Props, States> {
     if (pageFit) {
       setTimeout(() => {
         this._setScale('page-fit');
+        onScaleChange && onScaleChange(currentScale);
+        onCurrentPageIdxChanged && onCurrentPageIdxChanged(currentPageIndex);
       },         1000);
     }
   }

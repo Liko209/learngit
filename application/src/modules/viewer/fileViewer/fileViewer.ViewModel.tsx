@@ -5,9 +5,12 @@
  */
 
 import React from 'react';
-import { computed, action } from 'mobx';
+import { computed, action, observable } from 'mobx';
 import { AbstractViewModel } from '@/base';
-import { IViewerView } from '@/modules/viewer/container/ViewerView/interface';
+import {
+  IViewerView,
+  UpdateParamsType,
+} from '@/modules/viewer/container/ViewerView/interface';
 import moment from 'moment';
 import {
   JuiDialogHeaderMetaLeft,
@@ -32,12 +35,15 @@ import {
 import portalManager from '@/common/PortalManager';
 import _ from 'lodash';
 
-const CHANGE_DEBOUNCE_TIME = 500;
-
 class FileViewerViewModel extends AbstractViewModel<IViewerView>
   implements IViewerView {
   private _item: FileItemModel;
   private _dismiss: Function;
+  @observable
+  private _currentScale: number;
+  @observable
+  private _currentPageIdx: number;
+
   constructor(item: FileItemModel, dismiss: Function) {
     super();
     this._item = item;
@@ -131,13 +137,27 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
     );
   }
 
+  @computed
+  get currentPageIdx() {
+    return this._currentPageIdx;
+  }
+
+  @computed
+  get currentScale() {
+    return this._currentScale;
+  }
+
   @action
-  handleCurrentPageIdxChange = _.debounce(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      // const value = e.target.value;
-    },
-    CHANGE_DEBOUNCE_TIME,
-  );
+  onUpdate = (opts: UpdateParamsType) => {
+    console.log('--- fileViewer', opts);
+    const { scale, pageIdx } = opts;
+    if (scale && scale !== this._currentScale) {
+      this._currentScale = scale;
+    }
+    if (pageIdx !== undefined && pageIdx !== this._currentPageIdx) {
+      this._currentPageIdx = pageIdx;
+    }
+  }
 
   @computed
   get actions() {

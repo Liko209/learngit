@@ -74,6 +74,7 @@ const ViewerThumbnailWrap = styled.div`
     max-width: ${viewerThumbnailMaxWidth}px;
     cursor: pointer;
     margin-bottom: ${spacing(2)};
+    outline: none;
 
     &&:hover {
       && ${ViewerThumbnailContentWrap} {
