@@ -120,14 +120,13 @@ describe('TelephonyService', () => {
           return new Promise((resolve, reject) => {
             reject();
           });
-        } else {
-          return new Promise((resolve, reject) => {
-            let callOptions: RTCCallActionSuccessOptions = {
-              parkExtension: '987',
-            };
-            resolve(callOptions);
-          });
         }
+        return new Promise((resolve, reject) => {
+          let callOptions: RTCCallActionSuccessOptions = {
+            parkExtension: '987',
+          };
+          resolve(callOptions);
+        });
       },
       createAccount: (
         accountDelegate: { onMadeOutgoingCall: () => void },
