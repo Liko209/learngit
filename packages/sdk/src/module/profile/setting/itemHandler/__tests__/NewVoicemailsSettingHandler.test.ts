@@ -152,7 +152,7 @@ describe('NewVoicemailsSettingHandler', () => {
   });
 
   describe('handleProfileUpdated', () => {
-    it('should emit update when has subscribe update and.DESKTOP_VOICEMAIL change', (done: jest.DoneCallback) => {
+    it('should emit update when has subscribe update and DESKTOP_VOICEMAIL change', (done: jest.DoneCallback) => {
       settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
       notificationCenter.emitEntityUpdate<Profile>(ENTITY.PROFILE, [
@@ -163,9 +163,6 @@ describe('NewVoicemailsSettingHandler', () => {
       ]);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
         done();
       });
     });
@@ -181,7 +178,6 @@ describe('NewVoicemailsSettingHandler', () => {
       ]);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
         done();
       });
     });
@@ -202,9 +198,6 @@ describe('NewVoicemailsSettingHandler', () => {
       );
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
         done();
       });
     });
@@ -222,9 +215,6 @@ describe('NewVoicemailsSettingHandler', () => {
       );
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
         done();
       });
     });
@@ -238,7 +228,6 @@ describe('NewVoicemailsSettingHandler', () => {
       );
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
         done();
       });
     });
