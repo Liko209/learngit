@@ -5,9 +5,11 @@
  */
 
 import { getEntity } from '@/store/utils';
+import { Notification } from '@/containers/Notification';
 import { ProfileDialogGroupViewModel } from '../Group.ViewModel';
 
 jest.mock('@/store/utils');
+jest.mock('@/containers/Notification');
 
 const mockData = {
   displayName: 'Group name',
@@ -23,6 +25,7 @@ let vm: ProfileDialogGroupViewModel;
 describe('ProfileDialogGroupViewModel', () => {
   beforeAll(() => {
     (getEntity as jest.Mock).mockReturnValue(mockData);
+    Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
   });
 
   beforeEach(() => {
@@ -34,6 +37,16 @@ describe('ProfileDialogGroupViewModel', () => {
   describe('id', () => {
     it('should be get conversation id when the component is instantiated', () => {
       expect(vm.id).toEqual(props.id);
+    });
+  });
+
+  describe('member', () => {
+    it('should toast error message when user has been removed from the team [JPT-2091]', () => {
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'people.prompt.conversationPrivate',
+        }),
+      );
     });
   });
 
