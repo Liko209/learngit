@@ -184,6 +184,11 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.buttonOfIcon('deletenumber');
   }
 
+  // park
+  get parkActionMenuItem() {
+    return this.getSelectorByAutomationId('telephony-park-menu-item');
+  }
+
   // inbound call
   get sendToVoiceMailButton() {
     return this.getSelectorByAutomationId('telephony-voice-mail-btn');
@@ -338,6 +343,11 @@ export class TelephonyDialog extends BaseWebComponent {
 
   get callerIdList() {
     return this.getComponent(CallerIdList);
+  }
+
+  // Park
+  async clickParkActionButton() {
+    await this.t.click(this.parkActionMenuItem);
   }
 }
 class CallerIdList extends BaseWebComponent {
