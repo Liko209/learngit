@@ -11,7 +11,7 @@ fixture('ContentPanel/TeamMessage')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Check menu tip',['P2','ContentPanel','Team','TeamMessage','V1.4','Sean']),async(t)=>{
+test(formalName('Check menu tip',['P2','ContentPanel','Team','TeamMessage','V1.4','Sean.Zhuang']),async(t)=>{
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
