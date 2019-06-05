@@ -20,7 +20,7 @@ import { CALL_STATE } from './FSM';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
 import { UserSettingEntity } from 'sdk/module/setting';
-import { getEntity } from '@/store/utils/entities';
+import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import SettingModel from '@/store/models/UserSetting';
 import { NOTIFICATION_OPTIONS } from 'sdk/module/profile';
