@@ -41,6 +41,8 @@ const LeftResponsive = withResponsive(
     return cloneElement(props.content);
   },
   {
+    minWidth: 268,
+    maxWidth: 268,
     defaultWidth: 268,
     visualMode: VISUAL_MODE.BOTH,
     enable: {
@@ -179,7 +181,7 @@ class ViewerViewComponent extends Component<
           },
         };
       });
-      return <JuiViewerDocument pages={pages} />;
+      return <JuiViewerDocument pages={pages} pageFit={true} />;
     }
     return null;
   }

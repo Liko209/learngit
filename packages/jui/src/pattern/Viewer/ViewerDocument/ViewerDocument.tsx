@@ -18,6 +18,7 @@ import {
 const DEFAULT_SCALE_DELTA = 1.1;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
+const PAGE_PADDING = 32;
 
 const ViewerDocumentWrap = styled('div')`
   && {
@@ -36,7 +37,7 @@ const ViewerDocumentWrap = styled('div')`
   }
 `;
 
-type ScaleType = number;
+type ScaleType = number | string;
 type pageContainersItemsType = {
   div: HTMLDivElement;
   id: number;
@@ -93,6 +94,7 @@ type Props = {
   pageIndex?: number;
   resizeAble?: boolean;
   scale?: ScaleType;
+  pageFit?: boolean;
   onScaleChange?: (scale: ScaleType) => void;
   onCurrentPageIdxChanged?: (idx: number) => void;
 };
@@ -127,7 +129,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
   }
 
   componentDidMount() {
-    const { pageIndex, pages } = this.props;
+    const { pageIndex, pages, pageFit = true } = this.props;
     const containerEl = this.container.current;
     if (containerEl) {
       containerEl.addEventListener('wheel', this.handleContainerWheel, {
@@ -150,6 +152,12 @@ class JuiViewerDocument extends React.Component<Props, States> {
     }
 
     this._update();
+
+    if (pageFit) {
+      setTimeout(() => {
+        this._setScale('page-fit');
+      },         1000);
+    }
   }
 
   componentWillReceiveProps(nextProps: Props) {
@@ -203,6 +211,39 @@ class JuiViewerDocument extends React.Component<Props, States> {
     const scale = toScale;
     if (typeof scale === 'number' && scale > 0) {
       this._setScaleToUpdatePage(scale, false);
+    } else {
+      const pageFit = this.props.pageFit;
+      if (pageFit) {
+        const pageNumber = this.state.currentPageIndex;
+        const currentPageCmpContainer = this.pageCmpContainers[pageNumber];
+        const viewport = currentPageCmpContainer.currentViewport;
+        const currentScale = this.state.currentScale;
+        const containerEl = this.container.current;
+
+        let scale: ScaleType = currentScale;
+
+        let width = 0;
+        let height = 0;
+        let pageWidthScale = 1;
+        let pageHeightScale = 1;
+
+        if (viewport) {
+          width = viewport.width;
+          height = viewport.height;
+        }
+        if (containerEl) {
+          const hPadding = PAGE_PADDING;
+          const vPadding = PAGE_PADDING;
+
+          pageWidthScale =
+            ((containerEl.clientWidth - hPadding) / width) * currentScale;
+          pageHeightScale =
+            ((containerEl.clientHeight - vPadding) / height) * currentScale;
+        }
+
+        scale = Math.min(pageWidthScale, pageHeightScale);
+        this._setScaleToUpdatePage(scale, false);
+      }
     }
   }
 

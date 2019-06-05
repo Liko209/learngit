@@ -158,7 +158,7 @@ const scrollIntoViewWithContainer = (
   containerEl: HTMLDivElement,
   spot: number,
 ) => {
-  const targetEl = target.div;
+  const targetEl = target && target.div;
   if (targetEl && containerEl) {
     containerEl.scrollTop = targetEl.offsetTop + spot;
   }
