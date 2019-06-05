@@ -122,6 +122,7 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
     const { pages = [] } = versions[0];
     let value = Number(e.target.value);
     value = value > pages.length ? pages.length : value;
+    value = value < 1 ? 1 : value;
     this._textFieldValue = value;
     this._currentPageIdx = value - 1;
   }

@@ -131,14 +131,8 @@ class JuiViewerDocument extends React.Component<Props, States> {
   }
 
   componentDidMount() {
-    const {
-      pageIndex,
-      pages,
-      pageFit = true,
-      onScaleChange,
-      onCurrentPageIdxChanged,
-    } = this.props;
-    const { currentPageIndex, currentScale } = this.state;
+    const { pageIndex, pages, pageFit = true } = this.props;
+    const { currentPageIndex } = this.state;
 
     const containerEl = this.container.current;
     if (containerEl) {
