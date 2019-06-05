@@ -14,6 +14,7 @@ import {
 import { LinkItemModel, LinkItemViewProps } from './types';
 import { accelerateURL } from '@/common/accelerateURL';
 import { StreamContext } from '../../PostListPage/Stream/types';
+import { postParser, SearchHighlightContext } from '@/common/postParser';
 @observer
 class LinkItemView extends React.Component<LinkItemViewProps> {
   static contextType = StreamContext;
@@ -44,16 +45,20 @@ class LinkItemView extends React.Component<LinkItemViewProps> {
     const isUnableShow = !(title || image || summary);
 
     return isUnableShow ? null : (
-      <JuiConversationCardLinkItems
-        key={id}
-        title={title}
-        summary={summary}
-        thumbnail={this.formatUrlStamp(image)}
-        url={this.formatLinkProtocol(url)}
-        onLinkItemClose={this.onLinkItemClose(id)}
-        favicon={this.formatUrlStamp(favicon)}
-        faviconName={providerName}
-      />
+      <SearchHighlightContext.Consumer key={id}>
+        {({ keyword }) => (
+          <JuiConversationCardLinkItems
+            key={id}
+            title={postParser(title, { keyword })}
+            summary={postParser(summary, { keyword })}
+            thumbnail={this.formatUrlStamp(image)}
+            url={this.formatLinkProtocol(url)}
+            onLinkItemClose={this.onLinkItemClose(id)}
+            favicon={this.formatUrlStamp(favicon)}
+            faviconName={providerName}
+          />
+        )}
+      </SearchHighlightContext.Consumer>
     );
   }
 
@@ -62,11 +67,12 @@ class LinkItemView extends React.Component<LinkItemViewProps> {
     const { id, url, title } = item;
 
     return postText ? null : (
-      <JuiConversationPostText
-        key={id}
-        url={this.formatLinkProtocol(url)}
-        title={title}
-      />
+      <SearchHighlightContext.Consumer key={id}>
+        {({ keyword }) => <JuiConversationPostText key={id}>{postParser(`[${title}](${this.formatLinkProtocol(url)})`, {
+          keyword,
+          html: true,
+        })}</JuiConversationPostText>}
+      </SearchHighlightContext.Consumer>
     );
   }
 
@@ -82,14 +88,17 @@ class LinkItemView extends React.Component<LinkItemViewProps> {
     if (!data || !this.context.isShow) return null;
 
     const { object, title } = data;
-
     return (
-      <JuiConversationCardVideoLink
-        key={id}
-        title={title}
-        url={url}
-        html={object ? object.html : ''}
-      />
+      <SearchHighlightContext.Consumer key={id}>
+        {({ keyword }) => (
+          <JuiConversationCardVideoLink
+            key={id}
+            title={postParser(title, { keyword })}
+            url={url}
+            html={object ? object.html : ''}
+          />
+        )}
+      </SearchHighlightContext.Consumer>
     );
   }
 

@@ -11,7 +11,7 @@ import { JuiButtonBar } from '../../../components/Buttons';
 type JuiFileWithPreviewProps = {
   size: string;
   Actions: JSX.Element[];
-  fileName: string;
+  fileName: React.ReactChild | (React.ReactChild | null)[] | null;
   url: string;
   iconType: string;
   disabled?: boolean;
@@ -33,7 +33,7 @@ class JuiFileWithPreview extends React.PureComponent<JuiFileWithPreviewProps> {
         <Jui.FileCardMedia disabled={disabled} image={url} />
         <Jui.FileCardContent>
           <Jui.CardFileName>
-            <FileName filename={fileName} />
+            <FileName>{fileName}</FileName>
           </Jui.CardFileName>
           <Jui.CardFileInfo component="div">
             <Jui.CardSize data-test-automation-id="file-size">

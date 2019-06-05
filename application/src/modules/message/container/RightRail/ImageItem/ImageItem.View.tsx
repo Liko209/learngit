@@ -18,6 +18,8 @@ import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
 import { ImageItemViewProps, ImageItemProps } from './types';
 import { Download } from '@/containers/common/Download';
 import { SecondaryText } from '../common/SecondaryText.View';
+import { postParser } from '@/common/postParser';
+
 const SQUARE_SIZE = 36;
 import { JuiButtonBar } from 'jui/components/Buttons';
 import { FileActionMenu } from '@/containers/common/fileAction';
@@ -38,7 +40,13 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
           />
         </JuiListItemIcon>
         <JuiListItemText
-          primary={<FileName filename={fileName} />}
+          primary={
+            <FileName>
+              {postParser(fileName, {
+                fileName: true,
+              })}
+            </FileName>
+          }
           secondary={<SecondaryText name={personName} time={modifiedTime} />}
         />
         {hover && (
