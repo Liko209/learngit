@@ -51,7 +51,12 @@ test(formalName('Make a call from a conversation', ['P2', 'Phone', 'OutgoingCall
     await t.expect(telephonyDialog.title.exists).ok();
   })
 
-  await h(t).log('Then I capture screenshot', {screenshotPath: 'Jupiter_Phone_OutgoingCall_01'})
+  await h(t).log('Then I capture screenshot', {screenshotPath: 'Jupiter_Phone_OutgoingCall_01'});
+
+  await h(t).withLog('When I click the record button', async () => {
+    await telephonyDialog.clickRecordButton();
+  })
+  await h(t).log('Then I capture screenshot', {screenshotPath: 'Jupiter_Phone_CallRecordFail'});
 
   await h(t).withLog('When the callee answers the call', async () => {
     await session.answer();
@@ -64,7 +69,7 @@ test(formalName('Make a call from a conversation', ['P2', 'Phone', 'OutgoingCall
     await telephonyDialog.clickHoldButton();
   })
 
-  await h(t).log('Then I capture screenshot', {screenshotPath: 'Jupiter_Phone_OutgoingCall_02'})
+  await h(t).log('Then I capture screenshot', {screenshotPath: 'Jupiter_Phone_OutgoingCall_02'});
 
   await h(t).withLog('When I click logout button in the upper right corner', async () => {
     await app.homePage.openSettingMenu();
@@ -76,7 +81,7 @@ test(formalName('Make a call from a conversation', ['P2', 'Phone', 'OutgoingCall
     await logoutDialog.ensureLoaded();
   })
 
-  await h(t).log('And I capture screenshot', {screenshotPath: 'Jupiter_Phone_logoutDuringACall'})
+  await h(t).log('And I capture screenshot', {screenshotPath: 'Jupiter_Phone_logoutDuringACall'});
 
   await h(t).withLog('When I close the popup and end the call', async () => {
     await logoutDialog.clickCancelButton();
