@@ -27,7 +27,11 @@ import { JuiViewerSidebar, JuiViewerDocument } from 'jui/pattern/Viewer';
 import ViewerContext from './ViewerContext';
 import { IViewerView } from './interface';
 
-type ViewerViewType = { dataModule: IViewerView; viewerDestroyer: Function };
+type ViewerViewType = {
+  dataModule: IViewerView;
+  viewerDestroyer: Function;
+  originElement?: HTMLElement;
+};
 
 const LeftResponsive = withResponsive((props: any) => {
   return cloneElement(props.content);

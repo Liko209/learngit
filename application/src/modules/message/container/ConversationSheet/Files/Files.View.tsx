@@ -106,7 +106,9 @@ class FilesView extends React.Component<FilesViewProps> {
     );
   }
 
-  _handleFileClick = (item: FileItemModel) => () => {
+  _handleFileClick = (item: FileItemModel) => (
+    ev: React.MouseEvent<HTMLElement>,
+  ) => {
     this._viewerService.showFileViewer(item);
   }
 
@@ -211,7 +213,9 @@ class FilesView extends React.Component<FilesViewProps> {
               fileName={name}
               size={`${getFileSize(size)}`}
               url={accelerateURL(previewUrl)!}
-              handleFileClick={this._handleFileClick(item)}
+              handleFileClick={
+                supportFileViewer ? this._handleFileClick(item) : undefined
+              }
               iconType={iconType}
               disabled={supportFileViewer && !fileReadyForViewer}
               Actions={this._getActions(downloadUrl, id, postId)}

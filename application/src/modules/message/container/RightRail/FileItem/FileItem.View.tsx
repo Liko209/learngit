@@ -49,7 +49,9 @@ class FileItemView extends Component<FileItemViewProps> {
             <Thumbnail
               id={id}
               type="file"
-              onClick={this._handleFileClick(file)}
+              onClick={
+                supportFileViewer ? this._handleFileClick(file) : undefined
+              }
             />
           </JuiLeftRailListItemIcon>
           <JuiListItemText

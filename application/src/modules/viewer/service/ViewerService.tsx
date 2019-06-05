@@ -12,10 +12,11 @@ import { ViewerView } from '../container/ViewerView';
 import FileItemModel from '@/store/models/FileItem';
 
 class ViewerService implements IViewerService {
-  showFileViewer = (item: FileItemModel) => {
+  showFileViewer = (item: FileItemModel, originElement?: HTMLElement) => {
     const { dismiss } = Dialog.simple(
       <ViewerView
         dataModule={new FileViewerViewModel(item)}
+        originElement={originElement}
         viewerDestroyer={() => dismiss()}
       />,
       {
