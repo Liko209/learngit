@@ -15,15 +15,19 @@ import {
   JuiItemContent,
   JuiItemTextValue,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
-import { phoneParserHoc } from '@/modules/common/container/PhoneParser/PhoneParserHoc';
 import { MEETING_URL, SUCCESS_URL } from './constant';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
-
+import {
+  postParser,
+  HighlightContextInfo,
+  SearchHighlightContext,
+} from '@/common/postParser';
 type meetingProps = WithTranslation & ViewProps;
-const PhoneNumberHoc = phoneParserHoc(JuiAudioConferenceDescription);
 
 @observer
 class Meeting extends React.Component<meetingProps> {
+  static contextType = SearchHighlightContext;
+  context: HighlightContextInfo;
   private _renderMeetingContent = () => {
     const { t, meetingItem } = this.props;
     const { zoomMeetingId, joinUrl } = meetingItem;
@@ -32,29 +36,37 @@ class Meeting extends React.Component<meetingProps> {
       <>
         <JuiItemContent title={t('item.meeting.meetingUrl')}>
           <JuiLink size="small" handleOnClick={() => window.open(joinUrl)}>
-            {joinUrl}
+            {postParser(joinUrl, {
+              url: true,
+              keyword: this.context.keyword,
+            })}
           </JuiLink>
         </JuiItemContent>
         <JuiItemContent title={t('item.meeting.meetingId')}>
-          <JuiItemTextValue description={String(zoomMeetingId)} />
+          <JuiItemTextValue
+            description={postParser(String(zoomMeetingId), {
+              keyword: this.context.keyword,
+            })}
+          />
         </JuiItemContent>
         <JuiItemContent title={t('item.dialInNumber')}>
-          <PhoneNumberHoc description={formatPhoneNumber(dialNumber)} />
+          <JuiAudioConferenceDescription>
+            {postParser(formatPhoneNumber(dialNumber), {
+              keyword: this.context.keyword,
+              phoneNumber: true,
+            })}
+          </JuiAudioConferenceDescription>
           {<JuiItemConjunctionText description={t('item.or')} />}
-          <JuiLink
-            size="small"
-            handleOnClick={() => window.open(MEETING_URL)}
-          >
+          <JuiLink size="small" handleOnClick={() => window.open(MEETING_URL)}>
             {t('item.globalNumber')}
           </JuiLink>
         </JuiItemContent>
         <JuiItemContent title={t('item.meeting.help')}>
-          <JuiItemTextValue description={t('item.meeting.installProblems')} />
+          <JuiItemTextValue
+            description={t('item.meeting.installProblems') as string}
+          />
           <JuiItemConjunctionText description="" />
-          <JuiLink
-            size="small"
-            handleOnClick={() => window.open(SUCCESS_URL)}
-          >
+          <JuiLink size="small" handleOnClick={() => window.open(SUCCESS_URL)}>
             {t('item.meeting.readThis')}
           </JuiLink>
         </JuiItemContent>
@@ -82,7 +94,7 @@ class Meeting extends React.Component<meetingProps> {
     const isEnded = status === MEETING_STATUS.ENDED;
     return (
       <JuiConversationItemCard
-        title={t(meetingTitle)}
+        title={postParser(t(meetingTitle), { keyword: this.context.keyword })}
         Icon="meetings"
         subTitle={isEnded ? `${t('item.meeting.duration')}: ${duration}` : ''}
         isShowLoading={status === MEETING_STATUS.NOT_STARTED}
