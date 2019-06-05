@@ -6,10 +6,14 @@
 import { testable, test } from 'shield';
 import React from 'react';
 import { shallow } from 'enzyme';
+import { container, Jupiter } from 'framework';
 import { FilesView } from '../Files.View';
 import { JuiPreviewImage, StyledImg } from 'jui/pattern/ConversationCard/Files';
+import { config } from '@/modules/viewer/module.config';
 import * as Viewer from '@/modules/viewer/container/Viewer';
 
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(config);
 jest.mock('@/modules/viewer/container/Viewer');
 describe('FilesView', () => {
   const mockEvent = {
