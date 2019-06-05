@@ -220,7 +220,6 @@ class Task extends React.Component<taskViewProps> {
               <JuiTaskSectionOrDescription>
                 {postParser(section, {
                   keyword: this.context.keyword,
-                  url: true,
                 })}
               </JuiTaskSectionOrDescription>
             </JuiLabelWithContent>
