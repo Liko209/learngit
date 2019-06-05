@@ -108,7 +108,7 @@ describe('getConversationId() with person type conversationId', () => {
     );
   });
 
-  it('groupService should return backend err', async () => {
+  it('groupService should return backend err [JPT-2081/JPT-2247/JPT-2067/JPT-430/JPT-427/JPT-2087]', async () => {
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValueOnce(
       new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL')
     );
@@ -120,7 +120,7 @@ describe('getConversationId() with person type conversationId', () => {
     });
   });
 
-  it('groupService should return network err', async () => {
+  it('groupService should return network err [JPT-2084/JPT-2248/JPT-2068/JPT-429/JPT-428/JPT-2088]', async () => {
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValueOnce(
       new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK')
     );
@@ -133,7 +133,7 @@ describe('getConversationId() with person type conversationId', () => {
   });
 });
 
-describe('getConversationId() with  multiple person type conversationId', () => {
+describe('getConversationId() with multiple person type conversationId', () => {
   it('groupService should return ok', async () => {
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue({
       id: 2,
@@ -150,7 +150,7 @@ describe('getConversationId() with  multiple person type conversationId', () => 
     );
   });
 
-  it('groupService should return backend err', async () => {
+  it('groupService should return backend err [JPT-2081/JPT-2247/JPT-2067/JPT-430/JPT-427/JPT-2087]', async () => {
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValueOnce(
       new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL')
     );
@@ -162,7 +162,7 @@ describe('getConversationId() with  multiple person type conversationId', () => 
     });
   });
 
-  it('groupService should return network err', async () => {
+  it('groupService should return network err [JPT-2084/JPT-2248/JPT-2068/JPT-429/JPT-428/JPT-2088]', async () => {
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValueOnce(
       new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK')
     );
@@ -176,7 +176,7 @@ describe('getConversationId() with  multiple person type conversationId', () => 
 });
 
 describe('getConversationId() with message', () => {
-  it('should show loading then open the conversation and send the message when success [JPT-692] [JPT-697]', async () => {
+  it('should show loading then open the conversation and send the message when success [JPT-692/JPT-697]', async () => {
     postService.sendPost = jest.fn();
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue({
       id: 2,
@@ -205,7 +205,7 @@ describe('getConversationId() with message', () => {
     );
   });
 
-  it('should show loading then show error page if failed [JPT-280]', async () => {
+  it('should show loading then show error page if failed [JPT-2081/JPT-2247/JPT-2067/JPT-430/JPT-427/JPT-2087]', async () => {
     postService.sendPost = jest.fn();
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValueOnce(
       new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL')
@@ -226,7 +226,7 @@ describe('getConversationId() with message', () => {
     });
   });
 
-  it('should show loading then show error page if failed(network error) [JPT-280]', async () => {
+  it('should show loading then show error page if failed(network error) [JPT-2084/JPT-2248/JPT-2068/JPT-429/JPT-428/JPT-2088]', async () => {
     postService.sendPost = jest.fn();
     (postService.sendPost as jest.Mock).mockRejectedValue(
       new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK')
@@ -263,7 +263,7 @@ describe('getConversationId() with message', () => {
     });
   });
 
-  it('should show loading then show error page if failed(server error) [JPT-280]', async () => {
+  it('should show loading then show error page if failed(server error) [JPT-2081/JPT-2247/JPT-2067/JPT-430/JPT-427/JPT-2087]', async () => {
     postService.sendPost = jest.fn();
     (postService.sendPost as jest.Mock).mockRejectedValue(
       new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL')

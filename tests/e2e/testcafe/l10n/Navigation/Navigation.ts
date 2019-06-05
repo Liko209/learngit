@@ -5,7 +5,7 @@ import { h } from '../../v2/helpers';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 
 fixture('Navigation/Navigation').beforeEach(setupCase(BrandTire.RCOFFICE)).afterEach(teardownCase())
-test(formalName('Check menu tip',['P0','Navigation','V1.4','Sean']),async(t)=>{
+test(formalName('Check menu tip',['P0','Navigation','V1.4','Sean.Zhuang']),async(t)=>{
   const loginUser=h(t).rcData.mainCompany.users[0];
   const app=new AppRoot(t);
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`,async()=>{

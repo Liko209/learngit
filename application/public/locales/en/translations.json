@@ -212,10 +212,15 @@
       "newMessageTip": "Conversations with one or more specific people are great for informal chat. For projects, departments, or even topic-based discussion, you should ",
       "newMessageTipLink": "create a Team instead.",
       "NewMessageError": "We are having trouble creating this new message. Please try again later.",
-      "disabledText": "This team is read-only"
+      "disabledText": "This team is read-only",
+      "editFileNameTitle": "Rename file",
+      "editFileNameInputLabel": "Filename",
+      "editFileNameBackendError": "Sorry, something went wrong on our end and we aren't able to save the edit. Try again later.",
+      "editFileNameNetworkError": "We aren't able to save the edit. Check your network connection, then try again."
     },
-    "": {
-      "deleteFile": "Delete file"
+    "fileAction": {
+      "deleteFile": "Delete file",
+      "editFileName": "Edit filename"
     },
     "Messages": "Messages",
     "message": "Message"
@@ -255,6 +260,20 @@
       "verb-numerals-noun": "$t({{verb}}) {{count}} $t({{noun}})",
       "verb-numerals-prepositions-noun": "$t({{verb}}) {{count}}% of $t({{noun}})"
     },
+    "meeting": {
+      "videoCallInProgress": "Video Call in progress",
+      "videoCallEnded": "Video Call ended",
+      "videoCallCancelled": "Video Call cancelled",
+      "videoCallDuration": "Duration",
+      "startVideoCall": "Starting Video Call...",
+      "meetingUrl": "Meeting URL",
+      "meetingId": "Meeting ID",
+      "duration": "Duration",
+      "help": "Help",
+      "installProblems": "Installation problems?",
+      "readThis": "Read this"
+    },
+    "dialInNumber": "Dial-in Number",
     "avatarNamesWithOthers": " and other {{count}} people",
     "attachments": "Attachments",
     "assignee": "Assignee",
@@ -284,7 +303,6 @@
     "theFollowingFilesAlreadyExist": "The following file(s) already exist.",
     "wouldYouLikeToUpdateTheExistingFileOrCreateANewOne": "Would you like to update the existing file(s) or create a new one?",
     "audioConferenceTitle": "Audio Conference",
-    "dialInNumber": "Dial-in Number",
     "or": "or",
     "globalNumber": "Global Number",
     "hostCode": "Host Access",
