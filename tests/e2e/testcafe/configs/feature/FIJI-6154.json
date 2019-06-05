@@ -1,11 +1,10 @@
 {
     "on_merge": {
         "fixtures": [
-            "./fixtures/**/*.ts"
+            "./fixtures/Setting/NotificationAndSounds/OtherNotificationSettings.ts"
         ],
-        "include_tags": [
-            "JPT-6054"
-        ],
+        "include_tags": [],
+        "exclude_tags": [],
         "browsers": [
             "selenium:chrome"
         ]
