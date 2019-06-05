@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { MouseEvent, KeyboardEvent } from 'react';
-import styled from 'src/foundation/styled-components';
+import styled from '../../../foundation/styled-components';
 import {
   primary,
   palette,

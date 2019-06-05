@@ -7,7 +7,8 @@
     "paths": {
       "shield/*": ["../../tests/shield/src/*"],
       "rcui/*": ["../rcui/src/*"]
-    }
+    },
+    "skipLibCheck": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/VirtualList.story.tsx"]

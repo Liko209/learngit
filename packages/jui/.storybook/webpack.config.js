@@ -106,7 +106,7 @@ const plugins = [
   ]),
   new ForkTsCheckerWebpackPlugin({
     checkSyntacticErrors: true,
-    tsconfig: '../tsconfig.json',
+    tsconfig: path.resolve(__dirname, '../tsconfig.json'),
   }),
   new webpack.ProvidePlugin({
     'window.Quill': 'quill/dist/quill.js',
