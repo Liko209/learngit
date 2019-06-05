@@ -25,10 +25,10 @@ import {
   NEW_MESSAGE_BADGES_OPTIONS,
   EMAIL_NOTIFICATION_OPTIONS,
 } from 'sdk/module/profile';
-import { NewMessageSelectSourceItem } from './NewMessageSelectSourceItem';
+import { NewMessageSelectSourceItem } from './NewMessageSelectSourceItem.View';
 import { buildTitleAndDesc } from '@/modules/setting/utils';
-import { BadgeCountSourceItem } from './NewMessageBadgeCountSelectSouceItem';
-import { EmailNotificationTimeSourceItem } from './EmailNotificationTimeSelectSourceItem';
+import { BadgeCountSourceItem } from './NewMessageBadgeCountSelectSouceItem.View';
+import { EmailNotificationTimeSourceItem } from './EmailNotificationTimeSelectSourceItem.View';
 
 class MessageSettingManager implements IMessageSettingManager {
   @ISettingService private _settingService: ISettingService;
