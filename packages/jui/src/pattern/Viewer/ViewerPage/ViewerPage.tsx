@@ -5,7 +5,7 @@
  */
 
 import React, { createRef, createContext, ReactNode } from 'react';
-import styled from 'src/foundation/styled-components';
+import styled from '../../../foundation/styled-components';
 import { spacing } from '../../../foundation/utils/styles';
 import { applyTransform, applyInverseTransform } from '../ui_utils';
 

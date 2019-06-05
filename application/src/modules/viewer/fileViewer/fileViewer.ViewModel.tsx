@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { computed } from 'mobx';
+import { computed, action } from 'mobx';
 import { IViewerView } from '@/modules/viewer/container/ViewerView/interface';
 import moment from 'moment';
 import {
@@ -20,6 +20,9 @@ import { dateFormatter } from '@/utils/date';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { ItemVersionPage } from 'sdk/module/item/entity';
+import _ from 'lodash';
+
+const CHANGE_DEBOUNCE_TIME = 500;
 
 class FileViewerViewModel implements IViewerView {
   private _item: FileItemModel;
@@ -37,13 +40,19 @@ class FileViewerViewModel implements IViewerView {
 
   @computed
   get pages() {
-    const { versions } = this._item;
+    const { versions, origHeight, origWidth } = this._item;
     const { pages } = versions[0];
     return pages
-      ? pages.map(({ url }: ItemVersionPage) => (
-          <img style={{ width: '100%' }} src={url} />
-        ))
-      : [<>loading...</>];
+      ? pages.map(({ url }: ItemVersionPage) => {
+          return {
+            cmp: <img style={{ width: '100%' }} src={url} />,
+            viewport: {
+              origHeight,
+              origWidth,
+            },
+          };
+        })
+      : undefined;
   }
 
   @computed
@@ -79,6 +88,15 @@ class FileViewerViewModel implements IViewerView {
       </>
     );
   }
+
+  @action
+  handleCurrentPageIdxChange = _.debounce(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      console.log(value);
+    },
+    CHANGE_DEBOUNCE_TIME,
+  );
 
   @computed
   get actions() {

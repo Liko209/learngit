@@ -54,6 +54,7 @@ const ViewerThumbnailContentWrap = styled.div`
     border-radius: ${({ theme }) => theme.radius.xl};
     min-height: ${viewerThumbnailMaxWidth /
       defaultThumbnailProportion['16/9']}px;
+    box-sizing: border-box;
   }
 `;
 

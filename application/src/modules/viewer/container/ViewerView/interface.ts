@@ -6,7 +6,13 @@
 import { ReactNode } from 'react';
 
 interface IViewerView {
-  pages?: ReactNode[];
+  pages?: {
+    cmp: ReactNode;
+    viewport?: {
+      origHeight: number;
+      origWidth: number;
+    };
+  }[];
   title?: ReactNode;
   info?: ReactNode;
   actions?: ReactNode;

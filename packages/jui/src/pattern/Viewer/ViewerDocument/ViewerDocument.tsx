@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { createRef, ReactNode } from 'react';
-import styled from 'src/foundation/styled-components';
-import { spacing, palette } from '../../../foundation/utils/styles';
+import styled from '../../../foundation/styled-components';
+import { palette } from '../../../foundation/utils/styles';
 import { JuiViewerPage } from '../ViewerPage';
 import {
   scrollIntoView,

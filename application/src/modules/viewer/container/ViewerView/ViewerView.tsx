@@ -23,7 +23,7 @@ import {
   imageViewerHeaderAnimation,
 } from 'jui/components/Animation';
 import ReactResizeDetector from 'react-resize-detector';
-import { JuiViewerSidebar } from 'jui/pattern/Viewer/ViewerSidebar';
+import { JuiViewerSidebar, JuiViewerDocument } from 'jui/pattern/Viewer';
 import ViewerContext from './ViewerContext';
 import { IViewerView } from './interface';
 
@@ -83,24 +83,44 @@ class ViewerViewComponent extends Component<
     this.props.viewerDestroyer();
   }
 
-  renderContent = () => {
+  renderThumbnail = () => {
     const { dataModule } = this.props;
-    return dataModule.pages ? (
-      <div style={{ display: 'flex' }}>
-        <JuiViewerSidebar
-          open={true}
-          items={dataModule.pages}
-          selectedIndex={2}
-          onSelectedChanged={() => {}}
-        />
-        {
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {dataModule.pages.map(v => (
-              <div style={{ width: '100%', height: '200px' }}>{v}</div>
-            ))}
-          </div>}
-      </div>
-    ) : null;
+    if (dataModule.pages) {
+      const items = dataModule.pages.map(page => {
+        return page.cmp;
+      });
+      return (
+        <div style={{ display: 'flex', height: '100%' }}>
+          <JuiViewerSidebar
+            open={true}
+            items={items}
+            selectedIndex={2}
+            onSelectedChanged={() => {}}
+          />
+        </div>
+      );
+    }
+    return null;
+  }
+
+  renderDocument = () => {
+    const { dataModule } = this.props;
+    if (dataModule.pages) {
+      const pages = dataModule.pages.map(page => {
+        const { viewport } = page;
+        return {
+          cmp: page.cmp,
+          getViewport: () => {
+            return {
+              height: viewport ? viewport.origHeight : 0,
+              width: viewport ? viewport.origWidth : 0,
+            };
+          },
+        };
+      });
+      return <JuiViewerDocument pages={pages} />;
+    }
+    return null;
   }
 
   render() {
@@ -148,8 +168,8 @@ class ViewerViewComponent extends Component<
             <JuiDivider key="divider-filters" />
           </JuiTransition>
           <>
-            <LeftResponsive content={this.renderContent()} />
-            <RightResponsive content={null} />
+            <LeftResponsive content={this.renderThumbnail()} />
+            <RightResponsive content={this.renderDocument()} />
           </>
         </JuiViewerBackground>
       </ViewerContext.Provider>
