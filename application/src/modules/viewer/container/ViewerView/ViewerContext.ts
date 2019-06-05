@@ -8,12 +8,13 @@ import React from 'react';
 
 type ViewerContextType = {
   show: boolean;
-  closeViewer?: () => {};
-  onTransitionExited?: () => {};
-  onTransitionEntered?: () => {};
+  closeViewer?: () => void;
+  onTransitionExited?: () => void;
+  onTransitionEntered?: () => void;
   isAnimating: boolean;
 };
 export default React.createContext<ViewerContextType>({
   show: true,
   isAnimating: false,
 });
+export { ViewerContextType };

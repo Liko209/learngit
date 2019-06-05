@@ -19,6 +19,7 @@ import {
   JuiDialogHeaderActions,
   JuiDialogHeaderMeta,
 } from 'jui/components/Dialog/DialogHeader';
+import { JuiZoomButtonGroup } from 'jui/pattern/DragZoom';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { JuiButtonBar } from 'jui/components/Buttons/ButtonBar';
@@ -26,9 +27,8 @@ import {
   JuiTransition,
   imageViewerHeaderAnimation,
 } from 'jui/components/Animation';
-import ReactResizeDetector from 'react-resize-detector';
 import { JuiViewerSidebar, JuiViewerDocument } from 'jui/pattern/Viewer';
-import ViewerContext from './ViewerContext';
+import ViewerContext, { ViewerContextType } from './ViewerContext';
 import { IViewerView } from './interface';
 
 type ViewerViewType = {
@@ -60,10 +60,15 @@ const DocumentResponsive = withResponsive(
   },
 );
 
+type State = {
+  contextValue: ViewerContextType;
+  scale: number;
+};
+
 @observer
 class ViewerViewComponent extends Component<
   ViewerViewType & WithTranslation,
-  any
+  State
 > {
   constructor(props: ViewerViewType & WithTranslation) {
     super(props);
@@ -75,7 +80,50 @@ class ViewerViewComponent extends Component<
         onTransitionEntered: this.onTransitionEntered,
         isAnimating: true,
       },
+      scale: 100,
     };
+  }
+
+  _handlerKeydown = (event: KeyboardEvent) => {
+    // 107 Num Key  +
+    // 109 Num Key  -
+    // 173 Min Key  hyphen/underscor Hey
+    // 61 Plus key  +/= key
+    if (
+      event.ctrlKey &&
+      (event.which === 61 ||
+        event.which === 107 ||
+        event.which === 173 ||
+        event.which === 109 ||
+        event.which === 187 ||
+        event.which === 189)
+    ) {
+      event.preventDefault();
+    }
+  }
+
+  _handlerScroll = (event: MouseEvent) => {
+    if (event.ctrlKey) {
+      event.preventDefault();
+    }
+  }
+
+  componentDidMount() {
+    window.addEventListener('keydown', this._handlerKeydown, {
+      passive: false,
+    });
+    ['DOMMouseScroll', 'mousewheel'].forEach((v: string) => {
+      window.addEventListener(v, this._handlerScroll, {
+        passive: false,
+      });
+    });
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this._handlerKeydown);
+    ['DOMMouseScroll', 'mousewheel'].forEach((v: string) => {
+      window.removeEventListener(v, this._handlerScroll);
+    });
   }
 
   closeViewer = () => {
@@ -151,7 +199,6 @@ class ViewerViewComponent extends Component<
             animation={imageViewerHeaderAnimation}
           >
             <JuiDialogHeader data-test-automation-id="ViewerHeader">
-              <ReactResizeDetector handleWidth={true} onResize={() => {}} />
               {dataModule.info && (
                 <JuiDialogHeaderMeta>{dataModule.info}</JuiDialogHeaderMeta>
               )}
@@ -183,6 +230,44 @@ class ViewerViewComponent extends Component<
               <LeftResponsive content={this.renderThumbnailBar()} />
               <DocumentResponsive content={this.renderDocument()} />
             </JuiResponsiveLayout>
+            <JuiZoomButtonGroup
+              className="zoomGroup"
+              resetMode={true}
+              centerText={'100%'}
+              ZoomOut={
+                <JuiIconButton
+                  variant="plain"
+                  tooltipTitle={t('viewer.ZoomOut')}
+                  ariaLabel={t('viewer.ZoomOut')}
+                  disabled={false}
+                  onClick={() => {}}
+                >
+                  zoom_out
+                </JuiIconButton>
+              }
+              ZoomIn={
+                <JuiIconButton
+                  variant="plain"
+                  tooltipTitle={t('viewer.ZoomIn')}
+                  ariaLabel={t('viewer.ZoomIn')}
+                  disabled={false}
+                  onClick={() => {}}
+                >
+                  zoom_in
+                </JuiIconButton>
+              }
+              ZoomReset={
+                <JuiIconButton
+                  variant="plain"
+                  tooltipTitle={t('viewer.ZoomReset')}
+                  ariaLabel={t('viewer.ZoomReset')}
+                  disabled={false}
+                  onClick={() => {}}
+                >
+                  reset_zoom
+                </JuiIconButton>
+              }
+            />
           </>
         </JuiViewerBackground>
       </ViewerContext.Provider>

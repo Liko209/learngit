@@ -72,9 +72,9 @@ function ensureOptions(
 ): JuiDragZoomOptions {
   return options
     ? {
-      ...DEFAULT_DRAG_ZOOM_OPTIONS,
-      ...options,
-    }
+        ...DEFAULT_DRAG_ZOOM_OPTIONS,
+        ...options,
+      }
     : DEFAULT_DRAG_ZOOM_OPTIONS;
 }
 
@@ -354,6 +354,7 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
 export {
   JuiDragZoom,
   JuiDragZoomProps,
+  ZoomButtonGroup as JuiZoomButtonGroup,
   JuiDragZoomChildrenProps as JuiWithDragZoomProps,
   JuiDragZoomOptions,
   DEFAULT_DRAG_ZOOM_OPTIONS as DEFAULT_OPTIONS,

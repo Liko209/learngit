@@ -4,5 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export * from './ViewerView';
+export * from './Viewer.View';
 export * from './interface';
