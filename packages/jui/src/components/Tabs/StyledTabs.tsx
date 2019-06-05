@@ -11,6 +11,7 @@ import styled from '../../foundation/styled-components';
 import { height, spacing, grey } from '../../foundation/utils';
 
 type StyledTabsProps = MuiTabsProps & {
+  forceFlex?: boolean;
   position?: 'left' | 'center' | 'right';
   ref?: React.RefObject<any>;
 };
@@ -21,7 +22,11 @@ const PositionMap = {
   center: 'center',
 };
 
-const StyledMuiTabs = styled<StyledTabsProps>(MuiTabs)`
+const FilterMuiTabs = ({ forceFlex, ...rest }: StyledTabsProps) => (
+  <MuiTabs {...rest} />
+);
+
+const StyledMuiTabs = styled<StyledTabsProps>(FilterMuiTabs)`
   ${({ position }) => {
     if (position === 'center') {
       return `
@@ -31,7 +36,7 @@ const StyledMuiTabs = styled<StyledTabsProps>(MuiTabs)`
     return null;
   }}
   &.root {
-    display: flex;
+    display: ${({ forceFlex }) => (forceFlex ? 'flex' : null)};
     padding: ${spacing(0, 2)};
     min-height: ${height(8)};
     height: ${height(8)};
@@ -42,11 +47,11 @@ const StyledMuiTabs = styled<StyledTabsProps>(MuiTabs)`
 
 const StyledTabs = React.forwardRef(
   (
-    { children, position, ...rest }: StyledTabsProps,
+    { children, position, forceFlex, ...rest }: StyledTabsProps,
     ref: React.RefObject<any>,
   ) => {
     const Tabs = (
-      <StyledMuiTabs position={position} {...rest}>
+      <StyledMuiTabs position={position} forceFlex={forceFlex} {...rest}>
         {children}
       </StyledMuiTabs>
     );

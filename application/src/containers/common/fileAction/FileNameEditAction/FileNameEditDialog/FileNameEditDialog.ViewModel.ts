@@ -21,6 +21,10 @@ class FileNameEditDialogViewModel extends FileActionViewModel {
   })
   handleEditFileName = async () => {
     const { id, type } = this.item;
+    if (!this.newFileName) {
+      portalManager.dismissLast();
+      return;
+    }
     this.isLoading = true;
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,

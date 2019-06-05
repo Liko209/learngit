@@ -51,6 +51,17 @@ describe('FileNameEditDialogViewModel', () => {
     jest.resetAllMocks();
   });
   describe('handleEditFileName()', () => {
+    it('Show return when vm.newFileName null', async () => {
+      itemService.editFileName = jest
+        .fn()
+        .mockRejectedValueOnce(
+          new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, ''),
+        );
+      const vm = new FileNameEditDialogViewModel();
+      (getEntity as jest.Mock).mockReturnValue({ id: 1 });
+      await vm.handleEditFileName();
+      expect(Notification.flashToast).not.toHaveBeenCalled();
+    });
     it('Show a flash toast after the user clicks Save button on rename file dialog in offline mode [JPT-2076]', async () => {
       itemService.editFileName = jest
         .fn()
@@ -59,6 +70,7 @@ describe('FileNameEditDialogViewModel', () => {
         );
       const vm = new FileNameEditDialogViewModel();
       (getEntity as jest.Mock).mockReturnValue({ id: 1 });
+      vm.newFileName = '1';
       await vm.handleEditFileName();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         toastParamsBuilder('message.prompt.editFileNameNetworkError'),
@@ -72,6 +84,7 @@ describe('FileNameEditDialogViewModel', () => {
         );
       const vm = new FileNameEditDialogViewModel();
       (getEntity as jest.Mock).mockReturnValue({ id: 1 });
+      vm.newFileName = '1';
       await vm.handleEditFileName();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         toastParamsBuilder('message.prompt.editFileNameBackendError'),

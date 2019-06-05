@@ -23,7 +23,11 @@ class CallHistoryComp extends Component<WithTranslation> {
           data-test-automation-id="CallHistoryPageHeader"
         />
         <PhoneWrapper>
-          <JuiTabs position="center" defaultActiveIndex={CallHistoryTypes.All}>
+          <JuiTabs
+            forceFlex={true}
+            position="center"
+            defaultActiveIndex={CallHistoryTypes.All}
+          >
             {TAB_CONFIG.map(
               (
                 { title, container, automationID }: TabConfig,
