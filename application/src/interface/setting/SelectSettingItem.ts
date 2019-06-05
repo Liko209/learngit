@@ -25,11 +25,6 @@ type SelectSettingItem<T> = SettingItem & {
   defaultSource?: T[];
 
   /**
-   * Default value of this item
-   */
-  defaultValue?: string;
-
-  /**
    * Used for figure out which property in
    * the sourceItem is the key value
    */

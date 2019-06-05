@@ -4,31 +4,31 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import i18next from '@/i18n';
-import { NO_DEVICES_ID } from './constant';
 const UNKNOWN = 'Unknown';
+
 class DeviceNameHelper {
   static getDeviceName(
     device: MediaDeviceInfo,
     allDevices: MediaDeviceInfo[],
     t: i18next.TFunction,
   ) {
-    let text = '';
+    let result = '';
 
     if (this._isDefaultDevice(device)) {
-      text = this._getDefaultDeviceName(t);
+      result = this._getDefaultDeviceName(t);
     } else if (this._isNoDevice(device)) {
-      text = this._getNoDeviceName(t);
+      result = this._getNoDeviceName(t);
     } else if (device.label) {
       if (this._isBuiltInDevice(device)) {
-        text = this._getBuiltInDeviceName(device, t);
+        result = this._getBuiltInDeviceName(device, t);
       } else {
-        text = device.label;
+        result = device.label;
       }
     } else {
-      text = this._getOrderedDeviceName(device, allDevices, t);
+      result = this._getOrderedDeviceName(device, allDevices, t);
     }
 
-    return text;
+    return result;
   }
 
   private static _isDefaultDevice(device: MediaDeviceInfo) {
@@ -36,7 +36,7 @@ class DeviceNameHelper {
   }
 
   private static _isNoDevice(device: MediaDeviceInfo) {
-    return device.deviceId === NO_DEVICES_ID;
+    return device.deviceId === '';
   }
 
   private static _isBuiltInDevice(device: MediaDeviceInfo) {

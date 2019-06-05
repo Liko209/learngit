@@ -27,12 +27,14 @@ type SliderSettingItem = SettingItem & {
    * Maximum value
    */
   max: number;
+
   /**
    * Step
    */
   step?: number;
+
   /**
-   *
+   * Tooltip on thumb
    */
   tipRenderer?: ({ value }: { value: number }) => React.ReactNode;
 };

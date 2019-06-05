@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { DeviceNameHelper } from '../DeviceNameHelper';
-import { NO_DEVICES_ID } from '../constant';
 
 const DEVICE_1 = 'DEVICE_1';
 const DEVICE_2 = 'DEVICE_2';
@@ -59,7 +58,7 @@ describe('DeviceNameHelper', () => {
 
     it('should return setting.default for the special "No Devices" device [JPT-2098]', () => {
       const device: MediaDeviceInfo = {
-        deviceId: NO_DEVICES_ID,
+        deviceId: '',
         groupId: '0',
         label: 'no devices',
         kind: 'audiooutput',
