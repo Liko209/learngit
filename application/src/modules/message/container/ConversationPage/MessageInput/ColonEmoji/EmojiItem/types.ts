@@ -11,6 +11,7 @@ type EmojiItemProps = {
   selectHandler: Function;
   index: number;
   currentIndex: number;
+  displayId?: string;
 };
 
 type EmojiItemViewProps = EmojiItemProps & {

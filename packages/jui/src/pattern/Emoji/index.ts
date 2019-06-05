@@ -24,12 +24,6 @@ type ColonEmojiOptions = {
   blankNoShow?: boolean;
 };
 
-type SelectType = {
-  id: number;
-  name: string;
-  denotationChar: string;
-};
-
 type Options = QuillOptionsStatic & ColonEmojiOptions;
 
 class ColonEmoji {
@@ -73,17 +67,21 @@ class ColonEmoji {
     );
   }
 
-  select(data: SelectType) {
+  select(data: string) {
     requestAnimationFrame(() => {
+      const insertText = `:${data}: `;
       this._quill.setSelection(this._cursorPos, 0);
       this._quill.deleteText(
         this._colonCharPos,
         this._cursorPos - this._colonCharPos,
         'api',
       );
-      this._quill.insertEmbed(this._colonCharPos, 'colon', data, 'api');
-      this._quill.insertText(this._colonCharPos + 1, ' ', 'api');
-      this._quill.setSelection(this._colonCharPos + 2, 0, 'api');
+      this._quill.insertText(this._colonCharPos, insertText, 'api');
+      this._quill.setSelection(
+        this._colonCharPos + insertText.length,
+        0,
+        'api',
+      );
     });
   }
 

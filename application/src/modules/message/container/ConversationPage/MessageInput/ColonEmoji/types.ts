@@ -20,13 +20,13 @@ type ColonEmojiViewProps = {
   selectHandler: Function;
   isEditMode?: boolean;
   isOneToOneGroup: boolean;
-  initIndex: number;
   members?: any;
 };
 
 type MemberData = {
   displayName: string;
   id?: string;
+  displayId: string;
 };
 
 export { ColonEmojiProps, ColonEmojiViewProps, MemberData };

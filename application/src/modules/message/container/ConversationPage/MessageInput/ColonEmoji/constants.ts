@@ -16,6 +16,12 @@ const EMOJI_SIZE = {
   giant: 64,
 };
 
+const PRELOAD_ITEM = {
+  id: 12,
+  url:
+    'https://unpkg.com/emoji-datasource-emojione@4.0.4/img/emojione/sheets-256/64.png',
+};
+
 export {
   ITEM_HEIGHT,
   MAX_ITEM_NUMBER,
@@ -23,4 +29,5 @@ export {
   TITLE_HEIGHT,
   ITEM_DIFF,
   EMOJI_SIZE,
+  PRELOAD_ITEM,
 };

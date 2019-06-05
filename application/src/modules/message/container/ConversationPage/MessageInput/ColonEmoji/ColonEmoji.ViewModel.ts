@@ -6,14 +6,16 @@ import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
 import Keys from 'jui/pattern/MessageInput/keys';
 import { Quill } from 'react-quill';
+import { ExcludeList, ConvertList } from 'jui/pattern/Emoji/excludeList';
 import 'jui/pattern/Emoji';
-import { INIT_CURRENT_INDEX } from '../Mention/constants';
+// import { INIT_CURRENT_INDEX } from '../Mention/constants';
 import { CONVERSATION_TYPES } from '@/constants';
 import { emojiIndex, EmojiData } from 'emoji-mart';
 const DELAY = 300;
+const INIT_INDEX = 0;
 const QUILL_QUERY = '.conversation-page>div>div>.quill>.ql-container';
 const canTriggerDefaultEventHandler = (vm: ColonEmojiViewModel) => {
-  return vm.members.length && vm.open;
+  return !(vm.members.length && vm.open);
 };
 
 class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
@@ -86,19 +88,30 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
     // @ts-ignore
     const res = emojiIndex.search(term) as EmojiData[];
     if (res) {
-      this.currentIndex = this.initIndex;
+      this.currentIndex = INIT_INDEX;
       this.members = this._formatEmojiData(res);
     }
+  }
+
+  private _doUnderscoreTransfer = (colons: string) => {
+    return colons.split('-').join('_');
   }
 
   private _formatEmojiData(res: EmojiData[]) {
     const emojis: MemberData[] = [];
     if (res) {
       res.forEach(({ name, id }) => {
-        emojis.push({
-          id,
-          displayName: name,
-        });
+        let emojiId = id;
+        if (emojiId && !(ExcludeList.indexOf(id as string) > -1)) {
+          if (id && ConvertList.indexOf(id.split(':').join('')) > -1) {
+            emojiId = this._doUnderscoreTransfer(id);
+          }
+          emojis.push({
+            id,
+            displayId: emojiId,
+            displayName: name,
+          });
+        }
       });
     }
     return emojis;
@@ -129,9 +142,9 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
   @action
   private _upHandler(vm: ColonEmojiViewModel) {
     return function () {
-      const size = vm.members.length + INIT_CURRENT_INDEX;
+      const size = vm.members.length;
       const currentIndex = (vm.currentIndex + size - 1) % size;
-      vm.currentIndex = currentIndex === 0 ? vm.members.length : currentIndex;
+      vm.currentIndex = currentIndex < 0 ? vm.members.length : currentIndex;
       return canTriggerDefaultEventHandler(vm);
     };
   }
@@ -139,9 +152,9 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
   @action
   private _downHandler(vm: ColonEmojiViewModel) {
     return function () {
-      const size = vm.members.length + INIT_CURRENT_INDEX;
+      const size = vm.members.length;
       const currentIndex = (vm.currentIndex + 1) % size;
-      vm.currentIndex = currentIndex === 0 ? INIT_CURRENT_INDEX : currentIndex;
+      vm.currentIndex = currentIndex < 0 ? 0 : currentIndex;
       return canTriggerDefaultEventHandler(vm);
     };
   }
@@ -156,8 +169,8 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
       const quill: Quill = this.quill;
       const emojiModules = quill.getModule('emoji');
       emojiModules.select(
-        vm.members[vm.currentIndex - vm.initIndex].id,
-        vm.members[vm.currentIndex - vm.initIndex].displayName,
+        vm.members[vm.currentIndex - INIT_INDEX].displayId,
+        vm.members[vm.currentIndex - INIT_INDEX].displayName,
         vm._denotationChar,
       );
       vm.currentIndex = 0;
@@ -193,12 +206,6 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
     }
     this.open = true;
     this._denotationChar = denotationChar;
-  }
-
-  @computed
-  get initIndex() {
-    // because of title will within VL
-    return this.isOneToOneGroup ? 0 : INIT_CURRENT_INDEX;
   }
 
   @computed

@@ -29,13 +29,13 @@ class ColonEmojiView extends Component<ColonEmojiViewProps, State> {
   state: State = { width: 2000, height: ITEM_HEIGHT };
   _listRef: RefObject<JuiVirtualizedListHandles> = createRef();
   get(index: number) {
-    const { initIndex, ids } = this.props;
-    return ids[index - initIndex];
+    const { ids } = this.props;
+    return ids[index];
   }
 
   size() {
-    const { initIndex, ids } = this.props;
-    return ids.length + initIndex;
+    const { ids } = this.props;
+    return ids.length;
   }
 
   private _handleSizeUpdate = (size: Size) => {
@@ -50,8 +50,12 @@ class ColonEmojiView extends Component<ColonEmojiViewProps, State> {
     this.setState({ height, width });
   }
 
-  getSnapshotBeforeUpdate(prevProps: any) {
-    return true;
+  componentDidUpdate(prevProps: ColonEmojiViewProps) {
+    const { currentIndex } = this.props;
+    if (currentIndex !== prevProps.currentIndex) {
+      this._listRef.current &&
+        this._listRef.current.scrollToIndex(currentIndex);
+    }
   }
 
   render() {
@@ -87,6 +91,7 @@ class ColonEmojiView extends Component<ColonEmojiViewProps, State> {
               {members.map((emoji: any, index: number) => {
                 return (
                   <EmojiItem
+                    displayId={emoji.displayId}
                     key={emoji.id}
                     id={emoji.id}
                     index={index}

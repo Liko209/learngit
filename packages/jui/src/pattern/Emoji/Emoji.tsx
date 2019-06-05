@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import 'emoji-mart/css/emoji-mart.css';
-import { Picker, EmojiData } from 'emoji-mart';
+import { Picker, EmojiData, Emoji } from 'emoji-mart';
 import React, { MouseEvent } from 'react';
 import { JuiIconButton, JuiToggleButton } from '../../components/Buttons';
 import FormControlLabel from '@material-ui/core/FormControlLabel';

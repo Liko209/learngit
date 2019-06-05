@@ -14,13 +14,13 @@ import { EMOJI_SIZE } from '../constants';
 @observer
 class EmojiItemView extends Component<EmojiItemViewProps> {
   render() {
-    const { currentIndex, selectHandler, index, id } = this.props;
+    const { currentIndex, selectHandler, index, id, displayId } = this.props;
 
     return (
       <JuiMentionPanelSectionItem
         Avatar={
           <Emoji emoji={id || ''} set="emojione" size={EMOJI_SIZE.large} />}
-        displayName={id || ''}
+        displayName={` :${displayId}: ` || ''}
         selected={currentIndex === index}
         selectHandler={selectHandler(index)}
       />
