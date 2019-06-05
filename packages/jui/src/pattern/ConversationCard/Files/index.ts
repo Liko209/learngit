@@ -9,3 +9,4 @@ export * from './PreviewImage';
 export * from './FileWithExpand';
 export * from './ExpandImage';
 export * from './FilesWrapper';
+export * from './style';
