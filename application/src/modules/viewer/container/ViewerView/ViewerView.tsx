@@ -7,7 +7,11 @@
 import React, { Component, cloneElement } from 'react';
 import { observer } from 'mobx-react';
 import { JuiViewerBackground } from 'jui/pattern/ImageViewer';
-import { withResponsive, VISUAL_MODE } from 'jui/foundation/Layout/Responsive';
+import {
+  withResponsive,
+  VISUAL_MODE,
+  JuiResponsiveLayout,
+} from 'jui/foundation/Layout/Responsive';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiDialogHeader,
@@ -32,19 +36,27 @@ type ViewerViewType = {
   originElement?: HTMLElement;
 };
 
-const LeftResponsive = withResponsive((props: any) => {
-  return cloneElement(props.content);
-},                                    {});
-
-const RightResponsive = withResponsive(
+const LeftResponsive = withResponsive(
   (props: any) => {
     return cloneElement(props.content);
   },
   {
+    defaultWidth: 268,
     visualMode: VISUAL_MODE.BOTH,
     enable: {
-      left: true,
+      right: true,
     },
+    priority: 1,
+  },
+);
+
+const DocumentResponsive = withResponsive(
+  (props: any) => {
+    return cloneElement(props.content);
+  },
+  {
+    minWidth: 400,
+    priority: 2,
   },
 );
 
@@ -86,21 +98,19 @@ class ViewerViewComponent extends Component<
     this.props.dataModule.viewerDestroyer();
   }
 
-  renderThumbnail = () => {
+  renderThumbnailBar = () => {
     const { dataModule } = this.props;
     if (dataModule.pages) {
       const items = dataModule.pages.map(page => {
         return page.cmp;
       });
       return (
-        <div style={{ display: 'flex', height: '100%' }}>
-          <JuiViewerSidebar
-            open={true}
-            items={items}
-            selectedIndex={2}
-            onSelectedChanged={() => {}}
-          />
-        </div>
+        <JuiViewerSidebar
+          open={true}
+          items={items}
+          selectedIndex={2}
+          onSelectedChanged={() => {}}
+        />
       );
     }
     return null;
@@ -169,8 +179,10 @@ class ViewerViewComponent extends Component<
             <JuiDivider key="divider-filters" />
           </JuiTransition>
           <>
-            <LeftResponsive content={this.renderThumbnail()} />
-            <RightResponsive content={this.renderDocument()} />
+            <JuiResponsiveLayout>
+              <LeftResponsive content={this.renderThumbnailBar()} />
+              <DocumentResponsive content={this.renderDocument()} />
+            </JuiResponsiveLayout>
           </>
         </JuiViewerBackground>
       </ViewerContext.Provider>

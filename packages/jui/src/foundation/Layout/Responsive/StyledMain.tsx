@@ -11,6 +11,7 @@ type StyledMainProps = {
 };
 
 const StyledMain = styled('div')`
+  position: relative;
   height: 100%;
   flex: 1 1 0%;
   overflow: hidden;
