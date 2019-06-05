@@ -4,11 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { action, computed, observable } from 'mobx';
+import { computed, observable } from 'mobx';
 import { FileActionViewModel } from '../common/FIleAction.ViewModel';
 import { AccountService } from 'sdk/module/account';
 import { ItemService } from 'sdk/module/item/service';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { catchError } from '@/common/catchError';
 
 class FileDeleteActionViewModel extends FileActionViewModel {
   @observable
@@ -23,7 +24,10 @@ class FileDeleteActionViewModel extends FileActionViewModel {
     return this._currentItemVersion.creator_id === currentUserId;
   }
 
-  @action
+  @catchError.flash({
+    network: 'message.prompt.deleteFileNetworkError',
+    server: 'message.prompt.deleteFileBackendError',
+  })
   handleDeleteFile = async () => {
     if (this._currentItemVersion.deactivated) return;
 
