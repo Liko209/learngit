@@ -163,7 +163,6 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
 
   @action
   onUpdate = (opts: UpdateParamsType) => {
-    console.log('--- fileViewer', opts);
     const { scale, pageIdx } = opts;
     if (scale && scale !== this._currentScale) {
       this._currentScale = scale;
