@@ -1,12 +1,13 @@
 import { observable } from 'mobx';
 import { Company } from 'sdk/module/company/entity';
 import Base from './Base';
+import { CustomEmojiMap } from '@/common/emojiHelpers';
 
 export default class CompanyModel extends Base<Company> {
   @observable
   name: string;
   @observable
-  customEmoji: { [index: string]: { data: string } };
+  customEmoji: CustomEmojiMap;
   rcAccountId?: number;
   rcBrand?: string;
 
