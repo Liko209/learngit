@@ -4,73 +4,49 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Post } from 'sdk/module/post/entity';
-import PostModel from '@/store/models/Post';
 import { action, computed, observable } from 'mobx';
-import { Item } from 'sdk/module/item/entity';
-import FileItemModel from '@/store/models/FileItem';
-import { getEntity } from '@/store/utils';
-import { ENTITY_NAME } from '@/store';
-import { StoreViewModel } from '@/store/ViewModel';
-// import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-// import { AccountService } from 'sdk/module/account';
-import { FileDeleteActionProps } from './types';
+import { FileActionViewModel } from '../common/FIleAction.ViewModel';
+import { AccountService } from 'sdk/module/account';
+import { ItemService } from 'sdk/module/item/service';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
-class FileDeleteActionViewModel extends StoreViewModel<FileDeleteActionProps> {
+class FileDeleteActionViewModel extends FileActionViewModel {
   @observable
   conversationId: number;
 
   @computed
-  private get _id() {
-    return this.props.fileId;
-  }
-
-  @computed
-  private get item() {
-    return getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, this._id);
-  }
-
-  @computed
-  get fileName() {
-    return this.item.name;
-  }
-
-  @computed
   get canDelete() {
-    // different situation
-    // const userConfig = ServiceLoader.getInstance<AccountService>(
-    //   ServiceConfig.ACCOUNT_SERVICE,
-    // ).userConfig;
-    // const userId = userConfig.getGlipUserId();
-    // return userId === this.item.creatorId;
-    return true;
-  }
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    const currentUserId = userConfig.getGlipUserId();
 
-  @computed
-  private get post() {
-    const { postId } = this.props;
-    if (postId) {
-      return getEntity<Post, PostModel>(ENTITY_NAME.POST, postId);
-    }
-    return null;
-  }
-
-  @computed
-  private get versionIndex() {
-    const versions = this.item.versions;
-    if (this.post && this.post.itemData && versions) {
-      const itemData = this.post.itemData;
-      if (itemData && itemData.version_map && itemData.version_map[this._id]) {
-        const version = itemData.version_map[this._id];
-        return versions.length - version;
-      }
-    }
-    return versions.length - 1;
+    return this.currentItemVersion.creator_id === currentUserId;
   }
 
   @action
-  handleDeleteFile = () => {
-    this.versionIndex;
+  handleDeleteFile = async () => {
+    if (this.currentItemVersion.deactivated) return;
+
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
+    await itemService.deleteFile(
+      this._id,
+      this.item.versions.length -
+        this.item.versions.indexOf(this.currentItemVersion),
+    );
+  }
+
+  @computed
+  get currentItemVersion() {
+    const fileInConversation = !!this.post;
+    if (fileInConversation) {
+      const versionIndex =
+        this.item.versions.length - this.post!.fileItemVersion(this.item);
+      return this.item.versions[versionIndex];
+    }
+    return this.item.latestVersion;
   }
 }
 

@@ -87,15 +87,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     { item }: ExtendFileItem,
     rule: RULE,
   ): Promise<string> => {
-    const thumbnail = await getThumbnailURLWithType(
-      {
-        id: item.id,
-        type: item.type,
-        versionUrl: item.versionUrl || '',
-        versions: item.versions,
-      },
-      rule,
-    );
+    const thumbnail = await getThumbnailURLWithType(item, rule);
     if (thumbnail.url) {
       this.urlMap.set(item.id, thumbnail.url);
     }
@@ -137,7 +129,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       if (!item) {
         return;
       }
-      if (item.deactivated || item.isMocked) {
+      if (!this._itemAvailable(item)) {
         return;
       }
       const file = getFileType(item);
@@ -145,6 +137,19 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       files[file.type].push(file);
     });
     return files;
+  }
+
+  private _itemAvailable(item: FileItemModel) {
+    if (item.isMocked) return false;
+    if (item.deactivated) {
+      return false;
+    }
+
+    const fileItemVersion = this.post.fileItemVersion(item);
+    if (item.versions.length - fileItemVersion < 0) return false;
+    return !item.versions[
+      item.versions.length - this.post.fileItemVersion(item)
+    ].deactivated;
   }
 
   @computed

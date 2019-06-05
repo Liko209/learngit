@@ -16,7 +16,7 @@ import { FileActionProps } from './types';
 
 class FileActionViewModel extends StoreViewModel<FileActionProps> {
   @computed
-  private get _id() {
+  get _id() {
     return this.props.fileId;
   }
 
@@ -37,27 +37,6 @@ class FileActionViewModel extends StoreViewModel<FileActionProps> {
       return getEntity<Post, PostModel>(ENTITY_NAME.POST, postId);
     }
     return null;
-  }
-
-  @computed
-  get versionIndex() {
-    const versions = this.item.versions;
-    if (this.post) {
-      if (this.post.itemData && versions) {
-        const itemData = this.post.itemData;
-        if (
-          itemData &&
-          itemData.version_map &&
-          itemData.version_map[this._id]
-        ) {
-          const version = itemData.version_map[this._id];
-          return versions.length - version;
-        }
-      }
-      return versions.length - 1;
-    }
-    // There is no post data in the right rail
-    return 0;
   }
 }
 
