@@ -8,7 +8,7 @@ import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 import { JuiViewerDocument } from '../ViewerDocument';
 
-type ScaleType = 'page-fit' | number;
+type ScaleType = number;
 type ViewportType = {
   width: number;
   height: number;
