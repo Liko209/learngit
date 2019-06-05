@@ -13,8 +13,8 @@ test(formalName('Check the MembersSettings page',['P2', 'ContentPanel','Messages
   const users=h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const otherUser = users[5];
-  const app=new AppRoot(t);
   const guestUser = h(t).rcData.guestCompany.users[0];
+  const app=new AppRoot(t);
 
   let team = <IGroup>{
     name: `publicTeamWithMe${uuid()}`,
