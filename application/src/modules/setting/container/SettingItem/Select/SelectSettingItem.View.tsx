@@ -31,15 +31,12 @@ class SelectSettingItemViewComponent<
   @computed
   private get _source() {
     const { settingItem, settingItemEntity } = this.props;
-    console.log('settingItemEntity: ', settingItemEntity);
-    return settingItem.defaultSource || [];
+    return settingItemEntity.source || settingItem.defaultSource || [];
   }
 
   @computed
   private get _value() {
-    const { settingItemEntity } = this.props;
-    console.log('settingItemEntity: ', settingItemEntity);
-    return '';
+    return this.props.settingItemEntity.value || '';
   }
 
   @catchError.flash({
