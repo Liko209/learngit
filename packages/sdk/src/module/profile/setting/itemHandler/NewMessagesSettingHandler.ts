@@ -87,7 +87,7 @@ class NewMessagesSettingHandler extends AbstractSettingEntityHandler<
   ) {
     const glipProfileId = this._accountService.userConfig.getCurrentUserProfileId();
     const profile = payload.body.entities.get(glipProfileId);
-    if (!profile) {
+    if (!profile || profile[SETTING_KEYS.DESKTOP_MESSAGE] === undefined) {
       return;
     }
     if (
