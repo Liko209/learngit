@@ -23,7 +23,6 @@ class ViewerService implements IViewerService {
         onClose: () => dismiss(),
       },
     );
-    console.log(dismiss, 'looper22');
   }
 }
 
