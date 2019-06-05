@@ -11,7 +11,7 @@ import { ItemService } from 'sdk/module/item';
 import { mainLogger } from 'sdk';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 
-describe('ThumbnailPreloadProcessor', () => {
+describe.skip('ThumbnailPreloadProcessor', () => {
   let thumbnailPreloadProcessor: ThumbnailPreloadProcessor;
   let _sequenceProcessorHandler: SequenceProcessorHandler;
   beforeEach(() => {

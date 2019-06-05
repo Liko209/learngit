@@ -83,7 +83,8 @@ class ThumbnailPreloadProcessor implements IProcessor {
         }
 
         const fileItemModel = Object.keys(item).reduce((acc, key: string) => {
-          return (acc[camelCase(key)] = item[key]);
+          acc[camelCase(key)] = item[key];
+          return acc;
         },                                             {}) as FileItemModel;
         const thumbnail = await getThumbnailURLWithType(
           fileItemModel,
