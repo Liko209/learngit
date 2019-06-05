@@ -26,7 +26,7 @@ import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { Notification } from '@/containers/Notification';
 import { ClientService } from '@/modules/common';
 import { CALLING_OPTIONS } from 'sdk/module/profile';
-
+import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 const testProcedureWaitingTime = 20;
 const mockedDelay = 10;
 
@@ -75,6 +75,7 @@ describe('TelephonyService', () => {
       get: jest.fn(),
       getCallerIdList: jest.fn(),
       getForwardingNumberList: jest.fn(),
+      isRCFeaturePermissionEnabled: jest.fn(),
     };
 
     jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
@@ -673,6 +674,14 @@ describe('TelephonyService', () => {
     telephonyService.getForwardingNumberList();
 
     expect(mockedRCInfoService.getForwardingNumberList).toHaveBeenCalled();
+  });
+
+  it('should get forward permission from RC info service', () => {
+    telephonyService.getForwardPermission();
+
+    expect(
+      mockedRCInfoService.isRCFeaturePermissionEnabled,
+    ).toHaveBeenCalledWith(ERCServiceFeaturePermission.CALL_FORWARDING);
   });
 
   it('should call forward', () => {

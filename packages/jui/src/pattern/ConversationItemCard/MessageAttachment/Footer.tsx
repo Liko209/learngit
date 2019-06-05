@@ -34,8 +34,8 @@ const Footer = (props: FooterProps) => {
     return (
       <Wrapper>
         {icon && <Icon src={icon} />}
-        {footer && <Span dangerouslySetInnerHTML={{ __html: footer }} />}
-        {ts && <Span dangerouslySetInnerHTML={{ __html: timestamp }} />}
+        {footer && <Span>{footer}</Span>}
+        {ts && <Span>{timestamp}</Span>}
       </Wrapper>
     );
   }

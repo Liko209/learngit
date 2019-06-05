@@ -72,6 +72,7 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
             onClick={onCancel}
             color="primary"
             variant={cancelVariant}
+            data-test-automation-id={'DialogCancelButton'}
             autoFocus={false}
             disabled={loading}
             {...cancelBtnProps}
@@ -84,6 +85,7 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
           color={okType}
           variant={okVariant}
           autoFocus={false}
+          data-test-automation-id={'DialogOKButton'}
           disabled={loading}
           {...okBtnProps}
           loading={loading}
@@ -123,16 +125,24 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
     return (
       <JuiDialog open={open!} size={size} {...modalProps}>
         {typeof title === 'string' ? (
-          <JuiDialogTitle>{title}</JuiDialogTitle>
+          <JuiDialogTitle data-test-automation-id={'DialogTitle'}>
+            {title}
+          </JuiDialogTitle>
         ) : (
           title
         )}
         {contentBefore}
-        <JuiDialogContent fill={fillContent}>
+        <JuiDialogContent
+          data-test-automation-id={'DialogContent'}
+          fill={fillContent}
+        >
           {this.renderContent()}
         </JuiDialogContent>
         {contentAfter}
-        <StyledActions className="modal-actions">
+        <StyledActions
+          className="modal-actions"
+          data-test-automation-id={'DialogActions'}
+        >
           {footer ? footer : this.renderDefaultFooter()}
         </StyledActions>
       </JuiDialog>

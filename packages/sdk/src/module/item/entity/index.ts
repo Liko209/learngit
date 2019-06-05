@@ -23,6 +23,7 @@ import {
   InteractiveMessageItemAttachment,
   InteractiveMessageItemAttachmentField,
 } from '../module/interactiveMessage/entity';
+import { MeetingItem } from '../module/meeting/entity';
 export * from '../module/conference/entity';
 
 type ItemFile = FileItem;
@@ -42,4 +43,5 @@ export {
   InteractiveMessageItem,
   InteractiveMessageItemAttachment,
   InteractiveMessageItemAttachmentField,
+  MeetingItem,
 };

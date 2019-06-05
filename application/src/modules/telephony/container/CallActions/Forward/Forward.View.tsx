@@ -8,18 +8,12 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { JuiMenuItem, JuiSubMenu } from 'jui/components/Menus';
 import { JuiListItemText } from 'jui/components/Lists';
-import { ViewProps, ForwardCall } from './types';
+import { ViewProps } from './types';
 
 type Props = ViewProps & WithTranslation;
 
 @observer
-class ForwardViewComponent extends React.Component<
-  Props,
-  { forwardCalls: ForwardCall[] }
-> {
-  state = {
-    forwardCalls: [],
-  };
+class ForwardViewComponent extends React.Component<Props> {
   private _handleForwardMap = {};
 
   private _handleClick = (phoneNumber: string) => {
@@ -30,20 +24,13 @@ class ForwardViewComponent extends React.Component<
     return (this._handleForwardMap[phoneNumber] = () => forward(phoneNumber));
   }
 
-  async componentDidMount() {
-    const forwardCalls = await this.props.getForwardCalls();
-    this.setState({
-      forwardCalls,
-    });
-  }
-
   render() {
-    const { t } = this.props;
-    const { forwardCalls } = this.state;
+    const { t, shouldDisableForwardButton, forwardCalls } = this.props;
     return (
       <JuiSubMenu
         data-test-automation-id="telephony-forward-menu-item"
         title={t('telephony.action.forward')}
+        disabled={shouldDisableForwardButton}
       >
         {forwardCalls &&
           forwardCalls.map(({ phoneNumber, label }) => {
