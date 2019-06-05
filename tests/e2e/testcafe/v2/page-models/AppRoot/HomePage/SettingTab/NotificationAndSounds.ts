@@ -35,6 +35,7 @@ export class NotificationAndSounds extends BaseWebComponent {
   }
 
   get microphoneSourceItems() {
+    return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
     return this.getSelectorByAutomationId('settingItemSelectBoxItem-microphoneSource');
   }
 
@@ -51,6 +52,7 @@ export class NotificationAndSounds extends BaseWebComponent {
   }
 
   get speakerSourceItems() {
+    return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
     return this.getSelectorByAutomationId('settingItemSelectBoxItem-speakerSource');
   }
 
