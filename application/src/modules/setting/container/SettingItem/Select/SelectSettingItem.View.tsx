@@ -31,13 +31,15 @@ class SelectSettingItemViewComponent<
   @computed
   private get _source() {
     const { settingItem, settingItemEntity } = this.props;
-    return settingItemEntity.source || settingItem.defaultSource || [];
+    console.log('settingItemEntity: ', settingItemEntity);
+    return settingItem.defaultSource || [];
   }
 
   @computed
   private get _value() {
     const { settingItemEntity } = this.props;
-    return this.props.extractValue(settingItemEntity.value) || '';
+    console.log('settingItemEntity: ', settingItemEntity);
+    return '';
   }
 
   @catchError.flash({
@@ -72,6 +74,7 @@ class SelectSettingItemViewComponent<
         onChange={this._handleChange}
         disabled={disabled}
         value={this._value}
+        displayEmpty={true}
         automationId={`settingItemSelectBox-${settingItem.automationId}`}
         data-test-automation-value={this._value}
         isFullWidth={true}
@@ -89,8 +92,9 @@ class SelectSettingItemViewComponent<
     const value = this.props.extractValue(sourceItem);
     return (
       <JuiMenuItem
-        value={value}
         key={value}
+        value={value}
+        disabled={value === ''}
         automationId={`settingItemSelectBoxItem-${
           this.props.settingItem.automationId
         }-${value}`}
