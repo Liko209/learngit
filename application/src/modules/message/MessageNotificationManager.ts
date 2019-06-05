@@ -1,3 +1,5 @@
+import { SettingModel } from '@/store/models/UserSetting';
+import { UserSettingEntity } from 'sdk/module/setting';
 /*
  * @Author: Andy Hu (andy.hu@ringcentral.com)
  * @Date: 2019-01-17 15:16:45
@@ -39,7 +41,11 @@ import CompanyModel from '../../store/models/Company';
 import { Markdown } from 'glipdown';
 import { glipdown2Html } from './container/ConversationSheet/TextMessage/utils/glipdown2Html';
 import { MessageNotificationViewModel } from './MessageNotificationViewModel';
-import { DESKTOP_MESSAGE_NOTIFICATION_OPTIONS } from 'sdk/module/profile';
+import {
+  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
+  NOTIFICATION_OPTIONS,
+} from 'sdk/module/profile';
+import { SETTING_ITEM__NOTIFICATION_NEW_MESSAGES } from './interface/constant';
 const logger = mainLogger.tags('MessageNotificationManager');
 const NOTIFY_THROTTLE_FACTOR = 5000;
 export class MessageNotificationManager extends AbstractNotificationManager {
@@ -140,7 +146,10 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     return opts;
   }
   get currentMessageNotificationSetting() {
-    return getSingleEntity(ENTITY_NAME.PROFILE, 'desktopMessageOption');
+    return getEntity<UserSettingEntity, SettingModel<NOTIFICATION_OPTIONS>>(
+      ENTITY_NAME.USER_SETTING,
+      SETTING_ITEM__NOTIFICATION_NEW_MESSAGES,
+    );
   }
   async shouldEmitNotification(post: Post) {
     const activityData = post.activity_data || {};

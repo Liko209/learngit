@@ -90,7 +90,7 @@ describe('messageNotificationManager', () => {
     beforeEach(() => {
       jest.clearAllMocks();
       jest
-        .spyOn(utils, 'getSingleEntity')
+        .spyOn(utils, 'getEntity')
         .mockReturnValue(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE);
       jest.spyOn(notificationManager, 'show').mockImplementation();
     });
@@ -110,7 +110,7 @@ describe('messageNotificationManager', () => {
     describe('when notification settings turned to off', () => {
       beforeEach(() => {
         jest
-          .spyOn(utils, 'getSingleEntity')
+          .spyOn(utils, 'getEntity')
           .mockReturnValue(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF);
       });
       it('should not show notification when post is from group', async () => {
@@ -124,7 +124,7 @@ describe('messageNotificationManager', () => {
       beforeEach(() => {
         jest.clearAllMocks();
         jest
-          .spyOn(utils, 'getSingleEntity')
+          .spyOn(utils, 'getEntity')
           .mockReturnValue(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF);
       });
       it('should not show notification when post is from team with no @mention', async () => {
@@ -144,7 +144,7 @@ describe('messageNotificationManager', () => {
       beforeEach(() => {
         jest.clearAllMocks();
         jest
-          .spyOn(utils, 'getSingleEntity')
+          .spyOn(utils, 'getEntity')
           .mockReturnValue(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION);
       });
       it('should show notification when post is from team with no @mention', async () => {
