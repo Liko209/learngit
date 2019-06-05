@@ -27,7 +27,7 @@ import { JuiViewerSidebar } from 'jui/pattern/Viewer/ViewerSidebar';
 import ViewerContext from './ViewerContext';
 import { IViewerView } from './interface';
 
-type ViewerViewType = { dataModule: IViewerView };
+type ViewerViewType = { dataModule: IViewerView; viewerDestroyer: Function };
 
 const LeftResponsive = withResponsive((props: any) => {
   return cloneElement(props.content);
@@ -80,7 +80,7 @@ class ViewerViewComponent extends Component<
   }
 
   onTransitionExited = () => {
-    this.props.dataModule.viewerDestroyer();
+    this.props.viewerDestroyer();
   }
 
   renderContent = () => {

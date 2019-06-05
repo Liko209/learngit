@@ -10,7 +10,6 @@ interface IViewerView {
   title?: ReactNode;
   info?: ReactNode;
   actions?: ReactNode;
-  viewerDestroyer: () => void;
 }
 
 export { IViewerView };

@@ -23,13 +23,8 @@ import { ItemVersionPage } from 'sdk/module/item/entity';
 
 class FileViewerViewModel implements IViewerView {
   private _item: FileItemModel;
-  private _postId: number;
-  constructor(item: FileItemModel, postId: number) {
+  constructor(item: FileItemModel) {
     this._item = item;
-    this._postId = postId;
-  }
-  viewerDestroyer() {
-    return this._postId;
   }
 
   @computed
