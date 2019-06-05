@@ -777,6 +777,7 @@ test.meta(<ITestMeta>{
 
   const phoneNumber = "+1(650)399-0766";
   const phoneNumberChunks = phoneNumber.split(/\+|\(|\)|\ |\-/).filter(_.identity);
+  const calleeNumber = "(650) 399-0766";
 
   let chat = <IGroup>{
     type: 'DirectMessage',
@@ -804,6 +805,7 @@ test.meta(<ITestMeta>{
   const searchBar = app.homePage.header.searchBar;
   const searchDialog = app.homePage.searchDialog;
   await h(t).withLog(`When I search keyword ${phoneNumber}`, async () => {
+    await t.wait(5e3); // wait due to search serve backend delay.
     await searchBar.clickSelf();
     await searchDialog.clearInputAreaTextByKey();
     await searchDialog.typeSearchKeyword(phoneNumber);
@@ -819,7 +821,7 @@ test.meta(<ITestMeta>{
 
   const postItem = searchDialog.fullSearchPage.messagesTab.postItemById(postId);
   await h(t).withLog(`And display the post and phonenumber in hyper-link stype`, async () => {
-    await postItem.ensureLoaded();
+    await postItem.ensureLoaded(20e3);
     await t.expect(postItem.phoneLinkByDataId(phoneNumber).exists).ok();
   });
 
@@ -840,8 +842,8 @@ test.meta(<ITestMeta>{
       await telephonyDialog.ensureLoaded()
     });
 
-    await h(t).withLog(`And the callee number should be ${phoneNumber} then close dialog`, async () => {
-      await t.expect(telephonyDialog.extension.withExactText(phoneNumber).exists).ok();
+    await h(t).withLog(`And the callee number should be ${calleeNumber} then close dialog`, async () => {
+      await t.expect(telephonyDialog.extension.withExactText(calleeNumber).exists).ok();
       await telephonyDialog.clickHangupButton();
     });
   }
