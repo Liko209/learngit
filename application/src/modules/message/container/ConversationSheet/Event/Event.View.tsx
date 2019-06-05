@@ -39,11 +39,14 @@ class Event extends React.Component<Props, {}> {
       >
         <JuiSectionDivider gap={2}>
           <JuiLabelWithContent label={t('item.due')}>
-            <JuiTimeMessage time={`${timeContent.get()}`} />
+            <JuiTimeMessage
+              time={`${timeContent.get()}`}
+              data-test-automation-id="event-due"
+            />
           </JuiLabelWithContent>
           {location && (
             <JuiLabelWithContent label={t('item.locationTitle')}>
-              <JuiEventLocation>
+              <JuiEventLocation data-test-automation-id="event-location">
                 {postParser(location, {
                   keyword: this.context.keyword,
                   url: true,
@@ -52,7 +55,7 @@ class Event extends React.Component<Props, {}> {
             </JuiLabelWithContent>
           )}
           {description && (
-            <JuiEventDescription>
+            <JuiEventDescription data-test-automation-id="event-description">
               {postParser(description, {
                 keyword: this.context.keyword,
                 phoneNumber: true,

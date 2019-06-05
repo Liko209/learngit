@@ -48,13 +48,17 @@ class ContentSearchResultViewComponent extends Component<Props> {
       isShow,
       showResult,
       searchKey,
+      ...rest
     } = this.props;
     const { height } = this.state;
     return (
       <ConversationPageContext.Provider
         value={{ height, disableMoreAction: true }}
       >
-        <JuiFullSearchWrapper>
+        <JuiFullSearchWrapper
+          {...rest}
+          data-test-automation-id="search-message-panel"
+        >
           <JuiSizeDetector handleSizeChanged={this.handleSizeChanged} />
           <JuiFullSearchResultWrapper>
             {showResult && searchState.requestId ? (

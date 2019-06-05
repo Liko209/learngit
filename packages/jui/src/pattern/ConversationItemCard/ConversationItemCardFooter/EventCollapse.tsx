@@ -55,12 +55,12 @@ class JuiEventCollapse extends React.PureComponent<Props, States> {
   }
 
   render() {
-    const { children, hideText, showText } = this.props;
+    const { children, hideText, showText, ...rest } = this.props;
     const { isShow } = this.state;
     return (
       <Fragment>
         {isShow && children}
-        <StyledToggle onClick={this.handleToggle}>
+        <StyledToggle onClick={this.handleToggle} {...rest}>
           {isShow ? hideText : showText}
         </StyledToggle>
       </Fragment>

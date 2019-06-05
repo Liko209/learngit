@@ -29,7 +29,7 @@ class NoteView extends Component<NoteViewProps> {
         title={postParser(title, { keyword: this.context.keyword })}
         Icon={<NoteIcon />}
       >
-        <JuiNoteContent>
+        <JuiNoteContent data-test-automation-id="note-body">
           {postParser(summary, {
             keyword: this.context.keyword,
             phoneNumber: true,

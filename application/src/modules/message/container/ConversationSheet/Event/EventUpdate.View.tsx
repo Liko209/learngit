@@ -72,15 +72,19 @@ class EventUpdate extends React.Component<Props> {
             <JuiEventCollapse
               showText={t('item.showEventHistory')}
               hideText={t('item.hideEventHistory')}
+              data-test-automation-id="event-show-old"
             >
               {hasOldTime && (
-                <JuiEventCollapseContent>
+                <JuiEventCollapseContent data-test-automation-id="event-old-time">
                   {`${oldTime.get()} ${oldTimeText.get()}`}
                 </JuiEventCollapseContent>
               )}
               {oldLocation && (
-                <JuiEventCollapseContent>
-                  {postParser(oldLocation, { keyword: this.context.keyword, url: true })}
+                <JuiEventCollapseContent data-test-automation-id="event-old-location">
+                  {postParser(oldLocation, {
+                    keyword: this.context.keyword,
+                    url: true,
+                  })}
                 </JuiEventCollapseContent>
               )}
             </JuiEventCollapse>

@@ -121,7 +121,10 @@ class Task extends React.Component<taskViewProps> {
     const assignedIds = effectiveIds ? effectiveIds.slice(0, 2) : [];
 
     return assignedIds.map((assignedId: number) => (
-      <AvatarName key={assignedId} id={assignedId} />
+      <AvatarName
+        key={assignedId}
+        id={assignedId}
+      />
     ));
   }
 
@@ -217,7 +220,7 @@ class Task extends React.Component<taskViewProps> {
           )}
           {section && (
             <JuiLabelWithContent label={t('item.section')}>
-              <JuiTaskSectionOrDescription>
+              <JuiTaskSectionOrDescription data-test-automation-id="task-section">
                 {postParser(section, {
                   keyword: this.context.keyword,
                   url: true,
@@ -227,7 +230,7 @@ class Task extends React.Component<taskViewProps> {
           )}
           {notes && (
             <JuiLabelWithContent label={t('item.descriptionNotes')}>
-              <JuiTaskSectionOrDescription>
+              <JuiTaskSectionOrDescription data-test-automation-id="task-description">
                 {postParser(notes, {
                   keyword: this.context.keyword,
                   phoneNumber: true,
@@ -238,7 +241,7 @@ class Task extends React.Component<taskViewProps> {
           )}
           {files && files.length > 0 && (
             <JuiLabelWithContent label={t('item.attachments')}>
-              <JuiFileWrapper>
+              <JuiFileWrapper data-test-automation-id="task-attachments">
                 {files.map((file: ExtendFileItem) => {
                   return FILE_COMPS[file.type](
                     file,

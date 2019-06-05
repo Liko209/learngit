@@ -14,17 +14,22 @@ exports[`render() render correctly 1`] = `
       label="item.due"
     >
       <JuiTimeMessage
+        data-test-automation-id="event-due"
         time="1997/10/17"
       />
     </JuiLabelWithContent>
     <JuiLabelWithContent
       label="item.locationTitle"
     >
-      <styled.div>
+      <styled.div
+        data-test-automation-id="event-location"
+      >
         location
       </styled.div>
     </JuiLabelWithContent>
-    <styled.div>
+    <styled.div
+      data-test-automation-id="event-description"
+    >
       description
     </styled.div>
   </JuiSectionDivider>
