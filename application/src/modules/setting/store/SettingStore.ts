@@ -36,50 +36,50 @@ class SettingStore {
   @action
   getNoEmptyPages() {
     return this.getAllPages().filter(
-      pageId => this.getNoEmptyPageSections(pageId).length > 0,
+      (pageId) => this.getNoEmptyPageSections(pageId).length > 0,
     );
   }
 
   @action
   getAllPages() {
     const pagesIds: SettingPage['id'][] = [];
-    this._storeScopes.forEach(storeScope => {
-      pagesIds.push(...storeScope.pages.map(page => page.id));
+    this._storeScopes.forEach((storeScope) => {
+      pagesIds.push(...storeScope.pages.map((page) => page.id));
     });
     return uniq(pagesIds).sort(this._comparePageWeight);
   }
 
   @action
   getPageById(pageId: SettingPage['id']) {
-    return this._find(storeScope => storeScope.getPageById(pageId));
+    return this._find((storeScope) => storeScope.getPageById(pageId));
   }
 
   @action
   getPageSections(pageId: SettingPage['id']) {
-    return this._getAll(storeScope => storeScope.getPageSections(pageId)).sort(
-      this._compareSectionWeight,
-    );
+    return this._getAll((storeScope) =>
+      storeScope.getPageSections(pageId),
+    ).sort(this._compareSectionWeight);
   }
 
   @action
   getNoEmptyPageSections(pageId: SettingPage['id']) {
-    return this.getPageSections(pageId).filter(pageId => {
+    return this.getPageSections(pageId).filter((pageId) => {
       const itemIds = this.getSectionItems(pageId);
       return (
         itemIds.length > 0 &&
-        itemIds.some(itemId => this._isItemVisible(itemId))
+        itemIds.some((itemId) => this._isItemVisible(itemId))
       );
     });
   }
 
   @action
   getSectionById(sectionId: SettingSection['id']) {
-    return this._find(storeScope => storeScope.getSectionById(sectionId));
+    return this._find((storeScope) => storeScope.getSectionById(sectionId));
   }
 
   @action
   getSectionItems(sectionId: SettingSection['id']) {
-    return this._getAll(storeScope =>
+    return this._getAll((storeScope) =>
       storeScope.getSectionItems(sectionId),
     ).sort(this._compareItemWeight);
   }
@@ -96,7 +96,7 @@ class SettingStore {
 
   @action
   getItemById(itemId: SettingItem['id']) {
-    return this._find(storeScope => storeScope.getItemById(itemId));
+    return this._find((storeScope) => storeScope.getItemById(itemId));
   }
 
   @action
@@ -118,7 +118,7 @@ class SettingStore {
   @action
   private _getAll<T>(callback: (storeScope: SettingStoreScope) => T[]) {
     const result: T[] = [];
-    this._storeScopes.forEach(storeScope => {
+    this._storeScopes.forEach((storeScope) => {
       result.push(...callback(storeScope));
     });
     return uniq(result);

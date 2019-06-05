@@ -1,10 +1,9 @@
-import { SettingModel } from '@/store/models/UserSetting';
-import { UserSettingEntity } from 'sdk/module/setting';
 /*
  * @Author: Andy Hu (andy.hu@ringcentral.com)
  * @Date: 2019-01-17 15:16:45
  * Copyright Â© RingCentral. All rights reserved.
  */
+import { UserSettingEntity } from 'sdk/module/setting';
 import { goToConversation } from '@/common/goToConversation';
 import { POST_TYPE } from './../../common/getPostType';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -17,7 +16,7 @@ import {
   getActivity,
   getActivityData,
 } from './container/ConversationCard/Activity/handler/getActivity';
-import { getEntity, getGlobalValue, getSingleEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
 import {
@@ -41,6 +40,7 @@ import CompanyModel from '../../store/models/Company';
 import { Markdown } from 'glipdown';
 import { glipdown2Html } from './container/ConversationSheet/TextMessage/utils/glipdown2Html';
 import { MessageNotificationViewModel } from './MessageNotificationViewModel';
+import SettingModel from '../../store/models/UserSetting';
 import {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   NOTIFICATION_OPTIONS,
