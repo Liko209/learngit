@@ -135,9 +135,6 @@ describe('IncomingCallsSettingHandler', () => {
       ]);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
         done();
       });
     });
@@ -153,7 +150,6 @@ describe('IncomingCallsSettingHandler', () => {
       ]);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
         done();
       });
     });
@@ -173,9 +169,6 @@ describe('IncomingCallsSettingHandler', () => {
       );
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
         done();
       });
     });
@@ -193,9 +186,6 @@ describe('IncomingCallsSettingHandler', () => {
       );
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
         done();
       });
     });
@@ -209,7 +199,6 @@ describe('IncomingCallsSettingHandler', () => {
       );
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
         done();
       });
     });

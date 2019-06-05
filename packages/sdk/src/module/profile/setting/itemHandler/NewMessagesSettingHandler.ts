@@ -95,7 +95,7 @@ class NewMessagesSettingHandler extends AbstractSettingEntityHandler<
       profile[SETTING_KEYS.DESKTOP_MESSAGE] !==
       this.userSettingEntityCache!.value
     ) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
   }
   async onSettingEntityUpdate(
@@ -105,7 +105,7 @@ class NewMessagesSettingHandler extends AbstractSettingEntityHandler<
       payload.body.entities.has(SettingEntityIds.Notification_Browser) ||
       payload.body.entities.has(SettingEntityIds.Phone_DefaultApp)
     ) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
   }
 }
