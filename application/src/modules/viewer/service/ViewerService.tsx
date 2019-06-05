@@ -15,9 +15,8 @@ class ViewerService implements IViewerService {
   showFileViewer = (item: FileItemModel, originElement?: HTMLElement) => {
     const { dismiss } = Dialog.simple(
       <ViewerView
-        dataModule={new FileViewerViewModel(item)}
+        dataModule={new FileViewerViewModel(item, () => dismiss())}
         originElement={originElement}
-        viewerDestroyer={() => dismiss()}
       />,
       {
         fullScreen: true,

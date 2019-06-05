@@ -29,7 +29,6 @@ import { IViewerView } from './interface';
 
 type ViewerViewType = {
   dataModule: IViewerView;
-  viewerDestroyer: Function;
   originElement?: HTMLElement;
 };
 
@@ -84,7 +83,7 @@ class ViewerViewComponent extends Component<
   }
 
   onTransitionExited = () => {
-    this.props.viewerDestroyer();
+    this.props.dataModule.viewerDestroyer();
   }
 
   renderThumbnail = () => {
@@ -138,6 +137,7 @@ class ViewerViewComponent extends Component<
             show={show}
             duration="standard"
             easing="sharp"
+            onExited={this.onTransitionExited}
             animation={imageViewerHeaderAnimation}
           >
             <JuiDialogHeader data-test-automation-id="ViewerHeader">
@@ -154,13 +154,10 @@ class ViewerViewComponent extends Component<
                 </JuiDialogHeaderTitle>
               )}
               <JuiDialogHeaderActions>
-                <JuiButtonBar overlapSize={2.5}>
+                <JuiButtonBar overlapSize={-2}>
                   <>{dataModule.actions}</>
                   <JuiIconButton
-                    onClick={() => {
-                      this.closeViewer();
-                      this.onTransitionExited();
-                    }}
+                    onClick={this.closeViewer}
                     aria-label={t('common.dialog.close')}
                     tooltipTitle={t('common.dialog.close')}
                   >

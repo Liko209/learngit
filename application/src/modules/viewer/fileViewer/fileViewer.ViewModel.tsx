@@ -6,6 +6,7 @@
 
 import React from 'react';
 import { computed, action } from 'mobx';
+import { AbstractViewModel } from '@/base';
 import { IViewerView } from '@/modules/viewer/container/ViewerView/interface';
 import moment from 'moment';
 import {
@@ -19,15 +20,37 @@ import FileItemModel from '@/store/models/FileItem';
 import { dateFormatter } from '@/utils/date';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
+import { FileActionMenu } from '@/containers/common/fileAction';
 import { ItemVersionPage } from 'sdk/module/item/entity';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import portalManager from '@/common/PortalManager';
 import _ from 'lodash';
 
 const CHANGE_DEBOUNCE_TIME = 500;
 
-class FileViewerViewModel implements IViewerView {
+class FileViewerViewModel extends AbstractViewModel<IViewerView>
+  implements IViewerView {
   private _item: FileItemModel;
-  constructor(item: FileItemModel) {
+  private _dismiss: Function;
+  constructor(item: FileItemModel, dismiss: Function) {
+    super();
     this._item = item;
+    this._dismiss = dismiss;
+    this.reaction(
+      () => this._item.deactivated,
+      async (deactivated: boolean) => {
+        if (deactivated) {
+          this._onExceptions('viewer.ImageDeleted');
+        }
+      },
+      {
+        fireImmediately: true,
+      },
+    );
   }
 
   @computed
@@ -36,6 +59,10 @@ class FileViewerViewModel implements IViewerView {
     return newestCreatorId
       ? getEntity(ENTITY_NAME.PERSON, newestCreatorId)
       : null;
+  }
+
+  viewerDestroyer() {
+    this._dismiss();
   }
 
   @computed
@@ -92,19 +119,31 @@ class FileViewerViewModel implements IViewerView {
   @action
   handleCurrentPageIdxChange = _.debounce(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      console.log(value);
+      // const value = e.target.value;
     },
     CHANGE_DEBOUNCE_TIME,
   );
 
   @computed
   get actions() {
+    const { downloadUrl, id } = this._item;
     return (
       <>
-        <Download url={''} variant="round" />
+        <Download url={downloadUrl} />
+        <FileActionMenu fileId={id} disablePortal={true} />
       </>
     );
+  }
+
+  private _onExceptions(toastMessage: string) {
+    portalManager.dismissAll();
+    Notification.flashToast({
+      message: toastMessage,
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: false,
+    });
   }
 }
 
