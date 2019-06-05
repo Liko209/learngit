@@ -22,8 +22,9 @@ import { RC_INFO, notificationCenter } from 'sdk/service';
 import { PersonService, ContactType } from 'sdk/module/person';
 import { GlobalConfigService } from 'sdk/module/config';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { mainLogger } from 'sdk';
-import { TelephonyStore, CALL_TYPE } from '../store';
+import { TelephonyStore, CALL_TYPE, INCOMING_STATE } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
@@ -57,6 +58,9 @@ class TelephonyService {
   );
   private _globalConfigService = ServiceLoader.getInstance<GlobalConfigService>(
     ServiceConfig.GLOBAL_CONFIG_SERVICE,
+  );
+  private _phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
+    ServiceConfig.PHONE_NUMBER_SERVICE,
   );
   private _callId?: string;
   private _shouldResumeDisposer: IReactionDisposer;
@@ -730,18 +734,44 @@ class TelephonyService {
       this._telephonyStore.inputString.length <
       this._telephonyStore.maximumInputLength
     ) {
+      // only set forwardString
+      if (this._telephonyStore.incomingState === INCOMING_STATE.FORWARD) {
+        this._telephonyStore.forwardString += str;
+        return;
+      }
       this._telephonyStore.inputString += str;
+      return;
     }
+    return;
   }
 
   updateInputString = (str: string) => {
+    if (this._telephonyStore.incomingState === INCOMING_STATE.FORWARD) {
+      this._telephonyStore.forwardString = str.slice(
+        0,
+        this._telephonyStore.maximumInputLength,
+      );
+      return;
+    }
     this._telephonyStore.inputString = str.slice(
       0,
       this._telephonyStore.maximumInputLength,
     );
+    return;
   }
 
   deleteInputString = (clearAll: boolean = false) => {
+    if (this._telephonyStore.incomingState === INCOMING_STATE.FORWARD) {
+      if (clearAll) {
+        this._telephonyStore.forwardString = '';
+        return;
+      }
+      this._telephonyStore.forwardString = this._telephonyStore.forwardString.slice(
+        0,
+        this._telephonyStore.forwardString.length - 1,
+      );
+      return;
+    }
     if (clearAll) {
       this._telephonyStore.inputString = '';
       return;
@@ -750,6 +780,7 @@ class TelephonyService {
       0,
       this._telephonyStore.inputString.length - 1,
     );
+    return;
   }
 
   dispose = () => {
@@ -861,6 +892,10 @@ class TelephonyService {
       this._callId as string,
       phoneNumber,
     );
+  }
+
+  isValidNumber = (phoneNumber: string) => {
+    return this._phoneNumberService.isValidNumber(phoneNumber);
   }
 
   getForwardPermission = () => {

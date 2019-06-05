@@ -258,13 +258,20 @@ class JuiHeader extends PureComponent<Props, State> {
       placeholder,
       ariaLabelForDelete,
       onKeyDown,
+      Back,
     } = this.props;
     const fakeFunc = () => {};
 
     // TODO: change delete button's icon
     return (
       <StyledInputContainer draggable={false}>
-        <StyledDialerBtnContainer />
+        <StyledDialerBtnContainer>
+          {Back && (
+            <StyledBack>
+              <Back />
+            </StyledBack>
+          )}
+        </StyledDialerBtnContainer>
         <SearchInput
           onBlur={onBlur || fakeFunc}
           onFocus={onFocus || fakeFunc}

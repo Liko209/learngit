@@ -8,7 +8,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { TelephonyService } from '../../../service';
 import { Props, ViewProps, ForwardCall } from './types';
 import { container } from 'framework';
-// import { TelephonyStore } from '../../../store';
+import { TelephonyStore } from '../../../store';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import { Notification } from '@/containers/Notification';
 import { defaultNotificationOptions } from '@/common/catchError';
@@ -23,6 +23,10 @@ class ForwardViewModel extends StoreViewModel<Props> implements ViewProps {
   private _telephonyService: TelephonyService = container.get(
     TELEPHONY_SERVICE,
   );
+  private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
+  directForward = () => {
+    this._telephonyStore.directForward();
+  }
   @observable
   forwardCalls: ForwardCall[];
   @observable
@@ -32,15 +36,12 @@ class ForwardViewModel extends StoreViewModel<Props> implements ViewProps {
     this._getForwardCalls();
     this._getForwardPermission();
   }
-  // private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
-  // directForward = () => {
-  //   this._telephonyStore.directForward();
-  // }
+
   private _onActionSuccess = (message: string) => {
     Notification.flashToast({
       message,
       type: ToastType.SUCCESS,
-      messageAlign: ToastMessageAlign.LEFT,
+      messageAlign: ToastMessageAlign.CENTER,
       fullWidth: false,
       dismissible: false,
     });

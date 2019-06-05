@@ -580,7 +580,8 @@
     },
     "callerIdSelector": {
       "tooltip": "You can change this default Caller ID in settings."
-    }
+    },
+    "forwardCall": "Forward Call"
   },
   "phone": {
     "tab": {
