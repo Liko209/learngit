@@ -17,10 +17,17 @@ import {
   JuiEventCollapseContent,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardFooter';
 import { EventUpdateViewProps } from './types';
+import {
+  postParser,
+  HighlightContextInfo,
+  SearchHighlightContext,
+} from '@/common/postParser';
 
 type Props = WithTranslation & EventUpdateViewProps;
 @observer
 class EventUpdate extends React.Component<Props> {
+  static contextType = SearchHighlightContext;
+  context: HighlightContextInfo;
   private _isShowTime = (value: any) => {
     return (
       value.start ||
@@ -56,7 +63,7 @@ class EventUpdate extends React.Component<Props> {
 
     return (
       <EventUpdateViewCard
-        title={text}
+        title={postParser(text, { keyword: this.context.keyword })}
         iconColor={color}
         Icon="event"
         Footer={
@@ -64,16 +71,20 @@ class EventUpdate extends React.Component<Props> {
             <JuiEventCollapse
               showText={t('item.showEventHistory')}
               hideText={t('item.hideEventHistory')}
+              data-test-automation-id="event-show-old"
             >
               {hasOldTime && (
-                <JuiEventCollapseContent>
+                <JuiEventCollapseContent data-test-automation-id="event-old-time">
                   {`${oldTime.get()} ${oldTimeText.get()}`}
                 </JuiEventCollapseContent>
               )}
               {oldLocation && (
-                <JuiEventCollapseContent
-                  dangerouslySetInnerHTML={{ __html: oldLocation }}
-                />
+                <JuiEventCollapseContent data-test-automation-id="event-old-location">
+                  {postParser(oldLocation, {
+                    keyword: this.context.keyword,
+                    url: true,
+                  })}
+                </JuiEventCollapseContent>
               )}
             </JuiEventCollapse>
           )
@@ -86,7 +97,12 @@ class EventUpdate extends React.Component<Props> {
         )}
         {newLocation && (
           <JuiLabelWithContent label={t('item.locationTitle')}>
-            <JuiEventLocation location={newLocation} />
+            <JuiEventLocation>
+              {postParser(newLocation, {
+                keyword: this.context.keyword,
+                url: true,
+              })}
+            </JuiEventLocation>
           </JuiLabelWithContent>
         )}
       </EventUpdateViewCard>

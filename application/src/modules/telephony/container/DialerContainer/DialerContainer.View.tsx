@@ -18,6 +18,7 @@ import { Record } from '../Record';
 import { CallActions } from '../CallActions';
 import { End } from '../End';
 import { DialBtn } from '../DialBtn';
+import { ForwardBtn } from '../Forward/ForwardBtn';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 
@@ -91,6 +92,7 @@ class DialerContainerViewComponent extends React.Component<
     const {
       keypadEntered,
       isDialer,
+      isForward,
       clickToInput,
       playAudio,
       dialerInputFocused,
@@ -128,18 +130,20 @@ class DialerContainerViewComponent extends React.Component<
     };
 
     if (isDialer) {
-      callAction = DialBtn;
+      callAction = isForward ? ForwardBtn : DialBtn;
       const callerIdSelector = <CallerIdSelector {...callerIdProps} />;
       keypadActions = (
         <>
-          <RuiTooltip
-            title={t('telephony.callerIdSelector.tooltip')}
-            placement="bottom"
-            open={this.state.shouldShowToolTip}
-            tooltipForceHide={this.state.shouldShowToolTip}
-          >
-            {callerIdSelector}
-          </RuiTooltip>
+          {!isForward && (
+            <RuiTooltip
+              title={t('telephony.callerIdSelector.tooltip')}
+              placement="bottom"
+              open={this.state.shouldShowToolTip}
+              tooltipForceHide={this.state.shouldShowToolTip}
+            >
+              {callerIdSelector}
+            </RuiTooltip>
+          )}
           <DialPad
             makeMouseEffect={clickToInput}
             makeKeyboardEffect={playAudio}

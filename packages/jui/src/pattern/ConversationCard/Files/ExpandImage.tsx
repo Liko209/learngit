@@ -11,7 +11,7 @@ import moize from 'moize';
 
 type Props = {
   icon: string;
-  fileName: string;
+  fileName: React.ReactChild | (React.ReactChild | null)[] | null;
   previewUrl: string;
   Actions: JSX.Element;
   i18UnfoldMore: string;
