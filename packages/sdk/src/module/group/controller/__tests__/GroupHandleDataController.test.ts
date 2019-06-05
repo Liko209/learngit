@@ -18,9 +18,9 @@ import { StateService } from '../../../state';
 import { GroupDao } from '../../dao';
 import { Group } from '../../entity';
 import { GroupHandleDataController } from '../GroupHandleDataController';
-import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
+import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
-import { SYNC_SOURCE } from '../../../../module/sync';
+import { SYNC_SOURCE } from '../../../sync';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { GroupConfigService } from 'sdk/module/groupConfig';
 
@@ -1153,6 +1153,67 @@ describe('GroupHandleDataController', () => {
           version: 3,
         },
       ]);
+    });
+  });
+
+  describe('handleGroupFetchedPost', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValue(1);
+    });
+    const incomingPosts = [
+      { id: 1, created_at: 5, creator_id: 1, group_id: 9 },
+      { id: 2, created_at: 7, creator_id: 1, group_id: 9 },
+      { id: 3, created_at: 9, creator_id: 2, group_id: 9 },
+    ];
+
+    it('should only update when there are posts newer than my latest post and is mine', async () => {
+      groupConfigService.getById = jest
+        .fn()
+        .mockResolvedValue({ my_last_post_time: 6 });
+      await groupHandleDataController.handleGroupFetchedPost(
+        9,
+        incomingPosts as any,
+      );
+
+      expect(groupConfigService.handleMyMostRecentPostChange).toBeCalledWith([
+        { created_at: 7, creator_id: 1, group_id: 9, id: 2 },
+      ]);
+    });
+
+    it('should not update when post is old than my last post time', async () => {
+      groupConfigService.getById = jest
+        .fn()
+        .mockResolvedValue({ my_last_post_time: Date.now() });
+      await groupHandleDataController.handleGroupFetchedPost(
+        9,
+        incomingPosts as any,
+      );
+
+      expect(groupConfigService.handleMyMostRecentPostChange).not.toBeCalled();
+    });
+
+    it('should not update when has no post', async () => {
+      groupConfigService.getById = jest
+        .fn()
+        .mockResolvedValue({ my_last_post_time: Date.now() });
+      await groupHandleDataController.handleGroupFetchedPost(9, []);
+
+      expect(groupConfigService.handleMyMostRecentPostChange).not.toBeCalled();
+    });
+
+    it('should not update when no post is mine', async () => {
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValue(Date.now());
+      groupConfigService.getById = jest
+        .fn()
+        .mockResolvedValue({ my_last_post_time: 0 });
+      await groupHandleDataController.handleGroupFetchedPost(
+        9,
+        incomingPosts as any,
+      );
+
+      expect(groupConfigService.handleMyMostRecentPostChange).not.toBeCalled();
     });
   });
 });

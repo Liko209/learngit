@@ -106,6 +106,12 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .handleGroupMostRecentPostChanged(payload);
   }
 
+  handleGroupFetchedPosts(groupId: number, posts: Post[]) {
+    this.getGroupController()
+      .getHandleDataController()
+      .handleGroupFetchedPost(groupId, posts);
+  }
+
   deleteAllTeamInformation = async (ids: number[]) => {
     await this.getGroupController()
       .getGroupActionController()

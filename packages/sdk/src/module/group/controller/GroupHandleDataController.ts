@@ -30,6 +30,8 @@ import { IEntitySourceController } from '../../../framework/controller/interface
 import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { GroupConfigService } from 'sdk/module/groupConfig';
+
+const LOG_TAG = 'GroupHandleDataController';
 class GroupHandleDataController {
   constructor(
     public groupService: IGroupService,
@@ -549,6 +551,28 @@ class GroupHandleDataController {
       ServiceConfig.ACCOUNT_SERVICE,
     ).userConfig;
     return userConfig.getGlipUserId();
+  }
+
+  async handleGroupFetchedPost(groupId: number, posts: Post[]) {
+    if (!posts.length) {
+      return;
+    }
+    const currentUserId = this._getGlipUserId();
+    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
+    const groupConfig = await groupConfigService.getById(groupId);
+    const myLastPostTime = (groupConfig && groupConfig.my_last_post_time) || 0;
+    const newerMyPosts = posts.filter(post => {
+      return (
+        post.created_at > myLastPostTime && post.creator_id === currentUserId
+      );
+    });
+
+    const sortedMyPosts = _.orderBy(newerMyPosts, ['created_at'], ['desc']);
+    const myLastPost = _.head(sortedMyPosts);
+    myLastPost && (await this._updateMyLastPostTime([myLastPost]));
+    mainLogger.tags(LOG_TAG).log('update most recent my post', myLastPost);
   }
 }
 
