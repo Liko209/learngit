@@ -14,7 +14,7 @@ type ErrorInfo = {
 };
 
 export class RCResponseParser implements IResponseParser {
-  name: 'RCResponseParser';
+  name = 'RCResponseParser';
   parse(response: BaseResponse): JError | null {
     const { data } = response;
     /**
