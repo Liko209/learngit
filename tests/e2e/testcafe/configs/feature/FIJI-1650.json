@@ -4,8 +4,9 @@
       "./fixtures/**/*.ts"
     ],
     "include_tags": [
-      "JPT-6054"
-    ],
+    "P2"
+  ],
+
     "browsers": [
       "selenium:chrome"
     ]
