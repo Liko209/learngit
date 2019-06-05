@@ -20,13 +20,12 @@ class FileDeleteActionViewModel extends FileActionViewModel {
       ServiceConfig.ACCOUNT_SERVICE,
     ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
-
-    return this.currentItemVersion.creator_id === currentUserId;
+    return this._currentItemVersion.creator_id === currentUserId;
   }
 
   @action
   handleDeleteFile = async () => {
-    if (this.currentItemVersion.deactivated) return;
+    if (this._currentItemVersion.deactivated) return;
 
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
@@ -34,12 +33,11 @@ class FileDeleteActionViewModel extends FileActionViewModel {
     await itemService.deleteFile(
       this._id,
       this.item.versions.length -
-        this.item.versions.indexOf(this.currentItemVersion),
+        this.item.versions.indexOf(this._currentItemVersion),
     );
   }
 
-  @computed
-  get currentItemVersion() {
+  private get _currentItemVersion() {
     const fileInConversation = !!this.post;
     if (fileInConversation) {
       const versionIndex =

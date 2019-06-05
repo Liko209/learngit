@@ -23,15 +23,13 @@ function getFileSize(bytes: number) {
 }
 
 function fileItemAvailable(item: FileItemModel, post: PostModel) {
-  if (item.isMocked) return false;
-  if (item.deactivated) {
-    return false;
-  }
+  if (item.isMocked || item.deactivated) return false;
 
   const fileItemVersion = post.fileItemVersion(item);
-  if (item.versions.length - fileItemVersion < 0) return false;
-  return !item.versions[item.versions.length - post.fileItemVersion(item)]
-    .deactivated;
+  const versionIndex = item.versions.length - fileItemVersion;
+
+  if (versionIndex < 0) return false;
+  return !item.versions[versionIndex].deactivated;
 }
 
 export { getFileSize, fileItemAvailable };
