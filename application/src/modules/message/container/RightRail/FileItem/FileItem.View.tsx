@@ -23,6 +23,7 @@ import { Download } from '@/containers/common/Download';
 import { SecondaryText } from '../common/SecondaryText.View';
 import { JuiButtonBar } from 'jui/components/Buttons';
 import { FileActionMenu } from '@/containers/common/fileAction';
+import { postParser } from '@/common/postParser';
 
 @observer
 class FileItemView extends Component<FileItemViewProps> {
@@ -41,7 +42,13 @@ class FileItemView extends Component<FileItemViewProps> {
             <Thumbnail id={id} type="file" />
           </JuiLeftRailListItemIcon>
           <JuiListItemText
-            primary={<FileName filename={name} />}
+            primary={
+              <FileName>
+                {postParser(name, {
+                  fileName: true,
+                })}
+              </FileName>
+            }
             secondary={<SecondaryText name={personName} time={modifiedTime} />}
           />
           {hover && (

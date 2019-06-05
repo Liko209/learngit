@@ -39,24 +39,21 @@ class FileDeleteActionViewComponent extends Component<
     });
   }
 
+  iconCom = (
+    <JuiIconography iconColor={['grey', '500']} iconSize="small">
+      delete
+    </JuiIconography>
+  );
+
   render() {
     const { canDelete, t } = this.props;
-    const Icon = (
-      <JuiIconography
-        iconColor={['grey', '500']}
-        iconSize="small"
-        symbol={AR}
-      />
-    );
-
     return (
       <JuiMenuItem
-        icon={Icon}
+        icon={this.iconCom}
         disabled={!canDelete}
-        color="red"
         onClick={this.deleteFile}
       >
-        {t('message..deleteFile')}
+        {t('message.fileAction.deleteFile')}
       </JuiMenuItem>
     );
   }
