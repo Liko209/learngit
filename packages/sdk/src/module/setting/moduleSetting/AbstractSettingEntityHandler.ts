@@ -54,10 +54,18 @@ export abstract class AbstractSettingEntityHandler<T>
       return this.userSettingEntityCache;
     }
     const result = await this.fetchUserSettingEntity();
-    this.updateUserSettingEntityCache(result);
+    const checkKeys = ['value', 'state', 'source'];
+    if (
+      !_.isEqual(
+        _.pick(result, checkKeys),
+        _.pick(this.userSettingEntityCache, checkKeys),
+      )
+    ) {
+      this.notifyUserSettingEntityUpdate(result);
+      this.updateUserSettingEntityCache(result);
+    }
     return result;
   }
-
   abstract fetchUserSettingEntity(): Promise<UserSettingEntity<T>>;
 
   abstract updateValue(value: T): Promise<void>;

@@ -89,7 +89,7 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
       this.userSettingEntityCache.value &&
       this.userSettingEntityCache.value.browserPermission;
     if (payload !== lastPermission) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
   }
 
@@ -98,14 +98,15 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
   ) {
     const glipProfileId = this._accountService.userConfig.getCurrentUserProfileId();
     const profile = payload.body.entities.get(glipProfileId);
-    if (!profile || profile[SETTING_KEYS.DESKTOP_NOTIFICATION] === undefined) {
+    if (!profile) {
       return;
     }
+
     const lastPermission =
       this.userSettingEntityCache.value &&
       this.userSettingEntityCache.value.wantNotifications;
     if (profile[SETTING_KEYS.DESKTOP_NOTIFICATION] !== lastPermission) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
   }
   private async _getWantNotifications() {
