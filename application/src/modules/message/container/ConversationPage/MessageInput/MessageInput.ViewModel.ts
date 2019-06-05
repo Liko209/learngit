@@ -31,7 +31,7 @@ import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
-import { ZipItemLevel } from 'sdk/src/service/uploadLogControl/types';
+import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
 
 const saveDebugLog = (level: ZipItemLevel = ZipItemLevel.NORMAL) => {
   container

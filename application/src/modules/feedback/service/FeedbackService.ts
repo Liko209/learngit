@@ -15,7 +15,7 @@ import { FeedbackApi } from '../FeedbackApi';
 import { SessionManager, DateFormatter } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
-import { ZipItemLevel } from 'sdk/src/service/uploadLogControl/types';
+import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
 
 type UploadOption = { timeout: number; retry: number; level: ZipItemLevel };
 
