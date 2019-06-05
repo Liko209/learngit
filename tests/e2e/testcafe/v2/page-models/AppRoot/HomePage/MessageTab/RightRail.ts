@@ -2,7 +2,6 @@ import * as assert from 'assert';
 import { H } from '../../../../helpers';
 import { BaseWebComponent } from "../../../BaseWebComponent";
 
-
 export class RightRail extends BaseWebComponent {
   get self() {
     return this.getSelectorByAutomationId('rightRail');
@@ -260,6 +259,14 @@ class ImageAndFileItem extends BaseWebComponent {
     await this.t.expect(this.name.withText(name).exists).ok();
   }
 
+  get more(){
+    return this.getSelectorByAutomationId('fileActionMore',this.self);
+  }
+  
+  async clickMore(){
+    await this.t.click(this.more);
+  }
+
   get secondaryText() {
     return this.getSelectorByAutomationId('list-item-secondary-text', this.self);
   }
@@ -279,6 +286,7 @@ class ImageAndFileItem extends BaseWebComponent {
   get previewIcon() {
     return this.getSelectorByIcon('image_preview', this.self);
   }
+
 }
 
 class LinksTab extends BaseTab {

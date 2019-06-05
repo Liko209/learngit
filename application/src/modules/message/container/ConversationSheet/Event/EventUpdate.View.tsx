@@ -64,7 +64,6 @@ class EventUpdate extends React.Component<Props> {
     return (
       <EventUpdateViewCard
         title={postParser(text, { keyword: this.context.keyword })}
-        titleColor={color}
         iconColor={color}
         Icon="event"
         Footer={

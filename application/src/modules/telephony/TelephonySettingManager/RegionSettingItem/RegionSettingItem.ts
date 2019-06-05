@@ -7,8 +7,9 @@
 import { buildContainer } from '@/base';
 import { RegionSettingItemView } from './RegionSettingItem.View';
 import { RegionSettingItemViewModel } from './RegionSettingItem.ViewModel';
+import { RegionSettingItemProps } from './types';
 
-const RegionSettingItem = buildContainer({
+const RegionSettingItem = buildContainer<RegionSettingItemProps>({
   View: RegionSettingItemView,
   ViewModel: RegionSettingItemViewModel,
 });

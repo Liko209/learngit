@@ -121,10 +121,7 @@ class Task extends React.Component<taskViewProps> {
     const assignedIds = effectiveIds ? effectiveIds.slice(0, 2) : [];
 
     return assignedIds.map((assignedId: number) => (
-      <AvatarName
-        key={assignedId}
-        id={assignedId}
-      />
+      <AvatarName key={assignedId} id={assignedId} />
     ));
   }
 
@@ -190,7 +187,6 @@ class Task extends React.Component<taskViewProps> {
         title={postParser(this._getTitleText(text), {
           keyword: this.context.keyword,
         })}
-        titleColor={color}
         contentHasPadding={!!hasContent}
         Icon={
           <JuiTaskCheckbox customColor={color} checked={complete || false} />}

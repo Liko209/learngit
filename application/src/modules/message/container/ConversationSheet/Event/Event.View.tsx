@@ -20,6 +20,7 @@ import {
   HighlightContextInfo,
   SearchHighlightContext,
 } from '@/common/postParser';
+import { Palette } from 'jui/foundation/theme/theme';
 type Props = WithTranslation & EventViewProps;
 
 @observer
@@ -27,14 +28,13 @@ class Event extends React.Component<Props, {}> {
   static contextType = SearchHighlightContext;
   context: HighlightContextInfo;
   render() {
-    const { event, t, color, timeContent } = this.props;
+    const { event, t, color = ['common', 'black'] as [keyof Palette, string], timeContent } = this.props;
     const { text, description, location } = event;
 
     return (
       <JuiConversationItemCard
         title={postParser(text, { keyword: this.context.keyword })}
         iconColor={color}
-        titleColor={color}
         Icon="event"
       >
         <JuiSectionDivider gap={2}>

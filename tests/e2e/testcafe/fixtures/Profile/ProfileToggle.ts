@@ -77,12 +77,15 @@ test(formalName('Open a team/group conversation from team/group profile, then cl
     }
 
     const profileDialog = app.homePage.profileDialog;
+    const conversationPage = app.homePage.messageTab.conversationPage;
+
     for (const key in groupList) {
       const item = groupList[key];
 
       await h(t).withLog(`When I click a ${key} conversation profile button`, async () => {
-        await item.openMoreMenu();
-        await app.homePage.messageTab.moreMenu.profile.enter();
+        await item.enter();
+        await conversationPage.openMoreButtonOnHeader();
+        await conversationPage.headerMoreMenu.openProfile();
       });
 
       await h(t).withLog(`Then a ${key} conversation profile dialog should be popup`, async () => {
@@ -169,12 +172,15 @@ test(formalName('Open profile via conversation list', ['JPT-450', 'P2', 'Profile
   }
 
   const profileDialog = app.homePage.profileDialog;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   for (const key in groupList) {
     const item = groupList[key];
 
     await h(t).withLog(`When I click a ${key} conversation profile button`, async () => {
-      await item.openMoreMenu();
-      await app.homePage.messageTab.moreMenu.profile.enter();
+      await item.enter();
+      await conversationPage.openMoreButtonOnHeader();
+      await conversationPage.headerMoreMenu.openProfile();
     });
 
     await h(t).withLog(`Then a ${key} conversation profile dialog should be popup`, async () => {
@@ -243,14 +249,17 @@ test(formalName('Favorite/Unfavorite a conversation from profile', ['JPT-409', '
   }
 
   const profileDialog = app.homePage.profileDialog;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   for (const key in groupList) {
     const chat = groupList[key];
     const chatId = await chat.groupId;
 
     // favorite
     await h(t).withLog(`When I click a ${key} conversation profile button`, async () => {
-      await chat.openMoreMenu();
-      await app.homePage.messageTab.moreMenu.profile.enter();
+      await chat.enter();
+      await conversationPage.openMoreButtonOnHeader();
+      await conversationPage.headerMoreMenu.openProfile();
     });
 
     await h(t).withLog(`Then a ${key} conversation profile dialog should be popup`, async () => {
@@ -281,8 +290,9 @@ test(formalName('Favorite/Unfavorite a conversation from profile', ['JPT-409', '
 
     // un favorite
     await h(t).withLog(`When I click a ${key} conversation profile button on favorite section`, async () => {
-      await favoritesSection.conversationEntryById(chatId).openMoreMenu();
-      await app.homePage.messageTab.moreMenu.profile.enter();
+      await favoritesSection.conversationEntryById(chatId).enter();
+      await conversationPage.openMoreButtonOnHeader();
+      await conversationPage.headerMoreMenu.openProfile();
     });
 
     await h(t).withLog(`Then a ${key} conversation profile dialog should be popup`, async () => {

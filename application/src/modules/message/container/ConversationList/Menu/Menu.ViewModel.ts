@@ -21,11 +21,6 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   @computed
-  get personId() {
-    return this.props.personId;
-  }
-
-  @computed
   get groupId() {
     return this.props.groupId;
   }
@@ -38,11 +33,6 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   @computed
   get onClose() {
     return this.props.onClose;
-  }
-
-  @computed
-  get open() {
-    return !!this.anchorEl;
   }
 
   @computed

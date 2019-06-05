@@ -1,0 +1,309 @@
+/*
+ * @Author: Rito.Xiao (rito.xiao@ringcentral.com)
+ * @Date: 2019-05-14 14:26:48
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import {
+  SILENT_SYNC_INTERVAL,
+  SYNC_TYPE,
+  DEFAULT_RECORD_COUNT,
+  MAX_RECORD_COUNT,
+  SYNC_STATUS,
+} from './constants';
+import { mainLogger } from 'foundation';
+import { silentSyncProcessorHandler } from './SilentSyncProcessorHandler';
+import { SilentSyncProcessor } from './SilentSyncProcessor';
+import {
+  RCItemSyncResponse,
+  RCItemSyncInfo,
+} from 'sdk/api/ringcentral/types/RCItemSync';
+import { JError, JRCError, ERROR_CODES_RC, ERROR_CODES_SDK } from 'sdk/error';
+import { SYNC_DIRECTION } from '../constants';
+import { IRCItemSyncConfig } from '../config/IRCItemSyncConfig';
+import { notificationCenter, RELOAD_TARGET } from 'sdk/service';
+import { IdModel, ModelIdType } from 'sdk/framework/model';
+import { UndefinedAble } from 'sdk/types';
+
+abstract class AbstractSyncController<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+> {
+  private _syncStatus: number = 0;
+  private _lastSyncNewerTime: number = 0;
+
+  constructor(
+    protected syncName: string,
+    protected syncConfig: IRCItemSyncConfig,
+    private _entityKey: string,
+    private _interval: number = SILENT_SYNC_INTERVAL,
+  ) {}
+
+  async doSync(
+    isSilent: boolean,
+    direction: SYNC_DIRECTION,
+    recordCount?: number,
+  ): Promise<T[]> {
+    if (!(await this.hasPermission()) || this._isInClear()) {
+      mainLogger
+        .tags(this.syncName)
+        .info(`can not do sync now, status: ${this._syncStatus}`);
+      return [];
+    }
+    const syncToken = await this.getSyncToken();
+    if (!syncToken) {
+      return await this._doFSync(isSilent, recordCount);
+    }
+
+    if (!isSilent) {
+      mainLogger.tags(this.syncName).info('start do ISync');
+      if (direction === SYNC_DIRECTION.NEWER) {
+        this._lastSyncNewerTime = Date.now();
+      }
+      return await this._startSync(
+        isSilent,
+        SYNC_TYPE.ISYNC,
+        direction,
+        recordCount,
+      ).catch((reason: JError) => {
+        mainLogger
+          .tags(this.syncName)
+          .warn(
+            `do ISync failed, direction: ${direction}, count: ${recordCount}, error: ${reason}`,
+          );
+        throw reason;
+      });
+    }
+
+    const canDoSilentSync =
+      Date.now() - this._lastSyncNewerTime > this._interval &&
+      this.canDoSilentSync();
+
+    if (canDoSilentSync) {
+      mainLogger.tags(this.syncName).info('try to add ISync processor');
+      this._lastSyncNewerTime = Date.now();
+      const processor = new SilentSyncProcessor(this.syncName, async () => {
+        await this._startSync(
+          isSilent,
+          SYNC_TYPE.ISYNC,
+          SYNC_DIRECTION.NEWER,
+          recordCount,
+        ).catch((reason: JError) => {
+          mainLogger
+            .tags(this.syncName)
+            .warn(
+              `do silent ISync failed, direction: ${direction}, count: ${recordCount}, error: ${reason}`,
+            );
+        });
+      });
+      silentSyncProcessorHandler.addProcessor(processor);
+    }
+    return [];
+  }
+
+  private async _doFSync(
+    isSilent: boolean,
+    recordCount?: number,
+  ): Promise<T[]> {
+    if (this._isInFSync()) {
+      mainLogger
+        .tags(this.syncName)
+        .info(`is already in Fsync now, status: ${this._syncStatus}`);
+      throw new JRCError(
+        ERROR_CODES_SDK.INVALID_SYNC_TOKEN,
+        `${this.syncName}, invalid sync token`,
+      );
+    }
+    this._syncStatus = this._syncStatus | SYNC_STATUS.IN_FSYNC;
+    let result: T[] = [];
+    if (isSilent) {
+      mainLogger.tags(this.syncName).info('try to add FSync processor');
+      const processor = new SilentSyncProcessor(this.syncName, async () => {
+        await this._startSync(isSilent, SYNC_TYPE.FSYNC, undefined, recordCount)
+          .catch((reason: JError) => {
+            mainLogger
+              .tags(this.syncName)
+              .warn(`do silent FSync, count: ${recordCount}, error: ${reason}`);
+          })
+          .finally(() => {
+            this._syncStatus = this._syncStatus & ~SYNC_STATUS.IN_FSYNC;
+          });
+      });
+      silentSyncProcessorHandler.addProcessor(processor);
+    } else {
+      mainLogger.tags(this.syncName).info('start do FSync');
+      result = await this._startSync(
+        isSilent,
+        SYNC_TYPE.FSYNC,
+        undefined,
+        recordCount,
+      )
+        .catch((reason: JError) => {
+          mainLogger
+            .tags(this.syncName)
+            .warn(`do FSync, count: ${recordCount}, error: ${reason}`);
+          throw reason;
+        })
+        .finally(() => {
+          this._syncStatus = this._syncStatus & ~SYNC_STATUS.IN_FSYNC;
+        });
+    }
+    return result;
+  }
+
+  private async _startSync(
+    isSilent: boolean,
+    syncType: SYNC_TYPE,
+    direction?: SYNC_DIRECTION,
+    recordCount?: number,
+  ): Promise<T[]> {
+    let fetchCount: UndefinedAble<number> = undefined;
+    if (syncType === SYNC_TYPE.FSYNC) {
+      fetchCount = MAX_RECORD_COUNT;
+    } else if (direction === SYNC_DIRECTION.OLDER) {
+      fetchCount = recordCount || DEFAULT_RECORD_COUNT;
+    }
+
+    mainLogger
+      .tags(this.syncName)
+      .info(
+        `start sync, isSilent${isSilent}, type:${syncType}, direction:${direction}, count:${fetchCount}`,
+      );
+
+    const syncToken = await this.getSyncToken();
+    return await this.sendSyncRequest(syncType, syncToken, fetchCount)
+      .then(async (result: RCItemSyncResponse<T>) => {
+        if (!result || !result.records || !result.syncInfo) {
+          throw new JRCError(
+            ERROR_CODES_RC.UNKNOWN,
+            'incomplete response data',
+          );
+        }
+        mainLogger
+          .tags(this.syncName)
+          .info(`sync success, size:${result.records.length}`, result.syncInfo);
+        return await this._handleSuccessResponse(result, isSilent, fetchCount);
+      })
+      .catch(async (reason: JError) => {
+        await this._handleFailedResponse(reason);
+        return [];
+      });
+  }
+
+  async clearAll(): Promise<void> {
+    if (this._isInClear()) {
+      mainLogger
+        .tags(this.syncName)
+        .info(`is already in clear now, status: ${this._syncStatus}`);
+    }
+
+    this._syncStatus = this._syncStatus | SYNC_STATUS.IN_CLEAR;
+    await this.requestClearAllAndRemoveLocalData()
+      .then(async () => {
+        await this._reset();
+        notificationCenter.emitEntityReload(
+          this._entityKey,
+          RELOAD_TARGET.FOC,
+          [],
+          true,
+        );
+      })
+      .catch((reason: JError) => {
+        throw reason;
+      })
+      .finally(() => {
+        this._syncStatus = this._syncStatus & ~SYNC_STATUS.IN_CLEAR;
+      });
+  }
+
+  private async _handleSuccessResponse(
+    result: RCItemSyncResponse<T>,
+    isSilent: boolean,
+    count?: number,
+  ): Promise<T[]> {
+    const data = await this.handleDataAndSave(result);
+    if (this.canUpdateSyncToken(result.syncInfo)) {
+      await this.setSyncToken(result.syncInfo.syncToken);
+    }
+    if (count && result.records.length < count) {
+      await this.setHasMore(false);
+    }
+    if (isSilent) {
+      if (result.syncInfo.syncType === SYNC_TYPE.FSYNC) {
+        notificationCenter.emitEntityReload(
+          this._entityKey,
+          RELOAD_TARGET.FOC,
+          [],
+          true,
+        );
+      } else {
+        notificationCenter.emitEntityUpdate<T, IdType>(this._entityKey, data);
+      }
+    }
+    return data;
+  }
+
+  private async _handleFailedResponse(reason: JError): Promise<void> {
+    if (this.isTokenInvalidError(reason)) {
+      await this._reset();
+      this.doSync(true, SYNC_DIRECTION.NEWER);
+      throw new JRCError(
+        ERROR_CODES_SDK.INVALID_SYNC_TOKEN,
+        `${this.syncName}, invalid sync token`,
+      );
+    }
+    throw reason;
+  }
+
+  private async _reset() {
+    silentSyncProcessorHandler.removeProcessorByName(this.syncName);
+    this._syncStatus = 0;
+    this._lastSyncNewerTime = 0;
+    await this.removeHasMore();
+    await this.removeSyncToken();
+  }
+
+  private _isInClear() {
+    return !!(this._syncStatus & SYNC_STATUS.IN_CLEAR);
+  }
+
+  private _isInFSync() {
+    return !!(this._syncStatus & SYNC_STATUS.IN_FSYNC);
+  }
+
+  protected async setSyncToken(token: string): Promise<void> {
+    await this.syncConfig.setSyncToken(token);
+  }
+  protected async getSyncToken(): Promise<string> {
+    return await this.syncConfig.getSyncToken();
+  }
+
+  protected async removeSyncToken(): Promise<void> {
+    return await this.syncConfig.removeSyncToken();
+  }
+
+  protected async setHasMore(hasMore: boolean): Promise<void> {
+    await this.syncConfig.setHasMore(hasMore);
+  }
+
+  protected async removeHasMore(): Promise<void> {
+    await this.syncConfig.removeHasMore();
+  }
+
+  protected abstract hasPermission(): Promise<boolean>;
+  protected abstract canDoSilentSync(): boolean;
+  protected abstract isTokenInvalidError(reason: JError): boolean;
+  protected abstract canUpdateSyncToken(syncInfo: RCItemSyncInfo): boolean;
+  protected abstract async requestClearAllAndRemoveLocalData(): Promise<void>;
+  protected abstract async handleDataAndSave(
+    data: RCItemSyncResponse<T>,
+  ): Promise<T[]>;
+
+  protected abstract async sendSyncRequest(
+    syncType: SYNC_TYPE,
+    syncToken?: string,
+    recordCount?: number,
+  ): Promise<RCItemSyncResponse<T>>;
+}
+
+export { AbstractSyncController };

@@ -20,6 +20,10 @@ import { showImageViewer } from '@/modules/viewer/container/Viewer';
 import { getFileSize } from './helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
+import {
+  isSupportFileViewer,
+  isFileReadyForViewer,
+} from '@/common/getFileType';
 import { withFuture, FutureCreator } from 'jui/hoc/withFuture';
 import { UploadFileTracker } from './UploadFileTracker';
 import { Download } from '@/containers/common/Download';
@@ -200,8 +204,11 @@ class FilesView extends React.Component<FilesViewProps> {
         })}
         {files[FileType.document].map((file: ExtendFileItem) => {
           const { item, previewUrl } = file;
-          const { size, type, id, name, downloadUrl } = item;
+          const { size, type, id, name, downloadUrl, versions } = item;
+          const { status } = versions[0];
           const iconType = getFileIcon(type);
+          const supportFileViewer = isSupportFileViewer(type);
+          const fileReadyForViewer = isFileReadyForViewer(status);
           if (id < 0) {
             return this._renderItem(id, progresses, name);
           }
@@ -215,6 +222,7 @@ class FilesView extends React.Component<FilesViewProps> {
               size={`${getFileSize(size)}`}
               url={accelerateURL(previewUrl)!}
               iconType={iconType}
+              disabled={supportFileViewer && !fileReadyForViewer}
               Actions={this._getActions(downloadUrl, id, postId)}
             />
           );

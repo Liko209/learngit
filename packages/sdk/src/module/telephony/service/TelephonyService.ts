@@ -35,6 +35,10 @@ class TelephonyService extends EntityBaseService<IdModel> {
     this.telephonyController.logout();
   }
 
+  getVoipCallPermission = async () => {
+    return this.telephonyController.getVoipCallPermission();
+  }
+
   protected get telephonyController() {
     if (!this._telephonyEngineController) {
       this._telephonyEngineController = new TelephonyEngineController(

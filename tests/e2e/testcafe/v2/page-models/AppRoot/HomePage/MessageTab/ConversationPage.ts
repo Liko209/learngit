@@ -54,6 +54,14 @@ class HeaderMoreMenu extends BaseWebComponent {
   get convertToTeam() {
     return this.getEntry('Convert to team');
   }
+
+  get profile() {
+    return this.getSelectorByAutomationId('profileEntry');
+  }
+
+  async openProfile() {
+    return await this.t.click(this.profile);
+  }
 }
 
 export class BaseConversationPage extends BaseWebComponent {
@@ -829,6 +837,10 @@ export class PostItem extends BaseWebComponent {
 
   get fileSizes() {
     return this.getSelectorByAutomationId('file-no-preview-size', this.self);
+  }
+  
+  async nameShouldBe(name: string) {
+    await this.t.expect(this.fileNames.withText(name).exists).ok();
   }
 
   async nthFileNameShouldBe(n: number, name: string) {

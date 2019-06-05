@@ -26,7 +26,7 @@ describe('FeaturesFlagsService', () => {
       const modules = await featuresFlagsService.getSupportFeatureModules();
       const featureModules = featureModuleConfig.reduce((modules, feature) => {
         return modules.concat(feature.depModules);
-      },                                                []);
+      }, []);
       expect(modules).toEqual(featureModules);
     });
   });

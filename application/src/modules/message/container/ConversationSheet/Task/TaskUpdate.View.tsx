@@ -60,7 +60,6 @@ class TaskUpdate extends React.Component<
         title={postParser(this._getTitleText(text), {
           keyword: this.context.keyword,
         })}
-        titleColor={color}
         Icon={
           <JuiTaskCheckbox customColor={color} checked={complete || false} />}
         Footer={
