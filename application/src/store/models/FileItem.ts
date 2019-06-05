@@ -8,8 +8,6 @@ import { observable, computed } from 'mobx';
 import ItemModel from './Item';
 import { getFileIcon } from '@/common/getFileIcon';
 import { Thumbs } from 'sdk/module/item/module/base/entity/Item';
-import { AccountService } from 'sdk/module/account';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 enum FileType {
   image = 0,
@@ -62,12 +60,12 @@ export default class FileItemModel extends ItemModel {
   }
 
   private _getVersionsValue(type: string) {
+    if (!this.hasVersions()) return null;
     return this.versions[0][type] ? this.versions[0][type] : null;
   }
 
   @computed
   get thumbs(): Thumbs | null {
-    if (!this.hasVersions()) return null;
     return this._getVersionsValue('thumbs');
   }
 
@@ -80,56 +78,37 @@ export default class FileItemModel extends ItemModel {
 
   @computed
   get versionUrl(): string | null {
-    if (!this.hasVersions()) return null;
     return this._getVersionsValue('url');
   }
 
   @computed
   get size() {
-    if (!this.hasVersions()) return null;
     return this._getVersionsValue('size');
   }
 
   @computed
   get downloadUrl() {
-    if (!this.hasVersions()) return null;
     return this._getVersionsValue('download_url');
   }
 
   @computed
   get origHeight() {
-    if (!this.hasVersions()) return null;
     return this._getVersionsValue('orig_height');
   }
 
   @computed
   get origWidth() {
-    if (!this.hasVersions()) return null;
     return this._getVersionsValue('orig_width');
   }
 
   @computed
   get storeFileId() {
-    if (!this.hasVersions()) return null;
     return this._getVersionsValue('stored_file_id');
   }
 
   @computed
   get iconType() {
     return getFileIcon(this.type);
-  }
-
-  @computed
-  get canDeleteFile() {
-    if (!this.hasVersions()) {
-      return null;
-    }
-    const creatorId = this._getVersionsValue('creator_id');
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
-    const currentUserId = userConfig.getGlipUserId();
-    return creatorId === currentUserId;
   }
 
   static fromJS(data: Item) {

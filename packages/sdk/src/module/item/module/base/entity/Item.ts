@@ -17,6 +17,7 @@ export type ItemVersionPage = {
 };
 
 export type ItemVersions = {
+  creator_id: number;
   download_url: string;
   size: number;
   url: string;
