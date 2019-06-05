@@ -26,12 +26,16 @@ import { Download } from '@/containers/common/Download';
 import { accelerateURL } from '@/common/accelerateURL';
 import moize from 'moize';
 import { FileActionMenu } from '@/containers/common/fileAction';
+import { container } from 'framework';
+import { IViewerService, VIEWER_SERVICE } from '@/modules/viewer/interface';
+import FileItemModel from '@/store/models/FileItem';
 
 const SQUARE_SIZE = 180;
 const FutureAttachmentItem = withFuture(AttachmentItem);
 
 @observer
 class FilesView extends React.Component<FilesViewProps> {
+  _viewerService: IViewerService = container.get(VIEWER_SERVICE);
   componentWillUnmount() {
     this.props.dispose();
   }
@@ -96,6 +100,11 @@ class FilesView extends React.Component<FilesViewProps> {
       mode,
       postId,
     );
+  }
+
+  _handleFileClick = (item: FileItemModel) => () => {
+    const { postId } = this.props;
+    this._viewerService.showFileViewer(item, postId);
   }
 
   private _handleImageDidLoad = (id: number, callback: Function) => {
@@ -196,6 +205,7 @@ class FilesView extends React.Component<FilesViewProps> {
               fileName={name}
               size={`${getFileSize(size)}`}
               url={accelerateURL(previewUrl)!}
+              handleFileClick={this._handleFileClick(item)}
               iconType={iconType}
               Actions={this._getActions(downloadUrl, id, postId)}
             />

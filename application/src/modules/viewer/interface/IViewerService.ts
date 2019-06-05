@@ -1,3 +1,5 @@
+import FileItemModel from '@/store/models/FileItem';
+
 /*
  * @Author: looper wang (looper.wang@ringcentral.com)
  * @Date: 2019-06-04 09:12:51
@@ -5,7 +7,7 @@
  */
 
 interface IViewerService {
-  showFileViewer: () => void;
+  showFileViewer: (item: FileItemModel, postId: number) => void;
 }
 
 export { IViewerService };

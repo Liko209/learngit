@@ -4,38 +4,53 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
+import React, { Component, cloneElement } from 'react';
 import { observer } from 'mobx-react';
 import { JuiViewerBackground } from 'jui/pattern/ImageViewer';
+import { withResponsive, VISUAL_MODE } from 'jui/foundation/Layout/Responsive';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiDialogHeader,
   JuiDialogHeaderTitle,
   JuiDialogHeaderActions,
   JuiDialogHeaderMeta,
-  JuiDialogHeaderMetaLeft,
-  JuiDialogHeaderMetaRight,
-  JuiDialogHeaderSubtitle,
 } from 'jui/components/Dialog/DialogHeader';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
-import { Avatar } from '@/containers/Avatar';
 import { JuiButtonBar } from 'jui/components/Buttons/ButtonBar';
 import {
   JuiTransition,
   imageViewerHeaderAnimation,
 } from 'jui/components/Animation';
-import { Download } from '@/containers/common/Download';
 import ReactResizeDetector from 'react-resize-detector';
+import { JuiViewerSidebar } from 'jui/pattern/Viewer/ViewerSidebar';
 import ViewerContext from './ViewerContext';
 import { IViewerView } from './interface';
 
+type ViewerViewType = { dataModule: IViewerView };
+
+const LeftResponsive = withResponsive((props: any) => {
+  return cloneElement(props.content);
+},                                    {});
+
+const RightResponsive = withResponsive(
+  (props: any) => {
+    return cloneElement(props.content);
+  },
+  {
+    visualMode: VISUAL_MODE.BOTH,
+    enable: {
+      left: true,
+    },
+  },
+);
+
 @observer
 class ViewerViewComponent extends Component<
-  IViewerView & WithTranslation,
+  ViewerViewType & WithTranslation,
   any
 > {
-  constructor(props: IViewerView & WithTranslation) {
+  constructor(props: ViewerViewType & WithTranslation) {
     super(props);
     this.state = {
       contextValue: {
@@ -65,11 +80,31 @@ class ViewerViewComponent extends Component<
   }
 
   onTransitionExited = () => {
-    this.props.viewerDestroyer();
+    this.props.dataModule.viewerDestroyer();
+  }
+
+  renderContent = () => {
+    const { dataModule } = this.props;
+    return dataModule.pages ? (
+      <div style={{ display: 'flex' }}>
+        <JuiViewerSidebar
+          open={true}
+          items={dataModule.pages}
+          selectedIndex={2}
+          onSelectedChanged={() => {}}
+        />
+        {
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {dataModule.pages.map(v => (
+              <div style={{ width: '100%', height: '200px' }}>{v}</div>
+            ))}
+          </div>}
+      </div>
+    ) : null;
   }
 
   render() {
-    const { t } = this.props;
+    const { t, dataModule } = this.props;
     const { show } = this.state.contextValue;
     return (
       <ViewerContext.Provider value={this.state.contextValue}>
@@ -83,29 +118,20 @@ class ViewerViewComponent extends Component<
           >
             <JuiDialogHeader data-test-automation-id="ViewerHeader">
               <ReactResizeDetector handleWidth={true} onResize={() => {}} />
-              <JuiDialogHeaderMeta>
-                <JuiDialogHeaderMetaLeft>
-                  <Avatar
-                    uid={1}
-                    data-test-automation-id={'previewerSenderAvatar'}
-                  />
-                </JuiDialogHeaderMetaLeft>
-                <JuiDialogHeaderMetaRight
-                  title={'1'}
-                  data-test-automation-id={'previewerSenderInfo'}
-                  subtitle={'2'}
-                />
-              </JuiDialogHeaderMeta>
-              <JuiDialogHeaderTitle
-                variant="responsive"
-                data-test-automation-id={'previewerTitle'}
-              >
-                <span>{name}</span>
-                <JuiDialogHeaderSubtitle> 1</JuiDialogHeaderSubtitle>
-              </JuiDialogHeaderTitle>
+              {dataModule.info && (
+                <JuiDialogHeaderMeta>{dataModule.info}</JuiDialogHeaderMeta>
+              )}
+              {dataModule.title && (
+                <JuiDialogHeaderTitle
+                  variant="responsive"
+                  data-test-automation-id={'previewerTitle'}
+                >
+                  {dataModule.title}
+                </JuiDialogHeaderTitle>
+              )}
               <JuiDialogHeaderActions>
                 <JuiButtonBar overlapSize={2.5}>
-                  <Download url={''} variant="round" />
+                  <>{dataModule.actions}</>
                   <JuiIconButton
                     onClick={() => {
                       this.closeViewer();
@@ -121,6 +147,10 @@ class ViewerViewComponent extends Component<
             </JuiDialogHeader>
             <JuiDivider key="divider-filters" />
           </JuiTransition>
+          <>
+            <LeftResponsive content={this.renderContent()} />
+            <RightResponsive content={null} />
+          </>
         </JuiViewerBackground>
       </ViewerContext.Provider>
     );

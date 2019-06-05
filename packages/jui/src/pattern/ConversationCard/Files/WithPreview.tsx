@@ -14,15 +14,23 @@ type JuiFileWithPreviewProps = {
   fileName: string;
   url: string;
   iconType: string;
+  handleFileClick: () => void;
 };
 
 class JuiFileWithPreview extends React.PureComponent<JuiFileWithPreviewProps> {
   render() {
-    const { size, fileName, url, Actions, iconType } = this.props;
+    const {
+      size,
+      fileName,
+      url,
+      Actions,
+      iconType,
+      handleFileClick,
+    } = this.props;
 
     return (
       <Jui.FileCard>
-        <Jui.FileCardMedia image={url} />
+        <Jui.FileCardMedia image={url} onClick={handleFileClick} />
         <Jui.FileCardContent>
           <Jui.CardFileName>
             <FileName filename={fileName} />

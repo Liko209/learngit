@@ -5,8 +5,9 @@
  */
 
 import React from 'react';
-import { computed, observable } from 'mobx';
+import { computed } from 'mobx';
 import { IViewerView } from '@/modules/viewer/container/ViewerView/interface';
+import moment from 'moment';
 import {
   JuiDialogHeaderMetaLeft,
   JuiDialogHeaderMetaRight,
@@ -14,38 +15,69 @@ import {
 } from 'jui/components/Dialog/DialogHeader';
 import { Avatar } from '@/containers/Avatar';
 import { Download } from '@/containers/common/Download';
+import FileItemModel from '@/store/models/FileItem';
+import { dateFormatter } from '@/utils/date';
+import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
+import { ItemVersionPage } from 'sdk/src/module/item/entity';
 
-@observable
 class FileViewerViewModel implements IViewerView {
+  private _item: FileItemModel;
+  constructor(item: FileItemModel, postId: number) {
+    console.log(postId);
+    this._item = item;
+  }
   viewerDestroyer() {}
 
   @computed
-  get pages() {
-    return [1, 2, 3].map(v => <>{v}</>);
+  private get _person() {
+    const { newestCreatorId } = this._item;
+    return newestCreatorId
+      ? getEntity(ENTITY_NAME.PERSON, newestCreatorId)
+      : null;
   }
 
   @computed
-  get title() {
+  get pages() {
+    const { versions } = this._item;
+    const { pages } = versions[0];
+    return pages
+      ? pages.map(({ url }: ItemVersionPage) => (
+          <img style={{ width: '100%' }} src={url} />
+        ))
+      : [<>loading...</>];
+  }
+
+  @computed
+  get info() {
+    let userDisplayName;
+    let id;
+    if (this._person) {
+      userDisplayName = this._person.userDisplayName;
+      id = this._person.id;
+    }
+    const { createdAt } = this._item;
     return (
       <>
-        <>name</>
-        <JuiDialogHeaderSubtitle>subtitle</JuiDialogHeaderSubtitle>
+        <JuiDialogHeaderMetaLeft>
+          <Avatar uid={id} data-test-automation-id={'previewerSenderAvatar'} />
+        </JuiDialogHeaderMetaLeft>
+        <JuiDialogHeaderMetaRight
+          title={userDisplayName}
+          data-test-automation-id={'previewerSenderInfo'}
+          subtitle={dateFormatter.dateAndTimeWithoutWeekday(moment(createdAt))}
+        />
       </>
     );
   }
 
   @computed
-  get info() {
+  get title() {
+    const { name } = this._item;
     return (
       <>
-        <JuiDialogHeaderMetaLeft>
-          <Avatar uid={1} data-test-automation-id={'previewerSenderAvatar'} />
-        </JuiDialogHeaderMetaLeft>
-        <JuiDialogHeaderMetaRight
-          title={'lefttitle'}
-          data-test-automation-id={'previewerSenderInfo'}
-          subtitle={'leftsubtitle'}
-        />
+        {name}
+        <JuiDialogHeaderSubtitle> 100/100</JuiDialogHeaderSubtitle>
       </>
     );
   }
