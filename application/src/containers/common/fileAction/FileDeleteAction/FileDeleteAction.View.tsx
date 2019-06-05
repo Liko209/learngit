@@ -31,7 +31,7 @@ class FileDeleteActionViewComponent extends Component<
         </JuiDialogContentText>
       ),
       okText: t('common.dialog.delete'),
-      okType: t('negative'),
+      okType: 'negative',
       cancelText: t('common.dialog.cancel'),
       async onOK() {
         startLoading();

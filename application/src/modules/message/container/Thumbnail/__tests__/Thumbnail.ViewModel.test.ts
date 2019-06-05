@@ -27,7 +27,7 @@ describe('ThumbnailViewModel', () => {
     it('should get image url', done => {
       const file = {
         type: 'application/json',
-        versions: [{ stored_file_id: 1 }],
+        latestVersion: { stored_file_id: 1 },
       };
 
       (getEntity as jest.Mock).mockReturnValue(file);
@@ -88,7 +88,7 @@ describe('ThumbnailViewModel', () => {
     it('should recall _getThumbsUrlWithSize when file versions length has been changed', done => {
       const file = observable({
         type: 'application/json',
-        versions: [{ stored_file_id: 1 }],
+        latestVersion: { stored_file_id: 1 },
       });
 
       (getEntity as jest.Mock).mockReturnValue(file);
@@ -97,7 +97,7 @@ describe('ThumbnailViewModel', () => {
       setTimeout(() => {
         expect(thumbnailViewModel._lastStoreFileId).toEqual(1);
 
-        file.versions = [{ stored_file_id: 2 }, { stored_file_id: 1 }];
+        file.latestVersion = { stored_file_id: 2 };
         setTimeout(() => {
           expect(thumbnailViewModel._lastStoreFileId).toEqual(2);
           done();

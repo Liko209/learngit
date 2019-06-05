@@ -30,6 +30,7 @@ import { RULE } from '@/common/generateModifiedImageURL';
 import { UploadFileTracker } from './UploadFileTracker';
 import { getThumbnailURLWithType } from '@/common/getThumbnailURL';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { fileItemAvailable } from './helper';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
@@ -129,7 +130,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       if (!item) {
         return;
       }
-      if (!this._itemAvailable(item)) {
+      if (!fileItemAvailable(item, this.post)) {
         return;
       }
       const file = getFileType(item);
@@ -137,19 +138,6 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       files[file.type].push(file);
     });
     return files;
-  }
-
-  private _itemAvailable(item: FileItemModel) {
-    if (item.isMocked) return false;
-    if (item.deactivated) {
-      return false;
-    }
-
-    const fileItemVersion = this.post.fileItemVersion(item);
-    if (item.versions.length - fileItemVersion < 0) return false;
-    return !item.versions[
-      item.versions.length - this.post.fileItemVersion(item)
-    ].deactivated;
   }
 
   @computed

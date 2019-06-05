@@ -1,3 +1,6 @@
+import PostModel from '@/store/models/Post';
+import FileItemModel from '@/store/models/FileItem';
+
 /*
  * @Author: Nello Huang (nello.huang@ringcentral.com)
  * @Date: 2018-11-13 14:25:00
@@ -19,4 +22,16 @@ function getFileSize(bytes: number) {
   return `${(bytes / 1024 / 1024 / 1024).toFixed(1)}GB`;
 }
 
-export { getFileSize };
+function fileItemAvailable(item: FileItemModel, post: PostModel) {
+  if (item.isMocked) return false;
+  if (item.deactivated) {
+    return false;
+  }
+
+  const fileItemVersion = post.fileItemVersion(item);
+  if (item.versions.length - fileItemVersion < 0) return false;
+  return !item.versions[item.versions.length - post.fileItemVersion(item)]
+    .deactivated;
+}
+
+export { getFileSize, fileItemAvailable };
