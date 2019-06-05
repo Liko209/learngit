@@ -623,8 +623,8 @@
       "general": {
         "title": "General",
         "defaultPhoneApp": {
-          "label": "Default Phone app (calling, voicemail, SMS/MMS, fax)",
-          "description": "Choose which app you would like to use to receive phone notifications",
+          "label": "Default Phone app for calling",
+          "description": "Choose which app you'd like use to make calls",
           "option": {
             "glip": "Use RingCentral App (this app)",
             "ringcentral": "Use RingCentral Phone"
