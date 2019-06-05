@@ -54,6 +54,14 @@ class HeaderMoreMenu extends BaseWebComponent {
   get convertToTeam() {
     return this.getEntry('Convert to team');
   }
+
+  get profile() {
+    return this.getSelectorByAutomationId('profileEntry');
+  }
+
+  async openProfile() {
+    return await this.t.click(this.profile);
+  }
 }
 
 export class BaseConversationPage extends BaseWebComponent {
