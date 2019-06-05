@@ -27,7 +27,10 @@ import { FileActionMenu } from '@/containers/common/fileAction';
 import { ItemVersionPage } from 'sdk/module/item/entity';
 import { Notification } from '@/containers/Notification';
 import { JuiTextField } from 'jui/components/Forms/TextField';
-import { JuiViewerTitleWrap } from 'jui/pattern/Viewer/ViewerTitle';
+import {
+  JuiViewerTitleWrap,
+  JuiViewerImg,
+} from 'jui/pattern/Viewer/ViewerTitle';
 import {
   ToastType,
   ToastMessageAlign,
@@ -83,7 +86,7 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
     return pages
       ? pages.map(({ url }: ItemVersionPage) => {
           return {
-            cmp: <img style={{ width: '100%' }} src={url} />,
+            cmp: <JuiViewerImg src={url} />,
             viewport: {
               origHeight,
               origWidth,

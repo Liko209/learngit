@@ -18,4 +18,10 @@ const JuiViewerTitleWrap = styled.div`
   }
 `;
 
-export { JuiViewerTitleWrap };
+const JuiViewerImg = styled.img`
+  && {
+    width: 100%;
+  }
+`;
+
+export { JuiViewerTitleWrap, JuiViewerImg };
