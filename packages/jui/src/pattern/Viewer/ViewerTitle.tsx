@@ -13,7 +13,7 @@ const JuiViewerTitleWrap = styled.div`
     align-items: center;
     > div {
       margin: 0 ${spacing(2)};
-      width: ${spacing(8)};
+      width: ${spacing(12)};
     }
   }
 `;

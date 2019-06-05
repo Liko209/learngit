@@ -40,9 +40,12 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
   private _item: FileItemModel;
   private _dismiss: Function;
   @observable
-  private _currentScale: number;
+  private _currentScale: number = 1;
   @observable
-  private _currentPageIdx: number;
+  private _currentPageIdx: number = 0;
+
+  @observable
+  private _textFieldValue: number;
 
   constructor(item: FileItemModel, dismiss: Function) {
     super();
@@ -113,6 +116,16 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
     );
   }
 
+  @action
+  handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { versions } = this._item;
+    const { pages = [] } = versions[0];
+    let value = Number(e.target.value);
+    value = value > pages.length ? pages.length : value;
+    this._textFieldValue = value;
+    this._currentPageIdx = value - 1;
+  }
+
   @computed
   get title() {
     const { versions, name } = this._item;
@@ -124,13 +137,14 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
           id="outlined-number"
           label=""
           type="number"
-          value={1}
-          onChange={() => {}}
+          defaultValue={1}
+          value={this._textFieldValue}
+          onChange={this.handleTextFieldChange}
           inputProps={{
             'aria-label': 'numberInput',
           }}
         />
-        <JuiDialogHeaderSubtitle>{`100/${
+        <JuiDialogHeaderSubtitle>{`${this._currentPageIdx + 1}/${
           pages.length
         }`}</JuiDialogHeaderSubtitle>
       </JuiViewerTitleWrap>
