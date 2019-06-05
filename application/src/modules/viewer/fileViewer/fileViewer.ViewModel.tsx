@@ -23,6 +23,8 @@ import { ENTITY_NAME } from '@/store';
 import { FileActionMenu } from '@/containers/common/fileAction';
 import { ItemVersionPage } from 'sdk/module/item/entity';
 import { Notification } from '@/containers/Notification';
+import { JuiTextField } from 'jui/components/Forms/TextField';
+import { JuiViewerTitleWrap } from 'jui/pattern/Viewer/ViewerTitle';
 import {
   ToastType,
   ToastMessageAlign,
@@ -107,12 +109,25 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
 
   @computed
   get title() {
-    const { name } = this._item;
+    const { versions, name } = this._item;
+    const { pages = [] } = versions[0];
     return (
-      <>
+      <JuiViewerTitleWrap>
         {name}
-        <JuiDialogHeaderSubtitle> 100/100</JuiDialogHeaderSubtitle>
-      </>
+        <JuiTextField
+          id="outlined-number"
+          label=""
+          type="number"
+          value={1}
+          onChange={() => {}}
+          inputProps={{
+            'aria-label': 'numberInput',
+          }}
+        />
+        <JuiDialogHeaderSubtitle>{`100/${
+          pages.length
+        }`}</JuiDialogHeaderSubtitle>
+      </JuiViewerTitleWrap>
     );
   }
 
