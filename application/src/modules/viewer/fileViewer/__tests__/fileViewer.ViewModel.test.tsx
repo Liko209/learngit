@@ -81,6 +81,37 @@ describe('FileViewerViewModel', () => {
       expect(vm.title).not.toEqual(undefined);
     });
   });
+  describe('handleTextFieldChange()', () => {
+    it('should be return 2  when call input 2 length 2', () => {
+      const dismiss = jest.fn();
+      const vm = new FileViewerViewModel(
+        { versions: [{ pages: [1, 2] }] } as FileItemModel,
+        dismiss,
+      );
+      vm.handleTextFieldChange({ target: { value: '2' } });
+      expect(vm['_textFieldValue']).toEqual(2);
+    });
+
+    it('should be return 2  when call input 3 length 2', () => {
+      const dismiss = jest.fn();
+      const vm = new FileViewerViewModel(
+        { versions: [{ pages: [1, 2] }] } as FileItemModel,
+        dismiss,
+      );
+      vm.handleTextFieldChange({ target: { value: '3' } });
+      expect(vm['_textFieldValue']).toEqual(2);
+    });
+
+    it('should be return 1 when call input -1 length 2', () => {
+      const dismiss = jest.fn();
+      const vm = new FileViewerViewModel(
+        { versions: [{ pages: [1, 2] }] } as FileItemModel,
+        dismiss,
+      );
+      vm.handleTextFieldChange({ target: { value: '-1' } });
+      expect(vm['_textFieldValue']).toEqual(1);
+    });
+  });
   describe('actions()', () => {
     it('The viewer should be closed automatically when the file being previewed was deleted [JPT-2155]', async () => {
       const dismiss = jest.fn();
