@@ -26,6 +26,7 @@ import { JuiButtonBar } from 'jui/components/Buttons';
 import { FileActionMenu } from '@/containers/common/fileAction';
 import { IViewerService, VIEWER_SERVICE } from '@/modules/viewer/interface';
 import FileItemModel from '@/store/models/FileItem';
+import { postParser } from '@/common/postParser';
 
 @observer
 class FileItemView extends Component<FileItemViewProps> {
@@ -55,7 +56,13 @@ class FileItemView extends Component<FileItemViewProps> {
             />
           </JuiLeftRailListItemIcon>
           <JuiListItemText
-            primary={<FileName filename={name} />}
+            primary={
+              <FileName>
+                {postParser(name, {
+                  fileName: true,
+                })}
+              </FileName>
+            }
             secondary={<SecondaryText name={personName} time={modifiedTime} />}
           />
           {hover && (

@@ -177,7 +177,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get ignoreButton() {
-    return this.buttonOfIcon('close');
+    return this.getSelectorByAutomationId('telephony-ignore-btn');
   }
 
   get deleteButton() {
@@ -221,10 +221,10 @@ export class TelephonyDialog extends BaseWebComponent {
     '#': 'hash'
   }
 
-  async focusKeypad(){
+  async focusKeypad() {
     var focus = ClientFunction(() => {
-      document.querySelector('[data-test-automation-id="telephony-dialer-title"]').dispatchEvent(new Event('focus',{bubbles:true}))
-  });
+      document.querySelector('[data-test-automation-id="telephony-dialer-title"]').dispatchEvent(new Event('focus', { bubbles: true }))
+    });
 
     await focus();
   }
@@ -294,6 +294,10 @@ export class TelephonyDialog extends BaseWebComponent {
 
   async clickReplyActionButton() {
     await this.t.click(this.replyActionMenuItem);
+  }
+
+  async hoverReplyActionButton() {
+    await this.t.hover(this.replyActionMenuItem);
   }
 
   async clickReplyInMeetingButton() {
@@ -396,5 +400,17 @@ export class TelephonyMinimizeWindow extends BaseWebComponent {
 
   async clickHangupButton() {
     await this.t.click(this.hangupButton);
+  }
+
+  async hoverhandupButton() {
+    await this.t.hover(this.hangupButton);
+  }
+
+  async hoverMuteButton() {
+    await this.t.hover(this.muteButton);
+  }
+
+  async hoverunMuteButton() {
+    await this.t.hover(this.unMuteButton);
   }
 }

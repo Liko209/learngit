@@ -19,18 +19,18 @@ export default function ({
   if (ids.length === 1) {
     return version > 1
       ? buildVerbNounNumeralsText({
-        verb: 'item.activity.uploaded',
-        noun: 'item.activity.version',
-        numerals: version,
-      })
+          verb: 'uploaded',
+          noun: 'version',
+          numerals: version,
+        })
       : buildVerbArticleNounText({
-        verb: 'item.activity.shared',
-        noun: 'item.activity.file',
-      });
+          verb: 'shared',
+          noun: 'file',
+        });
   }
   return buildVerbNumeralsNounText({
-    verb: 'item.activity.shared',
+    verb: 'shared',
     numerals: ids.length,
-    noun: 'item.activity.file',
+    noun: 'file',
   });
 }
