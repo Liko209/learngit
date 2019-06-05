@@ -12,7 +12,6 @@ import {
 } from '@/common/generateModifiedImageURL';
 import { ItemService } from 'sdk/module/item/service';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
-import { ItemVersions } from 'sdk/module/item/entity';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 enum IMAGE_TYPE {
@@ -21,14 +20,6 @@ enum IMAGE_TYPE {
   ORIGINAL_IMAGE,
   UNKNOWN_IMAGE,
 }
-
-type ImageInfo = {
-  id: number;
-  type: string;
-  versionUrl: string;
-  versions: ItemVersions[];
-  fileItem: FileItemModel;
-};
 
 const SQUARE_SIZE = 180;
 const DEFAULT_WIDTH = 1000;
@@ -201,6 +192,5 @@ export {
   getMaxThumbnailURLInfo,
   getThumbnailURLWithType,
   IMAGE_TYPE,
-  ImageInfo,
   SQUARE_SIZE,
 };

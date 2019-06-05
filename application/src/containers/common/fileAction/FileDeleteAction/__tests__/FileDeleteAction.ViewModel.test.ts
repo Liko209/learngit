@@ -8,11 +8,22 @@ import { mockEntity } from 'shield/application';
 import { mockService } from 'shield/sdk';
 import { FileDeleteActionViewModel } from '../FileDeleteAction.ViewModel';
 import { AccountService } from 'sdk/module/account';
+import { ItemService } from 'sdk/module/item/service';
 import { ENTITY_NAME } from '@/store';
 
 const userA = 'userA';
 const userB = 'userB';
 const userC = 'userC';
+const fileV1 = {
+  creator_id: userA,
+};
+const fileV2 = {
+  creator_id: userB,
+};
+const fileV3 = {
+  creator_id: userC,
+};
+
 describe('FileDeleteActionViewModel', () => {
   const entityMock = postFileVersion => (name: any) => {
     if (name === ENTITY_NAME.POST) {
@@ -26,18 +37,8 @@ describe('FileDeleteActionViewModel', () => {
     if ((name = ENTITY_NAME.ITEM)) {
       return {
         creatorId: userA,
-        latestVersion: { creator_id: userC },
-        versions: [
-          {
-            creator_id: userC,
-          },
-          {
-            creator_id: userB,
-          },
-          {
-            creator_id: userA,
-          },
-        ],
+        latestVersion: fileV3,
+        versions: [fileV3, fileV2, fileV1],
       };
     }
   };
@@ -90,6 +91,39 @@ describe('FileDeleteActionViewModel', () => {
     t4() {
       const vm = new FileDeleteActionViewModel({ postId: 123 } as any);
       expect(vm.canDelete).toBe(false);
+    }
+  }
+
+  const spy = jest.fn();
+  const t2Spy = jest.fn();
+  @testable
+  class handleDeleteFile {
+    @test(
+      'should delete the version that currentUser uploaded when in conversation',
+    )
+    @mockService(AccountService, 'userConfig.get', mockUserConfig(userA))
+    @mockService(ItemService, 'deleteFile', spy)
+    @mockEntity(entityMock(1))
+    t1() {
+      const vm = new FileDeleteActionViewModel({
+        postId: 123,
+        fileId: 123,
+      } as any);
+      vm.handleDeleteFile();
+      expect(spy).toBeCalledWith(123, 1);
+    }
+
+    @test('should delete the latest version when not in conversation')
+    @mockService(AccountService, 'userConfig.get', mockUserConfig(userC))
+    @mockService(ItemService, 'deleteFile', t2Spy)
+    @mockEntity(entityMock(undefined))
+    t2() {
+      const vm = new FileDeleteActionViewModel({
+        postId: 123,
+        fileId: 123,
+      } as any);
+      vm.handleDeleteFile();
+      expect(t2Spy).toBeCalledWith(123, 3);
     }
   }
 });

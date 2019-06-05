@@ -16,13 +16,13 @@ import { FileActionProps } from './types';
 
 class FileActionViewModel extends StoreViewModel<FileActionProps> {
   @computed
-  get _id() {
+  get fileId() {
     return this.props.fileId;
   }
 
   @computed
   get item() {
-    return getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, this._id);
+    return getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, this.fileId);
   }
 
   @computed

@@ -31,9 +31,11 @@ class FileDeleteActionViewModel extends FileActionViewModel {
       ServiceConfig.ITEM_SERVICE,
     );
     await itemService.deleteFile(
-      this._id,
-      this.item.versions.length -
-        this.item.versions.indexOf(this._currentItemVersion),
+      this.fileId,
+      this.item.versions
+        .slice()
+        .reverse()
+        .indexOf(this._currentItemVersion) + 1,
     );
   }
 
