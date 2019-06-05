@@ -44,17 +44,14 @@ class SettingStoreScope {
     return [...this._items.values()];
   }
 
-  @action
   getPageById(pageId: SettingPage['id']) {
     return this._pages.get(pageId);
   }
 
-  @action
   getPageSections(pageId: SettingPage['id']) {
     return this._pageSections.get(pageId);
   }
 
-  @action
   getPageItems(pageId: SettingPage['id']) {
     return this.getPageSections(pageId).reduce(
       (result: SettingItem['id'][], sectionId) => {
@@ -64,17 +61,14 @@ class SettingStoreScope {
     );
   }
 
-  @action
   getSectionById(sectionId: SettingSection['id']) {
     return this._sections.get(sectionId);
   }
 
-  @action
   getSectionItems(sectionId: SettingSection['id']) {
     return this._sectionItems.get(sectionId);
   }
 
-  @action
   getItemById(itemId: SettingItem['id']) {
     return this._items.get(itemId);
   }
