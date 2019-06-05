@@ -114,7 +114,7 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
       this.props.selectedIndex !== nextProps.selectedIndex &&
       this.state.currentSelectedIndex !== nextProps.selectedIndex
     ) {
-      this._updateSelectedByIndex(nextProps.selectedIndex);
+      this._updateSelectedByIndex(nextProps.selectedIndex, false);
     }
     if (nextProps.open !== undefined && nextProps.open) {
       const enterTime = duration.enteringScreen;
@@ -124,7 +124,7 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
     }
   }
 
-  private _updateSelectedByIndex(toIdx: number) {
+  private _updateSelectedByIndex(toIdx: number, emitChange: boolean = true) {
     if (toIdx >= 0 && toIdx <= this.state.numberThumbnails - 1) {
       const { onSelectedChanged } = this.props;
       this.setState(
@@ -133,7 +133,9 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
         },
         () => {
           this._scrollThumbnailIntoView();
-          onSelectedChanged && onSelectedChanged(toIdx);
+          if (emitChange && onSelectedChanged) {
+            onSelectedChanged && onSelectedChanged(toIdx);
+          }
         },
       );
     }

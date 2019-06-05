@@ -19,6 +19,7 @@ const DEFAULT_SCALE_DELTA = 1.1;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const PAGE_PADDING = 32;
+const PAGE_FIT = 'page-fit';
 
 const ViewerDocumentWrap = styled('div')`
   && {
@@ -95,6 +96,7 @@ type Props = {
   resizeAble?: boolean;
   scale?: ScaleType;
   pageFit?: boolean;
+  scrollBarPadding?: number;
   onScaleChange?: (scale: ScaleType) => void;
   onCurrentPageIdxChanged?: (idx: number) => void;
 };
@@ -162,11 +164,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
     this._update();
 
     if (pageFit) {
-      setTimeout(() => {
-        this._setScale('page-fit');
-        onScaleChange && onScaleChange(currentScale);
-        onCurrentPageIdxChanged && onCurrentPageIdxChanged(currentPageIndex);
-      },         1000);
+      this._setScale(PAGE_FIT);
     }
   }
 
@@ -176,9 +174,10 @@ class JuiViewerDocument extends React.Component<Props, States> {
     if (
       pageIndex !== undefined &&
       this.props.pageIndex !== pageIndex &&
-      currentPageIndex !== pageIndex
+      currentPageIndex !== pageIndex &&
+      this._emitPageIdx !== pageIndex
     ) {
-      this._updateViewingByIndex(pageIndex);
+      this._updateViewingByIndex(pageIndex, false);
     }
     if (
       scale !== undefined &&
@@ -191,7 +190,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
     }
   }
 
-  private _updateViewingByIndex(toIdx: number) {
+  private _updateViewingByIndex(toIdx: number, emitChange: boolean = true) {
     if (toIdx < 0 || toIdx > this.state.numberPages - 1) {
       return;
     }
@@ -203,7 +202,9 @@ class JuiViewerDocument extends React.Component<Props, States> {
         this._resetCurrentPageView(toIdx);
 
         const { onCurrentPageIdxChanged } = this.props;
-        onCurrentPageIdxChanged && onCurrentPageIdxChanged(toIdx);
+        if (emitChange && onCurrentPageIdxChanged) {
+          onCurrentPageIdxChanged(toIdx);
+        }
       },
     );
   }
@@ -229,6 +230,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
         const viewport = currentPageCmpContainer.currentViewport;
         const currentScale = this.state.currentScale;
         const containerEl = this.container.current;
+        const { scrollBarPadding } = this.props;
 
         let scale: ScaleType = currentScale;
 
@@ -242,8 +244,10 @@ class JuiViewerDocument extends React.Component<Props, States> {
           height = viewport.height;
         }
         if (containerEl) {
-          const hPadding = PAGE_PADDING;
           const vPadding = PAGE_PADDING;
+          const hPadding = scrollBarPadding
+            ? PAGE_PADDING + scrollBarPadding
+            : PAGE_PADDING;
 
           pageWidthScale =
             ((containerEl.clientWidth - hPadding) / width) * currentScale;

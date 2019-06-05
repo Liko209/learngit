@@ -39,6 +39,7 @@ import _ from 'lodash';
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const SCALE_UNIT = 0.1;
+const LEFT_WIDTH = 268;
 
 type updateParamsType = {
   scale?: number;
@@ -55,10 +56,10 @@ const LeftResponsive = withResponsive(
     return cloneElement(props.content);
   },
   {
-    minWidth: 268,
-    maxWidth: 268,
-    defaultWidth: 268,
-    visualMode: VISUAL_MODE.BOTH,
+    minWidth: LEFT_WIDTH,
+    maxWidth: LEFT_WIDTH,
+    defaultWidth: LEFT_WIDTH,
+    visualMode: VISUAL_MODE.AUTOMATIC,
     enable: {
       right: true,
     },
@@ -78,6 +79,7 @@ const DocumentResponsive = withResponsive(
 
 type State = {
   contextValue: ViewerContextType;
+  initialScale: number;
 };
 
 @observer
@@ -85,9 +87,6 @@ class ViewerViewComponent extends Component<
   ViewerViewType & WithTranslation,
   State
 > {
-  // private _isBarChanged: boolean = false;
-  // private _isDocChanged: boolean = false;
-
   constructor(props: ViewerViewType & WithTranslation) {
     super(props);
     this.state = {
@@ -98,6 +97,7 @@ class ViewerViewComponent extends Component<
         onTransitionEntered: this.onTransitionEntered,
         isAnimating: true,
       },
+      initialScale: 0,
     };
   }
 
@@ -177,6 +177,12 @@ class ViewerViewComponent extends Component<
 
   private _handleScaleChanged = (newScale: number) => {
     this._setScale(newScale);
+    const { initialScale } = this.state;
+    if (initialScale === 0) {
+      this.setState({
+        initialScale: newScale,
+      });
+    }
   }
 
   private _setScale = _.debounce((newScale: number) => {
@@ -194,16 +200,16 @@ class ViewerViewComponent extends Component<
     });
   },                             100);
 
-  // private _handlePageIdxChanged = _.debounce((toIdx: number) => {
-  //   const { dataModule } = this.props;
-  //   const { currentPageIdx } = dataModule;
-  //   if (currentPageIdx === toIdx) {
-  //     return;
-  //   }
-  //   this._update({
-  //     pageIdx: toIdx,
-  //   });
-  // },                                         100);
+  private _handlePageIdxChanged = _.debounce((toIdx: number) => {
+    const { dataModule } = this.props;
+    const { currentPageIdx } = dataModule;
+    if (currentPageIdx === toIdx) {
+      return;
+    }
+    this._update({
+      pageIdx: toIdx,
+    });
+  },                                         100);
 
   private _update = ({ scale, pageIdx }: updateParamsType) => {
     const { dataModule } = this.props;
@@ -215,27 +221,9 @@ class ViewerViewComponent extends Component<
       });
   }
 
-  private _handleBarPageIdxChanged = (idx: number) => {
-    // if (this._isDocChanged) {
-    //   this._isDocChanged = false;
-    //   return;
-    // }
-    console.log('--- _handleBarPageIdxChanged', idx);
-    // this._isBarChanged = true;
+  private _handleReset = () => {
     this._update({
-      pageIdx: idx,
-    });
-  }
-
-  private _handleDocPageIdxChanged = (idx: number) => {
-    // if (this._isBarChanged) {
-    //   this._isBarChanged = false;
-    //   return;
-    // }
-    // this._isDocChanged = true;
-    console.log('--- _handleDocPageIdxChanged', idx);
-    this._update({
-      pageIdx: idx,
+      scale: this.state.initialScale,
     });
   }
 
@@ -250,7 +238,7 @@ class ViewerViewComponent extends Component<
           open={true}
           items={items}
           selectedIndex={dataModule.currentPageIdx}
-          onSelectedChanged={this._handleBarPageIdxChanged}
+          onSelectedChanged={this._handlePageIdxChanged}
         />
       );
     }
@@ -278,8 +266,9 @@ class ViewerViewComponent extends Component<
           scale={dataModule.currentScale}
           pageIndex={dataModule.currentPageIdx}
           pageFit={true}
+          scrollBarPadding={LEFT_WIDTH}
           onScaleChange={this._handleScaleChanged}
-          onCurrentPageIdxChanged={this._handleDocPageIdxChanged}
+          onCurrentPageIdxChanged={this._handlePageIdxChanged}
         />
       );
     }
@@ -295,7 +284,9 @@ class ViewerViewComponent extends Component<
 
   render() {
     const { t, dataModule } = this.props;
+    const { currentScale } = dataModule;
     const { show } = this.state.contextValue;
+    const { initialScale } = this.state;
     return (
       <ViewerContext.Provider value={this.state.contextValue}>
         <JuiViewerBackground data-test-automation-id="Viewer" show={show}>
@@ -348,7 +339,7 @@ class ViewerViewComponent extends Component<
                   variant="plain"
                   tooltipTitle={t('viewer.ZoomOut')}
                   ariaLabel={t('viewer.ZoomOut')}
-                  disabled={false}
+                  disabled={currentScale === MIN_SCALE}
                   onClick={() => this._handleZoomOut()}
                 >
                   zoom_out
@@ -359,7 +350,7 @@ class ViewerViewComponent extends Component<
                   variant="plain"
                   tooltipTitle={t('viewer.ZoomIn')}
                   ariaLabel={t('viewer.ZoomIn')}
-                  disabled={false}
+                  disabled={currentScale === MAX_SCALE}
                   onClick={() => this._handleZoomIn()}
                 >
                   zoom_in
@@ -370,8 +361,8 @@ class ViewerViewComponent extends Component<
                   variant="plain"
                   tooltipTitle={t('viewer.ZoomReset')}
                   ariaLabel={t('viewer.ZoomReset')}
-                  disabled={false}
-                  onClick={() => {}}
+                  disabled={currentScale === initialScale}
+                  onClick={() => this._handleReset()}
                 >
                   reset_zoom
                 </JuiIconButton>
