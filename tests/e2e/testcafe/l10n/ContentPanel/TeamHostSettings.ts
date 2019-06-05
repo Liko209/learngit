@@ -7,19 +7,20 @@ import { IGroup } from "../../v2/models";
 import { v4 as uuid } from 'uuid';
 
 fixture('ContentPanel/TeamHostSettings')
-.beforeEach(setupCase(BrandTire.RCOFFICE))
+.beforeEach(setupCase(BrandTire.RC_FIJI_GUEST))
 .afterEach(teardownCase());
 test(formalName('Check the MembersSettings page',['P2', 'ContentPanel','Messages', 'TeamSettings', 'TeamHostSettings', 'V1.4', 'Hanny.han']),async (t) => {
   const users=h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const otherUser = users[5];
   const app=new AppRoot(t);
+  const guestUser = h(t).rcData.guestCompany.users[0];
 
   let team = <IGroup>{
     name: `publicTeamWithMe${uuid()}`,
     type: "Team",
     owner: loginUser,
-    members: [loginUser, otherUser]
+    members: [loginUser, otherUser, guestUser]
   }
 
   await h(t).withLog(`Given I own a team: "${team.name}"`, async() => {
