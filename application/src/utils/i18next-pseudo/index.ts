@@ -37,7 +37,7 @@ export default class Pseudo {
   reservePlaceHolders(options: { [key: string]: string }) {
     let dest = this.pseudoString;
     Object.keys(options).forEach((oKey: string, index: number) => {
-      if (!['lng', 'lngs', 'ns'].includes(oKey)) {
+      if (!['lng', 'lngs', 'ns', 'verb', 'noun', 'adjective'].includes(oKey)) {
         const oVal = options[oKey];
         const hKey = `ṵͼṛα-${index}`;
         dest = dest.replace(oVal, hKey);

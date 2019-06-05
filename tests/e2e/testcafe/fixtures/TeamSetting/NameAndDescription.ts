@@ -53,13 +53,16 @@ test.meta(<ITestMeta>{
     });
     await h(t).directLoginWithUser(SITE_URL, adminUser);
     await app.homePage.ensureLoaded();
-  });;
+  });
 
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When I open my team profile from conversation list`, async () => {
-    await teamSection.conversationEntryById(team.glipId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamSection.conversationEntryById(team.glipId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`Then team profile dialog should be showed`, async () => {
@@ -77,7 +80,6 @@ test.meta(<ITestMeta>{
     await settingDialog.descriptionShouldBe(description);
   });
 
-  const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog(`When I open the the team profile from post @team_mention`, async () => {
     await settingDialog.cancel();
     await teamSection.conversationEntryById(team.glipId).enter();
@@ -137,10 +139,13 @@ test.meta(<ITestMeta>{
   });
 
   const teamSection = app.homePage.messageTab.teamsSection;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   const profileDialog = app.homePage.profileDialog;
   await h(t).withLog(`When I open my team profile from conversation list`, async () => {
-    await teamSection.conversationEntryById(team.glipId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamSection.conversationEntryById(team.glipId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`Then team profile dialog should be showed`, async () => {
@@ -174,8 +179,9 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`When I open team profile dialog again`, async () => {
-    await teamSection.conversationEntryById(team.glipId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamSection.conversationEntryById(team.glipId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`Then team name and description should be not changed on profile`, async () => {
@@ -227,10 +233,12 @@ test.meta(<ITestMeta>{
 
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;
+  const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When I open the team profile from conversation list`, async () => {
-    await teamSection.conversationEntryById(team.glipId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamSection.conversationEntryById(team.glipId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`Then team profile dialog should be showed`, async () => {
@@ -288,11 +296,13 @@ test.meta(<ITestMeta>{
 
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;
+  const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When I open my team {name} profile from conversation list`, async (step) => {
     step.setMetadata('name', team.name);
-    await teamSection.conversationEntryById(team.glipId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamSection.conversationEntryById(team.glipId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`Then team profile dialog should be showed`, async () => {
@@ -327,8 +337,9 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`When I open team profile dialog again`, async () => {
-    await teamSection.conversationEntryById(team.glipId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamSection.conversationEntryById(team.glipId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`Then team name and description should be updated on profile`, async () => {
@@ -381,10 +392,13 @@ test.meta(<ITestMeta>{
 
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When I open my team {name} profile from conversation list`, async (step) => {
     step.setMetadata('name', team.name);
-    await teamSection.conversationEntryById(team.glipId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamSection.conversationEntryById(team.glipId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`Then team profile dialog should be showed`, async () => {
@@ -466,10 +480,13 @@ test.meta(<ITestMeta>{
     await app.homePage.ensureLoaded();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When I open my team {teamName} profile from conversation list`, async (step) => {
     step.setMetadata('teamName', teamName);
-    await teamSection.conversationEntryById(team.glipId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamSection.conversationEntryById(team.glipId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`Then team profile dialog should be showed`, async () => {
