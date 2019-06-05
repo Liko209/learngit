@@ -101,7 +101,6 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
         >
           {isHover && (
             <Menu
-              personId={this.props.personId}
               groupId={this.props.groupId}
               anchorEl={this.menuAnchorEl}
               onClose={this._closeMenu}
