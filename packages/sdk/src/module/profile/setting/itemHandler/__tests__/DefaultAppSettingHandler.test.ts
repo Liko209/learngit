@@ -119,9 +119,7 @@ describe('DefaultAppSettingHandler', () => {
       ]);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
+
         done();
       });
     });
@@ -139,7 +137,6 @@ describe('DefaultAppSettingHandler', () => {
       ]);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
         done();
       });
     });
@@ -154,7 +151,6 @@ describe('DefaultAppSettingHandler', () => {
       ]);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
         done();
       });
     });
@@ -174,9 +170,6 @@ describe('DefaultAppSettingHandler', () => {
       notificationCenter.emit(SERVICE.TELEPHONY_SERVICE.VOIP_CALLING);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
         done();
       });
     });

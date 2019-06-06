@@ -95,7 +95,7 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
       profile[SETTING_KEYS.DESKTOP_VOICEMAIL] !==
       this.userSettingEntityCache!.value
     ) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
   }
   async onSettingEntityUpdate(
@@ -105,7 +105,7 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
       payload.body.entities.has(SettingEntityIds.Notification_Browser) ||
       payload.body.entities.has(SettingEntityIds.Phone_DefaultApp)
     ) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
   }
 }

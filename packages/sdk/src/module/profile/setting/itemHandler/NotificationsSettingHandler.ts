@@ -92,7 +92,7 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
       this.userSettingEntityCache.value &&
       this.userSettingEntityCache.value.browserPermission;
     if (payload !== lastPermission) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
   }
 
@@ -104,12 +104,13 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
     if (!profile) {
       return;
     }
+
     const lastPermission =
       this.userSettingEntityCache &&
       this.userSettingEntityCache.value &&
       this.userSettingEntityCache.value.wantNotifications;
     if (profile[SETTING_KEYS.DESKTOP_NOTIFICATION] !== lastPermission) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
   }
 }
