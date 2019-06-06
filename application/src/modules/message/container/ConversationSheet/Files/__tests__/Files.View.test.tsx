@@ -154,7 +154,7 @@ describe('FilesView', () => {
     t2(done: jest.DoneCallback) {
       const props: any = {
         ...someFilesProps,
-        postId: 1,
+        postId: -1,
         progresses: { get: () => 1 },
       };
       props.files[1][0].item.type = 'ppt';
