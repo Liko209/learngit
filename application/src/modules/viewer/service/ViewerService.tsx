@@ -7,10 +7,10 @@ import React from 'react';
 import { JuiDialogOpenTransition } from 'jui/components/Dialog';
 import { Dialog } from '@/containers/Dialog';
 import { IViewerService } from '../interface';
-import { FileViewerViewModel } from '../FileViewer';
+import { FileViewerViewModel } from '../FileViewerManager';
 import { ViewerView, LAYOUT } from '../container/ViewerView';
-import { ViewerTitleView } from '../FileViewer/Title.View';
-import { ViewerDocument } from '../FileViewer/ViewerContainer.View';
+import { ViewerTitleView } from '../FileViewerManager/Title.View';
+import { ViewerDocument } from '../FileViewerManager/ViewerContainer.View';
 
 class ViewerService implements IViewerService {
   showFileViewer = (itemId: number) => {
