@@ -48,17 +48,21 @@ test.meta(<ITestMeta>{
   const profileDialog = app.homePage.profileDialog;
   const teamSettingDialog = app.homePage.teamSettingDialog;
   const addTeamMemberDialog = app.homePage.addTeamMemberDialog;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`And admin set Add team member permission toggle is "on" on team settings page`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
     await teamSettingDialog.allowAddTeamMember();
     await teamSettingDialog.save();
   })
 
   await h(t).withLog(`When admin open team profile dialog`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`Then there is "add team members" icon`, async () => {
@@ -78,8 +82,9 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`When member of the team open team profile dialog ${memberUser.company.number}#${memberUser.extension}`, async () => {
     await app.homePage.logoutThenLoginWithUser(SITE_URL, memberUser);
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   })
 
   await h(t).withLog(`Then there is "add team members" icon`, async () => {
@@ -97,8 +102,9 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`When member (guest role) of the team open team profile dialog ${guest.company.number}#${guest.extension}`, async () => {
     await app.homePage.logoutThenLoginWithUser(SITE_URL, guest);
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   })
 
   await h(t).withLog(`Then there is not "add team members" icon`, async () => {
@@ -140,11 +146,13 @@ test.meta(<ITestMeta>{
   const profileDialog = app.homePage.profileDialog;
   const teamSettingDialog = app.homePage.teamSettingDialog;
   const addTeamMemberDialog = app.homePage.addTeamMemberDialog;
+  const conversationPage = app.homePage.messageTab.conversationPage;
   const teamEntry = app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId);
 
   await h(t).withLog(`And admin set Add team member permission toggle is "off" on team settings page`, async () => {
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
     await teamSettingDialog.notAllowAddTeamMember();
     await teamSettingDialog.updateDescription("test"); // need https://git.ringcentral.com/Fiji/Fiji/merge_requests/1477 to merge
@@ -153,8 +161,9 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`When admin open team profile dialog`, async () => {
     await t.expect(teamSettingDialog.exists).notOk();
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`Then there is "add team members" icon`, async () => {
@@ -175,8 +184,9 @@ test.meta(<ITestMeta>{
   })
 
   await h(t).withLog(`And open team profile dialog`, async () => {
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   })
 
   await h(t).withLog(`Then there is no "add team members" icon`, async () => {
@@ -189,8 +199,9 @@ test.meta(<ITestMeta>{
   })
 
   await h(t).withLog(`And open team profile dialog`, async () => {
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   })
 
   await h(t).withLog(`Then there is no "add team members" icon`, async () => {
@@ -214,7 +225,9 @@ test.meta(<ITestMeta>{
   await h(t).glip(memberUser).init();
   await h(t).glip(memberUser).resetProfileAndState();
   await h(t).platform(adminUser).init();
-  await h(t).glip(adminUser).init()
+  await h(t).glip(adminUser).init();
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
 
   const checkAddMember = async (user: IUser, isAddMembmerEnabled: boolean) => {
     await h(t).withLog(`When I logout and login  with ${user['type']} ${user.company.number}#${user.extension}`, async () => {
@@ -222,8 +235,9 @@ test.meta(<ITestMeta>{
     })
 
     await h(t).withLog(`And open team profile dialog`, async () => {
-      await teamEntry.openMoreMenu();
-      await app.homePage.messageTab.moreMenu.profile.enter();
+      await teamEntry.enter();
+      await conversationPage.openMoreButtonOnHeader();
+      await conversationPage.headerMoreMenu.openProfile();
     })
 
     if (isAddMembmerEnabled) {
@@ -239,8 +253,9 @@ test.meta(<ITestMeta>{
   }
 
   const allowAddTeamMember = async (isAddTeamMemberEnabled: boolean) => {
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
     if (isAddTeamMemberEnabled) {
       await teamSettingDialog.allowAddTeamMember();
@@ -275,8 +290,9 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And open team profile dialog`, async () => {
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   })
 
   await h(t).withLog(`Then there is "add team members" icon`, async () => {
@@ -301,8 +317,9 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And open team profile dialog`, async () => {
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   })
 
   await h(t).withLog(`Then there is "add team members" icon`, async () => {

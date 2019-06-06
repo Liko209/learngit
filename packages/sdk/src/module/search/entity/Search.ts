@@ -1,3 +1,6 @@
+import { Person } from 'sdk/module/person/entity';
+import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
+
 /*
  * @Author: Thomas thomas.yang@ringcentral.com
  * @Date: 2019-02-22 09:01:10
@@ -28,6 +31,12 @@ type FuzzySearchPersonOptions = {
   recentFirst?: boolean;
 };
 
+type PhoneContactEntity = {
+  id: string;
+  person: Person;
+  phoneNumber: PhoneNumber;
+};
+
 enum PersonSortingOrder {
   EmailMatching = 0,
   FullNameMatching = 1,
@@ -40,4 +49,5 @@ export {
   RecentSearchTypes,
   FuzzySearchPersonOptions,
   PersonSortingOrder,
+  PhoneContactEntity,
 };

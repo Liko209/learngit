@@ -14,10 +14,8 @@ import {
   JuiButtonBar,
   JuiButtonBarProps,
 } from '../../components/Buttons/ButtonBar';
-
 import { Palette } from '../../foundation/theme/theme';
-import { getAccentColor } from '../../foundation/utils';
-import { withHighlight } from '../../hoc/withHighlight';
+// import { getAccentColor } from '../../foundation/utils';
 
 const ItemCardWrapper = styled(JuiCard)`
   word-break: break-word;
@@ -29,7 +27,10 @@ const ItemTitle = styled<{ complete?: boolean }, 'span'>('span')`
   margin: ${spacing(0, 0, 0, 1)};
   text-decoration: ${({ complete }) => (complete ? 'line-through' : '')};
 `;
-
+const SubTitle = styled.span`
+  color: ${palette('text', 'secondary')};
+  flex-grow: 2;
+`;
 const HeaderActionsWrapper = styled(JuiButtonBar)<JuiButtonBarProps>`
   position: absolute;
   right: ${spacing(1.5)};
@@ -53,14 +54,13 @@ function calcActionBarWith(buttonNumber: number) {
 
 const ItemCardHeader = styled.div<{
   buttonNumber: number;
-  titleColor?: [keyof Palette, string];
 }>`
   position: relative;
   padding: ${spacing(4)};
   padding-right: ${({ buttonNumber }) => calcActionBarWith(buttonNumber)}px;
   display: flex;
   ${typography('body1')};
-  color: ${({ titleColor }) => getAccentColor(titleColor)};
+  color: ${palette('text', 'primary')};
   word-break: break-word;
   svg {
     font-size: ${spacing(5)};
@@ -90,13 +90,14 @@ const ItemCardFooter = styled<{ footerPadding: boolean }, 'footer'>('footer')`
 `;
 
 type JuiConversationItemCardProps = {
-  title?: string | JSX.Element;
+  title?: React.ReactChild | (React.ReactChild | null)[] | null;
   Icon: JSX.Element | string;
-  titleColor?: [keyof Palette, string];
   iconColor?: [keyof Palette, string];
   titleClick?: (event: React.MouseEvent<HTMLElement>) => void;
   children?: React.ReactNode;
   contentHasPadding?: boolean;
+  isShowLoading?: boolean;
+  subTitle?: string;
   Footer?: JSX.Element | null;
   footerPadding?: boolean;
   complete?: boolean;
@@ -104,7 +105,7 @@ type JuiConversationItemCardProps = {
   showHeaderActions?: boolean;
 } & React.DOMAttributes<{}>;
 
-class JuiConversationItemCardComponent extends React.PureComponent<
+class JuiConversationItemCard extends React.PureComponent<
   JuiConversationItemCardProps
 > {
   titleHandle = (e: React.MouseEvent<HTMLElement>) => {
@@ -117,39 +118,47 @@ class JuiConversationItemCardComponent extends React.PureComponent<
       children,
       title,
       Icon,
-      iconColor,
+      iconColor = ['primary', 'main'] as [keyof Palette, string],
       Footer,
       footerPadding = true,
       contentHasPadding = true,
-      titleColor,
       complete,
       headerActions,
       showHeaderActions,
+      isShowLoading = false,
+      subTitle,
       ...rest
     } = this.props;
     return (
       <ItemCardWrapper className="conversation-item-cards" {...rest}>
         <ItemCardHeader
           onClick={this.titleHandle}
-          titleColor={titleColor}
           buttonNumber={headerActions ? headerActions.length : 0}
         >
           {typeof Icon === 'string' ? (
-            <JuiIconography iconColor={iconColor} iconSize="medium">
+            <JuiIconography
+              iconColor={iconColor}
+              iconSize="medium"
+              useLoading={isShowLoading}
+            >
               {Icon}
             </JuiIconography>
           ) : (
             Icon
           )}
-          {title &&
-            (typeof title === 'string' ? (
-              <ItemTitle
-                complete={complete}
-                dangerouslySetInnerHTML={{ __html: title }}
-              />
-            ) : (
-              <ItemTitle complete={complete}>{title}</ItemTitle>
-            ))}
+          {title ? (
+            <ItemTitle
+              data-test-automation-id="conversation-item-cards-title"
+              complete={complete}
+            >
+              {title}
+            </ItemTitle>
+          ) : null}
+          {subTitle ? (
+            <SubTitle data-test-automation-id="conversation-item-cards-subtitle">
+              {subTitle}
+            </SubTitle>
+          ) : null}
           {showHeaderActions && headerActions && (
             <HeaderActionsWrapper overlapSize={2}>
               {headerActions.map((headerAction: HeaderAction) => (
@@ -165,9 +174,11 @@ class JuiConversationItemCardComponent extends React.PureComponent<
             </HeaderActionsWrapper>
           )}
         </ItemCardHeader>
-        <ItemCardContent hasPadding={contentHasPadding}>
-          {children}
-        </ItemCardContent>
+        {children ? (
+          <ItemCardContent hasPadding={contentHasPadding}>
+            {children}
+          </ItemCardContent>
+        ) : null}
         {Footer && (
           <ItemCardFooter footerPadding={footerPadding}>
             {Footer}
@@ -177,9 +188,5 @@ class JuiConversationItemCardComponent extends React.PureComponent<
     );
   }
 }
-
-const JuiConversationItemCard = withHighlight(['title'])(
-  JuiConversationItemCardComponent,
-);
 
 export { JuiConversationItemCard };

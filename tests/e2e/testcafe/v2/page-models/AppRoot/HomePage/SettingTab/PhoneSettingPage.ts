@@ -4,11 +4,11 @@ import * as assert from 'assert';
 
 export class PhoneSettingPage extends BaseWebComponent {
   get self() {
-    return this.getSelectorByAutomationId('SettingContainer');
+    return this.getSelectorByAutomationId('settingPage-phone');
   };
 
   get header() {
-    return this.getSelectorByAutomationId('SettingPageHeader');
+    return this.getSelectorByAutomationId('settingPageHeader-phone');
   }
 
   get headerTitle() {
@@ -16,19 +16,19 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get generalSection() {
-    return this.self.find('.setting-section');
+    return this.getSelectorByAutomationId('settingSection-phoneGeneral');
   }
 
   get generalLabel() {
-    return this.getSelectorByAutomationId('SettingSectionHeader', this.generalSection).find('.setting-section-title');
+    return this.getSelectorByAutomationId('settingSectionTitle-phoneGeneral', this.generalSection);
   }
 
   get callerIDLabel() {
-    return this.getSelectorByAutomationId('SettingSectionItemLabel-callerID', this.generalSection);
+    return this.getSelectorByAutomationId('settingItemLabel-callerID', this.generalSection);
   }
 
   get callerIDDescription() {
-    return this.getSelectorByAutomationId('SettingSectionItemDescription-callerID', this.generalSection);
+    return this.getSelectorByAutomationId('settingItemDescription-callerID', this.generalSection);
   }
 
   get callerIDDropDown() {
@@ -44,11 +44,11 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get regionLabel() {
-    return this.getSelectorByAutomationId('SettingSectionItemLabel-regionSetting', this.generalSection);
+    return this.getSelectorByAutomationId('settingItemLabel-regionSetting', this.generalSection);
   }
 
   get regionDescription() {
-    return this.getSelectorByAutomationId('SettingSectionItemDescription-regionSetting', this.generalSection);
+    return this.getSelectorByAutomationId('settingItemDescription-regionSetting', this.generalSection);
   }
 
   get regionUpdateButton() {
@@ -56,15 +56,15 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get extensionSettingsLabel() {
-    return this.getSelectorByAutomationId('SettingSectionItemLabel-extensions', this.generalSection);
+    return this.getSelectorByAutomationId('settingItemLabel-extensions', this.generalSection);
   }
 
   get extensionSettingsDescription() {
-    return this.getSelectorByAutomationId('SettingSectionItemDescription-extensions', this.generalSection);
+    return this.getSelectorByAutomationId('settingItemDescription-extensions', this.generalSection);
   }
 
   get extensionUpdateButton() {
-    return this.getSelectorByAutomationId('settingPhoneGeneralExtensionSetting', this.generalSection);
+    return this.getSelectorByAutomationId('settingItemButton-extensions', this.generalSection);
   }
 
   async existsGeneralLabel(text: string) {
@@ -153,7 +153,7 @@ export class PhoneSettingPage extends BaseWebComponent {
 
 export class UpdateRegionDialog extends BaseWebComponent {
   get self() {
-    return this.getSelector('[role="document"]'); // todo: dialog identity
+    return this.getSelectorByAutomationId('dialog-regionSetting');
   }
 
   get exists() {
@@ -165,7 +165,7 @@ export class UpdateRegionDialog extends BaseWebComponent {
   }
 
   get statement() {
-    return this.getSelectorByAutomationId('regionSettingDialogContentDescription');
+    return this.getSelectorByAutomationId('dialog-contentDescription-regionSetting');
   }
 
   get countryDropDown() {
@@ -181,11 +181,11 @@ export class UpdateRegionDialog extends BaseWebComponent {
   }
 
   get areaCode() {
-    return this.getSelectorByAutomationId('areaCodeTextField');
+    return this.getSelectorByAutomationId('dialog-regionSetting-areaCodeTextField');
   }
 
   get areaCodeInput() {
-    return this.getSelectorByAutomationId('areaCodeInput');
+    return this.getSelectorByAutomationId('dialog-regionSetting-areaCodeInput');
   }
 
   get areaCodeLabel() {
@@ -197,11 +197,11 @@ export class UpdateRegionDialog extends BaseWebComponent {
   }
 
   get saveButton() {
-    return this.getSelectorByAutomationId('saveRegionSettingOkButton');
+    return this.getSelectorByAutomationId('dialog-okButton-regionSetting');
   }
 
   get cancelButton() {
-    return this.getSelectorByAutomationId('saveRegionSettingCancelButton');
+    return this.getSelectorByAutomationId('dialog-cancelButton-regionSetting');
   }
 
   async showUpdateRegionDialog() {

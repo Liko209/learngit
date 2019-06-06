@@ -8,7 +8,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { DialerContainerProps, DialerContainerViewProps } from './types';
 import { container } from 'framework';
 import { computed } from 'mobx';
-import { TelephonyStore } from '../../store';
+import { TelephonyStore, INCOMING_STATE } from '../../store';
 import { TelephonyService } from '../../service';
 import audios from './sounds/sounds.json';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
@@ -16,6 +16,7 @@ import { RefObject } from 'react';
 import ReactDOM from 'react-dom';
 import { focusCampo } from '../../helpers';
 import { debounce } from 'lodash';
+import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
 const sleep = function () {
   return new Promise((resolve: (args: any) => any) => {
@@ -62,21 +63,26 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   @computed
+  get isForward() {
+    return this._telephonyStore.incomingState === INCOMING_STATE.FORWARD;
+  }
+
+  @computed
   get dialerInputFocused() {
     return this._telephonyStore.dialerInputFocused;
   }
 
   @computed
   get chosenCallerPhoneNumber() {
-    return this._telephonyStore.chosenCallerPhoneNumber;
+    return formatPhoneNumber(this._telephonyStore.chosenCallerPhoneNumber);
   }
 
   @computed
   get callerPhoneNumberList() {
-    return this._telephonyStore.callerPhoneNumberList.map((el) => ({
-      value: el.phoneNumber,
+    return this._telephonyStore.callerPhoneNumberList.map(el => ({
+      value: formatPhoneNumber(el.phoneNumber),
       usageType: el.usageType,
-      phoneNumber: el.phoneNumber,
+      phoneNumber: formatPhoneNumber(el.phoneNumber),
       label: el.label,
     }));
   }

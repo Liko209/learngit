@@ -14,7 +14,6 @@ jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
 function createStore() {
   return new TelephonyStore();
 }
-
 describe('Telephony store', () => {
   it('callWindowState should to be CALL_WINDOW_STATUS.MINIMIZED and callState should to be CALL_STATE.IDLE when instantiated TelephonyStore', () => {
     const store = createStore();
@@ -154,9 +153,15 @@ describe('Telephony store', () => {
     expect(store.incomingState).toBe(INCOMING_STATE.REPLY);
   });
 
-  it('quitReply()', () => {
+  it('directForward()', () => {
     const store = createStore();
-    store.quitReply();
+    store.directForward();
+    expect(store.incomingState).toBe(INCOMING_STATE.FORWARD);
+  });
+
+  it('backIncoming()', () => {
+    const store = createStore();
+    store.backIncoming();
     expect(store.incomingState).toBe(INCOMING_STATE.IDLE);
   });
 

@@ -4,20 +4,43 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RecentSearchTypes, RecentSearchModel } from '../entity';
+import {
+  RecentSearchTypes,
+  RecentSearchModel,
+  FuzzySearchPersonOptions,
+  PhoneContactEntity,
+} from '../entity';
+import { SearchUserConfig } from '../config/SearchUserConfig';
+import { Person } from 'sdk/module/person/entity';
+import { SortableModel } from 'sdk/framework/model';
 interface ISearchService {
   addRecentSearchRecord(
     type: RecentSearchTypes,
     value: string | number,
     params: {},
-  ): void;
-  clearRecentSearchRecords(): void;
-  getRecentSearchRecords(): RecentSearchModel[];
-  removeRecentSearchRecords(ids: Set<number>): void;
-
+  ): Promise<void>;
+  clearRecentSearchRecords(): Promise<void>;
+  getRecentSearchRecords(): Promise<RecentSearchModel[]>;
+  removeRecentSearchRecords(ids: Set<number>): Promise<void>;
   getRecentSearchRecordsByType(
     type: RecentSearchTypes,
-  ): Map<number | string, RecentSearchModel>;
+  ): Promise<Map<number | string, RecentSearchModel>>;
+
+  userConfig: SearchUserConfig;
+
+  doFuzzySearchPersons(
+    options: FuzzySearchPersonOptions,
+  ): Promise<{
+    terms: string[];
+    sortableModels: SortableModel<Person>[];
+  }>;
+
+  doFuzzySearchPhoneContacts(
+    options: FuzzySearchPersonOptions,
+  ): Promise<{
+    terms: string[];
+    phoneContacts: PhoneContactEntity[];
+  }>;
 }
 
 export { ISearchService };

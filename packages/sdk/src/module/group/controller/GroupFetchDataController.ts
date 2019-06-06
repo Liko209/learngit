@@ -191,15 +191,16 @@ export class GroupFetchDataController {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null> {
+  }> {
     const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
-      this._getTransformAllGroupFunc(
+      await this._getTransformAllGroupFunc(
         fetchAllIfSearchKeyEmpty,
         myGroupsOnly,
         recentFirst,
       ),
+      undefined,
       searchKey,
       undefined,
       (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
@@ -220,7 +221,10 @@ export class GroupFetchDataController {
       },
     );
     performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_ALL_GROUP });
-    return result;
+    return {
+      terms: result.terms.searchKeyTerms,
+      sortableModels: result.sortableModels,
+    };
   }
 
   private get _currentUserId() {
@@ -251,13 +255,13 @@ export class GroupFetchDataController {
     );
   }
 
-  private _getTransformGroupFunc(
+  private async _getTransformGroupFunc(
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
   ) {
     const groupConfigService = this._groupConfigService;
     const recentSearchedGroups = recentFirst
-      ? this._getRecentSearchGroups([RecentSearchTypes.GROUP])
+      ? await this._getRecentSearchGroups([RecentSearchTypes.GROUP])
       : undefined;
 
     return (group: Group, terms: Terms) => {
@@ -318,11 +322,12 @@ export class GroupFetchDataController {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null> {
+  }> {
     const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
-      this._getTransformGroupFunc(fetchAllIfSearchKeyEmpty, recentFirst),
+      await this._getTransformGroupFunc(fetchAllIfSearchKeyEmpty, recentFirst),
+      undefined,
       searchKey,
       undefined,
       (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
@@ -350,23 +355,28 @@ export class GroupFetchDataController {
       },
     );
     performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_GROUP });
-    return result;
+    return {
+      terms: result.terms.searchKeyTerms,
+      sortableModels: result.sortableModels,
+    };
   }
 
-  private _getRecentSearchGroups(types: RecentSearchTypes[]) {
+  private async _getRecentSearchGroups(types: RecentSearchTypes[]) {
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
 
     let result: Map<ModelIdType, RecentSearchModel> = new Map();
     for (const iterator of types) {
-      const recentGroups = searchService.getRecentSearchRecordsByType(iterator);
+      const recentGroups = await searchService.getRecentSearchRecordsByType(
+        iterator,
+      );
       result = new Map([...result].concat([...recentGroups]));
     }
     return result;
   }
 
-  private _getTransformAllGroupFunc(
+  private async _getTransformAllGroupFunc(
     fetchAllIfSearchKeyEmpty?: boolean,
     myGroupsOnly?: boolean,
     recentFirst?: boolean,
@@ -374,7 +384,7 @@ export class GroupFetchDataController {
     const groupConfigService = this._groupConfigService;
 
     const recentSearchedGroups = recentFirst
-      ? this._getRecentSearchGroups([
+      ? await this._getRecentSearchGroups([
           RecentSearchTypes.GROUP,
           RecentSearchTypes.TEAM,
         ])
@@ -502,13 +512,13 @@ export class GroupFetchDataController {
     return sortValue;
   }
 
-  private _getTransformTeamsFunc(
+  private async _getTransformTeamsFunc(
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
   ) {
     const groupConfigService = this._groupConfigService;
     const recentSearchedTeams = recentFirst
-      ? this._getRecentSearchGroups([RecentSearchTypes.TEAM])
+      ? await this._getRecentSearchGroups([RecentSearchTypes.TEAM])
       : undefined;
 
     const currentUserId = this._currentUserId;
@@ -586,11 +596,12 @@ export class GroupFetchDataController {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null> {
+  }> {
     const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
-      this._getTransformTeamsFunc(fetchAllIfSearchKeyEmpty, recentFirst),
+      await this._getTransformTeamsFunc(fetchAllIfSearchKeyEmpty, recentFirst),
+      undefined,
       searchKey,
       undefined,
       (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
@@ -619,7 +630,10 @@ export class GroupFetchDataController {
       },
     );
     performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_TEAM });
-    return result;
+    return {
+      terms: result.terms.searchKeyTerms,
+      sortableModels: result.sortableModels,
+    };
   }
 
   getAllPersonOfGroup(members: number[], currentUserId: number) {

@@ -18,8 +18,9 @@ import { Record } from '../Record';
 import { CallActions } from '../CallActions';
 import { End } from '../End';
 import { DialBtn } from '../DialBtn';
+import { ForwardBtn } from '../Forward/ForwardBtn';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { PhoneNumberType } from 'sdk/module/phoneNumber/types';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 
 const KEYPAD_ACTIONS = [Mute, Keypad, Hold, Add, Record, CallActions];
 
@@ -27,7 +28,7 @@ type Props = DialerContainerViewProps & WithTranslation;
 
 function sleep(timeout: number) {
   let timer: any;
-  const promise = new Promise((resolve) => {
+  const promise = new Promise(resolve => {
     timer = setTimeout(resolve, timeout);
   });
   return {
@@ -91,6 +92,7 @@ class DialerContainerViewComponent extends React.Component<
     const {
       keypadEntered,
       isDialer,
+      isForward,
       clickToInput,
       playAudio,
       dialerInputFocused,
@@ -106,7 +108,7 @@ class DialerContainerViewComponent extends React.Component<
 
     const callerIdProps = {
       value: chosenCallerPhoneNumber,
-      menu: callerPhoneNumberList.map((callerPhoneNumber) => {
+      menu: callerPhoneNumberList.map(callerPhoneNumber => {
         return Object.assign({}, callerPhoneNumber, {
           usageType:
             callerPhoneNumber.usageType === PhoneNumberType.NickName
@@ -128,18 +130,20 @@ class DialerContainerViewComponent extends React.Component<
     };
 
     if (isDialer) {
-      callAction = DialBtn;
+      callAction = isForward ? ForwardBtn : DialBtn;
       const callerIdSelector = <CallerIdSelector {...callerIdProps} />;
       keypadActions = (
         <>
-          <RuiTooltip
-            title={t('telephony.callerIdSelector.tooltip')}
-            placement="bottom"
-            open={this.state.shouldShowToolTip}
-            tooltipForceHide={this.state.shouldShowToolTip}
-          >
-            {callerIdSelector}
-          </RuiTooltip>
+          {!isForward && (
+            <RuiTooltip
+              title={t('telephony.callerIdSelector.tooltip')}
+              placement="bottom"
+              open={this.state.shouldShowToolTip}
+              tooltipForceHide={this.state.shouldShowToolTip}
+            >
+              {callerIdSelector}
+            </RuiTooltip>
+          )}
           <DialPad
             makeMouseEffect={clickToInput}
             makeKeyboardEffect={playAudio}

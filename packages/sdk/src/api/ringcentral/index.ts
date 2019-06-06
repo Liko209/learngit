@@ -7,3 +7,4 @@
 export * from './types';
 export { RCInfoApi } from './RCInfoApi';
 export { RCAuthApi } from './RCAuthApi';
+export { RCItemApi } from './RCItemApi';
