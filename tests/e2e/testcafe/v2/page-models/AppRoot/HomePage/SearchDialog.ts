@@ -565,12 +565,16 @@ export class JoinTeamDialog extends BaseWebComponent {
     return this.buttonOfText('Cancel');
   }
 
+  get cancelButtonByClass() {
+    return this.getSelector('.textButtonStyle')
+  }
+
   async clickJoinButton() {
     await this.t.click(this.joinButton);
   }
 
   async clickCancelButton() {
-    await this.t.click(this.cancelButton);
+    await this.t.click(this.cancelButtonByClass);
   }
 }
 
