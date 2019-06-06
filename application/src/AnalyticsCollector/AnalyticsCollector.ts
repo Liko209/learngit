@@ -76,6 +76,20 @@ class AnalyticsCollector {
       destination,
     });
   }
+
+  activeCall() {
+    dataAnalysis.track('Jup_Web/DT_call_activeCall');
+  }
+
+  flipNumberList() {
+    dataAnalysis.track('Jup_Web/DT_call_activeCall_flipNumberList');
+  }
+
+  flipCall() {
+    dataAnalysis.track('Jup_Web/DT_call_flipCall', {
+      source: 'activeCall_flipNumberList',
+    });
+  }
 }
 
 export { AnalyticsCollector };
