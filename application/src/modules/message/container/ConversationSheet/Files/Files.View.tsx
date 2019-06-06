@@ -232,7 +232,9 @@ class FilesView extends React.Component<FilesViewProps> {
               size={`${getFileSize(size)}`}
               url={accelerateURL(previewUrl)!}
               handleFileClick={
-                supportFileViewer ? this._handleFileClick(item) : undefined
+                supportFileViewer && !fileReadyForViewer
+                  ? this._handleFileClick(item)
+                  : undefined
               }
               iconType={iconType}
               disabled={supportFileViewer && !fileReadyForViewer}
