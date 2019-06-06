@@ -458,7 +458,7 @@ class FileUploadController {
           itemFile.group_ids[0],
           itemFile.name,
         );
-        versionNumber = existItemFile ? existItemFile.versions.length + 1 : 0;
+        versionNumber = existItemFile ? existItemFile.versions.length + 1 : 1;
       }
     }
 
