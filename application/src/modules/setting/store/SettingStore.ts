@@ -5,10 +5,9 @@
  */
 import { uniq } from 'lodash';
 import { observable, action, computed, createAtom } from 'mobx';
-import { ESettingItemState } from 'sdk/framework/model/setting/types';
 import { SettingPage, SettingSection, SettingItem } from '@/interface/setting';
 import { SettingStoreScope } from './SettingStoreScope';
-import { getSettingItemEntity } from './utils';
+import { isItemVisible } from './helper';
 
 class SettingStore {
   // NOTE
@@ -34,46 +33,47 @@ class SettingStore {
 
   getNoEmptyPages() {
     return this.getAllPages().filter(
-      (pageId) => this.getNoEmptyPageSections(pageId).length > 0,
+      pageId => this.getPageNonEmptySections(pageId).length > 0,
     );
   }
 
   getAllPages() {
     const pagesIds: SettingPage['id'][] = [];
-    this._storeScopes.forEach((storeScope) => {
-      pagesIds.push(...storeScope.pages.map((page) => page.id));
+    this._storeScopes.forEach(storeScope => {
+      pagesIds.push(...storeScope.pages.map(page => page.id));
     });
     return uniq(pagesIds).sort(this._comparePageWeight);
   }
 
   getPageById(pageId: SettingPage['id']) {
-    return this._find((storeScope) => storeScope.getPageById(pageId));
+    return this._find(storeScope => storeScope.getPageById(pageId));
   }
 
   getPageSections(pageId: SettingPage['id']) {
-    return this._getAll((storeScope) =>
-      storeScope.getPageSections(pageId),
-    ).sort(this._compareSectionWeight);
+    return this._getAll(storeScope => storeScope.getPageSections(pageId)).sort(
+      this._compareSectionWeight,
+    );
   }
 
-  getNoEmptyPageSections(pageId: SettingPage['id']) {
-    return this.getPageSections(pageId).filter((sectionId) => {
+  getPageNonEmptySections(pageId: SettingPage['id']) {
+    return this.getPageSections(pageId).filter(sectionId => {
       const itemIds = this.getSectionItems(sectionId);
-      return (
-        itemIds.length > 0 &&
-        itemIds.some((itemId) => this._isItemVisible(itemId))
-      );
+      return itemIds.length > 0 && itemIds.some(isItemVisible);
     });
   }
 
   getSectionById(sectionId: SettingSection['id']) {
-    return this._find((storeScope) => storeScope.getSectionById(sectionId));
+    return this._find(storeScope => storeScope.getSectionById(sectionId));
   }
 
   getSectionItems(sectionId: SettingSection['id']) {
-    return this._getAll((storeScope) =>
+    return this._getAll(storeScope =>
       storeScope.getSectionItems(sectionId),
     ).sort(this._compareItemWeight);
+  }
+
+  getSectionVisibleItems(sectionId: SettingSection['id']) {
+    return this.getSectionItems(sectionId).filter(isItemVisible);
   }
 
   getPageItems(pageId: SettingPage['id']) {
@@ -86,7 +86,7 @@ class SettingStore {
   }
 
   getItemById<T extends SettingItem>(itemId: SettingItem['id']): T | undefined {
-    return this._find<T>((storeScope) => storeScope.getItemById<T>(itemId));
+    return this._find<T>(storeScope => storeScope.getItemById<T>(itemId));
   }
 
   useScope(scope: symbol) {
@@ -106,7 +106,7 @@ class SettingStore {
 
   private _getAll<T>(callback: (storeScope: SettingStoreScope) => T[]) {
     const result: T[] = [];
-    this._storeScopes.forEach((storeScope) => {
+    this._storeScopes.forEach(storeScope => {
       result.push(...callback(storeScope));
     });
     return uniq(result);
@@ -123,10 +123,6 @@ class SettingStore {
       }
     }
     return result;
-  }
-
-  private _isItemVisible(id: SettingItem['id']) {
-    return getSettingItemEntity(id).state !== ESettingItemState.INVISIBLE;
   }
 
   private _comparePageWeight = (

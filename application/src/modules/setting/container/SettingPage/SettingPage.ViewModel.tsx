@@ -25,7 +25,7 @@ class SettingPageViewModel extends StoreViewModel<SettingPageProps>
     if (!this.page) {
       return [];
     }
-    return this._settingStore.getNoEmptyPageSections(this.props.id);
+    return this._settingStore.getPageNonEmptySections(this.props.id);
   }
 }
 
