@@ -17,7 +17,9 @@ import { AttachmentView } from 'jui/pattern/MessageInput/Attachment';
 import { Emoji } from '@/modules/emoji';
 import { Attachments } from './Attachments';
 import { extractView } from 'jui/hoc/extractView';
-
+import { ImageDownloader } from '@/common/ImageDownloader';
+import { IImageDownloadedListener } from 'sdk/pal';
+import { PRELOAD_ITEM } from './ColonEmoji/constants';
 type Props = MessageInputProps & MessageInputViewProps & WithTranslation;
 @observer
 class MessageInputViewComponent extends Component<
@@ -29,12 +31,14 @@ class MessageInputViewComponent extends Component<
   private _mentionRef: RefObject<any> = createRef();
   private _attachmentsRef: RefObject<any> = createRef();
   private _emojiRef: RefObject<any> = createRef();
-
+  private _imageDownloader: ImageDownloader;
+  private _listner: IImageDownloadedListener;
   state = {
     modules: {},
   };
 
   componentDidMount() {
+    this._imageDownloader = new ImageDownloader();
     this.updateModules();
     this.props.addOnPostCallback(() => {
       const { current } = this._attachmentsRef;
@@ -42,6 +46,7 @@ class MessageInputViewComponent extends Component<
         current.vm.cleanFiles();
       }
     });
+    this._imageDownloader.download(PRELOAD_ITEM, this._listner);
   }
 
   componentWillUnmount() {
