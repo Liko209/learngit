@@ -33,6 +33,7 @@ class FileDeleteActionViewComponent extends Component<
       okText: t('common.dialog.delete'),
       okType: 'negative',
       cancelText: t('common.dialog.cancel'),
+      modalProps: { 'data-test-automation-id': 'confirmDeleteDialog' },
       async onOK() {
         startLoading();
         const result = await handleDeleteFile();
@@ -56,6 +57,7 @@ class FileDeleteActionViewComponent extends Component<
         icon={this.iconCom}
         disabled={!canDelete}
         onClick={this.deleteFile}
+        data-test-automation-id={'fileDeleteItem'}
       >
         {t('message.fileAction.deleteFile')}
       </JuiMenuItem>
