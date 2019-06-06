@@ -223,7 +223,8 @@
       "editFileName": "Edit filename"
     },
     "Messages": "Messages",
-    "message": "Message"
+    "message": "Message",
+    "atMentionAllTeam": "Team"
   },
   "item": {
     "activity": {

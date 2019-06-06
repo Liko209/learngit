@@ -23,6 +23,7 @@ import { TelephonyService } from '@/modules/telephony/service';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { postParser, AtMentionsMapType } from '@/common/postParser';
+import i18nT from '@/utils/i18nT';
 
 class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
   private _featuresFlagsService: FeaturesFlagsService = container.get(
@@ -65,8 +66,7 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
     }
   }
 
-  @computed
-  private get _atMentions() {
+  private async _getAtMentions() {
     const post = this._post;
     const atMentionNonItemIds = (post && post.atMentionNonItemIds) || [];
     const kv: AtMentionsMapType = {};
@@ -76,6 +76,10 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
         isCurrent: id === this._currentUserId,
       };
     });
+    kv['-1'] = {
+      name: await i18nT('message.atMentionAllTeam'),
+      isCurrent: true,
+    };
     return kv;
   }
 
@@ -101,12 +105,12 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
     return getGlobalValue(GLOBAL_KEYS.STATIC_HTTP_SERVER);
   }
 
-  getContent = (keyword?: string) => {
+  getContent = async (keyword?: string) => {
     return postParser(this._post.text, {
       keyword,
       html: true,
       atMentions: {
-        map: this._atMentions,
+        map: await this._getAtMentions(),
       },
       emoji: {
         hostName: this._staticHttpServer,

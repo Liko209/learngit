@@ -644,6 +644,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
+  get quote() {
+    return this.self.find(`[data-name="text"]`).find('q');
+  }
+
   get href(){
     return this.self.find(`[href]`)
   }
@@ -838,7 +842,7 @@ export class PostItem extends BaseWebComponent {
   get fileSizes() {
     return this.getSelectorByAutomationId('file-no-preview-size', this.self);
   }
-  
+
   async nameShouldBe(name: string) {
     await this.t.expect(this.fileNames.withText(name).exists).ok();
   }
