@@ -64,7 +64,7 @@ describe('Socket Manager', () => {
   function mockCanReconnectController() {
     jest
       .spyOn(SocketCanConnectController.prototype, 'doCanConnectApi')
-      .mockImplementation(async (callback: any, forceOnline: any) => {
+      .mockImplementation(async ({ callback, forceOnline, nthCount }) => {
         callback(1);
       });
 
@@ -438,6 +438,7 @@ describe('Socket Manager', () => {
         syncUserConfig = new SyncUserConfig();
         syncUserConfig.setIndexSocketServerHost = jest.fn();
         syncUserConfig.setReconnectSocketServerHost = jest.fn();
+        socketManager['_reconnectRetryCount'] = 10;
         notificationCenter.emitKVChange(SOCKET.ERROR);
 
         expect(syncUserConfig.setIndexSocketServerHost).toHaveBeenCalledWith(
@@ -446,12 +447,14 @@ describe('Socket Manager', () => {
         expect(
           syncUserConfig.setReconnectSocketServerHost,
         ).toHaveBeenCalledWith('');
+        expect(socketManager['_reconnectRetryCount']).toEqual(11);
       });
 
       it('should clear socket address when socket connect error happened', () => {
         syncUserConfig = new SyncUserConfig();
         syncUserConfig.setIndexSocketServerHost = jest.fn();
         syncUserConfig.setReconnectSocketServerHost = jest.fn();
+        socketManager['_reconnectRetryCount'] = 0;
         notificationCenter.emitKVChange(SOCKET.CONNECT_ERROR);
 
         expect(syncUserConfig.setIndexSocketServerHost).toHaveBeenCalledWith(
@@ -460,6 +463,7 @@ describe('Socket Manager', () => {
         expect(
           syncUserConfig.setReconnectSocketServerHost,
         ).toHaveBeenCalledWith('');
+        expect(socketManager['_reconnectRetryCount']).toEqual(1);
       });
     });
 
@@ -680,6 +684,18 @@ describe('Socket Manager', () => {
       const fsmName2 = socketManager.activeFSM.name;
       expect(!!fsmName2).toBeTruthy();
       expect(fsmName2).not.toEqual(fsmName1);
+    });
+  });
+
+  describe('_stateHandler', () => {
+    it('connected event', () => {
+      socketManager['_reconnectRetryCount'] = 1;
+      socketManager['_stateHandler']({
+        name: '',
+        state: 'connected',
+        isManualStopped: false,
+      });
+      expect(socketManager['_reconnectRetryCount']).toEqual(0);
     });
   });
 });

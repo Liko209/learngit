@@ -47,7 +47,7 @@ describe('SocketCanConnectController', () => {
     return new SocketCanConnectController(1);
   }
 
-  describe('doCanConnectApi', () => {
+  describe('_doCanConnectApi', () => {
     beforeEach(() => {
       clearAndSetupBasicMock();
     });
@@ -56,14 +56,14 @@ describe('SocketCanConnectController', () => {
       jest.spyOn(controller, '_requestCanConnectInfo').mockResolvedValueOnce();
       jest.spyOn(controller, '_onCanConnectApiSuccess').mockResolvedValueOnce();
       const callback = () => {};
-      await controller.doCanConnectApi(callback, true);
+      await controller._doCanConnectApi(callback, true);
       expect(controller._onCanConnectApiSuccess).toHaveBeenCalledTimes(1);
     });
     it('should call _onCanConnectApiFailure when get can connect fail', async () => {
       const controller = getController();
       jest.spyOn(controller, '_requestCanConnectInfo').mockRejectedValueOnce();
       jest.spyOn(controller, '_onCanConnectApiFailure').mockResolvedValueOnce();
-      await controller.doCanConnectApi(() => {}, true);
+      await controller._doCanConnectApi(() => {}, true);
       expect(controller._onCanConnectApiFailure).toHaveBeenCalledTimes(1);
     });
   });
@@ -101,7 +101,7 @@ describe('SocketCanConnectController', () => {
   });
 
   describe('_onCanConnectApiFailure', () => {
-    it('should double reconnect interval time if it less than 1 min', async () => {
+    it('should double reconnect interval time if it less than 10 minutes', async () => {
       const controller = getController();
       jest
         .spyOn(controller, '_tryToCheckCanConnectAfterTime')
@@ -110,14 +110,14 @@ describe('SocketCanConnectController', () => {
       expect(controller._reconnectIntervalTime).toBeLessThan(60 * 1000);
       expect(controller._tryToCheckCanConnectAfterTime).toHaveBeenCalled();
     });
-    it('should equal to 1 min if double reconnect interval time is larger or equal to 1 min', async () => {
+    it('should equal to 10 minutes if double reconnect interval time is larger or equal to 10 minutes', async () => {
       const controller = getController();
-      controller._reconnectIntervalTime = 500 * 64;
+      controller._reconnectIntervalTime = 60 * 61 * 1000;
       jest
         .spyOn(controller, '_tryToCheckCanConnectAfterTime')
         .mockResolvedValueOnce();
       await controller._onCanConnectApiFailure();
-      expect(controller._reconnectIntervalTime).toEqual(60 * 1000);
+      expect(controller._reconnectIntervalTime).toEqual(10 * 60 * 1000);
       expect(controller._tryToCheckCanConnectAfterTime).toHaveBeenCalled();
     });
   });
@@ -202,6 +202,24 @@ describe('SocketCanConnectController', () => {
       presenceService.getCurrentUserPresence.mockResolvedValueOnce('OnCall');
       const result = await controller._generateUserPresence(false);
       expect(result).toEqual('OnCall');
+    });
+  });
+
+  describe('_getStartedTime', () => {
+    it('should return 0 when nthCount is 0', () => {
+      const controller = getController();
+      const result = controller._getStartedTime(0);
+      expect(result).toEqual(0);
+    });
+    it('should between 2 and 4', () => {
+      const controller = getController();
+      const result = controller._getStartedTime(1);
+      expect(2 <= result && result <= 4).toBeTruthy();
+    });
+    it('should not over 60 * 60 * 1000', () => {
+      const controller = getController();
+      const result = controller._getStartedTime(20);
+      expect(result > Math.pow(2, 16) && result < 60 * 60 * 1000).toBeTruthy();
     });
   });
 });
