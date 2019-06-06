@@ -1,0 +1,12 @@
+{
+  "on_merge": {
+    "fixtures": ["./fixtures/ConversationStream/PageHeader.ts"],
+    "include_tags": [
+      "JPT-2260",
+      "JPT-2261"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
