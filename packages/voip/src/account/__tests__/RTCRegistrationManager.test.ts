@@ -121,8 +121,16 @@ describe('RTCRegistrationManager', () => {
       });
     });
 
-    it('Should set retry interval from 30s to 60s. [JPT-813]', () => {
+    it('Should set retry interval to 5 sec when reg failed at first time [JPT-2257]', () => {
       setup();
+      regManager._regFailedFirstTime = true;
+      regManager._calculateNextRetryInterval();
+      expect(regManager._retryInterval).toBeLessThanOrEqual(5);
+    });
+
+    it("Should set retry interval to 30 to 60 sec when reg failed and it's not the first time [JPT-2256]", () => {
+      setup();
+      regManager._regFailedFirstTime = false;
       regManager._calculateNextRetryInterval();
       const minExpected = 30;
       const maxExpected = 60;
