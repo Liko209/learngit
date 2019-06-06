@@ -1,5 +1,9 @@
 {
   "common": {
+    "button": {
+      "ariaToggleOn": "On, click to turn off",
+      "ariaToggleOff": "Off, click to turn on"
+    },
     "dialog": {
       "OK": "OK",
       "cancel": "Cancel",
@@ -76,6 +80,7 @@
     "newActions": "New actions",
     "viewYourProfile": "View Your Profile",
     "aboutRingCentral": "About RingCentral",
+    "sendFeedback": "Send Feedback",
     "version": "Version",
     "lastCommit": "Last Commit",
     "deployedTime": "Date",
@@ -512,7 +517,8 @@
       "Answer": "Answer",
       "back": "Back",
       "forward": "Forward",
-      "customForward": "Custom..."
+      "customForward": "Custom...",
+      "flip": "Flip"
     },
     "customReplyMessagePlaceholder": "Type a custom message",
     "customReplyLabel": "Custom message",
@@ -553,7 +559,9 @@
       "ReplyCustomMessageEmpty": "Sorry, you cannot send an empty message.",
       "ReplyMessageSuccess": "Your voice message was sent successfully.",
       "ForwardBackendError": "Sorry, something went wrong on our end, we weren't able to forward the call.",
-      "ForwardCallSuccess": "Your call was forwarded successfully."
+      "ForwardCallSuccess": "Your call was forwarded successfully.",
+      "FlipBackendError": "Sorry, we weren't able to flip the call. Try again later.",
+      "FlipSuccess": "Call flipped"
     },
     "notification": {
       "incomingCall": "Incoming Call",
@@ -599,10 +607,40 @@
   },
   "integration": {},
   "setting": {
+    "errorText": {
+      "server": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later.",
+      "network": "We weren't able to save your settings. Check your network connection, then try again."
+    },
     "Settings": "Settings",
     "teamSettings": "Settings",
     "general": "General",
-    "notificationAndSounds": "Notification and Sounds",
+    "notificationAndSounds": {
+      "title": "Notification and Sounds",
+      "desktopNotifications": {
+        "title": "Desktop Notifications",
+        "notificationsForBrowser": {
+          "label": "Desktop notifications for browser",
+          "description": "Turn on/off desktop notifications on your web browser. Browser permission is needed for desktop notifications."
+        },
+        "newMessages": {
+          "label": "New Messages",
+          "description": "Choose your preference for desktop notifications for new messages",
+          "options": {
+            "always": "All new messages",
+            "mentions_or_dms": "Direct messages and mentions",
+            "never": "Off"
+          }
+        },
+        "incomingCalls": {
+          "label": "Incoming Calls",
+          "description": "Choose your preference for desktop notifications for incoming calls"
+        },
+        "callsAndVoicemails": {
+          "label": "Missed Calls and New Voicemails",
+          "description": "Choose your preference for desktop notifications for missed calls and new voicemails"
+        }
+      }
+    },
     "sounds": "Sounds",
     "messages": "Messages",
     "meetings": "Meetings",
@@ -614,13 +652,11 @@
         "title": "General",
         "callerID": {
           "label": "Caller ID",
-          "description": "Choose your default Caller ID for making RingCentral phone calls",
-          "errorText": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later."
+          "description": "Choose your default Caller ID for making RingCentral phone calls"
         },
         "extensions": {
           "label": "Extension settings",
-          "description": "Customize your RingCentral extension settings (call routing, voicemail greetings and more)",
-          "errorText": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later"
+          "description": "Customize your RingCentral extension settings (call routing, voicemail greetings and more)"
         },
         "regionSetting": {
           "label": "Region",
@@ -632,7 +668,28 @@
           "regionChangeDesc": "Set the country and area code for your region. This will be used for local and emergency dialing and phone number formatting."
         }
       }
-    }
+    },
+    "audioSource": {
+      "title": "Audio sources",
+      "microphoneSource": {
+        "label": "Microphone source",
+        "description": "Update your microphone source for RingCentral voice calls"
+      },
+      "speakerSource": {
+        "label": "Speaker source",
+        "description": "Update your speaker source for RingCentral voice calls"
+      },
+      "volume": {
+        "label": "Volume control",
+        "description": "Update the volume"
+      }
+    },
+    "default": "Default",
+    "speaker": "Speaker",
+    "noDevices": "No devices",
+    "microphone": "Microphone",
+    "builtInMicrophone": "Built-in microphone",
+    "builtInSpeaker": "Built-in speaker"
   },
   "viewer": {
     "ZoomIn": "Scale file up",
@@ -646,7 +703,18 @@
     "ConversationClosed": "You removed the conversation."
   },
   "notification": {
-    "mentioned": "You were mentioned"
+    "mentioned": "You were mentioned",
+    "notificationEnabled": "Notifications are now enabled.",
+    "topBanner": {
+      "enablePermissionMessage": "RingCentral needs your permission to enable desktop notifications.",
+      "enablePermissionAction": "Enable notifications",
+      "blockedPermissionMessage": "RingCentral notifications are blocked. Go to your browser settings to allow RingCentral to send notifications."
+    },
+    "notificationBlockedDialog": {
+      "title": "Notifications not allowed",
+      "content": "You currently have desktop notifications for RingCentral turned off. Update your browser settings to allow desktop notifications.",
+      "button": "OK"
+    }
   },
   "feedback": {
     "name": "Feedback",
@@ -656,10 +724,10 @@
     "submit": "Send",
     "describeYourProblemHere": "Describe your problem here",
     "uploadLogSuccess": "Upload log successfully.",
-    "uploadLogFailed": "Sorry, we weren't able to upload the logs.",
+    "uploadLogFailed": "Sorry, we weren't able to send the feedback. Try again later.",
     "openEmailFailed": "Open email failed.",
     "sendFeedbackSuccess": "Feedback sent successfully.",
-    "sendFeedbackFailed": "Send feedback failed.",
+    "sendFeedbackFailed": "Sorry, we weren't able to send the feedback. Try again later.",
     "title": "It looks like we're having issues.",
     "issueTitle": "Summary",
     "issueDescription": "What happened?",

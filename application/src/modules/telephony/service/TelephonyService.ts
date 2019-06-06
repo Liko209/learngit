@@ -894,6 +894,16 @@ class TelephonyService {
     );
   }
 
+  flip = (flipNumber: number) => {
+    if (!this._callId) {
+      return;
+    }
+    return this._serverTelephonyService.flip(
+      this._callId as string,
+      flipNumber,
+    );
+  }
+
   isValidNumber = (phoneNumber: string) => {
     return this._phoneNumberService.isValidNumber(phoneNumber);
   }
