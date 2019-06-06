@@ -11,7 +11,6 @@ import { AccountService } from 'sdk/module/account';
 import { ItemService } from 'sdk/module/item/service';
 import { ENTITY_NAME } from '@/store';
 import {
-  errorHelper,
   JServerError,
   JNetworkError,
   ERROR_CODES_SERVER,
@@ -174,7 +173,7 @@ describe('FileDeleteActionViewModel', () => {
 
     @test('should show toast when network error happen [JPT-2044]')
     @mockService(ItemService, 'deleteFile', () => {
-      throw new JServerError(ERROR_CODES_NETWORK.NOT_NETWORK, '');
+      throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, '');
     })
     @mockEntity(entityMock(undefined))
     async t2() {
@@ -183,7 +182,9 @@ describe('FileDeleteActionViewModel', () => {
         fileId: 123,
       } as any);
       await vm.handleDeleteFile();
-      expect(Notification.flashToast).toHaveBeenCalled();
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        toastParamsBuilder('message.prompt.deleteFileNetworkError'),
+      );
     }
   }
 });

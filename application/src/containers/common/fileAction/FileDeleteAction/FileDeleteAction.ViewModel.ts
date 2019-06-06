@@ -41,6 +41,7 @@ class FileDeleteActionViewModel extends FileActionViewModel {
         .reverse()
         .indexOf(this._currentItemVersion) + 1,
     );
+    return true;
   }
 
   private get _currentItemVersion() {

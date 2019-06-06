@@ -35,8 +35,9 @@ class FileDeleteActionViewComponent extends Component<
       cancelText: t('common.dialog.cancel'),
       async onOK() {
         startLoading();
-        await handleDeleteFile();
+        const result = await handleDeleteFile();
         stopLoading();
+        return !!result;
       },
     });
   }
