@@ -8,8 +8,6 @@ import Keys from 'jui/pattern/MessageInput/keys';
 import { Quill } from 'react-quill';
 import { ExcludeList, ConvertList } from 'jui/pattern/Emoji/excludeList';
 import 'jui/pattern/Emoji';
-// import { INIT_CURRENT_INDEX } from '../Mention/constants';
-import { CONVERSATION_TYPES } from '@/constants';
 import { emojiIndex, EmojiData } from 'emoji-mart';
 const DELAY = 300;
 const INIT_INDEX = 0;
@@ -117,11 +115,6 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
     return emojis;
   }
 
-  @computed
-  get groupType() {
-    return this._group.type;
-  }
-
   @action
   reset() {
     this._canDoFuzzySearch = false;
@@ -206,11 +199,6 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
     }
     this.open = true;
     this._denotationChar = denotationChar;
-  }
-
-  @computed
-  get isOneToOneGroup() {
-    return this.groupType === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE;
   }
 
   @computed
