@@ -51,7 +51,7 @@ class FileItemView extends Component<FileItemViewProps> {
               id={id}
               type="file"
               onClick={
-                supportFileViewer && !fileReadyForViewer
+                supportFileViewer && fileReadyForViewer
                   ? this._handleFileClick(file)
                   : undefined
               }
