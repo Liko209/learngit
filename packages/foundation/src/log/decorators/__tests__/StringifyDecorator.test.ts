@@ -14,6 +14,8 @@ describe('StringifyDecorator', () => {
           true,
           undefined,
           null,
+          true,
+          123,
         ],
         message: undefined,
       });
@@ -27,6 +29,8 @@ describe('StringifyDecorator', () => {
         'true',
         'undefined',
         'null',
+        'true',
+        '123',
       ]);
     });
   });

@@ -36,6 +36,7 @@ test(formalName('Events display on the right rail', ['P2', 'Messages', 'RightRai
     const teamsSection = app.homePage.messageTab.teamsSection;
     const eventsEntry = rightRail.eventsEntry;
     await teamsSection.conversationEntryById(team.glipId).enter();
+    await rightRail.clickFoldStatusButton();
     await rightRail.openMore();
     await eventsEntry.enter();
   });

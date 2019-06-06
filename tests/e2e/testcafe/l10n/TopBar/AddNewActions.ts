@@ -40,6 +40,7 @@ test(formalName('Check "New actions" menu', ['P2', 'TopBar', 'AddNewActions', 'V
 
   await h(t).withLog('When I click "New actions" button', async() => {
     await t.click(addActionButton);
+    await createTeamEntry.hoverSelf();
   });
   await h(t).withLog('Then "New actions" menu should be displayed', async () => {
     await t.expect(createTeamEntry.exists).ok()

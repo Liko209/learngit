@@ -15,10 +15,12 @@ import {
 } from 'sdk/module/profile';
 import { IncomingCallsSettingHandler } from '../IncomingCallsSettingHandler';
 import {
-  SettingService,
   UserSettingEntity,
   SettingEntityIds,
-} from 'sdk/module/setting';
+  SettingService,
+} from '../../../../setting';
+
+import { Profile } from 'sdk/module/profile/entity';
 jest.mock('sdk/module/profile');
 
 function clearMocks() {
@@ -29,10 +31,11 @@ function clearMocks() {
 
 describe('IncomingCallsSettingHandler', () => {
   let profileService: ProfileService;
-  let incomingCallsSettingHandler: IncomingCallsSettingHandler;
+  let settingHandler: IncomingCallsSettingHandler;
   let accoutService: AccountService;
   let settingService: SettingService;
   let mockDefaultSettingItem: UserSettingEntity;
+  const mockUserId = 123;
   function setUp() {
     jest.spyOn(notificationCenter, 'on');
     jest.spyOn(notificationCenter, 'off');
@@ -50,13 +53,22 @@ describe('IncomingCallsSettingHandler', () => {
     profileService = new ProfileService();
     settingService = new SettingService();
     accoutService = new AccountService(null);
+    accoutService = {
+      userConfig: {
+        getCurrentUserProfileId: jest.fn().mockReturnValue(mockUserId),
+      },
+    } as any;
     profileService.updateSettingOptions = jest.fn();
-    incomingCallsSettingHandler = new IncomingCallsSettingHandler(
+    profileService.getProfile = jest.fn().mockReturnValue({
+      [SETTING_KEYS.DESKTOP_CALL]: NOTIFICATION_OPTIONS.OFF,
+      [SETTING_KEYS.CALL_OPTION]: CALLING_OPTIONS.RINGCENTRAL,
+    });
+    settingHandler = new IncomingCallsSettingHandler(
       profileService,
       accoutService,
       settingService,
     );
-    incomingCallsSettingHandler.notifyUserSettingEntityUpdate = jest.fn();
+    settingHandler.notifyUserSettingEntityUpdate = jest.fn();
   }
 
   beforeEach(() => {
@@ -96,7 +108,7 @@ describe('IncomingCallsSettingHandler', () => {
           .fn()
           .mockReturnValue({ value: { desktopNotifications } });
         mockDefaultSettingItem.state = expectRes;
-        const result = await incomingCallsSettingHandler.fetchUserSettingEntity();
+        const result = await settingHandler.fetchUserSettingEntity();
         expect(result).toEqual(mockDefaultSettingItem);
       },
     );
@@ -104,10 +116,102 @@ describe('IncomingCallsSettingHandler', () => {
 
   describe('updateValue()', () => {
     it('should call updateSettingOptions with correct parameters', async () => {
-      await incomingCallsSettingHandler.updateValue(1);
+      await settingHandler.updateValue(1);
       expect(profileService.updateSettingOptions).toBeCalledWith([
         { value: 1, key: SETTING_KEYS.DESKTOP_CALL },
       ]);
+    });
+  });
+
+  describe('handleProfileUpdated', () => {
+    it('should emit update when has subscribe update and DESKTOP_CALL change', (done: jest.DoneCallback) => {
+      settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
+      settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
+      notificationCenter.emitEntityUpdate<Profile>(ENTITY.PROFILE, [
+        {
+          id: mockUserId,
+          [SETTING_KEYS.DESKTOP_CALL]: NOTIFICATION_OPTIONS.ON,
+        } as Profile,
+      ]);
+      setTimeout(() => {
+        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        expect(
+          settingHandler.notifyUserSettingEntityUpdate,
+        ).toHaveBeenCalledWith({});
+        done();
+      });
+    });
+
+    it('should not emit update when no change', (done: jest.DoneCallback) => {
+      settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
+      settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
+      notificationCenter.emitEntityUpdate<Profile>(ENTITY.PROFILE, [
+        {
+          id: mockUserId,
+          [SETTING_KEYS.DESKTOP_CALL]: NOTIFICATION_OPTIONS.OFF,
+        } as Profile,
+      ]);
+      setTimeout(() => {
+        expect(settingHandler.getUserSettingEntity).not.toBeCalled();
+        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
+        done();
+      });
+    });
+  });
+  describe('handleSettingModelUpdated', () => {
+    it('should emit update when has subscribe update and Notification_Browser change', (done: jest.DoneCallback) => {
+      settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
+      settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
+      notificationCenter.emitEntityUpdate<UserSettingEntity>(
+        ENTITY.USER_SETTING,
+        [
+          {
+            id: SettingEntityIds.Notification_Browser,
+            value: true,
+          } as UserSettingEntity,
+        ],
+      );
+      setTimeout(() => {
+        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        expect(
+          settingHandler.notifyUserSettingEntityUpdate,
+        ).toHaveBeenCalledWith({});
+        done();
+      });
+    });
+    it('should emit update when has subscribe update and Phone_DefaultApp change', (done: jest.DoneCallback) => {
+      settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
+      settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
+      notificationCenter.emitEntityUpdate<UserSettingEntity>(
+        ENTITY.USER_SETTING,
+        [
+          {
+            id: SettingEntityIds.Phone_DefaultApp,
+            value: true,
+          } as UserSettingEntity,
+        ],
+      );
+      setTimeout(() => {
+        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        expect(
+          settingHandler.notifyUserSettingEntityUpdate,
+        ).toHaveBeenCalledWith({});
+        done();
+      });
+    });
+
+    it('should not emit update when no change', (done: jest.DoneCallback) => {
+      settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
+      settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
+      notificationCenter.emitEntityUpdate<UserSettingEntity>(
+        ENTITY.USER_SETTING,
+        [],
+      );
+      setTimeout(() => {
+        expect(settingHandler.getUserSettingEntity).not.toBeCalled();
+        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
+        done();
+      });
     });
   });
 });

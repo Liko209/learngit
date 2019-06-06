@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import { BaseWebComponent } from "../../BaseWebComponent";
 import { ClientFunction } from 'testcafe';
+import { H } from '../../../helpers';
 
 
 export class TelephonyDialog extends BaseWebComponent {
@@ -37,6 +38,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickHangupButton() {
+    await H.sleep(1e3);
     await this.t.click(this.hangupButton);
   }
 

@@ -15,7 +15,7 @@ import { TopBannerViewModel } from './TopBanner.ViewModel';
 class TopBannerView extends React.Component<TopBannerViewProps> {
   render() {
     const children = _(TopBannerViewModel.data)
-      .orderBy('priority', 'desc')
+      .orderBy('priority', 'asc')
       .map(({ priority, Component, props, isShow }) => {
         return isShow ? <Component key={priority} {...props} /> : null;
       })

@@ -5,9 +5,25 @@
  */
 
 interface IRTCMediaDeviceDelegate {
-  onMediaDevicesChanged(
+  onMediaDevicesInitialed(
     audioOutputs: MediaDeviceInfo[],
     audioInputs: MediaDeviceInfo[],
+  ): void;
+  onMediaDevicesChanged(
+    audioOutputs: {
+      devices: MediaDeviceInfo[];
+      delta: {
+        added: MediaDeviceInfo[];
+        deleted: MediaDeviceInfo[];
+      };
+    },
+    audioInputs: {
+      devices: MediaDeviceInfo[];
+      delta: {
+        added: MediaDeviceInfo[];
+        deleted: MediaDeviceInfo[];
+      };
+    },
   ): void;
 }
 

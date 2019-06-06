@@ -37,6 +37,7 @@ test(formalName('Integrations display on the right rail', ['P2', 'Messages', 'Ri
     const teamsSection = app.homePage.messageTab.teamsSection;
     await teamsSection.conversationEntryByName(team.name);
     await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
+    await rightRail.clickFoldStatusButton();
     await rightRail.openMore();
     await rightRail.integrationsEntry.enter();
   });

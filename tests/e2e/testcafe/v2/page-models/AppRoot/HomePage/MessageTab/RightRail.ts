@@ -12,10 +12,37 @@ export class RightRail extends BaseWebComponent {
     return this.getSelectorByIcon('double_chevron_right').parent('button[aria-label="Hide details"]');
   }
 
+  get expandStatusButtonByClass() {
+    this.warnFlakySelector();
+    return this.getSelector('.double_chevron_right');
+  }
+
   get foldStatusButton() {
     this.warnFlakySelector();
     return this.getSelector('button[aria-label="Show details"]');
   }
+
+  get foldStatusButtonByClass() {
+    this.warnFlakySelector();
+    return this.getSelector('.double_chevron_left');
+  }
+
+  async clickFoldStatusButton() {
+    await this.t.click(this.foldStatusButtonByClass);
+  }
+
+  async hoverFoldStatusButton() {
+    await this.t.hover(this.foldStatusButtonByClass);
+  }
+
+  async clickExpandStatusButton() {
+    await this.t.click(this.expandStatusButtonByClass);
+  }
+
+  async hoverExpandStatusButton() {
+    await this.t.hover(this.expandStatusButtonByClass);
+  }
+
 
   async expand() {
     await this.t.click(this.foldStatusButton);
@@ -75,6 +102,10 @@ export class RightRail extends BaseWebComponent {
 
   get moreButton() {
     return this.getSelectorByAutomationId('right-shelf-more')
+  }
+
+  async clickMoreButton() {
+    await this.t.click(this.moreButton)
   }
 
   async openMore() {
@@ -262,7 +293,7 @@ class ImageAndFileItem extends BaseWebComponent {
   get more(){
     return this.getSelectorByAutomationId('fileActionMore',this.self);
   }
-  
+
   async clickMore(){
     await this.t.click(this.more);
   }
