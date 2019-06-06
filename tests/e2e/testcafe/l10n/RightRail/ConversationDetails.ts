@@ -38,6 +38,7 @@ test(formalName('Conversation Details on the right rail', ['P2', 'Messages', 'Ri
   await h(t).log('Then I take screenshot' , { screenshotPath:'Jupiter_RightRail_MoreIcon' });
 
   await h(t).withLog('When I click "More" icon on right rail', async () => {
+    await rightRail.clickFoldStatusButton();
     await rightRail.clickMoreButton();
   });
   await h(t).withLog('And "More" list should be displayed',async () => {
