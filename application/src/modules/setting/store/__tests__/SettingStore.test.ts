@@ -94,7 +94,7 @@ describe('SettingStore', () => {
   });
 
   describe('no empty getter functions', () => {
-    it('should return no empty section in page', () => {
+    it('should return no empty section in the page [JPT-2187]', () => {
       const store = setupWithPage();
       const scope = store.useScope(SCOPE);
       const scope2 = store.useScope(SCOPE_2);

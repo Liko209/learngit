@@ -182,6 +182,12 @@ class RCPermissionController {
           PermissionId: PermissionId.PERMISSION_MEEINGS,
         },
       ],
+      [
+        ERCServiceFeaturePermission.CONFERENCING,
+        {
+          featureName: RCServiceFeatureName.CONFERENCING,
+        },
+      ],
     ]);
   }
 }

@@ -11,7 +11,6 @@ import { JuiMenuList, JuiMenuItem } from 'jui/components';
 import { JuiAvatarActions } from 'jui/pattern/TopBar';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
-import { isElectron } from '@/common/isUserAgent';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 
 type Props = ViewProps & WithTranslation;
@@ -48,6 +47,8 @@ class AvatarActionsComponent extends React.Component<Props> {
 
   handleAboutPage = () => this.props.toggleAboutPage();
 
+  handleSendFeedback = () => this.props.handleSendFeedback();
+
   render() {
     const { handleSignOut, currentUserId, t } = this.props;
 
@@ -72,15 +73,20 @@ class AvatarActionsComponent extends React.Component<Props> {
               {t('people.team.profile')}
             </JuiMenuItem>
           </OpenProfileDialog>
-          {!isElectron && (
-            <JuiMenuItem
-              onClick={this.handleAboutPage}
-              aria-label={t('home.aboutRingCentral')}
-              data-test-automation-id="aboutPage"
-            >
-              {t('home.aboutRingCentral')}
-            </JuiMenuItem>
-          )}
+          <JuiMenuItem
+            onClick={this.handleAboutPage}
+            aria-label={t('home.aboutRingCentral')}
+            data-test-automation-id="aboutPage"
+          >
+            {t('home.aboutRingCentral')}
+          </JuiMenuItem>
+          <JuiMenuItem
+            onClick={this.handleSendFeedback}
+            aria-label={t('home.sendFeedback')}
+            data-test-automation-id="sendFeedback"
+          >
+            {t('home.sendFeedback')}
+          </JuiMenuItem>
           <JuiMenuItem
             onClick={handleSignOut}
             aria-label={t('auth.signOut')}
@@ -94,6 +100,8 @@ class AvatarActionsComponent extends React.Component<Props> {
   }
 }
 
-const AvatarActionsView = withTranslation('translations')(AvatarActionsComponent);
+const AvatarActionsView = withTranslation('translations')(
+  AvatarActionsComponent,
+);
 
 export { AvatarActionsView };
