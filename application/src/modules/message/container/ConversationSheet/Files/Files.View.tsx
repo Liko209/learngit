@@ -118,7 +118,7 @@ class FilesView extends React.Component<FilesViewProps> {
   _handleFileClick = (item: FileItemModel) => (
     ev: React.MouseEvent<HTMLElement>,
   ) => {
-    this._viewerService.show(item.id);
+    this._viewerService.open(item.id);
   }
 
   private _handleImageDidLoad = (id: number, callback: Function) => {
