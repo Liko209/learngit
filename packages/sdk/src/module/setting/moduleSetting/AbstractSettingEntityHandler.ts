@@ -12,11 +12,12 @@ import notificationCenter, {
   NotificationEntityDeletePayload,
 } from 'sdk/service/notificationCenter';
 import { ModelIdType } from 'sdk/framework/model';
+import { UndefinedAble } from 'sdk/types';
 
 export abstract class AbstractSettingEntityHandler<T>
   implements IUserSettingHandler<T> {
   id: number;
-  userSettingEntityCache: UserSettingEntity<T>;
+  userSettingEntityCache: UndefinedAble<UserSettingEntity<T>>;
   _subscriptions: {
     eventName: string;
     listener: (...values: any[]) => void;
@@ -38,7 +39,7 @@ export abstract class AbstractSettingEntityHandler<T>
 
   on<E>(
     eventName: string,
-    listener: (e: E) => Promise<void>,
+    listener: (e: E) => Promise<void> | void,
     filter?: (e: E) => boolean,
   ): void {
     this._on(eventName, (e: E) => {
@@ -47,6 +48,7 @@ export abstract class AbstractSettingEntityHandler<T>
         listener(e);
     });
   }
+
   async getUserSettingEntity(
     enableCache: boolean = false,
   ): Promise<UserSettingEntity<T>> {
@@ -103,5 +105,17 @@ export abstract class AbstractSettingEntityHandler<T>
         );
       },
     };
+  }
+
+  protected getCacheValue(key?: keyof T) {
+    if (!this.userSettingEntityCache) {
+      return undefined;
+    }
+    if (key) {
+      return this.userSettingEntityCache.value
+        ? this.userSettingEntityCache.value[key]
+        : undefined;
+    }
+    return this.userSettingEntityCache.value;
   }
 }
