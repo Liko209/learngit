@@ -41,7 +41,6 @@ decorate(injectable(), ClientService);
 
 jest.mock('../ToastCallError');
 jest.mock('@/containers/Notification');
-
 // mock media element methods
 window.HTMLMediaElement.prototype.load = jest.fn();
 window.HTMLMediaElement.prototype.play = jest.fn();
@@ -67,6 +66,7 @@ function initializeCallerId() {
 let defaultPhoneApp = CALLING_OPTIONS.GLIP;
 describe('TelephonyService', () => {
   beforeEach(() => {
+    jest.spyOn(utils, 'getSingleEntity').mockImplementation();
     let cachedOnMadeOutgoingCall: any;
     let cachedOnCallActionSuccess: any;
     let cachedOnCallActionFailed: any;
@@ -84,7 +84,7 @@ describe('TelephonyService', () => {
       isValidNumber: jest.fn(),
     };
 
-    jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
+    jest.spyOn(utils, 'getEntity').mockReturnValue({ value: defaultPhoneApp });
     mockedServerTelephonyService = {
       hold: jest.fn().mockImplementation(() => {
         sleep(mockedDelay).then(() =>
@@ -727,12 +727,14 @@ describe('TelephonyService', () => {
     });
     it(`should not response when there's incoming call and default phone setting is RC phone`, () => {
       defaultPhoneApp = CALLING_OPTIONS.RINGCENTRAL;
-      jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
+      jest
+        .spyOn(utils, 'getEntity')
+        .mockReturnValue({ value: defaultPhoneApp });
       telephonyService._onReceiveIncomingCall(params);
       expect(telephonyService._telephonyStore.incomingCall).not.toBeCalled();
     });
     it(`should show ui when there's incoming call and default phone setting is Ringcentral App`, () => {
-      jest.spyOn(utils, 'getSingleEntity').mockReturnValue('glip');
+      jest.spyOn(utils, 'getEntity').mockReturnValue({ value: 'glip' });
       telephonyService._onReceiveIncomingCall(params);
       expect(telephonyService._telephonyStore.incomingCall).toBeCalled();
     });

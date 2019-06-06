@@ -218,6 +218,8 @@
       "newMessageTipLink": "create a Team instead.",
       "NewMessageError": "We are having trouble creating this new message. Please try again later.",
       "disabledText": "This team is read-only",
+      "changeDefaultPhoneAppTitle": "Change default phone app",
+      "changeDefaultPhoneAppContent": "You are about to choose RingCentral Phone for your default phone features. Install RingCentral Phone app before continuing. Are you sure you want to change your default to RingCentral Phone?",
       "editFileNameTitle": "Rename file",
       "editFileNameInputLabel": "Filename",
       "editFileNameBackendError": "Sorry, something went wrong on our end and we aren't able to save the edit. Try again later.",
@@ -692,6 +694,14 @@
       "title": "Phone",
       "general": {
         "title": "General",
+        "defaultPhoneApp": {
+          "label": "Default Phone app for calling",
+          "description": "Choose which app you'd like use to make calls",
+          "option": {
+            "glip": "Use RingCentral App (this app)",
+            "ringcentral": "Use RingCentral Phone"
+          }
+        },
         "callerID": {
           "label": "Caller ID",
           "description": "Choose your default Caller ID for making RingCentral phone calls"

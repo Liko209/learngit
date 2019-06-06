@@ -46,6 +46,7 @@ import { CALLING_OPTIONS } from 'sdk/module/profile';
 import i18next from 'i18next';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
+import { SETTING_ITEM__PHONE_DEFAULT_PHONE_APP } from '../TelephonySettingManager/constant';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -469,8 +470,8 @@ class TelephonyService {
   }
   private get _isJupiterDefaultApp() {
     return (
-      getSingleEntity(ENTITY_NAME.PROFILE, 'callOption') ===
-      CALLING_OPTIONS.GLIP
+      getEntity(ENTITY_NAME.USER_SETTING, SETTING_ITEM__PHONE_DEFAULT_PHONE_APP)
+        .value === CALLING_OPTIONS.GLIP
     );
   }
 
