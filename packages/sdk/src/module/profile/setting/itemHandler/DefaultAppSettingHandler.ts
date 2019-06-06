@@ -75,7 +75,7 @@ export class DefaultAppSettingHandler extends AbstractSettingEntityHandler<
       return;
     }
     if (
-      profile[SETTING_KEYS.CALL_OPTION] !== this.userSettingEntityCache.value
+      profile[SETTING_KEYS.CALL_OPTION] !== this.userSettingEntityCache!.value
     ) {
       this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
     }

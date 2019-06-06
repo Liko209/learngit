@@ -65,11 +65,11 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
 
   async fetchUserSettingEntity() {
     const profile = await this._profileService.getProfile();
-    const wantNotifications =
-      profile[SETTING_KEYS.DESKTOP_NOTIFICATION] || false;
+    const wantNotifications = profile[SETTING_KEYS.DESKTOP_NOTIFICATION];
     const { current, isGranted } = Pal.instance.getNotificationPermission();
     const value: DesktopNotificationsSettingModel = {
-      wantNotifications,
+      wantNotifications:
+        wantNotifications === undefined ? true : wantNotifications,
       browserPermission: current,
       desktopNotifications: isGranted && wantNotifications ? true : false,
     };
