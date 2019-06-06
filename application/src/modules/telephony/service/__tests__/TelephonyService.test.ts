@@ -703,7 +703,7 @@ describe('TelephonyService', () => {
         .mockReturnValue({ value: defaultPhoneApp });
       telephonyService._onReceiveIncomingCall(params);
       expect(telephonyService._telephonyStore.incomingCall).not.toBeCalled();
-    });:
+    });
     it(`should show ui when there's incoming call and default phone setting is Ringcentral App`, () => {
       jest.spyOn(utils, 'getEntity').mockReturnValue({ value: 'glip' });
       telephonyService._onReceiveIncomingCall(params);
