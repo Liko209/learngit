@@ -80,6 +80,7 @@
     "newActions": "New actions",
     "viewYourProfile": "View Your Profile",
     "aboutRingCentral": "About RingCentral",
+    "sendFeedback": "Send Feedback",
     "version": "Version",
     "lastCommit": "Last Commit",
     "deployedTime": "Date",
@@ -216,48 +217,44 @@
       "newMessageTip": "Conversations with one or more specific people are great for informal chat. For projects, departments, or even topic-based discussion, you should ",
       "newMessageTipLink": "create a Team instead.",
       "NewMessageError": "We are having trouble creating this new message. Please try again later.",
-      "disabledText": "This team is read-only"
+      "disabledText": "This team is read-only",
+      "editFileNameTitle": "Rename file",
+      "editFileNameInputLabel": "Filename",
+      "editFileNameBackendError": "Sorry, something went wrong on our end and we aren't able to save the edit. Try again later.",
+      "editFileNameNetworkError": "We aren't able to save the edit. Check your network connection, then try again."
     },
-    "": {
-      "deleteFile": "Delete file"
+    "fileAction": {
+      "deleteFile": "Delete file",
+      "editFileName": "Edit filename"
     },
     "Messages": "Messages",
     "message": "Message"
   },
   "item": {
     "activity": {
-      "items": "items",
-      "task": "task",
-      "event": "event",
-      "note": "note",
-      "file": "file",
-      "file_plural": "files",
-      "link": "link",
-      "link_plural": "links",
-      "video chat": "video chat",
-      "audio conference": "audio conference",
-      "snippet": "snippet",
+      "created a task": "created a task",
+      "assigned task": "assigned task",
+      "reassigned task": "reassigned task",
+      "completed task": "completed task",
+      "completed {{count}}% of task": "completed {{count}}% of task",
+      "marked task incomplete": "marked task incomplete",
+      "marked task incomplete for {{user}}": "marked task incomplete for {{user}}",
+      "completed task for {{user}}": "completed task for {{user}}",
+      "created a event": "created an event",
+      "updated a event": "updated an event",
+      "updated event": "updated event",
+      "shared a note": "shared a note",
+      "shared a file": "shared a file",
+      "shared {{count}} file": "shared {{count}} files",
+      "uploaded version {{number}}": "uploaded version {{number}}",
+      "shared a link": "shared a link",
+      "shared {{count}} link": "shared {{count}} links",
+      "shared a snippet": "shared a snippet",
+      "shared items": "shared items",
+      "started a audio conference": "started an audio conference",
+      "started a video chat": "started a video chat",
       "replied": "replied",
-      "shared": "shared",
-      "started": "started",
-      "updated": "updated",
-      "created": "created",
-      "uploaded": "uploaded",
-      "version": "version",
-      "via": "via",
-      "marked": "marked",
-      "completed": "completed",
-      "reassigned": "reassigned",
-      "assigned": "assigned",
-      "incomplete": "incomplete",
-      "verb-noun-adjectives": "$t({{verb}}) $t({{noun}}) $t({{adjectives}})",
-      "verb-noun-adjectives-user": "$t({{verb}}) $t({{noun}}) $t({{adjectives}}) for {{user}}",
-      "verb-noun-numerals": "$t({{verb}}) $t({{noun}}) {{count}}",
-      "verb-noun": "$t({{verb}}) $t({{noun}})",
-      "verb-noun-user": "$t({{verb}}) $t({{noun}}) for {{user}}",
-      "verb-article-noun": "$t({{verb}}) {{noun, en-handle-an}} $t({{noun}})",
-      "verb-numerals-noun": "$t({{verb}}) {{count}} $t({{noun}})",
-      "verb-numerals-prepositions-noun": "$t({{verb}}) {{count}}% of $t({{noun}})"
+      "via": "via"
     },
     "meeting": {
       "videoCallInProgress": "Video Call in progress",
@@ -520,7 +517,8 @@
       "Answer": "Answer",
       "back": "Back",
       "forward": "Forward",
-      "customForward": "Custom..."
+      "customForward": "Custom...",
+      "flip": "Flip"
     },
     "customReplyMessagePlaceholder": "Type a custom message",
     "customReplyLabel": "Custom message",
@@ -561,7 +559,9 @@
       "ReplyCustomMessageEmpty": "Sorry, you cannot send an empty message.",
       "ReplyMessageSuccess": "Your voice message was sent successfully.",
       "ForwardBackendError": "Sorry, something went wrong on our end, we weren't able to forward the call.",
-      "ForwardCallSuccess": "Your call was forwarded successfully."
+      "ForwardCallSuccess": "Your call was forwarded successfully.",
+      "FlipBackendError": "Sorry, we weren't able to flip the call. Try again later.",
+      "FlipSuccess": "Call flipped"
     },
     "notification": {
       "incomingCall": "Incoming Call",
@@ -588,7 +588,8 @@
     },
     "callerIdSelector": {
       "tooltip": "You can change this default Caller ID in settings."
-    }
+    },
+    "forwardCall": "Forward Call"
   },
   "phone": {
     "tab": {
@@ -702,7 +703,28 @@
           "regionChangeDesc": "Set the country and area code for your region. This will be used for local and emergency dialing and phone number formatting."
         }
       }
-    }
+    },
+    "audioSource": {
+      "title": "Audio sources",
+      "microphoneSource": {
+        "label": "Microphone source",
+        "description": "Update your microphone source for RingCentral voice calls"
+      },
+      "speakerSource": {
+        "label": "Speaker source",
+        "description": "Update your speaker source for RingCentral voice calls"
+      },
+      "volume": {
+        "label": "Volume control",
+        "description": "Update the volume"
+      }
+    },
+    "default": "Default",
+    "speaker": "Speaker",
+    "noDevices": "No devices",
+    "microphone": "Microphone",
+    "builtInMicrophone": "Built-in microphone",
+    "builtInSpeaker": "Built-in speaker"
   },
   "viewer": {
     "ZoomIn": "Scale file up",
@@ -732,10 +754,10 @@
     "submit": "Send",
     "describeYourProblemHere": "Describe your problem here",
     "uploadLogSuccess": "Upload log successfully.",
-    "uploadLogFailed": "Sorry, we weren't able to upload the logs.",
+    "uploadLogFailed": "Sorry, we weren't able to send the feedback. Try again later.",
     "openEmailFailed": "Open email failed.",
     "sendFeedbackSuccess": "Feedback sent successfully.",
-    "sendFeedbackFailed": "Send feedback failed.",
+    "sendFeedbackFailed": "Sorry, we weren't able to send the feedback. Try again later.",
     "title": "It looks like we're having issues.",
     "issueTitle": "Summary",
     "issueDescription": "What happened?",

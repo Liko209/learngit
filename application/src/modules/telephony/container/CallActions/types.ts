@@ -14,7 +14,7 @@ type CallActionsViewProps = {
   callActionsMap: {
     [key: string]: { shouldShowAction?: boolean };
   };
-  shouldDisableCallActions: boolean;
+  isIncomingPage: boolean;
 };
 
 export { CallActionsProps, CallActionsViewProps };

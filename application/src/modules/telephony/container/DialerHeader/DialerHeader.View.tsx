@@ -46,6 +46,8 @@ class DialerHeaderViewComponent extends React.Component<Props> {
       t,
       shouldDisplayDialer,
       inputString,
+      forwardString,
+      isForward,
       onFocus,
       onBlur,
       onChange,
@@ -61,7 +63,7 @@ class DialerHeaderViewComponent extends React.Component<Props> {
         name={name ? name : t('telephony.unknownCaller')}
         phone={isExt ? `${t('telephony.Ext')} ${phone}` : phone}
         showDialerInputField={shouldDisplayDialer}
-        dialerValue={inputString}
+        dialerValue={isForward ? forwardString : inputString}
         onChange={onChange}
         onFocus={onFocus}
         onBlur={onBlur}
