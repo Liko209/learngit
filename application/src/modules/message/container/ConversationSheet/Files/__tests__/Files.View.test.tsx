@@ -166,7 +166,7 @@ describe('FilesView', () => {
         .simulate('click', mockEvent);
 
       setTimeout(() => {
-        expect(Viewer.open).not.toHaveBeenCalled();
+        expect(viewerService.open).not.toHaveBeenCalled();
         done();
       }, 0);
     }
