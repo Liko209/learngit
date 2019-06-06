@@ -10,7 +10,10 @@ import * as telephony from '@/modules/telephony/module.config';
 import * as common from '@/modules/common/module.config';
 
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { getEntity } from '@/store/utils';
+import { HOLD_STATE } from 'sdk/module/telephony/entity';
 
+jest.mock('@/store/utils');
 jest.mock('sdk/module/telephony');
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
@@ -26,6 +29,9 @@ beforeAll(() => {
 
 describe('HoldViewModel', () => {
   it('Should be disabled', async () => {
+    (getEntity as jest.Mock).mockReturnValue({
+      holdState: HOLD_STATE.DISABLE,
+    });
     expect(holdViewModel.disabled).toBe(true);
   });
 });

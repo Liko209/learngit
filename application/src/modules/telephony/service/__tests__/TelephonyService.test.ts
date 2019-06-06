@@ -24,6 +24,11 @@ import { container, injectable, decorate } from 'framework';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ClientService } from '@/modules/common';
 import { CALLING_OPTIONS } from 'sdk/module/profile';
+import { getEntity } from '@/store/utils';
+import { HOLD_STATE, RECORD_STATE } from 'sdk/module/telephony/entity';
+import CallModel from '@/store/models/Call';
+
+jest.mock('@/store/utils');
 const testProcedureWaitingTime = 20;
 const mockedDelay = 10;
 
@@ -49,6 +54,17 @@ const sleep = (time: number): Promise<void> => {
   });
 };
 
+const mockState = (prop: keyof CallModel, value: any) =>
+  (getEntity as jest.Mock).mockReturnValue({
+    [prop]: value,
+  });
+
+const mockHoldState = (state: HOLD_STATE) => mockState('holdState', state);
+const mockRecordState = (state: RECORD_STATE) =>
+  mockState('recordState', state);
+
+const mockCallModel = () => (getEntity as jest.Mock).mockReturnValue({});
+
 let mockedServerTelephonyService: any;
 let mockedRCInfoService: any;
 
@@ -73,30 +89,36 @@ describe('TelephonyService', () => {
       getForwardingNumberList: jest.fn(),
     };
 
+    mockCallModel();
+
     jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
     mockedServerTelephonyService = {
       hold: jest.fn().mockImplementation(() => {
-        sleep(mockedDelay).then(() =>
+        return sleep(mockedDelay).then(() =>
           count === 3 // for test failure situation
-            ? cachedOnCallActionFailed(RTC_CALL_ACTION.HOLD)
-            : cachedOnCallActionSuccess(RTC_CALL_ACTION.HOLD),
+            ? Promise.reject(RTC_CALL_ACTION.HOLD)
+            : Promise.resolve(RTC_CALL_ACTION.HOLD),
         );
       }),
       unhold: jest.fn().mockImplementation(() => {
-        sleep(mockedDelay).then(() =>
+        return sleep(mockedDelay).then(() =>
           count === 4 // for test failure situation
-            ? cachedOnCallActionFailed(RTC_CALL_ACTION.UNHOLD)
-            : cachedOnCallActionSuccess(RTC_CALL_ACTION.UNHOLD),
+            ? Promise.reject(RTC_CALL_ACTION.UNHOLD)
+            : Promise.resolve(RTC_CALL_ACTION.UNHOLD),
         );
       }),
       startRecord: jest.fn().mockImplementation(() => {
-        sleep(mockedDelay).then(() =>
-          cachedOnCallActionSuccess(RTC_CALL_ACTION.START_RECORD),
+        return sleep(mockedDelay).then(() =>
+          count === 3 // for test failure situation
+            ? Promise.reject(RTC_CALL_ACTION.START_RECORD)
+            : Promise.resolve(RTC_CALL_ACTION.START_RECORD),
         );
       }),
       stopRecord: jest.fn().mockImplementation(() => {
-        sleep(mockedDelay).then(() =>
-          cachedOnCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD),
+        return sleep(mockedDelay).then(() =>
+          count === 3 // for test failure situation
+            ? Promise.reject(RTC_CALL_ACTION.STOP_RECORD)
+            : Promise.resolve(RTC_CALL_ACTION.STOP_RECORD),
         );
       }),
       makeCall: jest.fn().mockImplementation(() => {
@@ -186,8 +208,9 @@ describe('TelephonyService', () => {
     it('The "hold" button should be disabled when an outbound call is not connected [JPT-1545]', async () => {
       initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
-      (telephonyService as TelephonyService).holdOrUnhold();
 
+      mockHoldState(HOLD_STATE.DISABLE);
+      (telephonyService as TelephonyService).holdOrUnhold();
       expect(
         (telephonyService as TelephonyService)._telephonyStore.holdDisabled,
       ).toBe(true);
@@ -204,9 +227,12 @@ describe('TelephonyService', () => {
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
 
+      mockHoldState(HOLD_STATE.IDLE);
       (telephonyService as TelephonyService).holdOrUnhold();
       (telephonyService as TelephonyService).holdOrUnhold();
 
+      await sleep(testProcedureWaitingTime);
+      mockHoldState(HOLD_STATE.HELD);
       expect(
         (telephonyService as TelephonyService)._telephonyStore.holdDisabled,
       ).toBe(false);
@@ -216,6 +242,7 @@ describe('TelephonyService', () => {
       expect(mockedServerTelephonyService.hold).toHaveBeenCalledTimes(1);
 
       await (telephonyService as TelephonyService).hangUp();
+      mockHoldState(HOLD_STATE.DISABLE);
       expect(
         (telephonyService as TelephonyService)._telephonyStore.holdDisabled,
       ).toBe(true);
@@ -225,8 +252,10 @@ describe('TelephonyService', () => {
       initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
+      mockHoldState(HOLD_STATE.IDLE);
       (telephonyService as TelephonyService).holdOrUnhold();
       await sleep(testProcedureWaitingTime);
+      mockHoldState(HOLD_STATE.HELD);
       (telephonyService as TelephonyService).holdOrUnhold();
       (telephonyService as TelephonyService).holdOrUnhold();
 
@@ -236,7 +265,7 @@ describe('TelephonyService', () => {
       );
 
       await sleep(testProcedureWaitingTime);
-
+      mockHoldState(HOLD_STATE.IDLE);
       expect(
         (telephonyService as TelephonyService)._telephonyStore.holdDisabled,
       ).toBe(false);
@@ -245,6 +274,7 @@ describe('TelephonyService', () => {
       );
 
       await (telephonyService as TelephonyService).hangUp();
+      mockHoldState(HOLD_STATE.DISABLE);
       expect(
         (telephonyService as TelephonyService)._telephonyStore.holdDisabled,
       ).toBe(true);
@@ -254,14 +284,15 @@ describe('TelephonyService', () => {
       initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
+      mockHoldState(HOLD_STATE.IDLE);
       (telephonyService as TelephonyService).holdOrUnhold();
-
+      mockHoldState(HOLD_STATE.HELD);
       expect((telephonyService as TelephonyService)._telephonyStore.held).toBe(
         true,
       );
 
       await sleep(testProcedureWaitingTime);
-
+      mockHoldState(HOLD_STATE.IDLE);
       expect(ToastCallError.toastFailedToHold).toHaveBeenCalled();
       expect(ToastCallError.toastFailedToResume).not.toHaveBeenCalled();
       expect((telephonyService as TelephonyService)._telephonyStore.held).toBe(
@@ -269,7 +300,7 @@ describe('TelephonyService', () => {
       );
 
       await (telephonyService as TelephonyService).hangUp();
-
+      mockHoldState(HOLD_STATE.DISABLE);
       expect(
         (telephonyService as TelephonyService)._telephonyStore.holdDisabled,
       ).toBe(true);
@@ -279,8 +310,10 @@ describe('TelephonyService', () => {
       initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
+      mockHoldState(HOLD_STATE.IDLE);
       (telephonyService as TelephonyService).holdOrUnhold();
       await sleep(testProcedureWaitingTime);
+      mockHoldState(HOLD_STATE.HELD);
 
       expect((telephonyService as TelephonyService)._telephonyStore.held).toBe(
         true,
@@ -296,6 +329,7 @@ describe('TelephonyService', () => {
       );
 
       await (telephonyService as TelephonyService).hangUp();
+      mockHoldState(HOLD_STATE.DISABLE);
 
       expect(
         (telephonyService as TelephonyService)._telephonyStore.holdDisabled,
@@ -307,6 +341,7 @@ describe('TelephonyService', () => {
     it('The "record" button should be disabled when an outbound call is not connected [JPT-1604]', async () => {
       initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
+      mockRecordState(RECORD_STATE.DISABLE);
       (telephonyService as TelephonyService).startOrStopRecording();
 
       expect(
@@ -325,10 +360,10 @@ describe('TelephonyService', () => {
       initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
-
+      mockRecordState(RECORD_STATE.IDLE);
       (telephonyService as TelephonyService).startOrStopRecording();
       (telephonyService as TelephonyService).startOrStopRecording();
-
+      mockRecordState(RECORD_STATE.RECORDING);
       expect(
         (telephonyService as TelephonyService)._telephonyStore.recordDisabled,
       ).toBe(false);
@@ -338,6 +373,7 @@ describe('TelephonyService', () => {
       expect(mockedServerTelephonyService.startRecord).toHaveBeenCalledTimes(1);
 
       await (telephonyService as TelephonyService).hangUp();
+      mockRecordState(RECORD_STATE.DISABLE);
       expect(
         (telephonyService as TelephonyService)._telephonyStore.recordDisabled,
       ).toBe(true);
@@ -347,8 +383,10 @@ describe('TelephonyService', () => {
       initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
+      mockRecordState(RECORD_STATE.IDLE);
       (telephonyService as TelephonyService).startOrStopRecording();
       await sleep(testProcedureWaitingTime);
+      mockRecordState(RECORD_STATE.RECORDING);
       (telephonyService as TelephonyService).startOrStopRecording();
       (telephonyService as TelephonyService).startOrStopRecording();
 
@@ -358,6 +396,7 @@ describe('TelephonyService', () => {
       ).toBe(true);
 
       await sleep(testProcedureWaitingTime);
+      mockRecordState(RECORD_STATE.IDLE);
 
       expect(
         (telephonyService as TelephonyService)._telephonyStore.recordDisabled,
@@ -367,6 +406,7 @@ describe('TelephonyService', () => {
       ).toBe(false);
 
       await (telephonyService as TelephonyService).hangUp();
+      mockRecordState(RECORD_STATE.DISABLE);
       expect(
         (telephonyService as TelephonyService)._telephonyStore.recordDisabled,
       ).toBe(true);
@@ -376,8 +416,9 @@ describe('TelephonyService', () => {
       initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
-
+      mockHoldState(HOLD_STATE.IDLE);
       await (telephonyService as TelephonyService).holdOrUnhold();
+      mockRecordState(RECORD_STATE.DISABLE);
       expect(
         (telephonyService as TelephonyService)._telephonyStore.recordDisabled,
       ).toBe(true);
@@ -386,10 +427,10 @@ describe('TelephonyService', () => {
       expect(
         (telephonyService as TelephonyService)._telephonyStore.recordDisabled,
       ).toBe(true);
-
+      mockHoldState(HOLD_STATE.HELD);
       await (telephonyService as TelephonyService).holdOrUnhold();
       await sleep(testProcedureWaitingTime);
-
+      mockRecordState(RECORD_STATE.IDLE);
       expect(
         (telephonyService as TelephonyService)._telephonyStore.recordDisabled,
       ).toBe(false);
@@ -401,19 +442,22 @@ describe('TelephonyService', () => {
       initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
-
+      mockRecordState(RECORD_STATE.IDLE);
       await (telephonyService as TelephonyService).startOrStopRecording();
       await sleep(testProcedureWaitingTime);
+      mockRecordState(RECORD_STATE.RECORDING);
 
       expect(
         (telephonyService as TelephonyService)._telephonyStore.isRecording,
       ).toBe(true);
 
+      mockHoldState(HOLD_STATE.IDLE);
       await (telephonyService as TelephonyService).holdOrUnhold();
       await sleep(testProcedureWaitingTime);
+      mockHoldState(HOLD_STATE.HELD);
       await (telephonyService as TelephonyService).holdOrUnhold();
       await sleep(testProcedureWaitingTime);
-
+      mockRecordState(RECORD_STATE.RECORDING);
       expect(
         (telephonyService as TelephonyService)._telephonyStore.isRecording,
       ).toBe(true);

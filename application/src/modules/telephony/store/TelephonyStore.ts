@@ -19,18 +19,9 @@ import {
 } from 'sdk/module/person/entity';
 import { v4 } from 'uuid';
 import {
-  HOLD_STATE,
-  HOLD_TRANSITION_NAMES,
   CALL_STATE,
   CALL_WINDOW_STATUS,
-  RecordFSM,
-  RECORD_TRANSITION_NAMES,
-  RECORD_STATE,
-  RecordDisableFSM,
-  RECORD_DISABLED_STATE,
-  RECORD_DISABLED_STATE_TRANSITION_NAMES,
   CallFSM,
-  HoldFSM,
   CallWindowFSM,
   CALL_TRANSITION_NAMES,
   CALL_WINDOW_TRANSITION_NAMES,
@@ -38,6 +29,9 @@ import {
 import { ANONYMOUS } from '../interface/constant';
 const some = require('lodash/some');
 const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
+
+import { Call, HOLD_STATE, RECORD_STATE } from 'sdk/module/telephony/entity';
+import CallModel from '@/store/models/Call';
 
 enum CALL_TYPE {
   NULL,
@@ -56,9 +50,6 @@ const INITIAL_REPLY_COUNTDOWN_TIME = 55;
 class TelephonyStore {
   private _callFSM = new CallFSM();
   private _callWindowFSM = new CallWindowFSM();
-  private _holdFSM = new HoldFSM();
-  private _recordFSM = new RecordFSM();
-  private _recordDisableFSM = new RecordDisableFSM();
   private _intervalReplyId?: NodeJS.Timeout;
 
   maximumInputLength = 30;
@@ -72,13 +63,6 @@ class TelephonyStore {
   callState: CALL_STATE = this._callFSM.state;
   @observable
   callType: CALL_TYPE = CALL_TYPE.NULL;
-  @observable
-  holdState: HOLD_STATE = this._holdFSM.state;
-
-  @observable
-  recordState: RECORD_STATE = this._recordFSM.state;
-  @observable
-  recordDisabledState: RECORD_DISABLED_STATE = this._recordDisableFSM.state;
 
   @observable
   uid?: number;
@@ -156,35 +140,17 @@ class TelephonyStore {
   dialerFocused: boolean;
 
   constructor() {
-    type FSM = '_callWindowFSM' | '_recordFSM' | '_recordDisableFSM';
-    type FSMProps = 'callWindowState' | 'recordState' | 'recordDisabledState';
+    type FSM = '_callWindowFSM';
+    type FSMProps = 'callWindowState';
 
-    [
-      ['_callWindowFSM', 'callWindowState'],
-      ['_recordFSM', 'recordState'],
-      ['_recordDisableFSM', 'recordDisabledState'],
-    ].forEach(([fsm, observableProp]: [FSM, FSMProps]) => {
-      this[fsm].observe('onAfterTransition', (lifecycle: LifeCycle) => {
-        const { to } = lifecycle;
-        this[observableProp] = to as
-          | CALL_WINDOW_STATUS
-          | RECORD_STATE
-          | RECORD_DISABLED_STATE;
-      });
-    });
-
-    this._holdFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
-      const { to } = lifecycle;
-      this.holdState = to as HOLD_STATE;
-      switch (this.holdState) {
-        case HOLD_STATE.HOLDED:
-          this.disableRecord();
-          break;
-        case HOLD_STATE.IDLE:
-          this.enableRecord();
-          break;
-      }
-    });
+    [['_callWindowFSM', 'callWindowState']].forEach(
+      ([fsm, observableProp]: [FSM, FSMProps]) => {
+        this[fsm].observe('onAfterTransition', (lifecycle: LifeCycle) => {
+          const { to } = lifecycle;
+          this[observableProp] = to as CALL_WINDOW_STATUS;
+        });
+      },
+    );
 
     this._callFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
       const { to, from } = lifecycle;
@@ -195,7 +161,6 @@ class TelephonyStore {
       switch (this.callState) {
         case CALL_STATE.CONNECTED:
           this.activeCallTime = Date.now();
-          this.enableHold();
           break;
         case CALL_STATE.DIALING:
         case CALL_STATE.IDLE:
@@ -306,8 +271,6 @@ class TelephonyStore {
   }
 
   private _restoreButtonStates() {
-    this.disableHold();
-    this.disableRecord();
     this.stopRecording();
   }
 
@@ -429,9 +392,7 @@ class TelephonyStore {
       mainLogger.debug(
         `${logTag} Invalid transition: unable to hold from held`,
       );
-      return;
     }
-    this._holdFSM[HOLD_TRANSITION_NAMES.HOLD]();
   }
 
   unhold = () => {
@@ -439,9 +400,7 @@ class TelephonyStore {
       mainLogger.debug(
         `${logTag} Invalid transition: unable to unhold from idle`,
       );
-      return;
     }
-    this._holdFSM[HOLD_TRANSITION_NAMES.UNHOLD]();
   }
 
   startRecording = () => {
@@ -449,9 +408,7 @@ class TelephonyStore {
       mainLogger.debug(
         `${logTag} Invalid transition: unable to record from recording`,
       );
-      return;
     }
-    this._recordFSM[RECORD_TRANSITION_NAMES.START_RECORD]();
   }
 
   stopRecording = () => {
@@ -459,9 +416,7 @@ class TelephonyStore {
       mainLogger.debug(
         `${logTag} Invalid transition: unable to stop recording from idle`,
       );
-      return;
     }
-    this._recordFSM[RECORD_TRANSITION_NAMES.STOP_RECORD]();
   }
 
   setPendingForHoldBtn(val: boolean) {
@@ -470,24 +425,6 @@ class TelephonyStore {
 
   setPendingForRecordBtn(val: boolean) {
     this.pendingForRecord = val;
-  }
-
-  enableHold = () => {
-    this._holdFSM[HOLD_TRANSITION_NAMES.CONNECTED]();
-  }
-
-  enableRecord = () => {
-    // prettier-ignore
-    return this._recordDisableFSM[RECORD_DISABLED_STATE_TRANSITION_NAMES.ENABLE]();
-  }
-
-  disableHold = () => {
-    this._holdFSM[HOLD_TRANSITION_NAMES.DISCONNECT]();
-  }
-
-  disableRecord = () => {
-    // prettier-ignore
-    return this._recordDisableFSM[RECORD_DISABLED_STATE_TRANSITION_NAMES.DISABLE]();
   }
 
   onDialerInputFocus = () => {
@@ -524,12 +461,12 @@ class TelephonyStore {
 
   @computed
   get holdDisabled() {
-    return this.holdState === HOLD_STATE.DISABLED;
+    return this.holdState === HOLD_STATE.DISABLE;
   }
 
   @computed
   get held() {
-    return this.holdState === HOLD_STATE.HOLDED;
+    return this.holdState === HOLD_STATE.HELD;
   }
 
   @computed
@@ -539,7 +476,7 @@ class TelephonyStore {
 
   @computed
   get recordDisabled() {
-    return this.recordDisabledState === RECORD_DISABLED_STATE.DISABLED;
+    return this.recordState === RECORD_STATE.DISABLE;
   }
 
   @action
@@ -586,6 +523,21 @@ class TelephonyStore {
   @computed
   get hasIncomingCall() {
     return this.callState === CALL_STATE.INCOMING;
+  }
+
+  @computed
+  get call(): CallModel {
+    return getEntity<Call, CallModel>(ENTITY_NAME.CALL, +this.callId);
+  }
+
+  @computed
+  get holdState(): HOLD_STATE {
+    return this.call.holdState;
+  }
+
+  @computed
+  get recordState(): RECORD_STATE {
+    return this.call.recordState;
   }
 }
 

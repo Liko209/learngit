@@ -75,6 +75,7 @@ class TelephonyService {
       `${TelephonyService.TAG} Call object created, call id=${callId}`,
     );
     this._callId = callId;
+    this._telephonyStore.callId = callId;
     this._telephonyStore.callType = CALL_TYPE.OUTBOUND;
     this._telephonyStore.directCall();
   }
@@ -177,14 +178,10 @@ class TelephonyService {
 
   private _initializeCallState() {
     this._telephonyStore.connected();
-    this._telephonyStore.enableHold();
-    this._telephonyStore.enableRecord();
   }
 
   private _resetCallState() {
     this._telephonyStore.end();
-    this._telephonyStore.disableHold();
-    this._telephonyStore.disableRecord();
     /**
      * Be careful that the server might not respond for the request, so since we design
      * the store as a singleton then we need to restore every single state for the next call.
@@ -203,62 +200,12 @@ class TelephonyService {
         TelephonyService.TAG
       }Call action: ${callAction} succeed, options: ${options}`,
     );
-    switch (callAction) {
-      case RTC_CALL_ACTION.HOLD: {
-        this._telephonyStore.setPendingForHoldBtn(false);
-        this._telephonyStore.hold();
-        break;
-      }
-      case RTC_CALL_ACTION.UNHOLD: {
-        this._telephonyStore.setPendingForHoldBtn(false);
-        this._telephonyStore.unhold();
-        break;
-      }
-      case RTC_CALL_ACTION.START_RECORD: {
-        this._telephonyStore.setPendingForRecordBtn(false);
-        this._telephonyStore.startRecording();
-        break;
-      }
-      case RTC_CALL_ACTION.STOP_RECORD: {
-        this._telephonyStore.setPendingForRecordBtn(false);
-        this._telephonyStore.stopRecording();
-        break;
-      }
-    }
   }
 
   // TODO: need more info here
   private _onCallActionFailed = (callAction: RTC_CALL_ACTION): void => {
-    switch (callAction) {
-      case RTC_CALL_ACTION.CALL_TIME_OUT: {
-        ToastCallError.toastCallTimeout();
-        break;
-      }
-      case RTC_CALL_ACTION.HOLD: {
-        this._telephonyStore.setPendingForHoldBtn(false);
-        ToastCallError.toastFailedToHold();
-        this._telephonyStore.unhold();
-        break;
-      }
-      case RTC_CALL_ACTION.UNHOLD: {
-        this._telephonyStore.setPendingForHoldBtn(false);
-        ToastCallError.toastFailedToResume();
-        this._telephonyStore.hold();
-        break;
-      }
-      case RTC_CALL_ACTION.START_RECORD: {
-        // TODO: FIJI-4803 phase2 error handlings
-        this._telephonyStore.setPendingForRecordBtn(false);
-        ToastCallError.toastFailedToRecord();
-        this._telephonyStore.stopRecording();
-        break;
-      }
-      case RTC_CALL_ACTION.STOP_RECORD: {
-        this._telephonyStore.setPendingForRecordBtn(false);
-        ToastCallError.toastFailedToStopRecording();
-        this._telephonyStore.startRecording();
-        break;
-      }
+    if (callAction === RTC_CALL_ACTION.CALL_TIME_OUT) {
+      ToastCallError.toastCallTimeout();
     }
   }
 
@@ -669,15 +616,32 @@ class TelephonyService {
       );
       return;
     }
-    if (this._telephonyStore.held) {
+
+    let $fetch: Promise<{}>;
+    let isHeld: boolean = this._telephonyStore.held;
+
+    if (isHeld) {
       mainLogger.info(`${TelephonyService.TAG}unhold call id=${this._callId}`);
       this._telephonyStore.setPendingForHoldBtn(true);
-      return this._serverTelephonyService.unhold(this._callId);
+      $fetch = this._serverTelephonyService.unhold(this._callId);
+    } else {
+      mainLogger.info(`${TelephonyService.TAG}hold call id=${this._callId}`);
+      this._telephonyStore.hold(); // for swift UX
+      this._telephonyStore.setPendingForHoldBtn(true);
+      $fetch = this._serverTelephonyService.hold(this._callId);
     }
-    mainLogger.info(`${TelephonyService.TAG}hold call id=${this._callId}`);
-    this._telephonyStore.hold(); // for swift UX
-    this._telephonyStore.setPendingForHoldBtn(true);
-    return this._serverTelephonyService.hold(this._callId);
+
+    $fetch
+      .catch(() => {
+        isHeld
+          ? ToastCallError.toastFailedToResume()
+          : ToastCallError.toastFailedToHold();
+        isHeld = !isHeld;
+      })
+      .finally(() => {
+        isHeld ? this._telephonyStore.unhold() : this._telephonyStore.hold();
+        this._telephonyStore.setPendingForHoldBtn(false);
+      });
   }
 
   startOrStopRecording = () => {
@@ -688,14 +652,32 @@ class TelephonyService {
     ) {
       return;
     }
-    if (this._telephonyStore.isRecording) {
+
+    let $fetch: Promise<{}>;
+    let isRecording: boolean = this._telephonyStore.isRecording;
+
+    if (isRecording) {
       this._telephonyStore.setPendingForRecordBtn(true);
-      return this._serverTelephonyService.stopRecord(this._callId as string);
+      $fetch = this._serverTelephonyService.stopRecord(this._callId as string);
+    } else {
+      this._telephonyStore.setPendingForRecordBtn(true);
+      this._telephonyStore.startRecording(); // for swift UX
+      $fetch = this._serverTelephonyService.startRecord(this._callId as string);
     }
 
-    this._telephonyStore.setPendingForRecordBtn(true);
-    this._telephonyStore.startRecording(); // for swift UX
-    return this._serverTelephonyService.startRecord(this._callId as string);
+    $fetch
+      .catch(() => {
+        isRecording
+          ? ToastCallError.toastFailedToStopRecording()
+          : ToastCallError.toastFailedToRecord();
+        isRecording = !isRecording;
+      })
+      .finally(() => {
+        this._telephonyStore.setPendingForRecordBtn(false);
+        isRecording
+          ? this._telephonyStore.stopRecording()
+          : this._telephonyStore.startRecording();
+      });
   }
 
   dtmf = (digits: string) => {
