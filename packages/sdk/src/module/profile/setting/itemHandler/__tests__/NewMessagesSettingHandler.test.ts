@@ -1,3 +1,4 @@
+import { CALLING_OPTIONS } from 'sdk/module/profile';
 /*
  * @Author: Vicky Zhu(vicky.zhu@ringcentral.com)
  * @Date: 2019-05-28 16:45:22
@@ -19,14 +20,6 @@ import {
   SettingEntityIds,
   SettingService,
 } from '../../../../setting';
-import {
-  SETTING_KEYS,
-  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
-  CALLING_OPTIONS,
-} from '../../../constants';
-import { ENTITY } from 'sdk/service';
-import { AccountService } from 'sdk/module/account';
-import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 import { Profile } from 'sdk/module/profile/entity';
 jest.mock('sdk/module/profile');
 

@@ -616,6 +616,17 @@
     "general": "General",
     "notificationAndSounds": {
       "title": "Notification and Sounds",
+      "otherNotificationSettings": {
+        "title": "Other notification settings",
+        "newMessageBadgeCount": {
+          "options": {
+            "groups_and_mentions": "Direct messages and mentions only",
+            "all": "All new messages"
+          },
+          "description": "Choose how the app will count new messages in the app badge count",
+          "label": "New message badge count"
+        }
+      },
       "desktopNotifications": {
         "title": "Desktop Notifications",
         "notificationsForBrowser": {
@@ -638,6 +649,30 @@
         "callsAndVoicemails": {
           "label": "Missed Calls and New Voicemails",
           "description": "Choose your preference for desktop notifications for missed calls and new voicemails"
+        }
+      },
+      "emailNotifications": {
+        "title": "Email Notifications",
+        "directMessages": {
+          "label": "Direct messages",
+          "description": "Receive email notifications for direct messages"
+        },
+        "mentions": {
+          "label": "Mentions",
+          "description": "Receive email notifications for when you are mentioned"
+        },
+        "teams": {
+          "label": "Teams",
+          "description": "Receive email notifications for direct messages"
+        },
+        "dailyDigest": {
+          "label": "Daily Digest",
+          "description": "Receive Glip daily digest emails summarizing daily tasks and team events"
+        },
+        "options": {
+          "0": "Off",
+          "900000": "Every 15 minutes",
+          "3600000": "Every hour"
         }
       }
     },

@@ -76,14 +76,14 @@ class SettingStoreScope {
   @action
   addPage(page: SettingPage) {
     this._pages.set(page.id, page);
-    page.sections.forEach(section => this.addSection(page.id, section));
+    page.sections.forEach((section) => this.addSection(page.id, section));
   }
 
   @action
   addSection(pageId: SettingPage['id'], section: SettingSection) {
     this._sections.set(section.id, section);
     this._pageSections.add(pageId, section.id);
-    section.items.forEach(item => this.addItem(section.id, item));
+    section.items.forEach((item) => this.addItem(section.id, item));
   }
 
   @action
