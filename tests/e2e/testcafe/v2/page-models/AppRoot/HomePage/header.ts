@@ -20,11 +20,11 @@ export class Header extends BaseWebComponent {
     return this.getSelector('.chevron_left');
   }
 
-  async clickBackBaButton() {
+  async clickBackButton() {
     await this.t.click(this.backButtonByClass)
   }
 
-  async hoverBackBaButton() {
+  async hoverBackButton() {
     await this.t.hover(this.backButtonByClass)
   }
 
@@ -37,11 +37,11 @@ export class Header extends BaseWebComponent {
     return this.getSelector('.chevron_right');
   }
 
-  async clickForwardBaButton() {
+  async clickForwardButton() {
     await this.t.click(this.forwardButtonByClass)
   }
 
-  async hoverForwardBaButton() {
+  async hoverForwardButton() {
     await this.t.hover(this.forwardButtonByClass)
   }
 

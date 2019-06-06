@@ -29,7 +29,7 @@ test(formalName('Check "back" button and "forward" button', ['P2', 'TopBar', 'Ba
 
   await h(t).withLog('When I click "dashboard" Tab and hover "back" button', async() => {
     await dashboardButton.enter();
-    await header.hoverBackBaButton();
+    await header.hoverBackButton();
   });
   // await h(t).withLog('Then back button on header should be enabled', async() => {
   //   await backButton.shouldBeEnabled();
@@ -37,8 +37,8 @@ test(formalName('Check "back" button and "forward" button', ['P2', 'TopBar', 'Ba
   await h(t).log('And I take screenshot',{ screenshotPath: 'Jupiter_TopBar_BackButton' });
 
   await h(t).withLog('When I click "back" button and I hover "forward" button', async() => {
-    await header.clickBackBaButton();
-    await header.hoverForwardBaButton();
+    await header.clickBackButton();
+    await header.hoverForwardButton();
   });
   // await h(t).withLog('Then forward button on header should be enabled', async() => {
   //   await forwardButton.shouldBeEnabled();
