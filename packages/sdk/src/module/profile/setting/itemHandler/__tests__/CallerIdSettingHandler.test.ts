@@ -214,4 +214,47 @@ describe('CallerIdSettingHandler ', () => {
       ]);
     });
   });
+
+  describe('handleSettingModelUpdated', () => {
+    it('should emit update when has subscribe update and Phone_DefaultApp change', (done: jest.DoneCallback) => {
+      callerIdSettingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
+      callerIdSettingHandler.getUserSettingEntity = jest
+        .fn()
+        .mockResolvedValue({});
+      notificationCenter.emitEntityUpdate<UserSettingEntity>(
+        ENTITY.USER_SETTING,
+        [
+          {
+            id: SettingEntityIds.Phone_DefaultApp,
+            value: true,
+          } as UserSettingEntity,
+        ],
+      );
+      setTimeout(() => {
+        expect(callerIdSettingHandler.getUserSettingEntity).toBeCalled();
+        expect(
+          callerIdSettingHandler.notifyUserSettingEntityUpdate,
+        ).toHaveBeenCalledWith({});
+        done();
+      });
+    });
+
+    it('should not emit update when no change', (done: jest.DoneCallback) => {
+      callerIdSettingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
+      callerIdSettingHandler.getUserSettingEntity = jest
+        .fn()
+        .mockResolvedValue({});
+      notificationCenter.emitEntityUpdate<UserSettingEntity>(
+        ENTITY.USER_SETTING,
+        [],
+      );
+      setTimeout(() => {
+        expect(callerIdSettingHandler.getUserSettingEntity).not.toBeCalled();
+        expect(
+          callerIdSettingHandler.notifyUserSettingEntityUpdate,
+        ).not.toBeCalled();
+        done();
+      });
+    });
+  });
 });

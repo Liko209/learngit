@@ -36,6 +36,9 @@ export class CallerIdSettingHandler extends AbstractSettingEntityHandler<
     this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
       this.onProfileEntityUpdate(payload),
     );
+    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload =>
+      this.onSettingEntityUpdate(payload),
+    );
   }
 
   async updateValue(record: PhoneNumberModel) {
@@ -90,6 +93,13 @@ export class CallerIdSettingHandler extends AbstractSettingEntityHandler<
       this.userSettingEntityCache.value &&
       this.userSettingEntityCache.value.id;
     if (defaultCallerId !== lastNumberId) {
+      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+    }
+  }
+  async onSettingEntityUpdate(
+    payload: NotificationEntityUpdatePayload<UserSettingEntity>,
+  ) {
+    if (payload.body.entities.has(SettingEntityIds.Phone_DefaultApp)) {
       this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
     }
   }
