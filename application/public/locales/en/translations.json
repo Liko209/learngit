@@ -740,6 +740,11 @@
   "notification": {
     "mentioned": "You were mentioned",
     "notificationEnabled": "Notifications are now enabled.",
+    "topBanner": {
+      "enablePermissionMessage": "RingCentral needs your permission to enable desktop notifications.",
+      "enablePermissionAction": "Enable notifications",
+      "blockedPermissionMessage": "RingCentral notifications are blocked. Go to your browser settings to allow RingCentral to send notifications."
+    },
     "notificationBlockedDialog": {
       "title": "Notifications not allowed",
       "content": "You currently have desktop notifications for RingCentral turned off. Update your browser settings to allow desktop notifications.",

@@ -43,12 +43,14 @@ class NotificationService implements INotificationService {
   addEllipsis(str: string = '', border: number) {
     return str && str.length > border ? `${str.substr(0, border)}...` : str;
   }
+
   async show(title: string, opts: NotificationOpts) {
     const { id, scope } = opts.data;
     const tag = `${scope}.${id}`;
     const customOps = { ...opts, tag, silent: true };
     logger.info(`prepare notification for ${tag}`);
     let titleFormatted = title;
+
     if (isFirefox) {
       customOps.body = this.addEllipsis(
         customOps.body,

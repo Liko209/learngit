@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { RuiSlider } from '../Slider';
-import styled from '@foundation/styled-components';
 import { number } from '@storybook/addon-knobs';
+import styled from '../../../../foundation/styled-components';
+import MuiTextField from '@material-ui/core/TextField';
 import { alignCenterDecorator } from '../../../../storybook/decorators';
 import { RuiIconography } from '../../../Iconography';
-import MuiTextField from '@material-ui/core/TextField';
-
+import { RuiSliderNoStyled, RuiSliderProps } from '../Slider';
+const RuiSlider = RuiSliderNoStyled;
+(RuiSlider as any).displayName = 'RuiSlider';
 const Wrapper = styled.div`
   overflow: visible;
   padding: 10px 0;
@@ -14,14 +15,22 @@ const Wrapper = styled.div`
 `;
 
 function getKnobs() {
-  const min = number('min', 0);
-  const max = number('max', 100);
-  return { min, max };
+  return {
+    get min() {
+      return number('min', 0);
+    },
+    get max() {
+      return number('max', 100);
+    },
+    get value() {
+      return number('value', 10);
+    },
+  };
 }
 
 function useSliderState(initialValue: number) {
   const [value, setValue] = React.useState(initialValue);
-  const handleChange = (event: React.ChangeEvent, value: number) => {
+  const handleChange = (event: React.ChangeEvent<{}>, value: number) => {
     setValue(value);
   };
   return { value, handleChange };
@@ -29,10 +38,24 @@ function useSliderState(initialValue: number) {
 
 storiesOf('Forms/Slider', module)
   .addDecorator(alignCenterDecorator)
+  .addParameters({
+    info: {
+      components: { RuiSlider },
+    },
+  })
+  .add('Base slider', () => {
+    const { min, max, value } = getKnobs();
+
+    return (
+      <Wrapper>
+        <RuiSlider min={min} max={max} value={value} onChange={() => {}} />
+      </Wrapper>
+    );
+  })
   .add('Continuous slider', () => {
     const { min, max } = getKnobs();
 
-    const SliderDemo = () => {
+    const SliderDemo: React.ComponentType<RuiSliderProps> = () => {
       const { value, handleChange } = useSliderState(10);
       return (
         <Wrapper>
@@ -46,7 +69,11 @@ storiesOf('Forms/Slider', module)
       );
     };
 
-    return <SliderDemo />;
+    return (
+      <Wrapper>
+        <SliderDemo />
+      </Wrapper>
+    );
   })
   .add('Discrete slider', () => {
     const { min, max } = getKnobs();
