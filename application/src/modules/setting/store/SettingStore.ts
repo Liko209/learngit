@@ -34,49 +34,45 @@ class SettingStore {
 
   getNoEmptyPages() {
     return this.getAllPages().filter(
-      pageId => this.getNoEmptyPageSections(pageId).length > 0,
+      (pageId) => this.getNoEmptyPageSections(pageId).length > 0,
     );
   }
 
   getAllPages() {
     const pagesIds: SettingPage['id'][] = [];
-    this._storeScopes.forEach(storeScope => {
-      pagesIds.push(...storeScope.pages.map(page => page.id));
+    this._storeScopes.forEach((storeScope) => {
+      pagesIds.push(...storeScope.pages.map((page) => page.id));
     });
     return uniq(pagesIds).sort(this._comparePageWeight);
   }
 
   getPageById(pageId: SettingPage['id']) {
-    return this._find(storeScope => storeScope.getPageById(pageId));
+    return this._find((storeScope) => storeScope.getPageById(pageId));
   }
 
   getPageSections(pageId: SettingPage['id']) {
-    return this._getAll(storeScope => storeScope.getPageSections(pageId)).sort(
-      this._compareSectionWeight,
-    );
+    return this._getAll((storeScope) =>
+      storeScope.getPageSections(pageId),
+    ).sort(this._compareSectionWeight);
   }
 
   getNoEmptyPageSections(pageId: SettingPage['id']) {
-<<<<<<< HEAD
-    return this.getPageSections(pageId).filter(pageId => {
-      const itemIds = this.getSectionItems(pageId);
-=======
+
     return this.getPageSections(pageId).filter(sectionId => {
       const itemIds = this.getSectionItems(sectionId);
->>>>>>> ec378edf3... fix(FIJI-6089): [Desktop Notifications Section Settings] fix observable issue
       return (
         itemIds.length > 0 &&
-        itemIds.some(itemId => this._isItemVisible(itemId))
+        itemIds.some((itemId) => this._isItemVisible(itemId))
       );
     });
   }
 
   getSectionById(sectionId: SettingSection['id']) {
-    return this._find(storeScope => storeScope.getSectionById(sectionId));
+    return this._find((storeScope) => storeScope.getSectionById(sectionId));
   }
 
   getSectionItems(sectionId: SettingSection['id']) {
-    return this._getAll(storeScope =>
+    return this._getAll((storeScope) =>
       storeScope.getSectionItems(sectionId),
     ).sort(this._compareItemWeight);
   }
@@ -91,7 +87,7 @@ class SettingStore {
   }
 
   getItemById<T extends SettingItem>(itemId: SettingItem['id']): T | undefined {
-    return this._find<T>(storeScope => storeScope.getItemById<T>(itemId));
+    return this._find<T>((storeScope) => storeScope.getItemById<T>(itemId));
   }
 
   useScope(scope: symbol) {
@@ -111,7 +107,7 @@ class SettingStore {
 
   private _getAll<T>(callback: (storeScope: SettingStoreScope) => T[]) {
     const result: T[] = [];
-    this._storeScopes.forEach(storeScope => {
+    this._storeScopes.forEach((storeScope) => {
       result.push(...callback(storeScope));
     });
     return uniq(result);

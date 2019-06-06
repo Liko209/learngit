@@ -36,8 +36,14 @@ import { getSingleEntity, getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { CALL_WINDOW_STATUS, CALL_STATE } from '../FSM';
 import { AccountService } from 'sdk/module/account';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
 import { CALLING_OPTIONS } from 'sdk/module/profile';
+import i18next from 'i18next';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 import { SETTING_ITEM__PHONE_DEFAULT_PHONE_APP } from '../TelephonySettingManager/constant';
@@ -228,6 +234,7 @@ class TelephonyService {
       }
       case RTC_CALL_ACTION.STOP_RECORD: {
         this._telephonyStore.setPendingForRecordBtn(false);
+        this._telephonyStore.isStopRecording = false;
         this._telephonyStore.stopRecording();
         break;
       }
@@ -262,6 +269,7 @@ class TelephonyService {
       }
       case RTC_CALL_ACTION.STOP_RECORD: {
         this._telephonyStore.setPendingForRecordBtn(false);
+        this._telephonyStore.isStopRecording = false;
         ToastCallError.toastFailedToStopRecording();
         this._telephonyStore.startRecording();
         break;
@@ -692,6 +700,7 @@ class TelephonyService {
     }
     if (this._telephonyStore.isRecording) {
       this._telephonyStore.setPendingForRecordBtn(true);
+      this._telephonyStore.isStopRecording = true;
       return this._serverTelephonyService.stopRecord(this._callId as string);
     }
 
@@ -879,6 +888,37 @@ class TelephonyService {
       time,
       timeUnit,
     );
+  }
+
+  park = () => {
+    if (!this._callId) {
+      return;
+    }
+
+    if (this._telephonyStore.isStopRecording) {
+      ToastCallError.toastParkErrorStopRecording();
+      return;
+    }
+
+    return this._serverTelephonyService
+      .park(this._callId)
+      .then((callOptions: RTCCallActionSuccessOptions) => {
+        const message = `${i18next.t('telephony.prompt.ParkOk')}: ${
+          callOptions.parkExtension
+        }`;
+        Notification.flagToast({
+          message,
+          type: ToastType.SUCCESS,
+          messageAlign: ToastMessageAlign.CENTER,
+          fullWidth: false,
+          dismissible: true,
+        });
+        this.hangUp();
+      })
+      .catch(e => {
+        ToastCallError.toastParkError();
+        mainLogger.info(`${TelephonyService.TAG}park call error: ${e}`);
+      });
   }
 
   getForwardingNumberList = () => {

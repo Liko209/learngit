@@ -515,6 +515,7 @@
       "stopRecord": "Stop",
       "callActions": "Call Actions",
       "reply": "Reply",
+      "park": "Park",
       "end": "End call",
       "Answer": "Answer",
       "back": "Back",
@@ -558,6 +559,9 @@
       "RecordOnServiceWeb": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
       "RecordAutomatically": "Cannot start call recording.",
       "InvalidNumber": "The phone number entered is invalid. Check the number and try again.",
+      "ParkErrorStopRecording": "Sorry, your call recording is being saved. Try to park the call later.",
+      "ParkError": "Sorry, something went wrong on our end and we weren't able to park the call. Try again later.",
+      "ParkOk": "Your call is parked at location",
       "ReplyCustomMessageEmpty": "Sorry, you cannot send an empty message.",
       "ReplyMessageSuccess": "Your voice message was sent successfully.",
       "ForwardBackendError": "Sorry, something went wrong on our end, we weren't able to forward the call.",
@@ -618,6 +622,17 @@
     "general": "General",
     "notificationAndSounds": {
       "title": "Notification and Sounds",
+      "otherNotificationSettings": {
+        "title": "Other notification settings",
+        "newMessageBadgeCount": {
+          "options": {
+            "groups_and_mentions": "Direct messages and mentions only",
+            "all": "All new messages"
+          },
+          "description": "Choose how the app will count new messages in the app badge count",
+          "label": "New message badge count"
+        }
+      },
       "desktopNotifications": {
         "title": "Desktop Notifications",
         "notificationsForBrowser": {
@@ -640,6 +655,30 @@
         "callsAndVoicemails": {
           "label": "Missed Calls and New Voicemails",
           "description": "Choose your preference for desktop notifications for missed calls and new voicemails"
+        }
+      },
+      "emailNotifications": {
+        "title": "Email Notifications",
+        "directMessages": {
+          "label": "Direct messages",
+          "description": "Receive email notifications for direct messages"
+        },
+        "mentions": {
+          "label": "Mentions",
+          "description": "Receive email notifications for when you are mentioned"
+        },
+        "teams": {
+          "label": "Teams",
+          "description": "Receive email notifications for direct messages"
+        },
+        "dailyDigest": {
+          "label": "Daily Digest",
+          "description": "Receive Glip daily digest emails summarizing daily tasks and team events"
+        },
+        "options": {
+          "0": "Off",
+          "900000": "Every 15 minutes",
+          "3600000": "Every hour"
         }
       }
     },

@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import { BaseWebComponent } from "../../BaseWebComponent";
 import { ClientFunction } from 'testcafe';
+import { H } from '../../../helpers';
 
 
 export class TelephonyDialog extends BaseWebComponent {
@@ -37,6 +38,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickHangupButton() {
+    await H.sleep(1e3);
     await this.t.click(this.hangupButton);
   }
 
@@ -182,6 +184,11 @@ export class TelephonyDialog extends BaseWebComponent {
 
   get deleteButton() {
     return this.buttonOfIcon('deletenumber');
+  }
+
+  // park
+  get parkActionMenuItem() {
+    return this.getSelectorByAutomationId('telephony-park-menu-item');
   }
 
   // inbound call
@@ -338,6 +345,11 @@ export class TelephonyDialog extends BaseWebComponent {
 
   get callerIdList() {
     return this.getComponent(CallerIdList);
+  }
+
+  // Park
+  async clickParkActionButton() {
+    await this.t.click(this.parkActionMenuItem);
   }
 }
 class CallerIdList extends BaseWebComponent {
