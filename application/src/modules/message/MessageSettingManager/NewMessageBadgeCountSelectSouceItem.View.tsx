@@ -4,9 +4,10 @@
  * Copyright Â© RingCentral. All rights reserved.
  */
 
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { NEW_MESSAGE_BADGES_OPTIONS } from 'sdk/module/profile';
+import { JuiText } from 'jui/components/Text';
 
 type BadgeCountItemProps = {
   value: NEW_MESSAGE_BADGES_OPTIONS;
@@ -17,8 +18,12 @@ class BadgeCountSelectItem extends Component<
 > {
   render() {
     const { value, t } = this.props;
-    return t(
-      `setting.notificationAndSounds.otherNotificationSettings.newMessageBadgeCount.options.${value}`,
+    return (
+      <JuiText>
+        {t(
+          `setting.notificationAndSounds.otherNotificationSettings.newMessageBadgeCount.options.${value}`,
+        )}
+      </JuiText>
     );
   }
 }
