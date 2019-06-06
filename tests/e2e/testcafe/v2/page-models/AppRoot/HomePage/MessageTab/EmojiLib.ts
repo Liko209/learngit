@@ -281,7 +281,7 @@ class EmojiMatchItem extends BaseWebComponent {
   }
 
   async shouldBeSelected() {
-    return this.t.expect(this.self.hasAttribute('selected'));
+    return this.t.expect(this.self.hasClass('selected')).ok();
   }
 
 }

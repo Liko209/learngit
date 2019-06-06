@@ -1,14 +1,14 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-05-09 10:51:18 
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-06-06 16:48:03
+ * @Author: Potar.He
+ * @Date: 2019-05-09 10:51:18
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2019-06-06 20:55:54
  */
 
 
 import { v4 as uuid } from 'uuid';
 
-import { h } from '../../v2/helpers'
+import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { SITE_URL, BrandTire } from '../../config';
@@ -578,7 +578,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`Then Display selected emoji's key {value} and text in the input box`, async (step) => {
     step.setMetadata('value', secondEmoji);
     currentInputAreaText = `${firstEmoji} gr ${secondEmoji} `;
-    await t.expect(conversationPage.messageInputArea.textContent).eql(currentInputAreaText)
+    await t.expect(conversationPage.messageInputArea.withText(H.escapePostText(currentInputAreaText)).exists).ok()
   });
 
   await h(t).withLog('When I hit Enter on the keyboard to send the message', async () => {
