@@ -32,7 +32,24 @@ const expectResult = [
     phoneNumber: 'Blocked',
     label: 'Blocked',
   },
-  { id: 3, usageType: 'NickName', phoneNumber: '1', label: 'nickname' },
+  {
+    id: 3,
+    usageType: 'NickName',
+    phoneNumber: '1',
+    label: 'CompanyNumberWithNickname',
+  },
+  {
+    id: 4,
+    usageType: 'NickName',
+    phoneNumber: '1',
+    label: 'DirectNumberWithNickname',
+  },
+  {
+    id: 5,
+    usageType: 'NickName',
+    phoneNumber: '1',
+    label: 'MainCompanyNumberWithNickname',
+  },
   {
     id: 4,
     usageType: 'CompanyNumber',
@@ -67,7 +84,7 @@ describe('RCInfoFetchController', () => {
     setUp();
   });
 
-  describe('getExtensionPhoneNumberList', () => {
+  describe('getCallerIdList', () => {
     it('should return value as expect order when get caller id list', async () => {
       rcCallerIdController._rcInfoFetchController.getExtensionPhoneNumberList = jest
         .fn()
@@ -81,13 +98,28 @@ describe('RCInfoFetchController', () => {
               id: 3,
               usageType: 'CompanyNumber',
               phoneNumber: '1',
-              label: 'nickname',
+              label: 'CompanyNumberWithNickname',
             },
+
             { id: 1, usageType: 'DirectNumber', phoneNumber: '1' },
             { id: 8, usageType: 'ForwardedCompanyNumber', phoneNumber: '1' },
+
             { id: 5, usageType: 'AdditionalCompanyNumber', phoneNumber: '1' },
+            {
+              id: 4,
+              usageType: 'DirectNumber',
+              phoneNumber: '1',
+              label: 'DirectNumberWithNickname',
+            },
             { id: 9, usageType: 'ContactCenterNumber', phoneNumber: '1' },
+
             { id: 4, usageType: 'CompanyNumber', phoneNumber: '1' },
+            {
+              id: 5,
+              usageType: 'MainCompanyNumber',
+              phoneNumber: '1',
+              label: 'MainCompanyNumberWithNickname',
+            },
           ],
         });
       const result = await rcCallerIdController.getCallerIdList();
