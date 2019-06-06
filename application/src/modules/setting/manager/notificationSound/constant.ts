@@ -7,9 +7,6 @@ import { SettingEntityIds } from 'sdk/module/setting/moduleSetting/types';
 
 const SETTING_PAGE__NOTIFICATION_SOUND = 'NOTIFICATION_SOUND';
 const SETTING_SECTION__SOUNDS = 'NOTIFICATION_SOUND.SOUNDS';
-<<<<<<< HEAD
-export { SETTING_PAGE__NOTIFICATION_SOUND, SETTING_SECTION__SOUNDS };
-=======
 const SETTING_SECTION__AUDIO_SOURCE = 'NOTIFICATION_SOUND.AUDIO_SOURCE';
 const SETTING_ITEM__MICROPHONE_SOURCE = SettingEntityIds.Phone_MicrophoneSource;
 const SETTING_ITEM__SPEAKER_SOURCE = SettingEntityIds.Phone_SpeakerSource;
@@ -23,4 +20,3 @@ export {
   SETTING_ITEM__SPEAKER_SOURCE,
   SETTING_ITEM__VOLUME,
 };
->>>>>>> origin/develop
