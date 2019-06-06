@@ -93,6 +93,9 @@ describe('NotificationsSettingHandler ', () => {
       ${false}          | ${PERMISSION.GRANTED} | ${false}
       ${false}          | ${PERMISSION.DEFAULT} | ${false}
       ${false}          | ${PERMISSION.DENIED}  | ${false}
+      ${undefined}      | ${PERMISSION.GRANTED} | ${true}
+      ${undefined}      | ${PERMISSION.DEFAULT} | ${false}
+      ${undefined}      | ${PERMISSION.DENIED}  | ${false}
     `(
       'should get desktopNotification is $expectRes when browserPermission is $browserPermission and wantNotifications is $wantNotifications',
       async ({ wantNotifications, browserPermission, expectRes }) => {
@@ -104,7 +107,8 @@ describe('NotificationsSettingHandler ', () => {
           isGranted: browserPermission === PERMISSION.GRANTED,
         });
         mockDefaultSettingItem.value = {
-          wantNotifications: wantNotifications,
+          wantNotifications:
+            wantNotifications === undefined ? true : wantNotifications,
           browserPermission: browserPermission,
           desktopNotifications: expectRes,
         };

@@ -7,7 +7,7 @@ import buildVerbNounText from './text/buildVerbNounText';
 
 export default function () {
   return buildVerbNounText({
-    verb: 'item.activity.shared',
-    noun: 'item.activity.items',
+    verb: 'shared',
+    noun: 'items',
   });
 }

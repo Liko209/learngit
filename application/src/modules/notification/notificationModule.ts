@@ -4,7 +4,7 @@
  * Copyright Â© RingCentral. All rights reserved.
  */
 import { AbstractModule } from 'framework';
-import { INotificationService } from './interface';
+import { INotificationService, INotificationSettingManager } from './interface';
 import { ILeaveBlockerService } from '../leave-blocker/interface';
 
 class NotificationModule extends AbstractModule {
@@ -12,15 +12,19 @@ class NotificationModule extends AbstractModule {
   private _notificationService: INotificationService;
   @ILeaveBlockerService
   private _leaveBlockService: ILeaveBlockerService;
+  @INotificationSettingManager
+  private _notificationSettingManager: INotificationSettingManager;
 
   async bootstrap() {
     this._leaveBlockService.onLeave(this.onLeaveHook);
     this._notificationService.init();
+    this._notificationSettingManager.init();
   }
 
   dispose() {
     this._leaveBlockService.offLeave(this.onLeaveHook);
     this._notificationService.clear();
+    this._notificationSettingManager.dispose();
   }
 
   onLeaveHook = () => {

@@ -1,7 +1,8 @@
 import { Jupiter, container } from 'framework';
 import { NotificationModule } from '../notificationModule';
 import { config } from '../module.config';
-import { config as leaveBlockerConfig } from '../../leave-blocker/module.config';
+import { config as leaveBlockerConfig } from '@/modules/leave-blocker/module.config';
+import { config as settingConfig } from '@/modules/setting/module.config';
 import { ILeaveBlockerService } from '@/modules/leave-blocker/interface';
 import { INotificationService } from '../interface';
 
@@ -11,6 +12,7 @@ global.Notification = {
 };
 
 const jupiter = container.get(Jupiter);
+jupiter.registerModule(settingConfig);
 jupiter.registerModule(leaveBlockerConfig);
 jupiter.registerModule(config);
 

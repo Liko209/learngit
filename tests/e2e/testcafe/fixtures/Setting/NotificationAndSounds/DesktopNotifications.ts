@@ -21,7 +21,7 @@ test.meta(<ITestMeta>{
 
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
-  const notificationAndSoundsSettingPage = settingTab.notificationAnSoundsSettingPage;
+  const notificationAndSoundsSettingPage = settingTab.notificationAndSoundPage;
   const sectionLabel = 'Desktop Notifications';
   const browserDescription = 'Turn on/off desktop notifications on your web browser. Browser permission is needed for desktop notifications.';
   const newMessgesDescription = 'Choose your preference for desktop notifications for new messages';
@@ -85,7 +85,7 @@ test.meta(<ITestMeta>{
   const app = new AppRoot(t);
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
-  const notificationAndSoundsSettingPage = settingTab.notificationAnSoundsSettingPage;
+  const notificationAndSoundsSettingPage = settingTab.notificationAndSoundPage;
   const sectionLabel = 'Desktop Notifications';
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -132,7 +132,7 @@ test.meta(<ITestMeta>{
   const app = new AppRoot(t);
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
-  const notificationAndSoundsSettingPage = settingTab.notificationAnSoundsSettingPage;
+  const notificationAndSoundsSettingPage = settingTab.notificationAndSoundPage;
   const sectionLabel = 'Desktop Notifications';
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
