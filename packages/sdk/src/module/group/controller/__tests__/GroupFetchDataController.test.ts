@@ -1001,6 +1001,22 @@ describe('GroupFetchDataController', () => {
       expect(result.terms.length).toBe(1);
       expect(result.terms[0]).toBe('thiaaas');
     });
+
+    it('do fuzzy search of teams with single term, team include me should in front', async () => {
+      groupService.getTeamIdsIncludeMe = jest
+        .fn()
+        .mockReturnValue(new Set([12506, 12508, 12510]));
+      const result = await groupFetchDataController.doFuzzySearchTeams(
+        'thiaaas',
+      );
+      expect(result.sortableModels.length).toBe(500);
+
+      expect(result.sortableModels[0].id).toBe(12506);
+      expect(result.sortableModels[1].id).toBe(12508);
+      expect(result.sortableModels[2].id).toBe(12510);
+      expect(result.sortableModels[3].id).toBe(12002);
+    });
+
     it('do fuzzy search of teams with searchKey is empty', async () => {
       const result = await groupFetchDataController.doFuzzySearchTeams('');
       expect(result.sortableModels.length).toBe(0);

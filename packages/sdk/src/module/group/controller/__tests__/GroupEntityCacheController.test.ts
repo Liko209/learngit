@@ -8,7 +8,6 @@ import { GroupEntityCacheController } from '../GroupEntityCacheController';
 import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
 import { Group } from '../../entity';
 import { GroupService } from '../../service/GroupService';
-import { service } from 'sdk/';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 const soundex = require('soundex-code');
 
@@ -228,6 +227,22 @@ describe('GroupEntityCacheController', () => {
       expect(res).toEqual(new Map([[2, testTeamData[0]]]));
     });
 
+    it('should put to team id cache when a put a team include me', () => {
+      const res = groupEntityCacheController.getTeamIdsIncludeMe();
+      expect(res).toEqual(new Set());
+      groupEntityCacheController.put([
+        {
+          id: 2,
+          creator_id: 1,
+          is_team: true,
+          members: [1, 4],
+        },
+      ] as Group[]);
+
+      const resAfter = groupEntityCacheController.getTeamIdsIncludeMe();
+      expect(resAfter).toEqual(new Set([2]));
+    });
+
     it('should not add to cache when put a multiple people group or team', () => {
       groupEntityCacheController.put([
         {
@@ -240,6 +255,23 @@ describe('GroupEntityCacheController', () => {
 
       const res = groupEntityCacheController.getIndividualGroups();
       expect(res).toEqual(new Map());
+    });
+
+    it('should delete cached team id when delete a team include me', () => {
+      groupEntityCacheController.put([
+        {
+          id: 2,
+          creator_id: 1,
+          is_team: true,
+          members: [1, 4],
+        },
+      ] as Group[]);
+
+      const res = groupEntityCacheController.getTeamIdsIncludeMe();
+      expect(res).toEqual(new Set([2]));
+      groupEntityCacheController.delete(2);
+      const finalRes = groupEntityCacheController.getTeamIdsIncludeMe();
+      expect(finalRes).toEqual(new Set());
     });
 
     it('delete, should delete the corresponding individual group as well', () => {
