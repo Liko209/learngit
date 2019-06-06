@@ -14,10 +14,11 @@ import {
 } from 'jui/pattern/MessageInput/AttachmentList';
 import { JuiDuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
 import { getFileIcon } from '@/common/getFileIcon';
+import { postParser } from '@/common/postParser';
 
 @observer
 class AttachmentsViewComponent extends Component<
-AttachmentsViewProps & WithTranslation
+  AttachmentsViewProps & WithTranslation
 > {
   private _showDuplicateFilesDialogIfNeeded = () => {
     const { duplicateFiles, showDuplicateFiles } = this.props;
@@ -30,7 +31,9 @@ AttachmentsViewProps & WithTranslation
           footText={t(
             'item.wouldYouLikeToUpdateTheExistingFileOrCreateANewOne',
           )}
-          duplicateFiles={duplicateFiles}
+          duplicateFileNames={duplicateFiles.map(({ name }) =>
+            postParser(name, { fileName: true }),
+          )}
           onCancel={this.props.cancelDuplicateFiles}
           onCreate={this.props.uploadDuplicateFiles}
           onUpdate={this.props.updateDuplicateFiles}
@@ -67,6 +70,10 @@ AttachmentsViewProps & WithTranslation
           <AttachmentList
             iconResolver={this._resolveIcon}
             files={files}
+            fileNames={files.map(({ id, name }) => ({
+              id,
+              fileNameChildren: postParser(name, { fileName: true }),
+            }))}
             removeAttachment={cancelUploadFile}
             data-test-automation-id="message-attachment-node"
           />
