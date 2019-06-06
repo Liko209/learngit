@@ -2,7 +2,7 @@
  * @Author: Potar.He
  * @Date: 2019-05-09 10:51:18
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2019-06-06 20:55:54
+ * @Last Modified time: 2019-06-06 21:37:20
  */
 
 
@@ -467,7 +467,7 @@ test.meta(<ITestMeta>{
   }
 
   const emojiText = ':sm:'
-  const prefix = ':sm';
+  const prefix = ':fla';
   const mixPrefix = 'gr :gr'
   const wrongPrefix = ':huhuhu';
   let currentInputAreaText = '';
@@ -511,7 +511,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When  I type text: {prefix}', async (step) => {
     step.setMetadata('prefix', prefix);
-    await t.typeText(conversationPage.messageInputArea, prefix, { paste: true, replace: true });
+    await t.typeText(conversationPage.messageInputArea, prefix, { paste: false, replace: false });
   });
 
   const emojiMatchList = app.homePage.messageTab.emojiMatchList;
@@ -578,7 +578,8 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`Then Display selected emoji's key {value} and text in the input box`, async (step) => {
     step.setMetadata('value', secondEmoji);
     currentInputAreaText = `${firstEmoji} gr ${secondEmoji} `;
-    await t.expect(conversationPage.messageInputArea.withText(H.escapePostText(currentInputAreaText)).exists).ok()
+    const reg = new RegExp(`${firstEmoji}.*gr.*${secondEmoji}.* `);
+    await t.expect(conversationPage.messageInputArea.textContent).match(reg);
   });
 
   await h(t).withLog('When I hit Enter on the keyboard to send the message', async () => {
