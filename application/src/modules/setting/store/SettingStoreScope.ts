@@ -13,7 +13,7 @@ type StoreSection = Omit<SettingSection, 'items'>;
 
 type PageMap = Map<SettingPage['id'], StorePage>;
 type SectionMap = Map<SettingSection['id'], StoreSection>;
-type ItemMap = Map<SettingItem['id'], SettingItem>;
+type ItemMap<T extends SettingItem = SettingItem> = Map<T['id'], T>;
 type PageSection = RelationMap<SettingPage['id'], SettingSection['id']>;
 type SectionItem = RelationMap<SettingSection['id'], SettingItem['id']>;
 
@@ -69,8 +69,8 @@ class SettingStoreScope {
     return this._sectionItems.get(sectionId);
   }
 
-  getItemById(itemId: SettingItem['id']) {
-    return this._items.get(itemId);
+  getItemById<T extends SettingItem>(itemId: SettingItem['id']): T {
+    return this._items.get(itemId) as T;
   }
 
   @action

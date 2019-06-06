@@ -6,6 +6,8 @@
 import { ILogEntityDecorator, LogEntity } from '../types';
 enum TYPES {
   String = '[object String]',
+  Boolean = '[object Boolean]',
+  Number = '[object Number]',
   Object = '[object Object]',
   Function = '[object Function]',
   Undefined = '[object Undefined]',
@@ -36,6 +38,12 @@ export class StringifyDecorator implements ILogEntityDecorator {
       },
       '[object Null]': (item: null) => {
         return 'null';
+      },
+      '[object Boolean]': (item: boolean) => {
+        return String(item);
+      },
+      '[object Number]': (item: number) => {
+        return String(item);
       },
     };
   }
