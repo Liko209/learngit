@@ -89,9 +89,9 @@ describe('messageNotificationManager', () => {
   describe('shouldEmitNotification()', () => {
     beforeEach(() => {
       jest.clearAllMocks();
-      jest
-        .spyOn(utils, 'getEntity')
-        .mockReturnValue(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE);
+      jest.spyOn(utils, 'getEntity').mockReturnValue({
+        value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE,
+      });
       jest.spyOn(notificationManager, 'show').mockImplementation();
     });
 

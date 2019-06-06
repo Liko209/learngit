@@ -96,7 +96,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       },
       onDispose: () => {
         this.close(id);
-        this._vmQueue = this._vmQueue.filter(i => i.id !== id);
+        this._vmQueue = this._vmQueue.filter((i) => i.id !== id);
       },
     });
 
@@ -150,7 +150,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       getEntity<UserSettingEntity, SettingModel<NOTIFICATION_OPTIONS>>(
         ENTITY_NAME.USER_SETTING,
         SETTING_ITEM__NOTIFICATION_NEW_MESSAGES,
-      ).value || ''
+      ).value || 'default'
     );
   }
   async shouldEmitNotification(post: Post) {
@@ -183,6 +183,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     const groupModel = new GroupModel(group);
     const result = { postModel, groupModel };
     const strategy = {
+      default: () => false,
       [DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE]: () => result,
       [DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION]: () => {
         if (groupModel.isTeam && !this.isMyselfAtMentioned(postModel)) {
