@@ -93,7 +93,7 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
     }
     if (
       profile[SETTING_KEYS.DESKTOP_VOICEMAIL] !==
-      this.userSettingEntityCache.value
+      this.userSettingEntityCache!.value
     ) {
       this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
     }
