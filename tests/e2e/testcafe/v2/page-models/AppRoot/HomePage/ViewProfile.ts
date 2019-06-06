@@ -157,7 +157,7 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   async hoverFavoriteButton() {
-    await this.t.click(this.favoriteButton);
+    await this.t.hover(this.favoriteButton);
   }
 
   get unFavoriteStatusIcon() {
