@@ -81,7 +81,7 @@ describe('TelephonyService', () => {
       isValidNumber: jest.fn(),
     };
 
-    jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
+    jest.spyOn(utils, 'getEntity').mockReturnValue({ value: defaultPhoneApp });
     mockedServerTelephonyService = {
       hold: jest.fn().mockImplementation(() => {
         sleep(mockedDelay).then(() =>
@@ -152,7 +152,7 @@ describe('TelephonyService', () => {
       forward: jest.fn(),
     };
 
-    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
+    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation((conf) => {
       switch (conf) {
         case ServiceConfig.TELEPHONY_SERVICE:
           telephonyService = mockedServerTelephonyService;
@@ -698,12 +698,14 @@ describe('TelephonyService', () => {
     });
     it(`should not response when there's incoming call and default phone setting is RC phone`, () => {
       defaultPhoneApp = CALLING_OPTIONS.RINGCENTRAL;
-      jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
+      jest
+        .spyOn(utils, 'getEntity')
+        .mockReturnValue({ value: defaultPhoneApp });
       telephonyService._onReceiveIncomingCall(params);
       expect(telephonyService._telephonyStore.incomingCall).not.toBeCalled();
-    });
+    });:
     it(`should show ui when there's incoming call and default phone setting is Ringcentral App`, () => {
-      jest.spyOn(utils, 'getSingleEntity').mockReturnValue('glip');
+      jest.spyOn(utils, 'getEntity').mockReturnValue({ value: 'glip' });
       telephonyService._onReceiveIncomingCall(params);
       expect(telephonyService._telephonyStore.incomingCall).toBeCalled();
     });
@@ -716,7 +718,7 @@ describe('TelephonyService', () => {
       const clientService = container.get(CLIENT_SERVICE);
       testedFn = jest.spyOn(clientService, 'invokeApp').mockImplementation();
     });
-    ['RC', 'ATT', 'TELUS'].forEach(i =>
+    ['RC', 'ATT', 'TELUS'].forEach((i) =>
       it(`should build correct url for ${i}`, () => {
         const RCPhoneCallURL = {
           RC: 'rcmobile',
