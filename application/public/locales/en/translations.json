@@ -512,7 +512,8 @@
       "Answer": "Answer",
       "back": "Back",
       "forward": "Forward",
-      "customForward": "Custom..."
+      "customForward": "Custom...",
+      "flip": "Flip"
     },
     "customReplyMessagePlaceholder": "Type a custom message",
     "customReplyLabel": "Custom message",
@@ -553,7 +554,9 @@
       "ReplyCustomMessageEmpty": "Sorry, you cannot send an empty message.",
       "ReplyMessageSuccess": "Your voice message was sent successfully.",
       "ForwardBackendError": "Sorry, something went wrong on our end, we weren't able to forward the call.",
-      "ForwardCallSuccess": "Your call was forwarded successfully."
+      "ForwardCallSuccess": "Your call was forwarded successfully.",
+      "FlipBackendError": "Sorry, we weren't able to flip the call. Try again later.",
+      "FlipSuccess": "Call flipped"
     },
     "notification": {
       "incomingCall": "Incoming Call",
