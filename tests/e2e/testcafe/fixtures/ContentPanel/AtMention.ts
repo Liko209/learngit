@@ -67,7 +67,7 @@ test.meta(<ITestMeta>{
 });
 
 
-test.only.meta(<ITestMeta>{
+test.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-2269'],
   maintainers: ['chris.zhan'],
@@ -127,7 +127,7 @@ test.only.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`When I quote the post with @Team`, async () => {
-    await post.clickSelf();
+    await t.click('html');
     await post.clickMoreItemOnActionBar();
     await post.actionBarMoreMenu.quoteItem.enter();
   });
