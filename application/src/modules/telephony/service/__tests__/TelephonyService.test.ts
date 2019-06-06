@@ -41,7 +41,6 @@ decorate(injectable(), ClientService);
 
 jest.mock('../ToastCallError');
 jest.mock('@/containers/Notification');
-
 // mock media element methods
 window.HTMLMediaElement.prototype.load = jest.fn();
 window.HTMLMediaElement.prototype.play = jest.fn();
@@ -67,6 +66,7 @@ function initializeCallerId() {
 let defaultPhoneApp = CALLING_OPTIONS.GLIP;
 describe('TelephonyService', () => {
   beforeEach(() => {
+    jest.spyOn(utils, 'getSingleEntity').mockImplementation();
     let cachedOnMadeOutgoingCall: any;
     let cachedOnCallActionSuccess: any;
     let cachedOnCallActionFailed: any;
@@ -168,7 +168,7 @@ describe('TelephonyService', () => {
       forward: jest.fn(),
     };
 
-    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation((conf) => {
+    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
       switch (conf) {
         case ServiceConfig.TELEPHONY_SERVICE:
           telephonyService = mockedServerTelephonyService;
@@ -747,7 +747,7 @@ describe('TelephonyService', () => {
       const clientService = container.get(CLIENT_SERVICE);
       testedFn = jest.spyOn(clientService, 'invokeApp').mockImplementation();
     });
-    ['RC', 'ATT', 'TELUS'].forEach((i) =>
+    ['RC', 'ATT', 'TELUS'].forEach(i =>
       it(`should build correct url for ${i}`, () => {
         const RCPhoneCallURL = {
           RC: 'rcmobile',
