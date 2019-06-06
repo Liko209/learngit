@@ -12,25 +12,12 @@ import {
   UpdateParamsType,
 } from '@/modules/viewer/container/ViewerView/interface';
 import moment from 'moment';
-import {
-  JuiDialogHeaderMetaLeft,
-  JuiDialogHeaderMetaRight,
-  JuiDialogHeaderSubtitle,
-} from 'jui/components/Dialog/DialogHeader';
-import { Avatar } from '@/containers/Avatar';
-import { Download } from '@/containers/common/Download';
 import FileItemModel from '@/store/models/FileItem';
 import { dateFormatter } from '@/utils/date';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { FileActionMenu } from '@/containers/common/fileAction';
-import { ItemVersionPage } from 'sdk/module/item/entity';
+import { ItemVersionPage, Item } from 'sdk/module/item/entity';
 import { Notification } from '@/containers/Notification';
-import { JuiTextField } from 'jui/components/Forms/TextField';
-import {
-  JuiViewerTitleWrap,
-  JuiViewerImg,
-} from 'jui/pattern/Viewer/ViewerTitle';
 import {
   ToastType,
   ToastMessageAlign,
@@ -40,7 +27,7 @@ import _ from 'lodash';
 
 class FileViewerViewModel extends AbstractViewModel<IViewerView>
   implements IViewerView {
-  private _item: FileItemModel;
+  private _itemId: number;
   private _dismiss: Function;
   @observable
   private _currentScale: number = 1;
@@ -50,9 +37,9 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
   @observable
   private _textFieldValue: number;
 
-  constructor(item: FileItemModel, dismiss: Function) {
+  constructor(itemId: number, dismiss: Function) {
     super();
-    this._item = item;
+    this._itemId = itemId;
     this._dismiss = dismiss;
     this.reaction(
       () => this._item.deactivated,
@@ -65,6 +52,11 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
         fireImmediately: true,
       },
     );
+  }
+
+  @computed
+  private get _item() {
+    return getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, this._itemId);
   }
 
   @computed
@@ -86,7 +78,7 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
     return pages
       ? pages.map(({ url }: ItemVersionPage) => {
           return {
-            cmp: <JuiViewerImg src={url} />,
+            url,
             viewport: {
               origHeight,
               origWidth,
@@ -94,29 +86,6 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
           };
         })
       : undefined;
-  }
-
-  @computed
-  get info() {
-    let userDisplayName;
-    let id;
-    if (this._person) {
-      userDisplayName = this._person.userDisplayName;
-      id = this._person.id;
-    }
-    const { createdAt } = this._item;
-    return (
-      <>
-        <JuiDialogHeaderMetaLeft>
-          <Avatar uid={id} data-test-automation-id={'previewerSenderAvatar'} />
-        </JuiDialogHeaderMetaLeft>
-        <JuiDialogHeaderMetaRight
-          title={userDisplayName}
-          data-test-automation-id={'previewerSenderInfo'}
-          subtitle={dateFormatter.dateAndTimeWithoutWeekday(moment(createdAt))}
-        />
-      </>
-    );
   }
 
   @action
@@ -132,27 +101,28 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
 
   @computed
   get title() {
-    const { versions, name } = this._item;
+    let userDisplayName;
+    let uid;
+    if (this._person) {
+      userDisplayName = this._person.userDisplayName;
+      uid = this._person.id;
+    }
+    const { createdAt } = this._item;
+
+    const { versions, name, downloadUrl, id } = this._item;
     const { pages = [] } = versions[0];
-    return (
-      <JuiViewerTitleWrap>
-        {name}
-        <JuiTextField
-          id="outlined-number"
-          label=""
-          type="number"
-          defaultValue={1}
-          value={this._textFieldValue}
-          onChange={this.handleTextFieldChange}
-          inputProps={{
-            'aria-label': 'numberInput',
-          }}
-        />
-        <JuiDialogHeaderSubtitle>{`${this._currentPageIdx + 1}/${
-          pages.length
-        }`}</JuiDialogHeaderSubtitle>
-      </JuiViewerTitleWrap>
-    );
+    return {
+      uid,
+      userDisplayName,
+      name,
+      downloadUrl,
+      handleTextFieldChange: this.handleTextFieldChange,
+      createdAt: dateFormatter.dateAndTimeWithoutWeekday(moment(createdAt)),
+      textFieldValue: this._textFieldValue,
+      currentPageIdx: this._currentPageIdx + 1,
+      pageTotal: pages.length,
+      fileId: id,
+    };
   }
 
   @computed
@@ -174,17 +144,6 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
     if (pageIdx !== undefined && pageIdx !== this._currentPageIdx) {
       this._currentPageIdx = pageIdx;
     }
-  }
-
-  @computed
-  get actions() {
-    const { downloadUrl, id } = this._item;
-    return (
-      <>
-        <Download url={downloadUrl} />
-        <FileActionMenu fileId={id} disablePortal={true} />
-      </>
-    );
   }
 
   private _onExceptions(toastMessage: string) {

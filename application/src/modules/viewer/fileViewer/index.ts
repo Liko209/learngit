@@ -4,4 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export * from './fileViewer.ViewModel';
+export * from './FileViewer.ViewModel';

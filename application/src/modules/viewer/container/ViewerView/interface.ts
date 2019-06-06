@@ -2,29 +2,36 @@
  * @Author: looper wang (looper.wang@ringcentral.com)
  * @Date: 2019-06-04 09:12:51
  * Copyright © RingCentral. All rights reserved.
- */
-import { ReactNode } from 'react';
-
-type UpdateParamsType = {
+ */ type UpdateParamsType = {
   scale?: number;
   pageIdx?: number;
 };
+
+type TitleType = {
+  uid?: number;
+  userDisplayName: string;
+  name: string;
+  downloadUrl: any;
+  createdAt: string;
+  textFieldValue: number;
+  currentPageIdx: number;
+  pageTotal: number;
+  fileId: number;
+  handleTextFieldChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+};
 interface IViewerView {
   pages?: {
-    cmp: ReactNode;
+    url: string;
     viewport?: {
       origHeight: number;
       origWidth: number;
     };
   }[];
-  title?: ReactNode;
-  info?: ReactNode;
-  actions?: ReactNode;
-
+  title?: TitleType;
   viewerDestroyer: Function;
   currentPageIdx: number;
   currentScale: number;
   onUpdate: (opts: UpdateParamsType) => void;
 }
 
-export { IViewerView, UpdateParamsType };
+export { IViewerView, UpdateParamsType, TitleType };

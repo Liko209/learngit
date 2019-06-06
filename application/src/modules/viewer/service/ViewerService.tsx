@@ -7,16 +7,19 @@ import React from 'react';
 import { JuiDialogOpenTransition } from 'jui/components/Dialog';
 import { Dialog } from '@/containers/Dialog';
 import { IViewerService } from '../interface';
-import { FileViewerViewModel } from '../fileViewer';
-import { ViewerView } from '../container/ViewerView';
-import FileItemModel from '@/store/models/FileItem';
+import { FileViewerViewModel } from '../FileViewer';
+import { ViewerView, LAYOUT } from '../container/ViewerView';
+import { ViewerTitleView } from '../FileViewer/Title.View';
+import { ViewerDocument } from '../FileViewer/ViewerContainer.View';
 
 class ViewerService implements IViewerService {
-  showFileViewer = (item: FileItemModel, originElement?: HTMLElement) => {
+  showFileViewer = (itemId: number) => {
     const { dismiss } = Dialog.simple(
       <ViewerView
-        dataModule={new FileViewerViewModel(item, () => dismiss())}
-        originElement={originElement}
+        dataModule={new FileViewerViewModel(itemId, () => dismiss())}
+        layout={LAYOUT['withSideBar']}
+        TitleRenderer={ViewerTitleView}
+        PageRenderer={ViewerDocument}
       />,
       {
         fullScreen: true,

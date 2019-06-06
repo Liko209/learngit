@@ -1,5 +1,3 @@
-import FileItemModel from '@/store/models/FileItem';
-
 /*
  * @Author: looper wang (looper.wang@ringcentral.com)
  * @Date: 2019-06-04 09:12:51
@@ -7,7 +5,7 @@ import FileItemModel from '@/store/models/FileItem';
  */
 
 interface IViewerService {
-  showFileViewer: (item: FileItemModel) => void;
+  showFileViewer: (itemId: number) => void;
 }
 
 export { IViewerService };
