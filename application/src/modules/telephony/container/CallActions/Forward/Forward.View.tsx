@@ -25,7 +25,12 @@ class ForwardViewComponent extends React.Component<Props> {
   }
 
   render() {
-    const { t, shouldDisableForwardButton, forwardCalls } = this.props;
+    const {
+      t,
+      directForward,
+      shouldDisableForwardButton,
+      forwardCalls,
+    } = this.props;
     return (
       <JuiSubMenu
         data-test-automation-id="telephony-forward-menu-item"
@@ -40,7 +45,9 @@ class ForwardViewComponent extends React.Component<Props> {
               </JuiMenuItem>
             );
           })}
-        <JuiMenuItem>{t('telephony.action.customForward')}</JuiMenuItem>
+        <JuiMenuItem onClick={directForward}>
+          {t('telephony.action.customForward')}
+        </JuiMenuItem>
       </JuiSubMenu>
     );
   }

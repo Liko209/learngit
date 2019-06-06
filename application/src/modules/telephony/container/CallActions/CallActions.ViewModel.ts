@@ -19,48 +19,23 @@ class CallActionsViewModel extends StoreViewModel<CallActionsProps>
   get callActionsMap() {
     return {
       [CALL_ACTION.REPLY]: {
-        shouldShowAction: this._isIncomingPage,
-        shouldDisableAction: this._stubShouldDisableOption,
+        shouldShowAction: this.isIncomingPage,
       },
       [CALL_ACTION.FORWARD]: {
-        shouldShowAction: this._isIncomingPage,
-        shouldDisableAction: this._stubShouldDisableOption,
+        shouldShowAction: this.isIncomingPage,
       },
       [CALL_ACTION.PARK]: {
-        shouldShowAction: this._shouldShowParkOption,
-        shouldDisableAction: this._shouldDisableParkOption,
+        shouldShowAction: !this.isIncomingPage,
+      },
+      [CALL_ACTION.FLIP]: {
+        shouldShowAction: !this.isIncomingPage,
       },
     };
   }
 
   @computed
-  private get _stubShouldDisableOption() {
-    return false;
-  }
-
-  @computed
-  private get _isIncomingPage() {
+  get isIncomingPage() {
     return this._telephonyStore.callState === CALL_STATE.INCOMING;
-  }
-
-  @computed
-  private get _shouldDisableParkOption() {
-    return (
-      this._telephonyStore.callState === CALL_STATE.CONNECTING ||
-      this._telephonyStore.held
-    );
-  }
-
-  @computed
-  private get _shouldShowParkOption() {
-    return this._telephonyStore.callState !== CALL_STATE.INCOMING;
-  }
-
-  @computed
-  get shouldDisableCallActions() {
-    return Object.values(this.callActionsMap).every(
-      action => !action.shouldShowAction,
-    );
   }
 }
 

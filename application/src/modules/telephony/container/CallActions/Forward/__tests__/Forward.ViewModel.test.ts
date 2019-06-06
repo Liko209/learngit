@@ -7,6 +7,7 @@ import { container, decorate, injectable, Jupiter } from 'framework';
 import { TelephonyService } from '../../../../service/TelephonyService';
 import { ForwardViewModel } from '../Forward.ViewModel';
 import { TELEPHONY_SERVICE } from '../../../../interface/constant';
+import { TelephonyStore, INCOMING_STATE } from '../../../../store';
 import { JServerError, ERROR_CODES_SERVER } from 'sdk/error';
 import {
   ToastType,
@@ -20,6 +21,11 @@ jest.mock('../../../../service/TelephonyService');
 jest.mock('@/containers/Notification');
 jest.mock('@/utils/error');
 
+decorate(injectable(), TelephonyService);
+decorate(injectable(), TelephonyStore);
+
+// container.bind(TELEPHONY_SERVICE).to(TelephonyService);
+// container.bind(TelephonyStore).to(TelephonyStore);
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(common.config);
 jupiter.registerModule(config);
@@ -95,6 +101,16 @@ describe('ForwardViewModel', () => {
       expect(Notification.flashToast).lastCalledWith(
         toastParamsBuilder('telephony.prompt.ForwardBackendError'),
       );
+    });
+  });
+
+  describe('directForward', () => {
+    it('should get incomingState equal with forward', async () => {
+      const vm = new ForwardViewModel();
+      vm.directForward();
+      const _telephonyStore: TelephonyStore = container.get(TelephonyStore);
+
+      expect(_telephonyStore.incomingState).toBe(INCOMING_STATE.FORWARD);
     });
   });
 });

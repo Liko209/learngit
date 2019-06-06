@@ -17,7 +17,7 @@ type CallActionsViewProps = {
       shouldDisableAction?: boolean;
     };
   };
-  shouldDisableCallActions: boolean;
+  isIncomingPage: boolean;
 };
 
 export { CallActionsProps, CallActionsViewProps };

@@ -7,8 +7,8 @@
 type Props = {};
 
 type ViewProps = {
-  disabled?: boolean;
   park: () => void;
+  disabled: boolean;
 };
 
 export { Props, ViewProps };

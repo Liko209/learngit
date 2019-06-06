@@ -4,4 +4,5 @@ export enum CALL_ACTION {
   FORWARD,
   PARK,
   REPLY,
+  FLIP,
 }

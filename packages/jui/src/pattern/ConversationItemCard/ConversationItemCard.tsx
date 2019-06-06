@@ -15,7 +15,7 @@ import {
   JuiButtonBarProps,
 } from '../../components/Buttons/ButtonBar';
 import { Palette } from '../../foundation/theme/theme';
-import { getAccentColor } from '../../foundation/utils';
+// import { getAccentColor } from '../../foundation/utils';
 
 const ItemCardWrapper = styled(JuiCard)`
   word-break: break-word;
