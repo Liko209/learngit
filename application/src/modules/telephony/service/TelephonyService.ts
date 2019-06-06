@@ -46,6 +46,7 @@ import { CALLING_OPTIONS } from 'sdk/module/profile';
 import i18next from 'i18next';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
+import { SETTING_ITEM__PHONE_DEFAULT_PHONE_APP } from '../TelephonySettingManager/constant';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -141,7 +142,7 @@ class TelephonyService {
       switch (e.code) {
         case 0:
           this._pauseRingtone();
-          ['mousedown', 'keydown'].forEach(evt => {
+          ['mousedown', 'keydown'].forEach((evt) => {
             const cb = () => {
               if (!this._telephonyStore.hasIncomingCall) {
                 return;
@@ -342,7 +343,7 @@ class TelephonyService {
       () =>
         this._telephonyStore.shouldDisplayDialer &&
         this._telephonyStore.callWindowState !== CALL_WINDOW_STATUS.MINIMIZED,
-      shouldDisplayDialer => {
+      (shouldDisplayDialer) => {
         if (!shouldDisplayDialer) {
           return;
         }
@@ -404,7 +405,7 @@ class TelephonyService {
           return;
         }
         const defaultPhoneNumber = callerPhoneNumberList.find(
-          callerPhoneNumber => callerPhoneNumber.id === defaultNumberId,
+          (callerPhoneNumber) => callerPhoneNumber.id === defaultNumberId,
         );
         if (defaultPhoneNumber) {
           this._telephonyStore.updateDefaultChosenNumber(
@@ -417,7 +418,7 @@ class TelephonyService {
 
     this._incomingCallDisposer = reaction(
       () => this._telephonyStore.hasIncomingCall,
-      hasIncomingCall => {
+      (hasIncomingCall) => {
         if (hasIncomingCall) {
           this._playRingtone();
         } else {
@@ -469,8 +470,8 @@ class TelephonyService {
   }
   private get _isJupiterDefaultApp() {
     return (
-      getSingleEntity(ENTITY_NAME.PROFILE, 'callOption') ===
-      CALLING_OPTIONS.GLIP
+      getEntity(ENTITY_NAME.USER_SETTING, SETTING_ITEM__PHONE_DEFAULT_PHONE_APP)
+        .value === CALLING_OPTIONS.GLIP
     );
   }
 
@@ -480,7 +481,7 @@ class TelephonyService {
     }
     // FIXME: move this logic to SDK and always using callerID
     const idx = this._telephonyStore.callerPhoneNumberList.findIndex(
-      phone =>
+      (phone) =>
         formatPhoneNumber(phone.phoneNumber) ===
         formatPhoneNumber(this._telephonyStore.chosenCallerPhoneNumber),
     );

@@ -11,11 +11,13 @@ import {
   SettingEntityIds,
   UserSettingEntity,
   SettingModuleIds,
+  SettingService,
 } from 'sdk/module/setting';
 import { ProfileService } from 'sdk/module/profile';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { notificationCenter, ENTITY } from 'sdk/service';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
 
 jest.mock('sdk/module/account/config/AccountUserConfig');
 jest.mock('sdk/module/profile');
@@ -30,6 +32,7 @@ function clearMocks() {
 describe('CallerIdSettingHandler ', () => {
   let iProfileService: ProfileService;
   let rcInfoService: RCInfoService;
+  let settingService: SettingService;
   const profileId = 111;
   let callerIdSettingHandler: CallerIdSettingHandler;
   let mockDefaultSettingItem: UserSettingEntity;
@@ -48,6 +51,7 @@ describe('CallerIdSettingHandler ', () => {
       valueSetter: expect.any(Function),
     };
     rcInfoService = new RCInfoService();
+    settingService = new SettingService();
     const accountService = new AccountService({} as any);
     ServiceLoader.getInstance = jest.fn().mockImplementation((key: any) => {
       if (key === ServiceConfig.RC_INFO_SERVICE) {
@@ -55,6 +59,9 @@ describe('CallerIdSettingHandler ', () => {
       }
       if (key === ServiceConfig.ACCOUNT_SERVICE) {
         return accountService;
+      }
+      if (key === ServiceConfig.SETTING_SERVICE) {
+        return settingService;
       }
     });
     iProfileService = new ProfileService();
@@ -153,16 +160,34 @@ describe('CallerIdSettingHandler ', () => {
       cleanUp();
     });
     it('should return all setting entity', async () => {
+      settingService.getById = jest
+        .fn()
+        .mockReturnValue({ value: CALLING_OPTIONS.RINGCENTRAL });
       const res = await callerIdSettingHandler.fetchUserSettingEntity();
       expect(res).toEqual({
         parentModelId: 0,
         weight: 0,
         valueType: 0,
-        state: 0,
+        state: 2,
         id: SettingEntityIds.Phone_CallerId,
         source: [{ id: 1 }, { id: 2 }],
         value: { id: 2 },
         valueSetter: expect.any(Function),
+      });
+    });
+
+    it('should return all setting entity when callOption is undefined', async () => {
+      settingService.getById = jest.fn().mockReturnValue({ value: undefined });
+      const res = await callerIdSettingHandler.fetchUserSettingEntity();
+      expect(res).toEqual({
+        id: SettingEntityIds.Phone_CallerId,
+        parentModelId: 0,
+        source: [{ id: 1 }, { id: 2 }],
+        state: 0,
+        value: { id: 2 },
+        valueSetter: expect.any(Function),
+        valueType: 0,
+        weight: 0,
       });
     });
   });
