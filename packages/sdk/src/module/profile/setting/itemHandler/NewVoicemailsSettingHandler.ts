@@ -28,7 +28,6 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
   NOTIFICATION_OPTIONS
 > {
   id = SettingEntityIds.Notification_MissCallAndNewVoiceMails;
-
   constructor(
     private _profileService: IProfileService,
     private _accountService: AccountService,
@@ -41,6 +40,9 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
   private _subscribe() {
     this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
       this.onProfileEntityUpdate(payload),
+    );
+    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload =>
+      this.onSettingEntityUpdate(payload),
     );
   }
 
@@ -92,6 +94,16 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
     if (
       profile[SETTING_KEYS.DESKTOP_VOICEMAIL] !==
       this.userSettingEntityCache.value
+    ) {
+      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+    }
+  }
+  async onSettingEntityUpdate(
+    payload: NotificationEntityUpdatePayload<UserSettingEntity>,
+  ) {
+    if (
+      payload.body.entities.has(SettingEntityIds.Notification_Browser) ||
+      payload.body.entities.has(SettingEntityIds.Phone_DefaultApp)
     ) {
       this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
     }
