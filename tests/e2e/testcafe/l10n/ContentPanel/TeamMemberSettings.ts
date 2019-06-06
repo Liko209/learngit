@@ -52,7 +52,6 @@ test(formalName('Pinned or unpinned text', ['P2', 'Messages', 'ContentPanelPanel
   const teamSettingDialog = app.homePage.teamSettingDialog;
   await h(t).withLog('And I tap Settings icon', async() => {
     await profileDialog.clickSetting();
-    // await t.expect(teamSettingDialog.exists).ok();
   });
 
   await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_ContentPanelPanel_TeamMemberSettings'});
@@ -60,7 +59,6 @@ test(formalName('Pinned or unpinned text', ['P2', 'Messages', 'ContentPanelPanel
   const leaveTeamDialog = app.homePage.leaveTeamDialog;
   await h(t).withLog('When I tap Leave team button', async() => {
     await teamSettingDialog.clickLeaveTeamButton();
-    // await t.expect(leaveTeamDialog.exists).ok();
   });
 
   await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_ContentPanelPanel_LeaveTeam'});

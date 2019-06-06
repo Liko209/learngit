@@ -42,7 +42,6 @@ test(formalName('Files display on the right rail', ['P2', 'Messages', 'ContentPa
   const miniProfile = app.homePage.miniProfile;
   await h(t).withLog('When I open a team and tap avatar', async() => {
     await teamPage.conversationEntryById(team.glipId).enter();
-    // await conversationPage.waitUntilPostsBeLoaded();
     await conversationPage.postItemById(textPostId).clickAvatar();
     await t.expect(miniProfile.profileButton).ok();
   });
