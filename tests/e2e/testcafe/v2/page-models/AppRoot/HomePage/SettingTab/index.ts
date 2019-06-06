@@ -1,6 +1,7 @@
 import { BaseWebComponent } from "../../../BaseWebComponent";
 import { LeftRail } from './LeftRail';
 import { PhoneSettingPage } from './PhoneSettingPage';
+import { NotificationAndSoundsSettingsPage } from './NotificationAndSoundsSettingsPage';
 
 class Entry extends BaseWebComponent {
   async enter() {
@@ -60,6 +61,10 @@ export class SettingTab extends BaseWebComponent {
   // phone setting
   get phoneSettingPage() {
     return this.getComponent(PhoneSettingPage);
+  }
+ // NotificationAndSoundsSettings
+  get notificationAnSoundsSettingPage() {
+    return this.getComponent(NotificationAndSoundsSettingsPage);
   }
 
 }
