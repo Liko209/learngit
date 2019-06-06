@@ -44,7 +44,7 @@ import {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   NOTIFICATION_OPTIONS,
 } from 'sdk/module/profile';
-import { SETTING_ITEM__NOTIFICATION_NEW_MESSAGES } from './interface/constant';
+import { MESSAGE_SETTING_ITEM } from './interface/constant';
 
 const logger = mainLogger.tags('MessageNotificationManager');
 const NOTIFY_THROTTLE_FACTOR = 5000;
@@ -96,7 +96,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       },
       onDispose: () => {
         this.close(id);
-        this._vmQueue = this._vmQueue.filter((i) => i.id !== id);
+        this._vmQueue = this._vmQueue.filter(i => i.id !== id);
       },
     });
 
@@ -149,7 +149,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     return (
       getEntity<UserSettingEntity, SettingModel<NOTIFICATION_OPTIONS>>(
         ENTITY_NAME.USER_SETTING,
-        SETTING_ITEM__NOTIFICATION_NEW_MESSAGES,
+        MESSAGE_SETTING_ITEM.NOTIFICATION_NEW_MESSAGES,
       ).value || 'default'
     );
   }
