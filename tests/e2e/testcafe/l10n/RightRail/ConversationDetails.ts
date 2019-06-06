@@ -38,7 +38,7 @@ test(formalName('Conversation Details on the right rail', ['P2', 'Messages', 'Ri
   await h(t).log('Then I take screenshot' , { screenshotPath:'Jupiter_RightRail_MoreIcon' });
 
   await h(t).withLog('When I click "More" icon on right rail', async () => {
-    await t.click(rightRail.moreButton);
+    await rightRail.clickMoreButton();
   });
   await h(t).withLog('And "More" list should be displayed',async () => {
     await t.expect(rightRail.eventsEntry.exists).ok();
@@ -46,7 +46,7 @@ test(formalName('Conversation Details on the right rail', ['P2', 'Messages', 'Ri
   await h(t).log('Then I take screenshot' , { screenshotPath:'Jupiter_RightRail_MoreList' });
 
   await h(t).withLog('When I hover "Hide detail" icon on right rail', async () => {
-    await t.click(rightRail.moreButton);
+    await rightRail.clickMoreButton();
     await rightRail.hoverExpandStatusButton();
   });
   // await h(t).withLog('And text "Hide details" should be displayed', async () => {

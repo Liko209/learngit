@@ -49,6 +49,11 @@ export class Header extends BaseWebComponent {
     this.warnFlakySelector();
     return this.getComponent(SearchBar, this.getSelectorByIcon('search', this.self).parent('div')); // TODO: automationID
   }
+
+  get searchBarSmall(){
+    this.warnFlakySelector();
+    return this.getComponent(SearchBar, this.getSelectorByIcon('search', this.self).parent('button'));
+  }
 }
 
 class BackNForward extends BaseWebComponent {

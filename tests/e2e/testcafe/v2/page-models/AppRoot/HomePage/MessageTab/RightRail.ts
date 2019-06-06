@@ -104,6 +104,10 @@ export class RightRail extends BaseWebComponent {
     return this.getSelectorByAutomationId('right-shelf-more')
   }
 
+  async clickMoreButton() {
+    await this.t.click(this.moreButton)
+  }
+
   async openMore() {
     await this.t.click(this.moreButton);
   }
@@ -289,7 +293,7 @@ class ImageAndFileItem extends BaseWebComponent {
   get more(){
     return this.getSelectorByAutomationId('fileActionMore',this.self);
   }
-  
+
   async clickMore(){
     await this.t.click(this.more);
   }
