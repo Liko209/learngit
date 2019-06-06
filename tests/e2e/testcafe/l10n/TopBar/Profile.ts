@@ -39,22 +39,21 @@ test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'Profile', 'V1.4', 'Han
   await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_ProfilePage'});
 
   const favoriteButton = profileDialog.favoriteButton;
-  const unFavoriteStatusIcon = profileDialog.unFavoriteStatusIcon;
 
   await h(t).withLog('When I hover "Favorites" button', async() => {
     if(favoriteButton.exists){
-      await t.hover(favoriteButton);
+      await profileDialog.hoverFavoriteButton();
     }
     else{
-      await t.click(unFavoriteStatusIcon);
-      await t.hover(favoriteButton);
+      await profileDialog.clickUnFavoriteButton();
+      await profileDialog.hoverFavoriteButton();
     }
   });
   await h(t).log('Then I take screenshot', {screenshotPath:'Jupiter_TopBar_RemoveFromFavorites'});
 
   await h(t).withLog('When I click "Favorites" button and hover it', async() => {
-    await t.click(favoriteButton);
-    await t.hover(unFavoriteStatusIcon);
+    await profileDialog.clickFavoriteButton();
+    await profileDialog.hoverUnFavoriteButton();
   });
   await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_AddToFavorites'});
 

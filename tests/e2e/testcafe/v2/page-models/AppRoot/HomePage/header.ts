@@ -20,12 +20,29 @@ export class Header extends BaseWebComponent {
     return this.getSelector('.chevron_left');
   }
 
+  async clickBackBaButton() {
+    await this.t.click(this.backButtonByClass)
+  }
+
+  async hoverBackBaButton() {
+    await this.t.hover(this.backButtonByClass)
+  }
+
+
   get forwardButton() {
     return this.getBackNForward('Forward');
   }
 
   get forwardButtonByClass() {
     return this.getSelector('.chevron_right');
+  }
+
+  async clickForwardBaButton() {
+    await this.t.click(this.forwardButtonByClass)
+  }
+
+  async hoverForwardBaButton() {
+    await this.t.hover(this.forwardButtonByClass)
   }
 
   get searchBar() {

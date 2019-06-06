@@ -47,7 +47,7 @@ test(formalName('Conversation Details on the right rail', ['P2', 'Messages', 'Ri
 
   await h(t).withLog('When I hover "Hide detail" icon on right rail', async () => {
     await t.click(rightRail.moreButton);
-    await t.hover(rightRail.expandStatusButton);
+    await rightRail.hoverExpandStatusButton();
   });
   // await h(t).withLog('And text "Hide details" should be displayed', async () => {
   //   await t.expect(rightRail.expandStatusButton.exists).ok();
@@ -55,8 +55,8 @@ test(formalName('Conversation Details on the right rail', ['P2', 'Messages', 'Ri
   await h(t).log('Then I take screenshot' , { screenshotPath:'Jupiter_RightRail_HideDetails' });
 
   await h(t).withLog('When I click "Hide details" button and hover "Show details" button on right rail', async () => {
-    await rightRail.fold();
-    await t.hover(rightRail.foldStatusButton);
+    await rightRail.clickExpandStatusButton();
+    await rightRail.hoverFoldStatusButton();
   });
   // await h(t).withLog('And text "Show details" should be displayed', async () => {
   //   await t.expect(rightRail.foldStatusButton.exists).ok();
