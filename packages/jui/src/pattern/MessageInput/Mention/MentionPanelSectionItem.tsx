@@ -45,11 +45,13 @@ class JuiMentionPanelSectionItem extends PureComponent<Props> {
     const { Avatar, displayName, selected, selectHandler } = this.props;
     return (
       <Wrapper
+        data-test-automation-class="match-item"
+        data-test-automation-value={displayName.trim()}
         className={selected ? 'selected' : ''}
         onMouseDown={selectHandler}
       >
         {Avatar}
-        <DisplayName aria-label={displayName}>{displayName}</DisplayName>
+        <DisplayName aria-label="display-text">{displayName}</DisplayName>
       </Wrapper>
     );
   }
