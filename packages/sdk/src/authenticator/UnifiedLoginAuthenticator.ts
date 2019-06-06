@@ -103,7 +103,9 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
       code,
       redirect_uri: window.location.origin,
     });
-
+    if (!rcToken.timestamp) {
+      rcToken.timestamp = Date.now();
+    }
     notificationCenter.emit(SHOULD_UPDATE_NETWORK_TOKEN, { rcToken });
     return rcToken;
   }
