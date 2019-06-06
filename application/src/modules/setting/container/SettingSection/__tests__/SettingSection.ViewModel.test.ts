@@ -5,10 +5,9 @@
  */
 import { jupiter, container } from 'framework';
 import { SettingStore } from '../../../store';
-import { config } from '../../../module.config';
 import { SettingSectionViewModel } from '../SettingSection.ViewModel';
 
-jupiter.registerModule(config);
+jupiter.registerClass(SettingStore);
 
 function setup() {
   const settingStore: SettingStore = jupiter.get(SettingStore);

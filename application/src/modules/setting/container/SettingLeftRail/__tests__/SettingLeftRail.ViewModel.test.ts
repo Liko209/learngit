@@ -5,11 +5,12 @@
  */
 import { jupiter, container } from 'framework';
 import { ISettingService } from '@/interface/setting';
-import { SettingStore } from '../../../store';
-import { config } from '../../../module.config';
+import { SettingStore } from '../../../store/SettingStore';
+import { SettingService } from '../../../service/SettingService';
 import { SettingLeftRailViewModel } from '../SettingLeftRail.ViewModel';
 
-jupiter.registerModule(config);
+jupiter.registerClass(SettingStore);
+jupiter.registerService(ISettingService, SettingService);
 
 function setup() {
   const settingStore: SettingStore = jupiter.get(SettingStore);
