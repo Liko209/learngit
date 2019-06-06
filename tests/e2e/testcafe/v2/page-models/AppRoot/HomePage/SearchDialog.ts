@@ -286,7 +286,7 @@ class FullSearch extends BaseSearchResultPage {
   }
 
   get messagesTab() {
-    return this.getComponent(MessagesResultTab, this.self)
+    return this.getComponent(MessagesResultTab)
   }
 
   get searchResultsCount() {
@@ -330,6 +330,9 @@ class FullSearch extends BaseSearchResultPage {
 }
 
 class MessagesResultTab extends BaseConversationPage {
+  get self() {
+    return this.getSelectorByAutomationId('search-message-panel');
+  }
   /**  post */
   async allPostShouldBeByUser(name: string) {
     await H.retryUntilPass(async () => {
