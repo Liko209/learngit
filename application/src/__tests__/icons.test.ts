@@ -13,6 +13,13 @@ function getIconList(svgData: string): string[] {
 }
 
 describe('icon svg file', () => {
+  // will remove until upgrade material ui
+  beforeAll(() => {
+    // mock console for jest
+    (global as any)['console'] = {
+      error: jest.fn(),
+    };
+  });
   const file = fs.readFileSync(
     path.join(__dirname, '../../public/jupiter-icon.svg'),
     'utf8',
