@@ -19,6 +19,9 @@ import i18next from 'i18next';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { renderToStaticMarkup } from 'react-dom/server';
 
+jest.mock('@/utils/i18nT', () => ({
+  i18nP: (str: string) => str,
+}));
 jest.mock('@/store/utils');
 jest.mock('sdk/module/config/service/UserConfigService');
 jest.mock('sdk/module/account/config/AuthUserConfig');

@@ -668,6 +668,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
+  get quote() {
+    return this.self.find(`[data-name="text"]`).find('q');
+  }
+
   get href(){
     return this.self.find(`[href]`)
   }
