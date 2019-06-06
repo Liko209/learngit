@@ -26,7 +26,7 @@ fixture('Phone/IncomingCall')
     await session.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
   });
   await h(t).withLog('And I hover send to voicemail button', async () => {
-    await telephonyDialog.ensureLoaded();
+    await telephonyDialog.waitUntilVisible(telephonyDialog.sendToVoiceMailButton);
     await telephonyDialog.hoverSendToVoiceMailButton();
   });
   await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_Phone_SendToVoicemail' });

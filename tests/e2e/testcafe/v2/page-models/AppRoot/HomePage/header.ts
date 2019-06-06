@@ -16,8 +16,16 @@ export class Header extends BaseWebComponent {
     return this.getBackNForward('Back');
   }
 
+  get backButtonByClass() {
+    return this.getSelector('.chevron_left');
+  }
+
   get forwardButton() {
     return this.getBackNForward('Forward');
+  }
+
+  get forwardButtonByClass() {
+    return this.getSelector('.chevron_right');
   }
 
   get searchBar() {

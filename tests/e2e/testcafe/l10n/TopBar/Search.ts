@@ -95,9 +95,9 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
     await searchDialog.typeSearchKeyword(publicTeamWithoutMe.name);
     await t.click(theTeamWhichWithoutMe.self);
   });
-  await h(t).withLog('Then "Join team" popup should be displayed', async () => {
-    await t.expect(joinTeamDialog.cancelButton.exists).ok();
-  });
+  // await h(t).withLog('Then "Join team" popup should be displayed', async () => {
+  //   await t.expect(joinTeamDialog.cancelButton.exists).ok();
+  // });
   await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_JoinTeamPopup' });
 
   await h(t).withLog('When I click the "search" box again', async () => {
