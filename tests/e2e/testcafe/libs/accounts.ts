@@ -26,11 +26,12 @@ class AccountPoolClient implements IAccountPoolClient {
     this.accountLockApi = new AccountLockApi(this.baseUrl);
   }
 
-  async checkOutAccounts(accountType: string) {
+  async checkOutAccounts(accountType: string, lockTimeout: number = 30 * 60e3) {
     this.accountLockApi.basePath = this.baseUrl;
     const accountLockAcquireBody = new AccountLockAcquire();
     accountLockAcquireBody.envName = this.envName;
     accountLockAcquireBody.accountType = accountType;
+    accountLockAcquireBody.expiresIn = lockTimeout;
     let acquiredAccount = undefined;
     try {
       acquiredAccount = await this.accountLockApi.accountLocksPost(accountLockAcquireBody);
