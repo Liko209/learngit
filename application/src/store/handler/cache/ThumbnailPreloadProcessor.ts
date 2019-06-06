@@ -13,7 +13,6 @@ import { RULE } from '@/common/generateModifiedImageURL';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils/entities';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { camelCase } from 'lodash';
 import FileItemModel from '@/store/models/FileItem';
 
 class ImageDownloadedListener implements IImageDownloadedListener {
@@ -82,12 +81,8 @@ class ThumbnailPreloadProcessor implements IProcessor {
           return false;
         }
 
-        const fileItemModel = Object.keys(item).reduce((acc, key: string) => {
-          acc[camelCase(key)] = item[key];
-          return acc;
-        },                                             {}) as FileItemModel;
         const thumbnail = await getThumbnailURLWithType(
-          fileItemModel,
+          new FileItemModel(item),
           this._item.count && this._item.count > 1
             ? RULE.SQUARE_IMAGE
             : RULE.RECTANGLE_IMAGE,
