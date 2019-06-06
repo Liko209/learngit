@@ -1,5 +1,9 @@
 {
   "common": {
+    "button": {
+      "ariaToggleOn": "On, click to turn off",
+      "ariaToggleOff": "Off, click to turn on"
+    },
     "dialog": {
       "OK": "OK",
       "cancel": "Cancel",
@@ -255,6 +259,20 @@
       "verb-numerals-noun": "$t({{verb}}) {{count}} $t({{noun}})",
       "verb-numerals-prepositions-noun": "$t({{verb}}) {{count}}% of $t({{noun}})"
     },
+    "meeting": {
+      "videoCallInProgress": "Video Call in progress",
+      "videoCallEnded": "Video Call ended",
+      "videoCallCancelled": "Video Call cancelled",
+      "videoCallDuration": "Duration",
+      "startVideoCall": "Starting Video Call...",
+      "meetingUrl": "Meeting URL",
+      "meetingId": "Meeting ID",
+      "duration": "Duration",
+      "help": "Help",
+      "installProblems": "Installation problems?",
+      "readThis": "Read this"
+    },
+    "dialInNumber": "Dial-in Number",
     "avatarNamesWithOthers": " and other {{count}} people",
     "attachments": "Attachments",
     "assignee": "Assignee",
@@ -284,7 +302,6 @@
     "theFollowingFilesAlreadyExist": "The following file(s) already exist.",
     "wouldYouLikeToUpdateTheExistingFileOrCreateANewOne": "Would you like to update the existing file(s) or create a new one?",
     "audioConferenceTitle": "Audio Conference",
-    "dialInNumber": "Dial-in Number",
     "or": "or",
     "globalNumber": "Global Number",
     "hostCode": "Host Access",
@@ -589,10 +606,75 @@
   },
   "integration": {},
   "setting": {
+    "errorText": {
+      "server": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later.",
+      "network": "We weren't able to save your settings. Check your network connection, then try again."
+    },
     "Settings": "Settings",
     "teamSettings": "Settings",
     "general": "General",
-    "notificationAndSounds": "Notification and Sounds",
+    "notificationAndSounds": {
+      "title": "Notification and Sounds",
+      "otherNotificationSettings": {
+        "title": "Other notification settings",
+        "newMessageBadgeCount": {
+          "options": {
+            "groups_and_mentions": "Direct messages and mentions only",
+            "all": "All new messages"
+          },
+          "description": "Choose how the app will count new messages in the app badge count",
+          "label": "New message badge count"
+        }
+      },
+      "desktopNotifications": {
+        "title": "Desktop Notifications",
+        "notificationsForBrowser": {
+          "label": "Desktop notifications for browser",
+          "description": "Turn on/off desktop notifications on your web browser. Browser permission is needed for desktop notifications."
+        },
+        "newMessages": {
+          "label": "New Messages",
+          "description": "Choose your preference for desktop notifications for new messages",
+          "options": {
+            "always": "All new messages",
+            "mentions_or_dms": "Direct messages and mentions",
+            "never": "Off"
+          }
+        },
+        "incomingCalls": {
+          "label": "Incoming Calls",
+          "description": "Choose your preference for desktop notifications for incoming calls"
+        },
+        "callsAndVoicemails": {
+          "label": "Missed Calls and New Voicemails",
+          "description": "Choose your preference for desktop notifications for missed calls and new voicemails"
+        }
+      },
+      "emailNotifications": {
+        "title": "Email Notifications",
+        "directMessages": {
+          "label": "Direct messages",
+          "description": "Receive email notifications for direct messages"
+        },
+        "mentions": {
+          "label": "Mentions",
+          "description": "Receive email notifications for when you are mentioned"
+        },
+        "teams": {
+          "label": "Teams",
+          "description": "Receive email notifications for direct messages"
+        },
+        "dailyDigest": {
+          "label": "Daily Digest",
+          "description": "Receive Glip daily digest emails summarizing daily tasks and team events"
+        },
+        "options": {
+          "0": "Off",
+          "900000": "Every 15 minutes",
+          "3600000": "Every hour"
+        }
+      }
+    },
     "sounds": "Sounds",
     "messages": "Messages",
     "meetings": "Meetings",
@@ -604,13 +686,11 @@
         "title": "General",
         "callerID": {
           "label": "Caller ID",
-          "description": "Choose your default Caller ID for making RingCentral phone calls",
-          "errorText": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later."
+          "description": "Choose your default Caller ID for making RingCentral phone calls"
         },
         "extensions": {
           "label": "Extension settings",
-          "description": "Customize your RingCentral extension settings (call routing, voicemail greetings and more)",
-          "errorText": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later"
+          "description": "Customize your RingCentral extension settings (call routing, voicemail greetings and more)"
         },
         "regionSetting": {
           "label": "Region",
@@ -636,7 +716,13 @@
     "ConversationClosed": "You removed the conversation."
   },
   "notification": {
-    "mentioned": "You were mentioned"
+    "mentioned": "You were mentioned",
+    "notificationEnabled": "Notifications are now enabled.",
+    "notificationBlockedDialog": {
+      "title": "Notifications not allowed",
+      "content": "You currently have desktop notifications for RingCentral turned off. Update your browser settings to allow desktop notifications.",
+      "button": "OK"
+    }
   },
   "feedback": {
     "name": "Feedback",

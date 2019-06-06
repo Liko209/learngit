@@ -28,9 +28,8 @@ class SelectSettingItemViewComponent<
   T extends SourceItemType
 > extends Component<Props<T>> {
   @catchError.flash({
-    // TODO move the keys out of setting.phone
-    network: 'setting.phone.general.callerID.errorText',
-    server: 'setting.phone.general.callerID.errorText',
+    network: 'setting.errorText.network',
+    server: 'setting.errorText.server',
   })
   private _handleChange = async (event: ChangeEvent<HTMLSelectElement>) => {
     await this.props.saveSetting(event.target.value);
