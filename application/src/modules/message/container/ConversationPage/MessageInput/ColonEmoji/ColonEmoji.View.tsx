@@ -65,7 +65,7 @@ class ColonEmojiView extends Component<ColonEmojiViewProps, State> {
           ? MAX_ITEM_NUMBER * ITEM_HEIGHT
           : ITEM_HEIGHT * memberIdsLength;
       return (
-        <JuiMentionPanel isEditMode={isEditMode}>
+        <JuiMentionPanel automationId="ColonEmojiPanel" isEditMode={isEditMode}>
           <JuiMentionPanelSection>
             <JuiSizeDetector handleSizeChanged={this._handleSizeUpdate} />
             <JuiVirtualizedList

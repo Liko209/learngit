@@ -49,7 +49,7 @@ class JuiMentionPanelSectionItem extends PureComponent<Props> {
         onMouseDown={selectHandler}
       >
         {Avatar}
-        <DisplayName>{displayName}</DisplayName>
+        <DisplayName aria-label={displayName}>{displayName}</DisplayName>
       </Wrapper>
     );
   }
