@@ -262,6 +262,12 @@ export class SocketManager {
       return;
     }
 
+    // reset to default state
+    this._reconnectRetryCount = 0;
+    if (this._canReconnectController) {
+      this._canReconnectController.cleanup();
+    }
+
     this._restartFSM();
   }
 

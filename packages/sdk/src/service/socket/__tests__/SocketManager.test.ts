@@ -676,6 +676,10 @@ describe('Socket Manager', () => {
       expect(socketManager.isScreenLocked()).toBeFalsy();
       expect(socketManager.hasActiveFSM()).toBeFalsy();
 
+      socketManager['_reconnectRetryCount'] = 10;
+      socketManager['_canReconnectController'] = new SocketCanConnectController(
+        {},
+      );
       // online will create new FSM
       notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
         state: 'online',
@@ -684,6 +688,10 @@ describe('Socket Manager', () => {
       const fsmName2 = socketManager.activeFSM.name;
       expect(!!fsmName2).toBeTruthy();
       expect(fsmName2).not.toEqual(fsmName1);
+      expect(socketManager['_reconnectRetryCount']).toEqual(0);
+      expect(
+        socketManager['_canReconnectController'].cleanup,
+      ).toHaveBeenCalled();
     });
   });
 
