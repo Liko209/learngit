@@ -28,6 +28,7 @@ describe('SearchService', () => {
     searchService = new SearchService();
     searchServiceController = new SearchServiceController(searchService);
   }
+
   beforeEach(() => {
     clearMocks();
     setUp();
@@ -45,7 +46,9 @@ describe('SearchService', () => {
     beforeEach(() => {
       clearMocks();
       setUp();
-      recentSearchRecordController = new RecentSearchRecordController();
+      recentSearchRecordController = new RecentSearchRecordController(
+        null as any,
+      );
       Object.defineProperty(searchService, 'recentSearchRecordController', {
         get: jest.fn(() => recentSearchRecordController),
       });
@@ -68,12 +71,12 @@ describe('SearchService', () => {
       ).toBeCalled();
     });
 
-    it('getRecentSearchRecords', () => {
+    it('getRecentSearchRecords', async () => {
       const models = [{ id: 11 }];
       recentSearchRecordController.getRecentSearchRecords = jest
         .fn()
-        .mockReturnValue(models);
-      const res = searchService.getRecentSearchRecords();
+        .mockResolvedValue(models);
+      const res = await searchService.getRecentSearchRecords();
       expect(recentSearchRecordController.getRecentSearchRecords).toBeCalled();
       expect(res).toEqual(models);
     });
@@ -91,6 +94,31 @@ describe('SearchService', () => {
       expect(
         recentSearchRecordController.getRecentSearchRecordsByType,
       ).toBeCalledWith(RecentSearchTypes.GROUP);
+    });
+  });
+
+  describe('doFuzzySearchPersons', () => {
+    let searchPersonController: SearchPersonController;
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+
+      searchPersonController = new SearchPersonController(searchService);
+      Object.defineProperty(searchService, 'searchPersonController', {
+        get: jest.fn(() => searchPersonController),
+      });
+    });
+
+    it('should call correct parameter', () => {
+      const options = {
+        searchKey: 'test keys',
+        excludeSelf: true,
+      };
+      searchService.doFuzzySearchPersons(options);
+      expect(searchPersonController.doFuzzySearchPersons).toBeCalledWith({
+        searchKey: 'test keys',
+        excludeSelf: true,
+      });
     });
   });
 

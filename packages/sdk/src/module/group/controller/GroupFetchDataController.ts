@@ -195,7 +195,7 @@ export class GroupFetchDataController {
     const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
-      this._getTransformAllGroupFunc(
+      await this._getTransformAllGroupFunc(
         fetchAllIfSearchKeyEmpty,
         myGroupsOnly,
         recentFirst,
@@ -255,13 +255,13 @@ export class GroupFetchDataController {
     );
   }
 
-  private _getTransformGroupFunc(
+  private async _getTransformGroupFunc(
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
   ) {
     const groupConfigService = this._groupConfigService;
     const recentSearchedGroups = recentFirst
-      ? this._getRecentSearchGroups([RecentSearchTypes.GROUP])
+      ? await this._getRecentSearchGroups([RecentSearchTypes.GROUP])
       : undefined;
 
     return (group: Group, terms: Terms) => {
@@ -326,7 +326,7 @@ export class GroupFetchDataController {
     const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
-      this._getTransformGroupFunc(fetchAllIfSearchKeyEmpty, recentFirst),
+      await this._getTransformGroupFunc(fetchAllIfSearchKeyEmpty, recentFirst),
       undefined,
       searchKey,
       undefined,
@@ -361,20 +361,22 @@ export class GroupFetchDataController {
     };
   }
 
-  private _getRecentSearchGroups(types: RecentSearchTypes[]) {
+  private async _getRecentSearchGroups(types: RecentSearchTypes[]) {
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
 
     let result: Map<ModelIdType, RecentSearchModel> = new Map();
     for (const iterator of types) {
-      const recentGroups = searchService.getRecentSearchRecordsByType(iterator);
+      const recentGroups = await searchService.getRecentSearchRecordsByType(
+        iterator,
+      );
       result = new Map([...result].concat([...recentGroups]));
     }
     return result;
   }
 
-  private _getTransformAllGroupFunc(
+  private async _getTransformAllGroupFunc(
     fetchAllIfSearchKeyEmpty?: boolean,
     myGroupsOnly?: boolean,
     recentFirst?: boolean,
@@ -382,7 +384,7 @@ export class GroupFetchDataController {
     const groupConfigService = this._groupConfigService;
 
     const recentSearchedGroups = recentFirst
-      ? this._getRecentSearchGroups([
+      ? await this._getRecentSearchGroups([
           RecentSearchTypes.GROUP,
           RecentSearchTypes.TEAM,
         ])
@@ -510,13 +512,13 @@ export class GroupFetchDataController {
     return sortValue;
   }
 
-  private _getTransformTeamsFunc(
+  private async _getTransformTeamsFunc(
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
   ) {
     const groupConfigService = this._groupConfigService;
     const recentSearchedTeams = recentFirst
-      ? this._getRecentSearchGroups([RecentSearchTypes.TEAM])
+      ? await this._getRecentSearchGroups([RecentSearchTypes.TEAM])
       : undefined;
 
     const currentUserId = this._currentUserId;
@@ -598,7 +600,7 @@ export class GroupFetchDataController {
     const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
-      this._getTransformTeamsFunc(fetchAllIfSearchKeyEmpty, recentFirst),
+      await this._getTransformTeamsFunc(fetchAllIfSearchKeyEmpty, recentFirst),
       undefined,
       searchKey,
       undefined,

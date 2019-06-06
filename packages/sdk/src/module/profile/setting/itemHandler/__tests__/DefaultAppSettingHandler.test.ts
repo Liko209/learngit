@@ -202,6 +202,24 @@ describe('DefaultAppSettingHandler', () => {
       const res = await settingHandler.fetchUserSettingEntity();
       expect(res.state).toEqual(ESettingItemState.ENABLE);
     });
+    it('should return value is glip when backend value is undefined', async () => {
+      profileService.getProfile = jest.fn().mockReturnValue({
+        [SETTING_KEYS.CALL_OPTION]: undefined,
+      });
+      telephonyService.getVoipCallPermission.mockResolvedValue(false);
+
+      const res = await settingHandler.fetchUserSettingEntity();
+      expect(res.value).toEqual(CALLING_OPTIONS.GLIP);
+    });
+    it('should return value is ringcentral when backend value is ringcentral', async () => {
+      profileService.getProfile = jest.fn().mockReturnValue({
+        [SETTING_KEYS.CALL_OPTION]: CALLING_OPTIONS.RINGCENTRAL,
+      });
+      telephonyService.getVoipCallPermission.mockResolvedValue(false);
+
+      const res = await settingHandler.fetchUserSettingEntity();
+      expect(res.value).toEqual(CALLING_OPTIONS.RINGCENTRAL);
+    });
     it('should return entity', async () => {
       const mockProfile = {
         id: mockUserId,
