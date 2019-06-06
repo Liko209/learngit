@@ -54,6 +54,7 @@ const LeftResponsive = withResponsive(
     return cloneElement(props.content);
   },
   {
+    tag: 'sideBar',
     minWidth: LEFT_WIDTH,
     maxWidth: LEFT_WIDTH,
     defaultWidth: LEFT_WIDTH,
@@ -70,6 +71,7 @@ const DocumentResponsive = withResponsive(
     return cloneElement(props.content);
   },
   {
+    tag: 'document',
     minWidth: 400,
     priority: 2,
   },
