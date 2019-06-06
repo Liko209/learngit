@@ -11,7 +11,6 @@ import {
   primary,
   spacing,
 } from '../../../foundation/utils/styles';
-import { withHighlight } from '../../../hoc/withHighlight';
 
 type Props = {
   children?: React.ReactNode;
@@ -23,13 +22,17 @@ type States = {
   isShow: boolean;
 };
 
-const JuiEventCollapseContent = withHighlight([
-  'dangerouslySetInnerHTML.__html',
-])(styled.div`
+const JuiEventCollapseContent = styled.div`
   ${typography('body1')};
   color: ${grey('500')};
   margin-bottom: ${spacing(1)};
-`);
+  a {
+    color: ${primary('500')};
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;
 
 const StyledToggle = styled.div`
   display: inline-block;
@@ -52,12 +55,12 @@ class JuiEventCollapse extends React.PureComponent<Props, States> {
   }
 
   render() {
-    const { children, hideText, showText } = this.props;
+    const { children, hideText, showText, ...rest } = this.props;
     const { isShow } = this.state;
     return (
       <Fragment>
         {isShow && children}
-        <StyledToggle onClick={this.handleToggle}>
+        <StyledToggle onClick={this.handleToggle} {...rest}>
           {isShow ? hideText : showText}
         </StyledToggle>
       </Fragment>

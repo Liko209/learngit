@@ -19,6 +19,7 @@ type DialerContainerProps = {
 type DialerContainerViewProps = {
   keypadEntered: boolean;
   isDialer: boolean;
+  isForward: boolean;
   dtmfThroughKeypad: (digit: string) => void;
   dtmfThroughKeyboard: (digit: string) => void;
   clickToInput: (digit: string) => void;

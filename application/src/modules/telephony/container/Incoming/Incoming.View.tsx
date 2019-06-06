@@ -15,6 +15,7 @@ import { Answer } from '../Answer';
 import { CallActions, CallActionsProps } from '../CallActions';
 import { VoiceMail } from '../VoiceMail';
 import { Reply } from '../Reply';
+import { Forward } from '../Forward';
 import { INCOMING_STATE } from '../../store';
 
 const More = (props: CallActionsProps) => (
@@ -46,6 +47,9 @@ class IncomingViewComponent extends Component<Props> {
     switch (incomingState) {
       case INCOMING_STATE.REPLY:
         return <Reply />;
+
+      case INCOMING_STATE.FORWARD:
+        return <Forward />;
 
       default:
         return (

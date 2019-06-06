@@ -52,11 +52,11 @@ test(formalName(`Turn on/off Post message toggle should/shouldn't be able to pos
   const conversationPage = app.homePage.messageTab.conversationPage;
   const teamEntry = app.homePage.messageTab.teamsSection.conversationEntryById(teamId);
 
-
   await h(t).withLog(`When admin turn Post message toggle off and save`, async () => {
     await app.homePage.ensureLoaded();
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
     await teamSettingDialog.notAllowMemberPostMessage();
     await teamSettingDialog.save();
@@ -73,8 +73,9 @@ test(formalName(`Turn on/off Post message toggle should/shouldn't be able to pos
   await h(t).withLog(`When admin turn Post message toggle on and save`, async () => {
     await t.useRole(roleAdmin);
     await app.homePage.ensureLoaded();
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
     await teamSettingDialog.allowMemberPostMessage();
     await teamSettingDialog.save();

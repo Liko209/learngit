@@ -11,10 +11,10 @@ describe('Code', () => {
     const data = code();
     expect(data).toEqual({
       parameter: {
-        verb: 'item.activity.shared',
-        noun: 'item.activity.snippet',
+        verb: 'shared',
+        noun: 'snippet',
       },
-      key: 'item.activity.verb-article-noun',
+      key: 'item.activity.shared a snippet',
     });
   });
 });
