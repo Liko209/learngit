@@ -26,6 +26,7 @@ import notificationCenter from 'sdk/service/notificationCenter';
 import { telephonyLogger } from 'foundation';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import _ from 'lodash';
+import { ToggleController, ToggleRequest } from './ToggleController';
 
 interface IResultResolveFn {
   (
@@ -49,6 +50,8 @@ class TelephonyCallController implements IRTCCallDelegate {
     string,
     { resolve: IResultResolveFn; reject: IResultRejectFn }[]
   >;
+  private _holdToggle: ToggleController;
+  private _recordToggle: ToggleController;
 
   constructor(
     entityId: number,
@@ -58,6 +61,8 @@ class TelephonyCallController implements IRTCCallDelegate {
     this._entityId = entityId;
     this._initCallEntity();
     this._callActionCallbackMap = new Map();
+    this._holdToggle = new ToggleController();
+    this._recordToggle = new ToggleController();
   }
 
   private _initCallEntity() {
@@ -142,15 +147,55 @@ class TelephonyCallController implements IRTCCallDelegate {
     }
   }
 
+  private _handleHoldSuccess(
+    callAction: RTC_CALL_ACTION,
+    options: RTCCallActionSuccessOptions,
+  ) {
+    this._holdToggle.onSuccess();
+    this._handleCallActionCallback(callAction, true, options);
+  }
+
+  private _handleUnHoldSuccess(
+    callAction: RTC_CALL_ACTION,
+    options: RTCCallActionSuccessOptions,
+  ) {
+    this._holdToggle.onSuccess();
+    this._handleCallActionCallback(callAction, true, options);
+  }
+
+  private _handleStartRecordSuccess(
+    callAction: RTC_CALL_ACTION,
+    options: RTCCallActionSuccessOptions,
+  ) {
+    this._recordToggle.onSuccess();
+    this._handleCallActionCallback(callAction, true, options);
+  }
+
+  private _handleStopRecordSuccess(
+    callAction: RTC_CALL_ACTION,
+    options: RTCCallActionSuccessOptions,
+  ) {
+    this._recordToggle.onSuccess();
+    this._handleCallActionCallback(callAction, true, options);
+  }
+
   onCallActionSuccess(
     callAction: RTC_CALL_ACTION,
     options: RTCCallActionSuccessOptions,
   ) {
     switch (callAction) {
       case RTC_CALL_ACTION.HOLD:
+        this._handleHoldSuccess(callAction, options);
+        break;
       case RTC_CALL_ACTION.UNHOLD:
+        this._handleUnHoldSuccess(callAction, options);
+        break;
       case RTC_CALL_ACTION.START_RECORD:
+        this._handleStartRecordSuccess(callAction, options);
+        break;
       case RTC_CALL_ACTION.STOP_RECORD:
+        this._handleStopRecordSuccess(callAction, options);
+        break;
       case RTC_CALL_ACTION.PARK:
       case RTC_CALL_ACTION.FLIP:
       case RTC_CALL_ACTION.FORWARD:
@@ -174,11 +219,13 @@ class TelephonyCallController implements IRTCCallDelegate {
   private _handleHoldActionFailed() {
     this._updateCallHoldState(HOLD_STATE.IDLE);
     this._handleCallActionCallback(RTC_CALL_ACTION.HOLD, false);
+    this._holdToggle.onFailure();
   }
 
   private _handleUnHoldActionFailed() {
     this._updateCallHoldState(HOLD_STATE.HELD);
     this._handleCallActionCallback(RTC_CALL_ACTION.UNHOLD, false);
+    this._holdToggle.onFailure();
   }
 
   private _updateCallRecordState(state: RECORD_STATE) {
@@ -190,14 +237,17 @@ class TelephonyCallController implements IRTCCallDelegate {
       telephonyLogger.warn(`No entity is found for call: ${this._entityId}`);
     }
   }
+
   private _handleStartRecordActionFailed() {
     this._updateCallRecordState(RECORD_STATE.IDLE);
     this._handleCallActionCallback(RTC_CALL_ACTION.START_RECORD, false);
+    this._recordToggle.onFailure();
   }
 
   private _handleStopRecordActionFailed() {
     this._updateCallRecordState(RECORD_STATE.RECORDING);
     this._handleCallActionCallback(RTC_CALL_ACTION.STOP_RECORD, false);
+    this._recordToggle.onFailure();
   }
 
   onCallActionFailed(callAction: RTC_CALL_ACTION) {
@@ -255,7 +305,13 @@ class TelephonyCallController implements IRTCCallDelegate {
     this._updateCallHoldState(HOLD_STATE.HELD);
     return new Promise((resolve, reject) => {
       this._saveCallActionCallback(RTC_CALL_ACTION.HOLD, resolve, reject);
-      this._rtcCall.hold();
+      const request: ToggleRequest = {
+        value: true,
+        func: () => {
+          this._rtcCall.hold();
+        },
+      };
+      this._holdToggle.do(request);
     });
   }
 
@@ -263,7 +319,13 @@ class TelephonyCallController implements IRTCCallDelegate {
     this._updateCallHoldState(HOLD_STATE.IDLE);
     return new Promise((resolve, reject) => {
       this._saveCallActionCallback(RTC_CALL_ACTION.UNHOLD, resolve, reject);
-      this._rtcCall.unhold();
+      const request: ToggleRequest = {
+        value: false,
+        func: () => {
+          this._rtcCall.unhold();
+        },
+      };
+      this._holdToggle.do(request);
     });
   }
 
@@ -275,7 +337,13 @@ class TelephonyCallController implements IRTCCallDelegate {
         resolve,
         reject,
       );
-      this._rtcCall.startRecord();
+      const request: ToggleRequest = {
+        value: true,
+        func: () => {
+          this._rtcCall.startRecord();
+        },
+      };
+      this._recordToggle.do(request);
     });
   }
 
@@ -287,7 +355,13 @@ class TelephonyCallController implements IRTCCallDelegate {
         resolve,
         reject,
       );
-      this._rtcCall.stopRecord();
+      const request: ToggleRequest = {
+        value: false,
+        func: () => {
+          this._rtcCall.stopRecord();
+        },
+      };
+      this._recordToggle.do(request);
     });
   }
 
