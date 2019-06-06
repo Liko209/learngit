@@ -128,7 +128,7 @@ describe('FilesView', () => {
     beforeEach() {
       viewerService = container.get(VIEWER_SERVICE);
 
-      jest.spyOn(viewerService, 'show').mockImplementationOnce(() => {});
+      jest.spyOn(viewerService, 'open').mockImplementationOnce(() => {});
     }
     @test(
       'should the file types support in the full-screen viewer if [JPT-2036]',
@@ -145,7 +145,7 @@ describe('FilesView', () => {
         .find(FileCardMedia)
         .simulate('click', mockEvent);
       setTimeout(() => {
-        expect(viewerService.show).toHaveBeenCalled();
+        expect(viewerService.open).toHaveBeenCalled();
         done();
       }, 0);
     }
@@ -166,7 +166,7 @@ describe('FilesView', () => {
         .simulate('click', mockEvent);
 
       setTimeout(() => {
-        expect(Viewer.showImageViewer).not.toHaveBeenCalled();
+        expect(Viewer.open).not.toHaveBeenCalled();
         done();
       }, 0);
     }

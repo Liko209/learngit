@@ -5,7 +5,7 @@
  */
 
 interface IViewerService {
-  show: (itemId: number) => void;
+  open: (itemId: number) => void;
 }
 
 export { IViewerService };
