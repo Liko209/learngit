@@ -206,6 +206,9 @@ describe('ConfigMigrator', () => {
   describe('onDBInitialized', () => {
     it('should call init', () => {
       configMigrator.init.mockImplementationOnce(() => {});
+      const mockFunc = jest.fn();
+      configMigrator['_getConfig'].mockReturnValue({ setConfigDao: mockFunc });
+      daoManager.getDBKVDao = jest.fn();
       daoManager['_notifyDBInitialized']();
       expect(configMigrator.onDBInitialized).toBeCalled();
       expect(configMigrator['_dbConfigReady']).toBeTruthy();

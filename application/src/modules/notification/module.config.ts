@@ -6,15 +6,20 @@
 import { ModuleConfig } from 'framework';
 import { NotificationModule } from './notificationModule';
 import { NotificationService } from './service';
-import { INotificationService } from './interface';
-import { PERMISSION } from './interface/constant';
+import {
+  INotificationService,
+  INotificationSettingManager,
+  INotificationPermission,
+} from './interface';
+import { NotificationSettingManager } from './notificationSettingManager/notificationSettingManager';
 import { Permission } from './Permission';
 
 const config: ModuleConfig = {
   entry: NotificationModule,
   provides: [
     { name: INotificationService, value: NotificationService },
-    { name: PERMISSION, value: Permission },
+    { name: INotificationSettingManager, value: NotificationSettingManager },
+    { name: INotificationPermission, value: Permission },
   ],
 };
 

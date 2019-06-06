@@ -18,10 +18,12 @@ import i18nT from '@/utils/i18nT';
 import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
+import { UploadRecentLogs } from '@/modules/feedback';
 
 const globalStore = storeManager.getGlobalStore();
 
-class AvatarActionsViewModel extends StoreViewModel<Props> implements ViewProps {
+class AvatarActionsViewModel extends StoreViewModel<Props>
+  implements ViewProps {
   @observable
   private _isShowDialog: boolean = false;
 
@@ -80,7 +82,9 @@ class AvatarActionsViewModel extends StoreViewModel<Props> implements ViewProps 
   }
 
   private _doLogout = async () => {
-    const accountService = ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE);
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
     await accountService.logout();
     window.location.href = '/';
   }
@@ -90,6 +94,10 @@ class AvatarActionsViewModel extends StoreViewModel<Props> implements ViewProps 
     globalStore.set(GLOBAL_KEYS.ELECTRON_APP_VERSION, electronAppVersion || '');
     globalStore.set(GLOBAL_KEYS.ELECTRON_VERSION, electronVersion || '');
     globalStore.set(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG, !this._isShowDialog);
+  }
+
+  handleSendFeedback = () => {
+    UploadRecentLogs.show();
   }
 }
 

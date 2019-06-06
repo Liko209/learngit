@@ -139,7 +139,6 @@ export class ConversationCard extends React.Component<
       onHighlightAnimationStart,
       isEditMode,
       showActivityStatus,
-      terms,
       ...rest
     } = this.props;
     const { from, ...restNavigationProps } = this._navigationProps;
@@ -183,7 +182,7 @@ export class ConversationCard extends React.Component<
           )}
         </JuiConversationCardHeader>
         <JuiConversationCardBody data-name="body">
-          {!hideText && !isEditMode && <TextMessage id={id} terms={terms} />}
+          {!hideText && !isEditMode && <TextMessage id={id} />}
           {isEditMode && (
             <EditMessageInput viewRef={this._editMessageInputRef} id={id} />
           )}

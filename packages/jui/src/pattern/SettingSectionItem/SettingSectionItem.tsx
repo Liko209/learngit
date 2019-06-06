@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { RuiSlider } from 'rcui/components/Forms/Slider';
 import styled from '../../foundation/styled-components';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';
 import {
@@ -72,10 +73,16 @@ const RightWrap = styled.div`
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
-    overflow: hidden;
+    overflow: visible;
     width: 100%;
     flex: 1;
     padding-left: ${spacing(2.5)};
+  }
+
+  ${RuiSlider} {
+    flex: 1;
+    line-height: 0;
+    padding: ${spacing(5, 0)};
   }
 `;
 

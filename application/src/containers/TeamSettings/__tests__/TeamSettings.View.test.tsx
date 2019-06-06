@@ -31,6 +31,7 @@ jest.mock('sdk/module/serviceLoader', () => ({
     getInstance: () => ({
       onTeamDelete: jest.fn(),
       onTeamArchive: jest.fn(),
+      setConfigDao: jest.fn(),
     }),
   },
   ServiceConfig: {

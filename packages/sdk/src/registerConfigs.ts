@@ -43,6 +43,8 @@ import {
 import { ServiceConfig } from './module/serviceLoader';
 import { PhoneNumberService } from './module/phoneNumber';
 import { BadgeService } from './module/badge';
+import { CallLogService } from './module/RCItems/callLog';
+import { VoicemailService } from './module/RCItems/voicemail';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -94,6 +96,8 @@ const registerConfigs = {
     { name: ServiceConfig.SETTING_SERVICE, value: SettingService },
     { name: ServiceConfig.PHONE_NUMBER_SERVICE, value: PhoneNumberService },
     { name: ServiceConfig.BADGE_SERVICE, value: BadgeService },
+    { name: ServiceConfig.CALL_LOG_SERVICE, value: CallLogService },
+    { name: ServiceConfig.VOICEMAIL_SERVICE, value: VoicemailService },
 
     // Manager
     {

@@ -1,8 +1,8 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-02-18 16:59:52 
+ * @Author: Potar.He
+ * @Date: 2019-02-18 16:59:52
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-03-14 17:40:03
+ * @Last Modified time: 2019-06-04 19:16:17
  */
 import * as assert from 'assert';
 import * as _ from 'lodash';
@@ -57,9 +57,12 @@ test(formalName('Only admin has the ability to remove members from the team', ['
   });
 
   const profileDialog = app.homePage.profileDialog;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog('And admin1 open team profile dialog', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   }, true);
 
   await h(t).withLog('When admin1 hover admin1 row in members list', async () => {
@@ -184,9 +187,12 @@ test(formalName('The remove team member permission should sync dynamically', ['J
   });
 
   const profileDialog = app.homePage.profileDialog;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog('And login user open team profile dialog', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   }, true);
 
 
@@ -222,8 +228,9 @@ test(formalName('The remove team member permission should sync dynamically', ['J
   });
 
   await h(t).withLog('And login user open team profile dialog', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   }, true);
 
   await h(t).withLog(`And The other admin changed login user's role to admin`, async () => {
@@ -314,9 +321,12 @@ test(formalName(`The team should be removed from the removed member's side`, ['J
     await app.homePage.ensureLoaded();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`And open the team profile dialog`, async () => {
-    await teamSection.conversationEntryById(team.glipId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamSection.conversationEntryById(team.glipId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   }, true);
 
   const otherUsers = [anotherAdmin, normalMember];

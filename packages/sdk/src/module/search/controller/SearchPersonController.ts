@@ -286,7 +286,7 @@ class SearchPersonController {
     ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
     const recentSearchedPersons = recentFirst
-      ? this._searchService.getRecentSearchRecordsByType(
+      ? await this._searchService.getRecentSearchRecordsByType(
           RecentSearchTypes.PEOPLE,
         )
       : undefined;

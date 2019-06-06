@@ -22,12 +22,14 @@ type SectionViewProps = {
   expanded: boolean;
   iconName: string;
   title: string;
+  dataNameForTest: string;
   onSortEnd: SortEndHandler;
   handleCollapse: Function;
   handleExpand: Function;
 } & SectionProps;
 
 type SectionConfig = {
+  dataNameForTest: string;
   title: string;
   iconName: string;
   sortable?: boolean;

@@ -218,7 +218,13 @@ function formatSeconds(seconds: number) {
     hourTime: twoDigit(hourTime),
   };
 }
-
+function formatDuration(milliSeconds: number) {
+  const hours = Math.floor((milliSeconds / (1000 * 60 * 60)) % 24);
+  if (hours >= 1) {
+    return moment.utc(milliSeconds).format('HH:mm:ss');
+  }
+  return moment.utc(milliSeconds).format('mm:ss');
+}
 export {
   getDateTimeStamp,
   getDateMessage,
@@ -228,6 +234,7 @@ export {
   dateFormatter,
   handleTimeZoneOffset,
   formatSeconds,
+  formatDuration,
 };
 
 // 7 days inside

@@ -20,18 +20,29 @@ import { showImageViewer } from '@/modules/viewer/container/Viewer';
 import { getFileSize } from './helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
+import {
+  isSupportFileViewer,
+  isFileReadyForViewer,
+} from '@/common/getFileType';
 import { withFuture, FutureCreator } from 'jui/hoc/withFuture';
 import { UploadFileTracker } from './UploadFileTracker';
 import { Download } from '@/containers/common/Download';
 import { accelerateURL } from '@/common/accelerateURL';
 import moize from 'moize';
 import { FileActionMenu } from '@/containers/common/fileAction';
+import {
+  postParser,
+  SearchHighlightContext,
+  HighlightContextInfo,
+} from '@/common/postParser';
 
 const SQUARE_SIZE = 180;
 const FutureAttachmentItem = withFuture(AttachmentItem);
 
 @observer
 class FilesView extends React.Component<FilesViewProps> {
+  static contextType = SearchHighlightContext;
+  context: HighlightContextInfo;
   componentWillUnmount() {
     this.props.dispose();
   }
@@ -59,7 +70,9 @@ class FilesView extends React.Component<FilesViewProps> {
         fileIcon={getFileIcon(name)}
         status={realStatus}
         key={id}
-        name={name}
+        name={postParser(name, {
+          fileName: true,
+        })}
         progress={progress}
         onClickDeleteButton={() => this.props.removeFile(id)}
         future={future}
@@ -149,7 +162,10 @@ class FilesView extends React.Component<FilesViewProps> {
                   height={size.height}
                   forceSize={!singleImage}
                   squareSize={SQUARE_SIZE}
-                  fileName={name}
+                  fileName={postParser(name, {
+                    fileName: true,
+                    keyword: this.context.keyword,
+                  })}
                   url={accelerateURL(urlMap.get(id)) || ''}
                   Actions={this._getActions(downloadUrl, id, postId)}
                 />
@@ -177,7 +193,10 @@ class FilesView extends React.Component<FilesViewProps> {
               height={size.height}
               forceSize={!singleImage}
               squareSize={SQUARE_SIZE}
-              fileName={name}
+              fileName={postParser(name, {
+                fileName: true,
+                keyword: this.context.keyword,
+              })}
               url={accelerateURL(urlMap.get(id)) || ''}
               Actions={this._getActions(downloadUrl, id, postId)}
             />
@@ -185,18 +204,25 @@ class FilesView extends React.Component<FilesViewProps> {
         })}
         {files[FileType.document].map((file: ExtendFileItem) => {
           const { item, previewUrl } = file;
-          const { size, type, id, name, downloadUrl } = item;
+          const { size, type, id, name, downloadUrl, versions } = item;
+          const { status } = versions[0];
           const iconType = getFileIcon(type);
+          const supportFileViewer = isSupportFileViewer(type);
+          const fileReadyForViewer = isFileReadyForViewer(status);
           if (id < 0) {
             return this._renderItem(id, progresses, name);
           }
           return (
             <JuiFileWithPreview
               key={id}
-              fileName={name}
+              fileName={postParser(name, {
+                fileName: true,
+                keyword: this.context.keyword,
+              })}
               size={`${getFileSize(size)}`}
               url={accelerateURL(previewUrl)!}
               iconType={iconType}
+              disabled={supportFileViewer && !fileReadyForViewer}
               Actions={this._getActions(downloadUrl, id, postId)}
             />
           );
@@ -211,7 +237,10 @@ class FilesView extends React.Component<FilesViewProps> {
           return (
             <JuiFileWithoutPreview
               key={id}
-              fileName={name}
+              fileName={postParser(name, {
+                fileName: true,
+                keyword: this.context.keyword,
+              })}
               size={`${getFileSize(size)}`}
               iconType={iconType}
               Actions={this._getActions(downloadUrl, id, postId)}
