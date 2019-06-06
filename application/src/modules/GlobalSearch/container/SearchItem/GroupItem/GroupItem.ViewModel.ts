@@ -11,6 +11,7 @@ import GroupModel from '@/store/models/Group';
 import { SearchService } from 'sdk/module/search';
 import { Props, RecentSearchTypes, ISearchItemModel } from '../types';
 import { SearchViewModel } from '../../common/Search.ViewModel';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 class GroupItemViewModel extends SearchViewModel<Props>
   implements ISearchItemModel {
@@ -19,10 +20,10 @@ class GroupItemViewModel extends SearchViewModel<Props>
 
     this.reaction(
       () => this.group,
-      (group: GroupModel) => {
+      async (group: GroupModel) => {
         this.props.didChange();
         if (group.isArchived || group.deactivated) {
-          SearchService.getInstance().removeRecentSearchRecords(
+          await this._getSearchService().removeRecentSearchRecords(
             new Set([group.id]),
           );
         }
@@ -62,9 +63,15 @@ class GroupItemViewModel extends SearchViewModel<Props>
   addRecentRecord = () => {
     const { isTeam } = this.group;
 
-    SearchService.getInstance().addRecentSearchRecord(
+    this._getSearchService().addRecentSearchRecord(
       isTeam ? RecentSearchTypes.TEAM : RecentSearchTypes.GROUP,
       this.props.id,
+    );
+  }
+
+  private _getSearchService() {
+    return ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
     );
   }
 }

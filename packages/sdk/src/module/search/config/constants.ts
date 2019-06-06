@@ -4,8 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+const SEARCH_MODULE_NAME = 'search';
+
 enum SEARCH_CONFIG_KEYS {
   RECENT_SEARCH_RECORDS = 'recent_search_records',
 }
 
-export { SEARCH_CONFIG_KEYS };
+export { SEARCH_CONFIG_KEYS, SEARCH_MODULE_NAME };

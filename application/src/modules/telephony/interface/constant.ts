@@ -3,4 +3,5 @@ export const ANONYMOUS = 'anonymous';
 export enum CALL_ACTION {
   FORWARD,
   REPLY,
+  FLIP,
 }

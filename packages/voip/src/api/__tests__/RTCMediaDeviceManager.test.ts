@@ -6,6 +6,9 @@
 
 import { RTCMediaDeviceManager } from '../RTCMediaDeviceManager';
 
+navigator.mediaDevices = {
+  enumerateDevices: jest.fn(),
+} as any;
 describe('Media device', () => {
   const devices1: MediaDeviceInfo[] = [
     {
@@ -101,12 +104,16 @@ describe('Media device', () => {
       groupId: '4',
     },
   ];
-
-  it("should do nothing if device list doesn't change when add/remove device. [JPT-1728]", () => {
+  it("should do nothing if device list doesn't change when add/remove device. [JPT-1728]", async () => {
+    (navigator.mediaDevices.enumerateDevices as jest.Mock).mockResolvedValue([
+      ...devices1,
+    ]);
     RTCMediaDeviceManager.instance()._gotMediaDevices(devices1);
+
     jest.spyOn(RTCMediaDeviceManager.instance(), 'setAudioInputDevice');
     jest.spyOn(RTCMediaDeviceManager.instance(), 'setAudioOutputDevice');
-    RTCMediaDeviceManager.instance()._gotMediaDevices(devices1);
+    await RTCMediaDeviceManager.instance()['_onMediaDevicesChange']();
+    // RTCMediaDeviceManager.instance()._gotMediaDevices(devices1);
     expect(
       RTCMediaDeviceManager.instance().setAudioInputDevice,
     ).not.toBeCalled();
@@ -146,12 +153,16 @@ describe('Media device', () => {
     RTCMediaDeviceManager.instance()._gotMediaDevices(devices1);
     jest.spyOn(RTCMediaDeviceManager.instance(), 'setAudioInputDevice');
     jest.spyOn(RTCMediaDeviceManager.instance(), 'setAudioOutputDevice');
+    jest.spyOn(RTCMediaDeviceManager.instance(), '_updateAudioDevices');
     RTCMediaDeviceManager.instance()._gotMediaDevices(devices3);
     expect(
       RTCMediaDeviceManager.instance().setAudioInputDevice,
     ).not.toBeCalled();
     expect(
       RTCMediaDeviceManager.instance().setAudioOutputDevice,
+    ).not.toBeCalled();
+    expect(
+      RTCMediaDeviceManager.instance()['_updateAudioDevices'],
     ).not.toBeCalled();
   });
 
@@ -175,12 +186,16 @@ describe('Media device', () => {
     );
   });
 
-  it('should save current device id as real device id when got real device id successfully. [JPT-1732]', () => {
+  it('should save current device id as real device id when got real device id successfully. [JPT-1732]', async () => {
     RTCMediaDeviceManager.instance().destroy();
-    RTCMediaDeviceManager.instance()._gotMediaDevices(devices1);
+    // RTCMediaDeviceManager.instance()._gotMediaDevices(devices1);
     jest.spyOn(RTCMediaDeviceManager.instance(), 'setAudioInputDevice');
     jest.spyOn(RTCMediaDeviceManager.instance(), 'setAudioOutputDevice');
-    RTCMediaDeviceManager.instance()._gotMediaDevices(devices5);
+    (navigator.mediaDevices.enumerateDevices as jest.Mock).mockResolvedValue([
+      ...devices1,
+      ...devices5,
+    ]);
+    await RTCMediaDeviceManager.instance()['_onMediaDevicesChange']();
     expect(RTCMediaDeviceManager.instance().setAudioInputDevice).toBeCalledWith(
       'b',
     );
