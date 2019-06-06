@@ -8,12 +8,12 @@ import { IProcessor } from 'sdk/framework/processor';
 import { ItemService, FileItemUtils } from 'sdk/module/item';
 import { getThumbnailURLWithType, IMAGE_TYPE } from '@/common/getThumbnailURL';
 import { Pal, DownloadItemInfo, IImageDownloadedListener } from 'sdk/pal';
-
 import { mainLogger } from 'sdk';
 import { RULE } from '@/common/generateModifiedImageURL';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils/entities';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import FileItemModel from '@/store/models/FileItem';
 
 class ImageDownloadedListener implements IImageDownloadedListener {
   constructor(private _waiter: any) {}
@@ -82,15 +82,7 @@ class ThumbnailPreloadProcessor implements IProcessor {
         }
 
         const thumbnail = await getThumbnailURLWithType(
-          {
-            id: item.id,
-            type: item.type,
-            versionUrl:
-              item.versions.length && item.versions[0].url
-                ? item.versions[0].url
-                : '',
-            versions: item.versions,
-          },
+          new FileItemModel(item),
           this._item.count && this._item.count > 1
             ? RULE.SQUARE_IMAGE
             : RULE.RECTANGLE_IMAGE,

@@ -1,5 +1,6 @@
 import { BaseWebComponent } from "../../BaseWebComponent";
 import { H } from '../../../helpers';
+import { DeleteTeamDialog } from "./DeleteTeamDialog";
 
 export class MoreActionOnFile extends BaseWebComponent{
 
@@ -15,12 +16,20 @@ export class MoreActionOnFile extends BaseWebComponent{
     return this.getSelectorByAutomationId('fileNameEditItem');
   }
 
+  get deleteFileMenu() {
+    return this.getSelectorByAutomationId('fileDeleteItem');
+  }
+
   get fileActionMenuList(){
     return this.getSelectorByAutomationId('fileActionMenuList');
   }
 
   get renameFileDialog(){
     return this.getComponent(RenameFileDialog);
+  }
+
+  get confirmDeleteDialog(){
+    return this.getComponent(ConfirmDeleteDialog);
   }
 
 
@@ -31,9 +40,13 @@ export class MoreActionOnFile extends BaseWebComponent{
   async clickMore(){
     await this.t.click(this.more);
   }
-  
+
   async clickRenameFileMenu(){
     await this.t.click(this.renameFileMenu);
+  }
+
+  async clickDeleteFile(){
+    await this.t.click(this.deleteFileMenu);
   }
 
   async renameFileMenuAtTop(menu:string){
@@ -45,17 +58,17 @@ export class MoreActionOnFile extends BaseWebComponent{
 export class RenameFileDialog extends BaseWebComponent{
 
     get self(){
-      return this.getSelectorByAutomationId('fileNameEditDialog');  
+      return this.getSelectorByAutomationId('fileNameEditDialog');
     }
-  
+
     get cancelButton(){
       return this.getSelectorByAutomationId('DialogCancelButton');
     }
-  
+
     get saveButton(){
       return this.getSelectorByAutomationId('DialogOKButton');
     }
-   
+
     get fileNameInput(){
       return this.getSelectorByAutomationId('fileNameEditInput');
     }
@@ -63,24 +76,24 @@ export class RenameFileDialog extends BaseWebComponent{
     get fileNameInputValue(){
       return this.getSelectorByAutomationId('followSuffixTextFieldInputValue');
     }
-  
+
     get fileNameSuffix(){
       return this.getSelectorByAutomationId('followSuffixTextFieldSuffixEl');
     }
-  
+
     async clickCancelButton(){
       await this.t.click(this.cancelButton);
     }
-  
+
     async clickSaveButton(){
       await this.t.click(this.saveButton);
       await this.waitForAllSpinnersToDisappear();
     }
-  
+
     async updateFileName(text:string){
       await this.clickAndTypeText(this.fileNameInput,text, { replace: true, paste: true });
     }
-  
+
     async existFileNameWithSuffix(name:string, suffix:string){
       await this.t.expect(this.fileNameInputValue.withExactText(name).exists).ok();
       await this.t.expect(this.fileNameSuffix.withExactText(H.escapePostText(suffix)).exists).ok();
@@ -93,5 +106,33 @@ export class RenameFileDialog extends BaseWebComponent{
     async clearFileNameInput(){
       await this.t.selectTextAreaContent(this.fileNameInput).pressKey('delete');
     }
-  
+
   }
+
+export class ConfirmDeleteDialog extends BaseWebComponent{
+  get self(){
+    return this.getSelectorByAutomationId('confirmDeleteDialog');
+  }
+
+  get cancelButton(){
+    return this.getSelectorByAutomationId('DialogCancelButton');
+  }
+
+  get deleteButton(){
+    return this.getSelectorByAutomationId('DialogOKButton');
+  }
+
+  get dialogTitle() {
+    return this.getSelectorByAutomationId('DialogTitle');
+  }
+
+  async clickCancelButton(){
+    await this.t.click(this.cancelButton);
+  }
+
+
+  async clickDeleteButton(){
+    await this.t.click(this.deleteButton);
+    await this.waitForAllSpinnersToDisappear();
+  }
+}
