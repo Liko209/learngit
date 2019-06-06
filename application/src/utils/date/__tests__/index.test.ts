@@ -3,7 +3,7 @@
  * @Date: 2019-01-10 10:26:01
  * Copyright © RingCentral. All rights reserved.
  */
-import { dateFormatter, formatSeconds } from '../';
+import { dateFormatter, formatSeconds, formatDuration } from '../';
 
 describe('dateFormatter', () => {
   it('format date', () => {
@@ -50,5 +50,13 @@ describe('dateFormatter', () => {
     expect(secondTime).toBe('01');
     expect(minuteTime).toBe('01');
     expect(hourTime).toBe('01');
+  });
+  it('should return well formatted time while get milli seconds', () => {
+    const formatMinutes = formatDuration(200000);
+    const formatHours = formatDuration(3601234);
+    const formatSeconds = formatDuration(59000);
+    expect(formatMinutes).toBe('03:20');
+    expect(formatHours).toBe('01:00:01');
+    expect(formatSeconds).toBe('00:59');
   });
 });

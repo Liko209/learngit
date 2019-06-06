@@ -64,12 +64,6 @@ const StyledConversationCard = styled<
     background: ${grey('50')};
   }
   ${({ mode }) => mode === 'navigation' && navigationStyles};
-  }
-
-  & .highlight-term {
-    color: ${palette('text', 'primary')};
-    background-color: ${palette('secondary', '100')};
-  }
 `;
 const highlightBg = ({ theme }: any) =>
   tinycolor(palette('semantic', 'critical')({ theme }))

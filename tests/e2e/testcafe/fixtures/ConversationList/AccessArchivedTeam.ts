@@ -55,10 +55,10 @@ test(formalName('Bookmarks/@mentions behavior of Archived Teams', ['JPT-1727', '
   });
 
   await h(t).withLog('And I archive the team', async () => {
-    await teamsSection.expand();
-    const teamItem = teamsSection.conversationEntryById(team.glipId);
-    await teamItem.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    const teamEntry = app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId);
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
     await teamSettingDialog.clickArchiveTeamButton();
     await archiveTeamDialog.clickArchiveButton();

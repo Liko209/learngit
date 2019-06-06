@@ -23,6 +23,7 @@ type FilesViewProps = {
   };
   progresses: Map<number, number>;
   ids: number[];
+  getCurrentVersionIndex: (itemId: number) => number;
   removeFile: (id: number) => void;
   dispose: () => void;
   urlMap: Map<number, string>;

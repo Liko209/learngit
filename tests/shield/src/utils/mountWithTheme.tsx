@@ -24,6 +24,7 @@ const theme = {
   },
   overrides: {},
   palette: {
+    getContrastText: () => '',
     common: { black: '#000', white: '#fff' },
     type: 'light',
     primary: {
@@ -299,6 +300,7 @@ const theme = {
   },
   spacing: { unit: 4 },
   transitions: {
+    create: () => '',
     easing: {
       easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
       easeOut: 'cubic-bezier(0.0, 0, 0.2, 1)',
@@ -341,6 +343,7 @@ const theme = {
     val3: '0 3px 1px -2px rgba(0, 0, 0, 0.14)',
   },
   maxHeight: { dialog: '72vh' },
+  opacity: [0.1, 0.2],
 };
 
 const mountWithTheme = (content: React.ReactNode) =>
