@@ -99,6 +99,33 @@ class FileActionController {
     );
   }
 
+  async deleteFile(itemId: number, version: number) {
+    const preHandlePartial = (
+      partialItem: Partial<Raw<ItemFile>>,
+      originalItem: ItemFile,
+    ): Partial<Raw<ItemFile>> => {
+      const { versions } = originalItem;
+      const activatedItem = versions.filter(item => {
+        return !item.deactivated;
+      });
+      if (activatedItem.length > 1) {
+        partialItem.deactivate_version = version;
+      } else {
+        partialItem.deactivated = true;
+      }
+      return partialItem;
+    };
+
+    await this._partialModifyController.updatePartially(
+      itemId,
+      preHandlePartial,
+      async (newItem: ItemFile) => {
+        const requestController = this._sourceController.getRequestController();
+        return await requestController!.put(newItem);
+      },
+    );
+  }
+
   private _replaceHostWithProxy(url: string) {
     return url.replace('s3.amazonaws.com', 's3-accelerate.amazonaws.com');
   }

@@ -18,7 +18,7 @@ jest.mock('sdk/module/config');
 
 import { ListSearchResultViewModel } from '../ListSearchResult.ViewModel';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-
+const userId = 1232222;
 const mockGroupEntity = {
   displayName: 'Socket001',
   entity: {
@@ -78,7 +78,7 @@ describe('ListSearchResultViewModel', () => {
       if (type === ServiceConfig.SEARCH_SERVICE) {
         return searchService;
       }
-      return null;
+      return { userConfig:{ getGlipUserId: () => userId }};
     });
   }
 

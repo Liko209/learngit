@@ -5,11 +5,13 @@
  */
 
 import { getEntity } from '@/store/utils';
-import { Notification } from '@/containers/Notification';
 import { ProfileDialogGroupViewModel } from '../Group.ViewModel';
+import { i18nP } from '@/utils/i18nT';
+import { Notification } from '@/containers/Notification';
 
-jest.mock('@/store/utils');
 jest.mock('@/containers/Notification');
+jest.mock('@/store/utils');
+jest.mock('@/utils/i18nT');
 
 const mockData = {
   displayName: 'Group name',
@@ -25,7 +27,8 @@ let vm: ProfileDialogGroupViewModel;
 describe('ProfileDialogGroupViewModel', () => {
   beforeAll(() => {
     (getEntity as jest.Mock).mockReturnValue(mockData);
-    Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
+    (i18nP as jest.Mock).mockReturnValue('');
+    Notification.flashToast = jest.fn();
   });
 
   beforeEach(() => {
