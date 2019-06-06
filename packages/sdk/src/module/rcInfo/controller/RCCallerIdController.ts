@@ -53,16 +53,16 @@ class RCCallerIdController {
     let result = [];
     result = this._addBlockedNumber(callerIdList);
     result = result.filter(
-      item =>
+      (item: PhoneNumberModel) =>
         !CALLER_ID_FILTER_TYPE.includes(item.usageType as PhoneNumberType),
     );
-    result = result.map(item => {
+    result = result.map((item: PhoneNumberModel) => {
       const { id, phoneNumber, usageType, label } = item;
       return {
         id,
         phoneNumber,
         usageType: label ? PhoneNumberType.NickName : usageType,
-        label: label ? label : CALLER_ID_LABEL[usageType],
+        label: label || CALLER_ID_LABEL[usageType],
       };
     });
     result.sort(this._recordsSortFn.bind(this));
