@@ -394,6 +394,9 @@ export class ProfileDialog extends BaseWebComponent {
     await this.t.click(this.joinTeamButton);
   }
 
+  get profileType() {
+    return this.profileTitle.getAttribute('data-profile-type');
+  }
 }
 class Member extends BaseWebComponent {
   get uid() {

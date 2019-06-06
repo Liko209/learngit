@@ -33,6 +33,7 @@ class RTCRegistrationManager extends EventEmitter2
   private _userAgent: IRTCUserAgent;
   private _retryTimer: NodeJS.Timeout | null = null;
   private _retryInterval: number;
+  private _regFailedFirstTime: boolean = true;
   private _userInfo: RTCUserInfo;
 
   onNetworkChangeToOnlineAction(): void {
@@ -81,6 +82,7 @@ class RTCRegistrationManager extends EventEmitter2
 
   private _onEnterReady() {
     this._clearRegisterRetryTimer();
+    this._regFailedFirstTime = true;
     this.emit(
       REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
       RTC_ACCOUNT_STATE.REGISTERED,
@@ -284,9 +286,14 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   private _calculateNextRetryInterval() {
-    this._retryInterval =
-      registerRetryMinValue +
-      Math.floor(Math.random() * registerRetryValueFloatRange);
+    if (this._regFailedFirstTime) {
+      this._retryInterval = 5;
+      this._regFailedFirstTime = false;
+    } else {
+      this._retryInterval =
+        registerRetryMinValue +
+        Math.floor(Math.random() * registerRetryValueFloatRange);
+    }
   }
 
   private _restartUA(

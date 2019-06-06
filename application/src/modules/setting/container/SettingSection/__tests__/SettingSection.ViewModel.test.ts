@@ -38,7 +38,7 @@ describe('SettingSectionViewModel', () => {
     it('should return sections in the page', () => {
       const { vm, settingStore } = setup();
       jest
-        .spyOn<SettingStore, any>(settingStore, 'getSectionItems')
+        .spyOn<SettingStore, any>(settingStore, 'getSectionVisibleItems')
         .mockReturnValue([1, 2]);
 
       expect(vm.itemIds).toEqual([1, 2]);
