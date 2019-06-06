@@ -42,7 +42,7 @@ test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'Profile', 'V1.4', 'Han
   const unFavoriteStatusIcon = profileDialog.unFavoriteStatusIcon;
 
   await h(t).withLog('When I hover "Favorites" button', async() => {
-    if(t.expect(favoriteButton.exists).ok()){
+    if(favoriteButton.exists){
       await t.hover(favoriteButton);
     }
     else{
