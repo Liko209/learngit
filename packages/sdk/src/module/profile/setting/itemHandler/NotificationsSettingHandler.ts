@@ -88,6 +88,7 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
   }
   async onNotificationPermissionUpdate(payload: NotificationPermission) {
     const lastPermission =
+      this.userSettingEntityCache &&
       this.userSettingEntityCache.value &&
       this.userSettingEntityCache.value.browserPermission;
     if (payload !== lastPermission) {
@@ -104,6 +105,7 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
       return;
     }
     const lastPermission =
+      this.userSettingEntityCache &&
       this.userSettingEntityCache.value &&
       this.userSettingEntityCache.value.wantNotifications;
     if (profile[SETTING_KEYS.DESKTOP_NOTIFICATION] !== lastPermission) {
