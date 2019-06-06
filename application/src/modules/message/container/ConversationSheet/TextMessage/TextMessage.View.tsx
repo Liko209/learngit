@@ -16,20 +16,11 @@ import {
 class TextMessageView extends React.Component<TextMessageViewProps> {
   static contextType = SearchHighlightContext;
   context: HighlightContextInfo;
-  state = {
-    content: '',
-  };
-
-  async componentDidMount() {
-    this.setState({
-      content: await this.props.getContent(this.context.keyword),
-    });
-  }
 
   render() {
     return (
       <JuiConversationPostText data-name="text">
-        {this.state.content}
+        {this.props.getContent(this.context.keyword)}
       </JuiConversationPostText>
     );
   }

@@ -19,7 +19,9 @@ import i18next from 'i18next';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-jest.mock('@/utils/i18nT', () => (str: string) => Promise.resolve(str));
+jest.mock('@/utils/i18nT', () => ({
+  i18nP: (str: string) => str,
+}));
 jest.mock('@/store/utils');
 jest.mock('sdk/module/config/service/UserConfigService');
 jest.mock('sdk/module/account/config/AuthUserConfig');
@@ -97,39 +99,35 @@ describe('TextMessageViewModel', () => {
         endpoint_id: 1234,
       });
     });
-    it('should be get url format text when text has link', async () => {
+    it('should be get url format text when text has link', () => {
       mockPostData.text = 'https://www.baidu.com';
-      expect(
-        renderToStaticMarkup((await vm.getContent()) as React.ReactElement),
-      ).toBe(
+      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
         `<a href="https://www.baidu.com" target="_blank" rel="noreferrer">https://www.baidu.com</a>`,
       );
     });
 
-    it('should be get email format text when text has email', async () => {
+    it('should be get email format text when text has email', () => {
       mockPostData.text = 'xxx@163.com';
-      expect(
-        renderToStaticMarkup((await vm.getContent()) as React.ReactElement),
-      ).toBe(
+      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
         `<a href="mailto:xxx@163.com" target="_blank" rel="noreferrer">xxx@163.com</a>`,
       );
     });
 
-    it('should be get bold font format text when there are two asterisks before and after', async () => {
+    it('should be get bold font format text when there are two asterisks before and after', () => {
       mockPostData.text = '**awesome**';
-      expect(
-        renderToStaticMarkup((await vm.getContent()) as React.ReactElement),
-      ).toBe('<b>awesome</b>');
+      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+        '<b>awesome</b>',
+      );
     });
-    it('should return hyperlink while get valid links', async () => {
+    it('should return hyperlink while get valid links', () => {
       jest.spyOn(utils, 'getGlobalValue').mockReturnValue(true);
 
       mockPostData.text = `${phoneNumber}`;
-      expect(
-        renderToStaticMarkup((await vm.getContent()) as React.ReactElement),
-      ).toBe(`MockPhoneNumberLink: ${phoneNumber}`);
+      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+        `MockPhoneNumberLink: ${phoneNumber}`,
+      );
     });
-    it('Numbers in meeting invite links should be ignored hyperlinked [JPT-1816]', async () => {
+    it('Numbers in meeting invite links should be ignored hyperlinked [JPT-1816]', () => {
       jest.spyOn(utils, 'getGlobalValue').mockReturnValue(true);
       const videoCallPost = `Dial-in Number: ${phoneNumber}`;
       mockPostData.text = videoCallPost;
@@ -148,7 +146,7 @@ describe('TextMessageViewModel', () => {
       i18next.loadLanguages('en', () => {});
       // const renderVideoCall = `Dial-in Number: ${phoneLink}`;
       expect(
-        renderToStaticMarkup((await vm.getContent()) as React.ReactElement),
+        renderToStaticMarkup(vm.getContent() as React.ReactElement),
       ).toMatch(`Dial-in Number: MockPhoneNumberLink: ${phoneNumber}`);
     });
   });
@@ -158,24 +156,24 @@ describe('TextMessageViewModel', () => {
     const text =
       "<a class='at_mention_compose' rel='{\"id\":2514947}'>@Thomas Yang</a>";
 
-    it('should be get person name link when at mention a person', async () => {
+    it('should be get person name link when at mention a person', () => {
       jest.spyOn(utils, 'getGlobalValue').mockReturnValue(false);
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
-      expect(
-        renderToStaticMarkup((await vm.getContent()) as React.ReactElement),
-      ).toBe(`MockJuiAtMention: Person name`);
+      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+        `MockJuiAtMention: Person name`,
+      );
       expect(vm.getGroup).toHaveBeenCalledTimes(0);
       expect(vm.getPerson).toHaveBeenCalledTimes(1);
     });
 
-    it('should be get new person name link when person name be changed', async () => {
+    it('should be get new person name link when person name be changed', () => {
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
       mockPersonData.userDisplayName = 'New person name';
-      expect(
-        renderToStaticMarkup((await vm.getContent()) as React.ReactElement),
-      ).toBe(`MockJuiAtMention: New person name`);
+      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+        `MockJuiAtMention: New person name`,
+      );
     });
   });
 
@@ -183,23 +181,23 @@ describe('TextMessageViewModel', () => {
     const atMentionNonItemIds = [11370502];
     const text = `<a class='at_mention_compose' rel='{"id":11370502}'>@Jupiter profile mini card</a>`;
 
-    it('should be get team name link when at mention a team', async () => {
+    it('should be get team name link when at mention a team', () => {
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
-      expect(
-        renderToStaticMarkup((await vm.getContent()) as React.ReactElement),
-      ).toBe(`MockJuiAtMention: ${mockGroupData.displayName}`);
+      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+        `MockJuiAtMention: ${mockGroupData.displayName}`,
+      );
       expect(vm.getGroup).toHaveBeenCalledTimes(1);
       expect(vm.getPerson).toHaveBeenCalledTimes(0);
     });
 
-    it('should be get new team name link when team name be changed', async () => {
+    it('should be get new team name link when team name be changed', () => {
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
       mockGroupData.displayName = 'New team name';
-      expect(
-        renderToStaticMarkup((await vm.getContent()) as React.ReactElement),
-      ).toBe(`MockJuiAtMention: ${mockGroupData.displayName}`);
+      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+        `MockJuiAtMention: ${mockGroupData.displayName}`,
+      );
     });
   });
 
@@ -208,12 +206,12 @@ describe('TextMessageViewModel', () => {
     const originalText = 'Jupiter profile mini card';
     const text = `<a class='at_mention_compose' rel='{"id":123}'>@${originalText}</a>`;
 
-    it('should be get original text when at mention an unknown item', async () => {
+    it('should be get original text when at mention an unknown item', () => {
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
-      expect(
-        renderToStaticMarkup((await vm.getContent()) as React.ReactElement),
-      ).toBe(`MockJuiAtMention: @${originalText}`);
+      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+        `MockJuiAtMention: @${originalText}`,
+      );
 
       expect(vm.getGroup).toHaveBeenCalledTimes(0);
       expect(vm.getPerson).toHaveBeenCalledTimes(0);
