@@ -157,7 +157,7 @@ describe('FilesView', () => {
         postId: 1,
         progresses: { get: () => 1 },
       };
-      props.files[1].type = 'ppt';
+      props.files[1].item.type = 'ppt';
       const wrapper = shallow(<FilesView {...props} />);
       wrapper
         .find(JuiFileWithPreview)
