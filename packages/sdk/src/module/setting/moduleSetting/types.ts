@@ -21,8 +21,6 @@ interface IUserSettingHandler<T = any> {
   dispose(): void;
 }
 
-interface IUserMultiSettingHandler {}
-
 interface IModuleSetting {
   getById<T>(id: SettingEntityIds): Promise<Nullable<UserSettingEntity<T>>>;
   init(): void;

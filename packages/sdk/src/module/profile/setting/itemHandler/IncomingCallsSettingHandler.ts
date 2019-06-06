@@ -92,7 +92,7 @@ class IncomingCallsSettingHandler extends AbstractSettingEntityHandler<
       return;
     }
     if (
-      profile[SETTING_KEYS.DESKTOP_CALL] !== this.userSettingEntityCache.value
+      profile[SETTING_KEYS.DESKTOP_CALL] !== this.userSettingEntityCache!.value
     ) {
       await this.getUserSettingEntity();
     }

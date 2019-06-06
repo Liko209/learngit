@@ -92,7 +92,7 @@ class NewMessagesSettingHandler extends AbstractSettingEntityHandler<
     }
     if (
       profile[SETTING_KEYS.DESKTOP_MESSAGE] !==
-      this.userSettingEntityCache.value
+      this.userSettingEntityCache!.value
     ) {
       await this.getUserSettingEntity();
     }
