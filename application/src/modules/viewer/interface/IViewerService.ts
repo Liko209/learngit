@@ -5,7 +5,7 @@
  */
 
 interface IViewerService {
-  showFileViewer: (itemId: number) => void;
+  show: (itemId: number) => void;
 }
 
 export { IViewerService };

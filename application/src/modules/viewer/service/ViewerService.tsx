@@ -13,7 +13,7 @@ import { ViewerTitleView } from '../FileViewerManager/Title.View';
 import { ViewerDocument } from '../FileViewerManager/ViewerContainer.View';
 
 class ViewerService implements IViewerService {
-  showFileViewer = (itemId: number) => {
+  show = (itemId: number) => {
     const { dismiss } = Dialog.simple(
       <ViewerView
         dataModule={new FileViewerViewModel(itemId, () => dismiss())}

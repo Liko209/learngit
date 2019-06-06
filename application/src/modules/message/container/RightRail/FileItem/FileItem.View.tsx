@@ -33,7 +33,7 @@ class FileItemView extends Component<FileItemViewProps> {
   _viewerService: IViewerService = container.get(VIEWER_SERVICE);
 
   private _handleFileClick = (item: FileItemModel) => () => {
-    this._viewerService.showFileViewer(item.id);
+    this._viewerService.show(item.id);
   }
   private _renderItem = () => {
     const { file, personName, modifiedTime, downloadUrl, id } = this.props;
