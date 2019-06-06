@@ -6,7 +6,7 @@ import { ClientFunction } from 'testcafe';
 import { MentionPage, BookmarkPage, ConversationPage, DuplicatePromptPage } from "./ConversationPage";
 import { RightRail } from './RightRail';
 import { LeftRail } from './LeftRail';
-import { EmojiLibrary } from './EmojiLib';
+import { EmojiLibrary, EmojiMatchList } from './EmojiLib';
 
 class Entry extends BaseWebComponent {
   async enter() {
@@ -79,7 +79,7 @@ class MoreMenu extends Entry {
     return this.getToggler('favToggler');
   }
 
-  get markAsReadOrUnread(){
+  get markAsReadOrUnread() {
     return this.getToggler('readOrUnreadConversation');
   }
 
@@ -188,7 +188,7 @@ class ConversationEntry extends BaseWebComponent {
 
 class ConversationSection extends BaseWebComponent {
   get header() {
-    return this.getSelectorByAutomationId('conversation-list-section-header',this.self);
+    return this.getSelectorByAutomationId('conversation-list-section-header', this.self);
   }
 
   get collapse() {
@@ -389,6 +389,10 @@ export class MessageTab extends BaseWebComponent {
 
   get emojiLibrary() {
     return this.getComponent(EmojiLibrary);
+  }
+
+  get emojiMatchList() {
+    return this.getComponent(EmojiMatchList);
   }
 
 }
