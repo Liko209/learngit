@@ -35,7 +35,11 @@ describe('ThumbnailViewModel', () => {
       thumbnailViewModel = new ThumbnailViewModel({ id: 123 });
       setTimeout(() => {
         expect(thumbnailViewModel.thumbsUrlWithSize).toEqual(previewUrl);
-        done();
+        file.latestVersion = { stored_file_id: 1 };
+        setTimeout(() => {
+          expect(thumbnailViewModel.thumbsUrlWithSize).toEqual(previewUrl);
+          done();
+        });
       });
     });
     it('should get file type', async () => {

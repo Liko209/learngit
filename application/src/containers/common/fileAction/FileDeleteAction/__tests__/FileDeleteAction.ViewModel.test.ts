@@ -10,6 +10,19 @@ import { FileDeleteActionViewModel } from '../FileDeleteAction.ViewModel';
 import { AccountService } from 'sdk/module/account';
 import { ItemService } from 'sdk/module/item/service';
 import { ENTITY_NAME } from '@/store';
+import {
+  errorHelper,
+  JServerError,
+  JNetworkError,
+  ERROR_CODES_SERVER,
+  ERROR_CODES_NETWORK,
+} from 'sdk/error';
+import {
+  ToastMessageAlign,
+  ToastType,
+} from '@/containers/ToastWrapper/Toast/types';
+import { Notification } from '@/containers/Notification';
+jest.mock('@/containers/Notification');
 
 const userA = 'userA';
 const userB = 'userB';
@@ -24,7 +37,21 @@ const fileV3 = {
   creator_id: userC,
 };
 
+function toastParamsBuilder(message: string) {
+  return {
+    message,
+    type: ToastType.ERROR,
+    messageAlign: ToastMessageAlign.LEFT,
+    fullWidth: false,
+    dismissible: false,
+    autoHideDuration: 3000,
+  };
+}
+
 describe('FileDeleteActionViewModel', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
   const entityMock = postFileVersion => (name: any) => {
     if (name === ENTITY_NAME.POST) {
       if (postFileVersion) {
@@ -124,6 +151,39 @@ describe('FileDeleteActionViewModel', () => {
       } as any);
       vm.handleDeleteFile();
       expect(t2Spy).toBeCalledWith(123, 3);
+    }
+  }
+
+  @testable
+  class errorHandler {
+    @test('should show toast when backend error happen [JPT-2048]')
+    @mockService(ItemService, 'deleteFile', () => {
+      throw new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
+    })
+    @mockEntity(entityMock(undefined))
+    async t1() {
+      Notification.flashToast = jest.fn();
+      const vm = new FileDeleteActionViewModel({
+        fileId: 123,
+      } as any);
+      await vm.handleDeleteFile();
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        toastParamsBuilder('message.prompt.deleteFileBackendError'),
+      );
+    }
+
+    @test('should show toast when network error happen [JPT-2044]')
+    @mockService(ItemService, 'deleteFile', () => {
+      throw new JServerError(ERROR_CODES_NETWORK.NOT_NETWORK, '');
+    })
+    @mockEntity(entityMock(undefined))
+    async t2() {
+      Notification.flashToast = jest.fn();
+      const vm = new FileDeleteActionViewModel({
+        fileId: 123,
+      } as any);
+      await vm.handleDeleteFile();
+      expect(Notification.flashToast).toHaveBeenCalled();
     }
   }
 });
