@@ -219,6 +219,14 @@ describe('NetworkRequestHandler', () => {
     });
   });
 
+  describe('getOAuthTokenHandler', () => {
+    it('should return getOAuthTokenHandler', () => {
+      expect(handler.getOAuthTokenHandler()).toEqual(
+        handler.tokenManager.getOAuthTokenHandler(handler.type),
+      );
+    });
+  });
+
   describe('notifyRequestArrived', () => {
     it('should should call onConsumeArrived', () => {
       handler.addRequestConsumer(NETWORK_VIA.HTTP, consumer);
