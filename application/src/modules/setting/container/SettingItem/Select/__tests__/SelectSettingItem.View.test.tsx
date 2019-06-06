@@ -12,19 +12,21 @@ jest.mock('@/containers/Notification');
 type Props = SelectSettingItemProps & SelectSettingItemViewProps<any>;
 function setup(customProps: any = {}) {
   const props: Props = {
-    id: 1,
+    id: 'A',
     disabled: false,
     settingItem: {
-      id: 0,
+      id: 'A',
       title: 'itemTitle',
       type: SETTING_ITEM_TYPE.SELECT,
       weight: 0,
     },
-    settingItemEntity: {
-      value: { id: 'A' },
-      source: [{ id: 'A' }, { id: 'B' }, { id: 'C' }],
-    } as SettingModel,
+    value: { id: 'A' },
+    source: [{ id: 'A' }, { id: 'B' }, { id: 'C' }],
     saveSetting: jest.fn().mockName('saveSetting()'),
+    extractValue: jest
+      .fn()
+      .mockName('extractValue()')
+      .mockImplementation(a => a),
     ...customProps,
   };
   const wrapper = mountWithTheme(<SelectSettingItemView {...props} />);
@@ -40,17 +42,19 @@ describe('SelectSettingItemView', () => {
     jest.restoreAllMocks();
   });
 
-  it('should display error when failed to change [JPT-1784]', async () => {
-    const { view } = setup({
-      saveSetting: jest
-        .fn()
-        .mockRejectedValue(
-          new JServerError(ERROR_CODES_SERVER.NOT_AUTHORIZED, ''),
-        ),
+  describe('_handleChange()', () => {
+    it('should display error when failed to change [JPT-1784]', async () => {
+      const { view } = setup({
+        saveSetting: jest
+          .fn()
+          .mockRejectedValue(
+            new JServerError(ERROR_CODES_SERVER.NOT_AUTHORIZED, ''),
+          ),
+      });
+
+      await view._handleChange({ target: { value: 'B' } });
+
+      expect(Notification.flashToast).toHaveBeenCalled();
     });
-
-    await view._handleChange({ target: { value: 'B' } });
-
-    expect(Notification.flashToast).toHaveBeenCalled();
   });
 });

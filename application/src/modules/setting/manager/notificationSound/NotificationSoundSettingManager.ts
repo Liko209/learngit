@@ -3,12 +3,29 @@
  * @Date: 2019-05-27 11:31:21
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { ISettingService } from '@/interface/setting';
+import {
+  ISettingService,
+  SETTING_ITEM_TYPE,
+  SelectSettingItem,
+  SliderSettingItem,
+} from '@/interface/setting';
+import { MediaDeviceSourceItem } from './audioSource/MediaDeviceSourceItem';
+import { SpeakerMuteIcon, SpeakerIcon } from './audioSource/SpeakerIcon';
 import {
   SETTING_PAGE__NOTIFICATION_SOUND,
   SETTING_SECTION__SOUNDS,
+  SETTING_SECTION__AUDIO_SOURCE,
+  SETTING_ITEM__MICROPHONE_SOURCE,
+  SETTING_ITEM__SPEAKER_SOURCE,
+  SETTING_ITEM__VOLUME,
 } from './constant';
+import {
+  DEFAULT_AUDIO_INPUT_DEVICES,
+  DEFAULT_AUDIO_OUTPUT_DEVICES,
+} from './audioSource/constant';
+
+const deviceIdExtractor = (device?: MediaDeviceInfo) =>
+  device ? device.deviceId : '';
 
 class NotificationSoundSettingManager {
   private _scope = Symbol('NotificationSoundSettingManager');
@@ -29,6 +46,49 @@ class NotificationSoundSettingManager {
           title: 'setting.sounds',
           weight: 200,
           items: [],
+        },
+        {
+          id: SETTING_SECTION__AUDIO_SOURCE,
+          automationId: 'audioSource',
+          title: 'setting.audioSource.title',
+          weight: 300,
+          items: [
+            {
+              id: SETTING_ITEM__MICROPHONE_SOURCE,
+              automationId: 'microphoneSource',
+              title: 'setting.audioSource.microphoneSource.label',
+              description: 'setting.audioSource.microphoneSource.description',
+              valueExtractor: deviceIdExtractor,
+              defaultSource: DEFAULT_AUDIO_INPUT_DEVICES,
+              sourceRenderer: MediaDeviceSourceItem,
+              type: SETTING_ITEM_TYPE.SELECT,
+              weight: 0,
+            } as SelectSettingItem<MediaDeviceInfo>,
+            {
+              id: SETTING_ITEM__SPEAKER_SOURCE,
+              automationId: 'speakerSource',
+              title: 'setting.audioSource.speakerSource.label',
+              description: 'setting.audioSource.speakerSource.description',
+              valueExtractor: deviceIdExtractor,
+              defaultSource: DEFAULT_AUDIO_OUTPUT_DEVICES,
+              sourceRenderer: MediaDeviceSourceItem,
+              type: SETTING_ITEM_TYPE.SELECT,
+              weight: 100,
+            } as SelectSettingItem<MediaDeviceInfo>,
+            {
+              id: SETTING_ITEM__VOLUME,
+              automationId: 'volume',
+              title: 'setting.audioSource.volume.label',
+              description: 'setting.audioSource.volume.description',
+              type: SETTING_ITEM_TYPE.SLIDER,
+              Left: SpeakerMuteIcon,
+              Right: SpeakerIcon,
+              tipRenderer: ({ value }) => `${Math.ceil(value * 100)}%`,
+              min: 0,
+              max: 1,
+              weight: 200,
+            } as SliderSettingItem,
+          ],
         },
       ],
     });

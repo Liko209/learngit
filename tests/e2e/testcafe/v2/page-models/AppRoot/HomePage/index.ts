@@ -24,6 +24,7 @@ import { ViewerDialog } from './ViewerDialog';
 import { SearchDialog, JoinTeamDialog } from './SearchDialog';
 import { SettingTab } from './SettingTab';
 import { LogoutDialog } from './LogoutDialog';
+import { MoreActionOnFile } from './MoreActionOnFile';
 import { PhoneTab } from './PhoneTab';
 
 export class HomePage extends BaseWebComponent {
@@ -181,4 +182,9 @@ export class HomePage extends BaseWebComponent {
   get logoutDialog() {
     return this.getComponent(LogoutDialog);
   }
+
+  get moreActionOnFile(){
+    return this.getComponent(MoreActionOnFile);
+  }
+
 }

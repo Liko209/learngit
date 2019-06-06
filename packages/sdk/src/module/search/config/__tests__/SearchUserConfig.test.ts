@@ -6,11 +6,11 @@
 
 import { SearchUserConfig } from '../SearchUserConfig';
 import { AccountGlobalConfig } from '../../../../module/account/config';
-import { UserConfigService } from '../../../config/service/UserConfigService';
-import { SEARCH_CONFIG_KEYS } from '../configKeys';
+import { DBConfigService } from '../../../config/service/DBConfigService';
+import { SEARCH_CONFIG_KEYS } from '../constants';
 import { ServiceLoader } from '../../../serviceLoader';
 
-jest.mock('../../../config/service/UserConfigService');
+jest.mock('../../../config/service/DBConfigService');
 jest.mock('../../../../module/account/config');
 
 function clearMocks() {
@@ -21,11 +21,11 @@ function clearMocks() {
 
 describe('SearchUserConfig', () => {
   let searchUserConfig: SearchUserConfig;
-  let userConfigService: UserConfigService;
+  let dbConfigService: DBConfigService;
   function setUp() {
-    userConfigService = new UserConfigService();
-    userConfigService.setUserId = jest.fn();
-    ServiceLoader.getInstance = jest.fn().mockReturnValue(userConfigService);
+    dbConfigService = new DBConfigService();
+    dbConfigService.setUserId = jest.fn();
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(dbConfigService);
 
     AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(222);
     searchUserConfig = new SearchUserConfig();
@@ -42,22 +42,22 @@ describe('SearchUserConfig', () => {
       setUp();
     });
 
-    it('setRecentSearchRecords', () => {
+    it('setRecentSearchRecords', async () => {
       const data: any = {};
-      searchUserConfig.setRecentSearchRecords([data]);
-      expect(userConfigService.put).toBeCalledWith(
+      await searchUserConfig.setRecentSearchRecords([data]);
+      expect(dbConfigService.put).toBeCalledWith(
         SearchUserConfig.moduleName,
         SEARCH_CONFIG_KEYS.RECENT_SEARCH_RECORDS,
         [data],
       );
     });
 
-    it('getRecentSearchRecords', () => {
+    it('getRecentSearchRecords', async () => {
       const data: any = [{}];
-      userConfigService.get = jest.fn().mockImplementation(() => {
+      dbConfigService.get = jest.fn().mockImplementation(() => {
         return data;
       });
-      const res = searchUserConfig.getRecentSearchRecords();
+      const res = await searchUserConfig.getRecentSearchRecords();
       expect(res).toEqual(data);
     });
   });

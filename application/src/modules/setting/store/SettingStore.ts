@@ -85,8 +85,14 @@ class SettingStore {
     );
   }
 
+<<<<<<< HEAD
   getItemById(itemId: SettingItem['id']) {
     return this._find(storeScope => storeScope.getItemById(itemId));
+=======
+  @action
+  getItemById<T extends SettingItem>(itemId: SettingItem['id']): T | undefined {
+    return this._find<T>(storeScope => storeScope.getItemById<T>(itemId));
+>>>>>>> origin/develop
   }
 
   useScope(scope: symbol) {

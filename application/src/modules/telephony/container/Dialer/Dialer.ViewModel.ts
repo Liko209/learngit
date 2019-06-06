@@ -9,12 +9,26 @@ import { container } from 'framework';
 import { computed } from 'mobx';
 import { DialerProps, DialerViewProps } from './types';
 import { TelephonyStore } from '../../store';
+import { CALL_STATE } from '../../FSM';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 class DialerViewModel extends StoreViewModel<DialerProps>
   implements DialerViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
 
   dialerId = this._telephonyStore.dialerId;
+
+  constructor(props: DialerProps) {
+    super(props);
+    this.reaction(
+      () => this.callState,
+      callState => {
+        if (callState === CALL_STATE.CONNECTING) {
+          analyticsCollector.activeCall();
+        }
+      },
+    );
+  }
 
   @computed
   get callState() {

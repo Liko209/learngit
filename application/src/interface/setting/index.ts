@@ -6,6 +6,7 @@
 export * from './SettingItem';
 export * from './SelectSettingItem';
 export * from './ToggleSettingItem';
+export * from './SliderSettingItem';
 export * from './LinkSettingItem';
 export * from './SettingSection';
 export * from './SettingPage';
