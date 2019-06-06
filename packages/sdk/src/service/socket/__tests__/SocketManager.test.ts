@@ -433,6 +433,34 @@ describe('Socket Manager', () => {
         // does not have reconnect-socket-host, use index-socket-host
         expect(socketManager.activeFSM.serverUrl).toEqual('index_socket');
       });
+
+      it('should clear socket address when socket error happened', () => {
+        syncUserConfig = new SyncUserConfig();
+        syncUserConfig.setIndexSocketServerHost = jest.fn();
+        syncUserConfig.setReconnectSocketServerHost = jest.fn();
+        notificationCenter.emitKVChange(SOCKET.ERROR);
+
+        expect(syncUserConfig.setIndexSocketServerHost).toHaveBeenCalledWith(
+          '',
+        );
+        expect(
+          syncUserConfig.setReconnectSocketServerHost,
+        ).toHaveBeenCalledWith('');
+      });
+
+      it('should clear socket address when socket connect error happened', () => {
+        syncUserConfig = new SyncUserConfig();
+        syncUserConfig.setIndexSocketServerHost = jest.fn();
+        syncUserConfig.setReconnectSocketServerHost = jest.fn();
+        notificationCenter.emitKVChange(SOCKET.CONNECT_ERROR);
+
+        expect(syncUserConfig.setIndexSocketServerHost).toHaveBeenCalledWith(
+          '',
+        );
+        expect(
+          syncUserConfig.setReconnectSocketServerHost,
+        ).toHaveBeenCalledWith('');
+      });
     });
 
     describe('reconnect', () => {
