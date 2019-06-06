@@ -154,11 +154,9 @@ describe('FilesView', () => {
     t2(done: jest.DoneCallback) {
       const props: any = {
         ...someFilesProps,
-        postId: -1,
-        id: -1,
         progresses: { get: () => 1 },
       };
-      props.files[1][0].item.type = 'ppt';
+      props.files[1][0].item.type = 'pdf';
       const wrapper = shallow(<FilesView {...props} />);
       wrapper
         .find(JuiFileWithPreview)
