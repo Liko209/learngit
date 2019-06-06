@@ -79,7 +79,7 @@ export class CallerIdSettingHandler extends AbstractSettingEntityHandler<
       this.userSettingEntityCache.value &&
       this.userSettingEntityCache.value.id;
     if (defaultCallerId !== lastNumberId) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
   }
 }

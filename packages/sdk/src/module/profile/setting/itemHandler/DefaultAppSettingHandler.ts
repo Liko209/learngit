@@ -39,7 +39,7 @@ export class DefaultAppSettingHandler extends AbstractSettingEntityHandler<
       this.onProfileEntityUpdate(payload),
     );
     this.on(SERVICE.TELEPHONY_SERVICE.VOIP_CALLING, async () => {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     });
   }
 
@@ -79,7 +79,7 @@ export class DefaultAppSettingHandler extends AbstractSettingEntityHandler<
     if (
       profile[SETTING_KEYS.CALL_OPTION] !== this.userSettingEntityCache!.value
     ) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
   }
 }

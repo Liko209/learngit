@@ -101,9 +101,6 @@ describe('CallerIdSettingHandler ', () => {
       ]);
       setTimeout(() => {
         expect(callerIdSettingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          callerIdSettingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
         done();
       });
     });
@@ -116,9 +113,6 @@ describe('CallerIdSettingHandler ', () => {
       notificationCenter.emitEntityUpdate(ENTITY.PROFILE, []);
       setTimeout(() => {
         expect(callerIdSettingHandler.getUserSettingEntity).not.toBeCalled();
-        expect(
-          callerIdSettingHandler.notifyUserSettingEntityUpdate,
-        ).not.toBeCalled();
         done();
       });
     });
@@ -135,9 +129,6 @@ describe('CallerIdSettingHandler ', () => {
       ]);
       setTimeout(() => {
         expect(callerIdSettingHandler.getUserSettingEntity).not.toBeCalled();
-        expect(
-          callerIdSettingHandler.notifyUserSettingEntityUpdate,
-        ).not.toBeCalled();
         done();
       });
     });
