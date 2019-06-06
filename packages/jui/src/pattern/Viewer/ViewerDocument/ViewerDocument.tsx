@@ -171,7 +171,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
       currentPageIndex !== pageIndex &&
       this._emitPageIdx !== pageIndex
     ) {
-      this._updateViewingByIndex(pageIndex, false);
+      this._updateViewingByIndex(pageIndex);
     }
     if (
       scale !== undefined &&
@@ -184,7 +184,10 @@ class JuiViewerDocument extends React.Component<Props, States> {
     }
   }
 
-  private _updateViewingByIndex(toIdx: number, emitChange: boolean = true) {
+  private _updateViewingByIndex(
+    toIdx: number,
+    emitChangeCallback?: (toIdx: number) => void,
+  ) {
     if (toIdx < 0 || toIdx > this.state.numberPages - 1) {
       return;
     }
@@ -194,11 +197,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
       },
       () => {
         this._resetCurrentPageView(toIdx);
-
-        const { onCurrentPageIdxChanged } = this.props;
-        if (emitChange && onCurrentPageIdxChanged) {
-          onCurrentPageIdxChanged(toIdx);
-        }
+        emitChangeCallback && emitChangeCallback(toIdx);
       },
     );
   }
@@ -305,7 +304,10 @@ class JuiViewerDocument extends React.Component<Props, States> {
 
     if (pageDiv) {
       if (!dest) {
-        this._updateViewingByIndex(pageNumber);
+        this._updateViewingByIndex(pageNumber, (toIdx: number) => {
+          const { onCurrentPageIdxChanged } = this.props;
+          onCurrentPageIdxChanged && onCurrentPageIdxChanged(toIdx);
+        });
         return;
       }
       let x = 0;
