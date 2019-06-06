@@ -162,13 +162,13 @@ describe('CallerIdSettingHandler ', () => {
     it('should return all setting entity', async () => {
       settingService.getById = jest
         .fn()
-        .mockReturnValue({ value: CALLING_OPTIONS.GLIP });
+        .mockReturnValue({ value: CALLING_OPTIONS.RINGCENTRAL });
       const res = await callerIdSettingHandler.fetchUserSettingEntity();
       expect(res).toEqual({
         parentModelId: 0,
         weight: 0,
         valueType: 0,
-        state: 0,
+        state: 2,
         id: SettingEntityIds.Phone_CallerId,
         source: [{ id: 1 }, { id: 2 }],
         value: { id: 2 },
@@ -177,19 +177,17 @@ describe('CallerIdSettingHandler ', () => {
     });
 
     it('should return all setting entity when callOption is undefined', async () => {
-      settingService.getById = jest
-        .fn()
-        .mockReturnValue({ value: CALLING_OPTIONS.RINGCENTRAL });
+      settingService.getById = jest.fn().mockReturnValue({ value: undefined });
       const res = await callerIdSettingHandler.fetchUserSettingEntity();
       expect(res).toEqual({
         id: SettingEntityIds.Phone_CallerId,
-        parentModelId: SettingModuleIds.PhoneSetting_General.id,
+        parentModelId: 0,
         source: [{ id: 1 }, { id: 2 }],
-        state: 2,
+        state: 0,
         value: { id: 2 },
         valueSetter: expect.any(Function),
-        valueType: 4,
-        weight: SettingModuleIds.CallerIdSetting.weight,
+        valueType: 0,
+        weight: 0,
       });
     });
   });
