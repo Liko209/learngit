@@ -15,19 +15,11 @@ import {
 } from 'sdk/module/profile';
 import { IncomingCallsSettingHandler } from '../IncomingCallsSettingHandler';
 import {
-  SettingService,
   UserSettingEntity,
   SettingEntityIds,
   SettingService,
 } from '../../../../setting';
-import {
-  SETTING_KEYS,
-  NOTIFICATION_OPTIONS,
-  CALLING_OPTIONS,
-} from '../../../constants';
-import { ENTITY } from 'sdk/service';
-import { PlatformUtils } from 'sdk/utils/PlatformUtils';
-import { AccountService } from 'sdk/module/account';
+
 import { Profile } from 'sdk/module/profile/entity';
 jest.mock('sdk/module/profile');
 
