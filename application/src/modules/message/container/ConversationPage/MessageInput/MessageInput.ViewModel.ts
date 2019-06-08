@@ -21,7 +21,7 @@ import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { Group } from 'sdk/module/group/entity';
 import { UI_NOTIFICATION_KEY } from '@/constants';
-import { mainLogger } from 'sdk';
+import { mainLogger, networkCollector } from 'sdk';
 import { PostService } from 'sdk/module/post';
 import { FileItem } from 'sdk/module/item/module/file/entity';
 import { UploadRecentLogs, FeedbackService } from '@/modules/feedback';
@@ -31,8 +31,57 @@ import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
+import JSZip from 'jszip';
+import { NETWORK_VIA } from '../../../../../../../packages/foundation/src';
+const URL = require('url-parse');
 
 const DEBUG_COMMAND_MAP = {
+  '/network': async () => {
+    const items = networkCollector.getAll();
+    const zip = new JSZip();
+    items.forEach(item => {
+      const { hostname } = URL(item.request.host);
+      const fo = zip
+        .folder(item.request.via === NETWORK_VIA.SOCKET ? 'socket' : 'http')
+        .folder(`${hostname}${item.request.path}`);
+      // fo = zip.folder(item.request.path);
+      // fo = fo.folder(item.request.path);
+      fo.file(`${item.response.status}.json`, JSON.stringify(item, null, 2));
+    });
+    const result = await zip.generateAsync({
+      type: 'blob',
+      compression: 'DEFLATE',
+      compressionOptions: {
+        level: 9,
+      },
+    });
+    saveBlob('NETWORK', result);
+    // const nameMap = new Map<string, number>();
+    // zipItems.forEach(zipItem => {
+    //   if (nameMap.has(zipItem.name)) {
+    //     nameMap.set(zipItem.name, nameMap.get(zipItem.name)! + 1);
+    //     const fileName = `${zipItem.name}-${nameMap.get(zipItem.name)}${
+    //       zipItem.type
+    //     }`;
+    //     zipItem.folder
+    //       ? zip.folder(zipItem.folder).file(fileName, zipItem.content)
+    //       : zip.file(fileName, zipItem.content);
+    //   } else {
+    //     nameMap.set(zipItem.name, 1);
+    //     const fileName = `${zipItem.name}${zipItem.type}`;
+    //     zipItem.folder
+    //       ? zip.folder(zipItem.folder).file(fileName, zipItem.content)
+    //       : zip.file(fileName, zipItem.content);
+    //   }
+    // });
+    // return await zip.generateAsync({
+    //   type: 'blob',
+    //   compression: 'DEFLATE',
+    //   compressionOptions: {
+    //     level: ZIP_LEVEL.HEIGH,
+    //   },
+    // });
+  },
   '/debug': () => UploadRecentLogs.show(),
   '/debug-save': () => {
     // todo use schema

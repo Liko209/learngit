@@ -168,6 +168,7 @@ class SyncController {
     performanceTracer.end({ key: PERFORMANCE_KEYS.HANDLE_REMAINING_DATA });
 
     onRemainingHandled && (await onRemainingHandled());
+    notificationCenter.emit('---l---');
     mainLogger.log('fetch remaining data and handle success');
     const syncConfig = ServiceLoader.getInstance<SyncService>(
       ServiceConfig.SYNC_SERVICE,
@@ -472,7 +473,7 @@ class SyncController {
     groups: Raw<Group>[],
     source: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
-  ) {
+    ) {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingGroup() groups.length: ${groups &&
