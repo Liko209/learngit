@@ -60,10 +60,12 @@ describe('NetworkManager', () => {
 
   describe('addApiRequest', () => {
     it('should add request to specific handler', () => {
-      jest.spyOn(
-        networkManager.networkRequestHandler(fakeHandleType.name)!,
-        'addApiRequest',
-      );
+      jest
+        .spyOn(
+          networkManager.networkRequestHandler(fakeHandleType.name)!,
+          'addApiRequest',
+        )
+        .mockImplementationOnce(() => {});
       const request = getFakeRequest();
       networkManager.addApiRequest(request);
       expect(

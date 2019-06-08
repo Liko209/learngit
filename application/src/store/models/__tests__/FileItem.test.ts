@@ -83,7 +83,7 @@ describe('FileItemModel', () => {
   });
 
   describe('get versionUrl', () => {
-    it('should return url if versions[0].url exist', () => {
+    it('should return url if latestVersion.url exist', () => {
       const fileItemModel = FileItemModel.fromJS({
         versions: [
           {
@@ -94,7 +94,7 @@ describe('FileItemModel', () => {
       expect(fileItemModel.versionUrl).toBe('123');
     });
 
-    it('should return null if versions[0].url not exist', () => {
+    it('should return null if latestVersion.url not exist', () => {
       const fileItemModel = FileItemModel.fromJS({
         id: 1,
         versions: [{}],
@@ -108,7 +108,7 @@ describe('FileItemModel', () => {
   });
 
   describe('get size', () => {
-    it('should return size if versions[0].size exist', () => {
+    it('should return size if latestVersion.size exist', () => {
       const fileItemModel = FileItemModel.fromJS({
         versions: [
           {
@@ -119,7 +119,7 @@ describe('FileItemModel', () => {
       expect(fileItemModel.size).toBe('123');
     });
 
-    it('should return null if versions[0].size not exist', () => {
+    it('should return null if latestVersion.size not exist', () => {
       const fileItemModel = FileItemModel.fromJS({
         id: 1,
         versions: [{}],
@@ -133,7 +133,7 @@ describe('FileItemModel', () => {
   });
 
   describe('get downloadUrl', () => {
-    it('should return downloadUrl if versions[0].size exist', () => {
+    it('should return downloadUrl if latestVersion.size exist', () => {
       const fileItemModel = FileItemModel.fromJS({
         versions: [
           {
@@ -144,7 +144,7 @@ describe('FileItemModel', () => {
       expect(fileItemModel.downloadUrl).toBe('123');
     });
 
-    it('should return null if versions[0].downloadUrl not exist', () => {
+    it('should return null if latestVersion.downloadUrl not exist', () => {
       const fileItemModel = FileItemModel.fromJS({
         id: 1,
         versions: [{}],
@@ -158,7 +158,7 @@ describe('FileItemModel', () => {
   });
 
   describe('get origHeight', () => {
-    it('should return downloadUrl if versions[0].origHeight exist', () => {
+    it('should return downloadUrl if latestVersion.origHeight exist', () => {
       const fileItemModel = FileItemModel.fromJS({
         versions: [
           {
@@ -169,7 +169,7 @@ describe('FileItemModel', () => {
       expect(fileItemModel.origHeight).toBe(123);
     });
 
-    it('should return null if versions[0].origHeight not exist', () => {
+    it('should return null if latestVersion.origHeight not exist', () => {
       const fileItemModel = FileItemModel.fromJS({
         id: 1,
         versions: [{}],
@@ -183,7 +183,7 @@ describe('FileItemModel', () => {
   });
 
   describe('get origWidth', () => {
-    it('should return origWidth if versions[0].origWidth exist', () => {
+    it('should return origWidth if latestVersion.origWidth exist', () => {
       const fileItemModel = FileItemModel.fromJS({
         versions: [
           {
@@ -194,7 +194,7 @@ describe('FileItemModel', () => {
       expect(fileItemModel.origWidth).toBe(123);
     });
 
-    it('should return null if versions[0].origWidth not exist', () => {
+    it('should return null if latestVersion.origWidth not exist', () => {
       const fileItemModel = FileItemModel.fromJS({
         id: 1,
         versions: [{}],
@@ -207,40 +207,16 @@ describe('FileItemModel', () => {
     });
   });
 
-  describe('canDeleteFile()', () => {
-    beforeEach(() => {
-      const mockAccountService = ({
-        userConfig: {
-          getGlipUserId: jest.fn().mockReturnValue(1),
-        },
-      } as any) as AccountService;
-      ServiceLoader.getInstance = jest.fn().mockReturnValue(mockAccountService);
-    });
-    it('should return false when currentUserId is not creatorId', () => {
-      const fileItemModel = FileItemModel.fromJS({
-        versions: [
-          {
-            creator_id: 2,
-          },
-        ],
-      } as any);
-      expect(fileItemModel.canDeleteFile).toBeFalsy();
-    });
-
-    it('should return true when currentUserId is creatorId', () => {
-      const fileItemModel = FileItemModel.fromJS({
-        versions: [
-          {
-            creator_id: 1,
-          },
-        ],
-      } as any);
-      expect(fileItemModel.canDeleteFile).toBeTruthy();
-    });
-
-    it('should return null if versions not exist', () => {
-      const fileItemModel = FileItemModel.fromJS({} as any);
-      expect(fileItemModel.canDeleteFile).toBeNull();
+  describe('latestVersion', () => {
+    const v1 = { deactivated: true };
+    const v2 = { deactivated: true };
+    const v3 = { deactivated: false };
+    const fileItemModel = FileItemModel.fromJS({
+      id: 1,
+      versions: [v1, v2, v3],
+    } as any);
+    it('should return first undeactivated version', () => {
+      expect(fileItemModel.latestVersion).toEqual(v3);
     });
   });
 });

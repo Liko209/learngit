@@ -113,13 +113,7 @@ class PreloadController implements IImageDownloadedListener {
 
     this._logger.info(`Will process itemId: ${item.id}, ${item.name}`);
     if (FileItemUtils.isSupportShowRawImage(item)) {
-      const info = {
-        id: item.id,
-        type: item.type,
-        versionUrl: item.versionUrl || '',
-        versions: item.versions,
-      };
-      const url = getThumbnailURL(info, {
+      const url = getThumbnailURL(item, {
         width: LARGE_IMAGE_SIZE,
         height: LARGE_IMAGE_SIZE,
       });

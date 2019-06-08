@@ -362,4 +362,15 @@ describe('FileItemService', () => {
       expect(fileActionController.editFileName).toBeCalledWith(1, 'newName');
     });
   });
+  describe('deleteFile()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call fileActionController', () => {
+      fileItemService.deleteFile(1, 1);
+      expect(fileActionController.deleteFile).toBeCalledWith(1, 1);
+    });
+  });
 });

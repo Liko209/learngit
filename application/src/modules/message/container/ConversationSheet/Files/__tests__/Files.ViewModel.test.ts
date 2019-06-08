@@ -5,7 +5,6 @@
  */
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { FilesViewModel } from '../Files.ViewModel';
-
 import { FileType, FilesViewProps } from '../types';
 import { Notification } from '@/containers/Notification';
 import { PROGRESS_STATUS } from 'sdk/module/progress';
@@ -13,11 +12,14 @@ import { PostService } from 'sdk/module/post';
 import FileItemModel from '@/store/models/FileItem';
 import { getThumbnailURLWithType } from '@/common/getThumbnailURL';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { fileItemAvailable } from '../helper';
 
 jest.mock('sdk/module/post');
 jest.mock('@/store/utils');
 jest.mock('@/containers/Notification');
 jest.mock('@/common/getThumbnailURL');
+jest.mock('../helper');
+fileItemAvailable.mockReturnValue(true);
 
 Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
 
@@ -61,7 +63,7 @@ function waitResult(callback: Function) {
     setTimeout(() => {
       callback();
       resolve();
-    },         0);
+    }, 0);
   });
 }
 
@@ -152,6 +154,12 @@ describe('filesItemVM', () => {
       deactivated: false,
       versionUrl: 'a-version-url',
       versions: [],
+      latestVersion: {
+        type: 'png',
+        isNew: true,
+        deactivated: false,
+        versionUrl: 'a-version-url',
+      },
     } as FileItemModel;
 
     beforeEach(() => {
@@ -202,6 +210,7 @@ describe('filesItemVM', () => {
         id: 456,
         versions: [],
       } as FileItemModel;
+
       filesItemVM.files[0] = [
         {
           item: gifItem,

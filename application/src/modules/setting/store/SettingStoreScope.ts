@@ -44,17 +44,14 @@ class SettingStoreScope {
     return [...this._items.values()];
   }
 
-  @action
   getPageById(pageId: SettingPage['id']) {
     return this._pages.get(pageId);
   }
 
-  @action
   getPageSections(pageId: SettingPage['id']) {
     return this._pageSections.get(pageId);
   }
 
-  @action
   getPageItems(pageId: SettingPage['id']) {
     return this.getPageSections(pageId).reduce(
       (result: SettingItem['id'][], sectionId) => {
@@ -64,17 +61,14 @@ class SettingStoreScope {
     );
   }
 
-  @action
   getSectionById(sectionId: SettingSection['id']) {
     return this._sections.get(sectionId);
   }
 
-  @action
   getSectionItems(sectionId: SettingSection['id']) {
     return this._sectionItems.get(sectionId);
   }
 
-  @action
   getItemById<T extends SettingItem>(itemId: SettingItem['id']): T {
     return this._items.get(itemId) as T;
   }
@@ -82,14 +76,14 @@ class SettingStoreScope {
   @action
   addPage(page: SettingPage) {
     this._pages.set(page.id, page);
-    page.sections.forEach(section => this.addSection(page.id, section));
+    page.sections.forEach((section) => this.addSection(page.id, section));
   }
 
   @action
   addSection(pageId: SettingPage['id'], section: SettingSection) {
     this._sections.set(section.id, section);
     this._pageSections.add(pageId, section.id);
-    section.items.forEach(item => this.addItem(section.id, item));
+    section.items.forEach((item) => this.addItem(section.id, item));
   }
 
   @action

@@ -52,7 +52,6 @@ class SelectSettingItemViewComponent<
 
   private _renderSelect() {
     const { value, disabled, settingItem } = this.props;
-
     return (
       <JuiBoxSelect
         onChange={this._handleChange}
@@ -62,6 +61,7 @@ class SelectSettingItemViewComponent<
         automationId={`settingItemSelectBox-${settingItem.automationId}`}
         data-test-automation-value={value}
         isFullWidth={true}
+        name="settings"
       >
         {this._renderSource()}
       </JuiBoxSelect>
