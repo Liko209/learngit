@@ -9,7 +9,7 @@ export class EmojiLibrary extends BaseWebComponent {
   get self() {
     return this.getSelectorByAutomationId('conversation-chatbar-emoji-menu');
   }
-  
+
   get emojis() {
     return this.self.find('.emoji-mart-emoji');
   }
@@ -152,7 +152,7 @@ export class EmojiLibrary extends BaseWebComponent {
 
   /* emoji foot */
   get footSection() {
-  return this.self.find('.leftContainer');
+    return this.self.find('.leftContainer');
   }
 
   get keepOpenToggle() {
@@ -201,7 +201,7 @@ class EmojiSection extends BaseWebComponent {
   get noResultDiv() {
     return this.self.find('.emoji-mart-no-results')
   }
-  
+
   get noResultLabel() {
     return this.noResultDiv.find('.emoji-mart-no-results-label');
   }
@@ -250,4 +250,38 @@ class EmojiItem extends BaseWebComponent {
     const text = await this.self.getAttribute('aria-label');
     return text.split(', ')[1].trim();
   }
+}
+
+export class EmojiMatchList extends BaseWebComponent {
+  get self() {
+    return this.getSelectorByAutomationId('ColonEmojiPanel');
+  }
+  get items() {
+    return this.getSelector('[data-test-automation-class="match-item"]');
+  }
+
+  // value like :smile:
+  itemByValue(value: string) {
+    return this.getComponent(EmojiMatchItem, this.items.filter(`[data-test-automation-value="${value}]`));
+  }
+
+  itemByNth(n: number) {
+    return this.getComponent(EmojiMatchItem, this.items.nth(n));
+  }
+
+}
+
+class EmojiMatchItem extends BaseWebComponent {
+  get value() {
+    return this.self.getAttribute('data-test-automation-value');
+  }
+
+  get textSpan() {
+    return this.self.find('[aria-label="display-text"]');
+  }
+
+  async shouldBeSelected() {
+    return this.t.expect(this.self.hasClass('selected')).ok();
+  }
+
 }

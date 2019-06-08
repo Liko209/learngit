@@ -32,6 +32,10 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
       handler: this._selectHandler(this),
     },
     {
+      key: Keys.TAB,
+      handler: this._selectHandler(this),
+    },
+    {
       key: Keys.ESCAPE,
       handler: this._escapeHandler(this),
     },
