@@ -1,0 +1,240 @@
+{
+  "response": {
+    "data": {
+      "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/client-info",
+      "client": {
+        "detected": true,
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36",
+        "appId": "TFQ9Uh2rTbiYGu9M_R7pAw~dP7Y4ZkZRVmKGwwJqSgf1A",
+        "appName": "Glip (Jupiter)",
+        "appVersion": "5.0",
+        "locale": "en-US"
+      },
+      "provisioning": {
+        "interopClientIds": {
+          "serviceWeb": "DE0Af3c63a68092734D333990A0401D349EEd9bdc46e80ec158238C3D857A92A",
+          "expressSetup": "a85da13c1fd991f09A9EB97FB4301c1ebf9e3f840431877921151c06660858bf",
+          "liveReports": "Z06yJnc8TMO92DVcUohrFg",
+          "qosReports": "BG3JfKMgSUaSjZvEIT1KeA",
+          "analyticsPortal": "YCzy6r9qTyCpyMPN1rUgVA"
+        },
+        "webUris": {
+          "expressSetupMobile": "https://service-glpdevxmn-us.secure.lab.nordigy.ru/rc-setup/mobile/?hash=D86B19006F3D32B3C3B343207D8BEA3701A5EE&appUrlScheme={appUrlScheme}&code={authCode}",
+          "signUp": "http://service-glpdevxmn-us.lab.nordigy.ru/office/plansandpricing.html",
+          "support": "http://service-glpdevxmn-us.lab.nordigy.ru/support.html",
+          "mobileWebUsers": "http://service-glpdevxmn.lab.nordigy.ru/mobileweb/settings.html?hash=D86B19006F3D32B3C3B343207D8BEA3701A5EE&session={random}&mid=400162901008&code={authCode}#extensions?tab=%22users%22&localeId=en_US&appUrlScheme={appUrlScheme}",
+          "mobileWebBilling": "http://service-glpdevxmn.lab.nordigy.ru/mobileweb/settings.html?hash=D86B19006F3D32B3C3B343207D8BEA3701A5EE&session={random}&mid=400162901008&code={authCode}#billing/main?appUrlScheme={appUrlScheme}&localeId=en_US",
+          "mobileWebPhoneSystem": "http://service-glpdevxmn.lab.nordigy.ru/mobileweb/settings.html?hash=D86B19006F3D32B3C3B343207D8BEA3701A5EE&session={random}&mid=400162901008&code={authCode}#main?screen=phoneSystem&appUrlScheme={appUrlScheme}&localeId=en_US",
+          "mobileWebUserSettings": "http://service-glpdevxmn.lab.nordigy.ru/mobileweb/settings.html?hash=D86B19006F3D32B3C3B343207D8BEA3701A5EE&session={random}&mid=400162901008&code={authCode}#main?screen=myInbound&appUrlScheme={appUrlScheme}&localeId=en_US",
+          "mobileWebTellAFriend": "http://service-glpdevxmn.lab.nordigy.ru/mobileweb/settings.html?hash=D86B19006F3D32B3C3B343207D8BEA3701A5EE&session={random}&mid=400162901008&code={authCode}#tellAFriend/main?appUrlScheme={appUrlScheme}&localeId=en_US",
+          "mobileWebChangePassword": "http://service-glpdevxmn.lab.nordigy.ru/mobileweb/settings.html?hash=D86B19006F3D32B3C3B343207D8BEA3701A5EE&session={random}&mid=400162901008&code={authCode}#changePwd?brandId=1210&mid=400162901008&appUrlScheme={appUrlScheme}&localeId=en_US",
+          "mobileWebInternationalCalling": "http://service-glpdevxmn.lab.nordigy.ru/mobileweb/settings.html?hash=D86B19006F3D32B3C3B343207D8BEA3701A5EE&session={random}&mid=400162901008&code={authCode}#billing/internationalCalling?appUrlScheme={appUrlScheme}&localeId=en_US",
+          "mobileWebCallHandling": "http://service-glpdevxmn.lab.nordigy.ru/mobileweb/settings.html?hash=D86B19006F3D32B3C3B343207D8BEA3701A5EE&session={random}&mid=400162901008&code={authCode}#userCallForwarding/rules?mid=400162901008&appUrlScheme={appUrlScheme}&localeId=en_US",
+          "mobileWebNotifications": "http://service-glpdevxmn.lab.nordigy.ru/mobileweb/settings.html?hash=D86B19006F3D32B3C3B343207D8BEA3701A5EE&session={random}&mid=400162901008&code={authCode}#notificationSettings?mid=400162901008&appUrlScheme={appUrlScheme}&localeId=en_US",
+          "mobileWebResetPassword": "http://service-glpdevxmn.lab.nordigy.ru/mobileweb/settings.html?session={random}#resetPassword/enterNumber?brandId=1210&appUrlScheme={appUrlScheme}&localeId=en_US",
+          "mobileWebTrialUpgrade": "http://service-glpdevxmn.lab.nordigy.ru/mobileweb/settings.html?hash=D86B19006F3D32B3C3B343207D8BEA3701A5EE&session={random}&mid=400162901008&code={authCode}#billing/upgrade?brandId=1210&appUrlScheme={appUrlScheme}&localeId=en_US",
+          "serviceWebHome": "http://service-glpdevxmn.lab.nordigy.ru/login/main.asp?CDXB1210:D86B19006F3D32B3C3B343207D8BEA3701A5EE&mid=400162901008&code={authCode}&enc=2&rdr=",
+          "serviceWebPhoneSystem": "http://service-glpdevxmn.lab.nordigy.ru/login/main.asp?CDXB1210:D86B19006F3D32B3C3B343207D8BEA3701A5EE&mid=400162901008&code={authCode}&enc=2&rdr=/company/index.html",
+          "serviceWebUserSettings": "http://service-glpdevxmn.lab.nordigy.ru/login/main.asp?CDXB1210:D86B19006F3D32B3C3B343207D8BEA3701A5EE&mid=400162901008&code={authCode}&enc=2&rdr=/settings/index.html",
+          "serviceWebBilling": "http://service-glpdevxmn.lab.nordigy.ru/login/main.asp?CDXB1210:D86B19006F3D32B3C3B343207D8BEA3701A5EE&mid=400162901008&code={authCode}&enc=2&rdr=%2Fsettings%2Fbilling.html",
+          "serviceWebTellAFriend": "https://www.ringcentral.com/buylove/buylove.html?BMID=REFTIER&PID=6969",
+          "serviceWebChangePassword": "http://service-glpdevxmn.lab.nordigy.ru/login/changePwd.html?localeId=en_US&mid=400162901008&number=18002076138",
+          "serviceWebResetPassword": "http://service-glpdevxmn.lab.nordigy.ru/login/password.html?localeId=en_US",
+          "serviceWebCallHandling": "http://service-glpdevxmn.lab.nordigy.ru/login/main.asp?CDXB1210:D86B19006F3D32B3C3B343207D8BEA3701A5EE&mid=400162901008&code={authCode}&enc=2&rdr=%2Fsettings%2Findex.html%23%2Fsettings%2FcallHandling",
+          "serviceWebBlockedCalls": "http://service-glpdevxmn.lab.nordigy.ru/login/main.asp?CDXB1210:D86B19006F3D32B3C3B343207D8BEA3701A5EE&mid=400162901008&code={authCode}&enc=2&rdr=%2Fsettings%2Findex.html%23%2Fsettings%2FscreeningGreetingHoldMusic%2FblockedCalls",
+          "serviceWebUserPhones": "http://service-glpdevxmn.lab.nordigy.ru/login/main.asp?CDXB1210:D86B19006F3D32B3C3B343207D8BEA3701A5EE&mid=400162901008&code={authCode}&enc=2&rdr=%2Fsettings%2Findex.html%23%2Fsettings%2FphonesAndNumbers%2Fphone",
+          "expiresIn": 1800,
+          "eula": "https://netstorage.ringcentral.com/legal/1210/en_US/eula.html",
+          "emergencyDisclaimer": "https://netstorage.ringcentral.com/legal/1210/en_US/emergencycalling.html",
+          "privacyPolicy": "https://netstorage.ringcentral.com/legal/1210/en_US/privacypolicy.html",
+          "eulaGlip": "https://netstorage.ringcentral.com/legal/1210/en_US/eulaglip.html",
+          "liveReports": "https://live.ringcentral.com",
+          "mobileWebQosReports": "https://dev.internal.rcdevops.com/qos",
+          "mobileAppDownload": "https://www.ringcentral.com/apps/?apps=ringcentral-glip,ringcentral-phone",
+          "meetings": "https://rcdev.zoom.us/",
+          "webinar": "https://rcdev.zoom.us",
+          "meetingsRecordings": "https://service-plaap2ams.lab.nordigy.ru",
+          "analyticsPortal": "https://analytics-glpdevxmn.ponylab.ringcentral.com?code={authCode}"
+        },
+        "hints": {}
+      }
+    },
+    "status": 200,
+    "statusText": "OK",
+    "headers": {
+      "date": "Sat, 08 Jun 2019 03:09:57 GMT",
+      "content-encoding": "gzip",
+      "x-rate-limit-limit": "100",
+      "routingkey": "XMN02P01PAS01",
+      "x-rate-limit-remaining": "99",
+      "content-length": "1528",
+      "rcrequestid": "e570f554-899a-11e9-aa56-005056beb634",
+      "content-language": "en-US",
+      "x-rate-limit-group": "light",
+      "content-type": "application/json; charset=UTF-8",
+      "x-rate-limit-window": "60"
+    },
+    "retryAfter": 6000
+  },
+  "request": {
+    "id": "d1527ee6-0458-40ae-dfc5-8185fcfdabec",
+    "path": "/restapi/v1.0/client-info",
+    "method": "get",
+    "data": {},
+    "headers": {
+      "Authorization": "Bearer WE1OMDJQMDFQQVMwMHxBQUNHUDdDWm5HX01JQ3ZKTnViLWVJQWFpcG9JUmtqMUt0b19IcGJSVXVmc2FGbUxlQU9NUk5ySUhqZWdUYkJ4eHZNZHhMbUxtNlJaLW5qODloMDdRUmZnX1BTRVlJTjUyNkp5RTFnMlpoOUdjWV91RlY4U2s5T09MR1oxTk5hR2p6N1E2YmxFZFZSTUdOZHVXdDlrQUdDUVF1R0p4QnEtS3BISTIyRjVibjRMRlVUQ2VzOWFhcHZIYmd0ZjhJVFZ5OWdISE1Cdm14SEQwTHBFUGN6MDMwcTh6VGVsMUowZ3cwTXxURXctTnd8VHZGTUdydEVwQkxHRnhsRHlMb0R0UXxBQQ"
+    },
+    "params": {},
+    "handlerType": {
+      "name": "RINGCENTRAL",
+      "defaultVia": 0,
+      "survivalModeSupportable": true,
+      "tokenExpirable": true,
+      "tokenRefreshable": true,
+      "platformHandleDelegate": {
+        "_isStarted": false,
+        "_accountManager": {
+          "_events": {},
+          "_newListener": false,
+          "_removeListener": false,
+          "verboseMemoryLeak": false,
+          "_maxListeners": 10,
+          "_container": {
+            "_containerConfig": {
+              "singleton": true
+            },
+            "_registrationMap": {}
+          },
+          "_isLogin": true,
+          "_accountMap": {},
+          "_accounts": [
+            {
+              "_events": {},
+              "_newListener": false,
+              "_removeListener": false,
+              "verboseMemoryLeak": false,
+              "_maxListeners": 10,
+              "_supportedServices": [
+                "RCInfoService",
+                "VoicemailService",
+                "CallLogService"
+              ],
+              "event": "SUPPORTED_SERVICE_CHANGE"
+            },
+            {
+              "_events": {},
+              "_newListener": false,
+              "_removeListener": false,
+              "verboseMemoryLeak": false,
+              "_maxListeners": 10,
+              "_supportedServices": [
+                "PostService",
+                "GroupService",
+                "CompanyService",
+                "ItemService",
+                "PersonService",
+                "PresenceService",
+                "ProfileService",
+                "StateService",
+                "TelephonyService",
+                "RCInfoService",
+                "SettingService",
+                "SearchService",
+                "BadgeService",
+                "CallLogService",
+                "VoicemailService"
+              ],
+              "event": "SUPPORTED_SERVICE_CHANGE"
+            }
+          ],
+          "event": "ACCOUNT_MANAGER.EVENT_SUPPORTED_SERVICE_CHANGE"
+        },
+        "_authController": {
+          "_accountManager": {
+            "_events": {},
+            "_newListener": false,
+            "_removeListener": false,
+            "verboseMemoryLeak": false,
+            "_maxListeners": 10,
+            "_container": {
+              "_containerConfig": {
+                "singleton": true
+              },
+              "_registrationMap": {}
+            },
+            "_isLogin": true,
+            "_accountMap": {},
+            "_accounts": [
+              {
+                "_events": {},
+                "_newListener": false,
+                "_removeListener": false,
+                "verboseMemoryLeak": false,
+                "_maxListeners": 10,
+                "_supportedServices": [
+                  "RCInfoService",
+                  "VoicemailService",
+                  "CallLogService"
+                ],
+                "event": "SUPPORTED_SERVICE_CHANGE"
+              },
+              {
+                "_events": {},
+                "_newListener": false,
+                "_removeListener": false,
+                "verboseMemoryLeak": false,
+                "_maxListeners": 10,
+                "_supportedServices": [
+                  "PostService",
+                  "GroupService",
+                  "CompanyService",
+                  "ItemService",
+                  "PersonService",
+                  "PresenceService",
+                  "ProfileService",
+                  "StateService",
+                  "TelephonyService",
+                  "RCInfoService",
+                  "SettingService",
+                  "SearchService",
+                  "BadgeService",
+                  "CallLogService",
+                  "VoicemailService"
+                ],
+                "event": "SUPPORTED_SERVICE_CHANGE"
+              }
+            ],
+            "event": "ACCOUNT_MANAGER.EVENT_SUPPORTED_SERVICE_CHANGE"
+          }
+        },
+        "_userConfig": {
+          "_userId": "400162901008",
+          "_moduleName": "account",
+          "_configService": {
+            "_isStarted": false,
+            "_ns": "400162901008"
+          },
+          "_configCache": {}
+        },
+        "_authUserConfig": {
+          "_userId": "400162901008",
+          "_moduleName": "auth",
+          "_configService": {
+            "_isStarted": false,
+            "_ns": "400162901008"
+          },
+          "_configCache": {}
+        }
+      }
+    },
+    "priority": 2,
+    "via": 0,
+    "retryCount": 0,
+    "host": "https://api-glpdevxmn.lab.nordigy.ru",
+    "timeout": 60000,
+    "requestConfig": {},
+    "authFree": false,
+    "HAPriority": 1,
+    "startTime": 1559963397798
+  }
+}

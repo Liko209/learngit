@@ -1,0 +1,38 @@
+{
+  "response": {
+    "data": {},
+    "status": 200,
+    "statusText": "OK",
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "x-authorization": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6MTU1OTk2MzQxNzQ0NiwidHlwZSI6IndlYiIsInVpZCI6MTg3ODc1MzMxLCJpYXQiOjE1NTk5NjM0MTcsImlzcyI6ImdscGRldnhtbi5hc2lhbGFiLmdsaXAubmV0Iiwic3ViIjoiZ2xpcCJ9.o5mJeKYHChdOFd61_-IP-Evvu-sK9reLxUepta2Gkn6NuCQpUzXxBMJ1j0GEDfcxzTnv4NVj5A7WFSDByxkwBw"
+    },
+    "retryAfter": 6000
+  },
+  "request": {
+    "id": "9cfb6211-441b-4028-f3b2-1fb08060b006",
+    "path": "/api/login",
+    "method": "put",
+    "data": {
+      "rc_access_token_data": "eyJhY2Nlc3NfdG9rZW4iOiJXRTFPTURKUU1ERlFRVk13TUh4QlFVTkhVRGREV201SFgwMUpRM1pLVG5WaUxXVkpRV0ZwY0c5SlVtdHFNVXQwYjE5SWNHSlNWWFZtYzJGR2JVeGxRVTlOVWs1eVNVaHFaV2RVWWtKNGVIWk5aSGhNYlV4dE5sSmFMVzVxT0Rsb01EZFJVbVpuWDFCVFJWbEpUalV5TmtwNVJURm5NbHBvT1VkaldWOTFSbFk0VTJzNVQwOU1SMW94VGs1aFIycDZOMUUyWW14RlpGWlNUVWRPWkhWWGREbHJRVWREVVZGMVIwcDRRbkV0UzNCSVNUSXlSalZpYmpSTVJsVlVRMlZ6T1dGaGNIWklZbWQwWmpoSlZGWjVPV2RJU0UxQ2RtMTRTRVF3VEhCRlVHTjZNRE13Y1RoNlZHVnNNVW93WjNjd1RYeFVSWGN0VG5kOFZIWkdUVWR5ZEVWd1FreEhSbmhzUkhsTWIwUjBVWHhCUVEiLCJ0b2tlbl90eXBlIjoiYmVhcmVyIiwiZXhwaXJlc19pbiI6MzYwMCwicmVmcmVzaF90b2tlbiI6IldFMU9NREpRTURGUVFWTXdNSHhCUVVOSFVEZERXbTVIWDAxSlEzWktUblZpTFdWSlFXRnBjRzlKVW10cU1VdDBiMTlJY0dKU1ZYVm1jMkZHYlV4bFFVOU5VazV5U1VocVpXZFVZa0o0ZUhaTlpIaE1iVXh0TmxKYUxXNXFPRGxvTURkUlVtWm5XbVZ1YjFSMFNHMVBObVYyUlMxVmIyZ3RYMnB3Wm1rMVNHNXJkRWRtUldoTVIxb3hUazVoUjJwNk4xRTJZbXhGWkZaU1RVZE9aSFZYZERsclFVZERVVkYxUjBwNFFuRXRTM0JJU1RJeVJqVmlialJNUmxWVVEyVnpPV0ZoY0haSVltZDBaamhKVkZaNU9XZElTRTFDZG0xNFNFUXdTVXhDUlhWbE5qWk1jV28xV25SdlRtaExYelpRUVh4VVJYY3RUbmQ4WDNWU1NWZzVWRTQzWVc5MUxXdFBVVlo2ZVRSRmQzeEJRUSIsInJlZnJlc2hfdG9rZW5fZXhwaXJlc19pbiI6NTE4NDAwMCwic2NvcGUiOiJFZGl0QWNjb3VudHMgRmF4ZXMgR2xpcEludGVybmFsIEVkaXRNZWV0aW5nc1ByZXNlbmNlIEVkaXRDYWxsTG9nIE1lZXRpbmdzIFZvaXBDYWxsaW5nIFJlYWRDYWxsUmVjb3JkaW5nIFJlYWRDbGllbnRJbmZvIEludGVyb3BlcmFiaWxpdHkgQ29udGFjdHMgRWRpdEV4dGVuc2lvbnMgVGVsZXBob255U2Vzc2lvbnMgUmluZ091dCBTTVMgSW50ZXJuYWxNZXNzYWdlcyBFZGl0TWVzc2FnZXMgRWRpdFByZXNlbmNlIiwib3duZXJfaWQiOiI0MDAxNjI5MDEwMDgiLCJlbmRwb2ludF9pZCI6Ikc3UlIzbGRvU2dDUE1pb1ZWalZsLUEiLCJ0aW1lc3RhbXAiOjE1NTk5NjMzOTc3MDB9"
+    },
+    "headers": {},
+    "params": {},
+    "handlerType": {
+      "name": "GLIP",
+      "defaultVia": 2,
+      "survivalModeSupportable": false,
+      "tokenExpirable": false,
+      "tokenRefreshable": false
+    },
+    "priority": 2,
+    "via": 0,
+    "retryCount": 0,
+    "host": "https://glpdevxmn.asialab.glip.net",
+    "timeout": 600000,
+    "requestConfig": {},
+    "authFree": true,
+    "HAPriority": 0,
+    "startTime": 1559963398413
+  }
+}

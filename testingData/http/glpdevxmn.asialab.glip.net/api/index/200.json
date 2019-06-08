@@ -1,0 +1,2088 @@
+{
+  "response": {
+    "data": {
+      "user_id": 187875331,
+      "company_id": 401409,
+      "state": {
+        "_id": 187056135,
+        "created_at": 1558920389729,
+        "creator_id": 187875331,
+        "version": 2366016931758080,
+        "model_size": 0,
+        "is_new": false,
+        "person_id": 187875331,
+        "tour_complete": true,
+        "read_through:42614790": 2703941636,
+        "modified_at": 1559963417435,
+        "deactivated": false,
+        "unread_count:42614790": 184,
+        "applied_patches": {
+          "clean_unused_keys": true
+        },
+        "unread_deactivated_count:42614790": 6,
+        "unread_mentions_count:42614790": 0,
+        "marked_as_unread:42614790": false,
+        "model_id": "187056135",
+        "post_cursor:42614790": 138,
+        "last_group_id": 43638790,
+        "post_cursor:367419394": 47,
+        "read_through:367419394": 2720014340,
+        "unread_count:367419394": 0,
+        "post_cursor:43114502": 36,
+        "read_through:43114502": 2705801220,
+        "unread_count:43114502": 0,
+        "unread_mentions_count:43114502": 0,
+        "unread_deactivated_count:43114502": 0,
+        "marked_as_unread:43114502": false,
+        "unread_deactivated_count:367419394": 0,
+        "unread_mentions_count:367419394": 0,
+        "marked_as_unread:367419394": false,
+        "post_cursor:43171846": 1,
+        "read_through:43171846": 2708570116,
+        "unread_count:43171846": 0,
+        "unread_mentions_count:43171846": 0,
+        "unread_deactivated_count:43171846": 1,
+        "marked_as_unread:43171846": false,
+        "post_cursor:43212806": 15,
+        "post_drp_cursor:43212806": 0,
+        "deactivated_post_cursor:43212806": 0,
+        "deactivated_post_drp_cursor:43212806": 0,
+        "tasks_cursor:43212806": 0,
+        "drp_tasks_cursor:43212806": 0,
+        "missed_call_cursor:43212806": 0,
+        "drp_missed_call_cursor:43212806": 0,
+        "team_mention_cursor:43212806": 0,
+        "admin_mention_cursor:43212806": 0,
+        "unread_count:43212806": 0,
+        "unread_mentions_count:43212806": 0,
+        "at_mentioning_post_ids": [
+          2706530308
+        ],
+        "unread_deactivated_count:43212806": 0,
+        "post_cursor:43196422": 3,
+        "post_drp_cursor:43196422": 0,
+        "deactivated_post_cursor:43196422": 0,
+        "deactivated_post_drp_cursor:43196422": 0,
+        "tasks_cursor:43196422": 0,
+        "drp_tasks_cursor:43196422": 0,
+        "missed_call_cursor:43196422": 0,
+        "drp_missed_call_cursor:43196422": 0,
+        "team_mention_cursor:43196422": 0,
+        "admin_mention_cursor:43196422": 0,
+        "unread_count:43196422": 0,
+        "read_through:43196422": 2706546692,
+        "unread_mentions_count:43196422": 0,
+        "read_through:43212806": 2715279364,
+        "marked_as_unread:43212806": false,
+        "unread_deactivated_count:43196422": 0,
+        "marked_as_unread:43196422": false,
+        "post_cursor:43638790": 4,
+        "read_through:43638790": 2723840004,
+        "unread_count:43638790": 0,
+        "unread_mentions_count:43638790": 0,
+        "unread_deactivated_count:43638790": 0,
+        "marked_as_unread:43638790": false,
+        "__from_index": true
+      },
+      "profile": {
+        "created_at": 1558920389694,
+        "creator_id": 187875331,
+        "version": 7364167541456896,
+        "model_size": 0,
+        "is_new": false,
+        "person_id": 187875331,
+        "want_email_people": 900000,
+        "want_email_team": 0,
+        "want_push_team": 0,
+        "want_push_people": 1,
+        "want_email_mentions": true,
+        "want_push_mentions": true,
+        "want_push_video_chat": true,
+        "want_email_glip_today": true,
+        "new_message_badges": "all",
+        "want_push_missed_calls_and_voicemails": 1,
+        "send_push_notifications_ignoring_presence": 0,
+        "send_email_notifications_ignoring_presence": 0,
+        "has_new_notification_defaults": true,
+        "modified_at": 1559963417406,
+        "deactivated": false,
+        "rc_authz_profile": {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/account/400161823008/extension/400162901008/authz-profile",
+          "permissions": [
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/BotInstall",
+                "id": "BotInstall",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/BusinessSms",
+                "id": "BusinessSms",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/CallFlip",
+                "id": "CallFlip",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/CallForwarding",
+                "id": "CallForwarding",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/CallHandling",
+                "id": "CallHandling",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/CallRecording",
+                "id": "CallRecording",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/CallTransfer",
+                "id": "CallTransfer",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ConfigureIntercom",
+                "id": "ConfigureIntercom",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ConfigurePresence",
+                "id": "ConfigurePresence",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/DND",
+                "id": "DND",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/DevPortalAccess",
+                "id": "DevPortalAccess",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/DomesticCalls",
+                "id": "DomesticCalls",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditBlockedNumbers",
+                "id": "EditBlockedNumbers",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditCallInfo",
+                "id": "EditCallInfo",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditCallLog",
+                "id": "EditCallLog",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditCallLogDelivery",
+                "id": "EditCallLogDelivery",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditCallerIDSettings",
+                "id": "EditCallerIDSettings",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditExtensionGrant",
+                "id": "EditExtensionGrant",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditMessages",
+                "id": "EditMessages",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditMessagesNotificationsSettings",
+                "id": "EditMessagesNotificationsSettings",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditOutboundFaxSettings",
+                "id": "EditOutboundFaxSettings",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditPersonalContacts",
+                "id": "EditPersonalContacts",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditPresenceSettings",
+                "id": "EditPresenceSettings",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditPresenceStatus",
+                "id": "EditPresenceStatus",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditUserAnsweringRules",
+                "id": "EditUserAnsweringRules",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditUserCredentials",
+                "id": "EditUserCredentials",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditUserDevices",
+                "id": "EditUserDevices",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditUserForwardingFlipNumbers",
+                "id": "EditUserForwardingFlipNumbers",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditUserHours",
+                "id": "EditUserHours",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditUserInfo",
+                "id": "EditUserInfo",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/EditUserScreeningGreetingSettings",
+                "id": "EditUserScreeningGreetingSettings",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/General",
+                "id": "General",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/Glip",
+                "id": "Glip",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/HUD",
+                "id": "HUD",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/Hold",
+                "id": "Hold",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/InboundSMS",
+                "id": "InboundSMS",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/InternalCalls",
+                "id": "InternalCalls",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/InternalSMS",
+                "id": "InternalSMS",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/InternationalCalls",
+                "id": "InternationalCalls",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/LocalSMS",
+                "id": "LocalSMS",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/Meetings",
+                "id": "Meetings",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/MessagesAndNotifications",
+                "id": "MessagesAndNotifications",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/OrganizeConference",
+                "id": "OrganizeConference",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/OutboundCallerId",
+                "id": "OutboundCallerId",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/OutboundFaxSettings",
+                "id": "OutboundFaxSettings",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/OutboundFaxes",
+                "id": "OutboundFaxes",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/OutboundSMS",
+                "id": "OutboundSMS",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ParkLocation",
+                "id": "ParkLocation",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ParkPublic",
+                "id": "ParkPublic",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/PhonesAndNumbers",
+                "id": "PhonesAndNumbers",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/PremiumDestinations",
+                "id": "PremiumDestinations",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadAssignedRoles",
+                "id": "ReadAssignedRoles",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadBlockedNumbers",
+                "id": "ReadBlockedNumbers",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadCallLog",
+                "id": "ReadCallLog",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadCallRecordings",
+                "id": "ReadCallRecordings",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadCallerIDSettings",
+                "id": "ReadCallerIDSettings",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadCompanyInfo",
+                "id": "ReadCompanyInfo",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Account"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadCompanyPhoneNumbers",
+                "id": "ReadCompanyPhoneNumbers",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Account"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadExtensionGrant",
+                "id": "ReadExtensionGrant",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadExtensions",
+                "id": "ReadExtensions",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Account"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadMessageContent",
+                "id": "ReadMessageContent",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadMessages",
+                "id": "ReadMessages",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadMessagesNotificationsSettings",
+                "id": "ReadMessagesNotificationsSettings",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadOutboundFaxSettings",
+                "id": "ReadOutboundFaxSettings",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadPersonalContacts",
+                "id": "ReadPersonalContacts",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadPresenceSettings",
+                "id": "ReadPresenceSettings",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadPresenceStatus",
+                "id": "ReadPresenceStatus",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Federation"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadServicePlanInfo",
+                "id": "ReadServicePlanInfo",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Account"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadUserAnsweringRules",
+                "id": "ReadUserAnsweringRules",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadUserDevices",
+                "id": "ReadUserDevices",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadUserForwardingFlipNumbers",
+                "id": "ReadUserForwardingFlipNumbers",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadUserInfo",
+                "id": "ReadUserInfo",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadUserPhoneNumbers",
+                "id": "ReadUserPhoneNumbers",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ReadUserScreeningGreetingSettings",
+                "id": "ReadUserScreeningGreetingSettings",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/RingCentralDesktopApp",
+                "id": "RingCentralDesktopApp",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/RingCentralMobileApp",
+                "id": "RingCentralMobileApp",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ScreeningGreetingHoldMusic",
+                "id": "ScreeningGreetingHoldMusic",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ServiceWebAccess",
+                "id": "ServiceWebAccess",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/ThirdPartyAppAccess",
+                "id": "ThirdPartyAppAccess",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/UserInfo",
+                "id": "UserInfo",
+                "assignable": true,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            },
+            {
+              "permission": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/permission/Voicemail",
+                "id": "Voicemail",
+                "assignable": false,
+                "readOnly": false,
+                "siteCompatible": "Independent"
+              },
+              "effectiveRole": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/user-role/3",
+                "id": "3"
+              },
+              "scopes": [
+                "Self"
+              ]
+            }
+          ]
+        },
+        "favorite_group_ids": [
+          284778498
+        ],
+        "me_tab": true,
+        "model_id": "186228751",
+        "favorite_post_ids": [
+          2723848196,
+          2723840004,
+          2723495940,
+          2723487748
+        ],
+        "id": 186228751
+      },
+      "people": [
+        {
+          "created_at": 1558920389700,
+          "creator_id": 187875331,
+          "version": 7013672515796992,
+          "model_size": 0,
+          "is_new": false,
+          "company_id": 401409,
+          "email": "user239@jupitertest523.ru",
+          "email_friendly_abbreviation": "user239",
+          "is_webmail": false,
+          "foreign_id": 400162901008,
+          "externally_registered": "rc_signons",
+          "has_bogus_email": false,
+          "rc_extension_id": 400162901008,
+          "rc_phone_numbers": [
+            {
+              "id": 400701231008,
+              "phoneNumber": "+12059940003",
+              "paymentType": "Local",
+              "location": "Alabaster, AL",
+              "type": "FaxOnly",
+              "usageType": "CompanyFaxNumber",
+              "status": "Normal",
+              "country": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/1",
+                "id": "1",
+                "name": "United States"
+              },
+              "features": [
+                "CallerId"
+              ]
+            },
+            {
+              "id": 400701985008,
+              "phoneNumber": "+12512410002",
+              "paymentType": "Local",
+              "location": "Bay Minette, AL",
+              "type": "VoiceFax",
+              "usageType": "CompanyNumber",
+              "status": "Normal",
+              "country": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/1",
+                "id": "1",
+                "name": "United States"
+              },
+              "features": [
+                "CallerId"
+              ]
+            },
+            {
+              "id": 400701986008,
+              "phoneNumber": "+12512410003",
+              "paymentType": "Local",
+              "location": "Bay Minette, AL",
+              "type": "VoiceFax",
+              "usageType": "CompanyNumber",
+              "status": "Normal",
+              "country": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/1",
+                "id": "1",
+                "name": "United States"
+              },
+              "features": [
+                "CallerId"
+              ]
+            },
+            {
+              "id": 400701987008,
+              "phoneNumber": "+12512410004",
+              "paymentType": "Local",
+              "location": "Bay Minette, AL",
+              "type": "VoiceFax",
+              "usageType": "CompanyNumber",
+              "status": "Normal",
+              "country": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/1",
+                "id": "1",
+                "name": "United States"
+              },
+              "features": [
+                "CallerId"
+              ]
+            },
+            {
+              "id": 400701988008,
+              "phoneNumber": "+12512410005",
+              "paymentType": "Local",
+              "location": "Bay Minette, AL",
+              "type": "VoiceFax",
+              "usageType": "CompanyNumber",
+              "status": "Normal",
+              "country": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/1",
+                "id": "1",
+                "name": "United States"
+              },
+              "features": [
+                "CallerId"
+              ]
+            },
+            {
+              "id": 400701989008,
+              "phoneNumber": "+12512410006",
+              "paymentType": "Local",
+              "location": "Bay Minette, AL",
+              "type": "VoiceFax",
+              "usageType": "CompanyNumber",
+              "status": "Normal",
+              "country": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/1",
+                "id": "1",
+                "name": "United States"
+              },
+              "label": "Nick_Name",
+              "features": [
+                "CallerId"
+              ]
+            },
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "paymentType": "TollFree",
+              "type": "VoiceFax",
+              "usageType": "MainCompanyNumber",
+              "status": "Normal",
+              "country": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/1",
+                "id": "1",
+                "name": "United States"
+              },
+              "features": [
+                "CallerId"
+              ]
+            }
+          ],
+          "first_name": "Emmalee",
+          "last_name": "Metz",
+          "state_id": 187056135,
+          "profile_id": 186228751,
+          "searchable_email": "user239@jupitertest523.ru",
+          "searchable_first_name": "emmalee",
+          "searchable_last_name": "metz",
+          "modified_at": 1559963417391,
+          "deactivated": false,
+          "me_group_id": 284778498,
+          "registered_at": 1558921319271,
+          "last_meaningful_update": 1559902262242,
+          "sanitized_rc_extension": {
+            "extensionNumber": "239",
+            "type": "User"
+          },
+          "sanitized_rc_first_name": "Emmalee",
+          "sanitized_rc_last_name": "Metz",
+          "has_rc_access_token": true,
+          "has_registered": false,
+          "display_name": "Emmalee Metz",
+          "endpoint_id": "G7RR3ldoSgCPMioVVjVl-A",
+          "id": 187875331
+        }
+      ],
+      "companies": [
+        {
+          "created_at": 1558596871049,
+          "creator_id": 179421187,
+          "version": 6884601232359424,
+          "model_size": 0,
+          "is_new": false,
+          "name": "RingCentral Inc.",
+          "domain": "jupitertest523.ru",
+          "webmail_person_id": null,
+          "is_kip_company": false,
+          "admins": [
+            179421187,
+            179429379,
+            179470339
+          ],
+          "disabled_features": {
+            "team_folders": true
+          },
+          "history": [
+            {
+              "name": "RingCentral Inc.",
+              "domain": "jupitertest523.ru",
+              "webmail_person_id": null,
+              "is_kip_company": false,
+              "admins": [
+                179421187
+              ],
+              "disabled_features": {
+                "team_folders": true
+              },
+              "is_new": true,
+              "created_at": 1559963417349,
+              "creator_id": 179421187
+            }
+          ],
+          "modified_at": 1559963417349,
+          "deactivated": false,
+          "rc_reporting": {
+            "first_signon": 1558596871294,
+            "first_signon_email": "mm1+15admin@jupitertest523.ru",
+            "first_provision": 1558596877746,
+            "total_people_touched": 8,
+            "total_extensions": 14,
+            "active_extensions": 9,
+            "newly_created": 8,
+            "matched_by_extension": 9,
+            "matched_by_email": 0,
+            "bogus_emails": 0,
+            "ignored_extensions": 0,
+            "glip_users_deactivated": 0
+          },
+          "rc_account": {
+            "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/account/400161823008",
+            "id": 400161823008,
+            "serviceInfo": {
+              "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/account/400161823008/service-info",
+              "brand": {
+                "id": "1210",
+                "name": "RingCentral",
+                "homeCountry": {
+                  "id": "1",
+                  "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/1",
+                  "name": "United States",
+                  "isoCode": "US",
+                  "callingCode": "1"
+                }
+              },
+              "servicePlan": {
+                "id": "3324",
+                "name": "Office 20 Line",
+                "edition": "Standard"
+              },
+              "billingPlan": {
+                "id": "1089",
+                "name": "Monthly - 399.80 - RC Off 20 Ln",
+                "durationUnit": "Month",
+                "duration": 1,
+                "type": "Regular",
+                "includedPhoneLines": 20
+              }
+            },
+            "operator": {
+              "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/account/400161823008/extension/400161831008",
+              "id": 400161831008,
+              "extensionNumber": "108"
+            },
+            "mainNumber": "+18002076138",
+            "status": "Confirmed",
+            "signupInfo": {
+              "tosAccepted": true,
+              "marketingAccepted": false
+            },
+            "setupWizardState": "Completed",
+            "regionalSettings": {
+              "timezone": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/timezone/58",
+                "id": "58",
+                "name": "US/Pacific",
+                "description": "Pacific Time (US & Canada)",
+                "bias": "-480"
+              },
+              "homeCountry": {
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/224",
+                "id": "224",
+                "name": "United Kingdom"
+              },
+              "language": {
+                "id": "1033",
+                "name": "English (United States)",
+                "localeCode": "en-US"
+              },
+              "greetingLanguage": {
+                "id": "1033",
+                "name": "English (United States)",
+                "localeCode": "en-US"
+              },
+              "formattingLocale": {
+                "id": "2057",
+                "name": "English (United Kingdom)",
+                "localeCode": "en-GB"
+              },
+              "timeFormat": "24h"
+            },
+            "federated": false
+          },
+          "rc_account_id": 400161823008,
+          "rc_service_info": {
+            "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/account/400161823008/service-info",
+            "servicePlanName": "RingCentral Office 20 Line",
+            "brand": {
+              "id": "1210",
+              "name": "RingCentral",
+              "homeCountry": {
+                "id": "1",
+                "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/1",
+                "name": "United States",
+                "isoCode": "US",
+                "callingCode": "1"
+              }
+            },
+            "servicePlan": {
+              "id": "3324",
+              "name": "Office 20 Line",
+              "edition": "Standard"
+            },
+            "billingPlan": {
+              "id": "1089",
+              "name": "Monthly - 399.80 - RC Off 20 Ln",
+              "durationUnit": "Month",
+              "duration": 1,
+              "type": "Regular",
+              "includedPhoneLines": 20
+            },
+            "serviceFeatures": [
+              {
+                "featureName": "SMS",
+                "enabled": true
+              },
+              {
+                "featureName": "SMSReceiving",
+                "enabled": true
+              },
+              {
+                "featureName": "Pager",
+                "enabled": true
+              },
+              {
+                "featureName": "PagerReceiving",
+                "enabled": true
+              },
+              {
+                "featureName": "Voicemail",
+                "enabled": true
+              },
+              {
+                "featureName": "Fax",
+                "enabled": true
+              },
+              {
+                "featureName": "FaxReceiving",
+                "enabled": true
+              },
+              {
+                "featureName": "DND",
+                "enabled": true
+              },
+              {
+                "featureName": "RingOut",
+                "enabled": true
+              },
+              {
+                "featureName": "InternationalCalling",
+                "enabled": true
+              },
+              {
+                "featureName": "Presence",
+                "enabled": true
+              },
+              {
+                "featureName": "VideoConferencing",
+                "enabled": true
+              },
+              {
+                "featureName": "SalesForce",
+                "enabled": false
+              },
+              {
+                "featureName": "Intercom",
+                "enabled": true
+              },
+              {
+                "featureName": "Paging",
+                "enabled": true
+              },
+              {
+                "featureName": "Conferencing",
+                "enabled": true
+              },
+              {
+                "featureName": "VoipCalling",
+                "enabled": true
+              },
+              {
+                "featureName": "FreeSoftPhoneLines",
+                "enabled": true
+              },
+              {
+                "featureName": "HipaaCompliance",
+                "enabled": false
+              },
+              {
+                "featureName": "CallPark",
+                "enabled": true
+              },
+              {
+                "featureName": "OnDemandCallRecording",
+                "enabled": true
+              },
+              {
+                "featureName": "Reports",
+                "enabled": true
+              },
+              {
+                "featureName": "CallForwarding",
+                "enabled": true
+              },
+              {
+                "featureName": "DeveloperPortal",
+                "enabled": true
+              },
+              {
+                "featureName": "EncryptionAtRest",
+                "enabled": false
+              },
+              {
+                "featureName": "BlockedMessageForwarding",
+                "enabled": false
+              },
+              {
+                "featureName": "EmergencyCalling",
+                "enabled": false
+              },
+              {
+                "featureName": "HDVoice",
+                "enabled": true
+              },
+              {
+                "featureName": "SingleExtensionUI",
+                "enabled": false
+              },
+              {
+                "featureName": "CallSupervision",
+                "enabled": false
+              },
+              {
+                "featureName": "VoicemailToText",
+                "enabled": false
+              },
+              {
+                "featureName": "WebPhone",
+                "enabled": true
+              },
+              {
+                "featureName": "RCTeams",
+                "enabled": true
+              },
+              {
+                "featureName": "UserManagement",
+                "enabled": true
+              },
+              {
+                "featureName": "Calendar",
+                "enabled": true
+              },
+              {
+                "featureName": "PasswordAuth",
+                "enabled": true
+              },
+              {
+                "featureName": "CallerIdControl",
+                "enabled": false
+              },
+              {
+                "featureName": "AutomaticInboundCallRecording",
+                "enabled": true
+              },
+              {
+                "featureName": "AutomaticOutboundCallRecording",
+                "enabled": true
+              },
+              {
+                "featureName": "AutomaticCallRecordingMute",
+                "enabled": false
+              },
+              {
+                "featureName": "SoftPhoneUpdate",
+                "enabled": true
+              },
+              {
+                "featureName": "LinkedSoftphoneLines",
+                "enabled": false
+              },
+              {
+                "featureName": "CallQualitySurvey",
+                "enabled": false
+              },
+              {
+                "featureName": "AccountFederation",
+                "enabled": false
+              },
+              {
+                "featureName": "MMS",
+                "enabled": true
+              },
+              {
+                "featureName": "CallParkLocations",
+                "enabled": true
+              },
+              {
+                "featureName": "ExternalDirectoryIntegration",
+                "enabled": false
+              },
+              {
+                "featureName": "CallSwitch",
+                "enabled": true
+              },
+              {
+                "featureName": "PromoMessage",
+                "enabled": true
+              },
+              {
+                "featureName": "SiteCodes",
+                "enabled": false
+              },
+              {
+                "featureName": "InternationalSMS",
+                "enabled": false
+              },
+              {
+                "featureName": "ConferencingNumber",
+                "enabled": true
+              },
+              {
+                "featureName": "VoipCallingOnMobile",
+                "enabled": true
+              },
+              {
+                "featureName": "DynamicConference",
+                "enabled": true
+              },
+              {
+                "featureName": "ConfigureDelegates",
+                "enabled": false
+              },
+              {
+                "featureName": "Archiver",
+                "enabled": false
+              },
+              {
+                "featureName": "EmergencyAddressAutoUpdate",
+                "enabled": false
+              }
+            ],
+            "limits": {
+              "freeSoftPhoneLinesPerExtension": 100,
+              "meetingSize": 4,
+              "maxMonitoredExtensionsPerUser": 100,
+              "maxExtensionNumberLength": 5,
+              "cloudRecordingStorage": 0
+            }
+          },
+          "rc_service_parameters": [
+            {
+              "id": 430,
+              "value": "RCOffice",
+              "accountId": "400161823008"
+            }
+          ],
+          "rc_glip_configuration": {
+            "premiumAdministration": true
+          },
+          "rc_brand": "RC",
+          "allow_rc_feature_rcphone": true,
+          "rc_last_provision": 1559962257523,
+          "id": 401409
+        }
+      ],
+      "timestamp": 1559963427092,
+      "has_password_set": true,
+      "deployment_state": {
+        "level": 3,
+        "number": 15
+      },
+      "api_server": "glpdevxmn.asialab.glip.net:8443",
+      "cache_server": "glpdevxmn.asialab.glip.net:31337",
+      "error_dump_server": "glpdevxmn.asialab.glip.net:31338",
+      "cookie_domain": ".asialab.glip.net",
+      "static_http_server": "https://d2rbro28ib85bu.cloudfront.net",
+      "static_https_server": "",
+      "version": "{\"all\":{\"scripts\":\"a0154f94c61073c5b93f8ec2d27d42cf-1.0\",\"templates\":\"95e7f5366fec0879763fa66b2d149771-1.0\",\"styles\":\"6486056ccc23c9bc8c691e139e85bcc0-1.0\"},\"data\":{\"scripts\":\"22c9f59c4591627d524c9337be2d6e1a-1.0\"},\"anon\":{\"scripts\":\"7ef1021defd1273b7bc41cb50d089f99-1.0\",\"templates\":\"776dae054962a17a7b21257781a717af-1.0\",\"styles\":\"eda9eaed4fd5d92c47a13ae776b2e408-1.0\"},\"login\":{\"styles\":\"56dae419d270dab386edc78ceb50cd56-1.0\"},\"named\":{\"scripts\":\"36ffb353ee0633d2eded4db21b2532f2-1.0\",\"templates\":\"c08bf338c056a01527d71bfeaa25fec8-1.0\",\"styles\":\"75dbf6c17b914ec521bf3f64db57ec68-1.0\"},\"private\":{\"scripts\":\"4a00ff036d9deaf4760c1569ea207187-1.0\",\"templates\":\"3198658c904cf28a7d8ce18fd3fa7006-1.0\",\"styles\":\"656abd84bb90917f88f716878d6c844d-1.0\"},\"ie\":{\"scripts\":\"6a1369976d0e4f98cd92b1bad4896070-1.0\",\"styles\":\"824000c3df064ad862871d47c5df114e-1.0\"},\"bootloader\":{\"scripts\":\"2e384cb97c9cd3b417e05edb5cbe03b5-1.0\"},\"glip-static\":{\"scripts\":\"ca86fe7a4d911b91eb07fa0571367960-1.0\"},\"mobile-web\":{\"scripts\":\"e7f6c14ea388de7cc4c06798d8ef323b-1.0\",\"styles\":\"559a3a03cfb67c6a37da1396207ec771-1.0\"},\"web-redirection\":{\"scripts\":\"0ef1860040b17c647d76f89a71b6937e-1.0\",\"styles\":\"cccaa9e3d85b89810a3d40e87d13ea61-1.0\"},\"mobile-onboarding\":{\"scripts\":\"a588edee08ed91951591261d271790df-1.0\",\"styles\":\"9235d5bb446ff56c5261c41a7f0a58f5-1.0\"},\"memory-monitor\":{\"scripts\":\"dc5b5215a34c63b4435d4f5bfff358f6-1.0\",\"styles\":\"6138b2b3cee937719c6bb329dd7e0777-1.0\"},\"signin-sdk\":{\"scripts\":\"09ad80cded27bb4193a60226b8562c97-1.0\"}}",
+      "socket_version": "1.4.5",
+      "ec_env": "qa",
+      "salesforce_uri": "https://gdx01-t01-gas01.asialab.glip.net:8000/salesforce_redirect",
+      "glipforce_oauth_login_url": "https://login.salesforce.com",
+      "glipforce_oauth_redirect_url": "https://app.glip.com/salesforce",
+      "client_config": {
+        "dnd_notifications_beta_companies": "all",
+        "presence_beta_emails": "all",
+        "presence_beta_domain": "all",
+        "Presence2.0Email": "all",
+        "presence_beta": "true",
+        "presence_webdesktop_all": "true",
+        "enable_email_monitor": "true",
+        "search_facade_base_paths": "{\"v1\": \"http://gdx02-t01-gsf01.asialab.glip.net:8080\"}",
+        "search_facade_indexing_global_path": "v1",
+        "search_facade_searching_global_path": "v1",
+        "code_snippets_beta_all": "true",
+        "beta_s3_direct_uploads_accelerated": "on",
+        "beta_s3_direct_uploads": "on",
+        "limit_people_broadcast_all": "off",
+        "limit_people_broadcast_emails": "",
+        "limit_people_broadcast_domains": "",
+        "suppress_invitee_emails": "on",
+        "team_mention_emails": "",
+        "team_mention_domains": "",
+        "team_mention_all": "true",
+        "reconnect_backoff_point": "300",
+        "reconnect_economy_multiplier": "100",
+        "reconnect_emergency_restart_time": "0",
+        "reconnect_enabled": "false",
+        "reconnect_failure_point": "500",
+        "reconnect_increment": "100",
+        "reconnect_initial_window": "1000",
+        "custom_status_domains": "",
+        "custom_status_all": "false",
+        "old_umi_disabled": "false",
+        "beta_rcv_api2_domains": "all",
+        "ui_consistency_beta_all": "false",
+        "ui_consistency_beta_domains": "",
+        "ui_consistency_beta_emails": "",
+        "Force_Logout_Percentage": ""
+      },
+      "ec_logstash_endpoint": "http://log8080-1553789998.us-east-1.elb.amazonaws.com/",
+      "ec_zoom_web_backend": "rcdev.dev.meetzoom.us",
+      "rcv_base_join_uri": "https://glpdevxmn-shr-1-v.lab.nordigy.ru",
+      "marketing_host": "glpdevxmn.asialab.glip.net:443",
+      "scoreboard": "glpdevxmn.asialab.glip.net:443"
+    },
+    "status": 200,
+    "statusText": "OK",
+    "headers": {
+      "content-type": "application/json; charset=utf-8"
+    },
+    "retryAfter": 6000
+  },
+  "request": {
+    "id": "665f3682-f1a1-4fd7-98c3-cc003c03f635",
+    "path": "/api/index",
+    "method": "get",
+    "data": {},
+    "headers": {
+      "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6MTU1OTk2MzQxNzQ0NiwidHlwZSI6IndlYiIsInVpZCI6MTg3ODc1MzMxLCJpYXQiOjE1NTk5NjM0MTcsImlzcyI6ImdscGRldnhtbi5hc2lhbGFiLmdsaXAubmV0Iiwic3ViIjoiZ2xpcCJ9.o5mJeKYHChdOFd61_-IP-Evvu-sK9reLxUepta2Gkn6NuCQpUzXxBMJ1j0GEDfcxzTnv4NVj5A7WFSDByxkwBw"
+    },
+    "params": {
+      "newer_than": "1559963122653"
+    },
+    "handlerType": {
+      "name": "GLIP",
+      "defaultVia": 2,
+      "survivalModeSupportable": false,
+      "tokenExpirable": false,
+      "tokenRefreshable": false
+    },
+    "priority": 1,
+    "via": 0,
+    "retryCount": 0,
+    "host": "https://glpdevxmn.asialab.glip.net",
+    "timeout": 600000,
+    "requestConfig": {},
+    "authFree": false,
+    "HAPriority": 0,
+    "startTime": 1559963426780
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "response": {
+    "data": [],
+    "status": 200,
+    "statusText": "",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Frame-Options": "DENY",
+      "X-Request-Id": "user_id:187875331;id:a719177d-dc9d-4a76-a4ef-7c13bfa6cdbc"
+    },
+    "retryAfter": 6000,
+    "request": {
+      "uri": "/api/items",
+      "route": {
+        "method": "handler",
+        "function": "api_handler"
+      },
+      "route_uri": "/api/:function_id/:model_id/:additional_info/:additional_info2",
+      "parameters": {
+        "type_id": 18,
+        "group_ids": 43638790,
+        "newer_than": 0,
+        "request_id": "15",
+        "function_id": "items"
+      },
+      "status_code": 200,
+      "startTime": 1559963439458
+    }
+  },
+  "request": {
+    "id": "15",
+    "path": "/api/items",
+    "method": "get",
+    "data": {},
+    "headers": {
+      "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6MTU1OTk2MzQxNzQ0NiwidHlwZSI6IndlYiIsInVpZCI6MTg3ODc1MzMxLCJpYXQiOjE1NTk5NjM0MTcsImlzcyI6ImdscGRldnhtbi5hc2lhbGFiLmdsaXAubmV0Iiwic3ViIjoiZ2xpcCJ9.o5mJeKYHChdOFd61_-IP-Evvu-sK9reLxUepta2Gkn6NuCQpUzXxBMJ1j0GEDfcxzTnv4NVj5A7WFSDByxkwBw"
+    },
+    "handlerType": {
+      "name": "GLIP",
+      "defaultVia": 2,
+      "survivalModeSupportable": false,
+      "tokenExpirable": false,
+      "tokenRefreshable": false
+    },
+    "priority": 2,
+    "via": 2,
+    "retryCount": 0,
+    "host": "https://glpdevxmn.asialab.glip.net",
+    "timeout": 60000,
+    "requestConfig": {},
+    "authFree": false,
+    "HAPriority": 0,
+    "startTime": 1559963439458,
+    "parameters": {
+      "type_id": 18,
+      "group_ids": 43638790,
+      "newer_than": 0,
+      "request_id": "15"
+    },
+    "uri": "/api/items"
+  }
+}

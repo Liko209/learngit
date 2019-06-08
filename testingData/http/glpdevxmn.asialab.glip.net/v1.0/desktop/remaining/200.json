@@ -1,0 +1,1182 @@
+{
+  "response": {
+    "data": {
+      "people": [
+        {
+          "created_at": 1558784245166,
+          "creator_id": 187457539,
+          "version": 3295385193807872,
+          "company_id": 401409,
+          "email": "allen.lian@ringcentral.com",
+          "rc_phone_numbers": [
+            {
+              "id": 400701134008,
+              "phoneNumber": "+12098520008",
+              "usageType": "DirectNumber"
+            },
+            {
+              "id": 400701217008,
+              "phoneNumber": "+3531800100001",
+              "usageType": "DirectNumber"
+            },
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "Allen",
+          "last_name": "Lian",
+          "headshot": {
+            "stored_file_id": "1457807372",
+            "url": "https://glipasialabnet-glpdevxmn.s3.amazonaws.com/web/customer_files/1457807372/IMG_0270.JPG?Expires=2075494478&AWSAccessKeyId=AKIAIL2TEPKHU23FQHNQ&Signature=7br4obsx6EhcIMPevOzgBTH5%2F%2Bc%3D",
+            "creator_id": 187457539,
+            "offset": "319x0",
+            "crop": "2230x2230",
+            "thumbs": {
+              "1457807372crop=2230x2230&offset=319x0&size=36x36": "https://glipasialabnet-glpdevxmn.s3-ap-southeast-1.amazonaws.com/web/customer_files/1457815564/modified.JPG?Expires=2075494478&AWSAccessKeyId=AKIAIL2TEPKHU23FQHNQ&Signature=9tVk4Tt5z2jvkcMsnbAzjtKbaTY%3D",
+              "width-1457807372crop=2230x2230&offset=319x0&size=36x36": "36",
+              "height-1457807372crop=2230x2230&offset=319x0&size=36x36": 24,
+              "1457807372crop=2230x2230&offset=319x0&size=80x80": "https://glipasialabnet-glpdevxmn.s3-ap-southeast-1.amazonaws.com/web/customer_files/1457823756/modified.JPG?Expires=2075494478&AWSAccessKeyId=AKIAIL2TEPKHU23FQHNQ&Signature=wSEvfxo9VKat%2F%2BWbXkI%2FP%2FEnz7w%3D",
+              "width-1457807372crop=2230x2230&offset=319x0&size=80x80": "80",
+              "height-1457807372crop=2230x2230&offset=319x0&size=80x80": 53,
+              "1457807372crop=2230x2230&offset=319x0&size=150": "https://glipasialabnet-glpdevxmn.s3-ap-southeast-1.amazonaws.com/web/customer_files/1457831948/modified.JPG?Expires=2075494478&AWSAccessKeyId=AKIAIL2TEPKHU23FQHNQ&Signature=8ydP27AN42AuJxrY2KQpPDzIdu8%3D",
+              "1457807372crop=2230x2230&offset=319x0&size=120x120": "https://glipasialabnet-glpdevxmn.s3-ap-southeast-1.amazonaws.com/web/customer_files/1458225164/modified.JPG?Expires=2075494478&AWSAccessKeyId=AKIAIL2TEPKHU23FQHNQ&Signature=G6unog5iG%2BC1ZECPS6VQWh%2Bw%2Bpw%3D",
+              "width-1457807372crop=2230x2230&offset=319x0&size=120x120": "120",
+              "height-1457807372crop=2230x2230&offset=319x0&size=120x120": 80,
+              "1457807372crop=2230x2230&offset=319x0&size=100": "https://glipasialabnet-glpdevxmn.s3-ap-southeast-1.amazonaws.com/web/customer_files/1460609036/modified.JPG?Expires=2075494478&AWSAccessKeyId=AKIAIL2TEPKHU23FQHNQ&Signature=S8Rn08dOVCxpKVBynMuwe0CPkns%3D",
+              "1457807372crop=2230x2230&offset=319x0&size=50x50": "https://glipasialabnet-glpdevxmn.s3-ap-southeast-1.amazonaws.com/web/customer_files/1460690956/modified.JPG?Expires=2075494478&AWSAccessKeyId=AKIAIL2TEPKHU23FQHNQ&Signature=toObmu5itMV46knUpMOnfhvZR1Y%3D",
+              "width-1457807372crop=2230x2230&offset=319x0&size=50x50": "50",
+              "height-1457807372crop=2230x2230&offset=319x0&size=50x50": 33,
+              "1457807372crop=2230x2230&offset=319x0&size=192": "https://glipasialabnet-glpdevxmn.s3-ap-southeast-1.amazonaws.com/web/customer_files/1460789260/modified.JPG?Expires=2075494478&AWSAccessKeyId=AKIAIL2TEPKHU23FQHNQ&Signature=SFjPeEiYAFh%2Bbva4X2lRI%2B7NZDc%3D",
+              "1457807372crop=2230x2230&offset=319x0&size=16x16": "https://glipasialabnet-glpdevxmn.s3-ap-southeast-1.amazonaws.com/web/customer_files/1461862412/modified.JPG?Expires=2075494478&AWSAccessKeyId=AKIAIL2TEPKHU23FQHNQ&Signature=r5hTsIzbA6HND%2FL%2BfoA6Pw6bOAs%3D",
+              "width-1457807372crop=2230x2230&offset=319x0&size=16x16": "16",
+              "height-1457807372crop=2230x2230&offset=319x0&size=16x16": 11,
+              "1457807372crop=2230x2230&offset=319x0&size=22x22": "https://glipasialabnet-glpdevxmn.s3-ap-southeast-1.amazonaws.com/web/customer_files/1461944332/modified.JPG?Expires=2075494478&AWSAccessKeyId=AKIAIL2TEPKHU23FQHNQ&Signature=Oyp%2FGKk5iBCpxwKZIzRRsuo5GXw%3D",
+              "width-1457807372crop=2230x2230&offset=319x0&size=22x22": "22",
+              "height-1457807372crop=2230x2230&offset=319x0&size=22x22": 15,
+              "1457807372crop=2230x2230&offset=319x0&size=70x70": "https://glipasialabnet-glpdevxmn.s3-ap-southeast-1.amazonaws.com/web/customer_files/1461960716/modified.JPG?Expires=2075494478&AWSAccessKeyId=AKIAIL2TEPKHU23FQHNQ&Signature=oG0oQq%2B0eBWVTtZc1GB4PUgrpIc%3D",
+              "width-1457807372crop=2230x2230&offset=319x0&size=70x70": "70",
+              "height-1457807372crop=2230x2230&offset=319x0&size=70x70": 47
+            }
+          },
+          "headshot_version": 1558787000242,
+          "sanitized_rc_extension": {
+            "extensionNumber": "222",
+            "type": "User"
+          },
+          "flags": 44,
+          "model_size": 2,
+          "id": 187457539
+        },
+        {
+          "created_at": 1558920407138,
+          "creator_id": 188047363,
+          "version": 3838765443317760,
+          "company_id": 401409,
+          "email": "cerrie.shen@ringcentral.com",
+          "rc_phone_numbers": [
+            {
+              "id": 400701230008,
+              "phoneNumber": "+12059940002",
+              "usageType": "DirectNumber"
+            },
+            {
+              "id": 400701256008,
+              "phoneNumber": "+18605680001",
+              "usageType": "DirectNumber"
+            },
+            {
+              "id": 400701258008,
+              "phoneNumber": "+6442000130",
+              "usageType": "DirectNumber"
+            },
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "Cerrie",
+          "last_name": "Shen",
+          "sanitized_rc_extension": {
+            "extensionNumber": "260",
+            "type": "User"
+          },
+          "flags": 44,
+          "model_size": 2,
+          "id": 188047363
+        },
+        {
+          "created_at": 1558920773806,
+          "creator_id": 191348739,
+          "version": 8739300652875776,
+          "company_id": 401409,
+          "email": "mia.cai@jupiter.com",
+          "rc_phone_numbers": [
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "Mia667",
+          "last_name": "Cai 02",
+          "sanitized_rc_extension": {
+            "extensionNumber": "667",
+            "type": "User"
+          },
+          "flags": 44,
+          "model_size": 2,
+          "id": 191348739
+        },
+        {
+          "created_at": 1558596876917,
+          "creator_id": 179429379,
+          "version": 6208821550645248,
+          "company_id": 401409,
+          "email": "mm1+1558590979254-5971747@dins.ru",
+          "rc_phone_numbers": [
+            {
+              "id": 400701121008,
+              "phoneNumber": "+12126430001",
+              "usageType": "DirectNumber"
+            },
+            {
+              "id": 400701120008,
+              "phoneNumber": "+13036950001",
+              "usageType": "DirectNumber"
+            },
+            {
+              "id": 400701123008,
+              "phoneNumber": "+18602950002",
+              "usageType": "DirectNumber"
+            },
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "Sophia",
+          "last_name": "Wang",
+          "sanitized_rc_extension": {
+            "extensionNumber": "102",
+            "type": "User"
+          },
+          "flags": 44,
+          "model_size": 2,
+          "id": 179429379
+        },
+        {
+          "created_at": 1558596877063,
+          "creator_id": 179437571,
+          "version": 6493975160553472,
+          "company_id": 401409,
+          "email": "mm1+1558590986433-7986158@dins.ru",
+          "rc_phone_numbers": [
+            {
+              "id": 400701125008,
+              "phoneNumber": "+12064550001",
+              "usageType": "DirectNumber"
+            },
+            {
+              "id": 400701124008,
+              "phoneNumber": "+13479470007",
+              "usageType": "DirectNumber"
+            },
+            {
+              "id": 400701126008,
+              "phoneNumber": "+14792340001",
+              "usageType": "DirectNumber"
+            },
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "William",
+          "last_name": "Ye",
+          "sanitized_rc_extension": {
+            "extensionNumber": "103",
+            "type": "User"
+          },
+          "flags": 44,
+          "model_size": 2,
+          "id": 179437571
+        },
+        {
+          "created_at": 1558596877137,
+          "creator_id": 179445763,
+          "version": 2911983500263424,
+          "company_id": 401409,
+          "email": "mm1+1558590988201-6346560@dins.ru",
+          "rc_phone_numbers": [
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "Extension without DID",
+          "sanitized_rc_extension": {
+            "extensionNumber": "104",
+            "type": "User"
+          },
+          "flags": 12,
+          "model_size": 2,
+          "id": 179445763
+        },
+        {
+          "created_at": 1558596877208,
+          "creator_id": 179453955,
+          "version": 5233609208233984,
+          "company_id": 401409,
+          "email": "mm1+1558590989304-1344173@dins.ru",
+          "rc_phone_numbers": [
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "Not International Call Permission",
+          "sanitized_rc_extension": {
+            "extensionNumber": "105",
+            "type": "User"
+          },
+          "flags": 12,
+          "model_size": 2,
+          "id": 179453955
+        },
+        {
+          "created_at": 1558596877279,
+          "creator_id": 179462147,
+          "version": 2324248748097536,
+          "company_id": 401409,
+          "email": "mm1+1558590989729-8243242@dins.ru",
+          "rc_phone_numbers": [
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "New User Not In Dept",
+          "sanitized_rc_extension": {
+            "extensionNumber": "106",
+            "type": "User"
+          },
+          "flags": 12,
+          "model_size": 2,
+          "id": 179462147
+        },
+        {
+          "created_at": 1558596877349,
+          "creator_id": 179470339,
+          "version": 8003123796770816,
+          "company_id": 401409,
+          "email": "mm1+1558590990146-3509734@dins.ru",
+          "rc_phone_numbers": [
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "Admin In Dept",
+          "last_name": null,
+          "sanitized_rc_extension": {
+            "extensionNumber": "107",
+            "type": "User"
+          },
+          "flags": 44,
+          "model_size": 2,
+          "id": 179470339
+        },
+        {
+          "created_at": 1558596877432,
+          "creator_id": 179478531,
+          "version": 3510222410743808,
+          "company_id": 401409,
+          "email": "mm1+1558590990682-1562399@dins.ru",
+          "rc_phone_numbers": [
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "Normal User In Dept",
+          "sanitized_rc_extension": {
+            "extensionNumber": "108",
+            "type": "User"
+          },
+          "flags": 44,
+          "model_size": 2,
+          "id": 179478531
+        },
+        {
+          "created_at": 1558596877503,
+          "creator_id": 179486723,
+          "version": 3686047907053568,
+          "company_id": 401409,
+          "email": "mm1+1558590991192-152444-deactivated1558596877579@dins.ru",
+          "rc_phone_numbers": [
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "Normal User In Dept2",
+          "sanitized_rc_extension": {
+            "extensionNumber": "109",
+            "type": "User"
+          },
+          "flags": 14,
+          "model_size": 2,
+          "id": 179486723
+        },
+        {
+          "created_at": 1558600619267,
+          "creator_id": 179494915,
+          "version": 2582132828405760,
+          "company_id": 401409,
+          "email": "mm1+1558590991192-152444@dins.ru",
+          "first_user": null,
+          "is_pseudo_user": null,
+          "glip_user_id": null,
+          "pseudo_user_phone_number": null,
+          "first_name": "Skye",
+          "rc_phone_numbers": [
+            {
+              "id": 400701181008,
+              "phoneNumber": "+12135500001",
+              "usageType": "DirectNumber"
+            },
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "last_name": "Wang",
+          "sanitized_rc_extension": {
+            "extensionNumber": "109",
+            "type": "User"
+          },
+          "flags": 44,
+          "model_size": 2,
+          "id": 179494915
+        },
+        {
+          "created_at": 1558596871176,
+          "creator_id": 179421187,
+          "version": 6792730122387456,
+          "company_id": 401409,
+          "email": "mm1+15admin@jupitertest523.ru",
+          "first_user": true,
+          "is_pseudo_user": null,
+          "glip_user_id": null,
+          "pseudo_user_phone_number": null,
+          "first_name": "GLIP-DEV-XMN",
+          "last_name": "Testing Account",
+          "rc_phone_numbers": [
+            {
+              "id": 400701119008,
+              "phoneNumber": "+12095830001",
+              "usageType": "DirectNumber"
+            },
+            {
+              "id": 400701122008,
+              "phoneNumber": "+16232820001",
+              "usageType": "DirectNumber"
+            },
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "sanitized_rc_extension": {
+            "extensionNumber": "101",
+            "type": "User"
+          },
+          "flags": 44,
+          "model_size": 2,
+          "id": 179421187
+        },
+        {
+          "created_at": 1559028262719,
+          "creator_id": 187817987,
+          "version": 2011858961141534,
+          "company_id": 401409,
+          "email": "nello@jupitertest523.ru",
+          "first_user": null,
+          "is_pseudo_user": null,
+          "glip_user_id": null,
+          "pseudo_user_phone_number": null,
+          "inviter_id": 187817987,
+          "flags": 0,
+          "model_size": 2,
+          "id": 270958595
+        },
+        {
+          "created_at": 1558930861225,
+          "creator_id": 269213699,
+          "version": 1793203074236416,
+          "company_id": 401409,
+          "email": "user10000@jupitertest523.ru",
+          "rc_phone_numbers": [
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "Marta",
+          "last_name": "Ankunding",
+          "sanitized_rc_extension": {
+            "extensionNumber": "10000",
+            "type": "User"
+          },
+          "flags": 12,
+          "model_size": 2,
+          "id": 269213699
+        },
+        {
+          "created_at": 1558930861518,
+          "creator_id": 269221891,
+          "version": 6286187773820928,
+          "company_id": 401409,
+          "email": "user10001@jupitertest523.ru",
+          "rc_phone_numbers": [
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "Consuelo",
+          "last_name": "Cartwright",
+          "sanitized_rc_extension": {
+            "extensionNumber": "10001",
+            "type": "User"
+          },
+          "flags": 12,
+          "model_size": 2,
+          "id": 269221891
+        },
+        {
+          "created_at": 1558930861761,
+          "creator_id": 269230083,
+          "version": 6374472699346944,
+          "company_id": 401409,
+          "email": "user10002@jupitertest523.ru",
+          "rc_phone_numbers": [
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "Clementine",
+          "last_name": "Bechtelar",
+          "sanitized_rc_extension": {
+            "extensionNumber": "10002",
+            "type": "User"
+          },
+          "flags": 12,
+          "model_size": 2,
+          "id": 269230083
+        },
+        {
+          "created_at": 1558930862010,
+          "creator_id": 269238275,
+          "version": 7199875389194240,
+          "company_id": 401409,
+          "email": "user10003@jupitertest523.ru",
+          "rc_phone_numbers": [
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "Letha",
+          "last_name": "Crist",
+          "sanitized_rc_extension": {
+            "extensionNumber": "10003",
+            "type": "User"
+          },
+          "flags": 12,
+          "model_size": 2,
+          "id": 269238275
+        },
+        {
+          "created_at": 1558930862295,
+          "creator_id": 269246467,
+          "version": 2902017404043264,
+          "company_id": 401409,
+          "email": "user10004@jupitertest523.ru",
+          "rc_phone_numbers": [
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "Dario",
+          "last_name": "Kub",
+          "sanitized_rc_extension": {
+            "extensionNumber": "10004",
+            "type": "User"
+          },
+          "flags": 12,
+          "model_size": 2,
+          "id": 269246467
+        },
+        {
+          "created_at": 1558930862599,
+          "creator_id": 269254659,
+          "version": 3424271365832704,
+          "company_id": 401409,
+          "email": "user10005@jupitertest523.ru",
+          "rc_phone_numbers": [
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "Mathias",
+          "last_name": "Dare",
+          "sanitized_rc_extension": {
+            "extensionNumber": "10005",
+            "type": "User"
+          },
+          "flags": 12,
+          "model_size": 2,
+          "id": 269254659
+        },
+        {
+          "created_at": 1558930862856,
+          "creator_id": 269262851,
+          "version": 5672739207643136,
+          "company_id": 401409,
+          "email": "user10006@jupitertest523.ru",
+          "rc_phone_numbers": [
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "Johnathan",
+          "last_name": "Champlin",
+          "sanitized_rc_extension": {
+            "extensionNumber": "10006",
+            "type": "User"
+          },
+          "flags": 12,
+          "model_size": 2,
+          "id": 269262851
+        },
+        {
+          "created_at": 1558930863112,
+          "creator_id": 269271043,
+          "version": 4616395457298432,
+          "company_id": 401409,
+          "email": "user10007@jupitertest523.ru",
+          "rc_phone_numbers": [
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "Cristal",
+          "last_name": "Sawayn",
+          "sanitized_rc_extension": {
+            "extensionNumber": "10007",
+            "type": "User"
+          },
+          "flags": 12,
+          "model_size": 2,
+          "id": 269271043
+        },{
+          "created_at": 1558920389700,
+          "creator_id": 187875331,
+          "version": 7013672515796992,
+          "company_id": 401409,
+          "email": "user239@jupitertest523.ru",
+          "is_webmail": false,
+          "externally_registered": "rc_signons",
+          "has_bogus_email": false,
+          "rc_phone_numbers": [
+            {
+              "id": 400701231008,
+              "phoneNumber": "+12059940003",
+              "usageType": "CompanyFaxNumber"
+            },
+            {
+              "id": 400701985008,
+              "phoneNumber": "+12512410002",
+              "usageType": "CompanyNumber"
+            },
+            {
+              "id": 400701986008,
+              "phoneNumber": "+12512410003",
+              "usageType": "CompanyNumber"
+            },
+            {
+              "id": 400701987008,
+              "phoneNumber": "+12512410004",
+              "usageType": "CompanyNumber"
+            },
+            {
+              "id": 400701988008,
+              "phoneNumber": "+12512410005",
+              "usageType": "CompanyNumber"
+            },
+            {
+              "id": 400701989008,
+              "phoneNumber": "+12512410006",
+              "usageType": "CompanyNumber"
+            },
+            {
+              "id": 400701118008,
+              "phoneNumber": "+18002076138",
+              "usageType": "MainCompanyNumber"
+            }
+          ],
+          "first_name": "Emmalee",
+          "last_name": "Metz",
+          "modified_at": 1559963417391,
+          "deactivated": false,
+          "sanitized_rc_extension": {
+            "extensionNumber": "239",
+            "type": "User"
+          },
+          "sanitized_rc_first_name": "Emmalee",
+          "sanitized_rc_last_name": "Metz",
+          "has_rc_access_token": true,
+          "display_name": "Emmalee Metz",
+          "id": 187875331
+        }],
+      "teams": [
+        {
+          "created_at": 1559022140459,
+          "creator_id": 188219395,
+          "version": 5325618386305024,
+          "model_size": 0,
+          "is_new": false,
+          "members": [
+            188219395,
+            200605699
+          ],
+          "is_team": true,
+          "is_public": true,
+          "privacy": "protected",
+          "set_abbreviation": "234",
+          "description": "",
+          "permissions": {
+            "admin": {
+              "uids": [
+                200605699
+              ]
+            },
+            "user": {
+              "uids": [],
+              "level": 15
+            }
+          },
+          "email_friendly_abbreviation": "234",
+          "function_id": "team",
+          "company_id": 401409,
+          "guest_user_company_ids": [],
+          "most_recent_content_modified_at": 1559026509174,
+          "modified_at": 1559026509175,
+          "deactivated": false,
+          "model_id": "42729478",
+          "id": 42729478
+        },
+        {
+          "created_at": 1559204000835,
+          "creator_id": 191340547,
+          "version": 4013989671469056,
+          "model_size": 0,
+          "is_new": true,
+          "members": [
+            191340547
+          ],
+          "is_team": true,
+          "is_public": true,
+          "privacy": "protected",
+          "description": "",
+          "set_abbreviation": "test for mia02",
+          "permissions": {
+            "admin": {
+              "uids": [
+                191340547
+              ]
+            },
+            "user": {
+              "uids": [],
+              "level": 11
+            }
+          },
+          "function_id": "team",
+          "company_id": 401409,
+          "email_friendly_abbreviation": "test_for_mia02",
+          "guest_user_company_ids": [],
+          "most_recent_content_modified_at": 1559229021770,
+          "modified_at": 1559229021877,
+          "deactivated": false,
+          "most_recent_post_id": 2698182660,
+          "most_recent_post_created_at": 1559229021770,
+          "team_mention_cursor": 0,
+          "admin_mention_cursor": 0,
+          "last_author_id": 191340547,
+          "post_cursor": 13,
+          "id": 42934278
+        },
+        {
+          "created_at": 1559292564476,
+          "creator_id": 187654147,
+          "version": 7232136648065024,
+          "model_size": 0,
+          "is_new": false,
+          "members": [
+            187654147,
+            187899907,
+            188047363,
+            188194819
+          ],
+          "is_team": true,
+          "is_public": true,
+          "privacy": "protected",
+          "description": "",
+          "set_abbreviation": "Public / Private team",
+          "permissions": {
+            "admin": {
+              "uids": [
+                187654147
+              ]
+            },
+            "user": {
+              "uids": [],
+              "level": 11
+            }
+          },
+          "function_id": "team",
+          "company_id": 401409,
+          "email_friendly_abbreviation": "public_/_private_team",
+          "guest_user_company_ids": [],
+          "most_recent_content_modified_at": 1559717180097,
+          "modified_at": 1559717180222,
+          "deactivated": false,
+          "model_id": "43089926",
+          "most_recent_post_id": 2714222596,
+          "most_recent_post_created_at": 1559717180061,
+          "team_mention_cursor": 0,
+          "admin_mention_cursor": 0,
+          "last_author_id": 188194819,
+          "post_cursor": 2,
+          "id": 43089926
+        },
+        {
+          "created_at": 1559703708399,
+          "creator_id": 187826179,
+          "version": 2031825853612032,
+          "model_size": 0,
+          "is_new": true,
+          "members": [
+            187826179,
+            188194819
+          ],
+          "is_team": true,
+          "is_public": true,
+          "privacy": "protected",
+          "set_abbreviation": "team d",
+          "description": "",
+          "permissions": {
+            "admin": {
+              "uids": [
+                187826179
+              ]
+            },
+            "user": {
+              "uids": [],
+              "level": 15
+            }
+          },
+          "email_friendly_abbreviation": "team_d",
+          "function_id": "team",
+          "company_id": 401409,
+          "guest_user_company_ids": [],
+          "most_recent_content_modified_at": 1559790011447,
+          "modified_at": 1559790022065,
+          "deactivated": false,
+          "most_recent_post_id": 2719817732,
+          "most_recent_post_created_at": 1559790011437,
+          "team_mention_cursor": 0,
+          "admin_mention_cursor": 0,
+          "last_author_id": 187826179,
+          "post_cursor": 3,
+          "id": 43507718
+        },
+        {
+          "created_at": 1559570954974,
+          "creator_id": 179421187,
+          "version": 1569878303571968,
+          "model_size": 0,
+          "is_new": false,
+          "members": [
+            179421187
+          ],
+          "is_team": true,
+          "is_public": true,
+          "privacy": "protected",
+          "description": "",
+          "set_abbreviation": "Test Team 02",
+          "permissions": {
+            "admin": {
+              "uids": [
+                179421187
+              ]
+            },
+            "user": {
+              "uids": [],
+              "level": 11
+            }
+          },
+          "function_id": "team",
+          "company_id": 401409,
+          "email_friendly_abbreviation": "test_team_02",
+          "guest_user_company_ids": [],
+          "most_recent_content_modified_at": 1559802317430,
+          "modified_at": 1559802317480,
+          "deactivated": false,
+          "model_id": "43261958",
+          "most_recent_post_id": 2720677892,
+          "most_recent_post_created_at": 1559802317430,
+          "team_mention_cursor": 0,
+          "admin_mention_cursor": 0,
+          "last_author_id": 179421187,
+          "post_cursor": 4,
+          "id": 43261958
+        },
+        {
+          "created_at": 1559703663376,
+          "creator_id": 187809795,
+          "version": 8604512419840000,
+          "model_size": 0,
+          "is_new": true,
+          "members": [
+            187809795,
+            188637187
+          ],
+          "is_team": true,
+          "is_public": true,
+          "privacy": "protected",
+          "description": "",
+          "set_abbreviation": "team a",
+          "permissions": {
+            "admin": {
+              "uids": [
+                187809795
+              ]
+            },
+            "user": {
+              "uids": [],
+              "level": 11
+            }
+          },
+          "function_id": "team",
+          "company_id": 401409,
+          "email_friendly_abbreviation": "team_a",
+          "guest_user_company_ids": [],
+          "most_recent_content_modified_at": 1559812604740,
+          "modified_at": 1559812604794,
+          "deactivated": false,
+          "most_recent_post_id": 2721857540,
+          "most_recent_post_created_at": 1559812604740,
+          "team_mention_cursor": 0,
+          "admin_mention_cursor": 0,
+          "last_author_id": 188637187,
+          "post_cursor": 2,
+          "id": 43474950
+        },
+        {
+          "created_at": 1559703698057,
+          "creator_id": 187826179,
+          "version": 8643606011183104,
+          "model_size": 0,
+          "is_new": true,
+          "members": [
+            187826179,
+            188637187
+          ],
+          "is_team": true,
+          "is_public": true,
+          "privacy": "protected",
+          "set_abbreviation": "team c",
+          "description": "",
+          "permissions": {
+            "admin": {
+              "uids": [
+                187826179
+              ]
+            },
+            "user": {
+              "uids": [],
+              "level": 15
+            }
+          },
+          "email_friendly_abbreviation": "team_c",
+          "function_id": "team",
+          "company_id": 401409,
+          "guest_user_company_ids": [],
+          "most_recent_content_modified_at": 1559813141217,
+          "modified_at": 1559813141255,
+          "deactivated": false,
+          "most_recent_post_id": 2721939460,
+          "most_recent_post_created_at": 1559813141217,
+          "team_mention_cursor": 0,
+          "admin_mention_cursor": 0,
+          "last_author_id": 188637187,
+          "post_cursor": 2,
+          "id": 43499526
+        },
+        {
+          "created_at": 1559703682000,
+          "creator_id": 187809795,
+          "version": 8773759200657408,
+          "model_size": 0,
+          "is_new": false,
+          "members": [
+            187809795
+          ],
+          "is_team": true,
+          "is_public": true,
+          "privacy": "protected",
+          "description": "",
+          "set_abbreviation": "team g",
+          "permissions": {
+            "admin": {
+              "uids": [
+                187809795
+              ]
+            },
+            "user": {
+              "uids": [],
+              "level": 11
+            }
+          },
+          "function_id": "team",
+          "company_id": 401409,
+          "email_friendly_abbreviation": "team_g",
+          "guest_user_company_ids": [],
+          "most_recent_content_modified_at": 1559815053314,
+          "modified_at": 1559815053314,
+          "deactivated": false,
+          "at_mentioning_post_ids": [
+            2722234372
+          ],
+          "id": 43491334
+        },
+        {
+          "created_at": 1559566308006,
+          "creator_id": 187908099,
+          "version": 6633242698448896,
+          "model_size": 0,
+          "is_new": false,
+          "members": [
+            187908099,
+            235708419,
+            187826179
+          ],
+          "is_team": true,
+          "is_public": true,
+          "privacy": "protected",
+          "description": "",
+          "set_abbreviation": "test file",
+          "permissions": {
+            "admin": {
+              "uids": [
+                187908099
+              ],
+              "level": 63
+            },
+            "user": {
+              "uids": [],
+              "level": 11
+            }
+          },
+          "function_id": "team",
+          "company_id": 401409,
+          "email_friendly_abbreviation": "test_file",
+          "guest_user_company_ids": [],
+          "most_recent_content_modified_at": 1559821954808,
+          "modified_at": 1559821953236,
+          "deactivated": false,
+          "most_recent_post_id": 2722635780,
+          "most_recent_post_created_at": 1559821953179,
+          "team_mention_cursor": 0,
+          "admin_mention_cursor": 0,
+          "last_author_id": 187908099,
+          "post_cursor": 21,
+          "model_id": "43253766",
+          "id": 43253766
+        },
+        {
+          "created_at": 1558942121281,
+          "creator_id": 179421187,
+          "version": 2599221360328704,
+          "model_size": 0,
+          "is_new": false,
+          "members": [
+            179421187,
+            179429379,
+            188055555,
+            188194819,
+            187826179,
+            187817987
+          ],
+          "is_team": true,
+          "is_public": true,
+          "privacy": "protected",
+          "description": "",
+          "set_abbreviation": "FIJI-5631 file option",
+          "permissions": {
+            "admin": {
+              "uids": [
+                179421187
+              ],
+              "level": 63
+            },
+            "user": {
+              "uids": [],
+              "level": 11
+            }
+          },
+          "function_id": "team",
+          "company_id": 401409,
+          "email_friendly_abbreviation": "fiji-5631_file_option",
+          "guest_user_company_ids": [],
+          "most_recent_content_modified_at": 1559825108304,
+          "modified_at": 1559825108388,
+          "deactivated": false,
+          "most_recent_post_id": 2721226756,
+          "most_recent_post_created_at": 1559804813626,
+          "team_mention_cursor": 0,
+          "admin_mention_cursor": 0,
+          "last_author_id": 187826179,
+          "post_cursor": 107,
+          "pinned_post_ids": [
+            2684567556
+          ],
+          "model_id": "42655750",
+          "id": 42655750
+        }
+      ],
+      "companies": [],
+      "presences": [],
+      "api_server": "glpdevxmn.asialab.glip.net:8443",
+      "cache_server": "glpdevxmn.asialab.glip.net:31337",
+      "error_dump_server": "glpdevxmn.asialab.glip.net:31338",
+      "cookie_domain": ".asialab.glip.net",
+      "static_http_server": "https://d2rbro28ib85bu.cloudfront.net",
+      "static_https_server": "",
+      "version": "{\"all\":{\"scripts\":\"a0154f94c61073c5b93f8ec2d27d42cf-1.0\",\"templates\":\"95e7f5366fec0879763fa66b2d149771-1.0\",\"styles\":\"6486056ccc23c9bc8c691e139e85bcc0-1.0\"},\"data\":{\"scripts\":\"22c9f59c4591627d524c9337be2d6e1a-1.0\"},\"anon\":{\"scripts\":\"7ef1021defd1273b7bc41cb50d089f99-1.0\",\"templates\":\"776dae054962a17a7b21257781a717af-1.0\",\"styles\":\"eda9eaed4fd5d92c47a13ae776b2e408-1.0\"},\"login\":{\"styles\":\"56dae419d270dab386edc78ceb50cd56-1.0\"},\"named\":{\"scripts\":\"36ffb353ee0633d2eded4db21b2532f2-1.0\",\"templates\":\"c08bf338c056a01527d71bfeaa25fec8-1.0\",\"styles\":\"75dbf6c17b914ec521bf3f64db57ec68-1.0\"},\"private\":{\"scripts\":\"4a00ff036d9deaf4760c1569ea207187-1.0\",\"templates\":\"3198658c904cf28a7d8ce18fd3fa7006-1.0\",\"styles\":\"656abd84bb90917f88f716878d6c844d-1.0\"},\"ie\":{\"scripts\":\"6a1369976d0e4f98cd92b1bad4896070-1.0\",\"styles\":\"824000c3df064ad862871d47c5df114e-1.0\"},\"bootloader\":{\"scripts\":\"2e384cb97c9cd3b417e05edb5cbe03b5-1.0\"},\"glip-static\":{\"scripts\":\"ca86fe7a4d911b91eb07fa0571367960-1.0\"},\"mobile-web\":{\"scripts\":\"e7f6c14ea388de7cc4c06798d8ef323b-1.0\",\"styles\":\"559a3a03cfb67c6a37da1396207ec771-1.0\"},\"web-redirection\":{\"scripts\":\"0ef1860040b17c647d76f89a71b6937e-1.0\",\"styles\":\"cccaa9e3d85b89810a3d40e87d13ea61-1.0\"},\"mobile-onboarding\":{\"scripts\":\"a588edee08ed91951591261d271790df-1.0\",\"styles\":\"9235d5bb446ff56c5261c41a7f0a58f5-1.0\"},\"memory-monitor\":{\"scripts\":\"dc5b5215a34c63b4435d4f5bfff358f6-1.0\",\"styles\":\"6138b2b3cee937719c6bb329dd7e0777-1.0\"},\"signin-sdk\":{\"scripts\":\"09ad80cded27bb4193a60226b8562c97-1.0\"}}",
+      "socket_version": "1.4.5",
+      "ec_env": "qa",
+      "salesforce_uri": "https://gdx01-t01-gas01.asialab.glip.net:8000/salesforce_redirect",
+      "glipforce_oauth_login_url": "https://login.salesforce.com",
+      "glipforce_oauth_redirect_url": "https://app.glip.com/salesforce",
+      "client_config": {
+        "dnd_notifications_beta_companies": "all",
+        "presence_beta_emails": "all",
+        "presence_beta_domain": "all",
+        "Presence2.0Email": "all",
+        "presence_beta": "true",
+        "presence_webdesktop_all": "true",
+        "enable_email_monitor": "true",
+        "search_facade_base_paths": "{\"v1\": \"http://gdx02-t01-gsf01.asialab.glip.net:8080\"}",
+        "search_facade_indexing_global_path": "v1",
+        "search_facade_searching_global_path": "v1",
+        "code_snippets_beta_all": "true",
+        "beta_s3_direct_uploads_accelerated": "on",
+        "beta_s3_direct_uploads": "on",
+        "limit_people_broadcast_all": "off",
+        "limit_people_broadcast_emails": "",
+        "limit_people_broadcast_domains": "",
+        "suppress_invitee_emails": "on",
+        "team_mention_emails": "",
+        "team_mention_domains": "",
+        "team_mention_all": "true",
+        "reconnect_backoff_point": "300",
+        "reconnect_economy_multiplier": "100",
+        "reconnect_emergency_restart_time": "0",
+        "reconnect_enabled": "false",
+        "reconnect_failure_point": "500",
+        "reconnect_increment": "100",
+        "reconnect_initial_window": "1000",
+        "custom_status_domains": "",
+        "custom_status_all": "false",
+        "old_umi_disabled": "false",
+        "beta_rcv_api2_domains": "all",
+        "ui_consistency_beta_all": "false",
+        "ui_consistency_beta_domains": "",
+        "ui_consistency_beta_emails": "",
+        "Force_Logout_Percentage": ""
+      },
+      "ec_logstash_endpoint": "http://log8080-1553789998.us-east-1.elb.amazonaws.com/",
+      "ec_zoom_web_backend": "rcdev.dev.meetzoom.us",
+      "rcv_base_join_uri": "https://glpdevxmn-shr-1-v.lab.nordigy.ru",
+      "marketing_host": "glpdevxmn.asialab.glip.net:443",
+      "scoreboard": "glpdevxmn.asialab.glip.net:443",
+      "deployment_state": {
+        "level": 3,
+        "number": 15
+      }
+    },
+    "status": 200,
+    "statusText": "OK",
+    "headers": {
+      "content-type": "application/json; charset=utf-8"
+    },
+    "retryAfter": 6000
+  },
+  "request": {
+    "id": "f218762f-6c7a-4aee-b72a-5e8b512bdeb9",
+    "path": "/v1.0/desktop/remaining",
+    "method": "get",
+    "data": {},
+    "headers": {
+      "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6MTU1OTk2MzQxNzQ0NiwidHlwZSI6IndlYiIsInVpZCI6MTg3ODc1MzMxLCJpYXQiOjE1NTk5NjM0MTcsImlzcyI6ImdscGRldnhtbi5hc2lhbGFiLmdsaXAubmV0Iiwic3ViIjoiZ2xpcCJ9.o5mJeKYHChdOFd61_-IP-Evvu-sK9reLxUepta2Gkn6NuCQpUzXxBMJ1j0GEDfcxzTnv4NVj5A7WFSDByxkwBw"
+    },
+    "params": {
+      "_": 1559963417888
+    },
+    "handlerType": {
+      "name": "GLIP",
+      "defaultVia": 2,
+      "survivalModeSupportable": false,
+      "tokenExpirable": false,
+      "tokenRefreshable": false
+    },
+    "priority": 1,
+    "via": 0,
+    "retryCount": 3,
+    "host": "https://glpdevxmn.asialab.glip.net",
+    "timeout": 600000,
+    "requestConfig": {},
+    "authFree": false,
+    "HAPriority": 0,
+    "startTime": 1559963423455
+  }
+}

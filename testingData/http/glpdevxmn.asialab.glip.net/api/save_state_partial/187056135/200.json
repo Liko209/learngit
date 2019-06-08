@@ -1,0 +1,78 @@
+{
+  "response": {
+    "data": {
+      "id": 0
+    },
+    "status": 200,
+    "statusText": "",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Frame-Options": "DENY",
+      "X-Request-Id": "user_id:187875331;id:e8317d97-a83a-4798-ac35-4d95479d2c2f"
+    },
+    "retryAfter": 6000,
+    "request": {
+      "uri": "/api/save_state_partial/187056135",
+      "route": {
+        "method": "handler",
+        "function": "api_handler"
+      },
+      "route_uri": "/api/:function_id/:model_id/:additional_info/:additional_info2",
+      "parameters": {
+        "unread_count:43638790": 0,
+        "unread_mentions_count:43638790": 0,
+        "unread_deactivated_count:43638790": 0,
+        "read_through:43638790": 2723848196,
+        "marked_as_unread:43638790": false,
+        "_id": 187056135,
+        "request_id": "24",
+        "function_id": "save_state_partial",
+        "model_id": "187056135"
+      },
+      "status_code": 200,
+      "startTime": 1559963484889
+    }
+  },
+  "request": {
+    "id": "24",
+    "path": "/api/save_state_partial/187056135",
+    "method": "put",
+    "data": {
+      "unread_count:43638790": 0,
+      "unread_mentions_count:43638790": 0,
+      "unread_deactivated_count:43638790": 0,
+      "read_through:43638790": 2723848196,
+      "marked_as_unread:43638790": false,
+      "_id": 187056135
+    },
+    "headers": {
+      "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6MTU1OTk2MzQxNzQ0NiwidHlwZSI6IndlYiIsInVpZCI6MTg3ODc1MzMxLCJpYXQiOjE1NTk5NjM0MTcsImlzcyI6ImdscGRldnhtbi5hc2lhbGFiLmdsaXAubmV0Iiwic3ViIjoiZ2xpcCJ9.o5mJeKYHChdOFd61_-IP-Evvu-sK9reLxUepta2Gkn6NuCQpUzXxBMJ1j0GEDfcxzTnv4NVj5A7WFSDByxkwBw"
+    },
+    "handlerType": {
+      "name": "GLIP",
+      "defaultVia": 2,
+      "survivalModeSupportable": false,
+      "tokenExpirable": false,
+      "tokenRefreshable": false
+    },
+    "priority": 2,
+    "via": 2,
+    "retryCount": 0,
+    "host": "https://glpdevxmn.asialab.glip.net",
+    "timeout": 60000,
+    "requestConfig": {},
+    "authFree": false,
+    "HAPriority": 0,
+    "startTime": 1559963484889,
+    "parameters": {
+      "unread_count:43638790": 0,
+      "unread_mentions_count:43638790": 0,
+      "unread_deactivated_count:43638790": 0,
+      "read_through:43638790": 2723848196,
+      "marked_as_unread:43638790": false,
+      "_id": 187056135,
+      "request_id": "24"
+    },
+    "uri": "/api/save_state_partial/187056135"
+  }
+}
