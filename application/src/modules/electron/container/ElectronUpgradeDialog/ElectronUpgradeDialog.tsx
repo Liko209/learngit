@@ -10,6 +10,7 @@ import {
 } from './ElectronUpgradeDialog.View';
 import { ElectronUpgradeDialogViewModel } from './ElectronUpgradeDialog.ViewModel';
 import {
+  UpgradeType,
   ElectronUpgradeDialogProps,
   ElectronUpgradeDialogViewProps,
 } from './types';
@@ -21,7 +22,10 @@ const ElectronUpgradeDialog = buildContainer<ElectronUpgradeDialogProps>({
 });
 
 const showUpgradeDialog = (props: ElectronUpgradeDialogViewProps) => {
-  if (ElectronUpgradeDialogComponent.getPortalRef()) {
+  if (
+    ElectronUpgradeDialogComponent.getPortalRef() ||
+    Object.is(props.type, UpgradeType.SOFT)
+  ) {
     return;
   }
   const ref = portalManager.wrapper(ElectronUpgradeDialogView).show(props);

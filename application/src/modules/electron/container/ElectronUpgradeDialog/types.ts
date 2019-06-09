@@ -10,10 +10,7 @@ enum UpgradeType {
 }
 
 type ElectronUpgradeDialogProps = {
-  needUpgrade: boolean;
   type: UpgradeType;
-  snooze: boolean;
-  url: string;
 };
 
 type ElectronUpgradeDialogViewProps = WithTranslation &
@@ -23,7 +20,13 @@ type UpgradeUserAction = {
   skip?: boolean;
   snooze?: boolean;
 };
+
+type Ref = {
+  dismiss: (afterDismiss?: (() => void) | undefined) => void;
+};
+
 export {
+  Ref,
   UpgradeType,
   ElectronUpgradeDialogProps,
   ElectronUpgradeDialogViewProps,

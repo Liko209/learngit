@@ -5,88 +5,23 @@
  */
 import React from 'react';
 import { ElectronUpgradeDialogComponent } from '../ElectronUpgradeDialog.View';
-import { mount } from 'enzyme';
-import { UpgradeType } from '../types';
-import { ThemeProvider } from 'styled-components';
-import { theme } from '../../../../../__tests__/utils';
-import { TopBannerViewModel } from '@/modules/app/container/TopBanner/TopBanner.ViewModel';
-
-const mountWithTheme = (content: React.ReactNode) =>
-  mount(<ThemeProvider theme={theme}>{content}</ThemeProvider>);
+import { mountWithTheme } from '@/__tests__/utils';
 
 const baseProps = {
   t: (str: string) => str,
 };
 describe('ElectronUpgradeDialog.View', () => {
-  it('should render correctly when first time appearance for force upgrade', () => {
-    const props = {
-      ...baseProps,
-      needUpgrade: true,
-      type: UpgradeType.FORCE,
-      snooze: false,
-      url: '',
-    };
-    const wrapper = mountWithTheme(
-      <ElectronUpgradeDialogComponent {...props} />,
-    );
-    expect(wrapper.contains('electron.upgrade.dialogTitle')).toBe(true);
-    expect(wrapper.contains('electron.upgrade.dialogMessage')).toBe(true);
-    expect(wrapper.contains('electron.upgrade.ignoreOnce')).toBe(true);
-    expect(wrapper.contains('electron.upgrade.upgrade')).toBe(true);
-  });
+  describe('ElectronUpgradeDialog.View', () => {
+    it('should model be rendered correctly when force upgrade', () => {
+      const props = { ...baseProps };
 
-  it('should show banner when user click ignore once button', () => {
-    TopBannerViewModel.showBanner = jest.fn();
-    window.jupiterElectron = {};
-    const props = {
-      ...baseProps,
-      needUpgrade: true,
-      type: UpgradeType.FORCE,
-      snooze: false,
-      url: '',
-    };
-    const wrapper = mountWithTheme(
-      <ElectronUpgradeDialogComponent {...props} />,
-    );
-    wrapper
-      .find('button')
-      .at(0)
-      .simulate('click');
-    expect(TopBannerViewModel.showBanner).toHaveBeenCalled();
-  });
+      const wrapper = mountWithTheme(
+        <ElectronUpgradeDialogComponent {...props} />,
+      );
 
-  it('should render correctly (no ignore once button) after snooze for force upgrade', () => {
-    const props = {
-      ...baseProps,
-      needUpgrade: true,
-      type: UpgradeType.FORCE,
-      snooze: true,
-      url: '',
-    };
-    const wrapper = mountWithTheme(
-      <ElectronUpgradeDialogComponent {...props} />,
-    );
-    expect(wrapper.contains('electron.upgrade.dialogTitle')).toBe(true);
-    expect(wrapper.contains('electron.upgrade.dialogMessage')).toBe(true);
-    expect(wrapper.contains('electron.upgrade.ignoreOnce')).toBe(false);
-    expect(wrapper.contains('electron.upgrade.upgrade')).toBe(true);
-  });
-
-  it('should render correctly when need soft upgrade', () => {
-    const props = {
-      ...baseProps,
-      needUpgrade: true,
-      type: UpgradeType.SOFT,
-      snooze: false,
-      url: '',
-    };
-    const wrapper = mountWithTheme(
-      <ElectronUpgradeDialogComponent {...props} />,
-    );
-    expect(wrapper.contains('electron.upgrade.dialogTitle')).toBe(true);
-    expect(wrapper.contains('electron.upgrade.dialogMessage')).toBe(true);
-    expect(wrapper.contains('electron.upgrade.notNow')).toBe(true);
-    expect(wrapper.contains('electron.upgrade.ignore')).toBe(true);
-    expect(wrapper.contains('electron.upgrade.upgrade')).toBe(true);
+      expect(wrapper.contains('electron.upgrade.dialogTitle')).toBe(true);
+      expect(wrapper.contains('electron.upgrade.dialogMessage')).toBe(true);
+      expect(wrapper.contains('electron.upgrade.upgrade')).toBe(true);
+    });
   });
 });

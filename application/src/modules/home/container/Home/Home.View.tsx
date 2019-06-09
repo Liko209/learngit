@@ -35,8 +35,8 @@ class HomeView extends Component<HomeViewProps> {
       ServiceConfig.ACCOUNT_SERVICE,
     );
     accountService.makeSureUserInWhitelist();
-    if (window.jupiterElectron && window.jupiterElectron.handleUpgradeCheck) {
-      window.jupiterElectron.handleUpgradeCheck();
+    if (window.jupiterElectron && window.jupiterElectron.onCheckNativeUpgrade) {
+      window.jupiterElectron.onCheckNativeUpgrade();
     }
   }
 
