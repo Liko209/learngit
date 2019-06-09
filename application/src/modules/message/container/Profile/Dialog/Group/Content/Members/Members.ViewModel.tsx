@@ -3,7 +3,7 @@
  * @Date: 2018-11-22 11:27:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, action, computed } from 'mobx';
+import { observable, action, comparer, computed } from 'mobx';
 import { ProfileDialogGroupViewModel } from '../../Group.ViewModel';
 import { MembersProps, MembersViewProps } from './types';
 import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandler';
@@ -18,9 +18,9 @@ const DELAY_DEBOUNCE = 300;
 class MembersViewModel extends ProfileDialogGroupViewModel
   implements MembersViewProps {
   @observable
-  private _sortableGroupMemberHandler: SortableGroupMemberHandler | null = null;
+  private _sortableGroupMemberHandler: SortableGroupMemberHandler;
   @observable
-  filteredMemberIds: number[] = [];
+  _filteredMemberIds: number[] = [];
   @observable
   keywords: string = '';
   changeSearchInputDebounce: () => void;
@@ -35,33 +35,27 @@ class MembersViewModel extends ProfileDialogGroupViewModel
       fireImmediately: true,
     });
     this.reaction(
-      () => this.sortedAllMemberIds,
+      () => ({
+        keywords: this.keywords,
+        allSortedIds: this._sortableGroupMemberHandler.allSortedMemberIds,
+      }),
       () => {
         this.handleSearch();
       },
-    );
-    this.reaction(
-      () => this.keywords,
-      () => {
-        this.handleSearch();
-      },
-    );
-  }
-
-  createSortableHandler = async () => {
-    // This handler need observable
-    this._sortableGroupMemberHandler = await SortableGroupMemberHandler.createSortableGroupMemberHandler(
-      this.id,
+      { fireImmediately: true, equals: comparer.structural },
     );
   }
 
   @computed
-  get sortedAllMemberIds() {
-    if (this._sortableGroupMemberHandler === null) {
-      return [];
-    }
-    // getSortedGroupMembersIds is computed
-    return this._sortableGroupMemberHandler.getSortedGroupMembersIds();
+  get filteredMemberIds() {
+    return this.keywords
+      ? this._filteredMemberIds
+      : this._sortableGroupMemberHandler.sortedMemberIds;
+  }
+
+  createSortableHandler = () => {
+    // This handler need observable
+    this._sortableGroupMemberHandler = new SortableGroupMemberHandler(this.id);
   }
 
   @action
@@ -78,21 +72,44 @@ class MembersViewModel extends ProfileDialogGroupViewModel
       const result = await searchService.doFuzzySearchPersons({
         searchKey: this.keywords,
         excludeSelf: false,
-        arrangeIds: this.sortedAllMemberIds,
+        arrangeIds: this._sortableGroupMemberHandler.allSortedMemberIds,
         fetchAllIfSearchKeyEmpty: true,
         asIdsOrder: true,
       });
-      if (result !== null) {
-        const ids = result.sortableModels.map(
-          (person: SortableModel<Person>) => person.id,
-        );
-        this.filteredMemberIds = ids;
-      }
+      const ids = result.sortableModels.map(
+        (person: SortableModel<Person>) => person.id,
+      );
+      this._filteredMemberIds = ids;
       return result;
     }
-    // when no keywords, just reset the member list.
-    this.filteredMemberIds = this.sortedAllMemberIds;
+
     return null;
+  }
+
+  @action
+  hasMore = (direction: 'up' | 'down') => {
+    if (this.keywords) {
+      return false;
+    }
+
+    return this.group.members.length !== this.filteredMemberIds.length;
+  }
+
+  @action
+  loadInitialData = async () => {
+    await this._sortableGroupMemberHandler.fetchGroupMembersByPage(20);
+
+    await this.handleSearch();
+  }
+
+  @action
+  loadMore = async (direction: 'up' | 'down', count: number) => {
+    await this._sortableGroupMemberHandler.fetchGroupMembersByPage(count);
+  }
+
+  dispose = () => {
+    this._sortableGroupMemberHandler &&
+      this._sortableGroupMemberHandler.dispose();
   }
 }
 export { MembersViewModel };

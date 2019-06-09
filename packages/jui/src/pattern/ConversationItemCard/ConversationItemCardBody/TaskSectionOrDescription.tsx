@@ -3,29 +3,18 @@
  * @Date: 2019-02-28 10:04:08
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
-import { typography, grey } from '../../../foundation/utils/styles';
-import { withHighlight } from '../../../hoc/withHighlight';
+import { typography, grey, primary } from '../../../foundation/utils/styles';
 
-type Props = {
-  text: string;
-};
-
-const StyledTaskSectionOrDescription = styled.div`
+const JuiTaskSectionOrDescription = styled.div`
   ${typography('body1')};
   color: ${grey('500')};
+  a {
+    color: ${primary('500')};
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
-
-const JuiTaskSectionOrDescriptionComponent = ({ text }: Props) => (
-  <StyledTaskSectionOrDescription dangerouslySetInnerHTML={{ __html: text }} />
-);
-
-JuiTaskSectionOrDescriptionComponent.displayName =
-  'JuiTaskSectionOrDescription';
-
-const JuiTaskSectionOrDescription = withHighlight(['text'])(
-  memo(JuiTaskSectionOrDescriptionComponent),
-);
 
 export { JuiTaskSectionOrDescription };

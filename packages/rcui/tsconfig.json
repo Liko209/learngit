@@ -8,6 +8,9 @@
     "jsx": "react",
     "rootDir": "src",
     "baseUrl": ".",
+    "paths": {
+      "@foundation/*": ["src/foundation/*"]
+    },
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,

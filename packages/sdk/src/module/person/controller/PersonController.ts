@@ -30,6 +30,7 @@ import { IEntityCacheController } from 'sdk/framework/controller/interface/IEnti
 import { PersonEntityCacheController } from './PersonEntityCacheController';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
+import { PhoneNumber, PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 
 const PersonFlags = {
   is_webmail: 1,
@@ -241,7 +242,7 @@ class PersonController {
     return !person.is_pseudo_user;
   }
 
-  private _isVisible(person: Person): boolean {
+  private _isServicePerson(person: Person): boolean {
     return person.email !== SERVICE_ACCOUNT_EMAIL;
   }
 
@@ -263,22 +264,28 @@ class PersonController {
   }
 
   private _hasBogusEmail(person: Person) {
-    return this._hasTrueValue(person, PersonFlags.has_bogus_email);
+    return (
+      this._hasTrueValue(person, PersonFlags.has_bogus_email) ||
+      person.has_bogus_email
+    );
   }
 
   isCacheValid = (person: Person) => {
     return (
       !this._isUnregistered(person) &&
-      this._isVisible(person) &&
-      !this._hasTrueValue(person, PersonFlags.is_removed_guest) &&
-      !this._hasTrueValue(person, PersonFlags.am_removed_guest) &&
+      this._isServicePerson(person) &&
       !person.is_pseudo_user &&
       !this._hasBogusEmail(person)
     );
   }
 
-  isValid(person: Person): boolean {
-    return this.isCacheValid(person) && !this._isDeactivated(person);
+  isVisible(person: Person): boolean {
+    return (
+      this.isCacheValid(person) &&
+      !this._hasTrueValue(person, PersonFlags.is_removed_guest) &&
+      !this._hasTrueValue(person, PersonFlags.am_removed_guest) &&
+      !this._isDeactivated(person)
+    );
   }
 
   getAvailablePhoneNumbers(
@@ -364,6 +371,35 @@ class PersonController {
       const person = await requestController.get(personId);
       person && notificationCenter.emitEntityUpdate(ENTITY.PERSON, [person]);
     }
+  }
+
+  getPhoneNumbers(
+    person: Person,
+    eachPhoneNumber: (phoneNumber: PhoneNumber) => void,
+  ): void {
+    if (person.sanitized_rc_extension) {
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
+      const ext = person.sanitized_rc_extension.extensionNumber;
+      ext &&
+        person.company_id === userConfig.getCurrentCompanyId() &&
+        eachPhoneNumber({
+          id: ext,
+          phoneNumberType: PhoneNumberType.Extension,
+        });
+    }
+    person.rc_phone_numbers &&
+      person.rc_phone_numbers.forEach((phoneNumberModel: PhoneNumberModel) => {
+        if (phoneNumberModel.usageType === PhoneNumberType.DirectNumber) {
+          const phoneNumber = phoneNumberModel.phoneNumber;
+          phoneNumber &&
+            eachPhoneNumber({
+              id: phoneNumber,
+              phoneNumberType: PhoneNumberType.DirectNumber,
+            });
+        }
+      });
   }
 }
 

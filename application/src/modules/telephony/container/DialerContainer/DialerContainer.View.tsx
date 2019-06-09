@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { RefObject, createRef } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react';
 import { JuiContainer, DialPad, CallerIdSelector } from 'jui/pattern/Dialer';
 import { RuiTooltip } from 'rcui/components/Tooltip';
@@ -18,7 +18,9 @@ import { Record } from '../Record';
 import { CallActions } from '../CallActions';
 import { End } from '../End';
 import { DialBtn } from '../DialBtn';
+import { ForwardBtn } from '../Forward/ForwardBtn';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 
 const KEYPAD_ACTIONS = [Mute, Keypad, Hold, Add, Record, CallActions];
 
@@ -26,7 +28,7 @@ type Props = DialerContainerViewProps & WithTranslation;
 
 function sleep(timeout: number) {
   let timer: any;
-  const promise = new Promise((resolve) => {
+  const promise = new Promise(resolve => {
     timer = setTimeout(resolve, timeout);
   });
   return {
@@ -40,16 +42,11 @@ class DialerContainerViewComponent extends React.Component<
   Props,
   DialerContainerViewState
 > {
-  private _keypadKeys: JSX.Element;
   private _timer: NodeJS.Timeout;
   private _waitForAnimationEndTimer: NodeJS.Timeout;
-  private _tooltipRef: RefObject<RuiTooltip> = createRef();
 
   constructor(props: Props) {
     super(props);
-    this._keypadKeys = (
-      <DialPad makeMouseEffect={props.dtmf} makeKeyboardEffect={props.dtmf} />
-    );
     // do not sync this state with `hasDialerOpened`, since once opened, `hasDialerOpened` would be set to `true` immediately
     this.state = {
       shouldShowToolTip: !props.hasDialerOpened,
@@ -61,23 +58,16 @@ class DialerContainerViewComponent extends React.Component<
     this.props.setCallerPhoneNumber(value);
   }
 
-  _toggleToolTip = (open: boolean) => {
-    if (!this._tooltipRef.current) {
-      return;
-    }
-    this._tooltipRef.current.setState({ open });
-  }
-
   async componentDidMount() {
     if (this.state.shouldShowToolTip) {
       const { timer, promise } = sleep(1000);
       this._waitForAnimationEndTimer = timer;
       await promise;
-      this._toggleToolTip(true);
+      // this._toggleToolTip(true);
       const toggler = sleep(5000);
       this._timer = toggler.timer;
       await toggler.promise;
-      this._toggleToolTip(false);
+      // this._toggleToolTip(false);
       this.setState({
         shouldShowToolTip: false,
       });
@@ -102,20 +92,37 @@ class DialerContainerViewComponent extends React.Component<
     const {
       keypadEntered,
       isDialer,
-      typeString,
+      isForward,
+      clickToInput,
       playAudio,
       dialerInputFocused,
       callerPhoneNumberList,
       chosenCallerPhoneNumber,
       t,
+      dialerFocused,
+      dtmfThroughKeyboard,
+      dtmfThroughKeypad,
     } = this.props;
     let keypadActions;
     let callAction = End;
 
-    // TODO: change caller id
     const callerIdProps = {
       value: chosenCallerPhoneNumber,
-      menu: callerPhoneNumberList,
+      menu: callerPhoneNumberList.map(callerPhoneNumber => {
+        return Object.assign({}, callerPhoneNumber, {
+          usageType:
+            callerPhoneNumber.usageType === PhoneNumberType.NickName
+              ? callerPhoneNumber.label
+              : t(
+                  `telephony.phoneNumberType.${callerPhoneNumber.usageType[0].toLowerCase() +
+                    callerPhoneNumber.usageType.slice(
+                      1,
+                      callerPhoneNumber.usageType.length,
+                    )}`,
+                ),
+          isTwoLine: callerPhoneNumber.usageType !== PhoneNumberType.Blocked,
+        });
+      }),
       label: t('telephony.callFrom'),
       disabled: false,
       heightSize: 'default',
@@ -123,30 +130,35 @@ class DialerContainerViewComponent extends React.Component<
     };
 
     if (isDialer) {
-      callAction = DialBtn;
+      callAction = isForward ? ForwardBtn : DialBtn;
       const callerIdSelector = <CallerIdSelector {...callerIdProps} />;
       keypadActions = (
         <>
-          {this.state.shouldShowToolTip ? (
+          {!isForward && (
             <RuiTooltip
               title={t('telephony.callerIdSelector.tooltip')}
               placement="bottom"
-              ref={this._tooltipRef}
+              open={this.state.shouldShowToolTip}
+              tooltipForceHide={this.state.shouldShowToolTip}
             >
               {callerIdSelector}
             </RuiTooltip>
-          ) : (
-            callerIdSelector
           )}
           <DialPad
-            makeMouseEffect={typeString}
+            makeMouseEffect={clickToInput}
             makeKeyboardEffect={playAudio}
             shouldHandleKeyboardEvts={dialerInputFocused}
           />
         </>
       );
     } else if (keypadEntered) {
-      keypadActions = this._keypadKeys;
+      keypadActions = (
+        <DialPad
+          makeMouseEffect={dtmfThroughKeypad}
+          makeKeyboardEffect={dtmfThroughKeyboard}
+          shouldHandleKeyboardEvts={dialerFocused}
+        />
+      );
     } else {
       keypadActions = KEYPAD_ACTIONS;
     }

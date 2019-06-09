@@ -95,6 +95,8 @@ type PagingInfo = {
 type INavigationInfo = {
   firstPage: IUriInfo;
   lastPage: IUriInfo;
+  nextPage?: IUriInfo;
+  previousPage?: IUriInfo;
 };
 
 type ISpecialServiceNumber = {
@@ -133,10 +135,13 @@ type DialingPlan = {
   navigation: INavigationInfo;
 };
 
-type IPhoneNumberRequest = {
-  usageType: string;
-  page: number;
-  perPage: number;
+type IPhoneNumberRequest = IForwardingNumberRequest & {
+  usageType?: string;
+};
+
+type IForwardingNumberRequest = {
+  page?: number;
+  perPage?: number;
 };
 
 type ICountryInfo = {
@@ -222,6 +227,9 @@ type RCBrandInfo = {
 };
 
 export {
+  IUriInfo,
+  INavigationInfo,
+  PagingInfo,
   RCCountryInfo,
   RCRegionalSetting,
   RCStatusInfo,
@@ -241,4 +249,5 @@ export {
   RCServiceFeature,
   RCBrandInfo,
   RCAuthCodeInfo,
+  IForwardingNumberRequest,
 };

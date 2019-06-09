@@ -134,6 +134,10 @@ const name2icon = {
   emoji: 'emoji',
   dialer: 'dialer',
   deletenumber: 'deletenumber',
+  arrow_right: 'arrow_right',
+  pause: 'pause',
+  play: 'play',
+  forwardcall: 'forwardcall',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

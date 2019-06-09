@@ -5,7 +5,7 @@
  */
 
 // TODO: move this file to JUI
-import React from 'react';
+import React, { MouseEvent } from 'react';
 import { JuiIconButton } from '../../components/Buttons';
 import _ from 'lodash';
 import { KEY_2_ICON_MAP, ACCEPTABLE_KEYS } from './constants';
@@ -27,7 +27,7 @@ const THROTTLE_TIME = 30;
 const throttledHandler = (f: any) =>
   _.debounce(f, THROTTLE_TIME, {
     trailing: true,
-    leading: false,
+    leading: true,
   });
 
 export class DialPad extends React.Component<
@@ -43,7 +43,7 @@ export class DialPad extends React.Component<
   private _buffer: string[] = [];
   private _timeoutId: NodeJS.Timeout | null = null;
   private _mouseDownTime: number | null = null;
-  private _onClicks: (() => void)[]; // only need this to generate once
+  private _onClicks: ((e?: MouseEvent<any>) => void)[]; // only need this to generate once
 
   constructor(props: DialPadViewProps) {
     super(props);
@@ -52,17 +52,14 @@ export class DialPad extends React.Component<
     };
 
     this._onClicks = Object.keys(KEY_2_ICON_MAP)
-      .filter((key) => key !== 'plus')
-      .map((str) =>
-        _.throttle(
-          () => this.props.makeMouseEffect(KEY_2_ICON_MAP[str]),
-          THROTTLE_TIME,
-          {
-            trailing: true,
-            leading: false,
-          },
-        ),
-      );
+      .filter(key => key !== 'plus')
+      .map(str => e => {
+        this.props.makeMouseEffect(KEY_2_ICON_MAP[str]);
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
   }
 
   componentDidMount() {
@@ -107,7 +104,7 @@ export class DialPad extends React.Component<
     if (!this.props.shouldHandleKeyboardEvts) {
       return;
     }
-    this._buffer = this._buffer.filter((bufferedKey) => bufferedKey !== key);
+    this._buffer = this._buffer.filter(bufferedKey => bufferedKey !== key);
     this.makeKeyboardEffect(key, true);
   }
 
@@ -118,15 +115,21 @@ export class DialPad extends React.Component<
     }
   }
 
-  _onMouseDownForZero = throttledHandler(() => {
+  _onMouseDownForZero = (e: MouseEvent<HTMLButtonElement>) => {
+    e.persist();
+    e.preventDefault();
+    e.stopPropagation();
     this._mouseDownTime = +new Date();
     this._timeoutId = setTimeout(() => {
       this.props.makeMouseEffect(KEY_2_ICON_MAP.plus);
       this._clearTimeout();
     },                           DialPad._timeout);
-  });
+  }
 
-  _onMouseupForZero = throttledHandler(() => {
+  _onMouseupForZero = throttledHandler((e: MouseEvent<HTMLButtonElement>) => {
+    e.persist();
+    e.preventDefault();
+    e.stopPropagation();
     const curTime = +new Date();
     if (
       this._mouseDownTime &&
@@ -134,6 +137,7 @@ export class DialPad extends React.Component<
     ) {
       return;
     }
+
     this._onClicks[10](); // the '10' button is on the 11th
     this._clearTimeout();
     this._mouseDownTime = null;
@@ -144,7 +148,7 @@ export class DialPad extends React.Component<
     return (
       <>
         {Object.keys(KEY_2_ICON_MAP)
-          .filter((key) => key !== 'plus')
+          .filter(key => key !== 'plus')
           .map((str, idx) => {
             const _onclick = this._onClicks[idx];
 
@@ -153,7 +157,7 @@ export class DialPad extends React.Component<
                 <JuiIconButton
                   shouldPersistBg={pressedKeys.includes(KEY_2_ICON_MAP[str])}
                   disableToolTip={true}
-                  onClick={_onclick}
+                  onMouseDown={_onclick}
                   size="xxlarge"
                   key={str}
                   color="grey.900"

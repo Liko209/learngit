@@ -11,10 +11,10 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { DialerHeaderViewProps } from './types';
 import { Avatar } from '@/containers/Avatar';
 
+type Props = DialerHeaderViewProps & WithTranslation;
+
 @observer
-class DialerHeaderViewComponent extends React.Component<
-  DialerHeaderViewProps & WithTranslation
-> {
+class DialerHeaderViewComponent extends React.Component<Props> {
   private _Avatar = () => {
     const { uid } = this.props;
     return (
@@ -46,6 +46,8 @@ class DialerHeaderViewComponent extends React.Component<
       t,
       shouldDisplayDialer,
       inputString,
+      forwardString,
+      isForward,
       onFocus,
       onBlur,
       onChange,
@@ -61,7 +63,7 @@ class DialerHeaderViewComponent extends React.Component<
         name={name ? name : t('telephony.unknownCaller')}
         phone={isExt ? `${t('telephony.Ext')} ${phone}` : phone}
         showDialerInputField={shouldDisplayDialer}
-        dialerValue={inputString}
+        dialerValue={isForward ? forwardString : inputString}
         onChange={onChange}
         onFocus={onFocus}
         onBlur={onBlur}

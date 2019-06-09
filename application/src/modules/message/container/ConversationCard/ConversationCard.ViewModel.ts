@@ -3,7 +3,7 @@
  * @Date: 2018-10-08 16:29:08
  * Copyright © RingCentral. All rights reserved.
  */
-import { promisedComputed } from 'computed-async-mobx';
+// import { promisedComputed } from 'computed-async-mobx';
 import PostModel from '@/store/models/Post';
 import { ConversationCardProps } from '@/modules/message/container/ConversationCard/types';
 import moment from 'moment';
@@ -20,16 +20,12 @@ import PersonModel from '@/store/models/Person';
 import GroupModel from '@/store/models/Group';
 import { StoreViewModel } from '@/store/ViewModel';
 import ProgressModel from '@/store/models/Progress';
-import { container } from 'framework';
-import { GlobalSearchStore } from '@/modules/GlobalSearch/store';
 import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
 import { IntegrationItem } from 'sdk/module/item/entity';
 import IntegrationItemModel from '@/store/models/IntegrationItem';
-import i18nT from '@/utils/i18nT';
+import { i18nP } from '@/utils/i18nT';
 
 class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
-  private _globalSearchStore = container.get(GlobalSearchStore);
-
   @computed
   get id() {
     return this.props.id;
@@ -107,7 +103,8 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
     return [];
   }
 
-  name = promisedComputed('', async () => {
+  @computed
+  get name() {
     // get name from items if this post is integration post
     // post -> itemIds -> isIntegration -> integrationItem.activity
     const integrationItems = this.integrationItems;
@@ -120,25 +117,24 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
         );
         return item.activity;
       }
-      return `${this.creator.userDisplayName} ${await i18nT(
-        'message.sharedItems',
-      )}`;
+      return `${this.creator.userDisplayName} ${i18nP('message.sharedItems')}`;
     }
     return this.creator.userDisplayName;
-  });
+  }
 
   @computed
   get customStatus() {
     return this.creator.awayStatus;
   }
 
-  createTime = promisedComputed('', async () => {
+  @computed
+  get createTime() {
     const { createdAt } = this.post;
     if (this.props.mode === 'navigation') {
-      return await dateFormatter.dateAndTime(moment(this.post.createdAt));
+      return dateFormatter.dateAndTime(moment(this.post.createdAt));
     }
-    return await postTimestamp(createdAt);
-  });
+    return postTimestamp(createdAt);
+  }
 
   @computed
   get isEditMode() {
@@ -149,14 +145,6 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   @computed
   get showActivityStatus() {
     return !!(this.post.parentId || this.post.existItemIds.length);
-  }
-
-  @computed
-  get terms() {
-    if (this._globalSearchStore.open) {
-      return this._globalSearchStore.searchKey.split(' ');
-    }
-    return [];
   }
 }
 

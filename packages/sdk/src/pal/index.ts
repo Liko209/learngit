@@ -11,4 +11,5 @@ export {
 } from './downloader';
 
 export { IErrorReporter } from './errorReporter';
+export { INotificationPermission, PERMISSION } from './notificationPermission';
 export { Pal } from './pal';

@@ -9,8 +9,8 @@ enum STATUS {
 }
 
 type ConversationPageViewProps = WithTranslation & {
-  loadingStatus: STATUS,
-  updateStatus: () => void,
+  loadingStatus: STATUS;
+  updateStatus: () => void;
   canPost: boolean;
   groupId: number;
 } & RouteComponentProps;
@@ -21,10 +21,16 @@ type ConversationPageProps = {
 
 type ConversationPageContextInfo = {
   disableMoreAction: boolean;
+  height?: number;
 };
 
 const ConversationPageContext = createContext({
   disableMoreAction: false,
 } as ConversationPageContextInfo);
 
-export { STATUS, ConversationPageProps, ConversationPageViewProps, ConversationPageContext };
+export {
+  STATUS,
+  ConversationPageProps,
+  ConversationPageViewProps,
+  ConversationPageContext,
+};

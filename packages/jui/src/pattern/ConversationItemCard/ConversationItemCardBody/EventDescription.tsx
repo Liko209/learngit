@@ -3,29 +3,18 @@
  * @Date: 2018-11-07 10:05:39
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
-import { typography, grey, spacing } from '../../../foundation/utils/styles';
-import { withHighlight } from '../../../hoc/withHighlight';
+import { typography, grey, primary } from '../../../foundation/utils/styles';
 
-type Props = {
-  description: string;
-};
-
-const StyledEventDescription = styled.div`
-  margin-top: ${spacing(2)};
+const JuiEventDescription = styled.div`
   ${typography('body1')};
   color: ${grey('500')};
+  a {
+    color: ${primary('500')};
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
-
-const JuiEventDescriptionComponent = ({ description }: Props) => (
-  <StyledEventDescription dangerouslySetInnerHTML={{ __html: description }} />
-);
-
-JuiEventDescriptionComponent.displayName = 'JuiEventDescription';
-
-const JuiEventDescription = withHighlight(['description'])(
-  memo(JuiEventDescriptionComponent),
-);
 
 export { JuiEventDescription };

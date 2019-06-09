@@ -257,6 +257,13 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   ): Promise<{ index: number; totalCount: number }> {
     return this.itemServiceController.getItemIndexInfo(itemId, options);
   }
+  async editFileName(itemId: number, newName: string): Promise<void> {
+    await this.fileService.editFileName(itemId, newName);
+  }
+
+  async deleteFile(itemId: number, version: number): Promise<void> {
+    await this.fileService.deleteFile(itemId, version);
+  }
 }
 
 export { ItemService };

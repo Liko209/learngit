@@ -4,10 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { Markdown } from 'glipdown';
 import styled from '../../../foundation/styled-components';
 import { spacing, typography, palette } from '../../../foundation/utils';
-import { withHighlight } from '../../../hoc/withHighlight';
 
 const Wrapper = styled.div`
   ${typography('body1')};
@@ -24,16 +22,14 @@ const BodyWrapper = styled.div`
   margin-top: ${spacing(2.5)};
 `;
 
-const MarkdownWrapper = withHighlight([
-  'dangerouslySetInnerHTML.__html',
-])(styled.div`
-  ${typography('caption1')};
+const MarkdownWrapper = styled.div`
+  ${typography('body1')};
   white-space: pre-wrap;
-`);
+`;
 
 type JuiIntegrationItemProps = {
-  title?: string;
-  body?: string;
+  title?: null | React.ReactChild | (React.ReactChild | null)[];
+  body?: null | React.ReactChild | (React.ReactChild | null)[];
 };
 
 const JuiIntegrationItemView = (props: JuiIntegrationItemProps) => {
@@ -42,17 +38,15 @@ const JuiIntegrationItemView = (props: JuiIntegrationItemProps) => {
     return (
       <Wrapper>
         {title && (
-          <MarkdownWrapper
-            data-test-automation-id="title"
-            dangerouslySetInnerHTML={{ __html: Markdown(title) }}
-          />
+          <MarkdownWrapper data-test-automation-id="title">
+            {title}
+          </MarkdownWrapper>
         )}
         {body && (
           <BodyWrapper>
-            <MarkdownWrapper
-              data-test-automation-id="body"
-              dangerouslySetInnerHTML={{ __html: Markdown(body) }}
-            />
+            <MarkdownWrapper data-test-automation-id="body">
+              {body}
+            </MarkdownWrapper>
           </BodyWrapper>
         )}
       </Wrapper>

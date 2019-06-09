@@ -7,11 +7,13 @@ import { SearchService } from '../SearchService';
 import { RecentSearchRecordController } from '../../controller/RecentSearchRecordController';
 import { SearchServiceController } from '../../controller/SearchServiceController';
 import { RecentSearchTypes } from '../../entity';
-import { SearchUserConfig } from '../../config';
+import { SearchUserConfig } from '../../config/SearchUserConfig';
+import { SearchPersonController } from '../../controller/SearchPersonController';
 
-jest.mock('../../config');
+jest.mock('../../config/SearchUserConfig');
 jest.mock('../../controller/SearchServiceController');
 jest.mock('../../controller/RecentSearchRecordController');
+jest.mock('../../controller/SearchPersonController');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -26,6 +28,7 @@ describe('SearchService', () => {
     searchService = new SearchService();
     searchServiceController = new SearchServiceController(searchService);
   }
+
   beforeEach(() => {
     clearMocks();
     setUp();
@@ -43,7 +46,9 @@ describe('SearchService', () => {
     beforeEach(() => {
       clearMocks();
       setUp();
-      recentSearchRecordController = new RecentSearchRecordController();
+      recentSearchRecordController = new RecentSearchRecordController(
+        null as any,
+      );
       Object.defineProperty(searchService, 'recentSearchRecordController', {
         get: jest.fn(() => recentSearchRecordController),
       });
@@ -66,12 +71,12 @@ describe('SearchService', () => {
       ).toBeCalled();
     });
 
-    it('getRecentSearchRecords', () => {
+    it('getRecentSearchRecords', async () => {
       const models = [{ id: 11 }];
       recentSearchRecordController.getRecentSearchRecords = jest
         .fn()
-        .mockReturnValue(models);
-      const res = searchService.getRecentSearchRecords();
+        .mockResolvedValue(models);
+      const res = await searchService.getRecentSearchRecords();
       expect(recentSearchRecordController.getRecentSearchRecords).toBeCalled();
       expect(res).toEqual(models);
     });
@@ -89,6 +94,55 @@ describe('SearchService', () => {
       expect(
         recentSearchRecordController.getRecentSearchRecordsByType,
       ).toBeCalledWith(RecentSearchTypes.GROUP);
+    });
+  });
+
+  describe('doFuzzySearchPersons', () => {
+    let searchPersonController: SearchPersonController;
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+
+      searchPersonController = new SearchPersonController(searchService);
+      Object.defineProperty(searchService, 'searchPersonController', {
+        get: jest.fn(() => searchPersonController),
+      });
+    });
+
+    it('should call correct parameter', () => {
+      const options = {
+        searchKey: 'test keys',
+        excludeSelf: true,
+      };
+      searchService.doFuzzySearchPersons(options);
+      expect(searchPersonController.doFuzzySearchPersons).toBeCalledWith({
+        searchKey: 'test keys',
+        excludeSelf: true,
+      });
+    });
+  });
+
+  describe('doFuzzySearchPhoneContacts', () => {
+    let searchPersonController: SearchPersonController;
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      searchPersonController = new SearchPersonController(searchService);
+      Object.defineProperty(searchService, 'searchPersonController', {
+        get: jest.fn(() => searchPersonController),
+      });
+    });
+
+    it('should call correct parameter', async () => {
+      const options = {
+        searchKey: 'test keys',
+        excludeSelf: true,
+      };
+      searchService.doFuzzySearchPhoneContacts(options);
+      expect(searchPersonController.doFuzzySearchPhoneContacts).toBeCalledWith({
+        searchKey: 'test keys',
+        excludeSelf: true,
+      });
     });
   });
 });

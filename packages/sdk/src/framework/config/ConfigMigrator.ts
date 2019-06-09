@@ -10,22 +10,56 @@ import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
 import { GlobalConfigService } from '../../module/config/service/GlobalConfigService';
 import { UserConfigService } from '../../module/config/service/UserConfigService';
 import { DBConfigService } from '../../module/config/service/DBConfigService';
-import { CONFIG_TYPE } from '../../module/config/constants';
+import { CONFIG_TYPE, CONFIG_EVENT_TYPE } from '../../module/config/constants';
 import { IConfigHistory } from './IConfigHistory';
+import { IDBObserver } from 'sdk/dao/IDBObserver';
+import { daoManager } from 'sdk/dao';
+import { AccountGlobalConfig } from 'sdk/module/account/config';
 
 // TODO FIJI-4002 should remove this after migration completed
 
-class ConfigMigrator {
-  private _isReady: boolean;
-  private _histories: IConfigHistory[];
+class ConfigMigrator implements IDBObserver {
+  private _dbConfigReady: boolean = false;
+  private _userConfigReady: boolean = false;
+  private _histories: IConfigHistory[] = [];
 
   constructor() {
-    this._isReady = false;
-    this._histories = [];
+    daoManager.observeDBInitialize(this);
+  }
+
+  onDBInitialized() {
+    const userConfig = this._getConfig(CONFIG_TYPE.DB) as DBConfigService;
+    userConfig.setConfigDao(daoManager.getDBKVDao());
+    this._dbConfigReady = true;
+    this.init();
+  }
+
+  observeUserDictionaryStatus() {
+    const userDictionary: string = AccountGlobalConfig.getUserDictionary();
+    if (userDictionary) {
+      this.onUserDictionaryUpdate(userDictionary);
+    } else {
+      AccountGlobalConfig.observeUserDictionary(
+        (eventType: CONFIG_EVENT_TYPE, userDictionary: string) => {
+          if (eventType === CONFIG_EVENT_TYPE.UPDATE) {
+            this.onUserDictionaryUpdate(userDictionary);
+          }
+        },
+      );
+    }
+  }
+
+  onUserDictionaryUpdate = (userDictionary: string) => {
+    const userConfig = this._getConfig(CONFIG_TYPE.USER) as UserConfigService;
+    userConfig.setUserId(userDictionary);
+    this._userConfigReady = true;
+    this.init();
   }
 
   async init() {
-    this._isReady = true;
+    if (!this._dbConfigReady || !this._userConfigReady) {
+      return;
+    }
     this._histories.forEach((history: IConfigHistory) => {
       const detail = history.getHistoryDetail();
       if (detail) {
@@ -40,7 +74,7 @@ class ConfigMigrator {
     if (!detail) {
       return;
     }
-    if (this._isReady) {
+    if (this._dbConfigReady && this._userConfigReady) {
       this._doDataMigration(detail);
     } else {
       this._histories.push(history);
@@ -48,7 +82,7 @@ class ConfigMigrator {
   }
 
   private async _doDataMigration(history: ConfigChangeHistory) {
-    if (!history || !history.version || !history.moduleName) {
+    if (!history || history.version === undefined || !history.moduleName) {
       return;
     }
     try {

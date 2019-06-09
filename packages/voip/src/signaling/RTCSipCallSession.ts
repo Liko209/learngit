@@ -23,6 +23,8 @@ import { RTCMediaElementManager } from '../utils/RTCMediaElementManager';
 import { RTCMediaElement } from '../utils/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCMediaDeviceManager } from '../api/RTCMediaDeviceManager';
+import { CallReport } from '../report/Call';
+import { CALL_REPORT_PROPS } from '../report/types';
 
 const {
   MediaStreams,
@@ -82,8 +84,8 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       this._inviteResponse = inviteRes;
       this._onSessionAccepted();
     });
-    this._session.on(WEBPHONE_SESSION_STATE.CONFIRMED, () => {
-      this._onSessionConfirmed();
+    this._session.on(WEBPHONE_SESSION_STATE.CONFIRMED, (response: any) => {
+      this._onSessionConfirmed(response);
     });
     this._session.on(WEBPHONE_SESSION_STATE.BYE, () => {
       this._onSessionDisconnected();
@@ -138,9 +140,9 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this.emit(CALL_SESSION_STATE.ACCEPTED);
   }
 
-  private _onSessionConfirmed() {
+  private _onSessionConfirmed(response: any) {
     this._initAudioDeviceChannel();
-    this.emit(CALL_SESSION_STATE.CONFIRMED);
+    this.emit(CALL_SESSION_STATE.CONFIRMED, response);
   }
 
   private _onSessionDisconnected() {
@@ -241,6 +243,13 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       case WEBPHONE_MEDIA_CONNECTION_STATE_EVENT.MEDIA_CONNECTION_FAILED:
         rtcLogger.error(LOG_TAG, `Reconnecting media. State = ${event}`);
         break;
+      case WEBPHONE_MEDIA_CONNECTION_STATE_EVENT.MEDIA_CONNECTION_CONNECTED:
+        CallReport.instance().updateEstablishment(
+          CALL_REPORT_PROPS.MEDIA_CONNECTED_TIME,
+        );
+        break;
+      default:
+        break;
     }
   }
 
@@ -286,14 +295,21 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 
   forward(target: string) {
-    this._session.forward(target);
+    this._session
+      .forward(target)
+      .then(() => {
+        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.FORWARD);
+      })
+      .catch(() => {
+        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.FORWARD);
+      });
   }
 
   park() {
     this._session.park().then(
       (parkOptions: any) => {
         const options: RTCCallActionSuccessOptions = {
-          parkExtension: parkOptions['park extension'],
+          parkExtension: `*${parkOptions['park extension']}`,
         };
         this.emit(
           CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,

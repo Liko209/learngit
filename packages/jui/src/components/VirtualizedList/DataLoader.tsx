@@ -66,18 +66,23 @@ const JuiDataLoader = ({
   },                         [loadMore, loadMore, loadInitialData]);
 
   const loadData = useCallback(
-    _.throttle((type: 'initial' | 'up' | 'down', count: number = 10) => {
+    _.throttle(async (type: 'initial' | 'up' | 'down', count: number = 10) => {
+      let success: boolean = false;
       const map = getMap();
       const { setLoading, load, onFailed } = map[type];
       setLoading(true);
       onFailed(false);
-      load(count)
-        .catch(() => {
-          isMountedRef.current && onFailed(true);
-        })
-        .then(() => {
-          isMountedRef.current && setLoading(false);
-        });
+      try {
+        await load(count);
+        success = true;
+      } catch {
+        isMountedRef.current && onFailed(true);
+        success = false;
+      } finally {
+        isMountedRef.current && setLoading(false);
+      }
+
+      return success;
     },         1000),
     [getMap],
   );
@@ -110,7 +115,12 @@ const JuiDataLoader = ({
   );
 
   useEffect(() => {
-    loadData('initial');
+    loadData('initial').then((result: boolean) => {
+      if (result && isMountedRef.current) {
+        const preloadInfo = loadMoreStrategy.getPreloadInfo();
+        preloadInfo && loadData(preloadInfo.direction!, preloadInfo.count);
+      }
+    });
   },        []);
 
   const childrenElement = children({

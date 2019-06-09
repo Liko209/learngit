@@ -11,7 +11,6 @@ import styled from '../../../foundation/styled-components';
 import {
   height,
   spacing,
-  palette,
   grey,
   shape,
   typography,
@@ -69,7 +68,8 @@ const SearchItemValueWrapper = styled.div`
 
 const Joined = styled.span`
   padding: ${spacing(0, 1)};
-  color: ${palette('common', 'white')};
+  color: ${({ theme }) =>
+    theme.palette.getContrastText(primary('700', 2)({ theme }))};
   border-radius: ${shape('borderRadius', 4)};
   background: ${primary('700', 2)};
   ${typography('caption1')}
@@ -86,6 +86,7 @@ type JuiSearchItemProps = {
   hovered?: boolean;
   beforeValue?: string;
   afterValue?: string;
+  joinedStatusText?: string;
 } & MenuItemProps;
 
 const JuiSearchItem = memo((props: JuiSearchItemProps) => {
@@ -99,6 +100,7 @@ const JuiSearchItem = memo((props: JuiSearchItemProps) => {
     hovered,
     beforeValue,
     afterValue,
+    joinedStatusText,
     ...rest
   } = props;
   // e2e also will be use it. shouldn't change the class name
@@ -120,7 +122,7 @@ const JuiSearchItem = memo((props: JuiSearchItemProps) => {
           <PrivateIcon data-test-automation-id="search-item-private" />
         )}
         {isJoined && (
-          <Joined data-test-automation-id="search-item-joined">Joined</Joined>
+          <Joined data-test-automation-id="search-item-joined">{joinedStatusText}</Joined>
         )}
       </SearchItemValueWrapper>
       {Actions && <SearchItemActions>{Actions}</SearchItemActions>}

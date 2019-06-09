@@ -12,7 +12,9 @@ import { UploadResult } from '../types';
 import { getAppContextInfo } from '@/utils/error';
 import * as Sentry from '@sentry/browser';
 import { FeedbackApi } from '../FeedbackApi';
-import { SessionManager } from 'sdk';
+import { SessionManager, DateFormatter } from 'sdk';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { AccountService } from 'sdk/module/account';
 
 type UploadOption = { timeout: number; retry: number };
 
@@ -31,9 +33,17 @@ class FeedbackService {
     return this._fileStackClient;
   }
 
-  zipRecentLogs = async (): Promise<[string, Blob] | null> => {
-    const zip = await LogControlManager.instance().getZipLog();
-    return [`RC_LOG_${SessionManager.getInstance().getSession()}.zip`, zip];
+  zipRecentLogs = async (): Promise<{ zipName: string; zipBlob: Blob }> => {
+    const zipBlob = await LogControlManager.instance().getZipLog();
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
+    const uid = accountService.userConfig.getGlipUserId();
+    const sessionId = SessionManager.getInstance().getSession();
+    return {
+      zipBlob,
+      zipName: `RC_LOG_${uid}_${sessionId}_${DateFormatter.formatDate()}.zip`,
+    };
   }
 
   uploadRecentLogs = async (
@@ -46,7 +56,7 @@ class FeedbackService {
       logger.debug('Zip log file fail.');
       return null;
     }
-    const [zipName, zipBlob] = zipResult;
+    const { zipName, zipBlob } = zipResult;
     return await this._getFileStackClient().upload(
       zipBlob,
       {

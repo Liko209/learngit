@@ -1,9 +1,8 @@
 /*
- * @Author: Thomas thomas.yang@ringcentral.com
- * @Date: 2019-03-01 01:39:18
+ * @Author: Thomas Yang(thomas.yang@ringcentral.com)
+ * @Date: 2019-05-20 15:40:20
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { SearchUserConfig } from './SearchUserConfig';
-
-export { SearchUserConfig };
+export { SearchUserConfig } from './SearchUserConfig';
+export { SEARCH_CONFIG_KEYS, SEARCH_MODULE_NAME } from './constants';

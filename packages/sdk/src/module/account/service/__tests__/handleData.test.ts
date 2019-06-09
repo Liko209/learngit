@@ -8,10 +8,12 @@ import notificationCenter from '../../../../service/notificationCenter';
 // import AccountDao from 'dao/account';
 import { accountHandleData } from '../handleData';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { AccountUserConfig } from '../../config';
+import { AccountGlobalConfig } from '../../config/AccountGlobalConfig';
+import { AccountUserConfig } from '../../config/AccountUserConfig';
 
 jest.mock('../../../config');
-jest.mock('../../config');
+jest.mock('../../config/AccountUserConfig');
+jest.mock('../../config/AccountGlobalConfig');
 jest.mock('../../../../service/notificationCenter', () => ({
   emitKVChange: jest.fn(),
 }));
@@ -37,6 +39,7 @@ describe('Account Service handleData', () => {
           return { userConfig: AccountUserConfig.prototype };
         }
       });
+    AccountGlobalConfig.getUserDictionary.mockReturnValue('123');
   });
   it('getCurrentUserId()', async () => {
     accountHandleData({

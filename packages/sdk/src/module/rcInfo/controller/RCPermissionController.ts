@@ -133,6 +133,12 @@ class RCPermissionController {
         },
       ],
       [
+        ERCServiceFeaturePermission.CALL_FORWARDING,
+        {
+          featureName: RCServiceFeatureName.CALL_FORWARDING,
+        },
+      ],
+      [
         ERCServiceFeaturePermission.INTERNAL_CALLS,
         {
           permissionId: PermissionId.INTERNAL_CALLS,
@@ -174,6 +180,12 @@ class RCPermissionController {
         {
           featureName: RCServiceFeatureName.VIDEO_CONFERENCING,
           PermissionId: PermissionId.PERMISSION_MEEINGS,
+        },
+      ],
+      [
+        ERCServiceFeaturePermission.CONFERENCING,
+        {
+          featureName: RCServiceFeatureName.CONFERENCING,
         },
       ],
     ]);

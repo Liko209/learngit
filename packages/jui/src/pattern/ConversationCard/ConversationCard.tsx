@@ -19,7 +19,8 @@ type ConversationCardProps = {
   children: (React.ReactChild | null)[];
   mode?: string;
   highlight?: boolean;
-  jumpToPost?: (e: React.MouseEvent) => any;
+  navigate?: (e: React.MouseEvent) => any;
+  navigationTip?: JSX.Element;
 } & React.DOMAttributes<{}>;
 
 const StyledNavigationButton = styled<JuiButtonProps>(JuiButton)`
@@ -63,12 +64,6 @@ const StyledConversationCard = styled<
     background: ${grey('50')};
   }
   ${({ mode }) => mode === 'navigation' && navigationStyles};
-  }
-
-  & .highlight-term {
-    color: ${palette('text', 'primary')};
-    background-color: ${palette('secondary', '100')};
-  }
 `;
 const highlightBg = ({ theme }: any) =>
   tinycolor(palette('semantic', 'critical')({ theme }))
@@ -117,8 +112,24 @@ class JuiConversationCard extends React.PureComponent<ConversationCardProps> {
     this.clearTimer();
   }
 
+  private _navigationButtonBuilder = () => {
+    const { mode, navigate, navigationTip } = this.props;
+    if (mode !== 'navigation') {
+      return null;
+    }
+    return (
+      <StyledNavigationButton
+        variant="round"
+        onClick={navigate}
+        data-test-automation-id={'jumpToConversation'}
+      >
+        {navigationTip}
+      </StyledNavigationButton>
+    );
+  }
+
   render() {
-    const { children, Avatar, mode, jumpToPost, ...rest } = this.props;
+    const { children, Avatar, mode, ...rest } = this.props;
     const { highlight } = this.state;
     return (
       <StyledConversationCard
@@ -126,22 +137,12 @@ class JuiConversationCard extends React.PureComponent<ConversationCardProps> {
         mode={mode}
         {...rest}
       >
-        {mode === 'navigation' ? (
-          <StyledNavigationButton
-            variant="round"
-            onClick={jumpToPost}
-            data-test-automation-id={'jumpToConversation'}
-          >
-            Jump to conversation
-          </StyledNavigationButton>
-        ) : null}
+        {this._navigationButtonBuilder()}
         <JuiConversationCardAvatarArea>{Avatar}</JuiConversationCardAvatarArea>
         <StyledRightSection>{children}</StyledRightSection>
-        <HighlightStyle />
       </StyledConversationCard>
     );
   }
 }
 
-export { JuiConversationCard };
-export default JuiConversationCard;
+export { JuiConversationCard, HighlightStyle };

@@ -8,21 +8,22 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { JuiConversationPostText } from 'jui/pattern/ConversationCard';
 import { TextMessageViewProps } from './types';
-import { withHighlight } from 'jui/hoc/withHighlight';
-
+import {
+  SearchHighlightContext,
+  HighlightContextInfo,
+} from '@/common/postParser';
 @observer
-@withHighlight(['html'])
 class TextMessageView extends React.Component<TextMessageViewProps> {
+  static contextType = SearchHighlightContext;
+  context: HighlightContextInfo;
+
   render() {
-    const { html } = this.props;
-    if (html) {
-      return (
-        <React.Fragment>
-          <JuiConversationPostText data-name="text" html={html} />
-        </React.Fragment>
-      );
-    }
-    return null;
+    return (
+      <JuiConversationPostText data-name="text">
+        {this.props.getContent(this.context.keyword)}
+      </JuiConversationPostText>
+    );
   }
 }
+
 export { TextMessageView };

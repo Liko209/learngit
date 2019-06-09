@@ -45,6 +45,10 @@ import { SearchService } from '../../search';
 import { RecentSearchTypes, RecentSearchModel } from '../../search/entity';
 import { MY_LAST_POST_VALID_PERIOD } from '../../search/constants';
 
+const kTeamIncludeMe: number = 1;
+const kSortingRateWithFirstMatched: number = 1;
+const kSortingRateWithFirstAndPositionMatched: number = 1.1;
+
 function buildNewGroupInfo(members: number[]) {
   const userConfig = ServiceLoader.getInstance<AccountService>(
     ServiceConfig.ACCOUNT_SERVICE,
@@ -191,15 +195,16 @@ export class GroupFetchDataController {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null> {
+  }> {
     const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
-      this._getTransformAllGroupFunc(
+      await this._getTransformAllGroupFunc(
         fetchAllIfSearchKeyEmpty,
         myGroupsOnly,
         recentFirst,
       ),
+      undefined,
       searchKey,
       undefined,
       (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
@@ -220,7 +225,10 @@ export class GroupFetchDataController {
       },
     );
     performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_ALL_GROUP });
-    return result;
+    return {
+      terms: result.terms.searchKeyTerms,
+      sortableModels: result.sortableModels,
+    };
   }
 
   private get _currentUserId() {
@@ -251,22 +259,29 @@ export class GroupFetchDataController {
     );
   }
 
-  private _getTransformGroupFunc(
+  private async _getTransformGroupFunc(
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
   ) {
     const groupConfigService = this._groupConfigService;
     const recentSearchedGroups = recentFirst
-      ? this._getRecentSearchGroups([RecentSearchTypes.GROUP])
+      ? await this._getRecentSearchGroups([RecentSearchTypes.GROUP])
       : undefined;
 
     return (group: Group, terms: Terms) => {
       if (this._isValidGroup(group) && group.members.length > 2) {
-        const allPersons = this.getAllPersonOfGroup(
+        const persons = this.getAllPersonOfGroup(
           group.members,
           this._currentUserId,
         );
-        const groupName = this.getGroupNameByMultiMembers(allPersons);
+
+        if (persons.invisiblePersons.length) {
+          return null;
+        }
+
+        const groupName = this.getGroupNameByMultiMembers(
+          persons.visiblePersons,
+        );
         const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
         const lowerCaseGroupName = groupName.toLowerCase();
         const isFuzzyMatched =
@@ -276,7 +291,7 @@ export class GroupFetchDataController {
           ) ||
           (searchKeyTermsToSoundex.length &&
             this.entityCacheSearchController.isSoundexMatched(
-              this.getSoundexValueOfGroup(allPersons),
+              this.getSoundexValueOfGroup(persons.visiblePersons),
               searchKeyTermsToSoundex,
             ));
         if (
@@ -292,9 +307,10 @@ export class GroupFetchDataController {
             : 0;
           return {
             firstSortKey,
+            secondSortKey: group.members.length,
             id: group.id,
             displayName: groupName,
-            secondSortKey: lowerCaseGroupName,
+            thirdSortKey: lowerCaseGroupName,
             entity: group,
           };
         }
@@ -310,11 +326,12 @@ export class GroupFetchDataController {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null> {
+  }> {
     const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
-      this._getTransformGroupFunc(fetchAllIfSearchKeyEmpty, recentFirst),
+      await this._getTransformGroupFunc(fetchAllIfSearchKeyEmpty, recentFirst),
+      undefined,
       searchKey,
       undefined,
       (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
@@ -331,27 +348,39 @@ export class GroupFetchDataController {
         if (groupA.secondSortKey > groupB.secondSortKey) {
           return 1;
         }
+
+        if (groupA.thirdSortKey < groupB.thirdSortKey) {
+          return -1;
+        }
+        if (groupA.thirdSortKey > groupB.thirdSortKey) {
+          return 1;
+        }
         return 0;
       },
     );
     performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_GROUP });
-    return result;
+    return {
+      terms: result.terms.searchKeyTerms,
+      sortableModels: result.sortableModels,
+    };
   }
 
-  private _getRecentSearchGroups(types: RecentSearchTypes[]) {
+  private async _getRecentSearchGroups(types: RecentSearchTypes[]) {
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
 
     let result: Map<ModelIdType, RecentSearchModel> = new Map();
     for (const iterator of types) {
-      const recentGroups = searchService.getRecentSearchRecordsByType(iterator);
+      const recentGroups = await searchService.getRecentSearchRecordsByType(
+        iterator,
+      );
       result = new Map([...result].concat([...recentGroups]));
     }
     return result;
   }
 
-  private _getTransformAllGroupFunc(
+  private async _getTransformAllGroupFunc(
     fetchAllIfSearchKeyEmpty?: boolean,
     myGroupsOnly?: boolean,
     recentFirst?: boolean,
@@ -359,7 +388,7 @@ export class GroupFetchDataController {
     const groupConfigService = this._groupConfigService;
 
     const recentSearchedGroups = recentFirst
-      ? this._getRecentSearchGroups([
+      ? await this._getRecentSearchGroups([
           RecentSearchTypes.GROUP,
           RecentSearchTypes.TEAM,
         ])
@@ -406,11 +435,14 @@ export class GroupFetchDataController {
                 searchKeyTermsToSoundex,
               ));
         } else {
-          const allPerson = this.getAllPersonOfGroup(
+          const persons = this.getAllPersonOfGroup(
             group.members,
             currentUserId,
           );
-          groupName = this.getGroupNameByMultiMembers(allPerson);
+          if (persons.invisiblePersons.length) {
+            break;
+          }
+          groupName = this.getGroupNameByMultiMembers(persons.visiblePersons);
           lowerCaseName = groupName.toLowerCase();
           isFuzzy =
             this.entityCacheSearchController.isFuzzyMatched(
@@ -419,7 +451,7 @@ export class GroupFetchDataController {
             ) ||
             (searchKeyTermsToSoundex.length > 0 &&
               this.entityCacheSearchController.isSoundexMatched(
-                this.getSoundexValueOfGroup(allPerson),
+                this.getSoundexValueOfGroup(persons.visiblePersons),
                 searchKeyTermsToSoundex,
               ));
         }
@@ -454,9 +486,6 @@ export class GroupFetchDataController {
   }
 
   private _getSortKeyWeight(lowerCaseName: string, searchKeyTerms: string[]) {
-    const kSortingRateWithFirstMatched: number = 1;
-    const kSortingRateWithFirstAndPositionMatched: number = 1.1;
-
     const splitNames = this.entityCacheSearchController.getTermsFromSearchKey(
       lowerCaseName,
     );
@@ -484,15 +513,15 @@ export class GroupFetchDataController {
     return sortValue;
   }
 
-  private _getTransformTeamsFunc(
+  private async _getTransformTeamsFunc(
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
   ) {
     const groupConfigService = this._groupConfigService;
     const recentSearchedTeams = recentFirst
-      ? this._getRecentSearchGroups([RecentSearchTypes.TEAM])
+      ? await this._getRecentSearchGroups([RecentSearchTypes.TEAM])
       : undefined;
-
+    const teamIdsIncludeMe = this._getTeamIdsIncludeMe();
     const currentUserId = this._currentUserId;
     return (team: Group, terms: Terms) => {
       let isMatched: boolean = false;
@@ -536,7 +565,8 @@ export class GroupFetchDataController {
           lowerCaseAbbreviation,
           searchKeyTerms,
         );
-
+        const isMeInTeam = teamIdsIncludeMe.has(team.id) ? kTeamIncludeMe : 0;
+        sortValue += isMeInTeam;
         isMatched = true;
       } while (false);
 
@@ -568,11 +598,12 @@ export class GroupFetchDataController {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null> {
+  }> {
     const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
-      this._getTransformTeamsFunc(fetchAllIfSearchKeyEmpty, recentFirst),
+      await this._getTransformTeamsFunc(fetchAllIfSearchKeyEmpty, recentFirst),
+      undefined,
       searchKey,
       undefined,
       (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
@@ -601,11 +632,15 @@ export class GroupFetchDataController {
       },
     );
     performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_TEAM });
-    return result;
+    return {
+      terms: result.terms.searchKeyTerms,
+      sortableModels: result.sortableModels,
+    };
   }
 
   getAllPersonOfGroup(members: number[], currentUserId: number) {
-    const allPersons: Person[] = [];
+    const visiblePersons: Person[] = [];
+    const invisiblePersons: Person[] = [];
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
@@ -615,10 +650,14 @@ export class GroupFetchDataController {
       }
       const person = personService.getSynchronously(id);
       if (person) {
-        allPersons.push(person);
+        if (personService.isVisiblePerson(person)) {
+          visiblePersons.push(person);
+        } else {
+          invisiblePersons.push(person);
+        }
       }
     });
-    return allPersons;
+    return { invisiblePersons, visiblePersons };
   }
   getSoundexValueOfGroup(allPersons: Person[]): string[] {
     const personService = ServiceLoader.getInstance<PersonService>(
@@ -638,7 +677,7 @@ export class GroupFetchDataController {
       ServiceConfig.PERSON_SERVICE,
     );
     allPersons.forEach((person: Person) => {
-      if (person) {
+      if (person && personService.isVisiblePerson(person)) {
         const name = personService.getName(person);
         if (name.length) {
           names.push(name);
@@ -701,7 +740,13 @@ export class GroupFetchDataController {
   }
 
   private _isPublicTeamOrIncludeUser(team: Group, userId: number) {
-    return team.privacy === 'protected' || team.members.includes(userId);
+    return (
+      team.privacy === 'protected' || this._getTeamIdsIncludeMe().has(team.id)
+    );
+  }
+
+  private _getTeamIdsIncludeMe() {
+    return this.groupService.getTeamIdsIncludeMe();
   }
 
   private async _queryGroupByMemberList(ids: number[]): Promise<Group | null> {

@@ -125,6 +125,21 @@ describe('ItemService', () => {
         expect(res).toBe('a');
       });
     });
+    describe('editFileName()', () => {
+      it('should call with correct parameter', async () => {
+        fileItemService.editFileName = jest.fn();
+        await itemService.editFileName(1, 'newName');
+        expect(fileItemService.editFileName).toBeCalledWith(1, 'newName');
+      });
+    });
+
+    describe('deleteFile()', () => {
+      it('should call with correct parameter', async () => {
+        fileItemService.deleteFile = jest.fn();
+        await itemService.deleteFile(1, 1);
+        expect(fileItemService.deleteFile).toBeCalledWith(1, 1);
+      });
+    });
 
     describe('sendItemFile()', () => {
       it('should call file item service with correct parameter', async () => {

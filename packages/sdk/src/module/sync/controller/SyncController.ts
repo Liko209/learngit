@@ -374,13 +374,18 @@ class SyncController {
     }
     const changeMap = new Map<string, ChangeModel>();
     const start = Date.now();
+
+    // should handle account data first anyway
+    const performanceTracer = PerformanceTracer.initial();
+    await accountHandleData({
+      userId,
+      companyId,
+      clientConfig,
+      profileId: profile ? profile._id : undefined,
+    });
+    performanceTracer.end({ key: this._getPerformanceKey(source, 'account') });
+
     await Promise.all([
-      accountHandleData({
-        userId,
-        companyId,
-        clientConfig,
-        profileId: profile ? profile._id : undefined,
-      }),
       this._handleIncomingCompany(companies, source, changeMap),
       this._handleIncomingItem(items, source, changeMap),
       this._handleIncomingPresence(presences, source, changeMap),
@@ -435,7 +440,7 @@ class SyncController {
       ServiceConfig.COMPANY_SERVICE,
     ).handleIncomingData(companies, source, changeMap);
     performanceTracer.end({
-      key: PERFORMANCE_KEYS.HANDLE_INCOMING_COMPANY,
+      key: this._getPerformanceKey(source, 'company'),
       count: companies && companies.length,
     });
   }
@@ -455,7 +460,7 @@ class SyncController {
       ServiceConfig.ITEM_SERVICE,
     ).handleIncomingData(items, changeMap);
     performanceTracer.end({
-      key: PERFORMANCE_KEYS.HANDLE_INCOMING_ITEM,
+      key: this._getPerformanceKey(source, 'item'),
       count: items && items.length,
     });
   }
@@ -475,7 +480,7 @@ class SyncController {
       ServiceConfig.PRESENCE_SERVICE,
     ).presenceHandleData(presences, changeMap);
     performanceTracer.end({
-      key: PERFORMANCE_KEYS.HANDLE_INCOMING_PRESENCE,
+      key: this._getPerformanceKey(source, 'presence'),
       count: presences && presences.length,
     });
   }
@@ -495,7 +500,7 @@ class SyncController {
       ServiceConfig.STATE_SERVICE,
     ).handleState(states, source, changeMap);
     performanceTracer.end({
-      key: PERFORMANCE_KEYS.HANDLE_INCOMING_STATE,
+      key: this._getPerformanceKey(source, 'state'),
       count: states && states.length,
     });
   }
@@ -513,7 +518,9 @@ class SyncController {
     await ServiceLoader.getInstance<ProfileService>(
       ServiceConfig.PROFILE_SERVICE,
     ).handleIncomingData(profile, source, changeMap);
-    performanceTracer.end({ key: PERFORMANCE_KEYS.HANDLE_INCOMING_PROFILE });
+    performanceTracer.end({
+      key: this._getPerformanceKey(source, 'profile'),
+    });
   }
 
   private async _handleIncomingPerson(
@@ -531,7 +538,7 @@ class SyncController {
       ServiceConfig.PERSON_SERVICE,
     ).handleIncomingData(persons, source, changeMap);
     performanceTracer.end({
-      key: PERFORMANCE_KEYS.HANDLE_INCOMING_PERSON,
+      key: this._getPerformanceKey(source, 'person'),
       count: persons && persons.length,
     });
   }
@@ -551,7 +558,7 @@ class SyncController {
       ServiceConfig.GROUP_SERVICE,
     ).handleData(groups, source, changeMap);
     performanceTracer.end({
-      key: PERFORMANCE_KEYS.HANDLE_INCOMING_GROUP,
+      key: this._getPerformanceKey(source, 'group'),
       count: groups && groups.length,
     });
   }
@@ -572,7 +579,7 @@ class SyncController {
       ServiceConfig.POST_SERVICE,
     ).handleIndexData(posts, maxPostsExceeded, changeMap);
     performanceTracer.end({
-      key: PERFORMANCE_KEYS.HANDLE_INCOMING_POST,
+      key: this._getPerformanceKey(source, 'post'),
       count: posts && posts.length,
     });
   }
@@ -614,6 +621,19 @@ class SyncController {
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_ERROR, {
         error: ErrorParserHolder.getErrorParser().parse(error),
       });
+    }
+  }
+
+  private _getPerformanceKey(source: SYNC_SOURCE, type: string) {
+    switch (source) {
+      case SYNC_SOURCE.INDEX:
+        return `${PERFORMANCE_KEYS.HANDLE_INDEX_INCOMING}${type}`;
+
+      case SYNC_SOURCE.INITIAL:
+        return `${PERFORMANCE_KEYS.HANDLE_INITIAL_INCOMING}${type}`;
+
+      case SYNC_SOURCE.REMAINING:
+        return `${PERFORMANCE_KEYS.HANDLE_REMAINING_INCOMING}${type}`;
     }
   }
 

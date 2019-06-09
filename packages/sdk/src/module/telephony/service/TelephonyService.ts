@@ -17,10 +17,16 @@ import { MAKE_CALL_ERROR_CODE } from '../types';
 import { IdModel } from '../../../framework/model';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 import { LogControlManager } from 'sdk/service/uploadLogControl';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { SettingService } from 'sdk/module/setting';
+import { PhoneSetting } from '../setting';
+import { ITelephonyService } from './ITelephonyService';
 
-class TelephonyService extends EntityBaseService<IdModel> {
+class TelephonyService extends EntityBaseService<IdModel>
+  implements ITelephonyService {
   private _telephonyEngineController: TelephonyEngineController;
   private _userConfig: TelephonyUserConfig;
+  private _phoneSetting: PhoneSetting;
 
   constructor() {
     super(false);
@@ -32,13 +38,36 @@ class TelephonyService extends EntityBaseService<IdModel> {
     this._init();
   }
 
+  protected onStarted() {
+    super.onStarted();
+    ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    ).registerModuleSetting(this.phoneSetting);
+  }
+
+  protected onStopped() {
+    super.onStopped();
+    if (this._phoneSetting) {
+      ServiceLoader.getInstance<SettingService>(
+        ServiceConfig.SETTING_SERVICE,
+      ).unRegisterModuleSetting(this._phoneSetting);
+      delete this._phoneSetting;
+    }
+  }
+
   handleLogOut = async () => {
     this.telephonyController.logout();
   }
 
+  getVoipCallPermission = async () => {
+    return this.telephonyController.getVoipCallPermission();
+  }
+
   protected get telephonyController() {
     if (!this._telephonyEngineController) {
-      this._telephonyEngineController = new TelephonyEngineController();
+      this._telephonyEngineController = new TelephonyEngineController(
+        this.userConfig,
+      );
     }
     return this._telephonyEngineController;
   }
@@ -136,6 +165,22 @@ class TelephonyService extends EntityBaseService<IdModel> {
       .replyWithMessage(callId, message);
   }
 
+  park = async (callId: string) => {
+    return await this.telephonyController.getAccountController().park(callId);
+  }
+
+  flip = async (callId: string, flipNumber: number) => {
+    return await this.telephonyController
+      .getAccountController()
+      .flip(callId, flipNumber);
+  }
+
+  forward = async (callId: string, phoneNumber: string) => {
+    return await this.telephonyController
+      .getAccountController()
+      .forward(callId, phoneNumber);
+  }
+
   replyWithPattern = (
     callId: string,
     pattern: RTC_REPLY_MSG_PATTERN,
@@ -155,6 +200,13 @@ class TelephonyService extends EntityBaseService<IdModel> {
   getVoipState = () => {
     const accountController = this.telephonyController.getAccountController();
     return accountController ? accountController.getVoipState() : '';
+  }
+
+  get phoneSetting() {
+    if (!this._phoneSetting) {
+      this._phoneSetting = new PhoneSetting(this);
+    }
+    return this._phoneSetting;
   }
 }
 

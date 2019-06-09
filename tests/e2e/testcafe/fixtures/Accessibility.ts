@@ -11,8 +11,12 @@ fixture('Accessibility')
 test.skip(formalName('Accessibility', ['Henry.Xu']), async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
-
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });

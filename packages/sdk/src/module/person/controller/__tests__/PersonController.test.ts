@@ -24,7 +24,8 @@ import { IEntityCacheController } from 'sdk/framework/controller/interface/IEnti
 import { IEntityCacheSearchController } from 'sdk/framework/controller/interface/IEntityCacheSearchController';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../../group/entity';
 import { GlobalConfigService } from 'sdk/module/config';
-import { AccountUserConfig, AuthUserConfig } from 'sdk/module/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
+import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 import { ContactType } from '../../types';
 import { SearchUtils } from 'sdk/framework/utils/SearchUtils';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
@@ -32,6 +33,8 @@ import { PersonEntityCacheController } from '../PersonEntityCacheController';
 import { PersonService } from '../../';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { PhoneNumber, PhoneNumberType } from 'sdk/module/phoneNumber/entity';
+import { AccountService } from 'sdk/module/account';
 
 jest.mock('sdk/module/config');
 jest.mock('sdk/module/account/config');
@@ -58,7 +61,10 @@ describe('PersonService', () => {
       .fn()
       .mockImplementation((config: string) => {
         if (config === ServiceConfig.ACCOUNT_SERVICE) {
-          return { userConfig: AccountUserConfig.prototype , authUserConfig: AuthUserConfig.prototype };
+          return {
+            userConfig: AccountUserConfig.prototype,
+            authUserConfig: AuthUserConfig.prototype,
+          };
         }
         if (config === ServiceConfig.PHONE_NUMBER_SERVICE) {
           return phoneNumberService;
@@ -755,6 +761,70 @@ describe('PersonService', () => {
         .mockReturnValue(requestController);
       personController.refreshPersonData(1);
       expect(requestController.get).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getPhoneNumbers', () => {
+    function getPerson() {
+      const person: Person = {
+        id: 1,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        has_registered: true,
+        version: 1,
+        company_id: 1,
+        email: 'cat1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'dora1',
+        last_name: 'bruce1',
+        display_name: 'dora1 bruce1',
+        sanitized_rc_extension: {
+          extensionNumber: '98494',
+          type: 'User',
+        },
+        rc_phone_numbers: [
+          { id: 1, phoneNumber: '650425743', usageType: 'DirectNumber' },
+        ],
+      };
+
+      return person;
+    }
+    it('should return all phone numbers when is company contact', () => {
+      const person = getPerson();
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
+      jest.spyOn(userConfig, 'getCurrentCompanyId').mockReturnValue(1);
+
+      const phoneNumbers: PhoneNumber[] = [];
+      personController.getPhoneNumbers(person, (phoneNumber: PhoneNumber) => {
+        phoneNumbers.push(phoneNumber);
+      });
+
+      expect(phoneNumbers).toEqual([
+        { id: '98494', phoneNumberType: PhoneNumberType.Extension },
+        { id: '650425743', phoneNumberType: PhoneNumberType.DirectNumber },
+      ]);
+    });
+
+    it('should only return DID when is a guest', () => {
+      const person = getPerson();
+
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
+      jest.spyOn(userConfig, 'getCurrentCompanyId').mockReturnValue(2);
+
+      const phoneNumbers: PhoneNumber[] = [];
+      personController.getPhoneNumbers(person, (phoneNumber: PhoneNumber) => {
+        phoneNumbers.push(phoneNumber);
+      });
+
+      expect(phoneNumbers).toEqual([
+        { id: '650425743', phoneNumberType: PhoneNumberType.DirectNumber },
+      ]);
     });
   });
 });

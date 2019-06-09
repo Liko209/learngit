@@ -4,27 +4,29 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AbstractModule, inject, Jupiter } from 'framework';
-import {
-  ILeaveBlockerService,
-  LEAVE_BLOCKER_SERVICE,
-} from '../leave-blocker/interface';
+import { ILeaveBlockerService } from '../leave-blocker/interface';
 import { ItemService } from 'sdk/module/item/service';
 
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { MessageNotificationManager } from './MessageNotificationManager';
-import { MESSAGE_NOTIFICATION_MANAGER } from './interface/constant';
+import { IMessageSettingManager } from './interface';
 
-import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
+import {
+  MESSAGE_NOTIFICATION_MANAGER,
+  MESSAGE_SERVICE,
+} from '@/modules/message/interface/constant';
 
 const itemService = ServiceLoader.getInstance<ItemService>(
   ServiceConfig.ITEM_SERVICE,
 );
 
 class MessageModule extends AbstractModule {
-  @inject(LEAVE_BLOCKER_SERVICE) _leaveBlockerService: ILeaveBlockerService;
+  @ILeaveBlockerService private _leaveBlockerService: ILeaveBlockerService;
   @inject(Jupiter) private _jupiter: Jupiter;
   @inject(MESSAGE_NOTIFICATION_MANAGER)
-  _messageNotificationManager: MessageNotificationManager;
+  private _messageNotificationManager: MessageNotificationManager;
+  @IMessageSettingManager
+  private _messageSettingManager: IMessageSettingManager;
   handleLeave = () => {
     return itemService.hasUploadingFiles();
   }
@@ -34,11 +36,13 @@ class MessageModule extends AbstractModule {
     this._leaveBlockerService.onLeave(this.handleLeave);
 
     this._jupiter.emitModuleInitial(MESSAGE_SERVICE);
+    this._messageSettingManager.init();
   }
 
   dispose() {
     this._messageNotificationManager.dispose();
     this._leaveBlockerService.offLeave(this.handleLeave);
+    this._messageSettingManager.dispose();
   }
 }
 

@@ -6,12 +6,10 @@
 import React from 'react';
 import styled from '../../../foundation/styled-components';
 import { typography, ellipsis } from '../../../foundation/utils';
-import { Markdown } from 'glipdown';
-import { withHighlight } from '../../../hoc/withHighlight';
 
 type FieldProps = {
-  title: string;
-  value: string;
+  title: React.ReactChild | null | (React.ReactChild | null)[];
+  value: React.ReactChild | null | (React.ReactChild | null)[];
   short?: boolean;
 };
 
@@ -19,18 +17,14 @@ const FieldWrapper = styled.div`
   float: left;
 `;
 
-const TitleWrapper = withHighlight([
-  'dangerouslySetInnerHTML.__html',
-])(styled.div`
-  ${typography('caption2')};
+const TitleWrapper = styled.div`
+  ${typography('body2')};
   ${ellipsis()};
-`);
+`;
 
-const ValueWrapper = withHighlight([
-  'dangerouslySetInnerHTML.__html',
-])(styled.div`
-  ${typography('caption1')};
-`);
+const ValueWrapper = styled.div`
+  ${typography('body1')};
+`;
 
 const Field = (props: FieldProps) => {
   const { title, value, short } = props;
@@ -38,8 +32,8 @@ const Field = (props: FieldProps) => {
   const marginBottom = short ? '10px' : '20px';
   return (
     <FieldWrapper style={{ width, marginBottom }}>
-      <TitleWrapper dangerouslySetInnerHTML={{ __html: title }} />
-      <ValueWrapper dangerouslySetInnerHTML={{ __html: Markdown(value) }} />
+      <TitleWrapper>{title}</TitleWrapper>
+      <ValueWrapper>{value}</ValueWrapper>
     </FieldWrapper>
   );
 };

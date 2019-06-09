@@ -9,11 +9,7 @@ import { IRTCRegistrationFsmDependency } from './IRTCRegistrationFsmDependency';
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCUserAgent } from '../signaling/IRTCUserAgent';
 import { RTCSipUserAgent } from '../signaling/RTCSipUserAgent';
-import {
-  RTC_ACCOUNT_STATE,
-  RTCCallOptions,
-  RTCUserAgentInfo,
-} from '../api/types';
+import { RTC_ACCOUNT_STATE, RTCCallOptions, RTCUserInfo } from '../api/types';
 import { UA_EVENT, ProvisionDataOptions } from '../signaling/types';
 import { IRTCCallDelegate } from '../api/IRTCCallDelegate';
 import {
@@ -37,7 +33,8 @@ class RTCRegistrationManager extends EventEmitter2
   private _userAgent: IRTCUserAgent;
   private _retryTimer: NodeJS.Timeout | null = null;
   private _retryInterval: number;
-  private _userAgentInfo: RTCUserAgentInfo;
+  private _regFailedFirstTime: boolean = true;
+  private _userInfo: RTCUserInfo;
 
   onNetworkChangeToOnlineAction(): void {
     this.reRegister();
@@ -67,10 +64,10 @@ class RTCRegistrationManager extends EventEmitter2
     this.emit(REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE, callSession);
   }
 
-  constructor(userAgentInfo: RTCUserAgentInfo) {
+  constructor(userInfo: RTCUserInfo) {
     super();
-    if (userAgentInfo) {
-      this._userAgentInfo = userAgentInfo;
+    if (userInfo) {
+      this._userInfo = userInfo;
     }
     this._fsm = new RTCRegistrationFSM(this);
     this._userAgent = new RTCSipUserAgent();
@@ -85,6 +82,7 @@ class RTCRegistrationManager extends EventEmitter2
 
   private _onEnterReady() {
     this._clearRegisterRetryTimer();
+    this._regFailedFirstTime = true;
     this.emit(
       REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
       RTC_ACCOUNT_STATE.REGISTERED,
@@ -288,9 +286,14 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   private _calculateNextRetryInterval() {
-    this._retryInterval =
-      registerRetryMinValue +
-      Math.floor(Math.random() * registerRetryValueFloatRange);
+    if (this._regFailedFirstTime) {
+      this._retryInterval = 5;
+      this._regFailedFirstTime = false;
+    } else {
+      this._retryInterval =
+        registerRetryMinValue +
+        Math.floor(Math.random() * registerRetryValueFloatRange);
+    }
   }
 
   private _restartUA(
@@ -298,18 +301,12 @@ class RTCRegistrationManager extends EventEmitter2
     options: ProvisionDataOptions,
   ) {
     const cloneOption = _.cloneDeep(options);
-    if (this._userAgentInfo) {
-      if (
-        this._userAgentInfo.endpointId &&
-        this._userAgentInfo.endpointId.length > 0
-      ) {
-        cloneOption.uuid = this._userAgentInfo.endpointId;
+    if (this._userInfo) {
+      if (this._userInfo.endpointId && this._userInfo.endpointId.length > 0) {
+        cloneOption.uuid = this._userInfo.endpointId;
       }
-      if (
-        this._userAgentInfo.userAgent &&
-        this._userAgentInfo.userAgent.length > 0
-      ) {
-        cloneOption.appName = this._userAgentInfo.userAgent;
+      if (this._userInfo.userAgent && this._userInfo.userAgent.length > 0) {
+        cloneOption.appName = this._userInfo.userAgent;
       }
     }
     this._userAgent.restartUA(provisionData, cloneOption);

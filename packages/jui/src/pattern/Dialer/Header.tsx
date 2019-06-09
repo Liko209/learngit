@@ -3,7 +3,12 @@
  * @Date: 2019-03-21 18:11:42
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { PureComponent, ChangeEvent, KeyboardEvent } from 'react';
+import React, {
+  PureComponent,
+  ChangeEvent,
+  KeyboardEvent,
+  MouseEvent,
+} from 'react';
 import styled from '../../foundation/styled-components';
 import {
   spacing,
@@ -205,7 +210,9 @@ class JuiHeader extends PureComponent<Props, State> {
     );
   }
 
-  private _handleMouseDown = () => {
+  private _handleMouseDown = (e: MouseEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
     this._mouseDownTime = +new Date();
     this._timerForClearAll = setTimeout(() => {
       const { deleteInputString } = this.props;
@@ -218,7 +225,9 @@ class JuiHeader extends PureComponent<Props, State> {
     },                                  1000);
   }
 
-  private _handleMounseUp = () => {
+  private _handleMounseUp = (e: MouseEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (!this.props.deleteLastInputString) {
       return;
     }
@@ -235,9 +244,7 @@ class JuiHeader extends PureComponent<Props, State> {
     delete this._timerForClearAll;
   }
 
-  private _handleMouseDownOnInput = (
-    e: React.MouseEvent<HTMLInputElement, MouseEvent>,
-  ) => {
+  private _handleMouseDownOnInput = (e: React.MouseEvent<any>) => {
     // prevent drag & drop
     e.stopPropagation();
   }
@@ -251,13 +258,20 @@ class JuiHeader extends PureComponent<Props, State> {
       placeholder,
       ariaLabelForDelete,
       onKeyDown,
+      Back,
     } = this.props;
     const fakeFunc = () => {};
 
     // TODO: change delete button's icon
     return (
       <StyledInputContainer draggable={false}>
-        <StyledDialerBtnContainer />
+        <StyledDialerBtnContainer>
+          {Back && (
+            <StyledBack>
+              <Back />
+            </StyledBack>
+          )}
+        </StyledDialerBtnContainer>
         <SearchInput
           onBlur={onBlur || fakeFunc}
           onFocus={onFocus || fakeFunc}

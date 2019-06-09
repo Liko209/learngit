@@ -14,7 +14,7 @@ import { SocketCanConnectController } from '../SocketCanConnectController';
 import { getCurrentTime } from '../../../utils/jsUtils';
 import { SyncUserConfig } from '../../../module/sync/config/SyncUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
-import { AuthUserConfig } from 'sdk/module/account/config';
+import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 
 jest.mock('../../../module/config');
 jest.mock('../SocketCanConnectController');
@@ -432,6 +432,34 @@ describe('Socket Manager', () => {
 
         // does not have reconnect-socket-host, use index-socket-host
         expect(socketManager.activeFSM.serverUrl).toEqual('index_socket');
+      });
+
+      it('should clear socket address when socket error happened', () => {
+        syncUserConfig = new SyncUserConfig();
+        syncUserConfig.setIndexSocketServerHost = jest.fn();
+        syncUserConfig.setReconnectSocketServerHost = jest.fn();
+        notificationCenter.emitKVChange(SOCKET.ERROR);
+
+        expect(syncUserConfig.setIndexSocketServerHost).toHaveBeenCalledWith(
+          '',
+        );
+        expect(
+          syncUserConfig.setReconnectSocketServerHost,
+        ).toHaveBeenCalledWith('');
+      });
+
+      it('should clear socket address when socket connect error happened', () => {
+        syncUserConfig = new SyncUserConfig();
+        syncUserConfig.setIndexSocketServerHost = jest.fn();
+        syncUserConfig.setReconnectSocketServerHost = jest.fn();
+        notificationCenter.emitKVChange(SOCKET.CONNECT_ERROR);
+
+        expect(syncUserConfig.setIndexSocketServerHost).toHaveBeenCalledWith(
+          '',
+        );
+        expect(
+          syncUserConfig.setReconnectSocketServerHost,
+        ).toHaveBeenCalledWith('');
       });
     });
 

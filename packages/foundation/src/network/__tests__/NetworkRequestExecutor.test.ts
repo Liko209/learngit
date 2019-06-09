@@ -8,22 +8,27 @@ import {
   IResponse,
 } from '../network';
 import { SERVER_ERROR_CODE } from '../Constants';
-import { HttpResponseBuilder } from '../client';
+import { HttpResponseBuilder, NetworkRequestBuilder } from '../client';
 
-function setupExecutor() {
-  return new NetworkRequestExecutor(getFakeRequest(), getFakeClient());
+function setupExecutor(request?: NetworkRequestBuilder) {
+  return new NetworkRequestExecutor(
+    request ? request : getFakeRequest(),
+    getFakeClient(),
+  );
 }
 
 describe('NetworkRequestExecutor', () => {
+  const fakeResponse = getFakeResponse();
   beforeEach(() => {
     jest.clearAllMocks();
+    fakeResponse.request = getFakeRequest();
   });
 
   describe('onSuccess', () => {
     it('should call callback', () => {
       const networkExecutor: NetworkRequestExecutor = setupExecutor();
       const spy = jest.spyOn(networkExecutor, '_callXApiResponseCallback');
-      networkExecutor.onSuccess(getFakeResponse());
+      networkExecutor.onSuccess(fakeResponse);
       expect(spy).toBeCalled();
       expect(networkExecutor.status).toEqual(
         NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION,
@@ -36,7 +41,7 @@ describe('NetworkRequestExecutor', () => {
       const networkExecutor: NetworkRequestExecutor = setupExecutor();
       networkExecutor.retryCount = 0;
       const spy = jest.spyOn(networkExecutor, '_callXApiResponseCallback');
-      networkExecutor.onFailure(getFakeResponse());
+      networkExecutor.onFailure(fakeResponse);
       expect(spy).toBeCalled();
       expect(networkExecutor.status).toEqual(
         NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION,
@@ -54,10 +59,9 @@ describe('NetworkRequestExecutor', () => {
       const spy502CB = jest
         .spyOn(networkExecutor, '_handle502XApiCompletionCallback')
         .mockImplementation(() => {});
-      const response = getFakeResponse();
-      response.status = RESPONSE_STATUS_CODE.BAD_GATEWAY;
-      response.statusText = NETWORK_FAIL_TEXT.BAD_GATEWAY;
-      networkExecutor.onFailure(response);
+      fakeResponse.status = RESPONSE_STATUS_CODE.BAD_GATEWAY;
+      fakeResponse.statusText = NETWORK_FAIL_TEXT.BAD_GATEWAY;
+      networkExecutor.onFailure(fakeResponse);
       expect(spy502CB).toBeCalled();
       expect(spyApiCB).toBeCalled();
       expect(networkExecutor.status).toEqual(
@@ -76,10 +80,9 @@ describe('NetworkRequestExecutor', () => {
       const spy503CB = jest
         .spyOn(networkExecutor, '_handle503XApiCompletionCallback')
         .mockImplementation(() => {});
-      const response = getFakeResponse();
-      response.status = RESPONSE_STATUS_CODE.SERVICE_UNAVAILABLE;
-      response.statusText = NETWORK_FAIL_TEXT.SERVICE_UNAVAILABLE;
-      networkExecutor.onFailure(response);
+      fakeResponse.status = RESPONSE_STATUS_CODE.SERVICE_UNAVAILABLE;
+      fakeResponse.statusText = NETWORK_FAIL_TEXT.SERVICE_UNAVAILABLE;
+      networkExecutor.onFailure(fakeResponse);
       expect(spy503CB).toBeCalled();
       expect(spyApiCB).toBeCalled();
       expect(networkExecutor.status).toEqual(
@@ -92,19 +95,17 @@ describe('NetworkRequestExecutor', () => {
       networkExecutor.status = NETWORK_REQUEST_EXECUTOR_STATUS.EXECUTING;
       networkExecutor.retryCount = 3;
       networkExecutor.retryCounter = 0;
-      const response = getFakeResponse();
-      response.status = RESPONSE_STATUS_CODE.NETWORK_ERROR;
+      fakeResponse.status = RESPONSE_STATUS_CODE.NETWORK_ERROR;
       const spy = jest.spyOn(networkExecutor, '_retry');
-      networkExecutor.onFailure(response);
+      networkExecutor.onFailure(fakeResponse);
       expect(spy).toBeCalled();
     });
 
     it('should remove oauth token when token is invalid', () => {
       const networkExecutor: NetworkRequestExecutor = setupExecutor();
       networkExecutor.status = NETWORK_REQUEST_EXECUTOR_STATUS.EXECUTING;
-      const oauthFailedResponse = getFakeResponse();
-      oauthFailedResponse.status = RESPONSE_STATUS_CODE.UNAUTHORIZED;
-      oauthFailedResponse.statusText = NETWORK_FAIL_TEXT.UNAUTHORIZED;
+      fakeResponse.status = RESPONSE_STATUS_CODE.UNAUTHORIZED;
+      fakeResponse.statusText = NETWORK_FAIL_TEXT.UNAUTHORIZED;
       const request = getFakeRequest();
       request.headers = {
         Authorization: '111',
@@ -114,7 +115,7 @@ describe('NetworkRequestExecutor', () => {
       };
       networkExecutor.request = request;
       networkExecutor.responseListener = responseListener;
-      networkExecutor.onFailure(oauthFailedResponse);
+      networkExecutor.onFailure(fakeResponse);
 
       expect(responseListener.onAccessTokenInvalid).toBeCalled();
       expect(request.headers.Authorization).toBeUndefined();
@@ -123,8 +124,9 @@ describe('NetworkRequestExecutor', () => {
 
   describe('getRequest', () => {
     it('should return the request', () => {
-      const networkExecutor: NetworkRequestExecutor = setupExecutor();
-      expect(networkExecutor.getRequest()).toEqual(getFakeRequest());
+      const request = getFakeRequest();
+      const networkExecutor: NetworkRequestExecutor = setupExecutor(request);
+      expect(networkExecutor.getRequest()).toEqual(request);
     });
   });
 
@@ -199,25 +201,50 @@ describe('NetworkRequestExecutor', () => {
       const networkExecutor: NetworkRequestExecutor = setupExecutor();
       networkExecutor.client.request = jest.fn();
       networkExecutor['_performNetworkRequest']();
+      networkExecutor['request'].startTime = 0;
+      const fakeRequest = getFakeRequest();
+      fakeRequest.startTime = 0;
       expect(networkExecutor.client.request).toBeCalledWith(
-        getFakeRequest(),
+        fakeRequest,
         networkExecutor,
       );
+    });
+
+    it('should _callXApiResponse when oauth token expired', () => {
+      const networkExecutor: NetworkRequestExecutor = setupExecutor();
+      networkExecutor.client.request = jest.fn();
+      networkExecutor['request'].startTime = 0;
+      networkExecutor['_requestDecoration'] = {
+        decorate: jest.fn().mockReturnValue(false),
+      } as any;
+      networkExecutor['_callXApiResponse'] = jest.fn();
+      const fakeRequest = getFakeRequest();
+      fakeRequest.startTime = 0;
+
+      networkExecutor['_performNetworkRequest']();
+      expect(networkExecutor['_callXApiResponse']).toBeCalledWith(
+        RESPONSE_STATUS_CODE.UNAUTHORIZED,
+        NETWORK_FAIL_TEXT.UNAUTHORIZED,
+      );
+      expect(networkExecutor.client.request).not.toBeCalled();
     });
 
     it('should decorate request when_requestDecoration is valid', () => {
       const networkExecutor: NetworkRequestExecutor = setupExecutor();
       networkExecutor.client.request = jest.fn();
       networkExecutor['_requestDecoration'] = {
-        decorate: jest.fn(),
+        decorate: jest.fn().mockReturnValue(true),
       };
       networkExecutor['_performNetworkRequest']();
+      networkExecutor['request'].startTime = 0;
+      const fakeRequest = getFakeRequest();
+      fakeRequest.startTime = 0;
       expect(networkExecutor.client.request).toBeCalledWith(
-        getFakeRequest(),
+        fakeRequest,
         networkExecutor,
       );
       expect(networkExecutor['_requestDecoration'].decorate).toBeCalledWith(
-        getFakeRequest(),
+        fakeRequest,
       );
     });
   });
@@ -262,6 +289,8 @@ describe('NetworkRequestExecutor', () => {
       jest.spyOn(networkExecutor, '_isCompletion').mockReturnValue(false);
       jest.spyOn(networkExecutor, '_callXApiResponseCallback');
       const mockErrorResponse = { status: 500, statusText: '' } as IResponse;
+      mockErrorResponse.request = getFakeRequest();
+      mockErrorResponse.request.startTime = 0;
       networkExecutor['onFailure'](mockErrorResponse);
       expect(networkExecutor['_callXApiResponseCallback']).toBeCalledWith(
         mockErrorResponse,
@@ -271,12 +300,11 @@ describe('NetworkRequestExecutor', () => {
 
   describe('_cancelClientRequest', () => {
     it('should call client.cancelRequest', () => {
-      const networkExecutor: NetworkRequestExecutor = setupExecutor();
+      const request = getFakeRequest();
+      const networkExecutor: NetworkRequestExecutor = setupExecutor(request);
       networkExecutor.client.cancelRequest = jest.fn();
       networkExecutor['_cancelClientRequest']();
-      expect(networkExecutor.client.cancelRequest).toBeCalledWith(
-        getFakeRequest(),
-      );
+      expect(networkExecutor.client.cancelRequest).toBeCalledWith(request);
     });
   });
 

@@ -32,10 +32,13 @@ type Props = {
   title: string;
   subtitle: string;
   footText: string;
+  cancelText: string;
+  updateText: string;
+  createText: string;
   onCancel: () => void;
   onUpdate: () => void;
   onCreate: () => void;
-  duplicateFiles: File[];
+  duplicateFileNames: (React.ReactChild | null | (React.ReactChild | null)[])[];
 };
 
 const NameList = styled.ul`
@@ -61,20 +64,23 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
     onCancel,
     onUpdate,
     onCreate,
-    duplicateFiles,
+    duplicateFileNames,
     title,
     subtitle,
     footText,
+    cancelText,
+    updateText,
+    createText,
   } = props;
-  const showDuplicateFiles = duplicateFiles.length > 0;
+  const showDuplicateFiles = duplicateFileNames.length > 0;
   if (showDuplicateFiles) {
     const content = (
       <Content data-test-automation-id="messageinput-duplicate-modal-title">
         {subtitle}
         <NameList>
-          {duplicateFiles.map((file: File, index: number) => (
-            <Item key={file.name}>
-              <FileName filename={file.name} />
+          {duplicateFileNames.map((fileName: string, index: number) => (
+            <Item key={index}>
+              <FileName>{fileName}</FileName>
             </Item>
           ))}
         </NameList>
@@ -90,7 +96,7 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
           autoFocus={true}
           data-test-automation-id="messageinput-duplicate-cancel-button"
         >
-          {'Cancel'}
+          {cancelText}
         </JuiButton>
         <JuiButton
           onClick={onUpdate}
@@ -99,7 +105,7 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
           autoFocus={true}
           data-test-automation-id="messageinput-duplicate-update-button"
         >
-          {'Update'}
+          {updateText}
         </JuiButton>
         <JuiButton
           onClick={onCreate}
@@ -108,7 +114,7 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
           autoFocus={true}
           data-test-automation-id="messageinput-duplicate-create-button"
         >
-          {'Create'}
+          {createText}
         </JuiButton>
       </Footer>
     );

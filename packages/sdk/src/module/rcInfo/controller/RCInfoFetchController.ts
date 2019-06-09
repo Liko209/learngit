@@ -23,17 +23,26 @@ import { RC_INFO } from '../../../service/eventKey';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { RCInfoService } from '../service';
 import { AccountService } from '../../account/service';
-import { SpecialNumberRuleModel } from '../types';
+import {
+  SpecialNumberRuleModel,
+  EForwardingNumberFeatureType,
+  ForwardingFlipNumberModel,
+} from '../types';
+import { AccountGlobalConfig } from 'sdk/module/account/config';
 
 const OLD_EXIST_SPECIAL_NUMBER_COUNTRY = 1; // in old version, we only store US special number
+const EXTENSION_PHONE_NUMBER_LIST_COUNT = 1000;
 
+import { RCInfoForwardingNumberController } from './RCInfoForwardingNumberController';
 class RCInfoFetchController {
   private _isRCInfoJobScheduled: boolean;
   private _shouldIgnoreFirstTime: boolean;
+  private _forwardingNumberController: RCInfoForwardingNumberController;
 
   constructor() {
     this._isRCInfoJobScheduled = false;
     this._shouldIgnoreFirstTime = false;
+    this._forwardingNumberController = new RCInfoForwardingNumberController();
   }
 
   private get rcInfoUserConfig() {
@@ -92,6 +101,11 @@ class RCInfoFetchController {
       this.scheduleRCInfoJob(
         JOB_KEY.FETCH_RC_ACCOUNT_SERVICE_INFO,
         this.requestAccountServiceInfo,
+        false,
+      );
+      this.scheduleRCInfoJob(
+        JOB_KEY.FETCH_FORWARDING_NUMBER,
+        this._getForwardingNumberController().requestForwardingNumbers,
         false,
       );
       this._isRCInfoJobScheduled = true;
@@ -159,9 +173,7 @@ class RCInfoFetchController {
   }
 
   private async _getCurrentCountryId() {
-    const userId = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig.getGlipUserId() as number;
+    const userId = AccountGlobalConfig.getUserDictionary() as number;
     const stationLocations = RCInfoGlobalConfig.getStationLocation();
     const stationLocation =
       stationLocations && stationLocations[userId.toString()];
@@ -181,7 +193,9 @@ class RCInfoFetchController {
   }
 
   requestExtensionPhoneNumberList = async (): Promise<void> => {
-    const extensionPhoneNumberList = await RCInfoApi.getExtensionPhoneNumberList();
+    const extensionPhoneNumberList = await RCInfoApi.getExtensionPhoneNumberList(
+      { perPage: EXTENSION_PHONE_NUMBER_LIST_COUNT },
+    );
     await this.rcInfoUserConfig.setExtensionPhoneNumberList(
       extensionPhoneNumberList,
     );
@@ -222,13 +236,20 @@ class RCInfoFetchController {
     return (await this.rcInfoUserConfig.getExtensionInfo()) || undefined;
   }
 
+  async getRCExtensionId(): Promise<number | undefined> {
+    const extensionInfo = await this.getRCExtensionInfo();
+    return extensionInfo && extensionInfo.id;
+  }
+
   async getRCRolePermissions(): Promise<RCRolePermissions | undefined> {
     return (await this.rcInfoUserConfig.getRolePermissions()) || undefined;
   }
 
   // this for DB special number compatibility, we can remove it after all user updated to 1.4
-  private _isISpecialServiceNumber(arg: any): arg is ISpecialServiceNumber {
-    return arg.uri && arg.records && arg.paging && arg.navigation;
+  private _isISpecialServiceNumber(model: any): model is ISpecialServiceNumber {
+    return (
+      model && model.uri && model.records && model.paging && model.navigation
+    );
   }
 
   async getSpecialNumberRule(): Promise<ISpecialServiceNumber | undefined> {
@@ -287,6 +308,21 @@ class RCInfoFetchController {
 
   async getAccountServiceInfo(): Promise<AccountServiceInfo | undefined> {
     return (await this.rcInfoUserConfig.getAccountServiceInfo()) || undefined;
+  }
+
+  async getForwardingFlipNumbers(
+    type: EForwardingNumberFeatureType,
+  ): Promise<ForwardingFlipNumberModel[]> {
+    return await this._getForwardingNumberController().getForwardingFlipNumbers(
+      type,
+    );
+  }
+
+  private _getForwardingNumberController() {
+    if (!this._forwardingNumberController) {
+      this._forwardingNumberController = new RCInfoForwardingNumberController();
+    }
+    return this._forwardingNumberController;
   }
 }
 

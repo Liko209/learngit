@@ -21,6 +21,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { GROUP_CAN_NOT_SHOWN_REASON } from 'sdk/module/group/constants';
 import i18nT from '@/utils/i18nT';
 import { getGlobalValue } from '@/store/utils/entities';
+import { getErrorType } from '@/common/catchError';
 import _ from 'lodash';
 
 const logger = mainLogger.tags('messageRouter Helper');
@@ -58,8 +59,9 @@ class GroupHandler {
     );
     try {
       await _profileService.reopenConversation(id);
-    } catch {
+    } catch (err) {
       history.replace('/messages/loading', {
+        errorType: getErrorType(err),
         params: { id },
         error: true,
       });
@@ -162,6 +164,12 @@ export class MessageRouterChangeHelper {
       dismissible: false,
     };
     switch (reason) {
+      case GROUP_CAN_NOT_SHOWN_REASON.NOT_AUTHORIZED:
+        Notification.flashToast({
+          message: 'people.prompt.conversationPrivate',
+          ...toastOpts,
+        });
+        break;
       case GROUP_CAN_NOT_SHOWN_REASON.ARCHIVED:
         Notification.flashToast({
           message: await i18nT('people.prompt.conversationArchived'),

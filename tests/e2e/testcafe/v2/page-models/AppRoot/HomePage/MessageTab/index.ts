@@ -79,16 +79,12 @@ class MoreMenu extends Entry {
     return this.getToggler('favToggler');
   }
 
-  get profile() {
-    return this.getEntry('Profile');
+  get markAsReadOrUnread(){
+    return this.getToggler('readOrUnreadConversation');
   }
 
   get close() {
-    return this.getComponent(MenuItem, this.self.find('li').withText('Close'));
-  }
-
-  async openProfile() {
-    return await this.t.click(this.profile.self);
+    return this.getComponent(MenuItem, this.self.find('*[data-test-automation-id="closeConversation"]'));
   }
 }
 
@@ -137,7 +133,7 @@ class ConversationEntry extends BaseWebComponent {
   }
 
   async shouldBeInvisible() {
-    await this.t.expect(this.isVisible).notOk();
+    await this.t.expect(this.exists).notOk();
   }
 
   get umi() {

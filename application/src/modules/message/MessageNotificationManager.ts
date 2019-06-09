@@ -4,7 +4,7 @@
  * Copyright Â© RingCentral. All rights reserved.
  */
 import { goToConversation } from '@/common/goToConversation';
-import { POST_TYPE } from './../../common/getPostType';
+import { POST_TYPE } from '../../common/getPostType';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { GLOBAL_KEYS } from '@/store/constants';
 import PersonModel from '@/store/models/Person';
@@ -24,7 +24,6 @@ import {
 } from '../notification/interface';
 import i18nT from '@/utils/i18nT';
 import { PersonService } from 'sdk/module/person';
-import { replaceAtMention } from './container/ConversationSheet/TextMessage/utils/handleAtMentionName';
 import GroupModel from '@/store/models/Group';
 import GroupService from 'sdk/module/group';
 import { PostService } from 'sdk/module/post';
@@ -33,16 +32,22 @@ import { IEntityChangeObserver } from 'sdk/framework/controller/types';
 import { mainLogger } from 'sdk';
 import { isFirefox, isWindows } from '@/common/isUserAgent';
 import { throttle } from 'lodash';
-import { Emoji } from './container/ConversationSheet/TextMessage/Emoji';
 import { Company } from 'sdk/module/company/entity';
 import CompanyModel from '../../store/models/Company';
-import { Markdown } from 'glipdown';
-import { glipdown2Html } from './container/ConversationSheet/TextMessage/utils/glipdown2Html';
+import { Remove_Markdown } from 'glipdown';
+import { postParser } from '@/common/postParser';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { MessageNotificationViewModel } from './MessageNotificationViewModel';
+
 const logger = mainLogger.tags('MessageNotificationManager');
 const NOTIFY_THROTTLE_FACTOR = 5000;
 export class MessageNotificationManager extends AbstractNotificationManager {
   protected _observer: IEntityChangeObserver;
   private _postService: PostService;
+  private _vmQueue: {
+    id: number;
+    vm: MessageNotificationViewModel;
+  }[] = [];
   constructor() {
     super('message');
     this._observer = {
@@ -65,75 +70,76 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     const postId = post.id;
     logger.info(`prepare notification for ${postId}`);
 
-    if (post.deactivated) {
-      this.handleDeletedPost(postId);
-    }
-
     const result = await this.shouldEmitNotification(post);
 
     if (!result) {
       return;
     }
     const { postModel, groupModel } = result;
+    this.enqueueVM(postModel, groupModel);
+  }
+  enqueueVM(postModel: PostModel, groupModel: GroupModel) {
+    const id = postModel.id;
+    const MAX_SIZE = 50;
+    const vm = new MessageNotificationViewModel(id, {
+      onCreate: () => this.buildNotification(postModel, groupModel),
+      onUpdate: (id: number) => {
+        const postModel = getEntity<Post, PostModel>(ENTITY_NAME.POST, id);
+        this.buildNotification(postModel, groupModel);
+      },
+      onDispose: () => {
+        this.close(id);
+        this._vmQueue = this._vmQueue.filter(i => i.id !== id);
+      },
+    });
 
+    if (this._vmQueue.length >= MAX_SIZE) {
+      this._vmQueue[MAX_SIZE - 1].vm.dispose();
+      delete this._vmQueue[MAX_SIZE - 1];
+      this._vmQueue.length = MAX_SIZE - 1;
+    }
+    this._vmQueue.unshift({ id, vm });
+  }
+
+  async buildNotification(postModel: PostModel, groupModel: GroupModel) {
     const person = getEntity<Person, PersonModel>(
       ENTITY_NAME.PERSON,
       postModel.creatorId,
     );
-
     const { title, body } = await this.buildNotificationBodyAndTitle(
       postModel,
       person,
       groupModel,
     );
-
-    const { members, isTeam } = groupModel;
-
-    const opts: NotificationOpts = {
-      body,
-      renotify: false,
-      icon: this.getIcon(person, members.length, isTeam),
-      data: {
-        id: postId,
-        scope: this._scope,
-        priority: NOTIFICATION_PRIORITY.MESSAGE,
+    const opts = Object.assign(
+      {
+        body,
       },
-      onClick: this.onClickHandlerBuilder(postModel.groupId, postId),
-    };
-
+      await this.buildNotificationOption(postModel, groupModel, person),
+    );
     this.show(title, opts);
   }
 
-  handleDeletedPost(postId: number) {
-    this.close(postId);
+  async buildNotificationOption(
+    postModel: PostModel,
+    groupModel: GroupModel,
+    person: PersonModel,
+  ) {
+    const { members, isTeam } = groupModel;
+    const opts: NotificationOpts = {
+      renotify: false,
+      icon: this.getIcon(person, members.length, isTeam),
+      data: {
+        id: postModel.id,
+        scope: this._scope,
+        priority: NOTIFICATION_PRIORITY.MESSAGE,
+      },
+      onClick: this.onClickHandlerBuilder(postModel.groupId, postModel.id),
+    };
+    return opts;
   }
 
   async shouldEmitNotification(post: Post) {
-    if (post.id <= 0) {
-      logger.info(
-        `notification for ${
-          post.id
-        } is not permitted because post is from local instead of service`,
-      );
-      return false;
-    }
-    if (!post || post.deactivated) {
-      logger.info(
-        `notification for ${
-          post.id
-        } is not permitted because post does not exist or has been deleted`,
-      );
-      return false;
-    }
-    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-    if (post.creator_id === currentUserId) {
-      logger.info(
-        `notification for ${
-          post.id
-        } is not permitted because post is created by current user`,
-      );
-      return false;
-    }
     const activityData = post.activity_data || {};
     const isPostType =
       !activityData.key || getPostType(activityData.key) === POST_TYPE.POST;
@@ -178,6 +184,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       goToConversation({ jumpToPostId, conversationId: groupId });
     };
   }
+
   async buildNotificationBodyAndTitle(
     post: PostModel,
     person: PersonModel,
@@ -193,25 +200,35 @@ export class MessageNotificationManager extends AbstractNotificationManager {
         title = await i18nT('notification.mentioned');
         body = group.displayName;
       } else {
-        body = replaceAtMention(Markdown(post.text), (_, id, name) => name);
-        body = glipdown2Html(this.handleEmoji(body));
+        body = this.handlePostContent(post.text);
       }
     }
     return { body, title };
   }
-  handleEmoji(body: string): string {
+
+  handlePostContent(text: string) {
+    const _text = Remove_Markdown(text, { dont_escape: true });
     const staticServer = getGlobalValue(GLOBAL_KEYS.STATIC_HTTP_SERVER);
     const currentCompanyId = getGlobalValue(GLOBAL_KEYS.CURRENT_COMPANY_ID);
-    if (currentCompanyId <= 0) {
-      return body;
-    }
     const company =
-      getEntity<Company, CompanyModel>(ENTITY_NAME.COMPANY, currentCompanyId) ||
+      (currentCompanyId &&
+        getEntity<Company, CompanyModel>(
+          ENTITY_NAME.COMPANY,
+          currentCompanyId,
+        )) ||
       {};
-    const { text } = new Emoji(body, staticServer, company.customEmoji, {
-      unicodeOnly: true,
+    const parsedResult = postParser(_text, {
+      atMentions: {
+        customReplaceFunc: (match, id, name) => name,
+      },
+      emoji: {
+        hostName: staticServer,
+        customEmojiMap: company.customEmoji,
+        unicodeOnly: true,
+      },
     });
-    return text;
+
+    return renderToStaticMarkup(parsedResult as React.ReactElement);
   }
 
   isMyselfAtMentioned(post: PostModel) {

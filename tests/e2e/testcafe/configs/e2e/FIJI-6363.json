@@ -1,0 +1,14 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/LeftNav/NavigationPanel.ts"
+    ],
+    "include_tags": [
+      "JPT-16",
+      "JPT-17"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

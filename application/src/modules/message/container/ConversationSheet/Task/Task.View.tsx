@@ -3,7 +3,7 @@
  * @Date: 2018-11-08 19:18:07
  * Copyright © RingCentral. All rights reserved.
  */
-import * as React from 'react';
+import React from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
@@ -13,18 +13,24 @@ import {
   JuiTaskSectionOrDescription,
   JuiTaskAvatarNames,
   JuiTimeMessage,
+  JuiSectionDivider,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 import {
   JuiFileWithExpand,
   JuiExpandImage,
   JuiFileWrapper,
 } from 'jui/pattern/ConversationCard/Files';
-import { showImageViewer } from '@/containers/Viewer';
+import { showImageViewer } from '@/modules/viewer/container/Viewer';
 
 import { AvatarName } from './AvatarName';
 import { ViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
 import { Download } from '@/containers/common/Download';
+import {
+  postParser,
+  HighlightContextInfo,
+  SearchHighlightContext,
+} from '@/common/postParser';
 
 type taskViewProps = WithTranslation & ViewProps;
 
@@ -32,6 +38,7 @@ const FILE_COMPS = {
   [FileType.image]: (
     file: ExtendFileItem,
     props: taskViewProps,
+    keyword: string,
     handleImageClick: (
       groupId: number,
       id: number,
@@ -53,13 +60,17 @@ const FILE_COMPS = {
       deactivated,
       type,
     } = item;
+
     return (
       !deactivated && (
         <JuiExpandImage
           icon={getFileIcon(type)}
           key={id}
           previewUrl={previewUrl}
-          fileName={name}
+          fileName={postParser(name, {
+            keyword,
+            fileName: true,
+          })}
           i18UnfoldLess={t('common.collapse')}
           i18UnfoldMore={t('common.expand')}
           defaultExpansionStatus={initialExpansionStatus}
@@ -71,13 +82,17 @@ const FILE_COMPS = {
             origHeight,
           )}
           Actions={<Download url={downloadUrl} />}
-          ImageActions={<Download url={downloadUrl} />}
+          ImageActions={<Download url={downloadUrl} key="downloadAction" />}
           onSwitchExpand={switchExpandHandler}
         />
       )
     );
   },
-  [FileType.others]: (file: ExtendFileItem) => {
+  [FileType.others]: (
+    file: ExtendFileItem,
+    props: taskViewProps,
+    keyword: string,
+  ) => {
     const { item } = file;
     const { name, downloadUrl, id, deactivated, type } = item;
     return (
@@ -85,7 +100,10 @@ const FILE_COMPS = {
         <JuiFileWithExpand
           icon={getFileIcon(type)}
           key={id}
-          fileName={name}
+          fileName={postParser(name, {
+            keyword,
+            fileName: true,
+          })}
           Actions={<Download url={downloadUrl} />}
         />
       )
@@ -95,6 +113,8 @@ const FILE_COMPS = {
 
 @observer
 class Task extends React.Component<taskViewProps> {
+  static contextType = SearchHighlightContext;
+  context: HighlightContextInfo;
   private get _taskAvatarNames() {
     const { effectiveIds } = this.props;
 
@@ -155,61 +175,82 @@ class Task extends React.Component<taskViewProps> {
       switchExpandHandler,
     } = this.props;
     const { text, complete } = task;
+    const hasContent =
+      endTime.get() ||
+      (effectiveIds && effectiveIds.length > 0) ||
+      section ||
+      notes ||
+      (files && files.length > 0);
     return (
       <JuiConversationItemCard
         complete={complete}
-        title={this._getTitleText(text)}
-        titleColor={color}
+        title={postParser(this._getTitleText(text), {
+          keyword: this.context.keyword,
+        })}
+        contentHasPadding={!!hasContent}
         Icon={
           <JuiTaskCheckbox customColor={color} checked={complete || false} />}
       >
-        {endTime.get() && (
-          <JuiLabelWithContent label={t('item.due')}>
-            <JuiTimeMessage
-              time={`${startTime.get()} ${
-                hasTime ? '-' : ''
-              } ${endTime.get()} ${timeText.get()}`}
-            />
-          </JuiLabelWithContent>
-        )}
+        <JuiSectionDivider gap={2}>
+          {endTime.get() && (
+            <JuiLabelWithContent label={t('item.due')}>
+              <JuiTimeMessage
+                time={`${startTime.get()} ${
+                  hasTime ? '-' : ''
+                } ${endTime.get()} ${timeText.get()}`}
+              />
+            </JuiLabelWithContent>
+          )}
 
-        {effectiveIds && effectiveIds.length > 0 && (
-          <JuiLabelWithContent label={t('item.assignee')}>
-            <JuiTaskAvatarNames
-              count={effectiveIds && effectiveIds.length}
-              otherText={t('item.avatarNamesWithOthers', {
-                count: effectiveIds.length - 2,
-              })}
-            >
-              {this._taskAvatarNames}
-            </JuiTaskAvatarNames>
-          </JuiLabelWithContent>
-        )}
-        {section && (
-          <JuiLabelWithContent label={t('item.section')}>
-            <JuiTaskSectionOrDescription text={section} />
-          </JuiLabelWithContent>
-        )}
-        {notes && (
-          <JuiLabelWithContent label={t('item.descriptionNotes')}>
-            <JuiTaskSectionOrDescription text={notes} />
-          </JuiLabelWithContent>
-        )}
-        {files && files.length > 0 && (
-          <JuiLabelWithContent label={t('item.attachments')}>
-            <JuiFileWrapper>
-              {files.map((file: ExtendFileItem) => {
-                return FILE_COMPS[file.type](
-                  file,
-                  this.props,
-                  this._handleImageClick,
-                  initialExpansionStatus,
-                  switchExpandHandler,
-                );
-              })}
-            </JuiFileWrapper>
-          </JuiLabelWithContent>
-        )}
+          {effectiveIds && effectiveIds.length > 0 && (
+            <JuiLabelWithContent label={t('item.assignee')}>
+              <JuiTaskAvatarNames
+                count={effectiveIds && effectiveIds.length}
+                otherText={t('item.avatarNamesWithOthers', {
+                  count: effectiveIds.length - 2,
+                })}
+              >
+                {this._taskAvatarNames}
+              </JuiTaskAvatarNames>
+            </JuiLabelWithContent>
+          )}
+          {section && (
+            <JuiLabelWithContent label={t('item.section')}>
+              <JuiTaskSectionOrDescription data-test-automation-id="task-section">
+                {postParser(section, {
+                  keyword: this.context.keyword,
+                })}
+              </JuiTaskSectionOrDescription>
+            </JuiLabelWithContent>
+          )}
+          {notes && (
+            <JuiLabelWithContent label={t('item.descriptionNotes')}>
+              <JuiTaskSectionOrDescription data-test-automation-id="task-description">
+                {postParser(notes, {
+                  keyword: this.context.keyword,
+                  phoneNumber: true,
+                  url: true,
+                })}
+              </JuiTaskSectionOrDescription>
+            </JuiLabelWithContent>
+          )}
+          {files && files.length > 0 && (
+            <JuiLabelWithContent label={t('item.attachments')}>
+              <JuiFileWrapper data-test-automation-id="task-attachments">
+                {files.map((file: ExtendFileItem) => {
+                  return FILE_COMPS[file.type](
+                    file,
+                    this.props,
+                    this.context.keyword,
+                    this._handleImageClick,
+                    initialExpansionStatus,
+                    switchExpandHandler,
+                  );
+                })}
+              </JuiFileWrapper>
+            </JuiLabelWithContent>
+          )}
+        </JuiSectionDivider>
       </JuiConversationItemCard>
     );
   }

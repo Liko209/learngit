@@ -114,11 +114,15 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentList', () => {
 });
 
 storiesOf('Pattern/MessageInput', module).add('JuiDuplicateAlert', () => {
-  const f2 = 'f2.txt';
-  const f1 = 'f1.txt';
-  const f3 =
-    'This is the name of attachment itemThis is the name of attachment item.txtsdfsdfdsfsdfdsfsfsdfsdfsdfsdfsdf';
-  const files = [{ name: f1 }, { name: f2 }, { name: f3 }];
+  const f2 = <span>f2.txt</span>;
+  const f1 = <span>f1.txt</span>;
+  const f3 = (
+    <span>
+      This is the name of attachment itemThis is the name of attachment
+      item.txtsdfsdfdsfsdfdsfsfsdfsdfsdfsdfsdf
+    </span>
+  );
+  const files = [f1, f2, f3];
   const array = Array(18)
     .fill(files)
     .flat();
@@ -129,10 +133,13 @@ storiesOf('Pattern/MessageInput', module).add('JuiDuplicateAlert', () => {
         title="Update Files?"
         subtitle="The following files already exist."
         footText="Do you want to update the existing files or do you wish to create new files?"
-        duplicateFiles={array}
+        duplicateFileNames={array}
         onCancel={() => callback('cancel')}
         onCreate={() => callback('create')}
         onUpdate={() => callback('update')}
+        cancelText="Cancel"
+        updateText="Update"
+        createText="Create"
       />
     </div>
   );

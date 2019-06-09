@@ -33,6 +33,7 @@ export class RcPlatformSdk {
 
   constructor(key, secret, url, private credential: ICredential) {
     this.sdk = new Ringcentral(key, secret, url);
+    MiscUtils.addDebugLog(this.sdk._axios, 'rc');
   }
 
   get token() {
@@ -219,12 +220,12 @@ export class RcPlatformSdk {
     return await this.createGroup(data).then(res => res.data.id);
   }
 
-  async sentAndGetTextPostId(text: string, groupId: string) {
+  async sentAndGetTextPostId(text: string, groupId: string): Promise<string> {
     return await this.sendTextPost(text, groupId).then(res => res.data.id);
   }
 
   /** phone number */
-  async getExtensionPhoneNumberList(){
+  async getExtensionPhoneNumberList() {
     const url = `/restapi/v1.0/account/~/extension/~/phone-number`;
     return await this.retryRequestOnException(async () => {
       return await this.sdk.get(url);

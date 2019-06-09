@@ -26,6 +26,9 @@ const ServiceConfig = {
   ITEM_SERVICE: 'ItemService',
   SETTING_SERVICE: 'SettingService',
   PHONE_NUMBER_SERVICE: 'PhoneNumberService',
+  BADGE_SERVICE: 'BadgeService',
+  CALL_LOG_SERVICE: 'CallLogService',
+  VOICEMAIL_SERVICE: 'VoicemailService',
 };
 
 export { ServiceConfig };

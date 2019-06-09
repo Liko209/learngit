@@ -1,8 +1,8 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-04-19 12:16:25
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-19 14:34:32
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2019-06-06 13:48:00
  */
 
 
@@ -144,6 +144,7 @@ test.meta(<ITestMeta>{
 
   // inbound call
   await h(t).withLog('When I close hangup the call', async () => {
+
     await telephonyDialog.clickHangupButton();
     await telephonyDialog.ensureDismiss();
   });

@@ -10,12 +10,16 @@ import { LogControlManager } from 'sdk/service/uploadLogControl/LogControlManage
 import { getAppContextInfo } from '@/utils/error';
 import * as Sentry from '@sentry/browser';
 import { FeedbackApi } from '../../FeedbackApi';
+import { AccountService } from 'sdk/module/account';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { DateFormatter, SessionManager } from 'sdk';
+
 jest.mock('@/utils/error');
 jest.mock('../../FeedbackApi');
 jest.mock('@sentry/browser');
 jest.mock('sdk/service/uploadLogControl/LogControlManager', () => {
   const mockLogMng = {
-    getZipLog: jest.fn(),
+    getZipLog: jest.fn().mockReturnValue([]),
   };
   const mock = {
     instance: () => mockLogMng,
@@ -42,6 +46,19 @@ jest.mock('jszip', () => {
 });
 
 describe('FeedbackService', () => {
+  beforeAll(() => {
+    const mockAccountService = ({
+      userConfig: {
+        getGlipUserId: jest.fn().mockReturnValue(1),
+      },
+    } as any) as AccountService;
+    const mockSessionManager = ({
+      getSession: jest.fn().mockReturnValue('MOCK_SESSION_ID'),
+    } as any) as SessionManager;
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(mockAccountService);
+    DateFormatter.formatDate = jest.fn().mockReturnValue('MOCK_TIME');
+    SessionManager.getInstance = jest.fn().mockReturnValue(mockSessionManager);
+  });
   describe('uploadRecentLogs()', () => {
     it('should zip logs', async () => {
       const feedbackService = new FeedbackService();
@@ -71,6 +88,33 @@ describe('FeedbackService', () => {
         email: 'email',
         name: 'username',
       });
+    });
+  });
+  describe('zipRecentLogs()', () => {
+    it('should get [zipName, zipBlob]', async () => {
+      const zipBlob = new Blob(['hi']);
+      LogControlManager.instance().getZipLog.mockReturnValue(zipBlob);
+      const feedbackService = new FeedbackService();
+      const zipResult = await feedbackService.zipRecentLogs();
+      expect(zipBlob).toEqual(zipResult.zipBlob);
+    });
+    it('should zip name format RC_LOG_{UID}_{SESSION_ID}_{CURRENT_TIME}.zip', async () => {
+      DateFormatter.formatDate.mockReturnValue('MOCK_TIME');
+      (SessionManager.getInstance().getSession as jest.Mock).mockReturnValue(
+        'MOCK_SESSION_ID',
+      );
+      const zipBlob = new Blob(['hi']);
+      LogControlManager.instance().getZipLog.mockReturnValue(zipBlob);
+      const feedbackService = new FeedbackService();
+      const zipResult = await feedbackService.zipRecentLogs();
+      const { uid, sessionId, currentTime } = {
+        uid: 1,
+        sessionId: 'MOCK_SESSION_ID',
+        currentTime: 'MOCK_TIME',
+      };
+      expect(`RC_LOG_${uid}_${sessionId}_${currentTime}.zip`).toEqual(
+        zipResult.zipName,
+      );
     });
   });
 });

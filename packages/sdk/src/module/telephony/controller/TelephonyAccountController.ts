@@ -31,7 +31,7 @@ import { ERCServiceFeaturePermission } from '../../rcInfo/types';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { TelephonyService } from '../service';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
-import { PhoneNumberAnonymous } from 'sdk/module/phoneNumber/types';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
   private _telephonyAccountDelegate: ITelephonyAccountDelegate;
@@ -143,15 +143,19 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       let makeCallResult: RTC_STATUS_CODE;
       if (fromNum) {
         let e164FromNum = fromNum;
-        if (fromNum !== PhoneNumberAnonymous) {
+        if (fromNum !== PhoneNumberType.PhoneNumberAnonymous) {
           e164FromNum = await phoneNumberService.getE164PhoneNumber(fromNum);
         }
+        telephonyLogger.debug(
+          `Place a call voip toNum: ${e164ToNumber} fromNum: ${e164FromNum}`,
+        );
         makeCallResult = this._rtcAccount.makeCall(
           e164ToNumber,
           this._telephonyCallDelegate,
           { fromNumber: e164FromNum },
         );
       } else {
+        telephonyLogger.debug(`Place a call to voip toNum: ${e164ToNumber}`);
         makeCallResult = this._rtcAccount.makeCall(
           e164ToNumber,
           this._telephonyCallDelegate,
@@ -225,6 +229,26 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   sendToVoiceMail(callId: string) {
     this._telephonyCallDelegate &&
       this._telephonyCallDelegate.sendToVoiceMail();
+  }
+
+  async park(callId: string) {
+    return (
+      this._telephonyCallDelegate && (await this._telephonyCallDelegate.park())
+    );
+  }
+
+  async flip(callId: string, flipNumber: number) {
+    return (
+      this._telephonyCallDelegate &&
+      (await this._telephonyCallDelegate.flip(flipNumber))
+    );
+  }
+
+  async forward(callId: string, phoneNumber: string) {
+    return (
+      this._telephonyCallDelegate &&
+      (await this._telephonyCallDelegate.forward(phoneNumber))
+    );
   }
 
   ignore(callId: string) {

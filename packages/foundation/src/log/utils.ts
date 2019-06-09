@@ -12,6 +12,8 @@ function sleep(timeout: number) {
 
 enum TYPES {
   String = '[object String]',
+  Boolean = '[object Boolean]',
+  Number = '[object Number]',
   Object = '[object Object]',
   Function = '[object Function]',
   Undefined = '[object Undefined]',
@@ -37,6 +39,12 @@ const PARSER_MAP: { [key in TYPES]: (item: any) => string } = {
   },
   '[object Null]': (item: null) => {
     return 'null';
+  },
+  '[object Boolean]': (item: boolean) => {
+    return String(item);
+  },
+  '[object Number]': (item: number) => {
+    return String(item);
   },
 };
 

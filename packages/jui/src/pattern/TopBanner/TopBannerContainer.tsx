@@ -7,6 +7,10 @@ import styled from '../../foundation/styled-components';
 const JuiTopBannerContainer = styled.div`
   position: relative;
   overflow: hidden;
+
+  > :not(:first-child) {
+    display: none;
+  }
 `;
 
 export { JuiTopBannerContainer };

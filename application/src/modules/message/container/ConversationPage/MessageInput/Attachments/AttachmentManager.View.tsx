@@ -10,6 +10,7 @@ import { observer } from 'mobx-react';
 import { AttachmentsViewProps } from './types';
 import { JuiDuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
 import { extractView } from 'jui/hoc/extractView';
+import { postParser } from '@/common/postParser';
 
 @observer
 class AttachmentManagerViewComponent extends Component<
@@ -25,10 +26,15 @@ class AttachmentManagerViewComponent extends Component<
           footText={t(
             'item.wouldYouLikeToUpdateTheExistingFileOrCreateANewOne',
           )}
-          duplicateFiles={duplicateFiles}
+          duplicateFileNames={duplicateFiles.map(({ name }) =>
+            postParser(name, { fileName: true }),
+          )}
           onCancel={this.props.cancelDuplicateFiles}
           onCreate={this.props.uploadDuplicateFiles}
           onUpdate={this.props.updateDuplicateFiles}
+          cancelText={t('common.dialog.cancel')}
+          updateText={t('common.dialog.update')}
+          createText={t('common.dialog.create')}
         />
       );
     }

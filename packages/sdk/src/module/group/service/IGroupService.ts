@@ -11,6 +11,7 @@ import {
   GroupCanBeShownResponse,
 } from '../types';
 import { SYNC_SOURCE } from '../../../module/sync/types';
+import { Post } from 'sdk/module/post/entity';
 
 interface IGroupService {
   isValid(group: Group): boolean;
@@ -93,7 +94,7 @@ interface IGroupService {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null>;
+  }>;
 
   doFuzzySearchTeams(
     searchKey?: string,
@@ -101,7 +102,7 @@ interface IGroupService {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null>;
+  }>;
 
   getGroupEmail(groupId: number): Promise<string>;
 
@@ -130,6 +131,10 @@ interface IGroupService {
   getEntities(): Promise<Group[]>;
 
   getSoundexById(id: number): string[];
+
+  getTeamIdsIncludeMe(): Set<number>;
+
+  handleGroupFetchedPosts(groupId: number, posts: Post[]): void;
 }
 
 export { IGroupService };

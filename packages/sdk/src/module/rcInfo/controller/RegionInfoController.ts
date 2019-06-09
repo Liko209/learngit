@@ -13,14 +13,18 @@ import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { RCInfoFetchController } from './RCInfoFetchController';
 import { RCAccountInfoController } from './RCAccountInfoController';
 import { RCCallerIdController } from './RCCallerIdController';
-import { SELLING_COUNTRY_LIST, SUPPORT_AREA_CODE_COUNTRIES } from './constants';
+import {
+  SELLING_COUNTRY_LIST,
+  SUPPORT_AREA_CODE_COUNTRIES,
+  RC_BRAND_NAME_TO_BRAND_ID,
+} from './constants';
 import {
   RCBrandType,
   StationLocationSetting,
   GlobalStationLocationSetting,
   RegionInfo,
 } from '../types';
-import { PhoneNumberType } from 'sdk/module/phoneNumber/types';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 import { AccountServiceInfoController } from './AccountServiceInfoController';
 import { mainLogger } from 'foundation';
 import { notificationCenter, RC_INFO, SERVICE } from 'sdk/service';
@@ -41,7 +45,7 @@ const DefaultCountryInfo = {
   isoCode: 'US',
   callingCode: '1',
 };
-const DefaultBrandId = '1210';
+const DefaultBrandId = RC_BRAND_NAME_TO_BRAND_ID.RC;
 
 class RegionInfoController {
   private _currentCountryInfo: DialingCountryInfo;
@@ -135,7 +139,7 @@ class RegionInfoController {
   }
 
   async getAreaCode() {
-    return PhoneParserUtility.getStationAreaCode() || '';
+    return (await PhoneParserUtility.getStationAreaCode()) || '';
   }
 
   hasAreaCode(countryCallingCode: string) {
@@ -272,7 +276,7 @@ class RegionInfoController {
       .info('setStationLocation', { brandId, countryInfo, areaCode });
 
     try {
-      PhoneParserUtility.setStationLocation({
+      await PhoneParserUtility.setStationLocation({
         siteCode,
         outboundCallPrefix,
         brandId: _.toInteger(brandId),

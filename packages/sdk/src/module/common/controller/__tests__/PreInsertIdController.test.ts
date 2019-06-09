@@ -45,30 +45,55 @@ describe('PreInsertIdController()', () => {
   describe('insert()', () => {
     it('should have data after insert ids', async () => {
       const controller = getController();
-      await controller.insert(10);
+      await controller.insert('10');
       const all = controller.getAll();
-      expect(all).toEqual([10]);
+      expect(all).toEqual(['10']);
     });
   });
 
   describe('delete()', () => {
     it('should remove id from the map when it is existed in map', async () => {
       const controller = getController();
-      await controller.insert(10);
+      await controller.insert('10');
       let all = controller.getAll();
-      expect(all).toEqual([10]);
-      await controller.delete(10);
+      expect(all).toEqual(['10']);
+      await controller.delete('10');
       all = controller.getAll();
       expect(all).toEqual([]);
     });
+
     it('should do nothing when it is not existed in map', async () => {
       const controller = getController();
-      await controller.insert(10);
+      await controller.insert('10');
       let all = controller.getAll();
-      expect(all).toEqual([10]);
-      await controller.delete(11);
+      expect(all).toEqual(['10']);
+      await controller.delete('11');
       all = controller.getAll();
-      expect(all).toEqual([10]);
+      expect(all).toEqual(['10']);
+    });
+  });
+
+  describe('bulkDelete()', () => {
+    it('should remove ids from the map when it is existed in map', async () => {
+      const controller = getController();
+      await controller.insert('10');
+      await controller.insert('11');
+      let all = controller.getAll();
+      expect(all).toEqual(['10', '11']);
+      await controller.bulkDelete(['10']);
+      all = controller.getAll();
+      expect(all).toEqual(['11']);
+    });
+
+    it('should do nothing when ids not existed in map', async () => {
+      const controller = getController();
+      await controller.insert('10');
+      await controller.insert('12');
+      let all = controller.getAll();
+      expect(all).toEqual(['10', '12']);
+      await controller.bulkDelete(['11']);
+      all = controller.getAll();
+      expect(all).toEqual(['10', '12']);
     });
   });
 });

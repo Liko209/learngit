@@ -1,0 +1,16 @@
+# node
+node_modules
+.env
+# auto generate file
+reports
+targets
+
+# Mac
+.DS_Store
+
+# vs code
+.vscode
+
+benchmark.json
+.testcafe-electron-rc
+capabilities.json

@@ -61,60 +61,60 @@ describe('activityViewModel', () => {
     expect(activityViewModel._activityData).toEqual({
       [TypeDictionary.TYPE_ID_EVENT]: {
         parameter: {
-          verb: 'item.activity.created',
-          noun: 'item.activity.event',
+          verb: 'created',
+          noun: 'event',
         },
-        key: 'item.activity.verb-article-noun',
+        key: 'item.activity.created a event',
       },
       [TypeDictionary.TYPE_ID_TASK]: {
         parameter: {
-          verb: 'item.activity.created',
-          noun: 'item.activity.task',
+          verb: 'created',
+          noun: 'task',
         },
-        key: 'item.activity.verb-article-noun',
+        key: 'item.activity.created a task',
       },
       [TypeDictionary.TYPE_ID_CODE]: {
         parameter: {
-          verb: 'item.activity.shared',
-          noun: 'item.activity.snippet',
+          verb: 'shared',
+          noun: 'snippet',
         },
-        key: 'item.activity.verb-article-noun',
+        key: 'item.activity.shared a snippet',
       },
       [TypeDictionary.TYPE_ID_LINK]: {
         parameter: {
-          verb: 'item.activity.shared',
-          noun: 'item.activity.link',
+          verb: 'shared',
+          noun: 'link',
         },
-        key: 'item.activity.verb-article-noun',
+        key: 'item.activity.shared a link',
       },
       [TypeDictionary.TYPE_ID_RC_VIDEO]: {
         parameter: {
-          verb: 'item.activity.started',
-          noun: 'item.activity.video chat',
+          verb: 'started',
+          noun: 'video chat',
         },
-        key: 'item.activity.verb-article-noun',
+        key: 'item.activity.started a video chat',
       },
       [TypeDictionary.TYPE_ID_CONFERENCE]: {
         parameter: {
-          verb: 'item.activity.started',
-          noun: 'item.activity.audio conference',
+          verb: 'started',
+          noun: 'audio conference',
         },
-        key: 'item.activity.verb-article-noun',
+        key: 'item.activity.started a audio conference',
       },
       [TypeDictionary.TYPE_ID_FILE]: {
         parameter: {
-          count: 2,
-          verb: 'item.activity.uploaded',
-          noun: 'item.activity.version',
+          number: 2,
+          verb: 'uploaded',
+          noun: 'version',
         },
-        key: 'item.activity.verb-noun-numerals',
+        key: 'item.activity.uploaded version {{number}}',
       },
       [TypeDictionary.TYPE_ID_PAGE]: {
         parameter: {
-          verb: 'item.activity.shared',
-          noun: 'item.activity.note',
+          verb: 'shared',
+          noun: 'note',
         },
-        key: 'item.activity.verb-article-noun',
+        key: 'item.activity.shared a note',
       },
     });
   });
@@ -124,7 +124,7 @@ describe('activityViewModel', () => {
     mockPostEntityData.source = '';
     mockPostEntityData.parentId = parentId;
     expect(activityViewModel.activity).toEqual({
-      key: 'item.activity.replied',
+      key: 'replied',
     });
 
     mockPostEntityData.source = '';
@@ -140,11 +140,11 @@ describe('activityViewModel', () => {
     mockPostEntityData.itemData = itemData;
     expect(activityViewModel.activity).toEqual({
       parameter: {
-        count: 2,
-        verb: 'item.activity.uploaded',
-        noun: 'item.activity.version',
+        number: 2,
+        verb: 'uploaded',
+        noun: 'version',
       },
-      key: 'item.activity.verb-noun-numerals',
+      key: 'item.activity.uploaded version {{number}}',
     });
     mockPostEntityData.itemTypeIds = {
       [TypeDictionary.TYPE_ID_PAGE]: [TypeDictionary.TYPE_ID_PAGE],
@@ -152,10 +152,10 @@ describe('activityViewModel', () => {
     };
     expect(activityViewModel.activity).toEqual({
       parameter: {
-        verb: 'item.activity.shared',
-        noun: 'item.activity.items',
+        verb: 'shared',
+        noun: 'items',
       },
-      key: 'item.activity.verb-noun',
+      key: 'item.activity.shared items',
     });
   });
 });

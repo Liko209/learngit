@@ -30,6 +30,7 @@ import { RULE } from '@/common/generateModifiedImageURL';
 import { UploadFileTracker } from './UploadFileTracker';
 import { getThumbnailURLWithType } from '@/common/getThumbnailURL';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { fileItemAvailable } from './helper';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
@@ -53,7 +54,12 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       notificationCenter.on(ENTITY.PROGRESS, this._handleItemChanged);
       UploadFileTracker.init();
     }
-    this.autorun(this.getCropImage);
+    this.autorun(() => {
+      const images = this.files[FileType.image];
+      if (images.length > 0) {
+        this.getCropImage();
+      }
+    });
   }
 
   isRecentlyUploaded = (id: number) => {
@@ -82,15 +88,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     { item }: ExtendFileItem,
     rule: RULE,
   ): Promise<string> => {
-    const thumbnail = await getThumbnailURLWithType(
-      {
-        id: item.id,
-        type: item.type,
-        versionUrl: item.versionUrl || '',
-        versions: item.versions,
-      },
-      rule,
-    );
+    const thumbnail = await getThumbnailURLWithType(item, rule);
     if (thumbnail.url) {
       this.urlMap.set(item.id, thumbnail.url);
     }
@@ -112,6 +110,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   }
 
   dispose = () => {
+    super.dispose();
     notificationCenter.off(ENTITY.PROGRESS, this._handleItemChanged);
   }
 
@@ -131,7 +130,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       if (!item) {
         return;
       }
-      if (item.deactivated || item.isMocked) {
+      if (!fileItemAvailable(item, this.post)) {
         return;
       }
       const file = getFileType(item);

@@ -2,7 +2,6 @@ import * as assert from 'assert';
 import { H } from '../../../../helpers';
 import { BaseWebComponent } from "../../../BaseWebComponent";
 
-
 export class RightRail extends BaseWebComponent {
   get self() {
     return this.getSelectorByAutomationId('rightRail');
@@ -10,12 +9,12 @@ export class RightRail extends BaseWebComponent {
 
   get expandStatusButton() {
     this.warnFlakySelector();
-    return this.getSelectorByIcon('chevron_right').parent('button[aria-label="Hide details"]');
+    return this.getSelectorByIcon('double_chevron_right').parent('button[aria-label="Hide details"]');
   }
 
   get foldStatusButton() {
     this.warnFlakySelector();
-    return this.getSelectorByIcon('chevron_left').parent('button[aria-label="Show details"]');
+    return this.getSelector('button[aria-label="Show details"]');
   }
 
   async expand() {
@@ -164,6 +163,10 @@ class BaseTab extends BaseWebComponent {
     return this.items.find('.list-item-secondary');
   }
 
+  get eventIcon() {
+    return this.getSelectorByIcon('event', this.items);
+  }
+
   async nthItemTitleShouldBe(n: number, title: string) {
     await this.t.expect(this.titles.nth(n).withText(title).exists).ok(
       `n: ${n} , title: ${title}`
@@ -172,6 +175,14 @@ class BaseTab extends BaseWebComponent {
 
   async shouldHasTitle(title: string) {
     await this.t.expect(this.titles.withText(title).exists).ok(title);
+  }
+
+  async shouldHasEventTime(text: string) {
+    await this.t.expect(this.secondaryTexts.withText(text).exists).ok(text);
+  }
+
+  async shouldHasEventIcon() {
+    await this.t.expect(this.eventIcon.exists).ok();
   }
 
   async shouldHasNoTitle(title: string) {
@@ -228,6 +239,11 @@ class NotesTab extends BaseTab {
   get items() {
     return this.getSelectorByAutomationId('rightRail-note-item');
   }
+
+  get secondaryText() {
+    return this.getSelectorByAutomationId('list-item-secondary-text', this.self);
+  }
+
 }
 
 class ImageAndFileItem extends BaseWebComponent {
@@ -241,6 +257,14 @@ class ImageAndFileItem extends BaseWebComponent {
 
   async nameShouldBe(name: string) {
     await this.t.expect(this.name.withText(name).exists).ok();
+  }
+
+  get more(){
+    return this.getSelectorByAutomationId('fileActionMore',this.self);
+  }
+  
+  async clickMore(){
+    await this.t.click(this.more);
   }
 
   get secondaryText() {
@@ -262,6 +286,7 @@ class ImageAndFileItem extends BaseWebComponent {
   get previewIcon() {
     return this.getSelectorByIcon('image_preview', this.self);
   }
+
 }
 
 class LinksTab extends BaseTab {

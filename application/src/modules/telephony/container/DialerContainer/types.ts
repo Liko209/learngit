@@ -1,3 +1,4 @@
+import { RefObject } from 'react';
 /*
  * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
  * @Date: 2019-03-06 15:43:50
@@ -8,15 +9,20 @@ interface ICallerPhoneNumber {
   phoneNumber: string;
   value: string;
   usageType: string;
+  label?: string;
 }
 
-type DialerContainerProps = {};
+type DialerContainerProps = {
+  dialerHeaderRef: RefObject<any>;
+};
 
 type DialerContainerViewProps = {
   keypadEntered: boolean;
   isDialer: boolean;
-  dtmf: (digit: string) => void;
-  typeString: (digit: string) => void;
+  isForward: boolean;
+  dtmfThroughKeypad: (digit: string) => void;
+  dtmfThroughKeyboard: (digit: string) => void;
+  clickToInput: (digit: string) => void;
   dialerInputFocused?: boolean;
   playAudio: (digit: string) => void;
   chosenCallerPhoneNumber: string;
@@ -24,6 +30,7 @@ type DialerContainerViewProps = {
   setCallerPhoneNumber: (val: string) => void;
   hasDialerOpened: boolean;
   onAfterDialerOpen: () => void;
+  dialerFocused: boolean;
 };
 
 type DialerContainerViewState = {

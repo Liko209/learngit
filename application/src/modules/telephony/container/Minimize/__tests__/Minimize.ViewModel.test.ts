@@ -10,18 +10,22 @@ import { MinimizeViewModel } from '../Minimize.ViewModel';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { GlobalConfigService } from 'sdk/module/config';
-import { AuthUserConfig } from 'sdk/module/account/config';
+import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
+import { ClientService } from '@/modules/common';
+import { CLIENT_SERVICE } from '@/modules/common/interface';
 
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
+decorate(injectable(), ClientService);
 
 GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('sdk/module/config');
-jest.mock('sdk/module/account/config');
+jest.mock('sdk/module/account/config/AuthUserConfig');
 
-container.bind(TELEPHONY_SERVICE).to(TelephonyService);
 container.bind(TelephonyStore).to(TelephonyStore);
+container.bind(TELEPHONY_SERVICE).to(TelephonyService);
+container.bind(CLIENT_SERVICE).to(ClientService);
 
 let minimizeViewModel: MinimizeViewModel;
 

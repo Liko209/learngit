@@ -46,9 +46,12 @@ test(formalName(`Leave team successful after clicking Leave button.`, ['P1', 'JP
     await app.homePage.ensureLoaded();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When I open team setting dialog via team profile entry on conversation list`, async () => {
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
   });
 
@@ -80,8 +83,9 @@ test(formalName(`Leave team successful after clicking Leave button.`, ['P1', 'JP
   });
 
   await h(t).withLog(`And the team member still in the team`, async () => {
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await t.expect(profileDialog.memberNames.withText(memberUserName).exists).ok();
   });
 
@@ -148,10 +152,12 @@ test(formalName(`The team information is updated when the member is left`, ['P1'
 
   const teamSettingDialog = app.homePage.teamSettingDialog;
   const leaveTeamDialog = app.homePage.leaveTeamDialog
+  const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When I open Leave Team confirmation and click "Leave" button`, async () => {
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
     await teamSettingDialog.clickLeaveTeamButton();
     await leaveTeamDialog.leave()
@@ -205,16 +211,19 @@ test(formalName(`Only team members are allowed to leave team`, ['P2', 'JPT-932',
     await app.homePage.ensureLoaded();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When team admin open team setting dialog via team profile entry on conversation list`, async () => {
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
   });
 
   const teamSettingDialog = app.homePage.teamSettingDialog;
   await h(t).withLog(`Then team admin can't see the 'Leave Team' option`, async () => {
     await teamSettingDialog.shouldBePopup();
-    await t.expect(teamSettingDialog.leaveTeamButton.visible).notOk();
+    await t.expect(teamSettingDialog.leaveTeamButton.exists).notOk();
     await teamSettingDialog.cancel();
   });
 
@@ -223,14 +232,15 @@ test(formalName(`Only team members are allowed to leave team`, ['P2', 'JPT-932',
   });
 
   await h(t).withLog(`When team member open team setting dialog via team profile entry on conversation list`, async () => {
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
   });
 
   await h(t).withLog(`Then team admin can see the 'Leave Team' option`, async () => {
     await teamSettingDialog.shouldBePopup();
-    await t.expect(teamSettingDialog.leaveTeamButton.visible).ok();
+    await t.expect(teamSettingDialog.leaveTeamButton.exists).ok();
   });
 
 });
@@ -259,18 +269,21 @@ test(formalName(`User should not be allowed to leave the all hands team`, ['P1',
 
   await h(t).withLog(`When all hands team receive new message and appear on the left rail`, async () => {
     await h(t).platform(otherUser).sendTextPost('test', teamId);
-  })
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When team member open team setting dialog via team profile entry on conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
   });
 
   const teamSettingDialog = app.homePage.teamSettingDialog;
   await h(t).withLog(`Then team member can't see the 'Leave Team' option`, async () => {
     await teamSettingDialog.shouldBePopup();
-    await t.expect(teamSettingDialog.leaveTeamButton.visible).notOk();
+    await t.expect(teamSettingDialog.leaveTeamButton.exists).notOk();
   });
 });
 

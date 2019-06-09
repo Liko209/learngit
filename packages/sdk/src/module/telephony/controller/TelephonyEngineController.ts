@@ -8,6 +8,7 @@ import {
   IRequest,
   ITelephonyDaoDelegate,
   telephonyLogger,
+  mainLogger,
 } from 'foundation';
 import { RTCEngine } from 'voip';
 import { Api } from '../../../api';
@@ -22,8 +23,10 @@ import { RCInfoService } from '../../rcInfo';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { PermissionService, UserPermissionType } from '../../permission';
 import { ENTITY } from 'sdk/service/eventKey';
-import { AuthUserConfig } from 'sdk/module/account/config';
 import { PlatformUtils } from 'sdk/utils/PlatformUtils';
+import { AccountService } from 'sdk/module/account';
+import _ from 'lodash';
+import { VoIPMediaDevicesDelegate } from './mediaDeviceDelegate/VoIPMediaDevicesDelegate';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -42,11 +45,7 @@ class VoIPNetworkClient implements ITelephonyNetworkDelegate {
 }
 
 class VoIPDaoClient implements ITelephonyDaoDelegate {
-  private _telephonyConfig: TelephonyUserConfig;
-
-  constructor() {
-    this._telephonyConfig = new TelephonyUserConfig();
-  }
+  constructor(private _telephonyConfig: TelephonyUserConfig) {}
   put(key: string, value: any): void {
     this._telephonyConfig.putConfig(key, value);
   }
@@ -60,17 +59,18 @@ class VoIPDaoClient implements ITelephonyDaoDelegate {
   }
 }
 
+const LOG_TAG = '[TelephonyEngineController]';
 class TelephonyEngineController {
   rtcEngine: RTCEngine;
   voipNetworkDelegate: VoIPNetworkClient;
   voipDaoDelegate: VoIPDaoClient;
+  mediaDevicesController: VoIPMediaDevicesDelegate;
   private _accountController: TelephonyAccountController;
   private _preCallingPermission: boolean = false;
 
-  constructor() {
+  constructor(public telephonyConfig: TelephonyUserConfig) {
     this.voipNetworkDelegate = new VoIPNetworkClient();
-    this.voipDaoDelegate = new VoIPDaoClient();
-
+    this.voipDaoDelegate = new VoIPDaoClient(telephonyConfig);
     this.subscribeNotifications();
   }
 
@@ -122,7 +122,9 @@ class TelephonyEngineController {
   }
 
   getEndpointId() {
-    const authConfig = new AuthUserConfig();
+    const authConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).authUserConfig;
     const rcToken = authConfig.getRCToken();
     return rcToken.endpoint_id;
   }
@@ -130,25 +132,42 @@ class TelephonyEngineController {
   initEngine() {
     RTCEngine.setLogger(new TelephonyLogController());
     this.rtcEngine = RTCEngine.getInstance();
+    this.mediaDevicesController = new VoIPMediaDevicesDelegate(this.rtcEngine);
     this.rtcEngine.setNetworkDelegate(this.voipNetworkDelegate);
     this.rtcEngine.setTelephonyDaoDelegate(this.voipDaoDelegate);
+    this.rtcEngine.setMediaDeviceDelegate(this.mediaDevicesController);
   }
 
-  createAccount(
+  async createAccount(
     accountDelegate: ITelephonyAccountDelegate,
     callDelegate: ITelephonyCallDelegate,
   ) {
     // Engine can hold multiple accounts for multiple calls
+    mainLogger.tags(LOG_TAG).info('createAccount()');
     this._preCallingPermission = true;
-    this.rtcEngine.setUserAgentInfo({
-      endpointId: this.getEndpointId(),
-      userAgent: PlatformUtils.getRCUserAgent(),
-    });
+    this.rtcEngine.setUserInfo(await this.getUserInfo());
+    mainLogger.tags(LOG_TAG).info('createAccount() setUserInfo');
     this._accountController = new TelephonyAccountController(
       this.rtcEngine,
       accountDelegate,
       callDelegate,
     );
+  }
+
+  async getUserInfo() {
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+    const rcBrandId = await rcInfoService.getRCBrandId();
+    const rcAccountId = await rcInfoService.getRCAccountId();
+    const rcExtensionId = await rcInfoService.getRCExtensionId();
+    return {
+      rcBrandId,
+      rcAccountId,
+      rcExtensionId,
+      endpointId: this.getEndpointId(),
+      userAgent: PlatformUtils.getRCUserAgent(),
+    };
   }
 
   getAccountController() {

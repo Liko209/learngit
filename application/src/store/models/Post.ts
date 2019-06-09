@@ -35,7 +35,7 @@ export default class PostModel extends Base<Post> {
   @observable
   groupId: number;
   @observable
-  itemData?: object;
+  itemData?: { version_map: {} };
   @observable
   source?: string;
   @observable
@@ -122,6 +122,15 @@ export default class PostModel extends Base<Post> {
     });
 
     return itemTypeIds;
+  }
+
+  public fileItemVersion(fileItem: FileItemModel) {
+    const firstPost = !this.itemData;
+    if (firstPost) {
+      return 1;
+    }
+    const version = this.itemData!.version_map[fileItem.id];
+    return version;
   }
 
   static fromJS(data: Post) {
