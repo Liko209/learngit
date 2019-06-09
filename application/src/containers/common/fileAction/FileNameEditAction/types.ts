@@ -11,7 +11,7 @@ import { FileActionProps } from '../common/types';
 
 export type FileNameEditActionProps = FileActionProps;
 
-export type FileNameEditActionViewProps = FileActionProps & {
+export type FileNameEditActionViewProps = FileNameEditActionProps & {
   canEditFileName: boolean;
   newFileName: string;
   updateNewFileName: (newFileName: string) => void;

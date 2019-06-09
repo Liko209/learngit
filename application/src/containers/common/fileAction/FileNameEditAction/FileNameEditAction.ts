@@ -14,4 +14,4 @@ const FileNameEditAction = buildContainer<FileNameEditActionProps>({
   ViewModel: FileNameEditActionViewModel,
 });
 
-export { FileNameEditAction };
+export { FileNameEditAction, FileNameEditActionProps };

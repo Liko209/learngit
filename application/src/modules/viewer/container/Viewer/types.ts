@@ -34,6 +34,7 @@ type ViewerViewModelProps = CommonProps & {
   loadMore: (direction: QUERY_DIRECTION) => Promise<Item[]>;
   setOnCurrentItemDeletedCb: (callback: () => void) => void;
   setOnItemSwitchCb: (callback: (itemId: number) => void) => void;
+  deleteItem?: boolean;
 };
 
 type ViewerViewProps = CommonProps & {

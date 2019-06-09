@@ -46,7 +46,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
   @observable
   currentItemId: number;
   private _itemListDataSource: ItemListDataSource | ItemListDataSourceByPost;
-  private _onCurrentItemDeletedCb: () => void;
+  private _onCurrentItemDeletedCb: (itemId: number) => void;
   private _onItemSwitchCb: (
     itemId: number,
     index: number,
@@ -55,6 +55,8 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
 
   @observable
   total: number = -1;
+
+  toBeDeletedItem: Set<number> = new Set();
 
   private _preloadController: PreloadController;
 
@@ -190,6 +192,12 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
 
   @action
   switchToPrevious = () => {
+    console.group(
+      '%cViewer.ViewModel',
+      'background: #20232a; color: #43daf9; padding: 2px 4px; border-radius: 5px;',
+    );
+    console.log('switch to previous');
+    console.groupEnd();
     if (this.ids.length < 2 || this.ids[0] === this.currentItemId) {
       if (this.hasPrevious) {
         this.loadMore(QUERY_DIRECTION.OLDER).then((result: FileItem[]) => {
@@ -205,6 +213,12 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
     } else {
       const itemId = this.ids[this._getItemIndex() - 1];
       const index = this.currentIndex - 1;
+      console.group(
+        '%cViewer.ViewModel',
+        'background: #20232a; color: #43daf9; padding: 2px 4px; border-radius: 5px;',
+      );
+      console.log(itemId, index);
+      console.groupEnd();
       itemId && this.updateCurrentItemIndex(index, itemId);
       itemId &&
         this._onItemSwitchCb &&
@@ -262,8 +276,25 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
     transaction(() => {
       this.total = info.totalCount;
       if (this.currentItemId === itemId) {
-        this.currentIndex = info.index;
+        console.group(
+          '%cViewer.ViewModel',
+          'background: #20232a; color: #43daf9; padding: 2px 4px; border-radius: 5px;',
+        );
+        console.log('currentItemId ', this.currentItemId);
+        console.log('currentIndex ', this.currentIndex);
+        console.log('info ', info);
+        console.groupEnd();
         if (info.index < 0) {
+          if (this.currentIndex > info.totalCount - 1) {
+            if (this.currentIndex > 0) {
+              this.currentIndex = Math.min(
+                this.currentIndex - 1,
+                info.totalCount - 1,
+              );
+            }
+          } else {
+            this.currentIndex = this.currentIndex;
+          }
           const itemType = this._itemListDataSource.type;
           const groupId = this._itemListDataSource.groupId;
           mainLogger
@@ -273,7 +304,9 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
                 info.index
               }/${info.totalCount}`,
             );
-          this._onCurrentItemDeletedCb && this._onCurrentItemDeletedCb();
+          this._onCurrentItemDeletedCb && this._onCurrentItemDeletedCb(itemId);
+        } else {
+          this.currentIndex = info.index;
         }
       }
     });
@@ -293,6 +326,12 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
   private _onItemDataChange = (
     payload: NotificationEntityPayload<FileItem>,
   ) => {
+    console.group(
+      '%cViewer.ViewModel',
+      'background: #20232a; color: #43daf9; padding: 2px 4px; border-radius: 5px;',
+    );
+    console.log('on item change');
+    console.groupEnd();
     const { type } = payload;
     const { groupId } = this.props;
     if (type === EVENT_TYPES.DELETE) {

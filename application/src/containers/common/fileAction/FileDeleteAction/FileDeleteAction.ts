@@ -14,4 +14,4 @@ const FileDeleteAction = buildContainer<FileDeleteActionProps>({
   ViewModel: FileDeleteActionViewModel,
 });
 
-export { FileDeleteAction };
+export { FileDeleteAction, FileDeleteActionProps };

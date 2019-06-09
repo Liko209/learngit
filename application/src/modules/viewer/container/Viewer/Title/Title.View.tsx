@@ -33,6 +33,7 @@ import { dateFormatter } from '@/utils/date';
 import ViewerContext from '../ViewerContext';
 import { Download } from '@/containers/common/Download';
 import ReactResizeDetector from 'react-resize-detector';
+import { FileActionMenu } from '@/containers/common/fileAction';
 
 @observer
 class ViewerTitleViewComponent extends Component<
@@ -100,29 +101,15 @@ class ViewerTitleViewComponent extends Component<
                   </JuiDialogHeaderSubtitle>
                 </JuiDialogHeaderTitle>
                 <JuiDialogHeaderActions>
-                  <JuiButtonBar overlapSize={2.5}>
+                  <JuiButtonBar overlapSize={0}>
                     <Download url={downloadUrl} variant="round" />
-                    {/* <JuiPopoverMenu
-                      Anchor={() => (
-                        <JuiIconButton tooltipTitle={t('common.more')}>
-                          more_horiz
-                        </JuiIconButton>
-                      )}
-                      anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'center',
+                    <FileActionMenu
+                      variant="round"
+                      fileId={item.id}
+                      beforeDelete={() => {
+                        viewerContext.setDeleteItem(true);
                       }}
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'center',
-                      }}
-                    >
-                      <JuiMenuList>
-                        {this.state.smallWindow ? (
-                          <JuiMenuItem>{t('common.download')}</JuiMenuItem>
-                        ) : null}
-                      </JuiMenuList>
-                    </JuiPopoverMenu> */}
+                    />
                     <JuiIconButton
                       onClick={viewerContext.closeViewer}
                       aria-label={t('common.dialog.close')}

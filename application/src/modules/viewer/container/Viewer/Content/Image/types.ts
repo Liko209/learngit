@@ -23,6 +23,7 @@ type ImageViewerViewProps = ImageViewerProps & {
   imageWidth?: number;
   imageHeight?: number;
   thumbnailSrc?: string;
+  closeViewer: () => void;
 };
 
 export { ImageViewerProps, ImageViewerViewProps, ImageViewerOptions };

@@ -26,7 +26,9 @@ class ViewerView extends Component<
         onTransitionExited: this.onTransitionExited,
         onTransitionEntered: this.onTransitionEntered,
         isAnimating: true,
+        setDeleteItem: this.setDeleteItem,
       },
+      deleteItem: false,
     };
   }
 
@@ -41,6 +43,12 @@ class ViewerView extends Component<
         show: false,
         isAnimating: true,
       },
+    });
+  }
+
+  setDeleteItem = (value: boolean) => {
+    this.setState({
+      deleteItem: value,
     });
   }
 
@@ -69,7 +77,10 @@ class ViewerView extends Component<
           <ViewerTitle itemId={rest.itemId} {...rest} />
           <ViewerContent
             data-test-automation-id="ViewerContent"
-            left={contentLeftRender({ ...rest })}
+            left={contentLeftRender({
+              ...rest,
+              deleteItem: this.state.deleteItem,
+            })}
             right={<div>commitBlock</div>}
           />
         </JuiViewerBackground>
