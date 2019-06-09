@@ -37,14 +37,14 @@ export default class Http {
     // const mockSuccessFile =
     // fs.
     if (fs.existsSync(`${mockDataDirectory}/200.json`)) {
-      console.log('TCL: request -> exists');
+      console.log('TCL: HTTP request -> exists', relatePath);
       const result = JSON.parse(
         fs.readFileSync(`${mockDataDirectory}/200.json`, { encoding: 'utf8' }),
       );
       // console.log('TCL: Http -> request -> result.response', result.response);
       listener.onSuccess({ request, ...result.response });
     } else {
-      console.log('TCL: request -> not exists', mockDataDirectory);
+      console.log('TCL: HTTP request -> not exists', relatePath);
       listener.onFailure({
         request,
         data: {},

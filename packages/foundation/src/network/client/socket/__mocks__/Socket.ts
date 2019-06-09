@@ -23,14 +23,22 @@ export default class Socket {
     const isMockPathExist = fs.existsSync(mockDataDirectory);
     console.log('TCL: Socket -> request -> isMockPathExist', isMockPathExist);
     if (!isMockPathExist) {
-      listener.onFailure({
+      listener.onSuccess({
         request,
         data: {},
-        status: 404,
-        statusText: 'Mock data not found',
+        status: 200,
+        statusText: 'Mock ok',
         headers: {},
       } as IResponse);
       return;
+      // listener.onFailure({
+      //   request,
+      //   data: {},
+      //   status: 404,
+      //   statusText: 'Mock data not found',
+      //   headers: {},
+      // } as IResponse);
+      // return;
     }
     const files = fs.readdirSync(mockDataDirectory, { withFileTypes: true });
     console.log('TCL: Http -> request -> files', files);
