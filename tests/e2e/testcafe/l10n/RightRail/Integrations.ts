@@ -35,7 +35,7 @@ test(formalName('Integrations display on the right rail', ['P2', 'Messages', 'Ri
 
   await h(t).withLog('When I open the created team conversation and open "Integrations" tab on right rail', async() => {
     const teamsSection = app.homePage.messageTab.teamsSection;
-    await teamsSection.conversationEntryByName(team.name);
+    await teamsSection.conversationEntryById(team.glipId).enter();
     await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
     await rightRail.openMore();
     await rightRail.integrationsEntry.enter();
