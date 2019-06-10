@@ -13,6 +13,7 @@ import { JuiSettingSectionContainer } from 'jui/pattern/SettingSection';
 import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 import { SettingSection } from '../SettingSection';
 import { SettingPageViewProps, SettingPageProps } from './types';
+import { observable } from 'mobx';
 
 // TODO move to jui
 const StyledSettingPage = styled.div`
@@ -24,29 +25,24 @@ type Props = SettingPageProps & SettingPageViewProps & WithTranslation;
 
 @observer
 class SettingPageViewComponent extends Component<Props> {
-  state: Size = {
-    width: 0,
-    height: 0,
-  };
-  source: HTMLElement[];
-  private _wrapRef: React.RefObject<any> = React.createRef();
+  @observable size: Size = { width: 0, height: 0 };
+  @observable sources: HTMLElement[] = [];
+
   private _handleSizeUpdate = (size: Size) => {
-    this.setState({
-      ...size,
-    });
+    this.size = size;
+  }
+
+  private _updateSource = (el: any) => {
+    this.sources = [el];
   }
 
   render() {
     if (!this.props.page) return null;
-    const { width } = this.state;
-    if (this._wrapRef.current && !this.source) {
-      this.source = [this._wrapRef.current];
-    }
-
     const { t, id, page } = this.props;
+
     return (
       <StyledSettingPage
-        ref={this._wrapRef}
+        ref={this._updateSource}
         data-test-automation-id={`settingPage-${page.automationId}`}
       >
         <JuiConversationPageHeader
@@ -56,9 +52,9 @@ class SettingPageViewComponent extends Component<Props> {
         />
         <JuiSizeDetector
           handleSizeChanged={this._handleSizeUpdate}
-          sources={this.source}
+          sources={this.sources}
         />
-        <JuiSettingSectionContainer containerWidth={width}>
+        <JuiSettingSectionContainer containerWidth={this.size.width}>
           {this._renderSections()}
         </JuiSettingSectionContainer>
         <ScrollMemory id={`SETTING_PAGE_${id}`} />
