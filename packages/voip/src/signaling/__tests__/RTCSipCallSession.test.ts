@@ -71,7 +71,7 @@ describe('sip call session', () => {
       this._mediaStatsTimerCallback = callback;
       this._mediaStatsTimer = setInterval(() => {
         this._mediaStatsTimerCallback();
-      },                                  interval);
+      }, interval);
     }
 
     stopMediaStats() {
@@ -533,7 +533,7 @@ describe('sip call session', () => {
         new Promise((resolve: any) => {
           setTimeout(() => {
             resolve('new');
-          },         100);
+          }, 100);
         }),
       ).resolves.toEqual('new');
       expect(succeededFunc).toHaveBeenCalled();
@@ -560,7 +560,7 @@ describe('sip call session', () => {
         new Promise((resolve: any) => {
           setTimeout(() => {
             resolve('new');
-          },         100);
+          }, 100);
         }),
       ).resolves.toEqual('new');
       expect(failedFunc).toHaveBeenCalled();
@@ -591,7 +591,7 @@ describe('sip call session', () => {
         new Promise((resolve: any) => {
           setTimeout(() => {
             resolve('new');
-          },         2100);
+          }, 2100);
         }),
       ).resolves.toEqual('new');
       expect(callback).toHaveBeenCalled();
@@ -606,7 +606,7 @@ describe('sip call session', () => {
         new Promise((resolve: any) => {
           setTimeout(() => {
             resolve('new');
-          },         1100);
+          }, 1100);
         }),
       ).resolves.toEqual('new');
       expect(callback).toHaveBeenCalled();
@@ -621,7 +621,7 @@ describe('sip call session', () => {
         new Promise((resolve: any) => {
           setTimeout(() => {
             resolve('new');
-          },         1100);
+          }, 1100);
         }),
       ).resolves.toEqual('new');
       expect(callback).toHaveBeenCalled();
@@ -630,7 +630,7 @@ describe('sip call session', () => {
         new Promise((resolve: any) => {
           setTimeout(() => {
             resolve('new');
-          },         1100);
+          }, 1100);
         }),
       ).resolves.toEqual('new');
       expect(callback.mock.calls.length).toBe(2);
@@ -645,7 +645,7 @@ describe('sip call session', () => {
         new Promise((resolve: any) => {
           setTimeout(() => {
             resolve('new');
-          },         1100);
+          }, 1100);
         }),
       ).resolves.toEqual('new');
       expect(callback.mock.calls.length).toBe(1);
@@ -654,7 +654,7 @@ describe('sip call session', () => {
         new Promise((resolve: any) => {
           setTimeout(() => {
             resolve('new');
-          },         1100);
+          }, 1100);
         }),
       ).resolves.toEqual('new');
       expect(callback.mock.calls.length).toBe(1);
@@ -669,7 +669,7 @@ describe('sip call session', () => {
         new Promise((resolve: any) => {
           setTimeout(() => {
             resolve('new');
-          },         1100);
+          }, 1100);
         }),
       ).resolves.toEqual('new');
       expect(callback.mock.calls.length).toBe(1);
@@ -678,7 +678,7 @@ describe('sip call session', () => {
         new Promise((resolve: any) => {
           setTimeout(() => {
             resolve('new');
-          },         1100);
+          }, 1100);
         }),
       ).resolves.toEqual('new');
       expect(callback.mock.calls.length).toBe(1);
@@ -794,6 +794,26 @@ describe('sip call session', () => {
         expect(sipCallSession._setAudioInputDevice).toHaveBeenCalled();
         done();
       });
+    });
+
+    it('should call _setAudioInput API of call session when upper layer call setAudioInput API.[JPT-2262]', () => {
+      jest.useFakeTimers();
+      RTCMediaDeviceManager.instance().destroy();
+      initSession();
+      jest.spyOn(sipCallSession, '_setAudioInputDevice').mockImplementation();
+      RTCMediaDeviceManager.instance().setAudioInputDevice('123');
+      jest.advanceTimersByTime(500);
+      expect(sipCallSession._setAudioInputDevice).toHaveBeenCalled();
+    });
+
+    it('should call _setAudioOutput API of call session when upper layer call setAudioInput API.[JPT-2263]', () => {
+      jest.useFakeTimers();
+      RTCMediaDeviceManager.instance().destroy();
+      initSession();
+      jest.spyOn(sipCallSession, '_setAudioOutputDevice').mockImplementation();
+      RTCMediaDeviceManager.instance().setAudioOutputDevice('123');
+      jest.advanceTimersByTime(500);
+      expect(sipCallSession._setAudioOutputDevice).toHaveBeenCalled();
     });
   });
 });
