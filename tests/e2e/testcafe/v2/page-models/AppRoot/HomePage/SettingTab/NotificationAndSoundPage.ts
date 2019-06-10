@@ -23,11 +23,11 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
 
   get newMessageBadgeCountDropDown() {
-    return this.getSelectorByAutomationId('settingItemSelectBox-newMessageBadgeCount');
+ return this.getSelectorByAutomationId('settingItemSelectBox-newMessageBadgeCount');
   }
-
+  
   get newMessageBadgeCount() {
-    return this.getSelectorByAutomationId('settingItemSelectBoxItem-newMessageBadgeCount');
+    return this.getSelector(`*[data-test-automation-id^="settingItemSelectBoxItem-newMessageBadgeCount-"`);
   }
 
   async selectNewMessageBadgeCount(text: string) {
