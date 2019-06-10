@@ -671,8 +671,7 @@ export class PostItem extends BaseWebComponent {
   get quote() {
     return this.self.find(`[data-name="text"]`).find('q');
   }
-
-  get href(){
+  get href() {
     return this.self.find(`[href]`)
   }
 
@@ -708,8 +707,8 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('.emoji');
   }
 
-  async shouldHasEmojiByValue(text: string) {
-    await this.t.expect(this.emojis.withAttribute('title', `:${text}:`))
+  async shouldHasEmojiByValue(value: string) {
+    await this.t.expect(this.emojis.withAttribute('title', value)).ok()
   }
 
   async emojisShouldBeInOrder(valueList: string[], timeout: number = 5e3) {
@@ -842,7 +841,7 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('[role="progressbar"]')
   }
 
-  async waitForPostToSend(timeout = 5e3) {
+  async waitForPostToSend(timeout = 10e3) {
     try {
       await H.retryUntilPass(async () => assert(await this.progressBar.exists), 5);
     } catch (e) {

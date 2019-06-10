@@ -146,7 +146,8 @@
     "jumpToConversation": "Jump to conversation",
     "emoji": {
       "emojiDefaultTitle": "Pick your emoji",
-      "toggleButtonLabel": "Keep open"
+      "toggleButtonLabel": "Keep open",
+      "emojiMatching": "Emojis matching"
     },
     "sharedItems": "shared items",
     "initialPost": {
