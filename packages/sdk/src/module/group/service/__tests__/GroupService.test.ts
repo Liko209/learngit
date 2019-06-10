@@ -35,6 +35,7 @@ describe('GroupService', () => {
   };
   const mockHandleDataController = {
     handleData: jest.fn(),
+    handleGroupFetchedPost: jest.fn(),
   };
   function clearMocks() {
     jest.clearAllMocks();
@@ -395,6 +396,21 @@ describe('GroupService', () => {
         '123',
         false,
         undefined,
+      );
+    });
+  });
+
+  describe('handleGroupFetchedPosts', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call with right parameters', async () => {
+      await groupService.handleGroupFetchedPosts(1, []);
+      expect(mockHandleDataController.handleGroupFetchedPost).toBeCalledWith(
+        1,
+        [],
       );
     });
   });

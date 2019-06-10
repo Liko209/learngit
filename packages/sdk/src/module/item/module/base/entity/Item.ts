@@ -17,6 +17,7 @@ export type ItemVersionPage = {
 };
 
 export type ItemVersions = {
+  creator_id: number;
   download_url: string;
   size: number;
   url: string;
@@ -25,6 +26,7 @@ export type ItemVersions = {
   orig_height?: number;
   orig_width?: number;
   pages?: ItemVersionPage[];
+  status?: string;
   deactivated?: boolean;
   stored_file_id: number;
   date: number;
@@ -45,6 +47,7 @@ export type Item = ExtendedBaseModel & {
   image?: string;
   do_not_render?: boolean;
   at_mentioning_post_ids?: number[];
+  deactivate_version?: number;
 };
 
 export type StoredFile = Raw<ExtendedBaseModel> & {

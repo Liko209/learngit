@@ -65,11 +65,11 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
 
   async fetchUserSettingEntity() {
     const profile = await this._profileService.getProfile();
-    const wantNotifications =
-      profile[SETTING_KEYS.DESKTOP_NOTIFICATION] || false;
+    const wantNotifications = profile[SETTING_KEYS.DESKTOP_NOTIFICATION];
     const { current, isGranted } = Pal.instance.getNotificationPermission();
     const value: DesktopNotificationsSettingModel = {
-      wantNotifications,
+      wantNotifications:
+        wantNotifications === undefined ? true : wantNotifications,
       browserPermission: current,
       desktopNotifications: isGranted && wantNotifications ? true : false,
     };
@@ -88,10 +88,11 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
   }
   async onNotificationPermissionUpdate(payload: NotificationPermission) {
     const lastPermission =
+      this.userSettingEntityCache &&
       this.userSettingEntityCache.value &&
       this.userSettingEntityCache.value.browserPermission;
     if (payload !== lastPermission) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
   }
 
@@ -103,11 +104,13 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
     if (!profile) {
       return;
     }
+
     const lastPermission =
+      this.userSettingEntityCache &&
       this.userSettingEntityCache.value &&
       this.userSettingEntityCache.value.wantNotifications;
     if (profile[SETTING_KEYS.DESKTOP_NOTIFICATION] !== lastPermission) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
   }
 }

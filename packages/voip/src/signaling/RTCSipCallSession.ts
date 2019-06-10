@@ -295,14 +295,21 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 
   forward(target: string) {
-    this._session.forward(target);
+    this._session
+      .forward(target)
+      .then(() => {
+        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.FORWARD);
+      })
+      .catch(() => {
+        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.FORWARD);
+      });
   }
 
   park() {
     this._session.park().then(
       (parkOptions: any) => {
         const options: RTCCallActionSuccessOptions = {
-          parkExtension: parkOptions['park extension'],
+          parkExtension: `*${parkOptions['park extension']}`,
         };
         this.emit(
           CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,

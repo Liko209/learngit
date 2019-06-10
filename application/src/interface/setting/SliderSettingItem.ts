@@ -19,9 +19,24 @@ type SliderSettingItem = SettingItem & {
    */
   Right?: ComponentType<any>;
 
+  /**
+   * Minimum value
+   */
   min: number;
-  step?: number;
+  /**
+   * Maximum value
+   */
   max: number;
+
+  /**
+   * Step
+   */
+  step?: number;
+
+  /**
+   * Tooltip on thumb
+   */
+  tipRenderer?: ({ value }: { value: number }) => React.ReactNode;
 };
 
 export { SliderSettingItem };

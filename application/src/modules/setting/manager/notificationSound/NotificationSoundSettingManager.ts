@@ -19,9 +19,13 @@ import {
   SETTING_ITEM__SPEAKER_SOURCE,
   SETTING_ITEM__VOLUME,
 } from './constant';
+import {
+  DEFAULT_AUDIO_INPUT_DEVICES,
+  DEFAULT_AUDIO_OUTPUT_DEVICES,
+} from './audioSource/constant';
 
 const deviceIdExtractor = (device?: MediaDeviceInfo) =>
-  device && device.deviceId;
+  device ? device.deviceId : '';
 
 class NotificationSoundSettingManager {
   private _scope = Symbol('NotificationSoundSettingManager');
@@ -32,7 +36,7 @@ class NotificationSoundSettingManager {
       id: SETTING_PAGE__NOTIFICATION_SOUND,
       automationId: 'notificationAndSounds',
       icon: 'bell',
-      title: 'setting.notificationAndSounds',
+      title: 'setting.notificationAndSounds.title',
       path: '/notification_and_sounds',
       weight: 100,
       sections: [
@@ -55,6 +59,7 @@ class NotificationSoundSettingManager {
               title: 'setting.audioSource.microphoneSource.label',
               description: 'setting.audioSource.microphoneSource.description',
               valueExtractor: deviceIdExtractor,
+              defaultSource: DEFAULT_AUDIO_INPUT_DEVICES,
               sourceRenderer: MediaDeviceSourceItem,
               type: SETTING_ITEM_TYPE.SELECT,
               weight: 0,
@@ -65,6 +70,7 @@ class NotificationSoundSettingManager {
               title: 'setting.audioSource.speakerSource.label',
               description: 'setting.audioSource.speakerSource.description',
               valueExtractor: deviceIdExtractor,
+              defaultSource: DEFAULT_AUDIO_OUTPUT_DEVICES,
               sourceRenderer: MediaDeviceSourceItem,
               type: SETTING_ITEM_TYPE.SELECT,
               weight: 100,
@@ -77,6 +83,7 @@ class NotificationSoundSettingManager {
               type: SETTING_ITEM_TYPE.SLIDER,
               Left: SpeakerMuteIcon,
               Right: SpeakerIcon,
+              tipRenderer: ({ value }) => `${Math.ceil(value * 100)}%`,
               min: 0,
               max: 1,
               weight: 200,

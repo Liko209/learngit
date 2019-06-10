@@ -81,6 +81,7 @@ const RightWrap = styled.div`
 
   ${RuiSlider} {
     flex: 1;
+    line-height: 0;
     padding: ${spacing(5, 0)};
   }
 `;

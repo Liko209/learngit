@@ -153,13 +153,13 @@ describe('AbstractConsumer', () => {
     it('should create executor', () => {
       consumer.canHandleRequest = jest.fn().mockReturnValue(true);
       mockClient.isNetworkReachable.mockReturnValue(true);
-      NetworkRequestHandler.prototype.produceRequest = jest
+      consumer['_producer'].produceRequest = jest
         .fn()
         .mockReturnValue('mockRequest');
       consumer['_addExecutor'] = jest.fn();
       consumer['_consume']();
       // expect(NetworkRequestHandler.prototype.produceRequest).toBeCalled();
-      expect(NetworkRequestHandler.prototype.produceRequest).toBeCalledWith(
+      expect(consumer['_producer'].produceRequest).toBeCalledWith(
         consumer['_via'],
         true,
       );

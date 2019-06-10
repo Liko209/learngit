@@ -21,7 +21,7 @@ import avatar from './img/avatar.jpg';
 storiesOf('Pattern/ConversationItemCard/ConversationItemCardBody', module).add(
   'EventLocation',
   () => {
-    return <JuiEventLocation location="Location" />;
+    return <JuiEventLocation>Location</JuiEventLocation>;
   },
 );
 

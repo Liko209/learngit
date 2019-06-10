@@ -15,6 +15,7 @@ import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { ESettingItemState } from 'sdk/framework/model/setting/types';
 import { TelephonyService } from 'sdk/module/telephony/service/TelephonyService';
+import { CONFIG_EVENT_TYPE } from 'sdk/module/config/constants';
 
 jest.mock('../utils');
 jest.mock('sdk/module/telephony/config/TelephonyGlobalConfig');
@@ -79,6 +80,7 @@ describe('MicrophoneSourceSettingHandler', () => {
       mockRtcEngine,
     );
     settingHandler.notifyUserSettingEntityUpdate = jest.fn();
+    settingHandler.getUserSettingEntity = jest.fn();
   }
 
   function cleanUp() {
@@ -137,9 +139,7 @@ describe('MicrophoneSourceSettingHandler', () => {
       notificationCenter.emit(RTC_MEDIA_ACTION.INPUT_DEVICE_LIST_CHANGED, [{}]);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
+
         done();
       });
     });
@@ -157,7 +157,7 @@ describe('MicrophoneSourceSettingHandler', () => {
       isChrome.mockReturnValue(false);
       settingHandler['_onPermissionChange']();
       setTimeout(() => {
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
+        expect(settingHandler.getUserSettingEntity).not.toBeCalled();
         done();
       });
     });
@@ -166,7 +166,7 @@ describe('MicrophoneSourceSettingHandler', () => {
       isChrome.mockReturnValue(true);
       settingHandler['_onPermissionChange']();
       setTimeout(() => {
-        expect(settingHandler.notifyUserSettingEntityUpdate).toBeCalled();
+        expect(settingHandler.getUserSettingEntity).toBeCalled();
         done();
       });
     });
@@ -180,43 +180,34 @@ describe('MicrophoneSourceSettingHandler', () => {
     afterEach(() => {
       cleanUp();
     });
-    it('should emit update when device change', (done: jest.DoneCallback) => {
-      mockDefaultSettingItem.value = { deviceId: 3 };
+    it('should emit update when device change', () => {
+      mockDefaultSettingItem.value = { deviceId: '3' };
       settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
-      settingHandler['_onSelectedDeviceUpdate']({ deviceId: 123 } as any);
+      settingHandler['_onSelectedDeviceUpdate'](
+        CONFIG_EVENT_TYPE.UPDATE,
+        '123',
+      );
       expect(settingHandler.getUserSettingEntity).toBeCalled();
-      setTimeout(() => {
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
-        done();
-      });
     });
-    it('should not emit update when device not change', (done: jest.DoneCallback) => {
-      mockDefaultSettingItem.value = { deviceId: 123 };
+    it('should not emit update when device not change', () => {
+      mockDefaultSettingItem.value = { deviceId: '123' };
       settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
-      settingHandler['_onSelectedDeviceUpdate'](({
-        deviceId: 123,
-      } as any) as MediaDeviceInfo);
+      settingHandler['_onSelectedDeviceUpdate'](
+        CONFIG_EVENT_TYPE.UPDATE,
+        '123',
+      );
       expect(settingHandler.getUserSettingEntity).not.toBeCalled();
-      setTimeout(() => {
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
-        done();
-      });
     });
-    it('should not emit update when cache not exist', (done: jest.DoneCallback) => {
+    it('should not emit update when cache not exist', () => {
       settingHandler['userSettingEntityCache'] = undefined;
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
-      settingHandler['_onSelectedDeviceUpdate'](({
-        deviceId: 123,
-      } as any) as MediaDeviceInfo);
+      settingHandler['_onSelectedDeviceUpdate'](
+        CONFIG_EVENT_TYPE.UPDATE,
+        '123',
+      );
       expect(settingHandler.getUserSettingEntity).not.toBeCalled();
-      setTimeout(() => {
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
-        done();
-      });
     });
   });
 
@@ -287,7 +278,7 @@ describe('MicrophoneSourceSettingHandler', () => {
     });
 
     it('JPT-2094 Show "Audio sources" section only for chrome/electron with meeting/call/conference permission', async () => {
-      isChrome.mockRejectedValue(true);
+      isChrome.mockReturnValue(true);
       mockTelephonyService.getVoipCallPermission.mockResolvedValue(true);
       rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
       expect(await settingHandler['_getEntityState']()).toEqual(
@@ -303,7 +294,7 @@ describe('MicrophoneSourceSettingHandler', () => {
       expect(await settingHandler['_getEntityState']()).toEqual(
         ESettingItemState.INVISIBLE,
       );
-      isChrome.mockRejectedValue(false);
+      isChrome.mockReturnValue(false);
       mockTelephonyService.getVoipCallPermission.mockResolvedValue(true);
       rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
       expect(await settingHandler['_getEntityState']()).toEqual(

@@ -12,6 +12,8 @@ import { MessageService } from './service';
 import { MessageStore } from './store';
 import { MessageModule } from './MessageModule';
 import { MessageNotificationManager } from './MessageNotificationManager';
+import { IMessageSettingManager } from './interface';
+import { MessageSettingManager } from './MessageSettingManager';
 
 const config: ModuleConfig = {
   entry: MessageModule,
@@ -24,6 +26,10 @@ const config: ModuleConfig = {
     {
       name: MESSAGE_NOTIFICATION_MANAGER,
       value: MessageNotificationManager,
+    },
+    {
+      name: IMessageSettingManager,
+      value: MessageSettingManager,
     },
   ],
 };

@@ -210,11 +210,30 @@ describe('NetworkRequestExecutor', () => {
       );
     });
 
+    it('should _callXApiResponse when oauth token expired', () => {
+      const networkExecutor: NetworkRequestExecutor = setupExecutor();
+      networkExecutor.client.request = jest.fn();
+      networkExecutor['request'].startTime = 0;
+      networkExecutor['_requestDecoration'] = {
+        decorate: jest.fn().mockReturnValue(false),
+      } as any;
+      networkExecutor['_callXApiResponse'] = jest.fn();
+      const fakeRequest = getFakeRequest();
+      fakeRequest.startTime = 0;
+
+      networkExecutor['_performNetworkRequest']();
+      expect(networkExecutor['_callXApiResponse']).toBeCalledWith(
+        RESPONSE_STATUS_CODE.UNAUTHORIZED,
+        NETWORK_FAIL_TEXT.UNAUTHORIZED,
+      );
+      expect(networkExecutor.client.request).not.toBeCalled();
+    });
+
     it('should decorate request when_requestDecoration is valid', () => {
       const networkExecutor: NetworkRequestExecutor = setupExecutor();
       networkExecutor.client.request = jest.fn();
       networkExecutor['_requestDecoration'] = {
-        decorate: jest.fn(),
+        decorate: jest.fn().mockReturnValue(true),
       };
       networkExecutor['_performNetworkRequest']();
       networkExecutor['request'].startTime = 0;

@@ -19,7 +19,7 @@ class BaseSettingItemViewModel<
   T extends SettingItemProps,
   K extends SettingItem = SettingItem
 > extends StoreViewModel<T> {
-  get _settingStore(): SettingStore {
+  private get _settingStore(): SettingStore {
     return container.get(SettingStore);
   }
 

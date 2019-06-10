@@ -32,7 +32,7 @@ const HandleByGlip = new class extends AbstractHandleType {
           'X-RC-Access-Token-Data': this.rcTokenProvider(),
         };
       }
-      return request;
+      return true;
     };
   }
 }();

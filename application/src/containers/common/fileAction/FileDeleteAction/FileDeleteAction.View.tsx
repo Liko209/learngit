@@ -19,7 +19,7 @@ class FileDeleteActionViewComponent extends Component<
 > {
   deleteFile = () => {
     const { t, fileName, handleDeleteFile } = this.props;
-    Dialog.confirm({
+    const { startLoading, stopLoading } = Dialog.confirm({
       title: t('message.prompt.deleteFileTitle'),
       content: (
         <JuiDialogContentText>
@@ -31,30 +31,35 @@ class FileDeleteActionViewComponent extends Component<
         </JuiDialogContentText>
       ),
       okText: t('common.dialog.delete'),
-      okType: t('negative'),
+      okType: 'negative',
       cancelText: t('common.dialog.cancel'),
-      onOK() {
-        handleDeleteFile();
+      modalProps: { 'data-test-automation-id': 'confirmDeleteDialog' },
+      async onOK() {
+        startLoading();
+        const result = await handleDeleteFile();
+        stopLoading();
+        return !!result;
       },
     });
   }
 
+  iconCom = (
+    <JuiIconography iconColor={['grey', '500']} iconSize="small">
+      delete
+    </JuiIconography>
+  );
+
   render() {
     const { canDelete, t } = this.props;
-    const Icon = (
-      <JuiIconography iconColor={['grey', '500']} iconSize="small">
-        delete
-      </JuiIconography>
-    );
 
     return (
       <JuiMenuItem
-        icon={Icon}
+        icon={this.iconCom}
         disabled={!canDelete}
-        color="red"
         onClick={this.deleteFile}
+        data-test-automation-id={'fileDeleteItem'}
       >
-        {t('message..deleteFile')}
+        {t('message.fileAction.deleteFile')}
       </JuiMenuItem>
     );
   }

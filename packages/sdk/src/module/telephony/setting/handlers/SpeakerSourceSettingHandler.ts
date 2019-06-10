@@ -50,7 +50,7 @@ export class SpeakerSourceSettingHandler extends AbstractSettingEntityHandler<
       ServiceConfig.RC_INFO_SERVICE,
     );
     const isEnable =
-      isChrome &&
+      isChrome() &&
       ((await this._telephonyService.getVoipCallPermission()) ||
         (await rcInfoService.isRCFeaturePermissionEnabled(
           ERCServiceFeaturePermission.VIDEO_CONFERENCING,
@@ -62,23 +62,20 @@ export class SpeakerSourceSettingHandler extends AbstractSettingEntityHandler<
   }
 
   private _onPermissionChange = async () => {
-    isChrome() &&
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+    isChrome() && (await this.getUserSettingEntity());
   }
 
-  private _onSelectedDeviceUpdate = (value: MediaDeviceInfo) => {
+  private _onSelectedDeviceUpdate = (type: number, value: string) => {
     if (
       this.userSettingEntityCache &&
-      this.getCacheValue('deviceId') !== value.deviceId
+      this.getCacheValue('deviceId') !== value
     ) {
-      this.getUserSettingEntity().then(entity =>
-        this.notifyUserSettingEntityUpdate(entity),
-      );
+      this.getUserSettingEntity();
     }
   }
 
   private _onDevicesChange = async (devices: MediaDeviceInfo[]) => {
-    this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+    await this.getUserSettingEntity();
   }
 
   dispose() {
