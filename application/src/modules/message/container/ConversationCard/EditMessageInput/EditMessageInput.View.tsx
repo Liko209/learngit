@@ -67,6 +67,7 @@ class EditMessageInputViewComponent extends Component<
         autofocus={false}
         isEditMode={true}
         onChange={saveDraft}
+        placeholder={t('message.action.typeNewMessage')}
       >
         <Mention id={gid} pid={id} isEditMode={true} ref={this._mentionRef} />
       </JuiMessageInput>

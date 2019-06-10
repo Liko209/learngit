@@ -170,8 +170,17 @@
       "editPost": "Edit post",
       "deletePost": "Delete post",
       "resendPost": "Resend post",
+      "attachFile": "Attach file",
       "typeNewMessage": "Type new message",
       "sendNewMessage": "Send new message"
+    },
+    "inputMenus": {
+      "google": "Google Drive",
+      "dropbox": "Dropbox",
+      "box": "Box",
+      "evernote": "Evernote",
+      "onedrive": "OneDrive",
+      "computer": "Computer"
     },
     "stream": {
       "addedToTeam": "{{inviter}} added {{newUser}} to the team",
