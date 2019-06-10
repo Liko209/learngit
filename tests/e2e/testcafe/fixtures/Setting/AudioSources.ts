@@ -17,7 +17,7 @@ import { ClientFunction } from 'testcafe';
 import * as _ from 'lodash';
 import * as assert from 'assert';
 
-fixture('Phone/GeneralSettings')
+fixture('NotificationAndSounds/AudioSources')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
@@ -25,7 +25,7 @@ test.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-2265'],
   maintainers: ['potar.he'],
-  keywords: ['GeneralSettings']
+  keywords: ['AudioSources']
 })(`Check the default Microphone/Speaker source in a call/meeting/conference`, async (t) => {
   const users = h(t).rcData.mainCompany.users
   const loginUser = users[0];
@@ -156,36 +156,8 @@ test.meta(<ITestMeta>{
       await notificationAndSoundsPage.currentMicrophoneSourceIdToBe(deviceId);
     });
 
-    // /** assert device in use */
-    // await h(t).withLog(`When the caller call loginUser`, async () => {
-    //   await callerWebPhoneSession.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
-    // });
-
-    // const telephonyDialog = app.homePage.telephonyDialog;
-    // await h(t).withLog(`and loginUser answer the call`, async () => {
-    //   await telephonyDialog.ensureLoaded();
-    //   await telephonyDialog.clickAnswerButton();
-    // });
-
-    // await h(t).withLog(`Then the microphone source id: {deviceId} should be in use`, async (step) => {
-    //   step.setMetadata('deviceId', deviceId);
-    //   // todo assert microphone id
-    //   // let sinkId = ''
-
-    //   // await H.retryUntilPass(async () => {
-    //   //   sinkId = await ClientFunction(() => {
-    //   //     const videoElement = document.querySelector('video[id^=remote-audio-]');
-    //   //     return videoElement["sinkId"];
-    //   //   })();
-    //   //   assert.ok(sinkId == deviceId, `${sinkId} != ${deviceId}`);
-    //   // })
-    // });
-
-    // await h(t).withLog(`And I hangup the call`, async () => {
-    //   await t.wait(3e3); // wait phone call connected
-    //   await telephonyDialog.clickHangupButton();
-    //   await telephonyDialog.ensureDismiss();
-    // });
+    // TODO:
+    /** assert output device in use */
   }
 });
 
@@ -193,7 +165,7 @@ test.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-2113'],
   maintainers: ['potar.he'],
-  keywords: ['GeneralSettings']
+  keywords: ['AudioSources']
 })(`The Microphone/Speaker source should be from the selected settings`, async (t) => {
   const users = h(t).rcData.mainCompany.users
   const loginUser = users[0];
@@ -328,7 +300,7 @@ test.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-2266', 'JPT-2267'],
   maintainers: ['potar.he'],
-  keywords: ['GeneralSettings']
+  keywords: ['AudioSources']
 })(`The Microphone/Speaker source should be from the default when no last used device and the currently used device is removed 
 & The Microphone/Speaker source should be from the last selected settings when the currently used device is removed`, async (t) => {
     const users = h(t).rcData.mainCompany.users
