@@ -45,7 +45,7 @@ describe('SettingPageViewModel', () => {
         .spyOn<SettingStore, any>(settingStore, 'getPageById')
         .mockReturnValue({ id: 'PAGE_1' });
       jest
-        .spyOn(settingStore, 'getPageNonEmptySections')
+        .spyOn(settingStore, 'getNoEmptyPageSections')
         .mockReturnValue(['SECTION_1', 'SECTION_2']);
 
       expect(vm.sectionIds).toEqual(['SECTION_1', 'SECTION_2']);

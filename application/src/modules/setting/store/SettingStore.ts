@@ -33,44 +33,43 @@ class SettingStore {
 
   getNoEmptyPages() {
     return this.getAllPages().filter(
-      pageId => this.getPageNonEmptySections(pageId).length > 0,
+      pageId => this.getNoEmptyPageSections(pageId).length > 0,
     );
   }
 
   getAllPages() {
     const pagesIds: SettingPage['id'][] = [];
-    this._storeScopes.forEach((storeScope) => {
-      pagesIds.push(...storeScope.pages.map((page) => page.id));
+    this._storeScopes.forEach(storeScope => {
+      pagesIds.push(...storeScope.pages.map(page => page.id));
     });
     return uniq(pagesIds).sort(this._comparePageWeight);
   }
 
   getPageById(pageId: SettingPage['id']) {
-    return this._find((storeScope) => storeScope.getPageById(pageId));
+    return this._find(storeScope => storeScope.getPageById(pageId));
   }
 
   getPageSections(pageId: SettingPage['id']) {
-    return this._getAll((storeScope) =>
-      storeScope.getPageSections(pageId),
-    ).sort(this._compareSectionWeight);
+    return this._getAll(storeScope => storeScope.getPageSections(pageId)).sort(
+      this._compareSectionWeight,
+    );
   }
 
   getNoEmptyPageSections(pageId: SettingPage['id']) {
-    return this.getPageSections(pageId).filter((sectionId) => {
+    return this.getPageSections(pageId).filter(sectionId => {
       const itemIds = this.getSectionItems(sectionId);
       return (
-        itemIds.length > 0 &&
-        itemIds.some((itemId) => this._isItemVisible(itemId))
+        itemIds.length > 0 && itemIds.some(itemId => isItemVisible(itemId))
       );
     });
   }
 
   getSectionById(sectionId: SettingSection['id']) {
-    return this._find((storeScope) => storeScope.getSectionById(sectionId));
+    return this._find(storeScope => storeScope.getSectionById(sectionId));
   }
 
   getSectionItems(sectionId: SettingSection['id']) {
-    return this._getAll((storeScope) =>
+    return this._getAll(storeScope =>
       storeScope.getSectionItems(sectionId),
     ).sort(this._compareItemWeight);
   }
@@ -109,7 +108,7 @@ class SettingStore {
 
   private _getAll<T>(callback: (storeScope: SettingStoreScope) => T[]) {
     const result: T[] = [];
-    this._storeScopes.forEach((storeScope) => {
+    this._storeScopes.forEach(storeScope => {
       result.push(...callback(storeScope));
     });
     return uniq(result);
