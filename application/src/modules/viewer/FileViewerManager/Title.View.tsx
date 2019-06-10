@@ -78,7 +78,7 @@ class ViewerTitleViewComponent extends Component<Type> {
                 'aria-label': 'numberInput',
               }}
             />
-            <JuiDialogHeaderSubtitle>{`${currentPageIdx}/${pageTotal}`}</JuiDialogHeaderSubtitle>
+            <JuiDialogHeaderSubtitle>{`(${currentPageIdx}/${pageTotal})`}</JuiDialogHeaderSubtitle>
           </JuiViewerTitleWrap>
         </JuiDialogHeaderTitle>
         <JuiDialogHeaderActions>
