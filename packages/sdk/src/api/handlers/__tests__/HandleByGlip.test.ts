@@ -39,12 +39,10 @@ describe('HandleByGlip', () => {
       const decoration = HandleByGlip.requestDecoration(handler);
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => false);
-      const decoratedRequest = decoration(request);
-      expect(
-        decoratedRequest.params && decoratedRequest.params.tk,
-      ).toBeUndefined();
-      expect(decoratedRequest.headers.Authorization).toBeUndefined();
-      expect(decoratedRequest).toEqual(request);
+      decoration(request);
+      expect(request.params && request.params.tk).toBeUndefined();
+      expect(request.headers.Authorization).toBeUndefined();
+      expect(request).toEqual(request);
     });
 
     it('should add tk to headers if needAuth is true ', () => {
@@ -53,11 +51,9 @@ describe('HandleByGlip', () => {
       const decoration = HandleByGlip.requestDecoration(handler);
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => true);
-      const decoratedRequest = decoration(request);
-      expect(
-        decoratedRequest.params && decoratedRequest.params.tk,
-      ).toBeUndefined();
-      expect(decoratedRequest.headers.Authorization).not.toBeUndefined();
+      decoration(request);
+      expect(request.params && request.params.tk).toBeUndefined();
+      expect(request.headers.Authorization).not.toBeUndefined();
     });
 
     it('should not add tk to headers if isOAuthTokenAvailable is false ', () => {
@@ -66,10 +62,10 @@ describe('HandleByGlip', () => {
       const decoration = HandleByGlip.requestDecoration(handler);
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => true);
-      const decoratedRequest = decoration(request);
+      decoration(request);
       expect(request.params && request.params.tk).toBeUndefined();
       expect(request.headers.Authorization).toBeUndefined();
-      expect(decoratedRequest).toEqual(request);
+      expect(request).toEqual(request);
     });
 
     it('should not add tk to params if isOAuthTokenAvailable is false ', () => {
@@ -88,9 +84,9 @@ describe('HandleByGlip', () => {
       const decoration = HandleByGlip.requestDecoration(handler);
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => true);
-      const decoratedRequest = decoration(request);
+      decoration(request);
       expect(request.headers['X-RC-Access-Token-Data']).toEqual('access_token');
-      expect(decoratedRequest).toEqual(request);
+      expect(request).toEqual(request);
     });
   });
 });

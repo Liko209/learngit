@@ -309,7 +309,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.park().then(
       (parkOptions: any) => {
         const options: RTCCallActionSuccessOptions = {
-          parkExtension: parkOptions['park extension'],
+          parkExtension: `*${parkOptions['park extension']}`,
         };
         this.emit(
           CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,

@@ -3,7 +3,7 @@
  * @Date: 2018-12-17 15:40:26
  * Copyright © RingCentral. All rights reserved.
  */
-import { Item } from 'sdk/module/item/entity';
+import { Item, ItemVersions } from 'sdk/module/item/entity';
 import { observable, computed } from 'mobx';
 import Base from './Base';
 
@@ -40,15 +40,24 @@ export default class ItemModel extends Base<Item> {
     return this.versions && this.versions.length > 0;
   }
 
-  private _getVersions(type: string) {
-    return this.versions[0][type] ? this.versions[0][type] : null;
+  protected getVersionsValue(type: string) {
+    if (!this.hasVersions()) return null;
+    return this.latestVersion && this.latestVersion[type]
+      ? this.latestVersion[type]
+      : null;
   }
 
   @computed
   get newestCreatorId(): number | null {
     if (!this.hasVersions()) return null;
-    return this._getVersions('creator_id');
+    return this.getVersionsValue('creator_id');
   }
+
+  @computed
+  get latestVersion(): ItemVersions | undefined {
+    return this.versions.find(item => !item.deactivated)!;
+  }
+
   static fromJS(data: Item) {
     return new ItemModel(data);
   }

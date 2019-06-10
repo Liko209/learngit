@@ -8,8 +8,7 @@ const componentExists = require("../utils/componentExists");
 const currentBranch = execSync("git rev-parse --abbrev-ref HEAD").toString();
 const separate = currentBranch.split("/");
 const checkPath = "../../../tests/e2e/testcafe/configs/";
-const ticketAsBranch = separate[1];
-
+const ticketAsBranch = separate[1] && separate[1].slice(0, -1);
 module.exports = {
   description: "Add a E2E skip config file to tests",
   prompts: [

@@ -193,7 +193,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I end the call', async () => {
-    app.homePage.telephonyDialog.clickHangupButton()
+    await app.homePage.telephonyDialog.clickHangupButton();
   });
 
   await h(t).withLog(`Then I should be return to the dialer`, async () => {

@@ -5,7 +5,6 @@
  */
 import React from 'react';
 import { CallHistory } from '../';
-import { mountWithTheme } from 'shield/utils';
 import { test, testable } from 'shield';
 import { shallow } from 'enzyme';
 import { JuiTabs, JuiTab } from 'jui/components/Tabs';
@@ -16,7 +15,7 @@ describe('CallHistory', () => {
   class JPT2143 {
     @test('should show all when open call history')
     t1() {
-      const wrapper = mountWithTheme(<CallHistory />);
+      const wrapper = shallow(<CallHistory />);
       expect(wrapper.find(JuiTabs).prop('defaultActiveIndex')).toBe(
         CallHistoryTypes.All,
       );

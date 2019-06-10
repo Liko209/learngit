@@ -133,6 +133,14 @@ describe('ItemService', () => {
       });
     });
 
+    describe('deleteFile()', () => {
+      it('should call with correct parameter', async () => {
+        fileItemService.deleteFile = jest.fn();
+        await itemService.deleteFile(1, 1);
+        expect(fileItemService.deleteFile).toBeCalledWith(1, 1);
+      });
+    });
+
     describe('sendItemFile()', () => {
       it('should call file item service with correct parameter', async () => {
         expect.assertions(1);

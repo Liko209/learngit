@@ -62,6 +62,30 @@ class HeaderMoreMenu extends BaseWebComponent {
   async openProfile() {
     return await this.t.click(this.profile);
   }
+
+  get adminActions() {
+    return this.self.find('li').withText('Admin actions');
+  }
+
+  async enterAdminActions() {
+    return await this.t.hover(this.adminActions);
+  }
+
+  get teamArchiveMenu() {
+    return this.self.find('li').withText('Archive team');
+  }
+
+  async archiveTeam() {
+    return this.t.click(this.teamArchiveMenu);
+  }
+
+  get teamDeleteMenu() {
+    return this.self.find('li').withText('Delete team');
+  }
+
+  async deleteTeam() {
+    return this.t.click(this.teamDeleteMenu);
+  }
 }
 
 export class BaseConversationPage extends BaseWebComponent {
@@ -644,7 +668,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
-  get href(){
+  get quote() {
+    return this.self.find(`[data-name="text"]`).find('q');
+  }
+  get href() {
     return this.self.find(`[href]`)
   }
 
@@ -680,8 +707,8 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('.emoji');
   }
 
-  async shouldHasEmojiByValue(text: string) {
-    await this.t.expect(this.emojis.withAttribute('title', `:${text}:`))
+  async shouldHasEmojiByValue(value: string) {
+    await this.t.expect(this.emojis.withAttribute('title', value)).ok()
   }
 
   async emojisShouldBeInOrder(valueList: string[], timeout: number = 5e3) {
@@ -814,7 +841,7 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('[role="progressbar"]')
   }
 
-  async waitForPostToSend(timeout = 5e3) {
+  async waitForPostToSend(timeout = 10e3) {
     try {
       await H.retryUntilPass(async () => assert(await this.progressBar.exists), 5);
     } catch (e) {
@@ -838,7 +865,7 @@ export class PostItem extends BaseWebComponent {
   get fileSizes() {
     return this.getSelectorByAutomationId('file-no-preview-size', this.self);
   }
-  
+
   async nameShouldBe(name: string) {
     await this.t.expect(this.fileNames.withText(name).exists).ok();
   }

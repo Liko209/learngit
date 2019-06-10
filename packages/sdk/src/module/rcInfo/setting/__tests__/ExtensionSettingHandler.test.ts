@@ -97,9 +97,7 @@ describe('ExtensionSettingHandler', () => {
       notificationCenter.emit(RC_INFO.CLIENT_INFO);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
+
         done();
       });
     });
@@ -110,7 +108,6 @@ describe('ExtensionSettingHandler', () => {
       notificationCenter.emit(RC_INFO.CLIENT_INFO);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
         done();
       });
     });

@@ -25,18 +25,18 @@ const TelephonyTabs: TabConfig[] = [
     component: Voicemail,
     UMIType: PhoneUMIType.VOICEMAIL,
   },
-  {
-    title: 'phone.faxes',
-    path: '/phone/faxes',
-    automationID: 'phone-tab-faxes',
-    component: CallHistory,
-  },
-  {
-    title: 'phone.recordings',
-    path: '/phone/recordings',
-    automationID: 'phone-tab-recording',
-    component: CallHistory,
-  },
+  // {
+  //   title: 'phone.faxes',
+  //   path: '/phone/faxes',
+  //   automationID: 'phone-tab-faxes',
+  //   component: CallHistory,
+  // },
+  // {
+  //   title: 'phone.recordings',
+  //   path: '/phone/recordings',
+  //   automationID: 'phone-tab-recording',
+  //   component: CallHistory,
+  // },
 ];
 
 export { TabConfig, TelephonyTabs, kDefaultPhoneTabPath };

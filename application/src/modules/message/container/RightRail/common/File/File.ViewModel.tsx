@@ -39,7 +39,7 @@ class FileViewModel extends AbstractViewModel<FileViewModelProps>
 
   @computed
   get _person(): any {
-    const { creatorId } = this.file;
+    const creatorId = this.file.latestVersion.creator_id;
     if (creatorId) {
       return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, creatorId);
     }
@@ -53,8 +53,8 @@ class FileViewModel extends AbstractViewModel<FileViewModelProps>
 
   @computed
   get modifiedTime() {
-    const { versions, createdAt } = this.file;
-    const modifiedTime = versions && versions[0] && versions[0].date;
+    const { createdAt } = this.file;
+    const modifiedTime = this.file.latestVersion.date;
     if (modifiedTime && typeof modifiedTime === 'number') {
       return dateFormatter.date(modifiedTime);
     }
