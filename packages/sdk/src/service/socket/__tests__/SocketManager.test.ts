@@ -440,13 +440,6 @@ describe('Socket Manager', () => {
         syncUserConfig.setReconnectSocketServerHost = jest.fn();
         socketManager['_reconnectRetryCount'] = 10;
         notificationCenter.emitKVChange(SOCKET.ERROR);
-
-        expect(syncUserConfig.setIndexSocketServerHost).toHaveBeenCalledWith(
-          '',
-        );
-        expect(
-          syncUserConfig.setReconnectSocketServerHost,
-        ).toHaveBeenCalledWith('');
         expect(socketManager['_reconnectRetryCount']).toEqual(11);
       });
 
@@ -456,13 +449,6 @@ describe('Socket Manager', () => {
         syncUserConfig.setReconnectSocketServerHost = jest.fn();
         socketManager['_reconnectRetryCount'] = 0;
         notificationCenter.emitKVChange(SOCKET.CONNECT_ERROR);
-
-        expect(syncUserConfig.setIndexSocketServerHost).toHaveBeenCalledWith(
-          '',
-        );
-        expect(
-          syncUserConfig.setReconnectSocketServerHost,
-        ).toHaveBeenCalledWith('');
         expect(socketManager['_reconnectRetryCount']).toEqual(1);
       });
     });

@@ -420,23 +420,6 @@ describe('SyncController ', () => {
         expect(syncController['_progressBar'].start).toBeCalled();
       });
     });
-
-    describe('refresh', () => {
-      it('should set last index request as false', () => {
-        SyncUserConfig.prototype.updateIndexSucceed = jest
-          .fn()
-          .mockImplementationOnce(() => {});
-
-        syncController.syncData = jest.fn();
-        syncController.handleSocketConnectionStateChanged({
-          state: 'refresh',
-        });
-        expect(
-          SyncUserConfig.prototype.updateIndexSucceed,
-        ).toHaveBeenCalledWith(false);
-        expect(syncController.syncData).toBeCalled();
-      });
-    });
   });
   describe('handleStoppingSocketEvent', () => {
     afterEach(() => {

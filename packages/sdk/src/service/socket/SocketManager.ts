@@ -156,15 +156,6 @@ export class SocketManager {
         this._reconnectRetryCount
       }`,
     );
-
-    const socketUserConfig = ServiceLoader.getInstance<SyncService>(
-      ServiceConfig.SYNC_SERVICE,
-    ).userConfig;
-    socketUserConfig.setIndexSocketServerHost('');
-    socketUserConfig.setReconnectSocketServerHost('');
-    notificationCenter.emit(SERVICE.SOCKET_STATE_CHANGE, {
-      state: 'refresh',
-    });
   }
 
   private _onLogin() {

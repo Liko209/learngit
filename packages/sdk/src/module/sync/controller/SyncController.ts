@@ -57,10 +57,6 @@ class SyncController {
     if (state === 'connected') {
       this._onSocketConnected();
     } else if (state === 'refresh') {
-      const syncConfig = ServiceLoader.getInstance<SyncService>(
-        ServiceConfig.SYNC_SERVICE,
-      ).userConfig;
-      syncConfig.updateIndexSucceed(false);
       this.syncData();
     } else if (state === 'connecting') {
       this._progressBar.start();
