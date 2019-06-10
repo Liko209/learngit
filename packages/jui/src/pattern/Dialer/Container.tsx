@@ -16,14 +16,16 @@ import {
 
 type Props = {
   removeMargin: boolean;
-  CallAction: React.ComponentType;
+  removePadding: boolean;
+  CallAction?: React.ComponentType;
   KeypadActions: React.ComponentType[] | JSX.Element;
+  keypadFullSize: boolean;
 };
 
-const StyledContainer = styled('div')`
+const StyledContainer = styled('div')<{ removePadding: boolean }>`
   && {
     background-color: ${palette('common', 'white')};
-    padding: ${spacing(0, 6, 6)};
+    padding: ${({ removePadding }) => (removePadding ? 0 : spacing(0, 6, 6))};
     box-sizing: border-box;
     height: ${height(99)};
     display: flex;
@@ -82,6 +84,8 @@ class JuiContainer extends PureComponent<Props> {
   _containerRef: RefObject<any> = createRef();
   static defaultProps = {
     removeMargin: true,
+    removePadding: false,
+    keypadFullSize: false,
   };
 
   state = {
@@ -113,24 +117,39 @@ class JuiContainer extends PureComponent<Props> {
   }
 
   render() {
-    const { CallAction, KeypadActions, removeMargin } = this.props;
+    const {
+      CallAction,
+      KeypadActions,
+      removeMargin,
+      removePadding,
+      keypadFullSize,
+    } = this.props;
+
+    const keypadActions = Array.isArray(KeypadActions)
+      ? KeypadActions.map((Action: React.ComponentType) => (
+          <Action key={Action.displayName} />
+        ))
+      : KeypadActions;
+
     return (
-      <StyledContainer ref={this._containerRef}>
+      <StyledContainer ref={this._containerRef} removePadding={removePadding}>
         <StyledKeypadActionsContainer>
-          <StyledKeypadActions
-            removeMargin={removeMargin}
-            onMouseDown={this._stopPropagation}
-          >
-            {Array.isArray(KeypadActions)
-              ? KeypadActions.map((Action: React.ComponentType) => (
-                  <Action key={Action.displayName} />
-                ))
-              : KeypadActions}
-          </StyledKeypadActions>
+          {keypadFullSize ? (
+            keypadActions
+          ) : (
+            <StyledKeypadActions
+              removeMargin={removeMargin}
+              onMouseDown={this._stopPropagation}
+            >
+              {keypadActions}
+            </StyledKeypadActions>
+          )}
         </StyledKeypadActionsContainer>
-        <StyledCallAction onMouseDown={this._stopPropagation}>
-          <CallAction />
-        </StyledCallAction>
+        {CallAction && (
+          <StyledCallAction onMouseDown={this._stopPropagation}>
+            <CallAction />
+          </StyledCallAction>
+        )}
       </StyledContainer>
     );
   }
@@ -145,4 +164,44 @@ const KeypadHeaderContainer = styled.div`
   padding: ${spacing(0, 9, 1, 5)};
 `;
 
-export { JuiContainer, JuiKeypadAction, KeypadHeaderContainer };
+const ContactSearchContainer = styled.div<{}>`
+  && {
+    position: relative;
+    width: 100%;
+    position: relative;
+    height: 100%;
+    flex: 1;
+    & > div:nth-child(2) {
+      margin-top: ${spacing(11)};
+      height: calc(100% - ${spacing(11)});
+      overflow: hidden;
+    }
+  }
+`;
+
+// https://github.com/styled-components/styled-components/issues/1821
+const ContactSearchItemContent = styled.div<{}>`
+  && {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    overflow: hidden;
+
+    & > *:nth-child(1) {
+      flex: 1;
+    }
+    & > *:nth-child(2) {
+      flex-basis: ${spacing(8)};
+    }
+  }
+`;
+
+export {
+  JuiContainer,
+  JuiKeypadAction,
+  KeypadHeaderContainer,
+  ContactSearchContainer,
+  ContactSearchItemContent,
+};
