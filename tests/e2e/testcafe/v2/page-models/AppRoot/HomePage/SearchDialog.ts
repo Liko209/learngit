@@ -286,7 +286,7 @@ class FullSearch extends BaseSearchResultPage {
   }
 
   get messagesTab() {
-    return this.getComponent(MessagesResultTab, this.self)
+    return this.getComponent(MessagesResultTab)
   }
 
   get searchResultsCount() {
@@ -330,6 +330,9 @@ class FullSearch extends BaseSearchResultPage {
 }
 
 class MessagesResultTab extends BaseConversationPage {
+  get self() {
+    return this.getSelectorByAutomationId('search-message-panel');
+  }
   /**  post */
   async allPostShouldBeByUser(name: string) {
     await H.retryUntilPass(async () => {
@@ -554,8 +557,16 @@ export class JoinTeamDialog extends BaseWebComponent {
     return this.buttonOfText('Join');
   }
 
+  get joinButtonByClass(){
+    return this.getSelector('.containedButtonStyle');
+  }
+
   get cancelButton() {
     return this.buttonOfText('Cancel');
+  }
+
+  get cancelButtonByClass() {
+    return this.getSelector('.textButtonStyle')
   }
 
   async clickJoinButton() {
@@ -563,7 +574,7 @@ export class JoinTeamDialog extends BaseWebComponent {
   }
 
   async clickCancelButton() {
-    await this.t.click(this.cancelButton);
+    await this.t.click(this.cancelButtonByClass);
   }
 }
 

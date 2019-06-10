@@ -17,8 +17,11 @@ import {
   SETTING_ITEM__PHONE_CALLER_ID,
   SETTING_ITEM__PHONE_REGION,
   SETTING_ITEM__PHONE_EXTENSIONS,
+  SETTING_ITEM__NOTIFICATION_INCOMING_CALLS,
+  SETTING_ITEM__NOTIFICATION_CALLS_VOICEMAILS,
 } from './constant';
 import { RegionSettingItem } from './RegionSettingItem';
+import { SETTING_SECTION__DESKTOP_NOTIFICATIONS } from '@/modules/notification/notificationSettingManager/constant';
 
 class TelephonySettingManager {
   private _scope = Symbol('TelephonySettingManager');
@@ -66,6 +69,34 @@ class TelephonySettingManager {
         },
       ],
     });
+    this._settingService.registerItem(
+      this._scope,
+      SETTING_SECTION__DESKTOP_NOTIFICATIONS,
+      {
+        id: SETTING_ITEM__NOTIFICATION_INCOMING_CALLS,
+        automationId: 'incomingCalls',
+        title:
+          'setting.notificationAndSounds.desktopNotifications.incomingCalls.label',
+        description:
+          'setting.notificationAndSounds.desktopNotifications.incomingCalls.description',
+        type: SETTING_ITEM_TYPE.TOGGLE,
+        weight: 300,
+      },
+    );
+    this._settingService.registerItem(
+      this._scope,
+      SETTING_SECTION__DESKTOP_NOTIFICATIONS,
+      {
+        id: SETTING_ITEM__NOTIFICATION_CALLS_VOICEMAILS,
+        automationId: 'callsAndVoicemails',
+        title:
+          'setting.notificationAndSounds.desktopNotifications.callsAndVoicemails.label',
+        description:
+          'setting.notificationAndSounds.desktopNotifications.callsAndVoicemails.description',
+        type: SETTING_ITEM_TYPE.TOGGLE,
+        weight: 400,
+      },
+    );
   }
 
   dispose() {

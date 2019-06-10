@@ -1,5 +1,9 @@
 {
   "common": {
+    "button": {
+      "ariaToggleOn": "On, click to turn off",
+      "ariaToggleOff": "Off, click to turn on"
+    },
     "dialog": {
       "OK": "OK",
       "cancel": "Cancel",
@@ -76,6 +80,7 @@
     "newActions": "New actions",
     "viewYourProfile": "View Your Profile",
     "aboutRingCentral": "About RingCentral",
+    "sendFeedback": "Send Feedback",
     "version": "Version",
     "lastCommit": "Last Commit",
     "deployedTime": "Date",
@@ -227,38 +232,29 @@
   },
   "item": {
     "activity": {
-      "items": "items",
-      "task": "task",
-      "event": "event",
-      "note": "note",
-      "file": "file",
-      "file_plural": "files",
-      "link": "link",
-      "link_plural": "links",
-      "video chat": "video chat",
-      "audio conference": "audio conference",
-      "snippet": "snippet",
+      "created a task": "created a task",
+      "assigned task": "assigned task",
+      "reassigned task": "reassigned task",
+      "completed task": "completed task",
+      "completed {{count}}% of task": "completed {{count}}% of task",
+      "marked task incomplete": "marked task incomplete",
+      "marked task incomplete for {{user}}": "marked task incomplete for {{user}}",
+      "completed task for {{user}}": "completed task for {{user}}",
+      "created a event": "created an event",
+      "updated a event": "updated an event",
+      "updated event": "updated event",
+      "shared a note": "shared a note",
+      "shared a file": "shared a file",
+      "shared {{count}} file": "shared {{count}} files",
+      "uploaded version {{number}}": "uploaded version {{number}}",
+      "shared a link": "shared a link",
+      "shared {{count}} link": "shared {{count}} links",
+      "shared a snippet": "shared a snippet",
+      "shared items": "shared items",
+      "started a audio conference": "started an audio conference",
+      "started a video chat": "started a video chat",
       "replied": "replied",
-      "shared": "shared",
-      "started": "started",
-      "updated": "updated",
-      "created": "created",
-      "uploaded": "uploaded",
-      "version": "version",
-      "via": "via",
-      "marked": "marked",
-      "completed": "completed",
-      "reassigned": "reassigned",
-      "assigned": "assigned",
-      "incomplete": "incomplete",
-      "verb-noun-adjectives": "$t({{verb}}) $t({{noun}}) $t({{adjectives}})",
-      "verb-noun-adjectives-user": "$t({{verb}}) $t({{noun}}) $t({{adjectives}}) for {{user}}",
-      "verb-noun-numerals": "$t({{verb}}) $t({{noun}}) {{count}}",
-      "verb-noun": "$t({{verb}}) $t({{noun}})",
-      "verb-noun-user": "$t({{verb}}) $t({{noun}}) for {{user}}",
-      "verb-article-noun": "$t({{verb}}) {{noun, en-handle-an}} $t({{noun}})",
-      "verb-numerals-noun": "$t({{verb}}) {{count}} $t({{noun}})",
-      "verb-numerals-prepositions-noun": "$t({{verb}}) {{count}}% of $t({{noun}})"
+      "via": "via"
     },
     "meeting": {
       "videoCallInProgress": "Video Call in progress",
@@ -521,7 +517,8 @@
       "Answer": "Answer",
       "back": "Back",
       "forward": "Forward",
-      "customForward": "Custom..."
+      "customForward": "Custom...",
+      "flip": "Flip"
     },
     "customReplyMessagePlaceholder": "Type a custom message",
     "customReplyLabel": "Custom message",
@@ -562,7 +559,9 @@
       "ReplyCustomMessageEmpty": "Sorry, you cannot send an empty message.",
       "ReplyMessageSuccess": "Your voice message was sent successfully.",
       "ForwardBackendError": "Sorry, something went wrong on our end, we weren't able to forward the call.",
-      "ForwardCallSuccess": "Your call was forwarded successfully."
+      "ForwardCallSuccess": "Your call was forwarded successfully.",
+      "FlipBackendError": "Sorry, we weren't able to flip the call. Try again later.",
+      "FlipSuccess": "Call flipped"
     },
     "notification": {
       "incomingCall": "Incoming Call",
@@ -589,7 +588,8 @@
     },
     "callerIdSelector": {
       "tooltip": "You can change this default Caller ID in settings."
-    }
+    },
+    "forwardCall": "Forward Call"
   },
   "phone": {
     "tab": {
@@ -607,10 +607,75 @@
   },
   "integration": {},
   "setting": {
+    "errorText": {
+      "server": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later.",
+      "network": "We weren't able to save your settings. Check your network connection, then try again."
+    },
     "Settings": "Settings",
     "teamSettings": "Settings",
     "general": "General",
-    "notificationAndSounds": "Notification and Sounds",
+    "notificationAndSounds": {
+      "title": "Notification and Sounds",
+      "otherNotificationSettings": {
+        "title": "Other notification settings",
+        "newMessageBadgeCount": {
+          "options": {
+            "groups_and_mentions": "Direct messages and mentions only",
+            "all": "All new messages"
+          },
+          "description": "Choose how the app will count new messages in the app badge count",
+          "label": "New message badge count"
+        }
+      },
+      "desktopNotifications": {
+        "title": "Desktop Notifications",
+        "notificationsForBrowser": {
+          "label": "Desktop notifications for browser",
+          "description": "Turn on/off desktop notifications on your web browser. Browser permission is needed for desktop notifications."
+        },
+        "newMessages": {
+          "label": "New Messages",
+          "description": "Choose your preference for desktop notifications for new messages",
+          "options": {
+            "always": "All new messages",
+            "mentions_or_dms": "Direct messages and mentions",
+            "never": "Off"
+          }
+        },
+        "incomingCalls": {
+          "label": "Incoming Calls",
+          "description": "Choose your preference for desktop notifications for incoming calls"
+        },
+        "callsAndVoicemails": {
+          "label": "Missed Calls and New Voicemails",
+          "description": "Choose your preference for desktop notifications for missed calls and new voicemails"
+        }
+      },
+      "emailNotifications": {
+        "title": "Email Notifications",
+        "directMessages": {
+          "label": "Direct messages",
+          "description": "Receive email notifications for direct messages"
+        },
+        "mentions": {
+          "label": "Mentions",
+          "description": "Receive email notifications for when you are mentioned"
+        },
+        "teams": {
+          "label": "Teams",
+          "description": "Receive email notifications for direct messages"
+        },
+        "dailyDigest": {
+          "label": "Daily Digest",
+          "description": "Receive Glip daily digest emails summarizing daily tasks and team events"
+        },
+        "options": {
+          "0": "Off",
+          "900000": "Every 15 minutes",
+          "3600000": "Every hour"
+        }
+      }
+    },
     "sounds": "Sounds",
     "messages": "Messages",
     "meetings": "Meetings",
@@ -622,13 +687,11 @@
         "title": "General",
         "callerID": {
           "label": "Caller ID",
-          "description": "Choose your default Caller ID for making RingCentral phone calls",
-          "errorText": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later."
+          "description": "Choose your default Caller ID for making RingCentral phone calls"
         },
         "extensions": {
           "label": "Extension settings",
-          "description": "Customize your RingCentral extension settings (call routing, voicemail greetings and more)",
-          "errorText": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later"
+          "description": "Customize your RingCentral extension settings (call routing, voicemail greetings and more)"
         },
         "regionSetting": {
           "label": "Region",
@@ -640,7 +703,28 @@
           "regionChangeDesc": "Set the country and area code for your region. This will be used for local and emergency dialing and phone number formatting."
         }
       }
-    }
+    },
+    "audioSource": {
+      "title": "Audio sources",
+      "microphoneSource": {
+        "label": "Microphone source",
+        "description": "Update your microphone source for RingCentral voice calls"
+      },
+      "speakerSource": {
+        "label": "Speaker source",
+        "description": "Update your speaker source for RingCentral voice calls"
+      },
+      "volume": {
+        "label": "Volume control",
+        "description": "Update the volume"
+      }
+    },
+    "default": "Default",
+    "speaker": "Speaker",
+    "noDevices": "No devices",
+    "microphone": "Microphone",
+    "builtInMicrophone": "Built-in microphone",
+    "builtInSpeaker": "Built-in speaker"
   },
   "viewer": {
     "ZoomIn": "Scale file up",
@@ -654,7 +738,18 @@
     "ConversationClosed": "You removed the conversation."
   },
   "notification": {
-    "mentioned": "You were mentioned"
+    "mentioned": "You were mentioned",
+    "notificationEnabled": "Notifications are now enabled.",
+    "topBanner": {
+      "enablePermissionMessage": "RingCentral needs your permission to enable desktop notifications.",
+      "enablePermissionAction": "Enable notifications",
+      "blockedPermissionMessage": "RingCentral notifications are blocked. Go to your browser settings to allow RingCentral to send notifications."
+    },
+    "notificationBlockedDialog": {
+      "title": "Notifications not allowed",
+      "content": "You currently have desktop notifications for RingCentral turned off. Update your browser settings to allow desktop notifications.",
+      "button": "OK"
+    }
   },
   "feedback": {
     "name": "Feedback",
@@ -664,10 +759,10 @@
     "submit": "Send",
     "describeYourProblemHere": "Describe your problem here",
     "uploadLogSuccess": "Upload log successfully.",
-    "uploadLogFailed": "Sorry, we weren't able to upload the logs.",
+    "uploadLogFailed": "Sorry, we weren't able to send the feedback. Try again later.",
     "openEmailFailed": "Open email failed.",
     "sendFeedbackSuccess": "Feedback sent successfully.",
-    "sendFeedbackFailed": "Send feedback failed.",
+    "sendFeedbackFailed": "Sorry, we weren't able to send the feedback. Try again later.",
     "title": "It looks like we're having issues.",
     "issueTitle": "Summary",
     "issueDescription": "What happened?",

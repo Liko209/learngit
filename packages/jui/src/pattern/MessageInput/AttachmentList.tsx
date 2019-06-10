@@ -15,8 +15,14 @@ type ItemInfo = {
   name: string;
 };
 
+type FileName = {
+  id: number;
+  fileNameChildren: React.ReactChild | null | (React.ReactChild | null)[];
+};
+
 type AttachmentListProps = {
   files?: ItemInfo[];
+  fileNames?: FileName[];
   removeAttachment: (file: ItemInfo) => void;
   iconResolver?: (file: ItemInfo) => string;
 };
@@ -44,7 +50,12 @@ class AttachmentList extends PureComponent<AttachmentListProps> {
     }
   }
   render() {
-    const { files = [], removeAttachment, iconResolver } = this.props;
+    const {
+      files = [],
+      removeAttachment,
+      iconResolver,
+      fileNames = [],
+    } = this.props;
     const count = files.length;
     return (
       <Wrapper data-test-automation-id="attachment-list">
@@ -58,7 +69,7 @@ class AttachmentList extends PureComponent<AttachmentListProps> {
                 }
                 ref={this._lastItemRef}
                 status={ITEM_STATUS.NORMAL}
-                name={looper.name}
+                name={fileNames[idx] ? fileNames[idx].fileNameChildren : ''}
                 onClickDeleteButton={() => removeAttachment(looper)}
                 key={idx}
               />

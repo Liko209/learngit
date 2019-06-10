@@ -5,12 +5,10 @@
  */
 import _ from 'lodash';
 import {
-  ESettingValueType,
   UserSettingEntity,
   AbstractSettingEntityHandler,
   SettingEntityIds,
 } from 'sdk/module/setting';
-import { SettingModuleIds } from 'sdk/module/setting/constants';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
@@ -52,9 +50,9 @@ export class CallerIdSettingHandler extends AbstractSettingEntityHandler<
     const callerList = await rcInfoService.getCallerIdList();
     const info = await this._profileService.getDefaultCaller();
     const settingItem: UserSettingEntity<PhoneNumberModel> = {
-      weight: SettingModuleIds.CallerIdSetting.weight,
-      valueType: ESettingValueType.OBJECT,
-      parentModelId: SettingModuleIds.PhoneSetting_General.id,
+      weight: 0,
+      valueType: 0,
+      parentModelId: 0,
       id: SettingEntityIds.Phone_CallerId,
       source: callerList,
       value: info,

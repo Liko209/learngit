@@ -10,15 +10,36 @@ import { JobSchedulerConfig } from './JobSchedulerConfig';
 import notificationCenter from '../../../service/notificationCenter';
 import { WINDOW, SERVICE } from '../../../service/eventKey';
 import { mainLogger } from 'foundation/src';
+import { SequenceProcessorHandler, IProcessor } from 'sdk/framework/processor';
+
+class ScheduleJobProcessor implements IProcessor {
+  constructor(
+    private _name: string,
+    private _processFunc: () => Promise<void>,
+  ) {}
+
+  async process(): Promise<boolean> {
+    await this._processFunc();
+    return true;
+  }
+
+  name(): string {
+    return `${this._name}`;
+  }
+}
+
+const UTIL_NAME = 'JobScheduler';
 
 class JobScheduler {
   private _isOnline: boolean;
   private _jobMap: Map<JOB_KEY, JobInfo>;
   private _userConfig: JobSchedulerConfig;
+  private _jobProcessor: SequenceProcessorHandler;
 
   constructor() {
     this._isOnline = true;
     this._jobMap = new Map<JOB_KEY, JobInfo>();
+    this._jobProcessor = new SequenceProcessorHandler(UTIL_NAME);
     notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
       this.onNetWorkChanged(onLine);
     });
@@ -52,7 +73,7 @@ class JobScheduler {
         if (info.jobId) {
           clearTimeout(info.jobId);
         }
-        this._execute(info);
+        this._addProcessor(info);
       }
     });
   }
@@ -79,8 +100,8 @@ class JobScheduler {
 
   preSchedule(info: JobInfo): void {
     if (this._jobMap.has(info.key)) {
-      mainLogger.warn(
-        `JobScheduler: already has job: ${info.key},
+      mainLogger.tags(UTIL_NAME).warn(
+        `already has job: ${info.key},
         will remove the old job and schedule again.`,
       );
       this.cancelJob(info.key, false);
@@ -94,13 +115,13 @@ class JobScheduler {
     this.preSchedule(info);
 
     if (force) {
-      this._execute(info);
+      this._addProcessor(info);
       return;
     }
 
     const lastSuccessTime: number = this._getLastSuccessTime(info.key);
     if (this._canExecute(info, lastSuccessTime)) {
-      this._execute(info);
+      this._addProcessor(info);
       return;
     }
 
@@ -121,7 +142,7 @@ class JobScheduler {
   }
 
   cancelJob(key: JOB_KEY, removeLastTime: boolean = false): void {
-    mainLogger.debug(`JobScheduler: cancelJob ${key}, ${removeLastTime}`);
+    mainLogger.tags(UTIL_NAME).debug(`cancelJob ${key}, ${removeLastTime}`);
     const info = this._jobMap.get(key);
     if (info) {
       info.isDropt = true;
@@ -150,7 +171,7 @@ class JobScheduler {
     try {
       return this.userConfig.getLastSuccessTime(key) || 0;
     } catch (err) {
-      mainLogger.error(`JobScheduler: _getLastSuccessTime error => ${err}`);
+      mainLogger.tags(UTIL_NAME).error(`_getLastSuccessTime error => ${err}`);
       return 0;
     }
   }
@@ -159,7 +180,7 @@ class JobScheduler {
     try {
       this.userConfig.setLastSuccessTime(key, value);
     } catch (err) {
-      mainLogger.error(`JobScheduler: _setLastSuccessTime error => ${err}`);
+      mainLogger.tags(UTIL_NAME).error(`_setLastSuccessTime error => ${err}`);
       return false;
     }
     return true;
@@ -169,16 +190,18 @@ class JobScheduler {
     try {
       this.userConfig.removeLastSuccessTime(key);
     } catch (err) {
-      mainLogger.error(`JobScheduler: _removeLastSuccessTime error => ${err}`);
+      mainLogger
+        .tags(UTIL_NAME)
+        .error(`_removeLastSuccessTime error => ${err}`);
       return false;
     }
     return true;
   }
 
   private _setTimer(info: JobInfo, interval: number): NodeJS.Timeout {
-    mainLogger.debug(`JobScheduler: _setTimer, ${info.key}, ${interval}`);
+    mainLogger.tags(UTIL_NAME).debug(`_setTimer, ${info.key}, ${interval}`);
     return setTimeout(() => {
-      this._execute(info);
+      this._addProcessor(info);
     },                interval);
   }
 
@@ -187,24 +210,29 @@ class JobScheduler {
       return false;
     }
     const currentTime: number = Date.now();
-    mainLogger.debug(
-      `JobScheduler: _canExecute, ${
-        info.key
-      }, ${currentTime}, ${lastSuccessTime}`,
-    );
+    mainLogger
+      .tags(UTIL_NAME)
+      .debug(`_canExecute, ${info.key}, ${currentTime}, ${lastSuccessTime}`);
     return currentTime - lastSuccessTime >= info.intervalSeconds * 1000;
   }
 
-  private _execute(info: JobInfo): void {
+  private _addProcessor(info: JobInfo): void {
+    const processor = new ScheduleJobProcessor(info.key, async () => {
+      await this._execute(info);
+    });
+    this._jobProcessor.addProcessor(processor);
+  }
+
+  private async _execute(info: JobInfo): Promise<void> {
     if (info.isExecuting || info.isDropt) {
-      mainLogger.debug(`JobScheduler: can not execute ${info.key}`);
+      mainLogger.tags(UTIL_NAME).debug(`can not execute ${info.key}`);
       return;
     }
 
     const onExecutionFinished = (successful: boolean) => {
-      mainLogger.debug(
-        `JobScheduler: onExecutionFinished ${info.key} => ${successful}`,
-      );
+      mainLogger
+        .tags(UTIL_NAME)
+        .debug(`onExecutionFinished ${info.key} => ${successful}`);
       if (!info || info.isDropt) {
         return;
       }
@@ -237,13 +265,13 @@ class JobScheduler {
     };
 
     info.isExecuting = true;
-    mainLogger.debug(`JobScheduler: start execute ${info.key}`);
+    mainLogger.tags(UTIL_NAME).debug(`start execute ${info.key}`);
     try {
-      info.executeFunc(onExecutionFinished);
+      await info.executeFunc(onExecutionFinished);
     } catch (err) {
-      mainLogger.error(
-        `JobScheduler: execute failed ${info.key}, error => ${err}`,
-      );
+      mainLogger
+        .tags(UTIL_NAME)
+        .error(`execute failed ${info.key}, error => ${err}`);
       onExecutionFinished(false);
     }
   }

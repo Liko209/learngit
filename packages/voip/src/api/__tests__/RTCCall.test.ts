@@ -2237,6 +2237,7 @@ describe('RTC call', () => {
 
     it("should call webphone's forward API when forward incoming call in idle state", done => {
       setup();
+      session.forward.mockResolvedValue(null);
       call.forward(forwardNumber);
       setImmediate(() => {
         expect(call._fsm.state()).toBe('forwarding');
@@ -2247,6 +2248,7 @@ describe('RTC call', () => {
 
     it("should call state change to forwarding and call webphone's forward API when call forward in replying state. [JPT-1763]", done => {
       setup();
+      session.forward.mockResolvedValue(null);
       call.startReply();
       setImmediate(() => {
         expect(call._fsm.state()).toBe('replying');
@@ -2262,6 +2264,7 @@ describe('RTC call', () => {
     describe('should report forward failed when forward incoming call and FSM is not idle state [JPT-1302]', () => {
       it('should report forward failed when forward incoming call and FSM is pending state', done => {
         setup();
+        session.forward.mockResolvedValue(null);
         call._fsm.accountNotReady();
         call.forward(forwardNumber);
         setImmediate(() => {
@@ -2275,6 +2278,7 @@ describe('RTC call', () => {
 
       it('should report forward failed when forward incoming call and FSM is answering state', done => {
         setup();
+        session.forward.mockResolvedValue(null);
         call._fsm.answer();
         call.forward(forwardNumber);
         setImmediate(() => {
@@ -2288,6 +2292,7 @@ describe('RTC call', () => {
 
       it('should report forward failed when forward incoming call and FSM is forwarding state', done => {
         setup();
+        session.forward.mockResolvedValue(null);
         call._fsm.forward();
         call.forward(forwardNumber);
         setImmediate(() => {

@@ -26,24 +26,22 @@ test(formalName('Check "back" button and "forward" button', ['P2', 'TopBar', 'Ba
 
   const dashboardButton = app.homePage.leftPanel.dashboardEntry;
   const header = app.homePage.header
-  const backButton = header.backButton;
-  const forwardButton = header.forwardButton;
 
   await h(t).withLog('When I click "dashboard" Tab and hover "back" button', async() => {
     await dashboardButton.enter();
-    await backButton.hoverSelf();
+    await header.hoverBackButton();
   });
-  await h(t).withLog('Then back button on header should be enabled', async() => {
-    await backButton.shouldBeEnabled();
-  });
+  // await h(t).withLog('Then back button on header should be enabled', async() => {
+  //   await backButton.shouldBeEnabled();
+  // });
   await h(t).log('And I take screenshot',{ screenshotPath: 'Jupiter_TopBar_BackButton' });
 
   await h(t).withLog('When I click "back" button and I hover "forward" button', async() => {
-    await backButton.clickSelf();
-    await forwardButton.hoverSelf();
+    await header.clickBackButton();
+    await header.hoverForwardButton();
   });
-  await h(t).withLog('Then forward button on header should be enabled', async() => {
-    await forwardButton.shouldBeEnabled();
-  });
+  // await h(t).withLog('Then forward button on header should be enabled', async() => {
+  //   await forwardButton.shouldBeEnabled();
+  // });
   await h(t).log('And I take screenshot',{ screenshotPath: 'Jupiter_TopBar_ForwardButton' });
 });

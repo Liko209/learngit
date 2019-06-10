@@ -11,7 +11,7 @@ fixture('ContentPanel/ShareFiles')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Open team conversation and shared files', ['P2', 'Messages', 'ContentPanel', 'ShareFiles', 'V1.4', 'hank.huang']), async (t) => {
+test(formalName('Open team conversation and shared files', ['P2', 'Messages', 'ContentPanel', 'ShareFiles', 'V1.4', 'Hank.Huang']), async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[6];
   const team = <IGroup>{

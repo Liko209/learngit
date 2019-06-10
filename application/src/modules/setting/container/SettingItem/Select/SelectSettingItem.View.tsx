@@ -28,9 +28,8 @@ class SelectSettingItemViewComponent<
   T extends SourceItemType
 > extends Component<Props<T>> {
   @catchError.flash({
-    // TODO move the keys out of setting.phone
-    network: 'setting.phone.general.callerID.errorText',
-    server: 'setting.phone.general.callerID.errorText',
+    network: 'setting.errorText.network',
+    server: 'setting.errorText.server',
   })
   private _handleChange = async (event: ChangeEvent<HTMLSelectElement>) => {
     await this.props.saveSetting(event.target.value);
@@ -52,14 +51,14 @@ class SelectSettingItemViewComponent<
   }
 
   private _renderSelect() {
-    const { disabled, settingItem, settingItemEntity } = this.props;
+    const { value, disabled, settingItem } = this.props;
 
-    const value = this._extractValue(settingItemEntity.value);
     return (
       <JuiBoxSelect
         onChange={this._handleChange}
         disabled={disabled}
         value={value}
+        displayEmpty={true}
         automationId={`settingItemSelectBox-${settingItem.automationId}`}
         data-test-automation-value={value}
         isFullWidth={true}
@@ -70,66 +69,35 @@ class SelectSettingItemViewComponent<
   }
 
   private _renderSource() {
-    const { source } = this.props.settingItemEntity;
-    return source ? source.map((item: T) => this._renderSourceItem(item)) : [];
+    return this.props.source.map((item: T) => this._renderSourceItem(item));
   }
 
   private _renderSourceItem(sourceItem: T) {
-    const itemValue = this._extractValue(sourceItem);
+    const itemValue = this.props.extractValue(sourceItem);
     return (
       <JuiMenuItem
-        value={itemValue}
         key={itemValue}
+        value={itemValue}
+        disabled={itemValue === ''}
         automationId={`settingItemSelectBoxItem-${
           this.props.settingItem.automationId
-        }`}
+        }-${itemValue}`}
         data-test-automation-class={'settingItemSelectBoxItem'}
         data-test-automation-value={itemValue}
       >
-        {this._renderMenuItemChildren(sourceItem)}
+        {this._renderMenuItemChildren(sourceItem, itemValue)}
       </JuiMenuItem>
     );
   }
 
-  private _renderMenuItemChildren(sourceItem: T) {
-    const { sourceRenderer: ItemComponent } = this.props.settingItem;
-    let node: React.ReactNode;
-    if (ItemComponent) {
-      node = (
-        <ItemComponent
-          key={this._extractValue(sourceItem)}
-          value={sourceItem}
-        />
-      );
-    } else if (
-      typeof sourceItem === 'string' ||
-      typeof sourceItem === 'number'
-    ) {
-      node = sourceItem;
-    } else {
-      node = JSON.stringify(sourceItem);
-    }
-    return node;
-  }
-
-  private _extractValue(sourceItem: T) {
-    const { valueExtractor } = this.props.settingItem;
-    let result: string | number;
-    if (valueExtractor) {
-      result = valueExtractor(sourceItem);
-    } else if (
-      typeof sourceItem === 'string' ||
-      typeof sourceItem === 'number'
-    ) {
-      result = sourceItem;
-    } else if (typeof sourceItem === 'object') {
-      result = (sourceItem as { id: string | number }).id;
-    } else if (sourceItem === undefined) {
-      result = '';
-    } else {
-      throw new Error('Error: Can not extract value of source');
-    }
-    return result.toString();
+  private _renderMenuItemChildren(sourceItem: T, itemValue: string) {
+    const { source, settingItem } = this.props;
+    const { sourceRenderer: ItemComponent } = settingItem;
+    return ItemComponent ? (
+      <ItemComponent key={itemValue} value={sourceItem} source={source} />
+    ) : (
+      itemValue
+    );
   }
 }
 

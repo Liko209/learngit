@@ -32,11 +32,11 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get callerIDDropDown() {
-    return this.getSelectorByAutomationId('settingItemSelectBox-callerID', this.generalSection);
+    return this.getSelectorByAutomationId('SettingSelectBox', this.generalSection);
   }
 
   get callerIDDropDownItem() {
-    return this.getSelectorByAutomationId('settingItemSelectBoxItem-callerID');
+    return this.getSelectorByAutomationId('SettingSelectItem');
   }
 
   get updateRegionDialog() {
@@ -52,7 +52,7 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get regionUpdateButton() {
-    return this.getSelectorByAutomationId('settingItemButton-regionSetting', this.generalSection);
+    return this.getSelectorByAutomationId('regionSettingDialogOpenButton', this.generalSection);
   }
 
   get extensionSettingsLabel() {
@@ -161,7 +161,7 @@ export class UpdateRegionDialog extends BaseWebComponent {
   }
 
   get title() {
-    return this.getSelectorByAutomationId('dialog-header-regionSetting');
+    return this.getSelectorByAutomationId('regionSettingDialogHeader');
   }
 
   get statement() {
