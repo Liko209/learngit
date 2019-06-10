@@ -475,7 +475,7 @@ test.meta(<ITestMeta>{
 
     await h(t).withLog(`Then I can see "{default}" in Microphone source selectorBox of audio sources section`, async (step) => {
       step.setMetadata('default', defaultDeviceLabel);
-      await notificationAndSoundsPage.currentMicrophoneSourceLabelToBe(lastAudioInput.label);
+      await notificationAndSoundsPage.currentMicrophoneSourceLabelToBe(defaultDeviceLabel);
     });
 
     await h(t).withLog(`When I click Microphone source selectorBox`, async () => {
@@ -493,7 +493,7 @@ test.meta(<ITestMeta>{
       await notificationAndSoundsPage.quitByPressEsc();
     });
 
-    /** insert input */
+    /** insert output */
     await h(t).withLog(`When I click speaker source selectorBox`, async () => {
       await notificationAndSoundsPage.clickSpeakerSourceSelectBox();
     });
@@ -505,27 +505,27 @@ test.meta(<ITestMeta>{
 
     const lastAudioOutput = <deviceInfo>{
       deviceId: uuid(),
-      kind: "audioinput",
+      kind: "audiooutput",
       label: "last-Audio-Output",
       groupId: uuid()
     }
 
     const newAudioOutput = <deviceInfo>{
       deviceId: uuid(),
-      kind: "audioinput",
-      label: "new-Audio-Input",
+      kind: "audiooutput",
+      label: "new-Audio-Output",
       groupId: uuid()
     }
 
-    await h(t).withLog(`When I insert new audio input device`, async () => {
+    await h(t).withLog(`When I insert new audio output device`, async () => {
       deviceInfos.push(lastAudioOutput, newAudioOutput);
-      audioInputs.push(lastAudioOutput, newAudioOutput);
+      audioOutputs.push(lastAudioOutput, newAudioOutput);
       await mockDeviceInfos(deviceInfos);
     });
 
     await h(t).withLog(`Then speaker source should have {length} items`, async (step) => {
-      step.setMetadata('length', audioInputs.length.toString())
-      await t.expect(notificationAndSoundsPage.speakerSourceItems.count).eql(audioInputs.length);
+      step.setMetadata('length', audioOutputs.length.toString())
+      await t.expect(notificationAndSoundsPage.speakerSourceItems.count).eql(audioOutputs.length);
     });
 
     await h(t).withLog(`And speaker source should have {lastLabel} and {newLabel}`, async (step) => {
@@ -561,10 +561,10 @@ test.meta(<ITestMeta>{
       await notificationAndSoundsPage.currentSpeakerSourceLabelToBe(newAudioOutput.label);
     });
 
-    /** remove input */
+    /** remove output */
     await h(t).withLog(`When I remove the new speaker device`, async () => {
       deviceInfos.pop();
-      audioInputs.pop();
+      audioOutputs.pop();
       await mockDeviceInfos(deviceInfos);
     });
 
@@ -578,9 +578,9 @@ test.meta(<ITestMeta>{
     });
 
     await h(t).withLog(`Then speaker source should have {length} items`, async (step) => {
-      step.setMetadata('length', audioInputs.length.toString())
+      step.setMetadata('length', audioOutputs.length.toString())
 
-      await t.expect(notificationAndSoundsPage.speakerSourceItems.count).eql(audioInputs.length);
+      await t.expect(notificationAndSoundsPage.speakerSourceItems.count).eql(audioOutputs.length);
     });
 
     await h(t).withLog(`And {newLabel} dismiss in drop down list`, async (step) => {
@@ -591,7 +591,7 @@ test.meta(<ITestMeta>{
 
     await h(t).withLog(`When I remove the last speaker device`, async () => {
       deviceInfos.pop();
-      audioInputs.pop();
+      audioOutputs.pop();
       await mockDeviceInfos(deviceInfos);
     });
 
@@ -605,8 +605,8 @@ test.meta(<ITestMeta>{
     });
 
     await h(t).withLog(`Then speaker source should have {length} items`, async (step) => {
-      step.setMetadata('length', audioInputs.length.toString());
-      await t.expect(notificationAndSoundsPage.speakerSourceItems.count).eql(audioInputs.length);
+      step.setMetadata('length', audioOutputs.length.toString());
+      await t.expect(notificationAndSoundsPage.speakerSourceItems.count).eql(audioOutputs.length);
     });
 
     await h(t).withLog(`And {lastLabel} dismiss in drop down list`, async (step) => {
