@@ -68,9 +68,9 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
 
   private _getGroupItemsQuery(groupId: number) {
     const query = this.createQuery();
-    return isIEOrEdge
+    return isIEOrEdge // ie or edge does not support array type index
       ? query.filter(item => item.group_ids.includes(groupId))
-      : query.equal('group_ids', groupId);
+      : query.anyOf('group_ids', [groupId]);
   }
 
   toSanitizedItem(item: Item) {
