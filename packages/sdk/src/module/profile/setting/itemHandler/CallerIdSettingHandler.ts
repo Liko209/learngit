@@ -5,12 +5,11 @@
  */
 import _ from 'lodash';
 import {
-  ESettingValueType,
   UserSettingEntity,
   AbstractSettingEntityHandler,
   SettingEntityIds,
+  SettingService,
 } from 'sdk/module/setting';
-import { SettingModuleIds } from 'sdk/module/setting/constants';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
@@ -21,7 +20,7 @@ import { AccountService } from 'sdk/module/account';
 import { ENTITY } from 'sdk/service';
 import { Profile } from '../../entity';
 import { IProfileService } from '../../service/IProfileService';
-import { SETTING_KEYS } from 'sdk/module/profile/constants';
+import { SETTING_KEYS, CALLING_OPTIONS } from 'sdk/module/profile/constants';
 
 export class CallerIdSettingHandler extends AbstractSettingEntityHandler<
   PhoneNumberModel
@@ -37,6 +36,9 @@ export class CallerIdSettingHandler extends AbstractSettingEntityHandler<
     this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
       this.onProfileEntityUpdate(payload),
     );
+    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload =>
+      this.onSettingEntityUpdate(payload),
+    );
   }
 
   async updateValue(record: PhoneNumberModel) {
@@ -49,16 +51,26 @@ export class CallerIdSettingHandler extends AbstractSettingEntityHandler<
     const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
       ServiceConfig.RC_INFO_SERVICE,
     );
+    const settingService = ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    );
+    const model = await settingService.getById<CALLING_OPTIONS>(
+      SettingEntityIds.Phone_DefaultApp,
+    );
+    const callingOptions = model && model.value;
     const callerList = await rcInfoService.getCallerIdList();
     const info = await this._profileService.getDefaultCaller();
     const settingItem: UserSettingEntity<PhoneNumberModel> = {
-      weight: SettingModuleIds.CallerIdSetting.weight,
-      valueType: ESettingValueType.OBJECT,
-      parentModelId: SettingModuleIds.PhoneSetting_General.id,
+      weight: 0,
+      valueType: 0,
+      parentModelId: 0,
       id: SettingEntityIds.Phone_CallerId,
       source: callerList,
       value: info,
-      state: ESettingItemState.ENABLE,
+      state:
+        callingOptions === CALLING_OPTIONS.RINGCENTRAL
+          ? ESettingItemState.INVISIBLE
+          : ESettingItemState.ENABLE,
       valueSetter: value => this.updateValue(value),
     };
     return settingItem;
@@ -81,6 +93,13 @@ export class CallerIdSettingHandler extends AbstractSettingEntityHandler<
       this.userSettingEntityCache.value &&
       this.userSettingEntityCache.value.id;
     if (defaultCallerId !== lastNumberId) {
+      await this.getUserSettingEntity();
+    }
+  }
+  async onSettingEntityUpdate(
+    payload: NotificationEntityUpdatePayload<UserSettingEntity>,
+  ) {
+    if (payload.body.entities.has(SettingEntityIds.Phone_DefaultApp)) {
       this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
     }
   }

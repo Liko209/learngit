@@ -77,6 +77,12 @@ const schema: ISchema = {
     14: {
       userConfigs: gen('key'),
     },
+    15: {
+      callLog: gen('id', ['sessionId']),
+      callLogView: gen('id', ['__timestamp']),
+      voicemail: gen('id'),
+      voicemailView: gen('id'),
+    },
   },
 };
 

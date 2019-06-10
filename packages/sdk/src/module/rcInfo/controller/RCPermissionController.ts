@@ -12,6 +12,9 @@ import {
   RCServiceFeatureName,
 } from '../types';
 import { RCServiceFeature } from '../../../api/ringcentral';
+import { CompanyService } from 'sdk/module/company';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { E_ACCOUNT_TYPE } from 'sdk/module/company/entity';
 
 class RCPermissionController {
   private _featurePermissionMap: Map<
@@ -41,14 +44,58 @@ class RCPermissionController {
     return false;
   }
 
+  private async _isDisabledRcPermissionForRcProAndFaxUser(
+    featurePermission: ERCServiceFeaturePermission,
+  ) {
+    switch (featurePermission) {
+      case ERCServiceFeaturePermission.VOIP_CALLING:
+      case ERCServiceFeaturePermission.DOMESTIC_CALLS:
+      case ERCServiceFeaturePermission.INTERNAL_CALLS:
+      case ERCServiceFeaturePermission.RINGCENTRAL_MOBILE_APP:
+      case ERCServiceFeaturePermission.CONFERENCING:
+        const companyService = ServiceLoader.getInstance<CompanyService>(
+          ServiceConfig.COMPANY_SERVICE,
+        );
+        const accountType = await companyService.getUserAccountTypeFromSP430();
+        if (accountType) {
+          return accountType !== E_ACCOUNT_TYPE.RC_MOBILE;
+        }
+      case ERCServiceFeaturePermission.VIDEO_CONFERENCING:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  private async _isRcProOrFaxUser() {
+    const companyService = ServiceLoader.getInstance<CompanyService>(
+      ServiceConfig.COMPANY_SERVICE,
+    );
+    const accountType = await companyService.getUserAccountTypeFromSP430();
+    return (
+      accountType === E_ACCOUNT_TYPE.RC_MOBILE ||
+      accountType === E_ACCOUNT_TYPE.RC_FAX
+    );
+  }
+
   private async _checkSpecialRCFeaturePermission(
     featurePermission: ERCServiceFeaturePermission,
   ) {
-    // TODO _isChinaRegionApptelephonyEnable  FIJI-4186
-
-    // TODO _isDisabledRCPermissionForRCProAndFaxUser FIJI-4185
     let isFound = true;
     let isEnabled = false;
+    let needContinueChecking = true;
+
+    // TODO _isChinaRegionApptelephonyEnable  FIJI-4186
+
+    if (
+      await this._isDisabledRcPermissionForRcProAndFaxUser(featurePermission)
+    ) {
+      needContinueChecking = !(await this._isRcProOrFaxUser());
+    }
+
+    if (!needContinueChecking) {
+      return { found: isFound, enabled: isEnabled };
+    }
 
     switch (featurePermission) {
       case ERCServiceFeaturePermission.VOIP_CALLING:
@@ -180,6 +227,12 @@ class RCPermissionController {
         {
           featureName: RCServiceFeatureName.VIDEO_CONFERENCING,
           PermissionId: PermissionId.PERMISSION_MEEINGS,
+        },
+      ],
+      [
+        ERCServiceFeaturePermission.CONFERENCING,
+        {
+          featureName: RCServiceFeatureName.CONFERENCING,
         },
       ],
     ]);

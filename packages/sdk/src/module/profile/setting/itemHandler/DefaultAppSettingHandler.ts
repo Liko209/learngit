@@ -39,7 +39,7 @@ export class DefaultAppSettingHandler extends AbstractSettingEntityHandler<
       this.onProfileEntityUpdate(payload),
     );
     this.on(SERVICE.TELEPHONY_SERVICE.VOIP_CALLING, async () => {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     });
   }
 
@@ -51,15 +51,13 @@ export class DefaultAppSettingHandler extends AbstractSettingEntityHandler<
 
   async fetchUserSettingEntity() {
     const hasCallPermission = await this._telephonyService.getVoipCallPermission();
-    const profile = await this._profileService.getProfile();
-
     const settingItem: UserSettingEntity<CALLING_OPTIONS> = {
       weight: 0,
       valueType: ESettingValueType.OBJECT,
       parentModelId: 0,
       id: SettingEntityIds.Phone_DefaultApp,
       source: [CALLING_OPTIONS.GLIP, CALLING_OPTIONS.RINGCENTRAL],
-      value: profile[SETTING_KEYS.CALL_OPTION],
+      value: await this._getCallOption(),
       state: hasCallPermission
         ? ESettingItemState.ENABLE
         : ESettingItemState.INVISIBLE,
@@ -77,9 +75,17 @@ export class DefaultAppSettingHandler extends AbstractSettingEntityHandler<
       return;
     }
     if (
-      profile[SETTING_KEYS.CALL_OPTION] !== this.userSettingEntityCache.value
+      profile[SETTING_KEYS.CALL_OPTION] !== this.userSettingEntityCache!.value
     ) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
+  }
+  private async _getCallOption() {
+    const profile = await this._profileService.getProfile();
+    let callOption = profile[SETTING_KEYS.CALL_OPTION];
+    if (callOption === undefined) {
+      callOption = CALLING_OPTIONS.GLIP;
+    }
+    return callOption;
   }
 }

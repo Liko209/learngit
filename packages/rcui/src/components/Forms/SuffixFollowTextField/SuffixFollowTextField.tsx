@@ -3,7 +3,7 @@
  * @Date: 2019-05-27 08:00:00
  * Copyright © RingCentral. All rights reserved.
  */
-import styled from '@foundation/styled-components';
+import styled from '../../../foundation/styled-components';
 import { PropTypes } from '@material-ui/core';
 import { FormHelperTextProps } from '@material-ui/core/FormHelperText';
 import { InputProps } from '@material-ui/core/Input';
@@ -116,9 +116,14 @@ class RuiSuffixFollowTextField extends React.PureComponent<
     }
 
     const defaultValue = this.inputEl.value;
-    this.setState({
-      inputValue: defaultValue,
-    });
+    this.setState(
+      {
+        inputValue: defaultValue,
+      },
+      () => {
+        this.syncHolderStyle();
+      },
+    );
   }
 
   componentWillUnmount() {
@@ -233,8 +238,15 @@ class RuiSuffixFollowTextField extends React.PureComponent<
 
     const suffixHolder = (
       <SuffixHolderWarp ref={this.suffixHolder as any}>
-        <SuffixHolderInputEl>{this.state.inputValue}</SuffixHolderInputEl>
-        <SuffixHolderSuffixEl ref={this.suffixValue as any}>
+        <SuffixHolderInputEl
+          data-test-automation-id={'followSuffixTextFieldInputValue'}
+        >
+          {this.state.inputValue}
+        </SuffixHolderInputEl>
+        <SuffixHolderSuffixEl
+          ref={this.suffixValue as any}
+          data-test-automation-id={'followSuffixTextFieldSuffixEl'}
+        >
           {suffixValue}
         </SuffixHolderSuffixEl>
       </SuffixHolderWarp>

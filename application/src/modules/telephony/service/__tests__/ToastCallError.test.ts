@@ -96,4 +96,25 @@ describe('ToastCallError', () => {
     ToastCallError.toastEmptyReplyMessage();
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
   });
+
+  it('should display invalid number error', () => {
+    ToastCallError.toast = jest.fn();
+    const i18nkey = 'telephony.prompt.InvalidNumber';
+    ToastCallError.toastInvalidNumber();
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
+  });
+
+  it('should display park error stop recording', () => {
+    ToastCallError.toast = jest.fn();
+    const i18nkey = 'telephony.prompt.ParkErrorStopRecording';
+    ToastCallError.toastParkErrorStopRecording();
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
+  });
+
+  it('should display park error', () => {
+    ToastCallError.toast = jest.fn();
+    const i18nkey = 'telephony.prompt.ParkError';
+    ToastCallError.toastParkError();
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
+  });
 });

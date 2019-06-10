@@ -21,7 +21,10 @@ class ProfileDialogPersonView extends Component<ProfileDialogPersonViewProps> {
     const { id } = this.props;
     return (
       <>
-        <JuiDialogHeader data-test-automation-id="profileDialogTitle">
+        <JuiDialogHeader
+          data-profile-type="chat"
+          data-test-automation-id="profileDialogTitle"
+        >
           <ProfileDialogPersonTitle id={id} />
         </JuiDialogHeader>
         <JuiDivider />

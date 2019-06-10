@@ -11,11 +11,13 @@ import {
   SettingEntityIds,
   UserSettingEntity,
   SettingModuleIds,
+  SettingService,
 } from 'sdk/module/setting';
 import { ProfileService } from 'sdk/module/profile';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { notificationCenter, ENTITY } from 'sdk/service';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
 
 jest.mock('sdk/module/account/config/AccountUserConfig');
 jest.mock('sdk/module/profile');
@@ -30,6 +32,7 @@ function clearMocks() {
 describe('CallerIdSettingHandler ', () => {
   let iProfileService: ProfileService;
   let rcInfoService: RCInfoService;
+  let settingService: SettingService;
   const profileId = 111;
   let callerIdSettingHandler: CallerIdSettingHandler;
   let mockDefaultSettingItem: UserSettingEntity;
@@ -38,16 +41,17 @@ describe('CallerIdSettingHandler ', () => {
     jest.spyOn(notificationCenter, 'off');
     jest.spyOn(notificationCenter, 'emitEntityUpdate');
     mockDefaultSettingItem = {
-      id: SettingModuleIds.CallerIdSetting.id,
-      parentModelId: SettingModuleIds.PhoneSetting_General.id,
+      parentModelId: 0,
+      weight: 0,
+      valueType: 0,
+      id: SettingEntityIds.Phone_CallerId,
       source: [{ id: 1 }, { id: 2 }],
       state: 0,
       value: { id: 2 },
       valueSetter: expect.any(Function),
-      valueType: 4,
-      weight: SettingModuleIds.CallerIdSetting.weight,
     };
     rcInfoService = new RCInfoService();
+    settingService = new SettingService();
     const accountService = new AccountService({} as any);
     ServiceLoader.getInstance = jest.fn().mockImplementation((key: any) => {
       if (key === ServiceConfig.RC_INFO_SERVICE) {
@@ -55,6 +59,9 @@ describe('CallerIdSettingHandler ', () => {
       }
       if (key === ServiceConfig.ACCOUNT_SERVICE) {
         return accountService;
+      }
+      if (key === ServiceConfig.SETTING_SERVICE) {
+        return settingService;
       }
     });
     iProfileService = new ProfileService();
@@ -101,9 +108,6 @@ describe('CallerIdSettingHandler ', () => {
       ]);
       setTimeout(() => {
         expect(callerIdSettingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          callerIdSettingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
         done();
       });
     });
@@ -116,9 +120,6 @@ describe('CallerIdSettingHandler ', () => {
       notificationCenter.emitEntityUpdate(ENTITY.PROFILE, []);
       setTimeout(() => {
         expect(callerIdSettingHandler.getUserSettingEntity).not.toBeCalled();
-        expect(
-          callerIdSettingHandler.notifyUserSettingEntityUpdate,
-        ).not.toBeCalled();
         done();
       });
     });
@@ -135,9 +136,6 @@ describe('CallerIdSettingHandler ', () => {
       ]);
       setTimeout(() => {
         expect(callerIdSettingHandler.getUserSettingEntity).not.toBeCalled();
-        expect(
-          callerIdSettingHandler.notifyUserSettingEntityUpdate,
-        ).not.toBeCalled();
         done();
       });
     });
@@ -153,16 +151,34 @@ describe('CallerIdSettingHandler ', () => {
       cleanUp();
     });
     it('should return all setting entity', async () => {
+      settingService.getById = jest
+        .fn()
+        .mockReturnValue({ value: CALLING_OPTIONS.RINGCENTRAL });
+      const res = await callerIdSettingHandler.fetchUserSettingEntity();
+      expect(res).toEqual({
+        parentModelId: 0,
+        weight: 0,
+        valueType: 0,
+        state: 2,
+        id: SettingEntityIds.Phone_CallerId,
+        source: [{ id: 1 }, { id: 2 }],
+        value: { id: 2 },
+        valueSetter: expect.any(Function),
+      });
+    });
+
+    it('should return all setting entity when callOption is undefined', async () => {
+      settingService.getById = jest.fn().mockReturnValue({ value: undefined });
       const res = await callerIdSettingHandler.fetchUserSettingEntity();
       expect(res).toEqual({
         id: SettingEntityIds.Phone_CallerId,
-        parentModelId: SettingModuleIds.PhoneSetting_General.id,
+        parentModelId: 0,
         source: [{ id: 1 }, { id: 2 }],
         state: 0,
         value: { id: 2 },
         valueSetter: expect.any(Function),
-        valueType: 4,
-        weight: SettingModuleIds.CallerIdSetting.weight,
+        valueType: 0,
+        weight: 0,
       });
     });
   });
@@ -187,6 +203,49 @@ describe('CallerIdSettingHandler ', () => {
           value: 111,
         },
       ]);
+    });
+  });
+
+  describe('handleSettingModelUpdated', () => {
+    it('should emit update when has subscribe update and Phone_DefaultApp change', (done: jest.DoneCallback) => {
+      callerIdSettingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
+      callerIdSettingHandler.getUserSettingEntity = jest
+        .fn()
+        .mockResolvedValue({});
+      notificationCenter.emitEntityUpdate<UserSettingEntity>(
+        ENTITY.USER_SETTING,
+        [
+          {
+            id: SettingEntityIds.Phone_DefaultApp,
+            value: true,
+          } as UserSettingEntity,
+        ],
+      );
+      setTimeout(() => {
+        expect(callerIdSettingHandler.getUserSettingEntity).toBeCalled();
+        expect(
+          callerIdSettingHandler.notifyUserSettingEntityUpdate,
+        ).toHaveBeenCalledWith({});
+        done();
+      });
+    });
+
+    it('should not emit update when no change', (done: jest.DoneCallback) => {
+      callerIdSettingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
+      callerIdSettingHandler.getUserSettingEntity = jest
+        .fn()
+        .mockResolvedValue({});
+      notificationCenter.emitEntityUpdate<UserSettingEntity>(
+        ENTITY.USER_SETTING,
+        [],
+      );
+      setTimeout(() => {
+        expect(callerIdSettingHandler.getUserSettingEntity).not.toBeCalled();
+        expect(
+          callerIdSettingHandler.notifyUserSettingEntityUpdate,
+        ).not.toBeCalled();
+        done();
+      });
     });
   });
 });

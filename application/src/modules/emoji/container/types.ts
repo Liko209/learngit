@@ -15,11 +15,13 @@ type EmojiProps = {
     | 'messenger'
     | 'facebook'
     | undefined;
+  defaultProps?: any;
 };
 
 type EmojiViewProps = {
   setEmojiOpenStatus: () => void;
   emojiOpenStatus: boolean;
+  defaultProps?: any;
 };
 
 export { EmojiProps, EmojiViewProps };

@@ -10,10 +10,11 @@ import { observer } from 'mobx-react';
 import { AttachmentsViewProps } from './types';
 import { JuiDuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
 import { extractView } from 'jui/hoc/extractView';
+import { postParser } from '@/common/postParser';
 
 @observer
 class AttachmentManagerViewComponent extends Component<
-AttachmentsViewProps & WithTranslation
+  AttachmentsViewProps & WithTranslation
 > {
   private _showDuplicateFilesDialogIfNeeded = () => {
     const { duplicateFiles, showDuplicateFiles, t } = this.props;
@@ -25,7 +26,9 @@ AttachmentsViewProps & WithTranslation
           footText={t(
             'item.wouldYouLikeToUpdateTheExistingFileOrCreateANewOne',
           )}
-          duplicateFiles={duplicateFiles}
+          duplicateFileNames={duplicateFiles.map(({ name }) =>
+            postParser(name, { fileName: true }),
+          )}
           onCancel={this.props.cancelDuplicateFiles}
           onCreate={this.props.uploadDuplicateFiles}
           onUpdate={this.props.updateDuplicateFiles}

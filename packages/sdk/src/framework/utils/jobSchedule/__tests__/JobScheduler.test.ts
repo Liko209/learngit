@@ -62,13 +62,14 @@ describe('JobScheduler', () => {
         .fn()
         .mockReturnValueOnce(123)
         .mockReturnValueOnce(456);
-      jobScheduler['_execute'] = jest.fn();
+      jobScheduler['_addProcessor'] = jest.fn();
+
       jobScheduler.onNetWorkChanged(true);
       expect(jobScheduler['_isOnline']).toBeTruthy();
       expect(jobScheduler['_canExecute']).toBeCalledWith(infos[1], 123);
       expect(jobScheduler['_canExecute']).toBeCalledWith(infos[2], 456);
       expect(jobScheduler['_getLastSuccessTime']).toBeCalledTimes(2);
-      expect(jobScheduler['_execute']).toBeCalledTimes(1);
+      expect(jobScheduler['_addProcessor']).toBeCalledTimes(1);
     });
   });
 
@@ -148,19 +149,20 @@ describe('JobScheduler', () => {
     it('should execute right now when force = true', () => {
       const info = { key: JOB_KEY.FETCH_CLIENT_INFO } as JobInfo;
       jobScheduler.cancelJob = jest.fn();
-      jobScheduler['_execute'] = jest.fn();
+      jobScheduler['_addProcessor'] = jest.fn();
+
       jobScheduler.scheduleJob(info, true);
       expect(jobScheduler.cancelJob).toBeCalledTimes(0);
       expect(jobScheduler['_jobMap'].get(JOB_KEY.FETCH_CLIENT_INFO)).toEqual(
         info,
       );
-      expect(jobScheduler['_execute']).toBeCalledWith(info);
+      expect(jobScheduler['_addProcessor']).toBeCalledWith(info);
     });
 
     it('should execute right now when can execute', () => {
       const info = { key: JOB_KEY.FETCH_CLIENT_INFO } as JobInfo;
       jobScheduler.cancelJob = jest.fn();
-      jobScheduler['_execute'] = jest.fn();
+      jobScheduler['_addProcessor'] = jest.fn();
       jobScheduler['_getLastSuccessTime'] = jest
         .fn()
         .mockReturnValueOnce(12345);
@@ -172,7 +174,7 @@ describe('JobScheduler', () => {
       );
       expect(jobScheduler['_getLastSuccessTime']).toBeCalledTimes(1);
       expect(jobScheduler['_canExecute']).toBeCalledWith(info, 12345);
-      expect(jobScheduler['_execute']).toBeCalledWith(info);
+      expect(jobScheduler['_addProcessor']).toBeCalledWith(info);
     });
 
     it('should set timer when can not execute', () => {
@@ -181,7 +183,7 @@ describe('JobScheduler', () => {
         intervalSeconds: 23,
       } as JobInfo;
       jobScheduler.cancelJob = jest.fn();
-      jobScheduler['_execute'] = jest.fn();
+      jobScheduler['_addProcessor'] = jest.fn();
       jobScheduler['_getLastSuccessTime'] = jest
         .fn()
         .mockReturnValueOnce(12345);
@@ -194,7 +196,7 @@ describe('JobScheduler', () => {
       );
       expect(jobScheduler['_getLastSuccessTime']).toBeCalledTimes(1);
       expect(jobScheduler['_canExecute']).toBeCalledWith(info, 12345);
-      expect(jobScheduler['_execute']).toBeCalledTimes(0);
+      expect(jobScheduler['_addProcessor']).toBeCalledTimes(0);
       expect(jobScheduler['_setTimer']).toBeCalledWith(info, 23000);
     });
   });

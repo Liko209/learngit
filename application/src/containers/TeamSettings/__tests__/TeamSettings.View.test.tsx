@@ -17,6 +17,10 @@ import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
 import { Trans } from 'react-i18next';
 import { i18nP } from '@/utils/i18nT';
 
+jest.mock('react-i18next', () => ({
+  Trans: 'Trans',
+  withTranslation: () => (comp: React.ComponentType) => comp,
+}))
 const mockTransition = (text: string, options?: object) => {
   if (!options) {
     return text.substring(text.lastIndexOf('.') + 1);
@@ -31,6 +35,7 @@ jest.mock('sdk/module/serviceLoader', () => ({
     getInstance: () => ({
       onTeamDelete: jest.fn(),
       onTeamArchive: jest.fn(),
+      setConfigDao: jest.fn(),
     }),
   },
   ServiceConfig: {
