@@ -250,6 +250,10 @@ class ImageAndFileItem extends BaseWebComponent {
   get thumbnail() {
     return this.getSelectorByAutomationId('thumbnail', this.self);
   }
+  
+  get docIcon() {
+    return this.getSelectorByIcon('doc', this.self);
+  }
 
   get name() {
     return this.getSelectorByAutomationId('file-name', this.self);

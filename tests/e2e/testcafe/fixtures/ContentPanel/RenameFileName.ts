@@ -52,7 +52,7 @@ test.meta(<ITestMeta>{
 
   const posts = app.homePage.messageTab.conversationPage.posts;
   const filesTabItem = rightRail.filesTab.nthItem(0);
-  const viewerDialog = app.homePage.viewerDialog;
+  const viewerDialog = app.homePage.fileAndImagePreviewer;
   const postItem = app.homePage.messageTab.conversationPage.nthPostItem(0);
   // TODO wait for file viewer feature FIJI-5643 merged
   // const Entries =[postItem,filesTabItem,viewerDialog];
