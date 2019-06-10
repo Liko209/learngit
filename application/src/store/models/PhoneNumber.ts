@@ -19,6 +19,7 @@ export default class PhoneNumberModel extends Base<PhoneNumber, string> {
     reaction(
       () => dialingCountryHandler.regionInfo,
       async () => {
+        // prettier-ignore
         const phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(ServiceConfig.PHONE_NUMBER_SERVICE);
         this._formattedPhoneNumber = await phoneNumberService.getLocalCanonical(
           this.id,

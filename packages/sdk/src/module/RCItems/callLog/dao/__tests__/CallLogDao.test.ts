@@ -135,7 +135,7 @@ describe('CallLogDao', () => {
     });
   });
 
-  describe('queryCallLogBySessionIdId', () => {
+  describe('queryCallLogBySessionId', () => {
     it('should get correct call log', async () => {
       dao.createQuery = jest.fn().mockReturnValue({
         equal: jest
@@ -143,9 +143,7 @@ describe('CallLogDao', () => {
           .mockReturnValue({ first: jest.fn().mockReturnValue(mockCallLog) }),
       });
 
-      expect(await dao.queryCallLogBySessionIdId('session')).toEqual(
-        mockCallLog,
-      );
+      expect(await dao.queryCallLogBySessionId('session')).toEqual(mockCallLog);
       expect(dao.createQuery).toBeCalled();
     });
   });

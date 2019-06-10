@@ -12,6 +12,8 @@ import { RCItemUserConfig } from 'sdk/module/RCItems/config';
 import { AllCallLogFetchController } from '../AllCallLogFetchController';
 import { MissedCallLogFetchController } from '../MissedCallLogFetchController';
 import { CallLogBadgeController } from '../CallLogBadgeController';
+import { CallLogUserConfig } from '../../config/CallLogUserConfig';
+import { CallLogHandleDataController } from '../CallLogHandleDataController';
 
 jest.mock('../../../../config');
 jest.mock('sdk/framework/controller/impl/EntitySourceController');
@@ -25,14 +27,14 @@ function clearMocks() {
 describe('CallLogController', () => {
   let callLogController: CallLogController;
   let entitySourceController: EntitySourceController<CallLog, string>;
-  let allConfig: RCItemUserConfig;
+  let allConfig: CallLogUserConfig;
   let missedConfig: RCItemUserConfig;
   function setUp() {
     entitySourceController = new EntitySourceController(
       null as any,
       null as any,
     );
-    allConfig = new RCItemUserConfig('all');
+    allConfig = new CallLogUserConfig('all');
     missedConfig = new RCItemUserConfig('missed');
     callLogController = new CallLogController(
       entitySourceController,
@@ -73,6 +75,14 @@ describe('CallLogController', () => {
     it('should return callLogBadgeController', () => {
       expect(callLogController.callLogBadgeController).toBeInstanceOf(
         CallLogBadgeController,
+      );
+    });
+  });
+
+  describe('callLogHandleDataController', () => {
+    it('should return callLogHandleDataController', () => {
+      expect(callLogController.callLogHandleDataController).toBeInstanceOf(
+        CallLogHandleDataController,
       );
     });
   });

@@ -143,23 +143,28 @@ describe('RcMessageActionController', () => {
   });
 
   describe('buildDownloadUrl', () => {
-    it('should return url with access token', () => {
-      accountService['authUserConfig'] = {
-        getRCToken: () => {
-          return { access_token: 'token' };
-        },
-      };
-      const res = rcMessageActionController.buildDownloadUrl('123');
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should return url with access token', async () => {
+      accountService.getRCToken = jest
+        .fn()
+        .mockResolvedValue({ access_token: 'token' });
+      const res = await rcMessageActionController.buildDownloadUrl('123');
       expect(res).toEqual('123?access_token=token');
     });
 
-    it('should return empty url when no access token', () => {
-      accountService['authUserConfig'] = {
-        getRCToken: () => {
-          return undefined;
-        },
-      };
-      const res = rcMessageActionController.buildDownloadUrl('123');
+    it('should return empty url when no access token', async () => {
+      accountService.getRCToken = jest.fn().mockResolvedValue(undefined);
+      const res = await rcMessageActionController.buildDownloadUrl('123');
+      expect(res).toEqual('');
+    });
+
+    it('should return empty when error happen', async () => {
+      accountService.getRCToken = jest.fn().mockRejectedValue(new Error());
+      const res = await rcMessageActionController.buildDownloadUrl('123');
       expect(res).toEqual('');
     });
   });

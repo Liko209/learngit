@@ -47,6 +47,7 @@ import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
 import i18next from 'i18next';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
+import storeManager from '@/store';
 import { SettingEntityIds } from 'sdk/module/setting';
 
 const ringTone = require('./sounds/Ringtone.mp3');
@@ -90,6 +91,9 @@ class TelephonyService {
     mainLogger.info(
       `${TelephonyService.TAG} Call object created, call id=${callId}`,
     );
+    // need factor in new module design
+    // if has incoming call voicemail should be pause
+    storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, true);
     this._callId = callId;
     this.uiCallStartTime = +new Date();
     this._telephonyStore.callType = CALL_TYPE.OUTBOUND;
@@ -113,6 +117,9 @@ class TelephonyService {
     }
     this._telephonyStore.callId = callId;
     this._telephonyStore.incomingCall();
+    // need factor in new module design
+    // if has incoming call voicemail should be pause
+    storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, true);
     mainLogger.info(
       `${TelephonyService.TAG}Call object created, call id=${
         callInfo.callId
@@ -188,6 +195,9 @@ class TelephonyService {
         break;
       }
       case RTC_CALL_STATE.DISCONNECTED: {
+        // need factor in new module design
+        // if has incoming call voicemail should be pause
+        storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, false);
         this._resetCallState();
         break;
       }

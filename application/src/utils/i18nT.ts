@@ -13,10 +13,7 @@ function hasLoadedNamespace() {
   };
 
   // failed loading ns - but at least fallback is not pending -> SEMI SUCCESS
-  if (
-    loadNotPending(lng, ns) &&
-    (!fallbackLng || loadNotPending(lastLng, ns))
-  ) {
+  if (loadNotPending(lng, ns) && (!fallbackLng || loadNotPending(lastLng, ns))) {
     return true;
   }
 
