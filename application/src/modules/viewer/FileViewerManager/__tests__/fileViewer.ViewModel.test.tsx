@@ -39,7 +39,10 @@ describe('FileViewerViewModel', () => {
   describe('viewerDestroyer()', () => {
     it('should dismiss be call when call viewerDestroyer function', () => {
       const dismiss = jest.fn();
-      const vm = new FileViewerViewModel({} as FileItemModel, dismiss);
+      (getEntity as jest.Mock).mockReturnValue({
+        versions: [{ pages: [] }],
+      });
+      const vm = new FileViewerViewModel(1, dismiss);
       vm.viewerDestroyer();
       expect(dismiss).toBeCalled();
     });

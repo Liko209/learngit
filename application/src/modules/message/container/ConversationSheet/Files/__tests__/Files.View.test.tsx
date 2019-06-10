@@ -107,11 +107,9 @@ describe('FilesView', () => {
             origWidth: 0,
             name: '0',
             type: 'doc',
-            versions: [
-              {
-                status: 'ready',
-              },
-            ],
+            latestVersion: {
+              status: 'ready',
+            },
             downloadUrl: 'downloadUrl',
           },
         },
