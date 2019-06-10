@@ -22,8 +22,9 @@ import { RC_INFO, notificationCenter } from 'sdk/service';
 import { PersonService, ContactType } from 'sdk/module/person';
 import { GlobalConfigService } from 'sdk/module/config';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { mainLogger } from 'sdk';
-import { TelephonyStore, CALL_TYPE } from '../store';
+import { TelephonyStore, CALL_TYPE, INCOMING_STATE } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
@@ -37,6 +38,7 @@ import { CALL_WINDOW_STATUS, CALL_STATE } from '../FSM';
 import { AccountService } from 'sdk/module/account';
 import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
 import { CALLING_OPTIONS } from 'sdk/module/profile';
+import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
 const ringTone = require('./sounds/Ringtone.mp3');
@@ -56,6 +58,9 @@ class TelephonyService {
   );
   private _globalConfigService = ServiceLoader.getInstance<GlobalConfigService>(
     ServiceConfig.GLOBAL_CONFIG_SERVICE,
+  );
+  private _phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
+    ServiceConfig.PHONE_NUMBER_SERVICE,
   );
   private _callId?: string;
   private _shouldResumeDisposer: IReactionDisposer;
@@ -467,8 +472,9 @@ class TelephonyService {
     }
     // FIXME: move this logic to SDK and always using callerID
     const idx = this._telephonyStore.callerPhoneNumberList.findIndex(
-      (phone) =>
-        formatPhoneNumber(phone.phoneNumber) === formatPhoneNumber(this._telephonyStore.chosenCallerPhoneNumber),
+      phone =>
+        formatPhoneNumber(phone.phoneNumber) ===
+        formatPhoneNumber(this._telephonyStore.chosenCallerPhoneNumber),
     );
     if (idx === -1) {
       return mainLogger.error(
@@ -728,18 +734,44 @@ class TelephonyService {
       this._telephonyStore.inputString.length <
       this._telephonyStore.maximumInputLength
     ) {
+      // only set forwardString
+      if (this._telephonyStore.incomingState === INCOMING_STATE.FORWARD) {
+        this._telephonyStore.forwardString += str;
+        return;
+      }
       this._telephonyStore.inputString += str;
+      return;
     }
+    return;
   }
 
   updateInputString = (str: string) => {
+    if (this._telephonyStore.incomingState === INCOMING_STATE.FORWARD) {
+      this._telephonyStore.forwardString = str.slice(
+        0,
+        this._telephonyStore.maximumInputLength,
+      );
+      return;
+    }
     this._telephonyStore.inputString = str.slice(
       0,
       this._telephonyStore.maximumInputLength,
     );
+    return;
   }
 
   deleteInputString = (clearAll: boolean = false) => {
+    if (this._telephonyStore.incomingState === INCOMING_STATE.FORWARD) {
+      if (clearAll) {
+        this._telephonyStore.forwardString = '';
+        return;
+      }
+      this._telephonyStore.forwardString = this._telephonyStore.forwardString.slice(
+        0,
+        this._telephonyStore.forwardString.length - 1,
+      );
+      return;
+    }
     if (clearAll) {
       this._telephonyStore.inputString = '';
       return;
@@ -748,6 +780,7 @@ class TelephonyService {
       0,
       this._telephonyStore.inputString.length - 1,
     );
+    return;
   }
 
   dispose = () => {
@@ -858,6 +891,26 @@ class TelephonyService {
     return this._serverTelephonyService.forward(
       this._callId as string,
       phoneNumber,
+    );
+  }
+
+  flip = (flipNumber: number) => {
+    if (!this._callId) {
+      return;
+    }
+    return this._serverTelephonyService.flip(
+      this._callId as string,
+      flipNumber,
+    );
+  }
+
+  isValidNumber = (phoneNumber: string) => {
+    return this._phoneNumberService.isValidNumber(phoneNumber);
+  }
+
+  getForwardPermission = () => {
+    return this._rcInfoService.isRCFeaturePermissionEnabled(
+      ERCServiceFeaturePermission.CALL_FORWARDING,
     );
   }
 }

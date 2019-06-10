@@ -1,11 +1,12 @@
 import * as _ from 'lodash';
 import { BaseWebComponent } from "../../BaseWebComponent";
 import { ClientFunction } from 'testcafe';
+import { H } from '../../../helpers';
 
 
 export class TelephonyDialog extends BaseWebComponent {
   get self() {
-    return this.getSelectorByAutomationId('dialer-container');
+    return this.getSelectorByAutomationId('dialer-move-animation-container');
   }
 
   get title() {
@@ -37,6 +38,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickHangupButton() {
+    await H.sleep(1e3);
     await this.t.click(this.hangupButton);
   }
 
@@ -221,10 +223,10 @@ export class TelephonyDialog extends BaseWebComponent {
     '#': 'hash'
   }
 
-  async focusKeypad(){
+  async focusKeypad() {
     var focus = ClientFunction(() => {
-      document.querySelector('[data-test-automation-id="telephony-dialer-title"]').dispatchEvent(new Event('focus',{bubbles:true}))
-  });
+      document.querySelector('[data-test-automation-id="telephony-dialer-title"]').dispatchEvent(new Event('focus', { bubbles: true }))
+    });
 
     await focus();
   }
@@ -400,5 +402,17 @@ export class TelephonyMinimizeWindow extends BaseWebComponent {
 
   async clickHangupButton() {
     await this.t.click(this.hangupButton);
+  }
+
+  async hoverhandupButton() {
+    await this.t.hover(this.hangupButton);
+  }
+
+  async hoverMuteButton() {
+    await this.t.hover(this.muteButton);
+  }
+
+  async hoverunMuteButton() {
+    await this.t.hover(this.unMuteButton);
   }
 }

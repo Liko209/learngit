@@ -19,7 +19,9 @@ class SearchServiceController {
 
   get recentSearchRecordController() {
     if (!this._recentSearchRecordController) {
-      this._recentSearchRecordController = new RecentSearchRecordController();
+      this._recentSearchRecordController = new RecentSearchRecordController(
+        this._searchService.userConfig,
+      );
     }
     return this._recentSearchRecordController;
   }

@@ -44,7 +44,6 @@ test(formalName('Tasks display on the right rail', ['P2', 'Messages', 'RightRail
   const tasksTab = rightRail.tasksTab;
   await h(t).withLog('When I create a task via api', async() => {
     await h(t).glip(loginUser).createSimpleTask(team.glipId, loginUser.rcId, taskTitle);
-    await t.expect(tasksTab.items.exists).ok();
   });
 
   await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_TasksList'});

@@ -42,6 +42,9 @@ class IncomingCallsSettingHandler extends AbstractSettingEntityHandler<
     this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
       this.onProfileEntityUpdate(payload),
     );
+    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload =>
+      this.onSettingEntityUpdate(payload),
+    );
   }
 
   async updateValue(value: NOTIFICATION_OPTIONS) {
@@ -90,7 +93,17 @@ class IncomingCallsSettingHandler extends AbstractSettingEntityHandler<
       return;
     }
     if (
-      profile[SETTING_KEYS.DESKTOP_CALL] !== this.userSettingEntityCache.value
+      profile[SETTING_KEYS.DESKTOP_CALL] !== this.userSettingEntityCache!.value
+    ) {
+      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+    }
+  }
+  async onSettingEntityUpdate(
+    payload: NotificationEntityUpdatePayload<UserSettingEntity>,
+  ) {
+    if (
+      payload.body.entities.has(SettingEntityIds.Notification_Browser) ||
+      payload.body.entities.has(SettingEntityIds.Phone_DefaultApp)
     ) {
       this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
     }

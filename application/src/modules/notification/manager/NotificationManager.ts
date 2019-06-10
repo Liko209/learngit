@@ -4,8 +4,6 @@
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
 import { INotificationService, NotificationOpts } from './../interface';
-import { mainLogger } from 'sdk';
-const logger = mainLogger.tags('AbstractNotificationManager');
 type NotificationId = number | string;
 
 export abstract class AbstractNotificationManager {
@@ -15,11 +13,10 @@ export abstract class AbstractNotificationManager {
   constructor(protected _scope: string) {}
 
   show(title: string, opts: NotificationOpts) {
-    const { id, scope } = opts.data;
-    const tag = `${scope}.${id}`;
-    const customOps = { ...opts, tag, silent: true };
-    logger.info(`prepare notification for ${tag}`);
-    this._notificationService.show(title, customOps);
+    if (document.hasFocus()) {
+      return;
+    }
+    this._notificationService.show(title, opts);
   }
 
   close(id: NotificationId) {

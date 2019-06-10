@@ -48,6 +48,7 @@ enum CALL_TYPE {
 enum INCOMING_STATE {
   IDLE,
   REPLY,
+  FORWARD,
 }
 
 const logTag = '[TelephonyStore_View]';
@@ -115,6 +116,9 @@ class TelephonyStore {
 
   @observable
   inputString: string = '';
+
+  @observable
+  forwardString: string = '';
 
   @observable
   dialerInputFocused: boolean = false;
@@ -203,6 +207,7 @@ class TelephonyStore {
           this.quitKeypad();
           this._restoreButtonStates();
           this._clearEnteredKeys();
+          this._clearForwardString();
           this.callerName = undefined;
           this.isMute = false;
           this.phoneNumber = undefined;
@@ -313,6 +318,10 @@ class TelephonyStore {
 
   private _clearEnteredKeys = () => {
     this.enteredKeys = '';
+  }
+
+  private _clearForwardString = () => {
+    this.forwardString = '';
   }
 
   updateDefaultChosenNumber = (defaultCallerPhoneNumber?: string) => {
@@ -550,7 +559,13 @@ class TelephonyStore {
     }
   }
 
-  quitReply = () => {
+  @action
+  directForward = () => {
+    this.incomingState = INCOMING_STATE.FORWARD;
+  }
+
+  @action
+  backIncoming = () => {
     this.incomingState = INCOMING_STATE.IDLE;
   }
 
@@ -580,7 +595,10 @@ class TelephonyStore {
   @computed
   get shouldDisplayDialer() {
     // TODO: change this when refactoring for multi-call
-    return [CALL_STATE.DIALING, CALL_STATE.IDLE].includes(this.callState);
+    return (
+      [CALL_STATE.DIALING, CALL_STATE.IDLE].includes(this.callState) ||
+      this.incomingState === INCOMING_STATE.FORWARD
+    );
   }
 
   @computed

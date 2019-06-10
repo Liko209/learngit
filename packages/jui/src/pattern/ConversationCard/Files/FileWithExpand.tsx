@@ -13,7 +13,7 @@ import { Theme } from '../../../foundation/theme/theme';
 
 type JuiFileWithExpandProps = {
   icon: string;
-  fileName: string;
+  fileName: React.ReactChild | (React.ReactChild | null)[] | null;
   fileNameColor?: ({ theme }: { theme: Theme }) => any;
   fileNameOpacity?: number;
   Actions: JSX.Element;
@@ -51,11 +51,9 @@ const JuiFileWithExpand: React.SFC<JuiFileWithExpandProps> = (
         <Jui.FileExpandItem>
           <Jui.FileIcon size="small">{icon}</Jui.FileIcon>
           <NameWithActions>
-            <FileName
-              statusColor={fileNameColor}
-              filename={fileName}
-              opacity={fileNameOpacity}
-            />
+            <FileName statusColor={fileNameColor} opacity={fileNameOpacity}>
+              {fileName}
+            </FileName>
             <ActionWrapper>{Actions}</ActionWrapper>
           </NameWithActions>
         </Jui.FileExpandItem>

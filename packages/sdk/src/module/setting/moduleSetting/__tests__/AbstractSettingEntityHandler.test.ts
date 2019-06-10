@@ -141,6 +141,44 @@ describe('AbstractSettingEntityHandler', () => {
     });
   });
 
+  describe('getCacheValue()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    afterEach(() => {
+      cleanUp();
+    });
+    it('should return undefined when cache not exist', () => {
+      mockSettingEntityHandler['userSettingEntityCache'] = undefined;
+      expect(mockSettingEntityHandler['getCacheValue']()).toBeUndefined();
+      expect(
+        mockSettingEntityHandler['getCacheValue']('p' as any),
+      ).toBeUndefined();
+    });
+    it('should return value when cache exist', () => {
+      const mockValue = {
+        a: 'aaa',
+      };
+      mockSettingEntityHandler['userSettingEntityCache'] = {
+        value: mockValue,
+      } as any;
+      expect(mockSettingEntityHandler['getCacheValue']()).toEqual(mockValue);
+    });
+    it('should return value property when cache exist', () => {
+      const mockValue = {
+        a: 'aaa',
+      };
+      mockSettingEntityHandler['userSettingEntityCache'] = {
+        value: mockValue,
+      } as any;
+      expect(mockSettingEntityHandler['getCacheValue']('a' as any)).toEqual(
+        mockValue.a,
+      );
+    });
+  });
+
   describe('updateUserSettingEntityCache()', () => {
     beforeEach(() => {
       clearMocks();

@@ -54,18 +54,17 @@ class HeaderMoreMenu extends BaseWebComponent {
   get convertToTeam() {
     return this.getEntry('Convert to team');
   }
+
+  get profile() {
+    return this.getSelectorByAutomationId('profileEntry');
+  }
+
+  async openProfile() {
+    return await this.t.click(this.profile);
+  }
 }
 
 export class BaseConversationPage extends BaseWebComponent {
-  private _self: Selector = this.getSelectorByAutomationId('messagePanel');
-
-  get self() {
-    return this._self;
-  }
-
-  set self(root: Selector) {
-    this._self = root;
-  }
 
   get posts() {
     return this.self.find('[data-name="conversation-card"]');
@@ -333,6 +332,10 @@ export class BaseConversationPage extends BaseWebComponent {
 }
 
 export class ConversationPage extends BaseConversationPage {
+  get self() {
+    return this.getSelectorByAutomationId('messagePanel');
+  }
+
   get jumpToFirstUnreadButtonWrapper() {
     return this.getSelectorByAutomationId('jump-to-first-unread-button')
   }
@@ -469,6 +472,26 @@ export class ConversationPage extends BaseConversationPage {
   async titleShouldBe(title: string) {
     await this.t.expect(this.title.textContent).eql(title);
   }
+
+  get attachFileIcon() {
+		return this.getSelectorByAutomationId('conversation-chatbar-attachment-button');
+	}
+
+	get attachFileFromComputer() {
+		return this.getSelectorByAutomationId('chatbar-attchment-selectfile');
+	}
+
+	async hoverAttachFileIcon() {
+		await this.t.hover(this.attachFileIcon);
+	}
+
+	async hoverAttachFileFromComputer() {
+		await this.t.hover(this.attachFileFromComputer);
+	}
+
+	async clickAttachFileIcon() {
+		await this.t.click(this.attachFileIcon);
+	}
 
   get messageFilesArea() {
     return this.getSelectorByAutomationId('attachment-list');
@@ -730,6 +753,22 @@ export class PostItem extends BaseWebComponent {
     return this.getSelectorByIcon('bookmark_border', this.self);
   }
 
+  get getPinButtonByClass() {
+		return this.getSelector('.icon.unpin');
+	}
+
+	get getUnpinButtonByClass() {
+		return this.getSelector('.icon.pin');
+	}
+
+	async clickPinButtonByClass() {
+		await this.t.hover(this.self).click(this.getPinButtonByClass);
+	}
+
+	async hoverPinButtonByClass() {
+		await this.t.hover(this.self).hover(this.getPinButtonByClass);
+	}
+
   get pinToggle() {
     return this.self.find('button').withAttribute('data-name', 'actionBarPin');
   }
@@ -768,6 +807,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="actionBarMore"]`);
   }
 
+	async hoverMoreItemOnActionBar() {
+		await this.t.hover(this.self).hover(this.moreMenu);
+	}
+
   async clickMoreItemOnActionBar() {
     await this.t.hover(this.self).click(this.moreMenu);
   }
@@ -794,6 +837,10 @@ export class PostItem extends BaseWebComponent {
       assert.strictEqual(n, likes, `Like Number error: expect ${n}, but actual ${likes}`);
     }, maxRetry, interval);
   }
+
+	async hoverBookmarkToggle() {
+		await this.t.hover(this.self).hover(this.bookmarkToggle);
+	}
 
   async clickBookmarkToggle() {
     await this.t.hover(this.self).click(this.bookmarkToggle);
@@ -926,65 +973,67 @@ export class PostItem extends BaseWebComponent {
 
   // special item card
   get itemCard() {
-    return this.self.find('.conversation-item-cards');
+    return this.getComponent(ConversationCardItem, this.self.find('.conversation-item-cards'))
   }
 
+}
+
+class ConversationCardItem extends BaseWebComponent {
   get eventIcon() {
-    return this.getSelectorByIcon('event', this.itemCard);
+    return this.getSelectorByIcon('event');
   }
 
-  get eventTitle() {
-    this.warnFlakySelector();
-    return this.eventIcon.nextSibling('span'); // todo: automation id
+  get title() {
+    return this.getSelectorByAutomationId('conversation-item-cards-title');
   }
 
   get eventLocation() {
-    this.warnFlakySelector();
-    return this.itemCard.find('div').withExactText('Location').nextSibling('div'); // todo: automation id
+    return this.getSelectorByAutomationId('event-location');
   }
 
   get eventDue() {
-    this.warnFlakySelector();
-    return this.itemCard.find('div').withExactText('Due').nextSibling('div'); // todo: automation id
+    return this.getSelectorByAutomationId('event-due');
   }
 
-  get eventDescripton() {
-    this.warnFlakySelector();
-    return // todo: automation id
+  get eventDescription() {
+    return this.getSelectorByAutomationId('event-description');
   }
 
-  get noteTitle() {
-    return this.itemCard.child('div').nth(0); // todo: automation id
+  get eventShowOld() {
+    return this.getSelectorByAutomationId('event-show-old');
+  }
+
+  get eventOldLocation() {
+    return this.getSelectorByAutomationId('event-old-location');
   }
 
   get noteBody() {
-    return this.itemCard.child('div').nth(1); // todo: automation id
-  }
-
-  get taskTitle() {
-    return this.itemCard.child('div').nth(0).child('span').nth(1);
+    return this.getSelectorByAutomationId('note-body');
   }
 
   get taskAssignee() {
-    return this.itemCard.find('.task-avatar-name');
+    return this.getSelectorByAutomationId('avatar-name');
   }
 
   get taskSection() {
-    return this.itemCard.find('div').withExactText('Section').nextSibling('div');
+    return this.getSelectorByAutomationId('task-section');
   }
 
   get taskDescription() {
-    return this.itemCard.find('div').withExactText('Description').nextSibling('div');
+    return this.getSelectorByAutomationId('task-description');
   }
 
-  get codeTitle() {
-    return this.getSelectorByIcon('code', this.itemCard).nextSibling('span');
+  get taskShowOld() {
+    return this.getSelectorByAutomationId('task-show-old');
+  }
+
+  get taskOldAssignees() {
+    return this.getSelectorByAutomationId('task-old-assignees').find(`[data-test-automation-id='avatar-name']`);
   }
 
   get codeBody() {
-    return this.getSelectorByAutomationId('codeSnippetBody', this.itemCard);
+    return this.getSelectorByAutomationId('codeSnippetBody');
   }
-
 }
 
 class AudioConference extends BaseWebComponent {

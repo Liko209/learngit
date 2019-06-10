@@ -152,8 +152,24 @@ export class ProfileDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('favorite-icon', this.self);
   }
 
+  async clickFavoriteButton() {
+    await this.t.click(this.favoriteButton);
+  }
+
+  async hoverFavoriteButton() {
+    await this.t.hover(this.favoriteButton);
+  }
+
   get unFavoriteStatusIcon() {
     return this.getSelectorByIcon("star_border", this.favoriteButton);
+  }
+
+  async clickUnFavoriteButton() {
+    await this.t.click(this.unFavoriteStatusIcon);
+  }
+
+  async hoverUnFavoriteButton() {
+    await this.t.hover(this.unFavoriteStatusIcon);
   }
 
   get favoriteStatusIcon() {
