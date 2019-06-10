@@ -35,7 +35,7 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
   private _currentPageIdx: number = 0;
 
   @observable
-  private _textFieldValue: number;
+  private _textFieldValue: number = 1;
 
   constructor(itemId: number, dismiss: Function) {
     super();
@@ -92,7 +92,8 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
   handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { versions } = this._item;
     const { pages = [] } = versions[0];
-    let value = Number(e.target.value);
+    let value = parseInt(e.target.value, 10);
+    if (isNaN(value)) return;
     value = value > pages.length ? pages.length : value;
     value = value < 1 ? 1 : value;
     this._textFieldValue = value;

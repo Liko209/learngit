@@ -66,7 +66,6 @@ class ViewerTitleViewComponent extends Component<Type> {
             {name}
             <JuiTextField
               id="outlined-number"
-              label=""
               type="number"
               defaultValue={1}
               value={textFieldValue}
