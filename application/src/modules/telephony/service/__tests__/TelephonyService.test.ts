@@ -24,10 +24,10 @@ import { ToastCallError } from '../ToastCallError';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { container, injectable, decorate } from 'framework';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-import { Notification } from '@/containers/Notification';
 import { ClientService } from '@/modules/common';
 import { CALLING_OPTIONS } from 'sdk/module/profile';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
+import { SettingService } from '@/modules/setting/service/SettingService';
 const testProcedureWaitingTime = 20;
 const mockedDelay = 10;
 
@@ -56,6 +56,7 @@ const sleep = (time: number): Promise<void> => {
 let mockedServerTelephonyService: any;
 let mockedRCInfoService: any;
 let mockedPhoneNumberService: any;
+let mockedSettingService: any;
 
 function initializeCallerId() {
   telephonyService._telephonyStore.chosenCallerPhoneNumber = '123';
@@ -83,8 +84,13 @@ describe('TelephonyService', () => {
     mockedPhoneNumberService = {
       isValidNumber: jest.fn(),
     };
+    mockedSettingService = {
+      getById: jest.fn().mockResolvedValue({ value: CALLING_OPTIONS.GLIP }),
+    };
 
-    jest.spyOn(utils, 'getEntity').mockReturnValue({ value: defaultPhoneApp });
+    jest
+      .spyOn(mockedSettingService, 'getById')
+      .mockResolvedValue({ value: defaultPhoneApp });
     mockedServerTelephonyService = {
       hold: jest.fn().mockImplementation(() => {
         sleep(mockedDelay).then(() =>
@@ -188,6 +194,8 @@ describe('TelephonyService', () => {
           return { userConfig: { getGlipUserId: jest.fn() } };
         case ServiceConfig.PHONE_NUMBER_SERVICE:
           return mockedPhoneNumberService as PhoneNumberService;
+        case ServiceConfig.SETTING_SERVICE:
+          return mockedSettingService as SettingService;
         default:
           return {} as PersonService;
       }
@@ -725,17 +733,19 @@ describe('TelephonyService', () => {
         .spyOn(telephonyService._telephonyStore, 'incomingCall')
         .mockImplementation();
     });
-    it(`should not response when there's incoming call and default phone setting is RC phone`, () => {
+    it(`should not response when there's incoming call and default phone setting is RC phone`, async () => {
       defaultPhoneApp = CALLING_OPTIONS.RINGCENTRAL;
-      jest
-        .spyOn(utils, 'getEntity')
-        .mockReturnValue({ value: defaultPhoneApp });
-      telephonyService._onReceiveIncomingCall(params);
+      mockedSettingService.getById = jest
+        .fn()
+        .mockResolvedValue({ value: defaultPhoneApp });
+      await telephonyService._onReceiveIncomingCall(params);
       expect(telephonyService._telephonyStore.incomingCall).not.toBeCalled();
     });
-    it(`should show ui when there's incoming call and default phone setting is Ringcentral App`, () => {
-      jest.spyOn(utils, 'getEntity').mockReturnValue({ value: 'glip' });
-      telephonyService._onReceiveIncomingCall(params);
+    it(`should show ui when there's incoming call and default phone setting is Ringcentral App`, async () => {
+      jest
+        .spyOn(mockedSettingService, 'getById')
+        .mockResolvedValue({ value: 'glip' });
+      await telephonyService._onReceiveIncomingCall(params);
       expect(telephonyService._telephonyStore.incomingCall).toBeCalled();
     });
   });
