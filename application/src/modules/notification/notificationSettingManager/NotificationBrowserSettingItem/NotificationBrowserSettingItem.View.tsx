@@ -109,7 +109,6 @@ class NotificationBrowserSettingItemViewComponent extends Component<
     e: React.ChangeEvent<HTMLInputElement>,
     checked: boolean,
   ) => {
-    console.log('alex, handleToggleChange ', checked);
     const browserPermission =
       this.props.settingItemEntity.value &&
       this.props.settingItemEntity.value.browserPermission;
