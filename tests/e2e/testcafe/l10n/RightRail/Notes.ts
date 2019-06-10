@@ -36,7 +36,6 @@ test(formalName('Notes display on the right rail', ['P2', 'Messages', 'RightRail
     const teamsSection = app.homePage.messageTab.teamsSection;
     await teamsSection.conversationEntryById(team.glipId).enter();
     await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
-    await rightRail.clickFoldStatusButton();
     await rightRail.openMore();
     await rightRail.notesEntry.enter();
   });
