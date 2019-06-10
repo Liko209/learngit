@@ -201,8 +201,10 @@ class SyncController {
         mainLogger.log(LOG_INDEX_DATA, 'fetch index failed');
         syncConfig.updateIndexSucceed(false);
         await this._handleSyncIndexError(error);
+        this._progressBar.stop();
         throw new Error(error);
       }
+      mainLogger.log(LOG_INDEX_DATA, 'executeFunc done. stop progress');
       this._progressBar.stop();
     };
     const taskController = this._getIndexDataTaskController(executeFunc);
