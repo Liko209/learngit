@@ -34,7 +34,7 @@ import { Profile } from 'sdk/module/profile/entity';
 import ProfileModel from '@/store/models/Profile';
 import { getSingleEntity, getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
-import { CALL_WINDOW_STATUS, CALL_STATE } from '../FSM';
+import { CALL_WINDOW_STATUS } from '../FSM';
 import { AccountService } from 'sdk/module/account';
 import { Notification } from '@/containers/Notification';
 import {
@@ -464,9 +464,9 @@ class TelephonyService {
     };
     const url = buildURL(phoneNumber);
     this._clientService.invokeApp(url);
-    if (this._telephonyStore.callState === CALL_STATE.DIALING) {
-      this._telephonyStore.closeDialer();
-    }
+    // if (this._telephonyStore.callState === CALL_STATE.DIALING) {
+    // this._telephonyStore.closeDialer();
+    // }
   }
   private get _isJupiterDefaultApp() {
     return (
@@ -475,10 +475,11 @@ class TelephonyService {
     );
   }
 
-  makeCall = async (toNumber: string) => {
+  makeCall = async (toNumber: string, callback?: Function) => {
     if (!this._isJupiterDefaultApp) {
       return this.makeRCPhoneCall(toNumber);
     }
+    callback && callback();
     // FIXME: move this logic to SDK and always using callerID
     const idx = this._telephonyStore.callerPhoneNumberList.findIndex(
       phone =>
