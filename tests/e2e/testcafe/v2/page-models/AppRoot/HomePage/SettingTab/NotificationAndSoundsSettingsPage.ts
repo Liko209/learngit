@@ -135,11 +135,8 @@ export class NotificationAndSoundsSettingsPage extends BaseWebComponent {
 
   async newMessageDropDownItemContains(newMessageItems: string[]) {
     const count = await this.newMessageSelectorAllItems.count;
-    console.log('count:', count);
-    console.log('newMessageItems:', newMessageItems);
     for (let i = 0; i < count; i++) {
       const text = await this.newMessageSelectorAllItems.nth(i).innerText;
-      console.info('text:', text);
       const result = newMessageItems.includes(text);
       assert.ok(result, `${text} does not apply ${newMessageItems}`);
     }
