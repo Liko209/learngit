@@ -24,7 +24,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
   get newMessageBadgeCountDropDown() {
  return this.getSelectorByAutomationId('settingItemSelectBox-newMessageBadgeCount');
   }
-  
+
   get newMessageBadgeCount() {
     return this.getSelector(`*[data-test-automation-id^="settingItemSelectBoxItem-newMessageBadgeCount-"`);
   }
@@ -79,8 +79,8 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
   get newMessgesSelectorItem() {
     return this.getSelectorByAutomationId('settingItemSelectBox-newMessages-item') // check settingItemSelectBoxItem-newMessages
   }
-  get newMessageSelectorAllItems() {
-    return this.getSelectorByAutomationId('settingItemSelectBoxItem-newMessages');
+  get newMessageSelectorAllItems(){
+    return this.getSelector('[data-test-automation-class="settingItemSelectBoxItem"]');
   }
   // Incoming Call
   get incomingCallsSection() {
