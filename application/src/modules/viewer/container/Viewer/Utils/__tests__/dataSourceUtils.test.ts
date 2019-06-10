@@ -4,17 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-// import { observable, action } from 'mobx';
-
+import 'jest';
 import { VIEWER_ITEM_TYPE } from '../../constants';
 import { Item } from 'sdk/module/item/entity';
 import { TypeDictionary } from 'sdk/utils/glip-type-dictionary';
-import { isExpectedItemOfThisGroup } from '../dataSourceUtils';
+import {
+  isExpectedItemOfThisGroup,
+  getNextItemToDisplay,
+} from '../dataSourceUtils';
 
 describe('dataSourceUtils', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
+
   describe('isExpectedItemOfThisGroup()', () => {
     const fileId = TypeDictionary.TYPE_ID_FILE;
     const notFileId = TypeDictionary.TYPE_ID_TASK;
@@ -87,6 +90,64 @@ describe('dataSourceUtils', () => {
           includeDeactivated,
         );
         expect(result).toEqual(expected);
+      },
+    );
+  });
+
+  describe('getNextItemToDisplay()', () => {
+    it.each`
+      historyIds | currentIds | lastItemId | lastItemIndex
+      ${[123]}   | ${[]}      | ${123}     | ${0}
+      ${[2, 3]}  | ${[]}      | ${3}       | ${1}
+    `(
+      'should return -1 when there is no other items available in ids',
+      ({ historyIds, currentIds, lastItemId, lastItemIndex }) => {
+        expect(
+          getNextItemToDisplay(
+            historyIds,
+            currentIds,
+            lastItemId,
+            lastItemIndex,
+          ),
+        ).toEqual({ index: -1, itemId: -1 });
+      },
+    );
+
+    it.each`
+      historyIds       | currentIds   | lastItemId | lastItemIndex | expected
+      ${[1, 123, 111]} | ${[1, 111]}  | ${123}     | ${1}          | ${{ index: 1, itemId: 111 }}
+      ${[1, 23]}       | ${[23]}      | ${1}       | ${0}          | ${{ index: 0, itemId: 23 }}
+      ${[1, 2, 3, 4]}  | ${[1, 3, 4]} | ${2}       | ${4}          | ${{ index: 4, itemId: 3 }}
+      ${[1, 2, 3, 4]}  | ${[1, 4]}    | ${2}       | ${4}          | ${{ index: 4, itemId: 4 }}
+    `(
+      'should return next available item when it exists',
+      ({ historyIds, currentIds, lastItemId, lastItemIndex, expected }) => {
+        expect(
+          getNextItemToDisplay(
+            historyIds,
+            currentIds,
+            lastItemId,
+            lastItemIndex,
+          ),
+        ).toEqual(expected);
+      },
+    );
+
+    it.each`
+      historyIds      | currentIds | lastItemId | lastItemIndex | expected
+      ${[1, 2, 3]}    | ${[1, 2]}  | ${3}       | ${4}          | ${{ index: 3, itemId: 2 }}
+      ${[1, 2, 3, 4]} | ${[1, 2]}  | ${4}       | ${5}          | ${{ index: 3, itemId: 2 }}
+    `(
+      'should return last available item when it exists and there is no next item available',
+      ({ historyIds, currentIds, lastItemId, lastItemIndex, expected }) => {
+        expect(
+          getNextItemToDisplay(
+            historyIds,
+            currentIds,
+            lastItemId,
+            lastItemIndex,
+          ),
+        ).toEqual(expected);
       },
     );
   });

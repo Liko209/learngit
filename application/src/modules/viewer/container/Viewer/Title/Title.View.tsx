@@ -20,8 +20,6 @@ import {
 } from 'jui/components/Dialog/DialogHeader';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
-// import { JuiMenuList, JuiMenuItem } from 'jui/components/Menus';
-// import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu/PopoverMenu';
 import { Avatar } from '@/containers/Avatar';
 import { DialogContext } from '@/containers/Dialog';
 import { JuiButtonBar } from 'jui/components/Buttons/ButtonBar';

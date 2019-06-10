@@ -55,4 +55,49 @@ function isExpectedItemOfThisGroup(
   return isValidItem;
 }
 
-export { getTypeId, isExpectedItemOfThisGroup, getFilterFunc };
+function getNextItemToDisplay(
+  historyIds: number[],
+  currentIds: number[],
+  lastItemId: number,
+  lastItemIndex: number,
+) {
+  const nullValue = { index: -1, itemId: -1 };
+
+  if (currentIds.length === 0) {
+    return nullValue;
+  }
+  const indexInHistoryIds = historyIds.indexOf(lastItemId);
+
+  // find next available item
+  for (let i = indexInHistoryIds + 1; i < historyIds.length; ++i) {
+    const itemId = historyIds[i];
+    const indexInCurrentIds = currentIds.indexOf(itemId);
+    if (indexInCurrentIds !== -1) {
+      return {
+        itemId,
+        index: lastItemIndex + (indexInCurrentIds - indexInHistoryIds),
+      };
+    }
+  }
+
+  // find previous available item
+  for (let i = indexInHistoryIds - 1; i >= 0; --i) {
+    const itemId = historyIds[i];
+    const indexInCurrentIds = currentIds.indexOf(itemId);
+    if (indexInCurrentIds !== -1) {
+      return {
+        itemId,
+        index: lastItemIndex + (i - indexInHistoryIds),
+      };
+    }
+  }
+
+  return nullValue;
+}
+
+export {
+  getTypeId,
+  isExpectedItemOfThisGroup,
+  getFilterFunc,
+  getNextItemToDisplay,
+};
