@@ -30,7 +30,7 @@ const callActions = {
 @observer
 class CallActionsViewComponent extends Component<Props> {
   private _Anchor = () => {
-    const { t, shouldPersistBg } = this.props;
+    const { t, shouldPersistBg, isIncomingPage } = this.props;
     return (
       <JuiIconButton
         color="grey.900"
@@ -40,7 +40,7 @@ class CallActionsViewComponent extends Component<Props> {
         aria-label={t('telephony.accessibility.callActions')}
         size={shouldPersistBg ? 'xlarge' : 'xxlarge'}
         data-test-automation-id="telephony-call-actions-btn"
-        disableToolTip={true}
+        disableToolTip={!isIncomingPage}
       >
         call_more
       </JuiIconButton>
