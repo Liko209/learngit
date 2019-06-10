@@ -19,6 +19,9 @@ import { mountWithTheme } from '@/__tests__/utils';
 import { PermissionService } from 'sdk/module/permission';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ProfileService } from 'sdk/module/profile';
+import { container } from 'framework';
+import { TelephonyService } from '@/modules/telephony/service';
+import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import {
   mockSingleEntity,
   mockEntity,
@@ -31,11 +34,14 @@ registerModule(telephonyConfig);
 
 window['RTCPeerConnection'] = true;
 
+const _telephonyService: TelephonyService = container.get(TELEPHONY_SERVICE);
+
 describe('PhoneLinkView', () => {
   const telephonyService = {
     name: ServiceConfig.TELEPHONY_SERVICE,
     makeCall() {},
     getAllCallCount() {},
+    makeRCPhoneCall() {},
   };
   @testable
   class TestIsRCUserOrNot {
@@ -72,13 +78,13 @@ describe('PhoneLinkView', () => {
     @mockGlobalValue(true)
     beforeEach() {
       jest.spyOn(helper, 'isSupportWebRTC').mockReturnValue(true);
+      jest.spyOn(_telephonyService, 'makeCall').mockResolvedValue(true);
     }
 
     @test('should direct call when can use telephony and user click')
     @mockService(RCInfoService, 'isVoipCallingAvailable', true)
     @mockService(PermissionService, 'hasPermission', true)
-    @mockService(telephonyService, 'getAllCallCount', 0)
-    @mockService(telephonyService, 'makeCall')
+    @mockService(PermissionService, 'hasPermission', true)
     async t1() {
       let wrapper = mountWithTheme(
         <PhoneLink text='123-123-12-211'>123-123-12-211</PhoneLink>,
@@ -89,7 +95,7 @@ describe('PhoneLinkView', () => {
       const link = wrapper.find('a[href="javascript:;"]');
       expect(link.exists()).toBe(true);
       link.simulate('click', { preventDefault: jest.fn() });
-      expect(telephonyService.getAllCallCount).toHaveBeenCalled();
+      expect(_telephonyService.makeCall).toHaveBeenCalled();
     }
 
     @test('should direct call when can NOT use telephony')

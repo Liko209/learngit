@@ -13,11 +13,12 @@ import { errorHelper } from 'sdk/error';
 import { GroupService } from 'sdk/module/group';
 import { ToastType } from '@/containers/ToastWrapper/Toast/types';
 import { ToastMessageAlign } from '../../../../../../../containers/ToastWrapper/Toast/types';
-import { ServiceLoader } from 'sdk/module/serviceLoader';
+import {ServiceConfig, ServiceLoader} from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/group', () => ({
   GroupService: jest.fn(),
 }));
+jest.mock('sdk/module/account/config/AccountUserConfig');
 jest.mock('@/store/utils');
 jest.mock('@/utils/error');
 jest.mock('sdk/api');
@@ -29,7 +30,14 @@ const mockData = {
   isTeam: true,
 };
 const groupService: GroupService = new GroupService();
-ServiceLoader.getInstance = jest.fn().mockReturnValue(groupService);
+ServiceLoader.getInstance = jest.fn().mockImplementation((type) => {
+  switch (type) {
+    case ServiceConfig.GROUP_SERVICE:
+      return groupService;
+    default:
+      return { userConfig: { getGlipUserId: () => 2222 }};
+  }
+});
 const props = {
   id: 1,
 };

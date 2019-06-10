@@ -5,10 +5,9 @@
  */
 import { uniq } from 'lodash';
 import { observable, action, computed, createAtom } from 'mobx';
-import { ESettingItemState } from 'sdk/framework/model/setting/types';
 import { SettingPage, SettingSection, SettingItem } from '@/interface/setting';
 import { SettingStoreScope } from './SettingStoreScope';
-import { getSettingItemEntity } from './utils';
+import { isItemVisible } from './helper';
 
 class SettingStore {
   // NOTE
@@ -34,7 +33,7 @@ class SettingStore {
 
   getNoEmptyPages() {
     return this.getAllPages().filter(
-      (pageId) => this.getNoEmptyPageSections(pageId).length > 0,
+      pageId => this.getPageNonEmptySections(pageId).length > 0,
     );
   }
 
@@ -76,6 +75,10 @@ class SettingStore {
     ).sort(this._compareItemWeight);
   }
 
+  getSectionVisibleItems(sectionId: SettingSection['id']) {
+    return this.getSectionItems(sectionId).filter(isItemVisible);
+  }
+
   getPageItems(pageId: SettingPage['id']) {
     return this.getPageSections(pageId).reduce(
       (result: SettingItem['id'][], sectionId: SettingSection['id']) => {
@@ -86,7 +89,7 @@ class SettingStore {
   }
 
   getItemById<T extends SettingItem>(itemId: SettingItem['id']): T | undefined {
-    return this._find<T>((storeScope) => storeScope.getItemById<T>(itemId));
+    return this._find<T>(storeScope => storeScope.getItemById<T>(itemId));
   }
 
   useScope(scope: symbol) {
@@ -123,10 +126,6 @@ class SettingStore {
       }
     }
     return result;
-  }
-
-  private _isItemVisible(id: SettingItem['id']) {
-    return getSettingItemEntity(id).state !== ESettingItemState.INVISIBLE;
   }
 
   private _comparePageWeight = (

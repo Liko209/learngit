@@ -93,9 +93,9 @@ class IncomingCallsSettingHandler extends AbstractSettingEntityHandler<
       return;
     }
     if (
-      profile[SETTING_KEYS.DESKTOP_CALL] !== this.userSettingEntityCache.value
+      profile[SETTING_KEYS.DESKTOP_CALL] !== this.userSettingEntityCache!.value
     ) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
   }
   async onSettingEntityUpdate(
@@ -105,7 +105,7 @@ class IncomingCallsSettingHandler extends AbstractSettingEntityHandler<
       payload.body.entities.has(SettingEntityIds.Notification_Browser) ||
       payload.body.entities.has(SettingEntityIds.Phone_DefaultApp)
     ) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
   }
 }

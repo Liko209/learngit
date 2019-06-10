@@ -10,7 +10,7 @@ type TextMessageProps = {
 };
 
 type TextMessageViewProps = {
-  getContent: (keyword?: string) => ChildrenType;
+  getContent: (keyword?: string) => Promise<ChildrenType>;
   directCall: (phoneNumber: string) => void;
   canUseTelephony: () => Promise<boolean>;
 };
