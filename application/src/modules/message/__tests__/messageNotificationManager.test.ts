@@ -12,6 +12,7 @@ import PostModel from '../../../store/models/Post';
 import { DESKTOP_MESSAGE_NOTIFICATION_OPTIONS } from 'sdk/module/profile';
 
 jest.mock('sdk/module/config');
+jest.mock('sdk/module/account/config/AccountUserConfig');
 describe('messageNotificationManager', () => {
   let notificationManager: MessageNotificationManager;
   const currentUserId = 110;
@@ -72,6 +73,7 @@ describe('messageNotificationManager', () => {
     },
   };
   beforeEach(() => {
+    const userId = 123432;
     jest.clearAllMocks();
     notificationManager = new MessageNotificationManager();
     jest.spyOn(utils, 'getGlobalValue').mockReturnValue(currentUserId);
@@ -82,7 +84,7 @@ describe('messageNotificationManager', () => {
         case ServiceConfig.GROUP_SERVICE:
           return mockedGroupService;
         default:
-          return {};
+          return { userConfig:{ getGlipUserId: () => userId }};
       }
     });
   });

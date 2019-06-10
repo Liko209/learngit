@@ -8,6 +8,7 @@ export const SETTING_ITEM__NOTIFICATION_INCOMING_CALLS =
 
 export enum CALL_ACTION {
   FORWARD,
+  PARK,
   REPLY,
   FLIP,
 }

@@ -41,7 +41,7 @@ abstract class AbstractHandleType implements IHandleType {
   }
   requestDecoration(tokenHandler: ITokenHandler) {
     return (request: IRequest) => {
-      return request;
+      return true;
     };
   }
 }

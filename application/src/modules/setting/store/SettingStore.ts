@@ -5,10 +5,9 @@
  */
 import { uniq } from 'lodash';
 import { observable, action, computed, createAtom } from 'mobx';
-import { ESettingItemState } from 'sdk/framework/model/setting/types';
 import { SettingPage, SettingSection, SettingItem } from '@/interface/setting';
 import { SettingStoreScope } from './SettingStoreScope';
-import { getSettingItemEntity } from './utils';
+import { isItemVisible } from './helper';
 
 class SettingStore {
   // NOTE
@@ -60,8 +59,7 @@ class SettingStore {
     return this.getPageSections(pageId).filter(sectionId => {
       const itemIds = this.getSectionItems(sectionId);
       return (
-        itemIds.length > 0 &&
-        itemIds.some(itemId => this._isItemVisible(itemId))
+        itemIds.length > 0 && itemIds.some(itemId => isItemVisible(itemId))
       );
     });
   }
@@ -74,6 +72,10 @@ class SettingStore {
     return this._getAll(storeScope =>
       storeScope.getSectionItems(sectionId),
     ).sort(this._compareItemWeight);
+  }
+
+  getSectionVisibleItems(sectionId: SettingSection['id']) {
+    return this.getSectionItems(sectionId).filter(isItemVisible);
   }
 
   getPageItems(pageId: SettingPage['id']) {
@@ -123,10 +125,6 @@ class SettingStore {
       }
     }
     return result;
-  }
-
-  private _isItemVisible(id: SettingItem['id']) {
-    return getSettingItemEntity(id).state !== ESettingItemState.INVISIBLE;
   }
 
   private _comparePageWeight = (

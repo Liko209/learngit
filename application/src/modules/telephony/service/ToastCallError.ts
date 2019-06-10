@@ -81,7 +81,19 @@ class ToastCallError {
 
   static toastInvalidNumber(): void {
     ToastCallError.toast('telephony.prompt.InvalidNumber', 2000);
-    mainLogger.info('Call error: Call timeout');
+    mainLogger.info('Call error: invalid number');
+  }
+
+  static toastParkErrorStopRecording(): void {
+    ToastCallError.toast('telephony.prompt.ParkErrorStopRecording', 3000);
+    mainLogger.info('Call error: your call recording is being saved.');
+  }
+
+  static toastParkError(): void {
+    ToastCallError.toast('telephony.prompt.ParkError', 3000);
+    mainLogger.info(
+      "Call error: something went wrong on our end and we weren't able to park the call.",
+    );
   }
 }
 

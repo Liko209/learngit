@@ -6,6 +6,13 @@
 import { getChildren } from '../getChildren';
 
 describe('getChildren()', () => {
+  // will remove until upgrade material ui
+  beforeAll(() => {
+    // mock console for jest
+    (global as any)['console'] = {
+      error: jest.fn(),
+    };
+  });
   it('should get convert children into array', () => {
     const div = document.createElement('ul');
     div.innerHTML = [0, 1, 2, 3, 4].reduce(

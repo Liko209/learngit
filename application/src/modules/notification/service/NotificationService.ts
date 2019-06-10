@@ -95,6 +95,7 @@ class NotificationService implements INotificationService {
       }
     } else {
       this._notificationDistributor.create(titleFormatted, customOps);
+      console.log('alex, show Notification');
     }
   }
 

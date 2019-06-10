@@ -49,14 +49,21 @@ class FileItemUtils {
   }
 
   static getUrl<T extends { versions: ItemVersions[] }>(file: T) {
-    return (file && file.versions.length > 0 && file.versions[0].url) || '';
+    return (
+      (file &&
+        file.versions.length > 0 &&
+        FileItemUtils._getLatestVersion(file.versions)!.url) ||
+      ''
+    );
   }
 
   static getDownloadUrl<T extends { versions: ItemVersions[]; url?: string }>(
     file: T,
   ) {
     return (
-      (file && file.versions.length > 0 && file.versions[0].download_url) ||
+      (file &&
+        file.versions.length > 0 &&
+        FileItemUtils._getLatestVersion(file.versions)!.download_url) ||
       file.url ||
       ''
     );
@@ -64,8 +71,15 @@ class FileItemUtils {
 
   static getStorageId<T extends { versions: ItemVersions[] }>(file: T) {
     return (
-      (file && file.versions.length > 0 && file.versions[0].stored_file_id) || 0
+      (file &&
+        file.versions.length > 0 &&
+        FileItemUtils._getLatestVersion(file.versions)!.stored_file_id) ||
+      0
     );
+  }
+
+  private static _getLatestVersion(versions: ItemVersions[]) {
+    return versions.find(item => !item.deactivated);
   }
 
   static isFromGiphy<T extends { source?: string }>(file: T) {

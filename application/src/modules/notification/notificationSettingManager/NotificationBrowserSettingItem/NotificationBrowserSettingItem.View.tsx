@@ -109,12 +109,10 @@ class NotificationBrowserSettingItemViewComponent extends Component<
     e: React.ChangeEvent<HTMLInputElement>,
     checked: boolean,
   ) => {
+    console.log('alex, handleToggleChange ', checked);
     const browserPermission =
       this.props.settingItemEntity.value &&
       this.props.settingItemEntity.value.browserPermission;
-    if (browserPermission !== PERMISSION.DEFAULT) {
-      this.props.setToggleState(checked);
-    }
     if (checked) {
       switch (browserPermission) {
         case PERMISSION.DEFAULT:
@@ -123,11 +121,12 @@ class NotificationBrowserSettingItemViewComponent extends Component<
             this._handleDialog(true);
           }
           if (permission === PERMISSION.GRANTED) {
-            this.props.setToggleState(checked);
+            await this.props.setToggleState(checked);
             this._showEnabledNotification();
           }
           break;
         case PERMISSION.GRANTED:
+          await this.props.setToggleState(checked);
           this._showEnabledNotification();
           break;
         case PERMISSION.DENIED:
@@ -136,6 +135,8 @@ class NotificationBrowserSettingItemViewComponent extends Component<
         default:
           break;
       }
+    } else {
+      this.props.setToggleState(checked);
     }
   }
 

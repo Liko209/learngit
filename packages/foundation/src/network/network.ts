@@ -25,7 +25,7 @@ interface IHandleType {
   basic: () => string;
   requestDecoration: (
     tokenHandler: ITokenHandler,
-  ) => (request: IRequest) => IRequest;
+  ) => (request: IRequest) => boolean;
 }
 
 interface ITokenRefreshListener {
@@ -41,7 +41,7 @@ interface INetworkRequestExecutor {
 }
 
 interface IRequestDecoration {
-  decorate: (request: IRequest) => void;
+  decorate: (request: IRequest) => boolean;
 }
 
 interface ITokenHandler {
