@@ -238,6 +238,7 @@ class ViewerViewComponent extends Component<
         <JuiViewerSidebar
           open={true}
           items={items}
+          data-test-automation-id="ViewerSidebar"
           selectedIndex={dataModule.currentPageIdx}
           onSelectedChanged={this._handlePageIdxChanged}
         />
@@ -293,12 +294,14 @@ class ViewerViewComponent extends Component<
                     <JuiZoomButtonGroup
                       className="zoomGroup"
                       resetMode={true}
+                      data-test-automation-id="ViewerZoomButtonGroup"
                       centerText={this._getScaleDisplayString()}
                       ZoomOut={
                         <JuiIconButton
                           variant="plain"
                           tooltipTitle={t('viewer.ZoomOut')}
                           ariaLabel={t('viewer.ZoomOut')}
+                          data-test-automation-id="ViewerZoomOutButton"
                           disabled={currentScale === MIN_SCALE}
                           onClick={() => this._handleZoomOut()}
                         >
@@ -310,6 +313,7 @@ class ViewerViewComponent extends Component<
                           variant="plain"
                           tooltipTitle={t('viewer.ZoomIn')}
                           ariaLabel={t('viewer.ZoomIn')}
+                          data-test-automation-id="ViewerZoomInButton"
                           disabled={currentScale === MAX_SCALE}
                           onClick={() => this._handleZoomIn()}
                         >
@@ -321,6 +325,7 @@ class ViewerViewComponent extends Component<
                           variant="plain"
                           tooltipTitle={t('viewer.ZoomReset')}
                           ariaLabel={t('viewer.ZoomReset')}
+                          data-test-automation-id="ViewerResetButton"
                           disabled={currentScale === initialScale}
                           onClick={() => this._handleReset()}
                         >

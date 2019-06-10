@@ -53,6 +53,7 @@ const ViewerDocument = (props: Type) => {
     return (
       <JuiViewerDocument
         pages={pages}
+        data-test-automation-id="ViewerDocument"
         scale={dataModule.currentScale}
         pageIndex={dataModule.currentPageIdx}
         pageFit={true}

@@ -50,20 +50,17 @@ class ViewerTitleViewComponent extends Component<Type> {
       <>
         <JuiDialogHeaderMeta>
           <JuiDialogHeaderMetaLeft>
-            <Avatar
-              uid={uid}
-              data-test-automation-id={'previewerSenderAvatar'}
-            />
+            <Avatar uid={uid} data-test-automation-id={'viewerSenderAvatar'} />
           </JuiDialogHeaderMetaLeft>
           <JuiDialogHeaderMetaRight
             title={userDisplayName}
-            data-test-automation-id={'previewerSenderInfo'}
+            data-test-automation-id={'viewerSenderInfo'}
             subtitle={createdAt}
           />
         </JuiDialogHeaderMeta>
         <JuiDialogHeaderTitle
           variant="responsive"
-          data-test-automation-id={'previewerTitle'}
+          data-test-automation-id={'viewerTitle'}
         >
           <JuiViewerTitleWrap>
             {name}
@@ -81,7 +78,7 @@ class ViewerTitleViewComponent extends Component<Type> {
             <JuiDialogHeaderSubtitle>{`(${currentPageIdx}/${pageTotal})`}</JuiDialogHeaderSubtitle>
           </JuiViewerTitleWrap>
         </JuiDialogHeaderTitle>
-        <JuiDialogHeaderActions>
+        <JuiDialogHeaderActions data-test-automation-id={'viewerActions'}>
           <JuiButtonBar overlapSize={-2}>
             <Download url={downloadUrl} />
             <FileActionMenu fileId={fileId} disablePortal={true} />
