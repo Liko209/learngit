@@ -174,7 +174,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
 
       this._telephonyCallDelegate.setRtcCall(call);
       this._telephonyAccountDelegate.onMadeOutgoingCall(
-        this._telephonyCallDelegate.getEntityId().toString(),
+        this._telephonyCallDelegate.getEntityId(),
       );
     } while (false);
 
@@ -287,7 +287,9 @@ class TelephonyAccountController implements IRTCAccountDelegate {
 
   onMadeOutgoingCall(call: RTCCall) {
     this._telephonyCallDelegate.setRtcCall(call);
-    this._telephonyAccountDelegate.onMadeOutgoingCall(call.getCallInfo().uuid);
+    this._telephonyAccountDelegate.onMadeOutgoingCall(
+      this._telephonyCallDelegate.getEntityId(),
+    );
   }
 
   private async _buildCallInfo(rtcCallInfo: RTCCallInfo) {
@@ -349,8 +351,9 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this._telephonyCallDelegate.setRtcCall(call);
     this._telephonyCallDelegate.setCallStateCallback(this.callStateChanged);
     call.setCallDelegate(this._telephonyCallDelegate);
-    const callInfo = await this._buildCallInfo(call.getCallInfo());
-    this._telephonyAccountDelegate.onReceiveIncomingCall(callInfo);
+    this._telephonyAccountDelegate.onReceiveIncomingCall(
+      this._telephonyCallDelegate.getEntityId(),
+    );
   }
 
   getCallCount() {

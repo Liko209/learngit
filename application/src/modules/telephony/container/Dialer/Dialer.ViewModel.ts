@@ -17,8 +17,8 @@ class DialerViewModel extends StoreViewModel<DialerProps>
   dialerId = this._telephonyStore.dialerId;
 
   @computed
-  get callState() {
-    return this._telephonyStore.callState;
+  get hasIncomingCall() {
+    return this._telephonyStore.hasIncomingCall;
   }
 
   @computed

@@ -13,7 +13,8 @@ import i18nT from '@/utils/i18nT';
 import { TelephonyStore } from './store';
 import { TelephonyService } from './service';
 import { TELEPHONY_SERVICE } from './interface/constant';
-import { CALL_STATE } from './FSM';
+// import { CALL_STATE } from './FSM';
+import { CALL_STATE } from 'sdk/module/telephony/entity';
 
 class TelephonyNotificationManager extends AbstractNotificationManager {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
@@ -27,21 +28,24 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
     this._disposer = reaction(
       () => ({
         callState: this._telephonyStore.callState,
+        hasIncomingCall: this._telephonyStore.hasIncomingCall,
         isContactMatched: this._telephonyStore.isContactMatched,
       }),
       ({
         callState,
+        hasIncomingCall,
         isContactMatched,
       }: {
         callState: CALL_STATE;
+        hasIncomingCall: boolean;
         isContactMatched: boolean;
       }) => {
-        if (callState === CALL_STATE.INCOMING && isContactMatched) {
+        if (hasIncomingCall && isContactMatched) {
           this._showNotification();
         } else {
           const shouldCloseNotification = [
             CALL_STATE.IDLE,
-            CALL_STATE.DIALING,
+            CALL_STATE.DISCONNECTED,
             CALL_STATE.CONNECTING,
             CALL_STATE.CONNECTED,
           ];

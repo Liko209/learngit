@@ -14,34 +14,28 @@ import { DialerContainer } from '../DialerContainer';
 import { DialerViewProps } from './types';
 import { withDialogOrNewWindow } from '../../HOC';
 import { Incoming } from '../Incoming';
-import { CALL_STATE } from '../../FSM';
 import { DialerKeypadHeader } from '../DialerKeypadHeader';
-
 @observer
 class DialerViewComponent extends React.Component<DialerViewProps> {
   dialerHeaderRef: RefObject<any> = createRef();
 
   renderDialer = () => {
-    const { callState, keypadEntered } = this.props;
-    switch (callState) {
-      case CALL_STATE.INCOMING:
-        return <Incoming />;
+    const { hasIncomingCall, keypadEntered } = this.props;
+    if (hasIncomingCall) return <Incoming />;
 
-      default:
-        return (
-          <>
-            <JuiHeaderContainer>
-              <DialerTitleBar />
-              {keypadEntered ? (
-                <DialerKeypadHeader />
-              ) : (
-                <DialerHeader ref={this.dialerHeaderRef} />
-              )}
-            </JuiHeaderContainer>
-            <DialerContainer dialerHeaderRef={this.dialerHeaderRef} />
-          </>
-        );
-    }
+    return (
+      <>
+        <JuiHeaderContainer>
+          <DialerTitleBar />
+          {keypadEntered ? (
+            <DialerKeypadHeader />
+          ) : (
+            <DialerHeader ref={this.dialerHeaderRef} />
+          )}
+        </JuiHeaderContainer>
+        <DialerContainer dialerHeaderRef={this.dialerHeaderRef} />
+      </>
+    );
   }
 
   render() {

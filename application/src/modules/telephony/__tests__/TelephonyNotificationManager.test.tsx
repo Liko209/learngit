@@ -27,9 +27,14 @@ const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 jupiter.registerModule(notification.config);
 jupiter.registerModule(common.config);
+
+(TelephonyStore as any)._autorun = jest.fn();
+
 beforeAll(() => {
   (getEntity as jest.Mock).mockReturnValue({
     userDisplayName: 'belle',
+    callState: 0,
+    callId: '1',
   });
 });
 
@@ -40,7 +45,7 @@ describe('TelephonyNotificationManager', () => {
   telephonyNotificationManager._disposer = jest.fn();
   const telephonyStore = jupiter.get(TelephonyStore);
   const title = 'Incoming Call';
-  jest.spyOn(i18nT, 'default').mockImplementation(async (i) => {
+  jest.spyOn(i18nT, 'default').mockImplementation(async i => {
     const translation = {
       'telephony.notification.incomingCall': 'Incoming Call',
       'telephony.notification.answer': 'Answer',
@@ -52,8 +57,6 @@ describe('TelephonyNotificationManager', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     Object.assign(telephonyStore, {
-      callState: 0,
-      callId: '1',
       phoneNumber: '123',
       callerName: 'alex',
       uid: 1,

@@ -10,10 +10,10 @@ import { computed, observable, action, comparer } from 'mobx';
 import { Props, ViewProps } from './types';
 import { TelephonyStore } from '../../store';
 import { TelephonyService } from '../../service';
-import { CALL_STATE, CALL_WINDOW_STATUS } from '../../FSM';
+import { CALL_WINDOW_STATUS } from '../../FSM';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { formatSeconds } from '@/utils/date';
-
+import { CALL_STATE } from 'sdk/module/telephony/entity';
 class DialpadViewModel extends StoreViewModel<Props> implements ViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
   private _telephonyService: TelephonyService = container.get(

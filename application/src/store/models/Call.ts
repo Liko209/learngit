@@ -51,6 +51,12 @@ export default class CallModel extends Base<Call> {
   @observable
   sessionId: string;
 
+  @observable
+  fromName: string;
+
+  @observable
+  toName: string;
+
   constructor(data: Call) {
     super(data);
     const {
@@ -66,6 +72,8 @@ export default class CallModel extends Base<Call> {
       disconnectTime,
       direction,
       mute_state,
+      from_name,
+      to_name,
     } = data;
 
     this.callId = call_id;
@@ -80,6 +88,8 @@ export default class CallModel extends Base<Call> {
     this.disconnectTime = disconnectTime;
     this.direction = direction;
     this.muteState = mute_state;
+    this.fromName = from_name;
+    this.toName = to_name;
   }
 
   static fromJS(data: Call) {

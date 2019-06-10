@@ -14,16 +14,13 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'sdk/module/telephony';
-import {
-  MAKE_CALL_ERROR_CODE,
-  TelephonyCallInfo,
-} from 'sdk/module/telephony/types';
+import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
 import { RC_INFO, notificationCenter } from 'sdk/service';
 import { PersonService, ContactType } from 'sdk/module/person';
 import { GlobalConfigService } from 'sdk/module/config';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
 import { mainLogger } from 'sdk';
-import { TelephonyStore, CALL_TYPE } from '../store';
+import { TelephonyStore } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
@@ -33,7 +30,7 @@ import { Profile } from 'sdk/module/profile/entity';
 import ProfileModel from '@/store/models/Profile';
 import { getSingleEntity, getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
-import { CALL_WINDOW_STATUS, CALL_STATE } from '../FSM';
+import { CALL_WINDOW_STATUS } from '../FSM';
 import { AccountService } from 'sdk/module/account';
 import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
 import { CALLING_OPTIONS } from 'sdk/module/profile';
@@ -68,37 +65,36 @@ class TelephonyService {
     );
   }
 
-  private _onMadeOutgoingCall = (callId: string) => {
+  private _onMadeOutgoingCall = (id: number) => {
     // TODO: This should be a list in order to support multiple call
     // Ticket: https://jira.ringcentral.com/browse/FIJI-4274
+    this._telephonyStore.id = id;
+    const { callId } = this._telephonyStore.call;
     mainLogger.info(
       `${TelephonyService.TAG} Call object created, call id=${callId}`,
     );
     this._callId = callId;
-    this._telephonyStore.callId = callId;
-    this._telephonyStore.callType = CALL_TYPE.OUTBOUND;
     this._telephonyStore.directCall();
   }
 
-  private _onReceiveIncomingCall = async (callInfo: TelephonyCallInfo) => {
+  private _onReceiveIncomingCall = async (id: number) => {
     if (!this._isJupiterDefaultApp) {
       return;
     }
-    const { fromName, fromNum, callId } = callInfo;
+    this._telephonyStore.id = id;
+    const { fromNum, callId, fromName } = this._telephonyStore.call;
     this._callId = callId;
-    this._telephonyStore.callType = CALL_TYPE.INBOUND;
     this._telephonyStore.callerName = fromName;
     const phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
     if (phoneNumber !== this._telephonyStore.phoneNumber) {
       this._telephonyStore.isContactMatched = false;
       this._telephonyStore.phoneNumber = phoneNumber;
     }
-    this._telephonyStore.callId = callId;
     this._telephonyStore.incomingCall();
     mainLogger.info(
-      `${TelephonyService.TAG}Call object created, call id=${
-        callInfo.callId
-      }, from name=${fromName}, from num=${fromNum}`,
+      `${
+        TelephonyService.TAG
+      }Call object created, call id=${callId}, from name=${'fromName'}, from num=${fromNum}`,
     );
   }
 
@@ -165,19 +161,11 @@ class TelephonyService {
     );
 
     switch (state) {
-      case RTC_CALL_STATE.CONNECTED: {
-        this._initializeCallState();
-        break;
-      }
       case RTC_CALL_STATE.DISCONNECTED: {
         this._resetCallState();
         break;
       }
     }
-  }
-
-  private _initializeCallState() {
-    this._telephonyStore.connected();
   }
 
   private _resetCallState() {
@@ -396,7 +384,7 @@ class TelephonyService {
     };
     const url = buildURL(phoneNumber);
     this._clientService.invokeApp(url);
-    if (this._telephonyStore.callState === CALL_STATE.DIALING) {
+    if (this._telephonyStore.callDisconnected) {
       this._telephonyStore.closeDialer();
     }
   }
@@ -487,7 +475,7 @@ class TelephonyService {
   answer = () => {
     if (this._callId) {
       mainLogger.info(`${TelephonyService.TAG}answer call id=${this._callId}`);
-      this._telephonyStore.answer();
+      // this._telephonyStore.answer();
       this._serverTelephonyService.answer(this._callId);
     }
   }
@@ -564,13 +552,12 @@ class TelephonyService {
 
   muteOrUnmute = () => {
     if (this._callId) {
-      this._telephonyStore.switchBetweenMuteAndUnmute();
       const { isMute } = this._telephonyStore;
       isMute
-        ? this._serverTelephonyService.mute(this._callId)
-        : this._serverTelephonyService.unmute(this._callId);
+        ? this._serverTelephonyService.unmute(this._callId)
+        : this._serverTelephonyService.mute(this._callId);
       mainLogger.info(
-        `${TelephonyService.TAG}${isMute ? 'mute' : 'unmute'} call id=${
+        `${TelephonyService.TAG}${isMute ? 'unmute' : 'mute'} call id=${
           this._callId
         }`,
       );

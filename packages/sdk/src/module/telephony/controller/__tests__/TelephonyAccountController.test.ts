@@ -338,11 +338,12 @@ describe('TelephonyAccountController', () => {
   describe('onMadeOutgoingCall', () => {
     it('should pass call created event to delegate', () => {
       spyOn(mockAcc, 'onMadeOutgoingCall');
+      jest.spyOn(callController, 'getEntityId').mockReturnValue(1);
       accountController.onMadeOutgoingCall({
         getCallInfo: jest.fn().mockReturnValue({ uuid: '123' }),
       });
       expect(callController.setRtcCall).toBeCalled();
-      expect(mockAcc.onMadeOutgoingCall).toBeCalledWith('123');
+      expect(mockAcc.onMadeOutgoingCall).toBeCalledWith(1);
     });
   });
 
@@ -426,6 +427,10 @@ describe('TelephonyAccountController', () => {
         sessionId: '',
       });
 
+      TelephonyCallController.prototype.getEntityId = jest
+        .fn()
+        .mockReturnValue(1);
+
       ServiceLoader.getInstance = jest.fn().mockReturnValueOnce({
         isRCFeaturePermissionEnabled: jest.fn().mockReturnValue(true),
       });
@@ -435,12 +440,7 @@ describe('TelephonyAccountController', () => {
       spyOn(mockAcc, 'onReceiveIncomingCall');
 
       await accountController.onReceiveIncomingCall(rtcCall);
-      expect(mockAcc.onReceiveIncomingCall).toBeCalledWith({
-        fromName: NAME,
-        fromNum: NUM,
-        toNum: '',
-        callId: CALL_ID,
-      });
+      expect(mockAcc.onReceiveIncomingCall).toBeCalledWith(1);
     });
   });
 

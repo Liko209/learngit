@@ -42,6 +42,7 @@ export default class MultiEntityMapStore<
     this._modelCreator = modelCreator;
 
     const callback = (payload: NotificationEntityPayload<T, IdType>) => {
+      entityName === 'call' && console.info('1111call', payload);
       this.handleIncomingData(payload);
     };
     event.forEach((eventName: string) => {

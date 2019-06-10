@@ -7,8 +7,8 @@ import { RTC_ACCOUNT_STATE } from 'voip';
 import { TelephonyCallInfo } from '../types';
 interface ITelephonyAccountDelegate {
   onAccountStateChanged(state: RTC_ACCOUNT_STATE): void;
-  onMadeOutgoingCall(callId: string): void;
-  onReceiveIncomingCall(callInfo: TelephonyCallInfo): void;
+  onMadeOutgoingCall(callId: number): void;
+  onReceiveIncomingCall(callId: number): void;
 }
 
 export { ITelephonyAccountDelegate, RTC_ACCOUNT_STATE };

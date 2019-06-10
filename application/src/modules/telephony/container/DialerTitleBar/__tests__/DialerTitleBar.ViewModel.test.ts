@@ -7,29 +7,39 @@
 import { container, decorate, injectable } from 'framework';
 import { TelephonyStore } from '../../../store';
 import { DetachOrAttachViewModel } from '../DialerTitleBar.ViewModel';
+import { getEntity } from '@/store/utils';
+import { CALL_STATE } from 'sdk/module/telephony/entity';
+import { observable } from 'mobx';
 
+jest.mock('@/store/utils');
 decorate(injectable(), TelephonyStore);
 
 container.bind(TelephonyStore).to(TelephonyStore);
 
 let dialerTitleBarViewModel: DetachOrAttachViewModel;
 
+let obj: any;
 beforeAll(() => {
+  obj = observable({
+    connectTime: Date.now(),
+    callState: CALL_STATE.IDLE,
+  });
+  (getEntity as jest.Mock).mockReturnValue(obj);
+  // dialerTitleBarViewModel.prototype.reaction = jest.fn();
   dialerTitleBarViewModel = new DetachOrAttachViewModel({});
 });
 
 describe('dialerTitleBarViewModel', () => {
   it('should return 00:00', () => {
-    expect(dialerTitleBarViewModel._timing).toBe('00:00');
+    expect((dialerTitleBarViewModel as any)._timing).toBe('00:00');
   });
   it('should return undefined when isDialer is false', () => {
-    dialerTitleBarViewModel._telephonyStore.activeCallTime = Date.now();
     dialerTitleBarViewModel.timing;
-    expect(dialerTitleBarViewModel._intervalId).toBeDefined();
-    dialerTitleBarViewModel._telephonyStore.callState = 'connecting';
+    expect((dialerTitleBarViewModel as any)._intervalId).toBeDefined();
+    obj.callState = CALL_STATE.CONNECTING;
     expect(dialerTitleBarViewModel.isDialer).toBeFalsy();
-    dialerTitleBarViewModel._telephonyStore.callState = 'idle';
+    obj.callState = CALL_STATE.DISCONNECTED;
     expect(dialerTitleBarViewModel.isDialer).toBeTruthy();
-    expect(dialerTitleBarViewModel._intervalId).toBeUndefined();
+    expect((dialerTitleBarViewModel as any)._intervalId).toBeUndefined();
   });
 });

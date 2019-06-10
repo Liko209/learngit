@@ -8,7 +8,7 @@ import { CLIENT_SERVICE } from '@/modules/common/interface';
 import { ClientService } from '@/modules/common';
 import { container, decorate, injectable } from 'framework';
 import { TelephonyStore } from '../../../store';
-import { CALL_STATE } from '../../../FSM';
+// import { CALL_STATE } from '../../../FSM';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
@@ -39,14 +39,10 @@ beforeAll(() => {
   jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
     matchContactByPhoneNumber: jest.fn(),
   });
-
   dialerViewModel = new DialerViewModel();
 });
 
 describe('DialerViewModel', () => {
-  it('should return call state', async () => {
-    expect(dialerViewModel.callState).toEqual(CALL_STATE.IDLE);
-  });
   it('should initialize with keypad not entered', async () => {
     expect(dialerViewModel.keypadEntered).toEqual(false);
   });

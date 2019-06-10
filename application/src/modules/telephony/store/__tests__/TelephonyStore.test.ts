@@ -3,13 +3,18 @@
  * @Date: 2019-03-01 23:13:35
  * Copyright © RingCentral. All rights reserved.
  */
-
 import { TelephonyStore, INCOMING_STATE } from '../TelephonyStore';
-import { CALL_STATE, CALL_WINDOW_STATUS } from '../../FSM';
+import { CALL_WINDOW_STATUS } from '../../FSM';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 import { getEntity } from '@/store/utils';
-import { HOLD_STATE, RECORD_STATE } from 'sdk/module/telephony/entity';
+import {
+  HOLD_STATE,
+  RECORD_STATE,
+  CALL_STATE,
+  CALL_DIRECTION,
+  MUTE_STATE,
+} from 'sdk/module/telephony/entity';
 import CallModel from '@/store/models/Call';
 
 jest.mock('@/store/utils');
@@ -23,34 +28,21 @@ jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
   matchContactByPhoneNumber: jest.fn(),
 });
 
+(TelephonyStore as any).autorun = jest.fn();
+
 function createStore() {
   return new TelephonyStore();
 }
 
 describe('Telephony store', () => {
-  it('callWindowState should to be CALL_WINDOW_STATUS.MINIMIZED and callState should to be CALL_STATE.IDLE when instantiated TelephonyStore', () => {
-    const store = createStore();
-    expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.MINIMIZED);
-    expect(store.callState).toBe(CALL_STATE.IDLE);
+  beforeEach(() => {
+    (getEntity as jest.Mock).mockReturnValue({});
   });
 
-  /* tslint:disable:max-line-length */
-  it('callState should to be correct state when call openDialer function or closeDialer function', () => {
+  it('callWindowState should to be CALL_WINDOW_STATUS.MINIMIZED and callState should to be undefined when instantiated TelephonyStore', () => {
     const store = createStore();
-    mockState('recordState', RECORD_STATE.IDLE);
-    store.openDialer();
-    expect(store.callState).toBe(CALL_STATE.DIALING);
-    store.closeDialer();
-    expect(store.callState).toBe(CALL_STATE.IDLE);
-    store.openDialer();
-    store.dialerCall();
-    expect(store.callState).toBe(CALL_STATE.CONNECTING);
-    store.closeDialer();
-    expect(store.callState).toBe(CALL_STATE.CONNECTING);
-    store.connected();
-    expect(store.callState).toBe(CALL_STATE.CONNECTED);
-    store.openDialer();
-    expect(store.callState).toBe(CALL_STATE.CONNECTED);
+    expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.MINIMIZED);
+    expect(store.callState).toBe(undefined);
   });
 
   it('callWindowState should to be correct when call openDialer function', () => {
@@ -82,65 +74,66 @@ describe('Telephony store', () => {
     expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.MINIMIZED);
   });
 
-  it('callState should to be CALL_STATE.DIALING when call end function and call from dialer', () => {
+  it('callState should to be CALL_STATE.DISCONNECTED when call end function and call from dialer', () => {
     const store = createStore();
     store.openDialer();
     store.dialerCall();
-    store.connected();
     store.end();
+    mockState('callState', CALL_STATE.DISCONNECTED);
     expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.FLOATING);
-    expect(store.callState).toBe(CALL_STATE.DIALING);
+    expect(store.call.callState).toBe(CALL_STATE.DISCONNECTED);
   });
 
-  it('callState should to be CALL_STATE.IDLE when call end function and call not from dialer', () => {
+  it('callState should to be CALL_STATE.DISCONNECTED when call end function and call not from dialer', () => {
     let store = createStore();
     store.incomingCall();
     expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.FLOATING);
-    expect(store.callState).toBe(CALL_STATE.INCOMING);
-    store.answer();
-    expect(store.callState).toBe(CALL_STATE.CONNECTING);
-    store.connected();
+    mockState('direction', CALL_DIRECTION.INBOUND);
+
+    expect(store.inbound).toBeTruthy;
+    mockState('callState', CALL_STATE.CONNECTED);
     expect(store.callState).toBe(CALL_STATE.CONNECTED);
     store.end();
+    mockState('callState', CALL_STATE.DISCONNECTED);
     expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.MINIMIZED);
-    expect(store.callState).toBe(CALL_STATE.IDLE);
+    expect(store.callState).toBe(CALL_STATE.DISCONNECTED);
 
     store = createStore();
     store.incomingCall();
     store.end();
+    mockState('callState', CALL_STATE.DISCONNECTED);
     expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.MINIMIZED);
-    expect(store.callState).toBe(CALL_STATE.IDLE);
+    expect(store.callState).toBe(CALL_STATE.DISCONNECTED);
 
     store = createStore();
     store.incomingCall();
-    store.answer();
     store.end();
+    mockState('callState', CALL_STATE.DISCONNECTED);
     expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.MINIMIZED);
-    expect(store.callState).toBe(CALL_STATE.IDLE);
+    expect(store.callState).toBe(CALL_STATE.DISCONNECTED);
 
     store = createStore();
     store.directCall();
+    mockState('callState', CALL_STATE.CONNECTED);
     expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.FLOATING);
-    expect(store.callState).toBe(CALL_STATE.CONNECTING);
-    store.connected();
     expect(store.callState).toBe(CALL_STATE.CONNECTED);
     store.end();
+    mockState('callState', CALL_STATE.DISCONNECTED);
     expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.MINIMIZED);
-    expect(store.callState).toBe(CALL_STATE.IDLE);
+    expect(store.callState).toBe(CALL_STATE.DISCONNECTED);
 
     store = createStore();
     store.directCall();
     store.end();
+    mockState('callState', CALL_STATE.DISCONNECTED);
     expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.MINIMIZED);
-    expect(store.callState).toBe(CALL_STATE.IDLE);
+    expect(store.callState).toBe(CALL_STATE.DISCONNECTED);
   });
 
   it('holdState should to be HOLD_STATE.DISABLED when instantiated TelephonyStore [JPT-1545]', () => {
     const store = createStore();
     store.directCall();
-    (getEntity as jest.Mock).mockReturnValue({
-      holdState: HOLD_STATE.DISABLE,
-    });
+    mockState('holdState', HOLD_STATE.DISABLE);
 
     expect(store.holdState).toBe(HOLD_STATE.DISABLE);
   });
@@ -148,7 +141,6 @@ describe('Telephony store', () => {
   it('holdState should change to HOLD_STATE.IDLE when connected', () => {
     const store = createStore();
     store.directCall();
-    store.connected();
     mockState('holdState', HOLD_STATE.IDLE);
     expect(store.holdState).toBe(HOLD_STATE.IDLE);
   });
@@ -163,7 +155,6 @@ describe('Telephony store', () => {
   it('holdState should change to HOLD_STATE.IDLE when connected', () => {
     const store = createStore();
     store.directCall();
-    store.connected();
     mockState('recordState', RECORD_STATE.IDLE);
     expect(store.recordDisabled).toBe(false);
   });
@@ -198,10 +189,11 @@ describe('Telephony store', () => {
 
   it('switch between mute and unmute', () => {
     const store = createStore();
+    mockState('muteState', MUTE_STATE.IDLE);
     expect(store.isMute).toBe(false);
-    store.switchBetweenMuteAndUnmute();
+    mockState('muteState', MUTE_STATE.MUTED);
     expect(store.isMute).toBe(true);
-    store.switchBetweenMuteAndUnmute();
+    mockState('muteState', MUTE_STATE.IDLE);
     expect(store.isMute).toBe(false);
   });
 
@@ -227,9 +219,10 @@ describe('Telephony store', () => {
     const store = createStore();
     store.callerName = 'name';
     store.phoneNumber = '112233';
-    store.isMute = true;
+    mockState('muteState', MUTE_STATE.MUTED);
     store.directCall();
     store.end();
+    mockState('muteState', MUTE_STATE.IDLE);
     expect(store.callerName).toBeUndefined();
     expect(store.phoneNumber).toBeUndefined();
     expect(store.isMute).toBeFalsy();
