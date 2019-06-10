@@ -63,15 +63,20 @@ describe('CallLogDao', () => {
 
   describe('queryAllViews', () => {
     it('should get and sort all views', async () => {
-      const views = [{ __timestamp: 422 }, { __timestamp: 2 }];
+      const views = [
+        { __timestamp: 422, id: 'A' },
+        { __timestamp: 2, id: 'B' },
+        { __timestamp: 2, id: 'A' },
+      ];
       viewDao.createQuery = jest
         .fn()
         .mockReturnValue({ toArray: jest.fn().mockReturnValue(views) });
 
       const sortedView = await viewDao.queryAllViews();
       expect(viewDao.createQuery).toBeCalled();
-      expect(sortedView[0]).toEqual(views[1]);
-      expect(sortedView[1]).toEqual(views[0]);
+      expect(sortedView[0]).toEqual({ __timestamp: 2, id: 'A' });
+      expect(sortedView[1]).toEqual({ __timestamp: 2, id: 'B' });
+      expect(sortedView[2]).toEqual({ __timestamp: 422, id: 'A' });
     });
   });
 

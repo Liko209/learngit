@@ -13,19 +13,38 @@ import { FetchResult } from '../../types';
 import { RCItemUserConfig } from '../../config';
 import { MODULE_NAME } from '../constants';
 import { VoicemailController } from '../controller';
+import { SubscribeController } from 'sdk/module/base/controller/SubscribeController';
+import { SUBSCRIPTION } from 'sdk/service';
 
 class VoicemailService extends EntityBaseService<Voicemail> {
   private _rcItemUserConfig: RCItemUserConfig;
   private _voicemailController: VoicemailController;
   constructor() {
     super(false, daoManager.getDao(VoicemailDao));
-    this._rcItemUserConfig = new RCItemUserConfig(MODULE_NAME);
+    this.setSubscriptionController(
+      SubscribeController.buildSubscriptionController({
+        [SUBSCRIPTION.MESSAGE_STORE]: this._triggerSilentSync,
+      }),
+    );
   }
 
   onStarted() {
     super.onStarted();
     this._getVoicemailController().voicemailFetchController.init();
     this._getVoicemailController().voicemailBadgeController.init();
+  }
+
+  onStopped() {
+    super.onStopped();
+    this._getVoicemailController().voicemailFetchController.dispose();
+    this._getVoicemailController().voicemailBadgeController.dispose();
+  }
+
+  private get userConfig(): RCItemUserConfig {
+    if (!this._rcItemUserConfig) {
+      this._rcItemUserConfig = new RCItemUserConfig(MODULE_NAME);
+    }
+    return this._rcItemUserConfig;
   }
 
   async requestSyncNewer() {
@@ -56,8 +75,8 @@ class VoicemailService extends EntityBaseService<Voicemail> {
     return 'This is transcription.';
   }
 
-  buildDownloadUrl(originalUrl: string): string {
-    return this._getVoicemailController().voicemailActionController.buildDownloadUrl(
+  async buildDownloadUrl(originalUrl: string): Promise<string> {
+    return await this._getVoicemailController().voicemailActionController.buildDownloadUrl(
       originalUrl,
     );
   }
@@ -75,12 +94,13 @@ class VoicemailService extends EntityBaseService<Voicemail> {
 
   private _getVoicemailController() {
     if (!this._voicemailController) {
-      this._voicemailController = new VoicemailController(
-        this.getEntitySource(),
-        this._rcItemUserConfig,
-      );
+      this._voicemailController = new VoicemailController(this.getEntitySource(), this.userConfig);
     }
     return this._voicemailController;
+  }
+
+  private _triggerSilentSync = async () => {
+    await this._getVoicemailController().voicemailFetchController.handleNotification();
   }
 }
 

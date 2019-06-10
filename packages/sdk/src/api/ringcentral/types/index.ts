@@ -27,3 +27,4 @@ export {
   ITokenModel,
   RCAuthCodeInfo,
 } from './common';
+export * from './RCEventSubscription';

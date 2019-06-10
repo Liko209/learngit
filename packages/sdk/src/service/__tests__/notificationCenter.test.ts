@@ -17,11 +17,7 @@ it('emitEntityReset()', () => {
 });
 
 it('emitEntityReload()', () => {
-  const result = notificationCenter.emitEntityReload(
-    'KEY',
-    RELOAD_TARGET.STORE,
-    [],
-  );
+  const result = notificationCenter.emitEntityReload('KEY', RELOAD_TARGET.STORE, []);
   expect(result).toBeUndefined();
 });
 

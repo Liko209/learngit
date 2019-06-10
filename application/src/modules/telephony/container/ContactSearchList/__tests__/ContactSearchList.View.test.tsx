@@ -15,8 +15,10 @@ describe('ContactSearchListView', () => {
         onEnter: jest.fn(),
         increaseFocusIndex: jest.fn(),
         decreaseFocusIndex: jest.fn(),
+        t: jest.fn().mockReturnValue(''),
       };
       const wrapper = shallow(<ContactSearchListView {...props} />);
+      console.log(wrapper.debug());
       expect(wrapper.children().length).toEqual(0);
     });
   });

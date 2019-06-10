@@ -65,7 +65,7 @@ class VoicemailViewDao extends BaseDao<VoicemailView> {
     }
     const sortedIds = allVMs
       .sort((vmA: VoicemailView, vmB: VoicemailView) => {
-        return natureCompare(vmB.creationTime, vmA.creationTime);
+        return natureCompare(vmA.creationTime, vmB.creationTime);
       })
       .map((value: VoicemailView) => {
         return value.id;
@@ -75,13 +75,11 @@ class VoicemailViewDao extends BaseDao<VoicemailView> {
       sortedIds,
       limit,
       anchorId,
-      direction === QUERY_DIRECTION.OLDER
-        ? QUERY_DIRECTION.NEWER
-        : QUERY_DIRECTION.OLDER,
+      direction,
     );
     mainLogger
       .tags(LOG_TAG)
-      .info(`queryVoicemails success, resultSize:${voicemailIds.length}`);
+      .info(`queryVoicemails success, resultSize:${voicemailIds}`);
 
     return voicemailIds;
   }

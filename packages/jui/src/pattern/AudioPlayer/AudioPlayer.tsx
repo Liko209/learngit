@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import styled from 'src/foundation/styled-components';
+import styled from '../../foundation/styled-components';
 import { JuiAudioAction } from './AudioAction';
 import { JuiAudioProgress } from './AudioProgress';
 import {
@@ -34,17 +34,31 @@ const getActionColor: IJuiGetAudioColor = (status, isHighlight) => {
   return isPrimary ? JuiAudioColor.PRIMARY : JuiAudioColor.DEFAULT;
 };
 
-class JuiAudioPlayer extends React.Component<JuiAudioPlayerProps> {
-  private _audio = new Audio();
+type State = {
+  status: JuiAudioStatus;
+  timestamp: number;
+  timestampLock: boolean;
+};
 
-  state = {
-    status: JuiAudioStatus.PLAY,
-    timestamp: 0,
-    timestampLock: false,
-  };
+const START = 0;
+const DELAY_START_TIME = 100;
+const LOADING_TIME = 150;
+
+class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
+  private _audio = new Audio();
+  private _currentSrc: string;
+  private _loadingTimer: NodeJS.Timer;
 
   constructor(props: JuiAudioPlayerProps) {
     super(props);
+
+    const { startTime = 0, duration } = props;
+
+    this.state = {
+      status: JuiAudioStatus.PLAY,
+      timestamp: Math.min(startTime, duration),
+      timestampLock: false,
+    };
 
     this.initAudioPlayer();
   }
@@ -54,25 +68,50 @@ class JuiAudioPlayer extends React.Component<JuiAudioPlayerProps> {
   }
 
   initAudioPlayer = () => {
-    const { startTime = 0, duration } = this.props;
-
-    this.state.timestamp = Math.min(startTime, duration);
-
     this._audio.preload = 'none';
     this._audio.onerror = this._onError;
+    this._audio.onplay = this._onPlay;
     this._audio.onended = this._onEnded;
+    this._audio.oncanplay = this._onCanplay;
     this._audio.ontimeupdate = this._onTimeUpdate;
   }
 
+  private _onCanplay = () => {
+    const { status } = this.state;
+    if (this._loadingTimer) {
+      clearTimeout(this._loadingTimer);
+    }
+
+    if (status === JuiAudioStatus.LOADING) {
+      this.setState({ status: JuiAudioStatus.PAUSE });
+    }
+  }
+
   private _onError = () => {
+    if (this._loadingTimer) {
+      clearTimeout(this._loadingTimer);
+    }
+    const { onError } = this.props;
+
+    this._currentSrc = '';
+    onError && onError();
     this.setState({ status: JuiAudioStatus.RELOAD });
   }
 
   private _onEnded = () => {
-    const { onEnded } = this.props;
+    const { onEnded, duration, onTimeUpdate } = this.props;
 
-    this.setState({ status: JuiAudioStatus.PLAY, timestamp: 0 });
-
+    this.setState({ timestamp: duration }, () => {
+      // we need focus to end and delay to start
+      // example video only 0.6s slider will reset in 60%
+      setTimeout(() => {
+        this.setState({
+          status: JuiAudioStatus.PLAY,
+          timestamp: START,
+        });
+        onTimeUpdate && onTimeUpdate(START);
+      },         DELAY_START_TIME);
+    });
     onEnded && onEnded();
   }
 
@@ -82,17 +121,23 @@ class JuiAudioPlayer extends React.Component<JuiAudioPlayerProps> {
 
   private _onDragEnd = () => {
     const { timestamp } = this.state;
+    const { onTimeUpdate } = this.props;
 
     this.setState({ timestampLock: false });
 
     this._audio.currentTime = timestamp;
+    onTimeUpdate && onTimeUpdate(timestamp);
   }
 
   private _onTimestampChange: IJuiAudioProgressChange = (event, timestamp) => {
     this.setState({ timestamp });
   }
 
-  private _onAction: IJuiAudioAction = status => this[status]();
+  private _onAction: IJuiAudioAction = (status: JuiAudioStatus) => {
+    const { onBeforeAction } = this.props;
+    onBeforeAction && onBeforeAction(status);
+    this[status]();
+  }
 
   private _onTimeUpdate = () => {
     const { timestampLock } = this.state;
@@ -108,21 +153,30 @@ class JuiAudioPlayer extends React.Component<JuiAudioPlayerProps> {
 
   private _onPlay = () => {
     this._audio.currentTime = this.state.timestamp;
+    this._loadingTimer = setTimeout(() => {
+      this.setState({ status: JuiAudioStatus.LOADING });
+    },                              LOADING_TIME);
 
     this.setState({ status: JuiAudioStatus.PAUSE });
   }
 
   play = () => {
-    if (!this._audio.src) {
-      this._audio.src = this.props.src;
+    const { src, onBeforePlay } = this.props;
+
+    onBeforePlay && onBeforePlay();
+
+    // if will play link is http://www.google.com:80
+    // audio.src will is http://www.google.com  ignore 80
+    // so we cache current play src till src change
+    // and set new src again
+    if (this._currentSrc !== src) {
+      this._audio.src = src;
+      this._currentSrc = src;
     }
 
-    this.setState({ status: JuiAudioStatus.LOADING });
-
-    this._audio
-      .play()
-      .then(this._onPlay)
-      .catch(this._onError);
+    if (this._audio.src) {
+      this._audio.play();
+    }
   }
 
   pause = () => {
@@ -142,9 +196,11 @@ class JuiAudioPlayer extends React.Component<JuiAudioPlayerProps> {
   }
 
   private _dispose() {
-    delete this._audio.onerror;
-    delete this._audio.onended;
-    delete this._audio.ontimeupdate;
+    this._audio.onerror = null;
+    this._audio.onplay = null;
+    this._audio.onended = null;
+    this._audio.ontimeupdate = null;
+    this._audio.oncanplay = null;
 
     delete this._audio;
   }
@@ -155,6 +211,7 @@ class JuiAudioPlayer extends React.Component<JuiAudioPlayerProps> {
     const {
       duration,
       actionTips,
+      actionLabels,
       mode = JuiAudioMode.FULL,
       isHighlight = false,
     } = this.props;
@@ -165,6 +222,7 @@ class JuiAudioPlayer extends React.Component<JuiAudioPlayerProps> {
           color={getActionColor(status, isHighlight)}
           status={status}
           tooltip={actionTips[status]}
+          label={actionLabels[status]}
           onAction={this._onAction}
         />
         <JuiAudioProgress

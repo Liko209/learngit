@@ -10,6 +10,7 @@ class RCAccount extends AbstractAccount {
   async updateSupportedServices(data: any): Promise<void> {
     this.setSupportedServices([
       ServiceConfig.RC_INFO_SERVICE,
+      ServiceConfig.RC_EVENT_SUBSCRIPTION_SERVICE,
       ServiceConfig.VOICEMAIL_SERVICE,
       ServiceConfig.CALL_LOG_SERVICE,
     ]);

@@ -8,8 +8,10 @@ import { CallLogService } from '../CallLogService';
 import { CallLogController } from '../../controller/CallLogController';
 import { RCItemUserConfig } from 'sdk/module/RCItems/config';
 import { CALL_LOG_SOURCE, MODULE_NAME } from '../../constants';
+import { CallLogUserConfig } from '../../config/CallLogUserConfig';
 
 jest.mock('../../../config');
+jest.mock('../../config/CallLogUserConfig');
 jest.mock('../../controller/CallLogController', () => {
   const xx = {
     callLogActionController: {
@@ -24,6 +26,10 @@ jest.mock('../../controller/CallLogController', () => {
     missedCallLogFetchController: {
       requestSync: jest.fn(),
       fetchCallLogs: jest.fn(),
+    },
+    callLogHandleDataController: {
+      handleMissedCallEvent: jest.fn(),
+      handleRCPresenceEvent: jest.fn(),
     },
   };
   return {
@@ -58,8 +64,8 @@ describe('CallLogService', () => {
   describe('userConfig', () => {
     it('should get userConfig', async () => {
       const config = callLogService['userConfig'];
-      expect(config instanceof RCItemUserConfig).toBeTruthy();
-      expect(RCItemUserConfig).toBeCalledWith(
+      expect(config instanceof CallLogUserConfig).toBeTruthy();
+      expect(CallLogUserConfig).toBeCalledWith(
         `${MODULE_NAME}.${CALL_LOG_SOURCE.ALL}`,
       );
     });
@@ -76,17 +82,10 @@ describe('CallLogService', () => {
   });
 
   describe('requestSyncNewer', () => {
-    it('should call all fetch controller when source is all', async () => {
-      await callLogService.requestSyncNewer(CALL_LOG_SOURCE.ALL);
+    it('should call all fetch controller', async () => {
+      await callLogService.requestSyncNewer();
       expect(
         callLogController.allCallLogFetchController.requestSync,
-      ).toBeCalled();
-    });
-
-    it('should call missed fetch controller when source is missed', async () => {
-      await callLogService.requestSyncNewer(CALL_LOG_SOURCE.MISSED);
-      expect(
-        callLogController.missedCallLogFetchController.requestSync,
       ).toBeCalled();
     });
   });
@@ -130,6 +129,26 @@ describe('CallLogService', () => {
     it('clearAllCallLogs', async () => {
       await callLogService.clearAllCallLogs();
       expect(callLogController.allCallLogFetchController.clearAll).toBeCalled();
+    });
+  });
+
+  describe('_handleMissedCallEvent', () => {
+    it('_handleMissedCallEvent', async () => {
+      const mockData = 'mockData' as any;
+      await callLogService['_handleMissedCallEvent'](mockData);
+      expect(
+        callLogController.callLogHandleDataController.handleMissedCallEvent,
+      ).toBeCalled();
+    });
+  });
+
+  describe('_handleRCPresenceEvent', () => {
+    it('_handleRCPresenceEvent', async () => {
+      const mockData = 'mockData' as any;
+      await callLogService['_handleRCPresenceEvent'](mockData);
+      expect(
+        callLogController.callLogHandleDataController.handleRCPresenceEvent,
+      ).toBeCalled();
     });
   });
 });
