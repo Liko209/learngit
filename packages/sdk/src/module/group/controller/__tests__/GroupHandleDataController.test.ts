@@ -18,11 +18,13 @@ import { StateService } from '../../../state';
 import { GroupDao } from '../../dao';
 import { Group } from '../../entity';
 import { GroupHandleDataController } from '../GroupHandleDataController';
-import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
+import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
-import { SYNC_SOURCE } from '../../../../module/sync';
+import { SYNC_SOURCE } from '../../../sync';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { GroupConfigService } from 'sdk/module/groupConfig';
 
+jest.mock('sdk/module/groupConfig');
 jest.mock('../../../../module/config');
 jest.mock('../../../../module/account/config/AccountUserConfig');
 
@@ -104,48 +106,77 @@ function generateFakeGroups(
   return groups;
 }
 
-const entitySourceController = new EntitySourceController<Group>(null, null);
-const stateService: StateService = new StateService();
-const personService = new PersonService();
-const profileService = new ProfileService();
-const groupService = {
-  getGroupsByIds: jest.fn(),
-  isValid: jest.fn(),
-};
-
-beforeEach(() => {
+function clearMocks() {
   jest.clearAllMocks();
-  GroupAPI.requestGroupById.mockResolvedValue(requestGroupByIdResult);
-
-  ServiceLoader.getInstance = jest
-    .fn()
-    .mockImplementation((serviceName: string) => {
-      if (serviceName === ServiceConfig.STATE_SERVICE) {
-        return stateService;
-      }
-
-      if (serviceName === ServiceConfig.PERSON_SERVICE) {
-        return personService;
-      }
-      if (serviceName === ServiceConfig.PROFILE_SERVICE) {
-        return profileService;
-      }
-
-      if (serviceName === ServiceConfig.ACCOUNT_SERVICE) {
-        return { userConfig: AccountUserConfig.prototype };
-      }
-      return null;
-    });
-});
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
 
 describe('GroupHandleDataController', () => {
+  let entitySourceController: EntitySourceController<any>;
+  let stateService: StateService;
+  let personService: PersonService;
+  let profileService: ProfileService;
+  let groupConfigService: GroupConfigService;
+  let groupService = {
+    getGroupsByIds: jest.fn(),
+    isValid: jest.fn(),
+  };
   let groupHandleDataController: GroupHandleDataController;
-  beforeEach(() => {
+
+  function setUp() {
+    entitySourceController = new EntitySourceController<Group>(
+      null as any,
+      null as any,
+    );
+    stateService = new StateService(null as any);
+    personService = new PersonService();
+    profileService = new ProfileService();
+    groupConfigService = new GroupConfigService();
+    groupService = {
+      getGroupsByIds: jest.fn(),
+      isValid: jest.fn(),
+    };
+
+    GroupAPI.requestGroupById.mockResolvedValue(requestGroupByIdResult);
+
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.STATE_SERVICE) {
+          return stateService;
+        }
+
+        if (serviceName === ServiceConfig.PERSON_SERVICE) {
+          return personService;
+        }
+        if (serviceName === ServiceConfig.PROFILE_SERVICE) {
+          return profileService;
+        }
+
+        if (serviceName === ServiceConfig.ACCOUNT_SERVICE) {
+          return { userConfig: AccountUserConfig.prototype };
+        }
+
+        if (serviceName === ServiceConfig.GROUP_CONFIG_SERVICE) {
+          return groupConfigService;
+        }
+        return null;
+      });
+
     groupHandleDataController = new GroupHandleDataController(
-      groupService,
+      groupService as any,
       entitySourceController,
     );
+
+    AccountUserConfig.prototype.getGlipUserId.mockReturnValue(1);
+  }
+
+  beforeEach(() => {
+    clearMocks();
+    setUp();
   });
+
   describe('handleData()', () => {
     it('should emit notification when passing an array from index', async () => {
       const result = await groupHandleDataController.handleData(
@@ -276,7 +307,8 @@ describe('GroupHandleDataController', () => {
 
   describe('handlePartialData', () => {
     beforeEach(() => {
-      jest.clearAllMocks();
+      clearMocks();
+      setUp();
     });
 
     it('should save directly if find partial in DB', async () => {
@@ -312,10 +344,13 @@ describe('GroupHandleDataController', () => {
       expect(entitySourceController.get).toHaveBeenCalledTimes(1);
     });
   });
+
   describe('handleFavoriteGroupsChanged()', () => {
     beforeEach(() => {
-      jest.clearAllMocks();
+      clearMocks();
+      setUp();
     });
+
     it('params', async () => {
       groupService.isValid.mockResolvedValue(true);
       groupService.getGroupsByIds.mockResolvedValue([{ id: 1, is_team: true }]);
@@ -362,9 +397,8 @@ describe('GroupHandleDataController', () => {
 
   describe('handleGroupMostRecentPostChanged()', () => {
     beforeEach(() => {
-      jest.clearAllMocks();
-      jest.resetAllMocks();
-      jest.restoreAllMocks();
+      clearMocks();
+      setUp();
     });
 
     const post = {
@@ -373,6 +407,7 @@ describe('GroupHandleDataController', () => {
       created_at: 100,
       is_team: true,
       group_id: 2,
+      creator_id: 1,
     };
     const map = new Map();
     map.set(1, post);
@@ -409,7 +444,8 @@ describe('GroupHandleDataController', () => {
       });
       expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     });
-    it('group has not most_recent_post_created_at should update group recent modified time', async () => {
+
+    it('group has no most_recent_post_created_at should update group recent modified time', async () => {
       daoManager
         .getDao(GroupDao)
         .doInTransaction.mockImplementation(async (fn: Function) => {
@@ -429,8 +465,19 @@ describe('GroupHandleDataController', () => {
           entities: map,
         },
       });
+      expect(groupConfigService.handleMyMostRecentPostChange).toBeCalledWith([
+        {
+          created_at: 100,
+          group_id: 2,
+          id: 1,
+          is_team: true,
+          modified_at: 100,
+          creator_id: 1,
+        },
+      ]);
       expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     });
+
     it('group has most_recent_post_created_at and greater then post created_at should not update group recent modified time', async () => {
       daoManager
         .getDao(GroupDao)
@@ -455,6 +502,7 @@ describe('GroupHandleDataController', () => {
       });
       expect(notificationCenter.emit).toHaveBeenCalledTimes(0);
     });
+
     it('should not update most_recent_post_id when post is pre-insert', async () => {
       daoManager
         .getDao(GroupDao)
@@ -926,20 +974,31 @@ describe('GroupHandleDataController', () => {
   });
 
   describe('getUniqMostRecentPostsByGroup', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
     it('should have 2 posts', () => {
       const posts: Post[] = toArrayOf<Post>([
-        { id: 1, group_id: 1, modified_at: 1, created_at: 100 },
-        { id: 2, group_id: 1, modified_at: 1, created_at: 101 },
+        { id: 1, group_id: 1, modified_at: 1, created_at: 100, creator_id: 1 },
+        { id: 2, group_id: 1, modified_at: 1, created_at: 101, creator_id: 2 },
 
-        { id: 3, group_id: 2, modified_at: 1, created_at: 101 },
+        { id: 3, group_id: 2, modified_at: 1, created_at: 102, creator_id: 1 },
+        { id: 4, group_id: 2, modified_at: 1, created_at: 103, creator_id: 1 },
       ]);
 
-      const groupedPosts = groupHandleDataController.getUniqMostRecentPostsByGroup(
-        posts,
-      );
-      expect(groupedPosts.length).toEqual(2);
-      expect(groupedPosts[0].id).toEqual(2);
-      expect(groupedPosts[1].id).toEqual(3);
+      const {
+        uniqMyMaxPosts,
+        uniqMaxPosts,
+      } = groupHandleDataController.getUniqMostRecentPostsByGroup(posts);
+      expect(uniqMaxPosts.length).toEqual(2);
+      expect(uniqMaxPosts[0].id).toEqual(2);
+      expect(uniqMaxPosts[1].id).toEqual(4);
+
+      expect(uniqMyMaxPosts.length).toEqual(2);
+      expect(uniqMyMaxPosts[0].id).toEqual(1);
+      expect(uniqMyMaxPosts[1].id).toEqual(4);
     });
   });
 
@@ -1094,6 +1153,67 @@ describe('GroupHandleDataController', () => {
           version: 3,
         },
       ]);
+    });
+  });
+
+  describe('handleGroupFetchedPost', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValue(1);
+    });
+    const incomingPosts = [
+      { id: 1, created_at: 5, creator_id: 1, group_id: 9 },
+      { id: 2, created_at: 7, creator_id: 1, group_id: 9 },
+      { id: 3, created_at: 9, creator_id: 2, group_id: 9 },
+    ];
+
+    it('should only update when there are posts newer than my latest post and is mine', async () => {
+      groupConfigService.getById = jest
+        .fn()
+        .mockResolvedValue({ my_last_post_time: 6 });
+      await groupHandleDataController.handleGroupFetchedPost(
+        9,
+        incomingPosts as any,
+      );
+
+      expect(groupConfigService.handleMyMostRecentPostChange).toBeCalledWith([
+        { created_at: 7, creator_id: 1, group_id: 9, id: 2 },
+      ]);
+    });
+
+    it('should not update when post is old than my last post time', async () => {
+      groupConfigService.getById = jest
+        .fn()
+        .mockResolvedValue({ my_last_post_time: Date.now() });
+      await groupHandleDataController.handleGroupFetchedPost(
+        9,
+        incomingPosts as any,
+      );
+
+      expect(groupConfigService.handleMyMostRecentPostChange).not.toBeCalled();
+    });
+
+    it('should not update when has no post', async () => {
+      groupConfigService.getById = jest
+        .fn()
+        .mockResolvedValue({ my_last_post_time: Date.now() });
+      await groupHandleDataController.handleGroupFetchedPost(9, []);
+
+      expect(groupConfigService.handleMyMostRecentPostChange).not.toBeCalled();
+    });
+
+    it('should not update when no post is mine', async () => {
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValue(Date.now());
+      groupConfigService.getById = jest
+        .fn()
+        .mockResolvedValue({ my_last_post_time: 0 });
+      await groupHandleDataController.handleGroupFetchedPost(
+        9,
+        incomingPosts as any,
+      );
+
+      expect(groupConfigService.handleMyMostRecentPostChange).not.toBeCalled();
     });
   });
 });

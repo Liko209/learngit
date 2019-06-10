@@ -12,7 +12,6 @@ import {
 } from '@/common/generateModifiedImageURL';
 import { ItemService } from 'sdk/module/item/service';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
-import { ItemVersions } from 'sdk/module/item/entity';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 enum IMAGE_TYPE {
@@ -22,24 +21,16 @@ enum IMAGE_TYPE {
   UNKNOWN_IMAGE,
 }
 
-type ImageInfo = {
-  id: number;
-  type: string;
-  versionUrl: string;
-  versions: ItemVersions[];
-};
-
 const SQUARE_SIZE = 180;
 const DEFAULT_WIDTH = 1000;
 const DEFAULT_HEIGHT = 200;
 
 function getThumbnailURL(
-  item: ImageInfo,
+  item: FileItemModel,
   size: { width: number; height: number } = { width: 1000, height: 200 },
 ) {
-  const { versions = [] } = item;
-  if (versions.length > 0) {
-    const version = versions[0];
+  const version = item.latestVersion;
+  if (version) {
     // hard code as dThor
     const { width, height } = size;
     const key = `${version.stored_file_id}size=${width}x${height}`;
@@ -51,46 +42,25 @@ function getThumbnailURL(
   return '';
 }
 
-function hasVersions(versions: ItemVersions[]) {
-  return versions && versions.length > 0;
-}
-
-function getVersionsValue(versions: ItemVersions[], type: string) {
-  return versions[0][type];
-}
-
-function getOrigHeight(versions: ItemVersions[]) {
-  return hasVersions(versions)
-    ? getVersionsValue(versions, 'orig_height')
-    : null;
-}
-
-function getOrigWidth(versions: ItemVersions[]) {
-  return hasVersions(versions)
-    ? getVersionsValue(versions, 'orig_width')
-    : null;
-}
-
 async function getThumbnailURLWithType(
-  item: ImageInfo,
+  item: FileItemModel,
   rule: RULE,
 ): Promise<{ url: string; type: IMAGE_TYPE }> {
   if (item.id < 0) {
     return { url: '', type: IMAGE_TYPE.UNKNOWN_IMAGE };
   }
-  const { id, type, versionUrl, versions } = item;
-  const origWidth = getOrigWidth(versions);
-  const origHeight = getOrigHeight(versions);
+  const origWidth = item.origWidth;
+  const origHeight = item.origHeight;
   let url = '';
-  if (!type) {
+  if (!item.type) {
     return { url, type: IMAGE_TYPE.UNKNOWN_IMAGE };
   }
   // Notes
   // 1. There is no thumbnail for the image just uploaded.
   // 2. tif has thumbnail field.
   // 3. gif use original url.
-  if (FileItemUtils.isGifItem({ type })) {
-    url = versionUrl || '';
+  if (FileItemUtils.isGifItem({ type: item.type })) {
+    url = item.versionUrl || '';
     return { url, type: IMAGE_TYPE.ORIGINAL_IMAGE };
   }
 
@@ -107,12 +77,12 @@ async function getThumbnailURLWithType(
       };
     }
 
-    if (!url && FileItemUtils.isSupportPreview({ type })) {
+    if (!url && FileItemUtils.isSupportPreview({ type: item.type })) {
       const itemService = ServiceLoader.getInstance<ItemService>(
         ServiceConfig.ITEM_SERVICE,
       );
       url = await itemService.getThumbsUrlWithSize(
-        id,
+        item.id,
         SQUARE_SIZE,
         SQUARE_SIZE,
       );
@@ -136,14 +106,14 @@ async function getThumbnailURLWithType(
       !url &&
       origWidth > 0 &&
       origHeight > 0 &&
-      FileItemUtils.isSupportPreview({ type })
+      FileItemUtils.isSupportPreview({ type: item.type })
     ) {
       const result = await generateModifiedImageURL({
         rule,
         origHeight,
         origWidth,
-        id,
         squareSize: SQUARE_SIZE,
+        id: item.id,
       });
       url = result.url;
       return { url, type: IMAGE_TYPE.MODIFY_IMAGE };
@@ -152,7 +122,7 @@ async function getThumbnailURLWithType(
 
   if (!url) {
     const result = await generateModifiedImageURL({
-      id,
+      id: item.id,
       rule: RULE.RECTANGLE_IMAGE,
       origHeight: DEFAULT_HEIGHT,
       origWidth: DEFAULT_WIDTH,
@@ -222,6 +192,5 @@ export {
   getMaxThumbnailURLInfo,
   getThumbnailURLWithType,
   IMAGE_TYPE,
-  ImageInfo,
   SQUARE_SIZE,
 };

@@ -30,6 +30,9 @@ describe('DeviceSyncManger', () => {
       set: jest.fn().mockImplementation((data: string) => {
         store = data;
       }),
+      on: jest.fn().mockImplementation((data: string) => {
+        return jest.fn();
+      }),
     };
     let deviceId: string;
     mockDeviceManager = {
@@ -39,11 +42,15 @@ describe('DeviceSyncManger', () => {
         deviceId = value;
       }),
       getDevices: jest.fn().mockReturnValue(mockDevices),
+      on: jest.fn().mockImplementation((data: string) => {
+        return jest.fn();
+      }),
     };
 
-    mockLatUsedDeviceManager = spyOnTarget(
-      new LastUsedDeviceManager(mockStorage),
-    );
+    mockLatUsedDeviceManager = {
+      record: jest.fn(),
+      getLastAvailableUsedDevice: jest.fn(),
+    } as any;
     deviceSyncManager = new DeviceSyncManger(
       mockStorage,
       mockDeviceManager,
@@ -54,6 +61,76 @@ describe('DeviceSyncManger', () => {
   function cleanUp() {
     clearMocks();
   }
+
+  describe('subscribe()', () => {
+    beforeEach(() => {
+      setUp();
+    });
+
+    afterEach(() => {
+      cleanUp();
+    });
+    it('should subscribe and handle two way change', () => {
+      deviceSyncManager.startSync();
+      expect(mockStorage.on).toBeCalled();
+      expect(mockDeviceManager.on).toBeCalled();
+      deviceSyncManager.endSync();
+    });
+  });
+
+  describe('handle DeviceManager value change', () => {
+    beforeEach(() => {
+      setUp();
+    });
+
+    afterEach(() => {
+      cleanUp();
+    });
+    it('should set to storage when deviceManager value changed', () => {
+      jest.spyOn(deviceSyncManager, 'setDevice');
+      mockStorage.get.mockReturnValue('bb');
+      deviceSyncManager['_handleDeviceManagerChanged']('aa');
+      expect(deviceSyncManager.setDevice).toBeCalledWith({
+        source: SOURCE_TYPE.DEVICE_MANAGER,
+        deviceId: 'aa',
+      });
+      expect(mockStorage.set).toBeCalledWith('aa');
+    });
+    it('should not set to storage when deviceManager value changed but equal to storage value', () => {
+      jest.spyOn(deviceSyncManager, 'setDevice');
+      mockStorage.get.mockReturnValue('aa');
+      deviceSyncManager['_handleDeviceManagerChanged']('aa');
+      expect(deviceSyncManager.setDevice).not.toBeCalled();
+      expect(mockStorage.set).not.toBeCalled();
+    });
+  });
+
+  describe('handle storage value change', () => {
+    beforeEach(() => {
+      setUp();
+    });
+
+    afterEach(() => {
+      cleanUp();
+    });
+    it('should set to DeviceManager when storage value changed', () => {
+      jest.spyOn(deviceSyncManager, 'setDevice');
+      mockDeviceManager.getDeviceId.mockReturnValue('bb');
+      deviceSyncManager['_handleStorageChanged']('aa');
+      expect(deviceSyncManager.setDevice).toBeCalledWith({
+        source: SOURCE_TYPE.STORAGE,
+        deviceId: 'aa',
+      });
+      expect(mockDeviceManager.setDeviceId).toBeCalledWith('aa');
+    });
+    it('should not set to DeviceManager when storage value changed but equal to DeviceManager value', () => {
+      jest.spyOn(deviceSyncManager, 'setDevice');
+      mockDeviceManager.getDeviceId.mockReturnValue('aa');
+      deviceSyncManager['_handleStorageChanged']('aa');
+      expect(deviceSyncManager.setDevice).not.toBeCalled();
+      expect(mockDeviceManager.setDeviceId).not.toBeCalled();
+    });
+  });
 
   describe('setDevice()', () => {
     beforeEach(() => {
@@ -80,15 +157,8 @@ describe('DeviceSyncManger', () => {
       expect(mockStorage.set).not.toBeCalled();
       expect(mockDeviceManager.setDeviceId).not.toBeCalled();
     });
-    it('should not save to storage when device is DEFAULT_AUDIO_ID', () => {
-      deviceSyncManager.setDevice({
-        source: SOURCE_TYPE.NEW_DEVICE,
-        deviceId: defaultAudioID,
-      });
-      expect(mockStorage.set).not.toBeCalled();
-      expect(mockLatUsedDeviceManager.record).not.toBeCalled();
-    });
     it('should not save to storage again when deviceId not change', () => {
+      expect(mockStorage.set).not.toBeCalled();
       mockStorage.get.mockReturnValue('AAA');
       mockDeviceManager.getDeviceId.mockReturnValue('BBB');
       deviceSyncManager.setDevice({
@@ -136,7 +206,7 @@ describe('DeviceSyncManger', () => {
         deviceId: '',
       });
     });
-    it('should use storage when storage device available(exist && in devices)', () => {
+    it('should use storage when storage device available(exist && in devices) [JPT-2113]', () => {
       mockDeviceManager.getDevices.mockReturnValue([
         {
           deviceId: 'AAA',
@@ -165,7 +235,7 @@ describe('DeviceSyncManger', () => {
       });
       expect(mockLatUsedDeviceManager.getLastAvailableUsedDevice).toBeCalled();
     });
-    it('should use lastUsed when storage devices not available(not in devices)', () => {
+    it('should use lastUsed when storage devices not available(not in devices). [JPT-2266]', () => {
       mockDeviceManager.getDevices.mockReturnValue([
         {
           deviceId: 'AAA',
@@ -182,7 +252,7 @@ describe('DeviceSyncManger', () => {
       expect(mockLatUsedDeviceManager.getLastAvailableUsedDevice).toBeCalled();
     });
     // should save current device id = 'default' when real device id not found. [JPT-1731]
-    it('should use current device(deviceManager) when (storage device, lastUsed device) not available', () => {
+    it('should use current device(deviceManager) when (storage device, lastUsed device) not available.', () => {
       mockDeviceManager.getDevices.mockReturnValue([
         {
           deviceId: 'AAA',
@@ -201,7 +271,7 @@ describe('DeviceSyncManger', () => {
       expect(mockDeviceManager.getDeviceId).toBeCalled();
       expect(mockDeviceManager.getDefaultDeviceId).not.toBeCalled();
     });
-    it('should use default device(deviceManager) when (storage device, lastUsed device) not available', () => {
+    it('should use default device(deviceManager) when (storage device, lastUsed device) not available. [JPT-2267]', () => {
       mockDeviceManager.getDevices.mockReturnValue([
         {
           deviceId: 'AAA',

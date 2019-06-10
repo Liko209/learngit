@@ -31,7 +31,7 @@
     "dotenv": "^6.0.0",
     "faker": "^4.1.0",
     "flatted": "^2.0.0",
-    "glip-account-pool-client": "http://xmn145.rcoffice.ringcentral.com:9003/packages/glip-account-pool-client-1.0.1.tgz",
+    "glip-account-pool-client": "http://xmn145.rcoffice.ringcentral.com:9003/packages/glip-account-pool-client-1.0.2.tgz",
     "glob": "^7.1.2",
     "jszip": "^3.1.5",
     "lodash": "^4.17.10",

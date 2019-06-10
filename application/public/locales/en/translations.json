@@ -146,7 +146,8 @@
     "jumpToConversation": "Jump to conversation",
     "emoji": {
       "emojiDefaultTitle": "Pick your emoji",
-      "toggleButtonLabel": "Keep open"
+      "toggleButtonLabel": "Keep open",
+      "emojiMatching": "Emojis matching"
     },
     "sharedItems": "shared items",
     "initialPost": {
@@ -218,17 +219,22 @@
       "newMessageTipLink": "create a Team instead.",
       "NewMessageError": "We are having trouble creating this new message. Please try again later.",
       "disabledText": "This team is read-only",
+      "changeDefaultPhoneAppTitle": "Change default phone app",
+      "changeDefaultPhoneAppContent": "You are about to choose RingCentral Phone for your default phone features. Install RingCentral Phone app before continuing. Are you sure you want to change your default to RingCentral Phone?",
       "editFileNameTitle": "Rename file",
       "editFileNameInputLabel": "Filename",
       "editFileNameBackendError": "Sorry, something went wrong on our end and we aren't able to save the edit. Try again later.",
-      "editFileNameNetworkError": "We aren't able to save the edit. Check your network connection, then try again."
+      "editFileNameNetworkError": "We aren't able to save the edit. Check your network connection, then try again.",
+      "deleteFileBackendError": "Sorry, something went wrong on our end and we weren't able to delete this file. Try again later.",
+      "deleteFileNetworkError": "We weren't able to delete this file. Check your network connection, then try again."
     },
     "fileAction": {
       "deleteFile": "Delete file",
       "editFileName": "Edit filename"
     },
     "Messages": "Messages",
-    "message": "Message"
+    "message": "Message",
+    "atMentionAllTeam": "Team"
   },
   "item": {
     "activity": {
@@ -513,6 +519,7 @@
       "stopRecord": "Stop",
       "callActions": "Call Actions",
       "reply": "Reply",
+      "park": "Park",
       "end": "End call",
       "Answer": "Answer",
       "back": "Back",
@@ -556,6 +563,9 @@
       "RecordOnServiceWeb": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
       "RecordAutomatically": "Cannot start call recording.",
       "InvalidNumber": "The phone number entered is invalid. Check the number and try again.",
+      "ParkErrorStopRecording": "Sorry, your call recording is being saved. Try to park the call later.",
+      "ParkError": "Sorry, something went wrong on our end and we weren't able to park the call. Try again later.",
+      "ParkOk": "Your call is parked at location",
       "ReplyCustomMessageEmpty": "Sorry, you cannot send an empty message.",
       "ReplyMessageSuccess": "Your voice message was sent successfully.",
       "ForwardBackendError": "Sorry, something went wrong on our end, we weren't able to forward the call.",
@@ -616,6 +626,17 @@
     "general": "General",
     "notificationAndSounds": {
       "title": "Notification and Sounds",
+      "otherNotificationSettings": {
+        "title": "Other notification settings",
+        "newMessageBadgeCount": {
+          "options": {
+            "groups_and_mentions": "Direct messages and mentions only",
+            "all": "All new messages"
+          },
+          "description": "Choose how the app will count new messages in the app badge count",
+          "label": "New message badge count"
+        }
+      },
       "desktopNotifications": {
         "title": "Desktop Notifications",
         "notificationsForBrowser": {
@@ -639,6 +660,30 @@
           "label": "Missed Calls and New Voicemails",
           "description": "Choose your preference for desktop notifications for missed calls and new voicemails"
         }
+      },
+      "emailNotifications": {
+        "title": "Email Notifications",
+        "directMessages": {
+          "label": "Direct messages",
+          "description": "Receive email notifications for direct messages"
+        },
+        "mentions": {
+          "label": "Mentions",
+          "description": "Receive email notifications for when you are mentioned"
+        },
+        "teams": {
+          "label": "Teams",
+          "description": "Receive email notifications for direct messages"
+        },
+        "dailyDigest": {
+          "label": "Daily Digest",
+          "description": "Receive Glip daily digest emails summarizing daily tasks and team events"
+        },
+        "options": {
+          "0": "Off",
+          "900000": "Every 15 minutes",
+          "3600000": "Every hour"
+        }
       }
     },
     "sounds": "Sounds",
@@ -650,6 +695,14 @@
       "title": "Phone",
       "general": {
         "title": "General",
+        "defaultPhoneApp": {
+          "label": "Default Phone app for calling",
+          "description": "Choose which app you'd like use to make calls",
+          "option": {
+            "glip": "Use RingCentral App (this app)",
+            "ringcentral": "Use RingCentral Phone"
+          }
+        },
         "callerID": {
           "label": "Caller ID",
           "description": "Choose your default Caller ID for making RingCentral phone calls"

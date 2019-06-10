@@ -10,6 +10,8 @@ import {
   NOTIFICATION_SETTING_SCOPE,
   SETTING_SECTION__DESKTOP_NOTIFICATIONS,
   SETTING_ITEM__NOTIFICATION_BROWSER,
+  SETTING_SECTION__EMAIL_NOTIFICATIONS,
+  SETTING_SECTION__OTHER_NOTIFICATION_SETTINGS,
 } from './constant';
 import { NotificationBrowserSettingItem } from './NotificationBrowserSettingItem';
 import { isElectron } from '@/common/isUserAgent';
@@ -37,6 +39,29 @@ class NotificationSettingManager implements INotificationSettingManager {
         title: 'setting.notificationAndSounds.desktopNotifications.title',
         weight: 100,
         items: notificationItems,
+      },
+    );
+
+    this._settingService.registerSection(
+      NOTIFICATION_SETTING_SCOPE,
+      SETTING_PAGE__NOTIFICATION_SOUND,
+      {
+        id: SETTING_SECTION__EMAIL_NOTIFICATIONS,
+        automationId: 'emailNotifications',
+        title: 'setting.notificationAndSounds.emailNotifications.title',
+        weight: 200,
+        items: [],
+      },
+    );
+    this._settingService.registerSection(
+      NOTIFICATION_SETTING_SCOPE,
+      SETTING_PAGE__NOTIFICATION_SOUND,
+      {
+        id: SETTING_SECTION__OTHER_NOTIFICATION_SETTINGS,
+        automationId: 'otherNotificationSettings',
+        title: 'setting.notificationAndSounds.otherNotificationSettings.title',
+        weight: 300,
+        items: [],
       },
     );
   }

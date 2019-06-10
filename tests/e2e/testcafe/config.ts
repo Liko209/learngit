@@ -85,6 +85,7 @@ const ENABLE_SSL = process.env.ENABLE_SSL === 'true';
 const SELENIUM_CAPABILITIES = process.env.SELENIUM_CAPABILITIES || 'capabilities.json' // ref: https://github.com/link89/testcafe-browser-provider-selenium/tree/customize-chrome-option
 const DISABLE_SCREENSHOT = process.env.DISABLE_SCREENSHOT === 'true';
 const ENABLE_NOTIFICATION = process.env.ENABLE_NOTIFICATION === 'true';
+const TESTS_LOG = process.env.TESTS_LOG || `tests-${new Date().toISOString()}.log`;
 
 const GIT_SOURCE_BRANCH = process.env.BRANCH;
 const GIT_TARGET_BRANCH = process.env.TARGET_BRANCH;
@@ -113,6 +114,7 @@ const RUNNER_OPTS = {
   SELENIUM_CAPABILITIES,
   LANGUAGE_CODE,
   DISABLE_SCREENSHOT,
+  TESTS_LOG,
 }
 
 // beat dashboard configuration

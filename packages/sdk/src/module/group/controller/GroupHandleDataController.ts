@@ -29,7 +29,9 @@ import { AccountService } from '../../account/service';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { GroupConfigService } from 'sdk/module/groupConfig';
 
+const LOG_TAG = 'GroupHandleDataController';
 class GroupHandleDataController {
   constructor(
     public groupService: IGroupService,
@@ -374,19 +376,29 @@ class GroupHandleDataController {
     );
   }
 
-  getUniqMostRecentPostsByGroup = (posts: Post[]): Post[] => {
+  getUniqMostRecentPostsByGroup = (
+    posts: Post[],
+  ): { uniqMaxPosts: Post[]; uniqMyMaxPosts: Post[] } => {
     const groupedPosts = _.groupBy(posts, 'group_id');
-
+    const currentUserId = this._getGlipUserId();
+    const uniqMyMaxPosts: Post[] = [];
     const uniqMaxPosts: Post[] = [];
-    _.each(groupedPosts, (item: any) => {
+    _.each(groupedPosts, (item: Post[]) => {
       const sortedItem = _.orderBy(item, ['created_at'], ['desc']);
       const maxItem = _.head(sortedItem);
       if (maxItem) {
         uniqMaxPosts.push(maxItem);
       }
+
+      const myMaxItem = sortedItem.find(
+        (post: Post) => post.creator_id === currentUserId,
+      );
+      if (myMaxItem) {
+        uniqMyMaxPosts.push(myMaxItem);
+      }
     });
 
-    return uniqMaxPosts;
+    return { uniqMaxPosts, uniqMyMaxPosts };
   }
 
   handleGroupMostRecentPostChanged = async ({
@@ -398,7 +410,14 @@ class GroupHandleDataController {
     }
     const posts: Post[] = [];
     body.entities.forEach((item: Post) => posts.push(item));
-    const uniqMaxPosts = this.getUniqMostRecentPostsByGroup(posts);
+    const { uniqMaxPosts, uniqMyMaxPosts } = this.getUniqMostRecentPostsByGroup(
+      posts,
+    );
+    await this._updateGroupMostRecentPost(uniqMaxPosts);
+    await this._updateMyLastPostTime(uniqMyMaxPosts);
+  }
+
+  private async _updateGroupMostRecentPost(uniqMaxPosts: Post[]) {
     const groupDao = daoManager.getDao(GroupDao);
     let validGroups: Partial<Raw<Group>>[] = [];
     const ids: number[] = [];
@@ -463,10 +482,7 @@ class GroupHandleDataController {
    */
   filterGroups = async (groups: Group[], limit: number) => {
     let sortedGroups = groups;
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
-    const currentUserId = userConfig.getGlipUserId();
+    const currentUserId = this._getGlipUserId();
     sortedGroups = groups.filter((model: Group) => {
       if (model.is_team) {
         return true;
@@ -521,6 +537,42 @@ class GroupHandleDataController {
       groups,
     );
     await this.doNotification([], transformData);
+  }
+
+  private async _updateMyLastPostTime(uniqMaxPosts: Post[]) {
+    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
+    await groupConfigService.handleMyMostRecentPostChange(uniqMaxPosts);
+  }
+
+  private _getGlipUserId() {
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    return userConfig.getGlipUserId();
+  }
+
+  async handleGroupFetchedPost(groupId: number, posts: Post[]) {
+    if (!posts.length) {
+      return;
+    }
+    const currentUserId = this._getGlipUserId();
+    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
+    const groupConfig = await groupConfigService.getById(groupId);
+    const myLastPostTime = (groupConfig && groupConfig.my_last_post_time) || 0;
+    const newerMyPosts = posts.filter(post => {
+      return (
+        post.created_at > myLastPostTime && post.creator_id === currentUserId
+      );
+    });
+
+    const sortedMyPosts = _.orderBy(newerMyPosts, ['created_at'], ['desc']);
+    const myLastPost = _.head(sortedMyPosts);
+    myLastPost && (await this._updateMyLastPostTime([myLastPost]));
+    mainLogger.tags(LOG_TAG).log('update most recent my post', myLastPost);
   }
 }
 
