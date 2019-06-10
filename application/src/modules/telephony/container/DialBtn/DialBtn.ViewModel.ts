@@ -22,6 +22,7 @@ class DialBtnViewModel extends StoreViewModel<DialBtnProps>
 
   makeCall = () => {
     if (!this._telephonyStore.inputString) {
+      this._telephonyStore.enterFirstLetterThroughKeypad();
       return this._telephonyService.updateInputString(
         this._telephonyService.lastCalledNumber,
       );
@@ -35,10 +36,10 @@ class DialBtnViewModel extends StoreViewModel<DialBtnProps>
   }
 
   // FIXME: remove this logic by exposing the phone parser from SDK to view-model layer
-  _makeCall = async (val: string) => {
+  private _makeCall = async (val: string) => {
     // make sure line 30 run before end()
     if (!(await this._telephonyService.makeCall(val))) {
-      await new Promise(resolve => {
+      await new Promise((resolve) => {
         requestAnimationFrame(resolve);
       });
       this._telephonyStore.end();

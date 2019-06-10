@@ -60,3 +60,14 @@ export const focusCampo = (inputField: HTMLInputElement | any) => {
     inputField && inputField.focus();
   });
 };
+
+export function sleep(timeout: number = 0) {
+  let timer: any;
+  const promise = new Promise((resolve) => {
+    timer = setTimeout(resolve, timeout);
+  });
+  return {
+    timer,
+    promise,
+  };
+}
