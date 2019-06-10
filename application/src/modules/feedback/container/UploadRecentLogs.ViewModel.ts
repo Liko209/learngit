@@ -25,7 +25,8 @@ export const isTaskInQueue = (taskStatus: TaskStatus) => {
   return [TaskStatus.PENDING, TaskStatus.EXECUTING].indexOf(taskStatus) > -1;
 };
 
-export class UploadRecentLogsViewModel extends AbstractViewModel
+export class UploadRecentLogsViewModel
+  extends AbstractViewModel<UploadRecentLogsViewModelProps>
   implements UploadRecentLogsViewModelProps {
   private _uploadLogResult: Nullable<UploadResult>;
   private _taskQueue: TaskQueueLoop;
@@ -106,7 +107,9 @@ export class UploadRecentLogsViewModel extends AbstractViewModel
   private _uploadRecentLogs = async () => {
     const feedbackService: FeedbackService = container.get(FeedbackService);
     this._uploadLogResult = null;
-    this._uploadLogResult = await feedbackService.uploadRecentLogs();
+    this._uploadLogResult = await feedbackService.uploadRecentLogs({
+      level: this.props.level,
+    });
     if (!this._uploadLogResult) {
       logger.debug('Upload recent logs failed.');
       throw 'Upload recent logs failed.';

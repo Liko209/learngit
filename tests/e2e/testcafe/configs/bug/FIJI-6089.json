@@ -1,0 +1,10 @@
+{
+    "on_merge": {
+        "fixtures": [
+            "./fixtures/Setting/Phone/*.ts"
+        ],
+        "browsers": [
+            "selenium:chrome"
+        ]
+    }
+}

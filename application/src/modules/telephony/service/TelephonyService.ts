@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { CALLING_OPTIONS } from 'sdk/module/profile';
 import { inject } from 'framework';
+import { SettingService } from 'sdk/module/setting/service/SettingService';
 import {
   TelephonyService as ServerTelephonyService,
   RTC_ACCOUNT_STATE,
@@ -42,11 +44,10 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
-import { CALLING_OPTIONS } from 'sdk/module/profile';
 import i18next from 'i18next';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
-import { SETTING_ITEM__PHONE_DEFAULT_PHONE_APP } from '../TelephonySettingManager/constant';
+import { SettingEntityIds } from 'sdk/module/setting';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -93,7 +94,8 @@ class TelephonyService {
   }
 
   private _onReceiveIncomingCall = async (callInfo: TelephonyCallInfo) => {
-    if (!this._isJupiterDefaultApp) {
+    const shouldIgnore = !(await this._isJupiterDefaultApp());
+    if (shouldIgnore) {
       return;
     }
     const { fromName, fromNum, callId } = callInfo;
@@ -468,15 +470,16 @@ class TelephonyService {
       this._telephonyStore.closeDialer();
     }
   }
-  private get _isJupiterDefaultApp() {
-    return (
-      getEntity(ENTITY_NAME.USER_SETTING, SETTING_ITEM__PHONE_DEFAULT_PHONE_APP)
-        .value === CALLING_OPTIONS.GLIP
-    );
+  private async _isJupiterDefaultApp() {
+    const entity = await ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    ).getById(SettingEntityIds.Phone_DefaultApp);
+    return (entity && entity.value) === CALLING_OPTIONS.GLIP;
   }
 
   makeCall = async (toNumber: string) => {
-    if (!this._isJupiterDefaultApp) {
+    const shouldMakeRcPhoneCall = !(await this._isJupiterDefaultApp());
+    if (shouldMakeRcPhoneCall) {
       return this.makeRCPhoneCall(toNumber);
     }
     // FIXME: move this logic to SDK and always using callerID

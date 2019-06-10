@@ -7,7 +7,7 @@ jest.mock('@/common/isUserAgent');
 jest.mock('@/store/utils/entities');
 
 global.Notification = {
-  requestPermission: jest.fn(),
+  requestPermission: jest.fn().mockImplementation(() => Promise.resolve()),
   permission: 'default',
 };
 
@@ -58,7 +58,7 @@ describe('NotificationService', () => {
     jest.restoreAllMocks();
     jest.spyOn(Notification, 'requestPermission').mockImplementation(() => {
       Notification.permission = permissionAfterRequest;
-      return permissionAfterRequest;
+      return Promise.resolve(permissionAfterRequest);
     });
   });
   afterEach(() => {
