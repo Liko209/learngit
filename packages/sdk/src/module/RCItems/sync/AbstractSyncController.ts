@@ -109,10 +109,11 @@ abstract class AbstractSyncController<
       mainLogger
         .tags(this.syncName)
         .info(`is already in Fsync now, status: ${this._syncStatus}`);
-      throw new JRCError(
-        ERROR_CODES_SDK.INVALID_SYNC_TOKEN,
-        `${this.syncName}, invalid sync token`,
-      );
+      // throw new JRCError(
+      //   ERROR_CODES_SDK.INVALID_SYNC_TOKEN,
+      //   `${this.syncName}, invalid sync token`,
+      // );
+      return [];
     }
     this._syncStatus = this._syncStatus | SYNC_STATUS.IN_FSYNC;
     let result: T[] = [];
@@ -247,12 +248,13 @@ abstract class AbstractSyncController<
     if (this.isTokenInvalidError(reason)) {
       await this._reset();
       this.doSync(true, SYNC_DIRECTION.NEWER);
-      throw new JRCError(
-        ERROR_CODES_SDK.INVALID_SYNC_TOKEN,
-        `${this.syncName}, invalid sync token`,
-      );
+      // throw new JRCError(
+      //   ERROR_CODES_SDK.INVALID_SYNC_TOKEN,
+      //   `${this.syncName}, invalid sync token`,
+      // );
+    } else {
+      throw reason;
     }
-    throw reason;
   }
 
   private async _reset() {

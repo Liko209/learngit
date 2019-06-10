@@ -18,7 +18,7 @@ test.meta(<ITestMeta>{
   priority: ['P2'],
   maintainers: ['shining.miao'],
   keywords: ['Reply']
-})('Can should The tooltip "More options" of "more" button is showed', async (t) => {
+})('Should the tooltip "More options" of "more" button is showed', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
@@ -61,7 +61,7 @@ test.meta(<ITestMeta>{
   priority: ['P2'],
   maintainers: ['shining.miao'],
   keywords: ['Reply']
-})('Can should The tooltip "Back" of "back" button is showed', async (t) => {
+})('Should the tooltip "Back" of "back" button is showed', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
