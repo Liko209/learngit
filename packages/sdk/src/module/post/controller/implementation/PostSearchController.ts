@@ -5,32 +5,32 @@
  */
 
 import _ from 'lodash';
-import { Raw } from '../../../../framework/model';
+import { Raw } from 'sdk/framework/model';
 import { Post } from '../../entity';
-import { Item } from '../../../item/entity';
-import { SOCKET } from '../../../../service/eventKey';
-import { SubscribeController } from '../../../base/controller/SubscribeController';
+import { Item } from 'sdk/module/item/entity';
+import { SOCKET } from 'sdk/service/eventKey';
+import { SubscribeController } from 'sdk/module/base/controller/SubscribeController';
 import {
   SearchResult,
   SearchContentTypesCount,
   SearchedResultData,
   SearchRequestInfo,
 } from './types';
-import { SearchAPI, ContentSearchParams } from '../../../../api/glip/search';
-import { transformAll } from '../../../../service/utils';
+import { SearchAPI, ContentSearchParams } from 'sdk/api/glip/search';
+import { transformAll } from 'sdk/service/utils';
 import {
   GlipTypeUtil,
   TypeDictionary,
   PERFORMANCE_KEYS,
   PerformanceTracer,
-} from '../../../../utils';
+} from 'sdk/utils';
 import { mainLogger } from 'foundation';
 import {
   ERROR_TYPES,
   ErrorParserHolder,
   JNetworkError,
   ERROR_CODES_NETWORK,
-} from '../../../../error';
+} from 'sdk/error';
 
 const LOG_TAG = 'PostSearchController';
 const SEARCH_TIMEOUT = 60 * 1000;
@@ -158,7 +158,7 @@ class PostSearchController {
       this._saveSearchInfo(result.request_id, {
         resolve,
         reject,
-        q: options.q as string,
+        queryOptions: options,
         scrollSize: options.scroll_size,
       });
     });
@@ -234,7 +234,6 @@ class PostSearchController {
         this._updateSearchInfo(requestId, {
           resolve,
           reject,
-          q: info.q,
         });
       });
     }
@@ -283,7 +282,7 @@ class PostSearchController {
     mainLogger.tags(LOG_TAG).log('getContentsCount', { result });
     return new Promise((resolve, reject) => {
       this._saveSearchInfo(result.request_id, {
-        q: options.q as string,
+        queryOptions: options,
         contentCountResolve: resolve,
       });
     });
@@ -292,7 +291,6 @@ class PostSearchController {
   handleSearchResults = async (searchResult: SearchResult) => {
     const {
       request_id: requestId,
-      query,
       results = [],
       response_id: responseId = 1,
       content_types: contentTypes = false,
@@ -327,10 +325,9 @@ class PostSearchController {
       };
 
       if (results && results.length > 0) {
-        _.merge(resultData, this._handlePostsAndItems(results));
+        _.merge(resultData, this._handlePostsAndItems(results, requestId));
         this._updateSearchInfo(requestId, {
           scrollRequestId: scrollRequestId + 1,
-          q: query,
         });
       }
 
@@ -379,21 +376,34 @@ class PostSearchController {
     }
   }
 
-  private _handlePostsAndItems(contents: (Raw<Post> | Raw<Item>)[]) {
-    let objects: (Post | Item)[] = transformAll(contents);
-    objects = objects.filter((value: Post | Item) => {
-      return !value.deactivated;
-    });
-
+  private _handlePostsAndItems(
+    contents: (Raw<Post> | Raw<Item>)[],
+    requestId: number,
+  ) {
     const posts: Post[] = [];
     const items: Item[] = [];
-    objects.map((value: Post | Item) => {
-      if (GlipTypeUtil.isExpectedType(value.id, TypeDictionary.TYPE_ID_POST)) {
-        posts.push(value as Post);
-      } else {
-        items.push(value as Item);
+
+    const queryInfo = this._queryInfos.get(requestId);
+    if (queryInfo) {
+      const targetGroupId = queryInfo.queryOptions.group_id;
+      const objects: (Post | Item)[] = transformAll(contents);
+      for (const value of objects) {
+        if (value.deactivated) {
+          continue;
+        }
+
+        if (
+          GlipTypeUtil.isExpectedType(value.id, TypeDictionary.TYPE_ID_POST)
+        ) {
+          const data = value as Post;
+          const postInGroup = !targetGroupId || data.group_id === targetGroupId;
+          postInGroup && posts.push(data);
+        } else {
+          items.push(value as Item);
+        }
       }
-    });
+    }
+
     return {
       items,
       posts,
