@@ -15,9 +15,17 @@ const Wrapper = styled.div`
   margin-top: ${spacing(1)};
 `;
 
+const JuiFileSection = styled.div`
+  ::after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+`;
+
 const JuiFileWrapper = React.memo((props: JuiFileWrapperProps) => {
   const { children } = props;
   return <Wrapper>{children}</Wrapper>;
 });
 
-export { JuiFileWrapper, JuiFileWrapperProps };
+export { JuiFileWrapper, JuiFileSection, JuiFileWrapperProps };
