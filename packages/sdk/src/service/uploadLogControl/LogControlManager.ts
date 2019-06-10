@@ -22,8 +22,6 @@ import { MemoryLogZipItemProvider } from './MemoryLogZipItemProvider';
 import { HealthStatusItemProvider } from './HealthStatusItemProvider';
 import * as zipWorker from './zip.worker';
 import { createWorker } from './utils';
-import { IHealthStatusItem } from 'sdk/types';
-import { SocketManager } from 'sdk/service/socket/SocketManager';
 
 export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
@@ -61,14 +59,6 @@ export class LogControlManager implements IAccessor {
     );
     this._healthStatusItemProvider = new HealthStatusItemProvider();
     this.registerZipProvider(this._healthStatusItemProvider);
-    this.registerHealthStatusItem({
-      getName: () => 'SocketStatus',
-      getStatus: async () => {
-        return {
-          connected: SocketManager.getInstance().isConnected(),
-        };
-      },
-    });
     this.subscribeNotifications();
   }
 
@@ -188,14 +178,6 @@ export class LogControlManager implements IAccessor {
 
   registerZipProvider(ins: IZipItemProvider) {
     this._zipItemProviders.push(ins);
-  }
-
-  registerHealthStatusItem(item: IHealthStatusItem) {
-    this._healthStatusItemProvider.registerHealthStatusItem(item);
-  }
-
-  unRegisterHealthStatusItem(item: IHealthStatusItem | string) {
-    this._healthStatusItemProvider.unRegisterHealthStatusItem(item);
   }
 
   getZipLog = async () => {

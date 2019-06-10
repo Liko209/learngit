@@ -16,11 +16,12 @@ import { SERVICE } from '../../../service/eventKey';
 import { MAKE_CALL_ERROR_CODE } from '../types';
 import { IdModel } from '../../../framework/model';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
-import { LogControlManager } from 'sdk/service/uploadLogControl';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SettingService } from 'sdk/module/setting';
 import { PhoneSetting } from '../setting';
 import { ITelephonyService } from './ITelephonyService';
+import { HealthModuleController } from 'sdk/framework/controller/impl/HealthModuleController';
+import { MODULE_NAME, MODULE_IDENTIFY } from '../constants';
 
 class TelephonyService extends EntityBaseService<IdModel>
   implements ITelephonyService {
@@ -33,6 +34,12 @@ class TelephonyService extends EntityBaseService<IdModel>
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SERVICE.LOGOUT]: this.handleLogOut,
+      }),
+    );
+
+    this.setHealthModuleController(
+      new HealthModuleController(MODULE_IDENTIFY, MODULE_NAME, {
+        VoIP: () => ({ state: this.getVoipState() }),
       }),
     );
     this._init();
@@ -74,12 +81,6 @@ class TelephonyService extends EntityBaseService<IdModel>
 
   private _init() {
     this.telephonyController.initEngine();
-    LogControlManager.instance().registerHealthStatusItem({
-      getName: () => 'Telephony',
-      getStatus: async () => ({
-        VoIPState: this.getVoipState(),
-      }),
-    });
   }
 
   get userConfig() {

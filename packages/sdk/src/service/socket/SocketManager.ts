@@ -6,12 +6,13 @@
 import { SocketFSM, StateHandlerType } from './SocketFSM';
 import notificationCenter from '../../service/notificationCenter';
 import { CONFIG, SOCKET, SERVICE } from '../../service/eventKey';
-import { mainLogger } from 'foundation';
+import { mainLogger, HealthModuleManager, BaseHealthModule } from 'foundation';
 import { AccountService } from '../../module/account/service';
 import { SocketCanConnectController } from './SocketCanConnectController';
 import { getCurrentTime } from '../../utils/jsUtils';
 import { SyncService } from '../../module/sync/service';
 import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
+import { MODULE_IDENTIFY, MODULE_NAME } from './constants';
 
 const SOCKET_LOGGER = 'SOCKET';
 export class SocketManager {
@@ -32,6 +33,16 @@ export class SocketManager {
     this._logPrefix = `[${SOCKET_LOGGER} manager]`;
 
     this._subscribeExternalEvent();
+    HealthModuleManager.getInstance().register(
+      new BaseHealthModule(MODULE_IDENTIFY, MODULE_NAME),
+    );
+
+    HealthModuleManager.getInstance()
+      .get(MODULE_IDENTIFY)!
+      .register({
+        name: 'SocketConnectState',
+        getStatus: () => ({ state: this.activeFSM.state }),
+      });
   }
 
   public static getInstance() {

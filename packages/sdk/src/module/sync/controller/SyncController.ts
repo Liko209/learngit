@@ -35,18 +35,16 @@ import { ProfileService } from '../../profile';
 import { Profile } from '../../profile/entity';
 import { StateService } from '../../state';
 import { SyncGlobalConfig } from '../config';
-import { LOG_INDEX_DATA } from '../constant';
+import { LOG_INDEX_DATA, MODULE_NAME } from '../constant';
 import { SyncListener, SyncService } from '../service';
 import { IndexDataTaskStrategy } from '../strategy/IndexDataTaskStrategy';
 import { ChangeModel, SYNC_SOURCE } from '../types';
 import { DaoGlobalConfig } from 'sdk/dao/config';
-import { LogControlManager } from 'sdk/service/uploadLogControl';
-import { Nullable, IHealthStatusItem } from 'sdk/types';
+import { Nullable } from 'sdk/types';
 import { InformationRecorder, AbstractRecord } from 'sdk/utils';
 import _ from 'lodash';
 
 const LOG_TAG = 'SyncController';
-const MODULE_NAME = 'SyncModule';
 
 type RequestStatus = 'none' | 'executing' | 'success' | 'failed';
 
@@ -55,7 +53,6 @@ class SyncController {
   private _syncListener: SyncListener;
   private _progressBar: ProgressBar;
   private _indexDataTaskController: TaskController;
-  private _syncHealthStatusItem: IHealthStatusItem;
   private _syncInformationRecorder: InformationRecorder<{
     lastIndexTimestamp: Nullable<number>;
     initial: RequestStatus;
@@ -80,18 +77,6 @@ class SyncController {
 
   constructor() {
     this._progressBar = progressManager.newProgressBar();
-    this._syncHealthStatusItem = {
-      getName: () => {
-        return MODULE_NAME;
-      },
-      getStatus: async () => {
-        return _.omit(this._syncInformationRecorder.getCurrentRecord(), 'logs');
-      },
-    };
-    LogControlManager.instance().unRegisterHealthStatusItem(MODULE_NAME);
-    LogControlManager.instance().registerHealthStatusItem(
-      this._syncHealthStatusItem,
-    );
   }
 
   handleSocketConnectionStateChanged({ state }: { state: any }) {
@@ -336,6 +321,10 @@ class SyncController {
     const params = { newer_than: timeStamp };
     notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_EXIST);
     return this._fetchData(indexData)(params);
+  }
+
+  getStatus() {
+    return _.omit(this._syncInformationRecorder.getCurrentRecord(), 'logs');
   }
 
   /* handle incoming data */

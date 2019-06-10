@@ -24,11 +24,6 @@ interface ISdkConfig {
   db?: DeepPartial<DBConfig>;
 }
 
-interface IHealthStatusItem {
-  getName(): string;
-  getStatus(): Promise<any>;
-}
-
 export {
   INewable,
   ISdkConfig,
@@ -37,7 +32,6 @@ export {
   UndefinedAble,
   NonFunctionPropertyNames,
   FunctionPropertyNames,
-  IHealthStatusItem,
 };
 export * from './api';
 export * from './db';
