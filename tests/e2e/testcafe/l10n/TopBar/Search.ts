@@ -117,12 +117,12 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
   });
   await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_TopBar_ContentSearch' });
 
-  await h(t).withLog(`When I set filter post by ${anotherUser.extension} and hover "Remove" button`, async () => {
-    const messagesTab = searchDialog.fullSearchPage.messagesTab;
-    await messagesTab.postByField.typeText(anotherUser.email);
-    await messagesTab.postByField.selectMemberByNth(0);
-    await t.hover(messagesTab.postByField.selectedItems.nth(-1).find('button'));
-  });
+  // await h(t).withLog(`When I set filter post by ${anotherUser.extension} and hover "Remove" button`, async () => {
+  //   const messagesTab = searchDialog.fullSearchPage.messagesTab;
+  //   await messagesTab.postByField.typeText(anotherUser.email);
+  //   await messagesTab.postByField.selectMemberByNth(0);
+  //   await t.hover(messagesTab.postByField.selectedItems.nth(-1).find('button'));
+  // });
   await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_TopBar_ContentSearchRemoveButton' });
 
   await h(t).withLog('When I click "Type" selector', async () => {
