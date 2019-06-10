@@ -137,6 +137,7 @@ const name2icon = {
   arrow_right: 'arrow_right',
   pause: 'pause',
   play: 'play',
+  dial: 'dial',
   forwardcall: 'forwardcall',
 };
 

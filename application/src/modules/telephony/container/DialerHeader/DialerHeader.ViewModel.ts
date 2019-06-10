@@ -3,7 +3,7 @@
  * @Date: 2019-03-06 16:31:49
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed } from 'mobx';
+import { computed, action } from 'mobx';
 import { container } from 'framework';
 import { TelephonyService } from '../../service';
 import { TelephonyStore, INCOMING_STATE } from '../../store';
@@ -56,12 +56,18 @@ class DialerHeaderViewModel extends StoreViewModel<DialerHeaderProps>
     this._telephonyStore.onDialerInputBlur();
   }
 
+  @action
   onChange = (e: ChangeEvent<HTMLInputElement>) => {
     this._telephonyService.updateInputString(e.target.value);
   }
 
+  @action
   onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && this._telephonyStore.inputString.length) {
+    if (
+      !this._telephonyStore.shouldEnterContactSearch &&
+      e.key === 'Enter' &&
+      this._telephonyStore.inputString.length
+    ) {
       /**
        * TODO: move this call making & state changing logic down to SDK
        */
@@ -72,7 +78,7 @@ class DialerHeaderViewModel extends StoreViewModel<DialerHeaderProps>
 
   // FIXME: remove this logic by exposing the phone parser from SDK to view-model layer
   _makeCall = async (val: string) => {
-    // make sure line 30 run before end()
+    // make sure `this._telephonyStore.dialerCall()` run before `this._telephonyStore.end()`
     if (!(await this._telephonyService.makeCall(val))) {
       await new Promise(resolve => {
         requestAnimationFrame(resolve);

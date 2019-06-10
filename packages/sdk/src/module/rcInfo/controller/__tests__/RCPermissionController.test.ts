@@ -7,8 +7,10 @@
 import { RCPermissionController } from '../RCPermissionController';
 import { ERCServiceFeaturePermission } from '../../types';
 import { RolePermissionController } from '../RolePermissionController';
-import { ServiceLoader } from '../../../serviceLoader';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { FULL_RC_PERMISSION_JSON } from './FullRCPermissionData';
+import { E_ACCOUNT_TYPE } from 'sdk/module/company/entity';
+
 jest.mock('../../../permission');
 jest.mock('../../config');
 
@@ -36,10 +38,22 @@ describe('RCInfoFetchController', () => {
   });
 
   describe('isRCFeaturePermissionEnabled', () => {
+    let accoutType = E_ACCOUNT_TYPE.RC_OFFICE;
     beforeEach(() => {
       clearMocks();
       ServiceLoader.getInstance = jest.fn().mockReturnValue({
         hasPermission: jest.fn().mockReturnValue(true),
+      });
+      ServiceLoader.getInstance = jest.fn().mockImplementation(config => {
+        if (config === ServiceConfig.PERMISSION_SERVICE) {
+          return {
+            hasPermission: jest.fn().mockReturnValue(true),
+          };
+        } else if (config === ServiceConfig.COMPANY_SERVICE) {
+          return {
+            getUserAccountTypeFromSP430: jest.fn().mockReturnValue(accoutType),
+          };
+        }
       });
     });
     it('should return true when users have calling permission', async () => {
@@ -167,6 +181,25 @@ describe('RCInfoFetchController', () => {
       });
       const res = await rcPermissionController.isRCFeaturePermissionEnabled(
         ERCServiceFeaturePermission.CALL_PARK,
+      );
+      expect(res).toBeTruthy();
+    });
+
+    it('should return false when user is fax users', async () => {
+      accoutType = E_ACCOUNT_TYPE.RC_FAX;
+      const res = await rcPermissionController.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.VOIP_CALLING,
+      );
+      expect(res).toBeFalsy();
+    });
+
+    it('should return true when user is rc pro', async () => {
+      accoutType = E_ACCOUNT_TYPE.RC_MOBILE;
+      mockFetchController.getRCExtensionInfo.mockReturnValueOnce({
+        serviceFeatures: FULL_RC_PERMISSION_JSON.serviceFeatures,
+      });
+      const res = await rcPermissionController.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.VOIP_CALLING,
       );
       expect(res).toBeTruthy();
     });

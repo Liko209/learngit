@@ -20,6 +20,9 @@ import {
 } from 'jui/components/Animation';
 import { TELEPHONY_SERVICE } from '../interface/constant';
 
+const FOCUS_IN_EVT = 'focusin';
+const BLUR = 'blur';
+
 function copyStyles(sourceDoc: Document, targetDoc: Document) {
   Array.from(sourceDoc.styleSheets).forEach((styleSheet: CSSStyleSheet) => {
     if (styleSheet.cssRules) {
@@ -106,8 +109,8 @@ function withDialogOrNewWindow<T>(
     private _div = document.createElement('div');
     private _root = document.body;
     private _dragRef = React.createRef<any>();
+    private _containerRef = React.createRef<any>();
     private _handleResize = () => {};
-
     private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
     private _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,
@@ -160,6 +163,35 @@ function withDialogOrNewWindow<T>(
       document.body.removeChild(this._backdrop);
     }
 
+    private _onFocus = (e: FocusEvent) => {
+      const el = ReactDOM.findDOMNode(this._containerRef.current);
+
+      if (!el) {
+        return;
+      }
+      if (e.target && (el as HTMLDivElement).contains(e.target as Element)) {
+        this._telephonyStore.onDialerFocus();
+        return;
+      }
+      this._telephonyStore.onDialerBlur();
+    }
+
+    private _onBlur = (e: FocusEvent) => {
+      const el = ReactDOM.findDOMNode(this._containerRef.current);
+
+      if (!el) {
+        return;
+      }
+      if (
+        e.target &&
+        (e.target === window ||
+          (el as HTMLDivElement).contains(e.target as Element))
+      ) {
+        this._telephonyStore.onDialerBlur();
+        return;
+      }
+    }
+
     componentDidUpdate() {
       const { startMinimizeAnimation } = this._telephonyStore;
       const dragEl = ReactDOM.findDOMNode(
@@ -195,6 +227,17 @@ function withDialogOrNewWindow<T>(
       },         300);
     }
 
+    componentWillUnMount() {
+      this._telephonyStore.onDialerBlur();
+      window.removeEventListener(FOCUS_IN_EVT, this._onFocus);
+      window.removeEventListener(BLUR, this._onBlur);
+    }
+
+    componentDidMount() {
+      window.addEventListener(FOCUS_IN_EVT, this._onFocus);
+      window.addEventListener(BLUR, this._onBlur);
+    }
+
     render() {
       const { callWindowState } = this._telephonyStore;
       const open =
@@ -217,6 +260,7 @@ function withDialogOrNewWindow<T>(
           TransitionComponent={DialerTransitionComponent}
           onStart={this._handleStart}
           onStop={this._handleStop}
+          ref={this._containerRef}
         >
           <Component {...this.props} />
         </JuiDraggableDialog>
