@@ -3,7 +3,7 @@ import * as notification from '@/modules/notification/module.config';
 import { INotificationService } from '../interface';
 
 global.Notification = {
-  requestPermission: jest.fn(),
+  requestPermission: jest.fn().mockImplementation(() => Promise.resolve()),
   permission: 'default',
 };
 
@@ -18,7 +18,7 @@ describe('NotificationService', () => {
     jest.clearAllMocks();
     jest.spyOn(Notification, 'requestPermission').mockImplementation(() => {
       Notification.permission = permissionAfterRequest;
-      return permissionAfterRequest;
+      return Promise.resolve(permissionAfterRequest);
     });
 
     const mockedSW = {
