@@ -52,7 +52,7 @@ export class NotificationAndSoundsSettingsPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('settingItemSelectBox-newMessages-item') // check settingItemSelectBoxItem-newMessages
   }
   get newMessageSelectorAllItems(){
-    return this.getSelectorByAutomationId('settingItemSelectBoxItem-newMessages');
+    return this.getSelector('[data-test-automation-class="settingItemSelectBoxItem"]');
   }
   // Incoming Call
   get incomingCallsSection() {
