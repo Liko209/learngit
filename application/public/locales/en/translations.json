@@ -583,7 +583,8 @@
       "resume": "Resume the call",
       "record": "Record the call",
       "stopRecord": "Stop recording",
-      "minimize": "Minimize the dialog"
+      "minimize": "Minimize the dialog",
+      "callActions": "Call actions"
     },
     "dialerPlaceholder": "Enter a name or number",
     "delete": "Delete",
