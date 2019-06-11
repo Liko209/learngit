@@ -3,8 +3,8 @@
     "fixtures": [
       "./fixtures/Logout.ts"
     ],
-    "include_tags": [
-      "JPT-1917"
+    "exclude_tags": [
+      "JPT-951"
     ],
     "browsers": [
       "selenium:chrome"
