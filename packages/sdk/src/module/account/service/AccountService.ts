@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { mainLogger } from 'foundation';
+import { mainLogger, DEFAULT_BEFORE_EXPIRED } from 'foundation';
 import { PersonService } from '../../person';
 import { Person } from '../../person/entity';
 import { generateUUID } from '../../../utils/mathUtils';
@@ -107,6 +107,24 @@ class AccountService extends AbstractService
     )) as ITokenModel;
     setRCToken(newRcToken);
     return newRcToken;
+  }
+
+  async getRCToken() {
+    let rcToken = this.authUserConfig.getRCToken();
+    if (rcToken && this._isRCTokenExpired(rcToken)) {
+      rcToken = await this.refreshRCToken();
+    }
+
+    return rcToken;
+  }
+
+  private _isRCTokenExpired(rcToken: ITokenModel) {
+    const accessTokenExpireInMillisecond = rcToken.expires_in * 1000;
+    const lastValidTime =
+      rcToken.timestamp +
+      accessTokenExpireInMillisecond -
+      DEFAULT_BEFORE_EXPIRED;
+    return Date.now() > lastValidTime;
   }
 
   async onBoardingPreparation() {

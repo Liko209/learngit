@@ -68,18 +68,9 @@ describe('UnifiedLoginAuthenticator', () => {
     setRCToken = jest.fn();
 
     const resp = await unified.authenticate({ code: '123' });
-    expect(resp).toEqual({
-      success: true,
-      isFirstLogin: true,
-      isRCOnlyMode: false,
-      accountInfos: [
-        {
-          data: { access_token: 113123 },
-          type: 'RCAccount',
-        },
-        { data: 'glip_token', type: 'GlipAccount' },
-      ],
-    });
+    expect(resp.success).toEqual(true);
+    expect(resp.isFirstLogin).toEqual(true);
+    expect(resp.isRCOnlyMode).toEqual(false);
     expect(resp.accountInfos!.length).toEqual(2);
     expect(unified['_requestRCAccountRelativeInfo']).toBeCalled();
   });

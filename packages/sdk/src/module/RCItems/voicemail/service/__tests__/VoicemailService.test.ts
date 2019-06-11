@@ -21,6 +21,7 @@ jest.mock('../../controller/VoicemailController', () => {
     voicemailFetchController: {
       clearAll: jest.fn(),
       fetchVoicemails: jest.fn(),
+      handleNotification: jest.fn(),
     },
   };
   return {
@@ -110,6 +111,20 @@ describe('VoicemailService', () => {
       expect(
         vmController.voicemailActionController.buildDownloadUrl,
       ).toBeCalledWith('13');
+    });
+  });
+
+  describe('_triggerSilentSync', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('_triggerSilentSync', async () => {
+      await vmService['_triggerSilentSync']();
+      expect(
+        vmController.voicemailFetchController.handleNotification,
+      ).toBeCalled();
     });
   });
 });

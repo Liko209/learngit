@@ -24,7 +24,7 @@ type IdListPaginationOptions<T, K> = {
   filterFunc: IMatchFunc<K>;
   transformFunc?: ITransformFunc<T>;
   isMatchFunc?: IMatchFunc<T>;
-  sortFunc?: ISortFunc<ISortableModel>;
+  sortFunc?: ISortFunc;
 };
 
 class IdListPaginationHandler<T extends IdModel, K extends Entity> {

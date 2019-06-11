@@ -126,9 +126,7 @@ class CallLogDao extends BaseDao<CallLog, string> {
     return query.count();
   }
 
-  async queryCallLogBySessionIdId(
-    sessionId: string,
-  ): Promise<Nullable<CallLog>> {
+  async queryCallLogBySessionId(sessionId: string): Promise<Nullable<CallLog>> {
     const query = this.createQuery();
     return query.equal('sessionId', sessionId).first();
   }

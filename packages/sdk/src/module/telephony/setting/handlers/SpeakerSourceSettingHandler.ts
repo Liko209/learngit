@@ -62,8 +62,7 @@ export class SpeakerSourceSettingHandler extends AbstractSettingEntityHandler<
   }
 
   private _onPermissionChange = async () => {
-    isChrome() &&
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+    isChrome() && (await this.getUserSettingEntity());
   }
 
   private _onSelectedDeviceUpdate = (type: number, value: string) => {
@@ -71,14 +70,12 @@ export class SpeakerSourceSettingHandler extends AbstractSettingEntityHandler<
       this.userSettingEntityCache &&
       this.getCacheValue('deviceId') !== value
     ) {
-      this.getUserSettingEntity().then(entity =>
-        this.notifyUserSettingEntityUpdate(entity),
-      );
+      this.getUserSettingEntity();
     }
   }
 
   private _onDevicesChange = async (devices: MediaDeviceInfo[]) => {
-    this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+    await this.getUserSettingEntity();
   }
 
   dispose() {

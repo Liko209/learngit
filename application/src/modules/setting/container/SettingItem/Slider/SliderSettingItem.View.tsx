@@ -19,9 +19,8 @@ type Props = SliderSettingItemViewProps &
 @observer
 class SliderSettingItemViewComponent extends Component<Props> {
   @catchError.flash({
-    // TODO move the keys out of setting.phone
-    network: 'setting.phone.general.callerID.errorText',
-    server: 'setting.phone.general.callerID.errorText',
+    network: 'setting.errorText.network',
+    server: 'setting.errorText.server',
   })
   private _handleChange = debounce(
     async (event: ChangeEvent<HTMLInputElement>, value: number) => {

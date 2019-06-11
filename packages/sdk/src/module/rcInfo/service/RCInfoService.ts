@@ -255,6 +255,12 @@ class RCInfoService extends EntityBaseService<IdModel>
       .getCompanyMainCaller();
   }
 
+  async getAccountId() {
+    return this.getRCInfoController()
+      .getRCAccountInfoController()
+      .getAccountId();
+  }
+
   async getForwardingNumberList(): Promise<ForwardingFlipNumberModel[]> {
     return await this.getRCInfoController()
       .getRCInfoFetchController()

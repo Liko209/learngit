@@ -4,9 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IZipItemProvider, ZipItem } from 'sdk/service/uploadLogControl/types';
+import {
+  IZipItemProvider,
+  ZipItem,
+  ZipItemLevel,
+} from 'sdk/service/uploadLogControl/types';
 
 export class ElectronZipItemProvider implements IZipItemProvider {
+  level: ZipItemLevel = ZipItemLevel.NORMAL;
   getZipItems = async () => {
     const logs =
       (window.jupiterElectron.getLogs && window.jupiterElectron.getLogs()) ||

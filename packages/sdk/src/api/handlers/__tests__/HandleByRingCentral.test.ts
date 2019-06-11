@@ -50,8 +50,8 @@ describe('HandleByRingCentral', () => {
       const decoration = HandleByRingCentral.requestDecoration(handler);
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => false);
-      const decoratedRequest = decoration(request);
-      expect(decoratedRequest.data).toEqual(
+      decoration(request);
+      expect(request.data).toEqual(
         stringify({
           username: 'test',
         }),
@@ -65,8 +65,8 @@ describe('HandleByRingCentral', () => {
       const decoration = HandleByRingCentral.requestDecoration(handler);
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => false);
-      const decoratedRequest = decoration(request);
-      expect(decoratedRequest.data).toEqual(
+      decoration(request);
+      expect(request.data).toEqual(
         stringify({
           username: 'test',
         }),
@@ -79,9 +79,9 @@ describe('HandleByRingCentral', () => {
       const decoration = HandleByRingCentral.requestDecoration(handler);
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => true);
-      const decoratedRequest = decoration(request);
-      expect(decoratedRequest.headers.Authorization).toEqual('Bearer token');
-      expect(decoratedRequest.data).toEqual({
+      decoration(request);
+      expect(request.headers.Authorization).toEqual('Bearer token');
+      expect(request.data).toEqual({
         username: 'test',
       });
     });
@@ -92,8 +92,8 @@ describe('HandleByRingCentral', () => {
       const decoration = HandleByRingCentral.requestDecoration(handler);
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => true);
-      const decoratedRequest = decoration(request);
-      expect(decoratedRequest.data).toEqual(
+      decoration(request);
+      expect(request.data).toEqual(
         stringify({
           username: 'test',
         }),
@@ -118,9 +118,9 @@ describe('HandleByRingCentral', () => {
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => true);
       request.headers.Authorization = 'Authorization';
-      const decoratedRequest = decoration(request);
-      expect(decoratedRequest.headers.Authorization).toEqual('Authorization');
-      expect(decoratedRequest.data).toEqual({
+      decoration(request);
+      expect(request.headers.Authorization).toEqual('Authorization');
+      expect(request.data).toEqual({
         username: 'test',
       });
     });

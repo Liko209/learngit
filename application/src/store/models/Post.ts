@@ -13,6 +13,7 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import FileItemModel from '@/store/models/FileItem';
 import LinkItemModel from '@/store/models/LinkItem';
+import { mainLogger } from 'sdk';
 
 export default class PostModel extends Base<Post> {
   createdAt: number;
@@ -122,6 +123,25 @@ export default class PostModel extends Base<Post> {
     });
 
     return itemTypeIds;
+  }
+
+  public fileItemVersion(fileItem: FileItemModel) {
+    if (!this.itemData) {
+      return 1;
+    }
+    const isFileItemReady = fileItem.id > 0;
+    if (!isFileItemReady) return 1;
+
+    const version = this.itemData.version_map[fileItem.id];
+    if (!version) {
+      // should not come here, due to exist bug, some data's version_map is incorrect. bug ticket: FIJI-6596
+      mainLogger.error('can not find version info in post itemData', {
+        itemData: this.itemData,
+        fileId: fileItem.id,
+      });
+      return 1;
+    }
+    return version;
   }
 
   static fromJS(data: Post) {

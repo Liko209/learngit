@@ -14,7 +14,7 @@ import { action } from 'mobx';
 import { observer } from 'mobx-react';
 
 type DataListProps = {
-  listHandler: FetchSortableDataListHandler<any>;
+  listHandler: FetchSortableDataListHandler<any, any>;
   initialDataCount: number;
   InfiniteListProps: Pick<
     JuiInfiniteListProps,
@@ -28,6 +28,7 @@ type DataListProps = {
     | 'stickToLastPosition'
   >;
   children: JSX.Element[];
+  reverse?: boolean;
 };
 
 @observer
@@ -56,9 +57,10 @@ class DataList extends React.Component<DataListProps> {
   }
 
   private _transformDirection(direction: 'up' | 'down') {
-    const queryDirection =
-      direction === 'up' ? QUERY_DIRECTION.NEWER : QUERY_DIRECTION.OLDER;
-    return queryDirection;
+    if (this.props.reverse) {
+      return direction === 'up' ? QUERY_DIRECTION.OLDER : QUERY_DIRECTION.NEWER;
+    }
+    return direction === 'up' ? QUERY_DIRECTION.NEWER : QUERY_DIRECTION.OLDER;
   }
 
   componentDidUpdate(prevProps: DataListProps) {

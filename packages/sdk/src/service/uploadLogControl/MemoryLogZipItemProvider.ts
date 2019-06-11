@@ -3,10 +3,11 @@
  * @Date: 2019-05-04 17:12:06
  * Copyright © RingCentral. All rights reserved.
  */
-import { IZipItemProvider, ZipItem } from './types';
+import { IZipItemProvider, ZipItem, ZipItemLevel } from './types';
 import { MemoryCollector } from './collectors/memoryCollector';
 
 export class MemoryLogZipItemProvider implements IZipItemProvider {
+  level: ZipItemLevel = ZipItemLevel.NORMAL;
   constructor(public memoryCollector: MemoryCollector) {}
 
   getZipItems = async () => {

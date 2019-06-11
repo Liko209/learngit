@@ -1,8 +1,8 @@
 /*
  * @Author:Andy.Hu
- * @Date: 2019-05-28 15:24:53 
- * @Last Modified by: Andy.Hu
- * @Last Modified time: 2019-05-28 15:56:35
+ * @Date: 2019-05-28 15:24:53
+ * @Last Modified by: Lex Huang (lex.huang@ringcentral.com)
+ * @Last Modified time: 2019-06-05 15:22:24
  */
 
 import { AppRoot } from '../../../v2/page-models/AppRoot/index';
@@ -24,7 +24,7 @@ test.meta(<ITestMeta>{
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4]
   const anotherUser = users[5];
-  
+
   const app = new AppRoot(t);
   const { company: { number } } = anotherUser;
   await h(t).glip(loginUser).init();
@@ -40,7 +40,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog('Given I have a 1:1 chat, another user send a post', async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
-  
+
   let conversationPage;
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -48,23 +48,23 @@ test.meta(<ITestMeta>{
     const chatEntry = app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId);
     await chatEntry.enter();
   });
-  
+
   const callerWebPhone = await h(t).newWebphoneSession(anotherUser);
   // conversation page header
-  
+
   await h(t).withLog('When I receive a call', async () => {
     await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
   });
-  
+
   await h(t).withLog('Then telephony dialog is not displayed', async () => {
     await app.homePage.telephonyDialog.ensureDismiss();
     await callerWebPhone.hangup();
   });
-  
+
   await h(t).withLog('When I switch default phone app to Jupiter', async () => {
      await h(t).glip(loginUser).setDefaultPhoneApp('glip');
   });
-  
+
   await h(t).withLog('When I click the call button', async () => {
     conversationPage = app.homePage.messageTab.conversationPage;
     await conversationPage.clickTelephonyButton();
@@ -87,8 +87,8 @@ test.meta(<ITestMeta>{
     await app.homePage.telephonyDialog.typeTextInDialer(number);
   });
 
-  await h(t).withLog('And I click the to dial button', async () => {
-    await app.homePage.telephonyDialog.clickDialButton();
+  await h(t).withLog('And I hit the `Enter` key', async () => {
+    await app.homePage.telephonyDialog.hitEnterToMakeCall();
   });
 
   await h(t).withLog('Then a call should be initiated', async () => {

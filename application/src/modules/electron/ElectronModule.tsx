@@ -2,6 +2,7 @@ import { AbstractModule } from 'framework';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ElectronZipItemProvider } from './ElectronZipItemProvider';
+import { ElectronCacheItemProvider } from './ElectronCacheItemProvider';
 import { LogControlManager } from 'sdk/service/uploadLogControl';
 import { logManager } from 'sdk';
 import notificationCenter from 'sdk/service/notificationCenter';
@@ -24,6 +25,9 @@ class ElectronModule extends AbstractModule {
       }
       LogControlManager.instance().registerZipProvider(
         new ElectronZipItemProvider(),
+      );
+      LogControlManager.instance().registerZipProvider(
+        new ElectronCacheItemProvider(),
       );
       window.jupiterElectron.setLogger &&
         window.jupiterElectron.setLogger(logManager.getLogger('electron'));

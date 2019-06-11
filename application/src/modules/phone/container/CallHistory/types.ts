@@ -3,4 +3,8 @@ enum CallHistoryTypes {
   Missed,
 }
 
-export { CallHistoryTypes };
+type CallHistoryViewProps = {
+  clearUMI: () => void;
+};
+
+export { CallHistoryTypes, CallHistoryViewProps };

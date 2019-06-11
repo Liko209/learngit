@@ -15,6 +15,12 @@ const actionTips = {
   reload: 'reload',
 };
 
+const actionLabels = {
+  play: 'play voicemail',
+  pause: 'pause voicemail',
+  reload: 'reload voicemail',
+};
+
 storiesOf('Pattern', module)
   .addDecorator(withInfoDecorator(JuiAudioPlayer, { inline: true }))
   .add('AudioPlayer', () => {
@@ -28,6 +34,7 @@ storiesOf('Pattern', module)
             duration={188}
             startTime={0}
             actionTips={actionTips}
+            actionLabels={actionLabels}
           />
         </dd>
         <dt>mode full</dt>
@@ -37,6 +44,7 @@ storiesOf('Pattern', module)
             duration={188}
             startTime={30}
             actionTips={actionTips}
+            actionLabels={actionLabels}
           />
         </dd>
         <dt>highlight display</dt>
@@ -47,6 +55,7 @@ storiesOf('Pattern', module)
             duration={188}
             startTime={60}
             actionTips={actionTips}
+            actionLabels={actionLabels}
           />
         </dd>
         <dt>reload display</dt>
@@ -56,6 +65,7 @@ storiesOf('Pattern', module)
             duration={188}
             startTime={90}
             actionTips={actionTips}
+            actionLabels={actionLabels}
           />
         </dd>
       </dl>

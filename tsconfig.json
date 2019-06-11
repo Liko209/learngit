@@ -29,6 +29,7 @@
     "./typings/react-visibility-sensor.d.ts",
     "./typings/glipdown.d.ts",
     "./typings/i18next-intervalPlural-postProcessor.d.ts",
-    "./typings/load-segment.d.ts"
+    "./typings/load-segment.d.ts",
+    "./typings/pubnub.d.ts"
   ]
 }

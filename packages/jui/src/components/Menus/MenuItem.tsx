@@ -87,6 +87,7 @@ class JuiMenuItem extends React.PureComponent<JuiMenuItemProps> {
     }
     return (
       <StyledMenuItem
+        tabIndex={0}
         data-test-automation-id={automationId}
         disabled={disabled}
         data-disabled={disabled}

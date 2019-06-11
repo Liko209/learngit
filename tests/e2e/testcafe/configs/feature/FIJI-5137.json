@@ -1,0 +1,19 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./telephony/ContactSearch.ts",
+      "./telephony/Dialer.ts",
+      "./telephony/EndCall.ts",
+      "./telephony/Hold.ts",
+      "./telephony/Keypad.ts",
+      "./telephony/MinimizeCall.ts",
+      "./telephony/Park.ts",
+      "./telephony/Reply.ts",
+      "./telephony/ToVoiceMail.ts",
+      "./telephony/EntryPoint.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

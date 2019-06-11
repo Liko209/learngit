@@ -12,48 +12,9 @@ import { StyledHeaderNoPadding } from 'jui/pattern/Dialer';
 import { height, spacing } from 'jui/foundation/utils';
 import { FakeInputViewProps } from './types';
 
-const FOCUS_IN_EVT = 'focusin';
-const BLUR = 'blur';
-
 @observer
 class FakeInputView extends Component<FakeInputViewProps> {
   private _containerRef: RefObject<any> = createRef();
-
-  private _onFocus = (e: FocusEvent) => {
-    const el = ReactDOM.findDOMNode(this._containerRef.current);
-
-    if (!el) {
-      return;
-    }
-    if (e.target && (el as HTMLDivElement).contains(e.target as Element)) {
-      this.props.onFocus && this.props.onFocus();
-      return;
-    }
-    this.props.onBlur && this.props.onBlur();
-  }
-
-  private _onBlur = (e: FocusEvent) => {
-    const el = ReactDOM.findDOMNode(this._containerRef.current);
-
-    if (!el) {
-      return;
-    }
-    if (
-      e.target &&
-      (e.target === window ||
-        (el as HTMLDivElement).contains(e.target as Element))
-    ) {
-      this.props.onBlur && this.props.onBlur();
-      return;
-    }
-  }
-
-  componentWillUnmount() {
-    const { onBlur } = this.props;
-    onBlur && onBlur();
-    window.removeEventListener(FOCUS_IN_EVT, this._onFocus);
-    window.removeEventListener(BLUR, this._onBlur);
-  }
 
   componentDidMount() {
     if (!this._containerRef.current) {
@@ -63,8 +24,6 @@ class FakeInputView extends Component<FakeInputViewProps> {
     if (!el) {
       return;
     }
-    window.addEventListener(FOCUS_IN_EVT, this._onFocus);
-    window.addEventListener(BLUR, this._onBlur);
 
     // auto focus
     requestAnimationFrame(() => {

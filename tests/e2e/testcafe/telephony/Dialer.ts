@@ -184,8 +184,8 @@ test.meta(<ITestMeta>{
     await app.homePage.telephonyDialog.typeTextInDialer(number);
   });
 
-  await h(t).withLog('And I click the to diapad button', async () => {
-    await app.homePage.telephonyDialog.clickDialButton();
+  await h(t).withLog('And I hit the `Enter` key', async () => {
+    await app.homePage.telephonyDialog.hitEnterToMakeCall();
   });
 
   await h(t).withLog('Then a call should be initiated', async () => {
@@ -193,7 +193,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I end the call', async () => {
-    app.homePage.telephonyDialog.clickHangupButton()
+    await app.homePage.telephonyDialog.clickHangupButton();
   });
 
   await h(t).withLog(`Then I should be return to the dialer`, async () => {
@@ -251,8 +251,8 @@ test.meta(<ITestMeta>{
     await telephonyDialog.callerIdList.selectBlocked();
   });
 
-  await h(t).withLog('And I click the to diapad button', async () => {
-    await telephonyDialog.clickDialButton();
+  await h(t).withLog('And I hit the `Enter` key', async () => {
+    await telephonyDialog.hitEnterToMakeCall();
   });
 
 
@@ -302,8 +302,8 @@ test.meta(<ITestMeta>{
     await telephonyDialog.typeTextInDialer(calleeDirectNumbers[0]);
   });
 
-  await h(t).withLog('And I click the to Dialpad button', async () => {
-    await telephonyDialog.clickDialButton();
+  await h(t).withLog('And I hit the `Enter` key', async () => {
+    await telephonyDialog.hitEnterToMakeCall();
   });
 
   await h(t).withLog('Then a call should be initiated', async () => {
