@@ -13,8 +13,8 @@ import { OPERATION } from 'jui/pattern/HistoryOperation';
 class BackNForwardViewModel extends StoreViewModel {
   @action
   forward = () => {
-    const pointer = historyStack.getCursor();
-    const stack = historyStack.getStack();
+    const pointer = historyStack.cursor;
+    const stack = historyStack.stack;
     if (pointer + 1 === stack.length) {
       return;
     }
@@ -24,7 +24,7 @@ class BackNForwardViewModel extends StoreViewModel {
 
   @action
   back = () => {
-    const pointer = historyStack.getCursor();
+    const pointer = historyStack.cursor;
     if (pointer - 1 < 0) {
       return;
     }
@@ -61,7 +61,7 @@ class BackNForwardViewModel extends StoreViewModel {
   @action
   private _setHistoryStackPointer(pointer: number) {
     historyStack.setCursor(pointer);
-    const stack = historyStack.getStack();
+    const stack = historyStack.stack;
     const pathname = stack[pointer];
     history.push(pathname, {
       navByBackNForward: true,
@@ -70,7 +70,7 @@ class BackNForwardViewModel extends StoreViewModel {
 
   @action
   go = (type: OPERATION, index: number) => {
-    let pointer = historyStack.getCursor();
+    let pointer = historyStack.cursor;
     if (type === OPERATION.BACK) {
       pointer = pointer - index - 1;
     }

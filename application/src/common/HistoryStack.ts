@@ -52,18 +52,18 @@ class HistoryStack {
 
   @computed
   get backRecord() {
-    return this.getStack().slice(0, this.getCursor());
+    return this.stack.slice(0, this.cursor);
   }
 
   @computed
   get forwardRecord() {
-    return this.getStack().slice(this.getCursor() + 1);
+    return this.stack.slice(this.cursor + 1);
   }
 
   @action
   updateStackNCursor() {
-    this._stack = this.getStack();
-    this._cursor = this.getCursor();
+    this._stack = this.stack;
+    this._cursor = this.cursor;
   }
 
   isInvalidPath(pathname: string) {
@@ -73,7 +73,7 @@ class HistoryStack {
     return category === MESSAGES_CATEGORY_ROUTER && !getMessagesTitle(subPath);
   }
 
-  getCursor() {
+  get cursor() {
     let current = this._cursor;
     const cursors = this._stack.reduce((
       cursors: number[],
@@ -93,7 +93,7 @@ class HistoryStack {
     return current;
   }
 
-  getStack() {
+  get stack() {
     const stack = this._stack.reduce((
       stack: string[],
       pathname: string,
@@ -107,7 +107,7 @@ class HistoryStack {
   }
 
   getCurrentPathname() {
-    return this.getStack()[this.getCursor()];
+    return this.stack[this.cursor];
   }
 
   @action
