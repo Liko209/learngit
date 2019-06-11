@@ -56,9 +56,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
         if (audio && !phoneStore.audioCache.get(this._id)) {
           phoneStore.addAudio(this._id, {
             ...audio,
-            downloadUrl: await this.voicemailService.buildDownloadUrl(
-              audio.uri,
-            ),
+            downloadUrl: '',
             startTime: 0,
           });
         }
@@ -154,16 +152,10 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
       this._phoneStore.setVoicemailId(this._id);
     }
     this.voicemailService.updateReadStatus(this._id, READ_STATUS.READ);
-    if (this.audio) {
-      const ret = await this.voicemailService.buildDownloadUrl(this.audio.uri);
-      this._phoneStore.updateAudio(this._id, {
-        downloadUrl: ret,
-      });
-    }
   }
 
   @action
-  onBeforeAction = (status: JuiAudioStatus) => {
+  onBeforeAction = async (status: JuiAudioStatus) => {
     if (status === JuiAudioStatus.PAUSE) {
       analyticsCollector.playPauseVoicemail(
         ANALYTICS_KEY.VOICEMAIL_ACTION_PAUSE,
@@ -174,6 +166,14 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
       analyticsCollector.playPauseVoicemail(
         ANALYTICS_KEY.VOICEMAIL_ACTION_PLAY,
       );
+      if (this.audio) {
+        const ret = await this.voicemailService.buildDownloadUrl(
+          this.audio.uri,
+        );
+        this._phoneStore.updateAudio(this._id, {
+          downloadUrl: ret,
+        });
+      }
       return;
     }
   }
