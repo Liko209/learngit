@@ -115,11 +115,15 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     });
     this._mediaDeviceManager.on(
       RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
-      this._setAudioInputDevice,
+      (deviceId: string) => {
+        this._setAudioInputDevice(deviceId);
+      },
     );
     this._mediaDeviceManager.on(
       RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
-      this._setAudioOutputDevice,
+      (deviceId: string) => {
+        this._setAudioOutputDevice(deviceId);
+      },
     );
     this._session.onMediaConnectionStateChange = this._onMediaConnectionStateChange;
   }
@@ -531,7 +535,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     }
   }
 
-  private _setAudioInputDevice = (deviceID: string) => {
+  private _setAudioInputDevice(deviceID: string) {
     navigator.mediaDevices
       .getUserMedia({
         audio: {
@@ -583,7 +587,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.sessionDescriptionHandler.getDescription();
   }
 
-  private _setAudioOutputDevice = (deviceID: string) => {
+  private _setAudioOutputDevice(deviceID: string) {
     if (this._mediaElement && this._mediaElement.local.setSinkId) {
       rtcLogger.debug(
         LOG_TAG,
