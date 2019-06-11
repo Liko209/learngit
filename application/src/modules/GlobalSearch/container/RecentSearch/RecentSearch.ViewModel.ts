@@ -4,6 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { container } from 'framework';
+import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
+import { Group } from 'sdk/module/group/entity';
+import GroupModel from '@/store/models/Group';
 import { observable, action } from 'mobx';
 import { SearchService } from 'sdk/module/search';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
@@ -11,6 +15,7 @@ import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { changeToSearchType, changeToRecordTypes } from '../common/changeTypes';
 import { GlobalSearchStore } from '../../store';
 import {
+  SearchItemTypes,
   RecentSearchProps,
   RecentSearchViewProps,
   RecentRecord,
@@ -113,21 +118,46 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
     this.recentRecord = [];
   }
 
+  isValidGroup (value?: number) {
+    if (!value) {
+      return false;
+    }
+    try {
+      const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, value);
+      const { isMember, deactivated, isArchived, isTeam, privacy } = group;
+      const isPrivate = isTeam && privacy === 'private';
+      const shouldHidden = deactivated || isArchived || (!isMember && isPrivate);
+      return shouldHidden !== undefined && !shouldHidden;
+    } catch {
+      return false;
+    }
+  }
+
+  isValidRecord = (record: RecentRecord) => {
+    const { value, type } = record;
+    if (type === SearchItemTypes.GROUP || type === SearchItemTypes.TEAM) {
+      return this.isValidGroup(typeof value === 'string' ? undefined : value);
+    }
+    return true;
+  }
+
   @action
   fetchRecent = async () => {
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
     const records = await searchService.getRecentSearchRecords();
-    this.recentRecord = records.map((record: RecentSearchModel) => {
-      const { id, value, query_params } = record;
-      return {
-        id,
-        value,
-        queryParams: query_params as { groupId: number },
-        type: changeToSearchType(record.type),
-      };
-    });
+    this.recentRecord = records
+      .map((record: RecentSearchModel) => {
+        const { id, value, query_params } = record;
+        return {
+          id,
+          value,
+          queryParams: query_params as { groupId: number },
+          type: changeToSearchType(record.type),
+        };
+      })
+      .filter(this.isValidRecord);
   }
 }
 
