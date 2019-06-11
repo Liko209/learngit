@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/MessageInput/Emoji.ts"
+    ],
+    "exclude_tags": [
+      "JPT-2115"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
