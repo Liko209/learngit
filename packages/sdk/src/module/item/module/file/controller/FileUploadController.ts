@@ -454,7 +454,7 @@ class FileUploadController {
       if (itemFile.id > 0) {
         versionNumber = itemFile.versions.length;
       } else {
-        const existItemFile = await this._getOldestExistFile(
+        const existItemFile = !itemFile.is_new && await this._getOldestExistFile(
           itemFile.group_ids[0],
           itemFile.name,
         );
