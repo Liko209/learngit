@@ -29,7 +29,7 @@ storiesOf('Pattern', module)
         <dt>mode mini</dt>
         <dd>
           <JuiAudioPlayer
-            src="http://f2.htqyy.com/play7/33/mp3/5"
+            src="https://mfile.bandari.net/mc-U52f5t5wDSe/Bandari/05Mist/04.Bandari.Net_Morning.mp3"
             mode={JuiAudioMode.MINI}
             duration={188}
             startTime={0}
@@ -40,7 +40,7 @@ storiesOf('Pattern', module)
         <dt>mode full</dt>
         <dd>
           <JuiAudioPlayer
-            src="http://f2.htqyy.com/play7/33/mp3/5"
+            src="https://mfile.bandari.net/mc-U52f5t5wDSe/Bandari/05Mist/04.Bandari.Net_Morning.mp3"
             duration={188}
             startTime={30}
             actionTips={actionTips}
@@ -51,7 +51,7 @@ storiesOf('Pattern', module)
         <dd>
           <JuiAudioPlayer
             isHighlight={true}
-            src="http://f2.htqyy.com/play7/33/mp3/5"
+            src="https://mfile.bandari.net/mc-U52f5t5wDSe/Bandari/05Mist/04.Bandari.Net_Morning.mp3"
             duration={188}
             startTime={60}
             actionTips={actionTips}
