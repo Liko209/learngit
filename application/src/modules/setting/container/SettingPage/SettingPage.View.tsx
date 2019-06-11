@@ -31,7 +31,9 @@ class SettingPageViewComponent extends Component<Props> {
 
   @action
   private _handleSizeUpdate = (size: Size) => {
-    this._size = size;
+    if (size.width !== this._size.width || size.height !== this._size.height) {
+      this._size = size;
+    }
   }
 
   @action

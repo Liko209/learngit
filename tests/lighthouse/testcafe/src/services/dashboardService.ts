@@ -185,7 +185,20 @@ class DashboardConfig {
           "apiGoal": Number.MAX_VALUE
         }
       }
-    }
+    },
+    "SearchPhoneScene": {
+      "name": "SearchPhoneScene",
+      "gatherer": "SearchPhoneGatherer",
+      "memoryUrl": "http://xmn145.rcoffice.ringcentral.com:9005",
+      "cpuUrl": "http://xmn145.rcoffice.ringcentral.com:9005",
+      "metric": {
+        "search_phone_number": {
+          "name": "search_phone_number",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/180",
+          "apiGoal": Number.MAX_VALUE
+        }
+      }
+    },
   };
 }
 

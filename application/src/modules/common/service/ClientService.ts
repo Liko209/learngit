@@ -18,7 +18,22 @@ class ClientService implements IClientService {
     window.focus();
   }
   invokeApp(urlScheme: string) {
-    window.location.href = urlScheme;
+    let rcCallPortal = document.getElementById(
+      'make_rc_call',
+    ) as HTMLIFrameElement | null;
+    if (!rcCallPortal) {
+      rcCallPortal = document.createElement('iframe');
+      Object.assign(rcCallPortal, {
+        id: 'make_rc_call',
+        height: '0',
+        width: '0',
+        tabIndex: -1,
+      });
+      rcCallPortal.style.display = 'none';
+      const body = document.body;
+      body.appendChild(rcCallPortal);
+    }
+    rcCallPortal.setAttribute('src', urlScheme);
   }
 }
 export { ClientService };
