@@ -70,12 +70,11 @@ class IncomingCallsSettingHandler extends AbstractSettingEntityHandler<
     return state;
   }
   async fetchUserSettingEntity() {
-    const profile = await this._profileService.getProfile();
     const settingItem: UserSettingEntity<NOTIFICATION_OPTIONS> = {
       weight: 1,
       valueType: 1,
       parentModelId: 1,
-      value: profile[SETTING_KEYS.DESKTOP_CALL],
+      value: await this._getDesktopCall(),
       source: [NOTIFICATION_OPTIONS.OFF, NOTIFICATION_OPTIONS.ON],
       id: SettingEntityIds.Notification_IncomingCalls,
       state: await this._getItemState(),
@@ -107,6 +106,14 @@ class IncomingCallsSettingHandler extends AbstractSettingEntityHandler<
     ) {
       await this.getUserSettingEntity();
     }
+  }
+  private async _getDesktopCall() {
+    const profile = await this._profileService.getProfile();
+    let desktopCall = profile[SETTING_KEYS.DESKTOP_CALL];
+    if (desktopCall === undefined) {
+      desktopCall = NOTIFICATION_OPTIONS.ON;
+    }
+    return desktopCall;
   }
 }
 export { IncomingCallsSettingHandler };

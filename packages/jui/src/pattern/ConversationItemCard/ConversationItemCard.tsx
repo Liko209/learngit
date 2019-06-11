@@ -155,7 +155,10 @@ class JuiConversationItemCard extends React.PureComponent<
             </ItemTitle>
           ) : null}
           {subTitle ? (
-            <SubTitle data-test-automation-id="conversation-item-cards-subtitle">
+            <SubTitle
+              data-id="subTitle"
+              data-test-automation-id="conversation-item-cards-subtitle"
+            >
               {subTitle}
             </SubTitle>
           ) : null}

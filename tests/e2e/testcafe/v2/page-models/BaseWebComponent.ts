@@ -98,6 +98,14 @@ export abstract class BaseWebComponent {
     return this.getSelector(`*[data-test-automation-id="${automationId}"]`, root);
   }
 
+  getSelectorByAutomationClass(automationId: string, root: Selector = null): Selector {
+    return this.getSelector(`*[data-test-automation-class="${automationId}"]`, root);
+  }
+
+  getSelectorByAutomationValue(automationId: string, root: Selector = null): Selector {
+    return this.getSelector(`*[data-test-automation-value="${automationId}"]`, root);
+  }
+
   getSelectorByAnchor(anchor: string, root: Selector = null): Selector {
     return this.getSelector(`*[data-anchor="${anchor}"]`, root);
   }
@@ -176,5 +184,34 @@ export abstract class BaseWebComponent {
       const ele: any = _self()
       ele.scrollIntoView()
     })(this.self)
+  }
+}
+
+export class Umi extends BaseWebComponent {
+  async count() {
+    return await this.getNumber(this.self);
+  }
+
+  async shouldBeNumber(n: number, maxRetry = 5, interval = 3e3) {
+    await H.retryUntilPass(async () => {
+      const umi = await this.count();
+      assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
+    }, maxRetry, interval);
+  }
+
+  async shouldBeAtMentionStyle() {
+    await H.retryUntilPass(async () => {
+      const umiStyle = await this.self.style;
+      const umiBgColor = umiStyle['background-color'];
+      assert.strictEqual(umiBgColor, 'rgb(255, 136, 0)', `${umiBgColor} not eql specify: rgb(255, 136, 0)`)
+    });
+  }
+
+  async shouldBeNotAtMentionStyle() {
+    await H.retryUntilPass(async () => {
+      const umiStyle = await this.self.style;
+      const umiBgColor = umiStyle['background-color'];
+      assert.strictEqual(umiBgColor, 'rgb(158, 158, 158)', `${umiBgColor} not eql specify: rgb(158, 158, 158)`)
+    });
   }
 }

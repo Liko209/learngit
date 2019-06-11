@@ -6,6 +6,11 @@ import { v4 } from 'uuid';
 import { JuiListItemText } from 'jui/components/Lists';
 import { JuiIconButton } from 'jui/components/Buttons';
 
+jest.mock('react-i18next', () => ({
+  Trans: 'Trans',
+  withTranslation: () => (comp: React.ComponentType) => comp,
+}));
+
 describe('ContactSearchItemView', () => {
   describe('Check the UI of matched record [JPT-2191]', () => {
     it(`The matched record shows following information:
@@ -55,6 +60,7 @@ describe('ContactSearchItemView', () => {
         showDialIcon: true,
         selected: true,
         onClick: jest.fn(),
+        t: jest.fn().mockReturnValue(''),
       };
 
       const wrapper = shallow(<ContactSearchItemView {...props} />);

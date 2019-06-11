@@ -48,6 +48,12 @@ export type Theme = {
   };
   size: size;
   boxShadow: boxShadow;
+  shape: {
+    border1: string;
+    border2: string;
+    border3: string;
+    border4: string;
+  };
 } & MuiTheme;
 
 export type PaletteOptions = typeof palette;

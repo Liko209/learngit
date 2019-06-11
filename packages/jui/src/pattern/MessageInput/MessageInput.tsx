@@ -11,8 +11,6 @@ import {
   primary,
   ellipsis,
 } from '../../foundation/utils/styles';
-// import { markdownFromDelta } from './markdown';
-import { handleAtMention } from './Mention/handleAtMention';
 import './Modules';
 
 import 'react-quill/dist/quill.snow.css';
@@ -110,6 +108,7 @@ type Props = {
   didDropFile?: (file: File[]) => void;
   autofocus?: boolean;
   id?: number;
+  placeholder: string;
 };
 
 class JuiMessageInput extends React.PureComponent<Props> {
@@ -206,10 +205,11 @@ class JuiMessageInput extends React.PureComponent<Props> {
       children,
       modules,
       isEditMode,
+      placeholder,
     } = this.props;
     const reactQuillValueProp = defaultValue
       ? {
-          defaultValue: handleAtMention(defaultValue),
+          defaultValue,
         }
       : {
           value,
@@ -230,7 +230,7 @@ class JuiMessageInput extends React.PureComponent<Props> {
         <ReactQuill
           {...reactQuillValueProp}
           onChange={this.onChange}
-          placeholder="Type new message"
+          placeholder={placeholder}
           modules={modules}
           formats={formats}
           readOnly={initialReadOnly}

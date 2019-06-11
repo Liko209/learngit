@@ -406,7 +406,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   dtmf(digits: string) {
     if (this._session) {
       try {
-        this._session.dtmf(digits);
+        this._session.dtmf(digits, 100, 50);
       } catch (error) {
         rtcLogger.warn(LOG_TAG, error.message);
       }

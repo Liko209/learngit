@@ -26,6 +26,9 @@ import { container, injectable, decorate } from 'framework';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ClientService } from '@/modules/common';
 import { CALLING_OPTIONS } from 'sdk/module/profile';
+import storeManager from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
+
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 
 import { SettingService } from '@/modules/setting/service/SettingService';
@@ -779,6 +782,15 @@ describe('TelephonyService', () => {
         .mockResolvedValue({ value: 'glip' });
       await telephonyService._onReceiveIncomingCall(params);
       expect(telephonyService._telephonyStore.incomingCall).toBeCalled();
+    });
+    it(`should set incoming call in global store if has incoming call [JPT-2222]`, async () => {
+      jest
+        .spyOn(mockedSettingService, 'getById')
+        .mockResolvedValue({ value: 'glip' });
+      await telephonyService._onReceiveIncomingCall(params);
+      expect(
+        storeManager.getGlobalStore().get(GLOBAL_KEYS.INCOMING_CALL),
+      ).toBeTruthy();
     });
   });
 

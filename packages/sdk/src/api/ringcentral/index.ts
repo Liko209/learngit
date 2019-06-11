@@ -7,4 +7,5 @@
 export * from './types';
 export { RCInfoApi } from './RCInfoApi';
 export { RCAuthApi } from './RCAuthApi';
+export { RcSubscriptionApi } from './RcSubscriptionApi';
 export { RCItemApi } from './RCItemApi';

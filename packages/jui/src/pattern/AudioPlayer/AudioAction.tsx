@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import styled from 'src/foundation/styled-components';
-import { spacing } from 'src/foundation/utils';
-import { JuiIconButton } from 'src/components/Buttons';
+import styled from '../../foundation/styled-components';
+import { spacing } from '../../foundation/utils';
+import { JuiIconButton } from '../../components/Buttons';
 import { RuiCircularProgress } from 'rcui/components/Progress';
 import { JuiAudioStatus, JuiAudioActionProps } from './types';
 
@@ -18,6 +18,7 @@ const StyledIconButton = styled(JuiIconButton)`
 
 const StyledPlayerLoading = styled(RuiCircularProgress)`
   &&&& {
+    box-sizing: border-box;
     margin-right: ${spacing(2)};
     padding: ${spacing(2.5)};
   }
@@ -28,18 +29,33 @@ const JuiAudioAction = ({
   status,
   onAction,
   tooltip,
+  label,
 }: JuiAudioActionProps) => {
   if (status === JuiAudioStatus.LOADING) {
-    return <StyledPlayerLoading size={40} />;
+    return (
+      <StyledPlayerLoading
+        data-test-automation-id="audio-loading-btn"
+        size={40}
+      />
+    );
   }
 
   const isReload = Object.is(status, JuiAudioStatus.RELOAD);
   const iconTitle = isReload ? 'refresh' : status;
 
-  const onClick = () => onAction(status);
+  const onClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onAction(status);
+  };
 
   return (
-    <StyledIconButton onClick={onClick} color={color} tooltipTitle={tooltip}>
+    <StyledIconButton
+      onClick={onClick}
+      data-test-automation-id={`audio-${iconTitle}-btn`}
+      color={color}
+      tooltipTitle={tooltip}
+      ariaLabel={label}
+    >
       {iconTitle}
     </StyledIconButton>
   );

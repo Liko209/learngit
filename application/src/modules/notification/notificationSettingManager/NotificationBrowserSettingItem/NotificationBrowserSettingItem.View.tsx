@@ -18,6 +18,7 @@ import {
 } from '@/modules/notification/interface';
 import { jupiter } from 'framework';
 import i18nT from '@/utils/i18nT';
+import { dataAnalysis } from 'sdk';
 
 const NOTIFICATION_BROWSER = 'NotificationBrowserSettingItem';
 type Props = WithTranslation & NotificationBrowserSettingItemViewProps;
@@ -45,10 +46,21 @@ class NotificationBrowserSettingItemViewComponent extends Component<
     };
   }
 
-  private handleDialogClose = () => {
+  private _handleDialog = (isShow: boolean) => {
     this.setState({
-      dialogOpen: false,
+      dialogOpen: isShow,
     });
+    if (isShow) {
+      dataAnalysis.page('Jup_Web/DT_settings_notification_blocked');
+    } else {
+      dataAnalysis.track(
+        'Jup_Web_settings_DesktopNotifications_blocked_closeDialog',
+      );
+    }
+  }
+
+  private _handleDialogClose = () => {
+    this._handleDialog(false);
   }
 
   private _renderDialog() {
@@ -63,7 +75,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
           content={dialogContent}
           okText={dialogButton}
           title={dialogTitle}
-          onOK={this.handleDialogClose}
+          onOK={this._handleDialogClose}
         />
       )
     );
@@ -100,34 +112,30 @@ class NotificationBrowserSettingItemViewComponent extends Component<
     const browserPermission =
       this.props.settingItemEntity.value &&
       this.props.settingItemEntity.value.browserPermission;
-    if (browserPermission !== PERMISSION.DEFAULT) {
-      this.props.setToggleState(checked);
-    }
     if (checked) {
       switch (browserPermission) {
         case PERMISSION.DEFAULT:
           const permission = await this._requestPermission();
           if (permission === PERMISSION.DENIED) {
-            this.setState({
-              dialogOpen: true,
-            });
+            this._handleDialog(true);
           }
           if (permission === PERMISSION.GRANTED) {
-            this.props.setToggleState(checked);
+            await this.props.setToggleState(checked);
             this._showEnabledNotification();
           }
           break;
         case PERMISSION.GRANTED:
+          await this.props.setToggleState(checked);
           this._showEnabledNotification();
           break;
         case PERMISSION.DENIED:
-          this.setState({
-            dialogOpen: true,
-          });
+          this._handleDialog(true);
           break;
         default:
           break;
       }
+    } else {
+      this.props.setToggleState(checked);
     }
   }
 
