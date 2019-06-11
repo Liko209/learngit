@@ -109,13 +109,6 @@ abstract class AbstractSyncController<
       mainLogger
         .tags(this.syncName)
         .info(`is already in Fsync now, status: ${this._syncStatus}`);
-<<<<<<< HEAD
-      // throw new JRCError(
-      //   ERROR_CODES_SDK.INVALID_SYNC_TOKEN,
-      //   `${this.syncName}, invalid sync token`,
-      // );
-=======
->>>>>>> e91af8223c295d152d38950e3147e084a6eb4b18
       return [];
     }
     this._syncStatus = this._syncStatus | SYNC_STATUS.IN_FSYNC;
@@ -241,8 +234,7 @@ abstract class AbstractSyncController<
           true,
         );
       } else {
-        data.length &&
-          notificationCenter.emitEntityUpdate<T, IdType>(this._entityKey, data);
+        notificationCenter.emitEntityUpdate<T, IdType>(this._entityKey, data);
       }
     }
     return data;
