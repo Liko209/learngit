@@ -115,6 +115,10 @@ class JuiViewerDocument extends React.Component<Props, States> {
   private _location: LocationType;
   private _emitPageIdx: number = 0;
   private _scrollState: WatchScrollStateType;
+  private _jumpToViewParam = {
+    toIdx: 0,
+    isJumpAction: false,
+  };
 
   state: States = {
     numberPages: 0,
@@ -171,6 +175,8 @@ class JuiViewerDocument extends React.Component<Props, States> {
       currentPageIndex !== pageIndex &&
       this._emitPageIdx !== pageIndex
     ) {
+      this._jumpToViewParam.toIdx = pageIndex;
+      this._jumpToViewParam.isJumpAction = true;
       this._updateViewingByIndex(pageIndex);
     }
     if (
@@ -429,13 +435,23 @@ class JuiViewerDocument extends React.Component<Props, States> {
 
     let emitIdx = this._emitPageIdx;
     const { onCurrentPageIdxChanged } = this.props;
+    const { isJumpAction, toIdx } = this._jumpToViewParam;
 
-    if (emitIdx < first.id || emitIdx > last.id) {
+    if (emitIdx < first.id) {
+      if (isJumpAction) {
+        this._jumpToViewParam.isJumpAction = false;
+        emitIdx = toIdx !== first.id ? Number(toIdx) : Number(first.id);
+      } else {
+        emitIdx = Number(first.id);
+      }
+    } else if (emitIdx > last.id) {
       emitIdx = Number(first.id);
     } else {
       if (viewLength > 2) {
         if (emitIdx < first.id || emitIdx > last.id) {
           emitIdx = Number(first.id);
+        } else {
+          emitIdx = toIdx;
         }
       } else if (viewLength === 2) {
         const secondView = views[1];
@@ -447,6 +463,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
       }
     }
     this._emitPageIdx = emitIdx;
+    this._jumpToViewParam.toIdx = emitIdx;
 
     onCurrentPageIdxChanged && onCurrentPageIdxChanged(emitIdx);
   }
