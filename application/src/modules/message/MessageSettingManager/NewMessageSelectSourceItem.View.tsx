@@ -4,8 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import JuiText from 'jui/components/Text/Text';
 import { DESKTOP_MESSAGE_NOTIFICATION_OPTIONS } from 'sdk/module/profile';
 
 type NewMessageSelectItemProps = {
@@ -17,8 +18,12 @@ class NewMessageSelectItem extends Component<
 > {
   render() {
     const { value, t } = this.props;
-    return t(
-      `setting.notificationAndSounds.desktopNotifications.newMessages.options.${value}`,
+    return (
+      <JuiText>
+        {t(
+          `setting.notificationAndSounds.desktopNotifications.newMessages.options.${value}`,
+        )}
+      </JuiText>
     );
   }
 }

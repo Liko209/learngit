@@ -66,5 +66,4 @@ export class SettingTab extends BaseWebComponent {
   get notificationAndSoundPage() {
     return this.getComponent(NotificationAndSoundSettingPage);
   }
-
 }
