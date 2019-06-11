@@ -3,7 +3,6 @@
  * @Date: 2018-10-16 15:04:14
  * Copyright © RingCentral. All rights reserved.
  */
-import { promisedComputed } from 'computed-async-mobx';
 import { action, computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import history from '@/history';
@@ -34,49 +33,29 @@ class BackNForwardViewModel extends StoreViewModel {
   }
 
   @computed
-  get rawBackRecord() {
-    const backRecord = historyStack.backRecord;
-    return backRecord.map((pathname: string) => ({
+  get backRecord() {
+    return historyStack.backRecord.map((pathname: string) => ({
       pathname,
-      title: pathname,
+      title: getDocTitle(pathname),
     }));
   }
 
   @computed
-  get rawForwardRecord() {
-    const forwardRecord = historyStack.forwardRecord;
-    return forwardRecord.map((pathname: string) => ({
+  get forwardRecord() {
+    return historyStack.forwardRecord.map((pathname: string) => ({
       pathname,
-      title: pathname,
+      title: getDocTitle(pathname),
     }));
   }
-
-  backRecord = promisedComputed([], async () => {
-    const backRecord = historyStack.backRecord;
-    const promiseRecord = backRecord.map(async (pathname: string) => ({
-      pathname,
-      title: await getDocTitle(pathname),
-    }));
-    return await Promise.all(promiseRecord);
-  });
-
-  forwardRecord = promisedComputed([], async () => {
-    const forwardRecord = historyStack.forwardRecord;
-    const promiseRecord = forwardRecord.map(async (pathname: string) => ({
-      pathname,
-      title: await getDocTitle(pathname),
-    }));
-    return await Promise.all(promiseRecord);
-  });
 
   @computed
   get disabledBack() {
-    return this.rawBackRecord.length === 0;
+    return this.backRecord.length === 0;
   }
 
   @computed
   get disabledForward() {
-    return this.rawForwardRecord.length === 0;
+    return this.forwardRecord.length === 0;
   }
 
   @action

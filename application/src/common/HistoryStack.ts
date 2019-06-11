@@ -4,8 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { action, observable, computed } from 'mobx';
+import { getMessagesTitle } from '@/common/getDocTitle';
 
 const MAX_RECORD = 11;
+const MESSAGES_CATEGORY_ROUTER = 'messages';
+
 class HistoryStack {
   @observable
   private _cursor: number = -1;
@@ -49,24 +52,62 @@ class HistoryStack {
 
   @computed
   get backRecord() {
-    return this._stack.slice(0, this._cursor);
+    return this.getStack().slice(0, this.getCursor());
   }
 
   @computed
   get forwardRecord() {
-    return this._stack.slice(this._cursor + 1);
+    return this.getStack().slice(this.getCursor() + 1);
+  }
+
+  @action
+  updateStackNCursor() {
+    this._stack = this.getStack();
+    this._cursor = this.getCursor();
+  }
+
+  isInvalidPath(pathname: string) {
+    const paths = pathname.split('/');
+    const category = paths[1].toLocaleLowerCase();
+    const subPath = paths[2];
+    return category === MESSAGES_CATEGORY_ROUTER && !getMessagesTitle(subPath);
   }
 
   getCursor() {
-    return this._cursor;
+    let current = this._cursor;
+    const cursors = this._stack.reduce((
+      cursors: number[],
+      pathname: string,
+      index: number,
+    ) => {
+      if (this.isInvalidPath(pathname)) {
+        cursors.push(index);
+      }
+      return cursors;
+    },                                 []);
+    cursors.forEach((value: number) => {
+      if (value <= this._cursor) {
+        current -= 1;
+      }
+    });
+    return current;
   }
 
   getStack() {
-    return this._stack;
+    const stack = this._stack.reduce((
+      stack: string[],
+      pathname: string,
+    ) => {
+      if (!this.isInvalidPath(pathname)) {
+        stack.push(pathname);
+      }
+      return stack;
+    },                               []);
+    return stack;
   }
 
   getCurrentPathname() {
-    return this._stack[this._cursor];
+    return this.getStack()[this.getCursor()];
   }
 
   @action

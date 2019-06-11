@@ -3,7 +3,6 @@
  * @Date: 2018-10-16 15:31:08
  * Copyright © RingCentral. All rights reserved.
  */
-import { PromisedComputedValue } from 'computed-async-mobx';
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -14,8 +13,8 @@ import HistoryStack from '@/common/HistoryStack';
 type recordProps = { title: string; pathname: string }[];
 
 type Props = WithTranslation & {
-  backRecord: PromisedComputedValue<recordProps>;
-  forwardRecord: PromisedComputedValue<recordProps>;
+  backRecord: recordProps;
+  forwardRecord: recordProps;
   showBackPanel: boolean;
   showForwardPanel: boolean;
   disabledBack: boolean;
@@ -59,7 +58,7 @@ class BackNForward extends Component<Props> {
       <div style={{ display: 'flex' }}>
         <JuiHistoryOperation
           type={OPERATION.BACK}
-          menu={backRecord.get().reverse()}
+          menu={backRecord.reverse()}
           disabled={disabledBack}
           tooltipTitle={t('common.back')}
           onClick={back}
@@ -68,7 +67,7 @@ class BackNForward extends Component<Props> {
         />
         <JuiHistoryOperation
           type={OPERATION.FORWARD}
-          menu={forwardRecord.get()}
+          menu={forwardRecord}
           tooltipTitle={t('common.forward')}
           disabled={disabledForward}
           onClick={forward}
