@@ -146,7 +146,7 @@
     "jumpToConversation": "Jump to conversation",
     "emoji": {
       "i18n": {
-        "search": "123",
+        "search": "Search",
         "clear": "Clear",
         "notfound": "No Emoji Found",
         "skintext": "Choose your default skin tone",
@@ -154,7 +154,7 @@
           "search": "Search Results",
           "recent": "Frequently Used",
           "people": "Smileys & People",
-          "nature": "456",
+          "nature": "Animals & Nature",
           "foods": "Food & Drink",
           "activity": "Activity",
           "places": "Travel & Places",
