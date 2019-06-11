@@ -21,7 +21,6 @@ import { VoicemailItem } from '../VoicemailItem';
 import {
   VOICE_MAIL_ITEM_HEIGHT,
   INITIAL_COUNT,
-  TOP_BAR_HEIGHT,
   LOADING_DELAY,
   VOICEMAIL_HEADER,
 } from './config';
@@ -74,7 +73,7 @@ class VoicemailComp extends Component<Props, State> {
                     listHandler={listHandler}
                     reverse={true}
                     InfiniteListProps={Object.assign(this._infiniteListProps, {
-                      height: height - TOP_BAR_HEIGHT - VOICEMAIL_HEADER,
+                      height: height - VOICEMAIL_HEADER,
                       noRowsRenderer: (
                         <JuiEmptyScreen
                           text={t('phone.noVoicemailAvailable')}
