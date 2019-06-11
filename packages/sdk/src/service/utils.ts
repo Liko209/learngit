@@ -24,6 +24,8 @@ const isIEOrEdge =
   typeof navigator !== 'undefined' &&
   /(MSIE|Trident|Edge)/.test(navigator.userAgent);
 
+const isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
+
 const transform = <T extends { id: any }>(item: any): T => {
   if (isObject(item)) {
     /* eslint-disable no-underscore-dangle, no-param-reassign */
@@ -104,4 +106,11 @@ const baseHandleData = async (
   }
 };
 
-export { transform, transformAll, baseHandleData, isFunction, isIEOrEdge };
+export {
+  transform,
+  transformAll,
+  baseHandleData,
+  isFunction,
+  isIEOrEdge,
+  isFirefox,
+};

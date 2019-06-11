@@ -4,14 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { IDatabase } from 'foundation';
-import { isIEOrEdge } from 'foundation/src/db/adapter/dexie/utils';
+import { isIEOrEdge, isFirefox } from 'sdk/service/utils';
 import _ from 'lodash';
-import { BaseDao } from '../../../../../framework/dao';
-import { SortUtils } from '../../../../../framework/utils';
+import { BaseDao } from 'sdk/framework/dao';
+import { SortUtils } from 'sdk/framework/utils';
 import { ItemFilterFunction, ItemQueryOptions } from '../../../types';
 import { Item, SanitizedItem } from '../entity';
-import { ArrayUtils } from '../../../../../utils/ArrayUtils';
+import { ArrayUtils } from 'sdk/utils/ArrayUtils';
 import { QUERY_DIRECTION } from '../../../../../dao/constants';
+
 class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
   constructor(collectionName: string, db: IDatabase) {
     super(collectionName, db);
@@ -68,9 +69,13 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
 
   private _getGroupItemsQuery(groupId: number) {
     const query = this.createQuery();
-    return isIEOrEdge // ie or edge does not support array type index
-      ? query.filter(item => item.group_ids.includes(groupId))
-      : query.anyOf('group_ids', [groupId]);
+
+    // ie or edge does not support array type index
+    return isIEOrEdge
+      ? query.contain('group_ids', groupId)
+      : isFirefox
+      ? query.contain('group_ids', groupId)
+      : query.equal('group_ids', groupId);
   }
 
   toSanitizedItem(item: Item) {
