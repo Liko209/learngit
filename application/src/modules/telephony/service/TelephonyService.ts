@@ -35,7 +35,7 @@ import { Profile } from 'sdk/module/profile/entity';
 import ProfileModel from '@/store/models/Profile';
 import { getSingleEntity, getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
-import { CALL_WINDOW_STATUS, CALL_STATE } from '../FSM';
+import { CALL_WINDOW_STATUS } from '../FSM';
 import { AccountService } from 'sdk/module/account';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { Notification } from '@/containers/Notification';
@@ -155,7 +155,7 @@ class TelephonyService {
       switch (e.code) {
         case 0:
           this._pauseRingtone();
-          ['mousedown', 'keydown'].forEach((evt) => {
+          ['mousedown', 'keydown'].forEach(evt => {
             const cb = () => {
               if (!this._telephonyStore.hasIncomingCall) {
                 return;
@@ -359,7 +359,7 @@ class TelephonyService {
       () =>
         this._telephonyStore.shouldDisplayDialer &&
         this._telephonyStore.callWindowState !== CALL_WINDOW_STATUS.MINIMIZED,
-      (shouldDisplayDialer) => {
+      shouldDisplayDialer => {
         if (!shouldDisplayDialer) {
           return;
         }
@@ -421,7 +421,7 @@ class TelephonyService {
           return;
         }
         const defaultPhoneNumber = callerPhoneNumberList.find(
-          (callerPhoneNumber) => callerPhoneNumber.id === defaultNumberId,
+          callerPhoneNumber => callerPhoneNumber.id === defaultNumberId,
         );
         if (defaultPhoneNumber) {
           this._telephonyStore.updateDefaultChosenNumber(
@@ -434,7 +434,7 @@ class TelephonyService {
 
     this._incomingCallDisposer = reaction(
       () => this._telephonyStore.hasIncomingCall,
-      (hasIncomingCall) => {
+      hasIncomingCall => {
         if (hasIncomingCall) {
           this._playRingtone();
         } else {
@@ -480,9 +480,9 @@ class TelephonyService {
     };
     const url = buildURL(phoneNumber);
     this._clientService.invokeApp(url);
-    if (this._telephonyStore.callState === CALL_STATE.DIALING) {
-      this._telephonyStore.closeDialer();
-    }
+    // if (this._telephonyStore.callState === CALL_STATE.DIALING) {
+    // this._telephonyStore.closeDialer();
+    // }
   }
   private async _isJupiterDefaultApp() {
     const entity = await ServiceLoader.getInstance<SettingService>(
@@ -491,20 +491,20 @@ class TelephonyService {
     return (entity && entity.value) === CALLING_OPTIONS.GLIP;
   }
 
-  makeCall = async (toNumber: string) => {
+  makeCall = async (toNumber: string, callback?: Function) => {
     const { isValid } = await this.isValidNumber(toNumber);
     if (!isValid) {
       ToastCallError.toastInvalidNumber();
       return;
     }
-
     const shouldMakeRcPhoneCall = !(await this._isJupiterDefaultApp());
     if (shouldMakeRcPhoneCall) {
       return this.makeRCPhoneCall(toNumber);
     }
+    callback && callback();
     // FIXME: move this logic to SDK and always using callerID
     const idx = this._telephonyStore.callerPhoneNumberList.findIndex(
-      (phone) =>
+      phone =>
         formatPhoneNumber(phone.phoneNumber) ===
         formatPhoneNumber(this._telephonyStore.chosenCallerPhoneNumber),
     );
@@ -963,7 +963,7 @@ class TelephonyService {
         });
         this.hangUp();
       })
-      .catch((e) => {
+      .catch(e => {
         ToastCallError.toastParkError();
         mainLogger.info(`${TelephonyService.TAG}park call error: ${e}`);
       });
