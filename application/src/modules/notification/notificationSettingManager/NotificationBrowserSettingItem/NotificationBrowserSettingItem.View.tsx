@@ -51,10 +51,13 @@ class NotificationBrowserSettingItemViewComponent extends Component<
       dialogOpen: isShow,
     });
     if (isShow) {
-      dataAnalysis.page('Jup_Web/DT_settings_notification_blocked');
+      dataAnalysis.page('Jup_Web/DT_settings_notification_blocked', {
+        endPoint: 'web',
+      });
     } else {
       dataAnalysis.track(
         'Jup_Web_settings_DesktopNotifications_blocked_closeDialog',
+        { endPoint: 'web' },
       );
     }
   }
