@@ -12,7 +12,7 @@ const INotificationService = createDecorator('NOTIFICATION_SERVICE');
 
 interface INotificationService {
   init: Function;
-  show: (title: string, options?: NotificationOpts) => void;
+  show: (title: string, options?: NotificationOpts, force?: boolean) => void;
   close: (scope: string, id: NotificationId) => void;
   clear: (scope?: string) => void;
 }

@@ -24,6 +24,7 @@ import { ENTITY_NAME } from '@/store/constants';
 import SettingModel from '@/store/models/UserSetting';
 import { DesktopNotificationsSettingModel as DNSM } from 'sdk/module/profile';
 import { SETTING_ITEM__NOTIFICATION_BROWSER } from '../notificationSettingManager/constant';
+
 class NotificationService implements INotificationService {
   @INotificationPermission
   private _permission: INotificationPermission;
@@ -69,13 +70,13 @@ class NotificationService implements INotificationService {
     return str && str.length > border ? `${str.substr(0, border)}...` : str;
   }
 
-  async show(title: string, opts: NotificationOpts) {
-    if (!this.shouldShowNotification) {
+  async show(title: string, opts: NotificationOpts, force?: boolean) {
+    if (!this.shouldShowNotification && !force) {
       return;
     }
     const { id, scope } = opts.data;
     const tag = `${scope}.${id}`;
-    const customOps = { ...opts, tag, silent: true };
+    const customOps = { silent: true, ...opts, tag };
     logger.info(`prepare notification for ${tag}`);
     let titleFormatted = title;
 

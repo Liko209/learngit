@@ -19,6 +19,7 @@ import {
 import { jupiter } from 'framework';
 import i18nT from '@/utils/i18nT';
 import { dataAnalysis } from 'sdk';
+import { catchError } from '@/common/catchError';
 
 const NOTIFICATION_BROWSER = 'NotificationBrowserSettingItem';
 type Props = WithTranslation & NotificationBrowserSettingItemViewProps;
@@ -83,13 +84,19 @@ class NotificationBrowserSettingItemViewComponent extends Component<
 
   private _showEnabledNotification = async () => {
     const title = await i18nT('notification.notificationEnabled');
-    this._notificationService.show(title, {
-      data: {
-        id: NOTIFICATION_BROWSER,
-        scope: NOTIFICATION_BROWSER,
-        priority: NOTIFICATION_PRIORITY.INFORMATION,
+    this._notificationService.show(
+      title,
+      {
+        data: {
+          id: new Date().toISOString(),
+          scope: NOTIFICATION_BROWSER,
+          priority: NOTIFICATION_PRIORITY.INFORMATION,
+        },
+        silent: false,
+        renotify: true,
       },
-    });
+      true,
+    );
   }
 
   private _requestPermission = async () => {
@@ -105,6 +112,10 @@ class NotificationBrowserSettingItemViewComponent extends Component<
     return permission;
   }
 
+  @catchError.flash({
+    network: 'setting.errorText.network',
+    server: 'setting.errorText.server',
+  })
   handleToggleChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
     checked: boolean,
@@ -135,7 +146,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
           break;
       }
     } else {
-      this.props.setToggleState(checked);
+      await this.props.setToggleState(checked);
     }
   }
 
