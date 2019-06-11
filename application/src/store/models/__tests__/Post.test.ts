@@ -23,5 +23,19 @@ describe('PostModel', () => {
       const fileItem = { id: fileId } as any;
       expect(postModel.fileItemVersion(fileItem)).toEqual(version);
     });
+
+    it('should return 1 when the fileItem is not ready', () => {
+      const postModel = new PostModel({ item_data: undefined } as Post);
+      const fileItem = { id: -1 } as any;
+      expect(postModel.fileItemVersion(fileItem)).toEqual(1);
+    });
+
+    it('should return 1 when can not find version infomation', () => {
+      const postModel = new PostModel({
+        item_data: { version_map: {} },
+      } as Post);
+      const fileItem = { id: 1 } as any;
+      expect(postModel.fileItemVersion(fileItem)).toEqual(1);
+    });
   });
 });
