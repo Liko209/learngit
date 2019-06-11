@@ -70,7 +70,9 @@ class JuiFabGroup extends PureComponent<JuiZoomGroupProps> {
     return (
       <StylesContain className={className}>
         <StyledZoom>{ZoomOut}</StyledZoom>
-        <StyledTextContain>{centerText}</StyledTextContain>
+        <StyledTextContain data-test-automation-id={'zoomGroupPercent'}>
+          {centerText}
+        </StyledTextContain>
         <StyledZoom>{ZoomIn}</StyledZoom>
         <StyledReset>{Reset}</StyledReset>
       </StylesContain>

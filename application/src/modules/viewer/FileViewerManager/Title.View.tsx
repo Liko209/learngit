@@ -63,7 +63,7 @@ class ViewerTitleViewComponent extends Component<Type> {
           data-test-automation-id={'viewerTitle'}
         >
           <JuiViewerTitleWrap>
-            {name}
+            <span data-test-automation-id={'viewerFileName'}>{name}</span>
             <JuiTextField
               id="outlined-number"
               type="number"
@@ -74,7 +74,11 @@ class ViewerTitleViewComponent extends Component<Type> {
                 'aria-label': 'numberInput',
               }}
             />
-            <JuiDialogHeaderSubtitle>{`(${currentPageIdx}/${pageTotal})`}</JuiDialogHeaderSubtitle>
+            <JuiDialogHeaderSubtitle
+              data-test-automation-id={'viewerPageCount'}
+            >
+              {`(${currentPageIdx}/${pageTotal})`}
+            </JuiDialogHeaderSubtitle>
           </JuiViewerTitleWrap>
         </JuiDialogHeaderTitle>
         <JuiDialogHeaderActions data-test-automation-id={'viewerActions'}>

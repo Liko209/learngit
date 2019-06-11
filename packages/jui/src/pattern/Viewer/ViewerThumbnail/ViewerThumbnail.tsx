@@ -170,7 +170,11 @@ class JuiViewerThumbnail extends React.PureComponent<Props, States> {
       >
         <ViewerThumbnailContentWrap>{content}</ViewerThumbnailContentWrap>
         {showThumbnailNumber && (
-          <ThumbnailNumberWarp>{thumbnailNum}</ThumbnailNumberWarp>
+          <ThumbnailNumberWarp
+            data-test-automation-id={'viewerThumbnailNumber'}
+          >
+            {thumbnailNum}
+          </ThumbnailNumberWarp>
         )}
       </ViewerThumbnailWrap>
     );

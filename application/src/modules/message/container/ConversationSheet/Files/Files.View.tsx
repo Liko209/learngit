@@ -224,6 +224,7 @@ class FilesView extends React.Component<FilesViewProps> {
           }
           return (
             <JuiFileWithPreview
+              data-test-automation-id={'fileWithPreview'}
               key={id}
               fileName={postParser(name, {
                 fileName: true,
