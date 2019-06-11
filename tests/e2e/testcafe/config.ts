@@ -132,6 +132,7 @@ enum BrandTire {
   "RC_VOIP_DISABLE" = "kamino(RC_VOIP_DISABLE,Jupiter,1210,4488)",
   "RC_WITH_GUESS_DID" = "kamino(RC_WITH_GUESS_DID,Jupiter,1210,4488)",
   "SORTED_LAST_NAME" = "kamino(Sorted_Last_Name,Jupiter,1210,4488)",
+  "RC_WITH_PHONE" = "kamino(1C4EWithPhoneAndNumber,Jupiter,1210,4488)",
 };
 
 const WebphoneConfig = {

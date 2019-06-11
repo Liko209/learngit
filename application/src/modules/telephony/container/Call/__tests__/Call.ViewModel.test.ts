@@ -10,7 +10,6 @@ import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import { TelephonyStore } from '../../../store';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { CallViewModel } from '../Call.ViewModel';
-import { GlobalConfigService } from 'sdk/module/config';
 import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 import { ClientService } from '@/modules/common';
 import { CLIENT_SERVICE } from '@/modules/common/interface';
@@ -33,12 +32,51 @@ container.bind(CLIENT_SERVICE).to(ClientService);
 
 let callViewModel: CallViewModel;
 
-beforeAll(() => {
+beforeEach(() => {
   callViewModel = new CallViewModel();
 });
 
 describe('CallViewModel', () => {
   it('`showIcon` should equals `false` when initializing', async () => {
     expect(callViewModel.showIcon.cached.value).toBe(false);
+  });
+
+  it('`_uid` should be empty', () => {
+    expect(callViewModel._uid).toBeFalsy();
+  });
+
+  it('`_uid` should be 1', () => {
+    callViewModel = new CallViewModel({
+      id: 1,
+    });
+    expect(callViewModel._uid).toBe(1);
+  });
+
+  it('Should initialize `phoneNumber` with empty string', () => {
+    expect(callViewModel.phoneNumber).toBe('');
+  });
+
+  it('`phoneNumber` should be `123`', () => {
+    const phone = '123',
+      callViewModel = new CallViewModel({
+        phone,
+      });
+    expect(callViewModel.phoneNumber).toBe(phone);
+  });
+
+  it('Should not call `directCall` on service when has empty input', () => {
+    callViewModel._telephonyService.directCall = jest.fn();
+    callViewModel.call();
+    expect(callViewModel._telephonyService.directCall).not.toBeCalled();
+  });
+
+  it('Should call `directCall` on service when has non-empty input', () => {
+    const phone = '123',
+      callViewModel = new CallViewModel({
+        phone,
+      });
+    callViewModel._telephonyService.directCall = jest.fn();
+    callViewModel.call();
+    expect(callViewModel._telephonyService.directCall).toBeCalledWith(phone);
   });
 });

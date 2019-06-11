@@ -562,7 +562,7 @@
       "LackOfRecordingPermission": "Sorry, your account does not have the feature to record a call. To enable the feature, contact your account administrator.",
       "RecordOnServiceWeb": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
       "RecordAutomatically": "Cannot start call recording.",
-      "InvalidNumber": "The phone number entered is invalid. Check the number and try again.",
+      "InvalidNumber": "Invalid phone number",
       "ParkErrorStopRecording": "Sorry, your call recording is being saved. Try to park the call later.",
       "ParkError": "Sorry, something went wrong on our end and we weren't able to park the call. Try again later.",
       "ParkOk": "Your call is parked at location",
@@ -583,9 +583,10 @@
       "resume": "Resume the call",
       "record": "Record the call",
       "stopRecord": "Stop recording",
-      "minimize": "Minimize the dialog"
+      "minimize": "Minimize the dialog",
+      "callActions": "Call actions"
     },
-    "dialerPlaceholder": "Enter a number",
+    "dialerPlaceholder": "Enter a name or number",
     "delete": "Delete",
     "callFrom": "Call from:",
     "phoneNumberType": {
@@ -599,6 +600,9 @@
     "callerIdSelector": {
       "tooltip": "You can change this default Caller ID in settings."
     },
+    "dial": "Dial:",
+    "noMatch": "No matched records",
+    "searching": "Searching...",
     "forwardCall": "Forward Call"
   },
   "phone": {

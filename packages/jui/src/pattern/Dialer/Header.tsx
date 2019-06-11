@@ -289,6 +289,7 @@ class JuiHeader extends PureComponent<Props, State> {
           }}
           onKeyDown={onKeyDown || fakeFunc}
           autoFocus={true}
+          autoComplete="off"
         />
         <StyledDialerBtnContainer>
           {dialerValue && dialerValue.length && (
