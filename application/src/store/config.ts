@@ -18,6 +18,8 @@ import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { SettingService } from 'sdk/module/setting';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { BadgeService } from 'sdk/module/badge';
+import { VoicemailService } from 'sdk/module/RCItems/voicemail';
+import { CallLogService } from 'sdk/module/RCItems/callLog';
 
 const CACHE_COUNT = 1000;
 const PHONE_NUMBER_CACHE_COUNT = 100;
@@ -170,6 +172,22 @@ const ENTITY_SETTING = {
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
+  [ENTITY_NAME.VOICE_MAIL]: {
+    event: [ENTITY.VOICE_MAIL],
+    service: () =>
+      ServiceLoader.getInstance<VoicemailService>(
+        ServiceConfig.VOICEMAIL_SERVICE,
+      ),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: CACHE_COUNT,
+  },
+  [ENTITY_NAME.CALL_LOG]: {
+    event: [ENTITY.CALL_LOG],
+    service: () =>
+      ServiceLoader.getInstance<CallLogService>(ServiceConfig.CALL_LOG_SERVICE),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: CACHE_COUNT,
+  },
 };
 
 const GLOBAL_VALUES = {
@@ -195,6 +213,7 @@ const GLOBAL_VALUES = {
   [GLOBAL_KEYS.CURRENT_SETTING_LIST_TYPE]: '',
   [GLOBAL_KEYS.IS_RC_USER]: false,
   [GLOBAL_KEYS.CURRENT_TELEPHONY_TAB]: '',
+  [GLOBAL_KEYS.INCOMING_CALL]: false,
 };
 
 export { ENTITY_SETTING, GLOBAL_VALUES };

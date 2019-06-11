@@ -16,10 +16,9 @@ import {
 } from './collectors';
 import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { IZipItemProvider } from './types';
+import { IZipItemProvider, ZipItemLevel, IZipWorker } from './types';
 import { ZipLogZipItemProvider } from './ZipLogZipItemProvider';
 import { MemoryLogZipItemProvider } from './MemoryLogZipItemProvider';
-import * as zipWorker from './zip.worker';
 import { createWorker } from './utils';
 
 export class LogControlManager implements IAccessor {
@@ -31,7 +30,7 @@ export class LogControlManager implements IAccessor {
   uploadLogConsumer: LogUploadConsumer;
   logUploadCollector: ConsumerCollector;
   memoryLogCollector: MemoryCollector;
-  worker: typeof zipWorker = createWorker(zipWorker);
+  worker: IZipWorker;
 
   private constructor() {
     this._isOnline = window.navigator.onLine;
@@ -176,15 +175,21 @@ export class LogControlManager implements IAccessor {
     this._zipItemProviders.push(ins);
   }
 
-  getZipLog = async () => {
+  getZipLog = async (level: ZipItemLevel = ZipItemLevel.NORMAL) => {
     const result = await Promise.all(
-      this._zipItemProviders.map(provider => {
-        return provider.getZipItems();
-      }),
+      this._zipItemProviders
+        .filter(provider => level >= provider.level)
+        .map(provider => {
+          return provider.getZipItems();
+        }),
     );
     const zipItems = result.reduce((previousValue, currentValue) => {
       return previousValue.concat(currentValue);
     });
+    if (!this.worker) {
+      const zipWorker = (await import('./zip.worker')) as any;
+      this.worker = createWorker(zipWorker.default);
+    }
     return this.worker.zip(zipItems);
   }
 }

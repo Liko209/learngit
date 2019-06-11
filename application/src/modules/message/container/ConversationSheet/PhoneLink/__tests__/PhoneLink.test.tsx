@@ -90,7 +90,7 @@ describe('PhoneLinkView', () => {
         <PhoneLink text='123-123-12-211'>123-123-12-211</PhoneLink>,
       );
       // needed to defer wrapper.update() till after the promise resolves
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
       wrapper.update();
       const link = wrapper.find('a[href="javascript:;"]');
       expect(link.exists()).toBe(true);

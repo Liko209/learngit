@@ -5,10 +5,18 @@
  */
 import { PhoneModule } from './PhoneModule';
 import { PhoneService } from './service';
+import { PhoneStore } from './store';
 import { PHONE_SERVICE } from './interface/constant';
+
 const config = {
   entry: PhoneModule,
-  provides: [{ name: PHONE_SERVICE, value: PhoneService }],
+  provides: [
+    {
+      name: PHONE_SERVICE,
+      value: PhoneService,
+    },
+    PhoneStore,
+  ],
 };
 
 export { config };

@@ -16,12 +16,9 @@ import { AccountService } from '../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 class CompanyController {
   private _currentCompanyId: number;
-  constructor(public entitySourceController: IEntitySourceController<Company>) {
-    const config = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
-    this._currentCompanyId = config.getCurrentCompanyId();
-  }
+  constructor(
+    public entitySourceController: IEntitySourceController<Company>,
+  ) {}
 
   async getBrandType() {
     const company = await this.entitySourceController.get(
@@ -30,10 +27,19 @@ class CompanyController {
     return (company && company.rc_brand) || undefined;
   }
 
+  private _getCurrentCompanyId() {
+    const config = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    return config.getCurrentCompanyId();
+  }
+
   async getUserAccountTypeFromSP430(): Promise<E_ACCOUNT_TYPE | undefined> {
-    const company = await this.entitySourceController.get(
-      this._currentCompanyId,
-    );
+    const companyId = this._getCurrentCompanyId();
+    if (!companyId) {
+      return undefined;
+    }
+    const company = await this.entitySourceController.get(companyId);
     if (company) {
       const serviceParameters = company.rc_service_parameters;
       if (serviceParameters) {

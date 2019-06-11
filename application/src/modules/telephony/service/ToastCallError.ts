@@ -80,8 +80,8 @@ class ToastCallError {
   }
 
   static toastInvalidNumber(): void {
-    ToastCallError.toast('telephony.prompt.InvalidNumber', 2000);
-    mainLogger.info('Call error: invalid number');
+    ToastCallError.toast('telephony.prompt.InvalidNumber', 3000);
+    mainLogger.info('Call error: Call timeout');
   }
 
   static toastParkErrorStopRecording(): void {

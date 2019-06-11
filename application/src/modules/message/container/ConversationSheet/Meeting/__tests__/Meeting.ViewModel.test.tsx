@@ -7,9 +7,9 @@ import { MeetingViewModel } from '../Meeting.ViewModel';
 import { testable, test } from 'shield';
 import React from 'react';
 import { mockEntity } from 'shield/application';
-import Backend from "i18next-xhr-backend";
+import Backend from 'i18next-xhr-backend';
 import i18next from 'i18next';
-import MeetingItemModel from "@/store/models/MeetingItem";
+import MeetingItemModel from '@/store/models/MeetingItem';
 import jsonFile from '../../../../../../../public/locales/en/translations.json';
 import { MEETING_STATUS } from '../types';
 import { mountWithTheme } from '@/__tests__/utils';
@@ -20,20 +20,20 @@ describe('MeetingViewModel', () => {
   beforeAll(() => {
     i18next.use(Backend).init(
       {
-        lng: "en",
+        lng: 'en',
         debug: true,
         resources: {
           en: {
-            translation: jsonFile
-          }
-        }
+            translation: jsonFile,
+          },
+        },
       },
-      (err, t) => {}
+      (err, t) => {},
     );
     i18next.loadLanguages('en', () => {});
     jest.resetAllMocks();
     meetingVM = new MeetingViewModel({
-      ids: [123453]
+      ids: [123453],
     });
   });
   function mountComponent(viewProps: {
@@ -41,65 +41,68 @@ describe('MeetingViewModel', () => {
     status: MEETING_STATUS;
     duration?: string;
     number?: string;
+    subTitle?: string;
   }) {
-    const { title, status, duration = '',} = viewProps;
+    const { title, status, duration = '' } = viewProps;
     const props = {
       meetingTitle: title,
       meetingItem: {
         status: status,
       } as MeetingItemModel,
-      duration: duration
+      duration,
     };
     return mountWithTheme(<MeetingView {...props} />);
   }
   @testable
   class meetingTitle {
     @test(
-      'should displayed starting Video Call information when someone start video call [JPT-2157]'
+      'should displayed starting Video Call information when someone start video call [JPT-2157]',
     )
     @mockEntity({
-      status: MEETING_STATUS.NOT_STARTED
+      status: MEETING_STATUS.NOT_STARTED,
     })
     t1() {
       const title = 'Starting Video Call...';
       const wrapper = mountComponent({
         title,
-        status: MEETING_STATUS.NOT_STARTED
+        status: MEETING_STATUS.NOT_STARTED,
       });
       expect(i18next.t(meetingVM.meetingTitle)).toBe(title);
       expect(wrapper.find('svg')).toHaveLength(1);
     }
     @test(
-      'should displayed Video Call in progress when the video is in progress [JPT-2159]'
+      'should displayed Video Call in progress when the video is in progress [JPT-2159]',
     )
     @mockEntity({
-      status: MEETING_STATUS.LIVE
+      status: MEETING_STATUS.LIVE,
     })
     t2() {
       expect(i18next.t(meetingVM.meetingTitle)).toBe('Video Call in progress');
     }
 
     @test(
-      'should displayed Video Call ended when the video call ended [JPT-2160]'
+      'should displayed Video Call ended when the video call ended [JPT-2160]',
     )
     @mockEntity({
       status: MEETING_STATUS.ENDED,
-      duration: 3601234
+      duration: 3601234,
     })
     t3() {
       const title = 'Video Call ended';
       const wrapper = mountComponent({
         title,
         status: MEETING_STATUS.ENDED,
-        duration: '02:30'
+        duration: '02:30',
       });
       expect(i18next.t(meetingVM.meetingTitle)).toBe('Video Call ended');
       expect(meetingVM.duration).toBe('01:00:01');
-      expect(wrapper.find('span')).toHaveLength(2);
+      expect(wrapper.find('span').find({ 'data-id': 'subTitle' })).toHaveLength(
+        1,
+      );
     }
     @test('should displayed Video Call ended when the video call expired')
     @mockEntity({
-      status: MEETING_STATUS.EXPIRED
+      status: MEETING_STATUS.EXPIRED,
     })
     t4() {
       const title = 'Video Call ended';
@@ -112,7 +115,7 @@ describe('MeetingViewModel', () => {
     }
     @test('should displayed Video Call cancelled when the video call cancelled')
     @mockEntity({
-      status: MEETING_STATUS.CANCELLED
+      status: MEETING_STATUS.CANCELLED,
     })
     t5() {
       const title = 'Video Call cancelled';

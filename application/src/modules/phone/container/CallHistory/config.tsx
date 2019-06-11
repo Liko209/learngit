@@ -5,6 +5,7 @@
  */
 import React from 'react';
 // import { CallHistoryTypes } from './types';
+import { AllCalls, CallLogType } from '../AllCalls';
 
 type TabConfig = {
   title: string;
@@ -18,7 +19,7 @@ type TabConfig = {
 const TAB_CONFIG = [
   {
     title: 'phone.AllCalls',
-    container: () => <div>AllCalls</div>,
+    container: (props: any) => <AllCalls type={CallLogType.All} {...props} />,
     empty: {
       text: '',
     },
@@ -26,7 +27,9 @@ const TAB_CONFIG = [
   },
   {
     title: 'phone.MissedCalls',
-    container: () => <div>MissedCalls</div>,
+    container: (props: any) => (
+      <AllCalls type={CallLogType.MissedCall} {...props} />
+    ),
     empty: {
       text: '',
     },

@@ -196,7 +196,7 @@ function twoDigit(n: number): string {
   return (n < 10 ? '0' : '') + n;
 }
 
-function formatSeconds(seconds: number) {
+function getHourMinuteSeconds(seconds: number) {
   let secondTime = seconds;
   let minuteTime = 0;
   let hourTime = 0;
@@ -212,6 +212,15 @@ function formatSeconds(seconds: number) {
       minuteTime = parseInt(minuteTime % 60, 10);
     }
   }
+  return {
+    secondTime,
+    minuteTime,
+    hourTime,
+  };
+}
+
+function formatSeconds(seconds: number) {
+  const { secondTime, minuteTime, hourTime } = getHourMinuteSeconds(seconds);
   return {
     secondTime: twoDigit(secondTime),
     minuteTime: twoDigit(minuteTime),
@@ -234,6 +243,7 @@ export {
   dateFormatter,
   handleTimeZoneOffset,
   formatSeconds,
+  getHourMinuteSeconds,
   formatDuration,
 };
 

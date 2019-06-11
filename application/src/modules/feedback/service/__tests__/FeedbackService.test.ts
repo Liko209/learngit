@@ -13,6 +13,7 @@ import { FeedbackApi } from '../../FeedbackApi';
 import { AccountService } from 'sdk/module/account';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { DateFormatter, SessionManager } from 'sdk';
+import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
 
 jest.mock('@/utils/error');
 jest.mock('../../FeedbackApi');
@@ -95,8 +96,13 @@ describe('FeedbackService', () => {
       const zipBlob = new Blob(['hi']);
       LogControlManager.instance().getZipLog.mockReturnValue(zipBlob);
       const feedbackService = new FeedbackService();
-      const zipResult = await feedbackService.zipRecentLogs();
+      const zipResult = await feedbackService.zipRecentLogs(
+        ZipItemLevel.DEBUG_ALL,
+      );
       expect(zipBlob).toEqual(zipResult.zipBlob);
+      expect(LogControlManager.instance().getZipLog).toBeCalledWith(
+        ZipItemLevel.DEBUG_ALL,
+      );
     });
     it('should zip name format RC_LOG_{UID}_{SESSION_ID}_{CURRENT_TIME}.zip', async () => {
       DateFormatter.formatDate.mockReturnValue('MOCK_TIME');

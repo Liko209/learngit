@@ -13,6 +13,8 @@ import styled from '../../../foundation/styled-components';
 import { spacing, grey, typography, radius } from '../../../foundation/utils';
 
 const StyledJuiOutlineTextField = styled(JuiOutlineTextField)`
+  display: flex;
+  justify-content: space-between;
   border-top: 0;
   border-right: 0;
   border-left: 0;
@@ -22,6 +24,8 @@ const StyledJuiOutlineTextField = styled(JuiOutlineTextField)`
 `;
 
 const ClearButton = styled.span`
+  width: auto;
+  text-align: right;
   padding: ${spacing(0, 3)};
   color: ${grey('600')};
   border-right: 1px solid ${grey('400')};

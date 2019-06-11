@@ -23,8 +23,8 @@ type UriModel<T> = {
 };
 
 type Caller = {
-  phoneNumber: string;
-  extensionNumber: string;
+  phoneNumber?: string;
+  extensionNumber?: string;
   location: string;
   name: string;
   device?: UriModel<string>;
@@ -69,4 +69,4 @@ type FetchResult<T> = {
   hasMore: boolean;
 };
 
-export { UriModel, Caller, RCMessage, FetchResult };
+export { UriModel, Caller, RCMessage, FetchResult, Attachment };

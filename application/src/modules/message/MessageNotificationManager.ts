@@ -3,6 +3,7 @@
  * @Date: 2019-01-17 15:16:45
  * Copyright Â© RingCentral. All rights reserved.
  */
+import { UserSettingEntity } from 'sdk/module/setting';
 import { goToConversation } from '@/common/goToConversation';
 import { POST_TYPE } from '../../common/getPostType';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -38,6 +39,12 @@ import { Remove_Markdown } from 'glipdown';
 import { postParser } from '@/common/postParser';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MessageNotificationViewModel } from './MessageNotificationViewModel';
+import SettingModel from '../../store/models/UserSetting';
+import {
+  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
+  NOTIFICATION_OPTIONS,
+} from 'sdk/module/profile';
+import { MESSAGE_SETTING_ITEM } from './interface/constant';
 
 const logger = mainLogger.tags('MessageNotificationManager');
 const NOTIFY_THROTTLE_FACTOR = 5000;
@@ -138,7 +145,14 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     };
     return opts;
   }
-
+  get currentMessageNotificationSetting() {
+    return (
+      getEntity<UserSettingEntity, SettingModel<NOTIFICATION_OPTIONS>>(
+        ENTITY_NAME.USER_SETTING,
+        MESSAGE_SETTING_ITEM.NOTIFICATION_NEW_MESSAGES,
+      ).value || 'default'
+    );
+  }
   async shouldEmitNotification(post: Post) {
     const activityData = post.activity_data || {};
     const isPostType =
@@ -167,16 +181,24 @@ export class MessageNotificationManager extends AbstractNotificationManager {
 
     const postModel = new PostModel(post);
     const groupModel = new GroupModel(group);
-
-    if (groupModel.isTeam && !this.isMyselfAtMentioned(postModel)) {
-      logger.info(
-        `notification for ${
-          post.id
-        } is not permitted because in team conversation, only post mentioning current user will show notification`,
-      );
-      return false;
-    }
-    return { postModel, groupModel };
+    const result = { postModel, groupModel };
+    const strategy = {
+      default: () => false,
+      [DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE]: () => result,
+      [DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION]: () => {
+        if (groupModel.isTeam && !this.isMyselfAtMentioned(postModel)) {
+          logger.info(
+            `notification for ${
+              post.id
+            } is not permitted because in team conversation, only post mentioning current user will show notification`,
+          );
+          return false;
+        }
+        return result;
+      },
+      [DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF]: () => false,
+    };
+    return strategy[this.currentMessageNotificationSetting]();
   }
 
   onClickHandlerBuilder(groupId: number, jumpToPostId: number) {

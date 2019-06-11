@@ -9,6 +9,7 @@ import { PhoneNumberController } from '../../controller/PhoneNumberController';
 import { PhoneParserUtility } from '../../../../utils/phoneParser';
 
 jest.mock('../../../../utils/phoneParser');
+jest.mock('../../controller/PhoneNumberController');
 
 describe('PhoneNumberService', () => {
   const ID = '123';
@@ -57,8 +58,23 @@ describe('PhoneNumberService', () => {
         phoneNumberController,
         'generateMatchedPhoneNumberList',
       );
-      await phoneNumberService.generateMatchedPhoneNumberList('123');
-      expect(spy).toBeCalledWith('123');
+      phoneNumberService['_phoneNumberController'] = phoneNumberController;
+
+      const phoneParser = new PhoneParserUtility('123', null as any);
+      await phoneNumberService.generateMatchedPhoneNumberList(
+        '123',
+        phoneParser,
+      );
+      expect(spy).toBeCalledWith('123', phoneParser);
+    });
+  });
+  describe('_handlePersonPayload', () => {
+    it('should call controller to get number list', async () => {
+      phoneNumberController.handlePersonPayload = jest.fn();
+      const mockData = 'mockData' as any;
+
+      await phoneNumberService['_handlePersonPayload'](mockData);
+      expect(phoneNumberController.handlePersonPayload).toBeCalledWith(mockData);
     });
   });
 });

@@ -503,7 +503,7 @@ describe('RegionInfoController', () => {
       const res = await regionInfoController['_getRightAreaCode'](
         myCountryInfo,
         '',
-        true,
+        false,
       );
       expect(PhoneParserUtility.getRegionalInfo).toBeCalledWith(46, '');
       expect(res).toEqual('123');
@@ -559,6 +559,25 @@ describe('RegionInfoController', () => {
         myCountryInfo,
         '199',
         false,
+        {
+          areaCodeByManual: true,
+          areaCode: '777',
+        } as any,
+      );
+      expect(res).toEqual('');
+    });
+
+    it('should return user setted area code when even when it is empty ', async () => {
+      PhoneParserUtility.getRegionalInfo = jest.fn().mockResolvedValue({
+        areaCode: '123',
+        HasBan: () => {
+          return true;
+        },
+      });
+      const res = await regionInfoController['_getRightAreaCode'](
+        myCountryInfo,
+        '',
+        true,
         {
           areaCodeByManual: true,
           areaCode: '777',

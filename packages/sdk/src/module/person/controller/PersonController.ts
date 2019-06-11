@@ -333,25 +333,26 @@ class PersonController {
       return null;
     }
     const e164Number = phoneParserUtility.getE164();
-
     const isShortNumber = phoneParserUtility.isShortNumber();
     const phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
       ServiceConfig.PHONE_NUMBER_SERVICE,
     );
     const numberList = await phoneNumberService.generateMatchedPhoneNumberList(
       e164Number,
+      phoneParserUtility,
     );
+
     const cacheController = this
       ._entityCacheController as PersonEntityCacheController;
 
     const result: Person[] = [];
 
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
-    const companyId = userConfig.getCurrentCompanyId();
+    if (numberList) {
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
+      const companyId = userConfig.getCurrentCompanyId();
 
-    numberList &&
       numberList.forEach((item: string) => {
         const person = cacheController.getPersonByPhoneNumber(item);
         if (
@@ -362,6 +363,8 @@ class PersonController {
           result.push(person);
         }
       });
+    }
+
     return result.length ? result[0] : null;
   }
 

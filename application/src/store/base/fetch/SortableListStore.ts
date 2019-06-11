@@ -8,6 +8,7 @@ import { ListStore } from './ListStore';
 import { ISortFunc, ISortableModel } from './types';
 import _ from 'lodash';
 import { mainLogger } from 'sdk';
+import { ModelIdType } from 'sdk/framework/model';
 
 // const defaultSortFunc: ISortFunc<ISortableModel> = (
 //   first: ISortableModel,
@@ -15,11 +16,12 @@ import { mainLogger } from 'sdk';
 // ) => first.sortValue - second.sortValue;
 
 export class SortableListStore<
-  SortableModel extends ISortableModel = ISortableModel
+  IdType extends ModelIdType = number,
+  SortableModel extends ISortableModel<IdType> = ISortableModel<IdType>
 > extends ListStore<SortableModel> {
-  private _sortFunc?: ISortFunc<SortableModel>;
+  private _sortFunc?: ISortFunc<IdType, SortableModel>;
 
-  constructor(sortFunc?: ISortFunc<SortableModel>, limit?: number) {
+  constructor(sortFunc?: ISortFunc<IdType, SortableModel>, limit?: number) {
     super(limit);
     this._sortFunc = sortFunc;
   }
@@ -56,11 +58,11 @@ export class SortableListStore<
   }
 
   @action
-  removeByIds(ids: number[]) {
+  removeByIds(ids: IdType[]) {
     if (!ids.length) {
       return;
     }
-    ids.forEach((id: number) => {
+    ids.forEach((id: IdType) => {
       const index = this.findIndexById(id);
       if (index > -1) {
         this.removeAt(index);
@@ -68,7 +70,7 @@ export class SortableListStore<
     });
   }
 
-  findIndexById(id: number) {
+  findIndexById(id: IdType) {
     return this.items.findIndex(item => item.id === id);
   }
 
@@ -77,7 +79,9 @@ export class SortableListStore<
     return _.map(this.items, 'id');
   }
 
-  getById(id: number) {
-    return _.find(this.items, { id }) as SortableModel | undefined;
+  getById(id: IdType) {
+    return this.items.find((item: SortableModel) => {
+      return item.id === id;
+    });
   }
 }

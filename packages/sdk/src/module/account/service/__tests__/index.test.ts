@@ -11,7 +11,7 @@ import { AccountGlobalConfig } from '../../../account/config';
 import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
 import { ServiceLoader } from '../../../serviceLoader';
 import { setRCToken } from '../../../../authenticator/utils';
-
+import { AuthUserConfig } from '../../../account/config/AuthUserConfig';
 jest.mock('../../../serviceLoader');
 jest.mock('../../../person');
 jest.mock('../../../../api');
@@ -135,6 +135,41 @@ describe('AccountService', () => {
       AccountGlobalConfig.getUserDictionary.mockReturnValue(1);
       AccountUserConfig.prototype.getGlipUserId.mockReturnValue('123');
       expect(accountService.isGlipLogin()).toBe(true);
+    });
+  });
+
+  describe('get rc token', () => {
+    const accessToken = {
+      access_token: 'access_token',
+      endpoint_id: 'i6Kffo9iTCun9yEIOT7drQ',
+      expires_in: 3600,
+      timestamp: 1559613357949,
+    };
+
+    beforeEach(() => {
+      AuthUserConfig.prototype.getRCToken = jest
+        .fn()
+        .mockReturnValue(accessToken);
+    });
+
+    it('should  not refresh token when token is invalid', async () => {
+      accountService['refreshRCToken'] = jest.fn().mockResolvedValue({ id: 1 });
+      Date.now = jest
+        .fn()
+        .mockReturnValue(1559613357949 + 3600 * 1000 - 5 * 60 * 1000);
+      const result = await accountService.getRCToken();
+      expect(accountService['refreshRCToken']).not.toBeCalled();
+      expect(result).toEqual(accessToken);
+    });
+
+    it('should refresh token when token is invalid', async () => {
+      accountService['refreshRCToken'] = jest.fn().mockResolvedValue({ id: 1 });
+      Date.now = jest
+        .fn()
+        .mockReturnValue(1559613357949 + 3600 * 1000 - 5 * 60 * 1000 + 1);
+      const result = await accountService.getRCToken();
+      expect(accountService['refreshRCToken']).toBeCalled();
+      expect(result).toEqual({ id: 1 });
     });
   });
 });
