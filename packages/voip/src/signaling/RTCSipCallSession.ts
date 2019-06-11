@@ -535,7 +535,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     }
   }
 
-  private _setAudioInputDevice = (deviceID: string) => {
+  private _setAudioInputDevice(deviceID: string) {
     navigator.mediaDevices
       .getUserMedia({
         audio: {
@@ -587,7 +587,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.sessionDescriptionHandler.getDescription();
   }
 
-  private _setAudioOutputDevice = (deviceID: string) => {
+  private _setAudioOutputDevice(deviceID: string) {
     if (this._mediaElement && this._mediaElement.local.setSinkId) {
       rtcLogger.debug(
         LOG_TAG,
