@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { JuiLeftNavProps } from 'jui/pattern/LeftNav';
-import { PromisedComputedValue } from 'computed-async-mobx';
 
 type LeftNavProps = {
   id: number;
@@ -15,7 +14,7 @@ type LeftNavViewProps = {
   expanded: boolean;
   id: string;
   handleTitle?: Function;
-  icons: PromisedComputedValue<JuiLeftNavProps['icons']>;
+  iconGroups: JuiLeftNavProps['icons'];
   onRouteChange?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 };
 

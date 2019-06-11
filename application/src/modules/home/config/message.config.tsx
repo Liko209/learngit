@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import i18nT from '@/utils/i18nT';
 import { MessageUmi } from '../container/MessageUmi';
 import { SubModuleConfig } from '../types';
 import { JuiIconography } from 'jui/foundation/Iconography';
@@ -28,7 +27,7 @@ const config: SubModuleConfig = {
         </JuiIconography>
       ),
       IconSelected: <JuiIconography>messages</JuiIconography>,
-      title: await i18nT('message.Messages'),
+      title: 'message.Messages',
       umi: <MessageUmi />,
       placement: 'top',
     };

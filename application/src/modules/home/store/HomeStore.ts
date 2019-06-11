@@ -10,7 +10,7 @@ import { SubModuleConfig, NavConfig } from '../types';
 import { config } from '../home.config';
 
 function isNavConfig(navConfig: NavConfig | undefined): navConfig is NavConfig {
-  return navConfig !== undefined;
+  return Boolean(navConfig && navConfig.url && navConfig.title);
 }
 
 class HomeStore {

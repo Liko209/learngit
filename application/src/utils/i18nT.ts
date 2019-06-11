@@ -13,7 +13,10 @@ function hasLoadedNamespace() {
   };
 
   // failed loading ns - but at least fallback is not pending -> SEMI SUCCESS
-  if (loadNotPending(lng, ns) && (!fallbackLng || loadNotPending(lastLng, ns))) {
+  if (
+    loadNotPending(lng, ns) &&
+    (!fallbackLng || loadNotPending(lastLng, ns))
+  ) {
     return true;
   }
 
@@ -26,6 +29,7 @@ function i18nT(key: string, options?: i18next.TOptions | string) {
   }
 
   return new Promise((resolve: (value: string) => void) => {
+    // FIXME: If we try to fetch it very early, loaded event never emit.
     i18next.on('loaded', () => {
       resolve(i18next.t(key, options));
     });

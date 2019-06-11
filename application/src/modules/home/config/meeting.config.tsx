@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import i18nT from '@/utils/i18nT';
 import { SubModuleConfig } from '../types';
 import { JuiIconography } from 'jui/foundation/Iconography';
 
@@ -22,7 +21,7 @@ const config: SubModuleConfig = {
       </JuiIconography>
     ),
     IconSelected: <JuiIconography>meetings</JuiIconography>,
-    title: await i18nT('meeting.Meetings'),
+    title: 'meeting.Meetings',
     placement: 'top',
   }),
 };
