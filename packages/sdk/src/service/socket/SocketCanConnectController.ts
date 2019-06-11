@@ -73,13 +73,21 @@ class SocketCanConnectController {
     forceOnline: boolean,
   ) {
     mainLogger.log(TAG, ' handleRequestSuccess:', result);
-    if (result && result['reconnect_retry_in']) {
-      // request success but need to waiting a second
-      const time: number = result['reconnect_retry_in'];
-      await this._tryToCheckCanConnectAfterTime(callback, forceOnline, time);
+    if (typeof result === 'object') {
+      if (result && result['reconnect_retry_in']) {
+        // request success but need to waiting a second
+        const time: number = result['reconnect_retry_in'];
+        await this._tryToCheckCanConnectAfterTime(callback, forceOnline, time);
+      } else {
+        callback(this._managerId);
+        this._isDoingCanConnect = false;
+      }
     } else {
-      callback(this._managerId);
-      this._isDoingCanConnect = false;
+      this._onCanConnectApiFailure(
+        'invalid result type',
+        callback,
+        forceOnline,
+      );
     }
   }
 

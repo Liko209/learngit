@@ -66,6 +66,42 @@ describe('SocketCanConnectController', () => {
       await controller.doCanConnectApi(() => {}, true);
       expect(controller._onCanConnectApiFailure).toHaveBeenCalledTimes(1);
     });
+    it('should call _onCanConnectApiFailure when get can connect success but with invalid response', async () => {
+      const controller = getController();
+      jest
+        .spyOn(controller, '_requestCanConnectInfo')
+        .mockResolvedValueOnce('<html><head></head></html>');
+      jest
+        .spyOn(controller, '_tryToCheckCanConnectAfterTime')
+        .mockResolvedValueOnce();
+      jest.spyOn(controller, '_onCanConnectApiFailure').mockResolvedValueOnce();
+      const callback = () => {};
+      await controller.doCanConnectApi(callback, true);
+      expect(controller._onCanConnectApiFailure).toHaveBeenCalledTimes(1);
+    });
+    it('should call _tryToCheckCanConnectAfterTime when get can connect response with reconnect_retry_in', async () => {
+      const controller = getController();
+      jest
+        .spyOn(controller, '_requestCanConnectInfo')
+        .mockResolvedValueOnce({ reconnect_retry_in: 10 });
+      jest
+        .spyOn(controller, '_tryToCheckCanConnectAfterTime')
+        .mockResolvedValueOnce();
+      const callback = () => {};
+      await controller.doCanConnectApi(callback, true);
+      expect(controller._tryToCheckCanConnectAfterTime).toHaveBeenCalledTimes(
+        1,
+      );
+    });
+    it('should call callback when everything is good', async () => {
+      const controller = getController();
+      jest
+        .spyOn(controller, '_requestCanConnectInfo')
+        .mockResolvedValueOnce({});
+      const callback = jest.fn();
+      await controller.doCanConnectApi(callback, true);
+      expect(callback).toHaveBeenCalledTimes(1);
+    });
   });
   describe('_onCanConnectApiSuccess', () => {
     it('should call _tryToCheckCanConnectAfterTime if the result has reconnect_retry_in', async () => {
