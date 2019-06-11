@@ -35,10 +35,11 @@ class SegAnalysisController extends AnalysisBaseController {
     this._segment && this._segment.track(name, this._addEndPoint(properties));
   }
 
-  private _addEndPoint(options?: any) {
-    if (options && !options['endPoint']) {
-      options['endPoint'] = this.getEndPoint();
+  private _addEndPoint(options: any = {}) {
+    if (options['endPoint']) {
+      return options;
     }
+    options['endPoint'] = this.getEndPoint();
     return options;
   }
 }
