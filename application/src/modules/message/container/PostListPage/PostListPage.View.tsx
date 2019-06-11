@@ -22,7 +22,9 @@ class PostListPageViewComponent extends Component<PostListPageViewProps> {
   }
   state = { height: 0 };
   handleSizeChanged = (size: Size) => {
-    this.setState({ height: size.height - USED_HEIGHT });
+    if (size.height !== this.state.height) {
+      this.setState({ height: size.height - USED_HEIGHT });
+    }
   }
   render() {
     const { kind, caption, ids, t, postFetcher } = this.props;

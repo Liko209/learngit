@@ -10,6 +10,7 @@ import { SwitchConversationScene } from "./switchConversationScene";
 import { SearchScene } from "./searchScene";
 import { FetchGroupScene } from "./fetchGroupScene";
 import { IndexDataScene } from "./indexDataScene";
+import { SearchPhoneScene } from "./searchPhoneScene";
 
 export {
   Scene,
@@ -19,5 +20,6 @@ export {
   SwitchConversationScene,
   SearchScene,
   IndexDataScene,
-  FetchGroupScene
+  FetchGroupScene,
+  SearchPhoneScene
 };
