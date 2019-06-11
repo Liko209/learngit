@@ -31,6 +31,7 @@ type JuiAudioActionProps = {
   color?: JuiAudioColor;
   status: JuiAudioStatus;
   tooltip: string;
+  label: string;
   onAction: IJuiAudioAction;
 };
 
@@ -51,7 +52,7 @@ type JuiAudioProgressProps = {
   onDragEnd(): void;
 };
 
-type JuiAudioActionTips = {
+type JuiAudioActionMap = {
   play: string;
   pause: string;
   reload: string;
@@ -60,12 +61,16 @@ type JuiAudioActionTips = {
 type JuiAudioPlayerProps = {
   src: string;
   duration: number;
-  actionTips: JuiAudioActionTips;
-  mode?: JuiAudioMode;
+  actionTips: JuiAudioActionMap;
+  actionLabels: JuiAudioActionMap;
+  mode?: JuiAudioMode.FULL | JuiAudioMode.MINI;
   startTime?: number;
   isHighlight?: boolean;
   onEnded?: () => void;
   onTimeUpdate?: (timestamp: number) => void;
+  onBeforePlay?: () => void;
+  onBeforeAction?: (status: JuiAudioStatus) => void;
+  onError?: () => void;
 };
 
 export {
@@ -75,7 +80,7 @@ export {
   JuiAudioStatus,
   IJuiAudioAction,
   IJuiGetAudioColor,
-  JuiAudioActionTips,
+  JuiAudioActionMap,
   JuiAudioActionProps,
   JuiAudioPlayerProps,
   JuiAudioProgressProps,

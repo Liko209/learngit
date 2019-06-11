@@ -26,6 +26,7 @@ import { SettingTab } from './SettingTab';
 import { LogoutDialog } from './LogoutDialog';
 import { MoreActionOnFile } from './MoreActionOnFile';
 import { PhoneTab } from './PhoneTab';
+import { DeleteVoicemailDialog } from './PhoneTab/Voicemail';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
@@ -183,8 +184,12 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(LogoutDialog);
   }
 
-  get moreActionOnFile(){
+  get moreActionOnFile() {
     return this.getComponent(MoreActionOnFile);
+  }
+
+  get deleteVoicemailDialog() {
+    return this.getComponent(DeleteVoicemailDialog);
   }
 
 }

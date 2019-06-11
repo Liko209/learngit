@@ -101,7 +101,7 @@ describe('ToastCallError', () => {
     ToastCallError.toast = jest.fn();
     const i18nkey = 'telephony.prompt.InvalidNumber';
     ToastCallError.toastInvalidNumber();
-    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 2000);
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
   });
 
   it('should display park error stop recording', () => {

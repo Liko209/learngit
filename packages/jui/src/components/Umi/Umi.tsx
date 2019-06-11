@@ -13,6 +13,7 @@ import {
   width,
   height,
   typography,
+  palette,
 } from '../../foundation/utils/styles';
 
 import { countToString, countToWidth } from './utils';
@@ -66,11 +67,7 @@ const StyledUmi = styled<JuiUmiProps, 'span'>('span').attrs({
   background: ${({ important }) => {
     return important ? secondary('main') : grey('500');
   }};
-  color: ${({ important, theme }) => {
-    return theme.palette.getContrastText(
-      (important ? secondary('main') : grey('500'))({ theme }),
-    );
-  }};
+  color: ${palette('common', 'white')};
   ${({ variant = 'count' }) => styles[variant]};
 `;
 

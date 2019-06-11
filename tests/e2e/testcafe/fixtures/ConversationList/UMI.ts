@@ -852,9 +852,9 @@ test.meta(<ITestMeta>{
   let teamWithUmiId;
 
   await h(t).withLog(`Given I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    },
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  },
   );
 
   await h(t).withLog('And Fav/DM/Team section is expanded', async () => {
@@ -871,10 +871,10 @@ test.meta(<ITestMeta>{
       { name: 'TM1', umi: 1, type: 'Team' },
     ];
     await createChats(t, chats, loginUser);
-    favoriteDirectMessageWithUmiId = getChatByName(chats,'F1').id;
-    favoriteTeamWithUmiId = getChatByName(chats,'F2').id;
-    directMessageWithUmiId = getChatByName(chats,'DM1').id;
-    teamWithUmiId = getChatByName(chats,'TM1').id;
+    favoriteDirectMessageWithUmiId = getChatByName(chats, 'F1').id;
+    favoriteTeamWithUmiId = getChatByName(chats, 'F2').id;
+    directMessageWithUmiId = getChatByName(chats, 'DM1').id;
+    teamWithUmiId = getChatByName(chats, 'TM1').id;
 
     await favoritesSection.conversationEntryById(favoriteDirectMessageWithUmiId).umi.shouldBeNumber(1);
     await favoritesSection.conversationEntryById(favoriteTeamWithUmiId).umi.shouldBeNumber(1);

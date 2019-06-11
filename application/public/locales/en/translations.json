@@ -63,7 +63,10 @@
     "You": "You",
     "Connecting": "Connecting",
     "deactivatedUsers": "Deactivated Users",
-    "team": "team"
+    "team": "team",
+    "play": "Play",
+    "pause": "Pause",
+    "reload": "Reload"
   },
   "auth": {
     "signIn": "Sign in",
@@ -170,8 +173,17 @@
       "editPost": "Edit post",
       "deletePost": "Delete post",
       "resendPost": "Resend post",
+      "attachFile": "Attach file",
       "typeNewMessage": "Type new message",
       "sendNewMessage": "Send new message"
+    },
+    "inputMenus": {
+      "google": "Google Drive",
+      "dropbox": "Dropbox",
+      "box": "Box",
+      "evernote": "Evernote",
+      "onedrive": "OneDrive",
+      "computer": "Computer"
     },
     "stream": {
       "addedToTeam": "{{inviter}} added {{newUser}} to the team",
@@ -562,7 +574,7 @@
       "LackOfRecordingPermission": "Sorry, your account does not have the feature to record a call. To enable the feature, contact your account administrator.",
       "RecordOnServiceWeb": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
       "RecordAutomatically": "Cannot start call recording.",
-      "InvalidNumber": "The phone number entered is invalid. Check the number and try again.",
+      "InvalidNumber": "Invalid phone number",
       "ParkErrorStopRecording": "Sorry, your call recording is being saved. Try to park the call later.",
       "ParkError": "Sorry, something went wrong on our end and we weren't able to park the call. Try again later.",
       "ParkOk": "Your call is parked at location",
@@ -583,9 +595,10 @@
       "resume": "Resume the call",
       "record": "Record the call",
       "stopRecord": "Stop recording",
-      "minimize": "Minimize the dialog"
+      "minimize": "Minimize the dialog",
+      "callActions": "Call actions"
     },
-    "dialerPlaceholder": "Enter a number",
+    "dialerPlaceholder": "Enter a name or number",
     "delete": "Delete",
     "callFrom": "Call from:",
     "phoneNumberType": {
@@ -599,18 +612,63 @@
     "callerIdSelector": {
       "tooltip": "You can change this default Caller ID in settings."
     },
+    "direction": {
+      "inboundcall": "Inbound call",
+      "outboundcall": "Outbound call"
+    },
+    "result": {
+      "missedcall": "Missed call"
+    },
+    "nocalllogs": "No call logs",
+    "dial": "Dial:",
+    "noMatch": "No matched records",
+    "searching": "Searching...",
     "forwardCall": "Forward Call"
   },
   "phone": {
     "tab": {
-      "callHistory": "Call History"
+      "callHistory": "Call history"
     },
     "AllCalls": "All calls",
     "MissedCalls": "Missed calls",
     "callhistory": "Call history",
     "voicemail": "Voicemail",
     "faxes": "Faxes",
-    "recordings": "Recordings"
+    "unknownCaller": "Unknown caller",
+    "unknown": "Unknown",
+    "recordings": "Recordings",
+    "noVoicemailAvailable": "No voicemail available",
+    "prompt": {
+      "notAbleToLoadVoicemailsForNetworkIssue": "We weren't able to load voicemails. Check your network connection.",
+      "notAbleToLoadVoicemailsForServerIssue": "We weren't able to load voicemails. Try again later.",
+      "notAbleToLoadCallLogsForNetworkIssue": "We weren't able to load call logs. Check your network connection.",
+      "notAbleToLoadCallLogsForServerIssue": "We weren't able to load call logs. Try again later.",
+      "playVoicemailLoadError": "Sorry, we weren't able to play/load the voicemail due to a poor network connection. Try again."
+    }
+  },
+  "voicemail": {
+    "labels": {
+      "play": "Play Voicemail",
+      "pause": "Pause Voicemail",
+      "reload": "Reload Voicemail"
+    },
+    "more": "More",
+    "downloadVoicemail": "Download Voicemail",
+    "messageIsReadMarkItAsUnread": "Message is read. Mark it as unread",
+    "messageIsUnreadMarkItAsRead": "Message is unread. Mark it as read",
+    "markUnread": "Mark Unread",
+    "markRead": "Mark Read",
+    "delete": "Delete",
+    "deleteVoicemail": "Delete Voicemail",
+    "areYouSureYouWantToDeleteTheVoicemail": "Are you sure you want to delete the voicemail?",
+    "prompt": {
+      "notAbleToUnreadVoicemalForNetworkIssue": "Sorry, we weren't able to mark the voicemail as unread due to a poor network connection. Try again.",
+      "notAbleToUnreadVoicemalForServerIssue": "Sorry, something went wrong on our end and we weren't able to mark the voicemail as unread. Try again later.",
+      "notAbleToReadVoicemailForNetworkIssue": "Sorry, we weren't able to mark the voicemail as read due to a poor network connection. Try again.",
+      "notAbleToReadVoicemailForServerIssue": "Sorry, something went wrong on our end and we weren't able to mark the voicemail as read. Try again later.",
+      "notAbleToDeleteVoicemailForNetworkIssue": "Sorry, we weren't able to delete the voicemail due to a poor network connection. Try again.",
+      "notAbleToDeleteVoicemailForServerIssue": "Sorry, something went wrong on our end and we weren't able to delete the voicemail. Try again later."
+    }
   },
   "meeting": {
     "Meetings": "Meetings"

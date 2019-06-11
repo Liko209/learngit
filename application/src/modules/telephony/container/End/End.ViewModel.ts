@@ -17,25 +17,18 @@ class EndViewModel extends StoreViewModel<EndProps> implements EndViewProps {
     TELEPHONY_SERVICE,
   );
 
-  private _timeoutID: NodeJS.Timeout;
-
-  private _hangUp = () => {};
-
   constructor(props: EndProps) {
     super(props);
-    this._timeoutID = setTimeout(() => {
-      this._hangUp = this._telephonyService.hangUp;
-    },                           ACTIVATION_CALL_TIME);
   }
 
   end = () => {
-    this._hangUp();
-  }
-
-  dispose() {
-    if (this._timeoutID) {
-      clearTimeout(this._timeoutID);
+    if (
+      +new Date() - this._telephonyService.uiCallStartTime <
+      ACTIVATION_CALL_TIME
+    ) {
+      return;
     }
+    this._telephonyService.hangUp();
   }
 }
 

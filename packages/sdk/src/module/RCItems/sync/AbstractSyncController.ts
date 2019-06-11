@@ -18,7 +18,7 @@ import {
   RCItemSyncResponse,
   RCItemSyncInfo,
 } from 'sdk/api/ringcentral/types/RCItemSync';
-import { JError, JRCError, ERROR_CODES_RC, ERROR_CODES_SDK } from 'sdk/error';
+import { JError, JRCError, ERROR_CODES_RC } from 'sdk/error';
 import { SYNC_DIRECTION } from '../constants';
 import { IRCItemSyncConfig } from '../config/IRCItemSyncConfig';
 import { notificationCenter, RELOAD_TARGET } from 'sdk/service';
@@ -109,10 +109,13 @@ abstract class AbstractSyncController<
       mainLogger
         .tags(this.syncName)
         .info(`is already in Fsync now, status: ${this._syncStatus}`);
+<<<<<<< HEAD
       // throw new JRCError(
       //   ERROR_CODES_SDK.INVALID_SYNC_TOKEN,
       //   `${this.syncName}, invalid sync token`,
       // );
+=======
+>>>>>>> e91af8223c295d152d38950e3147e084a6eb4b18
       return [];
     }
     this._syncStatus = this._syncStatus | SYNC_STATUS.IN_FSYNC;
@@ -238,7 +241,8 @@ abstract class AbstractSyncController<
           true,
         );
       } else {
-        notificationCenter.emitEntityUpdate<T, IdType>(this._entityKey, data);
+        data.length &&
+          notificationCenter.emitEntityUpdate<T, IdType>(this._entityKey, data);
       }
     }
     return data;
@@ -248,10 +252,6 @@ abstract class AbstractSyncController<
     if (this.isTokenInvalidError(reason)) {
       await this._reset();
       this.doSync(true, SYNC_DIRECTION.NEWER);
-      // throw new JRCError(
-      //   ERROR_CODES_SDK.INVALID_SYNC_TOKEN,
-      //   `${this.syncName}, invalid sync token`,
-      // );
     } else {
       throw reason;
     }

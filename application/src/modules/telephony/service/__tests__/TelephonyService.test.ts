@@ -26,10 +26,14 @@ import { container, injectable, decorate } from 'framework';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ClientService } from '@/modules/common';
 import { CALLING_OPTIONS } from 'sdk/module/profile';
+import storeManager from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
+
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
+
 import { SettingService } from '@/modules/setting/service/SettingService';
-const testProcedureWaitingTime = 20;
 const mockedDelay = 10;
+const testProcedureWaitingTime = 100;
 
 // HACK: flag for changing the call action result dynamically
 let count = 0;
@@ -54,6 +58,7 @@ const sleep = (time: number): Promise<void> => {
 };
 
 let mockedServerTelephonyService: any;
+let mockedPhoneNumberService: any;
 let mockedRCInfoService: any;
 let mockedPhoneNumberService: any;
 let mockedSettingService: any;
@@ -82,7 +87,12 @@ describe('TelephonyService', () => {
     };
 
     mockedPhoneNumberService = {
-      isValidNumber: jest.fn(),
+      isValidNumber: jest.fn().mockImplementation((toNumber) => ({
+        isValid: true,
+        toNumber,
+        parsed: toNumber,
+      })),
+      getLocalCanonical: jest.fn().mockImplementation((i) => i),
     };
     mockedSettingService = {
       getById: jest.fn().mockResolvedValue({ value: CALLING_OPTIONS.GLIP }),
@@ -91,6 +101,7 @@ describe('TelephonyService', () => {
     jest
       .spyOn(mockedSettingService, 'getById')
       .mockResolvedValue({ value: defaultPhoneApp });
+
     mockedServerTelephonyService = {
       hold: jest.fn().mockImplementation(() => {
         sleep(mockedDelay).then(() =>
@@ -172,9 +183,10 @@ describe('TelephonyService', () => {
       replyWithMessage: jest.fn(),
       replyWithPattern: jest.fn(),
       forward: jest.fn(),
+      flip: jest.fn(),
     };
 
-    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
+    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation((conf) => {
       switch (conf) {
         case ServiceConfig.TELEPHONY_SERVICE:
           telephonyService = mockedServerTelephonyService;
@@ -213,6 +225,9 @@ describe('TelephonyService', () => {
     jest.restoreAllMocks();
     container.unbindAll();
     count += 1;
+    mockedServerTelephonyService.isValidNumber = jest
+      .fn()
+      .mockReturnValue(true);
   });
 
   describe('The "hold" button status tests', () => {
@@ -673,6 +688,12 @@ describe('TelephonyService', () => {
     ).toBe('');
   });
 
+  it('Should show the toast when initiate a call to an invalid number from matched result [JPT-254]', async () => {
+    mockedPhoneNumberService.isValidNumber = jest.fn().mockReturnValue(false);
+    await (telephonyService as TelephonyService).makeCall(v4());
+    expect(ToastCallError.toastInvalidNumber).toHaveBeenCalled();
+  });
+
   it('should prompt the toast when park during the call recording is being saved [JPT-2179]', async () => {
     telephonyService._callId = '123';
     telephonyService._telephonyStore.isStopRecording = true;
@@ -720,6 +741,20 @@ describe('TelephonyService', () => {
     expect(mockedPhoneNumberService.isValidNumber).toHaveBeenCalled();
   });
 
+  it('Should not call flip', () => {
+    telephonyService.flip('123');
+    expect(mockedServerTelephonyService.flip).not.toHaveBeenCalled();
+  });
+
+  it('Should call flip', () => {
+    const callId = 'id_0';
+    telephonyService._callId = callId;
+    const phoneNumber = '123456789';
+    telephonyService.flip(phoneNumber);
+    expect(mockedServerTelephonyService.flip).toHaveBeenCalled();
+    telephonyService._callId = undefined;
+  });
+
   describe(`onReceiveIncomingCall()`, () => {
     const params = {
       fromName: 'test',
@@ -748,6 +783,15 @@ describe('TelephonyService', () => {
       await telephonyService._onReceiveIncomingCall(params);
       expect(telephonyService._telephonyStore.incomingCall).toBeCalled();
     });
+    it(`should set incoming call in global store if has incoming call [JPT-2222]`, async () => {
+      jest
+        .spyOn(mockedSettingService, 'getById')
+        .mockResolvedValue({ value: 'glip' });
+      await telephonyService._onReceiveIncomingCall(params);
+      expect(
+        storeManager.getGlobalStore().get(GLOBAL_KEYS.INCOMING_CALL),
+      ).toBeTruthy();
+    });
   });
 
   describe(`makeRCPhoneCall()`, () => {
@@ -757,7 +801,7 @@ describe('TelephonyService', () => {
       const clientService = container.get(CLIENT_SERVICE);
       testedFn = jest.spyOn(clientService, 'invokeApp').mockImplementation();
     });
-    ['RC', 'ATT', 'TELUS'].forEach(i =>
+    ['RC', 'ATT', 'TELUS'].forEach((i) =>
       it(`should build correct url for ${i}`, () => {
         const RCPhoneCallURL = {
           RC: 'rcmobile',

@@ -21,6 +21,17 @@ const SERVER_ERROR_CODE = {
   CMN211: 'CMN-211',
 };
 
+const REQUEST_HEADER_KEYS = {
+  ACCEPT: 'Accept',
+  CONTENT_TYPE: 'Content-Type',
+  IF_NONE_MATCH: 'If-None-Match',
+};
+
+const CONTENT_TYPES = {
+  JSON: 'application/json',
+  XML: 'application/xml',
+};
+
 export {
   DEFAULT_BEFORE_EXPIRED,
   DEFAULT_TIMEOUT_INTERVAL,
@@ -28,4 +39,6 @@ export {
   SERVER_ERROR_CODE,
   TEN_MINUTE_TIMEOUT,
   DEFAULT_RETRY_COUNT,
+  CONTENT_TYPES,
+  REQUEST_HEADER_KEYS,
 };

@@ -20,15 +20,16 @@ const LOG_TAG = 'FetchPostDataListHandler';
 
 class FetchPostDataListHandler extends FetchSortableDataListHandler<
   Post,
-  ISortableModel
+  number
 > {
   constructor(
     dataProvider: IFetchSortableDataProvider<Post>,
     options: IFetchSortableDataListHandlerOptions<Post>,
     groupId: number,
-    listStore: SortableListStore<ISortableModel> = new SortableListStore(
-      options.sortFunc,
-    ),
+    listStore: SortableListStore<
+      number,
+      ISortableModel
+    > = new SortableListStore(options.sortFunc),
   ) {
     super(dataProvider, options, listStore);
     this.subscribeNotification(
