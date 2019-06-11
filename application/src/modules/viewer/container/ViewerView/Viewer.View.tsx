@@ -167,13 +167,15 @@ class ViewerViewComponent extends Component<
   private _handleZoomOut = () => {
     const { dataModule } = this.props;
     const { currentScale } = dataModule;
-    this._setScale(currentScale - 1 * SCALE_UNIT);
+    const scaleValue = Math.max(currentScale - 1 * SCALE_UNIT, MIN_SCALE);
+    this._setScale(scaleValue);
   }
 
   private _handleZoomIn = () => {
     const { dataModule } = this.props;
     const { currentScale } = dataModule;
-    this._setScale(currentScale + 1 * SCALE_UNIT);
+    const scaleValue = Math.min(currentScale + 1 * SCALE_UNIT, MAX_SCALE);
+    this._setScale(scaleValue);
   }
 
   private _handleScaleChanged = (newScale: number) => {
