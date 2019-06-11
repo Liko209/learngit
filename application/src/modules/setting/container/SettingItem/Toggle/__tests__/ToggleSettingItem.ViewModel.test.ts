@@ -5,7 +5,7 @@ jest.mock('@/store/utils');
 
 describe('ToggleSettingItemViewModel', () => {
   describe('saveSetting()', () => {
-    it('should save setting', () => {
+    it('should save setting [JPT-2083]', () => {
       getEntity.mockReturnValue({
         valueSetter: jest.fn(),
       });

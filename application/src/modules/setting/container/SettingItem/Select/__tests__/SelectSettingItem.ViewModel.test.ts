@@ -77,7 +77,7 @@ describe('SelectSettingItemViewModel', () => {
     });
   });
 
-  describe('saveSetting()', () => {
+  describe('saveSetting() [JPT-2083]', () => {
     it('should supports object as value and source', () => {
       mockSettingItemEntity({
         valueSetter: jest.fn(),
