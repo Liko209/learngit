@@ -15,7 +15,7 @@ class ProgressManager {
   private _progressObserver: IProgressObserver;
 
   constructor() {
-    NProgress.configure({ showSpinner: false });
+    NProgress.configure({ showSpinner: false, minimum: 0.3 });
     this._progressObserver = {
       onStart: (progressInstance: IProgress) => {
         this._addProgressInstance(progressInstance);
@@ -51,7 +51,6 @@ class ProgressManager {
           progressInstance.getProgress(),
         ) / this._progressInstances.length;
       if (progress < 1) {
-        NProgress.inc();
         NProgress.inc();
       } else {
         NProgress.set(progress);
