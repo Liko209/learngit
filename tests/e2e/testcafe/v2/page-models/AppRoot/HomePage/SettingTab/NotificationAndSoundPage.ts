@@ -290,7 +290,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
     const count = await this.newMessageSelectorAllItems.count;
     for (let i = 0; i < count; i++) {
       const text = await this.newMessageSelectorAllItems.nth(i).innerText;
-      const result = newMessageItems.includes(text);
+      const result = newMessageItems.indexOf(text) !== -1;
       assert.ok(result, `${text} does not apply ${newMessageItems}`);
     }
   }

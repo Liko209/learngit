@@ -574,7 +574,7 @@
       "LackOfRecordingPermission": "Sorry, your account does not have the feature to record a call. To enable the feature, contact your account administrator.",
       "RecordOnServiceWeb": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
       "RecordAutomatically": "Cannot start call recording.",
-      "InvalidNumber": "Invalid phone number",
+      "InvalidNumber": "The phone number entered is invalid. Check the number and try again.",
       "ParkErrorStopRecording": "Sorry, your call recording is being saved. Try to park the call later.",
       "ParkError": "Sorry, something went wrong on our end and we weren't able to park the call. Try again later.",
       "ParkOk": "Your call is parked at location",

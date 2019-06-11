@@ -17,6 +17,10 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-dialer-title-left');
   }
 
+  get titleLabel() {
+    return this.getSelectorByAutomationId('telephony-dialer-title-left');
+  }
+
   get header() {
     return this.getSelectorByAutomationId('telephony-dialer-header');
   }
@@ -191,6 +195,23 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-park-menu-item');
   }
 
+  // forward
+  get forwardActionMenuItem() {
+    return this.getSelectorByAutomationId('telephony-forward-menu-item');
+  }
+
+  get forwardListFirstItem() {
+    return this.getSelectorByAutomationId('forward-list-0-item');
+  }
+
+  get customForwardItem() {
+    return this.getSelectorByAutomationId('custom-forward');
+  }
+
+  get forwardActionButton() {
+    return this.getSelectorByAutomationId('telephony-forward-btn');
+  }
+
   // inbound call
   get sendToVoiceMailButton() {
     return this.getSelectorByAutomationId('telephony-voice-mail-btn');
@@ -358,6 +379,31 @@ export class TelephonyDialog extends BaseWebComponent {
   // Park
   async clickParkActionButton() {
     await this.t.click(this.parkActionMenuItem);
+  }
+
+  // Forward
+  async hoverForwardButton() {
+    await this.t.hover(this.forwardActionMenuItem);
+  }
+
+  async clickForwardListFirstButton() {
+    await this.t.click(this.forwardListFirstItem);
+  }
+
+  async clickCustomForwardButton() {
+    await this.t.click(this.customForwardItem);
+  }
+
+  async hoverForwardActionButton() {
+    await this.t.hover(this.forwardActionButton);
+  }
+
+  async clickForwardActionButton() {
+    await this.t.click(this.forwardActionButton);
+  }
+
+  async existForwardTitle(text: string) {
+    await this.t.expect(this.titleLabel.withText(text).exists).ok();
   }
 }
 
