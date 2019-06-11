@@ -6,12 +6,11 @@
 import React, {
   ComponentType,
   ComponentClass,
-  ReactNode,
   PureComponent,
+  ReactElement,
 } from 'react';
 
-type ReadyToShowCallback = () => void;
-type FutureCreator = (callback: ReadyToShowCallback) => ReactNode;
+type FutureCreator = ReactElement;
 
 type FutureProps = {
   future?: FutureCreator;
@@ -33,7 +32,9 @@ function withFuture<P>(
       const { future, ...rest } = this.props;
       if (future) {
         const { futureReady } = this.state;
-        const futureElement = future(this._showFuture);
+        const futureElement = React.cloneElement(future as any, {
+          futureCallback: this._showFuture,
+        });
         return futureReady ? (
           futureElement
         ) : (

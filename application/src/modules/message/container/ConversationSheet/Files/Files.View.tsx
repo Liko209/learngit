@@ -144,35 +144,37 @@ class FilesView extends React.Component<FilesViewProps> {
             const placeholder = (
               <JuiDelayPlaceholder width={size.width} height={size.height} />
             );
-            if (id < 0 || this.props.isRecentlyUploaded(id)) {
-              return this._renderItem(
+            const props = {
+              width: size.width,
+              height: size.height,
+              forceSize: !singleImage,
+              squareSize: SQUARE_SIZE,
+              handleImageClick: this._handleImageClick(
                 id,
-                progresses,
-                name,
-                (callback: Function) => (
-                  <JuiPreviewImage
-                    key={id}
-                    didLoad={() => this._handleImageDidLoad(id, callback)}
-                    handleImageClick={this._handleImageClick(
-                      id,
-                      urlMap.get(id) || '',
-                      origWidth,
-                      origHeight,
-                    )}
-                    placeholder={placeholder}
-                    width={size.width}
-                    height={size.height}
-                    forceSize={!singleImage}
-                    squareSize={SQUARE_SIZE}
-                    fileName={postParser(name, {
-                      fileName: true,
-                      keyword: this.context.keyword,
-                    })}
-                    url={accelerateURL(urlMap.get(id)) || ''}
-                    Actions={this._getActions(downloadUrl, id, postId)}
-                  />
-                ),
-              );
+                urlMap.get(id) || '',
+                size.width,
+                size.height,
+              ),
+              fileName: postParser(name, {
+                fileName: true,
+                keyword: this.context.keyword,
+              }),
+              url: accelerateURL(urlMap.get(id)) || '',
+              Actions: this._getActions(downloadUrl, id, postId),
+            };
+            const future = (
+              <JuiPreviewImage
+                key={id}
+                didLoad={(callback: Function) =>
+                  this._handleImageDidLoad(id, callback)
+                }
+                placeholder={placeholder}
+                {...props}
+              />
+            );
+            const flag = id < 0 || this.props.isRecentlyUploaded(id);
+            if (flag) {
+              return this._renderItem(id, progresses, name, future);
             }
             return (
               <JuiPreviewImage
@@ -185,22 +187,7 @@ class FilesView extends React.Component<FilesViewProps> {
                     size.height,
                   ),
                 })}
-                handleImageClick={this._handleImageClick(
-                  id,
-                  urlMap.get(id) || '',
-                  size.width,
-                  size.height,
-                )}
-                width={size.width}
-                height={size.height}
-                forceSize={!singleImage}
-                squareSize={SQUARE_SIZE}
-                fileName={postParser(name, {
-                  fileName: true,
-                  keyword: this.context.keyword,
-                })}
-                url={accelerateURL(urlMap.get(id)) || ''}
-                Actions={this._getActions(downloadUrl, id, postId)}
+                {...props}
               />
             );
           })}

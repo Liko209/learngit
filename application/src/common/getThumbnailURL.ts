@@ -3,6 +3,7 @@
  * @Date: 2019-02-15 08:26:10
  * Copyright © RingCentral. All rights reserved.
  */
+import { autorun } from 'mobx';
 import _ from 'lodash';
 import FileItemModel from '@/store/models/FileItem';
 import { getThumbnailSize } from 'jui/foundation/utils';
@@ -46,92 +47,105 @@ async function getThumbnailURLWithType(
   item: FileItemModel,
   rule: RULE,
 ): Promise<{ url: string; type: IMAGE_TYPE }> {
-  if (item.id < 0) {
-    return { url: '', type: IMAGE_TYPE.UNKNOWN_IMAGE };
-  }
-  const origWidth = item.origWidth;
-  const origHeight = item.origHeight;
-  let url = '';
-  if (!item.type) {
-    return { url, type: IMAGE_TYPE.UNKNOWN_IMAGE };
-  }
-  // Notes
-  // 1. There is no thumbnail for the image just uploaded.
-  // 2. tif has thumbnail field.
-  // 3. gif use original url.
-  if (FileItemUtils.isGifItem({ type: item.type })) {
-    url = item.versionUrl || '';
-    return { url, type: IMAGE_TYPE.ORIGINAL_IMAGE };
-  }
+  // https://github.com/mobxjs/mobx/issues/1636
+  const disposer = autorun(() => {
+    item.origHeight;
+    item.origWidth;
+    item.type;
+    item.versionUrl;
+    item.id;
+  });
 
-  if (rule === RULE.SQUARE_IMAGE) {
-    url = getThumbnailURL(item, {
-      width: SQUARE_SIZE,
-      height: SQUARE_SIZE,
-    });
-
-    if (url && url.length) {
-      return {
-        url,
-        type: IMAGE_TYPE.THUMBNAIL_IMAGE,
-      };
+  try {
+    if (item.id < 0) {
+      return { url: '', type: IMAGE_TYPE.UNKNOWN_IMAGE };
+    }
+    const origWidth = item.origWidth;
+    const origHeight = item.origHeight;
+    let url = '';
+    if (!item.type) {
+      return { url, type: IMAGE_TYPE.UNKNOWN_IMAGE };
+    }
+    // Notes
+    // 1. There is no thumbnail for the image just uploaded.
+    // 2. tif has thumbnail field.
+    // 3. gif use original url.
+    if (FileItemUtils.isGifItem({ type: item.type })) {
+      url = item.versionUrl || '';
+      return { url, type: IMAGE_TYPE.ORIGINAL_IMAGE };
     }
 
-    if (!url && FileItemUtils.isSupportPreview({ type: item.type })) {
-      const itemService = ServiceLoader.getInstance<ItemService>(
-        ServiceConfig.ITEM_SERVICE,
-      );
-      url = await itemService.getThumbsUrlWithSize(
-        item.id,
-        SQUARE_SIZE,
-        SQUARE_SIZE,
-      );
-      return { url, type: IMAGE_TYPE.MODIFY_IMAGE };
-    }
-  } else {
-    const size = getThumbnailSize(origWidth, origHeight);
-    url = getThumbnailURL(item, {
-      width: size.imageWidth,
-      height: size.imageHeight,
-    });
+    if (rule === RULE.SQUARE_IMAGE) {
+      url = getThumbnailURL(item, {
+        width: SQUARE_SIZE,
+        height: SQUARE_SIZE,
+      });
 
-    if (url && url.length) {
-      return {
-        url,
-        type: IMAGE_TYPE.THUMBNAIL_IMAGE,
-      };
+      if (url && url.length) {
+        return {
+          url,
+          type: IMAGE_TYPE.THUMBNAIL_IMAGE,
+        };
+      }
+
+      if (!url && FileItemUtils.isSupportPreview({ type: item.type })) {
+        const itemService = ServiceLoader.getInstance<ItemService>(
+          ServiceConfig.ITEM_SERVICE,
+        );
+        url = await itemService.getThumbsUrlWithSize(
+          item.id,
+          SQUARE_SIZE,
+          SQUARE_SIZE,
+        );
+        return { url, type: IMAGE_TYPE.MODIFY_IMAGE };
+      }
+    } else {
+      const size = getThumbnailSize(origWidth, origHeight);
+      url = getThumbnailURL(item, {
+        width: size.imageWidth,
+        height: size.imageHeight,
+      });
+
+      if (url && url.length) {
+        return {
+          url,
+          type: IMAGE_TYPE.THUMBNAIL_IMAGE,
+        };
+      }
+
+      if (
+        !url &&
+        origWidth > 0 &&
+        origHeight > 0 &&
+        FileItemUtils.isSupportPreview({ type: item.type })
+      ) {
+        const result = await generateModifiedImageURL({
+          rule,
+          origHeight,
+          origWidth,
+          squareSize: SQUARE_SIZE,
+          id: item.id,
+        });
+        url = result.url;
+        return { url, type: IMAGE_TYPE.MODIFY_IMAGE };
+      }
     }
 
-    if (
-      !url &&
-      origWidth > 0 &&
-      origHeight > 0 &&
-      FileItemUtils.isSupportPreview({ type: item.type })
-    ) {
+    if (!url) {
       const result = await generateModifiedImageURL({
-        rule,
-        origHeight,
-        origWidth,
-        squareSize: SQUARE_SIZE,
         id: item.id,
+        rule: RULE.RECTANGLE_IMAGE,
+        origHeight: DEFAULT_HEIGHT,
+        origWidth: DEFAULT_WIDTH,
+        squareSize: SQUARE_SIZE,
       });
       url = result.url;
-      return { url, type: IMAGE_TYPE.MODIFY_IMAGE };
+      return { url, type: IMAGE_TYPE.ORIGINAL_IMAGE };
     }
+    return { url, type: IMAGE_TYPE.UNKNOWN_IMAGE };
+  } finally {
+    disposer();
   }
-
-  if (!url) {
-    const result = await generateModifiedImageURL({
-      id: item.id,
-      rule: RULE.RECTANGLE_IMAGE,
-      origHeight: DEFAULT_HEIGHT,
-      origWidth: DEFAULT_WIDTH,
-      squareSize: SQUARE_SIZE,
-    });
-    url = result.url;
-    return { url, type: IMAGE_TYPE.ORIGINAL_IMAGE };
-  }
-  return { url, type: IMAGE_TYPE.UNKNOWN_IMAGE };
 }
 
 function getMaxThumbnailURLInfo(item: FileItemModel) {
