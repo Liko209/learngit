@@ -18,7 +18,7 @@ type VoicemailViewProps = {
   readStatus: Voicemail['readStatus'];
   isUnread: boolean;
   audio?: Audio;
-  updateAudioUri: () => void;
+  onError: () => void;
   onBeforePlay: () => void;
   onBeforeAction: (status: JuiAudioStatus) => void;
   updateStartTime: (timestamp: number) => void;

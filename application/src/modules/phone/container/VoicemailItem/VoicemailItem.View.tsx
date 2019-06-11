@@ -79,7 +79,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
       readStatus,
       isUnread,
       audio,
-      updateAudioUri,
+      onError,
       onBeforePlay,
       onBeforeAction,
       updateStartTime,
@@ -118,7 +118,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
                 onBeforePlay={onBeforePlay}
                 onBeforeAction={onBeforeAction}
                 onTimeUpdate={updateStartTime}
-                onError={updateAudioUri}
+                onError={onError}
                 mode={mode}
                 isHighlight={isUnread}
                 src={audio.downloadUrl}

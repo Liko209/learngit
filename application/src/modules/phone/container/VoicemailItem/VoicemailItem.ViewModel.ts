@@ -147,12 +147,19 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   }
 
   @action
-  onBeforePlay = () => {
+  onBeforePlay = async () => {
     this.shouldPause = false;
+
     if (!this.selected) {
       this._phoneStore.setVoicemailId(this._id);
     }
     this.voicemailService.updateReadStatus(this._id, READ_STATUS.READ);
+    if (this.audio) {
+      const ret = await this.voicemailService.buildDownloadUrl(this.audio.uri);
+      this._phoneStore.updateAudio(this._id, {
+        downloadUrl: ret,
+      });
+    }
   }
 
   @action
@@ -172,7 +179,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   }
 
   @action
-  updateAudioUri = async () => {
+  onError = () => {
     Notification.flashToast({
       message: 'phone.prompt.playVoicemailLoadError',
       autoHideDuration: FLASH_TOAST_DURATION,
@@ -180,13 +187,6 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
       fullWidth: false,
       dismissible: false,
       messageAlign: ToastMessageAlign.LEFT,
-    });
-
-    if (!this.audio) {
-      return;
-    }
-    this._phoneStore.updateAudio(this._id, {
-      downloadUrl: await this.voicemailService.buildDownloadUrl(this.audio.uri),
     });
   }
 

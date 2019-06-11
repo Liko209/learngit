@@ -252,39 +252,8 @@ describe('VoicemailItemViewModel', () => {
       expect(phoneStore.voicemailId).toBe(1);
       expect(voicemailService.updateReadStatus).toHaveBeenCalled();
     }
-  }
 
-  @testable
-  class updateAudioUri {
-    @test('should call flash toast if load error [JPT-2225]')
-    @mockEntity({
-      attachments: [],
-    })
-    async t1() {
-      jest.spyOn(Notification, 'flashToast').mockImplementation();
-      const vm = new VoicemailItemViewModel({ id: 1 });
-      await vm.updateAudioUri();
-      expect(Notification.flashToast).toHaveBeenCalledWith({
-        message: 'phone.prompt.playVoicemailLoadError',
-        autoHideDuration: 3000,
-        type: ToastType.ERROR,
-        fullWidth: false,
-        dismissible: false,
-        messageAlign: ToastMessageAlign.LEFT,
-      });
-    }
-
-    @test('should return undefined if audio')
-    @mockEntity({
-      attachments: [],
-    })
-    async t2() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
-      const ret = await vm.updateAudioUri();
-      expect(ret).toBeUndefined();
-    }
-
-    @test('should return undefined if audio')
+    @test('should return build new uri if has audio')
     @mockEntity({
       attachments: [
         {
@@ -295,13 +264,34 @@ describe('VoicemailItemViewModel', () => {
     @mockService(voicemailService, 'buildDownloadUrl')
     async t3() {
       const vm = new VoicemailItemViewModel({ id: 1 });
-      await vm.updateAudioUri();
+      await vm.onBeforePlay();
       when(
         () => !!vm.audio,
         () => {
           expect(voicemailService.buildDownloadUrl).toHaveBeenCalled();
         },
       );
+    }
+  }
+
+  @testable
+  class onError {
+    @test('should call flash toast if load error [JPT-2225]')
+    @mockEntity({
+      attachments: [],
+    })
+    async t1() {
+      jest.spyOn(Notification, 'flashToast').mockImplementation();
+      const vm = new VoicemailItemViewModel({ id: 1 });
+      await vm.onError();
+      expect(Notification.flashToast).toHaveBeenCalledWith({
+        message: 'phone.prompt.playVoicemailLoadError',
+        autoHideDuration: 3000,
+        type: ToastType.ERROR,
+        fullWidth: false,
+        dismissible: false,
+        messageAlign: ToastMessageAlign.LEFT,
+      });
     }
   }
 
