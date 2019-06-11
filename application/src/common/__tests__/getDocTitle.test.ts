@@ -1,6 +1,8 @@
-import getDocTitle from '../getDocTitle';
+import { getDocTitle } from '../getDocTitle';
 
-jest.mock('@/utils/i18nT', () => (key: string) => key);
+jest.mock('@/utils/i18nT', () => ({
+  i18nP: (key: string) => key,
+}));
 
 jest.mock('@/store/utils', () => ({
   getEntity: (name: string, id: number) => ({

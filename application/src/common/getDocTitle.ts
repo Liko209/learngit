@@ -68,5 +68,4 @@ function getDocTitle(pathname: string): string {
   return docTitle(subPath);
 }
 
-export default getDocTitle;
-export { getMessagesTitle };
+export { getMessagesTitle, getDocTitle };

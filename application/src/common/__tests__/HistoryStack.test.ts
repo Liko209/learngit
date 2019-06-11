@@ -1,12 +1,16 @@
 import { HistoryStack } from '../HistoryStack';
 
+jest.mock('@/utils/i18nT', () => ({
+  i18nP: (key: string) => key,
+}));
+
 describe('history stack', () => {
   it('should can push pathname to stack', () => {
     const historyStack = new HistoryStack();
-    const pathname = 'text';
+    const pathname = '/messages/text';
     historyStack.push(pathname);
-    const cursor = historyStack.getCursor();
-    const stack = historyStack.getStack();
+    const cursor = historyStack.cursor;
+    const stack = historyStack.stack;
     expect(cursor).toEqual(0);
     expect(stack.length).toEqual(1);
     expect(stack[0]).toEqual(pathname);
@@ -14,59 +18,52 @@ describe('history stack', () => {
 
   it('should can replace pathname to stack', () => {
     const historyStack = new HistoryStack();
-    const pathname1 = 'text1';
-    const pathname2 = 'text2';
-    const pathname3 = 'text3';
+    const pathname1 = '/messages/text1';
+    const pathname2 = '/messages/text2';
+    const pathname3 = '/messages/text3';
     historyStack.replace(pathname1);
-    const stack = historyStack.getStack();
-    let cursor = historyStack.getCursor();
-    expect(cursor).toEqual(0);
-    expect(stack.length).toEqual(1);
-    expect(stack[0]).toEqual(pathname1);
+    expect(historyStack.cursor).toEqual(0);
+    expect(historyStack.stack.length).toEqual(1);
+    expect(historyStack.stack[0]).toEqual(pathname1);
 
     historyStack.push(pathname2);
     historyStack.replace(pathname3);
 
-    cursor = historyStack.getCursor();
-    expect(cursor).toEqual(1);
-    expect(stack.length).toEqual(2);
-    expect(stack[1]).toEqual(pathname3);
+    expect(historyStack.cursor).toEqual(1);
+    expect(historyStack.stack.length).toEqual(2);
+    expect(historyStack.stack[1]).toEqual(pathname3);
   });
 
   it('should can push pathname to stack when stack has pathname and cursor is in range stack length', () => {
     const historyStack = new HistoryStack();
-    const pathname1 = 'text1';
-    const pathname2 = 'text2';
-    const pathname3 = 'text3';
-    const pathname4 = 'text4';
+    const pathname1 = '/messages/text1';
+    const pathname2 = '/messages/text2';
+    const pathname3 = '/messages/text3';
+    const pathname4 = '/messages/text4';
     historyStack.push(pathname1);
     historyStack.push(pathname2);
     historyStack.push(pathname3);
-    let cursor = historyStack.getCursor();
-    const stack = historyStack.getStack();
-    expect(cursor).toEqual(2);
-    expect(stack.length).toEqual(3);
+    expect(historyStack.cursor).toEqual(2);
+    expect(historyStack.stack.length).toEqual(3);
 
     historyStack.setCursor(1);
-    cursor = historyStack.getCursor();
-    expect(cursor).toEqual(1);
-    expect(stack.length).toEqual(3);
+    expect(historyStack.cursor).toEqual(1);
+    expect(historyStack.stack.length).toEqual(3);
 
     historyStack.push(pathname4);
-    cursor = historyStack.getCursor();
-    expect(cursor).toEqual(2);
-    expect(stack.length).toEqual(3);
-    expect(stack[0]).toEqual(pathname1);
-    expect(stack[1]).toEqual(pathname2);
-    expect(stack[2]).toEqual(pathname4);
+    expect(historyStack.cursor).toEqual(2);
+    expect(historyStack.stack.length).toEqual(3);
+    expect(historyStack.stack[0]).toEqual(pathname1);
+    expect(historyStack.stack[1]).toEqual(pathname2);
+    expect(historyStack.stack[2]).toEqual(pathname4);
   });
 
   it('should return correct BackRecord and correct ForwardRecord', () => {
     const historyStack = new HistoryStack();
-    const pathname1 = 'text1';
-    const pathname2 = 'text2';
-    const pathname3 = 'text3';
-    const pathname4 = 'text4';
+    const pathname1 = '/messages/text1';
+    const pathname2 = '/messages/text2';
+    const pathname3 = '/messages/text3';
+    const pathname4 = '/messages/text4';
     historyStack.push(pathname1);
     historyStack.push(pathname2);
     historyStack.push(pathname3);
@@ -110,9 +107,9 @@ describe('history stack', () => {
 
   it('should return current cursor value', () => {
     const historyStack = new HistoryStack();
-    const pathname1 = 'text1';
-    const pathname2 = 'text2';
-    const pathname3 = 'text3';
+    const pathname1 = '/messages/text1';
+    const pathname2 = '/messages/text2';
+    const pathname3 = '/messages/text3';
 
     historyStack.push(pathname1);
     historyStack.push(pathname2);
