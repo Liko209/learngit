@@ -37,8 +37,9 @@ class ColonEmojiView extends Component<ColonEmojiViewProps, State> {
         : ITEM_HEIGHT * memberIdsLength;
     const width = size.width;
     const height = colonEmojiHeight;
-
-    this.setState({ height, width });
+    if (height !== this.state.height || width !== this.state.width) {
+      this.setState({ height, width });
+    }
   }
 
   componentDidUpdate(prevProps: ColonEmojiViewProps) {
