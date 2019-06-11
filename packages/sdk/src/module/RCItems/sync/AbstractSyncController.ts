@@ -234,7 +234,8 @@ abstract class AbstractSyncController<
           true,
         );
       } else {
-        notificationCenter.emitEntityUpdate<T, IdType>(this._entityKey, data);
+        data.length &&
+          notificationCenter.emitEntityUpdate<T, IdType>(this._entityKey, data);
       }
     }
     return data;
