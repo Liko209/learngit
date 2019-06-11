@@ -33,6 +33,7 @@ type Props = {
   toggleButtonLabel?: string;
   handleKeepOpenChange?: () => void;
   isKeepOpen?: boolean;
+  i18nObj?: object;
 };
 
 const StyledCutomizedComponentContainer = styled.span<{
@@ -197,6 +198,7 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
       handleKeepOpenChange,
       isKeepOpen,
       theme,
+      i18nObj,
     } = this.props;
     return (
       <HotKeys
@@ -216,6 +218,7 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
             disablePortal={true}
           >
             <Picker
+              i18n={i18nObj}
               color={theme && theme.palette.primary.main}
               sheetSize={sheetSize}
               title={title || ''}

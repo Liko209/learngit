@@ -145,6 +145,34 @@
     "messageTypeNameSMS": "text",
     "jumpToConversation": "Jump to conversation",
     "emoji": {
+      "i18n": {
+        "search": "123",
+        "clear": "Clear",
+        "notfound": "No Emoji Found",
+        "skintext": "Choose your default skin tone",
+        "categories": {
+          "search": "Search Results",
+          "recent": "Frequently Used",
+          "people": "Smileys & People",
+          "nature": "456",
+          "foods": "Food & Drink",
+          "activity": "Activity",
+          "places": "Travel & Places",
+          "objects": "Objects",
+          "symbols": "Symbols",
+          "flags": "Flags",
+          "custom": "Custom"
+        },
+        "categorieslabel": "Emoji categories",
+        "skintones": {
+          "default": "Default Skin Tone",
+          "light": "Light Skin Tone",
+          "mediumLight": "Medium-Light Skin Tone",
+          "medium": "Medium Skin Tone",
+          "mediumDark": "Medium-Dark Skin Tone",
+          "dark": "Dark Skin Tone"
+        }
+      },
       "emojiDefaultTitle": "Pick your emoji",
       "toggleButtonLabel": "Keep open",
       "emojiMatching": "Emojis matching"
