@@ -13,8 +13,7 @@ fixture('Telephony/Forward')
 .beforeEach(setupCase(BrandTire.RC_WITH_PHONE))
 .afterEach(teardownCase());
 
-// currently SDET do not support forward list account so this case will be pending
-
+// skip this case due to currently SDET do not support forward list account so this case will be pending
 // test.meta(<ITestMeta>{
 //   caseIds: ['JPT-2114'],
 //   priority: ['P2'],
