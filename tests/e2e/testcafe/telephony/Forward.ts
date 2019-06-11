@@ -221,6 +221,11 @@ test.meta(<ITestMeta>{
     await telephonyDialog.clickCustomForwardButton();
   });
 
+  await h(t).withLog('Then check forward title exist', async () => {
+    const title = "Forward Call"
+    await telephonyDialog.existForwardTitle(title);
+  });
+
   await h(t).withLog('When I click "703" on the keypad ', async () => {
     await telephonyDialog.tapKeypad('703');
   });
@@ -229,7 +234,12 @@ test.meta(<ITestMeta>{
     await telephonyDialog.clickForwardActionButton();
   });
 
-    await h(t).withLog('Then forwarder dialog should displayed', async () => {
+  const alertText = 'Your call was forwarded successfully.'
+  await h(t).withLog(`And there should be fail flash toast (short = 2s) displayed "${alertText}"`, async () => {
+    await app.homePage.alertDialog.shouldBeShowMessage(alertText);
+  });
+
+  await h(t).withLog('Then forwarder dialog should displayed', async () => {
     await forwarderWebPhone.waitForStatus('invited');
   });
 

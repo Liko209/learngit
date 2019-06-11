@@ -17,6 +17,10 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-dialer-title-left');
   }
 
+  get titleLabel() {
+    return this.getSelectorByAutomationId('telephony-dialer-title-left');
+  }
+
   get header() {
     return this.getSelectorByAutomationId('telephony-dialer-header');
   }
@@ -396,6 +400,10 @@ export class TelephonyDialog extends BaseWebComponent {
 
   async clickForwardActionButton() {
     await this.t.click(this.forwardActionButton);
+  }
+
+  async existForwardTitle(text: string) {
+    await this.t.expect(this.titleLabel.withText(text).exists).ok();
   }
 }
 
