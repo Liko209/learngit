@@ -13,6 +13,7 @@ import { JuiListItemAvatar, JuiListItemText } from '../../../components/Lists';
 import { ContactItem } from '../../ContactInfo';
 import { JuiIconography, IconColor } from '../../../foundation/Iconography';
 import styled from '../../../foundation/styled-components';
+import { Palette } from '../../../foundation/theme/theme';
 
 type Props = {
   isUnread: boolean;
@@ -27,6 +28,11 @@ const CallLogStatus = (props: Props) => {
   const color: IconColor = isMissedCall
     ? ['accent', 'tomato']
     : ['grey', '600'];
+
+  const textColor: [keyof Palette, string] = isMissedCall
+    ? ['accent', 'tomato']
+    : ['grey', '900'];
+
   return (
     <ContactItem disableButton={true} isUnread={isUnread}>
       <JuiListItemAvatar>
@@ -37,6 +43,7 @@ const CallLogStatus = (props: Props) => {
       <JuiListItemText
         alignCenter={true}
         primary={callType}
+        primaryColor={textColor}
         secondary={duration}
       />
     </ContactItem>
