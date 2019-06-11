@@ -4,8 +4,9 @@
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
 
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import JuiText from 'jui/components/Text/Text';
 import { EMAIL_NOTIFICATION_OPTIONS } from 'sdk/module/profile';
 
 type EmailNotificationItemProps = {
@@ -17,8 +18,10 @@ class EmailNotificationTimeSelectItem extends Component<
 > {
   render() {
     const { value, t } = this.props;
-    return t(
-      `setting.notificationAndSounds.emailNotifications.options.${value}`,
+    return (
+      <JuiText>
+        {t(`setting.notificationAndSounds.emailNotifications.options.${value}`)}
+      </JuiText>
     );
   }
 }
