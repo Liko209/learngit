@@ -14,6 +14,7 @@ fixture('Telephony/Forward')
 .afterEach(teardownCase());
 
 // skip this case due to currently SDET do not support forward list account so this case will be pending
+
 // test.meta(<ITestMeta>{
 //   caseIds: ['JPT-2114'],
 //   priority: ['P2'],
