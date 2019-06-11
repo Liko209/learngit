@@ -35,6 +35,7 @@ class JuiFileWithPreview extends React.PureComponent<JuiFileWithPreviewProps> {
         <Jui.FileCardMedia
           image={url}
           disabled={disabled}
+          data-test-automation-id={'fileCardMedia'}
           onClick={handleFileClick}
         />
         <Jui.FileCardContent>

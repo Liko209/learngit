@@ -78,6 +78,7 @@ class JuiThumbnail extends React.PureComponent<JuiThumbnailProps> {
         ) : (
           <JuiIconography
             iconSize={size === 'small' ? 'small' : 'extraLarge'}
+            data-test-automation-id="iconThumbnail"
             onClick={onClick}
           >
             {iconType}
