@@ -10,6 +10,7 @@ import MuiDrawer, { DrawerProps } from '@material-ui/core/Drawer/index';
 import { JuiViewerThumbnail, ThumbnailInfoType } from '../ViewerThumbnail';
 import { getVisibleElements, scrollIntoViewWithContainer } from '../ui_utils';
 import { duration } from '@material-ui/core/styles/transitions';
+import { HotKeys } from '../../../hoc/HotKeys';
 
 type VisibleThumbnailType = {
   view: ThumbnailContainerItemsType;
@@ -184,14 +185,16 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
     return null;
   }
 
+  private _emitSelectedCallback = (toIdx: number) => {
+    const { onSelectedChanged } = this.props;
+    onSelectedChanged && onSelectedChanged(toIdx);
+  }
+
   handleItemSelected = (e: any, info: ThumbnailInfoType) => {
     const { thumbnailNumber } = info;
     const { currentSelectedIndex } = this.state;
     if (currentSelectedIndex !== thumbnailNumber) {
-      this._updateSelectedByIndex(thumbnailNumber, (toIdx: number) => {
-        const { onSelectedChanged } = this.props;
-        onSelectedChanged && onSelectedChanged(toIdx);
-      });
+      this._updateSelectedByIndex(thumbnailNumber, this._emitSelectedCallback);
     }
   }
 
@@ -228,6 +231,24 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
     return null;
   }
 
+  private _onArrowUpKeydown = (e: KeyboardEvent) => {
+    const { currentSelectedIndex } = this.state;
+    this._updateSelectedByIndex(
+      currentSelectedIndex - 1,
+      this._emitSelectedCallback,
+    );
+    e.preventDefault();
+  }
+
+  private _onArrowDownKeydown = (e: KeyboardEvent) => {
+    const { currentSelectedIndex } = this.state;
+    this._updateSelectedByIndex(
+      currentSelectedIndex + 1,
+      this._emitSelectedCallback,
+    );
+    e.preventDefault();
+  }
+
   render() {
     const { open } = this.props;
     const transitionDuration = {
@@ -242,9 +263,16 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
         classes={{ paper: 'paper' }}
         transitionDuration={transitionDuration}
       >
-        <ViewerSidebarContentWrap ref={this.container as any}>
-          {this.renderThumbnail()}
-        </ViewerSidebarContentWrap>
+        <HotKeys
+          keyMap={{
+            up: this._onArrowUpKeydown,
+            down: this._onArrowDownKeydown,
+          }}
+        >
+          <ViewerSidebarContentWrap ref={this.container as any}>
+            {this.renderThumbnail()}
+          </ViewerSidebarContentWrap>
+        </HotKeys>
       </ViewerSidebarWrap>
     );
   }
