@@ -24,7 +24,7 @@ const NOTIFICATION_BROWSER = 'NotificationBrowserSettingItem';
 type Props = WithTranslation & NotificationBrowserSettingItemViewProps;
 type State = {
   dialogOpen: boolean;
-  isPending: boolean;
+  waitForPermission: boolean;
 };
 @observer
 class NotificationBrowserSettingItemViewComponent extends Component<
@@ -42,7 +42,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
     super(props);
     this.state = {
       dialogOpen: false,
-      isPending: false,
+      waitForPermission: false,
     };
   }
 
@@ -94,14 +94,9 @@ class NotificationBrowserSettingItemViewComponent extends Component<
 
   private _requestPermission = async () => {
     this.setState({
-      isPending: true,
+      waitForPermission: true,
     });
     const permission = await this._permission.request();
-    setTimeout(() => {
-      this.setState({
-        isPending: false,
-      });
-    },         0);
     return permission;
   }
 
@@ -123,6 +118,9 @@ class NotificationBrowserSettingItemViewComponent extends Component<
             await this.props.setToggleState(checked);
             this._showEnabledNotification();
           }
+          this.setState({
+            waitForPermission: false,
+          });
           break;
         case PERMISSION.GRANTED:
           await this.props.setToggleState(checked);
@@ -152,7 +150,8 @@ class NotificationBrowserSettingItemViewComponent extends Component<
       'setting.notificationAndSounds.desktopNotifications.notificationsForBrowser.description',
     );
 
-    const checked = this.state.isPending || desktopNotifications || false;
+    const checked =
+      this.state.waitForPermission || desktopNotifications || false;
     return (
       <JuiSettingSectionItem
         id="notificationBrowserSetting"
