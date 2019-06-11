@@ -129,7 +129,9 @@ class ItemListViewComponent extends Component<Props, State> {
         size.height - LIST_OUTTER_HEIGHT,
       );
     }
-    this.setState({ height, width });
+    if (height !== this.state.height || width !== this.state.width) {
+      this.setState({ height, width });
+    }
   }
 
   render() {

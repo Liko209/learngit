@@ -7,11 +7,13 @@ import { GroupPage } from './groupPage';
 import { HomePage } from './homePage';
 import { Page } from './page';
 import { SearchPage } from './searchPage';
+import { DialerPage } from './dialerPage';
 
 export {
   ConversationPage,
   GroupPage,
   HomePage,
   Page,
-  SearchPage
+  SearchPage,
+  DialerPage
 }
