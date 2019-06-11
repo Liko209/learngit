@@ -11,6 +11,7 @@ import { JuiMenuItem } from 'jui/components/Menus';
 import { SelectSettingItemViewProps, SelectSettingItemProps } from './types';
 import { JuiSettingSectionItem } from 'jui/pattern/SettingSectionItem';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import JuiText from 'jui/components/Text/Text';
 import { catchError } from '@/common/catchError';
 
 type SourceItemType =
@@ -96,7 +97,7 @@ class SelectSettingItemViewComponent<
     return ItemComponent ? (
       <ItemComponent key={itemValue} value={sourceItem} source={source} />
     ) : (
-      itemValue
+      <JuiText>{itemValue}</JuiText>
     );
   }
 }
