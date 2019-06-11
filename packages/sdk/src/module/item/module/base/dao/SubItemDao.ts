@@ -72,7 +72,7 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
 
     // ie or edge does not support array type index
     return isIEOrEdge
-      ? query.contain('group_ids', groupId)
+      ? query.filter(item => item.group_ids.includes(groupId))
       : isFirefox
       ? query.contain('group_ids', groupId)
       : query.equal('group_ids', groupId);
