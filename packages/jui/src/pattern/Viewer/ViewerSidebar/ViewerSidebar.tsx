@@ -11,6 +11,9 @@ import { JuiViewerThumbnail, ThumbnailInfoType } from '../ViewerThumbnail';
 import { getVisibleElements, scrollIntoViewWithContainer } from '../ui_utils';
 import { duration } from '@material-ui/core/styles/transitions';
 import { HotKeys } from '../../../hoc/HotKeys';
+import _ from 'lodash';
+
+const UPDATE_DEBOUNCE_TIME = 50;
 
 type VisibleThumbnailType = {
   view: ThumbnailContainerItemsType;
@@ -125,22 +128,22 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
     }
   }
 
-  private _updateSelectedByIndex(
-    toIdx: number,
-    emitChangeCallback?: (toIdx: number) => void,
-  ) {
-    if (toIdx >= 0 && toIdx <= this.state.numberThumbnails - 1) {
-      this.setState(
-        {
-          currentSelectedIndex: toIdx,
-        },
-        () => {
-          this._scrollThumbnailIntoView();
-          emitChangeCallback && emitChangeCallback(toIdx);
-        },
-      );
-    }
-  }
+  private _updateSelectedByIndex = _.debounce(
+    (toIdx: number, emitChangeCallback?: (toIdx: number) => void) => {
+      if (toIdx >= 0 && toIdx <= this.state.numberThumbnails - 1) {
+        this.setState(
+          {
+            currentSelectedIndex: toIdx,
+          },
+          () => {
+            this._scrollThumbnailIntoView();
+            emitChangeCallback && emitChangeCallback(toIdx);
+          },
+        );
+      }
+    },
+    UPDATE_DEBOUNCE_TIME,
+  );
 
   private _scrollThumbnailIntoView() {
     const visibleThumbs: VisibleThumbsType | null = this._getVisibleThumbs();
