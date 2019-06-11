@@ -3,8 +3,9 @@
  * @Date: 2019-05-27 10:14:04
  * Copyright © RingCentral. All rights reserved.
  */
-import { observer } from 'mobx-react';
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
+import { observable, action } from 'mobx';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import styled from 'jui/foundation/styled-components';
 import { JuiConversationPageHeader } from 'jui/pattern/ConversationPageHeader';
@@ -13,7 +14,7 @@ import { JuiSettingSectionContainer } from 'jui/pattern/SettingSection';
 import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 import { SettingSection } from '../SettingSection';
 import { SettingPageViewProps, SettingPageProps } from './types';
-import { observable } from 'mobx';
+import { mainLogger } from 'sdk';
 
 // TODO move to jui
 const StyledSettingPage = styled.div`
@@ -25,20 +26,28 @@ type Props = SettingPageProps & SettingPageViewProps & WithTranslation;
 
 @observer
 class SettingPageViewComponent extends Component<Props> {
-  @observable size: Size = { width: 0, height: 0 };
-  @observable sources: HTMLElement[] = [];
+  @observable private _size: Size = { width: 0, height: 0 };
+  @observable private _sources: HTMLElement[] = [];
 
+  @action
   private _handleSizeUpdate = (size: Size) => {
-    this.size = size;
+    this._size = size;
   }
 
+  @action
   private _updateSource = (el: any) => {
-    this.sources = [el];
+    this._sources = [el];
   }
 
   render() {
-    if (!this.props.page) return null;
     const { t, id, page } = this.props;
+
+    if (!page) {
+      mainLogger.warn(
+        '[SettingPageViewComponent] trying to render a setting page without page info',
+      );
+      return null;
+    }
 
     return (
       <StyledSettingPage
@@ -52,9 +61,9 @@ class SettingPageViewComponent extends Component<Props> {
         />
         <JuiSizeDetector
           handleSizeChanged={this._handleSizeUpdate}
-          sources={this.sources}
+          sources={this._sources}
         />
-        <JuiSettingSectionContainer containerWidth={this.size.width}>
+        <JuiSettingSectionContainer containerWidth={this._size.width}>
           {this._renderSections()}
         </JuiSettingSectionContainer>
         <ScrollMemory id={`SETTING_PAGE_${id}`} />
