@@ -50,7 +50,12 @@ class ProgressManager {
         _.sumBy(this._progressInstances, progressInstance =>
           progressInstance.getProgress(),
         ) / this._progressInstances.length;
-      NProgress.set(progress);
+      if (progress < 1) {
+        NProgress.inc();
+        NProgress.inc();
+      } else {
+        NProgress.set(progress);
+      }
     }
     if (progress === 1) {
       this._progressInstances = [];
