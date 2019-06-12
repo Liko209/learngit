@@ -98,6 +98,14 @@ export abstract class BaseWebComponent {
     return this.getSelector(`*[data-test-automation-id="${automationId}"]`, root);
   }
 
+  getSelectorByAutomationClass(automationId: string, root: Selector = null): Selector {
+    return this.getSelector(`*[data-test-automation-class="${automationId}"]`, root);
+  }
+
+  getSelectorByAutomationValue(automationId: string, root: Selector = null): Selector {
+    return this.getSelector(`*[data-test-automation-value="${automationId}"]`, root);
+  }
+
   getSelectorByAnchor(anchor: string, root: Selector = null): Selector {
     return this.getSelector(`*[data-anchor="${anchor}"]`, root);
   }

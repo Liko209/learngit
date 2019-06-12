@@ -307,21 +307,21 @@ class FullSearch extends BaseSearchResultPage {
   }
 
   async countOnHeaderShouldBe(n: number) {
-    H.retryUntilPass(async () => {
+    await H.retryUntilPass(async () => {
       const count = await this.getCountOnHeader();
       assert.strictEqual(count, n, `expect ${n}, but ${count}`);
     })
   }
 
   async countOnHeaderGreaterThanOrEqual(n: number) {
-    H.retryUntilPass(async () => {
+    await H.retryUntilPass(async () => {
       const count = await this.getCountOnHeader();
       assert.ok(count >= n, `expect at least ${n}, but ${count}`);
     })
   }
 
   async countOnHeaderLessThanOrEqual(n: number) {
-    H.retryUntilPass(async () => {
+    await H.retryUntilPass(async () => {
       const count = await this.getCountOnHeader();
       assert.ok(count <= n, `expect less than or equal ${n}, but ${count}`);
     })

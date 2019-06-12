@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { EventEmitter2 } from 'eventemitter2';
-import { EVENT_TYPES, RELOAD_TARGET } from './constants';
+import { EVENT_TYPES } from './constants';
 import _ from 'lodash';
 import { IdModel, Raw, ModelIdType } from '../framework/model';
 
@@ -54,7 +54,6 @@ export type NotificationEntityResetPayload = {
 
 export type NotificationEntityReloadPayload<IdType extends ModelIdType = number> = {
   type: EVENT_TYPES.RELOAD;
-  target: RELOAD_TARGET;
   isReloadAll: boolean;
   body: NotificationEntityIds<IdType>;
 };
@@ -188,7 +187,6 @@ class NotificationCenter extends EventEmitter2 {
 
   emitEntityReload<IdType extends ModelIdType = number>(
     key: string,
-    target: RELOAD_TARGET,
     ids: IdType[],
     isReloadAll?: boolean,
   ): void {
@@ -196,7 +194,6 @@ class NotificationCenter extends EventEmitter2 {
       ids,
     };
     const notification: NotificationEntityReloadPayload<IdType> = {
-      target,
       isReloadAll: isReloadAll ? isReloadAll : false,
       body: notificationBody,
       type: EVENT_TYPES.RELOAD,

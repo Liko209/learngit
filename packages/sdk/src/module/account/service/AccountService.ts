@@ -33,6 +33,8 @@ class AccountService extends AbstractService
   static serviceName = 'AccountService';
   static _instance: AccountService;
 
+  private _refreshTokenQueue: ((token: ITokenModel | null) => void)[] = [];
+  private _isRefreshingToken: boolean;
   private _authController: AuthController;
   private _userConfig: AccountUserConfig;
   private _authUserConfig: AuthUserConfig;
@@ -101,12 +103,39 @@ class AccountService extends AbstractService
   }
 
   async refreshRCToken(): Promise<ITokenModel | null> {
-    const oldRcToken = this.authUserConfig.getRCToken();
-    const newRcToken = (await RCAuthApi.refreshToken(
-      oldRcToken,
-    )) as ITokenModel;
-    setRCToken(newRcToken);
-    return newRcToken;
+    if (this._isRefreshingToken) {
+      return new Promise<ITokenModel | null>(resolve => {
+        this._refreshTokenQueue.push(resolve);
+      });
+    }
+
+    this._isRefreshingToken = true;
+    return new Promise<ITokenModel | null>(async resolve => {
+      const result = await this._doRefreshRCToken();
+      resolve(result);
+
+      this._refreshTokenQueue.forEach(
+        (value: (token: ITokenModel | null) => void) => {
+          value(result);
+        },
+      );
+      this._refreshTokenQueue = [];
+      this._isRefreshingToken = false;
+    });
+  }
+
+  private async _doRefreshRCToken(): Promise<ITokenModel | null> {
+    try {
+      const oldRcToken = this.authUserConfig.getRCToken();
+      const newRcToken = (await RCAuthApi.refreshToken(
+        oldRcToken,
+      )) as ITokenModel;
+      setRCToken(newRcToken);
+      return newRcToken;
+    } catch (error) {
+      mainLogger.tags(LOG_TAG).warn('failed to refresh token', error);
+      return null;
+    }
   }
 
   async getRCToken() {

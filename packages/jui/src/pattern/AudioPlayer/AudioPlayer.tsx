@@ -72,11 +72,11 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
     this._audio.onerror = this._onError;
     this._audio.onplay = this._onPlay;
     this._audio.onended = this._onEnded;
-    this._audio.oncanplay = this._onCanplay;
+    this._audio.onplaying = this._onPlaying;
     this._audio.ontimeupdate = this._onTimeUpdate;
   }
 
-  private _onCanplay = () => {
+  private _onPlaying = () => {
     const { status } = this.state;
     if (this._loadingTimer) {
       clearTimeout(this._loadingTimer);
@@ -133,9 +133,9 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
     this.setState({ timestamp });
   }
 
-  private _onAction: IJuiAudioAction = (status: JuiAudioStatus) => {
+  private _onAction: IJuiAudioAction = async (status: JuiAudioStatus) => {
     const { onBeforeAction } = this.props;
-    onBeforeAction && onBeforeAction(status);
+    onBeforeAction && (await onBeforeAction(status));
     this[status]();
   }
 
@@ -164,12 +164,11 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
     const { src, onBeforePlay } = this.props;
 
     onBeforePlay && onBeforePlay();
-
     // if will play link is http://www.google.com:80
     // audio.src will is http://www.google.com  ignore 80
     // so we cache current play src till src change
     // and set new src again
-    if (this._currentSrc !== src) {
+    if (this._currentSrc !== src && src !== '') {
       this._audio.src = src;
       this._currentSrc = src;
     }

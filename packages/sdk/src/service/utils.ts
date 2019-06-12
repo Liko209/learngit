@@ -26,6 +26,8 @@ const isIEOrEdge =
 
 const isChrome = !isIEOrEdge && navigator.platform.indexOf('Chrome') > -1;
 
+const isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
+
 const transform = <T extends { id: any }>(item: any): T => {
   if (isObject(item)) {
     /* eslint-disable no-underscore-dangle, no-param-reassign */
@@ -113,4 +115,5 @@ export {
   isFunction,
   isIEOrEdge,
   isChrome,
+  isFirefox,
 };

@@ -44,7 +44,9 @@ describe('ForwardBtnViewModel', () => {
     jest.clearAllMocks();
     vm = new ForwardBtnViewModel();
     vm._telephonyService.forward = jest.fn();
-    vm._telephonyService.isValidNumber = jest.fn().mockReturnValue(true);
+    vm._telephonyService.isValidNumber = jest
+      .fn()
+      .mockReturnValue({ isValid: true });
   });
   it('should call forward function', async () => {
     vm._telephonyStore.forwardString = '123';
@@ -57,7 +59,9 @@ describe('ForwardBtnViewModel', () => {
 
   it('should call invalid forward number should prompt toast [JPT-2140]', async () => {
     vm._telephonyStore.forwardString = 'aac';
-    vm._telephonyService.isValidNumber = jest.fn().mockReturnValue(false);
+    vm._telephonyService.isValidNumber = jest
+      .fn()
+      .mockReturnValue({ isValid: false });
     await vm.forward();
     const _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,
