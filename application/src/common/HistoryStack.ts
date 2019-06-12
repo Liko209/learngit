@@ -67,10 +67,8 @@ class HistoryStack {
   }
 
   isInvalidPath(pathname: string) {
-    const paths = pathname.split('/');
-    const category = paths[1].toLocaleLowerCase();
-    const subPath = paths[2];
-    return category === MESSAGES_CATEGORY_ROUTER && !getMessagesTitle(subPath);
+    const [, category, subPath] = pathname.split('/');
+    return category.toLocaleLowerCase() === MESSAGES_CATEGORY_ROUTER && !getMessagesTitle(subPath);
   }
 
   get cursor() {

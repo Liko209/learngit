@@ -38,7 +38,9 @@ describe('backNForward ViewModel', () => {
   });
   @testable
   class cursor {
-    @test('should not change history stack cursor when history stack cursor is in the history stack start or end')
+    @test(
+      'should not change history stack cursor when history stack cursor is in the history stack start or end',
+    )
     t1() {
       let oldCursor = historyStack.cursor;
       backNForwardViewModel.forward();
@@ -70,7 +72,6 @@ describe('backNForward ViewModel', () => {
 
   @testable
   class backRecord {
-
     @test('should return correct record when get backRecord')
     t1() {
       times(22, (value: number) => {
