@@ -38,7 +38,7 @@ class ConversationPostView extends Component<ConversationPostViewProps> {
     const target = getAtMentionNode(event.target as HTMLElement);
     const className = target.getAttribute('class') || '';
     const id =
-      target.getAttribute('id') === '-1'
+      target.getAttribute('id') === '-1' && this.props.isTeamMention
         ? this.props.conversationId
         : Number(target.getAttribute('id'));
     if (className.indexOf('at_mention_compose') > -1) {

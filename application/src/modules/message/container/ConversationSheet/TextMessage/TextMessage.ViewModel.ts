@@ -78,8 +78,12 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
       };
     });
     kv['-1'] = {
-      name: i18nP('message.atMentionAllTeam'),
-      isCurrent: true,
+      name: post.isAdminMention
+        ? i18nP('message.atMentionAllAdmin')
+        : i18nP('message.atMentionAllTeam'),
+      isCurrent:
+        post.isTeamMention ||
+        (post.isAdminMention && this.getGroup(post.groupId).isAdmin),
     };
     return kv;
   }

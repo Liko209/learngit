@@ -38,6 +38,8 @@ export type Post = ExtendedBaseModel & {
     page?: number; // page and anno_id is for document only
   };
   icon?: string; // for integration
+  is_team_mention?: boolean;
+  is_admin_mention?: boolean;
 };
 
 export type PostView = IdModel & {

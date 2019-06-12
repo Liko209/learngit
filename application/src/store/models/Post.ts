@@ -44,6 +44,8 @@ export default class PostModel extends Base<Post> {
   @observable
   deactivated?: boolean;
   @observable icon?: string;
+  @observable isTeamMention?: boolean;
+  @observable isAdminMention?: boolean;
 
   constructor(data: Post) {
     super(data);
@@ -63,6 +65,8 @@ export default class PostModel extends Base<Post> {
       parent_id,
       deactivated,
       icon,
+      is_admin_mention,
+      is_team_mention,
     } = data;
     this.createdAt = created_at;
     this.creatorId = creator_id;
@@ -79,6 +83,8 @@ export default class PostModel extends Base<Post> {
     this.parentId = parent_id;
     this.deactivated = deactivated;
     this.icon = icon;
+    this.isAdminMention = is_admin_mention;
+    this.isTeamMention = is_team_mention;
   }
 
   @computed
