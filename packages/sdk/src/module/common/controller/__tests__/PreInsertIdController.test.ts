@@ -38,62 +38,92 @@ describe('PreInsertIdController()', () => {
   describe('constructor()', () => {
     it('should return [] when new a PreInsertIdController instance', () => {
       const controller = getController();
-      expect(controller.getAll()).toEqual([]);
+      expect(controller.getAll()).toEqual({
+        uniqueIds: [],
+        ids: [],
+      });
     });
   });
 
   describe('insert()', () => {
     it('should have data after insert ids', async () => {
       const controller = getController();
-      await controller.insert('10');
+      await controller.insert('1001', 10);
       const all = controller.getAll();
-      expect(all).toEqual(['10']);
+      expect(all).toEqual({
+        uniqueIds: ['1001'],
+        ids: [10],
+      });
     });
   });
 
   describe('delete()', () => {
     it('should remove id from the map when it is existed in map', async () => {
       const controller = getController();
-      await controller.insert('10');
+      await controller.insert('10', 10);
       let all = controller.getAll();
-      expect(all).toEqual(['10']);
+      expect(all).toEqual({
+        uniqueIds: ['10'],
+        ids: [10],
+      });
       await controller.delete('10');
       all = controller.getAll();
-      expect(all).toEqual([]);
+      expect(all).toEqual({
+        uniqueIds: [],
+        ids: [],
+      });
     });
 
     it('should do nothing when it is not existed in map', async () => {
       const controller = getController();
-      await controller.insert('10');
+      await controller.insert('10', 10);
       let all = controller.getAll();
-      expect(all).toEqual(['10']);
+      expect(all).toEqual({
+        uniqueIds: ['10'],
+        ids: [10],
+      });
       await controller.delete('11');
       all = controller.getAll();
-      expect(all).toEqual(['10']);
+      expect(all).toEqual({
+        uniqueIds: ['10'],
+        ids: [10],
+      });
     });
   });
 
   describe('bulkDelete()', () => {
     it('should remove ids from the map when it is existed in map', async () => {
       const controller = getController();
-      await controller.insert('10');
-      await controller.insert('11');
+      await controller.insert('111000', 10);
+      await controller.insert('111001', 12);
       let all = controller.getAll();
-      expect(all).toEqual(['10', '11']);
-      await controller.bulkDelete(['10']);
+      expect(all).toEqual({
+        uniqueIds: ['111000', '111001'],
+        ids: [10, 12],
+      });
+      await controller.bulkDelete(['111000']);
       all = controller.getAll();
-      expect(all).toEqual(['11']);
+      expect(all).toEqual({
+        uniqueIds: ['111001'],
+        ids: [12],
+      });
     });
 
     it('should do nothing when ids not existed in map', async () => {
       const controller = getController();
-      await controller.insert('10');
-      await controller.insert('12');
+      await controller.insert('111000', 10);
+      await controller.insert('111001', 12);
       let all = controller.getAll();
-      expect(all).toEqual(['10', '12']);
-      await controller.bulkDelete(['11']);
+      expect(all).toEqual({
+        uniqueIds: ['111000', '111001'],
+        ids: [10, 12],
+      });
+      await controller.bulkDelete(['1110001']);
       all = controller.getAll();
-      expect(all).toEqual(['10', '12']);
+      expect(all).toEqual({
+        uniqueIds: ['111000', '111001'],
+        ids: [10, 12],
+      });
     });
   });
 });

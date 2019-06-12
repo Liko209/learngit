@@ -56,7 +56,10 @@ class SendPostController implements ISendPostController {
       companyId,
       ...params,
     };
-    const rawInfo = this._helper.buildRawPostInfo(paramsInfo);
+    const rawInfo = this._helper.buildRawPostInfo(
+      paramsInfo,
+      this.preInsertController.getAll(),
+    );
     await this.innerSendPost(rawInfo, false);
   }
 
