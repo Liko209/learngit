@@ -8,6 +8,7 @@ import { StorePage } from '../../store/SettingStoreScope';
 
 type SettingPageProps = {
   id: string;
+  containerRef: React.RefObject<any>;
 };
 
 type SettingPageViewProps = {

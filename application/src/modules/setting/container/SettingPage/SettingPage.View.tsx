@@ -43,12 +43,17 @@ class SettingPageViewComponent extends Component<Props> {
 
   render() {
     const { t, id, page } = this.props;
+    const { width } = this._size;
 
     if (!page) {
       mainLogger.warn(
         '[SettingPageViewComponent] trying to render a setting page without page info',
       );
       return null;
+    }
+    const { containerRef } = this.props;
+    if (containerRef.current && !this._sources) {
+      this._sources = [containerRef.current];
     }
 
     return (
@@ -65,9 +70,11 @@ class SettingPageViewComponent extends Component<Props> {
           handleSizeChanged={this._handleSizeUpdate}
           sources={this._sources}
         />
-        <JuiSettingSectionContainer containerWidth={this._size.width}>
-          {this._renderSections()}
-        </JuiSettingSectionContainer>
+        {width ? (
+          <JuiSettingSectionContainer containerWidth={width}>
+            {this._renderSections()}
+          </JuiSettingSectionContainer>
+        ) : null}
         <ScrollMemory id={`SETTING_PAGE_${id}`} />
       </StyledSettingPage>
     );
