@@ -25,7 +25,7 @@ const HandleByUpload = new class extends AbstractHandleType {
         }
       }
 
-      return request;
+      return true;
     };
   }
 }();

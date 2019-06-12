@@ -461,5 +461,19 @@ describe('GroupModel', () => {
         },
       );
     });
+
+    it('should return null when no one in person model', async (done: jest.DoneCallback) => {
+      const gm = GroupModel.fromJS({} as Group);
+      expect(gm.displayName).toBe('');
+      when(
+        () => gm.translation !== {},
+        () => {
+          process.nextTick(() => {
+            expect(gm.displayName).toBe('');
+            done();
+          });
+        },
+      );
+    });
   });
 });

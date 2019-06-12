@@ -49,16 +49,8 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
       async (id: number) => {
         this._largeRawImageURL = undefined;
         if (id > 0) {
-          const item = this.item;
-          const info = {
-            id: item.id,
-            type: item.type,
-            versionUrl: item.versionUrl || '',
-            versions: item.versions,
-          };
-
           // get from thumb first
-          this._largeRawImageURL = getThumbnailURL(info, {
+          this._largeRawImageURL = getThumbnailURL(this.item, {
             width: LARGE_IMAGE_SIZE,
             height: LARGE_IMAGE_SIZE,
           });

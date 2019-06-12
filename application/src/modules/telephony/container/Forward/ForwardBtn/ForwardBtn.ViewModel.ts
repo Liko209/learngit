@@ -39,9 +39,10 @@ class ForwardBtnViewModel extends StoreViewModel<Props> implements ViewProps {
     });
   }
   forward = async () => {
-    if (
-      !this._telephonyService.isValidNumber(this._telephonyStore.forwardString)
-    ) {
+    const { isValid } = await this._telephonyService.isValidNumber(
+      this._telephonyStore.forwardString,
+    );
+    if (!isValid) {
       return ToastCallError.toastInvalidNumber();
     }
     try {

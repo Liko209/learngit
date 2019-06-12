@@ -5,10 +5,9 @@
  */
 
 import { RCItemApi } from '../RCItemApi';
-import { NETWORK_VIA } from 'foundation';
+import { NETWORK_VIA, REQUEST_HEADER_KEYS, CONTENT_TYPES } from 'foundation';
 import { CallLogSyncParams, RCMessageSyncParams } from '../types/RCItemSync';
 import { SYNC_TYPE } from 'sdk/module/RCItems/sync';
-import { HTTP_HEADER_KEY, CONTENT_TYPE } from '../constants';
 import { READ_STATUS } from 'sdk/module/RCItems/constants';
 
 jest.mock('../../api');
@@ -107,7 +106,7 @@ describe('RCItemApi', () => {
         method: 'put',
         authFree: false,
         via: NETWORK_VIA.HTTP,
-        headers: { [HTTP_HEADER_KEY.CONTENT_TYPE]: CONTENT_TYPE.JSON },
+        headers: { [REQUEST_HEADER_KEYS.CONTENT_TYPE]: CONTENT_TYPES.JSON },
       });
     });
   });

@@ -44,9 +44,6 @@ class IncomingViewModel extends StoreViewModel<IncomingProps>
   }
 
   @observable
-  didHitAutoPolicy: boolean = false;
-
-  @observable
   windowActivated?: boolean;
 
   constructor(props: IncomingProps) {

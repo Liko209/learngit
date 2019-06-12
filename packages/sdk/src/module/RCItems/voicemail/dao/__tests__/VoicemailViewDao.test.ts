@@ -104,7 +104,7 @@ describe('VoicemailViewDao', () => {
         QUERY_DIRECTION.NEWER,
         1,
       );
-      expect(result).toEqual([3, 2]);
+      expect(result).toEqual([2, 3]);
     });
   });
 });

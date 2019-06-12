@@ -4,8 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+type AttachmentMenuItem = {
+  icon: string;
+  label: string;
+};
+
 type AttachmentViewProps = {
   onFileChanged: (files: FileList) => void;
+  tooltip: string;
+  menus: AttachmentMenuItem[];
+  fileMenu: AttachmentMenuItem;
 };
 
 export { AttachmentViewProps };

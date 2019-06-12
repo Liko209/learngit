@@ -3,13 +3,11 @@
  * @Date: 2018-12-11 15:08:04
  * Copyright © RingCentral. All rights reserved.
  */
-import { Item } from 'sdk/module/item/entity';
+import { Item, ItemVersions } from 'sdk/module/item/entity';
 import { observable, computed } from 'mobx';
 import ItemModel from './Item';
 import { getFileIcon } from '@/common/getFileIcon';
 import { Thumbs } from 'sdk/module/item/module/base/entity/Item';
-import { AccountService } from 'sdk/module/account';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 enum FileType {
   image = 0,
@@ -57,67 +55,52 @@ export default class FileItemModel extends ItemModel {
     this.modifiedAt = modified_at;
   }
 
-  hasVersions() {
-    return this.versions && this.versions.length > 0;
-  }
-
-  private _getVersionsValue(type: string) {
-    return this.versions[0][type] ? this.versions[0][type] : null;
-  }
-
   @computed
   get thumbs(): Thumbs | null {
-    if (!this.hasVersions()) return null;
-    return this._getVersionsValue('thumbs');
+    return this.getVersionsValue('thumbs');
   }
 
   @computed
   get pages() {
     if (!this.hasVersions()) return null;
-    const { pages } = this.versions[0];
+    const { pages } = this.latestVersion;
     return pages && pages.length > 0 ? pages : null;
   }
 
   @computed
   get versionUrl(): string | null {
-    if (!this.hasVersions()) return null;
-    return this._getVersionsValue('url');
+    return this.getVersionsValue('url');
   }
 
   @computed
   get size() {
-    if (!this.hasVersions()) return null;
-    return this._getVersionsValue('size');
+    return this.getVersionsValue('size');
   }
 
   @computed
   get downloadUrl() {
-    if (!this.hasVersions()) return null;
-    return this._getVersionsValue('download_url');
+    return this.getVersionsValue('download_url');
   }
 
   @computed
   get status() {
     if (!this.hasVersions()) return null;
-    return this._getVersionsValue('status');
+    return this.getVersionsValue('status');
   }
 
   @computed
   get origHeight() {
-    if (!this.hasVersions()) return null;
-    return this._getVersionsValue('orig_height');
+    return this.getVersionsValue('orig_height');
   }
 
   @computed
   get origWidth() {
-    if (!this.hasVersions()) return null;
-    return this._getVersionsValue('orig_width');
+    return this.getVersionsValue('orig_width');
   }
 
   @computed
   get storeFileId() {
-    if (!this.hasVersions()) return null;
-    return this._getVersionsValue('stored_file_id');
+    return this.getVersionsValue('stored_file_id');
   }
 
   @computed
@@ -126,16 +109,8 @@ export default class FileItemModel extends ItemModel {
   }
 
   @computed
-  get canDeleteFile() {
-    if (!this.hasVersions()) {
-      return null;
-    }
-    const creatorId = this._getVersionsValue('creator_id');
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
-    const currentUserId = userConfig.getGlipUserId();
-    return creatorId === currentUserId;
+  get latestVersion(): ItemVersions {
+    return this.versions.find(item => !item.deactivated)!;
   }
 
   static fromJS(data: Item) {

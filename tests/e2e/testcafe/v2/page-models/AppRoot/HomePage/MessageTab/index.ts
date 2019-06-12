@@ -1,12 +1,12 @@
 import * as _ from 'lodash';
 import * as assert from 'assert'
-import { BaseWebComponent } from '../../../BaseWebComponent';
+import { BaseWebComponent, Umi } from '../../../BaseWebComponent';
 import { h, H } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
 import { MentionPage, BookmarkPage, ConversationPage, DuplicatePromptPage } from "./ConversationPage";
 import { RightRail } from './RightRail';
 import { LeftRail } from './LeftRail';
-import { EmojiLibrary } from './EmojiLib';
+import { EmojiLibrary, EmojiMatchList } from './EmojiLib';
 
 class Entry extends BaseWebComponent {
   async enter() {
@@ -79,7 +79,7 @@ class MoreMenu extends Entry {
     return this.getToggler('favToggler');
   }
 
-  get markAsReadOrUnread(){
+  get markAsReadOrUnread() {
     return this.getToggler('readOrUnreadConversation');
   }
 
@@ -180,7 +180,7 @@ class ConversationEntry extends BaseWebComponent {
 
 class ConversationSection extends BaseWebComponent {
   get header() {
-    return this.getSelectorByAutomationId('conversation-list-section-header',this.self);
+    return this.getSelectorByAutomationId('conversation-list-section-header', this.self);
   }
 
   get collapse() {
@@ -383,33 +383,8 @@ export class MessageTab extends BaseWebComponent {
     return this.getComponent(EmojiLibrary);
   }
 
-}
-
-class Umi extends BaseWebComponent {
-  async count() {
-    return await this.getNumber(this.self);
+  get emojiMatchList() {
+    return this.getComponent(EmojiMatchList);
   }
 
-  async shouldBeNumber(n: number, maxRetry = 5, interval = 3e3) {
-    await H.retryUntilPass(async () => {
-      const umi = await this.count();
-      assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
-    }, maxRetry, interval);
-  }
-
-  async shouldBeAtMentionStyle() {
-    await H.retryUntilPass(async () => {
-      const umiStyle = await this.self.style;
-      const umiBgColor = umiStyle['background-color'];
-      assert.strictEqual(umiBgColor, 'rgb(255, 136, 0)', `${umiBgColor} not eql specify: rgb(255, 136, 0)`)
-    });
-  }
-
-  async shouldBeNotAtMentionStyle() {
-    await H.retryUntilPass(async () => {
-      const umiStyle = await this.self.style;
-      const umiBgColor = umiStyle['background-color'];
-      assert.strictEqual(umiBgColor, 'rgb(158, 158, 158)', `${umiBgColor} not eql specify: rgb(158, 158, 158)`)
-    });
-  }
 }

@@ -13,7 +13,7 @@
     "postwebpack": "rm -rf ./build ./dist"
   },
   "dependencies": {
-    "@sentry/browser": "4.6.4",
+    "@sentry/browser": "5.4.0",
     "computed-async-mobx": "4.1.1",
     "copy-to-clipboard": "3.0.8",
     "filestack-js": "2.0.2",
