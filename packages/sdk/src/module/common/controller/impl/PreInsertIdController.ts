@@ -8,6 +8,7 @@ import { IPreInsertIdController } from '../interface/IPreInsertIdController';
 import { AccountGlobalConfig } from '../../../../module/account/config';
 import { UserConfigService } from '../../../../module/config';
 import { ServiceConfig, ServiceLoader } from '../../../serviceLoader';
+import { mainLogger } from 'foundation';
 
 const PREINSERT_KEY_ID = 'PREINSERT_KEY_ID';
 
@@ -29,7 +30,15 @@ class PreInsertIdController implements IPreInsertIdController {
       PREINSERT_KEY_ID,
     );
     if (preInsertKeysIds) {
-      this._preInsertIds = JSON.parse(preInsertKeysIds);
+      try {
+        this._preInsertIds = JSON.parse(preInsertKeysIds);
+      } catch (e) {
+        mainLogger.log(
+          `PreInsertIdController Json parser error ${preInsertKeysIds}`,
+        );
+        this._preInsertIds = {};
+        this._syncDataDB();
+      }
     }
   }
 

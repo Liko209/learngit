@@ -43,6 +43,18 @@ describe('PreInsertIdController()', () => {
         ids: [],
       });
     });
+    it('should clear old invalid data without error when they existed', () => {
+      ServiceLoader.getInstance = jest.fn().mockReturnValue({
+        setUserId: jest.fn(),
+        get: jest.fn().mockReturnValueOnce(['-61480964']),
+        put: jest.fn(),
+      });
+      const controller = getController();
+      expect(controller.getAll()).toEqual({
+        uniqueIds: [],
+        ids: [],
+      });
+    });
   });
 
   describe('insert()', () => {
