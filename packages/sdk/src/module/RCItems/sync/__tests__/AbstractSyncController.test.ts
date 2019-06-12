@@ -25,6 +25,7 @@ class TestSyncController extends AbstractSyncController<IdModel> {
   isTokenInvalidError = jest.fn();
   canUpdateSyncToken = jest.fn();
   requestClearAllAndRemoveLocalData = jest.fn();
+  removeLocalData = jest.fn();
   handleDataAndSave = jest.fn();
   sendSyncRequest = jest.fn();
 }

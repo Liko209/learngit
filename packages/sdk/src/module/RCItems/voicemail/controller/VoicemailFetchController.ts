@@ -116,10 +116,14 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
     performanceTracer.trace({
       key: PERFORMANCE_KEYS.CLEAR_ALL_VOICEMAILS_FROM_SERVER,
     });
-    await this._entitySourceController.clear();
+    await this.removeLocalData();
     performanceTracer.end({
       key: PERFORMANCE_KEYS.CLEAR_ALL_VOICEMAILS,
     });
+  }
+
+  protected async removeLocalData(): Promise<void> {
+    await this._entitySourceController.clear();
   }
 
   protected async handleDataAndSave(
@@ -132,10 +136,6 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
 
       const deactivatedVmIds: number[] = [];
       const normalVms: Voicemail[] = [];
-
-      if (data.syncInfo.syncType === SYNC_TYPE.FSYNC) {
-        await this._entitySourceController.clear();
-      }
 
       data.records.forEach(vm => {
         if (vm.availability === MESSAGE_AVAILABILITY.ALIVE) {

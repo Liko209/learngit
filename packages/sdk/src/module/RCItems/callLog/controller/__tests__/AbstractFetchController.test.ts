@@ -10,6 +10,8 @@ import { CALL_LOG_SOURCE } from '../../constants';
 import { ERROR_MSG_RC, ERROR_CODES_RC } from 'sdk/error';
 import { mainLogger } from 'foundation';
 import { RCItemApi } from 'sdk/api';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { RCItemSyncController } from 'sdk/module/RCItems/sync';
 
 class TestFetchController extends AbstractFetchController {
   handleDataAndSave = jest.fn();
@@ -34,9 +36,16 @@ describe('AbstractFetchController', () => {
   const mockBadgeController = {
     handleCallLogs: jest.fn(),
   };
+  const mockCallLogService = {
+    userConfig: {
+      setPseudoCallLogInfo: jest.fn(),
+    },
+    resetFetchControllers: jest.fn(),
+  };
 
   function setUp() {
     mainLogger.tags = jest.fn().mockReturnValue({ info: jest.fn() });
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(mockCallLogService);
     controller = new TestFetchController(
       'test',
       mockConfig as any,
@@ -123,11 +132,37 @@ describe('AbstractFetchController', () => {
   });
 
   describe('requestClearAllAndRemoveLocalData', () => {
-    it('should call api and source controller', async () => {
+    it('should call api and clear local data', async () => {
       RCItemApi.deleteAllCallLogs = jest.fn();
+      controller['removeLocalData'] = jest.fn();
+
       await controller['requestClearAllAndRemoveLocalData']();
       expect(RCItemApi.deleteAllCallLogs).toBeCalled();
+      expect(controller['removeLocalData']).toBeCalled();
+    });
+  });
+
+  describe('removeLocalData', () => {
+    it('should call source controller and config', async () => {
+      await controller['removeLocalData']();
       expect(mockSourceController.clear).toBeCalled();
+      expect(mockCallLogService.userConfig.setPseudoCallLogInfo).toBeCalled();
+    });
+  });
+
+  describe('reset', () => {
+    it('should call resetFetchControllers', async () => {
+      await controller.reset();
+      expect(mockCallLogService.resetFetchControllers).toBeCalled();
+    });
+  });
+
+  describe('internalReset', () => {
+    it('should call super reset', async () => {
+      RCItemSyncController.prototype.reset = jest.fn();
+
+      await controller.internalReset();
+      expect(RCItemSyncController.prototype.reset).toBeCalled();
     });
   });
 });

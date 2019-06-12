@@ -21,7 +21,7 @@ import {
 import { JError, JRCError, ERROR_CODES_RC } from 'sdk/error';
 import { SYNC_DIRECTION } from '../constants';
 import { IRCItemSyncConfig } from '../config/IRCItemSyncConfig';
-import { notificationCenter, RELOAD_TARGET } from 'sdk/service';
+import { notificationCenter } from 'sdk/service';
 import { IdModel, ModelIdType } from 'sdk/framework/model';
 import { UndefinedAble } from 'sdk/types';
 
@@ -217,13 +217,8 @@ abstract class AbstractSyncController<
     this._syncStatus = this._syncStatus | SYNC_STATUS.IN_CLEAR;
     await this.requestClearAllAndRemoveLocalData()
       .then(async () => {
-        await this._reset();
-        notificationCenter.emitEntityReload(
-          this._entityKey,
-          RELOAD_TARGET.FOC,
-          [],
-          true,
-        );
+        await this.reset();
+        notificationCenter.emitEntityReload(this._entityKey, [], true);
       })
       .catch((reason: JError) => {
         throw reason;
@@ -231,6 +226,14 @@ abstract class AbstractSyncController<
       .finally(() => {
         this._syncStatus = this._syncStatus & ~SYNC_STATUS.IN_CLEAR;
       });
+  }
+
+  async reset() {
+    silentSyncProcessorHandler.removeProcessorByName(this.syncName);
+    this._syncStatus = 0;
+    this._lastSyncNewerTime = 0;
+    await this.removeHasMore();
+    await this.removeSyncToken();
   }
 
   private async _handleSuccessResponse(
@@ -247,12 +250,7 @@ abstract class AbstractSyncController<
     }
     if (isSilent) {
       if (result.syncInfo.syncType === SYNC_TYPE.FSYNC) {
-        notificationCenter.emitEntityReload(
-          this._entityKey,
-          RELOAD_TARGET.FOC,
-          [],
-          true,
-        );
+        notificationCenter.emitEntityReload(this._entityKey, [], true);
       } else {
         data.length &&
           notificationCenter.emitEntityUpdate<T, IdType>(this._entityKey, data);
@@ -263,19 +261,12 @@ abstract class AbstractSyncController<
 
   private async _handleFailedResponse(reason: JError): Promise<void> {
     if (this.isTokenInvalidError(reason)) {
-      await this._reset();
+      await this.removeLocalData();
+      await this.reset();
       this.doSync(true, SYNC_DIRECTION.NEWER);
     } else {
       throw reason;
     }
-  }
-
-  private async _reset() {
-    silentSyncProcessorHandler.removeProcessorByName(this.syncName);
-    this._syncStatus = 0;
-    this._lastSyncNewerTime = 0;
-    await this.removeHasMore();
-    await this.removeSyncToken();
   }
 
   private _isInClear() {
@@ -324,6 +315,7 @@ abstract class AbstractSyncController<
   protected abstract isTokenInvalidError(reason: JError): boolean;
   protected abstract canUpdateSyncToken(syncInfo: RCItemSyncInfo): boolean;
   protected abstract async requestClearAllAndRemoveLocalData(): Promise<void>;
+  protected abstract async removeLocalData(): Promise<void>;
   protected abstract async handleDataAndSave(
     data: RCItemSyncResponse<T>,
   ): Promise<T[]>;

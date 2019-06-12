@@ -18,6 +18,8 @@ import { JError, ERROR_MSG_RC, ERROR_CODES_RC } from 'sdk/error';
 import { mainLogger } from 'foundation';
 import { RCItemApi } from 'sdk/api';
 import { CallLogBadgeController } from './CallLogBadgeController';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { CallLogService } from '../service';
 
 abstract class AbstractFetchController extends RCItemSyncController<
   CallLog,
@@ -111,10 +113,27 @@ abstract class AbstractFetchController extends RCItemSyncController<
     performanceTracer.trace({
       key: PERFORMANCE_KEYS.CLEAR_ALL_CALL_LOG_FROM_SERVER,
     });
-    await this.sourceController.clear();
+    await this.removeLocalData();
     performanceTracer.end({
       key: PERFORMANCE_KEYS.CLEAR_ALL_CALL_LOG,
     });
+  }
+
+  protected async removeLocalData(): Promise<void> {
+    await this.sourceController.clear();
+    await await ServiceLoader.getInstance<CallLogService>(
+      ServiceConfig.CALL_LOG_SERVICE,
+    ).userConfig.setPseudoCallLogInfo({});
+  }
+
+  async reset() {
+    await ServiceLoader.getInstance<CallLogService>(
+      ServiceConfig.CALL_LOG_SERVICE,
+    ).resetFetchControllers();
+  }
+
+  async internalReset() {
+    super.reset();
   }
 }
 

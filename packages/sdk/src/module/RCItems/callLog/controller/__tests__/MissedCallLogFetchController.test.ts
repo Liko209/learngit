@@ -75,40 +75,6 @@ describe('MissedCallLogFetchController', () => {
         },
       ]);
     });
-
-    it('should clear data when sync type is FSYNC', async () => {
-      const mockTime1 = '2011-10-05T14:48:00.000Z';
-      const mockTime2 = '2011-10-05T15:48:00.000Z';
-      const mockData = {
-        records: [
-          { id: '1', startTime: mockTime1 },
-          { id: '2', startTime: mockTime2 },
-        ],
-        syncInfo: {
-          syncType: SYNC_TYPE.FSYNC,
-        },
-      } as any;
-      daoManager.getDao = jest.fn();
-
-      expect(await controller['handleDataAndSave'](mockData)).toEqual([
-        {
-          id: '1',
-          startTime: mockTime1,
-          __source: CALL_LOG_SOURCE.MISSED,
-          __timestamp: Date.parse(mockTime1),
-          __deactivated: false,
-        },
-        {
-          id: '2',
-          startTime: mockTime2,
-          __source: CALL_LOG_SOURCE.MISSED,
-          __timestamp: Date.parse(mockTime2),
-          __deactivated: false,
-        },
-      ]);
-      expect(mockSourceController.clear).toBeCalled();
-      expect(mockUserConfig.setPseudoCallLogInfo).toBeCalledWith({});
-    });
   });
 
   describe('sendSyncRequest', () => {

@@ -81,40 +81,6 @@ describe('AllLogFetchController', () => {
       expect(mockSourceController.bulkDelete).toBeCalledWith(['pseudo1']);
       expect(mockUserConfig.setPseudoCallLogInfo).toBeCalledWith({});
     });
-
-    it('should clear data when sync type is FSYNC', async () => {
-      const mockTime = '2011-10-05T14:48:00.000Z';
-      const mockData = {
-        records: [
-          { id: '1', startTime: mockTime, sessionId: 'sessionId1' },
-          { id: '2', startTime: mockTime },
-        ],
-        syncInfo: {
-          syncType: SYNC_TYPE.FSYNC,
-        },
-      } as any;
-      notificationCenter.emitEntityReplace = jest.fn();
-
-      expect(await controller['handleDataAndSave'](mockData)).toEqual([
-        {
-          id: '1',
-          startTime: mockTime,
-          sessionId: 'sessionId1',
-          __source: CALL_LOG_SOURCE.ALL,
-          __timestamp: Date.parse(mockTime),
-          __deactivated: false,
-        },
-        {
-          id: '2',
-          startTime: mockTime,
-          __source: CALL_LOG_SOURCE.ALL,
-          __timestamp: Date.parse(mockTime),
-          __deactivated: false,
-        },
-      ]);
-      expect(mockSourceController.clear).toBeCalled();
-      expect(mockUserConfig.setPseudoCallLogInfo).toBeCalledWith({});
-    });
   });
 
   describe('sendSyncRequest', () => {

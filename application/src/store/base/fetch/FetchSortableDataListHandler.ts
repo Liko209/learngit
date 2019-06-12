@@ -14,7 +14,7 @@ import {
   NotificationEntityDeletePayload,
   NotificationEntityReloadPayload,
 } from 'sdk/service/notificationCenter';
-import { EVENT_TYPES, RELOAD_TARGET } from 'sdk/service';
+import { EVENT_TYPES } from 'sdk/service';
 import { transform2Map } from '@/store/utils';
 import { ISortableModel, IMatchFunc, ITransformFunc, ISortFunc } from './types';
 import {
@@ -398,9 +398,7 @@ export class FetchSortableDataListHandler<
         this.handleDataUpdateReplace(payload);
         break;
       case EVENT_TYPES.RELOAD:
-        if (payload.target === RELOAD_TARGET.FOC) {
-          this.handleDataReload(payload);
-        }
+        this.handleDataReload(payload);
         break;
     }
   }
