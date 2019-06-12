@@ -85,9 +85,9 @@ const HTMLEscape = (str: string) => {
 
 const MATCH_ALL_REGEX = /^[\s\S]+$/g;
 const MATCH_NOTHING_REGEX = /a^/g;
-const AT_MENTION_REGEX = /<a class='at_mention_compose' rel='{"id":(\d*?)}'>(.*?)<\/a>/gi;
-const AT_MENTION_GROUPED_REGEXP = /(<a class='at_mention_compose' rel='{"id":\d*?}'>)(.*?)(<\/a>)/gi;
-const AT_MENTION_ESCAPED = /&lt;a class=&#x27;at_mention_compose&#x27; rel=&#x27;{&quot;id&quot;:(\d*?)}&#x27;&gt;(.*?)&lt;\/a&gt;/gi;
+const AT_MENTION_REGEX = /<a class='at_mention_compose' rel='{"id":([-?\d]*?)}'>(.*?)<\/a>/gi;
+const AT_MENTION_GROUPED_REGEXP = /(<a class='at_mention_compose' rel='{"id":[-?\d]*?}'>)(.*?)(<\/a>)/gi;
+const AT_MENTION_ESCAPED = /&lt;a class=&#x27;at_mention_compose&#x27; rel=&#x27;{&quot;id&quot;:([-?\d]*?)}&#x27;&gt;(.*?)&lt;\/a&gt;/gi;
 
 const EMOJI_UNICODE_REGEX = `${Object.keys(convertMapUnicode).join('|')}`;
 const EMOJI_UNICODE_REGEX_ESCAPED = `${Object.keys(convertMapUnicode)

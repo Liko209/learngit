@@ -22,6 +22,13 @@ function getIconList(svgData: string): string[] {
 }
 
 describe('icon svg file', () => {
+  // will remove until upgrade material ui
+  beforeAll(() => {
+    // mock console for jest
+    (global as any)['console'] = {
+      error: jest.fn(),
+    };
+  });
   const file = fs.readFileSync(
     path.join(__dirname, '../icon-symbol.svg'),
     'utf8',
@@ -39,6 +46,13 @@ describe('icon svg file', () => {
 });
 
 describe('RuiIconography', () => {
+  // will remove until upgrade material ui
+  beforeAll(() => {
+    // mock console for jest
+    (global as any)['console'] = {
+      error: jest.fn(),
+    };
+  });
   it('renders correctly', () => {
     const tree = renderer
       .create(

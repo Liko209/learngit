@@ -3,7 +3,7 @@
  * @Date: 2019-05-22 15:44:12
  * Copyright © RingCentral. All rights reserved.
  */
-import { doGetCaretPosition, focusCampo } from '../helpers';
+import { doGetCaretPosition, focusCampo, sleep } from '../helpers';
 
 describe('helpers', () => {
   describe('doGetCaretPosition', () => {
@@ -27,6 +27,16 @@ describe('helpers', () => {
       };
       focusCampo(mockedInput);
       expect(mockedInput.blur).not.toBeCalled();
+    });
+  });
+
+  describe('sleep', () => {
+    it('should wait 20ms asyncally', async () => {
+      const startTime = +new Date();
+      const { promise } = sleep(20);
+      await promise;
+      const endTime = +new Date();
+      expect(endTime - startTime >= 20).toBeTruthy();
     });
   });
 });

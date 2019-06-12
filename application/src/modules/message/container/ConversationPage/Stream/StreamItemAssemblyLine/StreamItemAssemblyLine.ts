@@ -11,7 +11,7 @@ import { TDelta } from '@/store/base';
 export class StreamItemAssemblyLine {
   constructor(private _assemblers: Assembler[]) {}
   process = (
-    delta: TDelta<IStreamItemSortableModel>,
+    delta: TDelta<number, IStreamItemSortableModel>,
     hasMore: boolean,
     readThrough: number,
     sortableModels: IStreamItemSortableModel[],

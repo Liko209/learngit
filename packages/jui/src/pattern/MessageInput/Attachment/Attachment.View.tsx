@@ -74,36 +74,15 @@ class AttachmentView extends Component<Props> {
   }
 
   render() {
-    const { onFileChanged } = this.props;
+    const { onFileChanged, tooltip, menus, fileMenu } = this.props;
     const { anchorEl } = this.state;
     const open = !!anchorEl;
-    const menus = [
-      {
-        icon: 'google',
-        label: 'Google Drive',
-      },
-      {
-        icon: 'dropbox',
-        label: 'Dropbox',
-      },
-      {
-        icon: 'box',
-        label: 'Box',
-      },
-      {
-        icon: 'evernote',
-        label: 'Evernote',
-      },
-      {
-        icon: 'onedrive',
-        label: 'OneDrive',
-      },
-    ];
+
     return (
       <Fragment>
         <JuiIconButton
           data-test-automation-id="conversation-chatbar-attachment-button"
-          tooltipTitle="Attach file"
+          tooltipTitle={tooltip}
           onClick={this._handleClickEvent}
           size="medium"
         >
@@ -144,11 +123,11 @@ class AttachmentView extends Component<Props> {
               <ClickAwayListener onClickAway={this._hideMenu}>
                 <JuiMenuItem
                   disableGutters={true}
-                  icon="computer"
+                  icon={fileMenu.icon}
                   data-test-automation-id="chatbar-attchment-selectfile"
                   onClick={this._hideMenuAndShowDialog}
                 >
-                  Computer
+                  {fileMenu.label}
                 </JuiMenuItem>
               </ClickAwayListener>
             </JuiMenuList>

@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import i18nT from '@/utils/i18nT';
 import { SubModuleConfig } from '../types';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { lazyComponent } from '@/modules/common/util/lazyComponent';
@@ -22,7 +21,7 @@ const config: SubModuleConfig = {
     url: '/settings',
     Icon: <JuiIconography iconSize="medium">settings_border</JuiIconography>,
     IconSelected: <JuiIconography iconSize="medium">settings</JuiIconography>,
-    title: await i18nT('setting.Settings'),
+    title: 'setting.Settings',
     placement: 'bottom',
   }),
   // loader: () =>

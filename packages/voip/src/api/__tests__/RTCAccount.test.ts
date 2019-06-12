@@ -193,6 +193,7 @@ describe('RTCAccount', () => {
     ua.mockSignal(UA_EVENT.REG_SUCCESS);
     setImmediate(() => {
       expect(account._regManager._fsm.state).toBe(REGISTRATION_FSM_STATE.READY);
+      expect(account._regManager._regFailedFirstTime).toBe(true);
       expect(account._state).toBe(RTC_ACCOUNT_STATE.REGISTERED);
       expect(mockListener.onAccountStateChanged).toHaveBeenCalledWith(
         RTC_ACCOUNT_STATE.REGISTERED,

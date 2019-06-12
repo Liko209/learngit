@@ -79,6 +79,7 @@ describe('SpeakerSourceSettingHandler', () => {
       mockRtcEngine,
     );
     settingHandler.notifyUserSettingEntityUpdate = jest.fn();
+    settingHandler.getUserSettingEntity = jest.fn();
     // settingHandler.on = jest.fn();
   }
 
@@ -133,9 +134,6 @@ describe('SpeakerSourceSettingHandler', () => {
       ]);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
         done();
       });
     });
@@ -153,7 +151,7 @@ describe('SpeakerSourceSettingHandler', () => {
       isChrome.mockReturnValue(false);
       settingHandler['_onPermissionChange']();
       setTimeout(() => {
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
+        expect(settingHandler.getUserSettingEntity).not.toBeCalled();
         done();
       });
     });
@@ -162,7 +160,7 @@ describe('SpeakerSourceSettingHandler', () => {
       isChrome.mockReturnValue(true);
       settingHandler['_onPermissionChange']();
       setTimeout(() => {
-        expect(settingHandler.notifyUserSettingEntityUpdate).toBeCalled();
+        expect(settingHandler.getUserSettingEntity).toBeCalled();
         done();
       });
     });
@@ -176,7 +174,7 @@ describe('SpeakerSourceSettingHandler', () => {
     afterEach(() => {
       cleanUp();
     });
-    it('should emit update when device change', (done: jest.DoneCallback) => {
+    it('should emit update when device change', () => {
       mockDefaultSettingItem.value = { deviceId: '3' };
       settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
@@ -185,14 +183,8 @@ describe('SpeakerSourceSettingHandler', () => {
         '123',
       );
       expect(settingHandler.getUserSettingEntity).toBeCalled();
-      setTimeout(() => {
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
-        done();
-      });
     });
-    it('should not emit update when device not change', (done: jest.DoneCallback) => {
+    it('should not emit update when device not change', () => {
       mockDefaultSettingItem.value = { deviceId: '123' };
       settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
@@ -201,10 +193,6 @@ describe('SpeakerSourceSettingHandler', () => {
         '123',
       );
       expect(settingHandler.getUserSettingEntity).not.toBeCalled();
-      setTimeout(() => {
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
-        done();
-      });
     });
     it('should not emit update when cache not exist', (done: jest.DoneCallback) => {
       settingHandler['userSettingEntityCache'] = undefined;
@@ -214,7 +202,6 @@ describe('SpeakerSourceSettingHandler', () => {
         '123',
       );
       setTimeout(() => {
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
         done();
       });

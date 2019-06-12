@@ -18,23 +18,28 @@ import { Palette } from '../../foundation/theme/theme';
 
 type JuiListItemTextProps = MuiListItemTextProps & {
   primaryColor?: [keyof Palette, string];
+  alignCenter?: boolean;
 };
 
 const WrappedListItemText = ({
   primaryColor,
+  alignCenter,
   ...rest
 }: JuiListItemTextProps) => <MuiListItemText {...rest} />;
 
 const StyledListItemText = styled<JuiListItemTextProps>(WrappedListItemText)`
+  flex: ${props => (props.alignCenter ? 'none !important' : '1 1 auto')};
   && {
     padding: 0;
     .list-item-primary {
+      /* warning don't add display flex */
+      /* https://css-tricks.com/flexbox-truncated-text/ */
       color: ${({ primaryColor }) => getAccentColor(primaryColor)};
       ${typography('body1')};
       ${ellipsis()};
     }
     .list-item-secondary {
-      color: ${grey('500')};
+      color: ${grey('600')};
       ${typography('caption1')};
       ${ellipsis()};
     }

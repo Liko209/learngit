@@ -67,7 +67,9 @@ if (process.env.NODE_ENV === 'test') {
     count: jest.fn(),
     countReset: jest.fn(),
     debug: jest.fn(),
-    error: jest.fn(),
+    error: (message) => {
+      throw (message instanceof Error ? message : new Error(message))
+    },
     group: jest.fn(),
     groupCollapsed: jest.fn(),
     groupEnd: jest.fn(),
@@ -78,7 +80,9 @@ if (process.env.NODE_ENV === 'test') {
     timeLog: jest.fn(),
     timeStamp: jest.fn(),
     trace: jest.fn(),
-    warn: jest.fn(),
+    warn: (message) => {
+      throw message
+    }
   };
 
   global.fetch = require('jest-fetch-mock');

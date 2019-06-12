@@ -70,6 +70,7 @@ describe('DefaultAppSettingHandler', () => {
     } as any;
     settingHandler = new VolumeSettingHandler(mockTelephonyService);
     settingHandler.notifyUserSettingEntityUpdate = jest.fn();
+    settingHandler.getUserSettingEntity = jest.fn();
   }
 
   function cleanUp() {
@@ -117,7 +118,7 @@ describe('DefaultAppSettingHandler', () => {
       isChrome.mockReturnValue(false);
       settingHandler['_onPermissionChange']();
       setTimeout(() => {
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
+        expect(settingHandler.getUserSettingEntity).not.toBeCalled();
         done();
       });
     });
@@ -126,7 +127,7 @@ describe('DefaultAppSettingHandler', () => {
       isChrome.mockReturnValue(true);
       settingHandler['_onPermissionChange']();
       setTimeout(() => {
-        expect(settingHandler.notifyUserSettingEntityUpdate).toBeCalled();
+        expect(settingHandler.getUserSettingEntity).toBeCalled();
         done();
       });
     });
@@ -147,9 +148,6 @@ describe('DefaultAppSettingHandler', () => {
       settingHandler['_onVolumeUpdate'](CONFIG_EVENT_TYPE.UPDATE, '11');
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
         done();
       });
     });
@@ -162,7 +160,6 @@ describe('DefaultAppSettingHandler', () => {
 
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
         done();
       });
     });
@@ -174,7 +171,6 @@ describe('DefaultAppSettingHandler', () => {
 
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
         done();
       });
     });

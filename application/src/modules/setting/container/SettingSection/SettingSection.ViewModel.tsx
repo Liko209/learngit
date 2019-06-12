@@ -22,7 +22,7 @@ class SettingSectionViewModel extends StoreViewModel<SettingSectionProps>
 
   @computed
   get itemIds() {
-    return this._settingStore.getSectionItems(this.props.sectionId);
+    return this._settingStore.getSectionVisibleItems(this.props.sectionId);
   }
 }
 
