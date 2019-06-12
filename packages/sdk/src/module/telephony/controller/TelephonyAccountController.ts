@@ -302,24 +302,6 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this._accountState = state;
   }
 
-  private async _buildCallInfo(rtcCallInfo: RTCCallInfo) {
-    const callInfo: TelephonyCallInfo = {
-      fromNum: rtcCallInfo.fromNum,
-      toNum: rtcCallInfo.toNum,
-      callId: rtcCallInfo.uuid,
-    };
-
-    if (rtcCallInfo.fromName) {
-      callInfo.fromName = rtcCallInfo.fromName;
-    }
-
-    if (rtcCallInfo.toName) {
-      callInfo.toName = rtcCallInfo.toName;
-    }
-
-    return callInfo;
-  }
-
   private async _shouldShowIncomingCall() {
     const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
       ServiceConfig.RC_INFO_SERVICE,
