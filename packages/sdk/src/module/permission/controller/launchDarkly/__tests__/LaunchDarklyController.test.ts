@@ -25,7 +25,7 @@ describe('LaunchDarklyController', () => {
   describe('constructor', () => {
     it('should call notificationCenter.on three times', () => {
       new LaunchDarklyController(() => {});
-      expect(notificationCenter.on).toHaveBeenCalledTimes(3);
+      expect(notificationCenter.on).toHaveBeenCalledTimes(4);
     });
   });
   describe('hasPermission', () => {
@@ -33,10 +33,6 @@ describe('LaunchDarklyController', () => {
       const controller = new LaunchDarklyController(() => {});
       let permission = controller.hasPermission(
         UserPermissionType.JUPITER_CREATE_TEAM,
-      );
-      expect(permission).toBeTruthy();
-      permission = controller.hasPermission(
-        UserPermissionType.JUPITER_SEND_NEW_MESSAGE,
       );
       expect(permission).toBeTruthy();
       permission = controller.hasPermission(

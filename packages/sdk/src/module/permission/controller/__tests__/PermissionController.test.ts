@@ -73,7 +73,6 @@ describe('PermissionController', () => {
       launchDarklyController.hasPermission = jest
         .fn()
         .mockReturnValueOnce(true);
-      splitIOController.hasPermission = jest.fn().mockReturnValueOnce(false);
       const result = await permissionController.hasPermission(
         UserPermissionType.JUPITER_CAN_SAVE_LOG,
       );
@@ -83,19 +82,17 @@ describe('PermissionController', () => {
       launchDarklyController.hasPermission = jest
         .fn()
         .mockReturnValueOnce(false);
-      splitIOController.hasPermission = jest.fn().mockReturnValueOnce(true);
       const result = await permissionController.hasPermission(
-        UserPermissionType.JUPITER_CAN_SAVE_LOG,
+        UserPermissionType.JUPITER_SEARCH_SUPPORT_BY_SOUNDEX,
       );
-      expect(result).toBeTruthy();
+      expect(result).toBeFalsy();
     });
     it('should read permission both from split and LD - 3', async () => {
       launchDarklyController.hasPermission = jest
         .fn()
         .mockReturnValueOnce(false);
-      splitIOController.hasPermission = jest.fn().mockReturnValueOnce(false);
       const result = await permissionController.hasPermission(
-        UserPermissionType.JUPITER_CAN_SAVE_LOG,
+        UserPermissionType.JUPITER_CAN_USE_TELEPHONY,
       );
       expect(result).toBeFalsy();
     });
