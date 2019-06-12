@@ -36,9 +36,17 @@ async(t: TestController) => {
   })
 
   const conversationPage = app.homePage.messageTab.conversationPage;
+  const rightRail=app.homePage.messageTab.rightRail;
   await h(t).withLog(`When I open the team ${team.name}`, async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.waitUntilPostsBeLoaded;
+    try{
+      await  rightRail.clickExpandStatusButton();
+    }
+    catch(e){
+
+      console.log("needn't click show detail");
+     }
   });
 
   await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_GetStarted'})

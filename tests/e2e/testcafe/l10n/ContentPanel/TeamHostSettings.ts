@@ -51,6 +51,7 @@ test(formalName('Check the MembersSettings page',['P2', 'ContentPanel','Messages
 
   await h(t).withLog('When I click more button', async () => {
     await t.click(profileDialog.moreIcon);
+    await t.hover(profileDialog.privateIcon);
   })
   await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamMore'})
 
