@@ -22,10 +22,12 @@ jest.mock('../../controller/CallLogController', () => {
       clearAll: jest.fn(),
       requestSync: jest.fn(),
       fetchCallLogs: jest.fn(),
+      internalReset: jest.fn(),
     },
     missedCallLogFetchController: {
       requestSync: jest.fn(),
       fetchCallLogs: jest.fn(),
+      internalReset: jest.fn(),
     },
     callLogHandleDataController: {
       handleMissedCallEvent: jest.fn(),
@@ -129,6 +131,18 @@ describe('CallLogService', () => {
     it('clearAllCallLogs', async () => {
       await callLogService.clearAllCallLogs();
       expect(callLogController.allCallLogFetchController.clearAll).toBeCalled();
+    });
+  });
+
+  describe('resetFetchControllers', () => {
+    it('resetFetchControllers', async () => {
+      await callLogService.resetFetchControllers();
+      expect(
+        callLogController.allCallLogFetchController.internalReset,
+      ).toBeCalled();
+      expect(
+        callLogController.missedCallLogFetchController.internalReset,
+      ).toBeCalled();
     });
   });
 

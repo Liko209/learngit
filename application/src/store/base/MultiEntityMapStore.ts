@@ -10,7 +10,6 @@ import { ENTITY_NAME } from '../constants';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import IUsedCache from './IUsedCache';
 import { EntityBaseService } from 'sdk/framework/service';
-import { RELOAD_TARGET } from 'sdk/service';
 
 const modelProvider = new ModelProvider();
 const { EVENT_TYPES } = service;
@@ -68,9 +67,7 @@ export default class MultiEntityMapStore<
 
       case EVENT_TYPES.RELOAD:
         {
-          if (payload.target === RELOAD_TARGET.STORE) {
-            this.reload();
-          }
+          this.reload();
         }
         break;
 

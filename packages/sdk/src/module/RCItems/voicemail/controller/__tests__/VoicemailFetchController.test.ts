@@ -9,12 +9,7 @@ import { EntitySourceController } from 'sdk/framework/controller/impl/EntitySour
 import { Voicemail } from '../../entity';
 import { RCItemUserConfig } from '../../../config';
 import { RCItemApi } from 'sdk/api';
-import {
-  notificationCenter,
-  ENTITY_LIST,
-  ENTITY,
-  RELOAD_TARGET,
-} from 'sdk/service';
+import { notificationCenter } from 'sdk/service';
 import { RC_MESSAGE_TYPE, SYNC_DIRECTION } from 'sdk/module/RCItems/constants';
 import { daoManager, QUERY_DIRECTION } from 'sdk/dao';
 import { VoicemailDao } from '../../dao/VoicemailDao';
@@ -105,7 +100,6 @@ describe('VoicemailFetchController', () => {
       });
       expect(notificationCenter.emitEntityReload).toBeCalledWith(
         'test',
-        RELOAD_TARGET.FOC,
         [],
         true,
       );

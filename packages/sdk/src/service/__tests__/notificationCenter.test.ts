@@ -1,5 +1,5 @@
 import notificationCenter from '../notificationCenter';
-import { RELOAD_TARGET, EVENT_TYPES } from '../constants';
+import { EVENT_TYPES } from '../constants';
 
 it('emitEntityUpdate()', () => {
   const result = notificationCenter.emitEntityUpdate('KEY', []);
@@ -17,7 +17,7 @@ it('emitEntityReset()', () => {
 });
 
 it('emitEntityReload()', () => {
-  const result = notificationCenter.emitEntityReload('KEY', RELOAD_TARGET.STORE, []);
+  const result = notificationCenter.emitEntityReload('KEY', []);
   expect(result).toBeUndefined();
 });
 
