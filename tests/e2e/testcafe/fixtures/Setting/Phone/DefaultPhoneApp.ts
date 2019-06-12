@@ -1,8 +1,8 @@
 /*
  * @Author:Andy.Hu
  * @Date: 2019-05-28 15:24:53
- * @Last Modified by: Lex Huang (lex.huang@ringcentral.com)
- * @Last Modified time: 2019-06-05 15:22:24
+ * @Last Modified by: Andy.Hu
+ * @Last Modified time: 2019-05-28 15:56:35
  */
 
 import { AppRoot } from '../../../v2/page-models/AppRoot/index';
@@ -34,9 +34,11 @@ test.meta(<ITestMeta>{
     owner: loginUser,
     members: [loginUser, anotherUser]
   }
+  
   await h(t).withLog('When I set default phone app to RC phone', async () => {
     await h(t).glip(loginUser).setDefaultPhoneApp('ringcentral');
   });
+
   await h(t).withLog('Given I have a 1:1 chat, another user send a post', async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
@@ -71,7 +73,6 @@ test.meta(<ITestMeta>{
     await app.homePage.telephonyDialog.ensureLoaded();
     await app.homePage.telephonyDialog.clickHangupButton();
   });
-
 
   /* from dialer start */
   await h(t).withLog('When I click the to dialpad button', async () => {
@@ -112,4 +113,194 @@ test.meta(<ITestMeta>{
   await h(t).withLog('Then telephony dialog is displayed', async () => {
     await app.homePage.telephonyDialog.ensureLoaded();
   });
+});
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-2049'],
+  maintainers: ['William.Ye'],
+  keywords: ['GeneralSettings']
+})(`Check the display of the Default Phone App`, async (t) => {
+  const loginUser = h(t).rcData.mainCompany.users[0];
+  const app = new AppRoot(t);
+
+  const settingsEntry = app.homePage.leftPanel.settingsEntry;
+  const settingTab = app.homePage.settingTab;
+  const phoneSettingPage = settingTab.phoneSettingPage;
+  const defaultAppLabel = 'Default Phone app for calling';
+  const defaultAppDescription = "Choose which app you'd like use to make calls";
+  const defaultRingCentralApp = 'Use RingCentral App (this app)';
+  const defaultRingCentralPhone = 'Use RingCentral Phone';
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I click Setting entry`, async () => {
+    await settingsEntry.enter();
+  });
+
+  await h(t).withLog(`And I click Phone tab`, async () => {
+    await settingTab.phoneEntry.enter();
+  });
+
+  await h(t).withLog(`Check the 'Default Phone App' section`, async () => {
+    await phoneSettingPage.existDefaultAppLabel(defaultAppLabel);
+    await phoneSettingPage.existDefaultAppDescription(defaultAppDescription);
+  });
+
+  await h(t).withLog(`When I click default app DropDown`, async () => {
+    await phoneSettingPage.clickDefaultAppSelectBox();
+  });
+
+  await h(t).withLog(`Then I can see the default apps in the list`, async () => {
+    await t.expect(phoneSettingPage.ringCentralAppItem.withExactText(defaultRingCentralApp)).ok();
+    await t.expect(phoneSettingPage.ringCentralPhoneItem.withExactText(defaultRingCentralPhone)).ok();
+  });
+});
+
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-2051'],
+  maintainers: ['William.Ye'],
+  keywords: ['GeneralSettings']
+})(`Check the confirmation dialog when the user selects "Use RingCentral Phone".`, async (t) => {
+  const loginUser = h(t).rcData.mainCompany.users[0];
+  const app = new AppRoot(t);
+
+  const settingsEntry = app.homePage.leftPanel.settingsEntry;
+  const settingTab = app.homePage.settingTab;
+  const phoneSettingPage = settingTab.phoneSettingPage;
+  const changeRCPhoneDialog = settingTab.phoneSettingPage.changeRCPhoneDialog;
+  const title = 'Change default phone app';
+  const statement = 'You are about to choose RingCentral Phone for your default phone features. Install RingCentral Phone app before continuing. Are you sure you want to change your default to RingCentral Phone?';
+  const okButton = 'OK';
+  const cancelButton = 'Cancel';
+  const defaultRingCentralApp = 'Use RingCentral App (this app)';
+  const defaultRingCentralPhone = 'Use RingCentral Phone';
+
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I click Setting entry`, async () => {
+    await settingsEntry.enter();
+  });
+
+  await h(t).withLog(`And I click Phone tab`, async () => {
+    await settingTab.phoneEntry.enter();
+  });
+
+  await h(t).withLog(`When I click default app DropDown`, async () => {
+    await phoneSettingPage.clickDefaultAppSelectBox();
+  });
+
+  await h(t).withLog(`When I click "RingCentral Phone"`, async () => {
+    await phoneSettingPage.clickRingCentralPhone();
+  });
+
+  await h(t).withLog(`Then a confirmation dialog will show`, async () => {
+    await changeRCPhoneDialog.ensureLoaded();
+  });
+
+  await h(t).withLog(`And check the content of the confirmation dialog`, async () => {
+    await changeRCPhoneDialog.titleShouldBe(title);
+    await changeRCPhoneDialog.statementShouldBe(statement);
+    await changeRCPhoneDialog.okButtonShouldBeText(okButton);
+    await changeRCPhoneDialog.cancelButtonShouldBeText(cancelButton);
+  });
+
+    await h(t).withLog(`Click "Cancel" button`, async () => {
+      await changeRCPhoneDialog.clickCancelButton();
+  });
+
+  await h(t).withLog(`Then the dialog is closed`, async () => {
+    await changeRCPhoneDialog.ensureDismiss();
+  });
+
+  await h(t).withLog(`And the the default app should keep the same`, async () => {
+    await t.expect(phoneSettingPage.defaultAppSelectBox.innerText).contains(defaultRingCentralApp);
+  });
+
+  await h(t).withLog(`When I click default app DropDown again`, async () => {
+    await phoneSettingPage.clickDefaultAppSelectBox();
+  });
+
+  await h(t).withLog(`When I click "RingCentral Phone"`, async () => {
+    await phoneSettingPage.clickRingCentralPhone();
+  });
+
+  await h(t).withLog(`Then a confirmation dialog will show`, async () => {
+    await changeRCPhoneDialog.ensureLoaded();
+  });
+
+  await h(t).withLog(`Click "OK" button`, async () => {
+    await changeRCPhoneDialog.clickOKButton();
+  });
+
+  await h(t).withLog(`Then the dialog is closed`, async () => {
+    await changeRCPhoneDialog.ensureDismiss();
+  });
+
+  await h(t).withLog(`And the the default app should keep the same`, async () => {
+    await t.expect(phoneSettingPage.defaultAppSelectBox.innerText).contains(defaultRingCentralPhone);
+  });
+});
+
+
+test.meta(<ITestMeta>{
+     priority: ['P1'],
+     caseIds: ['JPT-2053'],
+     maintainers: ['William.Ye'],
+     keywords: ['GeneralSettings']
+})('Check the settings changes when the user switch between "Use RingCentral Phone" and "Use RingCentral App"', async (t) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4]
+  const anotherUser = users[5];
+
+  const app = new AppRoot(t);
+  const { company: { number } } = anotherUser;
+  await h(t).glip(loginUser).init();
+  await h(t).scenarioHelper.resetProfile(loginUser);
+
+  const settingsEntry = app.homePage.leftPanel.settingsEntry;
+  const settingTab = app.homePage.settingTab;
+  const phoneSettingPage = settingTab.phoneSettingPage;
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I set default phone app to RC phone', async () => {
+    await h(t).glip(loginUser).setDefaultPhoneApp('ringcentral');
+  });
+
+  await h(t).withLog(`When I click Setting entry`, async () => {
+    await settingsEntry.enter();
+  });
+
+  await h(t).withLog(`And I click Phone tab`, async () => {
+    await settingTab.phoneEntry.enter();
+  });
+
+  await h(t).withLog(`Then the caller id section is hidden`, async () => {
+    await t.expect(phoneSettingPage.callIdSetting.exists).notOk();
+  });
+
+  await h(t).withLog('When I switch default phone app to Jupiter', async () => {
+    await h(t).glip(loginUser).setDefaultPhoneApp('glip');
+  });
+
+  await h(t).withLog(`And I click Phone tab`, async () => {
+    await settingTab.phoneEntry.enter();
+  });
+
+  await h(t).withLog(`Then the caller id section is displayed`, async () => {
+    await t.expect(phoneSettingPage.callIdSetting.exists).ok();
+  });
+
 });

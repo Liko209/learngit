@@ -23,6 +23,38 @@ export class PhoneSettingPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('settingSectionTitle-phoneGeneral', this.generalSection);
   }
 
+  get defaultAppLabel(){
+    return this.getSelectorByAutomationId('settingItemLabel-defaultPhoneApp', this.generalSection);
+  }
+
+  get defaultAppDescription(){
+    return this.getSelectorByAutomationId('settingItemDescription-defaultPhoneApp', this.generalSection);
+  }
+
+  get defaultAppSelectBox() {
+    return this.getSelectorByAutomationId('settingItemSelectBox-defaultPhoneApp', this.generalSection);
+  }
+
+  get phoneAppDropDownItems() {
+    return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
+  }
+
+  get ringCentralAppItem(){
+    return this.getSelectorByAutomationId('settingItemSelectBoxItem-defaultPhoneApp-glip');
+  }
+
+  get ringCentralPhoneItem(){
+    return this.getSelectorByAutomationId('settingItemSelectBoxItem-defaultPhoneApp-ringcentral');
+  }
+
+  get changeRCPhoneDialog() {
+    return this.getComponent(changeRCPhoneDialog);
+  }
+
+  get callIdSetting() {
+    return this.getSelectorByAutomationId('settingItem-callerID');
+  }
+
   get callerIDLabel() {
     return this.getSelectorByAutomationId('settingItemLabel-callerID', this.generalSection);
   }
@@ -69,6 +101,36 @@ export class PhoneSettingPage extends BaseWebComponent {
 
   async existsGeneralLabel(text: string) {
     await this.t.expect(this.generalLabel.withText(text).exists).ok();
+  }
+
+  // Default App settings
+  async existDefaultAppLabel(text: string) {
+    await this.t.expect(this.defaultAppLabel.withText(text).exists).ok();
+  }
+
+  async existDefaultAppDescription(text: string) {
+    await this.t.expect(this.defaultAppDescription.withText(text).exists).ok();
+  }
+
+  async existDefaultAppDropDown() {
+    await this.t.expect(this.defaultAppSelectBox.exists).ok();
+  }
+
+  async clickDefaultAppSelectBox() {
+    await this.t.click(this.defaultAppSelectBox);
+  }
+
+  async clickRingCentralPhone() {
+    await this.t.click(this.ringCentralPhoneItem);
+  }
+
+
+  async existRingCentralApp() {
+   await this.t.expect(this.ringCentralAppItem.exists).ok();
+  }
+
+  async existRingCentralPhone() {
+    await this.t.expect(this.ringCentralPhoneItem.exists).ok();
   }
 
   // Region settings
@@ -284,3 +346,54 @@ export class UpdateRegionDialog extends BaseWebComponent {
     await this.t.expect(this.cancelButton.withText(text).exists).ok();
   }
 }
+  export class changeRCPhoneDialog extends BaseWebComponent {
+    get self() {
+      return this.getSelectorByAutomationId('defaultPhoneAppConfirmDialog');
+    }
+
+    get exists() {
+      return this.title.exists;
+    }
+
+    get title() {
+      return this.getSelectorByAutomationId('DialogTitle');
+    }
+
+    get statement() {
+      return this.getSelectorByAutomationId('DialogContent');
+    }
+
+    get okButton() {
+      return this.getSelectorByAutomationId('defaultPhoneAppOkButton');
+    }
+
+     get cancelButton() {
+    return this.getSelectorByAutomationId('defaultPhoneAppCancelButton');
+    }
+
+    async titleShouldBe(text: string) {
+      await this.t.expect(this.title.withText(text).exists).ok();
+    }
+
+    async statementShouldBe(text: string) {
+      await this.t.expect(this.statement.withText(text).exists).ok();
+    }
+
+    async okButtonShouldBeText(text: string) {
+      await this.t.expect(this.okButton.withText(text).exists).ok();
+    }
+
+    async cancelButtonShouldBeText(text: string) {
+      await this.t.expect(this.cancelButton.withText(text).exists).ok();
+    }
+
+    async clickCancelButton() {
+      await this.t.click(this.cancelButton);
+    }
+
+    async clickOKButton() {
+      await this.t.click(this.okButton);
+    }
+
+  }
+
