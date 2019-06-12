@@ -66,6 +66,14 @@ class ContactSearchListViewComponent extends Component<
       });
     }
   }
+  componentDidUpdate({ trimmedInputString }: Props) {
+    if (
+      this.props.trimmedInputString !== trimmedInputString &&
+      this._listRef.current
+    ) {
+      this._listRef.current.scrollToIndex(0);
+    }
+  }
 
   private _handleVisibilityChanged = (range: {
     startIndex: number;
@@ -77,17 +85,17 @@ class ContactSearchListViewComponent extends Component<
   }
 
   private _scrollToView = (f: () => void) => () => {
-    const { focusIndex, dialerFocused } = this.props;
+    const { dialerFocused } = this.props;
     if (!dialerFocused) {
       return;
     }
     f();
-
+    const newFS = this.props.focusIndex;
     if (
-      (focusIndex < this._startIndex || focusIndex >= this._stopIndex) &&
+      (newFS < this._startIndex || newFS >= this._stopIndex) &&
       this._listRef.current
     ) {
-      this._listRef.current.scrollToIndex(focusIndex);
+      this._listRef.current.scrollToIndex(newFS);
     }
   }
 
