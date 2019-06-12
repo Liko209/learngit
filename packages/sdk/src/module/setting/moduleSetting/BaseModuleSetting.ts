@@ -37,7 +37,7 @@ abstract class BaseModuleSetting<
     settingId: SettingEntityIds,
   ): Promise<Nullable<UserSettingEntity<T>>> {
     if (this._handlerMap && this._handlerMap[settingId]) {
-      return await this._handlerMap[settingId]!.getUserSettingEntity(true);
+      return await this._handlerMap[settingId]!.getUserSettingEntity();
     }
     return null;
   }
