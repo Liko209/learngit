@@ -10,18 +10,13 @@ import {
   RTC_ACCOUNT_STATE,
   RTCCall,
   RTCSipFlags,
-  RTCCallInfo,
   RTC_CALL_STATE,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip';
 import { TelephonyCallController } from '../controller/TelephonyCallController';
 import { ITelephonyAccountDelegate } from '../service/ITelephonyAccountDelegate';
-import {
-  TelephonyCallInfo,
-  MAKE_CALL_ERROR_CODE,
-  LogoutCallback,
-} from '../types';
+import { MAKE_CALL_ERROR_CODE, LogoutCallback } from '../types';
 import { telephonyLogger } from 'foundation';
 import { MakeCallController } from './MakeCallController';
 import { RCInfoService } from '../../rcInfo';

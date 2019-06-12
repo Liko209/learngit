@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RTC_ACCOUNT_STATE } from 'voip';
-import { TelephonyCallInfo } from '../types';
 interface ITelephonyAccountDelegate {
   onAccountStateChanged(state: RTC_ACCOUNT_STATE): void;
   onMadeOutgoingCall(callId: number): void;
