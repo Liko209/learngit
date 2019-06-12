@@ -51,10 +51,6 @@ class SettingPageViewComponent extends Component<Props> {
       );
       return null;
     }
-    const { containerRef } = this.props;
-    if (containerRef.current && !this._sources) {
-      this._sources = [containerRef.current];
-    }
 
     return (
       <StyledSettingPage

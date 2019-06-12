@@ -44,7 +44,6 @@ type SettingRouterPops = RouteComponentProps<{ subPath: string }>;
 
 @observer
 class SettingRouterComponent extends Component<SettingRouterPops> {
-  private _wrapRef: React.RefObject<any> = React.createRef();
   private get _settingStore() {
     return jupiter.get(SettingStore);
   }
@@ -81,9 +80,7 @@ class SettingRouterComponent extends Component<SettingRouterPops> {
     return (
       <JuiResponsiveLayout>
         <LeftRailResponsive />
-        <SwitchResponsive>
-          <div ref={this._wrapRef}>{this._renderRoutes()}</div>
-        </SwitchResponsive>
+        <SwitchResponsive>{this._renderRoutes()}</SwitchResponsive>
       </JuiResponsiveLayout>
     );
   }
@@ -93,7 +90,7 @@ class SettingRouterComponent extends Component<SettingRouterPops> {
       <Route
         key={pageId}
         path={`${SETTING_ROUTE_ROOT}${this.getPath(pageId)}`}
-        render={() => <SettingPage id={pageId} containerRef={this._wrapRef} />}
+        render={() => <SettingPage id={pageId} />}
       />
     ));
   }
