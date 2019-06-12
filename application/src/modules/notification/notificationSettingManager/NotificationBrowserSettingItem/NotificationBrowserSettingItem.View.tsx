@@ -166,6 +166,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
 
     const checked =
       this.state.waitForPermission || desktopNotifications || false;
+    const hidden = desktopNotifications === undefined;
     return (
       <JuiSettingSectionItem
         id="notificationBrowserSetting"
@@ -173,16 +174,18 @@ class NotificationBrowserSettingItemViewComponent extends Component<
         label={label}
         description={description}
       >
-        <JuiToggleButton
-          data-test-automation-id="settingItemToggleButton-notificationBrowser"
-          checked={checked}
-          onChange={this.handleToggleChange}
-          aria-label={
-            checked
-              ? t('common.button.ariaToggleOn')
-              : t('common.button.ariaToggleOff')
-          }
-        />
+        {!hidden && (
+          <JuiToggleButton
+            data-test-automation-id="settingItemToggleButton-notificationBrowser"
+            checked={checked}
+            onChange={this.handleToggleChange}
+            aria-label={
+              checked
+                ? t('common.button.ariaToggleOn')
+                : t('common.button.ariaToggleOff')
+            }
+          />
+        )}
         {this._renderDialog()}
       </JuiSettingSectionItem>
     );
