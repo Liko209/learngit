@@ -431,7 +431,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`Given I have a chat with {extension}`, async (step) => {
     step.setMetadata('extension', anotherUser.extension);
     await h(t).scenarioHelper.createOrOpenChat(chat);
-  });;
+  });
 
   await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
     step.initMetadata({
@@ -709,7 +709,7 @@ test.meta(<ITestMeta>{
 
 test.meta(<ITestMeta>{
   priority: ['P2'], caseIds: ['JPT-2249'], keywords: ['emoji'], maintainers: ['Potar.He']
-})('Check can display emoji information when hovering an emoji', async (t) => {
+})('Check mention list should be above the emoji library', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const anotherUser = users[5];
@@ -784,7 +784,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('And The emoji match List should be above the emoji library', async () => {
     await t.expect(emojiMatchList.visible).ok();
-    await t.expect(emojiLibrary.keepOpenToggle.visible).notOk(); 
+    await t.expect(emojiLibrary.keepOpenToggle.visible).notOk();
   });
 
 });
