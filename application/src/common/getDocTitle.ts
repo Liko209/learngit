@@ -60,11 +60,8 @@ const DOC_TITLE = {
 };
 
 function getDocTitle(pathname: string): string {
-  const paths = pathname.split('/');
-  const category = paths[1].toLocaleLowerCase();
-  const subPath = paths[2];
-
-  const docTitle = DOC_TITLE[category];
+  const [, category, subPath] = pathname.split('/');
+  const docTitle = DOC_TITLE[category.toLocaleLowerCase()];
   return docTitle(subPath);
 }
 
