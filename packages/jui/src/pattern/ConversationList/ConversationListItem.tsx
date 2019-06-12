@@ -19,6 +19,7 @@ import {
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import { StyledIconographyDraft, StyledIconographyFailure } from './Indicator';
 import { Theme } from '../../foundation/theme/theme';
+import { JuiIconButton } from '../../components/Buttons';
 
 const StyledRightWrapper = styled.div`
   width: ${width(5)};
@@ -147,6 +148,7 @@ type JuiConversationListItemProps = {
   umiHint?: boolean;
   hidden?: boolean;
   isItemHover?: boolean;
+  moreTooltipTitle: string;
 } & MuiMenuItemProps;
 
 type IConversationListItem = {
@@ -174,6 +176,7 @@ const JuiConversationListItem: IConversationListItem = memo(
       hidden,
       children,
       isItemHover,
+      moreTooltipTitle,
       ...rest
     } = props;
 
@@ -195,9 +198,15 @@ const JuiConversationListItem: IConversationListItem = memo(
         {umi}
         <StyledRightWrapper tabIndex={-1}>
           {indicator}
-          <StyledIconographyMore onClick={onMoreClick}>
+          <JuiIconButton
+            size="medium"
+            variant="plain"
+            data-test-automation-id="conversationListItemMoreButton"
+            tooltipTitle={moreTooltipTitle}
+            onClick={onMoreClick}
+          >
             more_vert
-          </StyledIconographyMore>
+          </JuiIconButton>
         </StyledRightWrapper>
         {children}
       </StyledListItem>

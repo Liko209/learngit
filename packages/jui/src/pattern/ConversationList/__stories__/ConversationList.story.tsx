@@ -25,6 +25,8 @@ import {
 
 import StoryWrapper from './StoryWrapper';
 
+const moreTooltipTitle = 'More';
+
 storiesOf('Pattern/ConversationList', module)
   .add(
     'Section',
@@ -58,35 +60,41 @@ storiesOf('Pattern/ConversationList', module)
               presence={<JuiPresence presence={PRESENCE.AVAILABLE} />}
               umi={<JuiUmi unreadCount={10} />}
               indicator={<span />}
+              moreTooltipTitle={moreTooltipTitle}
             />
             <ListItem
               title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
               presence={<JuiPresence presence={PRESENCE.UNAVAILABLE} />}
               umi={<JuiUmi unreadCount={12} variant="auto" important={true} />}
               indicator={<span />}
+              moreTooltipTitle={moreTooltipTitle}
             />
             <ListItem
               title="Maria"
               presence={<JuiPresence presence={PRESENCE.UNAVAILABLE} />}
               umi={<JuiUmi unreadCount={9} />}
               indicator={<span />}
+              moreTooltipTitle={moreTooltipTitle}
             />
             <ListItem
               title="Jupiter Team"
               presence={<JuiPresence presence={PRESENCE.UNAVAILABLE} />}
               umi={<JuiUmi unreadCount={0} />}
               indicator={<span />}
+              moreTooltipTitle={moreTooltipTitle}
             />
             <ListItem
               title="Michael"
               presence={<JuiPresence presence={PRESENCE.DND} />}
               umi={<JuiUmi unreadCount={0} />}
               indicator={<span />}
+              moreTooltipTitle={moreTooltipTitle}
             />
             <ListItem
               title="Steve"
               presence={<JuiPresence presence={PRESENCE.NOTREADY} />}
               indicator={<span />}
+              moreTooltipTitle={moreTooltipTitle}
             />
           </List>
         </Section>
@@ -104,35 +112,41 @@ storiesOf('Pattern/ConversationList', module)
             presence={<JuiPresence presence={PRESENCE.AVAILABLE} />}
             umi={<JuiUmi unreadCount={10} />}
             indicator={<span />}
+            moreTooltipTitle={moreTooltipTitle}
           />
           <ListItem
             title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
             presence={<JuiPresence presence={PRESENCE.UNAVAILABLE} />}
             umi={<JuiUmi unreadCount={12} variant="auto" important={true} />}
             indicator={<span />}
+            moreTooltipTitle={moreTooltipTitle}
           />
           <ListItem
             title="Maria"
             presence={<JuiPresence presence={PRESENCE.UNAVAILABLE} />}
             umi={<JuiUmi unreadCount={9} />}
             indicator={<span />}
+            moreTooltipTitle={moreTooltipTitle}
           />
           <ListItem
             title="Jupiter Team"
             presence={<JuiPresence presence={PRESENCE.UNAVAILABLE} />}
             umi={<JuiUmi unreadCount={0} />}
             indicator={<span />}
+            moreTooltipTitle={moreTooltipTitle}
           />
           <ListItem
             title="Michael"
             presence={<JuiPresence presence={PRESENCE.NOTREADY} />}
             umi={<JuiUmi unreadCount={0} />}
             indicator={<span />}
+            moreTooltipTitle={moreTooltipTitle}
           />
           <ListItem
             title="Steve"
             presence={<JuiPresence presence={PRESENCE.ONCALL} />}
             indicator={<span />}
+            moreTooltipTitle={moreTooltipTitle}
           />
         </List>
       </StoryWrapper>
@@ -170,7 +184,9 @@ storiesOf('Pattern/ConversationList', module)
               {
                 title: 'Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello',
                 presence: <JuiPresence presence={PRESENCE.UNAVAILABLE} />,
-                umi: <JuiUmi unreadCount={12} variant="auto" important={true} />,
+                umi: (
+                  <JuiUmi unreadCount={12} variant="auto" important={true} />
+                ),
               },
               {
                 title: 'Maria',
@@ -269,6 +285,7 @@ storiesOf('Pattern/ConversationList', module)
             onClick={action('onClick')}
             onMoreClick={action('onMoreClick')}
             indicator={<span />}
+            moreTooltipTitle={moreTooltipTitle}
           />
         </StoryWrapper>
       );
