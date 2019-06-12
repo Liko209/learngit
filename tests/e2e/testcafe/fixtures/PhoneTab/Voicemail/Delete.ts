@@ -1,8 +1,8 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-06-06 09:53:59 
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-06-06 10:43:49
+ * @Author: Potar.He
+ * @Date: 2019-06-06 09:53:59
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2019-06-12 11:01:39
  */
 
 import { BrandTire, SITE_URL } from '../../../config';
@@ -92,7 +92,7 @@ test.meta(<ITestMeta>{
     await h(t).directLoginWithUser(SITE_URL, callee);
     await app.homePage.ensureLoaded();
   });
-  
+
   const voicemailPage = app.homePage.phoneTab.voicemailPage;
   await h(t).withLog('When I click Phone entry of leftPanel and click voicemail entry', async () => {
     await app.homePage.leftPanel.phoneEntry.enter();
@@ -105,7 +105,7 @@ test.meta(<ITestMeta>{
 
   const telephoneDialog = app.homePage.telephonyDialog;
   if (await telephoneDialog.exists) {
-    telephoneDialog.clickMinimizeButton()
+    await telephoneDialog.clickMinimizeButton()
   }
 
   await ensuredOneVoicemail(t, caller, callee, app);
@@ -159,5 +159,3 @@ test.meta(<ITestMeta>{
   });
 
 });
-
-

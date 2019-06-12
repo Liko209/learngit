@@ -463,8 +463,8 @@ export class GlipSdk {
   }
 
   /* high level API */
-  deactivated(rcId: string) {
-    this.updatePerson({ deactivated: true }, rcId);
+  async deactivated(rcId: string) {
+    await this.updatePerson({ deactivated: true }, rcId);
   }
 
   async markAsRead(groupIds: string[], rcId?: string, ) {

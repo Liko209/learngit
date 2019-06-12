@@ -97,7 +97,7 @@ test.meta(<ITestMeta>{
 
   const telephoneDialog = app.homePage.telephonyDialog;
   if (await telephoneDialog.exists) {
-    telephoneDialog.clickMinimizeButton()
+    await telephoneDialog.clickMinimizeButton();
   }
 
   await ensuredOneVoicemail(t, caller, callee, app);
@@ -177,5 +177,3 @@ test.meta(<ITestMeta>{
     });
   }
 });
-
-
