@@ -14,6 +14,7 @@ const excludeImageSnapshot = {
     'Pattern/DragZoom',
     'Pattern/VirtualList',
     'Pattern/ConversationLoading',
+    'Pattern/Viewer',
   ],
   name: [
     // story problem
@@ -24,6 +25,7 @@ const excludeImageSnapshot = {
     'Simple Menu',
     'IconList',
     'PreviewFileThumbnail',
+    'IntegrationItem',
   ],
   matchFunction: ({ name, kind }) => {
     return /HoC/.test(kind);

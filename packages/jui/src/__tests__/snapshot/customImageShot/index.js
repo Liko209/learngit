@@ -85,6 +85,7 @@ export const imageSnapshot = (customConfig = {}) => {
 
     let image;
     try {
+      page = await browser.newPage();
       await customizePage(page);
       await page.goto(url, {
         ...getGotoOptions({ context, url }),
@@ -102,16 +103,15 @@ export const imageSnapshot = (customConfig = {}) => {
         `Error when connecting to ${url}, did you start or build the storybook first? A storybook instance should be running or a static version should be built when using image snapshot feature.`,
         e,
       );
-      throw e;
     }
-
+    page.close();
     expect(image).toMatchImageSnapshot(getMatchOptions({ context, url }));
   };
 
   // take minimum area that contain the component to make screenshot
   async function screenshotDOMElement(page, selector, padding = 0, option) {
     // wait for component to load
-    await page.waitFor(selector);
+    await page.waitFor(selector, { timeout: 10000 });
 
     if (option.fullPage) {
       console.log('full page screenshot');
