@@ -13,7 +13,8 @@ import { ServiceConfig, ServiceLoader } from '../../module/serviceLoader';
 
 const NEXT_RECONNECT_TIME = 500;
 const MAX_RECONNECT_INTERVAL_TIME = 10 * 60 * 1000;
-const MAX_TRY_INDEX: number = 16;
+const MAX_TRY_INDEX: number = 21;
+const ONE_HOUR = 60 * 60 * 1000;
 
 const TAG = '[Socket SocketCanConnectController]';
 
@@ -201,11 +202,8 @@ class SocketCanConnectController {
     }
     const index = nthCount > MAX_TRY_INDEX ? MAX_TRY_INDEX : nthCount;
     const min = Math.pow(2, index);
-    const max =
-      index === MAX_TRY_INDEX
-        ? MAX_RECONNECT_INTERVAL_TIME
-        : Math.pow(2, index + 1);
-    return Math.random() * (max - min) + min;
+    const max = index === MAX_TRY_INDEX ? ONE_HOUR : Math.pow(2, index + 1);
+    return Math.floor(Math.random() * (max - min) + min);
   }
 }
 
