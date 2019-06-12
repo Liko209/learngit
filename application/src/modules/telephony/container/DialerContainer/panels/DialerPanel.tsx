@@ -18,7 +18,10 @@ import { isEqual } from 'lodash';
 
 type Props = {
   callerIdProps: CallerIdSelectorProps;
-  tooltipProps: Partial<RuiTooltipProps>;
+  tooltipProps: Pick<
+    RuiTooltipProps,
+    Exclude<keyof RuiTooltipProps, 'children'>
+  >;
 } & Partial<DialerContainerViewProps>;
 
 const emptyFunc = () => {};
@@ -30,18 +33,12 @@ export const DialerPanel = React.memo((props: Props) => {
     dialerInputFocused,
     isForward,
   } = props;
-  const { title, open, tooltipForceHide } = props.tooltipProps;
 
   const callAction = isForward ? ForwardBtn : DialBtn;
 
   const keypadActions = (
     <>
-      <RuiTooltip
-        title={title}
-        placement="bottom"
-        open={open}
-        tooltipForceHide={tooltipForceHide}
-      >
+      <RuiTooltip placement="bottom" {...props.tooltipProps}>
         <CallerIdSelector {...props.callerIdProps} />
       </RuiTooltip>
       <DialPad
