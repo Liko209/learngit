@@ -10,6 +10,13 @@ import ThemeProvider from '../../../foundation/styles/ThemeProvider';
 import * as renderer from 'react-test-renderer';
 
 describe('Tooltip', () => {
+  // will remove until upgrade material ui
+  beforeAll(() => {
+    // mock console for jest
+    (global as any)['console'] = {
+      error: jest.fn(),
+    };
+  });
   it('renders correctly', () => {
     const tree = renderer
       .create(

@@ -29,6 +29,8 @@ const PhoneParserModule: ModuleClass = Module;
 class PhoneParserUtility {
   private static _phoneParserModule: ModuleType;
   private static _moduleStatus: MODULE_STATUS = MODULE_STATUS.IDLE;
+  private static _readPhoneDataStatus: MODULE_STATUS = MODULE_STATUS.IDLE;
+  private static _readPhoneDataQueue: ((status: boolean) => void)[] = [];
   private static _loadingQueue: ((status: boolean) => void)[] = [];
   private static _initialized: boolean = false;
   private static _localPhoneDataLoaded: boolean = false;
@@ -147,11 +149,19 @@ class PhoneParserUtility {
 
     if (force) {
       PhoneParserUtility._initialized = false;
+      PhoneParserUtility._readPhoneDataStatus = MODULE_STATUS.IDLE;
     }
 
     if (PhoneParserUtility._initialized) {
       return true;
     }
+
+    if (PhoneParserUtility._readPhoneDataStatus === MODULE_STATUS.LOADING) {
+      return new Promise<boolean>(resolve => {
+        PhoneParserUtility._readPhoneDataQueue.push(resolve);
+      });
+    }
+    PhoneParserUtility._readPhoneDataStatus = MODULE_STATUS.LOADING;
 
     const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
       ServiceConfig.RC_INFO_SERVICE,
@@ -179,6 +189,7 @@ class PhoneParserUtility {
         await rcInfoService.loadRegionInfo();
       }
 
+      PhoneParserUtility._notifyReadPhoneDataFinished(true);
       performanceTracer.end({
         key: PERFORMANCE_KEYS.INIT_PHONE_PARSER,
         infos: result,
@@ -191,8 +202,20 @@ class PhoneParserUtility {
         key: PERFORMANCE_KEYS.INIT_PHONE_PARSER,
         infos: false,
       });
+
+      PhoneParserUtility._notifyReadPhoneDataFinished(false);
       return false;
     });
+  }
+
+  private static _notifyReadPhoneDataFinished(isSuccess: boolean) {
+    PhoneParserUtility._readPhoneDataQueue.forEach(resolve => {
+      resolve(isSuccess);
+    });
+    PhoneParserUtility._readPhoneDataQueue = [];
+    PhoneParserUtility._readPhoneDataStatus = isSuccess
+      ? MODULE_STATUS.LOADED
+      : MODULE_STATUS.IDLE;
   }
 
   static async canGetPhoneParser(): Promise<boolean> {

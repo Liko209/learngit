@@ -134,6 +134,9 @@ class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
   async editFileName(itemId: number, newName: string): Promise<void> {
     await this.fileActionController.editFileName(itemId, newName);
   }
+  async deleteFile(itemId: number, version: number): Promise<void> {
+    await this.fileActionController.deleteFile(itemId, version);
+  }
 }
 
 export { FileItemService };

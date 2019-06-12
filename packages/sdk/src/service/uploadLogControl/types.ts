@@ -23,7 +23,13 @@ type ZipItem = {
   folder?: string;
 };
 
+enum ZipItemLevel {
+  NORMAL,
+  DEBUG_ALL,
+}
+
 interface IZipItemProvider {
+  level: ZipItemLevel;
   getZipItems(): Promise<ZipItem[]>;
 }
 
@@ -45,7 +51,13 @@ interface IZipProducer {
   produce(): Nullable<LocalZip>;
 }
 
+interface IZipWorker {
+  zip(zipItems: ZipItem[]): Promise<Blob>;
+}
+
 export {
+  IZipWorker,
+  ZipItemLevel,
   IZipItemProvider,
   ZipItem,
   LogControlConfig,

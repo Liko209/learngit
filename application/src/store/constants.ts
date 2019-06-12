@@ -16,6 +16,8 @@ enum ENTITY_NAME {
   'USER_SETTING' = 'userSetting',
   'PHONE_NUMBER' = 'phoneNumber',
   'BADGE' = 'badge',
+  'VOICE_MAIL' = 'voicemail',
+  'CALL_LOG' = 'callLog',
 }
 
 enum HANDLER_TYPE {
@@ -46,6 +48,7 @@ enum GLOBAL_KEYS {
   CURRENT_SETTING_LIST_TYPE = 'CURRENT_SETTING_LIST_TYPE',
   IS_RC_USER = 'IS_RC_USER',
   CURRENT_TELEPHONY_TAB = 'CURRENT_TELEPHONY_TAB',
+  INCOMING_CALL = 'INCOMING_CALL',
 }
 
 export { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS };

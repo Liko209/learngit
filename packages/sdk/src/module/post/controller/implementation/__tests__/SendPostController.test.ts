@@ -54,8 +54,15 @@ class MockPreInsertController<T extends ExtendedBaseModel>
     return;
   }
 
-  isInPreInsert(version: number): boolean {
+  isInPreInsert(version: string): boolean {
     return false;
+  }
+
+  getAll() {
+    return {
+      uniqueIds: [],
+      ids: [],
+    };
   }
 }
 

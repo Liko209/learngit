@@ -34,7 +34,9 @@ class ContentSearchResultViewComponent extends Component<Props> {
   handleSizeChanged = (size: Size) => {
     let height = size.height - USED_HEIGHT;
     height = size.height < MIN_DIALOG_HEIGHT ? MIN_HEIGHT_FIX : height;
-    this.setState({ height, width: size.width });
+    if (height !== this.state.height || size.width !== this.state.width) {
+      this.setState({ height, width: size.width });
+    }
   }
   render() {
     const {

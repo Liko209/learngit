@@ -214,6 +214,10 @@ class Context {
         "rcui-${rcuiHeadHash}".toString()
     }
 
+    String getEndToEndTestLog() {
+        "e2e-${appHeadHash}.log".toString()
+    }
+
     String getErrorMessage() {
         failedStages.join(', ')
     }
@@ -280,6 +284,7 @@ class BaseJob {
     void addFailedStage(String name) {}
 
     // jenkins utils
+    @NonCPS
     void cancelOldBuildOfSameCause() {
         GitLabWebHookCause currentBuildCause = jenkins.currentBuild.rawBuild.getCause(GitLabWebHookCause.class)
         if (null == currentBuildCause)
@@ -306,6 +311,7 @@ class BaseJob {
                     jenkins.sleep 10
                 }
             }
+            return
         }
     }
 
@@ -374,6 +380,22 @@ class BaseJob {
     Boolean hasBeenLocked(String credentialId, URI lockUri, String key) {
         jenkins.sshagent (credentials: [credentialId]) {
             return 'true' == ssh(lockUri, "[ -f ${lockUri.getPath()}/${key} ] && echo 'true' || echo 'false'".toString())
+        }
+    }
+
+    void writeKeyFile(String credentialId, URI lockUri, String key, String filepath) {
+        if (!jenkins.fileExists(filepath) ) return
+
+        jenkins.sshagent (credentials: [credentialId]) {
+            ssh(lockUri, "mkdir -p ${lockUri.getPath()}".toString())
+            scp(filepath, lockUri, "${lockUri.getPath()}/${key}".toString())
+        }
+    }
+
+    void readKeyFile(String credentialId, URI lockUri, String key, String filepath) {
+        jenkins.sshagent (credentials: [credentialId]) {
+            String text = ssh(lockUri, "cat ${lockUri.getPath()}/${key} || true".toString())?: ''
+            jenkins.writeFile file: filepath, text: text, encoding: 'utf-8'
         }
     }
 }
@@ -470,7 +492,7 @@ class JupiterJob extends BaseJob {
 
     void unstashEndToEnd() {
         String tarball = "testcafe-${context.head}.tar.gz".toString()
-        jenkins.sh "find ${E2E_DIRECTORY} -maxdepth 1 -not -name node_modules | xargs rm -rf"
+        jenkins.sh "find ${E2E_DIRECTORY} -mindepth 1 -maxdepth 1 -not -name node_modules | xargs rm -rf"
         jenkins.unstash name: tarball
         jenkins.sh "tar -xzvf ${tarball}"
     }
@@ -554,7 +576,7 @@ class JupiterJob extends BaseJob {
             context.addresses.add(context.gitlabUserEmail)
 
         String getAuthorsCmd =
-            "git rev-list '${context.gitlabTargetNamespace}/${context.gitlabTargetBranch}'..'${context.gitlabSourceNamespace}/${context.gitlabSourceBranch}' | xargs git show -s --format='%ae' | sort | uniq | grep -E -o '\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}\\b'".toString()
+            "git rev-list '${context.gitlabTargetNamespace}/${context.gitlabTargetBranch}'..'${context.gitlabSourceNamespace}/${context.gitlabSourceBranch}' | xargs git show -s --format='%ae' | sort | uniq | grep -E -o '\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}\\b' || true".toString()
         List<String> authors = jenkins.sh(returnStdout: true, script:getAuthorsCmd).trim().split('\n')
         List<String> glipAddresses = authors.collect{ it.replaceAll('ringcentral.com', 'ringcentral.glip.com')}
         context.addresses.addAll(glipAddresses)
@@ -596,7 +618,7 @@ class JupiterJob extends BaseJob {
     void unitTest() {
         if (isSkipUnitTest) return
 
-        jenkins.sh 'npm run test -- --coverage -w 16'
+        jenkins.sh 'npm run test -- --coverage -w 24'
         jenkins.publishHTML([
             reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: 'Coverage', reportTitles: 'Coverage',
             allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true,
@@ -751,6 +773,7 @@ class JupiterJob extends BaseJob {
             "CONCURRENCY=${context.e2eConcurrency}",
             "EXCLUDE_TAGS=${context.e2eExcludeTags}",
             "BRANCH=${context.gitlabSourceBranch}",
+            "TESTS_LOG=${context.endToEndTestLog}",
             "ACTION=ON_MERGE",
             "SCREENSHOTS_PATH=./screenshots",
             "TMPFILE_PATH=./tmp",
@@ -786,8 +809,10 @@ class JupiterJob extends BaseJob {
                     usernameVariable: 'RC_PLATFORM_APP_KEY',
                     passwordVariable: 'RC_PLATFORM_APP_SECRET')]) {
                     try {
+                        readKeyFile(context.lockCredentialId, context.lockUri, context.endToEndTestLog, context.endToEndTestLog)
                         jenkins.sh "npm run e2e"
                     } finally {
+                        writeKeyFile(context.lockCredentialId, context.lockUri, context.endToEndTestLog, context.endToEndTestLog)
                         if (!context.e2eEnableRemoteDashboard) {
                             jenkins.sh "tar -czvf allure.tar.gz -C ./allure/allure-results . || true"
                             jenkins.archiveArtifacts artifacts: 'allure.tar.gz', fingerprint: true

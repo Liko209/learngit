@@ -162,6 +162,10 @@ enum CALL_LOG_SOURCE {
   MISSED = 'Missed',
 }
 
+const CALL_LOG_CONFIG_KEYS = {
+  PSEUDO_CALL_LOG_INFO: 'pseudo_call_log_info',
+};
+
 const MISSED_CALL_BADGE_ID = `${MODULE_NAME}.MISSED_CALLS`;
 
 export {
@@ -175,4 +179,5 @@ export {
   CALL_LOG_SOURCE,
   MISSED_CALL_BADGE_ID,
   MODULE_NAME,
+  CALL_LOG_CONFIG_KEYS,
 };

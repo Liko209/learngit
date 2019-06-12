@@ -56,7 +56,7 @@ describe('SegAnalysisController', () => {
         .mockReturnValueOnce('mac');
 
       segAnalysisController.identify(1);
-      expect(segment.identify).toHaveBeenCalledWith(1, undefined);
+      expect(segment.identify).toHaveBeenCalledWith(1, { endPoint: 'mac' });
     });
   });
 
@@ -83,7 +83,9 @@ describe('SegAnalysisController', () => {
         .mockReturnValueOnce('mac');
 
       segAnalysisController.track('sendPost');
-      expect(segment.track).toHaveBeenCalledWith('sendPost', undefined);
+      expect(segment.track).toHaveBeenCalledWith('sendPost', {
+        endPoint: 'mac',
+      });
     });
   });
   describe('page', () => {
@@ -94,8 +96,11 @@ describe('SegAnalysisController', () => {
     });
 
     it('should call page', () => {
+      jest
+        .spyOn(segAnalysisController, 'getEndPoint')
+        .mockReturnValueOnce('mac');
       segAnalysisController.page('good');
-      expect(segment.page).toHaveBeenCalledWith('good', undefined);
+      expect(segment.page).toHaveBeenCalledWith('good', { endPoint: 'mac' });
     });
   });
   describe('reset', () => {

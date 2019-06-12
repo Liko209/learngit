@@ -5,6 +5,7 @@
  */
 import { Entity } from '../store';
 import { IdModel, ModelIdType } from 'sdk/framework/model';
+import { observable } from 'mobx';
 
 export default class Base<
   T extends IdModel<IdType>,
@@ -12,7 +13,7 @@ export default class Base<
 > implements Entity<IdType> {
   id: IdType;
   data?: any;
-  isMocked: boolean;
+  @observable isMocked: boolean;
   constructor(data: T) {
     const { id, isMocked }: { id: IdType; isMocked?: boolean } = data;
     this.id = id;

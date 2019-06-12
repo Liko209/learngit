@@ -7,11 +7,11 @@
 import { AccountService } from '..';
 import { PersonService } from '../../../person';
 import { RCAuthApi } from '../../../../api';
-import { AccountGlobalConfig } from '../../../account/config';
-import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
+import { AccountGlobalConfig } from '../../config';
+import { AccountUserConfig } from '../../config/AccountUserConfig';
 import { ServiceLoader } from '../../../serviceLoader';
 import { setRCToken } from '../../../../authenticator/utils';
-
+import { AuthUserConfig } from '../../config/AuthUserConfig';
 jest.mock('../../../serviceLoader');
 jest.mock('../../../person');
 jest.mock('../../../../api');
@@ -19,15 +19,25 @@ jest.mock('../../../account/config/AccountUserConfig');
 jest.mock('../../../account/config/AuthUserConfig');
 jest.mock('../../../account/config');
 
+function clearMocks() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
+
 describe('AccountService', () => {
   let accountService: AccountService;
   let personService: PersonService;
 
-  beforeEach(() => {
+  function setUp() {
     personService = new PersonService();
     ServiceLoader.getInstance.mockReturnValue(personService);
-    accountService = new AccountService(null);
+    accountService = new AccountService(null as any);
     setRCToken = jest.fn();
+  }
+  beforeEach(() => {
+    clearMocks();
+    setUp();
   });
 
   describe('getCurrentUserInfo()', () => {
@@ -67,14 +77,15 @@ describe('AccountService', () => {
   });
 
   describe('refreshRCToken()', () => {
+    const result = {
+      timestamp: 1,
+      accessTokenExpireIn: 6001,
+      refreshTokenExpireIn: 6001,
+      accessToken: 'accessToken',
+      refreshToken: 'refreshToken',
+    };
+
     it('should refresh rc token if api return data', () => {
-      const result = {
-        timestamp: 1,
-        accessTokenExpireIn: 6001,
-        refreshTokenExpireIn: 6001,
-        accessToken: 'accessToken',
-        refreshToken: 'refreshToken',
-      };
       RCAuthApi.refreshToken.mockResolvedValue(result);
       expect.assertions(1);
       const token = accountService.refreshRCToken();
@@ -88,13 +99,6 @@ describe('AccountService', () => {
     });
 
     it('should refresh rc token if api return data', () => {
-      const result = {
-        timestamp: 1,
-        accessTokenExpireIn: 6001,
-        refreshTokenExpireIn: 6001,
-        accessToken: 'accessToken',
-        refreshToken: 'refreshToken',
-      };
       RCAuthApi.refreshToken.mockResolvedValueOnce(result);
       expect.assertions(1);
       const token = accountService.refreshRCToken();
@@ -107,14 +111,31 @@ describe('AccountService', () => {
       });
     });
 
-    it('should not refresh rc token if api return error', async () => {
+    it('should return null when refresh token error', async () => {
       RCAuthApi.refreshToken.mockRejectedValueOnce('error');
       expect.assertions(1);
-      try {
-        await accountService.refreshRCToken();
-      } catch (err) {
-        expect(err).toEqual('error');
-      }
+      const result = await accountService.refreshRCToken();
+      expect(result).toBe(null);
+    });
+
+    it('should only refresh token once when has multiple request to refresh token', async () => {
+      RCAuthApi.refreshToken.mockResolvedValueOnce(result);
+      expect.assertions(9);
+      const token1 = accountService.refreshRCToken();
+      const token2 = accountService.refreshRCToken();
+      const token3 = accountService.refreshRCToken();
+      expect(accountService['_refreshTokenQueue']).toHaveLength(2);
+      expect(accountService['_isRefreshingToken']).toBeTruthy();
+
+      const res = await Promise.all([token1, token2, token3]);
+
+      expect(RCAuthApi.refreshToken).toBeCalledTimes(1);
+      expect(accountService['_refreshTokenQueue']).toEqual([]);
+      expect(accountService['_isRefreshingToken']).toBeFalsy();
+      expect(res[0]).toEqual(result);
+      expect(res[1]).toEqual(result);
+      expect(res[2]).toEqual(result);
+      expect(setRCToken).toBeCalledTimes(1);
     });
   });
 
@@ -135,6 +156,41 @@ describe('AccountService', () => {
       AccountGlobalConfig.getUserDictionary.mockReturnValue(1);
       AccountUserConfig.prototype.getGlipUserId.mockReturnValue('123');
       expect(accountService.isGlipLogin()).toBe(true);
+    });
+  });
+
+  describe('get rc token', () => {
+    const accessToken = {
+      access_token: 'access_token',
+      endpoint_id: 'i6Kffo9iTCun9yEIOT7drQ',
+      expires_in: 3600,
+      timestamp: 1559613357949,
+    };
+
+    beforeEach(() => {
+      AuthUserConfig.prototype.getRCToken = jest
+        .fn()
+        .mockReturnValue(accessToken);
+    });
+
+    it('should  not refresh token when token is invalid', async () => {
+      accountService['refreshRCToken'] = jest.fn().mockResolvedValue({ id: 1 });
+      Date.now = jest
+        .fn()
+        .mockReturnValue(1559613357949 + 3600 * 1000 - 5 * 60 * 1000);
+      const result = await accountService.getRCToken();
+      expect(accountService['refreshRCToken']).not.toBeCalled();
+      expect(result).toEqual(accessToken);
+    });
+
+    it('should refresh token when token is invalid', async () => {
+      accountService['refreshRCToken'] = jest.fn().mockResolvedValue({ id: 1 });
+      Date.now = jest
+        .fn()
+        .mockReturnValue(1559613357949 + 3600 * 1000 - 5 * 60 * 1000 + 1);
+      const result = await accountService.getRCToken();
+      expect(accountService['refreshRCToken']).toBeCalled();
+      expect(result).toEqual({ id: 1 });
     });
   });
 });

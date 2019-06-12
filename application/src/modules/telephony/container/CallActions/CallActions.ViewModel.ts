@@ -24,6 +24,9 @@ class CallActionsViewModel extends StoreViewModel<CallActionsProps>
       [CALL_ACTION.FORWARD]: {
         shouldShowAction: this.isIncomingPage,
       },
+      [CALL_ACTION.PARK]: {
+        shouldShowAction: !this.isIncomingPage,
+      },
       [CALL_ACTION.FLIP]: {
         shouldShowAction: !this.isIncomingPage,
       },

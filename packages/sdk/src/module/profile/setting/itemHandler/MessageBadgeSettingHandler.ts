@@ -77,7 +77,7 @@ export class MessageBadgeSettingHandler extends AbstractSettingEntityHandler<
       profile[SETTING_KEYS.NEW_MESSAGE_BADGES] !==
       this.userSettingEntityCache!.value
     ) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
   }
 }
