@@ -125,16 +125,21 @@ class NotificationBrowserSettingItemViewComponent extends Component<
       switch (browserPermission) {
         case PERMISSION.DEFAULT:
           const permission = await this._requestPermission();
-          if (permission === PERMISSION.DENIED) {
-            this._handleDialog(true);
+          try {
+            if (permission === PERMISSION.DENIED) {
+              this._handleDialog(true);
+            }
+            if (permission === PERMISSION.GRANTED) {
+              await this.props.setToggleState(checked);
+              this._showEnabledNotification();
+            }
+          } catch (error) {
+            throw error;
+          } finally {
+            this.setState({
+              waitForPermission: false,
+            });
           }
-          if (permission === PERMISSION.GRANTED) {
-            await this.props.setToggleState(checked);
-            this._showEnabledNotification();
-          }
-          this.setState({
-            waitForPermission: false,
-          });
           break;
         case PERMISSION.GRANTED:
           await this.props.setToggleState(checked);
