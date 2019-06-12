@@ -14,9 +14,13 @@ describe('EntitySourceController', () => {
   let dao: BaseDao<TestEntity>;
   let deactivatedDao: DeactivatedDao;
   let requestController: RequestController<TestEntity>;
-  let entitySourceController: EntitySourceController<TestEntity>;
+  let entitySourceController: EntitySourceController<
+    TestEntity,
+    number | string
+  >;
   let entityPersistentController: EntityPersistentController<TestEntity>;
-  beforeEach(() => {
+
+  function setup() {
     dao = new BaseDao('TestEntity', new TestDatabase());
     deactivatedDao = new DeactivatedDao(new TestDatabase());
     requestController = new RequestController<TestEntity>(undefined);
@@ -26,9 +30,20 @@ describe('EntitySourceController', () => {
       deactivatedDao,
       requestController,
     );
-  });
+  }
+
+  function clearMocks() {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+  }
 
   describe('get()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
     it('should save entity if it is fetched from remote when enable save', async () => {
       entitySourceController = new EntitySourceController<TestEntity>(
         entityPersistentController,
@@ -68,6 +83,11 @@ describe('EntitySourceController', () => {
   });
 
   describe('getEntity()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
     it('should not call requestController.getDataById when local has', async () => {
       jest
         .spyOn(entitySourceController, 'getEntityLocally')
@@ -96,15 +116,34 @@ describe('EntitySourceController', () => {
       expect(requestController.get).toHaveBeenCalled();
     });
 
-    it('should throw exception when local has not, entity id is invalid', async () => {
+    it('should return null when local has not, entity id is invalid', async () => {
       jest
         .spyOn(entitySourceController, 'getEntityLocally')
         .mockResolvedValueOnce(null);
-      expect(entitySourceController.get(-1)).rejects.toThrow();
+      const result = await entitySourceController.get(-1);
+      expect(result).toEqual(null);
+    });
+
+    it('should call requestController.get when local has not, and entity id is string', async () => {
+      jest
+        .spyOn(entitySourceController, 'getEntityLocally')
+        .mockResolvedValueOnce(null);
+      jest
+        .spyOn(requestController, 'get')
+        .mockResolvedValueOnce({ id: 1, name: 'jupiter' });
+      const result = await entitySourceController.get('-1');
+      expect(result.id).toBe(1);
+      expect(result.name).toBe('jupiter');
+      expect(requestController.get).toHaveBeenCalled();
     });
   });
 
   describe('getEntityLocally()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
     it('should return entity when db has', async () => {
       jest.spyOn(dao, 'get').mockResolvedValueOnce({ id: 1, name: 'jupiter' });
       jest.spyOn(deactivatedDao, 'get').mockImplementation(() => {});
@@ -140,6 +179,11 @@ describe('EntitySourceController', () => {
   });
 
   describe('bulkUpdate()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
     it('should return entity when db has', async () => {
       jest.spyOn(dao, 'bulkUpdate').mockImplementation(() => {});
 
@@ -152,6 +196,11 @@ describe('EntitySourceController', () => {
   });
 
   describe('getEntitiesLocally()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
     it('should return entities when in db', async () => {
       jest.spyOn(dao, 'batchGet').mockImplementation(() => {
         return [{ id: 1, name: 'jupiter1' }, { id: 2, name: 'jupiter2' }];
@@ -245,6 +294,11 @@ describe('EntitySourceController', () => {
   });
 
   describe('getEntityKey()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
     it('should return entity when db has', () => {
       const result = entitySourceController.getEntityNotificationKey();
       expect(result).toBe('ENTITY.TESTENTITY');
@@ -252,6 +306,11 @@ describe('EntitySourceController', () => {
   });
 
   describe('batchGet', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
     it('should not throw error when get from server and error happens', async () => {
       const ids = [1];
       deactivatedDao.batchGet = jest.fn().mockResolvedValue([]);
@@ -260,6 +319,31 @@ describe('EntitySourceController', () => {
         throw new Error();
       });
       expect(entitySourceController.batchGet(ids)).resolves.toEqual([]);
+    });
+
+    it('should filter null and undefined and duplicated when do batchGet', async () => {
+      const ids = [1, 2, null, 3, undefined, 1, 5];
+      deactivatedDao.batchGet = jest.fn().mockResolvedValue([]);
+      const spy = jest.spyOn(entityPersistentController, 'batchGet');
+      spy.mockResolvedValueOnce([]);
+      requestController.get = jest.fn().mockImplementationOnce(() => {
+        throw new Error();
+      });
+      await entitySourceController.batchGet(ids, true);
+      expect(spy).toBeCalledWith([1, 2, 3, 5], true);
+    });
+
+    it('should return [] if has not valid ids', async () => {
+      const ids = [null, undefined];
+      deactivatedDao.batchGet = jest.fn().mockResolvedValue([]);
+      const spy = jest.spyOn(entityPersistentController, 'batchGet');
+      spy.mockResolvedValueOnce([]);
+      requestController.get = jest.fn().mockImplementationOnce(() => {
+        throw new Error();
+      });
+      const result = await entitySourceController.batchGet(ids, true);
+      expect(result).toEqual([]);
+      expect(spy).not.toBeCalled();
     });
   });
 });
