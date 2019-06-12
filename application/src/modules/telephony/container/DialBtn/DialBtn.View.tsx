@@ -29,7 +29,7 @@ class DialBtnViewComponent extends Component<Props> {
         showShadow={false}
         tooltipPlacement="top"
         iconName="answer"
-        data-test-automation-id="telephony-end-btn"
+        data-test-automation-id="telephony-dial-btn"
       />
     );
   }
