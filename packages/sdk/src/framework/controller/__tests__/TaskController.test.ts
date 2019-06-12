@@ -55,7 +55,7 @@ describe('TaskController', () => {
       const executeFunc = () => {
         setTimeout(() => {
           strategy.reset();
-        },         200);
+        }, 200);
       };
       strategy = new MockStrategy();
       taskController = new TaskController(strategy, executeFunc);
@@ -113,7 +113,7 @@ describe('TaskController', () => {
         expect(createTaskFunSpy).toBeCalledTimes(1);
         expect(doExecutingFunSpy).toBeCalledTimes(6);
         done();
-      },         200);
+      }, 400);
     });
 
     it('should keep the last strategy and just do retry times if task still failed', done => {
@@ -133,7 +133,7 @@ describe('TaskController', () => {
         const interval = strategy.getNext();
         expect(interval).toEqual(retryStrategy[retryStrategy.length - 1]);
         done();
-      },         200);
+      }, 200);
     });
   });
 });
