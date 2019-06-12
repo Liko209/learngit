@@ -6,6 +6,7 @@
 import { container, Jupiter } from 'framework';
 import { config } from '../../../module.config';
 import { GlobalSearchStore } from '../../../store';
+import { getEntity } from '@/store/utils';
 import { SearchService } from 'sdk/module/search';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
@@ -62,18 +63,14 @@ describe('RecentSearchViewModel', () => {
 
   describe('onKeyDown()', () => {
     it('if select index === recent record length should be return length - 1', () => {
-      jest
-        .spyOn(recentSearchViewModel, 'recentRecord', 'get')
-        .mockReturnValue([1, 2]);
+      jest.spyOn(recentSearchViewModel, 'recentRecord', 'get').mockReturnValue([1, 2]);
       recentSearchViewModel.setSelectIndex(1);
       recentSearchViewModel.onKeyDown();
       expect(recentSearchViewModel.selectIndex).toBe(1);
     });
 
     it('if select index !== recent record length select index should be + 1', () => {
-      jest
-        .spyOn(recentSearchViewModel, 'recentRecord', 'get')
-        .mockReturnValue([1, 2, 3]);
+      jest.spyOn(recentSearchViewModel, 'recentRecord', 'get').mockReturnValue([1, 2, 3]);
       recentSearchViewModel.setSelectIndex(1);
       recentSearchViewModel.onKeyDown();
       expect(recentSearchViewModel.selectIndex).toBe(2);
@@ -91,9 +88,7 @@ describe('RecentSearchViewModel', () => {
       expect(recentSearchViewModel.onEnter(keyBoardEvent)).toBeUndefined();
     });
     it('if has group id should be call onSelectItem with group id and add recent', () => {
-      jest
-        .spyOn(recentSearchViewModel, 'currentItemValue', 'get')
-        .mockReturnValue(null);
+      jest.spyOn(recentSearchViewModel, 'currentItemValue', 'get').mockReturnValue(null);
 
       const keyBoardEvent = {
         preventDefault: jest.fn(),
@@ -104,21 +99,11 @@ describe('RecentSearchViewModel', () => {
       const id = 1;
       const currentItemType = SearchItemTypes.PEOPLE;
       const groupId = 2;
-      jest
-        .spyOn(recentSearchViewModel, 'addRecentRecord')
-        .mockImplementation(() => {});
-      jest
-        .spyOn(recentSearchViewModel, 'onSelectItem')
-        .mockImplementation(() => {});
-      jest
-        .spyOn(recentSearchViewModel, 'currentItemValue', 'get')
-        .mockReturnValue(id);
-      jest
-        .spyOn(recentSearchViewModel, 'currentItemType', 'get')
-        .mockReturnValue(currentItemType);
-      jest
-        .spyOn(recentSearchViewModel, 'currentGroupId', 'get')
-        .mockReturnValue(groupId);
+      jest.spyOn(recentSearchViewModel, 'addRecentRecord').mockImplementation(() => {});
+      jest.spyOn(recentSearchViewModel, 'onSelectItem').mockImplementation(() => {});
+      jest.spyOn(recentSearchViewModel, 'currentItemValue', 'get').mockReturnValue(id);
+      jest.spyOn(recentSearchViewModel, 'currentItemType', 'get').mockReturnValue(currentItemType);
+      jest.spyOn(recentSearchViewModel, 'currentGroupId', 'get').mockReturnValue(groupId);
       const keyBoardEvent = {
         preventDefault: jest.fn(),
       } as any;
@@ -134,21 +119,11 @@ describe('RecentSearchViewModel', () => {
     it('if has group id should be call onSelectItem with group id and add recent', () => {
       const id = 1;
       const currentItemType = SearchItemTypes.PEOPLE;
-      jest
-        .spyOn(recentSearchViewModel, 'addRecentRecord')
-        .mockImplementation(() => {});
-      jest
-        .spyOn(recentSearchViewModel, 'onSelectItem')
-        .mockImplementation(() => {});
-      jest
-        .spyOn(recentSearchViewModel, 'currentItemValue', 'get')
-        .mockReturnValue(id);
-      jest
-        .spyOn(recentSearchViewModel, 'currentItemType', 'get')
-        .mockReturnValue(currentItemType);
-      jest
-        .spyOn(recentSearchViewModel, 'currentGroupId', 'get')
-        .mockReturnValue(null);
+      jest.spyOn(recentSearchViewModel, 'addRecentRecord').mockImplementation(() => {});
+      jest.spyOn(recentSearchViewModel, 'onSelectItem').mockImplementation(() => {});
+      jest.spyOn(recentSearchViewModel, 'currentItemValue', 'get').mockReturnValue(id);
+      jest.spyOn(recentSearchViewModel, 'currentItemType', 'get').mockReturnValue(currentItemType);
+      jest.spyOn(recentSearchViewModel, 'currentGroupId', 'get').mockReturnValue(null);
       const keyBoardEvent = {
         preventDefault: jest.fn(),
       } as any;
@@ -228,6 +203,50 @@ describe('RecentSearchViewModel', () => {
         1,
         {},
       );
+    });
+  });
+
+  describe('isValidGroup()', () => {
+    it('should return false if value is undefined', () => {
+      expect(recentSearchViewModel.isValidGroup()).toBe(false);
+    });
+    it('should return false if catch error', () => {
+      (getEntity as jest.Mock).mockImplementation(() => {
+        throw new Error('error');
+      });
+      expect(recentSearchViewModel.isValidGroup(1)).toBe(false);
+    });
+    it('should return false if delete the team or group', () => {
+      (getEntity as jest.Mock).mockReturnValueOnce({
+        isTeam: true,
+        deactivated: true,
+      });
+      expect(recentSearchViewModel.isValidGroup(1)).toBe(false);
+    });
+    it('should return false if group or team is private and not include user', () => {
+      (getEntity as jest.Mock).mockReturnValueOnce({
+        isTeam: true,
+        isMember: false,
+        privacy: 'private',
+      });
+      expect(recentSearchViewModel.isValidGroup(1)).toBe(false);
+    });
+    it('should return false if group or team is archived', () => {
+      (getEntity as jest.Mock).mockReturnValueOnce({
+        isTeam: true,
+        isMember: true,
+        privacy: 'private',
+        isArchived: true,
+      });
+      expect(recentSearchViewModel.isValidGroup(1)).toBe(false);
+    });
+    it('should return true if group or team is private and include user', () => {
+      (getEntity as jest.Mock).mockReturnValueOnce({
+        isTeam: true,
+        isMember: true,
+        privacy: 'private',
+      });
+      expect(recentSearchViewModel.isValidGroup(1)).toBe(true);
     });
   });
 });
