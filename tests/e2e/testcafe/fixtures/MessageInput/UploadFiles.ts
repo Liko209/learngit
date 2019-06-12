@@ -13,8 +13,8 @@ import { h, H } from '../../v2/helpers';
 
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
+import { IGroup, ITestMeta } from "../../v2/models";
 import { SITE_URL, BrandTire } from '../../config';
-import { IGroup } from '../../v2/models';
 
 function fileSizeOf(filePath: string, unit: string = 'KB', num: number = 1) {
   // filePath is relative to current script (thanks to testcafe!), so we have to get absolute path before read stat
@@ -34,7 +34,14 @@ fixture('UploadFiles')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('The post is sent successfully when sending a post with uploaded files', ['P0', 'JPT-448', 'UploadFiles', 'Mia.Cai']), async t => {
+
+  test.meta(<ITestMeta>{
+    priority: ['P0'],
+    caseIds: ['JPT-448'],
+    maintainers: ['Mia.Cai'],
+    keywords: ['UploadFiles'],
+  })('The post is sent successfully when sending a post with uploaded files', async (t) => {
+
   const users = h(t).rcData.mainCompany.users;
   const user = users[4];
   await h(t).platform(user).init();
@@ -60,9 +67,22 @@ test(formalName('The post is sent successfully when sending a post with uploaded
     await teamsSection.conversationEntryById(teamId).enter();
   });
 
-  const files = ['../../sources/1.txt', '../../sources/3.txt'];
+  const file1 = ['../../sources/1.txt'];
+  const file2 = ['../../sources/3.txt'];
+  const files = ['../../sources/1.txt','../../sources/3.txt'];
+  const fileName1 = '1.txt';
+  const fileName2 = '3.txt';
+
   await h(t).withLog('And upload two files as attachments', async () => {
-    await conversationPage.uploadFilesToMessageAttachment(files);
+    await conversationPage.uploadFilesToMessageAttachment(file1);
+    await conversationPage.uploadFilesToMessageAttachment(file2);
+  });
+
+  await h(t).withLog('Then the file is in the the message attachment ', async () => {
+    await t.expect(conversationPage.fileNamesOnMessageArea.withText(fileName1).exists).ok();
+    await t.expect(conversationPage.fileNamesOnMessageArea.withText(fileName1).visible).ok();
+    await t.expect(conversationPage.fileNamesOnMessageArea.withText(fileName2).exists).ok();
+    await t.expect(conversationPage.fileNamesOnMessageArea.withText(fileName2).visible).ok();
   });
 
   const message = `${uuid()} text message with attachments`;
@@ -89,7 +109,14 @@ test(formalName('The post is sent successfully when sending a post with uploaded
   });
 });
 
-test(formalName(`JPT-592 Shouldn't show the prompt when re-select an existing file only in attachment;`, ['P2', 'UploadFiles', 'Mia.Cai', 'JPT-592']), async t => {
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-592'],
+  maintainers: ['Mia.Cai'],
+  keywords: ['UploadFiles'],
+})('Should not show the prompt when re-select an existing file only in attachment', async (t) => {
+
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const user = users[0];
@@ -138,7 +165,14 @@ test(formalName(`JPT-592 Shouldn't show the prompt when re-select an existing fi
   });
 });
 
-test(formalName(`JPT-498 Can cancel files in the duplicate prompt when the same name is sent;JPT-457 Will show the prompt when re-upload an existing file in the conversation`, ['P1', 'UploadFiles', 'Mia.Cai', 'JPT-498', 'JPT-457']), async t => {
+
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-498','JPT-457'],
+  maintainers: ['Mia.Cai'],
+  keywords: ['UploadFiles'],
+})('JPT-498 Can cancel files in the duplicate prompt when the same name is sent;JPT-457 Will show the prompt when re-upload an existing file in the conversation', async (t) => {
+
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const user = users[0];
@@ -204,7 +238,14 @@ test(formalName(`JPT-498 Can cancel files in the duplicate prompt when the same 
 
 });
 
-test(formalName('JPT-499 Can update files when click update the button in the duplicate prompt', ['P1', 'UploadFiles', 'Mia.Cai', 'JPT-499']), async t => {
+
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-499'],
+  maintainers: ['Mia.Cai'],
+  keywords: ['UploadFiles'],
+})('JPT-499 Can update files when click update the button in the duplicate prompt', async (t) => {
+  
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const user = users[0];
@@ -288,7 +329,13 @@ test(formalName('JPT-499 Can update files when click update the button in the du
 
 });
 
-test(formalName('JPT-532 Can update files when re-select the file and local exists one post with the same name file', ['P2', 'UploadFiles', 'Mia.Cai', 'JPT-532']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-532'],
+  maintainers: ['Mia.Cai'],
+  keywords: ['UploadFiles'],
+})('JPT-532 Can update files when re-select the file and local exists one post with the same name file', async (t) => {
+
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const user = users[0];
@@ -383,7 +430,14 @@ test(formalName('JPT-532 Can update files when re-select the file and local exis
 
 });
 
-test(formalName('JPT-500 Can create files in the duplicate prompt when the same name file is sent', ['P1', 'UploadFiles', 'Mia.Cai', 'JPT-500']), async t => {
+
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-500'],
+  maintainers: ['Mia.Cai'],
+  keywords: ['UploadFiles'],
+})('JPT-500 Can create files in the duplicate prompt when the same name file is sent', async (t) => {
+
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const user = users[0];
@@ -456,7 +510,13 @@ test(formalName('JPT-500 Can create files in the duplicate prompt when the same 
   });
 });
 
-test(formalName('JPT-533 Can create files when re-select the file and local exists one post with the same name file', ['P2', 'UploadFiles', 'Mia.Cai', 'JPT-533']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-533'],
+  maintainers: ['Mia.Cai'],
+  keywords: ['UploadFiles'],
+})('JPT-533 Can create files when re-select the file and local exists one post with the same name file', async (t) => {
+ 
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const user = users[0];
@@ -549,7 +609,13 @@ test(formalName('JPT-533 Can create files when re-select the file and local exis
   });
 });
 
-test(formalName('JPT-593 Should update the oldest file when creating same name file then re-upload and update same name file to the conversation', ['P1', 'UploadFiles', 'Mia.Cai', 'JPT-593']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-593'],
+  maintainers: ['Mia.Cai'],
+  keywords: ['UploadFiles'],
+})('JPT-593 Should update the oldest file when creating same name file then re-upload and update same name file to the conversation', async (t) => {
+ 
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const user = users[0];
@@ -644,7 +710,13 @@ test(formalName('JPT-593 Should update the oldest file when creating same name f
 
 });
 
-test(formalName('JPT-512 Can remove files when selected files to conversations', ['P1', 'UploadFiles', 'Mia.Cai', 'JPT-512']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-512'],
+  maintainers: ['Mia.Cai'],
+  keywords: ['UploadFiles'],
+})('JPT-512 Can remove files when selected files to conversations', async (t) => {
+ 
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const user = users[0];
@@ -699,7 +771,13 @@ test(formalName('JPT-512 Can remove files when selected files to conversations',
   });
 });
 
-test(formalName('JPT-515 The selected files shouldn\'t be in the other conversation when switch to other conversations', ['P1', 'UploadFiles', 'Mia.Cai', 'JPT-515']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-515'],
+  maintainers: ['Mia.Cai'],
+  keywords: ['UploadFiles'],
+})('JPT-515 The selected files shouldn\'t be in the other conversation when switch to other conversations', async (t) => {
+ 
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const user = users[0];
@@ -755,7 +833,13 @@ test(formalName('JPT-515 The selected files shouldn\'t be in the other conversat
 
 });
 
-test(formalName('JPT-889 Check focus on input box when remove files', ['P2', 'UploadFiles', 'Skye.Wang', 'JPT-889']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-889'],
+  maintainers: ['Skye.Wang'],
+  keywords: ['UploadFiles'],
+})('JPT-889 Check focus on input box when remove files', async (t) => {
+ 
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
@@ -797,8 +881,13 @@ test(formalName('JPT-889 Check focus on input box when remove files', ['P2', 'Up
   });
 });
 
+test.skip.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-1438'],
+  maintainers: ['Potar'],
+  keywords: ['UploadFiles'],
+})('Can update image size in the duplicate prompt when the same name image is sent', async (t) => {
 
-test.skip(formalName('Can update image size in the duplicate prompt when the same name image is sent', ['P1', 'UploadFiles', 'Potar', 'JPT-1438']), async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
 
   let team = <IGroup>{
