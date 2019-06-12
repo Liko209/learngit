@@ -17,9 +17,6 @@ import { CallLogDao } from '../dao';
 import { SYNC_TYPE } from '../../sync';
 import { RCItemApi } from 'sdk/api';
 import { CallLogBadgeController } from './CallLogBadgeController';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { CallLogService } from '../service';
-import { Nullable } from 'sdk/types';
 
 const SYNC_NAME = 'MissedCallLogFetchController';
 
@@ -36,17 +33,8 @@ class MissedCallLogFetchController extends AbstractFetchController {
     data: RCItemSyncResponse<CallLog>,
   ): Promise<CallLog[]> {
     const dao = daoManager.getDao(CallLogDao);
-    let oldestTime: Nullable<number> = null;
+    const oldestTime = await dao.queryOldestTimestamp();
     const result: CallLog[] = [];
-
-    if (data.syncInfo.syncType === SYNC_TYPE.FSYNC) {
-      await this.sourceController.clear();
-      await ServiceLoader.getInstance<CallLogService>(
-        ServiceConfig.CALL_LOG_SERVICE,
-      ).userConfig.setPseudoCallLogInfo({});
-    } else {
-      oldestTime = await dao.queryOldestTimestamp();
-    }
 
     data.records.forEach((callLog: CallLog) => {
       const timestamp = Date.parse(callLog.startTime);

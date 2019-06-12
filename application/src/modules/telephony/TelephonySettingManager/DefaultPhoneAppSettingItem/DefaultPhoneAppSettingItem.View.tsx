@@ -10,6 +10,7 @@ import { Dialog } from '@/containers/Dialog';
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
 import { getSingleEntity } from '@/store/utils/entities';
 import { ENTITY_NAME } from '@/store/constants';
+import JuiText from 'jui/components/Text/Text';
 import { noop } from 'jui/foundation/utils';
 
 type DefaultPhoneAppSelectItemProps = {
@@ -20,7 +21,7 @@ const DefaultPhoneAppSelectItem: SFC<
   DefaultPhoneAppSelectItemProps & WithTranslation
 > = ({ value, t }) => {
   // to-do: This dialog logic should be moved into settings built-in component
-  const optionRef = useRef<HTMLDivElement>(null);
+  const optionRef = useRef<HTMLSpanElement>(null);
   const onClickHandler = useCallback((e: MouseEvent) => {
     let currentTarget = e.currentTarget;
     const currentValue = getSingleEntity(ENTITY_NAME.PROFILE, 'callOption');
@@ -88,7 +89,11 @@ const DefaultPhoneAppSelectItem: SFC<
       'setting.phone.general.defaultPhoneApp.option.ringcentral',
     ),
   };
-  return <div ref={optionRef}>{options[value]}</div>;
+  return (
+    <JuiText>
+      <span ref={optionRef}>{options[value]}</span>
+    </JuiText>
+  );
 };
 
 const withTranslationComp = withTranslation()(DefaultPhoneAppSelectItem);

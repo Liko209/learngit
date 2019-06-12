@@ -62,7 +62,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const teamsSection = app.homePage.messageTab.teamsSection;
   await h(t).withLog('And I click a private chat', async () => {
-    directMessagesSection.conversationEntryById(privateChat.glipId).enter();
+    await directMessagesSection.conversationEntryById(privateChat.glipId).enter();
   });
 
   const groupConversation = directMessagesSection.conversationEntryById(groupChat.glipId);

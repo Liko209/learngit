@@ -148,6 +148,34 @@
     "messageTypeNameSMS": "text",
     "jumpToConversation": "Jump to conversation",
     "emoji": {
+      "i18n": {
+        "search": "Search",
+        "clear": "Clear",
+        "notfound": "No Emoji Found",
+        "skintext": "Choose your default skin tone",
+        "categories": {
+          "search": "Search Results",
+          "recent": "Frequently Used",
+          "people": "Smileys & People",
+          "nature": "Animals & Nature",
+          "foods": "Food & Drink",
+          "activity": "Activity",
+          "places": "Travel & Places",
+          "objects": "Objects",
+          "symbols": "Symbols",
+          "flags": "Flags",
+          "custom": "Custom"
+        },
+        "categorieslabel": "Emoji categories",
+        "skintones": {
+          "default": "Default Skin Tone",
+          "light": "Light Skin Tone",
+          "mediumLight": "Medium-Light Skin Tone",
+          "medium": "Medium Skin Tone",
+          "mediumDark": "Medium-Dark Skin Tone",
+          "dark": "Dark Skin Tone"
+        }
+      },
       "emojiDefaultTitle": "Pick your emoji",
       "toggleButtonLabel": "Keep open",
       "emojiMatching": "Emojis matching"
@@ -574,7 +602,7 @@
       "LackOfRecordingPermission": "Sorry, your account does not have the feature to record a call. To enable the feature, contact your account administrator.",
       "RecordOnServiceWeb": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
       "RecordAutomatically": "Cannot start call recording.",
-      "InvalidNumber": "Invalid phone number",
+      "InvalidNumber": "The phone number entered is invalid. Check the number and try again.",
       "ParkErrorStopRecording": "Sorry, your call recording is being saved. Try to park the call later.",
       "ParkError": "Sorry, something went wrong on our end and we weren't able to park the call. Try again later.",
       "ParkOk": "Your call is parked at location",

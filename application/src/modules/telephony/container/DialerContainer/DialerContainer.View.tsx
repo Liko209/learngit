@@ -29,14 +29,12 @@ class DialerContainerViewComponent extends React.Component<
 > {
   private _timer: NodeJS.Timeout;
   private _waitForAnimationEndTimer: NodeJS.Timeout;
+  private _shouldShowToolTip =
+    !this.props.hasDialerOpened && !this.props.shouldCloseToolTip;
 
-  constructor(props: Props) {
-    super(props);
-    // do not sync this state with `hasDialerOpened`, since once opened, `hasDialerOpened` would be set to `true` immediately
-    this.state = {
-      shouldShowToolTip: !props.hasDialerOpened && !props.shouldCloseToolTip,
-    };
-  }
+  state = {
+    shouldShowToolTip: false,
+  };
 
   _onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
@@ -44,10 +42,13 @@ class DialerContainerViewComponent extends React.Component<
   }
 
   async componentDidMount() {
-    if (this.state.shouldShowToolTip) {
+    if (this._shouldShowToolTip) {
       const { timer, promise } = sleep(1000);
       this._waitForAnimationEndTimer = timer;
       await promise;
+      this.setState({
+        shouldShowToolTip: this._shouldShowToolTip,
+      });
       // this._toggleToolTip(true);
       const toggler = sleep(5000);
       this._timer = toggler.timer;

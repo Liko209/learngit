@@ -11,8 +11,6 @@ import {
   primary,
   ellipsis,
 } from '../../foundation/utils/styles';
-// import { markdownFromDelta } from './markdown';
-import { handleAtMention } from './Mention/handleAtMention';
 import './Modules';
 
 import 'react-quill/dist/quill.snow.css';
@@ -211,7 +209,7 @@ class JuiMessageInput extends React.PureComponent<Props> {
     } = this.props;
     const reactQuillValueProp = defaultValue
       ? {
-          defaultValue: handleAtMention(defaultValue),
+          defaultValue,
         }
       : {
           value,

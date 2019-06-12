@@ -31,6 +31,7 @@ type JuiPreviewImageProps = {
   placeholder?: JSX.Element;
   handleImageClick?: (ev: React.MouseEvent, loaded: boolean) => void;
   didLoad?: Function;
+  futureCallback?: Function;
 } & SizeType;
 
 const Wrapper = styled.div`
@@ -100,7 +101,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
     }
     this._loaded = true;
     this._updating = false;
-    didLoad && didLoad();
+    didLoad && didLoad(this.props.futureCallback);
     if (this._mounted) {
       this.forceUpdate();
     }
