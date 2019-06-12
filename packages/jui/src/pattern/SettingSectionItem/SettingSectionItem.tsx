@@ -73,7 +73,7 @@ const RightWrap = styled.div`
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
-    overflow: visible;
+    overflow: hidden;
     width: 100%;
     flex: 1;
     padding-left: ${spacing(2.5)};

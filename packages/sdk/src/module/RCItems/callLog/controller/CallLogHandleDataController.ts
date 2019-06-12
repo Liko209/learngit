@@ -26,6 +26,7 @@ import { CallLogDao } from '../dao';
 import { CallLogUserConfig } from '../config/CallLogUserConfig';
 import { mainLogger } from 'foundation';
 import { PseudoCallLogInfo } from '../types';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 
 const LOG_TAG = 'CallLogHandleDataController';
 
@@ -156,7 +157,7 @@ class CallLogHandleDataController {
     call: ActiveCall,
     pseudoId: string,
   ): CallLog {
-    return this._parseCallLog(
+    const callLog = this._parseCallLog(
       pseudoId,
       call.sessionId,
       call.from,
@@ -167,6 +168,10 @@ class CallLogHandleDataController {
       call.startTime,
       CALL_RESULT.UNKNOWN,
     );
+    if (callLog.from.phoneNumber === PhoneNumberType.PhoneNumberAnonymous) {
+      delete callLog.from;
+    }
+    return callLog;
   }
 
   private _getCallLogFromMissedCall(

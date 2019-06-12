@@ -19,12 +19,13 @@ import {
 import { jupiter } from 'framework';
 import i18nT from '@/utils/i18nT';
 import { dataAnalysis } from 'sdk';
+import { catchError } from '@/common/catchError';
 
 const NOTIFICATION_BROWSER = 'NotificationBrowserSettingItem';
 type Props = WithTranslation & NotificationBrowserSettingItemViewProps;
 type State = {
   dialogOpen: boolean;
-  isPending: boolean;
+  waitForPermission: boolean;
 };
 @observer
 class NotificationBrowserSettingItemViewComponent extends Component<
@@ -42,7 +43,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
     super(props);
     this.state = {
       dialogOpen: false,
-      isPending: false,
+      waitForPermission: false,
     };
   }
 
@@ -51,10 +52,13 @@ class NotificationBrowserSettingItemViewComponent extends Component<
       dialogOpen: isShow,
     });
     if (isShow) {
-      dataAnalysis.page('Jup_Web/DT_settings_notification_blocked');
+      dataAnalysis.page('Jup_Web/DT_settings_notification_blocked', {
+        endPoint: 'web',
+      });
     } else {
       dataAnalysis.track(
         'Jup_Web_settings_DesktopNotifications_blocked_closeDialog',
+        { endPoint: 'web' },
       );
     }
   }
@@ -83,28 +87,33 @@ class NotificationBrowserSettingItemViewComponent extends Component<
 
   private _showEnabledNotification = async () => {
     const title = await i18nT('notification.notificationEnabled');
-    this._notificationService.show(title, {
-      data: {
-        id: NOTIFICATION_BROWSER,
-        scope: NOTIFICATION_BROWSER,
-        priority: NOTIFICATION_PRIORITY.INFORMATION,
+    this._notificationService.show(
+      title,
+      {
+        data: {
+          id: new Date().toISOString(),
+          scope: NOTIFICATION_BROWSER,
+          priority: NOTIFICATION_PRIORITY.INFORMATION,
+        },
+        silent: false,
+        renotify: true,
       },
-    });
+      true,
+    );
   }
 
   private _requestPermission = async () => {
     this.setState({
-      isPending: true,
+      waitForPermission: true,
     });
     const permission = await this._permission.request();
-    setTimeout(() => {
-      this.setState({
-        isPending: false,
-      });
-    },         0);
     return permission;
   }
 
+  @catchError.flash({
+    network: 'setting.errorText.network',
+    server: 'setting.errorText.server',
+  })
   handleToggleChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
     checked: boolean,
@@ -123,6 +132,9 @@ class NotificationBrowserSettingItemViewComponent extends Component<
             await this.props.setToggleState(checked);
             this._showEnabledNotification();
           }
+          this.setState({
+            waitForPermission: false,
+          });
           break;
         case PERMISSION.GRANTED:
           await this.props.setToggleState(checked);
@@ -135,7 +147,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
           break;
       }
     } else {
-      this.props.setToggleState(checked);
+      await this.props.setToggleState(checked);
     }
   }
 
@@ -152,7 +164,9 @@ class NotificationBrowserSettingItemViewComponent extends Component<
       'setting.notificationAndSounds.desktopNotifications.notificationsForBrowser.description',
     );
 
-    const checked = this.state.isPending || desktopNotifications || false;
+    const checked =
+      this.state.waitForPermission || desktopNotifications || false;
+    const hidden = desktopNotifications === undefined;
     return (
       <JuiSettingSectionItem
         id="notificationBrowserSetting"
@@ -160,16 +174,18 @@ class NotificationBrowserSettingItemViewComponent extends Component<
         label={label}
         description={description}
       >
-        <JuiToggleButton
-          data-test-automation-id="settingItemToggleButton-notificationBrowser"
-          checked={checked}
-          onChange={this.handleToggleChange}
-          aria-label={
-            checked
-              ? t('common.button.ariaToggleOn')
-              : t('common.button.ariaToggleOff')
-          }
-        />
+        {!hidden && (
+          <JuiToggleButton
+            data-test-automation-id="settingItemToggleButton-notificationBrowser"
+            checked={checked}
+            onChange={this.handleToggleChange}
+            aria-label={
+              checked
+                ? t('common.button.ariaToggleOn')
+                : t('common.button.ariaToggleOff')
+            }
+          />
+        )}
         {this._renderDialog()}
       </JuiSettingSectionItem>
     );

@@ -17,6 +17,7 @@ import { VoiceMail } from '../VoiceMail';
 import { Reply } from '../Reply';
 import { Forward } from '../Forward';
 import { INCOMING_STATE } from '../../store';
+import { getDisplayName } from '../../helpers';
 
 const More = (props: CallActionsProps) => (
   <CallActions showLabel={false} {...props} shouldPersistBg={true} />
@@ -44,6 +45,7 @@ class IncomingViewComponent extends Component<Props> {
 
   render() {
     const { name, phone, t, isExt, incomingState } = this.props;
+
     switch (incomingState) {
       case INCOMING_STATE.REPLY:
         return <Reply />;
@@ -54,7 +56,7 @@ class IncomingViewComponent extends Component<Props> {
       default:
         return (
           <JuiIncomingCall
-            name={name ? name : t('telephony.unknownCaller')}
+            name={getDisplayName(t, name)}
             phone={phone && isExt ? `${t('telephony.Ext')} ${phone}` : phone}
             Actions={Actions}
             Ignore={Ignore}

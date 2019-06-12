@@ -34,13 +34,7 @@ class AllCallLogFetchController extends AbstractFetchController {
     const updateResult: CallLog[] = [];
     const deleteResult: string[] = [];
     const replaceResult: Map<string, CallLog> = new Map();
-    let pseudos = {};
-
-    if (data.syncInfo.syncType === SYNC_TYPE.FSYNC) {
-      await this.sourceController.clear();
-    } else {
-      pseudos = (await this._userConfig.getPseudoCallLogInfo()) || {};
-    }
+    const pseudos = (await this._userConfig.getPseudoCallLogInfo()) || {};
 
     data.records.forEach((callLog: CallLog) => {
       callLog.__source = CALL_LOG_SOURCE.ALL;

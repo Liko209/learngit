@@ -6,7 +6,17 @@
 
 import SendPostControllerHelper from '../SendPostControllerHelper';
 const helper = new SendPostControllerHelper();
+import { versionHash } from '../../../../../utils/mathUtils';
+import { GlipTypeUtil } from '../../../../../utils';
+
+jest.mock('../../../../../utils/mathUtils');
+jest.mock('../../../../../utils');
+
 describe('PostActionControllerHelper', () => {
+  beforeEach(() => {
+    versionHash.mockReturnValueOnce('10');
+    GlipTypeUtil.generatePseudoIdByType.mockReturnValueOnce(4);
+  });
   describe('buildLinksInfo', () => {
     it.each`
       text                              | expectLength
@@ -43,7 +53,10 @@ describe('PostActionControllerHelper', () => {
           page: 1,
         },
       };
-      const result = helper.buildRawPostInfo(params);
+      const result = helper.buildRawPostInfo(params, {
+        uniqueIds: [],
+        ids: [],
+      });
       expect(result['deactivated']).toBe(false);
       expect(result['is_new']).toBe(true);
       expect(result['text']).toEqual('good');
@@ -63,14 +76,36 @@ describe('PostActionControllerHelper', () => {
       expect(result['source']).toEqual('Jupiter');
     });
     it('should not build activity_data for post if there is not activity [FIJI-2740]', async () => {
-      const ret = helper.buildRawPostInfo({
-        userId: 3,
-        groupId: 2,
-        companyId: 1,
-        text: 'FIJI-2740',
-      });
+      const ret = helper.buildRawPostInfo(
+        {
+          userId: 3,
+          groupId: 2,
+          companyId: 1,
+          text: 'FIJI-2740',
+        },
+        { uniqueIds: [], ids: [] },
+      );
       expect(ret.text).toEqual('FIJI-2740');
       expect(ret['activity_data']).toBe(undefined);
+    });
+    it('should get unique version and pseudo id', async () => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+      versionHash.mockReturnValueOnce('10');
+      GlipTypeUtil.generatePseudoIdByType.mockReturnValueOnce(4);
+      versionHash.mockReturnValueOnce(11);
+      GlipTypeUtil.generatePseudoIdByType(8);
+      helper.buildRawPostInfo(
+        {
+          userId: 3,
+          groupId: 2,
+          companyId: 1,
+          text: 'FIJI-2740',
+        },
+        { uniqueIds: ['10'], ids: [4] },
+      );
+      expect(versionHash).toHaveBeenCalledTimes(2);
+      expect(GlipTypeUtil.generatePseudoIdByType).toHaveBeenCalledTimes(2);
     });
   });
 });

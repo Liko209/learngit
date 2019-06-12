@@ -17,6 +17,7 @@ import { Post } from 'sdk/module/post/entity';
 const LOG_TAG = 'GroupConfigController';
 class GroupConfigController {
   static serviceName = 'GroupConfigService';
+  private queue = Promise.resolve();
 
   constructor(
     public entitySourceController: IEntitySourceController<GroupConfig>,
@@ -93,7 +94,7 @@ class GroupConfigController {
     id: number;
     send_failure_post_ids: number[];
   }): Promise<boolean> {
-    return this.saveAndDoNotify(params);
+    return await this.saveAndDoNotify(params);
   }
 
   // get group data, for send failure post ids
@@ -110,15 +111,17 @@ class GroupConfigController {
   }
 
   async deletePostId(groupId: number, postId: number) {
-    const failIds = await this.getGroupSendFailurePostIds(groupId);
-    const index = failIds.indexOf(postId);
-    if (index > -1) {
-      failIds.splice(index, 1);
-      await this.updateGroupSendFailurePostIds({
-        id: groupId,
-        send_failure_post_ids: failIds,
-      });
-    }
+    this.queue = this.queue.then(async () => {
+      let failIds = await this.getGroupSendFailurePostIds(groupId);
+      if (failIds.includes(postId)) {
+        failIds = failIds.filter(id => id !== postId);
+        await this.updateGroupSendFailurePostIds({
+          id: groupId,
+          send_failure_post_ids: failIds,
+        });
+      }
+    });
+    return this.queue;
   }
 
   async addPostId(groupId: number, postId: number) {

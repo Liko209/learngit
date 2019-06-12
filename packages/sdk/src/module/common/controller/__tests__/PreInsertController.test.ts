@@ -10,6 +10,7 @@ import notificationCenter from '../../../../service/notificationCenter';
 import { UserConfigService } from '../../../../module/config/service/UserConfigService';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { Post } from 'sdk/module/post/entity';
+import _ from 'lodash';
 
 jest.mock('../../../progress');
 jest.mock('../../../../service/notificationCenter');
@@ -276,7 +277,13 @@ describe('PreInsertController', () => {
         notificationCenter,
         'emitEntityReplace',
       );
-      await preInsertController.bulkDelete([post7, post8, post9]);
+      const result: Post[] = [];
+      [post7, post8, post9].forEach(item => {
+        let a = _.cloneDeep(item);
+        a['version'] = item.version + 10;
+        result.push(a);
+      });
+      await preInsertController.bulkDelete(result);
       expect(daoSpy).toBeCalledTimes(0);
       expect(deleteSpy).toBeCalledTimes(0);
       expect(notifyDeleteSpy).toBeCalledTimes(0);

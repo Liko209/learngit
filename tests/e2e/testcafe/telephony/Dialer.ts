@@ -306,8 +306,10 @@ test.meta(<ITestMeta>{
     await telephonyDialog.hitEnterToMakeCall();
   });
 
+  let phoneFormatNumber: string = ''
   await h(t).withLog('Then a call should be initiated', async () => {
     await t.expect(telephonyDialog.hangupButton.exists).ok();
+    phoneFormatNumber = await telephonyDialog.extension.textContent;
   });
 
   await h(t).withLog('When I end the call and back to Dialpad', async () => {
@@ -321,7 +323,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then the Dialpad should populated last phone number', async () => {
-    await t.expect(app.homePage.telephonyDialog.dialerInput.value).eql(calleeDirectNumbers[0]);
+    await t.expect(app.homePage.telephonyDialog.dialerInput.value).eql(phoneFormatNumber);
   });
 });
 

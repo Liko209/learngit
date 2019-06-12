@@ -646,10 +646,9 @@ test.meta(<ITestMeta>{
 
   const conversationPage = app.homePage.messageTab.conversationPage;
 
-
   await h(t).withLog('When  I type text: {prefix}', async (step) => {
     step.setMetadata('prefix', prefix);
-    await t.typeText(conversationPage.messageInputArea, prefix, { paste: true });
+    await t.typeText(conversationPage.messageInputArea, prefix);
   });
 
   const emojiMatchList = app.homePage.messageTab.emojiMatchList;
@@ -657,7 +656,7 @@ test.meta(<ITestMeta>{
     await emojiMatchList.ensureLoaded();
   });
   await h(t).withLog('When I press esc', async () => {
-    await emojiMatchList.quitByPressEsc();
+    await t.pressKey('esc');
   });
 
   await h(t).withLog('Then the emoji emoji match list should dismiss', async () => {
@@ -666,12 +665,13 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When  I type text: {prefix}', async (step) => {
     step.setMetadata('prefix', prefix);
-    await t.typeText(conversationPage.messageInputArea, prefix, { paste: true, replace: true });
+    await t.typeText(conversationPage.messageInputArea, prefix, { replace: true });
   });
 
   await h(t).withLog('Then the emoji emoji match list should be open', async () => {
     await emojiMatchList.ensureLoaded();
   });
+
   await h(t).withLog('When I Click outside except input box', async () => {
     await t.click(conversationPage.header)
   });
