@@ -112,8 +112,9 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
     }
   }
   private async _getWantNotifications() {
-    const profile = await this._profileService.getProfile();
-    let wantNotifications = profile[SETTING_KEYS.DESKTOP_NOTIFICATION];
+    const profile = await this._profileService.getProfile().catch();
+    let wantNotifications =
+      profile && profile[SETTING_KEYS.DESKTOP_NOTIFICATION];
     if (wantNotifications === undefined) {
       wantNotifications = true;
     }

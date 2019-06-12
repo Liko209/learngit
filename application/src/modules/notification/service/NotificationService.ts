@@ -15,15 +15,12 @@ import { SWNotification } from '../agent/SWNotification';
 import { isFirefox, isElectron } from '@/common/isUserAgent';
 import { Pal } from 'sdk/pal';
 import { mainLogger } from 'sdk';
-import { computed, autorun } from 'mobx';
 import { Disposer } from 'mobx-react';
 const logger = mainLogger.tags('AbstractNotificationManager');
-import { UserSettingEntity } from 'sdk/module/setting';
-import { getEntity } from '@/store/utils/entities';
-import { ENTITY_NAME } from '@/store/constants';
-import SettingModel from '@/store/models/UserSetting';
+import { SettingService } from 'sdk/module/setting';
 import { DesktopNotificationsSettingModel as DNSM } from 'sdk/module/profile';
 import { SETTING_ITEM__NOTIFICATION_BROWSER } from '../notificationSettingManager/constant';
+import { ServiceLoader, ServiceConfig } from 'sdk/src/module/serviceLoader';
 class NotificationService implements INotificationService {
   @INotificationPermission
   private _permission: INotificationPermission;
@@ -38,24 +35,19 @@ class NotificationService implements INotificationService {
   }
 
   private disposer: Disposer;
-  private shouldShowNotification: boolean;
 
-  @computed
-  get browserSettingItem() {
-    return getEntity<UserSettingEntity, SettingModel<DNSM>>(
-      ENTITY_NAME.USER_SETTING,
-      SETTING_ITEM__NOTIFICATION_BROWSER,
+  async shouldShowNotification() {
+    const browserSettingItem = await ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    ).getById<DNSM>(SETTING_ITEM__NOTIFICATION_BROWSER);
+    return (
+      isElectron ||
+      (!!browserSettingItem!.value &&
+        browserSettingItem!.value.wantNotifications)
     );
   }
 
   init() {
-    this.disposer = autorun(() => {
-      this.shouldShowNotification =
-        isElectron ||
-        (!!this.browserSettingItem.value &&
-          this.browserSettingItem.value.wantNotifications);
-    });
-
     Pal.instance.setNotificationPermission(this._permission);
     for (const _distributor of this._notificationDistributors.values()) {
       const distributor = _distributor as AbstractNotification<any>;
@@ -65,12 +57,13 @@ class NotificationService implements INotificationService {
       }
     }
   }
+
   addEllipsis(str: string = '', border: number) {
     return str && str.length > border ? `${str.substr(0, border)}...` : str;
   }
 
   async show(title: string, opts: NotificationOpts) {
-    if (!this.shouldShowNotification) {
+    if (!(await this.shouldShowNotification())) {
       return;
     }
     const { id, scope } = opts.data;
