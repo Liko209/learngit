@@ -216,6 +216,7 @@ class TelephonyStore {
           this.callerName = undefined;
           this.isMute = false;
           this.phoneNumber = undefined;
+          this.isContactMatched = false;
           break;
         case CALL_STATE.CONNECTING:
           this.activeCallTime = undefined;
@@ -260,6 +261,9 @@ class TelephonyStore {
 
   @computed
   get displayName() {
+    if (!this.isContactMatched) {
+      return undefined;
+    }
     if (this.person) {
       return this.person.userDisplayName;
     }

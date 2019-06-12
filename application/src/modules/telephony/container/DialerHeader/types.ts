@@ -11,7 +11,7 @@ type DialerHeaderProps = {
 
 type DialerHeaderViewProps = {
   isExt: boolean;
-  name: string;
+  name?: string;
   phone?: string;
   uid?: number;
   shouldDisplayDialer: boolean;

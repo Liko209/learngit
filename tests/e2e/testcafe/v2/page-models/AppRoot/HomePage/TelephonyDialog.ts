@@ -226,7 +226,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get dialButton() {
-    return this.getSelectorByAutomationId('telephony-end-btn');
+    return this.getSelectorByAutomationId('telephony-dial-btn');
   }
 
   async keysRecordShouldBe(text: string) {
