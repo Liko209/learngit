@@ -13,6 +13,9 @@ import { AccountService } from '../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { PersonDao } from '../../person/dao/PersonDao';
 import { daoManager } from '../../../dao';
+import { mainLogger } from 'foundation';
+
+const LOG_TAG = '[ProfileActionController]';
 
 class ProfileActionController {
   constructor(
@@ -132,9 +135,16 @@ class ProfileActionController {
     postId: number,
     toBook: boolean,
   ): Promise<Profile | null> {
+    if (postId === null || postId === undefined) {
+      mainLogger.tags(LOG_TAG).error('putFavoritePost() postId is invalid');
+      throw new Error('The bookmark post id is invalid');
+    }
     const profile = await this.profileDataController.getProfile();
     if (profile) {
-      let oldFavPostIds = _.cloneDeep(profile.favorite_post_ids) || [];
+      let oldFavPostIds =
+        profile.favorite_post_ids.filter(
+          (id: number) => id !== null && id !== undefined,
+        ) || [];
       const shouldDoNothing =
         (toBook && oldFavPostIds.indexOf(postId) !== -1) ||
         (!toBook && oldFavPostIds.indexOf(postId) === -1);

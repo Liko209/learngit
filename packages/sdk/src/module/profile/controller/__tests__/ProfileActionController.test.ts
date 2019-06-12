@@ -19,7 +19,6 @@ jest.mock('../../../person/dao/PersonDao');
 jest.mock('../../../../dao');
 
 const personDao = new PersonDao(null);
-daoManager.getDao.mockReturnValue(personDao);
 
 class TestPartialModifyController implements IPartialModifyController<Profile> {
   partialEntity: Partial<Raw<Profile>>;
@@ -44,11 +43,7 @@ class TestPartialModifyController implements IPartialModifyController<Profile> {
 const profileDataController = new ProfileDataController(null);
 const testPartialModifyController = new TestPartialModifyController();
 describe('ProfileActionController', () => {
-  beforeEach(() => {
-    ServiceLoader.getInstance = jest.fn().mockImplementation(() => {
-      return { userConfig: AccountUserConfig.prototype };
-    });
-  });
+  beforeEach(() => {});
 
   function getActionController() {
     profileDataController.getCurrentProfileId.mockReturnValue(1);
@@ -58,7 +53,26 @@ describe('ProfileActionController', () => {
       profileDataController,
     );
   }
+
+  function clearMocks() {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+  }
+
+  function setup() {
+    ServiceLoader.getInstance = jest.fn().mockImplementation(() => {
+      return { userConfig: AccountUserConfig.prototype };
+    });
+    daoManager.getDao.mockReturnValue(personDao);
+  }
+
   describe('reorderFavoriteGroups', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
     it('should render back to forward', async () => {
       testPartialModifyController.partialEntity = { _id: 2 };
       testPartialModifyController.originalEntity = {
@@ -94,7 +108,13 @@ describe('ProfileActionController', () => {
       });
     });
   });
+
   describe('markGroupAsFavorite', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
     it('should mark group as favorite when it is unfavorite', async () => {
       testPartialModifyController.partialEntity = { _id: 2 };
       testPartialModifyController.originalEntity = {
@@ -151,7 +171,13 @@ describe('ProfileActionController', () => {
       });
     });
   });
+
   describe('markMeConversationAsFav', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
     it('should do nothing if had ever mark me as favorite', async () => {
       profileDataController.getProfile.mockResolvedValueOnce({
         id: 2,
@@ -187,7 +213,13 @@ describe('ProfileActionController', () => {
       });
     });
   });
+
   describe('putFavoritePost', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
     it('should mark post as favorite', async () => {
       profileDataController.getProfile.mockResolvedValueOnce({
         id: 2,
@@ -214,6 +246,32 @@ describe('ProfileActionController', () => {
         expect(result).toEqual({ _id: 2, favorite_post_ids: [] });
       } catch (e) {
         expect(true).toBeFalsy();
+      }
+    });
+
+    it('should do nothing if bookmark id is null', async () => {
+      profileDataController.getProfile.mockResolvedValueOnce({
+        id: 2,
+        favorite_post_ids: [111],
+      });
+      const controller = getActionController();
+      try {
+        await controller.putFavoritePost(null, false);
+      } catch (e) {
+        expect(profileDataController.getProfile).not.toBeCalled();
+      }
+    });
+
+    it('should do nothing if bookmark id is undefined', async () => {
+      profileDataController.getProfile.mockResolvedValueOnce({
+        id: 2,
+        favorite_post_ids: [111],
+      });
+      const controller = getActionController();
+      try {
+        const result = await controller.putFavoritePost(undefined, false);
+      } catch (e) {
+        expect(profileDataController.getProfile).not.toBeCalled();
       }
     });
 
@@ -246,7 +304,13 @@ describe('ProfileActionController', () => {
       }
     });
   });
+
   describe('reopenConversation', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
     it('should reopen group when group is hidden', async () => {
       testPartialModifyController.partialEntity = {
         _id: 2,
@@ -279,7 +343,13 @@ describe('ProfileActionController', () => {
       });
     });
   });
+
   describe('hideConversation', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
     it('should hide group', async () => {
       testPartialModifyController.partialEntity = { _id: 2 };
       testPartialModifyController.originalEntity = {
@@ -326,7 +396,13 @@ describe('ProfileActionController', () => {
       });
     });
   });
+
   describe('handleGroupIncomesNewPost', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
     it('should do nothing when groupIds is empty', async () => {
       const controller = getActionController();
       const result = await controller.handleGroupIncomesNewPost([]);
