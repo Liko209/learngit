@@ -1,6 +1,7 @@
 import * as assert from 'assert';
 import { H } from '../../../../helpers';
 import { BaseWebComponent } from "../../../BaseWebComponent";
+import { ConsoleLogPrettier } from '../../../../../../../../packages/foundation/src/log/ConsoleLogPrettier';
 
 export class RightRail extends BaseWebComponent {
   get self() {
@@ -104,8 +105,29 @@ export class RightRail extends BaseWebComponent {
     return this.getSelectorByAutomationId('right-shelf-more')
   }
 
+
+  get expandStatusButtonDisplayed() {
+    return this.expandStatusButtonByClass.exists;
+  }
+
   async clickMoreButton() {
-    await this.t.click(this.moreButton)
+    if (await this.expandStatusButtonDisplayed) {
+      await this.t.click(this.moreButton);
+    }
+    else{
+      await this.clickFoldStatusButton();
+      await this.t.click(this.moreButton);
+    }
+  }
+
+  async hoverMoreButton() {
+    if (await this.expandStatusButtonDisplayed) {
+      await this.t.hover(this.moreButton);
+    }
+    else{
+      await this.clickFoldStatusButton();
+      await this.t.hover(this.moreButton);
+    }
   }
 
   async openMore() {
