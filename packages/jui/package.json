@@ -7,7 +7,6 @@
     "build-storybook": "build-storybook",
     "test": "jest && npm run regressionTest",
     "regressionTest": "npm run storyImageShot",
-    "localStoryImageShot": "JUI_URL=http://localhost:8080 jest --config jest.config.snapshot.js",
     "storyImageShot": "jest --config jest.config.snapshot.js",
     "updateStoryImageShot": "jest --config jest.config.snapshot.js --updateSnapshot"
   },
@@ -37,6 +36,7 @@
     "typeface-roboto": "0.0.54"
   },
   "devDependencies": {
+    "happypack": "5.0.1",
     "@storybook/addon-a11y": "5.0.10",
     "@storybook/addon-actions": "5.0.10",
     "@storybook/addon-backgrounds": "5.0.10",
@@ -76,7 +76,6 @@
     "babel-plugin-require-context-hook": "1.0.0",
     "copy-webpack-plugin": "5.0.2",
     "enzyme-to-json": "3.3.5",
-    "fork-ts-checker-webpack-plugin": "1.2.0",
     "global": "4.3.2",
     "jest": "24.3.1",
     "jest-image-snapshot": "2.6.0",
