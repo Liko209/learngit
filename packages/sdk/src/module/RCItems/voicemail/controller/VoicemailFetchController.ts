@@ -67,6 +67,9 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
     // only request from server when has no data in local
     if (results.length < limit) {
       hasMore = await this.syncConfig.getHasMore();
+      mainLogger
+        .tags(this.syncName)
+        .info('fetch size not enough, need fetch from server: ', { hasMore });
       if (hasMore) {
         results = results.concat(
           await this.doSync(
@@ -74,6 +77,7 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
             direction === QUERY_DIRECTION.OLDER
               ? SYNC_DIRECTION.OLDER
               : SYNC_DIRECTION.NEWER,
+            false,
           ),
         );
         this._badgeController.handleVoicemails(results);
@@ -164,6 +168,10 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
       messageType:
         syncType === SYNC_TYPE.FSYNC ? RC_MESSAGE_TYPE.VOICEMAIL : undefined,
     });
+  }
+
+  handleNotification = async () => {
+    await this.doSync(false, SYNC_DIRECTION.NEWER, true);
   }
 }
 
