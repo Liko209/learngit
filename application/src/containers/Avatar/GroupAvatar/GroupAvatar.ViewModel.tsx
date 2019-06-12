@@ -18,13 +18,13 @@ import defaultTeamAvatar from './defaultTeamAvatar.png';
 class GroupAvatarViewModel extends AbstractViewModel<GroupAvatarProps>
   implements GroupAvatarViewProps {
   @computed
-  get cid() {
+  get _cid() {
     return this.props.cid; // conversation id
   }
 
   @computed
   private get _group() {
-    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.cid);
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._cid);
   }
 
   @computed
