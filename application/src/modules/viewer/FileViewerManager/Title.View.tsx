@@ -62,23 +62,21 @@ class ViewerTitleViewComponent extends Component<Type> {
           variant="responsive"
           data-test-automation-id={'viewerTitle'}
         >
-          <JuiViewerTitleWrap>
-            <span data-test-automation-id={'viewerFileName'}>{name}</span>
-            <JuiTextField
-              id="outlined-number"
-              type="number"
-              value={textFieldValue}
-              onChange={handleTextFieldChange}
-              inputProps={{
-                'aria-label': 'numberInput',
-              }}
-            />
-            <JuiDialogHeaderSubtitle
-              data-test-automation-id={'viewerPageCount'}
-            >
-              {`(${currentPageIdx}/${pageTotal})`}
-            </JuiDialogHeaderSubtitle>
-          </JuiViewerTitleWrap>
+          <span data-test-automation-id={'viewerFileName'}>{name}</span>
+          <JuiDialogHeaderSubtitle data-test-automation-id={'viewerPageCount'}>
+            <JuiViewerTitleWrap>
+              <JuiTextField
+                id="outlined-number"
+                type="number"
+                value={textFieldValue}
+                onChange={handleTextFieldChange}
+                inputProps={{
+                  'aria-label': 'numberInput',
+                }}
+              />
+            </JuiViewerTitleWrap>
+            {`(${currentPageIdx}/${pageTotal})`}
+          </JuiDialogHeaderSubtitle>
         </JuiDialogHeaderTitle>
         <JuiDialogHeaderActions data-test-automation-id={'viewerActions'}>
           <JuiButtonBar overlapSize={-2}>
