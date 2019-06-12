@@ -35,6 +35,9 @@ test(formalName('Tasks display on the right rail', ['P2', 'Messages', 'RightRail
 
   await h(t).withLog('When I open a team and click Tasks Tab', async() => {
     await teamPage.conversationEntryById(team.glipId).enter();
+    if (await rightRail.foldStatusButtonByClass.exists) {
+      await rightRail.clickFoldStatusButton();
+    }
     await rightRail.openMore();
     await rightRail.tasksEntry.enter();
   });
