@@ -680,6 +680,10 @@ export class PostItem extends BaseWebComponent {
     return this.body.find('img');
   }
 
+  get fileThumbnail() {
+    return this.getSelectorByAutomationId('fileCardMedia', this.self);
+  }
+
   get editTextArea() {
     return this.self.find('[data-placeholder="Type new message"]');
   }
