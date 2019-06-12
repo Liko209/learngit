@@ -331,35 +331,9 @@ describe('TelephonyCallController', () => {
       callController._handleCallStateChanged = jest.fn();
     });
     it('should pass the idle state to call controller', () => {
+      const spy = jest.spyOn(callController, '_handleCallStateChanged');
       callController.onCallStateChange(RTC_CALL_STATE.IDLE);
-      expect(mockDelegate.onCallStateChange).toBeCalledWith(
-        callId,
-        RTC_CALL_STATE.IDLE,
-      );
-    });
-
-    it('should pass the connected state to call controller', () => {
-      callController.onCallStateChange(RTC_CALL_STATE.CONNECTED);
-      expect(mockDelegate.onCallStateChange).toBeCalledWith(
-        callId,
-        RTC_CALL_STATE.CONNECTED,
-      );
-    });
-
-    it('should pass the connecting state to call controller', () => {
-      callController.onCallStateChange(RTC_CALL_STATE.CONNECTING);
-      expect(mockDelegate.onCallStateChange).toBeCalledWith(
-        callId,
-        RTC_CALL_STATE.CONNECTING,
-      );
-    });
-
-    it('should pass the disconnected state to call controller', () => {
-      callController.onCallStateChange(RTC_CALL_STATE.DISCONNECTED);
-      expect(mockDelegate.onCallStateChange).toBeCalledWith(
-        callId,
-        RTC_CALL_STATE.DISCONNECTED,
-      );
+      expect(spy).toBeCalledWith(RTC_CALL_STATE.IDLE);
     });
   });
 

@@ -172,6 +172,7 @@ describe('TelephonyService', () => {
       replyWithMessage: jest.fn(),
       replyWithPattern: jest.fn(),
       forward: jest.fn(),
+      setTelephonyDelegate: jest.fn(),
     };
 
     jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {

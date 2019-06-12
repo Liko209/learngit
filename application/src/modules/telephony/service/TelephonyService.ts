@@ -259,6 +259,12 @@ class TelephonyService {
       },
     );
 
+    this._serverTelephonyService.setTelephonyDelegate({
+      onAccountStateChanged: this._onAccountStateChanged,
+      onMadeOutgoingCall: this._onMadeOutgoingCall,
+      onReceiveIncomingCall: this._onReceiveIncomingCall,
+    });
+
     this._shouldDisplayDialerDisposer = reaction(
       () =>
         this._telephonyStore.shouldDisplayDialer &&

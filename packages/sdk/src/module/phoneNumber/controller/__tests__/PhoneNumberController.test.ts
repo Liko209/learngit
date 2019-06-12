@@ -149,5 +149,10 @@ describe('PhoneNumberController', () => {
       const res = phoneNumberController.isValidNumber('*#123');
       expect(res).toBeTruthy();
     });
+
+    it('should return true when phone num is 650.437.1071', () => {
+      const res = phoneNumberController.isValidNumber('650.437.1071');
+      expect(res).toBeTruthy();
+    });
   });
 });
