@@ -91,8 +91,12 @@ export class ViewerDialog extends BaseWebComponent {
   }
 
 
-  get viewerThumbnails() {
+  get thumbnails() {
     return this.getSelector('.ViewerThumbnail', this.self);
+  }
+
+  get thumbnailNumber() {
+    return this.getSelectorByAutomationId('viewerThumbnailNumber');
   }
 
   get zoomPercent() {
