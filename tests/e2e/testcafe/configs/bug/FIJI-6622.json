@@ -1,0 +1,11 @@
+{
+    "on_merge": {
+        "fixtures": [
+            "./fixtures/MessageInput/UploadFiles.ts"
+        ],
+        "browsers": [
+            "selenium:chrome"
+        ],
+    
+    }
+}
