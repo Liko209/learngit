@@ -29,8 +29,6 @@ test.meta(<ITestMeta>{
   const filePaths = './sources/preview_files/2Pages.doc';
   const filesName = '2Pages.doc';
 
-  await h(t).glip(loginUser).init();
-
   let team = <IGroup>{
     type: "Team",
     name: uuid(),
@@ -121,8 +119,6 @@ test.meta(<ITestMeta>{
   const filePaths = './sources/preview_files/2Pages.doc';
   const filesName = '2Pages.doc';
   const defaultPageIndex = '(1/2)';
-
-  await h(t).glip(loginUser).init();
 
   let team = <IGroup>{
     type: "Team",

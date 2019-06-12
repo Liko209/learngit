@@ -62,6 +62,7 @@ export class ViewerDialog extends BaseWebComponent {
     return this.self.find('input#outlined-number');
   }
 
+ 
   get positionIndex() {
     return this.getSelectorByAutomationId('viewerPageCount');
   }
