@@ -53,7 +53,6 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   get speakerSourceItems() {
     return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
-    return this.getSelectorByAutomationId('settingItemSelectBoxItem-speakerSource');
   }
 
   microphoneSourceById(value: string) {

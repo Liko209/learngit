@@ -46,7 +46,7 @@
     "shortid": "2.2.14",
     "string-format": "^2.0.0",
     "testcafe": "http://xmn145.rcoffice.ringcentral.com:9003/packages/testcafe-1.1.0.1.tgz",
-    "testcafe-browser-provider-electron": "0.0.6",
+    "testcafe-browser-provider-electron": "0.0.10",
     "testcafe-browser-provider-selenium": "http://xmn145.rcoffice.ringcentral.com:9003/packages/testcafe-browser-provider-selenium-0.3.3.tgz",
     "testcafe-live": "0.1.3",
     "testcafe-react-selectors": "^3.0.0",
