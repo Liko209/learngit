@@ -15,11 +15,14 @@ class ProgressManager {
   private _progressObserver: IProgressObserver;
 
   constructor() {
-    NProgress.configure({ showSpinner: false, minimum: 0.3 });
+    NProgress.configure({ showSpinner: false });
     this._progressObserver = {
       onStart: (progressInstance: IProgress) => {
         this._addProgressInstance(progressInstance);
-        this._updateProgress();
+        if (!NProgress.isStarted()) {
+          NProgress.start();
+        }
+        NProgress.inc();
       },
 
       onProgress: (progressInstance: IProgress) => {
@@ -50,14 +53,11 @@ class ProgressManager {
         _.sumBy(this._progressInstances, progressInstance =>
           progressInstance.getProgress(),
         ) / this._progressInstances.length;
-      if (progress < 1) {
-        NProgress.inc();
-      } else {
-        NProgress.set(progress);
-      }
+      progress > NProgress.status && NProgress.set(progress);
     }
     if (progress === 1) {
       this._progressInstances = [];
+      NProgress.done();
     }
   }
 

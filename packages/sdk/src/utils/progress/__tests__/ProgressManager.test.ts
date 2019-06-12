@@ -27,6 +27,8 @@ describe('ProgressManager', () => {
         loaded: 10,
         total: 100,
       });
+      expect(NProgress.start).toBeCalled();
+      expect(NProgress.inc).toBeCalled();
       expect(NProgress.set).lastCalledWith(0.1);
       progressBar.stop();
       expect(NProgress.set).lastCalledWith(1);
@@ -57,9 +59,9 @@ describe('ProgressManager', () => {
       jest.clearAllMocks();
 
       const newProgressBar = progressManager.newProgressBar();
-      expect(NProgress.set).not.toBeCalled();
+      expect(NProgress.start).not.toBeCalled();
       newProgressBar.start();
-      expect(NProgress.set).lastCalledWith(0);
+      expect(NProgress.start).toBeCalled();
       newProgressBar.update({
         lengthComputable: true,
         loaded: 10,
