@@ -55,15 +55,15 @@ export class ViewerDialog extends BaseWebComponent {
   }
 
   get fileName() {
-    return this.title.find('span').nth(0);
+    return this.getSelectorByAutomationId("viewerFileName");
+  }
+
+  get goToPageInput() {
+    return this.self.find('input#outlined-number');
   }
 
   get positionIndex() {
-    return this.title.find('span').nth(1);
-  }
-
-  get viewerDiv() {
-    return this.getSelector('.ViewerDocumentContent');
+    return this.getSelectorByAutomationId('viewerPageCount');
   }
 
   get downloadIcon() {
@@ -82,12 +82,29 @@ export class ViewerDialog extends BaseWebComponent {
     await this.t.click(this.closeButton);
   }
 
+  get contentDiv() {
+    return this.getSelector('.ViewerDocumentContent');
+  }
+
+  get viewerPages() {
+    return this.getSelector('.ViewerPage', this.self);
+  }
+
+
+  get viewerThumbnails() {
+    return this.getSelector('.ViewerThumbnail', this.self);
+  }
+
+  get zoomPercent() {
+    return this.getSelectorByAutomationId('zoomGroupPercent')
+  }
+
   get zoomOutIcon() {
     return this.getSelectorByIcon('zoom_out', this.self);
   }
 
   get zoomOutButton() {
-    return this.zoomOutIcon.parent('button');
+    return this.getSelectorByAutomationId('ViewerZoomOutButton');
   }
 
   async clickZoomOutButton() {
@@ -106,7 +123,7 @@ export class ViewerDialog extends BaseWebComponent {
   }
 
   get zoomInButton() {
-    return this.zoomInIcon.parent('button');
+    return this.getSelectorByAutomationId('ViewerZoomInButton');
   }
 
   async clickZoomInButton() {
@@ -114,10 +131,21 @@ export class ViewerDialog extends BaseWebComponent {
       .expect(this.zoomInButton.hasAttribute('disabled')).notOk()
       .click(this.zoomInButton);
   }
+
   async hoverZoomInButton() {
     await this.t
       .expect(this.zoomInButton.hasAttribute('disabled')).notOk()
       .hover(this.zoomInButton);
+  }
+
+  get viewerResetButton() {
+    return this.getSelectorByAutomationId('ViewerResetButton');
+  }
+
+  async clickResetButton() {
+    await this.t
+      .expect(this.viewerResetButton.hasAttribute('disabled')).notOk()
+      .click(this.viewerResetButton);
   }
 
   get fileActionMoreButton() {
@@ -126,14 +154,6 @@ export class ViewerDialog extends BaseWebComponent {
 
   async clickFileActionMoreMenu() {
     await this.t.click(this.fileActionMoreButton);
-  }
-
-  get viewerPages() {
-    return this.getSelector('.ViewerPage', this.self);
-  }
-
-  get viewerThumbnails() {
-    return this.getSelector('.ViewerThumbnail', this.self);
   }
 
 }
