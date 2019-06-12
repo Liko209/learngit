@@ -24,6 +24,7 @@ const StyledSelectBoxContainer = styled.div`
   width: 100%;
   text-align: left;
   padding-bottom: ${spacing(3)};
+  max-width: ${spacing(58)};
 `;
 const StyledSelectBoxHeader = styled.div`
   color: ${grey('600')};
@@ -51,7 +52,7 @@ class JuiBoxSelect extends PureComponent<
     } = this.props;
     return (
       <StyledSelectBoxContainer className={className}>
-        <StyledSelectBoxHeader>{label}</StyledSelectBoxHeader>
+        {label && <StyledSelectBoxHeader>{label}</StyledSelectBoxHeader>}
         <StyledSelect
           data-test-automation-id={automationId}
           classes={CLASSES_SELECT}

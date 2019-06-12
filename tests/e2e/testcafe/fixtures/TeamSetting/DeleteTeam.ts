@@ -1,8 +1,8 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-02-18 17:51:37 
+ * @Author: Potar.He
+ * @Date: 2019-02-18 17:51:37
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-02-20 11:14:11
+ * @Last Modified time: 2019-06-04 19:17:03
  */
 
 import * as assert from 'assert';
@@ -28,21 +28,16 @@ test(formalName(`Delete team successfully after clicking Delete button.`, ['P1',
   await h(t).glip(adminUser).init();
 
   const alertText = "Team deleted successfully.";
-  const unopenedTeamName = uuid();
+  const teamName = uuid();
 
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;
 
-  let unopenedTeamId, openedTeamId;
-  await h(t).withLog(`Given I have one new team`, async () => {
-    unopenedTeamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: unopenedTeamName,
-      type: 'Team',
-      members: [adminUser.rcId, memberUser.rcId],
-    });
+  let teamId;
 
-    openedTeamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: uuid(),
+  await h(t).withLog(`Given I have one new team`, async () => {
+    teamId = await h(t).platform(adminUser).createAndGetGroupId({
+      name: teamName,
       type: 'Team',
       members: [adminUser.rcId, memberUser.rcId],
     });
@@ -51,12 +46,14 @@ test(formalName(`Delete team successfully after clicking Delete button.`, ['P1',
   await h(t).withLog(`And I login Jupiter with adminUser: ${adminUser.company.number}#${adminUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, adminUser);
     await app.homePage.ensureLoaded();
-    await teamSection.conversationEntryById(openedTeamId).enter();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When I open unopened Team setting dialog via team profile entry on conversation list`, async () => {
-    await teamSection.conversationEntryById(unopenedTeamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
   });
 
@@ -73,7 +70,7 @@ test(formalName(`Delete team successfully after clicking Delete button.`, ['P1',
   const deleteTeamDialog = app.homePage.deleteTeamDialog;
   await h(t).withLog(`And the Delete team confirmation is displayed`, async () => {
     await deleteTeamDialog.shouldBePopup();
-    await deleteTeamDialog.teamNameInConfirmationShouldBe(unopenedTeamName);
+    await deleteTeamDialog.teamNameInConfirmationShouldBe(teamName);
   });
 
   await h(t).withLog(`When I click "Cancel" button`, async () => {
@@ -89,7 +86,7 @@ test(formalName(`Delete team successfully after clicking Delete button.`, ['P1',
   });
 
   await h(t).withLog(`And the team still in the team list`, async () => {
-    await t.expect(teamSection.conversationEntryById(unopenedTeamId).exists).ok();
+    await t.expect(teamSection.conversationEntryById(teamId).exists).ok();
   });
 
   await h(t).withLog(`When I open Delete team confirmation again`, async () => {
@@ -110,27 +107,10 @@ test(formalName(`Delete team successfully after clicking Delete button.`, ['P1',
 
   await h(t).withLog(`And there should be success flash toast (short = 2s) displayed "${alertText}"`, async () => {
     await app.homePage.alertDialog.shouldBeShowMessage(alertText);
-    await app.homePage.messageTab.conversationPage.groupIdShouldBe(openedTeamId);
   });
 
   await h(t).withLog(`And the team conversation was removed from the conversation list`, async () => {
-    await t.expect(teamSection.conversationEntryById(unopenedTeamId).exists).notOk();
-  });
-
-  await h(t).withLog(`When I delete opened Team`, async () => {
-    await teamSection.conversationEntryById(openedTeamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
-    await profileDialog.clickSetting();
-    await teamSettingDialog.clickDeleteTeamButton();
-    await deleteTeamDialog.clickDeleteButton();
-  });
-
-  await h(t).withLog(`Then the detele Team confirmation dismiss`, async () => {
-    await t.expect(deleteTeamDialog.exists).notOk();
-  });
-
-  await h(t).withLog(`And there should be success flash toast (short = 2s) displayed "${alertText}"`, async () => {
-    await app.homePage.alertDialog.shouldBeShowMessage(alertText);
+    await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
   });
 
   await h(t).withLog(`And send to the empty conversation screen`, async () => {
@@ -138,7 +118,7 @@ test(formalName(`Delete team successfully after clicking Delete button.`, ['P1',
   });
 
   await h(t).withLog(`And the team conversation was removed from the conversation list`, async () => {
-    await t.expect(teamSection.conversationEntryById(openedTeamId).exists).notOk();
+    await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
   });
 });
 
@@ -174,9 +154,12 @@ test.meta(<ITestMeta>{
     await app.homePage.ensureLoaded();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When I open Team setting dialog via team profile entry on conversation list`, async () => {
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
   });
 
@@ -254,9 +237,12 @@ test(formalName(`Can create team that team name is same as the deleted team`, ['
     await app.homePage.ensureLoaded();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When I open Team setting dialog via team profile entry on conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
   });
 
@@ -311,9 +297,12 @@ test.skip(formalName(`Should display tooltip when click "i" icon beside the "Del
     await app.homePage.ensureLoaded();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When I open Team setting dialog via team profile entry on conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
   });
 

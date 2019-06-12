@@ -300,10 +300,10 @@ class BaseDao<T extends IdModel<IdType>, IdType extends ModelIdType = number>
   }
 
   private _validateKey(key: IdType) {
-    if (!_.isInteger(key)) {
+    if (!_.isInteger(key) && !_.isString(key)) {
       Throw(
         ERROR_CODES_DB.INVALID_USAGE_ERROR,
-        `Key for db get method should be an integer. ${key}`,
+        `Key for db get method should be an integer or string. ${key}`,
       );
     }
   }

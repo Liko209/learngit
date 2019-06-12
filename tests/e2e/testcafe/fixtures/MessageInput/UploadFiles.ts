@@ -798,7 +798,7 @@ test(formalName('JPT-889 Check focus on input box when remove files', ['P2', 'Up
 });
 
 
-test(formalName('Can update image size in the duplicate prompt when the same name image is sent', ['P1', 'UploadFiles', 'Potar', 'JPT-1438']), async t => {
+test.skip(formalName('Can update image size in the duplicate prompt when the same name image is sent', ['P1', 'UploadFiles', 'Potar', 'JPT-1438']), async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
 
   let team = <IGroup>{

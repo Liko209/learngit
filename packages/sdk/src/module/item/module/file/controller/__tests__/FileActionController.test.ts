@@ -249,4 +249,80 @@ describe('FileActionController', () => {
       });
     });
   });
+
+  describe('deleteFile()', () => {
+    it('should update deactivated of this version and item deactivated when all versions are be deleted', async () => {
+      const normalId = Math.abs(
+        GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_FILE),
+      );
+
+      entitySourceController.get = jest.fn().mockResolvedValue(1);
+      partialModifyController.updatePartially = jest
+        .fn()
+        .mockImplementation(
+          (itemId: number, prehandleFunc: any, doUpdateFunc: any) => {
+            expect(itemId).toBe(normalId);
+            expect(
+              prehandleFunc(
+                { id: normalId },
+                {
+                  id: normalId,
+                  deactivated: false,
+                  versions: [{}, { deactivated: true }],
+                },
+              ),
+            ).toEqual({
+              id: normalId,
+              deactivated: true,
+            });
+            doUpdateFunc({
+              id: normalId,
+              deactivated: true,
+            });
+          },
+        );
+      await fileActionController.deleteFile(normalId, 0);
+      expect(partialModifyController.updatePartially).toBeCalledTimes(1);
+      expect(requestController.put).toBeCalledWith({
+        id: normalId,
+        deactivated: true,
+      });
+    });
+    it('should update deactivated of this version when other versions is not deleted', async () => {
+      const normalId = Math.abs(
+        GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_FILE),
+      );
+
+      entitySourceController.get = jest.fn().mockResolvedValue(1);
+      partialModifyController.updatePartially = jest
+        .fn()
+        .mockImplementation(
+          (itemId: number, prehandleFunc: any, doUpdateFunc: any) => {
+            expect(itemId).toBe(normalId);
+            expect(
+              prehandleFunc(
+                { id: normalId },
+                {
+                  id: normalId,
+                  versions: [{ deactivated: false }, { deactivated: false }],
+                },
+              ),
+            ).toEqual({
+              id: normalId,
+              deactivate_version: 1,
+            });
+            doUpdateFunc({
+              id: normalId,
+              deactivate_version: 1,
+            });
+          },
+        );
+      await fileActionController.deleteFile(normalId, 1);
+      expect(partialModifyController.updatePartially).toBeCalledTimes(1);
+      expect(requestController.put).toBeCalledWith({
+        id: normalId,
+        deactivate_version: 1,
+      });
+    });
+  });
 });

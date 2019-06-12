@@ -196,7 +196,7 @@ function twoDigit(n: number): string {
   return (n < 10 ? '0' : '') + n;
 }
 
-function formatSeconds(seconds: number) {
+function getHourMinuteSeconds(seconds: number) {
   let secondTime = seconds;
   let minuteTime = 0;
   let hourTime = 0;
@@ -213,12 +213,27 @@ function formatSeconds(seconds: number) {
     }
   }
   return {
+    secondTime,
+    minuteTime,
+    hourTime,
+  };
+}
+
+function formatSeconds(seconds: number) {
+  const { secondTime, minuteTime, hourTime } = getHourMinuteSeconds(seconds);
+  return {
     secondTime: twoDigit(secondTime),
     minuteTime: twoDigit(minuteTime),
     hourTime: twoDigit(hourTime),
   };
 }
-
+function formatDuration(milliSeconds: number) {
+  const hours = Math.floor((milliSeconds / (1000 * 60 * 60)) % 24);
+  if (hours >= 1) {
+    return moment.utc(milliSeconds).format('HH:mm:ss');
+  }
+  return moment.utc(milliSeconds).format('mm:ss');
+}
 export {
   getDateTimeStamp,
   getDateMessage,
@@ -228,6 +243,8 @@ export {
   dateFormatter,
   handleTimeZoneOffset,
   formatSeconds,
+  getHourMinuteSeconds,
+  formatDuration,
 };
 
 // 7 days inside

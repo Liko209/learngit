@@ -48,9 +48,12 @@ test.meta(<ITestMeta>{
     await t.expect(teamChat.exists).ok({ timeout: 10e3 });
   });
 
-  await h(t).withLog(`When I click a team conversation profile button`, async () => {
-    await teamChat.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
+  await h(t).withLog(`When I open a team conversation profile button`, async () => {
+    await teamChat.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`Then a team conversation profile dialog should be popup`, async () => {
@@ -120,9 +123,12 @@ test.meta(<ITestMeta>{
     await t.expect(teamChat.exists).ok({ timeout: 10e3 });
   });
 
-  await h(t).withLog(`When I click a team conversation profile button`, async () => {
-    await teamChat.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
+  await h(t).withLog(`When I open a team conversation profile button`, async () => {
+    await teamChat.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`Then a team conversation profile dialog should be popup`, async () => {

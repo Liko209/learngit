@@ -17,12 +17,15 @@ jest.mock('@/containers/Notification');
 
 Notification.flashToast = jest.fn();
 
-function setUpMock(boolVal: boolean, isFailed: boolean, errorType: 'network' | 'server') {
+function setUpMock(
+  boolVal: boolean,
+  isFailed: boolean,
+  errorType: 'network' | 'server',
+) {
   return {
     isFavorite: boolVal,
     isUnread: boolVal,
-    onClose: () => { },
-    personId: 1234,
+    onClose: () => {},
     groupId: 1234,
     anchorEl: null,
     showClose: true,
@@ -161,7 +164,7 @@ describe('MenuView', () => {
     it('should display flash toast notification when read conversation failed [JPT-1272]', (done: jest.DoneCallback) => {
       const props: any = {
         isUnread: true,
-        onClose: () => { },
+        onClose: () => {},
         toggleRead: () => {
           throw new JSdkError(
             ERROR_CODES_SDK.GENERAL,
@@ -184,13 +187,13 @@ describe('MenuView', () => {
           }),
         );
         done();
-      },         0);
+      }, 0);
     }, 2);
 
     it('should display flash toast notification when unread conversation failed [JPT-1272]', (done: jest.DoneCallback) => {
       const props: any = {
         isUnread: false,
-        onClose: () => { },
+        onClose: () => {},
         toggleRead: () => {
           throw new JSdkError(
             ERROR_CODES_SDK.GENERAL,
@@ -213,7 +216,7 @@ describe('MenuView', () => {
           }),
         );
         done();
-      },         0);
+      }, 0);
     }, 2);
   });
 });

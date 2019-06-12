@@ -25,15 +25,15 @@ const RINGCENTRAL_API = {
   API_PHONE_PARSER_DATA: `/${API_VERSION}/number-parser/phonedata.xml`,
   API_PROFILE: '/glip/profile',
   API_GENERATE_CODE: `/${API_VERSION}/interop/generate-code`,
+
+  API_SUBSCRIPTION: `/${API_VERSION}/subscription`,
 };
 
-const HTTP_HEADER_KEY = {
-  ACCEPT: 'Accept',
-  IF_NONE_MATCH: 'If-None-Match',
+const RC_ITEM_API = {
+  CALL_LOG: `/${API_VERSION}/account/~/extension/~/call-log`,
+  CALL_LOG_SYNC: `/${API_VERSION}/account/~/extension/~/call-log-sync`,
+  MESSAGE_STORE: `/${API_VERSION}/account/~/extension/~/message-store`,
+  MESSAGE_SYNC: `/${API_VERSION}/account/~/extension/~/message-sync`,
 };
 
-const CONTENT_TYPE = {
-  XML: 'application/xml',
-};
-
-export { RINGCENTRAL_API, HTTP_HEADER_KEY, CONTENT_TYPE };
+export { RINGCENTRAL_API, RC_ITEM_API };

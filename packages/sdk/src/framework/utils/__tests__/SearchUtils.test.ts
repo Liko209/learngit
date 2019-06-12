@@ -94,4 +94,48 @@ describe('SearchUtils', () => {
       },
     );
   });
+
+  describe('getValidPhoneNumber', () => {
+    it.each`
+      srcStr              | expectRes
+      ${'+6504257431'}    | ${'6504257431'}
+      ${'+(650)4257-431'} | ${'6504257431'}
+      ${'abcd'}           | ${''}
+      ${'abcd123456'}     | ${''}
+      ${'6504257431'}     | ${'6504257431'}
+      ${'650,4257,431'}   | ${'6504257431'}
+      ${'650*4257*431'}   | ${'6504257431'}
+      ${'650a4257431'}    | ${''}
+      ${'6504257431a'}    | ${''}
+      ${'#650*4257431'}   | ${'6504257431'}
+    `(
+      'should return $expectRes when input is $srcStr',
+      ({ srcStr, expectRes }) => {
+        expect(SearchUtils.getValidPhoneNumber(srcStr)).toBe(expectRes);
+      },
+    );
+  });
+
+  describe('isSpecialChar', () => {
+    it.each`
+      srcStr | expectRes
+      ${'+'} | ${true}
+      ${'('} | ${true}
+      ${')'} | ${true}
+      ${'-'} | ${true}
+      ${'*'} | ${true}
+      ${'#'} | ${true}
+      ${','} | ${true}
+      ${'0'} | ${false}
+      ${'1'} | ${false}
+      ${'9'} | ${false}
+      ${'a'} | ${false}
+      ${'z'} | ${false}
+    `(
+      'should return $expectRes when char is $srcStr',
+      ({ srcStr, expectRes }) => {
+        expect(SearchUtils.isSpecialChar(srcStr)).toBe(expectRes);
+      },
+    );
+  });
 });

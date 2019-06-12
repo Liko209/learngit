@@ -1,0 +1,48 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-05-30 09:18:16
+ * Copyright © RingCentral. All rights reserved.
+ */
+import { jupiter, container } from 'framework';
+import { ISettingService } from '@/interface/setting';
+import { config } from '../../../module.config';
+import { NotificationSoundSettingManager } from '../NotificationSoundSettingManager';
+
+jest.mock('@/history');
+
+jupiter.registerModule(config);
+
+function setup() {
+  const manager: NotificationSoundSettingManager = jupiter.get(
+    NotificationSoundSettingManager,
+  );
+  const settingService: ISettingService = jupiter.get(ISettingService);
+  return { manager, settingService };
+}
+
+describe('NotificationSoundSettingManager', () => {
+  beforeEach(() => {
+    container.snapshot();
+  });
+  afterEach(() => {
+    container.restore();
+  });
+
+  describe('init()', () => {
+    it('should register page', () => {
+      const { manager, settingService } = setup();
+      jest.spyOn(settingService, 'registerPage');
+      manager.init();
+      expect(settingService.registerPage).toHaveBeenCalled();
+    });
+  });
+
+  describe('dispose()', () => {
+    it('should un-register page', () => {
+      const { manager, settingService } = setup();
+      jest.spyOn(settingService, 'unRegisterAll');
+      manager.dispose();
+      expect(settingService.unRegisterAll).toHaveBeenCalled();
+    });
+  });
+});

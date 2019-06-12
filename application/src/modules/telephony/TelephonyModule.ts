@@ -10,10 +10,7 @@ import { GlobalSearchService } from '@/modules/GlobalSearch/service/GlobalSearch
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { TelephonyService } from '@/modules/telephony/service';
 import { TELEPHONY_SERVICE } from './interface/constant';
-import {
-  LEAVE_BLOCKER_SERVICE,
-  ILeaveBlockerService,
-} from '@/modules/leave-blocker/interface';
+import { ILeaveBlockerService } from '@/modules/leave-blocker/interface';
 import { mainLogger } from 'sdk';
 import { SERVICE } from 'sdk/service/eventKey';
 import { notificationCenter } from 'sdk/service';
@@ -24,62 +21,71 @@ import { Dialer, Dialpad, Call } from './container';
 class TelephonyModule extends AbstractModule {
   static TAG: string = '[UI TelephonyModule] ';
 
+  @inject(Jupiter)
+  private _jupiter: Jupiter;
   @inject(FeaturesFlagsService)
-  private _FeaturesFlagsService: FeaturesFlagsService;
-  @inject(TELEPHONY_SERVICE) private _telephonyService: TelephonyService;
-  @inject(LEAVE_BLOCKER_SERVICE) _leaveBlockerService: ILeaveBlockerService;
+  private _featuresFlagsService: FeaturesFlagsService;
+  @inject(TELEPHONY_SERVICE)
+  private _telephonyService: TelephonyService;
+  @ILeaveBlockerService
+  private _leaveBlockerService: ILeaveBlockerService;
   @inject(TelephonyNotificationManager)
-  private _telephonyNotificationManager: TelephonyNotificationManager;
+  private _notificationManager: TelephonyNotificationManager;
   @inject(TelephonySettingManager)
-  private _telephonySettingManager: TelephonySettingManager;
-  @inject(Jupiter) _jupiter: Jupiter;
-
-  @inject(HomeService) _homeService: HomeService;
-  @inject(GlobalSearchService) _globalSearchService: GlobalSearchService;
-
-  initTelephony = () => {
-    this._telephonyService.init();
-    this._telephonyNotificationManager.init();
-    this._telephonySettingManager.init();
-    this._leaveBlockerService.onLeave(this.handleLeave);
-  }
-
-  onVoipCallingStateChanged = (enabled: boolean) => {
-    if (enabled) {
-      this.initTelephony();
-    } else {
-      this._telephonyNotificationManager.dispose();
-      this._leaveBlockerService.offLeave(this.handleLeave);
-    }
-  }
+  private _settingManager: TelephonySettingManager;
+  @inject(HomeService)
+  private _homeService: HomeService;
+  @inject(GlobalSearchService)
+  private _globalSearchService: GlobalSearchService;
 
   async bootstrap() {
-    const canUseTelephony = await this._FeaturesFlagsService.canUseTelephony();
+    const canUseTelephony = await this._featuresFlagsService.canUseTelephony();
     if (canUseTelephony) {
-      this.initTelephony();
+      this._initTelephony();
     }
     notificationCenter.on(
       SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
-      this.onVoipCallingStateChanged,
+      this._handleVoipCallingStateChanged,
     );
-
-    this._jupiter.emitModuleInitial(TELEPHONY_SERVICE);
-    this._homeService.registerExtension('root', Dialer);
-    this._homeService.registerExtension('topBar', Dialpad);
-    this._globalSearchService.registerExtension('searchItem', Call);
   }
 
   dispose() {
     notificationCenter.off(
       SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
-      this.onVoipCallingStateChanged,
+      this._handleVoipCallingStateChanged,
     );
-    this._telephonyNotificationManager.dispose();
-    this._telephonyService.dispose();
-    this._leaveBlockerService.offLeave(this.handleLeave);
+    this._disposeTelephony();
   }
 
-  handleLeave = () => {
+  private _initTelephony() {
+    this._telephonyService.init();
+    this._jupiter.emitModuleInitial(TELEPHONY_SERVICE);
+    this._notificationManager.init();
+    this._settingManager.init();
+    this._leaveBlockerService.onLeave(this._handleLeave);
+    this._homeService.registerExtension('root', Dialer);
+    this._homeService.registerExtension('topBar', Dialpad);
+    this._globalSearchService.registerExtension('searchItem', Call);
+  }
+
+  private _disposeTelephony() {
+    this._notificationManager.dispose();
+    this._settingManager.dispose();
+    this._telephonyService.dispose();
+    this._jupiter.emitModuleDispose(TELEPHONY_SERVICE);
+    this._leaveBlockerService.offLeave(this._handleLeave);
+    // TODO unregister extensions
+  }
+
+  private _handleVoipCallingStateChanged = (enabled: boolean) => {
+    if (enabled) {
+      this._initTelephony();
+    } else {
+      this._disposeTelephony();
+    }
+  }
+
+  private _handleLeave = () => {
     if (this._telephonyService.getAllCallCount() > 0) {
       mainLogger.info(
         `${

@@ -68,6 +68,7 @@ class NetworkRequestHandler
         return;
       }
     }
+
     const task = new RequestTask(request);
 
     this.appendTask(task, isTail);
@@ -181,6 +182,10 @@ class NetworkRequestHandler
 
   getOAuthTokenManager() {
     return this.tokenManager;
+  }
+
+  getOAuthTokenHandler() {
+    return this.tokenManager.getOAuthTokenHandler(this.type);
   }
 
   notifyRequestArrived(handleVia: NETWORK_VIA) {

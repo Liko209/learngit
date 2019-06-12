@@ -3,15 +3,33 @@
  * @Date: 2019-01-08 12:41:10
  * Copyright © RingCentral. All rights reserved.
  */
-
 import { ComponentType } from 'react';
 import { observable, computed, action } from 'mobx';
 import { RouteProps } from 'react-router-dom';
 import { SubModuleConfig, NavConfig } from '../types';
 import { config } from '../home.config';
+
+function isNavConfig(navConfig: NavConfig | undefined): navConfig is NavConfig {
+  return navConfig !== undefined;
+}
+
 class HomeStore {
   @observable private _subModuleConfigsMap = new Map<string, SubModuleConfig>();
+  @observable private _subRouteMap = new Map<string, RouteProps>();
+  @observable private _navConfigMap = new Map<string, NavConfig>();
   @observable private _defaultRouterPaths: string[] = [];
+
+  @computed
+  get subRoutes() {
+    return [...this._subRouteMap.values()];
+  }
+
+  @computed
+  get navConfigs() {
+    return Object.keys(config.subModules)
+      .map(moduleName => this._navConfigMap.get(moduleName))
+      .filter(isNavConfig);
+  }
 
   @computed
   get subModuleConfigs() {
@@ -41,22 +59,6 @@ class HomeStore {
     this._defaultRouterPaths = paths;
   }
 
-  @computed
-  get subRoutes() {
-    return this.subModuleConfigs
-      .filter(subModule => subModule.route)
-      .map(subModule => subModule.route) as RouteProps[];
-  }
-
-  @computed
-  get navConfigs() {
-    return Object.keys(config.subModules)
-      .filter(moduleName => this._subModuleConfigsMap.has(moduleName))
-      .map(moduleName => this.getSubModule(moduleName))
-      .filter(config => !!config && !!config.nav)
-      .map(config => !!config && config.nav!()) as Promise<NavConfig>[];
-  }
-
   getSubModule(name: string) {
     return this._subModuleConfigsMap.get(name);
   }
@@ -64,6 +66,16 @@ class HomeStore {
   @action
   addSubModule(name: string, config: SubModuleConfig) {
     this._subModuleConfigsMap.set(name, config);
+  }
+
+  @action
+  addRoute(name: string, route: RouteProps) {
+    this._subRouteMap.set(name, route);
+  }
+
+  @action
+  addNavItem(name: string, navItemConfig: NavConfig) {
+    this._navConfigMap.set(name, navItemConfig);
   }
 
   @observable extensions: { [key: string]: Set<ComponentType> } = {};

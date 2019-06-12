@@ -8,7 +8,7 @@ import { JError, JServerError, ERROR_CODES_SERVER } from '../../error';
 import { IResponseParser } from './types';
 
 export class GlipResponseParser implements IResponseParser {
-  name: 'GlipResponseParser';
+  name = 'GlipResponseParser';
   parse(response: BaseResponse): JError | null {
     const { data } = response;
     /**

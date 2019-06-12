@@ -8,7 +8,7 @@ const JuiTopBannerContainer = styled.div`
   position: relative;
   overflow: hidden;
 
-  > :first-child:not(:only-child) {
+  > :not(:first-child) {
     display: none;
   }
 `;

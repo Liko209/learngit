@@ -7,7 +7,7 @@ import { RCInfoFetchController } from './RCInfoFetchController';
 import { AccountService } from 'sdk/module/account';
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
-import { PhoneNumberType } from 'sdk/module/phoneNumber/types';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 
 const CALLER_ID_ORDER = {
   [PhoneNumberType.DirectNumber]: 0,

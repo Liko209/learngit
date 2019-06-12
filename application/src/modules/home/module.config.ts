@@ -3,13 +3,19 @@
  * @Date: 2019-01-09 12:36:13
  * Copyright © RingCentral. All rights reserved.
  */
+import { ModuleConfig } from 'framework';
 import { HomeService } from './service';
 import { HomeStore } from './store';
 import { HomeModule } from './HomeModule';
+import { IHomeService } from './interface/IHomeService';
 
-const config = {
+const config: ModuleConfig = {
   entry: HomeModule,
-  provides: [HomeStore, HomeService],
+  provides: [
+    HomeStore,
+    HomeService,
+    { name: IHomeService, value: HomeService },
+  ],
 };
 
 export { config };

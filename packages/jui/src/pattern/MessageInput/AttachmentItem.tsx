@@ -35,7 +35,7 @@ type StatusProps = {
 type AttachmentItemProps = StatusProps &
   IconProps & {
     progress?: number;
-    name: string;
+    name: React.ReactChild | null | (React.ReactChild | null)[];
     hideRemoveButton?: boolean;
     onClickDeleteButton?: (event: MouseEvent) => void;
     fileIcon: string;

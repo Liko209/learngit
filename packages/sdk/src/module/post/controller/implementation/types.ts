@@ -4,9 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Raw } from '../../../../framework/model';
+import { Raw } from 'sdk/framework/model';
+import { Item } from 'sdk/module/item/entity';
+import { ContentSearchParams } from 'sdk/api/glip/search';
 import { Post } from '../../entity';
-import { Item } from '../../../item/entity';
 
 export type SearchContentTypesCount = {
   [key: number]: number;
@@ -30,7 +31,7 @@ export type SearchedResultData = {
 };
 
 export type SearchRequestInfo = {
-  q: string;
+  queryOptions: ContentSearchParams;
   responseId?: number;
   resolve?: any;
   reject?: any;

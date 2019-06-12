@@ -1,18 +1,16 @@
 /*
- * @Author: Conner (conner.kang@ringcentral.com)
- * @Date: 2019-04-02 10:29:39
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-05-19 17:49:41
  * Copyright © RingCentral. All rights reserved.
  */
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { Route, withRouter } from 'react-router-dom';
-
-import { SettingRouter } from './SettingRouter';
-import { SettingViewProps } from './types';
+import { withRouter, RouteComponentProps, Route } from 'react-router-dom';
+import { SettingRouter } from '../SettingRouter';
 
 @observer
-class SettingComponent extends Component<SettingViewProps> {
+class SettingComponent extends Component<RouteComponentProps> {
   render() {
     return (
       <Route
@@ -22,7 +20,5 @@ class SettingComponent extends Component<SettingViewProps> {
     );
   }
 }
-
 const Setting = withRouter(SettingComponent);
-
 export { Setting };

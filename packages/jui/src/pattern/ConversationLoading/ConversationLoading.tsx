@@ -17,7 +17,7 @@ const LoadingWrapper = styled.div`
 
 type JuiConversationLoadingProps = {
   tip: string;
-  linkText: string;
+  linkText?: string;
   showTip?: boolean;
   onClick: () => void;
 };

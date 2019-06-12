@@ -42,9 +42,12 @@ test(formalName(`The Add Team Members dialog display correctly after clicking 'A
     await app.homePage.ensureLoaded();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When admin open team profile via team "More Menu"`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`Then "add team members" button should be showed`, async () => {
@@ -96,9 +99,12 @@ test(formalName(`Add team member successful after clicking Add button.`, ['P1', 
     await app.homePage.ensureLoaded();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When admin open team profile via team "More Menu"`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`Then "add team members" button should be showed`, async () => {
@@ -134,8 +140,9 @@ test(formalName(`Add team member successful after clicking Add button.`, ['P1', 
 
   await h(t).withLog(`Then The add team member dialog is closed. and The members is not added to team`, async () => {
     await t.expect(addTeamMemberDialog.exists).notOk();
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await t.expect(profileDialog.memberEntryByName(nonMemberName).exists).notOk();
    });
 
@@ -165,13 +172,13 @@ test(formalName(`Add team member successful after clicking Add button.`, ['P1', 
 
   await h(t).withLog(`Then The add team member dialog is closed. and .The added members was added to team`, async () => {
     await t.expect(addTeamMemberDialog.exists).notOk();
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await t.expect(profileDialog.memberEntryByName(nonMemberName).exists).ok();
     await profileDialog.clickCloseButton();
    });
 
-   const conversationPage = app.homePage.messageTab.conversationPage;
    await h(t).withLog(`And the conversation stream should show "${addSuccessMessage}"`, async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
     await conversationPage.ensureLoaded();
@@ -208,9 +215,12 @@ test(formalName(`The existing team members should not be displayed as search res
     await app.homePage.ensureLoaded();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When admin open team profile via team "More Menu"`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`Then "add team members" button should be showed`, async () => {
@@ -270,9 +280,12 @@ test(formalName(`The member list and counts are updated when the member is added
     await app.homePage.ensureLoaded();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`When admin open team profile via team "More Menu"`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog(`And members count only 1`, async () => {
@@ -309,8 +322,9 @@ test(formalName(`The member list and counts are updated when the member is added
 
   await h(t).withLog(`Then The add team member dialog is closed. and .The added members was added to team`, async () => {
     await t.expect(addTeamMemberDialog.exists).notOk();
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await t.expect(profileDialog.memberEntryByName(nonMemberName).exists).ok();
     await profileDialog.countOnMemberHeaderShouldBe(2);
    });

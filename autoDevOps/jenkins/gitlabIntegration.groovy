@@ -1,4 +1,3 @@
-
 import jenkins.model.*
 import java.net.URI
 import com.dabsquared.gitlabjenkins.cause.GitLabWebHookCause
@@ -52,7 +51,7 @@ def condStage(Map args, Closure block) {
 
 // generate sha1 hash from a git treeish object, ensure stability by only taking parent and tree object into account
 def stableSha1(String treeish) {
-    String cmd = "git cat-file commit ${treeish} | grep -e ^tree | openssl sha1 |  grep -oE '[^ ]+\$'".toString()
+    String cmd = "git cat-file commit ${treeish} | grep -e ^tree | cut -d ' ' -f 2".toString()
     return sh(returnStdout: true, script: cmd).trim()
 }
 
@@ -107,6 +106,11 @@ def updateRemoteCopy(String remoteUri, String linkSource, String linkTarget, Boo
     println sshCmd(remoteUri, "cp -rf ${linkSource}/* ${linkTarget}/")
 }
 
+def updatePrecacheRevision(String remoteUri, String appDir, String sha, long timestamp) {
+    String cmd = """rm -f ${appDir}/precache-manifest.js.bak || true && cp -f ${appDir}/precache-manifest.*.js ${appDir}/precache-manifest.js.bak &&  awk -v rev='    \\"revision\\": \\"${timestamp}\\",' '/versionInfo/{sub(/.+/,rev,last)} NR>1{print last} {last=\\\$0} END {print last}' ${appDir}/precache-manifest.js.bak > ${appDir}/precache-manifest.*.js"""
+    println sshCmd(remoteUri, cmd)
+}
+
 def updateVersionInfo(String remoteUri, String appDir, String sha, long timestamp) {
     String cmd = "sed -i 's/{{deployedCommit}}/${sha.substring(0,9)}/;s/{{deployedTime}}/${timestamp}/' ${appDir}/static/js/versionInfo.*.chunk.js || true"
     println sshCmd(remoteUri, cmd)
@@ -142,6 +146,7 @@ static String getMessageChannel(String sourceBranch, String targetBranch) {
 }
 
 def safeMail(addresses, subject, body) {
+    echo addresses.join(',')
     addresses.each {
         try {
             mail to: it, subject: subject, body: body
@@ -177,7 +182,7 @@ def formatGlipReport(report) {
     if (null != report.description)
         lines.push("**Description**: ${aTagToGlipLink(report.description)}")
     if (null != report.jobUrl)
-        lines.push("**Job URL**: ${report.jobUrl}")
+        lines.push("**Job**: ${report.jobUrl}")
     if (null != report.saReport)
         lines.push("**Static Analysis**: ${report.saReport}")
     if (null != report.coverage)
@@ -187,13 +192,16 @@ def formatGlipReport(report) {
     if (null != report.coverageDiffDetail)
         lines.push("**Coverage Changes Detail**: ${report.coverageDiffDetail}")
     if (null != report.appUrl)
-        lines.push("**Application URL**: ${report.appUrl}")
+        lines.push("**Application**: ${report.appUrl}")
     if (null != report.juiUrl)
-        lines.push("**Storybook URL**: ${report.juiUrl}")
-    if (null != report.publishUrl)
-        lines.push("**Package URL**: ${report.publishUrl}")
+        lines.push("**Storybook**: ${report.juiUrl}")
+    if (null != report.rcuiUrl)
+        lines.push("**RCUI Storybook**: ${report.rcuiUrl}")
     if (null != report.e2eUrl)
         lines.push("**E2E Report**: ${report.e2eUrl}")
+    if (null != report.error)
+        lines.push("**Error Message**: ${report.error}")
+    lines.push("**Note**: Feel free to submit [form](https://docs.google.com/forms/d/e/1FAIpQLSdBmVQZHgS1gYsSZQyLj3ecWgNSI5LdrRBDSd17xpO1eWU57g/viewform?usp=sf_link) if you have problems.")
     return lines.join(' \n')
 }
 
@@ -206,13 +214,15 @@ def formatJenkinsReport(report) {
     if (null != report.coverageDiff)
         lines.push("Coverage Changes: ${report.coverageDiff}")
     if (null != report.appUrl)
-        lines.push("Application URL: ${urlToATag(report.appUrl)}")
+        lines.push("Application: ${urlToATag(report.appUrl)}")
     if (null != report.juiUrl)
-        lines.push("Storybook URL: ${urlToATag(report.juiUrl)}")
-    if (null != report.publishUrl)
-        lines.push("Package URL: ${urlToATag(report.publishUrl)}")
+        lines.push("Storybook: ${urlToATag(report.juiUrl)}")
+    if (null != report.rcuiUrl)
+        lines.push("RCUI Storybook: ${urlToATag(report.rcuiUrl)}")
     if (null != report.e2eUrl)
         lines.push("E2E Report: ${urlToATag(report.e2eUrl)}")
+    if (null != report.error)
+        lines.push("Error Message: ${report.error}")
     return lines.join('<br>')
 }
 
@@ -225,9 +235,6 @@ String deployUri = params.DEPLOY_URI
 String deployCredentialId = params.DEPLOY_CREDENTIAL
 String deployBaseDir = params.DEPLOY_BASE_DIR
 String rcCredentialId = params.E2E_RC_CREDENTIAL
-String dockerDeployUri = params.DOCKER_DEPLOY_URI
-String dockerDeployCredentialId = params.DOCKER_DEPLOY_CREDENTIAL
-String dockerDeployBaseDir = params.DOCKER_DEPLOY_BASE_DIR
 String releaseBranch = 'master'
 String integrationBranch = 'develop'
 
@@ -268,26 +275,29 @@ String subDomain = getSubDomain(gitlabSourceBranch, gitlabTargetBranch)
 String appLinkDir = "${deployBaseDir}/${subDomain}".toString()
 String appStageLinkDir = "${deployBaseDir}/stage".toString()
 String juiLinkDir = "${deployBaseDir}/${subDomain}-jui".toString()
-String publishDir = "${deployBaseDir}/publish".toString()
+String rcuiLinkDir = "${deployBaseDir}/${subDomain}-rcui".toString()
 
 String appUrl = "https://${subDomain}.fiji.gliprc.com".toString()
 String juiUrl = "https://${subDomain}-jui.fiji.gliprc.com".toString()
-String publishPackageName = "${subDomain}.tar.gz".toString()
-String publishUrl = "https://publish.fiji.gliprc.com/${publishPackageName}".toString()
+String rcuiUrl = "https://${subDomain}-rcui.fiji.gliprc.com".toString()
+
 
 // following params should be updated after checkout stage success
 String headSha = null
 String appHeadSha = null
 String juiHeadSha = null
+String rcuiHeadSha = null
 
 // update with +=
 // release build use different build command, we should distinguish it from other build by using different name pattern
 String appHeadShaDir = "${deployBaseDir}/app-${buildRelease ? 'release-' : ''}".toString()
 String juiHeadShaDir = "${deployBaseDir}/jui-".toString()
+String rcuiHeadShaDir = "${deployBaseDir}/rcui-".toString()
 
 // by default we should not skip building app and jui
 Boolean skipBuildApp = false
 Boolean skipBuildJui = false
+Boolean skipBuildRcui = false
 Boolean skipSaAndUt = false
 Boolean skipInstallDependencies = false
 
@@ -369,91 +379,100 @@ node(buildNode) {
                 ]
             ])
             // keep node_modules to speed up build process
-            sh 'git clean -xdf'
-            // sh 'git clean -xdf -e node_modules'
+            // dependency lock is a key to help us decide if we need to upgrade dependencies
+            sh 'git clean -xdf -e node_modules -e dependency.lock'
+
             // get head sha
             headSha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
             // change in tests and autoDevOps directory should not trigger application build
             // for git 1.9, there is an easy way to exclude files
             // but most slaves are centos, whose git's version is still 1.8, we use a cmd pipeline here for compatibility
             appHeadSha = sh(returnStdout: true, script: '''ls -1 | grep -Ev '^(tests|autoDevOps)$' | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- ''').trim()
-            if (isMerge && headSha == appHeadSha) {
-                // the reason to use stableSha here is if HEAD is generate via fast-forward, the commit will be changed when re-running the job due to timestamp changed
-                echo "generate stable sha1 key from ${appHeadSha}"
-                appHeadSha = stableSha1(appHeadSha)
-            }
+            // the reason to use stableSha here is if HEAD is generate via fast-forward, the commit will be changed when re-running the job due to timestamp changed
+            echo "generate stable sha1 key from ${appHeadSha}"
+            appHeadSha = stableSha1(appHeadSha)
 
             echo "appHeadSha=${appHeadSha}"
             assert appHeadSha, 'appHeadSha is invalid'
             appHeadShaDir += appHeadSha
             echo "appHeadShaDir=${appHeadShaDir}"
+
             // build jui only when packages/jui has change
             juiHeadSha = sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/jui''').trim()
-            if (isMerge && headSha == juiHeadSha) {
-                // same as appHeadSha
-                echo "generate stable sha1 key from ${juiHeadSha}"
-                juiHeadSha = stableSha1(juiHeadSha)
-            }
+            // same as appHeadSha
+            echo "generate stable sha1 key from ${juiHeadSha}"
+            juiHeadSha = stableSha1(juiHeadSha)
             echo "juiHeadSha=${juiHeadSha}"
             assert juiHeadSha, 'juiHeadSha is invalid'
             juiHeadShaDir += juiHeadSha
             echo "juiHeadShaDir=${juiHeadShaDir}"
+
+            // build rcui only when packages/rcui has change
+            rcuiHeadSha = sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/rcui''').trim()
+            // same as appHeadSha
+            echo "generate stable sha1 key from ${rcuiHeadSha}"
+            rcuiHeadSha = stableSha1(rcuiHeadSha)
+
+            echo "rcuiHeadSha=${rcuiHeadSha}"
+            assert rcuiHeadSha, 'rcuiHeadSha is invalid'
+            rcuiHeadShaDir += rcuiHeadSha
+            echo "rcuiHeadShaDir=${rcuiHeadShaDir}"
 
             // check if app or jui has been built
             sshagent(credentials: [deployCredentialId]) {
                 // we should always build release version
                 skipBuildApp = doesRemoteDirectoryExist(deployUri, appHeadShaDir)
                 skipBuildJui = doesRemoteDirectoryExist(deployUri, juiHeadShaDir)
-            }
-
-            if (!skipBuildApp && !skipBuildJui) {
-                String dockerAppHeadShaDir = "${dockerDeployBaseDir}/app-${buildRelease ? 'release-' : ''}${appHeadSha}".toString()
-                String dockerJuiHeadShaDir = "${dockerDeployBaseDir}/jui-${juiHeadSha}".toString()
-
-                sshagent(credentials: [dockerDeployCredentialId]) {
-                    // we should always build release version
-                    skipBuildApp = doesRemoteDirectoryExist(dockerDeployUri, dockerAppHeadShaDir)
-                    skipBuildJui = doesRemoteDirectoryExist(dockerDeployUri, dockerJuiHeadShaDir)
-                }
-
-                sshagent(credentials: [deployCredentialId]) {
-                    if (skipBuildApp) {
-                        rsyncFolderRemoteToRemote(dockerDeployUri, dockerAppHeadShaDir, deployUri, appHeadShaDir)
-                    }
-                    if (skipBuildJui) {
-                        rsyncFolderRemoteToRemote(dockerDeployUri, dockerJuiHeadShaDir, deployUri, juiHeadShaDir)
-                    }
-                }
+                skipBuildRcui = doesRemoteDirectoryExist(deployUri, rcuiHeadShaDir)
             }
 
             // since SA and UT must be passed before we build and deploy app and jui
             // that means if app and jui have already been built,
             // SA and UT must have already passed, we can just skip them to save more resources
-            skipSaAndUt = skipBuildApp && skipBuildJui
+            skipSaAndUt = skipBuildApp && skipBuildJui && (integrationBranch != gitlabSourceBranch)
 
+            // we should always rebuild release version
             skipBuildApp = skipBuildApp && !buildRelease
 
             // we can even skip install dependencies
-            skipInstallDependencies = skipSaAndUt
+            skipInstallDependencies = skipSaAndUt && skipBuildRcui
 
             // don't skip e2e if configuration file exists
             skipEndToEnd = skipEndToEnd && !fileExists("tests/e2e/testcafe/configs/${gitlabSourceBranch}.json")
+
+            // add the email of merge request related authors
+            if (isMerge) {
+                try {
+                    String getAuthorsCmd = "git rev-list '${gitlabTargetNamespace}/${gitlabTargetBranch}'..'${gitlabSourceNamespace}/${gitlabSourceBranch}' | xargs git show -s --format='%ae' | sort | uniq | grep -E -o '\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}\\b'".toString()
+                    String[] authorsAddresses = sh(returnStdout: true, script:getAuthorsCmd).trim().split('\n')
+                    String[] glipAddresses = authorsAddresses.collect{ it.replaceAll('ringcentral.com', 'ringcentral.glip.com')}
+                    reportChannels.addAll(Arrays.asList(glipAddresses))
+                } catch(e) {}
+            }
         }
 
         condStage(name: 'Install Dependencies', enable: !skipInstallDependencies) {
             try {
-                sh 'npm run fixed:version pre'
+                sh 'npm run fixed:version pre || true'
             } catch (e) { }
-            sh "echo 'registry=${npmRegistry}' > .npmrc"
-            sshagent (credentials: [scmCredentialId]) {
-                // sh 'npm install @sentry/cli@1.40.0'
-                // sh 'npm install @babel/parser@7.3.4'
-                sh 'npm install --unsafe-perm'
+            sh "npm config set registry ${npmRegistry}"
+            // if dependency.lock exists and same as current version, then we can skip install dependency
+            // else install dependency and update dependency.lock
+            String dependencyLock = sh(returnStdout: true, script: '''git ls-files | grep package.json | grep -v tests | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- | xargs git cat-file commit | grep -e ^tree | cut -d ' ' -f 2 ''').trim()
+            if (fileExists('dependency.lock') && readFile(file: 'dependency.lock', encoding: 'utf-8').trim() == dependencyLock) {
+                echo "dependency lock doesn't change, no need to update: ${dependencyLock}"
+            } else {
+                sshagent (credentials: [scmCredentialId]) {
+                    sh 'npm install --ignore-scripts --unsafe-perm'
+                    sh 'npm install --unsafe-perm'
+                }
+                // update dependency lock
+                writeFile(file:'dependency.lock', encoding: 'utf-8', text: dependencyLock)
+                try {
+                    sh 'npm run fixed:version check'
+                    sh 'npm run fixed:version cache'
+                } catch (e) { }
             }
-            try {
-                sh 'npm run fixed:version check'
-                sh 'npm run fixed:version cache'
-            } catch (e) { }
         }
 
         parallel (
@@ -539,7 +558,9 @@ node(buildNode) {
         parallel (
             'Build JUI' : {
                 condStage(name: 'Build JUI', enable: !skipBuildJui) {
-                    sh 'npm run build:ui'
+                    withEnv(["NODE_OPTIONS=--max_old_space_size=12000"]) {
+                        sh 'npm run build:ui'
+                    }
                 }
 
                 condStage(name: 'Deploy JUI') {
@@ -554,17 +575,37 @@ node(buildNode) {
                 report.juiUrl = juiUrl
             },
 
+            'Build RCUI' : {
+                condStage(name: 'Build RCUI', enable: !skipBuildRcui) {
+                    withEnv(["NODE_OPTIONS=--max_old_space_size=12000"]) {
+                        dir('packages/rcui') {
+                            sh 'npm run build:storybook'
+                        }
+                    }
+                }
+
+                condStage(name: 'Deploy RCUI') {
+                    String sourceDir = "packages/rcui/public/"  // !!! don't forget trailing '/'
+                    sshagent(credentials: [deployCredentialId]) {
+                        // copy to dir name with head sha when dir is not exists
+                        skipBuildRcui || rsyncFolderToRemote(sourceDir, deployUri, rcuiHeadShaDir)
+                        // and create copy to branch name based folder
+                        updateRemoteCopy(deployUri, rcuiHeadShaDir, rcuiLinkDir)
+                    }
+                }
+                report.rcuiUrl = rcuiUrl
+            },
+
             'Build Application': {
                 condStage(name: 'Build Application', enable: !skipBuildApp) {
                     // FIXME: move this part to build script
                     sh 'npx ts-node application/src/containers/VersionInfo/GitRepo.ts'
                     sh 'mv commitInfo.ts application/src/containers/VersionInfo/'
-                    try {
-                        // fix FIJI-4534
-                        long timestamp = System.currentTimeMillis()
-                        sh "sed 's/{{buildCommit}}/${headSha.substring(0, 9)}/;s/{{buildTime}}/${timestamp}/' application/src/containers/VersionInfo/versionInfo.json > versionInfo.json"
-                        sh 'mv versionInfo.json application/src/containers/VersionInfo/versionInfo.json'
-                    } catch (e) {}
+
+                    long timestamp = System.currentTimeMillis()
+                    sh "sed 's/{{buildCommit}}/${headSha.substring(0, 9)}/;s/{{buildTime}}/${timestamp}/' application/src/containers/VersionInfo/versionInfo.json > versionInfo.json || true"
+                    sh 'mv versionInfo.json application/src/containers/VersionInfo/versionInfo.json || true'
+
                     if (buildRelease) {
                         sh 'npm run build:release'
                     } else {
@@ -579,10 +620,16 @@ node(buildNode) {
                     sshagent(credentials: [deployCredentialId]) {
                         // copy to dir name with head sha when dir is not exists
                         skipBuildApp || rsyncFolderToRemote(sourceDir, deployUri, appHeadShaDir)
+
+                        long ts = System.currentTimeMillis()
+                        // and update precache revision
+                        updatePrecacheRevision(deployUri, appHeadShaDir, headSha, ts)
+
                         // and create copy to branch name based folder, for release build, use replace instead of delete
                         updateRemoteCopy(deployUri, appHeadShaDir, appLinkDir, !buildRelease)
+
                         // and update version info
-                        long ts = System.currentTimeMillis()
+
                         updateVersionInfo(deployUri, appLinkDir, headSha, ts)
                         // for stage build, also create link to stage folder
                         if (!isMerge && gitlabSourceBranch.startsWith('stage'))
@@ -597,7 +644,7 @@ node(buildNode) {
         condStage(name: 'Telephony Automation', timeout: 600) {
             try {
                 if (!isMerge && 'POC/FIJI-1302' == gitlabSourceBranch) {
-                    build(job: 'Jupiter-telephony-automation', parameters: [
+                    build(job: 'Jupiter-telephony-automation', wait: false, parameters: [
                         [$class: 'StringParameterValue', name: 'BRANCH', value: 'POC/FIJI-1302'],
                         [$class: 'StringParameterValue', name: 'JUPITER_URL', value: appUrl],
                     ])
@@ -613,7 +660,6 @@ node(buildNode) {
                 "SITE_URL=${appUrl}",
                 "SITE_ENV=${e2eSiteEnv}",
                 "SELENIUM_SERVER=${e2eSeleniumServer}",
-                "SELENIUM_CHROME_CAPABILITIES=./chrome-opts.json",
                 "ENABLE_REMOTE_DASHBOARD=${e2eEnableRemoteDashboard}",
                 "ENABLE_MOCK_SERVER=${e2eEnableMockServer}",
                 "BROWSERS=${e2eBrowsers}",
@@ -632,14 +678,16 @@ node(buildNode) {
                 "QUARANTINE_MODE=true",
                 "QUARANTINE_FAILED_THRESHOLD=4",
                 "QUARANTINE_PASSED_THRESHOLD=1",
+                "DEBUG=axios",
+                "ENABLE_SSL=true",
+                //"FIXTURES=./fixtures/**/*.ts,./telephony/**/*.ts",
                 "RUN_NAME=[Jupiter][Pipeline][Merge][${startTime}][${gitlabSourceBranch}][${gitlabMergeRequestLastCommit}]",
             ]) {dir("tests/e2e/testcafe") {
                 // print environment variable to help debug
                 sh 'env'
-
                 // following configuration file is use for tuning chrome, in order to use use-data-dir and disk-cache-dir
                 // you need to ensure target dirs exist in selenium-node, and use ramdisk for better performance
-                sh '''echo '{"chrome":{"goog:chromeOptions":{"args":["headless", "--disable-web-security"]}}}' > capabilities.json'''
+                writeFile file: 'capabilities.json', text: params.E2E_CAPABILITIES, encoding: 'utf-8'
                 sh "mkdir -p screenshots tmp"
                 sh "echo 'registry=${npmRegistry}' > .npmrc"
                 sshagent (credentials: [scmCredentialId]) {
@@ -677,6 +725,7 @@ node(buildNode) {
         safeMail(reportChannels, "Jenkins Pipeline Success: ${currentBuild.fullDisplayName}", formatGlipReport(report))
     } catch (e) {
         // post failure actions
+        report.error = currentBuild.getRawBuild().getLog(20).join('\n')
         skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'failed')
         report.description = currentBuild.getDescription()
         report.jobUrl = buildUrl

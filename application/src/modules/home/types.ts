@@ -13,6 +13,7 @@ type NavConfig = {
   title: string | Promise<string>;
   placement: 'top' | 'bottom';
   umi?: JSX.Element;
+  disable?: boolean | Promise<boolean>;
 };
 
 type SubModuleConfig = {

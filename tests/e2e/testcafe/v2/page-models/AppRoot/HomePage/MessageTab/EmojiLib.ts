@@ -84,7 +84,7 @@ export class EmojiLibrary extends BaseWebComponent {
   }
 
   async previewShouldBeKey(key: string) {
-    const emojiRegExp = new RegExp(`.*, ${key}`);
+    const emojiRegExp = new RegExp(`.*, ${key}$`);
     const emoji = this.previewArea.find('.emoji-mart-emoji');
     await this.t.expect(emoji.getAttribute('aria-label')).match(emojiRegExp);
   }
@@ -150,6 +150,34 @@ export class EmojiLibrary extends BaseWebComponent {
     return this.getSection('Flags');
   }
 
+  /* emoji foot */
+  get footSection() {
+    return this.self.find('.leftContainer');
+  }
+
+  get keepOpenToggle() {
+    return this.checkboxOf(this.footSection);
+  }
+
+  get keepOpenStatus() {
+    return this.keepOpenToggle.checked;
+  }
+
+  private async toggle(checkbox: Selector, check: boolean) {
+    const isChecked = await checkbox.checked;
+    if (isChecked != check) {
+      await this.t.click(checkbox);
+    }
+  }
+
+  async turnOnKeepOpen() {
+    await this.toggle(this.keepOpenToggle, true);
+  }
+
+  async turnOffKeepOpen() {
+    await this.toggle(this.keepOpenToggle, false);
+  }
+
   async categoryHeaderOnTopShouldBe(category: string) {
     await H.retryUntilPass(async () => {
       const searchBottomHeight = await this.searchBox.getBoundingClientRectProperty('bottom');
@@ -173,7 +201,7 @@ class EmojiSection extends BaseWebComponent {
   get noResultDiv() {
     return this.self.find('.emoji-mart-no-results')
   }
-  
+
   get noResultLabel() {
     return this.noResultDiv.find('.emoji-mart-no-results-label');
   }
@@ -188,6 +216,10 @@ class EmojiSection extends BaseWebComponent {
 
   async clickEmojiByNth(n: number) {
     await this.t.click(this.emojis.nth(n));
+  }
+
+  async hoverEmojiByNth(n: number) {
+    await this.t.hover(this.emojis.nth(n));
   }
 
   async clickRandomEmoji() {
@@ -218,4 +250,38 @@ class EmojiItem extends BaseWebComponent {
     const text = await this.self.getAttribute('aria-label');
     return text.split(', ')[1].trim();
   }
+}
+
+export class EmojiMatchList extends BaseWebComponent {
+  get self() {
+    return this.getSelectorByAutomationId('ColonEmojiPanel');
+  }
+  get items() {
+    return this.getSelector('[data-test-automation-class="match-item"]');
+  }
+
+  // value like :smile:
+  itemByValue(value: string) {
+    return this.getComponent(EmojiMatchItem, this.items.filter(`[data-test-automation-value="${value}]`));
+  }
+
+  itemByNth(n: number) {
+    return this.getComponent(EmojiMatchItem, this.items.nth(n));
+  }
+
+}
+
+class EmojiMatchItem extends BaseWebComponent {
+  get value() {
+    return this.self.getAttribute('data-test-automation-value');
+  }
+
+  get textSpan() {
+    return this.self.find('[aria-label="display-text"]');
+  }
+
+  async shouldBeSelected() {
+    return this.t.expect(this.self.hasClass('selected')).ok();
+  }
+
 }

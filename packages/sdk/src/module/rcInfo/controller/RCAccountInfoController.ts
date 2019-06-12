@@ -36,6 +36,11 @@ class RCAccountInfoController {
     return brandName && RC_BRAND_NAME_TO_BRAND_ID[brandName];
   }
 
+  async getRCAccountId(): Promise<number | undefined> {
+    const accountInfo = await this._getAccountInfo();
+    return accountInfo && accountInfo.id;
+  }
+
   async getOutboundCallPrefix() {
     const accountInfo = await this._getAccountInfo();
     const prefix = (accountInfo && accountInfo.outboundCallPrefix) || 0;
@@ -59,6 +64,11 @@ class RCAccountInfoController {
 
   private async _getAccountInfo() {
     return this._rcInfoFetchController.getRCAccountInfo();
+  }
+
+  async getAccountId() {
+    const accountInfo = await this._getAccountInfo();
+    return accountInfo && accountInfo.id;
   }
 }
 

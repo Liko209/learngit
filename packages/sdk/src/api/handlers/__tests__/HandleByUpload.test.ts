@@ -34,12 +34,10 @@ describe('HandleByUpload', () => {
     const decoration = HandleByUpload.requestDecoration(handler);
     const request = postRequest();
     request.needAuth = jest.fn().mockImplementation(() => false);
-    const decoratedRequest = decoration(request);
-    expect(
-      decoratedRequest.params && decoratedRequest.params.tk,
-    ).toBeUndefined();
-    expect(decoratedRequest.headers.Authorization).toBeUndefined();
-    expect(decoratedRequest).toEqual(request);
+    decoration(request);
+    expect(request.params && request.params.tk).toBeUndefined();
+    expect(request.headers.Authorization).toBeUndefined();
+    expect(request).toEqual(request);
   });
   it('should add tk to headers if needAuth is true ', () => {
     handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => true);
@@ -48,11 +46,9 @@ describe('HandleByUpload', () => {
     const request = postRequest();
     const path = request.path;
     request.needAuth = jest.fn().mockImplementation(() => true);
-    const decoratedRequest = decoration(request);
-    expect(
-      decoratedRequest.params && decoratedRequest.params.tk,
-    ).toBeUndefined();
-    expect(decoratedRequest.path).toEqual(`${path}?tk=token`);
+    decoration(request);
+    expect(request.params && request.params.tk).toBeUndefined();
+    expect(request.path).toEqual(`${path}?tk=token`);
   });
   it('should not add tk to headers if isOAuthTokenAvailable is false ', () => {
     handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => false);
@@ -61,10 +57,10 @@ describe('HandleByUpload', () => {
     const request = postRequest();
     const path = request.path;
     request.needAuth = jest.fn().mockImplementation(() => true);
-    const decoratedRequest = decoration(request);
+    decoration(request);
     expect(request.params && request.params.tk).toBeUndefined();
-    expect(decoratedRequest.path).toEqual(path);
-    expect(decoratedRequest).toEqual(request);
+    expect(request.path).toEqual(path);
+    expect(request).toEqual(request);
   });
   it('should not add tk to params if isOAuthTokenAvailable is false ', () => {
     const decoration = HandleByUpload.requestDecoration(null);

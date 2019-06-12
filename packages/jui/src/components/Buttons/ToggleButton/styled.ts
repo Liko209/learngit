@@ -50,7 +50,7 @@ const ToggleButton = styled(MuiSwitch)`
     margin: 0;
   }
 
-  .custom-icon {
+  && .custom-icon {
     width: ${width(3)};
     height: ${height(3)};
     box-shadow: none;
@@ -69,6 +69,13 @@ const ToggleButton = styled(MuiSwitch)`
     }
     & + .custom-bar {
       opacity: 1;
+    }
+  }
+
+  .custom-disabled.custom-checked {
+    & + .custom-bar {
+      opacity: 1;
+      background: ${palette('primary', '100')};
     }
   }
 

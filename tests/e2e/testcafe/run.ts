@@ -5,7 +5,7 @@
  */
 import { getLogger } from 'log4js';
 
-import { filterByTags } from './libs/filter';
+import { filterByTags, readTestLog } from './libs/filter';
 import { RUNNER_OPTS } from './config';
 import { accountPoolClient, finishRun } from './init';
 
@@ -27,8 +27,8 @@ async function runTests(runnerOpts) {
   logger.info(`runner options: ${JSON.stringify(runnerOpts, null, 2)}`);
 
   runner
-    .src(runnerOpts.FIXTURES)
-    .filter(filterByTags(runnerOpts.INCLUDE_TAGS, runnerOpts.EXCLUDE_TAGS))
+    .src([`${__dirname}/.dummy-test.ts`, ...runnerOpts.FIXTURES])
+    .filter(filterByTags(runnerOpts.INCLUDE_TAGS, runnerOpts.EXCLUDE_TAGS, readTestLog(runnerOpts.TESTS_LOG)))
     .browsers(runnerOpts.BROWSERS)
     .reporter(runnerOpts.REPORTER, process.stdout)
     .screenshots(runnerOpts.SCREENSHOTS_PATH, runnerOpts.SCREENSHOT_ON_FAIL)

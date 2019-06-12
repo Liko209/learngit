@@ -5,11 +5,9 @@
  */
 
 import { WithTranslation } from 'react-i18next';
+import { FileActionProps } from '../common/types';
 
-export type FileDeleteActionProps = {
-  fileId: number;
-  postId?: number;
-};
+export type FileDeleteActionProps = FileActionProps;
 
 export type FileDeleteActionViewProps = {
   canDelete: boolean;

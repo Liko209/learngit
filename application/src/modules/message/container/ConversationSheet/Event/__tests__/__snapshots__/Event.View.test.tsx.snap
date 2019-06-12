@@ -1,11 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`render() render correctly 1`] = `
-<ForwardRef
+<JuiConversationItemCard
   Icon="event"
   iconColor="color"
   title="text"
-  titleColor="color"
 >
   <JuiSectionDivider
     gap={2}
@@ -14,19 +13,24 @@ exports[`render() render correctly 1`] = `
       label="item.due"
     >
       <JuiTimeMessage
+        data-test-automation-id="event-due"
         time="1997/10/17"
       />
     </JuiLabelWithContent>
     <JuiLabelWithContent
       label="item.locationTitle"
     >
-      <ForwardRef
-        location="location"
-      />
+      <styled.div
+        data-test-automation-id="event-location"
+      >
+        location
+      </styled.div>
     </JuiLabelWithContent>
-    <ComponentWithLink
-      description="description"
-    />
+    <styled.div
+      data-test-automation-id="event-description"
+    >
+      description
+    </styled.div>
   </JuiSectionDivider>
-</ForwardRef>
+</JuiConversationItemCard>
 `;

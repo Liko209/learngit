@@ -16,10 +16,16 @@ import { SERVICE } from '../../../service/eventKey';
 import { MAKE_CALL_ERROR_CODE } from '../types';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 import { Call } from '../entity';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { SettingService } from 'sdk/module/setting';
+import { PhoneSetting } from '../setting';
+import { ITelephonyService } from './ITelephonyService';
 
-class TelephonyService extends EntityBaseService<Call> {
+class TelephonyService extends EntityBaseService<Call>
+  implements ITelephonyService {
   private _telephonyEngineController: TelephonyEngineController;
   private _userConfig: TelephonyUserConfig;
+  private _phoneSetting: PhoneSetting;
 
   constructor() {
     super({ isSupportedCache: true, entityName: 'CALL' });
@@ -31,8 +37,31 @@ class TelephonyService extends EntityBaseService<Call> {
     this._init();
   }
 
+  protected onStarted() {
+    super.onStarted();
+    this.telephonyController.createAccount();
+    ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    ).registerModuleSetting(this.phoneSetting);
+  }
+
+  protected onStopped() {
+    this.telephonyController.logout();
+    super.onStopped();
+    if (this._phoneSetting) {
+      ServiceLoader.getInstance<SettingService>(
+        ServiceConfig.SETTING_SERVICE,
+      ).unRegisterModuleSetting(this._phoneSetting);
+      delete this._phoneSetting;
+    }
+  }
+
   handleLogOut = async () => {
     this.telephonyController.logout();
+  }
+
+  getVoipCallPermission = async () => {
+    return this.telephonyController.getVoipCallPermission();
   }
 
   protected get telephonyController() {
@@ -47,16 +76,6 @@ class TelephonyService extends EntityBaseService<Call> {
 
   private _init() {
     this.telephonyController.initEngine();
-  }
-
-  protected onStarted() {
-    super.onStarted();
-    this.telephonyController.createAccount();
-  }
-
-  protected onStopped() {
-    this.telephonyController.logout();
-    super.onStopped();
   }
 
   get userConfig() {
@@ -179,6 +198,13 @@ class TelephonyService extends EntityBaseService<Call> {
   getLastCalledNumber = () => {
     const accountController = this.telephonyController.getAccountController();
     return accountController ? accountController.getLastCalledNumber() : '';
+  }
+
+  get phoneSetting() {
+    if (!this._phoneSetting) {
+      this._phoneSetting = new PhoneSetting(this);
+    }
+    return this._phoneSetting;
   }
 }
 

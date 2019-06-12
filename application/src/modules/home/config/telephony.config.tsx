@@ -5,9 +5,12 @@
  */
 import React from 'react';
 import i18nT from '@/utils/i18nT';
+import { PhoneUMI } from '@/modules/phone/container/PhoneUMI';
 import { lazyComponent } from '@/modules/common/util/lazyComponent';
 import { SubModuleConfig } from '../types';
 import { JuiIconography } from 'jui/foundation/Iconography';
+import { container } from 'framework';
+import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 
 const config: SubModuleConfig = {
   route: {
@@ -28,7 +31,9 @@ const config: SubModuleConfig = {
     ),
     IconSelected: <JuiIconography>leftNavPhone</JuiIconography>,
     title: await i18nT('telephony.Phone'),
+    umi: <PhoneUMI />,
     placement: 'top',
+    disable: !(await container.get(FeaturesFlagsService).canUseTelephony()),
   }),
   moduleConfigLoader: () =>
     import(/*

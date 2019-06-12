@@ -33,20 +33,8 @@ const itemService = new ItemService();
 const groupService = {
   hasMorePostInRemote: jest.fn(),
   updateHasMore: jest.fn(),
+  handleGroupFetchedPosts: jest.fn(),
 };
-
-function setup() {
-  ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
-  itemService.handleIncomingData = jest.fn();
-  daoManager.getDao.mockImplementation(arg => {
-    if (arg === PostDao) {
-      return postDao;
-    }
-    if (arg === ItemDao) {
-      return itemDao;
-    }
-  });
-}
 
 describe('PostFetchController()', () => {
   const postDataController = new PostDataController(
@@ -65,6 +53,25 @@ describe('PostFetchController()', () => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     jest.restoreAllMocks();
+  }
+
+  function setup() {
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
+    itemService.handleIncomingData = jest.fn();
+    daoManager.getDao.mockImplementation(arg => {
+      if (arg === PostDao) {
+        return postDao;
+      }
+      if (arg === ItemDao) {
+        return itemDao;
+      }
+    });
+
+    postDataController.handleFetchedPosts = jest.fn().mockResolvedValue({
+      posts: [],
+      items: [],
+      hasMore: true,
+    });
   }
 
   afterAll(() => {
@@ -709,6 +716,7 @@ describe('PostFetchController()', () => {
       );
       groupService.updateHasMore.mockImplementationOnce(() => {});
       expect(groupService.updateHasMore).toHaveBeenCalledTimes(1);
+      expect(groupService.handleGroupFetchedPosts).toBeCalled();
       expect(result.hasMore).toBeFalsy();
     });
   });

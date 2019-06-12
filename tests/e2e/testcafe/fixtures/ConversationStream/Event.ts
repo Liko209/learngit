@@ -75,13 +75,13 @@ test(formalName(`Check the display of the Event in the conversation stream`, ['P
 
   const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog(`And check the display of the Event in the conversation stream`, async () => {
-    const eventIconStyle = await conversationPage.postItemById(postId).eventIcon.style;
-    const eventTitleStyle = await conversationPage.postItemById(postId).eventTitle.style;
+    const eventIconStyle = await conversationPage.postItemById(postId).itemCard.eventIcon.style;
+    const eventTitleStyle = await conversationPage.postItemById(postId).itemCard.title.style;
     await t.expect(eventIconStyle['color']).eql("rgb(255, 55, 55)");
     await t.expect(eventTitleStyle['color']).eql("rgb(255, 55, 55)");
-    await t.expect(conversationPage.postItemById(postId).eventTitle.textContent).eql(`${title}`);
-    await t.expect(conversationPage.postItemById(postId).eventLocation.textContent).eql(`${location}`);
-    await t.expect(conversationPage.postItemById(postId).eventDue.textContent).contains(`${dueTime}`);
+    await t.expect(conversationPage.postItemById(postId).itemCard.title.textContent).eql(`${title}`);
+    await t.expect(conversationPage.postItemById(postId).itemCard.eventLocation.textContent).eql(`${location}`);
+    await t.expect(conversationPage.postItemById(postId).itemCard.eventDue.textContent).contains(`${dueTime}`);
   });
 });
 

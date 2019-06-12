@@ -29,9 +29,9 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
     super();
     this.reaction(
       () => this._globalSearchStore.searchKey,
-      (searchKey: string) => {
+      async (searchKey: string) => {
         if (searchKey === '') {
-          this.fetchRecent();
+          await this.fetchRecent();
         }
       },
       {
@@ -114,11 +114,11 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
   }
 
   @action
-  fetchRecent = () => {
+  fetchRecent = async () => {
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
-    const records = searchService.getRecentSearchRecords();
+    const records = await searchService.getRecentSearchRecords();
     this.recentRecord = records.map((record: RecentSearchModel) => {
       const { id, value, query_params } = record;
       return {

@@ -59,6 +59,7 @@ class RTCDaoManager {
       );
       return;
     }
+    rtcLogger.debug(LOG_TAG, 'remove provisioning info in DAO');
     this._delegate.remove(kProvisioningInfoKey);
   }
 }

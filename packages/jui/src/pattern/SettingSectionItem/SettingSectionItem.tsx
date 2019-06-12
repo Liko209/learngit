@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { RuiSlider } from 'rcui/components/Forms/Slider';
 import styled from '../../foundation/styled-components';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';
 import {
@@ -16,8 +17,8 @@ import {
 import { JuiDivider, JuiDividerProps } from '../../components/Divider/Divider';
 
 type JuiSettingSectionItemProps = {
-  id: string;
-  label: string | JSX.Element;
+  id: string | number;
+  label?: string | JSX.Element;
   description?: string | JSX.Element;
   disabled?: boolean;
   automationId?: string;
@@ -77,6 +78,12 @@ const RightWrap = styled.div`
     flex: 1;
     padding-left: ${spacing(2.5)};
   }
+
+  ${RuiSlider} {
+    flex: 1;
+    line-height: 0;
+    padding: ${spacing(5, 0)};
+  }
 `;
 
 const DividerWrap = styled<JuiDividerProps>(JuiDivider)``;
@@ -110,23 +117,24 @@ class JuiSettingSectionItem extends React.PureComponent<
       automationId,
     } = this.props;
     const disabledClass = disabled ? 'disabled' : '';
-    const testId = automationId ? `-${automationId}` : `-${id}`;
+    const testId = automationId ? automationId : id;
     return (
       <SettingSectionItemWrap
         className="setting-section-item"
-        data-test-automation-id={`SettingSectionItem${testId}`}
+        data-test-automation-id={`settingItem-${testId}`}
+        data-disabled={disabled}
       >
         <SettingSectionItemContentWrap className="setting-section-item-content">
           <LeftWrap className="setting-section-item-left">
             <LabelWrap
-              data-test-automation-id={`SettingSectionItemLabel${testId}`}
+              data-test-automation-id={`settingItemLabel-${testId}`}
               className={`setting-section-item-label ${disabledClass}`}
             >
               {label}
             </LabelWrap>
             {description && (
               <DescriptionWrap
-                data-test-automation-id={`SettingSectionItemDescription${testId}`}
+                data-test-automation-id={`settingItemDescription-${testId}`}
                 className={`setting-section-item-description ${disabledClass}`}
               >
                 {description}

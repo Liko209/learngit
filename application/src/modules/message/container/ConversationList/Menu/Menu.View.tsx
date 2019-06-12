@@ -18,7 +18,6 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 import { catchError } from '@/common/catchError';
 
 type Props = MenuViewProps & RouteComponentProps & WithTranslation;
@@ -178,15 +177,7 @@ class MenuViewComponent extends Component<Props> {
   }
 
   render() {
-    const {
-      personId,
-      groupId,
-      anchorEl,
-      onClose,
-      favoriteText,
-      t,
-      isFavorite,
-    } = this.props;
+    const { anchorEl, favoriteText, t, isFavorite } = this.props;
     return (
       <JuiMenuContain
         id="render-props-menu"
@@ -200,15 +191,12 @@ class MenuViewComponent extends Component<Props> {
         {this._renderReadOrUnreadMenuItem()}
         <JuiMenuItem
           data-test-automation-id="favToggler"
-          onClick={isFavorite ? this._handleRemoveFavorite : this._handleFavorite}
+          onClick={
+            isFavorite ? this._handleRemoveFavorite : this._handleFavorite
+          }
         >
           {t(`${favoriteText}`)}
         </JuiMenuItem>
-        <OpenProfileDialog id={personId || groupId} beforeClick={onClose}>
-          <JuiMenuItem data-test-automation-id="profileEntry">
-            {t('people.team.profile')}
-          </JuiMenuItem>
-        </OpenProfileDialog>
         {this.renderCloseMenuItem()}
       </JuiMenuContain>
     );

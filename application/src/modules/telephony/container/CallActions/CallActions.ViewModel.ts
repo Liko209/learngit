@@ -9,7 +9,6 @@ import { CallActionsProps, CallActionsViewProps } from './types';
 import { CALL_ACTION } from '../../interface/constant';
 import { container } from 'framework';
 import { TelephonyStore } from '../../store';
-// import { CALL_STATE } from '../../FSM';
 
 class CallActionsViewModel extends StoreViewModel<CallActionsProps>
   implements CallActionsViewProps {
@@ -19,24 +18,23 @@ class CallActionsViewModel extends StoreViewModel<CallActionsProps>
   get callActionsMap() {
     return {
       [CALL_ACTION.REPLY]: {
-        shouldShowAction: this._isIncomingPage,
+        shouldShowAction: this.isIncomingPage,
       },
       [CALL_ACTION.FORWARD]: {
-        shouldShowAction: this._isIncomingPage,
+        shouldShowAction: this.isIncomingPage,
+      },
+      [CALL_ACTION.PARK]: {
+        shouldShowAction: !this.isIncomingPage,
+      },
+      [CALL_ACTION.FLIP]: {
+        shouldShowAction: !this.isIncomingPage,
       },
     };
   }
 
   @computed
-  private get _isIncomingPage() {
+  get isIncomingPage() {
     return this._telephonyStore.inbound;
-  }
-
-  @computed
-  get shouldDisableCallActions() {
-    return Object.values(this.callActionsMap).every(
-      action => !action.shouldShowAction,
-    );
   }
 }
 

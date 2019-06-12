@@ -1,0 +1,8 @@
+ 2 files changed, 37 insertions(+), 45 deletions(-)
+LMXMN036:testcafe mia.cai$ git push 
+warning: redirecting to https://git.ringcentral.com/Fiji/Fiji.git/
+Counting objects: 13, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (12/12), done.
+Writing objects: 100% (13/13), 1.48 KiB | 1.48 MiB/s, done.
+Total 13 (delta 8), reused 0 (delta 0)

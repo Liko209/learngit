@@ -16,6 +16,8 @@ type DialerHeaderViewProps = {
   uid?: number;
   shouldDisplayDialer: boolean;
   inputString?: string;
+  forwardString?: string;
+  isForward?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;

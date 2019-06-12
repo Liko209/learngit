@@ -41,8 +41,8 @@ class LeftNavViewModel extends StoreViewModel {
   }
 
   icons = promisedComputed([[], []], async () => {
-    const navConfigs = await Promise.all(this._homeStore.navConfigs);
-
+    let navConfigs = await Promise.all(this._homeStore.navConfigs);
+    navConfigs = navConfigs.filter(({ disable }: NavConfig) => !disable);
     const topIcons = navConfigs
       .filter((navItem: NavConfig) => navItem.placement === 'top')
       .map(removePlacement);

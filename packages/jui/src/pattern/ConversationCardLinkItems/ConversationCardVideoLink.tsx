@@ -15,7 +15,6 @@ import {
   grey,
   typography,
 } from '../../foundation/utils/styles';
-import { withHighlight } from '../../hoc/withHighlight';
 
 const LinkItemsWrapper = styled(JuiCard)`
   display: flex;
@@ -65,13 +64,13 @@ const VideoWrapper = styled.div`
 `;
 
 type Props = {
-  title: string;
+  title: React.ReactChild | (React.ReactChild | null)[] | null;
   url: string;
   html?: string;
   onLinkItemClose?: (e: React.MouseEvent<HTMLSpanElement>) => void;
 };
 
-class JuiConversationCardVideoLinkComponent extends PureComponent<Props> {
+class JuiConversationCardVideoLink extends PureComponent<Props> {
   constructor(props: Props) {
     super(props);
   }
@@ -86,11 +85,9 @@ class JuiConversationCardVideoLinkComponent extends PureComponent<Props> {
       <LinkItemsWrapper>
         <LinkItemContents>
           <Title>
-            <a
-              href={url}
-              target="_blank"
-              dangerouslySetInnerHTML={{ __html: title }}
-            />
+            <a href={url} target="_blank">
+              {title}
+            </a>
           </Title>
           <VideoWrapper
             dangerouslySetInnerHTML={{
@@ -111,9 +108,5 @@ class JuiConversationCardVideoLinkComponent extends PureComponent<Props> {
     );
   }
 }
-
-const JuiConversationCardVideoLink = withHighlight(['title'])(
-  JuiConversationCardVideoLinkComponent,
-);
 
 export { JuiConversationCardVideoLink };

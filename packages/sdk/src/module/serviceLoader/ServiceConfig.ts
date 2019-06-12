@@ -26,6 +26,9 @@ const ServiceConfig = {
   ITEM_SERVICE: 'ItemService',
   SETTING_SERVICE: 'SettingService',
   PHONE_NUMBER_SERVICE: 'PhoneNumberService',
+  RC_EVENT_SUBSCRIPTION_SERVICE: 'RCEventSubscriptionService',
+  CALL_LOG_SERVICE: 'CallLogService',
+  VOICEMAIL_SERVICE: 'VoicemailService',
   BADGE_SERVICE: 'BadgeService',
 };
 

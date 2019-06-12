@@ -8,6 +8,7 @@ import {
   IRequest,
   ITelephonyDaoDelegate,
   telephonyLogger,
+  mainLogger,
 } from 'foundation';
 import { RTCEngine } from 'voip';
 import { Api } from '../../../api';
@@ -25,6 +26,8 @@ import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 import { AccountService } from 'sdk/module/account';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import { Call } from '../entity';
+import _ from 'lodash';
+import { VoIPMediaDevicesDelegate } from './mediaDeviceDelegate/VoIPMediaDevicesDelegate';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -57,10 +60,12 @@ class VoIPDaoClient implements ITelephonyDaoDelegate {
   }
 }
 
+const LOG_TAG = '[TelephonyEngineController]';
 class TelephonyEngineController {
   rtcEngine: RTCEngine;
   voipNetworkDelegate: VoIPNetworkClient;
   voipDaoDelegate: VoIPDaoClient;
+  mediaDevicesController: VoIPMediaDevicesDelegate;
   private _accountController: TelephonyAccountController;
   private _preCallingPermission: boolean = false;
   private _accountDelegate: ITelephonyAccountDelegate;
@@ -135,8 +140,10 @@ class TelephonyEngineController {
   initEngine() {
     RTCEngine.setLogger(new TelephonyLogController());
     this.rtcEngine = RTCEngine.getInstance();
+    this.mediaDevicesController = new VoIPMediaDevicesDelegate(this.rtcEngine);
     this.rtcEngine.setNetworkDelegate(this.voipNetworkDelegate);
     this.rtcEngine.setTelephonyDaoDelegate(this.voipDaoDelegate);
+    this.rtcEngine.setMediaDeviceDelegate(this.mediaDevicesController);
   }
 
   setAccountDelegate(delegate: ITelephonyAccountDelegate) {
@@ -161,6 +168,22 @@ class TelephonyEngineController {
           this._entityCacheController,
         );
     }
+  }
+
+  async getUserInfo() {
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+    const rcBrandId = await rcInfoService.getRCBrandId();
+    const rcAccountId = await rcInfoService.getRCAccountId();
+    const rcExtensionId = await rcInfoService.getRCExtensionId();
+    return {
+      rcBrandId,
+      rcAccountId,
+      rcExtensionId,
+      endpointId: this.getEndpointId(),
+      userAgent: PlatformUtils.getRCUserAgent(),
+    };
   }
 
   getAccountController() {

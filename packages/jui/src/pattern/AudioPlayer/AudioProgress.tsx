@@ -6,7 +6,7 @@
 import React, { Fragment } from 'react';
 import moment from 'moment';
 import JuiSlider from '@material-ui/lab/Slider';
-import styled from 'src/foundation/styled-components';
+import styled from '../../foundation/styled-components';
 import { width, spacing, palette, typography } from '../../foundation/utils';
 import { JuiAudioMode, JuiAudioProgressProps } from './types';
 
@@ -38,7 +38,11 @@ const JuiAudioProgress = ({
 }: JuiAudioProgressProps) => {
   const isMiniMode = Object.is(mode, JuiAudioMode.MINI);
   const currentTime = Math.min(value, duration);
-  const elProgressClock = <StyledClock>{formatTime(currentTime)}</StyledClock>;
+  const elProgressClock = (
+    <StyledClock data-test-automation-id="audio-end-time">
+      {formatTime(duration)}
+    </StyledClock>
+  );
 
   if (isMiniMode) {
     return elProgressClock;
@@ -46,7 +50,9 @@ const JuiAudioProgress = ({
 
   return (
     <Fragment>
-      {elProgressClock}
+      <StyledClock data-test-automation-id="audio-current-time">
+        {formatTime(currentTime)}
+      </StyledClock>
       <StyledSlider
         max={duration}
         value={value}
@@ -54,7 +60,7 @@ const JuiAudioProgress = ({
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
       />
-      <StyledClock>{formatTime(duration)}</StyledClock>
+      {elProgressClock}
     </Fragment>
   );
 };

@@ -5,4 +5,25 @@
  */
 import { IdModel } from '../../../framework/model';
 
-export type PhoneNumber = IdModel<string>;
+enum PhoneNumberType {
+  DirectNumber = 'DirectNumber',
+  MainCompanyNumber = 'MainCompanyNumber',
+  Blocked = 'Blocked',
+  NickName = 'NickName',
+  CompanyNumber = 'CompanyNumber',
+  AdditionalCompanyNumber = 'AdditionalCompanyNumber',
+  CompanyFaxNumber = 'CompanyFaxNumber',
+  ForwardedNumber = 'ForwardedNumber',
+  ForwardedCompanyNumber = 'ForwardedCompanyNumber',
+  ContactCenterNumber = 'ContactCenterNumber',
+  ConferencingNumber = 'ConferencingNumber',
+  Extension = 'Extension',
+  PhoneNumberAnonymous = 'anonymous',
+  Unknown = 'Unknown',
+}
+
+type PhoneNumber = IdModel<string> & {
+  phoneNumberType: PhoneNumberType;
+};
+
+export { PhoneNumber, PhoneNumberType };
