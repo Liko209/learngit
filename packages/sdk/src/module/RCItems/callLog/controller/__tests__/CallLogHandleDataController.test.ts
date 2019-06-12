@@ -9,6 +9,7 @@ import { CALL_RESULT } from '../../constants';
 import { notificationCenter } from 'sdk/service';
 import { CALL_DIRECTION } from 'sdk/module/RCItems/constants';
 import { TELEPHONY_STATUS } from 'sdk/module/rcEventSubscription/constants';
+import { CallLog } from '../../entity';
 
 describe('CallLogHandleDataController', () => {
   let controller: CallLogHandleDataController;
@@ -173,6 +174,14 @@ describe('CallLogHandleDataController', () => {
             terminationType: 'final',
             startTime: '12356',
           },
+          {
+            sessionId: 'sessionId3',
+            direction: CALL_DIRECTION.INBOUND,
+            telephonyStatus: TELEPHONY_STATUS.NoCall,
+            terminationType: 'final',
+            startTime: '123567',
+            from: 'anonymous',
+          },
         ],
       } as any;
       mockConfig.getPseudoCallLogInfo.mockReturnValue({
@@ -181,6 +190,11 @@ describe('CallLogHandleDataController', () => {
       controller['_getCallLogBySessionId'] = jest
         .fn()
         .mockReturnValue(undefined);
+      mockSourceController.bulkUpdate = jest
+        .fn()
+        .mockImplementation((data: CallLog[]) => {
+          expect(data[1].from).toBeUndefined();
+        });
 
       await controller.handleRCPresenceEvent(mockData);
       expect(mockConfig.getPseudoCallLogInfo).toBeCalled();
@@ -188,6 +202,10 @@ describe('CallLogHandleDataController', () => {
         sessionId1: {},
         sessionId2: {
           id: 'sessionId2Outbound',
+          result: 'Unknown',
+        },
+        sessionId3: {
+          id: 'sessionId3Inbound',
           result: 'Unknown',
         },
       });

@@ -25,12 +25,18 @@ import { notificationCenter, RELOAD_TARGET } from 'sdk/service';
 import { IdModel, ModelIdType } from 'sdk/framework/model';
 import { UndefinedAble } from 'sdk/types';
 
+type FSyncResponse<T> = {
+  resolve: (data: T[]) => void;
+  reject: (reason: JError) => void;
+};
+
 abstract class AbstractSyncController<
   T extends IdModel<IdType>,
   IdType extends ModelIdType = number
 > {
   private _syncStatus: number = 0;
   private _lastSyncNewerTime: number = 0;
+  private _FSyncQueue: FSyncResponse<T>[] = [];
 
   constructor(
     protected syncName: string,
@@ -109,22 +115,34 @@ abstract class AbstractSyncController<
       mainLogger
         .tags(this.syncName)
         .info(`is already in Fsync now, status: ${this._syncStatus}`);
-      return [];
+      if (isSilent) {
+        return [];
+      }
+      return new Promise<T[]>((resolve, reject) => {
+        this._FSyncQueue.push({ resolve, reject });
+      });
     }
     this._syncStatus = this._syncStatus | SYNC_STATUS.IN_FSYNC;
     let result: T[] = [];
     if (isSilent) {
       mainLogger.tags(this.syncName).info('try to add FSync processor');
       const processor = new SilentSyncProcessor(this.syncName, async () => {
-        await this._startSync(isSilent, SYNC_TYPE.FSYNC, undefined, recordCount)
+        const data = await this._startSync(
+          isSilent,
+          SYNC_TYPE.FSYNC,
+          undefined,
+          recordCount,
+        )
           .catch((reason: JError) => {
             mainLogger
               .tags(this.syncName)
               .warn(`do silent FSync, count: ${recordCount}, error: ${reason}`);
+            this._rejectResponses(reason);
           })
           .finally(() => {
             this._syncStatus = this._syncStatus & ~SYNC_STATUS.IN_FSYNC;
           });
+        this._resolveResponses(data || []);
       });
       silentSyncProcessorHandler.addProcessor(processor);
     } else {
@@ -139,11 +157,13 @@ abstract class AbstractSyncController<
           mainLogger
             .tags(this.syncName)
             .warn(`do FSync, count: ${recordCount}, error: ${reason}`);
+          this._rejectResponses(reason);
           throw reason;
         })
         .finally(() => {
           this._syncStatus = this._syncStatus & ~SYNC_STATUS.IN_FSYNC;
         });
+      this._resolveResponses(result);
     }
     return result;
   }
@@ -264,6 +284,20 @@ abstract class AbstractSyncController<
 
   private _isInFSync() {
     return !!(this._syncStatus & SYNC_STATUS.IN_FSYNC);
+  }
+
+  private _resolveResponses(data: T[]) {
+    this._FSyncQueue.forEach((response: FSyncResponse<T>) => {
+      response.resolve(data);
+    });
+    this._FSyncQueue = [];
+  }
+
+  private _rejectResponses(reason: JError) {
+    this._FSyncQueue.forEach((response: FSyncResponse<T>) => {
+      response.reject(reason);
+    });
+    this._FSyncQueue = [];
   }
 
   protected async setSyncToken(token: string): Promise<void> {
