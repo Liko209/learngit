@@ -3,8 +3,9 @@
  * @Date: 2019-05-27 10:14:04
  * Copyright © RingCentral. All rights reserved.
  */
-import { observer } from 'mobx-react';
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
+import { observable, action } from 'mobx';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import styled from 'jui/foundation/styled-components';
 import { JuiConversationPageHeader } from 'jui/pattern/ConversationPageHeader';
@@ -13,6 +14,7 @@ import { JuiSettingSectionContainer } from 'jui/pattern/SettingSection';
 import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 import { SettingSection } from '../SettingSection';
 import { SettingPageViewProps, SettingPageProps } from './types';
+import { mainLogger } from 'sdk';
 
 // TODO move to jui
 const StyledSettingPage = styled.div`
@@ -24,29 +26,35 @@ type Props = SettingPageProps & SettingPageViewProps & WithTranslation;
 
 @observer
 class SettingPageViewComponent extends Component<Props> {
-  state: Size = {
-    width: 0,
-    height: 0,
-  };
-  source: HTMLElement[];
-  private _wrapRef: React.RefObject<any> = React.createRef();
+  @observable private _size: Size = { width: 0, height: 0 };
+  @observable private _sources: HTMLElement[] = [];
+
+  @action
   private _handleSizeUpdate = (size: Size) => {
-    this.setState({
-      ...size,
-    });
+    if (size.width !== this._size.width || size.height !== this._size.height) {
+      this._size = size;
+    }
+  }
+
+  @action
+  private _updateSource = (el: any) => {
+    this._sources = [el];
   }
 
   render() {
-    if (!this.props.page) return null;
-    const { width } = this.state;
-    if (this._wrapRef.current && !this.source) {
-      this.source = [this._wrapRef.current];
+    const { t, id, page } = this.props;
+    const { width } = this._size;
+
+    if (!page) {
+      mainLogger.warn(
+        '[SettingPageViewComponent] trying to render a setting page without page info',
+      );
+      return null;
     }
 
-    const { t, id, page } = this.props;
     return (
       <StyledSettingPage
-        ref={this._wrapRef}
+        ref={this._updateSource}
         data-test-automation-id={`settingPage-${page.automationId}`}
       >
         <JuiConversationPageHeader
@@ -56,11 +64,13 @@ class SettingPageViewComponent extends Component<Props> {
         />
         <JuiSizeDetector
           handleSizeChanged={this._handleSizeUpdate}
-          sources={this.source}
+          sources={this._sources}
         />
-        <JuiSettingSectionContainer containerWidth={width}>
-          {this._renderSections()}
-        </JuiSettingSectionContainer>
+        {width ? (
+          <JuiSettingSectionContainer containerWidth={width}>
+            {this._renderSections()}
+          </JuiSettingSectionContainer>
+        ) : null}
         <ScrollMemory id={`SETTING_PAGE_${id}`} />
       </StyledSettingPage>
     );

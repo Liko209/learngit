@@ -24,7 +24,6 @@ import { RC_INFO, notificationCenter } from 'sdk/service';
 import { PersonService, ContactType } from 'sdk/module/person';
 import { GlobalConfigService } from 'sdk/module/config';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
-import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { mainLogger } from 'sdk';
 import { TelephonyStore, CALL_TYPE, INCOMING_STATE } from '../store';
 import { ToastCallError } from './ToastCallError';
@@ -36,8 +35,9 @@ import { Profile } from 'sdk/module/profile/entity';
 import ProfileModel from '@/store/models/Profile';
 import { getSingleEntity, getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
-import { CALL_WINDOW_STATUS, CALL_STATE } from '../FSM';
+import { CALL_WINDOW_STATUS } from '../FSM';
 import { AccountService } from 'sdk/module/account';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { Notification } from '@/containers/Notification';
 import {
   ToastType,
@@ -47,6 +47,7 @@ import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
 import i18next from 'i18next';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
+import storeManager from '@/store';
 import { SettingEntityIds } from 'sdk/module/setting';
 
 const ringTone = require('./sounds/Ringtone.mp3');
@@ -76,6 +77,8 @@ class TelephonyService {
   private _callerPhoneNumberDisposer: IReactionDisposer;
   private _incomingCallDisposer: IReactionDisposer;
 
+  uiCallStartTime: number;
+
   private _onAccountStateChanged = (state: RTC_ACCOUNT_STATE) => {
     mainLogger.debug(
       `${TelephonyService.TAG}[Telephony_Service_Account_State]: ${state}`,
@@ -88,7 +91,11 @@ class TelephonyService {
     mainLogger.info(
       `${TelephonyService.TAG} Call object created, call id=${callId}`,
     );
+    // need factor in new module design
+    // if has incoming call voicemail should be pause
+    storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, true);
     this._callId = callId;
+    this.uiCallStartTime = +new Date();
     this._telephonyStore.callType = CALL_TYPE.OUTBOUND;
     this._telephonyStore.directCall();
   }
@@ -100,6 +107,7 @@ class TelephonyService {
     }
     const { fromName, fromNum, callId } = callInfo;
     this._callId = callId;
+    this.uiCallStartTime = +new Date();
     this._telephonyStore.callType = CALL_TYPE.INBOUND;
     this._telephonyStore.callerName = fromName;
     const phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
@@ -109,6 +117,9 @@ class TelephonyService {
     }
     this._telephonyStore.callId = callId;
     this._telephonyStore.incomingCall();
+    // need factor in new module design
+    // if has incoming call voicemail should be pause
+    storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, true);
     mainLogger.info(
       `${TelephonyService.TAG}Call object created, call id=${
         callInfo.callId
@@ -184,6 +195,9 @@ class TelephonyService {
         break;
       }
       case RTC_CALL_STATE.DISCONNECTED: {
+        // need factor in new module design
+        // if has incoming call voicemail should be pause
+        storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, false);
         this._resetCallState();
         break;
       }
@@ -466,9 +480,9 @@ class TelephonyService {
     };
     const url = buildURL(phoneNumber);
     this._clientService.invokeApp(url);
-    if (this._telephonyStore.callState === CALL_STATE.DIALING) {
-      this._telephonyStore.closeDialer();
-    }
+    // if (this._telephonyStore.callState === CALL_STATE.DIALING) {
+    // this._telephonyStore.closeDialer();
+    // }
   }
   private async _isJupiterDefaultApp() {
     const entity = await ServiceLoader.getInstance<SettingService>(
@@ -477,11 +491,17 @@ class TelephonyService {
     return (entity && entity.value) === CALLING_OPTIONS.GLIP;
   }
 
-  makeCall = async (toNumber: string) => {
+  makeCall = async (toNumber: string, callback?: Function) => {
+    const { isValid } = await this.isValidNumber(toNumber);
+    if (!isValid) {
+      ToastCallError.toastInvalidNumber();
+      return;
+    }
     const shouldMakeRcPhoneCall = !(await this._isJupiterDefaultApp());
     if (shouldMakeRcPhoneCall) {
       return this.makeRCPhoneCall(toNumber);
     }
+    callback && callback();
     // FIXME: move this logic to SDK and always using callerID
     const idx = this._telephonyStore.callerPhoneNumberList.findIndex(
       phone =>
@@ -661,7 +681,7 @@ class TelephonyService {
   }
 
   getAllCallCount = () => {
-    return this._serverTelephonyService.getAllCallCount();
+    return this._serverTelephonyService && this._serverTelephonyService.getAllCallCount();
   }
 
   holdOrUnhold = () => {
@@ -742,6 +762,7 @@ class TelephonyService {
     );
   }
 
+  @action
   concatInputString = (str: string) => {
     if (
       this._telephonyStore.inputString.length <
@@ -758,6 +779,7 @@ class TelephonyService {
     return;
   }
 
+  @action
   updateInputString = (str: string) => {
     if (this._telephonyStore.incomingState === INCOMING_STATE.FORWARD) {
       this._telephonyStore.forwardString = str.slice(
@@ -773,6 +795,7 @@ class TelephonyService {
     return;
   }
 
+  @action
   deleteInputString = (clearAll: boolean = false) => {
     if (this._telephonyStore.incomingState === INCOMING_STATE.FORWARD) {
       if (clearAll) {
@@ -893,6 +916,28 @@ class TelephonyService {
     );
   }
 
+  isValidNumber = async (
+    toNumber: string = this._telephonyStore.inputString,
+  ) => {
+    if (this._phoneNumberService.isValidNumber(toNumber)) {
+      const res = await this.parsePhone(toNumber);
+      return {
+        toNumber,
+        isValid: !!res,
+        parsed: res,
+      };
+    }
+    return {
+      toNumber,
+      isValid: false,
+      parsed: null,
+    };
+  }
+
+  parsePhone = async (toNumber: string = this._telephonyStore.inputString) => {
+    return this._phoneNumberService.getLocalCanonical(toNumber);
+  }
+
   park = () => {
     if (!this._callId) {
       return;
@@ -946,10 +991,6 @@ class TelephonyService {
       this._callId as string,
       flipNumber,
     );
-  }
-
-  isValidNumber = (phoneNumber: string) => {
-    return this._phoneNumberService.isValidNumber(phoneNumber);
   }
 
   getForwardPermission = () => {

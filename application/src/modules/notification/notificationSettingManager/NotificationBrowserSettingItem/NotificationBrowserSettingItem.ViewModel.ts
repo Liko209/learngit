@@ -13,7 +13,6 @@ import SettingModel from '@/store/models/UserSetting';
 import { NotificationBrowserSettingItemViewProps } from './types';
 import { SETTING_ITEM__NOTIFICATION_BROWSER } from '../constant';
 import { DesktopNotificationsSettingModel as DNSM } from 'sdk/module/profile';
-import { catchError } from '@/common/catchError';
 
 class NotificationBrowserSettingItemViewModel extends StoreViewModel
   implements NotificationBrowserSettingItemViewProps {
@@ -25,10 +24,6 @@ class NotificationBrowserSettingItemViewModel extends StoreViewModel
     );
   }
 
-  @catchError.flash({
-    network: 'setting.errorText.network',
-    server: 'setting.errorText.server',
-  })
   setToggleState = async (checked: boolean) => {
     const { valueSetter } = this.settingItemEntity;
     await (valueSetter && valueSetter({ desktopNotifications: checked }));

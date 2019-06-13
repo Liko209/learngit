@@ -6,8 +6,8 @@
 import { container } from 'framework';
 import { registerModule } from 'shield/utils';
 import * as phone from '@/modules/phone/module.config';
-import { PHONE_SERVICE } from '../interface/constant';
 import { IPhoneService } from '../interface/IPhoneService';
+import { PHONE_SERVICE } from '../interface/constant';
 
 jest.mock('@/store/utils');
 

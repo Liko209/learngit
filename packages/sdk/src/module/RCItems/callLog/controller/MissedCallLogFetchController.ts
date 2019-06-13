@@ -35,6 +35,7 @@ class MissedCallLogFetchController extends AbstractFetchController {
     const dao = daoManager.getDao(CallLogDao);
     const oldestTime = await dao.queryOldestTimestamp();
     const result: CallLog[] = [];
+
     data.records.forEach((callLog: CallLog) => {
       const timestamp = Date.parse(callLog.startTime);
       if (!oldestTime || oldestTime > timestamp) {
@@ -47,7 +48,7 @@ class MissedCallLogFetchController extends AbstractFetchController {
     mainLogger
       .tags(SYNC_NAME)
       .info('handleDataAndSave, data length: ', result.length);
-    result && (await this.sourceController.bulkPut(result));
+    result.length && (await this.sourceController.bulkPut(result));
     return result;
   }
 

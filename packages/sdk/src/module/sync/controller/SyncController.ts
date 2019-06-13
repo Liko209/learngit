@@ -503,7 +503,7 @@ class SyncController {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingPost() posts.length: ${posts &&
-        posts.length}, source: ${source}`,
+        posts.map(post => post._id)}, source: ${source}`,
     );
     const performanceTracer = PerformanceTracer.initial();
     await ServiceLoader.getInstance<PostService>(

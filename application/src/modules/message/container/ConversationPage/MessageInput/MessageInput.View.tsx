@@ -103,12 +103,52 @@ class MessageInputViewComponent extends Component<
     }
   }
 
+  private _getMenus() {
+    const { t } = this.props;
+
+    return [
+      {
+        icon: 'google',
+        label: t('message.inputMenus.google'),
+      },
+      {
+        icon: 'dropbox',
+        label: t('message.inputMenus.dropbox'),
+      },
+      {
+        icon: 'box',
+        label: t('message.inputMenus.box'),
+      },
+      {
+        icon: 'evernote',
+        label: t('message.inputMenus.evernote'),
+      },
+      {
+        icon: 'onedrive',
+        label: t('message.inputMenus.onedrive'),
+      },
+    ];
+  }
+
+  private _getFileMenu() {
+    const { t } = this.props;
+
+    return {
+      icon: 'computer',
+      label: t('message.inputMenus.computer'),
+    };
+  }
+
   render() {
     const { draft, contentChange, error, id, t, insertEmoji } = this.props;
     const { modules } = this.state;
+
     const toolbarNode = (
       <MessageActionBar>
         <AttachmentView
+          menus={this._getMenus()}
+          fileMenu={this._getFileMenu()}
+          tooltip={t('message.action.attachFile')}
           onFileChanged={this._autoUploadFile}
           data-test-automation-id="message-action-bar-attachment"
         />
@@ -128,6 +168,7 @@ class MessageInputViewComponent extends Component<
         toolbarNode={toolbarNode}
         attachmentsNode={attachmentsNode}
         didDropFile={this.handleCopyPasteFile}
+        placeholder={t('message.action.typeNewMessage')}
       >
         <Mention id={id} ref={this._mentionRef} />
         <ColonEmoji id={id} ref={this._emojiRef} />

@@ -12,6 +12,7 @@ import { ServiceLoader } from '../../../serviceLoader';
 
 const accountService = {
   logout: jest.fn(),
+  isLoggedIn: jest.fn(),
 };
 
 class EnvSwitchedListenerTest {
@@ -50,6 +51,13 @@ describe('AppEnvSetting', () => {
 
   it('should call listener when switch env', async () => {
     mockConfigService.get.mockReturnValue('TEST1');
+    await AppEnvSetting.switchEnv('TEST2', accountService as AccountService);
+    expect(accountService.logout).not.toBeCalled();
+  });
+
+  it('should only logout when account is logged in when switch env', async () => {
+    mockConfigService.get.mockReturnValue('TEST1');
+    accountService.isLoggedIn.mockReturnValue(true);
     await AppEnvSetting.switchEnv('TEST2', accountService as AccountService);
     expect(accountService.logout).toBeCalledTimes(1);
   });

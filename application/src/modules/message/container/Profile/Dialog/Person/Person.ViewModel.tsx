@@ -45,12 +45,12 @@ class ProfileDialogPersonViewModel
   get person() {
     return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, this.id);
   }
-  refreshPersonData = async () => {
+  refreshPersonData = () => {
     try {
       const personService = ServiceLoader.getInstance<PersonService>(
         ServiceConfig.PERSON_SERVICE,
       );
-      await personService.refreshPersonData(this.id);
+      personService.refreshPersonData(this.id);
     } catch (err) {
       generalErrorHandler(err);
     }

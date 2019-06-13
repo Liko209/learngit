@@ -10,6 +10,7 @@ import { Dialog } from '@/containers/Dialog';
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
 import { getSingleEntity } from '@/store/utils/entities';
 import { ENTITY_NAME } from '@/store/constants';
+import JuiText from 'jui/components/Text/Text';
 import { noop } from 'jui/foundation/utils';
 
 type DefaultPhoneAppSelectItemProps = {
@@ -72,7 +73,7 @@ const DefaultPhoneAppSelectItem: SFC<
   },                                 []);
   useEffect(() => {
     const divEl = optionRef.current;
-    const selectItemList = divEl ? divEl.parentElement : null;
+    const selectItemList = divEl ? divEl.closest('li') : null;
     if (selectItemList) {
       selectItemList.addEventListener('click', onClickHandler);
       return () => selectItemList.removeEventListener('click', onClickHandler);
@@ -88,7 +89,11 @@ const DefaultPhoneAppSelectItem: SFC<
       'setting.phone.general.defaultPhoneApp.option.ringcentral',
     ),
   };
-  return <div ref={optionRef}>{options[value]}</div>;
+  return (
+    <JuiText>
+      <div ref={optionRef}>{options[value]}</div>
+    </JuiText>
+  );
 };
 
 const withTranslationComp = withTranslation()(DefaultPhoneAppSelectItem);
