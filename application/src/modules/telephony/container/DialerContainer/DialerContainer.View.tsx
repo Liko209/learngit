@@ -10,7 +10,6 @@ import { DialPad } from 'jui/pattern/Dialer';
 import _ from 'lodash';
 import { DialerContainerViewProps, DialerContainerViewState } from './types';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 import { sleep } from '../../helpers';
 import {
   CallControlPanel,
@@ -94,21 +93,7 @@ class DialerContainerViewComponent extends React.Component<
 
     const callerIdProps = {
       value: chosenCallerPhoneNumber,
-      menu: callerPhoneNumberList.map((callerPhoneNumber) => {
-        return Object.assign({}, callerPhoneNumber, {
-          usageType:
-            callerPhoneNumber.usageType === PhoneNumberType.NickName
-              ? callerPhoneNumber.label
-              : t(
-                  `telephony.phoneNumberType.${callerPhoneNumber.usageType[0].toLowerCase() +
-                    callerPhoneNumber.usageType.slice(
-                      1,
-                      callerPhoneNumber.usageType.length,
-                    )}`,
-                ),
-          isTwoLine: callerPhoneNumber.usageType !== PhoneNumberType.Blocked,
-        });
-      }),
+      menu: callerPhoneNumberList,
       label: t('telephony.callFrom'),
       disabled: false,
       heightSize: 'default',

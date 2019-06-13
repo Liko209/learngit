@@ -465,6 +465,7 @@ class TelephonyStore {
     this._callFSM[CALL_TRANSITION_NAMES.HAS_CONNECTED]();
   }
 
+  @action
   hold = () => {
     if (this.held) {
       mainLogger.debug(
@@ -475,6 +476,7 @@ class TelephonyStore {
     this._holdFSM[HOLD_TRANSITION_NAMES.HOLD]();
   }
 
+  @action
   unhold = () => {
     if (!this.held) {
       mainLogger.debug(
@@ -485,6 +487,7 @@ class TelephonyStore {
     this._holdFSM[HOLD_TRANSITION_NAMES.UNHOLD]();
   }
 
+  @action
   startRecording = () => {
     if (this.isRecording) {
       mainLogger.debug(
@@ -495,6 +498,7 @@ class TelephonyStore {
     this._recordFSM[RECORD_TRANSITION_NAMES.START_RECORD]();
   }
 
+  @action
   stopRecording = () => {
     if (!this.isRecording) {
       mainLogger.debug(

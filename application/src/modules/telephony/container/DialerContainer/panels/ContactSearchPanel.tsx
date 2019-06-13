@@ -4,15 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import {
-  CallerIdSelectorProps,
-  CallerIdSelector,
-  JuiContainer,
-  ContactSearchContainer,
-} from 'jui/pattern/Dialer';
+import { JuiContainer, ContactSearchContainer } from 'jui/pattern/Dialer';
 import { RuiTooltipProps, RuiTooltip } from 'rcui/components/Tooltip';
 import { ContactSearchList } from '../../ContactSearchList';
 import { isEqual } from 'lodash';
+import {
+  CallerIdSelectorProps,
+  CallerIdSelector,
+} from '../../CallerIdSelector';
 
 type Props = {
   callerIdProps: CallerIdSelectorProps;

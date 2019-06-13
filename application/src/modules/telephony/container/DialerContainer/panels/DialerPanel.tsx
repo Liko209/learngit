@@ -4,17 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import {
-  CallerIdSelectorProps,
-  CallerIdSelector,
-  JuiContainer,
-  DialPad,
-} from 'jui/pattern/Dialer';
+import { JuiContainer, DialPad } from 'jui/pattern/Dialer';
 import { RuiTooltipProps, RuiTooltip } from 'rcui/components/Tooltip';
 import { DialBtn } from '../../DialBtn';
 import { ForwardBtn } from '../../Forward/ForwardBtn';
 import { DialerContainerViewProps } from '../types';
 import { isEqual } from 'lodash';
+import {
+  CallerIdSelectorProps,
+  CallerIdSelector,
+} from '../../CallerIdSelector';
 
 type Props = {
   callerIdProps: CallerIdSelectorProps;
