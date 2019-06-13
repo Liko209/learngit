@@ -5,7 +5,7 @@
  */
 
 import { LifeCycle } from 'ts-javascript-state-machine';
-import { observable, computed, action, reaction, autorun } from 'mobx';
+import { observable, computed, action, reaction } from 'mobx';
 import { PersonService, ContactType } from 'sdk/module/person';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { mainLogger } from 'sdk';
@@ -57,9 +57,7 @@ const INITIAL_REPLY_COUNTDOWN_TIME = 55;
 class TelephonyStore {
   private _callWindowFSM = new CallWindowFSM();
   private _intervalReplyId?: NodeJS.Timeout;
-  private _history: Set<
-    CALL_STATE | CALL_DIRECTION | typeof DIALING
-  > = new Set();
+  private _history: Set<CALL_DIRECTION | typeof DIALING> = new Set();
 
   maximumInputLength = 30;
 
@@ -163,8 +161,6 @@ class TelephonyStore {
         });
       },
     );
-
-    this._autorun();
 
     reaction(
       () => this.phoneNumber,
@@ -342,7 +338,7 @@ class TelephonyStore {
 
     switch (true) {
       case history.has(CALL_DIRECTION.INBOUND) &&
-        history.has(CALL_STATE.DISCONNECTED) &&
+        history.has(DIALING) &&
         this.shouldResume:
         this.openDialer();
         break;
@@ -375,6 +371,7 @@ class TelephonyStore {
   }
 
   incomingCall = () => {
+    this._history.add(CALL_DIRECTION.INBOUND);
     this._openCallWindow();
   }
 
@@ -518,18 +515,8 @@ class TelephonyStore {
     },                                  1000);
   }
 
-  private _updateHistory() {
-    this._history.add(this.callState).add(this.call.direction);
-  }
-
   private _clearHistory() {
-    if (this._history.has(CALL_STATE.DISCONNECTED)) {
-      this._history.clear();
-    }
-  }
-
-  private _autorun() {
-    return autorun(this._updateHistory);
+    this._history.clear();
   }
 
   @computed
@@ -563,7 +550,6 @@ class TelephonyStore {
 
   @computed
   get callState(): CALL_STATE {
-    if (!this.call) return CALL_STATE.IDLE;
     return this.call.callState;
   }
 

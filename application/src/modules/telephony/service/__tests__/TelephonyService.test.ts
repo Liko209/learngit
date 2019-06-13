@@ -77,8 +77,6 @@ let mockedSettingService: any;
 
 function initializeCallerId() {
   telephonyService._telephonyStore.chosenCallerPhoneNumber = '123';
-  // telephonyService._telephonyStore.autorun = jest.fn();
-  // telephonyService._telephonyStore.callId = '1';
   telephonyService._telephonyStore;
   telephonyService._telephonyStore.callerPhoneNumberList = [
     { id: '123', phoneNumber: '123', usageType: 'companyNumber' },
@@ -89,10 +87,6 @@ describe('TelephonyService', () => {
   beforeEach(() => {
     jest.spyOn(utils, 'getSingleEntity').mockImplementation();
     let cachedOnMadeOutgoingCall: any;
-    let cachedOnCallActionSuccess: any;
-    let cachedOnCallActionFailed: any;
-    let cachedOnCallStateChange: any;
-    let callId: string | null = null;
 
     call = observable({
       callId: '1',
@@ -109,8 +103,6 @@ describe('TelephonyService', () => {
       getForwardingNumberList: jest.fn(),
       isRCFeaturePermissionEnabled: jest.fn(),
     };
-
-    // mockCallModel();
 
     jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
     mockedPhoneNumberService = {
@@ -159,17 +151,12 @@ describe('TelephonyService', () => {
         );
       }),
       makeCall: jest.fn().mockImplementation(() => {
-        callId = v4();
+        // callId = v4();
         cachedOnMadeOutgoingCall(1);
-        setTimeout(
-          () => cachedOnCallStateChange(callId, RTC_CALL_STATE.CONNECTED),
-          mockedDelay,
-        );
+        setTimeout(() => {}, mockedDelay);
         return MAKE_CALL_ERROR_CODE.NO_ERROR;
       }),
-      hangUp: jest.fn().mockImplementation(() => {
-        cachedOnCallStateChange(callId, RTC_CALL_STATE.DISCONNECTED);
-      }),
+      hangUp: jest.fn().mockImplementation(() => {}),
       park: (callUuid: string) => {
         if ('failed' === callUuid) {
           return new Promise((resolve, reject) => {
@@ -183,24 +170,9 @@ describe('TelephonyService', () => {
           resolve(callOptions);
         });
       },
-      createAccount: (
-        accountDelegate: { onMadeOutgoingCall: () => void },
-        callDelegate: {
-          onCallActionSuccess: () => void;
-          onCallStateChange: () => void;
-          onCallActionFailed: () => void;
-        },
-      ) => {
+      createAccount: (accountDelegate: { onMadeOutgoingCall: () => void }) => {
         const { onMadeOutgoingCall } = accountDelegate;
-        const {
-          onCallActionSuccess,
-          onCallActionFailed,
-          onCallStateChange,
-        } = callDelegate;
         cachedOnMadeOutgoingCall = onMadeOutgoingCall;
-        cachedOnCallActionSuccess = onCallActionSuccess;
-        cachedOnCallStateChange = onCallStateChange;
-        cachedOnCallActionFailed = onCallActionFailed;
       },
       answer: jest.fn(),
       sendToVoiceMail: jest.fn(),
@@ -702,10 +674,6 @@ describe('TelephonyService', () => {
       fromNum: '456',
       callId: incomingId,
     });
-    telephonyService._onCallStateChange(
-      incomingId,
-      RTC_CALL_STATE.DISCONNECTED,
-    );
     expect(
       (telephonyService as TelephonyService)._telephonyStore.inputString,
     ).toBe(inputString);

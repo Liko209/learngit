@@ -90,10 +90,7 @@ class TelephonyService extends EntityBaseService<Call>
   }
 
   // TODO remove
-  createAccount = (
-    accountDelegate: ITelephonyAccountDelegate,
-    callDelegate: ITelephonyCallDelegate,
-  ) => {}
+  createAccount = (accountDelegate: ITelephonyAccountDelegate) => {};
 
   getAllCallCount = () => {
     const accountController = this.telephonyController.getAccountController();

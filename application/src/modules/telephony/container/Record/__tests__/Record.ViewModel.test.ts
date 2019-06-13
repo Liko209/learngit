@@ -25,13 +25,13 @@ beforeAll(() => {
   jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
     matchContactByPhoneNumber: jest.fn(),
   });
+  (getEntity as jest.Mock).mockReturnValue({
+    recordState: RECORD_STATE.DISABLE,
+  });
   recordViewModel = new RecordViewModel();
 });
 describe('RecordViewModel', () => {
   it('Should be disabled', async () => {
-    (getEntity as jest.Mock).mockReturnValue({
-      recordState: RECORD_STATE.DISABLE,
-    });
     expect(recordViewModel.disabled).toBe(true);
   });
 });

@@ -25,7 +25,6 @@ beforeAll(() => {
     callState: CALL_STATE.IDLE,
   });
   (getEntity as jest.Mock).mockReturnValue(obj);
-  // dialerTitleBarViewModel.prototype.reaction = jest.fn();
   dialerTitleBarViewModel = new DetachOrAttachViewModel({});
 });
 

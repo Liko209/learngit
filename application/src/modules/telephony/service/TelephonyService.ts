@@ -10,8 +10,6 @@ import { SettingService } from 'sdk/module/setting/service/SettingService';
 import {
   TelephonyService as ServerTelephonyService,
   RTC_ACCOUNT_STATE,
-  RTC_CALL_STATE,
-  RTC_CALL_ACTION,
   RTCCallActionSuccessOptions,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
@@ -22,8 +20,7 @@ import { PersonService, ContactType } from 'sdk/module/person';
 import { GlobalConfigService } from 'sdk/module/config';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
 import { mainLogger } from 'sdk';
-// import { TelephonyStore } from '../store';
-import { TelephonyStore, CALL_TYPE, INCOMING_STATE } from '../store';
+import { TelephonyStore, INCOMING_STATE } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
@@ -96,7 +93,6 @@ class TelephonyService {
     storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, true);
     this._callId = callId;
     this.uiCallStartTime = +new Date();
-    // this._telephonyStore.callType = CALL_TYPE.OUTBOUND;
     this._telephonyStore.directCall();
   }
 
@@ -109,7 +105,6 @@ class TelephonyService {
     const { fromNum, callId, fromName } = this._telephonyStore.call;
     this._callId = callId;
     this.uiCallStartTime = +new Date();
-    // this._telephonyStore.callType = CALL_TYPE.INBOUND;
     this._telephonyStore.callerName = fromName;
     const phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
     if (phoneNumber !== this._telephonyStore.phoneNumber) {
@@ -184,24 +179,9 @@ class TelephonyService {
     return;
   }
 
-  private _onCallStateChange = (callId: string, state: RTC_CALL_STATE) => {
-    mainLogger.debug(
-      `${TelephonyService.TAG}[Telephony_Service_Call_State]: ${state}`,
-    );
-
-    switch (state) {
-      case RTC_CALL_STATE.DISCONNECTED: {
-        // need factor in new module design
-        // if has incoming call voicemail should be pause
-        storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, false);
-        this._resetCallState();
-        break;
-      }
-    }
-  }
-
   private _resetCallState() {
     this._telephonyStore.end();
+    storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, false);
     /**
      * Be careful that the server might not respond for the request, so since we design
      * the store as a singleton then we need to restore every single state for the next call.
@@ -209,24 +189,6 @@ class TelephonyService {
     this._telephonyStore.setPendingForHoldBtn(false);
     this._telephonyStore.setPendingForRecordBtn(false);
     delete this._callId;
-  }
-
-  private _onCallActionSuccess = (
-    callAction: RTC_CALL_ACTION,
-    options: RTCCallActionSuccessOptions,
-  ) => {
-    mainLogger.info(
-      `${
-        TelephonyService.TAG
-      }Call action: ${callAction} succeed, options: ${options}`,
-    );
-  }
-
-  // TODO: need more info here
-  private _onCallActionFailed = (callAction: RTC_CALL_ACTION): void => {
-    if (callAction === RTC_CALL_ACTION.CALL_TIME_OUT) {
-      ToastCallError.toastCallTimeout();
-    }
   }
 
   private _setDialerOpenedCount = () => {
@@ -278,18 +240,11 @@ class TelephonyService {
       this._getCallerPhoneNumberList,
     );
 
-    this._serverTelephonyService.createAccount(
-      {
-        onAccountStateChanged: this._onAccountStateChanged,
-        onMadeOutgoingCall: this._onMadeOutgoingCall,
-        onReceiveIncomingCall: this._onReceiveIncomingCall,
-      },
-      {
-        onCallStateChange: this._onCallStateChange,
-        onCallActionSuccess: this._onCallActionSuccess,
-        onCallActionFailed: this._onCallActionFailed,
-      },
-    );
+    this._serverTelephonyService.createAccount({
+      onAccountStateChanged: this._onAccountStateChanged,
+      onMadeOutgoingCall: this._onMadeOutgoingCall,
+      onReceiveIncomingCall: this._onReceiveIncomingCall,
+    });
 
     this._serverTelephonyService.setTelephonyDelegate({
       onAccountStateChanged: this._onAccountStateChanged,
@@ -425,9 +380,6 @@ class TelephonyService {
     if (this._telephonyStore.callDisconnected) {
       this._telephonyStore.closeDialer();
     }
-    // if (this._telephonyStore.callState === CALL_STATE.DIALING) {
-    // this._telephonyStore.closeDialer();
-    // }
   }
   private async _isJupiterDefaultApp() {
     const entity = await ServiceLoader.getInstance<SettingService>(
@@ -518,13 +470,13 @@ class TelephonyService {
     if (this._callId) {
       mainLogger.info(`${TelephonyService.TAG}Hang up call id=${this._callId}`);
       this._serverTelephonyService.hangUp(this._callId);
+      this._resetCallState();
     }
   }
 
   answer = () => {
     if (this._callId) {
       mainLogger.info(`${TelephonyService.TAG}answer call id=${this._callId}`);
-      // this._telephonyStore.answer();
       this._serverTelephonyService.answer(this._callId);
     }
   }

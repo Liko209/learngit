@@ -9,7 +9,7 @@ import { container } from 'framework';
 import { computed } from 'mobx';
 import { DialerProps, DialerViewProps } from './types';
 import { TelephonyStore } from '../../store';
-import { CALL_STATE } from '../../FSM';
+import { CALL_STATE } from 'sdk/module/telephony/entity';
 import { analyticsCollector } from '@/AnalyticsCollector';
 
 class DialerViewModel extends StoreViewModel<DialerProps>
@@ -21,7 +21,7 @@ class DialerViewModel extends StoreViewModel<DialerProps>
   constructor(props: DialerProps) {
     super(props);
     this.reaction(
-      () => this.callState,
+      () => this._telephonyStore.callState,
       callState => {
         if (callState === CALL_STATE.CONNECTING) {
           analyticsCollector.activeCall();

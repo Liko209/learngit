@@ -16,7 +16,9 @@ import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { DialerViewModel } from '../Dialer.ViewModel';
 import { GlobalConfigService } from 'sdk/module/config';
 import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
+import { getEntity } from '@/store/utils';
 
+jest.mock('@/store/utils');
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
 decorate(injectable(), ClientService);
@@ -39,6 +41,7 @@ beforeAll(() => {
   jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
     matchContactByPhoneNumber: jest.fn(),
   });
+  (getEntity as jest.Mock).mockReturnValue({});
   dialerViewModel = new DialerViewModel();
 });
 
