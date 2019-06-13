@@ -1,0 +1,21 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/**/*.ts"
+    ],
+    "include_tags": [
+      "P0",
+      "P1",
+      "JPT-2038",
+      "JPT-2121",
+      "JPT-2123",
+      "JPT-2153",
+      "JPT-1248",
+      "JPT-1249",
+      "JPT-1409"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
