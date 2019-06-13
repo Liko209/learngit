@@ -12,6 +12,7 @@ import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 import { IGroup, ITestMeta } from '../../v2/models';
 import * as assert from 'assert';
+import { ClientFunction } from 'testcafe';
 
 fixture('fileViewer')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -95,3 +96,140 @@ test.meta(<ITestMeta>{
   });
 
 });
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-2123'],
+  keywords: ['FilesViewer'],
+  maintainers: ['Potar.He']
+})('Check how the user goes through the pages in full-screen viewer', async t => {
+  const loginUser = h(t).rcData.mainCompany.users[4];
+
+  const filePaths = './sources/preview_files/2Pages.doc';
+  const defaultPage = '1'
+  const destinationPage = '2';
+  const defaultPageIndex = '(1/2)';
+  const secondPageIndex = '(2/2)';
+
+  let team = <IGroup>{
+    type: "Team",
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  let postId: string;
+  await h(t).withLog(`Given I have a team named {teamName} before login`, async (step) => {
+    step.setMetadata('teamName', team.name)
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  await h(t).withLog('And send a doc file in the team', async () => {
+    postId = await h(t).scenarioHelper.createPostWithTextAndFilesThenGetPostId({
+      filePaths,
+      group: team,
+      operator: loginUser,
+      text: uuid()
+    });
+  });
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I open the team', async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog('Then I  should be able to see an indicator on the file thumbnail.', async () => {
+    await conversationPage.waitUntilPostsBeLoaded();
+    await t.expect(conversationPage.postItemById(postId).fileThumbnail.exists).ok();
+  });
+
+  await h(t).withLog('When I click the file thumbnail', async () => {
+    await t.click(conversationPage.postItemById(postId).fileThumbnail);
+  });
+
+  const viewerDialog = app.homePage.viewerDialog;
+  await h(t).withLog('Then the file previewer should be showed', async () => {
+    await viewerDialog.ensureLoaded();
+    await viewerDialog.shouldBeFullScreen();
+  });
+
+  await h(t).withLog('When I click second thumbnail in the left navigation panel', async () => {
+    await t.click(viewerDialog.thumbnails.nth(1));
+  });
+
+  await h(t).withLog('Then User should be able to go to a specified page {destinationPage}', async (step) => {
+    step.setMetadata('destinationPage', destinationPage)
+    await t.expect(viewerDialog.positionIndex.textContent).eql(secondPageIndex);
+    await t.expect(viewerDialog.viewerPages.nth(1).visible).ok();
+    await t.expect(viewerDialog.thumbnails.nth(1).hasClass('selected')).ok();
+  });
+
+  await h(t).withLog('When I click first thumbnail in the left navigation panel', async () => {
+    await t.click(viewerDialog.thumbnails.nth(0));
+  });
+
+  await h(t).withLog('Then User should be able to go to a specified page {defaultPage}', async (step) => {
+    step.setMetadata('defaultPage', defaultPage)
+    await t.expect(viewerDialog.positionIndex.textContent).eql(defaultPageIndex);
+    await t.expect(viewerDialog.viewerPages.nth(0).visible).ok();
+    await t.expect(viewerDialog.thumbnails.nth(0).hasClass('selected')).ok();
+  });
+
+  await h(t).withLog('When I press "down" arrow on the keyboard', async () => {
+    await t.pressKey('down');
+  });
+
+  await h(t).withLog('Then User should be able to go to a specified page {destinationPage}', async (step) => {
+    step.setMetadata('destinationPage', destinationPage)
+    await t.expect(viewerDialog.positionIndex.textContent).eql(secondPageIndex);
+    await t.expect(viewerDialog.viewerPages.nth(1).visible).ok();
+    await t.expect(viewerDialog.thumbnails.nth(1).hasClass('selected')).ok();
+  });
+
+  await h(t).withLog('When I press "up" arrow on the keyboard', async () => {
+    await t.pressKey('up');
+  });
+
+  await h(t).withLog('Then User should be able to go to a specified page {defaultPage}', async (step) => {
+    step.setMetadata('defaultPage', defaultPage)
+    await t.expect(viewerDialog.positionIndex.textContent).eql(defaultPageIndex);
+    await t.expect(viewerDialog.viewerPages.nth(0).visible).ok();
+    await t.expect(viewerDialog.thumbnails.nth(0).hasClass('selected')).ok();
+  });
+
+  // there is problem.
+  // await h(t).withLog('When I scroll down to bottom', async () => {
+  //   await viewerDialog.scrollToMiddle();
+  //   await viewerDialog.scrollToBottom();
+  // });
+
+  // await h(t).withLog('Then User should be able to go to a specified page {destinationPage}', async (step) => {
+  //   step.setMetadata('destinationPage', destinationPage)
+  //   await t.expect(viewerDialog.positionIndex.textContent).eql(secondPageIndex);
+  //   await t.expect(viewerDialog.viewerPages.nth(1).visible).ok();
+  //   await t.expect(viewerDialog.thumbnails.nth(1).hasClass('selected')).ok();
+  // });
+
+  // await h(t).withLog('When I scroll up to top', async () => {
+  //   await viewerDialog.scrollToMiddle();
+  //   await viewerDialog.scrollToY(0);
+  // });
+
+  // await h(t).withLog('Then User should be able to go to a specified page {defaultPage}', async (step) => {
+  //   step.setMetadata('defaultPage', defaultPage)
+  //   await t.expect(viewerDialog.positionIndex.textContent).eql(defaultPageIndex);
+  //   await t.expect(viewerDialog.viewerPages.nth(0).visible).ok();
+  //   await t.expect(viewerDialog.thumbnails.nth(0).hasClass('selected')).ok();
+  // });
+});
+

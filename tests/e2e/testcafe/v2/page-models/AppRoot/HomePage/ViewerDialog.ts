@@ -2,7 +2,7 @@
  * @Author: Potar.He 
  * @Date: 2019-06-10 18:59:44 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-06-10 19:00:46
+ * @Last Modified time: 2019-06-13 09:33:26
  */
 import { BaseWebComponent } from "../../BaseWebComponent";
 import { ClientFunction, t } from "testcafe";
@@ -62,7 +62,6 @@ export class ViewerDialog extends BaseWebComponent {
     return this.self.find('input#outlined-number');
   }
 
- 
   get positionIndex() {
     return this.getSelectorByAutomationId('viewerPageCount');
   }
@@ -83,6 +82,30 @@ export class ViewerDialog extends BaseWebComponent {
     await this.t.click(this.closeButton);
   }
 
+  get pagesScrollDiv() {
+    return this.getSelector('.ViewerDocument');
+  }
+
+  async scrollToY(y: number) {
+    const scrollDivElement = this.pagesScrollDiv;
+    await ClientFunction((_y) => {
+      scrollDivElement().scrollTop = _y;
+    },
+      { dependencies: { scrollDivElement } })(y);
+  }
+
+  async scrollToMiddle() {
+    const scrollHeight = await this.pagesScrollDiv.scrollHeight;
+    const clientHeight = await this.pagesScrollDiv.clientHeight;
+    const middleHeight = (scrollHeight - clientHeight) / 2;
+    await this.scrollToY(middleHeight);
+  }
+
+  async scrollToBottom() {
+    const scrollHeight = await this.pagesScrollDiv.scrollHeight;
+    await this.scrollToY(scrollHeight);
+  }
+
   get contentDiv() {
     return this.getSelector('.ViewerDocumentContent');
   }
@@ -91,6 +114,9 @@ export class ViewerDialog extends BaseWebComponent {
     return this.getSelector('.ViewerPage', this.self);
   }
 
+  get pageContentWraps() {
+    return this.getSelector('.ViewerPageContentWrap', this.self);
+  }
 
   get thumbnails() {
     return this.getSelector('.ViewerThumbnail', this.self);
@@ -100,7 +126,7 @@ export class ViewerDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('viewerThumbnailNumber');
   }
 
-  get zoomPercent() {
+  get zoomScale() {
     return this.getSelectorByAutomationId('zoomGroupPercent')
   }
 
@@ -145,6 +171,14 @@ export class ViewerDialog extends BaseWebComponent {
 
   get viewerResetButton() {
     return this.getSelectorByAutomationId('ViewerResetButton');
+  }
+
+  async viewerResetButtonShouldBeDisabled() {
+    await this.t.expect(this.viewerResetButton.hasAttribute('disabled')).ok()
+  }
+
+  async viewerResetButtonShouldBeEnabled() {
+    await this.t.expect(this.viewerResetButton.hasAttribute('disabled')).notOk()
   }
 
   async clickResetButton() {
