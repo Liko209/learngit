@@ -25,7 +25,7 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
   constructor(props: Props) {
     super(props);
     this.reaction(
-      () => this._file.versions && this._file.versions.length, // According to file's versions to decide update/create thumbnail or not
+      () => this._file.latestVersion, // According to file's latest versions to decide update/create thumbnail or not
       this._getThumbsUrlWithSize,
       {
         fireImmediately: true,
@@ -45,17 +45,11 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @action
   private _getThumbsUrlWithSize = async () => {
-    const { id, type, versions } = this._file;
-    const version = versions && versions[0];
+    const version = this._file.latestVersion;
     if (version) {
       if (version.stored_file_id !== this._lastStoreFileId) {
         const thumbnail = await getThumbnailURLWithType(
-          {
-            id,
-            type,
-            versions,
-            versionUrl: version.url || '',
-          },
+          this._file,
           RULE.SQUARE_IMAGE,
         );
         this._lastStoreFileId = version.stored_file_id;

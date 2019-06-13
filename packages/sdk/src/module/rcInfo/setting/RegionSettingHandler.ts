@@ -29,7 +29,7 @@ export class RegionSettingHandler extends AbstractSettingEntityHandler<
 
   private _subscribe() {
     this.on(RC_INFO.RC_REGION_INFO, async () => {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     });
   }
 

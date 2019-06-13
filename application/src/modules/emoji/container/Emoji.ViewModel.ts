@@ -9,6 +9,7 @@ import { EmojiProps } from './types';
 import { StoreViewModel } from '@/store/ViewModel';
 import { EmojiGlobalUserConfig } from '../service/EmojiGlobalUserConfig';
 import { action, observable } from 'mobx';
+import 'jui/pattern/Emoji';
 
 class EmojiViewModel extends StoreViewModel<EmojiProps> {
   @observable

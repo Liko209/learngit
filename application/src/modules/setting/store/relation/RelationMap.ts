@@ -3,34 +3,32 @@
  * @Date: 2019-05-29 13:51:19
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, action, ObservableSet, ObservableMap } from 'mobx';
+import { action, ObservableSet } from 'mobx';
 
 class RelationMap<K, V> {
-  @observable
-  private _relations = new ObservableMap<K, Set<V>>();
+  private _relations = new Map<K, ObservableSet<V>>();
 
-  @action
-  private _getChildrenSet(parent: K) {
+  private _useChildrenSet(parent: K) {
     let items = this._relations.get(parent);
     if (!items) {
       items = new ObservableSet();
-      this._relations.set(parent, items);
+      this._relations.set(parent, items!);
     }
     return items;
   }
 
-  @action
   get(parent: K) {
-    return [...this._getChildrenSet(parent)];
+    return [...this._useChildrenSet(parent)];
   }
 
   @action
   add(parent: K, child: V) {
-    this._getChildrenSet(parent).add(child);
+    this._useChildrenSet(parent).add(child);
   }
 
   @action
   clear() {
+    this._relations.forEach(relation => relation.clear());
     this._relations.clear();
   }
 }

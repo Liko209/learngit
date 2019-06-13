@@ -106,6 +106,12 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .handleGroupMostRecentPostChanged(payload);
   }
 
+  handleGroupFetchedPosts(groupId: number, posts: Post[]) {
+    this.getGroupController()
+      .getHandleDataController()
+      .handleGroupFetchedPost(groupId, posts);
+  }
+
   deleteAllTeamInformation = async (ids: number[]) => {
     await this.getGroupController()
       .getGroupActionController()
@@ -392,6 +398,11 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   getIndividualGroups() {
     const cache = this.getEntityCacheController() as GroupEntityCacheController;
     return cache.getIndividualGroups();
+  }
+
+  getTeamIdsIncludeMe() {
+    const cache = this.getEntityCacheController() as GroupEntityCacheController;
+    return cache.getTeamIdsIncludeMe();
   }
 
   private get _groupFetchDataController() {

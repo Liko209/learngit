@@ -8,6 +8,7 @@ import { observable } from 'mobx';
 import { NetworkBanner } from './Banners/NetworkBanner';
 import { TopBannerConfig, BannerType } from './types';
 import { ElectronUpgradeBanner } from './Banners/ElectronUpgradeBanner';
+import { NotificationEnableBanner } from './Banners/NotificationEnableBanner';
 class TopBannerViewModel extends AbstractViewModel {
   @observable
   static data: TopBannerConfig[] = [
@@ -22,6 +23,12 @@ class TopBannerViewModel extends AbstractViewModel {
       Component: ElectronUpgradeBanner,
       props: {},
       isShow: false,
+    },
+    {
+      priority: 300,
+      Component: NotificationEnableBanner,
+      props: {},
+      isShow: true,
     },
   ];
 

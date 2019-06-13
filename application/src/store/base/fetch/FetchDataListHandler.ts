@@ -10,19 +10,22 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import { TDelta, ISortableModel } from './types';
 import { ListStore } from './ListStore';
 import { DEFAULT_PAGE_SIZE } from './constant';
+import { ModelIdType, IdModel } from 'sdk/framework/model';
 
-export type DeltaDataHandler = <
-  SortableModel extends ISortableModel = ISortableModel
->(
-  delta: TDelta<SortableModel>,
-) => any;
+export type DeltaDataHandler<
+  IdType extends ModelIdType = number,
+  SortableModel extends ISortableModel<IdType> = ISortableModel<IdType>
+> = (delta: TDelta<IdType, SortableModel>) => any;
 
-export interface IFetchDataListHandlerOptions {
+export interface IFetchDataListHandlerOptions<
+  IdType extends ModelIdType = number,
+  SortableModel extends ISortableModel<IdType> = ISortableModel<IdType>
+> {
   pageSize?: number;
   hasMoreUp?: boolean;
   hasMoreDown?: boolean;
   entityName?: ENTITY_NAME;
-  dataChangeCallBack?: DeltaDataHandler;
+  dataChangeCallBack?: DeltaDataHandler<IdType, SortableModel>;
 }
 
 export interface IFetchDataProvider<T> {
@@ -33,17 +36,26 @@ export interface IFetchDataProvider<T> {
   ): Promise<T[]>;
 }
 
-export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
-  private _fetchDataProvider: IFetchDataProvider<T> | null;
-  private _listStore: ListStore<T>;
+export class FetchDataListHandler<
+  Model extends IdModel<IdType>,
+  IdType extends ModelIdType = number,
+  SortableModel extends ISortableModel<IdType> = ISortableModel<IdType>
+> extends BaseNotificationSubscribable {
+  private _fetchDataProvider: IFetchDataProvider<SortableModel> | null;
+  private _listStore: ListStore<SortableModel>;
   protected _pageSize: number;
   protected _entityName?: ENTITY_NAME;
-  protected _dataChangeCallBacks: DeltaDataHandler[] = [];
+  protected _dataChangeCallBacks: DeltaDataHandler<
+    IdType,
+    SortableModel
+  >[] = [];
+  protected _defaultHasMoreDown: boolean;
+  protected _defaultHasMoreUp: boolean;
 
   constructor(
-    dataProvider: IFetchDataProvider<T> | null,
-    options: IFetchDataListHandlerOptions,
-    listStore: ListStore<T> = new ListStore<T>(),
+    dataProvider: IFetchDataProvider<SortableModel> | null,
+    options: IFetchDataListHandlerOptions<IdType, SortableModel>,
+    listStore: ListStore<SortableModel> = new ListStore<SortableModel>(),
   ) {
     super();
     this._fetchDataProvider = dataProvider;
@@ -59,6 +71,8 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
     this._entityName = entityName;
     this.listStore._hasMoreUp = hasMoreUp;
     this.listStore._hasMoreDown = hasMoreDown;
+    this._defaultHasMoreUp = hasMoreUp;
+    this._defaultHasMoreDown = hasMoreDown;
     if (dataChangeCallBack) {
       this.addDataChangeCallback(dataChangeCallBack);
     }
@@ -81,13 +95,13 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
     );
   }
 
-  addDataChangeCallback(cb: DeltaDataHandler) {
+  addDataChangeCallback(cb: DeltaDataHandler<IdType, SortableModel>) {
     if (cb && !this._dataChangeCallBacks.includes(cb)) {
       this._dataChangeCallBacks.push(cb);
     }
   }
 
-  removeDataChangeCallback(cb: DeltaDataHandler) {
+  removeDataChangeCallback(cb: DeltaDataHandler<IdType, SortableModel>) {
     if (cb) {
       const index = this._dataChangeCallBacks.indexOf(cb);
       if (index >= 0) {
@@ -98,7 +112,7 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
 
   async fetchData(direction: QUERY_DIRECTION, pageSize?: number) {
     const size = pageSize ? pageSize : this._pageSize;
-    let anchor: T | undefined;
+    let anchor: SortableModel | undefined;
     if (direction === QUERY_DIRECTION.OLDER) {
       anchor = this._listStore.first();
     } else {
@@ -111,7 +125,7 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
   protected async fetchDataInternal(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor?: T,
+    anchor?: SortableModel,
   ): Promise<any> {
     if (this._fetchDataProvider) {
       const result = await this._fetchDataProvider.fetchData(
@@ -134,7 +148,7 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
     }
   }
 
-  protected replaceEntityStore<Entity>(replaceEntities: Map<number, Entity>) {
+  protected replaceEntityStore(replaceEntities: Map<IdType, Model>) {
     if (!replaceEntities.size) {
       return;
     }
@@ -147,7 +161,10 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
     }
   }
 
-  protected handlePageData(result: T[], direction: QUERY_DIRECTION) {
+  protected handlePageData(
+    result: SortableModel[],
+    direction: QUERY_DIRECTION,
+  ) {
     let inFront = false;
     if (direction === QUERY_DIRECTION.OLDER) {
       inFront = true;

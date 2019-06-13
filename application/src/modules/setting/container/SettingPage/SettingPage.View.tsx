@@ -31,9 +31,11 @@ class SettingPageViewComponent extends Component<Props> {
   source: HTMLElement[];
   private _wrapRef: React.RefObject<any> = React.createRef();
   private _handleSizeUpdate = (size: Size) => {
-    this.setState({
-      ...size,
-    });
+    if (size.width !== this.state.width || size.height !== this.state.height) {
+      this.setState({
+        ...size,
+      });
+    }
   }
 
   render() {

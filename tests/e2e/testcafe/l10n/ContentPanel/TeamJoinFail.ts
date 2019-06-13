@@ -56,8 +56,8 @@ async (t: TestController) => {
     await h(t).scenarioHelper.updateTeam(team, { isPublic: false });
   });
 
-  await h(t).withLog('And I click the join team button', async () => {
-     await t.click(joinTeamDialog.joinButton);
+  await h(t).withLog('And I click the join team button', async ()=> {
+    await t.click(joinTeamDialog.joinButtonByClass());
   });
   await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_JoinTeamFail'});
 });

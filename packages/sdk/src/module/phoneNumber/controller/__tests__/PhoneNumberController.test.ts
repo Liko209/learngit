@@ -5,23 +5,31 @@
  */
 import { PhoneNumberController } from '../PhoneNumberController';
 import { PhoneParserUtility } from '../../../../utils/phoneParser';
+import { EVENT_TYPES, notificationCenter, ENTITY } from 'sdk/service';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('../../../../utils/phoneParser');
 
 describe('PhoneNumberController', () => {
   let phoneNumberController: PhoneNumberController;
+  const mockPersonService = {
+    getPhoneNumbers: jest.fn(),
+  };
   beforeEach(() => {
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(mockPersonService);
     phoneNumberController = new PhoneNumberController();
   });
 
   describe('generateMatchedPhoneNumberList', () => {
     it('should return list when it is short number', async () => {
-      PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
+      PhoneParserUtility.getPhoneParser = jest.fn().mockResolvedValue({
         isShortNumber: jest.fn().mockReturnValue(true),
         getE164: jest.fn().mockReturnValue('123'),
       });
+      const phoneParser = (await PhoneParserUtility.getPhoneParser('123'))!;
       const res = await phoneNumberController.generateMatchedPhoneNumberList(
         '123',
+        phoneParser,
       );
       expect(res.length).toBe(1);
       expect(res[0]).toBe('123');
@@ -32,8 +40,10 @@ describe('PhoneNumberController', () => {
         isShortNumber: jest.fn().mockReturnValue(true),
         getE164: jest.fn().mockReturnValue('456'),
       });
+      const phoneParser = (await PhoneParserUtility.getPhoneParser('456'))!;
       const res = await phoneNumberController.generateMatchedPhoneNumberList(
         '123',
+        phoneParser,
       );
       expect(res.length).toBe(2);
       expect(res[0]).toBe('123');
@@ -47,8 +57,10 @@ describe('PhoneNumberController', () => {
         isSpecialNumber: jest.fn().mockReturnValue(false),
         getCountryCode: jest.fn().mockReturnValue(''),
       });
+      const phoneParser = (await PhoneParserUtility.getPhoneParser(''))!;
       const res = await phoneNumberController.generateMatchedPhoneNumberList(
         '6502274787',
+        phoneParser,
       );
       expect(res.length).toBe(2);
       expect(res[0]).toBe('6502274787');
@@ -64,9 +76,12 @@ describe('PhoneNumberController', () => {
       });
       PhoneParserUtility.getStationCountryCode = jest.fn().mockReturnValue('1');
       PhoneParserUtility.getStationAreaCode = jest.fn().mockReturnValue('');
+      const phoneParser = (await PhoneParserUtility.getPhoneParser(''))!;
       const res = await phoneNumberController.generateMatchedPhoneNumberList(
         '+16502274787',
+        phoneParser,
       );
+
       expect(res.length).toBe(4);
       expect(res[0]).toBe('+16502274787');
       expect(res[1]).toBe('16502274787');
@@ -83,10 +98,12 @@ describe('PhoneNumberController', () => {
         getAreaCode: jest.fn().mockReturnValue('650'),
         getNumber: jest.fn().mockReturnValue('2274787'),
       });
+      const phoneParser = (await PhoneParserUtility.getPhoneParser(''))!;
       PhoneParserUtility.getStationCountryCode = jest.fn().mockReturnValue('1');
       PhoneParserUtility.getStationAreaCode = jest.fn().mockReturnValue('650');
       const res = await phoneNumberController.generateMatchedPhoneNumberList(
         '+16502274787',
+        phoneParser,
       );
       expect(res.length).toBe(5);
       expect(res[0]).toBe('+16502274787');
@@ -148,6 +165,32 @@ describe('PhoneNumberController', () => {
     it('should return true when phone num is *#123', () => {
       const res = phoneNumberController.isValidNumber('*#123');
       expect(res).toBeTruthy();
+    });
+  });
+
+  describe('handlePersonPayload', () => {
+    it('should emit phone number notification', () => {
+      const mockData = {
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          entities: [
+            {
+              rc_phone_numbers: [
+                { phoneNumber: '12367' },
+                { phoneNumber: '4563' },
+              ],
+            },
+            {
+              sanitized_rc_extension: { extensionNumber: '187' },
+            },
+          ],
+        },
+      } as any;
+      notificationCenter.emitEntityUpdate = jest.fn();
+
+      phoneNumberController.handlePersonPayload(mockData);
+      expect(mockPersonService.getPhoneNumbers).toBeCalled();
+      expect(notificationCenter.emitEntityUpdate).toBeCalled();
     });
   });
 });

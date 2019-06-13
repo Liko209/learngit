@@ -62,6 +62,30 @@ class HeaderMoreMenu extends BaseWebComponent {
   async openProfile() {
     return await this.t.click(this.profile);
   }
+
+  get adminActions() {
+    return this.self.find('li').withText('Admin actions');
+  }
+
+  async enterAdminActions() {
+    return await this.t.hover(this.adminActions);
+  }
+
+  get teamArchiveMenu() {
+    return this.self.find('li').withText('Archive team');
+  }
+
+  async archiveTeam() {
+    return this.t.click(this.teamArchiveMenu);
+  }
+
+  get teamDeleteMenu() {
+    return this.self.find('li').withText('Delete team');
+  }
+
+  async deleteTeam() {
+    return this.t.click(this.teamDeleteMenu);
+  }
 }
 
 export class BaseConversationPage extends BaseWebComponent {
@@ -473,6 +497,26 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.expect(this.title.textContent).eql(title);
   }
 
+  get attachFileIcon() {
+		return this.getSelectorByAutomationId('conversation-chatbar-attachment-button');
+	}
+
+	get attachFileFromComputer() {
+		return this.getSelectorByAutomationId('chatbar-attchment-selectfile');
+	}
+
+	async hoverAttachFileIcon() {
+		await this.t.hover(this.attachFileIcon);
+	}
+
+	async hoverAttachFileFromComputer() {
+		await this.t.hover(this.attachFileFromComputer);
+	}
+
+	async clickAttachFileIcon() {
+		await this.t.click(this.attachFileIcon);
+	}
+
   get messageFilesArea() {
     return this.getSelectorByAutomationId('attachment-list');
   }
@@ -644,7 +688,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
-  get href(){
+  get quote() {
+    return this.self.find(`[data-name="text"]`).find('q');
+  }
+  get href() {
     return this.self.find(`[href]`)
   }
 
@@ -680,8 +727,8 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('.emoji');
   }
 
-  async shouldHasEmojiByValue(text: string) {
-    await this.t.expect(this.emojis.withAttribute('title', `:${text}:`))
+  async shouldHasEmojiByValue(value: string) {
+    await this.t.expect(this.emojis.withAttribute('title', value)).ok()
   }
 
   async emojisShouldBeInOrder(valueList: string[], timeout: number = 5e3) {
@@ -733,6 +780,22 @@ export class PostItem extends BaseWebComponent {
     return this.getSelectorByIcon('bookmark_border', this.self);
   }
 
+  get getPinButtonByClass() {
+		return this.getSelector('.icon.unpin');
+	}
+
+	get getUnpinButtonByClass() {
+		return this.getSelector('.icon.pin');
+	}
+
+	async clickPinButtonByClass() {
+		await this.t.hover(this.self).click(this.getPinButtonByClass);
+	}
+
+	async hoverPinButtonByClass() {
+		await this.t.hover(this.self).hover(this.getPinButtonByClass);
+	}
+
   get pinToggle() {
     return this.self.find('button').withAttribute('data-name', 'actionBarPin');
   }
@@ -771,6 +834,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="actionBarMore"]`);
   }
 
+	async hoverMoreItemOnActionBar() {
+		await this.t.hover(this.self).hover(this.moreMenu);
+	}
+
   async clickMoreItemOnActionBar() {
     await this.t.hover(this.self).click(this.moreMenu);
   }
@@ -798,6 +865,10 @@ export class PostItem extends BaseWebComponent {
     }, maxRetry, interval);
   }
 
+	async hoverBookmarkToggle() {
+		await this.t.hover(this.self).hover(this.bookmarkToggle);
+	}
+
   async clickBookmarkToggle() {
     await this.t.hover(this.self).click(this.bookmarkToggle);
   }
@@ -814,7 +885,7 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('[role="progressbar"]')
   }
 
-  async waitForPostToSend(timeout = 5e3) {
+  async waitForPostToSend(timeout = 10e3) {
     try {
       await H.retryUntilPass(async () => assert(await this.progressBar.exists), 5);
     } catch (e) {
@@ -838,7 +909,7 @@ export class PostItem extends BaseWebComponent {
   get fileSizes() {
     return this.getSelectorByAutomationId('file-no-preview-size', this.self);
   }
-  
+
   async nameShouldBe(name: string) {
     await this.t.expect(this.fileNames.withText(name).exists).ok();
   }

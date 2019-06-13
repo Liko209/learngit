@@ -6,6 +6,9 @@
 
 import { RTCMediaDeviceManager } from '../RTCMediaDeviceManager';
 
+navigator.mediaDevices = {
+  enumerateDevices: jest.fn(),
+} as any;
 describe('Media device', () => {
   const devices1: MediaDeviceInfo[] = [
     {
@@ -101,12 +104,56 @@ describe('Media device', () => {
       groupId: '4',
     },
   ];
-
-  it("should do nothing if device list doesn't change when add/remove device. [JPT-1728]", () => {
+  const oldDeviceList: MediaDeviceInfo[] = [
+    {
+      deviceId: 'a',
+      kind: 'audiooutput',
+      label: 'Output 4',
+      groupId: '4',
+    },
+    {
+      deviceId: 'b',
+      kind: 'audioinput',
+      label: 'Input 4',
+      groupId: '4',
+    },
+  ];
+  const newDeviceList: MediaDeviceInfo[] = [
+    {
+      deviceId: 'a',
+      kind: 'audiooutput',
+      label: 'Output 4',
+      groupId: '4',
+    },
+    {
+      deviceId: 'a1',
+      kind: 'audiooutput',
+      label: 'Output 4',
+      groupId: '4',
+    },
+    {
+      deviceId: 'b',
+      kind: 'audioinput',
+      label: 'Input 4',
+      groupId: '4',
+    },
+    {
+      deviceId: 'b1',
+      kind: 'audioinput',
+      label: 'Input 4',
+      groupId: '4',
+    },
+  ];
+  it("should do nothing if device list doesn't change when add/remove device. [JPT-1728]", async () => {
+    (navigator.mediaDevices.enumerateDevices as jest.Mock).mockResolvedValue([
+      ...devices1,
+    ]);
     RTCMediaDeviceManager.instance()._gotMediaDevices(devices1);
+
     jest.spyOn(RTCMediaDeviceManager.instance(), 'setAudioInputDevice');
     jest.spyOn(RTCMediaDeviceManager.instance(), 'setAudioOutputDevice');
-    RTCMediaDeviceManager.instance()._gotMediaDevices(devices1);
+    await RTCMediaDeviceManager.instance()['_onMediaDevicesChange']();
+    // RTCMediaDeviceManager.instance()._gotMediaDevices(devices1);
     expect(
       RTCMediaDeviceManager.instance().setAudioInputDevice,
     ).not.toBeCalled();
@@ -146,12 +193,16 @@ describe('Media device', () => {
     RTCMediaDeviceManager.instance()._gotMediaDevices(devices1);
     jest.spyOn(RTCMediaDeviceManager.instance(), 'setAudioInputDevice');
     jest.spyOn(RTCMediaDeviceManager.instance(), 'setAudioOutputDevice');
+    jest.spyOn(RTCMediaDeviceManager.instance(), '_updateAudioDevices');
     RTCMediaDeviceManager.instance()._gotMediaDevices(devices3);
     expect(
       RTCMediaDeviceManager.instance().setAudioInputDevice,
     ).not.toBeCalled();
     expect(
       RTCMediaDeviceManager.instance().setAudioOutputDevice,
+    ).not.toBeCalled();
+    expect(
+      RTCMediaDeviceManager.instance()['_updateAudioDevices'],
     ).not.toBeCalled();
   });
 
@@ -175,12 +226,15 @@ describe('Media device', () => {
     );
   });
 
-  it('should save current device id as real device id when got real device id successfully. [JPT-1732]', () => {
+  it('should save current device id as real device id when got real device id successfully. [JPT-1732]', async () => {
     RTCMediaDeviceManager.instance().destroy();
-    RTCMediaDeviceManager.instance()._gotMediaDevices(devices1);
     jest.spyOn(RTCMediaDeviceManager.instance(), 'setAudioInputDevice');
     jest.spyOn(RTCMediaDeviceManager.instance(), 'setAudioOutputDevice');
-    RTCMediaDeviceManager.instance()._gotMediaDevices(devices5);
+    (navigator.mediaDevices.enumerateDevices as jest.Mock).mockResolvedValue([
+      ...devices1,
+      ...devices5,
+    ]);
+    await RTCMediaDeviceManager.instance()['_onMediaDevicesChange']();
     expect(RTCMediaDeviceManager.instance().setAudioInputDevice).toBeCalledWith(
       'b',
     );
@@ -191,7 +245,7 @@ describe('Media device', () => {
     expect(RTCMediaDeviceManager.instance().getCurrentAudioOutput()).toBe('a');
   });
 
-  it('should notify new device id when lazy timer 500ms reached. [JPT-1732]', done => {
+  it('should notify new device id when lazy timer 500ms reached. [JPT-1733]', done => {
     jest.useFakeTimers();
     RTCMediaDeviceManager.instance().destroy();
     jest.spyOn(RTCMediaDeviceManager.instance(), '_emitAudioInputChanged');
@@ -214,5 +268,43 @@ describe('Media device', () => {
       ).toBeCalledWith('output');
       done();
     });
+  });
+
+  it('should return new added devices when device added and call _getDevicesDelta', () => {
+    RTCMediaDeviceManager.instance().destroy();
+    const added = [
+      { deviceId: 'a1', kind: 'audiooutput', label: 'Output 4', groupId: '4' },
+      {
+        deviceId: 'b1',
+        kind: 'audioinput',
+        label: 'Input 4',
+        groupId: '4',
+      },
+    ];
+    expect(
+      RTCMediaDeviceManager.instance()._getDevicesDelta(
+        newDeviceList,
+        oldDeviceList,
+      ).added,
+    ).toEqual(added);
+  });
+
+  it('should return deleted added devices when device deleted and call _getDevicesDelta', () => {
+    RTCMediaDeviceManager.instance().destroy();
+    const deleted = [
+      { deviceId: 'a1', kind: 'audiooutput', label: 'Output 4', groupId: '4' },
+      {
+        deviceId: 'b1',
+        kind: 'audioinput',
+        label: 'Input 4',
+        groupId: '4',
+      },
+    ];
+    expect(
+      RTCMediaDeviceManager.instance()._getDevicesDelta(
+        oldDeviceList,
+        newDeviceList,
+      ).deleted,
+    ).toEqual(deleted);
   });
 });

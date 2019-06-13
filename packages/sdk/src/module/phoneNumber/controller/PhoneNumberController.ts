@@ -4,6 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
+import notificationCenter, {
+  NotificationEntityPayload,
+} from 'sdk/service/notificationCenter';
+import { Person } from 'sdk/module/person/entity';
+import { EVENT_TYPES, ENTITY } from 'sdk/service';
+import { PhoneNumber } from '../entity';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { PersonService } from 'sdk/module/person';
 
 class PhoneNumberController {
   async getE164PhoneNumber(phoneNumber: string) {
@@ -32,13 +40,12 @@ class PhoneNumberController {
     return new RegExp('^[0-9+*# ()-]+$').test(toNumber.trim());
   }
 
-  async generateMatchedPhoneNumberList(phoneNumber: string) {
+  async generateMatchedPhoneNumberList(
+    phoneNumber: string,
+    phoneParserUtility: PhoneParserUtility,
+  ) {
     const numberList: string[] = [];
     numberList.push(phoneNumber);
-    const phoneParserUtility = await PhoneParserUtility.getPhoneParser(
-      phoneNumber,
-      false,
-    );
     if (!phoneParserUtility) {
       return null;
     }
@@ -90,6 +97,24 @@ class PhoneNumberController {
       }
     }
     return numberList;
+  }
+
+  handlePersonPayload = (payload: NotificationEntityPayload<Person>) => {
+    if (payload.type === EVENT_TYPES.UPDATE) {
+      const phoneNumbers: PhoneNumber[] = [];
+      const personService = ServiceLoader.getInstance<PersonService>(
+        ServiceConfig.PERSON_SERVICE,
+      );
+      payload.body.entities.forEach((person: Person) => {
+        personService.getPhoneNumbers(person, (data: PhoneNumber) => {
+          phoneNumbers.push(data);
+        });
+      });
+      notificationCenter.emitEntityUpdate<PhoneNumber, string>(
+        ENTITY.PHONE_NUMBER,
+        phoneNumbers,
+      );
+    }
   }
 }
 

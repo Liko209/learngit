@@ -12,9 +12,12 @@ type CallActionsViewProps = {
   showLabel?: boolean;
   shouldPersistBg?: boolean;
   callActionsMap: {
-    [key: string]: { shouldShowAction?: boolean };
+    [key: string]: {
+      shouldShowAction?: boolean;
+      shouldDisableAction?: boolean;
+    };
   };
-  shouldDisableCallActions: boolean;
+  isIncomingPage: boolean;
 };
 
 export { CallActionsProps, CallActionsViewProps };

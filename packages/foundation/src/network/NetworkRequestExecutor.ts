@@ -142,8 +142,15 @@ export class NetworkRequestExecutor
 
   private _performNetworkRequest() {
     networkLogger.tags(LOG_TAG).info('_performNetworkRequest()');
-    if (this._requestDecoration) {
-      this._requestDecoration.decorate(this.request);
+    if (
+      this._requestDecoration &&
+      !this._requestDecoration.decorate(this.request)
+    ) {
+      this._callXApiResponse(
+        RESPONSE_STATUS_CODE.UNAUTHORIZED,
+        NETWORK_FAIL_TEXT.UNAUTHORIZED,
+      );
+      return;
     }
     doRequestLog(this.request);
     this.client.request(this.request, this);

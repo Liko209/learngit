@@ -25,6 +25,8 @@ const RINGCENTRAL_API = {
   API_PHONE_PARSER_DATA: `/${API_VERSION}/number-parser/phonedata.xml`,
   API_PROFILE: '/glip/profile',
   API_GENERATE_CODE: `/${API_VERSION}/interop/generate-code`,
+
+  API_SUBSCRIPTION: `/${API_VERSION}/subscription`,
 };
 
 const RC_ITEM_API = {
@@ -34,15 +36,4 @@ const RC_ITEM_API = {
   MESSAGE_SYNC: `/${API_VERSION}/account/~/extension/~/message-sync`,
 };
 
-const HTTP_HEADER_KEY = {
-  ACCEPT: 'Accept',
-  IF_NONE_MATCH: 'If-None-Match',
-  CONTENT_TYPE: 'Content-Type',
-};
-
-const CONTENT_TYPE = {
-  XML: 'application/xml',
-  JSON: 'application/json',
-};
-
-export { RINGCENTRAL_API, HTTP_HEADER_KEY, CONTENT_TYPE, RC_ITEM_API };
+export { RINGCENTRAL_API, RC_ITEM_API };

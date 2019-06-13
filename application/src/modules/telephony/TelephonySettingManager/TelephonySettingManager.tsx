@@ -17,8 +17,14 @@ import {
   SETTING_ITEM__PHONE_CALLER_ID,
   SETTING_ITEM__PHONE_REGION,
   SETTING_ITEM__PHONE_EXTENSIONS,
+  SETTING_ITEM__PHONE_DEFAULT_PHONE_APP,
+  SETTING_ITEM__NOTIFICATION_INCOMING_CALLS,
+  SETTING_ITEM__NOTIFICATION_CALLS_VOICEMAILS,
 } from './constant';
 import { RegionSettingItem } from './RegionSettingItem';
+import { DefaultPhoneAppSelectItem } from './DefaultPhoneAppSettingItem';
+import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
+import { SETTING_SECTION__DESKTOP_NOTIFICATIONS } from '@/modules/notification/notificationSettingManager/constant';
 
 class TelephonySettingManager {
   private _scope = Symbol('TelephonySettingManager');
@@ -40,19 +46,28 @@ class TelephonySettingManager {
           weight: 0,
           items: [
             {
+              id: SETTING_ITEM__PHONE_DEFAULT_PHONE_APP,
+              title: 'setting.phone.general.defaultPhoneApp.label',
+              description: 'setting.phone.general.defaultPhoneApp.description',
+              type: SETTING_ITEM_TYPE.SELECT,
+              weight: 100,
+              sourceRenderer: DefaultPhoneAppSelectItem,
+              automationId: 'defaultPhoneApp',
+            } as SelectSettingItem<CALLING_OPTIONS>,
+            {
               id: SETTING_ITEM__PHONE_CALLER_ID,
               automationId: 'callerID',
               title: 'setting.phone.general.callerID.label',
               description: 'setting.phone.general.callerID.description',
               type: SETTING_ITEM_TYPE.SELECT,
-              weight: 0,
+              weight: 200,
               sourceRenderer: CallerIdSelectSourceItem,
             } as SelectSettingItem<IPhoneNumberRecord>,
             {
               id: SETTING_ITEM__PHONE_REGION,
               automationId: 'regionSetting',
               type: RegionSettingItem,
-              weight: 100,
+              weight: 300,
             },
             {
               id: SETTING_ITEM__PHONE_EXTENSIONS,
@@ -60,12 +75,40 @@ class TelephonySettingManager {
               title: 'setting.phone.general.extensions.label',
               description: 'setting.phone.general.extensions.description',
               type: SETTING_ITEM_TYPE.LINK,
-              weight: 200,
+              weight: 400,
             },
           ],
         },
       ],
     });
+    this._settingService.registerItem(
+      this._scope,
+      SETTING_SECTION__DESKTOP_NOTIFICATIONS,
+      {
+        id: SETTING_ITEM__NOTIFICATION_INCOMING_CALLS,
+        automationId: 'incomingCalls',
+        title:
+          'setting.notificationAndSounds.desktopNotifications.incomingCalls.label',
+        description:
+          'setting.notificationAndSounds.desktopNotifications.incomingCalls.description',
+        type: SETTING_ITEM_TYPE.TOGGLE,
+        weight: 300,
+      },
+    );
+    this._settingService.registerItem(
+      this._scope,
+      SETTING_SECTION__DESKTOP_NOTIFICATIONS,
+      {
+        id: SETTING_ITEM__NOTIFICATION_CALLS_VOICEMAILS,
+        automationId: 'callsAndVoicemails',
+        title:
+          'setting.notificationAndSounds.desktopNotifications.callsAndVoicemails.label',
+        description:
+          'setting.notificationAndSounds.desktopNotifications.callsAndVoicemails.description',
+        type: SETTING_ITEM_TYPE.TOGGLE,
+        weight: 400,
+      },
+    );
   }
 
   dispose() {
