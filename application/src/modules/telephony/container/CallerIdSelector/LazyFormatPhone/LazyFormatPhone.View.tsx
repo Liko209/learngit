@@ -20,6 +20,6 @@ export class LazyFormatPhoneView extends Component<LazyFormatViewPhoneProps> {
   }
 
   render() {
-    return <span>{this.props.formattedPhoneNumber} </span>;
+    return <span>{this.props.formattedPhoneNumber}</span>;
   }
 }
