@@ -37,28 +37,4 @@ describe('FileActionViewModel', () => {
       expect(vm.post).toEqual(null);
     });
   });
-
-  describe('versionIndex()', () => {
-    it('should versionIndex be return 0 when has postId', () => {
-      const vm = new FileActionViewModel();
-      expect(vm.versionIndex).toEqual(0);
-    });
-    it('should versionIndex be return 2 when has postId', () => {
-      const vm = new FileActionViewModel({ postId: 1, fileId: 2 });
-      const post = {
-        itemData: {},
-      };
-      const item = {
-        versions: [0, 1, 2],
-      };
-      (getEntity as jest.Mock).mockImplementation(type => {
-        if (type === 'post') {
-          return post;
-        } else {
-          return item;
-        }
-      });
-      expect(vm.versionIndex).toEqual(2);
-    });
-  });
 });

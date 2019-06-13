@@ -65,9 +65,9 @@ class MentionViewComponent extends Component<MentionViewProps & WithTranslation>
     const newStyle = isOneToOneGroup
       ? style
       : {
-        ...style,
-        top: Number(style.top) - ITEM_DIFF, // every item has 40px but title is 32px
-      };
+          ...style,
+          top: Number(style.top) - ITEM_DIFF, // every item has 40px but title is 32px
+        };
     return (
       <JuiVirtualCellWrapper key={item} style={newStyle}>
         <MentionItem

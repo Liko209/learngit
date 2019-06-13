@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { mainLogger } from 'foundation';
-import { RCItemApi, ITokenModel } from 'sdk/api/ringcentral';
+import { RCItemApi } from 'sdk/api/ringcentral';
 import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from 'sdk/framework/controller/interface/IPartialModifyController';
 import { notificationCenter } from 'sdk/service';
@@ -16,14 +16,14 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 class RcMessageActionController<T extends RCMessage> {
   constructor(
-    private logTag: string,
+    private controllerName: string,
     protected entitySourceController: IEntitySourceController<T>,
     protected partialModifyController: IPartialModifyController<T>,
   ) {}
 
   async deleteRcMessages(entityIds: number[], purge: boolean) {
     const performanceTracer = PerformanceTracer.initial();
-    mainLogger.tags(this.logTag).info('deleteRcMessages', entityIds);
+    mainLogger.tags(this.controllerName).info('deleteRcMessages', entityIds);
     try {
       const messages = await this.entitySourceController.batchGet(entityIds);
       messages.forEach((value: T) => {
@@ -40,9 +40,10 @@ class RcMessageActionController<T extends RCMessage> {
         messages,
       );
       await this.entitySourceController.bulkDelete(entityIds);
+      return true;
     } catch (error) {
       mainLogger
-        .tags(this.logTag)
+        .tags(this.controllerName)
         .warn('failed to delete messages: ', entityIds);
       throw error;
     } finally {
@@ -52,7 +53,7 @@ class RcMessageActionController<T extends RCMessage> {
 
   async updateReadStatus(messageId: number, toStatus: READ_STATUS) {
     mainLogger
-      .tags(this.logTag)
+      .tags(this.controllerName)
       .info('updateMessageReadStatus', { messageId, toStatus });
 
     const preHandlePartialEntity = (
@@ -75,21 +76,27 @@ class RcMessageActionController<T extends RCMessage> {
       return newVm;
     };
 
-    this.partialModifyController.updatePartially(
+    await this.partialModifyController.updatePartially(
       messageId,
       preHandlePartialEntity,
       doUpdateEntity,
     );
   }
 
-  buildDownloadUrl(url: string) {
-    const authConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).authUserConfig;
-    const rcToken: ITokenModel = authConfig.getRCToken();
-    return rcToken && rcToken.access_token
-      ? `${url}?access_token=${rcToken.access_token}`
-      : '';
+  async buildDownloadUrl(url: string) {
+    try {
+      const accountService = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      );
+      const rcToken = await accountService.getRCToken();
+
+      return rcToken && rcToken.access_token
+        ? `${url}?access_token=${rcToken.access_token}`
+        : '';
+    } catch (error) {
+      mainLogger.tags(this.controllerName).log('failed to get url', error);
+      return '';
+    }
   }
 }
 

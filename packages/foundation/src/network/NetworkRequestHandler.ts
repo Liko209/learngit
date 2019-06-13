@@ -184,6 +184,10 @@ class NetworkRequestHandler
     return this.tokenManager;
   }
 
+  getOAuthTokenHandler() {
+    return this.tokenManager.getOAuthTokenHandler(this.type);
+  }
+
   notifyRequestArrived(handleVia: NETWORK_VIA) {
     if (handleVia === NETWORK_VIA.ALL) {
       this.consumers.forEach((consumer: INetworkRequestConsumerListener) => {

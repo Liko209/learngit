@@ -11,6 +11,7 @@ import { JuiMenuItem } from 'jui/components/Menus';
 import { SelectSettingItemViewProps, SelectSettingItemProps } from './types';
 import { JuiSettingSectionItem } from 'jui/pattern/SettingSectionItem';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import JuiText from 'jui/components/Text/Text';
 import { catchError } from '@/common/catchError';
 
 type SourceItemType =
@@ -52,7 +53,6 @@ class SelectSettingItemViewComponent<
 
   private _renderSelect() {
     const { value, disabled, settingItem } = this.props;
-
     return (
       <JuiBoxSelect
         onChange={this._handleChange}
@@ -62,6 +62,7 @@ class SelectSettingItemViewComponent<
         automationId={`settingItemSelectBox-${settingItem.automationId}`}
         data-test-automation-value={value}
         isFullWidth={true}
+        name="settings"
       >
         {this._renderSource()}
       </JuiBoxSelect>
@@ -96,7 +97,7 @@ class SelectSettingItemViewComponent<
     return ItemComponent ? (
       <ItemComponent key={itemValue} value={sourceItem} source={source} />
     ) : (
-      itemValue
+      <JuiText>{itemValue}</JuiText>
     );
   }
 }

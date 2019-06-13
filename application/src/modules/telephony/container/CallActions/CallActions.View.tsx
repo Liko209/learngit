@@ -15,6 +15,7 @@ import { JuiMenuList } from 'jui/components/Menus';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import { Forward } from './Forward';
 import { Reply } from './Reply';
+import { Park } from './Park';
 import { Flip } from './Flip';
 
 type Props = CallActionsViewProps & WithTranslation;
@@ -22,6 +23,7 @@ type Props = CallActionsViewProps & WithTranslation;
 const callActions = {
   [CALL_ACTION.FORWARD]: Forward,
   [CALL_ACTION.REPLY]: Reply,
+  [CALL_ACTION.PARK]: Park,
   [CALL_ACTION.FLIP]: Flip,
 };
 
@@ -34,11 +36,11 @@ class CallActionsViewComponent extends Component<Props> {
         color="grey.900"
         shouldPersistBg={shouldPersistBg}
         tooltipPlacement="top"
-        tooltipTitle={t('telephony.moreOptions')}
-        aria-label={t('telephony.moreOptions')}
+        tooltipTitle={t('telephony.accessibility.callActions')}
+        aria-label={t('telephony.accessibility.callActions')}
         size={shouldPersistBg ? 'xlarge' : 'xxlarge'}
         data-test-automation-id="telephony-call-actions-btn"
-        disableToolTip={isIncomingPage}
+        disableToolTip={!isIncomingPage}
       >
         call_more
       </JuiIconButton>

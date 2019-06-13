@@ -6,6 +6,7 @@
 import { autorun } from 'mobx';
 import { SettingPage } from '@/interface/setting';
 import { SettingStore, SettingStoreScope } from '../SettingStore';
+import { isItemVisible } from '../helper';
 import {
   buildGeneralPageAndSection,
   buildSection,
@@ -23,6 +24,8 @@ import {
   SETTING_ITEM__2 as ITEM__2,
 } from './constant';
 
+jest.mock('../helper');
+
 const SCOPE = Symbol('SCOPE');
 const SCOPE_2 = Symbol('SCOPE_2');
 const SCOPE_3 = Symbol('SCOPE_3');
@@ -34,6 +37,12 @@ function setupWithPage(page: SettingPage = buildGeneralPageAndSection()) {
 }
 
 describe('SettingStore', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
+    jest.resetAllMocks();
+  });
+
   describe('useScope()', () => {
     it('should add a new SettingStoreScope', () => {
       const store = new SettingStore();
@@ -95,11 +104,18 @@ describe('SettingStore', () => {
       const scope2 = store.useScope(SCOPE_2);
       scope.addSection(
         PAGE__GENERAL,
-        buildSection(SECTION__1, [buildItem(ITEM__1)]),
+        buildSection(SECTION__1, [buildItem(ITEM__1), buildItem(ITEM__2)]),
       );
+      isItemVisible.mockImplementation(id => {
+        return {
+          [ITEM__1]: false,
+          [ITEM__2]: true,
+        }[id];
+      });
       scope2.addSection(PAGE__GENERAL, buildSection(SECTION__2));
       expect(store.getNoEmptyPages()).toEqual([PAGE__GENERAL]);
       expect(store.getNoEmptyPageSections(PAGE__GENERAL)).toEqual([SECTION__1]);
+      expect(store.getSectionVisibleItems(SECTION__1)).toEqual([2]);
     });
   });
 

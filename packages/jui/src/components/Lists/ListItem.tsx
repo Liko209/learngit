@@ -8,15 +8,17 @@ import MuiListItem, {
   ListItemProps as MuiListItemProps,
 } from '@material-ui/core/ListItem';
 import styled from '../../foundation/styled-components';
-import { spacing } from '../../foundation/utils';
+import { spacing, width } from '../../foundation/utils';
 
 type JuiListItemProps = MuiListItemProps & {
+  width?: number;
+  isInline?: boolean;
   singleLine?: boolean;
   disableButton?: boolean;
 };
 
 const WrappedListItem = React.memo(
-  ({ singleLine, disableButton, ...rests }: JuiListItemProps) => (
+  ({ width, isInline, singleLine, disableButton, ...rests }: JuiListItemProps) => (
     <MuiListItem {...rests} />
   ),
 );
@@ -24,6 +26,8 @@ const WrappedListItem = React.memo(
 const StyledListItem = styled<JuiListItemProps>(WrappedListItem)`
   && {
     padding: ${spacing(2)};
+    width: ${props => (props.width ? width(props.width) : '100%')};
+    display: ${props => (props.isInline ? 'inline-flex' : 'flex')};
     padding-left: ${props => (props.singleLine ? spacing(4) : spacing(2))};
   }
 `;

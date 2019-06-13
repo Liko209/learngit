@@ -9,12 +9,30 @@ import { SubItemDao } from '../SubItemDao';
 import { SanitizedItem, Item } from '../../entity';
 import { QUERY_DIRECTION } from '../../../../../../dao/constants';
 
+jest.mock('sdk/service/utils', () => {
+  return {
+    isIEOrEdge: false,
+    isFirefox: false,
+  };
+});
+
+function clearMocks() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
+
 describe('Event Item Dao', () => {
   let dao: SubItemDao<SanitizedItem>;
 
-  beforeAll(() => {
+  function setUp() {
     const { database } = setup();
     dao = new SubItemDao<SanitizedItem>('eventItem', database);
+  }
+
+  beforeEach(() => {
+    clearMocks();
+    setUp();
   });
 
   const groupId = 1;
@@ -75,13 +93,9 @@ describe('Event Item Dao', () => {
 
   describe('queryItemsByGroupId', () => {
     const items = [item1, item2, item3, item4, item5];
-    beforeAll(async () => {
+    beforeEach(async () => {
       await dao.clear();
       await dao.bulkPut(items);
-    });
-
-    afterEach(() => {
-      jest.restoreAllMocks();
     });
 
     it('should return items by group id', async () => {
