@@ -48,6 +48,11 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   @computed
+  get enteredDialer() {
+    return this._telephonyStore.enteredDialer;
+  }
+
+  @computed
   get keypadEntered() {
     return this._telephonyStore.keypadEntered;
   }
