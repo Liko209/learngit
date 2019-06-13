@@ -65,7 +65,11 @@ const JuiConversationListSectionHeader = memo(
         <StyledRightWrapper>
           {!expanded ? umi : null}
           {!hideArrow ? (
-            <JuiListNavItemIconography iconSize="medium" onClick={onArrowClick}>
+            <JuiListNavItemIconography
+              iconSize="medium"
+              onClick={onArrowClick}
+              data-test-automation-id="conversation-list-section-header-arrow"
+            >
               {arrow}
             </JuiListNavItemIconography>
           ) : null}

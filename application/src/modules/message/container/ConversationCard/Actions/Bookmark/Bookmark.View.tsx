@@ -48,6 +48,7 @@ class BookmarkViewComponent extends Component<Props> {
         onClick={isBookmark ? this._handleRemoveBookmark : this._handleBookmark}
         variant="plain"
         data-name="actionBarBookmark"
+        data-test-automation-id="actionBarBookmark"
       >
         {isBookmark ? 'bookmark' : 'bookmark_border'}
       </JuiIconButton>

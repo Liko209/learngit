@@ -49,6 +49,7 @@ class PrivacyViewComponent extends Component<Props> {
         alwaysEnableTooltip={true}
         onClick={this.onClickPrivacy}
         tooltipTitle={t(tooltipKey)}
+        data-test-automation-id="privacy-toggle"
       >
         {isPublic ? 'lock_open' : 'lock'}
       </JuiIconButton>
