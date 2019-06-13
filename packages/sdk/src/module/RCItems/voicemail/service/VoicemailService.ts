@@ -20,7 +20,7 @@ class VoicemailService extends EntityBaseService<Voicemail> {
   private _rcItemUserConfig: RCItemUserConfig;
   private _voicemailController: VoicemailController;
   constructor() {
-    super(false, daoManager.getDao(VoicemailDao));
+    super({ isSupportedCache: false }, daoManager.getDao(VoicemailDao));
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SUBSCRIPTION.MESSAGE_STORE]: this._triggerSilentSync,
@@ -94,7 +94,10 @@ class VoicemailService extends EntityBaseService<Voicemail> {
 
   private _getVoicemailController() {
     if (!this._voicemailController) {
-      this._voicemailController = new VoicemailController(this.getEntitySource(), this.userConfig);
+      this._voicemailController = new VoicemailController(
+        this.getEntitySource(),
+        this.userConfig,
+      );
     }
     return this._voicemailController;
   }

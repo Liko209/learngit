@@ -10,7 +10,7 @@ import { EntityBaseService } from '../../../../../framework/service';
 class MeetingItemService extends EntityBaseService<MeetingItem> {
   private _meetingItemController: MeetingItemController;
   constructor() {
-    super(false);
+    super({ isSupportedCache: false });
     this.setCheckTypeFunc((id: number) => {
       return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_MEETING);
     });
