@@ -64,11 +64,11 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get callerIDDropDown() {
-    return this.getSelectorByAutomationId('SettingSelectBox', this.generalSection);
+    return this.getSelectorByAutomationId('settingItemSelectBox-defaultPhoneApp', this.generalSection);
   }
 
   get callerIDDropDownItem() {
-    return this.getSelectorByAutomationId('SettingSelectItem');
+    return this.getSelectorByAutomationId('settingItemSelectBoxItem-defaultPhoneApp-glip');
   }
 
   get updateRegionDialog() {
@@ -84,7 +84,7 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get regionUpdateButton() {
-    return this.getSelectorByAutomationId('regionSettingDialogOpenButton', this.generalSection);
+    return this.getSelectorByAutomationId('settingItemButton-regionSetting', this.generalSection);
   }
 
   get extensionSettingsLabel() {
