@@ -12,10 +12,7 @@ import { JuiMenu } from '../../components';
 import styled, { keyframes, css } from '../../foundation/styled-components';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { spacing, grey, palette, width, height } from '../../foundation/utils';
-import {
-  JuiIconography,
-  JuiIconographyProps,
-} from '../../foundation/Iconography';
+import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import { StyledIconographyDraft, StyledIconographyFailure } from './Indicator';
 import { Theme } from '../../foundation/theme/theme';

@@ -7,7 +7,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { DialPad } from 'jui/pattern/Dialer';
-import _ from 'lodash';
 import { DialerContainerViewProps, DialerContainerViewState } from './types';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';

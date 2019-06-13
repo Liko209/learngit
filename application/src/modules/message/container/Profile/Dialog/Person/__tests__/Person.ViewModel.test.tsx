@@ -9,7 +9,7 @@ import { ProfileDialogPersonViewModel } from '../Person.ViewModel';
 
 jest.mock('@/store/utils');
 jest.mock('sdk/dao');
-
+jest.mock('sdk/module/person');
 const mockData = {
   userDisplayName: 'Name 1',
   awayStatus: 'Status 1',
