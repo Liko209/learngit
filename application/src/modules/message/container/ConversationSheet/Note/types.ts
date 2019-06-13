@@ -11,6 +11,8 @@ type NoteProps = {
 type NoteViewProps = {
   title: string;
   summary: string;
+  getShowDialogPermission: () => Promise<boolean>;
+  getBodyInfo: () => Promise<string | false>;
 };
 
 export { NoteProps, NoteViewProps };

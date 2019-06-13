@@ -7,9 +7,11 @@
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { NoteProps, NoteViewProps } from './types';
-
+import { PermissionService, UserPermissionType } from 'sdk/module/permission';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { Item } from 'sdk/module/item/entity';
 import NoteItemModel from '@/store/models/NoteItem';
+import { ItemService } from 'sdk/module/item/service';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 
@@ -34,6 +36,26 @@ class NoteViewModel extends StoreViewModel<NoteProps> implements NoteViewProps {
   @computed
   get summary() {
     return this._items.map((item: NoteItemModel) => item.summary).join('');
+  }
+
+  getShowDialogPermission = async () => {
+    const permissionService = ServiceLoader.getInstance<PermissionService>(
+      ServiceConfig.PERMISSION_SERVICE,
+    );
+    return await permissionService.hasPermission(
+      UserPermissionType.JUPITER_CAN_SHOW_NOTE_DIALOG,
+    );
+  }
+
+  getBodyInfo = async () => {
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
+    try {
+      return await itemService.getNoteBody(2138130);
+    } catch (error) {
+      return false;
+    }
   }
 }
 
