@@ -49,5 +49,5 @@ async(t: TestController) => {
      }
   });
 
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_GetStarted'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_GetStarted'});
 });

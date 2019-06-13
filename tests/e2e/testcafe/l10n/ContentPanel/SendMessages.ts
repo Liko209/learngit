@@ -10,29 +10,29 @@ import { IGroup } from "../../v2/models";
 fixture('ContentPanel/SendMessages').beforeEach(setupCase(BrandTire.RCOFFICE)).afterEach(teardownCase())
 test(formalName('Check the like button ', ['P2', 'ContentPanel','Messages', 'SendMessages', 'V1.4', 'Hanny.Han']),async (t) => {
   const users=h(t).rcData.mainCompany.users;
-  const userA = users[4];
-  const userB = users[5];
+  const loginUser = users[4];
+  const otherUser = users[5];
   const app=new AppRoot(t);
-  await h(t).glip(userB).init();
+  await h(t).glip(otherUser).init();
 
   let team = <IGroup>{
     name: uuid(),
     type: "Team",
-    owner: userA,
-    members: [userA, userB]
+    owner: loginUser,
+    members: [loginUser, otherUser]
   }
 
   let postId;
   await h(t).withLog(`Given I one team named: "${team.name}" and one message in it`, async () => {
     await h(t).scenarioHelper.createTeam(team);
-    postId = await h(t).scenarioHelper.sentAndGetTextPostId(uuid(), team, userA);
+    postId = await h(t).scenarioHelper.sentAndGetTextPostId(uuid(), team, loginUser);
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
   const postCard = conversationPage.postItemById(postId);
 
-  await h(t).withLog(`And I login Jupiter with ${userA.company.number}#${userA.extension}`,async () => {
-    await h(t).directLoginWithUser(SITE_URL, userA);
+  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`,async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   })
 
