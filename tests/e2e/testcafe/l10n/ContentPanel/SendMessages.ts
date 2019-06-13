@@ -1,6 +1,5 @@
 
 import { v4 as uuid } from 'uuid';
-import * as assert from 'assert';
 import { setupCase, teardownCase } from "../../init";
 import { BrandTire, SITE_URL } from "../../config";
 import { formalName } from "../../libs/filter";
@@ -47,16 +46,16 @@ test(formalName('Check the like button ', ['P2', 'ContentPanel','Messages', 'Sen
   await h(t).withLog('And Appear action bar and there have hollow "like" icon', async () => {
     await t.hover(postCard.likeToggleOnActionBar);
   });
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_MessagesLike'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_MessagesLike'});
 
   await h(t).withLog('When I click like button and hover footer like button', async () => {
     await t.click(postCard.likeToggleOnActionBar);
     await t.hover(postCard.likeButtonOnFooter);
   });
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_MessagesYouLike'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_MessagesYouLike'});
 
   await h(t).withLog('When I hover unlike button', async () => {
     await t.hover(postCard.likeToggleOnActionBar);
   });
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_MessagesUnLike'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_MessagesUnLike'});
 })
