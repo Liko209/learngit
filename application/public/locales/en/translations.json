@@ -791,6 +791,7 @@
         },
         "callerID": {
           "label": "Caller ID",
+          "Blocked": "Blocked",
           "description": "Choose your default Caller ID for making RingCentral phone calls"
         },
         "extensions": {
