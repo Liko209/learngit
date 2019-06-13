@@ -2,7 +2,7 @@
  * @Author: Potar.He 
  * @Date: 2019-06-12 20:04:51 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-06-13 09:46:47
+ * @Last Modified time: 2019-06-13 10:06:44
  */
 
 import { v4 as uuid } from 'uuid';
@@ -282,6 +282,41 @@ test.meta(<ITestMeta>{
     })
   });
 
+  await h(t).withLog('When I click zoom out icon', async () => {
+    await viewerDialog.clickZoomOutButton();
+  });
 
+  await h(t).withLog('And Reset zoom button is enabled.', async () => {
+    await viewerDialog.viewerResetButtonShouldBeEnabled()
+  });
+
+  newZoomScale = scaleChange(zoomScale, false);
+  await h(t).withLog('And the current zoom percentage -10%: {newZoomScale}', async (step) => {
+    step.setMetadata('newZoomScale', newZoomScale)
+    await t.expect(viewerDialog.zoomScale.textContent).eql(newZoomScale);
+  });
+
+  await h(t).withLog('When I click reset zoom button', async () => {
+    await viewerDialog.clickResetButton();
+  });
+
+  await h(t).withLog('And Reset zoom button is disable.', async () => {
+    await viewerDialog.viewerResetButtonShouldBeDisabled()
+  });
+
+  await h(t).withLog('And page viewer scale is {zoomScale}, first page width: {pageWidth}, height: {pageHeight} ', async (step) => {
+    step.initMetadata({
+      zoomScale,
+      pageWidth: pageWidth.toString(),
+      pageHeight: pageHeight.toString()
+    })
+    await H.retryUntilPass(async () => {
+      const newWidth = await viewerDialog.pageContentWraps.clientWidth;
+      const newHeight = await viewerDialog.pageContentWraps.clientHeight;
+      await t.expect(viewerDialog.zoomScale.textContent).eql(zoomScale);
+      assert.ok(newWidth == pageWidth, "width is not reset");
+      assert.ok(newHeight == pageHeight, "width is not reset");
+    })
+  });
 
 });
