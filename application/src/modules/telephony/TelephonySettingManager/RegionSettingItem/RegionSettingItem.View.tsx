@@ -102,6 +102,7 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
 
     const { isoCode } = currentCountryInfo;
     const regionText = t('setting.phone.general.regionSetting.region');
+    const countryText = t('setting.phone.general.regionSetting.country');
     const areaCodeText = t('setting.phone.general.regionSetting.areaCode');
     const saveText = t('common.dialog.save');
     const cancelText = t('common.dialog.cancel');
@@ -142,7 +143,7 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
             {regionChangeDesc}
           </JuiTypography>
           <JuiRegionSelect
-            label="Country"
+            label={countryText}
             initialRegionValue={isoCode}
             regionList={countriesList}
             onChange={handleDialPlanChange}
