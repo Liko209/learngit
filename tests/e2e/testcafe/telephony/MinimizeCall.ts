@@ -229,7 +229,7 @@ test.meta(<ITestMeta>{
     await telephonyDialog.clickMinimizeButton();
   });
   await h(t).withLog('And I hover the “end” button', async () => {
-    await minimizeCallWindow.hoverhandupButton();
+    await minimizeCallWindow.clickHangupButton();
   });
   await h(t).withLog('Then show the tooltip', async () => {
     await telephonyDialog.showTooltip(tooltipText);
@@ -299,7 +299,7 @@ test.meta(<ITestMeta>{
     await minimizeCallWindow.clickMuteButton();
   });
   await h(t).withLog('And I hover the “unmute” button', async () => {
-    await minimizeCallWindow.hoverunMuteButton();
+    await minimizeCallWindow.hoverUnMuteButton();
   });
   await h(t).withLog('Then show the tooltip', async () => {
     await minimizeCallWindow.showTooltip(tooltipTextunmute);

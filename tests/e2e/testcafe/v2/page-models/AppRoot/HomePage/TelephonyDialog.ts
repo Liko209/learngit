@@ -221,10 +221,10 @@ export class TelephonyDialog extends BaseWebComponent {
     '#': 'hash'
   }
 
-  async focusKeypad(){
+  async focusKeypad() {
     var focus = ClientFunction(() => {
-      document.querySelector('[data-test-automation-id="telephony-dialer-title"]').dispatchEvent(new Event('focus',{bubbles:true}))
-  });
+      document.querySelector('[data-test-automation-id="telephony-dialer-title"]').dispatchEvent(new Event('focus', { bubbles: true }))
+    });
 
     await focus();
   }
@@ -377,12 +377,20 @@ export class TelephonyMinimizeWindow extends BaseWebComponent {
     return this.buttonOfIcon('mic');
   }
 
+  async hoverMuteButton() {
+    await this.t.hover(this.muteButton);
+  }
+
   async clickMuteButton() {
     await this.t.click(this.muteButton);
   }
 
   get unMuteButton() {
     return this.buttonOfIcon('mic_off');
+  }
+
+  async hoverUnMuteButton() {
+    await this.t.hover(this.unMuteButton);
   }
 
   async clickUnMuteButton() {
