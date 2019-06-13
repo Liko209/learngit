@@ -17,6 +17,7 @@ const JuiViewerTitleWrap = styled.span`
     }
     input {
       height: ${spacing(3)};
+      text-align: center;
     }
   }
 `;
