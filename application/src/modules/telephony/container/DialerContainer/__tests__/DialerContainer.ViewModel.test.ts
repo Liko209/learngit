@@ -93,4 +93,8 @@ describe('DialerContainerViewModel', () => {
   it('Should not enter contact search', () => {
     expect(dialerContainerViewModel.shouldEnterContactSearch).toBeFalsy();
   });
+
+  it('Should return dialer entered state', () => {
+    expect(dialerContainerViewModel.enteredDialer).toBeFalsy();
+  });
 });

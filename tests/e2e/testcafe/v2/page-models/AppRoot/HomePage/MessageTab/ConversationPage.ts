@@ -453,17 +453,17 @@ export class ConversationPage extends BaseConversationPage {
   async typeAtMentionUserNameAndPressEnter(userName: string) {
     await this.typeAtSymbol();
     await this.t.typeText(this.messageInputArea, userName, { paste: true })
-    await this.mentionUser.ensureLoaded();
+    await this.mentionUserList.ensureLoaded();
     await this.t.pressKey('enter');
   }
 
   async addMentionUser(userName: string) {
     await this.t.typeText(this.messageInputArea, `@${userName}`);
-    await this.mentionUser.ensureLoaded();
-    await this.mentionUser.selectMemberByName(userName);
+    await this.mentionUserList.ensureLoaded();
+    await this.mentionUserList.selectMemberByName(userName);
   }
 
-  get mentionUser() {
+  get mentionUserList() {
     return this.getComponent(MentionUsers);
   }
 

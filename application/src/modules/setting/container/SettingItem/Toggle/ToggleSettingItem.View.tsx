@@ -42,22 +42,25 @@ class ToggleSettingItemViewComponent extends Component<Props> {
 
   private _renderToggle() {
     const { disabled, settingItem, settingItemEntity, t } = this.props;
-    const value = Boolean(settingItemEntity.value);
+    const value = settingItemEntity.value;
+    const hidden = value === undefined;
     return (
-      <JuiToggleButton
-        data-test-automation-id={`settingItemToggleButton-${
-          settingItem.automationId
-        }`}
-        data-test-automation-value={value}
-        checked={value}
-        aria-label={
-          value
-            ? t('common.button.ariaToggleOn')
-            : t('common.button.ariaToggleOff')
-        }
-        disabled={disabled}
-        onChange={this._handleChange}
-      />
+      !hidden && (
+        <JuiToggleButton
+          data-test-automation-id={`settingItemToggleButton-${
+            settingItem.automationId
+          }`}
+          data-test-automation-value={value}
+          checked={Boolean(value)}
+          aria-label={
+            value
+              ? t('common.button.ariaToggleOn')
+              : t('common.button.ariaToggleOff')
+          }
+          disabled={disabled}
+          onChange={this._handleChange}
+        />
+      )
     );
   }
 }

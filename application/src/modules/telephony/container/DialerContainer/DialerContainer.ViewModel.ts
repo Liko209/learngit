@@ -47,6 +47,11 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   @computed
+  get enteredDialer() {
+    return this._telephonyStore.enteredDialer;
+  }
+
+  @computed
   get keypadEntered() {
     return this._telephonyStore.keypadEntered;
   }
@@ -78,14 +83,13 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
 
   @computed
   get callerPhoneNumberList() {
-    return this._telephonyStore.callerPhoneNumberList.map(el => ({
+    return this._telephonyStore.callerPhoneNumberList.map((el) => ({
       value: el.phoneNumber,
       usageType: el.usageType,
       phoneNumber: el.phoneNumber,
       label: el.label,
     }));
   }
-
   @computed
   get hasDialerOpened() {
     return this._telephonyStore.dialerOpenedCount !== 0;

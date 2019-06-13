@@ -3,25 +3,21 @@
  * @Date: 2019-06-13 14:20:09
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed, observable, action } from 'mobx';
+import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { LazyFormatPhoneProps } from './types';
 import { formatPhoneNumber } from '../helpers';
+import { container } from 'framework';
+import { TelephonyStore } from '../../../store';
 
 export class LazyFormatPhoneViewModel extends StoreViewModel<
   LazyFormatPhoneProps
 > {
-  @observable
-  _mounted = false;
-
-  @action
-  onAfterRender = () => {
-    this._mounted = true;
-  }
+  private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
 
   @computed
   get formattedPhoneNumber() {
-    if (!this._mounted) {
+    if (!this._telephonyStore.enteredDialer) {
       return this.props.value;
     }
     return formatPhoneNumber(this.props.value);

@@ -12,14 +12,11 @@ import { JuiMenu } from '../../components';
 import styled, { keyframes, css } from '../../foundation/styled-components';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { spacing, grey, palette, width, height } from '../../foundation/utils';
-import {
-  JuiIconography,
-  JuiIconographyProps,
-} from '../../foundation/Iconography';
+import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import { StyledIconographyDraft, StyledIconographyFailure } from './Indicator';
 import { Theme } from '../../foundation/theme/theme';
-import { JuiIconButton } from '../../components/Buttons';
+import { JuiIconButton, JuiIconButtonProps } from '../../components/Buttons';
 
 const StyledRightWrapper = styled.div`
   width: ${width(5)};
@@ -40,7 +37,8 @@ const rippleEnter = (theme: Theme) => keyframes`
     opacity: ${1 - theme.palette.action.hoverOpacity};
   }
 `;
-const StyledIconographyMore = styled(JuiIconography)<JuiIconographyProps>``;
+
+const StyledIconButtonMore = styled(JuiIconButton)<JuiIconButtonProps>``;
 
 const WrapperListItem = ({
   isItemHover,
@@ -50,7 +48,7 @@ const WrapperListItem = ({
 const hoverStyle = css`
   background-color: ${({ theme }) =>
     fade(grey('700')({ theme }), theme.opacity['1'] / 2)};
-  ${StyledIconographyMore} {
+  ${StyledIconButtonMore} {
     display: inline-flex;
   }
   ${StyledIconographyDraft}, ${StyledIconographyFailure} {
@@ -94,7 +92,7 @@ const StyledListItem = styled(WrapperListItem)`
     color: ${palette('primary', 'main')};
   }
 
-  && ${StyledIconographyMore} {
+  && ${StyledIconButtonMore} {
     color: ${palette('grey', '400')};
     display: none;
     font-size: ${spacing(5)};
@@ -198,7 +196,7 @@ const JuiConversationListItem: IConversationListItem = memo(
         {umi}
         <StyledRightWrapper tabIndex={-1}>
           {indicator}
-          <JuiIconButton
+          <StyledIconButtonMore
             size="medium"
             variant="plain"
             data-test-automation-id="conversationListItemMoreButton"
@@ -206,7 +204,7 @@ const JuiConversationListItem: IConversationListItem = memo(
             onClick={onMoreClick}
           >
             more_vert
-          </JuiIconButton>
+          </StyledIconButtonMore>
         </StyledRightWrapper>
         {children}
       </StyledListItem>

@@ -9,16 +9,6 @@ import { LazyFormatViewPhoneProps } from './types';
 
 @observer
 export class LazyFormatPhoneView extends Component<LazyFormatViewPhoneProps> {
-  private _timer: NodeJS.Timeout;
-
-  componentDidMount() {
-    this._timer = setTimeout(this.props.onAfterRender, 1500);
-  }
-
-  componentWillUnmount() {
-    this._timer && clearTimeout(this._timer);
-  }
-
   render() {
     return <span>{this.props.formattedPhoneNumber}</span>;
   }

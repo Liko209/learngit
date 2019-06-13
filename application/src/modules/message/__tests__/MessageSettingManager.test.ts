@@ -13,7 +13,7 @@ describe('MessageSettingManager', () => {
   });
   beforeEach(() => {});
   describe('init()', () => {
-    it('should call register when init', () => {
+    it('should call register when init [JPT-2099]', () => {
       expect(mockedSettingService.registerItem).toHaveBeenCalled();
     });
   });

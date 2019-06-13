@@ -71,6 +71,10 @@ export class PhoneSettingPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('settingItemSelectBoxItem-callerID');
   }
 
+  get callerIDDropDownItemByClass() {
+    return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
+  }
+
   get updateRegionDialog() {
     return this.getComponent(UpdateRegionDialog);
   }
@@ -182,6 +186,10 @@ export class PhoneSettingPage extends BaseWebComponent {
 
   async selectCallerID(text: string) {
     await this.t.click(this.callerIDDropDownItem.withText(text));
+  }
+
+  async selectCallerIdByText(text: string) {
+    await this.t.click(this.callerIDDropDownItemByClass.withText(text));
   }
 
   async clickCallerIDDropDown() {

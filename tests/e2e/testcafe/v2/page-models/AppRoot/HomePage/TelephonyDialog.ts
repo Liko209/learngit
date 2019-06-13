@@ -353,7 +353,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get callerIdSelector() {
-    return this.getSelectorByAutomationId('callerIdSelector', this.self);
+    return this.getSelectorByAutomationId('caller-id-selector', this.self);
   }
 
   async currentCallerIdShoulebe(text: string) {

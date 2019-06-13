@@ -328,7 +328,7 @@ test.meta(<ITestMeta>{
 });
 
 test.meta(<ITestMeta>{
-  caseIds: ['JPT-1964'],
+  caseIds: ['JPT-1964', 'JPT-1901'],
   priority: ['P1'],
   maintainers: ['Foden.Lin'],
   keywords: ['Dialer']
@@ -357,7 +357,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And I set the caller id is "Blocked" from the setting`, async () => {
-    await phoneTab.selectCallerID('Blocked');
+    await phoneTab.selectCallerIdByText('Blocked');
   });
   await h(t).withLog('And I click the to diapad button', async () => {
     await app.homePage.openDialer();
@@ -365,5 +365,27 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then should display "Blocked" in caller ID seclection of the dialer page`, async () => {
     await t.expect(app.homePage.telephonyDialog.callerIdSelector.textContent).eql('Blocked');
+  });
+
+  await h(t).withLog(`And I click the caller id`, async () => {
+    await phoneTab.clickCallerIDDropDown();
+  });
+
+  let callerIdNumber = await phoneTab.callerIDDropDownItemByClass.nth(0).innerText
+  await h(t).withLog(`And I set the caller id is ${callerIdNumber} from the setting`, async () => {
+    await phoneTab.selectCallerIdByText(callerIdNumber);
+  });
+
+  await h(t).withLog('When I refresh page', async () => {
+    await h(t).reload();
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('And I click the to diapad button', async () => {
+    await app.homePage.openDialer();
+  });
+
+  await h(t).withLog(`Then should display ${callerIdNumber} in caller ID seclection of the dialer page`, async () => {
+    await t.expect(app.homePage.telephonyDialog.callerIdSelector.textContent).eql(callerIdNumber);
   });
 });

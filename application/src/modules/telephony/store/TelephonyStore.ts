@@ -164,6 +164,9 @@ class TelephonyStore {
   @observable
   firstLetterEnteredThroughKeypad: boolean;
 
+  @observable
+  enteredDialer: boolean = false;
+
   constructor() {
     type FSM = '_callWindowFSM' | '_recordFSM' | '_recordDisableFSM';
     type FSMProps = 'callWindowState' | 'recordState' | 'recordDisabledState';
@@ -245,7 +248,7 @@ class TelephonyStore {
 
     reaction(
       () => this.inputString.length,
-      (length) => {
+      length => {
         if (!length) {
           this.firstLetterEnteredThroughKeypad = false;
         }
@@ -653,6 +656,11 @@ class TelephonyStore {
   @computed
   get hasIncomingCall() {
     return this.callState === CALL_STATE.INCOMING;
+  }
+
+  @action
+  syncDialerEntered(entered: boolean) {
+    this.enteredDialer = entered;
   }
 }
 
