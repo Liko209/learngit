@@ -77,6 +77,7 @@ class TelephonyService {
   private _callerPhoneNumberDisposer: IReactionDisposer;
   private _incomingCallDisposer: IReactionDisposer;
 
+  // for end call
   uiCallStartTime: number;
 
   private _onAccountStateChanged = (state: RTC_ACCOUNT_STATE) => {
@@ -95,7 +96,6 @@ class TelephonyService {
     // if has incoming call voicemail should be pause
     storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, true);
     this._callId = callId;
-    this.uiCallStartTime = +new Date();
     this._telephonyStore.callType = CALL_TYPE.OUTBOUND;
     this._telephonyStore.directCall();
   }
@@ -524,6 +524,7 @@ class TelephonyService {
         TelephonyService.TAG
       }Make call with fromNumber: ${fromNumber}， and toNumber: ${toNumber}`,
     );
+    this.uiCallStartTime = +new Date();
     const rv = await this._serverTelephonyService.makeCall(
       toNumber,
       fromNumber,

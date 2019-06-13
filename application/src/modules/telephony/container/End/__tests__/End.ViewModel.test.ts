@@ -32,8 +32,7 @@ describe('EndViewModel', () => {
     endViewModel = new EndViewModel({});
     endViewModel._telephonyService.uiCallStartTime = +new Date();
 
-    debugger;
-    await new Promise((resolve) => {
+    await new Promise(resolve => {
       setTimeout(resolve, 1000);
     });
 
