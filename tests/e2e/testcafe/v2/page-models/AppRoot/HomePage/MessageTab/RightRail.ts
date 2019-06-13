@@ -1,7 +1,6 @@
 import * as assert from 'assert';
 import { H } from '../../../../helpers';
 import { BaseWebComponent } from "../../../BaseWebComponent";
-import { ConsoleLogPrettier } from '../../../../../../../../packages/foundation/src/log/ConsoleLogPrettier';
 
 export class RightRail extends BaseWebComponent {
   get self() {
@@ -111,23 +110,17 @@ export class RightRail extends BaseWebComponent {
   }
 
   async clickMoreButton() {
-    if (await this.expandStatusButtonDisplayed) {
-      await this.t.click(this.moreButton);
-    }
-    else{
+    if (!await this.expandStatusButtonDisplayed) {
       await this.clickFoldStatusButton();
-      await this.t.click(this.moreButton);
     }
+   await this.t.click(this.moreButton);
   }
 
   async hoverMoreButton() {
-    if (await this.expandStatusButtonDisplayed) {
-      await this.t.hover(this.moreButton);
+    if (!await this.expandStatusButtonDisplayed) {
+      await this.hoverFoldStatusButton();
     }
-    else{
-      await this.clickFoldStatusButton();
-      await this.t.hover(this.moreButton);
-    }
+   await this.t.hover(this.moreButton);
   }
 
   async openMore() {
