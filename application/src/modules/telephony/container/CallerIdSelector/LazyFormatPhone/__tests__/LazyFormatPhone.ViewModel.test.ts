@@ -3,7 +3,7 @@
  * @Date: 2019-06-13 16:17:53
  * Copyright © RingCentral. All rights reserved.
  */
-import { formatPhoneNumber } from '../../helpers';
+import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 import { LazyFormatPhoneViewModel } from '../LazyFormatPhone.ViewModel';
 
 import { container, decorate, injectable } from 'framework';
@@ -14,7 +14,7 @@ decorate(injectable(), TelephonyStore);
 
 container.bind(TelephonyStore).to(TelephonyStore);
 
-jest.mock('../../helpers');
+jest.mock('@/modules/common/container/PhoneNumberFormat');
 beforeEach(() => {
   lazyFormatPhoneViewModel = undefined;
 });
@@ -39,7 +39,7 @@ describe('LazyFormatPhoneViewModel', () => {
         value,
       });
       lazyFormatPhoneViewModel.formattedPhoneNumber;
-      expect(formatPhoneNumber).toBeCalledWith(value);
+      expect(formatPhoneNumber).toBeCalledWith(value, false);
     });
   });
 });
