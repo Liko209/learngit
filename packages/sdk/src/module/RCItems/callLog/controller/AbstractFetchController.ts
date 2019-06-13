@@ -61,15 +61,20 @@ abstract class AbstractFetchController extends RCItemSyncController<
     });
 
     // only request from server when has no data in local
-    if (results.length === 0) {
-      results = await this.doSync(
-        false,
-        direction === QUERY_DIRECTION.OLDER
-          ? SYNC_DIRECTION.OLDER
-          : SYNC_DIRECTION.NEWER,
-      );
-      this._badgeController.handleCallLogs(results);
+    if (results.length < limit) {
       hasMore = await this.syncConfig.getHasMore();
+      if (hasMore) {
+        results = results.concat(
+          await this.doSync(
+            false,
+            direction === QUERY_DIRECTION.OLDER
+              ? SYNC_DIRECTION.OLDER
+              : SYNC_DIRECTION.NEWER,
+          ),
+        );
+        this._badgeController.handleCallLogs(results);
+        hasMore = await this.syncConfig.getHasMore();
+      }
     }
 
     mainLogger
@@ -89,13 +94,13 @@ abstract class AbstractFetchController extends RCItemSyncController<
   }
 
   protected isTokenInvalidError(reason: JError): boolean {
-    mainLogger.tags(this.syncName).info('receive sync token error', reason);
+    mainLogger.tags(this.syncName).info('receive sync error', reason);
     return (
       reason &&
-      reason.message === ERROR_MSG_RC.SYNC_TOKEN_INVALID_ERROR_MSG &&
       (reason.code === ERROR_CODES_RC.CLG_101 ||
         reason.code === ERROR_CODES_RC.CLG_102 ||
-        reason.code === ERROR_CODES_RC.CLG_104)
+        reason.code === ERROR_CODES_RC.CLG_104 ||
+        reason.message === ERROR_MSG_RC.SYNC_TOKEN_INVALID_ERROR_MSG)
     );
   }
 

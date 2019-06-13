@@ -12,6 +12,7 @@ import _ from 'lodash';
 import { ArrayUtils } from 'sdk/utils/ArrayUtils';
 import { DEFAULT_FETCH_SIZE } from '../../constants';
 import { Nullable } from 'sdk/types';
+import { SortUtils } from 'sdk/framework/utils';
 
 const LOG_TAG = 'CallLogViewDao';
 
@@ -54,7 +55,8 @@ class CallLogViewDao extends BaseDao<CallLogView, string> {
       if (
         source === view.__source ||
         (source === CALL_LOG_SOURCE.MISSED &&
-          view.result === CALL_RESULT.MISSED)
+          (view.result === CALL_RESULT.MISSED ||
+            view.result === CALL_RESULT.VOICEMAIL))
       ) {
         ids.push(view.id);
       }
@@ -78,7 +80,14 @@ class CallLogViewDao extends BaseDao<CallLogView, string> {
   async queryAllViews(): Promise<CallLogView[]> {
     const query = this.createQuery();
     const views = await query.toArray();
-    return _.orderBy(views, '__timestamp', 'asc');
+    return views.sort((lv: CallLogView, rv: CallLogView) => {
+      return SortUtils.sortModelByKey<CallLogView, string>(
+        lv,
+        rv,
+        ['__timestamp'],
+        false,
+      );
+    });
   }
 
   async queryOldestTimestamp(): Promise<Nullable<number>> {

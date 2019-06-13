@@ -14,11 +14,11 @@ import {
   RC_MESSAGE_TYPE,
   SYNC_DIRECTION,
   DEFAULT_FETCH_SIZE,
+  MESSAGE_AVAILABILITY,
 } from '../../constants';
 import { SYNC_TYPE } from '../../sync';
 import { JError, ERROR_CODES_RC, ERROR_MSG_RC } from 'sdk/error';
 import { mainLogger } from 'foundation';
-import { transform } from 'sdk/service/utils';
 import { FetchResult } from '../../types';
 import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
 import { daoManager, QUERY_DIRECTION } from 'sdk/dao';
@@ -50,7 +50,7 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
     mainLogger
       .tags(this.syncName)
       .info(
-        `fetchVoicemails, anchorId:${anchorId}, limit:${limit}, direction:${direction}`,
+        `fetchVoicemails, anchorId:${anchorId}, limit:${limit}, direction:${direction}, anchorId:${anchorId}`,
       );
 
     let results: Voicemail[] = [];
@@ -65,15 +65,20 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
     });
 
     // only request from server when has no data in local
-    if (results.length === 0) {
-      results = await this.doSync(
-        false,
-        direction === QUERY_DIRECTION.OLDER
-          ? SYNC_DIRECTION.OLDER
-          : SYNC_DIRECTION.NEWER,
-      );
-      this._badgeController.handleVoicemails(results);
+    if (results.length < limit) {
       hasMore = await this.syncConfig.getHasMore();
+      if (hasMore) {
+        results = results.concat(
+          await this.doSync(
+            false,
+            direction === QUERY_DIRECTION.OLDER
+              ? SYNC_DIRECTION.OLDER
+              : SYNC_DIRECTION.NEWER,
+          ),
+        );
+        this._badgeController.handleVoicemails(results);
+        hasMore = await this.syncConfig.getHasMore();
+      }
     }
 
     mainLogger
@@ -95,12 +100,12 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
   }
 
   protected isTokenInvalidError(reason: JError): boolean {
-    mainLogger.tags(MODULE_NAME).log('receive sync token error', reason);
+    mainLogger.tags(MODULE_NAME).log('receive sync error', reason);
 
     return (
       reason &&
-      reason.message === ERROR_MSG_RC.SYNC_TOKEN_INVALID_ERROR_MSG &&
-      reason.code === ERROR_CODES_RC.MSG_333
+      (reason.code === ERROR_CODES_RC.MSG_333 ||
+        reason.message === ERROR_MSG_RC.SYNC_TOKEN_INVALID_ERROR_MSG)
     );
   }
 
@@ -121,16 +126,28 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
     data: RCItemSyncResponse<Voicemail>,
   ): Promise<Voicemail[]> {
     if (data && data.records && data.records.length) {
-      const transformedData = data.records.map(item =>
-        transform<Voicemail>(item),
-      );
       mainLogger
         .tags(MODULE_NAME)
-        .log(
-          'handleDataAndSave, receive vms length is',
-          transformedData.length,
-        );
-      await this._entitySourceController.bulkPut(data.records);
+        .log('handleDataAndSave, receive vms length is', data.records.length);
+
+      const deactivatedVmIds: number[] = [];
+      const normalVms: Voicemail[] = [];
+
+      if (data.syncInfo.syncType === SYNC_TYPE.FSYNC) {
+        await this._entitySourceController.clear();
+      }
+
+      data.records.forEach(vm => {
+        if (vm.availability === MESSAGE_AVAILABILITY.ALIVE) {
+          normalVms.push(vm);
+        } else {
+          deactivatedVmIds.push(vm.id);
+        }
+      });
+      normalVms.length &&
+        (await this._entitySourceController.bulkUpdate(normalVms));
+      deactivatedVmIds.length &&
+        (await this._entitySourceController.bulkDelete(deactivatedVmIds));
     }
     return data.records;
   }

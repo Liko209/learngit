@@ -298,6 +298,10 @@ class PptrUtils {
 
     let browser = await puppeteer.launch(opt);
 
+    const context = browser.defaultBrowserContext();
+
+    await context.overridePermissions(Config.jupiterHost, ['notifications']);
+
     await PptrUtils.injectMockServer(browser);
 
     const wsEndpoint = PptrUtils.toEndpoint(browser.wsEndpoint());

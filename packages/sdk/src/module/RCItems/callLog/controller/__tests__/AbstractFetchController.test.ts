@@ -59,26 +59,31 @@ describe('AbstractFetchController', () => {
       });
       mockConfig.getHasMore.mockReturnValue(false);
 
-      expect(await controller.fetchCallLogs(CALL_LOG_SOURCE.ALL)).toEqual({
+      expect(
+        await controller.fetchCallLogs(CALL_LOG_SOURCE.ALL, undefined, 1),
+      ).toEqual({
         data: [mockData],
         hasMore: true,
       });
     });
 
-    it('should get data from remote when local does not have data', async () => {
+    it('should get data from remote when local does not have enough data', async () => {
       const mockData = { id: 'test' };
-      const mockQueryCallLogs = jest.fn().mockResolvedValue([]);
+      const mockQueryCallLogs = jest.fn().mockResolvedValue([mockData]);
       daoManager.getDao = jest.fn().mockReturnValue({
         queryCallLogs: mockQueryCallLogs,
       });
-      mockConfig.getHasMore.mockReturnValue(false);
+      mockConfig.getHasMore.mockReturnValue(true);
       controller.doSync = jest.fn().mockResolvedValue([mockData]);
 
       expect(await controller.fetchCallLogs(CALL_LOG_SOURCE.ALL)).toEqual({
-        data: [mockData],
-        hasMore: false,
+        data: [mockData, mockData],
+        hasMore: true,
       });
-      expect(mockBadgeController.handleCallLogs).toBeCalledWith([mockData]);
+      expect(mockBadgeController.handleCallLogs).toBeCalledWith([
+        mockData,
+        mockData,
+      ]);
     });
   });
 
@@ -90,7 +95,6 @@ describe('AbstractFetchController', () => {
 
     it('should return true when reason is CLG_101', async () => {
       const reason = {
-        message: ERROR_MSG_RC.SYNC_TOKEN_INVALID_ERROR_MSG,
         code: ERROR_CODES_RC.CLG_101,
       } as any;
       expect(controller['isTokenInvalidError'](reason)).toBeTruthy();
@@ -98,7 +102,6 @@ describe('AbstractFetchController', () => {
 
     it('should return true when reason is CLG_102', async () => {
       const reason = {
-        message: ERROR_MSG_RC.SYNC_TOKEN_INVALID_ERROR_MSG,
         code: ERROR_CODES_RC.CLG_102,
       } as any;
       expect(controller['isTokenInvalidError'](reason)).toBeTruthy();
@@ -106,8 +109,14 @@ describe('AbstractFetchController', () => {
 
     it('should return true when reason is CLG_104', async () => {
       const reason = {
-        message: ERROR_MSG_RC.SYNC_TOKEN_INVALID_ERROR_MSG,
         code: ERROR_CODES_RC.CLG_104,
+      } as any;
+      expect(controller['isTokenInvalidError'](reason)).toBeTruthy();
+    });
+
+    it('should return true when reason has correct error message', async () => {
+      const reason = {
+        message: ERROR_MSG_RC.SYNC_TOKEN_INVALID_ERROR_MSG,
       } as any;
       expect(controller['isTokenInvalidError'](reason)).toBeTruthy();
     });

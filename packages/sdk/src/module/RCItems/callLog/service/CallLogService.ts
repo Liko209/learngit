@@ -13,14 +13,28 @@ import { FetchResult } from '../../types';
 import { CALL_LOG_SOURCE, MODULE_NAME } from '../constants';
 import { CallLogController } from '../controller/CallLogController';
 import { RCItemUserConfig } from '../../config';
+import { SubscribeController } from 'sdk/module/base/controller/SubscribeController';
+import { SUBSCRIPTION } from 'sdk/service';
+import {
+  MissedCallEventPayload,
+  RCPresenceEventPayload,
+} from 'sdk/module/rcEventSubscription/types';
+import { CallLogUserConfig } from '../config/CallLogUserConfig';
 
 class CallLogService extends EntityBaseService<CallLog, string> {
   private _callLogController: CallLogController;
-  private _userConfig: RCItemUserConfig;
+  private _userConfig: CallLogUserConfig;
   private _missedCallUserConfig: RCItemUserConfig;
 
   constructor() {
     super(false, daoManager.getDao(CallLogDao));
+    this.setSubscriptionController(
+      SubscribeController.buildSubscriptionController({
+        [SUBSCRIPTION.PRESENCE_WITH_TELEPHONY_DETAIL]: this
+          ._handleRCPresenceEvent,
+        [SUBSCRIPTION.MISSED_CALLS]: this._handleMissedCallEvent,
+      }),
+    );
   }
 
   onStarted() {
@@ -29,16 +43,22 @@ class CallLogService extends EntityBaseService<CallLog, string> {
     this.callLogController.callLogBadgeController.init();
   }
 
-  private get userConfig() {
+  onStopped() {
+    super.onStopped();
+    this.callLogController.allCallLogFetchController.dispose();
+    this.callLogController.callLogBadgeController.dispose();
+  }
+
+  get userConfig() {
     if (!this._userConfig) {
-      this._userConfig = new RCItemUserConfig(
+      this._userConfig = new CallLogUserConfig(
         `${MODULE_NAME}.${CALL_LOG_SOURCE.ALL}`,
       );
     }
     return this._userConfig;
   }
 
-  private get missedCallUserConfig() {
+  get missedCallUserConfig() {
     if (!this._missedCallUserConfig) {
       this._missedCallUserConfig = new RCItemUserConfig(
         `${MODULE_NAME}.${CALL_LOG_SOURCE.MISSED}`,
@@ -58,12 +78,8 @@ class CallLogService extends EntityBaseService<CallLog, string> {
     return this._callLogController;
   }
 
-  async requestSyncNewer(source: CALL_LOG_SOURCE) {
-    if (source === CALL_LOG_SOURCE.ALL) {
-      this.callLogController.allCallLogFetchController.requestSync();
-    } else {
-      this.callLogController.missedCallLogFetchController.requestSync();
-    }
+  async requestSyncNewer() {
+    this.callLogController.allCallLogFetchController.requestSync();
   }
 
   async fetchCallLogs(
@@ -100,6 +116,18 @@ class CallLogService extends EntityBaseService<CallLog, string> {
 
   async clearAllCallLogs() {
     return await this.callLogController.allCallLogFetchController.clearAll();
+  }
+
+  private _handleMissedCallEvent = async (payload: MissedCallEventPayload) => {
+    await this.callLogController.callLogHandleDataController.handleMissedCallEvent(
+      payload,
+    );
+  }
+
+  private _handleRCPresenceEvent = async (payload: RCPresenceEventPayload) => {
+    await this.callLogController.callLogHandleDataController.handleRCPresenceEvent(
+      payload,
+    );
   }
 }
 

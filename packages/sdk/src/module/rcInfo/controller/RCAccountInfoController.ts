@@ -65,6 +65,11 @@ class RCAccountInfoController {
   private async _getAccountInfo() {
     return this._rcInfoFetchController.getRCAccountInfo();
   }
+
+  async getAccountId() {
+    const accountInfo = await this._getAccountInfo();
+    return accountInfo && accountInfo.id;
+  }
 }
 
 export { RCAccountInfoController };

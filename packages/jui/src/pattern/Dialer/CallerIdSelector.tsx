@@ -87,4 +87,4 @@ const CallerIdSelector = (props: CallerIdSelectorProps) => {
   );
 };
 
-export { CallerIdSelector };
+export { CallerIdSelector, CallerIdSelectorProps };

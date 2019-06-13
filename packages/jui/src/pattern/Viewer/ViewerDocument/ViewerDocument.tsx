@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { createRef, ReactNode } from 'react';
-import styled from 'src/foundation/styled-components';
-import { spacing, palette } from '../../../foundation/utils/styles';
+import styled from '../../../foundation/styled-components';
+import { palette } from '../../../foundation/utils/styles';
 import { JuiViewerPage } from '../ViewerPage';
 import {
   scrollIntoView,
@@ -18,6 +18,8 @@ import {
 const DEFAULT_SCALE_DELTA = 1.1;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
+const PAGE_PADDING = 32;
+const PAGE_FIT = 'page-fit';
 
 const ViewerDocumentWrap = styled('div')`
   && {
@@ -36,7 +38,7 @@ const ViewerDocumentWrap = styled('div')`
   }
 `;
 
-type ScaleType = number;
+type ScaleType = number | string;
 type pageContainersItemsType = {
   div: HTMLDivElement;
   id: number;
@@ -93,6 +95,8 @@ type Props = {
   pageIndex?: number;
   resizeAble?: boolean;
   scale?: ScaleType;
+  pageFit?: boolean;
+  scrollBarPadding?: number;
   onScaleChange?: (scale: ScaleType) => void;
   onCurrentPageIdxChanged?: (idx: number) => void;
 };
@@ -111,6 +115,10 @@ class JuiViewerDocument extends React.Component<Props, States> {
   private _location: LocationType;
   private _emitPageIdx: number = 0;
   private _scrollState: WatchScrollStateType;
+  private _jumpToViewParam = {
+    toIdx: 0,
+    isJumpAction: false,
+  };
 
   state: States = {
     numberPages: 0,
@@ -127,7 +135,9 @@ class JuiViewerDocument extends React.Component<Props, States> {
   }
 
   componentDidMount() {
-    const { pageIndex, pages } = this.props;
+    const { pageIndex, pages, pageFit = true } = this.props;
+    const { currentPageIndex } = this.state;
+
     const containerEl = this.container.current;
     if (containerEl) {
       containerEl.addEventListener('wheel', this.handleContainerWheel, {
@@ -138,7 +148,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
         this._scrollUpdate.bind(this),
       );
     }
-    if (pageIndex !== undefined) {
+    if (pageIndex !== undefined && pageIndex !== currentPageIndex) {
       this.setState({
         currentPageIndex: pageIndex,
       });
@@ -150,6 +160,10 @@ class JuiViewerDocument extends React.Component<Props, States> {
     }
 
     this._update();
+
+    if (pageFit) {
+      this._setScale(PAGE_FIT);
+    }
   }
 
   componentWillReceiveProps(nextProps: Props) {
@@ -158,8 +172,11 @@ class JuiViewerDocument extends React.Component<Props, States> {
     if (
       pageIndex !== undefined &&
       this.props.pageIndex !== pageIndex &&
-      currentPageIndex !== pageIndex
+      currentPageIndex !== pageIndex &&
+      this._emitPageIdx !== pageIndex
     ) {
+      this._jumpToViewParam.toIdx = pageIndex;
+      this._jumpToViewParam.isJumpAction = true;
       this._updateViewingByIndex(pageIndex);
     }
     if (
@@ -173,7 +190,10 @@ class JuiViewerDocument extends React.Component<Props, States> {
     }
   }
 
-  private _updateViewingByIndex(toIdx: number) {
+  private _updateViewingByIndex(
+    toIdx: number,
+    emitChangeCallback?: (toIdx: number) => void,
+  ) {
     if (toIdx < 0 || toIdx > this.state.numberPages - 1) {
       return;
     }
@@ -183,9 +203,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
       },
       () => {
         this._resetCurrentPageView(toIdx);
-
-        const { onCurrentPageIdxChanged } = this.props;
-        onCurrentPageIdxChanged && onCurrentPageIdxChanged(toIdx);
+        emitChangeCallback && emitChangeCallback(toIdx);
       },
     );
   }
@@ -203,6 +221,42 @@ class JuiViewerDocument extends React.Component<Props, States> {
     const scale = toScale;
     if (typeof scale === 'number' && scale > 0) {
       this._setScaleToUpdatePage(scale, false);
+    } else {
+      const pageFit = this.props.pageFit;
+      if (pageFit) {
+        const pageNumber = this.state.currentPageIndex;
+        const currentPageCmpContainer = this.pageCmpContainers[pageNumber];
+        const viewport = currentPageCmpContainer.currentViewport;
+        const currentScale = this.state.currentScale;
+        const containerEl = this.container.current;
+        const { scrollBarPadding } = this.props;
+
+        let scale: ScaleType = currentScale;
+
+        let width = 0;
+        let height = 0;
+        let pageWidthScale = 1;
+        let pageHeightScale = 1;
+
+        if (viewport) {
+          width = viewport.width;
+          height = viewport.height;
+        }
+        if (containerEl) {
+          const vPadding = PAGE_PADDING;
+          const hPadding = scrollBarPadding
+            ? PAGE_PADDING + scrollBarPadding
+            : PAGE_PADDING;
+
+          pageWidthScale =
+            ((containerEl.clientWidth - hPadding) / width) * currentScale;
+          pageHeightScale =
+            ((containerEl.clientHeight - vPadding) / height) * currentScale;
+        }
+
+        scale = Math.min(pageWidthScale, pageHeightScale);
+        this._setScaleToUpdatePage(scale, false);
+      }
     }
   }
 
@@ -256,7 +310,10 @@ class JuiViewerDocument extends React.Component<Props, States> {
 
     if (pageDiv) {
       if (!dest) {
-        this._updateViewingByIndex(pageNumber);
+        this._updateViewingByIndex(pageNumber, (toIdx: number) => {
+          const { onCurrentPageIdxChanged } = this.props;
+          onCurrentPageIdxChanged && onCurrentPageIdxChanged(toIdx);
+        });
         return;
       }
       let x = 0;
@@ -378,13 +435,23 @@ class JuiViewerDocument extends React.Component<Props, States> {
 
     let emitIdx = this._emitPageIdx;
     const { onCurrentPageIdxChanged } = this.props;
+    const { isJumpAction, toIdx } = this._jumpToViewParam;
 
-    if (emitIdx < first.id || emitIdx > last.id) {
+    if (emitIdx < first.id) {
+      if (isJumpAction) {
+        this._jumpToViewParam.isJumpAction = false;
+        emitIdx = toIdx !== first.id ? Number(toIdx) : Number(first.id);
+      } else {
+        emitIdx = Number(first.id);
+      }
+    } else if (emitIdx > last.id) {
       emitIdx = Number(first.id);
     } else {
       if (viewLength > 2) {
         if (emitIdx < first.id || emitIdx > last.id) {
           emitIdx = Number(first.id);
+        } else {
+          emitIdx = toIdx;
         }
       } else if (viewLength === 2) {
         const secondView = views[1];
@@ -396,6 +463,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
       }
     }
     this._emitPageIdx = emitIdx;
+    this._jumpToViewParam.toIdx = emitIdx;
 
     onCurrentPageIdxChanged && onCurrentPageIdxChanged(emitIdx);
   }

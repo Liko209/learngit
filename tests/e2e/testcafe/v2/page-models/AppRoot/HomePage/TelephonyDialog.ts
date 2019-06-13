@@ -347,11 +347,20 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getComponent(CallerIdList);
   }
 
+  async hitEnterToMakeCall() {
+    await this.t.click(this.dialerInput).pressKey('enter');
+  }
+
+  get contactSearchList() {
+    return this.getComponent(ContactSearchList);
+  }
+
   // Park
   async clickParkActionButton() {
     await this.t.click(this.parkActionMenuItem);
   }
 }
+
 class CallerIdList extends BaseWebComponent {
   get self() {
     return this.getSelector('[role="listbox"]')
@@ -376,6 +385,24 @@ class CallerIdList extends BaseWebComponent {
   async selectByText(text: string) {
     await this.t.click(this.callerIds.withExactText(text));
     return this.getSelectorByAutomationId('callerIdSelector');
+  }
+}
+
+class ContactSearchList extends BaseWebComponent {
+  get self() {
+    return this.getSelectorByAutomationId('telephony-contact-search-list');
+  }
+
+  get searchResults() {
+    return this.self.find('li').filter('[data-test-automation-id="telephony-contact-search-list_item"]');
+  }
+
+  async selectNth(n: number) {
+    await this.t.click(this.searchResults.nth(n))
+  }
+
+  get hasDirectDial(){
+    return !!(this.searchResults[0] && this.searchResults[0].find('div:nth-child(2)>button').exists);
   }
 }
 

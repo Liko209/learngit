@@ -286,7 +286,8 @@ const withResponsive = (
 ) =>
   class ResponsiveHOC extends PureComponent<any> {
     static tag = `responsive(${WrappedComponent.displayName ||
-      WrappedComponent.name})`;
+      WrappedComponent.name ||
+      props.tag})`;
     render() {
       return (
         <Responsive {...props} {...this.props} tag={ResponsiveHOC.tag}>

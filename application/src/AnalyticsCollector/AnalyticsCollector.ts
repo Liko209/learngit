@@ -77,6 +77,33 @@ class AnalyticsCollector {
     });
   }
 
+  // [FIJI-4573] Segment - Add event - All Calls
+  seeAllCalls() {
+    this.page('Jup_Web/DT_phone_callHistory_allCalls', {});
+  }
+
+  seeMissedCalls() {
+    this.page('Jup_Web/DT_phone_callHistory_missedCalls', {});
+  }
+
+  seeVoicemailListPage() {
+    this.page('Jup_Web/DT_phone_voicemailHistory', {});
+  }
+
+  // [FIJI-4573] Segment - Add event - open contact's min profile
+  openMiniProfile(source: string) {
+    dataAnalysis.track('Jup_Web/DT_profile_openMiniProfile', {
+      source,
+    });
+  }
+
+  // [FIJI-4724] Segment - Add event - Play Voicemail
+  playPauseVoicemail(action: string) {
+    dataAnalysis.track('Jup_Web/DT_voicemail_playPauseVoicemail', {
+      action,
+    });
+  }
+
   activeCall() {
     dataAnalysis.track('Jup_Web/DT_call_activeCall');
   }

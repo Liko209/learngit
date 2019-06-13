@@ -24,7 +24,7 @@ class SegAnalysisController extends AnalysisBaseController {
   }
 
   page(name: string, properties?: any) {
-    this._segment && this._segment.page(name, properties);
+    this._segment && this._segment.page(name, this._addEndPoint(properties));
   }
 
   identify(id: number, properties?: any) {

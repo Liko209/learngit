@@ -5,15 +5,16 @@
  */
 import _ from 'lodash';
 import { transaction, action } from 'mobx';
-import { IdModel } from 'sdk/framework/model';
+import { IdModel, ModelIdType } from 'sdk/framework/model';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import {
   NotificationEntityPayload,
   NotificationEntityUpdatePayload,
   NotificationEntityReplacePayload,
   NotificationEntityDeletePayload,
+  NotificationEntityReloadPayload,
 } from 'sdk/service/notificationCenter';
-import { EVENT_TYPES } from 'sdk/service';
+import { EVENT_TYPES, RELOAD_TARGET } from 'sdk/service';
 import { transform2Map } from '@/store/utils';
 import { ISortableModel, IMatchFunc, ITransformFunc, ISortFunc } from './types';
 import {
@@ -28,17 +29,19 @@ type CountChangeCallback = (count: number) => void;
 
 export interface IFetchSortableDataListHandlerOptions<
   Model,
-  SortableModel extends ISortableModel = ISortableModel
-> extends IFetchDataListHandlerOptions {
+  IdType extends ModelIdType = number,
+  SortableModel extends ISortableModel<IdType> = ISortableModel<IdType>
+> extends IFetchDataListHandlerOptions<IdType, SortableModel> {
   isMatchFunc: IMatchFunc<Model>;
-  transformFunc: ITransformFunc<Model, SortableModel>;
-  sortFunc?: ISortFunc<SortableModel>;
+  transformFunc: ITransformFunc<Model, IdType, SortableModel>;
+  sortFunc?: ISortFunc<IdType, SortableModel>;
   eventName?: string;
   limit?: number;
 }
 export interface IFetchSortableDataProvider<
   Model,
-  SortableModel extends ISortableModel = ISortableModel
+  IdType extends ModelIdType = number,
+  SortableModel extends ISortableModel<IdType> = ISortableModel<IdType>
 > {
   fetchData(
     direction: QUERY_DIRECTION,
@@ -50,16 +53,20 @@ export interface IFetchSortableDataProvider<
   fetchTotalCount?(): Promise<number>;
 }
 
+const LOG_TAG = 'FetchSortableDataListHandler';
+
 export class FetchSortableDataListHandler<
-  Model extends IdModel,
-  SortableModel extends ISortableModel = ISortableModel
-> extends FetchDataListHandler<SortableModel> {
+  Model extends IdModel<IdType>,
+  IdType extends ModelIdType = number,
+  SortableModel extends ISortableModel<IdType> = ISortableModel<IdType>
+> extends FetchDataListHandler<Model, IdType, SortableModel> {
   private _isMatchFunc: IMatchFunc<Model>;
 
-  private _transformFunc: ITransformFunc<Model, SortableModel>;
-  private _sortFun?: ISortFunc<SortableModel>;
+  private _transformFunc: ITransformFunc<Model, IdType, SortableModel>;
+  private _sortFun?: ISortFunc<IdType, SortableModel>;
   private _sortableDataProvider?: IFetchSortableDataProvider<
     Model,
+    IdType,
     SortableModel
   >;
   protected _totalCountChangeCallback?: CountChangeCallback;
@@ -68,9 +75,11 @@ export class FetchSortableDataListHandler<
   private _maintainMode: boolean = false;
 
   constructor(
-    dataProvider: IFetchSortableDataProvider<Model, SortableModel> | undefined,
-    options: IFetchSortableDataListHandlerOptions<Model, SortableModel>,
-    listStore: SortableListStore<SortableModel> = new SortableListStore(
+    dataProvider:
+      | IFetchSortableDataProvider<Model, IdType, SortableModel>
+      | undefined,
+    options: IFetchSortableDataListHandlerOptions<Model, IdType, SortableModel>,
+    listStore: SortableListStore<IdType, SortableModel> = new SortableListStore(
       options.sortFunc,
       options.limit,
     ),
@@ -84,9 +93,12 @@ export class FetchSortableDataListHandler<
     this._eventName = options.eventName || '';
 
     if (options.eventName) {
-      this.subscribeNotification(options.eventName, ({ type, body }) => {
-        this.onDataChanged({ type, body });
-      });
+      this.subscribeNotification(
+        options.eventName,
+        (payload: NotificationEntityPayload<Model, IdType>) => {
+          this.onDataChanged(payload);
+        },
+      );
     }
   }
 
@@ -95,14 +107,12 @@ export class FetchSortableDataListHandler<
   }
 
   get sortableListStore() {
-    return this.listStore as SortableListStore<SortableModel>;
+    return this.listStore as SortableListStore<IdType, SortableModel>;
   }
 
   set maintainMode(mode: boolean) {
     if (this._maintainMode !== mode) {
-      mainLogger.debug(
-        `FetchSortableDataListHandler: change maintain mode, ${mode}`,
-      );
+      mainLogger.tags(LOG_TAG).debug(`change maintain mode, ${mode}`);
       this._maintainMode = mode;
       this._releaseDataInMaintainMode();
     }
@@ -133,9 +143,7 @@ export class FetchSortableDataListHandler<
   ) {
     const dataProvider = this._sortableDataProvider;
     if (!dataProvider) {
-      mainLogger.warn(
-        'FetchSortableDataListHandler: data fetcher should be defined ',
-      );
+      mainLogger.tags(LOG_TAG).warn('data fetcher should be defined ');
       return [];
     }
     return this.fetchDataBy(direction, () =>
@@ -156,15 +164,17 @@ export class FetchSortableDataListHandler<
       this.updateEntityStore(data);
       this.handleHasMore(hasMore, direction);
       this.handlePageData(sortableResult);
-      this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
-        if (callback) {
-          callback({
-            added: sortableResult,
-            updated: [],
-            deleted: [],
-          });
-        }
-      });
+      this._dataChangeCallBacks.forEach(
+        (callback: DeltaDataHandler<IdType, SortableModel>) => {
+          if (callback) {
+            callback({
+              added: sortableResult,
+              updated: [],
+              deleted: [],
+            });
+          }
+        },
+      );
 
       if (sortableResult.length) {
         this._releaseDataInMaintainMode();
@@ -174,10 +184,9 @@ export class FetchSortableDataListHandler<
   }
   @action
   refreshData() {
-    mainLogger.debug(
-      `FetchSortableDataListHandler: refreshData: ${this.listStore.items
-        .length - this._pageSize}`,
-    );
+    mainLogger
+      .tags(LOG_TAG)
+      .debug(`refreshData: ${this.listStore.items.length - this._pageSize}`);
     let sortableResult: SortableModel[];
     if (this.listStore.items.length > this._pageSize) {
       sortableResult = this.listStore.items.slice(
@@ -191,20 +200,22 @@ export class FetchSortableDataListHandler<
     }
 
     !this._maintainMode &&
-      this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
-        if (callback) {
-          callback({
-            added: sortableResult,
-            updated: [],
-            deleted: [],
-          });
-        }
-      });
+      this._dataChangeCallBacks.forEach(
+        (callback: DeltaDataHandler<IdType, SortableModel>) => {
+          if (callback) {
+            callback({
+              added: sortableResult,
+              updated: [],
+              deleted: [],
+            });
+          }
+        },
+      );
   }
 
   @action
-  handleDataDeleted = (payload: NotificationEntityDeletePayload) => {
-    let originalSortableIds: number[] = [];
+  handleDataDeleted = (payload: NotificationEntityDeletePayload<IdType>) => {
+    let originalSortableIds: IdType[] = [];
 
     if (this._dataChangeCallBacks.length) {
       originalSortableIds = this.sortableListStore.getIds;
@@ -213,15 +224,17 @@ export class FetchSortableDataListHandler<
     const deletedSortableModelIds = Array.from(payload.body.ids);
     this.sortableListStore.removeByIds(deletedSortableModelIds);
 
-    this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
-      if (callback) {
-        callback({
-          deleted: _.intersection(originalSortableIds, payload.body.ids),
-          updated: [],
-          added: [],
-        });
-      }
-    });
+    this._dataChangeCallBacks.forEach(
+      (callback: DeltaDataHandler<IdType, SortableModel>) => {
+        if (callback) {
+          callback({
+            deleted: _.intersection(originalSortableIds, payload.body.ids),
+            updated: [],
+            added: [],
+          });
+        }
+      },
+    );
 
     this._updateTotalCount();
   }
@@ -229,11 +242,11 @@ export class FetchSortableDataListHandler<
   @action
   handleDataUpdateReplace = (
     payload:
-      | NotificationEntityUpdatePayload<Model>
-      | NotificationEntityReplacePayload<Model>,
+      | NotificationEntityUpdatePayload<Model, IdType>
+      | NotificationEntityReplacePayload<Model, IdType>,
   ) => {
     let originalSortableModels: SortableModel[] = [];
-    let deletedSortableModelIds: number[] = [];
+    let deletedSortableModelIds: IdType[] = [];
     let addedSortableModels: SortableModel[] = [];
     let updatedSortableModels: SortableModel[] = [];
 
@@ -241,19 +254,19 @@ export class FetchSortableDataListHandler<
     const keys = Array.from(payload.body.ids);
 
     const existKeys = this.sortableListStore.getIds;
-    let matchedKeys: number[] = _.intersection(keys, existKeys);
+    let matchedKeys: IdType[] = _.intersection(keys, existKeys);
     const matchedSortableModels: SortableModel[] = [];
     const matchedEntities: Model[] = [];
     const isReplaceAll =
       payload.type === EVENT_TYPES.REPLACE && payload.body.isReplaceAll;
-    const toReplaceEntities: Map<number, Model> = new Map();
+    const toReplaceEntities: Map<IdType, Model> = new Map();
 
     if (payload.type === EVENT_TYPES.REPLACE) {
       if (payload.body.isReplaceAll) {
         matchedKeys = keys;
       }
     }
-    matchedKeys.forEach((key: number) => {
+    matchedKeys.forEach((key: IdType) => {
       const model = entities.get(key) as Model;
       if (this._isMatchFunc(model)) {
         const sortableModel = this._transformFunc(model);
@@ -277,19 +290,17 @@ export class FetchSortableDataListHandler<
         deletedSortableModelIds = matchedKeys;
       }
     } else {
-      const differentKeys: number[] = _.difference(keys, existKeys);
-      differentKeys.forEach((key: number) => {
+      const differentKeys: IdType[] = _.difference(keys, existKeys);
+      differentKeys.forEach((key: IdType) => {
         const model = entities.get(key) as Model;
         if (this._isMatchFunc(model)) {
           const sortModel = this._transformFunc(model);
           const isInRange = this._isInRange(sortModel);
           this._eventName &&
             this._eventName.startsWith('ENTITY.POST') &&
-            mainLogger.info(
-              `FetchSortableDataListHandler:${
-                this._eventName
-              }, key:${key}, isInRange:${isInRange}`,
-            );
+            mainLogger
+              .tags(LOG_TAG)
+              .info(`${this._eventName}, key:${key}, isInRange:${isInRange}`);
           if (isInRange) {
             matchedSortableModels.push(sortModel);
             matchedEntities.push(model);
@@ -338,15 +349,17 @@ export class FetchSortableDataListHandler<
         addedSortableModels.length ||
         updatedSortableModels.length)
     ) {
-      this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
-        if (callback) {
-          callback({
-            deleted: deletedSortableModelIds,
-            updated: updatedSortableModels,
-            added: addedSortableModels,
-          });
-        }
-      });
+      this._dataChangeCallBacks.forEach(
+        (callback: DeltaDataHandler<IdType, SortableModel>) => {
+          if (callback) {
+            callback({
+              deleted: deletedSortableModelIds,
+              updated: updatedSortableModels,
+              added: addedSortableModels,
+            });
+          }
+        },
+      );
 
       if (addedSortableModels.length) {
         this._releaseDataInMaintainMode();
@@ -358,7 +371,24 @@ export class FetchSortableDataListHandler<
     }
   }
 
-  onDataChanged(payload: NotificationEntityPayload<Model>) {
+  @action
+  handleDataReload = (payload: NotificationEntityReloadPayload<IdType>) => {
+    mainLogger.tags(LOG_TAG).info('reload foc: ', this._entityName);
+    this.sortableListStore.setHasMore(this._defaultHasMoreUp, true);
+    this.sortableListStore.setHasMore(this._defaultHasMoreDown, false);
+    this.handleDataDeleted({
+      type: EVENT_TYPES.DELETE,
+      body: {
+        ids: payload.isReloadAll
+          ? this.sortableListStore.getIds
+          : payload.body.ids,
+      },
+    });
+    this._defaultHasMoreUp && this.fetchData(QUERY_DIRECTION.OLDER);
+    this._defaultHasMoreDown && this.fetchData(QUERY_DIRECTION.NEWER);
+  }
+
+  onDataChanged(payload: NotificationEntityPayload<Model, IdType>) {
     switch (payload.type) {
       case EVENT_TYPES.DELETE:
         this.handleDataDeleted(payload);
@@ -366,6 +396,11 @@ export class FetchSortableDataListHandler<
       case EVENT_TYPES.UPDATE:
       case EVENT_TYPES.REPLACE:
         this.handleDataUpdateReplace(payload);
+        break;
+      case EVENT_TYPES.RELOAD:
+        if (payload.target === RELOAD_TARGET.FOC) {
+          this.handleDataReload(payload);
+        }
         break;
     }
   }
@@ -468,7 +503,7 @@ export class FetchSortableDataListHandler<
     }
   }
 
-  removeByIds(ids: number[]) {
+  removeByIds(ids: IdType[]) {
     this.onDataChanged({
       type: EVENT_TYPES.DELETE,
       body: {
@@ -478,7 +513,7 @@ export class FetchSortableDataListHandler<
   }
 
   upsert(models: Model[]) {
-    const entityMap = transform2Map(models);
+    const entityMap = transform2Map<Model, IdType>(models);
     const notificationBody = {
       ids: Array.from(entityMap.keys()),
       entities: entityMap,
@@ -491,7 +526,7 @@ export class FetchSortableDataListHandler<
   }
 
   replaceAll(models: Model[]) {
-    const entityMap = transform2Map(models);
+    const entityMap = transform2Map<Model, IdType>(models);
     const notificationBody = {
       ids: Array.from(entityMap.keys()),
       entities: entityMap,
