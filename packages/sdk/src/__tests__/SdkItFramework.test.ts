@@ -1,7 +1,8 @@
-import { Sdk, sdk } from 'sdk/index';
+import { Sdk } from 'sdk/index';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { notificationCenter } from 'sdk/service';
+import './ItUtils';
 
 jest.mock('sdk/utils/phoneParser');
 jest.mock('sdk/framework/account/helper', () => {
@@ -39,13 +40,6 @@ function executeHooks<N extends keyof LifeCycleHooks>(
   }
 }
 
-// function withHooks<N extends keyof LifeCycleHooks>(name: N, hooks?: Partial<LifeCycleHooks>) {
-//   const
-//   return (callback: jest.ProvidesCallback, timeOut?: number) => {
-
-//   }
-// }
-
 function clearMocks() {
   jest.clearAllMocks();
   jest.resetModules();
@@ -70,14 +64,17 @@ async function initEnd() {
 
 async function setup() {
   const startTime = Date.now();
-  console.log('-=======setup start', startTime);
   await initSdk();
   login();
   await initEnd();
-  console.log('-=======end', Date.now(), 'cost:', Date.now() - startTime);
+  console.log('setup sdk cost:', Date.now() - startTime);
 }
 
-export function itForSdk(name: string, hooks?: Partial<LifeCycleHooks>) {
+export function itForSdk(
+  name: string,
+  caseExecutor: (itCtx: ItContext) => void,
+) {
+  console.log('framework init...');
   const itCtx: ItContext = {
     server: {
       // create mock server here
@@ -88,36 +85,21 @@ export function itForSdk(name: string, hooks?: Partial<LifeCycleHooks>) {
       post: {},
     },
   };
-  return function run(caseExecutor: (itCtx: ItContext) => void) {
-    console.log('framework init...');
 
-    beforeAll(async () => {
-      clearMocks();
-      await setup();
-    });
-    afterAll(async () => {
-      const startTime = Date.now();
-      console.log('-=======afterAll start', startTime);
-      await ServiceLoader.getInstance<AccountService>(
-        ServiceConfig.ACCOUNT_SERVICE,
-      ).logout();
-      console.log(
-        '-=======afterAll end',
-        Date.now(),
-        'cost:',
-        Date.now() - startTime,
-      );
-    });
-    beforeEach((...args: any) => {
-      console.log('framework beforeEach');
-      executeHooks('beforeEach', hooks, ...args);
-    });
-    afterEach((...args: any) => {
-      console.log('framework afterEach');
-      executeHooks('afterEach', hooks, ...args);
-    });
-    describe(name, () => {
-      caseExecutor(itCtx);
-    });
-  };
+  beforeAll(async () => {
+    console.log('framework beforeAll');
+    clearMocks();
+    await setup();
+  });
+  afterAll(async () => {
+    console.log('framework afterAll');
+    const startTime = Date.now();
+    await ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).logout();
+    console.log('clean sdk cost:', Date.now() - startTime);
+  });
+  describe(name, () => {
+    caseExecutor(itCtx);
+  });
 }

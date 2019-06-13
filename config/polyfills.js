@@ -4,6 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 'use strict';
+// jest.mock('sdk/utils/phoneParser');
+// jest.mock('sdk/framework/account/helper', () => {
+//   return {
+//     fetchWhiteList: jest.fn().mockReturnValue({}),
+//   };
+// });
+// jest.mock('foundation/src/network/client/http/Http');
+// jest.mock('foundation/src/network/client/socket/Socket');
+
 if (process.env.NODE_ENV === 'test') {
   // Mobx UT setup
   const mobx = require('mobx');

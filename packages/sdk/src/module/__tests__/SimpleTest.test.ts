@@ -1,17 +1,10 @@
-import { itForSdk } from './SdkItFramework.test';
+import { itForSdk } from 'sdk/__tests__/SdkItFramework.test';
 
 function add(x: number, y: number) {
   return x + y;
 }
 
-itForSdk('SimpleIt example', {
-  beforeEach: () => {
-    console.log('hook before each');
-  },
-  afterEach: () => {
-    console.log('hook after each');
-  },
-})(ctx => {
+itForSdk('SimpleIt example', ctx => {
   console.log('inject context:', ctx);
   describe('testAdd()', () => {
     it('should add xxx1', () => {

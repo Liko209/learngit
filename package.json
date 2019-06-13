@@ -97,7 +97,11 @@
     "tslint": "5.13.0",
     "tslint-config-airbnb": "5.11.1",
     "tslint-react": "3.6.0",
-    "typescript": "3.4.2"
+    "typescript": "3.4.2",
+    "nock": "10.0.6",
+    "mitm": "1.7.0",
+    "xhr-mock": "2.4.1",
+    "axios-mock-adapter": "1.16.0"
   },
   "husky": {
     "hooks": {
