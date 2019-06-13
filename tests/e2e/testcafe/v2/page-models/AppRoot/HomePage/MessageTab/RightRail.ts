@@ -118,7 +118,7 @@ export class RightRail extends BaseWebComponent {
 
   async hoverMoreButton() {
     if (!await this.expandStatusButtonDisplayed) {
-      await this.hoverFoldStatusButton();
+      await this.clickFoldStatusButton();
     }
    await this.t.hover(this.moreButton);
   }
