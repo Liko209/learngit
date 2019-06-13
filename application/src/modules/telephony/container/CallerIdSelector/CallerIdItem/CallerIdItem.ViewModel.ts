@@ -8,12 +8,12 @@ import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { CallerIdItemProps } from './types';
 import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
-import { formatPhoneNumber } from '../helpers';
+import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
 export class CallerIdItemViewModel extends StoreViewModel<CallerIdItemProps> {
   @computed
   get formattedPhoneNumber() {
-    return formatPhoneNumber(this.props.phoneNumber);
+    return formatPhoneNumber(this.props.phoneNumber, false);
   }
 
   @computed

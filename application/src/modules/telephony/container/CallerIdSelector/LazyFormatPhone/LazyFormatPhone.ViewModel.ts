@@ -6,7 +6,7 @@
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { LazyFormatPhoneProps } from './types';
-import { formatPhoneNumber } from '../helpers';
+import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 import { container } from 'framework';
 import { TelephonyStore } from '../../../store';
 
@@ -20,6 +20,6 @@ export class LazyFormatPhoneViewModel extends StoreViewModel<
     if (!this._telephonyStore.enteredDialer) {
       return this.props.value;
     }
-    return formatPhoneNumber(this.props.value);
+    return formatPhoneNumber(this.props.value, false);
   }
 }
