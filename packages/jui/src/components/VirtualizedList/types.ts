@@ -36,6 +36,7 @@ type JuiVirtualizedListProps = {
   contentStyle?: React.CSSProperties;
   stickToLastPosition?: boolean;
   fixedWrapper?: boolean;
+  onBottomStatusChange?: (atBottom: boolean) => void;
 };
 
 export {

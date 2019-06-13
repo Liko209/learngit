@@ -52,6 +52,7 @@ type Props = {
   children: JSX.Element[];
   contentStyle: React.CSSProperties;
   stickToLastPosition?: boolean;
+  onBottomStatusChange?: (atBottom: boolean) => void;
 };
 type JuiVirtualizedListHandles = {
   scrollToBottom: () => void;
@@ -79,6 +80,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     after = null,
     stickToBottom,
     contentStyle,
+    onBottomStatusChange = noop,
     stickToLastPosition = true,
   }: Props,
   forwardRef,
@@ -440,7 +442,9 @@ const JuiVirtualizedList: RefForwardingComponent<
   // Update prevAtBottom
   //
   useEffect(() => {
-    prevAtBottomRef.current = computeAtBottom();
+    const original = prevAtBottomRef.current;
+    const current = (prevAtBottomRef.current = computeAtBottom());
+    if (original !== current) onBottomStatusChange(current);
   });
   //
   // Ensure no blank area
