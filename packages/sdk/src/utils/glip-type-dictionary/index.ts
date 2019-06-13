@@ -36,7 +36,7 @@ const socketMessageMap: IMessage<string> = {
   [TypeDictionary.TYPE_ID_INTERACTIVE_MESSAGE_ITEM]: 'item',
 };
 
-function getKey(id: number) {
+function getSocketMessageKey(id: number) {
   if (GlipTypeUtil.isIntegrationType(id)) {
     return 'item';
   }
@@ -82,7 +82,7 @@ function parseSocketMessage(message: string | ISystemMessage) {
       if (obj.search_results) {
         result['search'] = obj.search_results;
       }
-      const key = getKey(obj._id);
+      const key = getSocketMessageKey(obj._id);
       if (key) {
         result[key] = result[key] || [];
         result[key].push(obj);
@@ -92,4 +92,9 @@ function parseSocketMessage(message: string | ISystemMessage) {
   return result;
 }
 
-export { TypeDictionary, GlipTypeUtil, parseSocketMessage };
+export {
+  TypeDictionary,
+  GlipTypeUtil,
+  parseSocketMessage,
+  getSocketMessageKey,
+};
