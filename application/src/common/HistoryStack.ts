@@ -66,7 +66,10 @@ class HistoryStack {
     this._cursor = this.cursor;
   }
 
-  isInvalidPath(pathname: string) {
+  isInvalidPath(pathname?: string) {
+    if (!pathname) {
+      return true;
+    }
     const [, category, subPath] = pathname.split('/');
     return category.toLocaleLowerCase() === MESSAGES_CATEGORY_ROUTER && !getMessagesTitle(subPath);
   }
