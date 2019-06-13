@@ -5,7 +5,6 @@ import { AppRoot } from "../../v2/page-models/AppRoot";
 import { h } from "../../v2/helpers";
 import { IGroup } from "../../v2/models";
 import { v4 as uuid } from 'uuid';
-import { t } from "testcafe";
 
 fixture('ContentPanel/TeamJoinFail')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
