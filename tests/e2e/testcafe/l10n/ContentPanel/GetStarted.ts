@@ -44,7 +44,6 @@ async(t: TestController) => {
       await  rightRail.clickExpandStatusButton();
     }
     catch(e){
-
       console.log("needn't click show detail");
      }
   });
