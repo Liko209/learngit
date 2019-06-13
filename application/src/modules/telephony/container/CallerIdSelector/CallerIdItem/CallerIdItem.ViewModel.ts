@@ -7,18 +7,13 @@
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { CallerIdItemProps } from './types';
-import { getEntity } from '@/store/utils';
-import { ENTITY_NAME } from '@/store';
-import PhoneNumberModel from '@/store/models/PhoneNumber';
-import { PhoneNumber, PhoneNumberType } from 'sdk/module/phoneNumber/entity';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
+import { formatPhoneNumber } from '../helpers';
 
 export class CallerIdItemViewModel extends StoreViewModel<CallerIdItemProps> {
   @computed
   get formattedPhoneNumber() {
-    return getEntity<PhoneNumber, PhoneNumberModel, string>(
-      ENTITY_NAME.PHONE_NUMBER,
-      this.props.phoneNumber,
-    ).formattedPhoneNumber;
+    return formatPhoneNumber(this.props.phoneNumber);
   }
 
   @computed
