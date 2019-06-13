@@ -8,7 +8,6 @@ import {
   IRequest,
   ITelephonyDaoDelegate,
   telephonyLogger,
-  mainLogger,
 } from 'foundation';
 import { RTCEngine } from 'voip';
 import { Api } from '../../../api';
