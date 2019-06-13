@@ -70,4 +70,20 @@ describe('ProgressManager', () => {
       expect(NProgress.set).lastCalledWith(0.1);
     });
   });
+  describe('startProgressBar()', () => {
+    it('should start progress', () => {
+      const progressManager = new ProgressManager();
+      const stopProgressBar = progressManager.startProgressBar(() => true);
+      expect(NProgress.start).toBeCalled();
+      stopProgressBar();
+      expect(NProgress.done).toBeCalled();
+    });
+    it('should not start progress', () => {
+      const progressManager = new ProgressManager();
+      const stopProgressBar = progressManager.startProgressBar(() => false);
+      expect(NProgress.start).not.toBeCalled();
+      stopProgressBar();
+      expect(NProgress.done).not.toBeCalled();
+    });
+  });
 });

@@ -108,7 +108,9 @@ class SyncController {
   }
 
   private async _firstLogin() {
-    this._progressBar.start();
+    const stopProgressBar = progressManager.startProgressBar(
+      () => navigator.onLine,
+    );
     const performanceTracer = PerformanceTracer.initial();
     const currentTime = Date.now();
     try {
@@ -121,7 +123,7 @@ class SyncController {
     }
     this._checkFetchedRemaining(currentTime);
     performanceTracer.end({ key: PERFORMANCE_KEYS.FIRST_LOGIN });
-    this._progressBar.stop();
+    stopProgressBar();
   }
 
   private async _fetchInitial(time: number) {
@@ -179,7 +181,9 @@ class SyncController {
     const executeFunc = async () => {
       const timeStamp = this.getIndexTimestamp();
       mainLogger.log(LOG_TAG, `start fetching index:${timeStamp}`);
-      this._progressBar.start();
+      const stopProgressBar = progressManager.startProgressBar(
+        () => navigator.onLine,
+      );
       const { onIndexLoaded, onIndexHandled } = this._syncListener;
       const syncConfig = ServiceLoader.getInstance<SyncService>(
         ServiceConfig.SYNC_SERVICE,
@@ -201,11 +205,11 @@ class SyncController {
         mainLogger.log(LOG_INDEX_DATA, 'fetch index failed');
         syncConfig.updateIndexSucceed(false);
         await this._handleSyncIndexError(error);
-        this._progressBar.stop();
+        stopProgressBar();
         throw new Error(error);
       }
       mainLogger.log(LOG_INDEX_DATA, 'executeFunc done. stop progress');
-      this._progressBar.stop();
+      stopProgressBar();
     };
     const taskController = this._getIndexDataTaskController(executeFunc);
     taskController.start();

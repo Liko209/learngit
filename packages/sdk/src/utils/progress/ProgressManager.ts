@@ -65,6 +65,17 @@ class ProgressManager {
     const progressBar = new ProgressBar(this._progressObserver);
     return progressBar;
   }
+
+  startProgressBar = (condition?: () => boolean) => {
+    let progressBar: ProgressBar;
+    if (!condition || condition()) {
+      progressBar = this.newProgressBar();
+      progressBar.start();
+    }
+    return () => {
+      progressBar && progressBar.stop();
+    };
+  }
 }
 const progressManager = new ProgressManager();
 export { progressManager, ProgressManager };
