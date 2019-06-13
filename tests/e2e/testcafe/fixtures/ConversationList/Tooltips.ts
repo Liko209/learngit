@@ -45,8 +45,7 @@ test(formalName('Tooltips related to conversation list',
       const teamsSection = app.homePage.messageTab.teamsSection;
       await teamsSection.expand();
       const teamEntry = teamsSection.conversationEntryById(teamId);
-      const moreButton = teamEntry.moreMenuEntry;
-      await t.hover(moreButton);
+      await teamEntry.hoverMoreButton();
       await teamEntry.showTooltip(moreTooltipText);
     }, true);
   },
