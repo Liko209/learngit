@@ -214,12 +214,14 @@ describe('SocketCanConnectController', () => {
     it('should between 2 and 4', () => {
       const controller = getController();
       const result = controller._getStartedTime(1);
-      expect(2 <= result && result <= 4).toBeTruthy();
+      expect(2000 <= result && result <= 4000).toBeTruthy();
     });
     it('should not over 60 * 60 * 1000', () => {
       const controller = getController();
       const result = controller._getStartedTime(20);
-      expect(result > Math.pow(2, 16) && result < 60 * 60 * 1000).toBeTruthy();
+      expect(
+        result > Math.pow(2, 11) * 1000 && result < 60 * 60 * 1000,
+      ).toBeTruthy();
     });
   });
 });
