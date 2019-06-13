@@ -36,11 +36,11 @@ test(formalName('Check menu tip',['P2','ContentPanel','Team','TeamMessage','V1.4
     await h(t).scenarioHelper.joinTeam(publicTeam,otherUser)
   })
 
-  await h(t).withLog(`And add another user into the team`, async () => {
+  await h(t).withLog('And add another user into the team', async () => {
     await h(t).scenarioHelper.addMemberToTeam(publicTeam,[anotherUser])
   });
 
-  await h(t).withLog(`And rename the team twice`, async () => {
+  await h(t).withLog('And rename the team twice', async () => {
     await h(t).scenarioHelper.updateTeam(publicTeam, {name: `${uuid()}`})
     await h(t).scenarioHelper.updateTeam(publicTeam, {name: `rename ${uuid()}`})
   });
@@ -51,9 +51,9 @@ test(formalName('Check menu tip',['P2','ContentPanel','Team','TeamMessage','V1.4
   });
 
   const teamSection = app.homePage.messageTab.teamsSection;
-  await h(t).withLog(`When I enter the team`, async () => {
+  await h(t).withLog('When I enter the team', async () => {
     await teamSection.conversationEntryById(publicTeam.glipId).enter();
   });
 
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_Team'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_Team'});
 });

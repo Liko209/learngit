@@ -41,18 +41,19 @@ test(formalName('Check the MembersSettings page',['P2', 'ContentPanel','Messages
   await h(t).withLog('And I click members button', async () => {
     await t.click(conversationPage.memberCountIcon);
   });
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamProfile'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamProfile'});
 
   const profileDialog = app.homePage.profileDialog;
   await h(t).withLog('When I hover settings button', async () => {
     await t.hover(profileDialog.settingButton);
   })
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamHostSettings'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamHostSettings'});
 
   await h(t).withLog('When I click more button', async () => {
     await t.click(profileDialog.moreIcon);
+    await t.hover(profileDialog.privateIcon);
   })
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamMore'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamMore'});
 
   const AddTeamMembers = app.homePage.addTeamMemberDialog;
   await h(t).withLog('When I click more button again and click add team members button', async () => {
@@ -60,5 +61,5 @@ test(formalName('Check the MembersSettings page',['P2', 'ContentPanel','Messages
     await t.click(profileDialog.addMembersIcon);
     // await await t.expect(AddTeamMembers.addButton.exists).ok();
   })
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_AddTeamMembers'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_AddTeamMembers'});
 });

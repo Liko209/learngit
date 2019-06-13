@@ -42,18 +42,18 @@ test(formalName('Check the TeamSetting page',['P2','ContentPanel','Messages', 'T
     await t.click(profileDialog.settingButton);
   });
 
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamSettingsDetail'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamSettingsDetail'});
 
   const teamSettingDialog = app.homePage.teamSettingDialog;
   await h(t).withLog('When I click Archive tip button', async () => {
     await teamSettingDialog.clickArchiveTeamButton();
   })
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_ArchiveTeam'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_ArchiveTeam'});
 
   const archiveTeamDialog = app.homePage.archiveTeamDialog;
   await h(t).withLog('When I click archive team cancel button and click delete team button', async () =>{
     await archiveTeamDialog.clickCancel();
     await teamSettingDialog.clickDeleteTeamButton();
   })
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_DeleteTeam'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_DeleteTeam'});
 });

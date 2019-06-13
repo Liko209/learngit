@@ -44,16 +44,16 @@ async (t: TestController) => {
     await t.hover(conversationPage.privateTeamIcon);
   });
 
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_PrivateLock'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_PrivateLock'});
 
   await h(t).withLog(`When I click lock button`, async () => {
     await t.click(conversationPage.privateTeamIcon);
   });
 
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_PublicLock'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_PublicLock'});
 
   await h(t).withLog('When I hover members button', async () => {
     await t.hover(conversationPage.memberCountIcon);
   });
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_Members'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_Members'});
 });
