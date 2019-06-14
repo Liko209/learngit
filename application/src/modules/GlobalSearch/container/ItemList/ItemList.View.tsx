@@ -18,6 +18,7 @@ import { ItemListProps, ItemListViewProps } from './types';
 import { SearchSectionsConfig } from '../config';
 import { cacheEventFn } from '../types';
 import { LIST_OUTTER_HEIGHT } from '../ContentSearchResult/constants';
+import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
 
 const MAX_COUNT = 12;
 const ITEM_HEIGHT = 40;
@@ -41,6 +42,8 @@ class ItemListViewComponent extends Component<Props, State> {
   > = React.createRef();
 
   state: State = { width: 0, height: ITEM_HEIGHT * MAX_COUNT };
+
+  private _performanceTracer: PerformanceTracer = PerformanceTracer.initial();
 
   private _cacheIndexPathFn = (type: cacheEventFn, index: number) => {
     const fnKey = `${index}`;
@@ -132,6 +135,13 @@ class ItemListViewComponent extends Component<Props, State> {
     if (height !== this.state.height || width !== this.state.width) {
       this.setState({ height, width });
     }
+  }
+
+  componentDidUpdate() {
+    this._performanceTracer.end({
+      key: PERFORMANCE_KEYS.UI_GLOBALSEARCH_TAB_RENDER,
+      count: this.props.list.length,
+    });
   }
 
   render() {
