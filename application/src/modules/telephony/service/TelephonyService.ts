@@ -46,7 +46,6 @@ import {
 import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
 import i18next from 'i18next';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
-import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 import storeManager from '@/store';
 import { SettingEntityIds } from 'sdk/module/setting';
 
@@ -330,9 +329,6 @@ class TelephonyService {
 
     this._getDialerOpenedCount();
 
-    // Read firstly
-    this._getCallerPhoneNumberList();
-
     notificationCenter.on(
       RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
       this._getCallerPhoneNumberList,
@@ -501,8 +497,8 @@ class TelephonyService {
     // FIXME: move this logic to SDK and always using callerID
     const idx = this._telephonyStore.callerPhoneNumberList.findIndex(
       phone =>
-        formatPhoneNumber(phone.phoneNumber) ===
-        formatPhoneNumber(this._telephonyStore.chosenCallerPhoneNumber),
+        phone.phoneNumber ===
+        this._telephonyStore.chosenCallerPhoneNumber,
     );
     if (idx === -1) {
       return mainLogger.error(
