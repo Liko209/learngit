@@ -9,6 +9,7 @@ import { LazyFormatPhoneViewModel } from '../LazyFormatPhone.ViewModel';
 import { container, decorate, injectable } from 'framework';
 import { TelephonyStore } from '../../../../store';
 import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
+import i18next from 'i18next';
 
 let lazyFormatPhoneViewModel: LazyFormatPhoneViewModel | undefined;
 decorate(injectable(), TelephonyStore);
@@ -16,6 +17,8 @@ decorate(injectable(), TelephonyStore);
 container.bind(TelephonyStore).to(TelephonyStore);
 
 jest.mock('@/modules/common/container/PhoneNumberFormat');
+jest.mock('i18next');
+jest.spyOn(i18next, 't').mockReturnValue('Blocked');
 beforeEach(() => {
   lazyFormatPhoneViewModel = undefined;
 });
@@ -28,6 +31,7 @@ describe('LazyFormatPhoneViewModel', () => {
         value,
       });
       lazyFormatPhoneViewModel.formattedPhoneNumber;
+      expect(i18next.t).toHaveBeenCalled();
       expect(formatPhoneNumber).not.toBeCalledWith(value);
     });
 
