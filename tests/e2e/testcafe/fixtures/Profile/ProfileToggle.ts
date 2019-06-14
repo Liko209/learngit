@@ -13,189 +13,95 @@ fixture('Profile/ProfileToggle')
 
 
 const title = 'Profile';
-test(formalName('Open a team/group conversation from team/group profile, then close by message button in profile',
-  ['JPT-408', 'P2', 'ProfileToggle', 'Looper']),
-  async (t: TestController) => {
-    const app = new AppRoot(t);
-    const users = h(t).rcData.mainCompany.users;
-    const loginUser = users[7];
-    await h(t).platform(loginUser).init();
-    await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfileAndState();
 
-    const favoritesSection = app.homePage.messageTab.favoritesSection;
-    const teamsSection = app.homePage.messageTab.teamsSection;
-
-    let favoriteChatId, teamId;
-    await h(t).withLog('Given I have an extension with 1 group (in favorite) chat and 1 team chat', async () => {
-      teamId = await h(t).platform(loginUser).createAndGetGroupId({
-        isPublic: true,
-        name: uuid(),
-        type: 'Team',
-        members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-      });
-      favoriteChatId = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Group',
-        members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-      });
-    });
-
-    await h(t).withLog('All conversations should not be hidden before login', async () => {
-      await h(t).glip(loginUser).favoriteGroups([+ favoriteChatId])
-    });
-
-    await h(t).withLog('And I clean all UMI before login',
-      async () => {
-        const unreadGroups = await h(t).glip(loginUser).getIdsOfGroupsWithUnreadMessages();
-        await h(t).glip(loginUser).markAsRead(unreadGroups);
-      },
-    );
-
-    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
-      async () => {
-        await h(t).directLoginWithUser(SITE_URL, loginUser);
-        await app.homePage.ensureLoaded();
-      },
-    );
-    const favoriteChat = favoritesSection.conversationEntryById(favoriteChatId);
-    const teamChat = teamsSection.conversationEntryById(teamId);
-
-    await h(t).withLog('Then I can find the 2 conversations in conversation list', async () => {
-      await favoritesSection.expand();
-      await t.expect(favoriteChat.exists).ok(favoriteChatId, { timeout: 10e3 });
-      await teamsSection.expand();
-      await t.expect(teamChat.exists).ok(teamId, { timeout: 10e3 });
-    }, true);
-
-    const groupList = {
-      group: favoriteChat,
-      team: teamChat
-    }
-
-    const idList = {
-      group: favoriteChatId,
-      team: teamId
-    }
-
-    const profileDialog = app.homePage.profileDialog;
-    const conversationPage = app.homePage.messageTab.conversationPage;
-
-    for (const key in groupList) {
-      const item = groupList[key];
-
-      await h(t).withLog(`When I click a ${key} conversation profile button`, async () => {
-        await item.enter();
-        await conversationPage.openMoreButtonOnHeader();
-        await conversationPage.headerMoreMenu.openProfile();
-      });
-
-      await h(t).withLog(`Then a ${key} conversation profile dialog should be popup`, async () => {
-        await profileDialog.ensureLoaded();
-      });
-
-      await h(t).withLog(`When I click a ${key} conversation profile dialog message button`, async () => {
-        await profileDialog.goToMessages();
-      });
-
-      await h(t).withLog(`The ${key} conversation profile dialog dismiss, and open the conversations`, async () => {
-        await t.expect(profileDialog.exists).notOk();
-        await app.homePage.messageTab.conversationPage.groupIdShouldBe(idList[key]);
-      });
-    }
-  },
-);
-
-
-test(formalName('Open profile via conversation list', ['JPT-450', 'P2', 'ProfileToggle', 'Looper']), async (t: TestController) => {
+test.meta(<ITestMeta>{
+  priority: ["P2"],
+  caseIds: ['JPT-408'],
+  keywords: ['ProfileToggle'],
+  maintainers: ['looper', 'potar.he']
+})('Open a team/group conversation from team/group profile, then close by message button in profile', async (t: TestController) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[7];
-  await h(t).platform(loginUser).init();
-  await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
 
-  const dmSection = app.homePage.messageTab.directMessagesSection;
-  const teamsSection = app.homePage.messageTab.teamsSection;
+  let group = <IGroup>{
+    type: "Group",
+    members: [loginUser, users[5], users[6]],
+    owner: loginUser
+  }
+
+  let team = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    members: [loginUser, users[5], users[6]],
+    owner: loginUser
+  };
+
+
+  await h(t).withLog('Given I have an extension with chat, group, team', async () => {
+    await h(t).scenarioHelper.resetProfileAndState(loginUser);
+    await h(t).scenarioHelper.createTeamsOrChats([group, team]);
+    await h(t).glip(loginUser).favoriteGroups(group.glipId);
+  });
+
   const favoritesSection = app.homePage.messageTab.favoritesSection;
+  const teamsSection = app.homePage.messageTab.teamsSection;
 
-  let favoriteChatId, privateChatId, teamId;
-  await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B and 1 group (in favorite) chat C',
-    async () => {
-      privateChatId = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'PrivateChat',
-        members: [loginUser.rcId, users[5].rcId],
-      });
-      teamId = await h(t).platform(loginUser).createAndGetGroupId({
-        isPublic: true,
-        name: uuid(),
-        type: 'Team',
-        members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-      });
-      favoriteChatId = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Group',
-        members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-      });
-      await h(t).glip(loginUser).favoriteGroups([+favoriteChatId]);
-    },
-  );
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
 
-  await h(t).withLog('And I clean all UMI before login',
-    async () => {
-      const unreadGroups = await h(t).glip(loginUser).getIdsOfGroupsWithUnreadMessages();
-      await h(t).glip(loginUser).markAsRead(unreadGroups);
-    },
-  );
-
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
-    async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    },
-  );
-
-  const pvtChat = dmSection.conversationEntryById(privateChatId);
-  const favChat = favoritesSection.conversationEntryById(favoriteChatId);
-  const teamChat = teamsSection.conversationEntryById(teamId);
-
-  await h(t).withLog('Then I can find the 3 conversations in conversation list', async () => {
-    await dmSection.expand();
-    await t.expect(pvtChat.exists).ok(privateChatId, { timeout: 10e3 });
-    await favoritesSection.expand();
-    await t.expect(favChat.exists).ok(favoriteChatId, { timeout: 10e3 });
     await teamsSection.expand();
-    await t.expect(teamChat.exists).ok(teamId, { timeout: 10e3 });
-  }, true);
+    await favoritesSection.expand();
+  });
+
+
+  const favoriteChat = favoritesSection.conversationEntryById(group.glipId);
+  const teamChat = teamsSection.conversationEntryById(team.glipId);
 
   const groupList = {
-    favChat: favChat,
-    pvtChat: pvtChat,
-    teamChat: teamChat
+    group: favoriteChat,
+    team: teamChat
+  }
+
+  const idList = {
+    group: group.glipId,
+    team: team.glipId
   }
 
   const profileDialog = app.homePage.profileDialog;
   const conversationPage = app.homePage.messageTab.conversationPage;
 
-  for (const key in groupList) {
-    const item = groupList[key];
+  for (const kind in groupList) {
+    const conversation = groupList[kind];
 
-    await h(t).withLog(`When I click a ${key} conversation profile button`, async () => {
-      await item.enter();
+    await h(t).withLog(`When I click a {kind} conversation profile button`, async (step) => {
+      step.setMetadata('kind', kind);
+      await conversation.enter();
       await conversationPage.openMoreButtonOnHeader();
       await conversationPage.headerMoreMenu.openProfile();
     });
 
-    await h(t).withLog(`Then a ${key} conversation profile dialog should be popup`, async () => {
+    await h(t).withLog(`Then a {kind} conversation profile dialog should be popup`, async (step) => {
+      step.setMetadata('kind', kind);
       await profileDialog.ensureLoaded();
     });
 
-    await h(t).withLog(`When I click a ${key} conversation profile dialog close button`, async () => {
-      await profileDialog.clickCloseButton();
+    await h(t).withLog(`When I click a {kind} conversation profile dialog message button`, async (step) => {
+      step.setMetadata('kind', kind);
+      await profileDialog.goToMessages();
     });
 
-    await h(t).withLog(`The ${key} conversation profile dialog dismiss`, async () => {
+    await h(t).withLog(`The {kind} conversation profile dialog dismiss, and open the conversations`, async (step) => {
+      step.setMetadata('kind', kind);
       await t.expect(profileDialog.exists).notOk();
-    },
-    );
+      await app.homePage.messageTab.conversationPage.groupIdShouldBe(idList[kind]);
+    });
   }
 });
 
@@ -203,7 +109,7 @@ test.meta(<ITestMeta>{
   priority: ["P2"],
   caseIds: ['JPT-409'],
   keywords: ['ProfileToggle'],
-  maintainers: ['ProfileToggle']
+  maintainers: ['Looper', 'Potar.He']
 })('Favorite/Unfavorite a conversation from profile', async (t: TestController) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
@@ -229,16 +135,21 @@ test.meta(<ITestMeta>{
     owner: loginUser
   }
 
-  await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B and 1 group chat C', async () => {
+  await h(t).withLog('Given I have an extension with chat, group, team', async () => {
     await h(t).scenarioHelper.createTeamsOrChats([chat, group, team]);
   });
 
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const teamsSection = app.homePage.messageTab.teamsSection;
   const favoritesSection = app.homePage.messageTab.favoritesSection;
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`WHen I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
+
     await teamsSection.expand();
     await directMessagesSection.expand();
     await favoritesSection.expand();
@@ -259,22 +170,24 @@ test.meta(<ITestMeta>{
 
   for (const kind in groupList) {
     const conversation = groupList[kind];
-    let chatId: string = '';
+    let chatId = '';
     let chatName = '';
 
     // favorite
     await h(t).withLog(`When I click a {kind} conversation "{chatName}" profile button`, async (step) => {
+      step.initMetadata({ kind });
       await conversation.enter();
       chatId = await conversation.groupId;
       chatName = await conversation.name;
       await conversationPage.openMoreButtonOnHeader();
       await conversationPage.headerMoreMenu.openProfile();
-      step.initMetadata({ kind, chatName });
+      step.updateMetadata({ chatName });
     });
 
     await h(t).withLog(`Then a {kind} conversation profile dialog should be popup`, async (step) => {
       step.setMetadata('kind', kind);
       await profileDialog.ensureLoaded();
+      await t.expect(profileDialog.profileTitle.withText(title).exists).ok();
     });
 
     await h(t).withLog(`When I click a {kind} conversation profile dialog "unfavorite" icon`, async (step) => {
@@ -312,8 +225,7 @@ test.meta(<ITestMeta>{
 
     await h(t).withLog(`Then a {kind} conversation profile dialog should be popup`, async (step) => {
       step.setMetadata('kind', kind);
-      await t.expect(profileDialog.getSelector('hr').exists).ok();
-      await t.expect(profileDialog.getSelector('div').withText(title).exists).ok();
+      await profileDialog.ensureLoaded();
     });
 
     await h(t).withLog(`When I click a {kind} conversation profile dialog "favorite" icon`, async (step) => {
