@@ -43,6 +43,12 @@ class NoteViewModel extends StoreViewModel<NoteProps> implements NoteViewProps {
     const permissionService = ServiceLoader.getInstance<PermissionService>(
       ServiceConfig.PERMISSION_SERVICE,
     );
+    console.log(
+      'looper',
+      await permissionService.hasPermission(
+        UserPermissionType.JUPITER_CAN_SHOW_NOTE_DIALOG,
+      ),
+    );
     return await permissionService.hasPermission(
       UserPermissionType.JUPITER_CAN_SHOW_NOTE_DIALOG,
     );

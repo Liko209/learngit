@@ -60,7 +60,9 @@ class NoteView extends Component<NoteViewProps> {
   }
 
   _handleClick = async () => {
-    const { title } = this.props;
+    const { title, getShowDialogPermission } = this.props;
+    const showNoteDialog = await getShowDialogPermission();
+    if (!showNoteDialog) return;
     const { dismiss } = Dialog.simple(
       <>
         <>
@@ -87,12 +89,11 @@ class NoteView extends Component<NoteViewProps> {
   }
 
   render() {
-    const { title, summary, getShowDialogPermission } = this.props;
-    const showNoteDialog = getShowDialogPermission();
+    const { title, summary } = this.props;
     return (
       <JuiConversationItemCard
         title={postParser(title, { keyword: this.context.keyword })}
-        onClick={showNoteDialog ? this._handleClick : undefined}
+        onClick={this._handleClick}
         Icon={<NoteIcon />}
       >
         <JuiNoteContent data-test-automation-id="note-body">
