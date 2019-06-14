@@ -7,7 +7,7 @@
 import { BaseDao, QUERY_DIRECTION } from 'sdk/dao';
 import { CallLogView, CallLog } from '../entity';
 import { IDatabase, mainLogger } from 'foundation';
-import { CALL_LOG_SOURCE, CALL_RESULT } from '../constants';
+import { CALL_LOG_SOURCE, LOCAL_INFO_TYPE } from '../constants';
 import _ from 'lodash';
 import { ArrayUtils } from 'sdk/utils/ArrayUtils';
 import { DEFAULT_FETCH_SIZE } from '../../constants';
@@ -53,10 +53,10 @@ class CallLogViewDao extends BaseDao<CallLogView, string> {
     let ids: string[] = [];
     views.forEach((view: CallLogView) => {
       if (
-        source === view.__source ||
+        (source === CALL_LOG_SOURCE.ALL &&
+          !(view.__localInfo & LOCAL_INFO_TYPE.IS_MISSED_SOURCE)) ||
         (source === CALL_LOG_SOURCE.MISSED &&
-          (view.result === CALL_RESULT.MISSED ||
-            view.result === CALL_RESULT.VOICEMAIL))
+          view.__localInfo & LOCAL_INFO_TYPE.IS_MISSED)
       ) {
         ids.push(view.id);
       }
