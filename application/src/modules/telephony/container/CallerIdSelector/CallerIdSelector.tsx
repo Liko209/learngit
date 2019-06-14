@@ -127,19 +127,15 @@ class RawCallerIdSelector extends PureComponent<
     );
   }
 
-  private _renderValue = (val: any) => {
-    return <LazyFormatPhone value={val} />;
-  }
-
   render() {
-    const { menu, ...rest } = this.props;
+    const { menu, renderValue, ...rest } = this.props;
     const { focusIndex } = this.state;
 
     return (
       <JuiBoxSelect
         {...rest}
         automationId="caller-id-selector"
-        renderValue={this._renderValue}
+        renderValue={renderValue}
         MenuProps={{
           classes: { paper: LIST_CLASS_NAME },
         }}
@@ -186,7 +182,12 @@ class RawCallerIdSelector extends PureComponent<
   }
 }
 
-const CallerIdSelector = styled(RawCallerIdSelector)`
+const CallerIdSelector = styled((props: CallerIdSelectorProps) => (
+  <RawCallerIdSelector
+    {...props}
+    renderValue={(i: any) => <LazyFormatPhone value={i} />}
+  />
+))`
   && {
     position: absolute;
     top: ${spacing(1.5)};

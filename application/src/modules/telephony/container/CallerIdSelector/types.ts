@@ -13,6 +13,7 @@ export type CallerIdSelectorProps = {
   label: string;
   disabled: boolean;
   onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  renderValue?: (i: string) => React.ReactNode;
 };
 
 export type CallerIdSelectorState = {
