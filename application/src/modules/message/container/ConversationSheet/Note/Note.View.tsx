@@ -9,6 +9,7 @@ import { NoteViewProps } from './types';
 import {
   JuiConversationItemCard,
   JuiNoteContent,
+  JuiNoteIframe,
 } from 'jui/pattern/ConversationItemCard';
 import {
   JuiDialogHeader,
@@ -31,7 +32,7 @@ import {
 @observer
 class NoteView extends Component<NoteViewProps> {
   static contextType = SearchHighlightContext;
-  @observable private _ref: RefObject<HTMLIFrameElement> = createRef();
+  @observable private _ref: RefObject<any> = createRef();
   context: HighlightContextInfo;
   refReaction: any;
 
@@ -45,34 +46,36 @@ class NoteView extends Component<NoteViewProps> {
   }
 
   _iframeOnLoad = async (iframe: HTMLIFrameElement) => {
-    if (iframe) return;
-    const { getBodyInfo } = this.props;
-    const bodyInfo = await getBodyInfo();
+    if (!iframe) return;
     const iframeContentDocument = iframe.contentDocument;
     if (!iframeContentDocument) return;
+    const { getBodyInfo } = this.props;
+    const bodyInfo = await getBodyInfo();
     iframeContentDocument.open();
     iframeContentDocument.write(bodyInfo as any);
     iframeContentDocument.close();
   }
 
-  _handleCLick = async () => {
+  _handleClick = async () => {
     const { getShowDialogPermission, title } = this.props;
     const showNoteDialog = getShowDialogPermission();
     if (!showNoteDialog) return;
     const { dismiss } = Dialog.simple(
       <>
-        <JuiDialogHeader>
-          <JuiDialogHeaderTitle>{title}</JuiDialogHeaderTitle>
-          <JuiDialogHeaderActions>
-            <JuiButtonBar overlapSize={2.5}>
-              <JuiIconButton onClick={() => dismiss()} tooltipTitle="Close">
-                close
-              </JuiIconButton>
-            </JuiButtonBar>
-          </JuiDialogHeaderActions>
-        </JuiDialogHeader>
-        <JuiDivider key="divider-filters" />
-        <iframe ref={this._ref} width="100%" height="100%" frameBorder={0} />
+        <>
+          <JuiDialogHeader>
+            <JuiDialogHeaderTitle>{title}</JuiDialogHeaderTitle>
+            <JuiDialogHeaderActions>
+              <JuiButtonBar overlapSize={2.5}>
+                <JuiIconButton onClick={() => dismiss()} tooltipTitle="Close">
+                  close
+                </JuiIconButton>
+              </JuiButtonBar>
+            </JuiDialogHeaderActions>
+          </JuiDialogHeader>
+          <JuiDivider key="divider-filters" />
+        </>
+        <JuiNoteIframe ref={this._ref} />
       </>,
       {
         fullScreen: true,
@@ -87,7 +90,7 @@ class NoteView extends Component<NoteViewProps> {
     return (
       <JuiConversationItemCard
         title={postParser(title, { keyword: this.context.keyword })}
-        onClick={this._handleCLick}
+        onClick={this._handleClick}
         Icon={<NoteIcon />}
       >
         <JuiNoteContent data-test-automation-id="note-body">
