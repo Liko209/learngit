@@ -74,11 +74,11 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
     this._audio.onended = this._onEnded;
     this._audio.onplaying = this._onPlaying;
     this._audio.ontimeupdate = this._onTimeUpdate;
-    this._audio.onloadedmetadata = this._loadedmetadata;
+    this._audio.onloadeddata = this._onLoadeddata;
   }
 
   // safari must be set currentTime after loaded
-  private _loadedmetadata = () => {
+  private _onLoadeddata = () => {
     this._audio.currentTime = this.state.timestamp;
   }
 
@@ -204,7 +204,7 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
     this._audio.onplay = null;
     this._audio.onended = null;
     this._audio.ontimeupdate = null;
-    this._audio.oncanplay = null;
+    this._audio.onloadeddata = null;
 
     delete this._audio;
   }
