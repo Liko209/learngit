@@ -19,6 +19,7 @@ import { Palette } from '../../foundation/theme/theme';
 
 const ItemCardWrapper = styled(JuiCard)`
   word-break: break-word;
+  cursor: ${({ onClick }) => (onClick ? 'pointer' : 'auto')};
   margin-bottom: ${spacing(3)};
 `;
 
