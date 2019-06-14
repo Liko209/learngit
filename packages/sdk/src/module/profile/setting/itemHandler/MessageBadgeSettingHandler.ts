@@ -45,7 +45,6 @@ export class MessageBadgeSettingHandler extends AbstractSettingEntityHandler<
   }
 
   async fetchUserSettingEntity() {
-    const profile = await this._profileService.getProfile();
     const settingItem: UserSettingEntity<NEW_MESSAGE_BADGES_OPTIONS> = {
       weight: 1,
       parentModelId: 1,
@@ -55,7 +54,7 @@ export class MessageBadgeSettingHandler extends AbstractSettingEntityHandler<
         NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS,
         NEW_MESSAGE_BADGES_OPTIONS.ALL,
       ],
-      value: profile[SETTING_KEYS.NEW_MESSAGE_BADGES],
+      value: await this._getMessageBadge(),
       state: ESettingItemState.ENABLE,
       valueSetter: value => this.updateValue(value),
     };
@@ -79,5 +78,14 @@ export class MessageBadgeSettingHandler extends AbstractSettingEntityHandler<
     ) {
       await this.getUserSettingEntity();
     }
+  }
+
+  private async _getMessageBadge() {
+    const profile = await this._profileService.getProfile();
+    let messageBadge = profile[SETTING_KEYS.NEW_MESSAGE_BADGES];
+    if (_.isEmpty(messageBadge)) {
+      messageBadge = NEW_MESSAGE_BADGES_OPTIONS.ALL;
+    }
+    return messageBadge;
   }
 }
