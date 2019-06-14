@@ -29,6 +29,10 @@ abstract class BaseModuleSetting<
     }
   }
 
+  has(id: SettingEntityIds): boolean {
+    return !!(this._handlerMap && this._handlerMap[id]);
+  }
+
   async getById<T>(
     settingId: SettingEntityIds,
   ): Promise<Nullable<UserSettingEntity<T>>> {

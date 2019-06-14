@@ -17,12 +17,19 @@ import {
 } from 'sdk/error';
 import { Notification } from '@/containers/Notification';
 jest.mock('@/containers/Notification');
+import { Jupiter, container } from 'framework';
+import { config } from '../../../module.config';
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(config);
 
 function setUpMock(
   browserPermission: NotificationPermission,
   errorType?: 'network' | 'server',
 ) {
   Notification.flashToast = jest.fn().mockImplementation(() => {});
+  global.Notification = {
+    permission: browserPermission,
+  };
   return {
     settingItemEntity: {
       value: {
