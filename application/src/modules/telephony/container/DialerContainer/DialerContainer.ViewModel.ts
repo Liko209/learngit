@@ -209,7 +209,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
     if (!this.canClickToInput) {
       return;
     }
-    if (!this.trimmedInputString.length) {
+    if (!this.trimmedInputString.length && !this.isForward) {
       this._telephonyStore.enterFirstLetterThroughKeypad();
     }
     this.playAudio(str);
