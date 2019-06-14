@@ -950,7 +950,7 @@ export class PostItem extends BaseWebComponent {
     return this.phoneLink.withAttribute('data-id', dataId);
   }
   // be searched item
-  get keyworkdsByHighLight() {
+  get keywordsByHighLight() {
     return this.self.find('span.highlight-term');
   }
 
@@ -1013,7 +1013,7 @@ class ConversationCardItem extends BaseWebComponent {
   get taskOldAssigneesDiv() {
     return this.getSelectorByAutomationIdUnderSelf('task-old-assignees');
   }
-  
+
   get taskOldAssignees() {
     return this.getSelectorByAutomationId('avatar-name', this.taskOldAssigneesDiv)
   }
