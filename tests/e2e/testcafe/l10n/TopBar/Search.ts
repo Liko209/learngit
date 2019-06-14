@@ -51,7 +51,7 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
     await app.homePage.ensureLoaded();
   });
   await h(t).withLog('When I click search box', async () => {
-    const searchBar = app.homePage.header.searchBarSmall;
+    const searchBar = app.homePage.header.searchBar;
     await searchBar.enter();
   });
   await h(t).withLog('Then search box should be displayed', async () => {
@@ -95,13 +95,11 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
     await searchDialog.typeSearchKeyword(publicTeamWithoutMe.name);
     await t.click(theTeamWhichWithoutMe.self);
   });
-  // await h(t).withLog('Then "Join team" popup should be displayed', async () => {
-  //   await t.expect(joinTeamDialog.cancelButton.exists).ok();
-  // });
+  
   await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_JoinTeamPopup' });
 
   await h(t).withLog('When I click the "search" box again', async () => {
-    const searchBar = app.homePage.header.searchBarSmall;
+    const searchBar = app.homePage.header.searchBar;
     await joinTeamDialog.clickCancelButton();
     await searchBar.enter();
   });

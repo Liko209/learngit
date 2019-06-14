@@ -28,17 +28,17 @@ test(formalName('Integrations display on the right rail', ['P2', 'Messages', 'Ri
   });
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number} # ${loginUser.extension}`, async() => {
     await h(t).directLoginWithUser(SITE_URL,loginUser);
-    await app.homePage.ensureLoaded;
+    await app.homePage.ensureLoaded();
   });
 
   const rightRail = app.homePage.messageTab.rightRail;
 
   await h(t).withLog('When I open the created team conversation and open "Integrations" tab on right rail', async() => {
     const teamsSection = app.homePage.messageTab.teamsSection;
-    await teamsSection.conversationEntryByName(team.name);
-    await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
-    await rightRail.openMore();
-    await rightRail.integrationsEntry.enter();
+    const integrations = rightRail.integrationsEntry;
+    await teamsSection.conversationEntryById(team.glipId).enter();
+    await rightRail.clickMoreButton();
+    await integrations.enter();
   });
   await h(t).log('Then I take screenshot' , { screenshotPath:'Jupiter_RightRail_IntegrationsEmpty'} );
 });

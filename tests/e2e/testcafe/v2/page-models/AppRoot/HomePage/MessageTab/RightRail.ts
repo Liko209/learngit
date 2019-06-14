@@ -104,8 +104,23 @@ export class RightRail extends BaseWebComponent {
     return this.getSelectorByAutomationId('right-shelf-more')
   }
 
+
+  get expandStatusButtonDisplayed() {
+    return this.expandStatusButtonByClass.exists;
+  }
+
   async clickMoreButton() {
-    await this.t.click(this.moreButton)
+    if (!await this.expandStatusButtonDisplayed) {
+      await this.clickFoldStatusButton();
+    }
+   await this.t.click(this.moreButton);
+  }
+
+  async hoverMoreButton() {
+    if (!await this.expandStatusButtonDisplayed) {
+      await this.clickFoldStatusButton();
+    }
+   await this.t.hover(this.moreButton);
   }
 
   async openMore() {

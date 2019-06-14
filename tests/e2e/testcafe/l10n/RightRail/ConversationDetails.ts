@@ -33,7 +33,7 @@ test(formalName('Conversation Details on the right rail', ['P2', 'Messages', 'Ri
   await h(t).withLog('When I open the created team conversation and hover "More" icon on right rail', async () => {
     const teamsSection = app.homePage.messageTab.teamsSection;
     await teamsSection.conversationEntryById(team.glipId).enter();
-    await t.hover(rightRail.moreButton);
+    await rightRail.hoverMoreButton();
   });
   await h(t).log('Then I take screenshot' , { screenshotPath:'Jupiter_RightRail_MoreIcon' });
 
