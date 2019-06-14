@@ -23,9 +23,7 @@ class VoicemailViewDao extends BaseDao<VoicemailView> {
     return {
       id: vm.id,
       from: vm.from,
-      to: vm.to,
       creationTime: vm.creationTime,
-      lastModifiedTime: vm.lastModifiedTime,
     };
   }
 
@@ -33,13 +31,7 @@ class VoicemailViewDao extends BaseDao<VoicemailView> {
     partialVM: Partial<Voicemail>,
   ): Partial<VoicemailView> {
     return {
-      ..._.pick(partialVM, [
-        'id',
-        'from',
-        'to',
-        'creationTime',
-        'lastModifiedTime',
-      ]),
+      ..._.pick(partialVM, ['id', 'from', 'creationTime']),
     };
   }
 
