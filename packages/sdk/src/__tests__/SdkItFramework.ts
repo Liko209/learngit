@@ -2,16 +2,15 @@ import { Sdk } from 'sdk/index';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { notificationCenter } from 'sdk/service';
-import './ItUtils';
 
-jest.mock('sdk/utils/phoneParser');
-jest.mock('sdk/framework/account/helper', () => {
-  return {
-    fetchWhiteList: jest.fn().mockReturnValue({}),
-  };
-});
-jest.mock('foundation/src/network/client/http/Http');
-jest.mock('foundation/src/network/client/socket/Socket');
+// jest.mock('sdk/utils/phoneParser');
+// jest.mock('sdk/framework/account/helper', () => {
+//   return {
+//     fetchWhiteList: jest.fn().mockReturnValue({}),
+//   };
+// });
+// jest.mock('foundation/src/network/client/http/Http');
+// jest.mock('foundation/src/network/client/socket/Socket');
 
 type ItContext = {
   server: {
@@ -29,16 +28,6 @@ type LifeCycleHooks = {
   afterAll: jest.Lifecycle;
   afterEach: jest.Lifecycle;
 };
-
-function executeHooks<N extends keyof LifeCycleHooks>(
-  name: N,
-  hooks?: Partial<LifeCycleHooks>,
-  ...args: any
-) {
-  if (hooks && hooks[name]) {
-    hooks[name]!.call(null, ...args);
-  }
-}
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -58,7 +47,7 @@ async function login() {
 
 async function initEnd() {
   return new Promise(resolve => {
-    notificationCenter.once('---l---', () => resolve());
+    notificationCenter.once('TotallyInit', () => resolve());
   });
 }
 

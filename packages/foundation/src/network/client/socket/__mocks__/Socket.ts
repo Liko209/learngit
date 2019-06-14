@@ -62,7 +62,7 @@ export default class Socket {
     }
   }
 
-  isNetworkReachable = () => true;
+  isNetworkReachable = () => false;
 
   cancelRequest() {}
 }

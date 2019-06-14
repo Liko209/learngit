@@ -25,8 +25,8 @@ class CallLogService extends EntityBaseService<CallLog, string> {
 
   onStarted() {
     super.onStarted();
-    this.callLogController.allCallLogFetchController.init();
-    this.callLogController.callLogBadgeController.init();
+    // this.callLogController.allCallLogFetchController.init();
+    // this.callLogController.callLogBadgeController.init();
   }
 
   private get userConfig() {

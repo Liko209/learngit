@@ -44,82 +44,6 @@ class Router {
   }
 }
 
-// // nock('https://app.launchdarkly.com')
-// //   .get(/.*/)
-// //   .reply(200, 'test xxxx');
-// Axios.get('https://app.launchdarkly.com/sdk')
-//   .catch(error => {
-//     console.log('TCL: error', error);
-//   })
-//   .then(result => {
-//     console.log('TCL: result', result);
-//   });
-// Axios.put('https://app.launchdarkly.com/aaaa')
-//   .catch(error => {
-//     console.log('TCL: error', error);
-//   })
-//   .then(result => {
-//     console.log('TCL: result', result);
-//   });
-// Axios.get('https://app.launchdarkly.com')
-//   .catch(error => {
-//     console.log('TCL: error 2', error);
-//   })
-//   .then(result => {
-//     console.log('TCL: result', result);
-//   });
-
-// applyMockServer({
-//   host: 'https://app.launchdarkly.com',
-//   api: [
-//     path: '/sdk',
-//     method: 'get',
-//     handle: async (url, requestBody) => {
-//     console.log('TCL: url, requestBody', url, requestBody);
-//       return {
-
-//       };
-//     },
-//   ],
-// });
-
-// import mock from 'xhr-mock';
-// console.log('TCL: mock', mock);
-// mock.setup();
-// mock.use((req, res) => {
-//   console.log('TCL: req, res', req, res);
-//   return res
-//     .status(200)
-//     .reason('OK')
-//     .header('Content-Length', '12')
-//     .body('Hello World!');
-// });
-
-// Axios.get('/');
-// Axios.get('https://app.launchdarkly.com/xxx');
-// Axios.post('https://app.launchdarkly.com/xxx');
-// Axios.get('https://app.launchdarkly.com')
-//   .catch(error => {
-//     console.log('TCL: error 2', error);
-//   })
-//   .then(result => {
-//     console.log('TCL: result', result);
-//   });
-// type API = {
-//   [path: string | RegExp]: (uri: string, requestBody: any, cb: () => void) => void;
-// }
-interface IApiHandler {
-  handle: (uri: string, requestBody: any) => Promise<any>;
-}
-
-type HttpMethod = 'get' | 'put' | 'post';
-
-// class SocketServer {
-
-// }
-
-type Api = {};
-
 interface IMockServer {
   host: string;
   // api: [{ path: string | RegExp; method: HttpMethod; handler: IApiHandler }];
@@ -128,16 +52,6 @@ interface IMockServer {
 
 class MockFileServer implements IMockServer {
   private _router: Router;
-  // init() {}
-
-  // getInitial() {
-  //   return;
-  // }
-
-  // createPost(body: any) {
-  //   // const post = parse(body);
-  //   //
-  // }
   constructor(public host: string) {
     this._router = new Router((routePath, path) => {
       console.log(

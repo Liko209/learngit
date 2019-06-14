@@ -34,7 +34,7 @@ describe('GroupService', () => {
 
   async function initEnd() {
     return new Promise(resolve => {
-      notificationCenter.once('---l---', () => resolve());
+      notificationCenter.once('TotallyInit', () => resolve());
     });
   }
 
