@@ -167,6 +167,9 @@ class TelephonyStore {
   // for end call
   uiCallStartTime: number;
 
+  @observable
+  enteredDialer: boolean = false;
+
   constructor() {
     [
       ['_callWindowFSM', 'callWindowState'],
@@ -647,6 +650,11 @@ class TelephonyStore {
   @computed
   get hasIncomingCall() {
     return this.callState === CALL_STATE.INCOMING;
+  }
+
+  @action
+  syncDialerEntered(entered: boolean) {
+    this.enteredDialer = entered;
   }
 }
 
