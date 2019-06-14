@@ -124,7 +124,10 @@ describe('ProfileDataController', () => {
       const result = await profileDataController.profileHandleData(
         data as Profile,
       );
-      expect(result).toBeNull();
+      expect(result).toEqual({
+        id: 2,
+        modified_at: 10,
+      });
     });
   });
 

@@ -86,7 +86,7 @@ class ProfileDataController {
       if (profile) {
         const local = await this.getProfile();
         if (local && local.modified_at >= profile.modified_at) {
-          return null;
+          return local;
         }
         const transformedData: Profile = transform(profile);
         if (transformedData) {
