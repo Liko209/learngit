@@ -113,6 +113,7 @@ exports[`Storyshots Pattern LeftNav: Pattern LeftNav 1`] = `
   -webkit-justify-content: center;
   -ms-flex-pack: center;
   justify-content: center;
+  pointer-events: none;
 }
 
 .c4.c4 {

@@ -72,6 +72,12 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
   color: #fff;
 }
 
+.c4 {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+
 .c4.c4 {
   padding: 0;
 }
@@ -89,7 +95,7 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
 }
 
 .c4.c4 .list-item-secondary {
-  color: #9e9e9e;
+  color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -115,7 +121,7 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
   onTouchMove={[Function]}
   onTouchStart={[Function]}
   role="menuitem"
-  tabIndex={-1}
+  tabIndex={0}
 >
   <div
     className="MuiListItemIcon-root c1 c2"
@@ -410,7 +416,7 @@ exports[`Storyshots Components/Menus Text MenuItem With Icon: Components/Menus T
   onTouchMove={[Function]}
   onTouchStart={[Function]}
   role="menuitem"
-  tabIndex={-1}
+  tabIndex={0}
 >
   <div
     className="MuiListItemIcon-root c1 c2"
@@ -479,7 +485,7 @@ exports[`Storyshots Components/Menus Text MenuItem: Components/Menus Text MenuIt
   onTouchMove={[Function]}
   onTouchStart={[Function]}
   role="menuitem"
-  tabIndex={-1}
+  tabIndex={0}
 >
   Profile
   <span

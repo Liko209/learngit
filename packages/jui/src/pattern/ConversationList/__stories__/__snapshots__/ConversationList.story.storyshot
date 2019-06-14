@@ -21,7 +21,7 @@ exports[`Storyshots Pattern/ConversationList List: Pattern/ConversationList List
   border-radius: 50%;
 }
 
-.c16 {
+.c18 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -41,7 +41,7 @@ exports[`Storyshots Pattern/ConversationList List: Pattern/ConversationList List
   border-radius: 50%;
 }
 
-.c12 {
+.c14 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -61,14 +61,14 @@ exports[`Storyshots Pattern/ConversationList List: Pattern/ConversationList List
   border-radius: 50%;
 }
 
-.c10 {
+.c12 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c11 {
+.c13 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -79,6 +79,234 @@ exports[`Storyshots Pattern/ConversationList List: Pattern/ConversationList List
   font-size: 24px;
 }
 
+.c10.c10 {
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  color: #9e9e9e;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c10.c10 .c11,
+.c10.c10 .c11 svg {
+  font-size: 20px;
+}
+
+.c10.c10:hover {
+  background-color: transparent;
+}
+
+.c10.c10:hover .c11 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c10.c10:active .c11 {
+  color: #9e9e9e;
+}
+
+.c10.c10.c10.c10.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c10.c10 .rippleVisible {
+  color: #9e9e9e;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c19.c19 .c11,
+.c19.c19 .c11 svg {
+  font-size: 20px;
+}
+
+.c19.c19:hover .c11 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c19.c19:active .c11 {
+  color: #9e9e9e;
+}
+
+.c19.c19.c19.c19.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c20.c20 .c11,
+.c20.c20 .c11 svg {
+  font-size: 20px;
+}
+
+.c20.c20:hover .c11 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c20.c20:active .c11 {
+  color: #0684bd;
+}
+
+.c20.c20.c20.c20.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c21.c21 .c11,
+.c21.c21 .c11 svg {
+  font-size: 20px;
+}
+
+.c21.c21:hover .c11 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c21.c21:active .c11 {
+  color: #0684bd;
+}
+
+.c21.c21.c21.c21.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c22.c22 .c11,
+.c22.c22 .c11 svg {
+  font-size: 20px;
+}
+
+.c22.c22:hover .c11 {
+  color: rgba(237,182,60,0.88);
+}
+
+.c22.c22:active .c11 {
+  color: #edb63c;
+}
+
+.c22.c22.c22.c22.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c23.c23 .c11,
+.c23.c23 .c11 svg {
+  font-size: 16px;
+}
+
+.c23.c23:hover .c11 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c23.c23:active .c11 {
+  color: #9e9e9e;
+}
+
+.c23.c23.c23.c23.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c24.c24 .c11,
+.c24.c24 .c11 svg {
+  font-size: 20px;
+}
+
+.c24.c24:hover .c11 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c24.c24:active .c11 {
+  color: #0684bd;
+}
+
+.c24.c24.c24.c24.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c25.c25 .c11,
+.c25.c25 .c11 svg {
+  font-size: 16px;
+}
+
+.c25.c25:hover .c11 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c25.c25:active .c11 {
+  color: #0684bd;
+}
+
+.c25.c25.c25.c25.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c26.c26 .c11,
+.c26.c26 .c11 svg {
+  font-size: 16px;
+}
+
+.c26.c26:hover .c11 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c26.c26:active .c11 {
+  color: #fff;
+}
+
+.c26.c26.c26.c26.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c27.c27 .c11,
+.c27.c27 .c11 svg {
+  font-size: 32px;
+}
+
+.c27.c27:hover .c11 {
+  color: rgba(33,33,33,0.88);
+}
+
+.c27.c27:active .c11 {
+  color: #212121;
+}
+
+.c27.c27.c27.c27.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c28.c28 .c11,
+.c28.c28 .c11 svg {
+  font-size: 24px;
+}
+
+.c28.c28:hover .c11 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c28.c28:active .c11 {
+  color: #fff;
+}
+
+.c28.c28.c28.c28.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c29.c29 .c11,
+.c29.c29 .c11 svg {
+  font-size: 20px;
+}
+
+.c29.c29:hover .c11 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c29.c29:active .c11 {
+  color: #fff;
+}
+
+.c29.c29.c29.c29.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
 .c7 {
   display: inline-block;
   width: 20px;
@@ -87,51 +315,7 @@ exports[`Storyshots Pattern/ConversationList List: Pattern/ConversationList List
   -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
   transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
   background: #9e9e9e;
-  color: rgba(0,0,0,0.87);
-  font-size: 0.75rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 16px;
-  text-align: center;
-  visibility: visible;
-}
-
-.c13 {
-  display: inline-block;
-  width: 20px;
-  height: 16px;
-  border-radius: 12px;
-  -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
-  transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
-  background: #ff8800;
-  color: rgba(0,0,0,0.87);
-  font-size: 0;
-  height: 10px;
-  width: 10px;
-  line-height: 10px;
-  color: transparent;
-  visibility: visible;
-}
-
-li:hover > .c13,
-div:hover > .c13 {
-  font-size: 0.75rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 16px;
-  text-align: center;
-  visibility: visible;
-}
-
-.c14 {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border-radius: 12px;
-  -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
-  transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
-  background: #9e9e9e;
-  color: rgba(0,0,0,0.87);
+  color: #fff;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -142,13 +326,57 @@ div:hover > .c13 {
 
 .c15 {
   display: inline-block;
+  width: 20px;
+  height: 16px;
+  border-radius: 12px;
+  -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
+  transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
+  background: #ff8800;
+  color: #fff;
+  font-size: 0;
+  height: 10px;
+  width: 10px;
+  line-height: 10px;
+  color: transparent;
+  visibility: visible;
+}
+
+li:hover > .c15,
+div:hover > .c15 {
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  text-align: center;
+  visibility: visible;
+}
+
+.c16 {
+  display: inline-block;
   width: 16px;
   height: 16px;
   border-radius: 12px;
   -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
   transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
   background: #9e9e9e;
-  color: rgba(0,0,0,0.87);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  text-align: center;
+  visibility: visible;
+}
+
+.c17 {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 12px;
+  -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
+  transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
+  background: #9e9e9e;
+  color: #fff;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -233,8 +461,8 @@ div:hover > .c13 {
   display: inline-flex;
 }
 
-.c3.c3.c3:hover .c17,
-.c3.c3.c3:hover .sc-fkyLDJ {
+.c3.c3.c3:hover .c30,
+.c3.c3.c3:hover .sc-gacfCG {
   display: none;
 }
 
@@ -343,19 +571,48 @@ div:hover > .c13 {
           tabIndex={-1}
         >
           <span />
-          <span
-            className="c9 more_vert icon c10"
+          <button
+            aria-describedby={null}
+            className="MuiButtonBase-root MuiIconButton-root c9 c10"
+            data-test-automation-id="conversationListItemMoreButton"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseOver={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="medium"
+            tabIndex="0"
+            title={null}
+            type="button"
+            variant="plain"
           >
-            <svg
-              className="c11"
-              role="img"
+            <span
+              className="MuiIconButton-label"
             >
-              <use
-                href="#icon-more_vert"
-                xlinkHref="#icon-more_vert"
-              />
-            </svg>
-          </span>
+              <span
+                className="c11 more_vert icon c12"
+                size="medium"
+              >
+                <svg
+                  className="c13"
+                  role="img"
+                >
+                  <use
+                    href="#icon-more_vert"
+                    xlinkHref="#icon-more_vert"
+                  />
+                </svg>
+              </span>
+            </span>
+          </button>
         </div>
         <span
           className="MuiTouchRipple-root"
@@ -381,7 +638,7 @@ div:hover > .c13 {
           className="c4"
         >
           <div
-            className="c12"
+            className="c14"
           />
         </div>
         <p
@@ -396,7 +653,7 @@ div:hover > .c13 {
         </p>
         <span
           aria-hidden={true}
-          className="umi c13"
+          className="umi c15"
         >
           12
         </span>
@@ -405,19 +662,48 @@ div:hover > .c13 {
           tabIndex={-1}
         >
           <span />
-          <span
-            className="c9 more_vert icon c10"
+          <button
+            aria-describedby={null}
+            className="MuiButtonBase-root MuiIconButton-root c9 c10"
+            data-test-automation-id="conversationListItemMoreButton"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseOver={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="medium"
+            tabIndex="0"
+            title={null}
+            type="button"
+            variant="plain"
           >
-            <svg
-              className="c11"
-              role="img"
+            <span
+              className="MuiIconButton-label"
             >
-              <use
-                href="#icon-more_vert"
-                xlinkHref="#icon-more_vert"
-              />
-            </svg>
-          </span>
+              <span
+                className="c11 more_vert icon c12"
+                size="medium"
+              >
+                <svg
+                  className="c13"
+                  role="img"
+                >
+                  <use
+                    href="#icon-more_vert"
+                    xlinkHref="#icon-more_vert"
+                  />
+                </svg>
+              </span>
+            </span>
+          </button>
         </div>
         <span
           className="MuiTouchRipple-root"
@@ -443,7 +729,7 @@ div:hover > .c13 {
           className="c4"
         >
           <div
-            className="c12"
+            className="c14"
           />
         </div>
         <p
@@ -458,7 +744,7 @@ div:hover > .c13 {
         </p>
         <span
           aria-hidden={true}
-          className="umi c14"
+          className="umi c16"
         >
           9
         </span>
@@ -467,19 +753,48 @@ div:hover > .c13 {
           tabIndex={-1}
         >
           <span />
-          <span
-            className="c9 more_vert icon c10"
+          <button
+            aria-describedby={null}
+            className="MuiButtonBase-root MuiIconButton-root c9 c10"
+            data-test-automation-id="conversationListItemMoreButton"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseOver={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="medium"
+            tabIndex="0"
+            title={null}
+            type="button"
+            variant="plain"
           >
-            <svg
-              className="c11"
-              role="img"
+            <span
+              className="MuiIconButton-label"
             >
-              <use
-                href="#icon-more_vert"
-                xlinkHref="#icon-more_vert"
-              />
-            </svg>
-          </span>
+              <span
+                className="c11 more_vert icon c12"
+                size="medium"
+              >
+                <svg
+                  className="c13"
+                  role="img"
+                >
+                  <use
+                    href="#icon-more_vert"
+                    xlinkHref="#icon-more_vert"
+                  />
+                </svg>
+              </span>
+            </span>
+          </button>
         </div>
         <span
           className="MuiTouchRipple-root"
@@ -505,7 +820,7 @@ div:hover > .c13 {
           className="c4"
         >
           <div
-            className="c12"
+            className="c14"
           />
         </div>
         <p
@@ -520,7 +835,7 @@ div:hover > .c13 {
         </p>
         <span
           aria-hidden={true}
-          className="umi c15"
+          className="umi c17"
         >
           
         </span>
@@ -529,19 +844,48 @@ div:hover > .c13 {
           tabIndex={-1}
         >
           <span />
-          <span
-            className="c9 more_vert icon c10"
+          <button
+            aria-describedby={null}
+            className="MuiButtonBase-root MuiIconButton-root c9 c10"
+            data-test-automation-id="conversationListItemMoreButton"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseOver={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="medium"
+            tabIndex="0"
+            title={null}
+            type="button"
+            variant="plain"
           >
-            <svg
-              className="c11"
-              role="img"
+            <span
+              className="MuiIconButton-label"
             >
-              <use
-                href="#icon-more_vert"
-                xlinkHref="#icon-more_vert"
-              />
-            </svg>
-          </span>
+              <span
+                className="c11 more_vert icon c12"
+                size="medium"
+              >
+                <svg
+                  className="c13"
+                  role="img"
+                >
+                  <use
+                    href="#icon-more_vert"
+                    xlinkHref="#icon-more_vert"
+                  />
+                </svg>
+              </span>
+            </span>
+          </button>
         </div>
         <span
           className="MuiTouchRipple-root"
@@ -567,7 +911,7 @@ div:hover > .c13 {
           className="c4"
         >
           <div
-            className="c12"
+            className="c14"
           />
         </div>
         <p
@@ -582,7 +926,7 @@ div:hover > .c13 {
         </p>
         <span
           aria-hidden={true}
-          className="umi c15"
+          className="umi c17"
         >
           
         </span>
@@ -591,19 +935,48 @@ div:hover > .c13 {
           tabIndex={-1}
         >
           <span />
-          <span
-            className="c9 more_vert icon c10"
+          <button
+            aria-describedby={null}
+            className="MuiButtonBase-root MuiIconButton-root c9 c10"
+            data-test-automation-id="conversationListItemMoreButton"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseOver={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="medium"
+            tabIndex="0"
+            title={null}
+            type="button"
+            variant="plain"
           >
-            <svg
-              className="c11"
-              role="img"
+            <span
+              className="MuiIconButton-label"
             >
-              <use
-                href="#icon-more_vert"
-                xlinkHref="#icon-more_vert"
-              />
-            </svg>
-          </span>
+              <span
+                className="c11 more_vert icon c12"
+                size="medium"
+              >
+                <svg
+                  className="c13"
+                  role="img"
+                >
+                  <use
+                    href="#icon-more_vert"
+                    xlinkHref="#icon-more_vert"
+                  />
+                </svg>
+              </span>
+            </span>
+          </button>
         </div>
         <span
           className="MuiTouchRipple-root"
@@ -629,7 +1002,7 @@ div:hover > .c13 {
           className="c4"
         >
           <div
-            className="c16"
+            className="c18"
           />
         </div>
         <p
@@ -647,19 +1020,48 @@ div:hover > .c13 {
           tabIndex={-1}
         >
           <span />
-          <span
-            className="c9 more_vert icon c10"
+          <button
+            aria-describedby={null}
+            className="MuiButtonBase-root MuiIconButton-root c9 c10"
+            data-test-automation-id="conversationListItemMoreButton"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseOver={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="medium"
+            tabIndex="0"
+            title={null}
+            type="button"
+            variant="plain"
           >
-            <svg
-              className="c11"
-              role="img"
+            <span
+              className="MuiIconButton-label"
             >
-              <use
-                href="#icon-more_vert"
-                xlinkHref="#icon-more_vert"
-              />
-            </svg>
-          </span>
+              <span
+                className="c11 more_vert icon c12"
+                size="medium"
+              >
+                <svg
+                  className="c13"
+                  role="img"
+                >
+                  <use
+                    href="#icon-more_vert"
+                    xlinkHref="#icon-more_vert"
+                  />
+                </svg>
+              </span>
+            </span>
+          </button>
         </div>
         <span
           className="MuiTouchRipple-root"
@@ -691,14 +1093,14 @@ exports[`Storyshots Pattern/ConversationList ListItem: Pattern/ConversationList 
   border-radius: 50%;
 }
 
-.c9 {
+.c11 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c10 {
+.c12 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -709,6 +1111,234 @@ exports[`Storyshots Pattern/ConversationList ListItem: Pattern/ConversationList 
   font-size: 24px;
 }
 
+.c9.c9 {
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  color: #9e9e9e;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c9.c9 .c10,
+.c9.c9 .c10 svg {
+  font-size: 20px;
+}
+
+.c9.c9:hover {
+  background-color: transparent;
+}
+
+.c9.c9:hover .c10 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c9.c9:active .c10 {
+  color: #9e9e9e;
+}
+
+.c9.c9.c9.c9.disabled .c10 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c9.c9 .rippleVisible {
+  color: #9e9e9e;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c13.c13 .c10,
+.c13.c13 .c10 svg {
+  font-size: 20px;
+}
+
+.c13.c13:hover .c10 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c13.c13:active .c10 {
+  color: #9e9e9e;
+}
+
+.c13.c13.c13.c13.disabled .c10 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c14.c14 .c10,
+.c14.c14 .c10 svg {
+  font-size: 20px;
+}
+
+.c14.c14:hover .c10 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c14.c14:active .c10 {
+  color: #0684bd;
+}
+
+.c14.c14.c14.c14.disabled .c10 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c15.c15 .c10,
+.c15.c15 .c10 svg {
+  font-size: 20px;
+}
+
+.c15.c15:hover .c10 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c15.c15:active .c10 {
+  color: #0684bd;
+}
+
+.c15.c15.c15.c15.disabled .c10 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c16.c16 .c10,
+.c16.c16 .c10 svg {
+  font-size: 20px;
+}
+
+.c16.c16:hover .c10 {
+  color: rgba(237,182,60,0.88);
+}
+
+.c16.c16:active .c10 {
+  color: #edb63c;
+}
+
+.c16.c16.c16.c16.disabled .c10 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c17.c17 .c10,
+.c17.c17 .c10 svg {
+  font-size: 16px;
+}
+
+.c17.c17:hover .c10 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c17.c17:active .c10 {
+  color: #9e9e9e;
+}
+
+.c17.c17.c17.c17.disabled .c10 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c18.c18 .c10,
+.c18.c18 .c10 svg {
+  font-size: 20px;
+}
+
+.c18.c18:hover .c10 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c18.c18:active .c10 {
+  color: #0684bd;
+}
+
+.c18.c18.c18.c18.disabled .c10 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c19.c19 .c10,
+.c19.c19 .c10 svg {
+  font-size: 16px;
+}
+
+.c19.c19:hover .c10 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c19.c19:active .c10 {
+  color: #0684bd;
+}
+
+.c19.c19.c19.c19.disabled .c10 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c20.c20 .c10,
+.c20.c20 .c10 svg {
+  font-size: 16px;
+}
+
+.c20.c20:hover .c10 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c20.c20:active .c10 {
+  color: #fff;
+}
+
+.c20.c20.c20.c20.disabled .c10 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c21.c21 .c10,
+.c21.c21 .c10 svg {
+  font-size: 32px;
+}
+
+.c21.c21:hover .c10 {
+  color: rgba(33,33,33,0.88);
+}
+
+.c21.c21:active .c10 {
+  color: #212121;
+}
+
+.c21.c21.c21.c21.disabled .c10 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c22.c22 .c10,
+.c22.c22 .c10 svg {
+  font-size: 24px;
+}
+
+.c22.c22:hover .c10 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c22.c22:active .c10 {
+  color: #fff;
+}
+
+.c22.c22.c22.c22.disabled .c10 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c23.c23 .c10,
+.c23.c23 .c10 svg {
+  font-size: 20px;
+}
+
+.c23.c23:hover .c10 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c23.c23:active .c10 {
+  color: #fff;
+}
+
+.c23.c23.c23.c23.disabled .c10 {
+  color: rgba(0,0,0,0.12);
+}
+
 .c6 {
   display: inline-block;
   width: 28px;
@@ -717,7 +1347,7 @@ exports[`Storyshots Pattern/ConversationList ListItem: Pattern/ConversationList 
   -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
   transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
   background: #9e9e9e;
-  color: rgba(0,0,0,0.87);
+  color: #fff;
   font-size: 0;
   height: 10px;
   width: 10px;
@@ -807,8 +1437,8 @@ div:hover > .c6 {
   display: inline-flex;
 }
 
-.c2.c2.c2:hover .c11,
-.c2.c2.c2:hover .sc-fkyLDJ {
+.c2.c2.c2:hover .c24,
+.c2.c2.c2:hover .sc-gacfCG {
   display: none;
 }
 
@@ -911,20 +1541,49 @@ div:hover > .c6 {
         tabIndex={-1}
       >
         <span />
-        <span
-          className="c8 more_vert icon c9"
+        <button
+          aria-describedby={null}
+          className="MuiButtonBase-root MuiIconButton-root c8 c9"
+          data-test-automation-id="conversationListItemMoreButton"
+          disabled={false}
+          onBlur={[Function]}
           onClick={[Function]}
+          onContextMenu={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseOver={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          size="medium"
+          tabIndex="0"
+          title={null}
+          type="button"
+          variant="plain"
         >
-          <svg
-            className="c10"
-            role="img"
+          <span
+            className="MuiIconButton-label"
           >
-            <use
-              href="#icon-more_vert"
-              xlinkHref="#icon-more_vert"
-            />
-          </svg>
-        </span>
+            <span
+              className="c10 more_vert icon c11"
+              size="medium"
+            >
+              <svg
+                className="c12"
+                role="img"
+              >
+                <use
+                  href="#icon-more_vert"
+                  xlinkHref="#icon-more_vert"
+                />
+              </svg>
+            </span>
+          </span>
+        </button>
       </div>
       <span
         className="MuiTouchRipple-root"
@@ -955,7 +1614,7 @@ exports[`Storyshots Pattern/ConversationList Section: Pattern/ConversationList S
   border-radius: 50%;
 }
 
-.c23 {
+.c25 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -975,7 +1634,7 @@ exports[`Storyshots Pattern/ConversationList Section: Pattern/ConversationList S
   border-radius: 50%;
 }
 
-.c19 {
+.c21 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -995,7 +1654,7 @@ exports[`Storyshots Pattern/ConversationList Section: Pattern/ConversationList S
   border-radius: 50%;
 }
 
-.c24 {
+.c26 {
   width: 6px;
   height: 2px;
   background: #fff;
@@ -1008,7 +1667,7 @@ exports[`Storyshots Pattern/ConversationList Section: Pattern/ConversationList S
   display: inline-flex;
 }
 
-.c18 {
+.c20 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -1039,6 +1698,234 @@ exports[`Storyshots Pattern/ConversationList Section: Pattern/ConversationList S
   fill: currentColor;
   pointer-events: none;
   font-size: 16px;
+}
+
+.c18.c18 {
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  color: #9e9e9e;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c18.c18 .c19,
+.c18.c18 .c19 svg {
+  font-size: 20px;
+}
+
+.c18.c18:hover {
+  background-color: transparent;
+}
+
+.c18.c18:hover .c19 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c18.c18:active .c19 {
+  color: #9e9e9e;
+}
+
+.c18.c18.c18.c18.disabled .c19 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c18.c18 .rippleVisible {
+  color: #9e9e9e;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c27.c27 .c19,
+.c27.c27 .c19 svg {
+  font-size: 20px;
+}
+
+.c27.c27:hover .c19 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c27.c27:active .c19 {
+  color: #9e9e9e;
+}
+
+.c27.c27.c27.c27.disabled .c19 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c28.c28 .c19,
+.c28.c28 .c19 svg {
+  font-size: 20px;
+}
+
+.c28.c28:hover .c19 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c28.c28:active .c19 {
+  color: #0684bd;
+}
+
+.c28.c28.c28.c28.disabled .c19 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c29.c29 .c19,
+.c29.c29 .c19 svg {
+  font-size: 20px;
+}
+
+.c29.c29:hover .c19 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c29.c29:active .c19 {
+  color: #0684bd;
+}
+
+.c29.c29.c29.c29.disabled .c19 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c30.c30 .c19,
+.c30.c30 .c19 svg {
+  font-size: 20px;
+}
+
+.c30.c30:hover .c19 {
+  color: rgba(237,182,60,0.88);
+}
+
+.c30.c30:active .c19 {
+  color: #edb63c;
+}
+
+.c30.c30.c30.c30.disabled .c19 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c31.c31 .c19,
+.c31.c31 .c19 svg {
+  font-size: 16px;
+}
+
+.c31.c31:hover .c19 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c31.c31:active .c19 {
+  color: #9e9e9e;
+}
+
+.c31.c31.c31.c31.disabled .c19 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c32.c32 .c19,
+.c32.c32 .c19 svg {
+  font-size: 20px;
+}
+
+.c32.c32:hover .c19 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c32.c32:active .c19 {
+  color: #0684bd;
+}
+
+.c32.c32.c32.c32.disabled .c19 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c33.c33 .c19,
+.c33.c33 .c19 svg {
+  font-size: 16px;
+}
+
+.c33.c33:hover .c19 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c33.c33:active .c19 {
+  color: #0684bd;
+}
+
+.c33.c33.c33.c33.disabled .c19 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c34.c34 .c19,
+.c34.c34 .c19 svg {
+  font-size: 16px;
+}
+
+.c34.c34:hover .c19 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c34.c34:active .c19 {
+  color: #fff;
+}
+
+.c34.c34.c34.c34.disabled .c19 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c35.c35 .c19,
+.c35.c35 .c19 svg {
+  font-size: 32px;
+}
+
+.c35.c35:hover .c19 {
+  color: rgba(33,33,33,0.88);
+}
+
+.c35.c35:active .c19 {
+  color: #212121;
+}
+
+.c35.c35.c35.c35.disabled .c19 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c36.c36 .c19,
+.c36.c36 .c19 svg {
+  font-size: 24px;
+}
+
+.c36.c36:hover .c19 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c36.c36:active .c19 {
+  color: #fff;
+}
+
+.c36.c36.c36.c36.disabled .c19 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c37.c37 .c19,
+.c37.c37 .c19 svg {
+  font-size: 20px;
+}
+
+.c37.c37:hover .c19 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c37.c37:active .c19 {
+  color: #fff;
+}
+
+.c37.c37.c37.c37.disabled .c19 {
+  color: rgba(0,0,0,0.12);
 }
 
 .c3.c3 {
@@ -1109,51 +1996,7 @@ exports[`Storyshots Pattern/ConversationList Section: Pattern/ConversationList S
   -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
   transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
   background: #9e9e9e;
-  color: rgba(0,0,0,0.87);
-  font-size: 0.75rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 16px;
-  text-align: center;
-  visibility: visible;
-}
-
-.c20 {
-  display: inline-block;
-  width: 20px;
-  height: 16px;
-  border-radius: 12px;
-  -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
-  transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
-  background: #ff8800;
-  color: rgba(0,0,0,0.87);
-  font-size: 0;
-  height: 10px;
-  width: 10px;
-  line-height: 10px;
-  color: transparent;
-  visibility: visible;
-}
-
-li:hover > .c20,
-div:hover > .c20 {
-  font-size: 0.75rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 16px;
-  text-align: center;
-  visibility: visible;
-}
-
-.c21 {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border-radius: 12px;
-  -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
-  transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
-  background: #9e9e9e;
-  color: rgba(0,0,0,0.87);
+  color: #fff;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -1164,13 +2007,57 @@ div:hover > .c20 {
 
 .c22 {
   display: inline-block;
+  width: 20px;
+  height: 16px;
+  border-radius: 12px;
+  -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
+  transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
+  background: #ff8800;
+  color: #fff;
+  font-size: 0;
+  height: 10px;
+  width: 10px;
+  line-height: 10px;
+  color: transparent;
+  visibility: visible;
+}
+
+li:hover > .c22,
+div:hover > .c22 {
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  text-align: center;
+  visibility: visible;
+}
+
+.c23 {
+  display: inline-block;
   width: 16px;
   height: 16px;
   border-radius: 12px;
   -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
   transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
   background: #9e9e9e;
-  color: rgba(0,0,0,0.87);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  text-align: center;
+  visibility: visible;
+}
+
+.c24 {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 12px;
+  -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
+  transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
+  background: #9e9e9e;
+  color: #fff;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -1255,8 +2142,8 @@ div:hover > .c20 {
   display: inline-flex;
 }
 
-.c12.c12.c12:hover .c25,
-.c12.c12.c12:hover .sc-fkyLDJ {
+.c12.c12.c12:hover .c38,
+.c12.c12.c12:hover .sc-gacfCG {
   display: none;
 }
 
@@ -1455,19 +2342,48 @@ div:hover > .c20 {
                   tabIndex={-1}
                 >
                   <span />
-                  <span
-                    className="c17 more_vert icon c5"
+                  <button
+                    aria-describedby={null}
+                    className="MuiButtonBase-root MuiIconButton-root c17 c18"
+                    data-test-automation-id="conversationListItemMoreButton"
+                    disabled={false}
+                    onBlur={[Function]}
+                    onContextMenu={[Function]}
+                    onFocus={[Function]}
+                    onKeyDown={[Function]}
+                    onKeyUp={[Function]}
+                    onMouseDown={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseOver={[Function]}
+                    onMouseUp={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchMove={[Function]}
+                    onTouchStart={[Function]}
+                    size="medium"
+                    tabIndex="0"
+                    title={null}
+                    type="button"
+                    variant="plain"
                   >
-                    <svg
-                      className="c18"
-                      role="img"
+                    <span
+                      className="MuiIconButton-label"
                     >
-                      <use
-                        href="#icon-more_vert"
-                        xlinkHref="#icon-more_vert"
-                      />
-                    </svg>
-                  </span>
+                      <span
+                        className="c19 more_vert icon c5"
+                        size="medium"
+                      >
+                        <svg
+                          className="c20"
+                          role="img"
+                        >
+                          <use
+                            href="#icon-more_vert"
+                            xlinkHref="#icon-more_vert"
+                          />
+                        </svg>
+                      </span>
+                    </span>
+                  </button>
                 </div>
                 <span
                   className="MuiTouchRipple-root"
@@ -1493,7 +2409,7 @@ div:hover > .c20 {
                   className="c13"
                 >
                   <div
-                    className="c19"
+                    className="c21"
                   />
                 </div>
                 <p
@@ -1508,7 +2424,7 @@ div:hover > .c20 {
                 </p>
                 <span
                   aria-hidden={true}
-                  className="umi c20"
+                  className="umi c22"
                 >
                   12
                 </span>
@@ -1517,19 +2433,48 @@ div:hover > .c20 {
                   tabIndex={-1}
                 >
                   <span />
-                  <span
-                    className="c17 more_vert icon c5"
+                  <button
+                    aria-describedby={null}
+                    className="MuiButtonBase-root MuiIconButton-root c17 c18"
+                    data-test-automation-id="conversationListItemMoreButton"
+                    disabled={false}
+                    onBlur={[Function]}
+                    onContextMenu={[Function]}
+                    onFocus={[Function]}
+                    onKeyDown={[Function]}
+                    onKeyUp={[Function]}
+                    onMouseDown={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseOver={[Function]}
+                    onMouseUp={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchMove={[Function]}
+                    onTouchStart={[Function]}
+                    size="medium"
+                    tabIndex="0"
+                    title={null}
+                    type="button"
+                    variant="plain"
                   >
-                    <svg
-                      className="c18"
-                      role="img"
+                    <span
+                      className="MuiIconButton-label"
                     >
-                      <use
-                        href="#icon-more_vert"
-                        xlinkHref="#icon-more_vert"
-                      />
-                    </svg>
-                  </span>
+                      <span
+                        className="c19 more_vert icon c5"
+                        size="medium"
+                      >
+                        <svg
+                          className="c20"
+                          role="img"
+                        >
+                          <use
+                            href="#icon-more_vert"
+                            xlinkHref="#icon-more_vert"
+                          />
+                        </svg>
+                      </span>
+                    </span>
+                  </button>
                 </div>
                 <span
                   className="MuiTouchRipple-root"
@@ -1555,7 +2500,7 @@ div:hover > .c20 {
                   className="c13"
                 >
                   <div
-                    className="c19"
+                    className="c21"
                   />
                 </div>
                 <p
@@ -1570,7 +2515,7 @@ div:hover > .c20 {
                 </p>
                 <span
                   aria-hidden={true}
-                  className="umi c21"
+                  className="umi c23"
                 >
                   9
                 </span>
@@ -1579,19 +2524,48 @@ div:hover > .c20 {
                   tabIndex={-1}
                 >
                   <span />
-                  <span
-                    className="c17 more_vert icon c5"
+                  <button
+                    aria-describedby={null}
+                    className="MuiButtonBase-root MuiIconButton-root c17 c18"
+                    data-test-automation-id="conversationListItemMoreButton"
+                    disabled={false}
+                    onBlur={[Function]}
+                    onContextMenu={[Function]}
+                    onFocus={[Function]}
+                    onKeyDown={[Function]}
+                    onKeyUp={[Function]}
+                    onMouseDown={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseOver={[Function]}
+                    onMouseUp={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchMove={[Function]}
+                    onTouchStart={[Function]}
+                    size="medium"
+                    tabIndex="0"
+                    title={null}
+                    type="button"
+                    variant="plain"
                   >
-                    <svg
-                      className="c18"
-                      role="img"
+                    <span
+                      className="MuiIconButton-label"
                     >
-                      <use
-                        href="#icon-more_vert"
-                        xlinkHref="#icon-more_vert"
-                      />
-                    </svg>
-                  </span>
+                      <span
+                        className="c19 more_vert icon c5"
+                        size="medium"
+                      >
+                        <svg
+                          className="c20"
+                          role="img"
+                        >
+                          <use
+                            href="#icon-more_vert"
+                            xlinkHref="#icon-more_vert"
+                          />
+                        </svg>
+                      </span>
+                    </span>
+                  </button>
                 </div>
                 <span
                   className="MuiTouchRipple-root"
@@ -1617,7 +2591,7 @@ div:hover > .c20 {
                   className="c13"
                 >
                   <div
-                    className="c19"
+                    className="c21"
                   />
                 </div>
                 <p
@@ -1632,7 +2606,7 @@ div:hover > .c20 {
                 </p>
                 <span
                   aria-hidden={true}
-                  className="umi c22"
+                  className="umi c24"
                 >
                   
                 </span>
@@ -1641,19 +2615,48 @@ div:hover > .c20 {
                   tabIndex={-1}
                 >
                   <span />
-                  <span
-                    className="c17 more_vert icon c5"
+                  <button
+                    aria-describedby={null}
+                    className="MuiButtonBase-root MuiIconButton-root c17 c18"
+                    data-test-automation-id="conversationListItemMoreButton"
+                    disabled={false}
+                    onBlur={[Function]}
+                    onContextMenu={[Function]}
+                    onFocus={[Function]}
+                    onKeyDown={[Function]}
+                    onKeyUp={[Function]}
+                    onMouseDown={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseOver={[Function]}
+                    onMouseUp={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchMove={[Function]}
+                    onTouchStart={[Function]}
+                    size="medium"
+                    tabIndex="0"
+                    title={null}
+                    type="button"
+                    variant="plain"
                   >
-                    <svg
-                      className="c18"
-                      role="img"
+                    <span
+                      className="MuiIconButton-label"
                     >
-                      <use
-                        href="#icon-more_vert"
-                        xlinkHref="#icon-more_vert"
-                      />
-                    </svg>
-                  </span>
+                      <span
+                        className="c19 more_vert icon c5"
+                        size="medium"
+                      >
+                        <svg
+                          className="c20"
+                          role="img"
+                        >
+                          <use
+                            href="#icon-more_vert"
+                            xlinkHref="#icon-more_vert"
+                          />
+                        </svg>
+                      </span>
+                    </span>
+                  </button>
                 </div>
                 <span
                   className="MuiTouchRipple-root"
@@ -1679,10 +2682,10 @@ div:hover > .c20 {
                   className="c13"
                 >
                   <div
-                    className="c23"
+                    className="c25"
                   >
                     <div
-                      className="c24"
+                      className="c26"
                     />
                   </div>
                 </div>
@@ -1698,7 +2701,7 @@ div:hover > .c20 {
                 </p>
                 <span
                   aria-hidden={true}
-                  className="umi c22"
+                  className="umi c24"
                 >
                   
                 </span>
@@ -1707,19 +2710,48 @@ div:hover > .c20 {
                   tabIndex={-1}
                 >
                   <span />
-                  <span
-                    className="c17 more_vert icon c5"
+                  <button
+                    aria-describedby={null}
+                    className="MuiButtonBase-root MuiIconButton-root c17 c18"
+                    data-test-automation-id="conversationListItemMoreButton"
+                    disabled={false}
+                    onBlur={[Function]}
+                    onContextMenu={[Function]}
+                    onFocus={[Function]}
+                    onKeyDown={[Function]}
+                    onKeyUp={[Function]}
+                    onMouseDown={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseOver={[Function]}
+                    onMouseUp={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchMove={[Function]}
+                    onTouchStart={[Function]}
+                    size="medium"
+                    tabIndex="0"
+                    title={null}
+                    type="button"
+                    variant="plain"
                   >
-                    <svg
-                      className="c18"
-                      role="img"
+                    <span
+                      className="MuiIconButton-label"
                     >
-                      <use
-                        href="#icon-more_vert"
-                        xlinkHref="#icon-more_vert"
-                      />
-                    </svg>
-                  </span>
+                      <span
+                        className="c19 more_vert icon c5"
+                        size="medium"
+                      >
+                        <svg
+                          className="c20"
+                          role="img"
+                        >
+                          <use
+                            href="#icon-more_vert"
+                            xlinkHref="#icon-more_vert"
+                          />
+                        </svg>
+                      </span>
+                    </span>
+                  </button>
                 </div>
                 <span
                   className="MuiTouchRipple-root"
@@ -1745,7 +2777,7 @@ div:hover > .c20 {
                   className="c13"
                 >
                   <div
-                    className="c19"
+                    className="c21"
                   />
                 </div>
                 <p
@@ -1763,19 +2795,48 @@ div:hover > .c20 {
                   tabIndex={-1}
                 >
                   <span />
-                  <span
-                    className="c17 more_vert icon c5"
+                  <button
+                    aria-describedby={null}
+                    className="MuiButtonBase-root MuiIconButton-root c17 c18"
+                    data-test-automation-id="conversationListItemMoreButton"
+                    disabled={false}
+                    onBlur={[Function]}
+                    onContextMenu={[Function]}
+                    onFocus={[Function]}
+                    onKeyDown={[Function]}
+                    onKeyUp={[Function]}
+                    onMouseDown={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseOver={[Function]}
+                    onMouseUp={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchMove={[Function]}
+                    onTouchStart={[Function]}
+                    size="medium"
+                    tabIndex="0"
+                    title={null}
+                    type="button"
+                    variant="plain"
                   >
-                    <svg
-                      className="c18"
-                      role="img"
+                    <span
+                      className="MuiIconButton-label"
                     >
-                      <use
-                        href="#icon-more_vert"
-                        xlinkHref="#icon-more_vert"
-                      />
-                    </svg>
-                  </span>
+                      <span
+                        className="c19 more_vert icon c5"
+                        size="medium"
+                      >
+                        <svg
+                          className="c20"
+                          role="img"
+                        >
+                          <use
+                            href="#icon-more_vert"
+                            xlinkHref="#icon-more_vert"
+                          />
+                        </svg>
+                      </span>
+                    </span>
+                  </button>
                 </div>
                 <span
                   className="MuiTouchRipple-root"
@@ -1811,7 +2872,7 @@ exports[`Storyshots Pattern/ConversationList SortableList: Pattern/ConversationL
   border-radius: 50%;
 }
 
-.c16 {
+.c18 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -1831,7 +2892,7 @@ exports[`Storyshots Pattern/ConversationList SortableList: Pattern/ConversationL
   border-radius: 50%;
 }
 
-.c12 {
+.c14 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -1851,14 +2912,14 @@ exports[`Storyshots Pattern/ConversationList SortableList: Pattern/ConversationL
   border-radius: 50%;
 }
 
-.c10 {
+.c12 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c11 {
+.c13 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -1869,6 +2930,234 @@ exports[`Storyshots Pattern/ConversationList SortableList: Pattern/ConversationL
   font-size: 24px;
 }
 
+.c10.c10 {
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  color: #9e9e9e;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c10.c10 .c11,
+.c10.c10 .c11 svg {
+  font-size: 20px;
+}
+
+.c10.c10:hover {
+  background-color: transparent;
+}
+
+.c10.c10:hover .c11 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c10.c10:active .c11 {
+  color: #9e9e9e;
+}
+
+.c10.c10.c10.c10.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c10.c10 .rippleVisible {
+  color: #9e9e9e;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c19.c19 .c11,
+.c19.c19 .c11 svg {
+  font-size: 20px;
+}
+
+.c19.c19:hover .c11 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c19.c19:active .c11 {
+  color: #9e9e9e;
+}
+
+.c19.c19.c19.c19.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c20.c20 .c11,
+.c20.c20 .c11 svg {
+  font-size: 20px;
+}
+
+.c20.c20:hover .c11 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c20.c20:active .c11 {
+  color: #0684bd;
+}
+
+.c20.c20.c20.c20.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c21.c21 .c11,
+.c21.c21 .c11 svg {
+  font-size: 20px;
+}
+
+.c21.c21:hover .c11 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c21.c21:active .c11 {
+  color: #0684bd;
+}
+
+.c21.c21.c21.c21.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c22.c22 .c11,
+.c22.c22 .c11 svg {
+  font-size: 20px;
+}
+
+.c22.c22:hover .c11 {
+  color: rgba(237,182,60,0.88);
+}
+
+.c22.c22:active .c11 {
+  color: #edb63c;
+}
+
+.c22.c22.c22.c22.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c23.c23 .c11,
+.c23.c23 .c11 svg {
+  font-size: 16px;
+}
+
+.c23.c23:hover .c11 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c23.c23:active .c11 {
+  color: #9e9e9e;
+}
+
+.c23.c23.c23.c23.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c24.c24 .c11,
+.c24.c24 .c11 svg {
+  font-size: 20px;
+}
+
+.c24.c24:hover .c11 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c24.c24:active .c11 {
+  color: #0684bd;
+}
+
+.c24.c24.c24.c24.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c25.c25 .c11,
+.c25.c25 .c11 svg {
+  font-size: 16px;
+}
+
+.c25.c25:hover .c11 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c25.c25:active .c11 {
+  color: #0684bd;
+}
+
+.c25.c25.c25.c25.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c26.c26 .c11,
+.c26.c26 .c11 svg {
+  font-size: 16px;
+}
+
+.c26.c26:hover .c11 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c26.c26:active .c11 {
+  color: #fff;
+}
+
+.c26.c26.c26.c26.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c27.c27 .c11,
+.c27.c27 .c11 svg {
+  font-size: 32px;
+}
+
+.c27.c27:hover .c11 {
+  color: rgba(33,33,33,0.88);
+}
+
+.c27.c27:active .c11 {
+  color: #212121;
+}
+
+.c27.c27.c27.c27.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c28.c28 .c11,
+.c28.c28 .c11 svg {
+  font-size: 24px;
+}
+
+.c28.c28:hover .c11 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c28.c28:active .c11 {
+  color: #fff;
+}
+
+.c28.c28.c28.c28.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c29.c29 .c11,
+.c29.c29 .c11 svg {
+  font-size: 20px;
+}
+
+.c29.c29:hover .c11 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c29.c29:active .c11 {
+  color: #fff;
+}
+
+.c29.c29.c29.c29.disabled .c11 {
+  color: rgba(0,0,0,0.12);
+}
+
 .c7 {
   display: inline-block;
   width: 20px;
@@ -1877,51 +3166,7 @@ exports[`Storyshots Pattern/ConversationList SortableList: Pattern/ConversationL
   -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
   transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
   background: #9e9e9e;
-  color: rgba(0,0,0,0.87);
-  font-size: 0.75rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 16px;
-  text-align: center;
-  visibility: visible;
-}
-
-.c13 {
-  display: inline-block;
-  width: 20px;
-  height: 16px;
-  border-radius: 12px;
-  -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
-  transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
-  background: #ff8800;
-  color: rgba(0,0,0,0.87);
-  font-size: 0;
-  height: 10px;
-  width: 10px;
-  line-height: 10px;
-  color: transparent;
-  visibility: visible;
-}
-
-li:hover > .c13,
-div:hover > .c13 {
-  font-size: 0.75rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 16px;
-  text-align: center;
-  visibility: visible;
-}
-
-.c14 {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border-radius: 12px;
-  -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
-  transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
-  background: #9e9e9e;
-  color: rgba(0,0,0,0.87);
+  color: #fff;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -1932,13 +3177,57 @@ div:hover > .c13 {
 
 .c15 {
   display: inline-block;
+  width: 20px;
+  height: 16px;
+  border-radius: 12px;
+  -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
+  transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
+  background: #ff8800;
+  color: #fff;
+  font-size: 0;
+  height: 10px;
+  width: 10px;
+  line-height: 10px;
+  color: transparent;
+  visibility: visible;
+}
+
+li:hover > .c15,
+div:hover > .c15 {
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  text-align: center;
+  visibility: visible;
+}
+
+.c16 {
+  display: inline-block;
   width: 16px;
   height: 16px;
   border-radius: 12px;
   -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
   transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
   background: #9e9e9e;
-  color: rgba(0,0,0,0.87);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  text-align: center;
+  visibility: visible;
+}
+
+.c17 {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 12px;
+  -webkit-transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
+  transition: font-size 150ms cubic-bezier(0.4,0,0.2,1) 0ms,height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,line-height 150ms cubic-bezier(0.4,0,0.2,1) 0ms,color 150ms cubic-bezier(0.4,0,0.2,1) 0ms;
+  background: #9e9e9e;
+  color: #fff;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -2023,8 +3312,8 @@ div:hover > .c13 {
   display: inline-flex;
 }
 
-.c3.c3.c3:hover .c17,
-.c3.c3.c3:hover .sc-fkyLDJ {
+.c3.c3.c3:hover .c30,
+.c3.c3.c3:hover .sc-gacfCG {
   display: none;
 }
 
@@ -2132,19 +3421,48 @@ div:hover > .c13 {
           className="c8"
           tabIndex={-1}
         >
-          <span
-            className="c9 more_vert icon c10"
+          <button
+            aria-describedby={null}
+            className="MuiButtonBase-root MuiIconButton-root c9 c10"
+            data-test-automation-id="conversationListItemMoreButton"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseOver={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="medium"
+            tabIndex="0"
+            title={null}
+            type="button"
+            variant="plain"
           >
-            <svg
-              className="c11"
-              role="img"
+            <span
+              className="MuiIconButton-label"
             >
-              <use
-                href="#icon-more_vert"
-                xlinkHref="#icon-more_vert"
-              />
-            </svg>
-          </span>
+              <span
+                className="c11 more_vert icon c12"
+                size="medium"
+              >
+                <svg
+                  className="c13"
+                  role="img"
+                >
+                  <use
+                    href="#icon-more_vert"
+                    xlinkHref="#icon-more_vert"
+                  />
+                </svg>
+              </span>
+            </span>
+          </button>
         </div>
         <span
           className="MuiTouchRipple-root"
@@ -2170,7 +3488,7 @@ div:hover > .c13 {
           className="c4"
         >
           <div
-            className="c12"
+            className="c14"
           />
         </div>
         <p
@@ -2185,7 +3503,7 @@ div:hover > .c13 {
         </p>
         <span
           aria-hidden={true}
-          className="umi c13"
+          className="umi c15"
         >
           12
         </span>
@@ -2193,19 +3511,48 @@ div:hover > .c13 {
           className="c8"
           tabIndex={-1}
         >
-          <span
-            className="c9 more_vert icon c10"
+          <button
+            aria-describedby={null}
+            className="MuiButtonBase-root MuiIconButton-root c9 c10"
+            data-test-automation-id="conversationListItemMoreButton"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseOver={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="medium"
+            tabIndex="0"
+            title={null}
+            type="button"
+            variant="plain"
           >
-            <svg
-              className="c11"
-              role="img"
+            <span
+              className="MuiIconButton-label"
             >
-              <use
-                href="#icon-more_vert"
-                xlinkHref="#icon-more_vert"
-              />
-            </svg>
-          </span>
+              <span
+                className="c11 more_vert icon c12"
+                size="medium"
+              >
+                <svg
+                  className="c13"
+                  role="img"
+                >
+                  <use
+                    href="#icon-more_vert"
+                    xlinkHref="#icon-more_vert"
+                  />
+                </svg>
+              </span>
+            </span>
+          </button>
         </div>
         <span
           className="MuiTouchRipple-root"
@@ -2231,7 +3578,7 @@ div:hover > .c13 {
           className="c4"
         >
           <div
-            className="c12"
+            className="c14"
           />
         </div>
         <p
@@ -2246,7 +3593,7 @@ div:hover > .c13 {
         </p>
         <span
           aria-hidden={true}
-          className="umi c14"
+          className="umi c16"
         >
           9
         </span>
@@ -2254,19 +3601,48 @@ div:hover > .c13 {
           className="c8"
           tabIndex={-1}
         >
-          <span
-            className="c9 more_vert icon c10"
+          <button
+            aria-describedby={null}
+            className="MuiButtonBase-root MuiIconButton-root c9 c10"
+            data-test-automation-id="conversationListItemMoreButton"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseOver={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="medium"
+            tabIndex="0"
+            title={null}
+            type="button"
+            variant="plain"
           >
-            <svg
-              className="c11"
-              role="img"
+            <span
+              className="MuiIconButton-label"
             >
-              <use
-                href="#icon-more_vert"
-                xlinkHref="#icon-more_vert"
-              />
-            </svg>
-          </span>
+              <span
+                className="c11 more_vert icon c12"
+                size="medium"
+              >
+                <svg
+                  className="c13"
+                  role="img"
+                >
+                  <use
+                    href="#icon-more_vert"
+                    xlinkHref="#icon-more_vert"
+                  />
+                </svg>
+              </span>
+            </span>
+          </button>
         </div>
         <span
           className="MuiTouchRipple-root"
@@ -2292,7 +3668,7 @@ div:hover > .c13 {
           className="c4"
         >
           <div
-            className="c12"
+            className="c14"
           />
         </div>
         <p
@@ -2307,7 +3683,7 @@ div:hover > .c13 {
         </p>
         <span
           aria-hidden={true}
-          className="umi c15"
+          className="umi c17"
         >
           
         </span>
@@ -2315,19 +3691,48 @@ div:hover > .c13 {
           className="c8"
           tabIndex={-1}
         >
-          <span
-            className="c9 more_vert icon c10"
+          <button
+            aria-describedby={null}
+            className="MuiButtonBase-root MuiIconButton-root c9 c10"
+            data-test-automation-id="conversationListItemMoreButton"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseOver={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="medium"
+            tabIndex="0"
+            title={null}
+            type="button"
+            variant="plain"
           >
-            <svg
-              className="c11"
-              role="img"
+            <span
+              className="MuiIconButton-label"
             >
-              <use
-                href="#icon-more_vert"
-                xlinkHref="#icon-more_vert"
-              />
-            </svg>
-          </span>
+              <span
+                className="c11 more_vert icon c12"
+                size="medium"
+              >
+                <svg
+                  className="c13"
+                  role="img"
+                >
+                  <use
+                    href="#icon-more_vert"
+                    xlinkHref="#icon-more_vert"
+                  />
+                </svg>
+              </span>
+            </span>
+          </button>
         </div>
         <span
           className="MuiTouchRipple-root"
@@ -2353,7 +3758,7 @@ div:hover > .c13 {
           className="c4"
         >
           <div
-            className="c16"
+            className="c18"
           />
         </div>
         <p
@@ -2370,19 +3775,48 @@ div:hover > .c13 {
           className="c8"
           tabIndex={-1}
         >
-          <span
-            className="c9 more_vert icon c10"
+          <button
+            aria-describedby={null}
+            className="MuiButtonBase-root MuiIconButton-root c9 c10"
+            data-test-automation-id="conversationListItemMoreButton"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseOver={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="medium"
+            tabIndex="0"
+            title={null}
+            type="button"
+            variant="plain"
           >
-            <svg
-              className="c11"
-              role="img"
+            <span
+              className="MuiIconButton-label"
             >
-              <use
-                href="#icon-more_vert"
-                xlinkHref="#icon-more_vert"
-              />
-            </svg>
-          </span>
+              <span
+                className="c11 more_vert icon c12"
+                size="medium"
+              >
+                <svg
+                  className="c13"
+                  role="img"
+                >
+                  <use
+                    href="#icon-more_vert"
+                    xlinkHref="#icon-more_vert"
+                  />
+                </svg>
+              </span>
+            </span>
+          </button>
         </div>
         <span
           className="MuiTouchRipple-root"
@@ -2408,7 +3842,7 @@ div:hover > .c13 {
           className="c4"
         >
           <div
-            className="c16"
+            className="c18"
           />
         </div>
         <p
@@ -2423,7 +3857,7 @@ div:hover > .c13 {
         </p>
         <span
           aria-hidden={true}
-          className="umi c15"
+          className="umi c17"
         >
           
         </span>
@@ -2431,19 +3865,48 @@ div:hover > .c13 {
           className="c8"
           tabIndex={-1}
         >
-          <span
-            className="c9 more_vert icon c10"
+          <button
+            aria-describedby={null}
+            className="MuiButtonBase-root MuiIconButton-root c9 c10"
+            data-test-automation-id="conversationListItemMoreButton"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseOver={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="medium"
+            tabIndex="0"
+            title={null}
+            type="button"
+            variant="plain"
           >
-            <svg
-              className="c11"
-              role="img"
+            <span
+              className="MuiIconButton-label"
             >
-              <use
-                href="#icon-more_vert"
-                xlinkHref="#icon-more_vert"
-              />
-            </svg>
-          </span>
+              <span
+                className="c11 more_vert icon c12"
+                size="medium"
+              >
+                <svg
+                  className="c13"
+                  role="img"
+                >
+                  <use
+                    href="#icon-more_vert"
+                    xlinkHref="#icon-more_vert"
+                  />
+                </svg>
+              </span>
+            </span>
+          </button>
         </div>
         <span
           className="MuiTouchRipple-root"

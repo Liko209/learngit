@@ -147,6 +147,11 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
 
 .c0.c0 {
   padding: 8px;
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
   padding-left: 8px;
 }
 
@@ -157,6 +162,12 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
 .c2.c2 a,
 .c2.c2 button {
   margin-right: 0;
+}
+
+.c1 {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
 }
 
 .c1.c1 {
@@ -176,7 +187,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
 }
 
 .c1.c1 .list-item-secondary {
-  color: #9e9e9e;
+  color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -520,6 +531,11 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
 
 .c0.c0 {
   padding: 8px;
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
   padding-left: 8px;
 }
 
@@ -544,6 +560,12 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
   overflow: hidden;
 }
 
+.c4 {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+
 .c4.c4 {
   padding: 0;
 }
@@ -561,7 +583,7 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
 }
 
 .c4.c4 .list-item-secondary {
-  color: #9e9e9e;
+  color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;

@@ -381,12 +381,6 @@ Array [
   font-size: 0;
 }
 
-.c11::after {
-  content: '';
-  display: block;
-  clear: both;
-}
-
 .c11 .conversation-item-cards:last-child {
   margin-bottom: 0;
 }
@@ -892,12 +886,6 @@ Array [
 .c11 {
   padding: 0px 16px 16px 0px;
   font-size: 0;
-}
-
-.c11::after {
-  content: '';
-  display: block;
-  clear: both;
 }
 
 .c11 .conversation-item-cards:last-child {

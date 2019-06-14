@@ -141,6 +141,11 @@ exports[`Storyshots Components/Lists/ListItem List: Components/Lists/ListItem Li
 
 .c0.c0 {
   padding: 8px;
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
   padding-left: 8px;
 }
 
@@ -174,6 +179,12 @@ exports[`Storyshots Components/Lists/ListItem List: Components/Lists/ListItem Li
   margin-right: 0;
 }
 
+.c4 {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+
 .c4.c4 {
   padding: 0;
 }
@@ -191,7 +202,7 @@ exports[`Storyshots Components/Lists/ListItem List: Components/Lists/ListItem Li
 }
 
 .c4.c4 .list-item-secondary {
-  color: #9e9e9e;
+  color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -1041,7 +1052,7 @@ exports[`Storyshots Components/Lists/ListItem List: Components/Lists/ListItem Li
 `;
 
 exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and controls: Components/Lists/ListItem Single-line item with Avatar and controls 1`] = `
-.c1.c1 {
+.c2.c2 {
   width: 24px;
   height: 24px;
   font-size: 0.75rem;
@@ -1051,16 +1062,16 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   background-color: #f5f6fb;
 }
 
-.c1.c1:hover {
+.c2.c2:hover {
   opacity: 0.88;
   cursor: pointer;
 }
 
-.c1.c1:active {
+.c2.c2:active {
   opacity: 0.76;
 }
 
-.c1 > .avatar-short-name {
+.c2 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -1077,11 +1088,11 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   align-items: center;
 }
 
-.c4.c4 {
+.c5.c5 {
   width: 36px;
 }
 
-.c4 .custom-switchBase {
+.c5 .custom-switchBase {
   width: 36px;
   height: 20px;
   -webkit-transform: translateX(-8px);
@@ -1089,15 +1100,15 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   transform: translateX(-8px);
 }
 
-.c4:hover .custom-bar {
+.c5:hover .custom-bar {
   opacity: 0.88 !important;
 }
 
-.c4:active .custom-bar {
+.c5:active .custom-bar {
   opacity: 0.76 !important;
 }
 
-.c4 .custom-bar {
+.c5 .custom-bar {
   opacity: 1;
   background: #bfbfbf;
   border-radius: 10px;
@@ -1111,36 +1122,36 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   margin: 0;
 }
 
-.c4.c4 .custom-icon {
+.c5.c5 .custom-icon {
   width: 12px;
   height: 12px;
   box-shadow: none;
 }
 
-.c4 .custom-disabled .custom-icon {
+.c5 .custom-disabled .custom-icon {
   background: #fff;
 }
 
-.c4 .custom-checked {
+.c5 .custom-checked {
   -webkit-transform: translateX(8px);
   -ms-transform: translateX(8px);
   transform: translateX(8px);
 }
 
-.c4 .custom-checked .custom-icon {
+.c5 .custom-checked .custom-icon {
   background: #fff;
 }
 
-.c4 .custom-checked + .custom-bar {
+.c5 .custom-checked + .custom-bar {
   opacity: 1;
 }
 
-.c4 .custom-disabled.custom-checked + .custom-bar {
+.c5 .custom-disabled.custom-checked + .custom-bar {
   opacity: 1;
   background: #b2e3f4;
 }
 
-.c4 input {
+.c5 input {
   -webkit-transform: translateX(8px);
   -ms-transform: translateX(8px);
   transform: translateX(8px);
@@ -1148,23 +1159,38 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
 
 .c0.c0 {
   padding: 8px;
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
   padding-left: 16px;
 }
 
-.c3.c3 {
+.c1 {
+  margin-right: 8px;
+}
+
+.c4.c4 {
   margin: 0px 8px;
 }
 
-.c3.c3 a,
-.c3.c3 button {
+.c4.c4 a,
+.c4.c4 button {
   margin-right: 0;
 }
 
-.c2.c2 {
+.c3 {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+
+.c3.c3 {
   padding: 0;
 }
 
-.c2.c2 .list-item-primary {
+.c3.c3 .list-item-primary {
   color: #212121;
   font-size: 0.875rem;
   font-weight: 400;
@@ -1176,8 +1202,8 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   word-break: break-word;
 }
 
-.c2.c2 .list-item-secondary {
-  color: #9e9e9e;
+.c3.c3 .list-item-secondary {
+  color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -1192,7 +1218,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   className="MuiList-root MuiList-padding "
 >
   <div
-    className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button c0"
+    className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-dense MuiListItem-gutters MuiListItem-button c0"
     onBlur={[Function]}
     onContextMenu={[Function]}
     onFocus={[Function]}
@@ -1208,7 +1234,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
     tabIndex="0"
   >
     <div
-      className="MuiAvatar-root c1"
+      className="MuiAvatar-root c1 c2"
       size="small"
     >
       <img
@@ -1217,7 +1243,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
       />
     </div>
     <div
-      className="MuiListItemText-root c2"
+      className="MuiListItemText-root c3"
     >
       <span
         className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary list-item-primary"
@@ -1226,10 +1252,10 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
       </span>
     </div>
     <div
-      className="c3"
+      className="c4"
     >
       <span
-        className="MuiSwitch-root custom-root c4"
+        className="MuiSwitch-root custom-root c5"
       >
         <span
           className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiSwitch-switchBase custom-switchBase MuiSwitch-colorPrimary"
@@ -1401,6 +1427,11 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
 
 .c0.c0 {
   padding: 8px;
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
   padding-left: 16px;
 }
 
@@ -1425,6 +1456,12 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
   overflow: hidden;
 }
 
+.c6 {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+
 .c6.c6 {
   padding: 0;
 }
@@ -1442,7 +1479,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
 }
 
 .c6.c6 .list-item-secondary {
-  color: #9e9e9e;
+  color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -1671,6 +1708,11 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
 
 .c0.c0 {
   padding: 8px;
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
   padding-left: 8px;
 }
 
@@ -1704,6 +1746,12 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
   margin-right: 0;
 }
 
+.c4 {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+
 .c4.c4 {
   padding: 0;
 }
@@ -1721,7 +1769,7 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
 }
 
 .c4.c4 .list-item-secondary {
-  color: #9e9e9e;
+  color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;

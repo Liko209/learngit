@@ -665,7 +665,7 @@ exports[`Storyshots Pattern/TopBar TopBar: Pattern/TopBar TopBar 1`] = `
           <button
             aria-describedby={null}
             className="MuiButtonBase-root MuiIconButton-root c12 c13"
-            data-test-automation-id="Back"
+            data-test-automation-id="back"
             disabled={false}
             onBlur={[Function]}
             onClick={[Function]}
@@ -716,7 +716,7 @@ exports[`Storyshots Pattern/TopBar TopBar: Pattern/TopBar TopBar 1`] = `
           <button
             aria-describedby={null}
             className="MuiButtonBase-root MuiIconButton-root c12 c13"
-            data-test-automation-id="Forward"
+            data-test-automation-id="forward"
             disabled={false}
             onBlur={[Function]}
             onClick={[Function]}

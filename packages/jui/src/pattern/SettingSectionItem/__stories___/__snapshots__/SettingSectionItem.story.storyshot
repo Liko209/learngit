@@ -90,6 +90,14 @@ exports[`Storyshots Pattern/Setting SettingSectionItem: Pattern/Setting SettingS
   padding-left: 10px;
 }
 
+.c5 .c9 {
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  line-height: 0;
+  padding: 20px 0px;
+}
+
 .c0.c0 {
   margin-bottom: 16px;
 }

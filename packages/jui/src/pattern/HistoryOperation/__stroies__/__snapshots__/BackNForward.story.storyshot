@@ -272,7 +272,7 @@ exports[`Storyshots Pattern BackNForward: Pattern BackNForward 1`] = `
     <button
       aria-describedby={null}
       className="MuiButtonBase-root MuiIconButton-root c1 c2"
-      data-test-automation-id="Back"
+      data-test-automation-id="back"
       disabled={false}
       onBlur={[Function]}
       onClick={[Function]}
@@ -323,7 +323,7 @@ exports[`Storyshots Pattern BackNForward: Pattern BackNForward 1`] = `
     <button
       aria-describedby={null}
       className="MuiButtonBase-root MuiIconButton-root c1 c2"
-      data-test-automation-id="Forward"
+      data-test-automation-id="forward"
       disabled={false}
       onBlur={[Function]}
       onClick={[Function]}

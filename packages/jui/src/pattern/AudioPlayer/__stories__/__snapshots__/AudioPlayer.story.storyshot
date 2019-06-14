@@ -203,6 +203,11 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
   width: 120px;
 }
 
+.c7 > div > div {
+  -webkit-transition: none;
+  transition: none;
+}
+
 .c0 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
@@ -224,7 +229,9 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
     >
       <button
         aria-describedby={null}
+        aria-label="play voicemail"
         className="MuiButtonBase-root MuiIconButton-root c1 c2"
+        data-test-automation-id="audio-play-btn"
         disabled={false}
         onBlur={[Function]}
         onClick={[Function]}
@@ -269,8 +276,9 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
       </button>
       <span
         className="c6"
+        data-test-automation-id="audio-end-time"
       >
-        00:00
+        03:08
       </span>
     </div>
   </dd>
@@ -283,7 +291,9 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
     >
       <button
         aria-describedby={null}
+        aria-label="play voicemail"
         className="MuiButtonBase-root MuiIconButton-root c1 c2"
+        data-test-automation-id="audio-play-btn"
         disabled={false}
         onBlur={[Function]}
         onClick={[Function]}
@@ -328,6 +338,7 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
       </button>
       <span
         className="c6"
+        data-test-automation-id="audio-current-time"
       >
         00:30
       </span>
@@ -392,6 +403,7 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
       </div>
       <span
         className="c6"
+        data-test-automation-id="audio-end-time"
       >
         03:08
       </span>
@@ -406,7 +418,9 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
     >
       <button
         aria-describedby={null}
+        aria-label="play voicemail"
         className="MuiButtonBase-root MuiIconButton-root c1 c8"
+        data-test-automation-id="audio-play-btn"
         disabled={false}
         onBlur={[Function]}
         onClick={[Function]}
@@ -451,6 +465,7 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
       </button>
       <span
         className="c6"
+        data-test-automation-id="audio-current-time"
       >
         01:00
       </span>
@@ -515,6 +530,7 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
       </div>
       <span
         className="c6"
+        data-test-automation-id="audio-end-time"
       >
         03:08
       </span>
@@ -529,7 +545,9 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
     >
       <button
         aria-describedby={null}
+        aria-label="play voicemail"
         className="MuiButtonBase-root MuiIconButton-root c1 c2"
+        data-test-automation-id="audio-play-btn"
         disabled={false}
         onBlur={[Function]}
         onClick={[Function]}
@@ -574,6 +592,7 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
       </button>
       <span
         className="c6"
+        data-test-automation-id="audio-current-time"
       >
         01:30
       </span>
@@ -638,6 +657,7 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
       </div>
       <span
         className="c6"
+        data-test-automation-id="audio-end-time"
       >
         03:08
       </span>

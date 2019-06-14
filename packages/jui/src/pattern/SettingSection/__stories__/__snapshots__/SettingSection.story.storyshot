@@ -40,7 +40,7 @@ exports[`Storyshots Pattern/Setting SettingSection: Pattern/Setting SettingSecti
     data-test-automation-id="settingSection-undefined"
   >
     <div
-      className="MuiListSubheader-root MuiListSubheader-sticky MuiListSubheader-gutters c1"
+      className="MuiListSubheader-root MuiListSubheader-gutters c1"
     >
       <span
         className="setting-section-title c2"
@@ -65,7 +65,7 @@ exports[`Storyshots Pattern/Setting SettingSection: Pattern/Setting SettingSecti
     data-test-automation-id="settingSection-undefined"
   >
     <div
-      className="MuiListSubheader-root MuiListSubheader-sticky MuiListSubheader-gutters c1"
+      className="MuiListSubheader-root MuiListSubheader-gutters c1"
     >
       <span
         className="setting-section-title c2"
