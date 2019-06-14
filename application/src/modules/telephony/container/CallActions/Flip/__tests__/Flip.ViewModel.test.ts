@@ -62,13 +62,13 @@ describe('FlipViewModel', () => {
     expect(vm._onActionError).toHaveBeenCalled();
   });
 
-  it.skip('should return true', () => {
+  it('should return true', () => {
     vm = new FlipViewModel({});
     vm.flipNumbers = [1];
     expect(vm.canUseFlip).toBeTruthy();
   });
 
-  it.skip('should return false when Hold or !hasFlipNumbers or isConnecting', () => {
+  it('should return false when Hold or !hasFlipNumbers or isConnecting', () => {
     rcInfoService.getFlipNumberList.mockReturnValue([]);
     vm = new FlipViewModel({});
     expect(vm.canUseFlip).toBeFalsy();

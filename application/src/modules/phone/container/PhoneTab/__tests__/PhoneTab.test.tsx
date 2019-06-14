@@ -25,7 +25,7 @@ registerModule(telephonyConfig);
 registerModule(featuresFlags);
 registerModule(common);
 
-describe.skip('PhoneTab', () => {
+describe('PhoneTab', () => {
   const history = createMemoryHistory();
 
   @testable
