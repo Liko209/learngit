@@ -5,9 +5,7 @@
  */
 
 import React, { PureComponent, createRef, ChangeEvent } from 'react';
-import styled from 'styled-components';
 import { JuiBoxSelect } from 'jui/components/Selects/BoxSelect';
-import { spacing } from 'jui/foundation/utils';
 import { JuiVirtualizedList } from 'jui/components/VirtualizedList';
 import { HotKeys } from 'jui/hoc/HotKeys';
 import { CallerIdItem } from './CallerIdItem';
@@ -19,11 +17,16 @@ import {
 } from './types';
 import './styles.css';
 import { LazyFormatPhone } from './LazyFormatPhone';
+import { CallerIdContainer } from 'jui/pattern/Dialer';
 
 const MENU_PADDING = 2;
 const MIN_ROW_HEIGHT = 32;
 const INITIAL_PAGE_SIZE = 416 / 32;
 const LIST_CLASS_NAME = 'caller_id-list-container';
+
+const styleProp = {
+  classes: { paper: LIST_CLASS_NAME },
+};
 
 class RawCallerIdSelector extends PureComponent<
   CallerIdSelectorProps,
@@ -33,6 +36,7 @@ class RawCallerIdSelector extends PureComponent<
   private _containerRef: React.RefObject<any> = createRef();
   private _startIndex: number;
   private _stopIndex: number;
+  private _height = 416 - MENU_PADDING * 4;
 
   state = {
     height: 0,
@@ -92,16 +96,10 @@ class RawCallerIdSelector extends PureComponent<
   });
 
   private _onEnter = () => {
-    const item = this._getDisplayList()[this.state.focusIndex];
-    this._onSelect(item);
+    this._onSelect(this.state.focusIndex);
   }
 
-  private _getDisplayList = () => {
-    return this.props.menu;
-  }
-
-  private _onSelect = (item: ICallerPhoneNumber) => {
-    const idx = this.props.menu.findIndex((el) => el === item);
+  private _onSelect = (idx: number) => {
     const target = this.props.menu[idx] as any;
     const evt = {
       target,
@@ -127,6 +125,22 @@ class RawCallerIdSelector extends PureComponent<
     );
   }
 
+  private _keyMap = {
+    up: this._onUpKeyDown,
+    down: this._onDownKeyDown,
+    enter: this._onEnter,
+  };
+
+  private _cachedClickCallBacks: (() => void)[] = [];
+
+  private _onClickFactory = (idx: number) => {
+    if (this._cachedClickCallBacks[idx]) {
+      return this._cachedClickCallBacks[idx];
+    }
+    this._cachedClickCallBacks[idx] = () => this._onSelect(idx);
+    return this._cachedClickCallBacks[idx];
+  }
+
   render() {
     const { menu, renderValue, ...rest } = this.props;
     const { focusIndex } = this.state;
@@ -136,23 +150,14 @@ class RawCallerIdSelector extends PureComponent<
         {...rest}
         automationId="caller-id-selector"
         renderValue={renderValue}
-        MenuProps={{
-          classes: { paper: LIST_CLASS_NAME },
-        }}
+        MenuProps={styleProp}
         ref={this._containerRef}
       >
         {menu.length > INITIAL_PAGE_SIZE
           ? [
-              <HotKeys
-                keyMap={{
-                  up: this._onUpKeyDown,
-                  down: this._onDownKeyDown,
-                  enter: this._onEnter,
-                }}
-                key={LIST_CLASS_NAME}
-              >
+              <HotKeys keyMap={this._keyMap} key={LIST_CLASS_NAME}>
                 <JuiVirtualizedList
-                  height={416 - MENU_PADDING * 4}
+                  height={this._height}
                   minRowHeight={MIN_ROW_HEIGHT}
                   initialScrollToIndex={focusIndex}
                   ref={this._listRef}
@@ -162,9 +167,7 @@ class RawCallerIdSelector extends PureComponent<
                     <CallerIdItem
                       {...item}
                       key={item.phoneNumber}
-                      onClick={() => {
-                        this._onSelect(item);
-                      }}
+                      onClick={this._onClickFactory(idx)}
                       selected={
                         item.phoneNumber === this.props.value ||
                         idx === focusIndex
@@ -182,47 +185,11 @@ class RawCallerIdSelector extends PureComponent<
   }
 }
 
-const CallerIdSelector = styled((props: CallerIdSelectorProps) => (
+const CallerIdSelector = CallerIdContainer((props: CallerIdSelectorProps) => (
   <RawCallerIdSelector
     {...props}
     renderValue={(i: any) => <LazyFormatPhone value={i} />}
   />
-))`
-  && {
-    position: absolute;
-    top: ${spacing(1.5)};
-    left: 0;
-    right: 0;
-    margin: auto;
-    display: flex;
-    flex-direction: horizontal;
-    flex-wrap: nowrap;
-    align-items: center;
-    justify-content: center;
-    font-size: ${({ theme }) => theme.typography.body1.fontSize};
-    padding-bottom: 0;
-
-    div:nth-of-type(1) {
-      padding-bottom: 0;
-    }
-    div:nth-of-type(2) {
-      background: transparent;
-      border: none;
-      width: auto;
-      font-size: ${({ theme }) => theme.typography.caption2.fontSize};
-      margin-right: ${spacing(-3)};
-
-      & > div > div[role='button'] {
-        padding: ${spacing(1.5, 4.5, 1.5, 1.5)};
-        overflow: hidden;
-        display: block;
-        text-overflow: ellipsis;
-        word-break: keep-all;
-        white-space: nowrap;
-        max-width: ${spacing(36)};
-      }
-    }
-  }
-`;
+));
 
 export { CallerIdSelector, CallerIdSelectorProps, RawCallerIdSelector };
