@@ -5,6 +5,7 @@
  */
 
 import ItemAPI from 'sdk/api/glip/item';
+import { CSSStringForNotePage } from '../constants';
 import { NoteItemController } from '../NoteItemController';
 
 jest.mock('sdk/api/glip/item');
@@ -32,7 +33,7 @@ describe('NoteItemController', () => {
         .mockResolvedValue({ id: 1, body: 'bbbb' });
       const result = await noteItemController.getNoteBody(1);
       expect(result).toEqual(
-        `<html><head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\" charset=\"utf-8\"/></head> <body>${'bbbb'}</body></html>`,
+        `<html><head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\" charset=\"utf-8\"/>${CSSStringForNotePage}</head> <body>${'bbbb'}</body></html>`,
       );
     });
   });
