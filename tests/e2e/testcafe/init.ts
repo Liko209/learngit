@@ -152,7 +152,7 @@ function writeTestLog(testLogFile: string, t: TestController) {
   } = testRun;
   const msg = JSON.stringify([fixtureName, testName]) + '\n';
   // write log
-  fs.appendFileSync(testLogFile, msg);
+  fs.existsSync(testLogFile) ? fs.appendFileSync(testLogFile, msg) : fs.writeFileSync(testLogFile, msg);
 }
 
 // inject external service into test case
