@@ -8,8 +8,7 @@ import {
 import url from 'url';
 import { CommonFileServer } from '../../../../../../sdk/src/__tests__/mockServer/CommonFileServer';
 import { MockGlipServer } from '../../../../../../sdk/src/__tests__/mockServer/glip/MockGlipServer';
-const fileServer = new CommonFileServer();
-const mockGlipServer = new MockGlipServer();
+import { InstanceManager } from '../../../../../../sdk/src/__tests__/mockServer/InstanceManager';
 
 export default class Http {
   request = (request: IRequest, listener: INetworkRequestExecutorListener) => {
@@ -17,9 +16,9 @@ export default class Http {
     const relatePath = `${hostname}${request.path}`;
     console.log('TCL: Http -> request -> ', relatePath);
     if (hostname === 'glpdevxmn.asialab.glip.net') {
-      mockGlipServer.handle(request, listener);
+      InstanceManager.get(MockGlipServer).handle(request, listener);
     } else {
-      fileServer.handle(request, listener);
+      InstanceManager.get(CommonFileServer).handle(request, listener);
     }
     // const mockDataDirectory = path.resolve(
     //   __dirname,

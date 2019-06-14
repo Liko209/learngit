@@ -10,7 +10,13 @@ import path from 'path';
 import fs from 'fs';
 import { PostStore } from './post';
 import { ItemStore } from './item';
+import { InstanceManager } from '../InstanceManager';
 import { createResponse } from '../utils';
+import { Post } from 'sdk/module/post/entity/Post';
+
+function parseUid(request: IRequest) {
+  return 1;
+}
 
 export class MockGlipServer implements IMockServer {
   private _router: Router;
@@ -24,6 +30,7 @@ export class MockGlipServer implements IMockServer {
     this.itemStore = new ItemStore();
 
     this._router.use('get', '/api/posts', this.getPosts);
+    this._router.use('post', '/api/post', this.createPost);
     this._router.use('get', '*', this._handleCommon);
     this._router.use('put', '*', this._handleCommon);
     this._router.use('post', '*', this._handleCommon);
@@ -36,9 +43,18 @@ export class MockGlipServer implements IMockServer {
       createResponse({
         request,
         data: {
-          posts: this.postStore.getItems({ limit, direction, group_id }),
-          items: this.itemStore.getItemsByPostId(),
+          posts: this.postStore.getPostsByGroupId(group_id),
+          items: this.itemStore.getItemsByGroupId(group_id),
         },
+      }),
+    );
+  }
+
+  createPost = (request: IRequest, cb: INetworkRequestExecutorListener) => {
+    cb.onSuccess(
+      createResponse({
+        request,
+        data: this.postStore.create(request.data as Post),
       }),
     );
   }

@@ -13,7 +13,7 @@ jest.mock('sdk/framework/account/helper', () => {
 jest.mock('foundation/src/network/client/http/Http');
 jest.mock('foundation/src/network/client/socket/Socket');
 
-itForSdk('Service Integration test', () => {
+itForSdk('Service Integration test', ({ server, models }) => {
   // beforeEach(() => {});
   let groupService: GroupService;
   let personService: PersonService;
@@ -33,19 +33,6 @@ itForSdk('Service Integration test', () => {
       console.log('TCL: result', JSON.stringify(searchResult, null, 2));
       expect(searchResult.sortableModels.length).toEqual(1);
     });
-    // it('send post', async () => {
-    //   const service = ServiceLoader.getInstance<PostService>(
-    //     ServiceConfig.POST_SERVICE,
-    //   );
-    //   // const groups = await groupService.dao!.getAll();
-    //   console.log(
-    //     'TCL: sendPost',
-    //     await service.sendPost({
-    //       text: 'xx',
-    //       groupId: 1,
-    //     }),
-    //   );
-    // });
   });
   describe('SearchService', () => {
     it('search person', async () => {
@@ -55,14 +42,48 @@ itForSdk('Service Integration test', () => {
       console.log('TCL: result', JSON.stringify(searchResult, null, 2));
     });
   });
-  describe.only('PostService', () => {
+  describe('PostService', () => {
+    const MOCK_POSTS = [
+      {
+        created_at: 1559963449975,
+        creator_id: 187875331,
+        version: 3026637464985615,
+        model_size: 0,
+        is_new: true,
+        item_ids: [],
+        post_ids: [],
+        modified_at: 1559963449975,
+        unique_id: '-1774460932',
+        text: '测试',
+        group_id: 43638790,
+        at_mention_item_ids: [],
+        at_mention_non_item_ids: [],
+        company_id: 401409,
+        deactivated: false,
+        source: 'Jupiter',
+        function_id: 'post',
+        items: [],
+        id: 2723848196,
+      },
+    ];
     it('getPosts', async () => {
-      try {
-        const result = await postService.getPostsByGroupId({ groupId: 1 });
-        console.log('TCL: result', result);
-      } catch (e) {
-        console.log('TCL: e', e);
-      }
+      jest
+        .spyOn(models.post, 'getPostsByGroupId')
+        .mockImplementationOnce((id: number) => {
+          console.log('TCL: getPostsByGroupId', id);
+          return MOCK_POSTS;
+        });
+      const result = await postService.getPostsByGroupId({ groupId: 1 });
+      expect(result.posts).toEqual(MOCK_POSTS);
+    });
+    it('send post', async () => {
+      await postService.sendPost({
+        text: 'xx',
+        groupId: 1,
+      });
+      const posts = await postService.getPostsByGroupId({ groupId: 1 });
+      console.log('TCL: post', posts);
+      expect(posts.posts.findIndex(it => it.text === 'xx') > -1).toBeTruthy();
     });
   });
 });

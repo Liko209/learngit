@@ -6,11 +6,12 @@ export class ItemStore extends BaseStore<Item> {
     super('item');
   }
 
-  getItemsByGrouptId(id: number) {
+  getItemsByGroupId(id: number) {
     return this.collection.where(value => {
       return value.group_ids.includes(id);
     });
   }
+
   getItemsByPostId(id: number) {
     return this.collection.where(value => {
       return value.post_ids.includes(id);

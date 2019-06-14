@@ -1,0 +1,23 @@
+{
+  "response": {
+    "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/subscription/d53f1219-541a-463f-b443-a8c9dbbae399",
+    "id": "d53f1219-541a-463f-b443-a8c9dbbae399",
+    "creationTime": "2019-06-14T03:37:58.070Z",
+    "status": "Active",
+    "eventFilters": [
+      "/restapi/v1.0/account/400161823008/extension/400162901008/message-store",
+      "/restapi/v1.0/account/400161823008/extension/400162901008/presence?detailedTelephonyState=true",
+      "/restapi/v1.0/account/400161823008/extension/400162901008/missed-calls"
+    ],
+    "expirationTime": "2019-06-14T03:52:58.070Z",
+    "expiresIn": 899,
+    "deliveryMode": {
+      "transportType": "PubNub",
+      "encryption": true,
+      "address": "19355387208570370_026748ab",
+      "subscriberKey": "sub-c-b8b9cd8c-e906-11e2-b383-02ee2ddab7fe",
+      "encryptionAlgorithm": "AES",
+      "encryptionKey": "J810Lyo4AxJ+461yTAg+Mw=="
+    }
+  }
+}

@@ -14,29 +14,28 @@ export class BaseStore<T extends ExtendedBaseModel<number>>
   }
 
   create(item: T) {
-    item['_id'] = Date.now();
-    return this.collection.insert(item);
+    return this.collection.insert({ ...item, _id: Date.now() });
   }
   delete(id: number): void {
     this.collection.findAndRemove({
       _id: id,
-    });
+    } as any);
   }
   update(item: Partial<T>): void {
     this.collection.findAndUpdate(
       {
         _id: item.id,
-      },
+      } as any,
       target => _.defaultsDeep(target, item),
     );
   }
   getById(id: number) {
-    return this.collection.findOne({ _id: id });
+    return this.collection.findOne({ _id: id } as any);
   }
   getByIds(ids: number[]): T[] {
     return this.collection.find({
       _id: { $in: ids },
-    });
+    } as any);
   }
   getItems(options: { limit: number; direction: string }): T[] {
     return this.collection.find();
