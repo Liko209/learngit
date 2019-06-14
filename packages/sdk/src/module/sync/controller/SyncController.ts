@@ -54,15 +54,17 @@ class SyncController {
 
   handleSocketConnectionStateChanged({ state }: { state: any }) {
     mainLogger.log(LOG_TAG, 'sync service SERVICE.SOCKET_STATE_CHANGE', state);
-    if (state === 'connected') {
-      this._onSocketConnected();
-    } else if (state === 'refresh') {
-      this.syncData();
-    } else if (state === 'connecting') {
+    if (state === 'connecting') {
       this._progressBar.start();
-    } else if (state === 'disconnected') {
-      this._onSocketDisconnected();
+    } else {
       this._progressBar.stop();
+      if (state === 'connected') {
+        this._onSocketConnected();
+      } else if (state === 'refresh') {
+        this.syncData();
+      } else if (state === 'disconnected') {
+        this._onSocketDisconnected();
+      }
     }
   }
 
