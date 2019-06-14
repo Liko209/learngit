@@ -4,6 +4,7 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { h } from '../../v2/helpers';
 import { SITE_URL, BrandTire } from '../../config';
+import { ITestMeta, IGroup } from '../../v2/models';
 
 declare var test: TestFn;
 fixture('Profile/ProfileToggle')
@@ -198,37 +199,43 @@ test(formalName('Open profile via conversation list', ['JPT-450', 'P2', 'Profile
   }
 });
 
-test(formalName('Favorite/Unfavorite a conversation from profile', ['JPT-409', 'P2', 'ProfileToggle', 'Potar.He']), async (t: TestController) => {
+test.meta(<ITestMeta>{
+  priority: ["P2"],
+  caseIds: ['JPT-409'],
+  keywords: ['ProfileToggle'],
+  maintainers: ['ProfileToggle']
+})('Favorite/Unfavorite a conversation from profile', async (t: TestController) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[7];
-  await h(t).platform(loginUser).init();
-  await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
+  const loginUser = users[7]
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
+
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    members: [loginUser, users[5]],
+    owner: loginUser
+  }
+
+  let group = <IGroup>{
+    type: "Group",
+    members: [loginUser, users[5], users[6]],
+    owner: loginUser
+  }
+
+  let team = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    members: [loginUser, users[5], users[6]],
+    owner: loginUser
+  }
+
+  await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B and 1 group chat C', async () => {
+    await h(t).scenarioHelper.createTeamsOrChats([chat, group, team]);
+  });
 
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const teamsSection = app.homePage.messageTab.teamsSection;
   const favoritesSection = app.homePage.messageTab.favoritesSection;
-
-  let pvtChatId, GroupId, teamId;
-  await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B and 1 group chat C', async () => {
-    pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'PrivateChat',
-      members: [loginUser.rcId, users[5].rcId],
-    });
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-    });
-    GroupId = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'Group',
-      members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-    });
-
-  });
-
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
@@ -237,10 +244,9 @@ test(formalName('Favorite/Unfavorite a conversation from profile', ['JPT-409', '
     await favoritesSection.expand();
   });
 
-  const privateChat = directMessagesSection.conversationEntryById(pvtChatId);
-  const groupChat = directMessagesSection.conversationEntryById(GroupId);
-  const teamChat = teamsSection.conversationEntryById(teamId);
-
+  const privateChat = directMessagesSection.conversationEntryById(chat.glipId);
+  const groupChat = directMessagesSection.conversationEntryById(group.glipId);
+  const teamChat = teamsSection.conversationEntryById(team.glipId);
 
   const groupList = {
     groupChat,
@@ -251,22 +257,28 @@ test(formalName('Favorite/Unfavorite a conversation from profile', ['JPT-409', '
   const profileDialog = app.homePage.profileDialog;
   const conversationPage = app.homePage.messageTab.conversationPage;
 
-  for (const key in groupList) {
-    const chat = groupList[key];
-    const chatId = await chat.groupId;
+  for (const kind in groupList) {
+    const conversation = groupList[kind];
+    let chatId: string = '';
+    let chatName = '';
 
     // favorite
-    await h(t).withLog(`When I click a ${key} conversation profile button`, async () => {
-      await chat.enter();
+    await h(t).withLog(`When I click a {kind} conversation "{chatName}" profile button`, async (step) => {
+      await conversation.enter();
+      chatId = await conversation.groupId;
+      chatName = await conversation.name;
       await conversationPage.openMoreButtonOnHeader();
       await conversationPage.headerMoreMenu.openProfile();
+      step.initMetadata({ kind, chatName });
     });
 
-    await h(t).withLog(`Then a ${key} conversation profile dialog should be popup`, async () => {
+    await h(t).withLog(`Then a {kind} conversation profile dialog should be popup`, async (step) => {
+      step.setMetadata('kind', kind);
       await profileDialog.ensureLoaded();
     });
 
-    await h(t).withLog(`When I click a ${key} conversation profile dialog "unfavorite" icon`, async () => {
+    await h(t).withLog(`When I click a {kind} conversation profile dialog "unfavorite" icon`, async (step) => {
+      step.setMetadata('kind', kind);
       await t.click(profileDialog.unFavoriteStatusIcon);
     });
 
@@ -275,32 +287,37 @@ test(formalName('Favorite/Unfavorite a conversation from profile', ['JPT-409', '
       await t.expect(profileDialog.favoriteStatusIcon.exists).ok();
     });
 
-    await h(t).withLog(`When I click a ${key} conversation profile dialog close button`, async () => {
+    await h(t).withLog(`When I click a {kind} conversation profile dialog close button`, async (step) => {
+      step.setMetadata('kind', kind);
       await profileDialog.clickCloseButton();
     });
 
     await h(t).withLog(`Then the profile dialog dismiss`, async () => {
-      await t.expect(profileDialog.exists).notOk();
+      await profileDialog.ensureDismiss();
     });
 
-    await h(t).withLog(`And The ${key} conversation move to favorites section`, async () => {
-      await t.expect(chat.exists).notOk();
-      await t.expect(favoritesSection.conversationEntryById(chatId).exists).ok();
+    await h(t).withLog(`And The {kind} conversation "{chatName}" move to favorites section`, async (step) => {
+      step.initMetadata({ kind, chatName });
+      await conversation.ensureDismiss();
+      await favoritesSection.conversationEntryById(chatId).ensureLoaded();
     });
 
     // un favorite
-    await h(t).withLog(`When I click a ${key} conversation profile button on favorite section`, async () => {
+    await h(t).withLog(`When I click a {kind} conversation profile button on favorite section`, async (step) => {
+      step.setMetadata('kind', kind);
       await favoritesSection.conversationEntryById(chatId).enter();
       await conversationPage.openMoreButtonOnHeader();
       await conversationPage.headerMoreMenu.openProfile();
     });
 
-    await h(t).withLog(`Then a ${key} conversation profile dialog should be popup`, async () => {
+    await h(t).withLog(`Then a {kind} conversation profile dialog should be popup`, async (step) => {
+      step.setMetadata('kind', kind);
       await t.expect(profileDialog.getSelector('hr').exists).ok();
       await t.expect(profileDialog.getSelector('div').withText(title).exists).ok();
     });
 
-    await h(t).withLog(`When I click a ${key} conversation profile dialog "favorite" icon`, async () => {
+    await h(t).withLog(`When I click a {kind} conversation profile dialog "favorite" icon`, async (step) => {
+      step.setMetadata('kind', kind);
       await t.click(profileDialog.favoriteStatusIcon);
     });
 
@@ -308,17 +325,19 @@ test(formalName('Favorite/Unfavorite a conversation from profile', ['JPT-409', '
       await profileDialog.ensureLoaded();
     });
 
-    await h(t).withLog(`When I click a ${key} conversation profile dialog close button`, async () => {
+    await h(t).withLog(`When I click a {kind} conversation profile dialog close button`, async (step) => {
+      step.setMetadata('kind', kind);
       await profileDialog.clickCloseButton();
     });
 
     await h(t).withLog(`Then the profile dialog dismiss`, async () => {
-      await t.expect(profileDialog.exists).notOk();
+      await profileDialog.ensureDismiss();
     });
 
-    await h(t).withLog(`And The ${key} conversation move to original section`, async () => {
-      await t.expect(chat.exists).ok();
-      await t.expect(favoritesSection.conversationEntryById(chatId).exists).notOk();
+    await h(t).withLog(`And The {kind} conversation {chatName }move to original section`, async (step) => {
+      step.initMetadata({ kind, chatName });
+      await conversation.ensureLoaded();
+      await favoritesSection.conversationEntryById(chatId).ensureDismiss();
     });
   }
 });
