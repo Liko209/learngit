@@ -79,7 +79,7 @@ const CallBack = () => (
     automationId="reply-with-will-call-back"
   >
     {[{ label: '5 min' }].map(({ label }) => (
-      <JuiPreDefineMenuItem automationId="reply-with-0-type-time">
+      <JuiPreDefineMenuItem key={label} automationId="reply-with-0-type-time">
         {label}
       </JuiPreDefineMenuItem>
     ))}
@@ -89,7 +89,7 @@ const CallBack = () => (
 const WillCallBack = () => (
   <JuiPreDefineMessage text="Will call you back in....">
     {[{ label: '5 min' }].map(({ label }) => (
-      <JuiPreDefineMenuItem>{label}</JuiPreDefineMenuItem>
+      <JuiPreDefineMenuItem key={label}>{label}</JuiPreDefineMenuItem>
     ))}
   </JuiPreDefineMessage>
 );

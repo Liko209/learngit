@@ -7,11 +7,7 @@ module.exports = {
   ],
   testMatch: [`**/*/__tests__/**/*.test?(s).[jt]s?(x)`],
   setupFilesAfterEnv: ['<rootDir>/config/jest/setupTest.js'],
-  testPathIgnorePatterns: [
-    '/node_modules/',
-    'build',
-    'snapshot/storyImageShot.test.tsx',
-  ],
+  testPathIgnorePatterns: ['/node_modules/', 'build'],
   testURL: 'http://localhost',
   globals: {
     'ts-jest': {

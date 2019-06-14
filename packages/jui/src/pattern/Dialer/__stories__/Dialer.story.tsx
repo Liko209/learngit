@@ -100,7 +100,7 @@ const knobs = {
 };
 
 const MuteAction = () => (
-  <JuiKeypadAction>
+  <JuiKeypadAction key="muteAction">
     <JuiIconButton
       color="grey.900"
       disableToolTip={true}
@@ -114,7 +114,7 @@ const MuteAction = () => (
 MuteAction.displayName = 'MuteAction';
 
 const KeypadAction = () => (
-  <JuiKeypadAction>
+  <JuiKeypadAction key="keypadAction">
     <JuiIconButton
       color="grey.900"
       disableToolTip={true}
@@ -128,7 +128,7 @@ const KeypadAction = () => (
 KeypadAction.displayName = 'KeypadAction';
 
 const HoldAction = () => (
-  <JuiKeypadAction>
+  <JuiKeypadAction key="holdAction">
     <JuiIconButton
       color="grey.900"
       disableToolTip={true}
@@ -142,7 +142,7 @@ const HoldAction = () => (
 HoldAction.displayName = 'HoldAction';
 
 const AddAction = () => (
-  <JuiKeypadAction>
+  <JuiKeypadAction key="addAction">
     <JuiIconButton
       color="grey.900"
       disableToolTip={true}
@@ -156,7 +156,7 @@ const AddAction = () => (
 AddAction.displayName = 'AddAction';
 
 const RecordAction = () => (
-  <JuiKeypadAction>
+  <JuiKeypadAction key="recordAction">
     <JuiIconButton
       color="grey.900"
       disableToolTip={true}
@@ -170,7 +170,7 @@ const RecordAction = () => (
 RecordAction.displayName = 'RecordAction';
 
 const CallActionsAction = () => (
-  <JuiKeypadAction>
+  <JuiKeypadAction key="callActions">
     <JuiIconButton
       color="grey.900"
       disableToolTip={true}

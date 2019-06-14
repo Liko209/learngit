@@ -3,7 +3,6 @@
  * @Date: 2019-05-27 17:47:36
  * Copyright © RingCentral. All rights reserved.
  */
-import AR from 'jui/assets/country-flag/Argentina.svg';
 import React, { Component } from 'react';
 import { JuiMenuItem } from 'jui/components/Menus';
 import { FileDeleteActionViewProps } from './types';

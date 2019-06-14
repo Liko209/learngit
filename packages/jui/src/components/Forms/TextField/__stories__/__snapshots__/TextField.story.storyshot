@@ -1,0 +1,131 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Components/Forms TextField: Components/Forms TextField 1`] = `
+.c0.c0 {
+  margin: 0 0 16px 0;
+}
+
+.c0.c0 label {
+  color: #757575;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+}
+
+.c0.c0 input::-webkit-input-placeholder {
+  color: #757575;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c0.c0 input::-moz-placeholder {
+  color: #757575;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c0.c0 input:-ms-input-placeholder {
+  color: #757575;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c0.c0 input::placeholder {
+  color: #757575;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c0.c0 .form-label-focused:not(.form-label-error) {
+  color: #0684bd;
+}
+
+.c0 .underline:after {
+  border-bottom-color: #0684bd;
+}
+
+<div>
+  <section>
+    <p>
+      default
+    </p>
+    <div
+      className="MuiFormControl-root MuiFormControl-fullWidth c0"
+      onKeyDown={[Function]}
+    >
+      <label
+        className="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink"
+        data-shrink={true}
+        htmlFor="TeamName"
+      >
+        Team name
+      </label>
+      <div
+        className="MuiInputBase-root MuiInput-root root MuiInput-underline underline MuiInputBase-fullWidth MuiInput-fullWidth MuiInputBase-formControl MuiInput-formControl"
+        onClick={[Function]}
+      >
+        <input
+          aria-describedby="TeamName-helper-text"
+          aria-invalid={false}
+          className="MuiInputBase-input MuiInput-input"
+          disabled={false}
+          id="TeamName"
+          maxLength={200}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          required={false}
+          type="text"
+        />
+      </div>
+      <p
+        className="MuiFormHelperText-root"
+        id="TeamName-helper-text"
+      >
+        Team name required
+      </p>
+    </div>
+  </section>
+  <section>
+    <p>
+      type="number" use aria-label for control
+    </p>
+    <div
+      className="MuiFormControl-root c0"
+      onKeyDown={[Function]}
+    >
+      
+      <div
+        className="MuiInputBase-root MuiInput-root MuiInput-underline underline MuiInputBase-formControl MuiInput-formControl"
+        onClick={[Function]}
+      >
+        <input
+          aria-invalid={false}
+          aria-label="numberInput"
+          className="MuiInputBase-input MuiInput-input MuiInputBase-inputType MuiInput-inputType"
+          disabled={false}
+          id="outlined-number"
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          required={false}
+          type="number"
+          value=""
+        />
+      </div>
+    </div>
+  </section>
+</div>
+`;

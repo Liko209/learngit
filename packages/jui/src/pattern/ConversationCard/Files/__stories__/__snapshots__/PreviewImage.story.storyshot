@@ -1,0 +1,112 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/ConversationCard JuiPreviewImage: Pattern/ConversationCard JuiPreviewImage 1`] = `
+.c1.c1 {
+  cursor: pointer;
+  float: left;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  margin: 0px 8px 8px 0px;
+  width: 400px;
+  height: 400px;
+  position: relative;
+  border-radius: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  background-color: #f5f6fb;
+  box-shadow: none;
+}
+
+.c1:hover .c3 {
+  -webkit-transform: translate(0,0);
+  -ms-transform: translate(0,0);
+  transform: translate(0,0);
+}
+
+.c2 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c2 .image-preview:before {
+  color: #bdbdbd !important;
+}
+
+.c0:hover {
+  cursor: pointer;
+}
+
+<div>
+  <img
+    className="c0"
+    onClick={[Function]}
+    onLoad={[Function]}
+    src="test-file-stub"
+    style={
+      Object {
+        "display": "none",
+      }
+    }
+  />
+  <img
+    className="c0"
+    onClick={[Function]}
+    onLoad={[Function]}
+    src="test-file-stub"
+    style={
+      Object {
+        "display": "none",
+      }
+    }
+  />
+  <img
+    className="c0"
+    onClick={[Function]}
+    onLoad={[Function]}
+    src="test-file-stub"
+    style={
+      Object {
+        "display": "none",
+      }
+    }
+  />
+  <img
+    className="c0"
+    onClick={[Function]}
+    onLoad={[Function]}
+    src="test-file-stub"
+    style={
+      Object {
+        "display": "none",
+      }
+    }
+  />
+  <div
+    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c1 "
+  >
+    <div
+      className="c2"
+    />
+  </div>
+</div>
+`;

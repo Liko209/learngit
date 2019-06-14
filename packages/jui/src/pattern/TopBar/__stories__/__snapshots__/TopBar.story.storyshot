@@ -1,0 +1,968 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/TopBar TopBar: Pattern/TopBar TopBar 1`] = `
+.c27.c27 {
+  width: 40px;
+  height: 40px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  background-color: #F95B5C;
+}
+
+.c27.c27:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c27.c27:active {
+  opacity: 0.76;
+}
+
+.c27 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c6 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c7 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c17 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 20px;
+}
+
+.c24 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 16px;
+}
+
+.c23.c23 {
+  min-height: 0;
+}
+
+.c22.c22 {
+  background-color: #fff;
+  width: 32px;
+  height: 32px;
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.2),0 2px 2px 0 rgba(0,0,0,0.12),0 0 2px 0 rgba(0,0,0,0.14);
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: rgba(0,0,0,0.87);
+}
+
+.c22.c22:hover,
+.c22.c22:active {
+  background-color: rgb(229,229,229);
+}
+
+.c22.c22 .rippleVisible {
+  color: rgb(255,255,255);
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c22.c22[disabled] {
+  background-color: #fff;
+  color: rgba(0,0,0,0.87);
+  box-shadow: 0px 8px 10px -5px rgba(0,0,0,0.2),0px 16px 24px 2px rgba(0,0,0,0.14),0px 6px 30px 5px rgba(0,0,0,0.12);
+  opacity: 0.12;
+}
+
+.c28.c28 .c5,
+.c28.c28 .c5 svg {
+  font-size: 20px;
+}
+
+.c28.c28:hover .c5 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c28.c28:active .c5 {
+  color: #9e9e9e;
+}
+
+.c28.c28.c28.c28.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c4.c4 {
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  color: #9e9e9e;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c4.c4 .c5,
+.c4.c4 .c5 svg {
+  font-size: 20px;
+}
+
+.c4.c4:hover {
+  background-color: rgba(158,158,158,0.12);
+}
+
+.c4.c4:hover .c5 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c4.c4:active .c5 {
+  color: #9e9e9e;
+}
+
+.c4.c4.c4.c4.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c4.c4 .rippleVisible {
+  color: #9e9e9e;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c29.c29 .c5,
+.c29.c29 .c5 svg {
+  font-size: 20px;
+}
+
+.c29.c29:hover .c5 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c29.c29:active .c5 {
+  color: #0684bd;
+}
+
+.c29.c29.c29.c29.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c30.c30 .c5,
+.c30.c30 .c5 svg {
+  font-size: 20px;
+}
+
+.c30.c30:hover .c5 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c30.c30:active .c5 {
+  color: #0684bd;
+}
+
+.c30.c30.c30.c30.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c31.c31 .c5,
+.c31.c31 .c5 svg {
+  font-size: 20px;
+}
+
+.c31.c31:hover .c5 {
+  color: rgba(237,182,60,0.88);
+}
+
+.c31.c31:active .c5 {
+  color: #edb63c;
+}
+
+.c31.c31.c31.c31.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c32.c32 .c5,
+.c32.c32 .c5 svg {
+  font-size: 16px;
+}
+
+.c32.c32:hover .c5 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c32.c32:active .c5 {
+  color: #9e9e9e;
+}
+
+.c32.c32.c32.c32.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c33.c33 .c5,
+.c33.c33 .c5 svg {
+  font-size: 20px;
+}
+
+.c33.c33:hover .c5 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c33.c33:active .c5 {
+  color: #0684bd;
+}
+
+.c33.c33.c33.c33.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c34.c34 .c5,
+.c34.c34 .c5 svg {
+  font-size: 16px;
+}
+
+.c34.c34:hover .c5 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c34.c34:active .c5 {
+  color: #0684bd;
+}
+
+.c34.c34.c34.c34.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c35.c35 .c5,
+.c35.c35 .c5 svg {
+  font-size: 16px;
+}
+
+.c35.c35:hover .c5 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c35.c35:active .c5 {
+  color: #fff;
+}
+
+.c35.c35.c35.c35.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c36.c36 .c5,
+.c36.c36 .c5 svg {
+  font-size: 32px;
+}
+
+.c36.c36:hover .c5 {
+  color: rgba(33,33,33,0.88);
+}
+
+.c36.c36:active .c5 {
+  color: #212121;
+}
+
+.c36.c36.c36.c36.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c37.c37 .c5,
+.c37.c37 .c5 svg {
+  font-size: 24px;
+}
+
+.c37.c37:hover .c5 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c37.c37:active .c5 {
+  color: #fff;
+}
+
+.c37.c37.c37.c37.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c13.c13 {
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  color: #fff;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c13.c13 .c5,
+.c13.c13 .c5 svg {
+  font-size: 20px;
+}
+
+.c13.c13:hover {
+  background-color: rgba(255,255,255,0.12);
+}
+
+.c13.c13:hover .c5 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c13.c13:active .c5 {
+  color: #fff;
+}
+
+.c13.c13.c13.c13.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c13.c13 .rippleVisible {
+  color: #fff;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c38.c38 .c5,
+.c38.c38 .c5 svg {
+  font-size: 20px;
+}
+
+.c38.c38:hover .c5 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c38.c38:active .c5 {
+  color: #fff;
+}
+
+.c38.c38.c38.c38.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c26 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  width: 100%;
+}
+
+.c15 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  position: relative;
+  height: 40px;
+  min-height: 40px;
+  background-color: #f5f6fb;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  box-sizing: border-box;
+  padding: 0 16px;
+}
+
+.c18.c18 {
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  color: #212121;
+}
+
+.c16 {
+  color: #9e9e9e;
+  width: 20px;
+  height: 20px;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  cursor: pointer;
+  margin: 0 8px 0 0;
+}
+
+.c12.c12.c12.c12.c12 .icon[disabled] {
+  color: rgba(255,255,255,0.5);
+}
+
+.c11 {
+  position: relative;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.c9.c9 {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: white;
+  box-sizing: border-box;
+  font-size: 1.5rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 28px;
+  font-weight: bold;
+  padding-left: 24px;
+  width: 190px;
+}
+
+.c25 {
+  margin-right: 20px;
+}
+
+.c0.c0 {
+  min-height: 64px;
+  min-width: 400px;
+  background-color: #fff;
+  background: linear-gradient( to right, #4475fd, #66bffa );
+  box-shadow: none;
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+  z-index: 1210;
+}
+
+.c1.c1 {
+  min-height: 64px;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  padding: 0px 16px 0px 8px;
+}
+
+.c3 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+}
+
+.c21.c21 {
+  margin-right: 12px;
+}
+
+.c2 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+}
+
+.c19 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: end;
+  -webkit-justify-content: flex-end;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
+}
+
+.c19 .c20 {
+  display: none;
+}
+
+.c14 {
+  width: 100%;
+  margin-right: 12px;
+  max-width: 268px;
+  background-color: rgba(255,255,255,0.2);
+  border: 0;
+  cursor: pointer;
+}
+
+.c14:hover {
+  background-color: rgba(255,255,255,0.3);
+}
+
+.c14 .topBar-input-root {
+  pointer-events: none;
+}
+
+.c14 input {
+  cursor: pointer;
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c14 span.search,
+.c14 span.close {
+  color: #fff;
+}
+
+@media (max-width:805px) {
+  .c2 .topBar-search-bar {
+    display: none;
+  }
+}
+
+@media (max-width:730px) {
+  .c2 .c10 {
+    display: none;
+  }
+}
+
+@media (max-width:650px) {
+  .c2 .c8 {
+    display: none;
+  }
+}
+
+@media (max-width:805px) {
+  .c19 .c20 {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+  }
+}
+
+<div
+  style={
+    Object {
+      "background": "silver",
+      "padding": "20px",
+    }
+  }
+>
+  <header
+    className="MuiPaper-root MuiPaper-elevation4 MuiAppBar-root MuiAppBar-positionStatic MuiAppBar-colorPrimary c0"
+  >
+    <div
+      className="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters c1"
+    >
+      <div
+        className="c2"
+      >
+        <div
+          className="c3"
+        >
+          <button
+            aria-describedby={null}
+            className="MuiButtonBase-root MuiIconButton-root c4"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseOver={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="medium"
+            tabIndex="0"
+            title={null}
+            type="button"
+            variant="round"
+          >
+            <span
+              className="MuiIconButton-label"
+            >
+              <span
+                className="c5  icon c6"
+                size="medium"
+              >
+                <svg
+                  className="c7"
+                  role="img"
+                >
+                  <use />
+                </svg>
+              </span>
+            </span>
+            <span
+              className="MuiTouchRipple-root"
+            />
+          </button>
+          <p
+            className="MuiTypography-root MuiTypography-body2 c8 c9"
+          >
+            RingCentral
+          </p>
+        </div>
+        <div
+          className="c10 c11"
+        >
+          <button
+            aria-describedby={null}
+            className="MuiButtonBase-root MuiIconButton-root c12 c13"
+            data-test-automation-id="Back"
+            disabled={false}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseOver={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="medium"
+            tabIndex="0"
+            title={null}
+            type="button"
+            variant="round"
+          >
+            <span
+              className="MuiIconButton-label"
+            >
+              <span
+                className="c5 chevron_left icon c6"
+                disabled={false}
+                size="medium"
+              >
+                <svg
+                  className="c7"
+                  role="img"
+                >
+                  <use
+                    href="#icon-chevron_left"
+                    xlinkHref="#icon-chevron_left"
+                  />
+                </svg>
+              </span>
+            </span>
+            <span
+              className="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+        <div
+          className="c10 c11"
+        >
+          <button
+            aria-describedby={null}
+            className="MuiButtonBase-root MuiIconButton-root c12 c13"
+            data-test-automation-id="Forward"
+            disabled={false}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseOver={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="medium"
+            tabIndex="0"
+            title={null}
+            type="button"
+            variant="round"
+          >
+            <span
+              className="MuiIconButton-label"
+            >
+              <span
+                className="c5 chevron_right icon c6"
+                disabled={false}
+                size="medium"
+              >
+                <svg
+                  className="c7"
+                  role="img"
+                >
+                  <use
+                    href="#icon-chevron_right"
+                    xlinkHref="#icon-chevron_right"
+                  />
+                </svg>
+              </span>
+            </span>
+            <span
+              className="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+        <div
+          className="topBar-search-bar c14 c15"
+          data-test-automation-id="topBar-search-bar"
+          onClick={[Function]}
+        >
+          <span
+            className="c16 search icon c6"
+          >
+            <svg
+              className="c17"
+              role="img"
+              size="medium"
+            >
+              <use
+                href="#icon-search"
+                xlinkHref="#icon-search"
+              />
+            </svg>
+          </span>
+          <div
+            className="MuiInputBase-root topBar-input-root MuiInputBase-disabled c18"
+            onClick={[Function]}
+          >
+            <input
+              className="MuiInputBase-input MuiInputBase-disabled"
+              data-test-automation-id="topBar-search-input"
+              disabled={true}
+              maxLength={200}
+              onBlur={[Function]}
+              onChange={[Function]}
+              onFocus={[Function]}
+              placeholder="search"
+              type="text"
+              value=""
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        className="c19"
+      >
+        <button
+          aria-describedby={null}
+          className="MuiButtonBase-root MuiFab-root c20 c21 c22 c23"
+          disabled={false}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onContextMenu={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseOver={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          tabIndex="0"
+          title={null}
+          type="button"
+        >
+          <span
+            className="MuiFab-label"
+          >
+            <span
+              className=" search icon c6"
+            >
+              <svg
+                className="c24"
+                role="img"
+                size="small"
+              >
+                <use
+                  href="#icon-search"
+                  xlinkHref="#icon-search"
+                />
+              </svg>
+            </span>
+          </span>
+        </button>
+        <div
+          className="c25"
+        >
+          <div
+            className="c26"
+            onClick={[Function]}
+            onMouseDown={[Function]}
+          >
+            <button
+              aria-describedby={null}
+              className="MuiButtonBase-root MuiIconButton-root c4"
+              disabled={false}
+              onBlur={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              size="medium"
+              tabIndex="0"
+              title={null}
+              type="button"
+              variant="round"
+            >
+              <span
+                className="MuiIconButton-label"
+              >
+                <span
+                  className="c5  icon c6"
+                  size="medium"
+                >
+                  <svg
+                    className="c7"
+                    role="img"
+                  >
+                    <use />
+                  </svg>
+                </span>
+              </span>
+              <span
+                className="MuiTouchRipple-root"
+              />
+            </button>
+          </div>
+        </div>
+        <div
+          className="c25"
+        >
+          <div
+            className="c26"
+            onClick={[Function]}
+            onMouseDown={[Function]}
+          >
+            <button
+              aria-describedby={null}
+              className="MuiButtonBase-root MuiIconButton-root c4"
+              disabled={false}
+              onBlur={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              size="medium"
+              tabIndex="0"
+              title={null}
+              type="button"
+              variant="round"
+            >
+              <span
+                className="MuiIconButton-label"
+              >
+                <span
+                  className="c5  icon c6"
+                  size="medium"
+                >
+                  <svg
+                    className="c7"
+                    role="img"
+                  >
+                    <use />
+                  </svg>
+                </span>
+              </span>
+              <span
+                className="MuiTouchRipple-root"
+              />
+            </button>
+          </div>
+        </div>
+        <div
+          className=""
+        >
+          <div
+            className="c26"
+            onClick={[Function]}
+            onMouseDown={[Function]}
+          >
+            <div
+              className="MuiAvatar-root MuiAvatar-colorDefault c27"
+              color="tomato"
+              size="large"
+            >
+              DL
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+</div>
+`;

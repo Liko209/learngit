@@ -93,7 +93,7 @@ storiesOf('Components/Snackbars', module).add('toast', () => (
       action={[
         <JuiSnackbarAction key="action1">Action</JuiSnackbarAction>,
         <JuiSnackbarAction key="action2">Action</JuiSnackbarAction>,
-        <JuiSnackbarAction key="action2" variant="icon" icon={close} />,
+        <JuiSnackbarAction key="action3" variant="icon" icon={close} />,
       ]}
     />
   </Wrapper>

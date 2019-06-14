@@ -1,0 +1,1060 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
+.c12.c12 {
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  background-color: #f5f6fb;
+}
+
+.c12.c12:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c12.c12:active {
+  opacity: 0.76;
+}
+
+.c12 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c4 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c5 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c24 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 32px;
+}
+
+.c23.c23 {
+  min-height: 0;
+}
+
+.c22.c22 {
+  background-color: #f44336;
+  width: 64px;
+  height: 64px;
+  box-shadow: none;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: #fff;
+}
+
+.c22.c22:hover,
+.c22.c22:active {
+  background-color: rgb(219,60,48);
+}
+
+.c22.c22 .rippleVisible {
+  color: rgb(246,104,94);
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c22.c22[disabled] {
+  background-color: #f44336;
+  color: #fff;
+  box-shadow: none;
+  opacity: 0.12;
+}
+
+.c25.c25 .c8,
+.c25.c25 .c8 svg {
+  font-size: 20px;
+}
+
+.c25.c25:hover .c8 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c25.c25:active .c8 {
+  color: #9e9e9e;
+}
+
+.c25.c25.c25.c25.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c26.c26 .c8,
+.c26.c26 .c8 svg {
+  font-size: 20px;
+}
+
+.c26.c26:hover .c8 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c26.c26:active .c8 {
+  color: #9e9e9e;
+}
+
+.c26.c26.c26.c26.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c27.c27 .c8,
+.c27.c27 .c8 svg {
+  font-size: 20px;
+}
+
+.c27.c27:hover .c8 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c27.c27:active .c8 {
+  color: #0684bd;
+}
+
+.c27.c27.c27.c27.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c28.c28 .c8,
+.c28.c28 .c8 svg {
+  font-size: 20px;
+}
+
+.c28.c28:hover .c8 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c28.c28:active .c8 {
+  color: #0684bd;
+}
+
+.c28.c28.c28.c28.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c29.c29 .c8,
+.c29.c29 .c8 svg {
+  font-size: 20px;
+}
+
+.c29.c29:hover .c8 {
+  color: rgba(237,182,60,0.88);
+}
+
+.c29.c29:active .c8 {
+  color: #edb63c;
+}
+
+.c29.c29.c29.c29.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c30.c30 .c8,
+.c30.c30 .c8 svg {
+  font-size: 16px;
+}
+
+.c30.c30:hover .c8 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c30.c30:active .c8 {
+  color: #9e9e9e;
+}
+
+.c30.c30.c30.c30.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c31.c31 .c8,
+.c31.c31 .c8 svg {
+  font-size: 20px;
+}
+
+.c31.c31:hover .c8 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c31.c31:active .c8 {
+  color: #0684bd;
+}
+
+.c31.c31.c31.c31.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c32.c32 .c8,
+.c32.c32 .c8 svg {
+  font-size: 16px;
+}
+
+.c32.c32:hover .c8 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c32.c32:active .c8 {
+  color: #0684bd;
+}
+
+.c32.c32.c32.c32.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c7.c7 {
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  color: #fff;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c7.c7 .c8,
+.c7.c7 .c8 svg {
+  font-size: 16px;
+}
+
+.c7.c7:hover {
+  background-color: transparent;
+}
+
+.c7.c7:hover .c8 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c7.c7:active .c8 {
+  color: #fff;
+}
+
+.c7.c7.c7.c7.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c7.c7 .rippleVisible {
+  color: #fff;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c20.c20 {
+  padding: 0;
+  width: 64px;
+  height: 64px;
+  color: #212121;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c20.c20 .c8,
+.c20.c20 .c8 svg {
+  font-size: 32px;
+}
+
+.c20.c20:hover {
+  background-color: rgba(33,33,33,0.12);
+}
+
+.c20.c20:hover .c8 {
+  color: rgba(33,33,33,0.88);
+}
+
+.c20.c20:active .c8 {
+  color: #212121;
+}
+
+.c20.c20.c20.c20.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c20.c20 .rippleVisible {
+  color: #212121;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c2.c2 {
+  color: #fff;
+  padding: 0px 16px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  height: 36px;
+}
+
+.c3.c3 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c3.c3 span {
+  margin-right: 8px;
+}
+
+.c6.c6 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c6.c6 button {
+  margin-left: 8px;
+}
+
+.c11 {
+  margin-right: 12px;
+}
+
+.c13 {
+  margin-left: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c14 {
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c15 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c9.c9 {
+  color: #fff;
+  padding: 4px 16px 12px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  box-sizing: border-box;
+  height: 56px;
+}
+
+.c10.c10 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: 100%;
+}
+
+.c10.c10 caption {
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+}
+
+.c16.c16 {
+  background-color: #fff;
+  padding: 0px 24px 24px;
+  box-sizing: border-box;
+  height: 396px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+}
+
+.c21.c21 {
+  -webkit-align-self: center;
+  -ms-flex-item-align: center;
+  align-self: center;
+}
+
+.c17.c17 {
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  position: relative;
+}
+
+.c18.c18 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  margin-bottom: -20px;
+}
+
+.c19.c19 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: 64px;
+  margin-bottom: 20px;
+}
+
+.c19.c19 > span {
+  color: #616161;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+}
+
+.c19.c19 > span.disabled {
+  color: rgba(0,0,0,0.12);
+}
+
+.c0.c0 {
+  width: 280px;
+  margin: 32px;
+  box-shadow: 0px 8px 10px -5px rgba(0,0,0,0.2),0px 16px 24px 2px rgba(0,0,0,0.14),0px 6px 30px 5px rgba(0,0,0,0.12);
+  border-radius: 8px;
+  overflow: auto;
+  outline: none;
+  cursor: move;
+}
+
+.c1.c1 {
+  background-color: #4475fd;
+}
+
+<div
+  className="c0"
+  data-test-automation-id="dialer-container"
+>
+  <div
+    className="c1"
+  >
+    <div
+      className="c2"
+      data-test-automation-id="telephony-dialer-title"
+    >
+      <div
+        className="c3"
+        data-test-automation-id="telephony-dialer-title-left"
+      >
+        <span
+          className="  icon c4"
+        >
+          <svg
+            className="c5"
+            role="img"
+            size="large"
+          >
+            <use />
+          </svg>
+        </span>
+        02:32
+      </div>
+      <div
+        className="c6"
+      >
+        <button
+          aria-describedby={null}
+          className="MuiButtonBase-root MuiIconButton-root c7"
+          disabled={false}
+          onBlur={[Function]}
+          onContextMenu={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseOver={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          size="small"
+          tabIndex="0"
+          title={null}
+          type="button"
+          variant="plain"
+        >
+          <span
+            className="MuiIconButton-label"
+          >
+            <span
+              className="c8  icon c4"
+              size="small"
+            >
+              <svg
+                className="c5"
+                role="img"
+              >
+                <use />
+              </svg>
+            </span>
+          </span>
+        </button>
+        <button
+          aria-describedby={null}
+          className="MuiButtonBase-root MuiIconButton-root c7"
+          disabled={false}
+          onBlur={[Function]}
+          onContextMenu={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseOver={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          size="small"
+          tabIndex="0"
+          title={null}
+          type="button"
+          variant="plain"
+        >
+          <span
+            className="MuiIconButton-label"
+          >
+            <span
+              className="c8  icon c4"
+              size="small"
+            >
+              <svg
+                className="c5"
+                role="img"
+              >
+                <use />
+              </svg>
+            </span>
+          </span>
+        </button>
+      </div>
+    </div>
+    <div
+      className="c9"
+      data-test-automation-id="telephony-dialer-header"
+      onMouseEnter={[Function]}
+      onMouseLeave={[Function]}
+    >
+      <div
+        className="c10"
+      >
+        <div
+          className="c11"
+        >
+          <button
+            aria-describedby={null}
+            className="MuiButtonBase-root MuiIconButton-root c7"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseOver={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="small"
+            tabIndex="0"
+            title={null}
+            type="button"
+            variant="plain"
+          >
+            <span
+              className="MuiIconButton-label"
+            >
+              <span
+                className="c8  icon c4"
+                size="small"
+              >
+                <svg
+                  className="c5"
+                  role="img"
+                >
+                  <use />
+                </svg>
+              </span>
+            </span>
+          </button>
+        </div>
+        <div
+          className="MuiAvatar-root c12"
+          size="medium"
+        >
+          <img
+            className="MuiAvatar-img"
+            src="test-file-stub"
+          />
+        </div>
+        <div
+          className="c13"
+        >
+          <div
+            className="c14"
+            data-test-automation-id="telephony-dialer-header-name"
+          >
+            Terry Webster
+          </div>
+          <div
+            className="c15"
+            data-test-automation-id="telephony-dialer-header-phone"
+          >
+            (650) 555-12345
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    className="c16"
+  >
+    <div
+      className="c17"
+    >
+      <div
+        className="c18"
+        onMouseDown={[Function]}
+      >
+        <div
+          className="c19"
+        >
+          <button
+            className="MuiButtonBase-root MuiIconButton-root c20"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="xxlarge"
+            tabIndex="0"
+            type="button"
+            variant="round"
+          >
+            <span
+              className="MuiIconButton-label"
+            >
+              <span
+                className="c8  icon c4"
+                size="xxlarge"
+              >
+                <svg
+                  className="c5"
+                  role="img"
+                >
+                  <use />
+                </svg>
+              </span>
+            </span>
+            <span
+              className="MuiTouchRipple-root"
+            />
+          </button>
+          <span>
+            Mute
+          </span>
+        </div>
+        <div
+          className="c19"
+        >
+          <button
+            className="MuiButtonBase-root MuiIconButton-root c20"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="xxlarge"
+            tabIndex="0"
+            type="button"
+            variant="round"
+          >
+            <span
+              className="MuiIconButton-label"
+            >
+              <span
+                className="c8  icon c4"
+                size="xxlarge"
+              >
+                <svg
+                  className="c5"
+                  role="img"
+                >
+                  <use />
+                </svg>
+              </span>
+            </span>
+            <span
+              className="MuiTouchRipple-root"
+            />
+          </button>
+          <span>
+            Keypad
+          </span>
+        </div>
+        <div
+          className="c19"
+        >
+          <button
+            className="MuiButtonBase-root MuiIconButton-root c20"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="xxlarge"
+            tabIndex="0"
+            type="button"
+            variant="round"
+          >
+            <span
+              className="MuiIconButton-label"
+            >
+              <span
+                className="c8  icon c4"
+                size="xxlarge"
+              >
+                <svg
+                  className="c5"
+                  role="img"
+                >
+                  <use />
+                </svg>
+              </span>
+            </span>
+            <span
+              className="MuiTouchRipple-root"
+            />
+          </button>
+          <span>
+            Hold
+          </span>
+        </div>
+        <div
+          className="c19"
+        >
+          <button
+            className="MuiButtonBase-root MuiIconButton-root c20"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="xxlarge"
+            tabIndex="0"
+            type="button"
+            variant="round"
+          >
+            <span
+              className="MuiIconButton-label"
+            >
+              <span
+                className="c8  icon c4"
+                size="xxlarge"
+              >
+                <svg
+                  className="c5"
+                  role="img"
+                >
+                  <use />
+                </svg>
+              </span>
+            </span>
+            <span
+              className="MuiTouchRipple-root"
+            />
+          </button>
+          <span>
+            Add
+          </span>
+        </div>
+        <div
+          className="c19"
+        >
+          <button
+            className="MuiButtonBase-root MuiIconButton-root c20"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="xxlarge"
+            tabIndex="0"
+            type="button"
+            variant="round"
+          >
+            <span
+              className="MuiIconButton-label"
+            >
+              <span
+                className="c8  icon c4"
+                size="xxlarge"
+              >
+                <svg
+                  className="c5"
+                  role="img"
+                >
+                  <use />
+                </svg>
+              </span>
+            </span>
+            <span
+              className="MuiTouchRipple-root"
+            />
+          </button>
+          <span>
+            Record
+          </span>
+        </div>
+        <div
+          className="c19"
+        >
+          <button
+            className="MuiButtonBase-root MuiIconButton-root c20"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="xxlarge"
+            tabIndex="0"
+            type="button"
+            variant="round"
+          >
+            <span
+              className="MuiIconButton-label"
+            >
+              <span
+                className="c8  icon c4"
+                size="xxlarge"
+              >
+                <svg
+                  className="c5"
+                  role="img"
+                >
+                  <use />
+                </svg>
+              </span>
+            </span>
+            <span
+              className="MuiTouchRipple-root"
+            />
+          </button>
+          <span>
+            Call Actions
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      className="c21"
+      onMouseDown={[Function]}
+    >
+      <button
+        className="MuiButtonBase-root MuiFab-root c22 c23"
+        disabled={false}
+        onBlur={[Function]}
+        onContextMenu={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        tabIndex="0"
+        type="button"
+      >
+        <span
+          className="MuiFab-label"
+        >
+          <span
+            className=" hand_up icon c4"
+          >
+            <svg
+              className="c24"
+              role="img"
+              size="moreLarge"
+            >
+              <use
+                href="#icon-hand-up"
+                xlinkHref="#icon-hand-up"
+              />
+            </svg>
+          </span>
+        </span>
+        <span
+          className="MuiTouchRipple-root"
+        />
+      </button>
+    </div>
+  </div>
+</div>
+`;

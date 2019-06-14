@@ -1,0 +1,427 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/ConversationRightShelf PinnedItem 1`] = `
+.c4 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c5 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: inherit;
+  fill: #9e9e9e;
+}
+
+.c6.c6 {
+  padding: 0;
+}
+
+.c6.c6 .list-item-primary {
+  color: #212121;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c6.c6 .list-item-secondary {
+  color: #9e9e9e;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c2 {
+  height: 20px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c3.c3 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin: 0px 4px 0px 4px;
+  font-size: 1rem;
+}
+
+.c1.c1 {
+  display: block;
+  padding: 8px;
+}
+
+.c8 {
+  padding-left: 24px;
+  overflow: hidden;
+}
+
+.c9 {
+  color: #616161;
+  overflow: hidden;
+  position: relative;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  font-size: 0.875rem;
+}
+
+.c10 {
+  color: #616161;
+  overflow: hidden;
+  position: relative;
+  line-height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  max-height: 40px;
+  word-break: break-word;
+  font-size: 0.875rem;
+}
+
+.c7 {
+  color: #9e9e9e;
+  font-size: 0.75rem;
+}
+
+.c0 {
+  width: 268px;
+  background: white;
+}
+
+<div>
+  <div
+    className="c0"
+  >
+    <div
+      className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button c1"
+      data-postid={123}
+      data-test-automation-id="pinned-section"
+      onBlur={[Function]}
+      onContextMenu={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      role="button"
+      tabIndex="0"
+    >
+      <div
+        className="c2"
+      >
+        <div
+          className="c3"
+        >
+          <span
+            className=" pin icon c4"
+          >
+            <svg
+              className="c5"
+              role="img"
+              size="inherit"
+            >
+              <use
+                href="#icon-pin"
+                xlinkHref="#icon-pin"
+              />
+            </svg>
+          </span>
+        </div>
+        <div
+          className="MuiListItemText-root c6"
+          data-test-automation-id="pinned-creator"
+        >
+          <span
+            className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary list-item-primary"
+          >
+            Virginia Gill
+          </span>
+        </div>
+        <div
+          className="c7"
+          data-test-automation-id="pinned-createTime"
+        >
+          8/8/2019
+        </div>
+      </div>
+      <div
+        className="c8"
+      >
+        <div
+          className="c9"
+          data-test-automation-id="pinned-text"
+        >
+          Files that get shared in your conversation automatically show up here.
+        </div>
+      </div>
+      <span
+        className="MuiTouchRipple-root"
+      />
+    </div>
+  </div>
+  <div
+    className="c0"
+  >
+    <div
+      className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button c1"
+      data-postid={123}
+      data-test-automation-id="pinned-section"
+      onBlur={[Function]}
+      onContextMenu={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      role="button"
+      tabIndex="0"
+    >
+      <div
+        className="c2"
+      >
+        <div
+          className="c3"
+        >
+          <span
+            className=" pin icon c4"
+          >
+            <svg
+              className="c5"
+              role="img"
+              size="inherit"
+            >
+              <use
+                href="#icon-pin"
+                xlinkHref="#icon-pin"
+              />
+            </svg>
+          </span>
+        </div>
+        <div
+          className="MuiListItemText-root c6"
+          data-test-automation-id="pinned-creator"
+        >
+          <span
+            className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary list-item-primary"
+          >
+            Virginia Gill
+          </span>
+        </div>
+        <div
+          className="c7"
+          data-test-automation-id="pinned-createTime"
+        >
+          8/8/2019
+        </div>
+      </div>
+      <div
+        className="c8"
+      >
+        <div
+          className="c9"
+          data-test-automation-id="pinned-text"
+        >
+          Files that get shared in your conversation automatically show up here.
+        </div>
+      </div>
+      <span
+        className="MuiTouchRipple-root"
+      />
+    </div>
+  </div>
+  <div
+    className="c0"
+  >
+    <div
+      className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button c1"
+      data-postid={123}
+      data-test-automation-id="pinned-section"
+      onBlur={[Function]}
+      onContextMenu={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      role="button"
+      tabIndex="0"
+    >
+      <div
+        className="c2"
+      >
+        <div
+          className="c3"
+        >
+          <span
+            className=" pin icon c4"
+          >
+            <svg
+              className="c5"
+              role="img"
+              size="inherit"
+            >
+              <use
+                href="#icon-pin"
+                xlinkHref="#icon-pin"
+              />
+            </svg>
+          </span>
+        </div>
+        <div
+          className="MuiListItemText-root c6"
+          data-test-automation-id="pinned-creator"
+        >
+          <span
+            className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary list-item-primary"
+          >
+            Virginia Gill
+          </span>
+        </div>
+        <div
+          className="c7"
+          data-test-automation-id="pinned-createTime"
+        >
+          8/8/2019
+        </div>
+      </div>
+      <div
+        className="c8"
+      >
+        <div
+          className="c10"
+          data-test-automation-id="pinned-text"
+        >
+          Files that get shared in your conversation automatically show up here.
+        </div>
+      </div>
+      <span
+        className="MuiTouchRipple-root"
+      />
+    </div>
+  </div>
+  <div
+    className="c0"
+  >
+    <div
+      className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button c1"
+      data-postid={123}
+      data-test-automation-id="pinned-section"
+      onBlur={[Function]}
+      onContextMenu={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      role="button"
+      tabIndex="0"
+    >
+      <div
+        className="c2"
+      >
+        <div
+          className="c3"
+        >
+          <span
+            className=" pin icon c4"
+          >
+            <svg
+              className="c5"
+              role="img"
+              size="inherit"
+            >
+              <use
+                href="#icon-pin"
+                xlinkHref="#icon-pin"
+              />
+            </svg>
+          </span>
+        </div>
+        <div
+          className="MuiListItemText-root c6"
+          data-test-automation-id="pinned-creator"
+        >
+          <span
+            className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary list-item-primary"
+          >
+            Virginia Gill
+          </span>
+        </div>
+        <div
+          className="c7"
+          data-test-automation-id="pinned-createTime"
+        >
+          8/8/2019
+        </div>
+      </div>
+      <div
+        className="c8"
+      >
+        <div
+          className="c9"
+          data-test-automation-id="pinned-text"
+        >
+          Files that get shared in your conversation automatically show up here.
+        </div>
+      </div>
+      <span
+        className="MuiTouchRipple-root"
+      />
+    </div>
+  </div>
+</div>
+`;
