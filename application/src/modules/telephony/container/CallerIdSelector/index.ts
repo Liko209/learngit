@@ -1,1 +1,1 @@
-export * from './CallerIdSelector';
+export * from './CallerIdSelector.View';
