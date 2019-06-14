@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
+import React, { Component, RefObject, createRef } from 'react';
 import { NoteViewProps } from './types';
 import {
   JuiConversationItemCard,
@@ -15,6 +15,7 @@ import {
   JuiDialogHeaderTitle,
   JuiDialogHeaderActions,
 } from 'jui/components/Dialog/DialogHeader';
+import { observable, reaction } from 'mobx';
 import { JuiButtonBar } from 'jui/components/Buttons/ButtonBar';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { JuiDivider } from 'jui/components/Divider';
@@ -30,14 +31,34 @@ import {
 @observer
 class NoteView extends Component<NoteViewProps> {
   static contextType = SearchHighlightContext;
+  @observable private _ref: RefObject<HTMLIFrameElement> = createRef();
   context: HighlightContextInfo;
+  refReaction: any;
+
+  constructor(props: NoteViewProps) {
+    super(props);
+    this.refReaction = reaction(() => this._ref.current, this._iframeOnLoad);
+  }
+
+  componentWillUnmount() {
+    this.refReaction();
+  }
+
+  _iframeOnLoad = async (iframe: HTMLIFrameElement) => {
+    if (iframe) return;
+    const { getBodyInfo } = this.props;
+    const bodyInfo = await getBodyInfo();
+    const iframeContentDocument = iframe.contentDocument;
+    if (!iframeContentDocument) return;
+    iframeContentDocument.open();
+    iframeContentDocument.write(bodyInfo as any);
+    iframeContentDocument.close();
+  }
 
   _handleCLick = async () => {
-    const { getShowDialogPermission, getBodyInfo, title } = this.props;
+    const { getShowDialogPermission, title } = this.props;
     const showNoteDialog = getShowDialogPermission();
     if (!showNoteDialog) return;
-    const bodyInfo = await getBodyInfo();
-    if (!bodyInfo) return;
     const { dismiss } = Dialog.simple(
       <>
         <JuiDialogHeader>
@@ -51,7 +72,7 @@ class NoteView extends Component<NoteViewProps> {
           </JuiDialogHeaderActions>
         </JuiDialogHeader>
         <JuiDivider key="divider-filters" />
-        <div dangerouslySetInnerHTML={{ __html: bodyInfo }} />
+        <iframe ref={this._ref} width="100%" height="100%" frameBorder={0} />
       </>,
       {
         fullScreen: true,
