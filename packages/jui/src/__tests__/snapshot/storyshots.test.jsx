@@ -12,45 +12,39 @@ import * as renderer from 'react-test-renderer';
 import { styleSheetSerializer } from 'jest-styled-components/serializer';
 import { addSerializer } from 'jest-specific-snapshot';
 import { excludeDomSnapshot } from './snapshotConfig';
+import { isExcluded } from './utils';
 
 addSerializer(styleSheetSerializer);
 
+const tested = new Set();
+function isTested(story) {
+  const hash = `${story.kind} ${story.name}`;
+  if (tested.has(hash)) {
+    return true;
+  }
+  tested.add(hash);
+  return false;
+}
 initStoryshots({
-  asyncJest: true,
-  test: ({ story, context, done }) => {
-    if (
-      excludeDomSnapshot.name.includes(story.name) ||
-      excludeDomSnapshot.kind.includes(story.kind)
-    ) {
-      console.log(`skip story ${story.kind} ${story.name}`);
-      done();
+  test: ({ story, context }) => {
+    if (isExcluded(story.kind, story.name, excludeDomSnapshot)) {
       return;
     }
-    expect(done).toBeDefined();
+    if (isTested(story)) {
+      return;
+    }
+
     const converter = new Stories2SnapsConverter({
       snapshotExtension: '.storyshot',
     });
     const snapshotFilename = converter.getSnapshotFileName(context);
 
-    // This is a storyOf Async (see ./required_with_context/Async.stories)
-    try {
-      const storyElement = story.render();
-      // Mount the component
-      const wrapper = renderer.create(storyElement);
-      // wait until the "Async" component is updated
-      setTimeout(() => {
-        // wrapper.update();
-        // Update the wrapper with the changes in the underlying component
-        expect(wrapper.toJSON()).toMatchSpecificSnapshot(snapshotFilename);
-        // expect(toJson(wrapper)).toMatchSpecificSnapshot('haha');
-        // Assert the expected value and the corresponding snapshot
-
-        // finally mark test as done
-        done();
-      }, 0);
-    } catch {
-      done();
-    }
+    const storyElement = story.render();
+    const wrapper = renderer.create(storyElement);
+    expect(wrapper.toJSON()).toMatchSpecificSnapshot(
+      snapshotFilename,
+      `${story.kind} ${story.name}`,
+    );
   },
   configPath: path.resolve(__dirname, '../../../.storybook/config.test.js'),
 });

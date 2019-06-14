@@ -1,6 +1,35 @@
 const excludeDomSnapshot = {
-  kind: [],
-  name: ['Checkbox Button Bar', 'CheckboxButton'],
+  kind: [
+    'Components/Animation',
+    'Components/DragArea',
+    'Components/VirtualizedList',
+    'Components/ImageView',
+    'Components/SizeDetector',
+    'Components/ZoomArea',
+    'Foundation/Layout',
+    'Pattern/DragZoom',
+    'Pattern/VirtualList',
+    'Pattern/ConversationLoading',
+    'Pattern/Viewer',
+    'Components/Tabs',
+    'Pattern/TeamSetting',
+    'Pattern/ToastWrapper',
+  ],
+  name: [
+    // didn't support modal yet
+    'JuiAlert',
+    'JuiConfirm',
+    'Simple Menu',
+    'IconList',
+    'PreviewFileThumbnail',
+    'IntegrationItem',
+    'CheckboxButton',
+    'MessageInput',
+    'AttachmentList',
+    'JuiDuplicateAlert',
+    'JuiRightRailItemLoading',
+    'ContentLoader',
+  ],
 };
 const excludeImageSnapshot = {
   kind: [
@@ -17,8 +46,6 @@ const excludeImageSnapshot = {
     'Pattern/Viewer',
   ],
   name: [
-    // story problem
-    'OutlineTextField',
     // didn't support modal yet
     'JuiAlert',
     'JuiConfirm',

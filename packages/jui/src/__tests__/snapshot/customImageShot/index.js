@@ -10,6 +10,7 @@ import puppeteer from 'puppeteer';
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import { logger } from '@storybook/node-logger';
 import { constructUrl } from './url';
+import { isExcluded } from '../utils';
 
 expect.extend({ toMatchImageSnapshot });
 
@@ -29,17 +30,6 @@ const defaultConfig = {
   customizePage: asyncNoop,
   getCustomBrowser: undefined,
 };
-
-function isExcluded(kind, name, config) {
-  if (
-    config.name.includes(name) ||
-    config.kind.includes(kind) ||
-    config.matchFunction({ kind, name })
-  ) {
-    console.log(`skip story ${kind} ${name}`);
-    return true;
-  }
-}
 
 export const imageSnapshot = (customConfig = {}) => {
   const {

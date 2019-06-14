@@ -4,33 +4,34 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import {
-  storiesOf,
-  configure,
-  addDecorator,
-  addParameters,
-} from '@storybook/react';
-import {
-  Global,
-  ThemeProvider,
-  themes,
-  createReset,
-  convert,
-} from '@storybook/theming';
+import { configure, addDecorator, addParameters } from '@storybook/react';
+import { ThemeProvider, themes, convert } from '@storybook/theming';
+import { MuiThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider as StyledThemeProvider } from 'styled-components';
+import { createMuiTheme } from '@material-ui/core/styles';
+import JssProvider from 'react-jss/lib/JssProvider';
+import { rawTheme } from './theme';
 
-import { ThemeProvider as JuiThemeProvider } from '../src/foundation/theme/index';
-import './index.css';
+const generateClassName = (rule, styleSheet) =>
+  `${styleSheet.options.classNamePrefix}-${rule.key}`;
+
+const theme = createMuiTheme(rawTheme);
 
 const ThemeDecorator = storyFn => {
   return (
-    <JuiThemeProvider themeName='light'>
-      <ThemeProvider theme={convert(themes.light)}>{storyFn()}</ThemeProvider>
-    </JuiThemeProvider>
+    <MuiThemeProvider theme={theme}>
+      <StyledThemeProvider theme={theme}>
+        <ThemeProvider theme={convert(themes.light)}>{storyFn()}</ThemeProvider>
+      </StyledThemeProvider>
+    </MuiThemeProvider>
   );
 };
 
 // this decorator is used in storyshots.test.jsx not storyImageShots.test.jsx
 addDecorator(ThemeDecorator);
+addDecorator(story => (
+  <JssProvider generateClassName={generateClassName}>{story()}</JssProvider>
+));
 
 addParameters({
   info: {

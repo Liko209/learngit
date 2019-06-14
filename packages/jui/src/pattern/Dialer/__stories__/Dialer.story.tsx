@@ -35,6 +35,7 @@ const Status = () => <JuiIconography iconSize="large" symbol={signal2} />;
 
 const MinimizeAction = () => (
   <JuiIconButton
+    key="MinimizeAction"
     size="small"
     tooltipTitle="Minimize"
     variant="plain"
@@ -47,6 +48,7 @@ MinimizeAction.displayName = 'MinimizeAction';
 
 const DetachOrAttachAction = () => (
   <JuiIconButton
+    key="DetachOrAttachAction"
     size="small"
     tooltipTitle="Detach"
     variant="plain"

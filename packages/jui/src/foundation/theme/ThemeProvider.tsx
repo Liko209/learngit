@@ -4,6 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export {
-  default as ThemeProvider,
-} from 'rcui/foundation/styles/ThemeProvider';
+// @ts-ignore
+window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
+export { default as ThemeProvider } from 'rcui/foundation/styles/ThemeProvider';

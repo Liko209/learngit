@@ -10,5 +10,3 @@ jest
   .spyOn(themeHandler, 'loadUrl')
   .mockImplementation(() => Promise.resolve(light));
 import 'jest-styled-components';
-import '@storybook/addon-knobs';
-jest.mock('@storybook/addon-knobs');
