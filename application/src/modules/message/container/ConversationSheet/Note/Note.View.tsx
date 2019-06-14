@@ -16,7 +16,7 @@ import {
   JuiDialogHeaderTitle,
   JuiDialogHeaderActions,
 } from 'jui/components/Dialog/DialogHeader';
-import { observable, reaction } from 'mobx';
+import { observable, reaction, IReactionDisposer } from 'mobx';
 import { JuiButtonBar } from 'jui/components/Buttons/ButtonBar';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { JuiDivider } from 'jui/components/Divider';
@@ -34,15 +34,18 @@ class NoteView extends Component<NoteViewProps> {
   static contextType = SearchHighlightContext;
   @observable private _ref: RefObject<any> = createRef();
   context: HighlightContextInfo;
-  refReaction: any;
+  refReactionDispose: IReactionDisposer;
 
   constructor(props: NoteViewProps) {
     super(props);
-    this.refReaction = reaction(() => this._ref.current, this._iframeOnLoad);
+    this.refReactionDispose = reaction(
+      () => this._ref.current,
+      this._iframeOnLoad,
+    );
   }
 
   componentWillUnmount() {
-    this.refReaction();
+    this.refReactionDispose();
   }
 
   _iframeOnLoad = async (iframe: HTMLIFrameElement) => {
