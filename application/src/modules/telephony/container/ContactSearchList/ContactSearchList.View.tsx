@@ -15,6 +15,7 @@ import { ContactSearchListViewProps } from './types';
 import { observer } from 'mobx-react';
 import { ContactSearchItem } from '../ContactSearchItem';
 import { HotKeys } from 'jui/hoc/HotKeys';
+import { ROW_HEIGHT } from './constants';
 
 type Props = WithTranslation & ContactSearchListViewProps;
 type ContactSearchListState = {
@@ -22,7 +23,6 @@ type ContactSearchListState = {
 };
 
 const MENU_PADDING = 2;
-const ROW_HEIGHT = 44;
 
 const ContactSearchListContainer = styled.div`
   flex: 1;
@@ -49,8 +49,6 @@ class ContactSearchListViewComponent extends Component<
 > {
   private _containerRef: React.RefObject<any> = createRef();
   private _listRef: React.RefObject<any> = createRef();
-  private _startIndex: number;
-  private _stopIndex: number;
 
   state = {
     height: 0,
@@ -66,28 +64,28 @@ class ContactSearchListViewComponent extends Component<
       });
     }
   }
-
-  private _handleVisibilityChanged = (range: {
-    startIndex: number;
-    stopIndex: number;
-  }) => {
-    const { startIndex, stopIndex } = range;
-    this._startIndex = startIndex;
-    this._stopIndex = stopIndex;
+  componentDidUpdate({ trimmedInputString }: Props) {
+    if (
+      this.props.trimmedInputString !== trimmedInputString &&
+      this._listRef.current
+    ) {
+      this._listRef.current.scrollToIndex(0);
+    }
   }
-
   private _scrollToView = (f: () => void) => () => {
-    const { focusIndex, dialerFocused } = this.props;
+    const { dialerFocused } = this.props;
     if (!dialerFocused) {
       return;
     }
     f();
-
-    if (
-      (focusIndex < this._startIndex || focusIndex >= this._stopIndex) &&
-      this._listRef.current
-    ) {
-      this._listRef.current.scrollToIndex(focusIndex);
+    const newFS = this.props.focusIndex;
+    const { startIndex, stopIndex } = this._listRef.current.getVisibleRange();
+    if (this._listRef.current) {
+      if (newFS <= startIndex) {
+        this._listRef.current.scrollToIndex(newFS, false);
+      } else if (newFS >= stopIndex) {
+        this._listRef.current.scrollToIndex(newFS, true);
+      }
     }
   }
 
@@ -130,7 +128,6 @@ class ContactSearchListViewComponent extends Component<
                 loadingRenderer={<></>}
                 hasMore={hasMore}
                 initialScrollToIndex={focusIndex === -1 ? 0 : focusIndex}
-                onVisibleRangeChange={this._handleVisibilityChanged}
                 ref={this._listRef}
               >
                 {displayedSearchResult.map((searchItem, idx) => {

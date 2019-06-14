@@ -16,20 +16,16 @@ import { isEqual } from 'lodash';
 
 type Props = {
   callerIdProps: CallerIdSelectorProps;
-  tooltipProps: Partial<RuiTooltipProps>;
+  tooltipProps: Pick<
+    RuiTooltipProps,
+    Exclude<keyof RuiTooltipProps, 'children'>
+  >;
 };
 
 export const ContactSearchPanel = React.memo((props: Props) => {
-  const { title, open, tooltipForceHide } = props.tooltipProps;
-
   const keypadActions = (
     <ContactSearchContainer>
-      <RuiTooltip
-        title={title}
-        placement="bottom"
-        open={open}
-        tooltipForceHide={tooltipForceHide}
-      >
+      <RuiTooltip placement="bottom" {...props.tooltipProps}>
         <CallerIdSelector {...props.callerIdProps} />
       </RuiTooltip>
       <ContactSearchList />

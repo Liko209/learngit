@@ -2,7 +2,6 @@ import * as _ from 'lodash';
 import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import { h, H } from '../../../../helpers';
-import { ClientFunction } from 'testcafe';
 
 
 export class EmojiLibrary extends BaseWebComponent {

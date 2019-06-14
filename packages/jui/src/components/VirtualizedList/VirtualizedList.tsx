@@ -52,7 +52,6 @@ type Props = {
   children: JSX.Element[];
   contentStyle: React.CSSProperties;
   stickToLastPosition?: boolean;
-  fixedWrapper?: boolean;
 };
 type JuiVirtualizedListHandles = {
   scrollToBottom: () => void;
@@ -81,7 +80,6 @@ const JuiVirtualizedList: RefForwardingComponent<
     stickToBottom,
     contentStyle,
     stickToLastPosition = true,
-    fixedWrapper,
   }: Props,
   forwardRef,
 ) => {
@@ -217,9 +215,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     return !isRangeIn(renderedRange, computeVisibleRange());
   };
 
-  const updateRange = ({
-    forceUpdate = false,
-  }: { forceUpdate?: boolean } = {}) => {
+  const updateRange = () => {
     if (ref.current) {
       const { scrollTop } = ref.current;
       const visibleRange = computeVisibleRange();
@@ -238,7 +234,7 @@ const JuiVirtualizedList: RefForwardingComponent<
 
   const ensureNoBlankArea = () => {
     if (shouldUpdateRange()) {
-      updateRange({ forceUpdate: true });
+      updateRange();
     }
   };
 
@@ -255,8 +251,8 @@ const JuiVirtualizedList: RefForwardingComponent<
     isAtBottom: () => {
       return prevAtBottomRef.current;
     },
-    scrollToIndex: (index: number) => {
-      jumpToPosition({ index });
+    scrollToIndex: (index: number, options?: boolean) => {
+      jumpToPosition({ index, options });
     },
     getVisibleRange: computeVisibleRange,
     getPrevVisibleRange: () => prevVisibleRange,
@@ -355,7 +351,6 @@ const JuiVirtualizedList: RefForwardingComponent<
         }
         result.diff = diff;
       }
-
       return result;
     };
 
@@ -379,13 +374,13 @@ const JuiVirtualizedList: RefForwardingComponent<
     let rowElements: Element[] = getChildren(contentRef.current);
 
     if (!shouldUseNativeImplementation) {
-      rowElements = compact(rowElements.map((i) => i.firstElementChild));
+      rowElements = compact(rowElements.map(i => i.firstElementChild));
     }
 
     rowElements.forEach(handleRowSizeChange);
     const observers = rowElements.map(observeDynamicRow);
     return () => {
-      observers.forEach((observer) => {
+      observers.forEach(observer => {
         observer.observer.disconnect();
         delete observer.cb;
       });
