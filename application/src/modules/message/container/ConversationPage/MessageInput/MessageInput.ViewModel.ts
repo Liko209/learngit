@@ -34,6 +34,20 @@ import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
 import JSZip from 'jszip';
 import { NETWORK_VIA } from '../../../../../../../packages/foundation/src';
 const URL = require('url-parse');
+import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
+
+const saveDebugLog = (level: ZipItemLevel = ZipItemLevel.NORMAL) => {
+  container
+    .get(FeedbackService)
+    .zipRecentLogs(level)
+    .then(zipResult => {
+      if (!zipResult) {
+        mainLogger.debug('Zip log fail.');
+        return;
+      }
+      saveBlob(zipResult.zipName, zipResult.zipBlob);
+    });
+};
 
 const DEBUG_COMMAND_MAP = {
   '/network': async () => {
@@ -83,19 +97,12 @@ const DEBUG_COMMAND_MAP = {
     // });
   },
   '/debug': () => UploadRecentLogs.show(),
+  '/debug-all': () => UploadRecentLogs.show({ level: ZipItemLevel.DEBUG_ALL }),
   '/debug-save': () => {
-    // todo use schema
-    // feedback://..., object;
-    container
-      .get(FeedbackService)
-      .zipRecentLogs()
-      .then(zipResult => {
-        if (!zipResult) {
-          mainLogger.debug('Zip log fail.');
-          return;
-        }
-        saveBlob(zipResult.zipName, zipResult.zipBlob);
-      });
+    saveDebugLog(ZipItemLevel.NORMAL);
+  },
+  '/debug-save-all': () => {
+    saveDebugLog(ZipItemLevel.DEBUG_ALL);
   },
 };
 

@@ -1,14 +1,14 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-05-09 10:51:18 
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-05-09 11:07:20
+ * @Author: Potar.He
+ * @Date: 2019-05-09 10:51:18
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2019-06-06 21:37:20
  */
 
 
 import { v4 as uuid } from 'uuid';
 
-import { h } from '../../v2/helpers'
+import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { SITE_URL, BrandTire } from '../../config';
@@ -28,15 +28,20 @@ test.meta(<ITestMeta>{
   let chat = <IGroup>{
     type: "DirectMessage",
     owner: loginUser,
-    members: [loginUser, users[1]]
+    members: [loginUser, anotherUser]
   }
 
   const app = new AppRoot(t);
-  await h(t).withLog(`Given I have a chat with ${anotherUser.extension}`, async () => {
+  await h(t).withLog(`Given I have a chat with {extension}`, async (step) => {
+    step.setMetadata('extension', anotherUser.extension);
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -128,11 +133,12 @@ test.meta(<ITestMeta>{
   let chat = <IGroup>{
     type: "DirectMessage",
     owner: loginUser,
-    members: [loginUser, users[1]]
+    members: [loginUser, anotherUser]
   }
 
   const app = new AppRoot(t);
-  await h(t).withLog(`Given I have a chat with ${anotherUser.extension}`, async () => {
+  await h(t).withLog(`Given I have a chat with {extension}`, async (step) => {
+    step.setMetadata('extension', anotherUser.extension);
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
@@ -198,18 +204,22 @@ test.meta(<ITestMeta>{
   let chat = <IGroup>{
     type: "DirectMessage",
     owner: loginUser,
-    members: [loginUser, users[1]]
+    members: [loginUser, anotherUser]
   }
 
   const app = new AppRoot(t);
-  await h(t).withLog(`Given I have a chat with ${anotherUser.extension}`, async () => {
+  await h(t).withLog(`Given I have a chat`, async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
-  });
+  });;
 
   await h(t).withLog('When I enter a chat conversation', async () => {
     await app.homePage.messageTab.directMessagesSection.expand();
@@ -256,15 +266,20 @@ test.meta(<ITestMeta>{
   let chat = <IGroup>{
     type: "DirectMessage",
     owner: loginUser,
-    members: [loginUser, users[1]]
+    members: [loginUser, anotherUser]
   }
 
   const app = new AppRoot(t);
-  await h(t).withLog(`Given I have a chat with ${anotherUser.extension}`, async () => {
+  await h(t).withLog(`Given I have a chat with {extension}`, async (step) => {
+    step.setMetadata('extension', anotherUser.extension);
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -335,15 +350,20 @@ test.meta(<ITestMeta>{
   let chat = <IGroup>{
     type: "DirectMessage",
     owner: loginUser,
-    members: [loginUser, users[1]]
+    members: [loginUser, anotherUser]
   }
 
   const app = new AppRoot(t);
-  await h(t).withLog(`Given I have a chat with ${anotherUser.extension}`, async () => {
+  await h(t).withLog(`Given I have a chat with {extension}`, async (step) => {
+    step.setMetadata('extension', anotherUser.extension);
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -404,15 +424,20 @@ test.meta(<ITestMeta>{
   let chat = <IGroup>{
     type: "DirectMessage",
     owner: loginUser,
-    members: [loginUser, users[1]]
+    members: [loginUser, anotherUser]
   }
 
   const app = new AppRoot(t);
-  await h(t).withLog(`Given I have a chat with ${anotherUser.extension}`, async () => {
+  await h(t).withLog(`Given I have a chat with {extension}`, async (step) => {
+    step.setMetadata('extension', anotherUser.extension);
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -423,7 +448,7 @@ test.meta(<ITestMeta>{
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
-    await h(t).withLog('And I click Emoji button', async () => {
+  await h(t).withLog('And I click Emoji button', async () => {
     await conversationPage.clickEmojiButton();
   });
 
@@ -449,6 +474,317 @@ test.meta(<ITestMeta>{
     await emojiLibrary.previewShouldBeKey(emojiValue);
     await t.expect(emojiLibrary.previewName.textContent).eql(emojiName);
     await t.expect(emojiLibrary.previewShortName.textContent).eql(emojiShortName);
+  });
+
+});
+
+
+test.meta(<ITestMeta>{
+  priority: ['P1'], caseIds: ['JPT-1747'], keywords: ['emoji'], maintainers: ['Potar.he']
+})('Check can display emoji information when hovering an emoji', async (t) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const anotherUser = users[5];
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, anotherUser]
+  }
+
+  const emojiText = ':sm:'
+  const prefix = ':fla';
+  const mixPrefix = 'gr :gr'
+  const wrongPrefix = ':huhuhu';
+  let currentInputAreaText = '';
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`Given I have a chat with {extension}`, async (step) => {
+    step.setMetadata('extension', anotherUser.extension);
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('And I enter the chat conversation', async () => {
+    await app.homePage.messageTab.directMessagesSection.expand();
+    await app.homePage.messageTab.directMessagesSection.nthConversationEntry(0).enter();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog('When I type text: {emojiText}', async (step) => {
+    step.setMetadata('emojiText', emojiText);
+    await t.typeText(conversationPage.messageInputArea, emojiText, { paste: true, replace: true });
+  });
+
+  await h(t).withLog('When I hit Enter on the keyboard to send the message', async () => {
+    await t.pressKey('enter');
+    await conversationPage.nthPostItem(-1).waitForPostToSend();
+  });
+
+  await h(t).withLog(`Then Display the emoji {emojiText} in the conversation stream`, async (step) => {
+    step.setMetadata('emojiText', emojiText);
+    currentInputAreaText = emojiText + ' ';
+    await conversationPage.nthPostItem(-1).shouldHasEmojiByValue(emojiText);
+  });
+
+  await h(t).withLog('When  I type text: {prefix}', async (step) => {
+    step.setMetadata('prefix', prefix);
+    await t.typeText(conversationPage.messageInputArea, prefix, { paste: false, replace: false });
+  });
+
+  const emojiMatchList = app.homePage.messageTab.emojiMatchList;
+  await h(t).withLog('Then the emoji emoji match list should be open', async () => {
+    await emojiMatchList.ensureLoaded();
+    await t.expect(conversationPage.messageInputArea.focused).ok();
+  });
+
+  await h(t).withLog('And the first emoji match item is in selected style', async () => {
+    await emojiMatchList.itemByNth(0).shouldBeSelected();
+  });
+
+  await h(t).withLog('When I hit down on the keyboard', async () => {
+    await t.pressKey('down');
+  });
+
+  await h(t).withLog('Then the second emoji item is in selected style', async () => {
+    await emojiMatchList.itemByNth(1).shouldBeSelected();
+  });
+
+  await h(t).withLog('When I hit up on the keyboard', async () => {
+    await t.pressKey('up');
+  });
+
+  let firstEmoji = '';
+  await h(t).withLog('Then the first emoji item {value} is in selected style', async (step) => {
+    await emojiMatchList.itemByNth(0).shouldBeSelected();
+    firstEmoji = await emojiMatchList.itemByNth(0).textSpan.textContent
+    firstEmoji = firstEmoji.trim();
+    step.setMetadata('value', firstEmoji);
+  });
+
+  await h(t).withLog('When I hit Enter on the keyboard', async () => {
+    await t.pressKey('enter');
+  });
+  await h(t).withLog(`Then Display selected emoji's key {value} and text in the input box`, async (step) => {
+    step.setMetadata('value', firstEmoji);
+    currentInputAreaText = `${firstEmoji} `;
+    await t.expect(conversationPage.messageInputArea.textContent).eql(currentInputAreaText);
+  });
+
+  await h(t).withLog('When I type text: {mixPrefix}', async (step) => {
+    step.setMetadata('mixPrefix', mixPrefix);
+    await t.typeText(conversationPage.messageInputArea, mixPrefix, { paste: true });
+  });
+
+  await h(t).withLog('Then the emoji emoji match list should be open', async () => {
+    await emojiMatchList.ensureLoaded();
+    await t.expect(conversationPage.messageInputArea.focused).ok();
+  });
+
+  let secondEmoji = '';
+  await h(t).withLog('And the first emoji match item {value} is in selected style', async (step) => {
+    await emojiMatchList.itemByNth(0).shouldBeSelected();
+    secondEmoji = await emojiMatchList.itemByNth(0).textSpan.textContent
+    secondEmoji = secondEmoji.trim();
+    step.setMetadata('value', secondEmoji);
+  });
+
+  await h(t).withLog('When I hit Tab on the keyboard', async () => {
+    await t.pressKey('tab');
+  });
+
+  await h(t).withLog(`Then Display selected emoji's key {value} and text in the input box`, async (step) => {
+    step.setMetadata('value', secondEmoji);
+    currentInputAreaText = `${firstEmoji} gr ${secondEmoji} `;
+    const reg = new RegExp(`${firstEmoji}.*gr.*${secondEmoji}.* `);
+    await t.expect(conversationPage.messageInputArea.textContent).match(reg);
+  });
+
+  await h(t).withLog('When I hit Enter on the keyboard to send the message', async () => {
+    await t.pressKey('enter');
+  });
+
+  await h(t).withLog(`Then Display the emoji in the conversation stream`, async (step) => {
+    const emijis = [firstEmoji.replace(':', ""), secondEmoji.replace(':', "")]
+    await conversationPage.nthPostItem(-1).emojisShouldBeInOrder(emijis)
+  });
+
+  await h(t).withLog('When I type text: {wrongPrefix}', async (step) => {
+    step.setMetadata('wrongPrefix', wrongPrefix);
+    await t.typeText(conversationPage.messageInputArea, wrongPrefix, { replace: true, paste: true });
+  });
+
+  await h(t).withLog('Then the emoji emoji match list should not be open ', async () => {
+    await emojiMatchList.ensureDismiss();
+  });
+
+  await h(t).withLog('When I hit Enter on the keyboard to send the message', async () => {
+    await t.pressKey('enter');
+  });
+
+  await h(t).withLog(`Then not emoji in last post `, async () => {
+    await t.expect(conversationPage.lastPostItem.emojis.exists).notOk();
+  });
+});
+
+
+test.meta(<ITestMeta>{
+  priority: ['P2'], caseIds: ['JPT-2115'], keywords: ['emoji'], maintainers: ['Potar.he']
+})('Check can close the matching emoji list', async (t) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const anotherUser = users[5];
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, anotherUser]
+  }
+
+  const prefix = ':fla';
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`Given I have a chat with {extension}`, async (step) => {
+    step.setMetadata('extension', anotherUser.extension);
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('And I enter the chat conversation', async () => {
+    await app.homePage.messageTab.directMessagesSection.expand();
+    await app.homePage.messageTab.directMessagesSection.nthConversationEntry(0).enter();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
+  await h(t).withLog('When  I type text: {prefix}', async (step) => {
+    step.setMetadata('prefix', prefix);
+    await t.typeText(conversationPage.messageInputArea, prefix);
+  });
+
+  const emojiMatchList = app.homePage.messageTab.emojiMatchList;
+  await h(t).withLog('Then the emoji emoji match list should be open', async () => {
+    await emojiMatchList.ensureLoaded();
+  });
+  await h(t).withLog('When I press esc', async () => {
+    await t.pressKey('esc');
+  });
+
+  await h(t).withLog('Then the emoji emoji match list should dismiss', async () => {
+    await emojiMatchList.ensureDismiss();
+  });
+
+  await h(t).withLog('When  I type text: {prefix}', async (step) => {
+    step.setMetadata('prefix', prefix);
+    await t.typeText(conversationPage.messageInputArea, prefix, { replace: true });
+  });
+
+  await h(t).withLog('Then the emoji emoji match list should be open', async () => {
+    await emojiMatchList.ensureLoaded();
+  });
+
+  await h(t).withLog('When I Click outside except input box', async () => {
+    await t.click(conversationPage.header)
+  });
+
+  await h(t).withLog('Then the emoji emoji match list should dismiss', async () => {
+    await emojiMatchList.ensureDismiss();
+  })
+
+});
+
+test.meta(<ITestMeta>{
+  priority: ['P2'], caseIds: ['JPT-2249'], keywords: ['emoji'], maintainers: ['Potar.He']
+})('Check mention list should be above the emoji library', async (t) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const anotherUser = users[5];
+
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, anotherUser]
+  }
+
+  const prefix = ':fla';
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`Given I have a chat with {extension}`, async (step) => {
+    step.setMetadata('extension', anotherUser.extension)
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I enter first chat conversation', async () => {
+    await app.homePage.messageTab.directMessagesSection.expand();
+    await app.homePage.messageTab.directMessagesSection.nthConversationEntry(0).enter();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog('And I click Emoji button', async () => {
+    await conversationPage.clickEmojiButton();
+  });
+
+  const emojiLibrary = app.homePage.messageTab.emojiLibrary;
+  await h(t).withLog('Then the emoji library should be open', async () => {
+    await emojiLibrary.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I turn on the keep-on toggle`, async () => {
+    await emojiLibrary.turnOnKeepOpen();
+  });
+
+  await h(t).withLog('And I click an emoji', async () => {
+    await emojiLibrary.smileysAndPeopleSection.clickEmojiByNth(0);
+  });
+
+  await h(t).withLog('Then the emoji library should be open', async () => {
+    await emojiLibrary.ensureLoaded();
+  });
+
+  await h(t).withLog('And message input area keep focus', async () => {
+    await t.expect(conversationPage.messageInputArea.focused).ok();
+  });
+
+  await h(t).withLog('When I type text: {prefix}', async (step) => {
+    step.setMetadata('prefix', ` ${prefix}`);
+    await t.typeText(conversationPage.messageInputArea, ` ${prefix}`);
+  });
+
+  await h(t).withLog('Then the emoji library should be open', async () => {
+    await emojiLibrary.ensureLoaded();
+  });;
+
+  const emojiMatchList = app.homePage.messageTab.emojiMatchList;
+  await h(t).withLog('And emoji match List should be open ', async () => {
+    await emojiMatchList.ensureLoaded();
+  });
+
+  await h(t).withLog('And The emoji match List should be above the emoji library', async () => {
+    await t.expect(emojiMatchList.visible).ok();
+    await t.expect(emojiLibrary.keepOpenToggle.visible).notOk();
   });
 
 });

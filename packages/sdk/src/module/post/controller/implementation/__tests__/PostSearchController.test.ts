@@ -90,7 +90,7 @@ describe('PostSearchController', () => {
       SearchAPI.search = jest.fn().mockReturnValue(res);
       setTimeout(() => {
         postSearchController.handleSearchResults(countResults);
-      },         100);
+      }, 100);
 
       const promise = postSearchController.getContentsCount(searchParams);
       const counts = await promise;
@@ -158,7 +158,7 @@ describe('PostSearchController', () => {
               response_id: 1,
               scroll_request_id: '1',
             });
-          },         10);
+          }, 10);
           return {};
         })
         .mockImplementationOnce(() => {
@@ -171,13 +171,13 @@ describe('PostSearchController', () => {
               response_id: 1,
               scroll_request_id: '2',
             });
-          },         10);
+          }, 10);
           return {};
         });
 
       setTimeout(() => {
         postSearchController.handleSearchResults(searchedResult);
-      },         100);
+      }, 100);
       const promise = postSearchController.searchPosts(searchParams);
       const itemsAndPosts = await promise;
       expect(itemsAndPosts).toEqual({
@@ -215,8 +215,8 @@ describe('PostSearchController', () => {
 
       setTimeout(() => {
         postSearchController.handleSearchResults(searchedResult);
-      },         100);
-      const promise = postSearchController.searchPosts(searchParams);
+      }, 100);
+      const promise = postSearchController.searchPosts(searchParams as any);
       const itemsAndPosts = await promise;
       expect(itemsAndPosts).toEqual({
         hasMore: true,
@@ -246,6 +246,59 @@ describe('PostSearchController', () => {
         postSearchController.searchPosts(searchParams),
       ).rejects.toThrowError(error);
     });
+
+    it('should filter posts which does not belong to search conversation', async () => {
+      queryInfos.set(123, {
+        queryOptions: { q: 'q', group_id: 367419394 },
+      });
+      const searchParams = {
+        q: 'name',
+        type: 'all',
+        scroll_size: 1,
+        group_id: 367419394,
+      };
+      const res = { request_id: 123 };
+      SearchAPI.search = jest.fn().mockResolvedValue(res);
+
+      setTimeout(() => {
+        postSearchController.handleSearchResults({
+          request_id: 123,
+          client_request_id: 1,
+          query: 'name',
+          results: [
+            {
+              _id: 2696437764,
+              created_at: 123123,
+              model_id: '2696437764',
+              group_id: 367419394,
+            },
+            {
+              _id: 2685272068,
+              created_at: 123123,
+              model_id: '2685272068',
+              group_id: 99999,
+            },
+          ],
+          just_ids: false,
+          response_id: 1,
+        });
+      }, 100);
+      const promise = postSearchController.searchPosts(searchParams as any);
+      const itemsAndPosts = await promise;
+      expect(itemsAndPosts).toEqual({
+        hasMore: true,
+        items: [],
+        posts: [
+          {
+            id: 2696437764,
+            created_at: 123123,
+            model_id: '2696437764',
+            group_id: 367419394,
+          },
+        ],
+        requestId: 123,
+      });
+    });
   });
 
   describe('endPostSearch', () => {
@@ -258,8 +311,8 @@ describe('PostSearchController', () => {
     it('should clear local search info and send request to clear request', async () => {
       expect.assertions(5);
       const requestId = Date.now();
-      queryInfos.set(requestId, { q: 'q' });
-      queryInfos.set(requestId + 1, { q: 'k' });
+      queryInfos.set(requestId, { queryOptions: { q: 'q' } });
+      queryInfos.set(requestId + 1, { queryOptions: { q: 'k' } });
       SearchAPI.search = jest.fn().mockResolvedValue({});
       await postSearchController.endPostSearch();
       expect(queryInfos.has(requestId)).toBeFalsy();
@@ -275,7 +328,7 @@ describe('PostSearchController', () => {
 
     it('it should not throw error even if request failed', async () => {
       const requestId = Date.now();
-      queryInfos.set(requestId, { q: 'q' });
+      queryInfos.set(requestId, { queryOptions: { q: 'q' } });
       const error = new JServerError(ERROR_CODES_SERVER.GENERAL, 'error');
       SearchAPI.search = jest.fn().mockRejectedValue(error);
       expect(
@@ -292,7 +345,10 @@ describe('PostSearchController', () => {
 
     it('should set search ended when results is null', () => {
       const requestId = Date.now();
-      queryInfos.set(requestId, { q: 'q', scrollRequestId: 1 });
+      queryInfos.set(requestId, {
+        queryOptions: { q: 'q' },
+        scrollRequestId: 1,
+      });
 
       const searchedResult: any = {
         request_id: requestId,
@@ -327,7 +383,10 @@ describe('PostSearchController', () => {
 
     it('should throw an error when search timeout when has unended search', async () => {
       const requestId = 123;
-      queryInfos.set(requestId, { q: 'q', scrollRequestId: 1 });
+      queryInfos.set(requestId, {
+        queryOptions: { q: 'q' },
+        scrollRequestId: 1,
+      });
       jest.spyOn(window, 'setTimeout').mockImplementation((fn: any) => {
         fn();
       });
@@ -353,7 +412,10 @@ describe('PostSearchController', () => {
 
     it('should throw an error when request encounter an unexpected error', async () => {
       const requestId = Date.now();
-      queryInfos.set(requestId, { q: 'q', scrollRequestId: 1 });
+      queryInfos.set(requestId, {
+        queryOptions: { q: 'q' },
+        scrollRequestId: 1,
+      });
       SearchAPI.scrollSearch = jest
         .fn()
         .mockRejectedValue(
@@ -370,7 +432,10 @@ describe('PostSearchController', () => {
 
     it('should throw not an error when request has beed deleted by server', async () => {
       const requestId = Date.now();
-      queryInfos.set(requestId, { q: 'q', scrollRequestId: 1 });
+      queryInfos.set(requestId, {
+        queryOptions: { q: 'q' },
+        scrollRequestId: 1,
+      });
       SearchAPI.scrollSearch = jest
         .fn()
         .mockRejectedValue(
@@ -392,7 +457,10 @@ describe('PostSearchController', () => {
 
     it('should set has more info to false when has no more result', async () => {
       const requestId = Date.now();
-      queryInfos.set(requestId, { q: 'q', scrollRequestId: 1 });
+      queryInfos.set(requestId, {
+        queryOptions: { q: 'q' },
+        scrollRequestId: 1,
+      });
 
       const promise = postSearchController.scrollSearchPosts(requestId);
       const searchedResult: any = {
@@ -406,7 +474,7 @@ describe('PostSearchController', () => {
 
       setTimeout(() => {
         postSearchController.handleSearchResults(searchedResult);
-      },         100);
+      }, 100);
       const results = await promise;
       expect(results).toEqual({
         requestId,
@@ -422,7 +490,10 @@ describe('PostSearchController', () => {
 
     it('should return next page data when scroll succeed', async () => {
       const requestId = Date.now();
-      queryInfos.set(requestId, { q: 'q', scrollRequestId: 1 });
+      queryInfos.set(requestId, {
+        queryOptions: { q: 'q' },
+        scrollRequestId: 1,
+      });
 
       const promise = postSearchController.scrollSearchPosts(requestId);
       const searchedResult: any = {
@@ -447,7 +518,7 @@ describe('PostSearchController', () => {
 
       setTimeout(() => {
         postSearchController.handleSearchResults(searchedResult);
-      },         100);
+      }, 100);
       const results = await promise;
       expect(results).toEqual({
         requestId,
@@ -466,7 +537,7 @@ describe('PostSearchController', () => {
     it('should just return empty data with no hasMore when the search is ended', async () => {
       const requestId = Date.now();
       queryInfos.set(requestId, {
-        q: 'q',
+        queryOptions: { q: 'q' },
         scrollRequestId: 1,
         isSearchEnded: true,
       });
@@ -481,7 +552,7 @@ describe('PostSearchController', () => {
 
       setTimeout(() => {
         postSearchController.handleSearchResults(searchedResult);
-      },         100);
+      }, 100);
       const results = await promise;
       expect(results).toEqual({
         requestId,
@@ -493,7 +564,11 @@ describe('PostSearchController', () => {
 
     it('should get next page automatically when count does not match', async () => {
       const requestId = Date.now();
-      queryInfos.set(requestId, { q: 'q', scrollRequestId: 1, scrollSize: 10 });
+      queryInfos.set(requestId, {
+        queryOptions: { q: 'q' },
+        scrollRequestId: 1,
+        scrollSize: 10,
+      });
       const searchedResult: any = {
         request_id: requestId,
         query: 'name',
@@ -518,7 +593,7 @@ describe('PostSearchController', () => {
         .mockImplementationOnce(() => {
           setTimeout(() => {
             postSearchController.handleSearchResults(searchedResult);
-          },         10);
+          }, 10);
           return {};
         })
         .mockImplementationOnce(() => {
@@ -530,7 +605,7 @@ describe('PostSearchController', () => {
               response_id: 1,
               scroll_request_id: '2',
             });
-          },         10);
+          }, 10);
         });
 
       const promise = postSearchController.scrollSearchPosts(requestId);

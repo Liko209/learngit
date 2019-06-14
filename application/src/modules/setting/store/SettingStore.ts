@@ -33,7 +33,7 @@ class SettingStore {
 
   getNoEmptyPages() {
     return this.getAllPages().filter(
-      pageId => this.getPageNonEmptySections(pageId).length > 0,
+      pageId => this.getNoEmptyPageSections(pageId).length > 0,
     );
   }
 
@@ -55,10 +55,12 @@ class SettingStore {
     );
   }
 
-  getPageNonEmptySections(pageId: SettingPage['id']) {
+  getNoEmptyPageSections(pageId: SettingPage['id']) {
     return this.getPageSections(pageId).filter(sectionId => {
       const itemIds = this.getSectionItems(sectionId);
-      return itemIds.length > 0 && itemIds.some(isItemVisible);
+      return (
+        itemIds.length > 0 && itemIds.some(itemId => isItemVisible(itemId))
+      );
     });
   }
 

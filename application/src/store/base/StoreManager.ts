@@ -10,6 +10,7 @@ import GlobalStore from './GlobalStore';
 
 import { HANDLER_TYPE, ENTITY_NAME } from '../constants';
 import { ENTITY_SETTING } from '../config';
+import { IdModel, ModelIdType } from 'sdk/framework/model';
 
 enum STORE_TYPE {
   ENTITY,
@@ -121,13 +122,13 @@ class StoreManager {
     store.batchSet(entities, refreshCache);
   }
 
-  dispatchReplacedDataModels(
-    entityStoreName: ENTITY_NAME,
-    entities: Map<number, any>,
-  ) {
+  dispatchReplacedDataModels<
+    Model extends IdModel<IdType>,
+    IdType extends ModelIdType = number
+  >(entityStoreName: ENTITY_NAME, entities: Map<IdType, Model>) {
     const store = this.getEntityMapStore(
       entityStoreName,
-    ) as MultiEntityMapStore<any, any>;
+    ) as MultiEntityMapStore<Model, any, IdType>;
     store.batchReplace(entities);
   }
 

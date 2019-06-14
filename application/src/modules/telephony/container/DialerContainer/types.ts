@@ -31,6 +31,9 @@ type DialerContainerViewProps = {
   hasDialerOpened: boolean;
   onAfterDialerOpen: () => void;
   dialerFocused: boolean;
+  shouldEnterContactSearch: boolean;
+  shouldCloseToolTip: boolean;
+  enteredDialer: boolean;
 };
 
 type DialerContainerViewState = {

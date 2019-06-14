@@ -11,15 +11,18 @@ import { MissedCallLogFetchController } from './MissedCallLogFetchController';
 import { CallLog } from '../entity';
 import { RCItemUserConfig } from '../../config';
 import { CallLogBadgeController } from './CallLogBadgeController';
+import { CallLogHandleDataController } from './CallLogHandleDataController';
+import { CallLogUserConfig } from '../config/CallLogUserConfig';
 
 class CallLogController {
   private _callLogActionController: CallLogActionController;
   private _allCallLogFetchController: AllCallLogFetchController;
   private _missedCallLogFetchController: MissedCallLogFetchController;
   private _callLogBadgeController: CallLogBadgeController;
+  private _callLogHandleDataController: CallLogHandleDataController;
   constructor(
     private _entitySourceController: IEntitySourceController<CallLog, string>,
-    private _userConfig: RCItemUserConfig,
+    private _userConfig: CallLogUserConfig,
     private _missedCallUserConfig: RCItemUserConfig,
   ) {}
 
@@ -65,6 +68,17 @@ class CallLogController {
     }
 
     return this._callLogBadgeController;
+  }
+
+  get callLogHandleDataController() {
+    if (!this._callLogHandleDataController) {
+      this._callLogHandleDataController = new CallLogHandleDataController(
+        this._userConfig,
+        this._entitySourceController,
+      );
+    }
+
+    return this._callLogHandleDataController;
   }
 }
 

@@ -12,6 +12,7 @@ import { extractView } from 'jui/hoc/extractView';
 import { Mention } from '@/modules/message/container/ConversationPage/MessageInput/Mention';
 import keyboardEventDefaultHandler from 'jui/pattern/MessageInput/keyboardEventDefaultHandler';
 import { observer } from 'mobx-react';
+import { handleAtMention } from 'jui/pattern/MessageInput/Mention/handleAtMention';
 
 type State = {
   modules: object;
@@ -61,12 +62,13 @@ class EditMessageInputViewComponent extends Component<
     return (
       <JuiMessageInput
         ref={this._messageInputRef}
-        defaultValue={draft || text}
+        defaultValue={draft || handleAtMention(text)}
         error={error ? t(error) : error}
         modules={modules}
         autofocus={false}
         isEditMode={true}
         onChange={saveDraft}
+        placeholder={t('message.action.typeNewMessage')}
       >
         <Mention id={gid} pid={id} isEditMode={true} ref={this._mentionRef} />
       </JuiMessageInput>

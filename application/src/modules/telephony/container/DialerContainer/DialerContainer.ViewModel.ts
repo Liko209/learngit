@@ -14,15 +14,11 @@ import audios from './sounds/sounds.json';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { RefObject } from 'react';
 import ReactDOM from 'react-dom';
-import { focusCampo } from '../../helpers';
 import { debounce } from 'lodash';
+import { focusCampo, sleep } from '../../helpers';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
-
-const sleep = function () {
-  return new Promise((resolve: (args: any) => any) => {
-    requestAnimationFrame(resolve);
-  });
-};
+import { CALL_WINDOW_STATUS } from '../../FSM';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 
 class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   implements DialerContainerViewProps {
@@ -53,13 +49,23 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   @computed
+  get enteredDialer() {
+    return this._telephonyStore.enteredDialer;
+  }
+
+  @computed
   get keypadEntered() {
     return this._telephonyStore.keypadEntered;
   }
 
   @computed
   get isDialer() {
-    return this._telephonyStore.shouldDisplayDialer;
+    return (
+      this._telephonyStore.shouldDisplayDialer &&
+      (!this.trimmedInputString.length ||
+        (!!this.trimmedInputString.length &&
+          this._telephonyStore.firstLetterEnteredThroughKeypad))
+    );
   }
 
   @computed
@@ -74,22 +80,37 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
 
   @computed
   get chosenCallerPhoneNumber() {
-    return formatPhoneNumber(this._telephonyStore.chosenCallerPhoneNumber);
+    const isBlocked = this._telephonyStore.chosenCallerPhoneNumber === PhoneNumberType.Blocked;
+    if (!isBlocked) {
+      return formatPhoneNumber(this._telephonyStore.chosenCallerPhoneNumber);
+    }
+    return this._telephonyStore.chosenCallerPhoneNumber;
   }
 
   @computed
   get callerPhoneNumberList() {
-    return this._telephonyStore.callerPhoneNumberList.map(el => ({
-      value: formatPhoneNumber(el.phoneNumber),
-      usageType: el.usageType,
-      phoneNumber: formatPhoneNumber(el.phoneNumber),
-      label: el.label,
-    }));
+    return this._telephonyStore.callerPhoneNumberList.map(el => {
+      const itemId = el.id;
+      const formattedValue = itemId !== 0 ? formatPhoneNumber(el.phoneNumber) : el.phoneNumber;
+      return {
+        value: formattedValue,
+        usageType: el.usageType,
+        phoneNumber: formattedValue,
+        label: el.label,
+      };
+    });
   }
-
   @computed
   get hasDialerOpened() {
     return this._telephonyStore.dialerOpenedCount !== 0;
+  }
+
+  @computed
+  get shouldCloseToolTip() {
+    return (
+      this._telephonyStore.startMinimizeAnimation ||
+      this._telephonyStore.callWindowState === CALL_WINDOW_STATUS.MINIMIZED
+    );
   }
 
   @computed
@@ -106,6 +127,16 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
       this._telephonyStore.dialerFocused && this._telephonyStore.keypadEntered
     );
   }
+
+  @computed
+  get trimmedInputString() {
+    return this._telephonyStore.inputString.trim();
+  }
+
+  @computed
+  get shouldEnterContactSearch() {
+    return this._telephonyStore.shouldEnterContactSearch;
+  }
   /**
    * Perf: since it's a loop around search, we should not block the main thread
    * while searching for the next available <audio/> roundly
@@ -121,7 +152,8 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
 
     // if the current <audio/> is playing, search for the next none
     if (!currentSoundTrack.paused) {
-      await sleep();
+      const { promise } = sleep();
+      await promise;
       return Array.isArray(this._audioPool)
         ? this.getPlayableSoundTrack(
             ((cursor as number) + 1) % this._audioPool.length,
@@ -186,6 +218,9 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   clickToInput = (str: string) => {
     if (!this.canClickToInput) {
       return;
+    }
+    if (!this.trimmedInputString.length) {
+      this._telephonyStore.enterFirstLetterThroughKeypad();
     }
     this.playAudio(str);
     this._telephonyService.concatInputString(str);

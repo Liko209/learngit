@@ -91,10 +91,10 @@ class JuiConversationCardHeader extends React.PureComponent<
       return;
     }
     const childrenWithContent = Array.from(this.leftSection.children).filter(
-      (childElement) => childElement.hasChildNodes(),
+      childElement => childElement.hasChildNodes(),
     );
     const totalWidth = _.sum(
-      childrenWithContent.map((child) => child.clientWidth),
+      childrenWithContent.map(child => child.clientWidth),
     );
     const leftSectionWidth = this.leftSection.clientWidth;
     if (totalWidth < leftSectionWidth) {
@@ -103,7 +103,7 @@ class JuiConversationCardHeader extends React.PureComponent<
     const shareChildren: Element[] = [];
     let shareChildrenCount = childrenWithContent.length;
     let sharedWidth = leftSectionWidth / shareChildrenCount;
-    childrenWithContent.forEach((childElement) => {
+    childrenWithContent.forEach(childElement => {
       const currentWidth = childElement.clientWidth;
       if (currentWidth < sharedWidth) {
         shareChildrenCount -= 1;
@@ -113,7 +113,7 @@ class JuiConversationCardHeader extends React.PureComponent<
       }
     });
     shareChildren.forEach(
-      (shareChild) =>
+      shareChild =>
         ((shareChild as HTMLElement).style.maxWidth = `${sharedWidth}px`),
     );
   }
@@ -160,5 +160,5 @@ class JuiConversationCardHeader extends React.PureComponent<
   }
 }
 
-export { JuiConversationCardHeader };
+export { JuiConversationCardHeader, StyledTime };
 export default JuiConversationCardHeader;

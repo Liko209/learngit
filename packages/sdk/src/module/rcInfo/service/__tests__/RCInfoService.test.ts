@@ -61,7 +61,6 @@ describe('RCInfoService', () => {
     mockSettingService = new SettingService();
     let rawGetInstance = (key: string) => ServiceLoader.getInstance(key);
     ServiceLoader.getInstance = jest.fn().mockImplementation((key: any) => {
-      console.log('TCL: key', key);
       if (key === ServiceConfig.SETTING_SERVICE) {
         return mockSettingService;
       }

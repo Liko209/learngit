@@ -36,19 +36,18 @@ abstract class RCItemSyncController<
   }
 
   init() {
-    this.doSync(true, SYNC_DIRECTION.NEWER);
     this._triggerSilentFetchKeys.forEach((key: string) => {
-      notificationCenter.on(key, this._handleNotification);
+      notificationCenter.on(key, this.handleNotification);
     });
   }
 
   dispose() {
     this._triggerSilentFetchKeys.forEach((key: string) => {
-      notificationCenter.off(key, this._handleNotification);
+      notificationCenter.off(key, this.handleNotification);
     });
   }
 
-  private _handleNotification = async () => {
+  handleNotification = async () => {
     await this.doSync(true, SYNC_DIRECTION.NEWER);
   }
 

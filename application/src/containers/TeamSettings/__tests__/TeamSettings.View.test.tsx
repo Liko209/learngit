@@ -40,6 +40,7 @@ jest.mock('sdk/module/serviceLoader', () => ({
   },
   ServiceConfig: {
     GROUP_SERVICE: expect.any(String),
+    VOICEMAIL_SERVICE: expect.any(String),
   },
 }));
 

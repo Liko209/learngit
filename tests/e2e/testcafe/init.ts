@@ -134,6 +134,27 @@ export async function finishRun() {
   return result;
 }
 
+// write passed tests to test log
+function writeTestLog(testLogFile: string, t: TestController) {
+  const testRun = t['testRun'];
+  const errs = testRun.errs;
+  // only write passed test to log
+  if (errs && errs.length > 0)
+    return
+  // create one line log
+  const {
+    test: {
+      name: testName,
+      fixture: {
+        name: fixtureName,
+      },
+    }
+  } = testRun;
+  const msg = JSON.stringify([fixtureName, testName]) + '\n';
+  // write log
+  fs.appendFileSync(testLogFile, msg);
+}
+
 // inject external service into test case
 export function setupCase(accountType: string) {
   return async (t: TestController) => {
@@ -197,7 +218,13 @@ export function setupCase(accountType: string) {
 
 export function teardownCase() {
   return async (t: TestController) => {
+    // write test log
+    writeTestLog(RUNNER_OPTS.TESTS_LOG, t);
+
+    // ensure network is turn on
     h(t).turnOnNetwork();
+
+    // ensure clean mock context
     if (mockClient)
       await mockClient.releaseBrowser(h(t).mockRequestId);
 

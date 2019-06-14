@@ -57,10 +57,13 @@ class TowardIcons extends PureComponent<IconsProps> {
   render() {
     const { type = OPERATION.BACK, disabled = true, tooltipTitle } = this.props;
     let iconDirection;
+    let autoMationId = 'back';
     if (type === OPERATION.BACK) {
       iconDirection = 'chevron_left';
+      autoMationId = 'back';
     } else {
       iconDirection = 'chevron_right';
+      autoMationId = 'forward';
     }
     return (
       <StyledIconButton
@@ -69,7 +72,7 @@ class TowardIcons extends PureComponent<IconsProps> {
         onClick={this.handleClick}
         disabled={disabled}
         disableToolTip={disabled}
-        data-test-automation-id={tooltipTitle}
+        data-test-automation-id={autoMationId}
         onMouseDown={this.handlePress}
         onMouseUp={this.handleRelease}
         color="common.white"

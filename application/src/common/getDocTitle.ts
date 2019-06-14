@@ -6,6 +6,12 @@ import { POST_LIST_TYPE } from '@/modules/message/container/PostListPage/types';
 import { toTitleCase } from '@/utils/string';
 import i18nT, { i18nTValueProps } from '@/utils/i18nT';
 
+//
+// TODO refactor this file
+// We don't want to modify this file every time when add/remove modules.
+// The title getter functions here belongs to biz modules.
+//
+
 function getMessagesTitle(messagePath?: string): i18nTValueProps {
   if (
     messagePath &&
@@ -23,31 +29,21 @@ function getMessagesTitle(messagePath?: string): i18nTValueProps {
 }
 
 function getSettingsTitle(settingPath: string): i18nTValueProps {
-  const settingI18N = i18nT('setting.Settings');
-  enum SETTING_LIST_TYPE {
-    GENERAL = 'general',
-    NOTIFICATION_AND_SOUNDS = 'notification_and_sounds',
-    MESSAGES = 'messages',
-    PHONE = 'phone',
-    MEETINGS = 'meetings',
-    CALENDAR = 'calendar',
+  const baseTitle = i18nT('setting.Settings');
+  const subTitleMap = new Map([
+    ['general', i18nT('setting.general')],
+    ['notification_and_sounds', i18nT('setting.notificationAndSounds.title')],
+    ['messages', i18nT('setting.messages')],
+    ['phone', i18nT('setting.phone.title')],
+    ['calendar', i18nT('setting.calendar')],
+    ['meetings', i18nT('setting.meetings')],
+  ]);
+  const titleArray = [baseTitle];
+  const subTitle = subTitleMap.get(settingPath);
+  if (subTitle) {
+    titleArray.push(subTitle);
   }
-  if (
-    settingPath &&
-    new RegExp(`^(${Object.values(SETTING_LIST_TYPE).join('|')})$`).test(
-      settingPath,
-    )
-  ) {
-    const pathI18NKey = `setting.${getI18NKeyByRoutePath(settingPath)}.title`;
-    return `${settingI18N} - ${i18nT(pathI18NKey)}`;
-  }
-  return settingI18N;
-}
-
-function getI18NKeyByRoutePath(path: string) {
-  return path.replace(/\_(.)/gi, (str, v) => {
-    return v.toUpperCase();
-  });
+  return titleArray.join(' - ');
 }
 
 const DOC_TITLE = {

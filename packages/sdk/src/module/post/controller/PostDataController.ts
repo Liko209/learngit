@@ -219,6 +219,8 @@ class PostDataController {
               .getDao(PostDao)
               .queryPostIdsByGroupId(id);
             if (postIds.length > 0) {
+              deletePostIds = deletePostIds.concat(postIds);
+              deleteMap.set(id, postIds);
               mainLogger.info(
                 LOG_INDEX_DATA_POST,
                 `handelPostsOverThreshold() groupId:${id}, deletePostIds(start-end): ${
@@ -227,8 +229,6 @@ class PostDataController {
                   deletePostIds.length
                 }`,
               );
-              deletePostIds = deletePostIds.concat(postIds);
-              deleteMap.set(id, postIds);
             }
           }),
         );

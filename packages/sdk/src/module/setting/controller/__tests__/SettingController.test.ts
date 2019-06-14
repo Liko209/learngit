@@ -17,6 +17,7 @@ describe('SettingController', () => {
   let settingController: SettingController;
   const createMockModuleSetting = (mockSettingEntity: any = {}) => {
     return {
+      has: jest.fn(),
       getById: jest.fn().mockResolvedValue(mockSettingEntity),
       init: jest.fn(),
       dispose: jest.fn(),
@@ -40,6 +41,34 @@ describe('SettingController', () => {
     });
     it('should init ModuleSetting when register', () => {
       const mockModuleSetting = createMockModuleSetting();
+      settingController.registerModuleSetting(mockModuleSetting);
+      expect(mockModuleSetting.init).toBeCalled();
+    });
+    it('should handle _requestPool when register', async (done: jest.DoneCallback) => {
+      const mockModuleSetting = createMockModuleSetting();
+      mockModuleSetting.has.mockReturnValue(true);
+      mockModuleSetting.getById.mockResolvedValue('mock');
+      settingController.getById(123).then(result => {
+        expect(result).toEqual('mock');
+        expect(settingController['_requestPool'].length).toEqual(0);
+        done();
+      });
+
+      expect(settingController['_requestPool'].length).toEqual(1);
+      settingController.registerModuleSetting(mockModuleSetting);
+      expect(mockModuleSetting.init).toBeCalled();
+    });
+    it('should handle _requestPool when register', async (done: jest.DoneCallback) => {
+      const mockModuleSetting = createMockModuleSetting();
+      mockModuleSetting.has.mockReturnValue(true);
+      mockModuleSetting.getById.mockImplementation(() => Promise.resolve(null));
+      settingController.getById(123).catch(result => {
+        expect(result).toEqual(null);
+        expect(settingController['_requestPool'].length).toEqual(0);
+        done();
+      });
+
+      expect(settingController['_requestPool'].length).toEqual(1);
       settingController.registerModuleSetting(mockModuleSetting);
       expect(mockModuleSetting.init).toBeCalled();
     });
@@ -68,7 +97,9 @@ describe('SettingController', () => {
       const mockModuleSetting2 = createMockModuleSetting();
       settingController.registerModuleSetting(mockModuleSetting2);
       mockModuleSetting1.getById.mockResolvedValue(null);
+      mockModuleSetting1.has.mockReturnValue(false);
       mockModuleSetting2.getById.mockResolvedValue('result');
+      mockModuleSetting2.has.mockReturnValue(true);
       expect(await settingController.getById(1)).toEqual(
         await mockModuleSetting2.getById(1),
       );

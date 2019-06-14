@@ -18,11 +18,6 @@ enum EVENT_TYPES {
   'RESET' = 'reset',
 }
 
-enum RELOAD_TARGET {
-  STORE = 'store',
-  FOC = 'foc',
-}
-
 enum PERMISSION_ENUM {
   TEAM_POST = 1,
   TEAM_ADD_MEMBER = 2,
@@ -52,5 +47,4 @@ export {
   SHOULD_UPDATE_NETWORK_TOKEN,
   CACHE_INITIAL_STATUS,
   UMI_METRICS,
-  RELOAD_TARGET,
 };

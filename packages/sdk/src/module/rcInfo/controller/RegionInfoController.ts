@@ -356,6 +356,10 @@ class RegionInfoController {
         areaCode = checkResult.should ? areaCode : checkResult.areaCode;
       }
 
+      if (areaCodeByManual && areaCode.length === 0) {
+        return areaCode;
+      }
+
       let region = await PhoneParserUtility.getRegionalInfo(
         _.toInteger(countryInfo.id),
         areaCode,
