@@ -9,6 +9,9 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { IGroup, ITestMeta } from "../../v2/models";
 import { SITE_URL, BrandTire } from '../../config';
+import * as _ from 'lodash';
+import * as assert from 'assert';
+
 
 fixture('Contact Search')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -326,3 +329,82 @@ test.meta(<ITestMeta>{
 function groupsToString(groups: IGroup[]): string {
   return groups.map(group => group.name).join(',');
 }
+
+fixture('Recently Search')
+  .beforeEach(setupCase(BrandTire.SORTED_LAST_NAME))
+  .afterEach(teardownCase());
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1420'],
+  maintainers: ['ali.naffaa'],
+  keywords: ['search'],
+})('Recent search member will be reset after logout', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const userA = users[0];
+  const userB = users[1];
+  const userC = users[2];
+  const loginUser = users[3];
+
+  await h(t).glip(loginUser).init();
+  const firstName = await h(t).glip(loginUser).getPersonPartialData('first_name');
+
+  const nameUserC = await h(t).glip(loginUser).getPersonPartialData('display_name', userC.rcId);
+
+  await h(t).withLog(`Given I login Jupiter as User C: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const searchBar = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
+  await h(t).withLog(`When I type user first name ${firstName} in search input area`, async () => {
+    await searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(firstName);
+  });
+
+  async function checkInAlphabeticalOrder() {
+    let userNames: string[] = [];
+    const count = await searchDialog.instantPage.peoples.count;
+    for (const i of _.range(count)) {
+      userNames.push(await searchDialog.instantPage.nthPeople(i).getName());
+      if (i > 0) {
+        assert.ok(userNames[i - 1].toLowerCase() < userNames[i].toLowerCase(), `people result is not alphabetical order`);
+      }
+    }
+  }
+
+  await h(t).withLog(`Then people search resutls order is alphabetical order`, async () => {
+    await checkInAlphabeticalOrder();
+  });
+
+  await h(t).withLog(`When I search userC and open conversation with userC ${nameUserC}`, async () => {
+    await searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(nameUserC);
+    await searchDialog.instantPage.nthPeople(0).enter();
+  }, true);
+
+  await h(t).withLog(`And I type user first name ${firstName} in search input area`, async () => {
+    await searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(firstName);
+  });;
+
+  await h(t).withLog(`Then people search resutls top is ${nameUserC}`, async () => {
+    await t.expect(searchDialog.instantPage.nthPeople(0).name.textContent).eql(nameUserC);
+  });
+
+  await h(t).withLog(`When I re-login with this extension`, async () => {
+    await searchDialog.clickCloseButton();
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, loginUser);
+  });
+
+  await h(t).withLog(`When I type user first name ${firstName} in search input area`, async () => {
+    await searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(firstName);
+  });
+
+  await h(t).withLog(`Then people search resutls order is reset (in alphabetical order)`, async () => {
+    await checkInAlphabeticalOrder();
+  });
+});

@@ -1,17 +1,21 @@
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
-import { formalName } from '../../libs/filter';
 import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { IGroup } from '../../v2/models';
+import { IGroup, ITestMeta } from '../../v2/models';
 
 fixture('Bookmarks/Bookmarks')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Jump to post position when click jump to conversation button.[Bookmarks]', ['P1', 'JPT-315', 'zack', 'Bookmarks']), async (t: TestController) => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-315'],
+  keywords: ['Bookmarks'],
+  maintainers: ['zack']
+})('Jump to post position when click jump to conversation button.[Bookmarks]', async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const otherUser = users[5];
@@ -51,7 +55,11 @@ test(formalName('Jump to post position when click jump to conversation button.[B
   const bookmarkPage = app.homePage.messageTab.bookmarkPage;
   const conversationPage = app.homePage.messageTab.conversationPage;
 
-  await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      name: loginUser.company.number,
+      extension: loginUser.extension
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -61,7 +69,8 @@ test(formalName('Jump to post position when click jump to conversation button.[B
       await bookmarkEntry.enter();
     });
 
-    await h(t).withLog(`And I click the ${conversations[i].type} post. (except team name)`, async () => {
+    await h(t).withLog(`And I click the {type} post. (except team name)`, async (step) => {
+      step.setMetadata('conversationType', conversations[i].type)
       await bookmarkPage.postItemById(postIds[i]).clickSelf();
     });
 
@@ -86,8 +95,12 @@ test(formalName('Jump to post position when click jump to conversation button.[B
   }
 });
 
-//skip due to https://jira.ringcentral.com/browse/FIJI-4527
-test(formalName('Jump to conversation bottom when click name and conversation show in the top of conversation list.[Bookmarks]', ['P2', 'JPT-314', 'Bookmarks']), async (t: TestController) => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-314'],
+  keywords: ['Bookmarks'],
+  maintainers: ['zack']
+})('Jump to conversation bottom when click name and conversation show in the top of conversation list.[Bookmarks]', async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const otherUser = users[5];
@@ -129,7 +142,11 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
 
   const app = new AppRoot(t);
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      name: loginUser.company.number,
+      extension: loginUser.extension
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -140,7 +157,7 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
 
   await h(t).withLog('Then I can find 3 posts in the bookmarks page', async () => {
     await bookmarkEntry.enter();
-     for (const postId of postIds) {
+    for (const postId of postIds) {
       await t.expect(bookmarkPage.postItemById(postId).exists).ok();
     }
   }, true);
@@ -152,7 +169,8 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
       conversationName = await bookmarkPage.postItemById(postIds[i]).conversationName.textContent
     });
 
-    await h(t).withLog(`and I click the conversation name ${conversationName} in one conversation card`, async () => {
+    await h(t).withLog(`and I click the conversation name {conversationName} in one conversation card`, async (step) => {
+      step.setMetadata('conversationName', conversationName);
       await bookmarkPage.postItemById(postIds[i]).jumpToConversationByClickName();
     });
 
@@ -164,14 +182,17 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
 });
 
 
-test(formalName('Data in bookmarks page should be dynamically sync.', ['P2', 'JPT-311', 'zack']), async (t: TestController) => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-311'],
+  keywords: ['Bookmarks'],
+  maintainers: ['zack']
+})('Data in bookmarks page should be dynamically sync.', async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[7];
   const otherUser = users[5];
 
-  await h(t).withLog(`Given I have an extension: ${loginUser.company.number}#${loginUser.extension}, reset its profile`, async () => {
-    await h(t).scenarioHelper.resetProfile(loginUser);
-  });
+  await h(t).scenarioHelper.resetProfile(loginUser);
 
   let team = <IGroup>{
     type: "Team",
@@ -181,7 +202,8 @@ test(formalName('Data in bookmarks page should be dynamically sync.', ['P2', 'JP
   }
 
   let bookmarksPostTeamId1, bookmarksPostTeamId2, bookmarksPostTeamId3;
-  await h(t).withLog(`Given I have one team named ${team.name} and 3 post`, async () => {
+  await h(t).withLog(`Given I have one team named {name} and 3 post`, async (step) => {
+    step.setMetadata('name', team.name);
     await h(t).scenarioHelper.createTeam(team);
     await h(t).platform(otherUser).init();
     bookmarksPostTeamId1 = await h(t).scenarioHelper.sentAndGetTextPostId(uuid(), team, otherUser);
@@ -190,7 +212,11 @@ test(formalName('Data in bookmarks page should be dynamically sync.', ['P2', 'JP
   });
 
   const app = new AppRoot(t);
-  await h(t).withLog(`When I login Jupiter with this extension`, async () => {
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      name: loginUser.company.number,
+      extension: loginUser.extension
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -242,7 +268,12 @@ test(formalName('Data in bookmarks page should be dynamically sync.', ['P2', 'JP
   }, true);
 })
 
-test(formalName('Remove UMI when jump to conversation which have unread messages.', ['P2', 'JPT-380', 'zack']), async (t: TestController) => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-380'],
+  keywords: ['Bookmarks'],
+  maintainers: ['zack']
+})('Remove UMI when jump to conversation which have unread messages.', async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[7];
   const otherUser = users[5];
@@ -274,7 +305,11 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
   const bookmarkPage = app.homePage.messageTab.bookmarkPage;
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
 
-  await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      name: loginUser.company.number,
+      extension: loginUser.extension
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -315,7 +350,12 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
   }, true);
 });
 
-test(formalName('Show UMI when receive new messages after jump to conversation.', ['P2', 'JPT-384', 'zack']), async (t: TestController) => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-384'],
+  keywords: ['Bookmarks'],
+  maintainers: ['zack']
+})('Show UMI when receive new messages after jump to conversation.', async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[7];
   const otherUser = users[5];
@@ -342,7 +382,11 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
   });
 
   const app = new AppRoot(t);
-  await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      name: loginUser.company.number,
+      extension: loginUser.extension
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -416,73 +460,86 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
   });
 });
 
-test(formalName('Bookmark/Remove Bookmark a message in a conversation', ['P2', 'JPT-330', 'JPT-326', 'zack']),
-  async (t: TestController) => {
-    const users = h(t).rcData.mainCompany.users;
-    const loginUser = users[7];
-    const otherUser = users[5];
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-326'],
+  keywords: ['Bookmarks'],
+  maintainers: ['zack']
+})('Bookmark/Remove Bookmark a message in a conversation', async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[7];
+  const otherUser = users[5];
 
-    let chat = <IGroup>{
-      type: "DirectMessage",
-      owner: loginUser,
-      members: [loginUser, otherUser]
-    }
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
 
-    await h(t).withLog('Given I have an extension with a chat and clear all bookmark post.', async () => {
-      await h(t).scenarioHelper.resetProfileAndState(loginUser);
-      await h(t).scenarioHelper.createOrOpenChat(chat);
-    });
+  await h(t).withLog('Given I have an extension with a chat and clear all bookmark post.', async () => {
+    await h(t).scenarioHelper.resetProfileAndState(loginUser);
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
 
-    let bookmarkPostId;
-    await h(t).withLog('And the chat have a post', async () => {
-      bookmarkPostId = await h(t).scenarioHelper.sentAndGetTextPostId(uuid(), chat, otherUser);
-    });
+  let bookmarkPostId;
+  await h(t).withLog('And the chat have a post', async () => {
+    bookmarkPostId = await h(t).scenarioHelper.sentAndGetTextPostId(uuid(), chat, otherUser);
+  });
 
-    const app = new AppRoot(t);
-    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    });
+  const app = new AppRoot(t);
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      name: loginUser.company.number,
+      extension: loginUser.extension
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
 
-    const bookmarksEntry = app.homePage.messageTab.bookmarksEntry;
-    const conversationPage = app.homePage.messageTab.conversationPage;
-    const bookmarkPage = app.homePage.messageTab.bookmarkPage;
-    const dmSection = app.homePage.messageTab.directMessagesSection;
-    await h(t).withLog(`And I jump to the specific conversation`, async () => {
-      await dmSection.expand();
-      await dmSection.conversationEntryById(chat.glipId).enter();
-    });
+  const bookmarksEntry = app.homePage.messageTab.bookmarksEntry;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const bookmarkPage = app.homePage.messageTab.bookmarkPage;
+  const dmSection = app.homePage.messageTab.directMessagesSection;
+  await h(t).withLog(`And I jump to the specific conversation`, async () => {
+    await dmSection.expand();
+    await dmSection.conversationEntryById(chat.glipId).enter();
+  });
 
-    await h(t).withLog('And I bookmark the post then make sure bookmark icon is correct', async () => {
-      await conversationPage.waitUntilPostsBeLoaded();
-      await conversationPage.postItemById(bookmarkPostId).clickBookmarkToggle();
-      await t.expect(conversationPage.postItemById(bookmarkPostId).bookmarkIcon.exists).ok();
-    });
+  await h(t).withLog('And I bookmark the post then make sure bookmark icon is correct', async () => {
+    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.postItemById(bookmarkPostId).clickBookmarkToggle();
+    await t.expect(conversationPage.postItemById(bookmarkPostId).bookmarkIcon.exists).ok();
+  });
 
-    await h(t).withLog('Then I enter Bookmark page and find the Bookmark posts', async () => {
-      await bookmarksEntry.enter();
-      await t.expect(bookmarkPage.posts.count).eql(1);
-      await t.expect(bookmarkPage.postItemById(bookmarkPostId).exists).ok();
-    }, true);
+  await h(t).withLog('Then I enter Bookmark page and find the Bookmark posts', async () => {
+    await bookmarksEntry.enter();
+    await t.expect(bookmarkPage.posts.count).eql(1);
+    await t.expect(bookmarkPage.postItemById(bookmarkPostId).exists).ok();
+  }, true);
 
-    await h(t).withLog('When I click the post and jump to the conversation', async () => {
-      await bookmarkPage.postItemById(bookmarkPostId).hoverPostAndClickJumpToConversationButton();
-    });
+  await h(t).withLog('When I click the post and jump to the conversation', async () => {
+    await bookmarkPage.postItemById(bookmarkPostId).hoverPostAndClickJumpToConversationButton();
+  });
 
-    await h(t).withLog('And I cancel the bookmark in the post then make sure bookmark icon is correct', async () => {
-      await conversationPage.postItemById(bookmarkPostId).clickBookmarkToggle();
-      await t.expect(conversationPage.postItemById(bookmarkPostId).unBookmarkIcon.exists).ok();
-    });
+  await h(t).withLog('And I cancel the bookmark in the post then make sure bookmark icon is correct', async () => {
+    await conversationPage.postItemById(bookmarkPostId).clickBookmarkToggle();
+    await t.expect(conversationPage.postItemById(bookmarkPostId).unBookmarkIcon.exists).ok();
+  });
 
-    await h(t).withLog('Then I enter Bookmark page and the bookmark post has been removed', async () => {
-      await bookmarksEntry.enter();
-      await t.expect(bookmarkPage.posts.count).eql(0);
-      await t.expect(bookmarkPage.postItemById(bookmarkPostId).exists).notOk();
-    }, true);
-  })
+  await h(t).withLog('Then I enter Bookmark page and the bookmark post has been removed', async () => {
+    await bookmarksEntry.enter();
+    await t.expect(bookmarkPage.posts.count).eql(0);
+    await t.expect(bookmarkPage.postItemById(bookmarkPostId).exists).notOk();
+  }, true);
+})
 
 
-test(formalName('JPT-733 Can\'t show all received posts when open bookmarks page', ['P2', 'JPT-733', 'Mia.Cai', 'Bookmarks']), async (t: TestController) => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-733'],
+  keywords: ['Bookmarks'],
+  maintainers: ['Mia.Cai']
+})('Can\'t show all received posts when open bookmarks page', async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const otherUser = users[5];
@@ -498,7 +555,11 @@ test(formalName('JPT-733 Can\'t show all received posts when open bookmarks page
   });
 
   const app = new AppRoot(t);
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      name: loginUser.company.number,
+      extension: loginUser.extension
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -522,54 +583,54 @@ test(formalName('JPT-733 Can\'t show all received posts when open bookmarks page
 
 
 
-test(formalName('JPT-1147 Can like/unlike message in bookmark list', ['P2', 'JPT-1147', 'Foden.lin', 'Bookmarks']),
-async (t: TestController) => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1147'],
+  keywords: ["Bookmarks"],
+  maintainers: ['Foden.lin', 'Potar.He']
+})('Can like/unlike message in bookmark list', async (t: TestController) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
-  const user = users[7];
+  const loginUser = users[7];
   const otherUser = users[5];
 
+  let chat = <IGroup>{
+    type: 'DirectMessage',
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
 
   const bookmarksEntry = app.homePage.messageTab.bookmarksEntry;
-  const conversationPage = app.homePage.messageTab.conversationPage;
   const bookmarkPage = app.homePage.messageTab.bookmarkPage;
-  const dmSection = app.homePage.messageTab.directMessagesSection;
-  user.sdk = await h(t).getSdk(user);
 
-  let group;
   await h(t).withLog('Given I have an only one group and the group should not be hidden', async () => {
-    group = await h(t).platform(user).createGroup({
-      type: 'Group', members: [user.rcId, users[5].rcId],
-    });
+    await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
-  let bookmarkPost;
-  await h(t).withLog('And I have a post', async () => {
-    bookmarkPost = await h(t).platform(otherUser).sendTextPost(
-      `Hi I'm Bookmarks, (${user.rcId})`,
-      group.data.id,
-    );
-  }, true);
+  let bookmarkPostId;
+  await h(t).withLog('And I bookemark a post', async () => {
+    bookmarkPostId = await h(t).scenarioHelper.sentAndGetTextPostId(`Hi I'm Bookmarks, (${loginUser.rcId})`, chat, otherUser);
+    await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).bookmarkPosts(bookmarkPostId);
+  });
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, user);
+  await h(t).withLog(`And I login Jupiter with this extension: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      name: loginUser.company.number,
+      extension: loginUser.extension
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog(`And I jump to the specific conversation`, async () => {
-    await dmSection.expand();
-    await dmSection.conversationEntryById(group.data.id).enter();
-  });
+  const BookPostCard = bookmarkPage.postItemById(bookmarkPostId);
 
-  await h(t).withLog('And I bookmark the post then make sure bookmark icon is correct', async () => {
-    await conversationPage.postItemById(bookmarkPost.data.id).clickBookmarkToggle();
-    await t.expect(conversationPage.postItemById(bookmarkPost.data.id).bookmarkIcon.exists).ok();
-  });
-  await h(t).withLog('Then I enter Bookmark page and find the Bookmark posts', async () => {
+  await h(t).withLog('And I enter Bookmark page and find the Bookmark posts', async () => {
     await bookmarksEntry.enter();
+    await bookmarkPage.ensureLoaded();
+    await BookPostCard.ensureLoaded();
   }, true);
 
-  const BookPostCard = bookmarkPage.postItemById(bookmarkPost.data.id);
   await h(t).withLog(`When I click "unlike" button`, async () => {
     await BookPostCard.clickLikeOnActionBar();
   });
@@ -582,10 +643,9 @@ async (t: TestController) => {
     await BookPostCard.likeShouldBe(1);
   });
 
-
   await h(t).withLog(`When I click solid 'like' icon on action bar`, async () => {
     await BookPostCard.clickLikeOnActionBar();
-    });
+  });
 
   await h(t).withLog(`Then Action bar solid "like" icon change to hollow "unlike" icon and like number should be 0 on message card `, async () => {
     await t.hover(BookPostCard.self);

@@ -7,7 +7,7 @@ import buildVerbArticleNounText from './text/buildVerbArticleNounText';
 
 export default function () {
   return buildVerbArticleNounText({
-    verb: 'item.activity.started',
-    noun: 'item.activity.video chat',
+    verb: 'started',
+    noun: 'video chat',
   });
 }

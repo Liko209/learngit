@@ -30,6 +30,7 @@ class HomeViewModel extends StoreViewModel {
 
   private _initHistoryListen() {
     history.listen((location: Location, action: Action) => {
+      historyStack.updateStackNCursor();
       const { state, pathname } = location;
       if (state && state.navByBackNForward) {
         return;

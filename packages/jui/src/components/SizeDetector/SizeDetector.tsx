@@ -24,8 +24,6 @@ const JuiSizeDetector = ({
   const body = window.document.getElementsByTagName('body')[0];
   if (!targets) {
     targets = [body];
-  } else if (!targets.includes(body)) {
-    targets.push(body);
   }
 
   const updateSize = (entries: ResizeObserverEntry[]) => {
@@ -43,7 +41,7 @@ const JuiSizeDetector = ({
     }
 
     return () => {};
-  },        []);
+  },        [targets]);
   return <></>;
 };
 

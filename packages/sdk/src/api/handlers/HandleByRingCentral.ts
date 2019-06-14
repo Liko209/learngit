@@ -22,6 +22,10 @@ const HandleByRingCentral = new class extends AbstractHandleType {
   requestDecoration(tokenHandler: ITokenHandler) {
     const handler = tokenHandler as OAuthTokenHandler;
     return (request: IRequest) => {
+      if (!request.authFree && handler && handler.isOAuthAccessTokenExpired()) {
+        return false;
+      }
+
       if (_.isEmpty(handler)) {
         throw new Error('token handler can not be null.');
       }
@@ -38,7 +42,7 @@ const HandleByRingCentral = new class extends AbstractHandleType {
       if (!authorization) {
         request.data = stringify(request.data);
       }
-      return request;
+      return true;
     };
   }
 

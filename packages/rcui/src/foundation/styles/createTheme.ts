@@ -10,7 +10,7 @@ import breakpoints from './theme/breakpoints.json';
 import { createMuiTheme } from '@material-ui/core/styles';
 import createMuiPalette from '@material-ui/core/styles/createPalette';
 
-import { Theme, ThemeOptions, PaletteOptions } from './theme.d';
+import { Theme, ThemeOptions, PaletteOptions } from './theme';
 
 function createPalette(paletteOptions: PaletteOptions) {
   const { augmentColor } = createMuiPalette(paletteOptions);

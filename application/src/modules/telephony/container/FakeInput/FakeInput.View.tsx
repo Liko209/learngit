@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
+import React, { Component, RefObject, createRef } from 'react';
+import ReactDOM from 'react-dom';
 import { observer } from 'mobx-react';
 import styled, { keyframes, css } from 'styled-components';
 import { StyledHeaderNoPadding } from 'jui/pattern/Dialer';
@@ -13,6 +14,25 @@ import { FakeInputViewProps } from './types';
 
 @observer
 class FakeInputView extends Component<FakeInputViewProps> {
+  private _containerRef: RefObject<any> = createRef();
+
+  componentDidMount() {
+    if (!this._containerRef.current) {
+    }
+
+    const el = ReactDOM.findDOMNode(this._containerRef.current);
+    if (!el) {
+      return;
+    }
+
+    // auto focus
+    requestAnimationFrame(() => {
+      if (this._containerRef.current) {
+        (el as HTMLElement).focus();
+      }
+    });
+  }
+
   // HACK: using `direction:rtl` and `unicode-bidi` while also reversing the input string
   render() {
     const { showCursor, enteredKeys } = this.props;
@@ -31,6 +51,7 @@ class FakeInputView extends Component<FakeInputViewProps> {
       flex-grow: 1;
       align-self: stretch;
       min-width: 0;
+      outline: none;
     `;
 
     const Container = styled.div`
@@ -40,6 +61,7 @@ class FakeInputView extends Component<FakeInputViewProps> {
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: text;
     `;
 
     const Inner = styled.div`
@@ -75,7 +97,7 @@ class FakeInputView extends Component<FakeInputViewProps> {
     `;
 
     return (
-      <FlexContainer>
+      <FlexContainer tabIndex={0} ref={this._containerRef}>
         <StyledHeaderNoPadding>
           <Container>
             <Inner>

@@ -1,19 +1,30 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-04-10 17:37:00 
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-10 17:37:23
+ * @Author: Potar.He
+ * @Date: 2019-04-10 17:37:00
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2019-06-09 10:53:54
  */
 import { AssertionError } from "assert";
 import * as assert from "assert";
 import { ITestMeta } from "../v2/models";
 import * as _ from "lodash";
+import * as fs from "fs";
 
 type CaseFilter = (caseName: string, fixtureName: string, fixturePath: string, testMeta: any, fixtureMeta: any) => boolean;
 
 export interface INameTags {
   name: string;
   tags: string[];
+}
+
+export function readTestLog(testLogFile: string, ): Set<string> {
+  try {
+    return new Set(
+      fs.readFileSync(testLogFile, { encoding: 'utf-8' }).split('\n')
+    )
+  } catch (e) {
+    return null;
+  }
 }
 
 function isValidTag(tag: string, breakOnError: boolean = false): boolean {
@@ -61,16 +72,24 @@ export function formalNameWithTestMetaPrefix(name: string, testMeta: ITestMeta):
 export function parseFormalName(formalName: string): INameTags {
   const tags: string[] = [];
   let rest = formalName;
-  let match;
-  while (match = /^\[([^\]]+?)\](.*)$/.exec(rest)) {
-    tags.push(match[1]);
-    rest = match[2];
+  const matchs = formalName.match(/(?<=^|\])\[[^\[\]]+\]/g);
+  for (const i in matchs) {
+    const match = /^\[([^\]]+?)\](.*)$/.exec(rest)
+    if (match) {
+      tags.push(match[1]);
+      rest = match[2];
+    }
   }
   return { tags, name: rest.trim() };
 }
 
-export function filterByTags(includeTags?: string[], excludeTags?: string[]): CaseFilter {
+export function filterByTags(includeTags: string[], excludeTags: string[], testLog?: Set<string>): CaseFilter {
   return (caseName: string, fixtureName: string, fixturePath: string, testMeta: any, fixtureMeta: any): boolean => {
+    // ensure at least one test is selected, or else testcafe will throw errors
+    if (caseName === 'dummy test') return true;
+    // skip if the case has already passed
+    if (testLog && testLog.has(JSON.stringify([fixtureName, caseName]))) return false;
+
     let flag: boolean = true;
     const nameTags = parseFormalName(caseName);
     const testMetaTags = getTagsFromMeta(testMeta);

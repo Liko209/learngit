@@ -35,6 +35,7 @@ class JobSchedulerConfig extends UserConfig {
     this.remove(JOB_KEY.FETCH_EXTENSION_PHONE_NUMBER_LIST);
     this.remove(JOB_KEY.FETCH_DIALING_PLAN);
     this.remove(JOB_KEY.FETCH_RC_ACCOUNT_SERVICE_INFO);
+    this.remove(JOB_KEY.FETCH_FORWARDING_NUMBER);
   }
 }
 

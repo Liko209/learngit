@@ -17,15 +17,18 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const SECTION_CONFIGS: SectionConfigs = {
   [SECTION_TYPE.FAVORITE]: {
+    dataNameForTest: 'Favorites',
     title: 'message.favoriteGroups',
     iconName: 'star',
     sortable: true,
   },
   [SECTION_TYPE.DIRECT_MESSAGE]: {
+    dataNameForTest: 'Direct Messages',
     title: 'message.directGroups',
     iconName: 'direct_message',
   },
   [SECTION_TYPE.TEAM]: {
+    dataNameForTest: 'Teams',
     title: 'message.teamGroups',
     iconName: 'team',
   },
@@ -72,6 +75,11 @@ class SectionViewModel extends StoreViewModel<SectionProps> {
   @computed
   get title() {
     return this._config.title;
+  }
+
+  @computed
+  get dataNameForTest() {
+    return this._config.dataNameForTest;
   }
 
   onSortEnd = ({

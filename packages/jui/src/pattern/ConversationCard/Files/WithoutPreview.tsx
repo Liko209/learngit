@@ -4,22 +4,21 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-
+import { JuiButtonBar } from '../../../components/Buttons';
 import * as Jui from './style';
 import { FileName } from './FileName';
 
 type JuiFileWithoutPreviewProps = {
-  fileName: string;
+  fileName: React.ReactChild | (React.ReactChild | null)[] | null;
   size: string;
-  Actions: JSX.Element;
+  Actions: JSX.Element[];
   iconType: string;
 };
 
-const FileSecondary = (secondary: string, children: JSX.Element) => {
+const FileSecondary = (secondary: string) => {
   return (
     <>
       <span data-test-automation-id="file-no-preview-size">{secondary}</span>
-      <Jui.FileActionsWrapper>{children}</Jui.FileActionsWrapper>
     </>
   );
 };
@@ -40,9 +39,12 @@ const JuiFileWithoutPreview: React.SFC<JuiFileWithoutPreviewProps> = (
           primary: 'file-item-primary',
           secondary: 'file-item-secondary',
         }}
-        primary={<FileName filename={fileName} />}
-        secondary={FileSecondary(size, Actions)}
+        primary={<FileName>{fileName}</FileName>}
+        secondary={FileSecondary(size)}
       />
+      <Jui.FileActionsWrapper>
+        <JuiButtonBar overlapSize={-2}>{Actions}</JuiButtonBar>
+      </Jui.FileActionsWrapper>
     </Jui.FileItem>
   );
 };

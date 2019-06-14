@@ -12,7 +12,7 @@ import { FileName } from '../../ConversationCard/Files/FileName';
 type JuiPinnedItemProps = {
   icon: string | ReactElement<any>;
   isFile: boolean;
-  text: string;
+  text: React.ReactChild | (React.ReactChild | null)[] | null;
   id: number;
 };
 
@@ -33,7 +33,7 @@ class JuiPinnedItem extends Component<JuiPinnedItemProps> {
           {iconElement}
         </IconWrapper>
         {isFile ? (
-          <FileName filename={text} />
+          <FileName>{text}</FileName>
         ) : (
           <JuiListItemText
             data-test-automation-id="pinned-item-text"

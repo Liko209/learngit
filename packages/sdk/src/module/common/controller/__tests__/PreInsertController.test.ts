@@ -10,6 +10,7 @@ import notificationCenter from '../../../../service/notificationCenter';
 import { UserConfigService } from '../../../../module/config/service/UserConfigService';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { Post } from 'sdk/module/post/entity';
+import _ from 'lodash';
 
 jest.mock('../../../progress');
 jest.mock('../../../../service/notificationCenter');
@@ -147,7 +148,7 @@ describe('PreInsertController', () => {
       expect(preInsertController.isInPreInsert('-2')).toBe(false);
     });
 
-    it('should not do delete action if entity is not in pre-insert for version', async () => {
+    it('should do delete action if entity is not in pre-insert for version bug id < 0', async () => {
       const post: Post = { id: -2, version: 2 };
       const daoSpy = jest.spyOn(dao, 'delete');
       const deleteSpy = jest.spyOn(
@@ -157,12 +158,26 @@ describe('PreInsertController', () => {
       await preInsertController.insert(post);
       await preInsertController.delete(post);
       await preInsertController.delete(post);
-      expect(daoSpy).toBeCalledTimes(1);
-      expect(deleteSpy).toBeCalledTimes(1);
+      expect(daoSpy).toBeCalledTimes(2);
+      expect(deleteSpy).toBeCalledTimes(2);
     });
 
-    it('should not do delete action if entity is not in pre-insert for unique_id', async () => {
+    it('should not do delete action if entity is not in pre-insert for unique_id but id < 0', async () => {
       const post: Post = { id: -2, version: 2, unique_id: '2' };
+      const daoSpy = jest.spyOn(dao, 'delete');
+      const deleteSpy = jest.spyOn(
+        preInsertController['_preInsertIdController'],
+        'delete',
+      );
+      await preInsertController.insert(post);
+      await preInsertController.delete(post);
+      await preInsertController.delete(post);
+      expect(daoSpy).toBeCalledTimes(2);
+      expect(deleteSpy).toBeCalledTimes(2);
+    });
+
+    it('should not do delete action if entity is not in pre-insert and id > 0', async () => {
+      const post: Post = { id: 2, version: 2, unique_id: '2' };
       const daoSpy = jest.spyOn(dao, 'delete');
       const deleteSpy = jest.spyOn(
         preInsertController['_preInsertIdController'],
@@ -262,7 +277,13 @@ describe('PreInsertController', () => {
         notificationCenter,
         'emitEntityReplace',
       );
-      await preInsertController.bulkDelete([post7, post8, post9]);
+      const result: Post[] = [];
+      [post7, post8, post9].forEach(item => {
+        let a = _.cloneDeep(item);
+        a['version'] = item.version + 10;
+        result.push(a);
+      });
+      await preInsertController.bulkDelete(result);
       expect(daoSpy).toBeCalledTimes(0);
       expect(deleteSpy).toBeCalledTimes(0);
       expect(notifyDeleteSpy).toBeCalledTimes(0);

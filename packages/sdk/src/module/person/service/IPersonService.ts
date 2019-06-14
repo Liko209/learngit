@@ -17,6 +17,7 @@ import {
 
 import { ContactType } from '../types';
 import { SYNC_SOURCE } from '../../../module/sync/types';
+import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
 
 interface IPersonService {
   handleIncomingData(
@@ -62,6 +63,11 @@ interface IPersonService {
   getSoundexById(id: number): string[];
 
   isCacheValid(person: Person): boolean;
+
+  getPhoneNumbers(
+    person: Person,
+    eachPhoneNumber: (phoneNumber: PhoneNumber) => void,
+  ): void;
 }
 
 export { IPersonService };

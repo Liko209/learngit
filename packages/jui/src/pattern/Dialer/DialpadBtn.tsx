@@ -51,7 +51,7 @@ const blinkAnimation = () =>
   `;
 
 type JuiDialpadBtnProps = {
-  shouldAnimationStart: boolean;
+  startMinimizeAnimation: boolean;
   id: string;
   ariaLabel: string;
   onClick: () => void;
@@ -59,7 +59,7 @@ type JuiDialpadBtnProps = {
 };
 
 const JuiDialpadBtn = ({
-  shouldAnimationStart,
+  startMinimizeAnimation,
   id,
   ariaLabel,
   onClick,
@@ -70,7 +70,7 @@ const JuiDialpadBtn = ({
       margin-right: ${spacing(3)};
 
       button {
-        animation: ${shouldAnimationStart ? blinkAnimation : undefined};
+        animation: ${startMinimizeAnimation ? blinkAnimation : undefined};
       }
     }
   `;

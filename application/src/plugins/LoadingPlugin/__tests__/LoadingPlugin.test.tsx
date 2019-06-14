@@ -5,7 +5,7 @@
  */
 import { mount } from 'enzyme';
 import React from 'react';
-import { unwrapMemo } from 'test-util/unwrapMemo';
+import { unwrapMemo } from 'shield/utils/unwrapMemo';
 import { AbstractViewModel } from '../../../base/AbstractViewModel';
 import { loading, LoadingPlugin } from '../LoadingPlugin';
 

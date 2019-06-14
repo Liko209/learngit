@@ -2,9 +2,12 @@
  * @Author: doyle.wu
  * @Date: 2018-12-11 12:00:41
  */
+import { Op } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
 import { Scene } from "../scenes";
 import { Config } from '../config';
 import { PerformanceMetric } from "../gatherers";
+import { DateUtils } from "../utils";
 import {
   TaskDto,
   SceneDto,
@@ -13,14 +16,24 @@ import {
   LoadingTimeSummaryDto,
   LoadingTimeItemDto,
   FpsDto,
-  VersionDto
+  VersionDto,
+  LoadingTimeDevelopSummaryDto,
+  LoadingTimeReleaseSummaryDto
 } from "../models";
+import { DashboardService } from '.';
 
 class MetricService {
 
   static async createVersion(version: string): Promise<VersionDto> {
+    const isRelease = Config.jupiterHost === Config.jupiterReleaseHost;
     let now = await VersionDto.findOne({ where: { name: version } });
     if (now) {
+      if (!now.isRelease && isRelease) {
+        await VersionDto.update({ isRelease: isRelease, endTime: new Date() },
+          { where: { id: now.id } }
+        );
+        now.isRelease = isRelease;
+      }
       return now;
     }
 
@@ -34,14 +47,17 @@ class MetricService {
 
     return await VersionDto.create({
       name: version,
+      isRelease: isRelease,
       startTime: new Date()
     });
   }
 
-  static async createTask(): Promise<TaskDto> {
+  static async createTask(version: string): Promise<TaskDto> {
     return await TaskDto.create({
       host: Config.jupiterHost,
       status: "0",
+      appVersion: version,
+      isRelease: Config.jupiterHost === Config.jupiterReleaseHost,
       startTime: new Date()
     });
   }
@@ -100,7 +116,8 @@ class MetricService {
       pwa,
       startTime,
       endTime,
-      appVersion
+      appVersion,
+      isRelease: Config.jupiterHost === Config.jupiterReleaseHost,
     });
   }
 
@@ -265,7 +282,7 @@ class MetricService {
           if (!t) {
             continue;
           }
-          costTime = t.endTime - t.startTime;
+          costTime = t.time;
           sum += costTime;
           min = costTime > min ? min : costTime;
           max = costTime > max ? costTime : max;
@@ -277,10 +294,9 @@ class MetricService {
           arr.push(costTime);
           dtoArr.push({
             type: "API",
-            startTime: t.startTime,
-            endTime: t.endTime,
             costTime: costTime,
-            handleCount: t.count
+            handleCount: t.count,
+            infos: JSON.stringify(t.infos)
           });
         }
         arr.sort((a, b) => {
@@ -300,7 +316,199 @@ class MetricService {
         for (let dto of dtoArr) {
           dto["summaryId"] = summary.id;
         }
+
         await LoadingTimeItemDto.bulkCreate(dtoArr);
+
+        await MetricService.summaryLoadingTimeForVersion(sceneDto, summary);
+      }
+    }
+  }
+
+  static async summaryLoadingTimeForVersion(sceneDto: SceneDto, summary: LoadingTimeSummaryDto): Promise<void> {
+    const isRelease = Config.jupiterHost === Config.jupiterReleaseHost;
+    const isDevelop = Config.jupiterHost === Config.jupiterDevelopHost;
+    const isStage = Config.jupiterHost === Config.jupiterStageHost;
+
+    if (!isRelease && !isDevelop && !isStage) {
+      return;
+    }
+
+    let version = await VersionDto.findOne({ where: { name: sceneDto.appVersion } });
+    if (!version) {
+      return;
+    }
+
+    const platform = 'chrome';
+    let versions = await VersionDto.findAll({
+      where: {
+        name: {
+          [Op.in]: [
+            (await DashboardService.getVersionInfo(Config.jupiterDevelopHost)).jupiterVersion,
+            (await DashboardService.getVersionInfo(Config.jupiterStageHost)).jupiterVersion
+          ]
+        }
+      }
+    });
+    if (versions && versions.length > 0) {
+      await LoadingTimeDevelopSummaryDto.destroy({ where: { versionId: { [Op.notIn]: versions.map(a => a.id) }, platform: platform, name: summary.name, isRelease: false } })
+    }
+
+    const release = isRelease ? 1 : 0;
+    const versionName = isDevelop ? "develop" : version.name;
+
+    let dtos = await LoadingTimeItemDto.sequelize.query("select i.*, s.start_time from t_loading_time_summary ss  join t_scene s on s.id=ss.scene_id join t_loading_time_item i on i.summary_id=ss.id where ss.name=? and s.name=? and s.app_version=? and s.is_release=?",
+      {
+        replacements: [summary.name, sceneDto.name, sceneDto.appVersion, release],
+        raw: true,
+        type: Sequelize.QueryTypes.SELECT
+      });
+
+    if (!dtos || dtos.length === 0) {
+      return;
+    }
+
+    let sum = 0, min = 60000000,
+      max = 0, maxHanleCount = -1,
+      arr = [], costTime, cnt, minTime, maxTime, time;
+
+    minTime = maxTime = new Date(dtos[0]['start_time']).getTime();
+    const map = {};
+    for (let dto of dtos) {
+      if (map[dto['summary_id']]) {
+        map[dto['summary_id']].push(dto);
+      } else {
+        map[dto['summary_id']] = [dto];
+      }
+
+      time = new Date(dto['start_time']).getTime();
+      minTime = minTime > time ? time : minTime;
+      maxTime = maxTime < time ? time : maxTime;
+
+      cnt = parseInt(dto['handle_count']);
+      costTime = parseFloat(dto['cost_time']);
+      arr.push(costTime);
+      sum += costTime;
+      min = costTime > min ? min : costTime;
+      max = costTime > max ? costTime : max;
+      if (cnt >= 0) {
+        maxHanleCount = cnt > maxHanleCount ? cnt : maxHanleCount;
+      } else {
+        cnt = 0;
+      }
+    }
+
+    arr.sort((a, b) => {
+      return a === b ? 0 : (a > b ? 1 : -1);
+    });
+
+    let versionSummary = {
+      versionId: version.id,
+      version: versionName,
+      name: summary.name,
+      uiMaxTime: 0,
+      uiAvgTime: 0,
+      uiMinTime: 0,
+      uiTop90Time: 0,
+      uiTop95Time: 0,
+      apiMaxTime: max,
+      apiAvgTime: sum / arr.length,
+      apiMinTime: min,
+      apiTop90Time: arr[parseInt((0.9 * arr.length).toString())],
+      apiTop95Time: arr[parseInt((0.95 * arr.length).toString())],
+      apiHandleCount: cnt,
+      isRelease: isRelease,
+      platform: platform,
+      time: DateUtils.getTimeRange(minTime, maxTime)
+    }
+
+    if (isDevelop || isRelease) {
+      await LoadingTimeReleaseSummaryDto.destroy({
+        where: {
+          name: summary.name, version: versionName, platform: platform
+        }
+      });
+
+      await LoadingTimeReleaseSummaryDto.create(versionSummary);
+    }
+
+    const where = {
+      name: summary.name, versionId: version.id, isRelease, platform: platform
+    };
+
+    await LoadingTimeDevelopSummaryDto.destroy({ where });
+
+    if (isRelease) {
+      await LoadingTimeDevelopSummaryDto.create(versionSummary);
+    } else {
+      const summaryIds = Object.keys(map).map(a => parseInt(a));
+      summaryIds.sort((a, b) => a > b ? 1 : -1);
+      const points = [0, 0, 0, 0, 0, 0, 0]; // max 7 point for develop branch
+      for (let i = 0; i < summaryIds.length; i++) {
+        points[i % points.length]++;
+      }
+
+      let index = 0;
+      let branchIndex = 1;
+      for (let idx of points) {
+        if (idx === 0) {
+          continue;
+        }
+
+        let dtoArr = [];
+        for (let i = 0; i < idx; i++) {
+          dtoArr.push(...map[summaryIds[index++]]);
+        }
+
+        arr = [];
+        sum = 0;
+        min = 60000000;
+        max = 0;
+
+        maxHanleCount = -1;
+        minTime = maxTime = new Date(dtoArr[0]['start_time']).getTime();
+        for (let dto of dtoArr) {
+          time = new Date(dto['start_time']).getTime();
+          minTime = minTime > time ? time : minTime;
+          maxTime = maxTime < time ? time : maxTime;
+
+          cnt = parseInt(dto['handle_count']);
+          costTime = parseFloat(dto['cost_time']);
+          arr.push(costTime);
+          sum += costTime;
+          min = costTime > min ? min : costTime;
+          max = costTime > max ? costTime : max;
+          if (cnt >= 0) {
+            maxHanleCount = cnt > maxHanleCount ? cnt : maxHanleCount;
+          } else {
+            cnt = 0;
+          }
+        }
+
+        arr.sort((a, b) => {
+          return a === b ? 0 : (a > b ? 1 : -1);
+        });
+
+        versionSummary = {
+          versionId: version.id,
+          version: [versionName, '_', branchIndex++].join(''),
+          name: summary.name,
+          uiMaxTime: 0,
+          uiAvgTime: 0,
+          uiMinTime: 0,
+          uiTop90Time: 0,
+          uiTop95Time: 0,
+          apiMaxTime: max,
+          apiAvgTime: sum / arr.length,
+          apiMinTime: min,
+          apiTop90Time: arr[parseInt((0.9 * arr.length).toString())],
+          apiTop95Time: arr[parseInt((0.95 * arr.length).toString())],
+          apiHandleCount: cnt,
+          isRelease: isRelease,
+          platform: platform,
+          time: DateUtils.getTimeRange(minTime, maxTime)
+        }
+
+        await LoadingTimeDevelopSummaryDto.create(versionSummary);
       }
     }
   }

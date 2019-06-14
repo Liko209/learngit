@@ -14,6 +14,8 @@ import {
   DEFAULT_TIMEOUT_INTERVAL,
   HA_PRIORITY,
   REQUEST_PRIORITY,
+  NETWORK_FAIL_TEXT,
+  networkLogger,
 } from 'foundation';
 import { RequestHolder } from './requestHolder';
 import { omitLocalProperties, serializeUrlParams } from '../utils';
@@ -69,6 +71,7 @@ export interface IResponseError {
   id: number;
 }
 
+const LOG_TAG = '[NetworkClient]';
 export default class NetworkClient {
   networkRequests: INetworkRequests;
   pathPrefix?: string;
@@ -110,6 +113,23 @@ export default class NetworkClient {
     const response = await this.rawRequest(query, requestHolder);
     if (response.status >= 200 && response.status < 300) {
       return response.data;
+    }
+
+    const request = response.request;
+    if (
+      response.statusText === NETWORK_FAIL_TEXT.SOCKET_DISCONNECTED &&
+      request &&
+      request.via === NETWORK_VIA.ALL
+    ) {
+      networkLogger
+        .tags(LOG_TAG)
+        .info(
+          'request() switch request for id:',
+          request.id,
+          'path:',
+          request.path,
+        );
+      return await this.request(query, requestHolder);
     }
     throw responseParser.parse(response);
   }

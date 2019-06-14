@@ -173,8 +173,8 @@ class InstantSearch extends BaseSearchResultPage {
     return this.getComponent(SearchItem, this.teams.nth(n));
   }
 
-  searchPeopleWithText(text:string){
-    return this.getComponent(SearchItem,this.peoples.withText(text));
+  searchPeopleWithText(text: string) {
+    return this.getComponent(SearchItem, this.peoples.withText(text));
   }
 
   /* content search */
@@ -286,7 +286,7 @@ class FullSearch extends BaseSearchResultPage {
   }
 
   get messagesTab() {
-    return this.getComponent(MessagesResultTab, this.self)
+    return this.getComponent(MessagesResultTab)
   }
 
   get searchResultsCount() {
@@ -307,21 +307,21 @@ class FullSearch extends BaseSearchResultPage {
   }
 
   async countOnHeaderShouldBe(n: number) {
-    H.retryUntilPass(async () => {
+    await H.retryUntilPass(async () => {
       const count = await this.getCountOnHeader();
       assert.strictEqual(count, n, `expect ${n}, but ${count}`);
     })
   }
 
   async countOnHeaderGreaterThanOrEqual(n: number) {
-    H.retryUntilPass(async () => {
+    await H.retryUntilPass(async () => {
       const count = await this.getCountOnHeader();
       assert.ok(count >= n, `expect at least ${n}, but ${count}`);
     })
   }
 
   async countOnHeaderLessThanOrEqual(n: number) {
-    H.retryUntilPass(async () => {
+    await H.retryUntilPass(async () => {
       const count = await this.getCountOnHeader();
       assert.ok(count <= n, `expect less than or equal ${n}, but ${count}`);
     })
@@ -330,6 +330,9 @@ class FullSearch extends BaseSearchResultPage {
 }
 
 class MessagesResultTab extends BaseConversationPage {
+  get self() {
+    return this.getSelectorByAutomationId('search-message-panel');
+  }
   /**  post */
   async allPostShouldBeByUser(name: string) {
     await H.retryUntilPass(async () => {
@@ -417,6 +420,11 @@ class TabEntry extends BaseWebComponent {
 class SearchItem extends BaseWebComponent {
   get avatar() {
     return this.getSelectorByAutomationId('search-item-avatar', this.self);
+  }
+
+  //recently content
+  get contentIcon() {
+    return this.getSelectorByIcon('history', this.avatar);
   }
 
   get name() {

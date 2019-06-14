@@ -26,4 +26,8 @@ describe('KeypadViewModel', () => {
   it('Should return empty string', async () => {
     expect(fakeInputViewModel.enteredKeys).toBe('');
   });
+
+  it('Should return empty undefined', async () => {
+    expect(fakeInputViewModel.showCursor).toBe(undefined);
+  });
 });

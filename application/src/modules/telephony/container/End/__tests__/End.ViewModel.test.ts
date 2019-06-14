@@ -17,13 +17,25 @@ jupiter.registerModule(telephony.config);
 
 let endViewModel: EndViewModel;
 
-beforeAll(() => {
-  endViewModel = new EndViewModel();
-  endViewModel._telephonyService.hangUp = jest.fn();
-});
-
 describe('EndViewModel', () => {
-  it('should call hangUp function', () => {
+  it('should not call hangUp function', () => {
+    endViewModel = new EndViewModel({});
+    endViewModel._telephonyStore.uiCallStartTime = Date.now();
+    endViewModel.end();
+    const _telephonyService: TelephonyService = container.get(
+      TELEPHONY_SERVICE,
+    );
+    expect(_telephonyService.hangUp).not.toBeCalled();
+  });
+
+  it('should call hangUp function', async () => {
+    endViewModel = new EndViewModel({});
+    endViewModel._telephonyStore.uiCallStartTime = Date.now();
+
+    await new Promise(resolve => {
+      setTimeout(resolve, 1000);
+    });
+
     endViewModel.end();
     const _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,

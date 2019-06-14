@@ -9,6 +9,9 @@ import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { TelephonyStore } from '../../store';
 import { StoreViewModel } from '@/store/ViewModel';
 import { DialBtnProps, DialBtnViewProps } from './types';
+import { analyticsCollector } from '@/AnalyticsCollector';
+
+const ANALYTICS_SOURCE = 'dialer';
 
 class DialBtnViewModel extends StoreViewModel<DialBtnProps>
   implements DialBtnViewProps {
@@ -19,6 +22,7 @@ class DialBtnViewModel extends StoreViewModel<DialBtnProps>
 
   makeCall = () => {
     if (!this._telephonyStore.inputString) {
+      this._telephonyStore.enterFirstLetterThroughKeypad();
       return this._telephonyService.updateInputString(
         this._telephonyService.lastCalledNumber,
       );
@@ -27,18 +31,27 @@ class DialBtnViewModel extends StoreViewModel<DialBtnProps>
      * TODO: move this call making & state changing logic down to SDK
      */
     this._makeCall(this._telephonyStore.inputString);
-    this._telephonyStore.dialerCall();
+    this._trackCall(ANALYTICS_SOURCE);
   }
 
   // FIXME: remove this logic by exposing the phone parser from SDK to view-model layer
-  _makeCall = async (val: string) => {
+  private _makeCall = async (val: string) => {
     // make sure line 30 run before end()
-    if (!(await this._telephonyService.makeCall(val))) {
-      await new Promise((resolve) => {
+    if (
+      !(await this._telephonyService.makeCall(
+        val,
+        this._telephonyStore.dialerCall,
+      ))
+    ) {
+      await new Promise(resolve => {
         requestAnimationFrame(resolve);
       });
       this._telephonyStore.end();
     }
+  }
+
+  private _trackCall = (analysisSource: string) => {
+    analyticsCollector.makeOutboundCall(analysisSource);
   }
 }
 

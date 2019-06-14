@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/RightRail/EventList.ts"
+    ],
+    "include_tags": [
+      "JPT-964"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

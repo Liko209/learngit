@@ -40,9 +40,7 @@ export class DashboardHelper {
     const beatStep = new Step();
     beatStep.test = testId;
     beatStep.name = step.text.replace(/\{/g, '[').replace(/\}/g, ']');
-    if (step.metadata && Object.keys(step.metadata).length > 0) {
-      beatStep.description = format(step.text.replace(/\$\{/g, '{'), step.metadata);
-    }
+    beatStep.description = step.description;
     beatStep.metadata = Object.assign({}, step.metadata);
     beatStep.status = StatusMap[step.status];
     beatStep.startTime = new Date(step.startTime);

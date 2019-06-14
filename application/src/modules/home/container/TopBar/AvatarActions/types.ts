@@ -13,6 +13,7 @@ type ViewProps = {
     electronVersion?: string,
   ) => void;
   handleSignOut: () => void;
+  handleSendFeedback: () => void;
 };
 
 export { Props, ViewProps };

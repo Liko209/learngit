@@ -4,7 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { UMI_SECTION_TYPE } from 'sdk/module/state';
+enum UMI_SECTION_TYPE {
+  SINGLE,
+  FAVORITE,
+  DIRECT_MESSAGE,
+  TEAM,
+  ALL,
+}
 
 type UmiProps = {
   type: UMI_SECTION_TYPE;
@@ -17,4 +23,9 @@ type UmiViewProps = {
   important?: boolean;
 };
 
-export { UmiProps, UmiViewProps, UMI_SECTION_TYPE };
+type UnreadCounts = {
+  unreadCount: number;
+  mentionCount: number;
+};
+
+export { UMI_SECTION_TYPE, UmiProps, UmiViewProps, UnreadCounts };

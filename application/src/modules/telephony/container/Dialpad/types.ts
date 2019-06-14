@@ -13,7 +13,7 @@ type ViewProps = {
   timing: string | { key: string };
   id: string;
   canUseTelephony: boolean;
-  shouldAnimationStart: boolean;
+  startMinimizeAnimation: boolean;
 };
 
 export { Props, ViewProps };

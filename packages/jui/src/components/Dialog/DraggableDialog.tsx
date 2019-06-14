@@ -19,7 +19,7 @@ type PaperProps = {
   onStop?: DraggableEventHandler;
   onDrag?: DraggableEventHandler;
   handle?: string;
-  TransitionComponent?: React.ComponentType<TransitionProps>;
+  TransitionComponent?: React.ComponentType<TransitionProps | any>;
 } & JuiPaperProps;
 
 type JuiDraggableDialogProps = PaperProps & JuiDialogProps;

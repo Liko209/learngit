@@ -150,7 +150,7 @@ class PostFetchController {
         limit: unreadCount + ADDITIONAL_UNREAD_POST_COUNT,
         postId: startPostId,
         direction: QUERY_DIRECTION.NEWER,
-        shouldSaveToDb: false,
+        shouldSaveToDb: true,
       });
       if (serverResult) {
         result.posts = serverResult.posts;
@@ -234,6 +234,12 @@ class PostFetchController {
           handledResult.hasMore,
         );
       }
+
+      handledResult.posts.length &&
+        this._groupService.handleGroupFetchedPosts(
+          groupId,
+          handledResult.posts,
+        );
       return handledResult;
     }
     return serverResult;

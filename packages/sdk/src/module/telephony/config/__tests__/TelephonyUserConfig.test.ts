@@ -3,7 +3,6 @@
  * @Date: 2019-03-15 09:47:29
  * Copyright © RingCentral. All rights reserved.
  */
-import { UserConfigService, GlobalConfigService } from '../../../config';
 import { TelephonyUserConfig } from '../TelephonyUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { TELEPHONY_KEYS } from '../configKeys';
@@ -17,7 +16,7 @@ describe('TelephonyUserConfig', () => {
     jest.resetAllMocks();
     jest.restoreAllMocks();
   }
-  let telephonyConfig;
+  let telephonyConfig: TelephonyUserConfig;
   const mockConfigService = {
     put: jest.fn(),
     setUserId: jest.fn(),

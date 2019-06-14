@@ -8,8 +8,9 @@ import { GroupState, MyState, State } from '../entity';
 import { Group } from '../../group/entity';
 import { Profile } from '../../profile/entity';
 import { NotificationEntityPayload } from '../../../service/notificationCenter';
-import { SectionUnread } from '../types';
+import { GroupBadge } from '../types';
 import { SYNC_SOURCE } from '../../sync/types';
+import { UndefinedAble } from 'sdk/types';
 
 interface IStateService {
   updateReadStatus(
@@ -40,7 +41,7 @@ interface IStateService {
     payload: NotificationEntityPayload<Profile>,
   ): void;
 
-  getSingleUnreadInfo(id: number): SectionUnread | undefined;
+  getSingleGroupBadge(id: number): UndefinedAble<GroupBadge>;
 }
 
 export { IStateService };

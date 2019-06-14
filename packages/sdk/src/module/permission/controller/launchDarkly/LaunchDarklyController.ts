@@ -5,7 +5,7 @@
  */
 
 import { LaunchDarklyClient } from './LaunchDarklyClient';
-import { notificationCenter, SERVICE } from '../../../../service';
+import { notificationCenter, SERVICE, WINDOW } from '../../../../service';
 import { AccountService } from '../../../account/service';
 import { LaunchDarklyDefaultPermissions } from './LaunchDarklyDefaultPermissions';
 import UserPermissionType from '../../types';
@@ -26,7 +26,7 @@ class LaunchDarklyController {
   }
 
   hasPermission(type: UserPermissionType): boolean {
-    return this.isClientReady
+    return this.isClientReady && this.launchDarklyClient.hasFlags()
       ? this.launchDarklyClient.hasPermission(type)
       : this._defaultPermission(type);
   }
@@ -47,6 +47,12 @@ class LaunchDarklyController {
     });
     notificationCenter.on(SERVICE.LOGOUT, () => {
       this._shutdownClient();
+    });
+    notificationCenter.on(WINDOW.ONLINE, ({ onLine }: { onLine: boolean }) => {
+      if (onLine) {
+        this._shutdownClient();
+        this._initClient();
+      }
     });
   }
   private _shutdownClient() {

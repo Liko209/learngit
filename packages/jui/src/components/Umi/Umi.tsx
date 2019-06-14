@@ -8,12 +8,12 @@
 import React, { PureComponent } from 'react';
 import styled, { css } from '../../foundation/styled-components';
 import {
-  palette,
   secondary,
   grey,
   width,
   height,
   typography,
+  palette,
 } from '../../foundation/utils/styles';
 
 import { countToString, countToWidth } from './utils';
@@ -67,9 +67,7 @@ const StyledUmi = styled<JuiUmiProps, 'span'>('span').attrs({
   background: ${({ important }) => {
     return important ? secondary('main') : grey('500');
   }};
-  color: ${() => {
-    return palette('common', 'white');
-  }};
+  color: ${palette('common', 'white')};
   ${({ variant = 'count' }) => styles[variant]};
 `;
 

@@ -6,6 +6,8 @@
 
 type Direction = 'up' | 'down';
 
+type UndefinedAble<T> = T | undefined;
+
 type IndexRange = {
   startIndex: number;
   stopIndex: number;
@@ -42,4 +44,5 @@ export {
   IndexConstraint,
   Direction,
   Delta,
+  UndefinedAble,
 };

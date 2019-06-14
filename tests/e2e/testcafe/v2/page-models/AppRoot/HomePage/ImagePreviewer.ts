@@ -71,12 +71,12 @@ export class FileAndImagePreviewer extends BaseWebComponent {
     await this.t.click(this.closeButton);
   }
 
-  get perviousIcon() {
-    return this.getSelectorByIcon('pervious', this.self);
+  get previousIcon() {
+    return this.getSelectorByIcon('previous', this.self);
   }
 
-  get perviousButton() {
-    return this.perviousIcon.parent('button');
+  get previousButton() {
+    return this.previousIcon.parent('button');
   }
 
   get forwardIcon() {
@@ -87,16 +87,28 @@ export class FileAndImagePreviewer extends BaseWebComponent {
     return this.forwardIcon.parent('button');
   }
 
-  async clickPerviousButton() {
+  async clickPreviousButton() {
     await this.t
-      .expect(this.perviousButton.hasAttribute('disabled')).notOk()
-      .click(this.perviousButton);
+      .expect(this.previousButton.hasAttribute('disabled')).notOk()
+      .click(this.previousButton);
+  }
+
+  async hoverPreviousButton() {
+    await this.t
+      .expect(this.previousButton.hasAttribute('disabled')).notOk()
+      .hover(this.previousButton);
   }
 
   async clickForwardButton() {
     await this.t
       .expect(this.forwardButton.hasAttribute('disabled')).notOk()
       .click(this.forwardButton);
+  }
+
+  async hoverForwardButton() {
+    await this.t
+      .expect(this.forwardButton.hasAttribute('disabled')).notOk()
+      .hover(this.forwardButton);
   }
 
   get zoomOutIcon() {
@@ -112,9 +124,14 @@ export class FileAndImagePreviewer extends BaseWebComponent {
       .expect(this.zoomOutButton.hasAttribute('disabled')).notOk()
       .click(this.zoomOutButton);
   }
+  async hoverZoomOutButton() {
+    await this.t
+      .expect(this.zoomOutButton.hasAttribute('disabled')).notOk()
+      .hover(this.zoomOutButton);
+  }
 
   get zoomInIcon() {
-    return this.getSelectorByIcon('zoom_out', this.self);
+    return this.getSelectorByIcon('zoom_in', this.self);
   }
 
   get zoomInButton() {
@@ -125,5 +142,10 @@ export class FileAndImagePreviewer extends BaseWebComponent {
     await this.t
       .expect(this.zoomInButton.hasAttribute('disabled')).notOk()
       .click(this.zoomInButton);
+  }
+  async hoverZoomInButton() {
+    await this.t
+      .expect(this.zoomInButton.hasAttribute('disabled')).notOk()
+      .hover(this.zoomInButton);
   }
 }

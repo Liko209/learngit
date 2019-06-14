@@ -15,7 +15,6 @@ import * as md from 'jui/pattern/MessageInput/markdown';
 import { PostService } from 'sdk/module/post';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { DeltaStatic } from 'quill';
-import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
 
 jest.mock('sdk/module/post');
 jest.mock('sdk/module/groupConfig');
@@ -24,7 +23,7 @@ jest.mock('sdk/module/config/GlobalConfig');
 jest.mock('sdk/module/config/UserConfig');
 
 const postService = new PostService();
-
+const userId = 1232222;
 const groupConfigService = {
   updateDraft: jest.fn(),
   getDraft: jest.fn(),
@@ -49,7 +48,7 @@ ServiceLoader.getInstance = jest
       return groupConfigService;
     }
 
-    return null;
+    return { userConfig:{ getGlipUserId: () => userId }};
   });
 
 const mockGroupEntityData = {

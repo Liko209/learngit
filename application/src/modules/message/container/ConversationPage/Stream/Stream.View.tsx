@@ -39,6 +39,8 @@ import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { JuiConversationCard } from 'jui/pattern/ConversationCard';
+import { ERROR_TYPES } from '@/common/catchError';
+import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
 
@@ -46,13 +48,19 @@ type StreamItemPost = StreamItem & { value: number[] };
 
 const LOADING_DELAY = 500;
 const MINSTREAMITEMHEIGHT = 50;
+
+const POST_PRELOAD_COUNT = 20;
+const POST_PRELOAD_DIRECTION = 'up';
 @observer
 class StreamViewComponent extends Component<Props> {
   private _currentUserId: number = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-  private _loadMoreStrategy = new ThresholdStrategy({
-    threshold: 60,
-    minBatchCount: 10,
-  });
+  private _loadMoreStrategy = new ThresholdStrategy(
+    {
+      threshold: 60,
+      minBatchCount: 10,
+    },
+    { direction: POST_PRELOAD_DIRECTION, count: POST_PRELOAD_COUNT },
+  );
   private _listRef: React.RefObject<
     JuiVirtualizedListHandles
   > = React.createRef();
@@ -63,6 +71,8 @@ class StreamViewComponent extends Component<Props> {
   private _disposers: Disposer[] = [];
 
   @observable private _jumpToFirstUnreadLoading = false;
+
+  private _performanceTracer: PerformanceTracer = PerformanceTracer.initial();
 
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
@@ -113,6 +123,11 @@ class StreamViewComponent extends Component<Props> {
     }
 
     jumpToPostId && this._handleJumpToIdChanged(jumpToPostId, prevJumpToPostId);
+
+    this._performanceTracer.end({
+      key: PERFORMANCE_KEYS.UI_MESSAGE_RENDER,
+      count: postIds.length,
+    });
   }
 
   private _handleJumpToIdChanged(currentId: number, prevId?: number) {
@@ -368,14 +383,44 @@ class StreamViewComponent extends Component<Props> {
     this._watchUnreadCount();
   }
 
-  private _onInitialDataFailed = (
-    <JuiStreamLoading
-      showTip={true}
-      tip={this.props.t('translations:message.prompt.MessageLoadingErrorTip')}
-      linkText={this.props.t('translations:common.prompt.tryAgain')}
-      onClick={this._loadInitialPosts}
-    />
-  );
+  private get _getFailedTip() {
+    const { errorType, t } = this.props;
+    if (errorType === ERROR_TYPES.NETWORK) {
+      return t('message.prompt.MessageLoadingErrorTipForNetworkIssue');
+    }
+    if (errorType === ERROR_TYPES.NOT_AUTHORIZED) {
+      return t('people.prompt.conversationPrivate');
+    }
+    if (errorType === ERROR_TYPES.BACKEND) {
+      return t('message.prompt.MessageLoadingErrorTipForServerIssue');
+    }
+    return t('message.prompt.MessageLoadingErrorTip');
+  }
+
+  private get _getFailedLinkText() {
+    const { errorType, t } = this.props;
+    if (errorType === ERROR_TYPES.NETWORK) {
+      return t('common.prompt.thenTryAgain');
+    }
+    if (errorType === ERROR_TYPES.NOT_AUTHORIZED) {
+      return '';
+    }
+    if (errorType === ERROR_TYPES.BACKEND) {
+      return t('common.prompt.tryAgainLater');
+    }
+    return t('common.prompt.tryAgain');
+  }
+
+  private get _onInitialDataFailed() {
+    return (
+      <JuiStreamLoading
+        showTip={true}
+        tip={this._getFailedTip}
+        linkText={this._getFailedLinkText}
+        onClick={this._loadInitialPosts}
+      />
+    );
+  }
 
   render() {
     const { loadMore, hasMore, items, loadingStatus } = this.props;

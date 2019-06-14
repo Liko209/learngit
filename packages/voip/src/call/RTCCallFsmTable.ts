@@ -11,6 +11,9 @@ import {
 } from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 
+import { CallReport } from '../report/Call';
+import { FsmStatusCategory } from '../report/types';
+
 const CallFsmState = {
   IDLE: 'idle',
   PENDING: 'pending',
@@ -501,6 +504,9 @@ class RTCCallFsmTable extends StateMachine {
       ],
       methods: {
         onTransition(lifecycle) {
+          CallReport.instance().updateFsmStatus(
+            lifecycle.to as FsmStatusCategory,
+          );
           rtcLogger.debug(
             'RTC_Call_FSM',
             `Transition: ${lifecycle.transition} from: ${lifecycle.from} to: ${

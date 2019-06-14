@@ -8,6 +8,7 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 import * as _ from 'lodash';
+import { IGroup, ITestMeta } from "../../v2/models";
 
 fixture('ConversationList/maxConversation')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -31,7 +32,7 @@ test(formalName('JPT-58 Show conversations with limit count conversations, older
       await h(t).platform(loginUser).init();
       await h(t).glip(loginUser).init();
       await h(t).glip(loginUser).resetProfileAndState();
-      await h(t).platform(otherUser).init();    
+      await h(t).platform(otherUser).init();
     });
 
     let teamId;
@@ -250,3 +251,58 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
     });
   }
 );
+
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-247'],
+  maintainers: ['ali.naffaa'],
+  keywords: ['ConversationList'],
+})('The Favorites section should display all the favorite conversations and should not be limited to 20 conversations', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  await h(t).platform(loginUser).init();
+  const otherUser = users[5];
+  const favConversationCount = 21
+  let teamsId = [];
+
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
+
+  await h(t).withLog('Given user has more than 20 conversations in the Fav section', async () => {
+    const oldTeams: any[] = await h(t).glip(loginUser).getTeams().then(res => res.data.teams);
+    const needCreatedCount = favConversationCount - oldTeams.length
+    if (needCreatedCount > 0) {
+      oldTeams.map((team) => {
+        teamsId.push(team._id.toString())
+      })
+      for (let i = 0; i < needCreatedCount; i++) {
+        let team = <IGroup>{
+          type: "Team",
+          name: uuid(),
+          owner: loginUser,
+          members: [loginUser, otherUser],
+        };
+        await h(t).scenarioHelper.createTeamsOrChats([team]).then(() => teamsId.push(team.glipId))
+      }
+    } else {
+      oldTeams.slice(0, favConversationCount).map((team) => {
+        teamsId.push(team._id.toString())
+      })
+    }
+    await h(t).glip(loginUser).favoriteGroups(teamsId);
+  });
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const favoritesSection = app.homePage.messageTab.favoritesSection;
+  await h(t).withLog('Then all conversations are displayed in Favorite section', async () => {
+    await favoritesSection.expand();
+    await t.expect(favoritesSection.conversations.count).eql(favConversationCount);
+    for (let teamId of teamsId) {
+      await favoritesSection.conversationEntryById(teamId).ensureLoaded();
+    }
+  });
+});

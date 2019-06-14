@@ -1,6 +1,7 @@
 import 'testcafe';
 import { v4 as uuid } from 'uuid';
 import * as path from 'path';
+import * as format from 'string-format';
 import { IStep, Status, IStepOptions } from '../models';
 import { getLogger } from 'log4js';
 import { H } from './utils';
@@ -10,7 +11,7 @@ import chalk from 'chalk';
 const logger = getLogger(__filename);
 logger.level = 'info';
 
-class Step implements IStep {
+export class Step implements IStep {
   t: TestController;
 
   text: string;
@@ -22,6 +23,7 @@ class Step implements IStep {
   attachments?: string[];
   children?: IStep[];
   error?: any;
+  description?; string
 
   options: IStepOptions;
   closure?: (step?: Step) => Promise<any>;
@@ -42,6 +44,11 @@ class Step implements IStep {
 
     this.t = t;
     this.closure = cb;
+    this.children = [];
+  }
+
+  initMetadata(metadata: { [key: string]: string }) {
+    this.metadata = metadata
   }
 
   setMetadata(key: string, value: string) {
@@ -70,9 +77,12 @@ class Step implements IStep {
       }
       this.endTime = Date.now();
     }
+    if (this.metadata && Object.keys(this.metadata).length > 0) {
+      this.description = format(this.text.replace(/\$\{/g, '{'), this.metadata);
+    }
     // post-execute
     // log to stdout
-    console.log(`${new Date(this.startTime).toLocaleString()} [${this.status}] ${this.text}`+ chalk.cyan(this.options.screenshotPath?" "+this.options.screenshotPath:"") +`(${this.endTime - this.startTime}ms)`);
+    console.log(`${new Date(this.startTime).toLocaleString()} [${this.status}] ${this.description || this.text}` + chalk.cyan(this.options.screenshotPath ? " " + this.options.screenshotPath : "") + `(${this.endTime - this.startTime}ms)`);
     // take screenshot
     if (!this.error && (this.options.takeScreenshot || this.options.screenshotPath))
       this.screenshotPath = await this.takeScreenShot(this.options.screenshotPath);
@@ -128,7 +138,7 @@ export class LogHelper {
     return await this.withLog(stepOrText, undefined, options);
   }
 
-  async withLog(stepOrText: IStep | string, cb: (step?: IStep) => Promise<any>, options?: IStepOptions | boolean): Promise<Step> {
+  async withLog(stepOrText: IStep | string, cb: (step?: Step) => Promise<any>, options?: IStepOptions | boolean): Promise<Step> {
     const step = new Step(this.t, stepOrText, cb, options);
     this.addStep(step);
     await step.execute();

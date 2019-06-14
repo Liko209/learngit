@@ -72,6 +72,32 @@ const moduleRules = [
       },
     ],
   },
+  {
+    test: /\.svg$/,
+    include: path.resolve(__dirname, '../src/assets/jupiter-icon'),
+    use: [
+      {
+        loader: 'svg-sprite-loader',
+        options: {
+          extract: true,
+          publicPath: '/static/',
+          spriteFilename: 'jupiter-icon-[hash:6].svg',
+          symbolId: 'jupiter-[name]',
+        },
+      },
+      {
+        loader: 'svgo-loader',
+        options: {
+          plugins: [
+            { removeTitle: true },
+            { convertColors: { shorthex: false } },
+            { convertPathData: true },
+            { reusePaths: true },
+          ],
+        },
+      },
+    ],
+  },
 ];
 
 const plugins = [

@@ -1,0 +1,5 @@
+div[role="presentation"]>.caller_id-list-container {
+  max-height: 416px;
+  min-width: 112px;
+  max-width: 320px;
+}

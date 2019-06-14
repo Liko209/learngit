@@ -13,15 +13,13 @@ import history from '@/history';
 import { LeftNavView } from '../LeftNav.View';
 import React from 'react';
 
-describe.only('LeftNav.View', () => {
+describe('LeftNav.View', () => {
   describe('onRouteChange', () => {
     jest.spyOn(history, 'push').mockImplementation();
     const props = {
       history: { listen: jest.fn(), push: history.push },
       location: { pathname: '/message/123' },
-      icons: {
-        get: () => [],
-      },
+      iconGroups: [[], []],
     } as any;
     let view: any;
     beforeEach(() => {

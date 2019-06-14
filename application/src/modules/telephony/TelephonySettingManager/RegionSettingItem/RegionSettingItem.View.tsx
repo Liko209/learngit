@@ -29,18 +29,6 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
     };
   }
 
-  saveRegion = async () => {
-    const { saveRegion, dialPlanISOCode, areaCode } = this.props;
-    const save = await saveRegion(dialPlanISOCode, areaCode);
-    save && this.setState({ dialogOpen: false });
-  }
-
-  onCancel = () => {
-    this.setState({
-      dialogOpen: false,
-    });
-  }
-
   handleClicked = async () => {
     await this.props.loadRegionSetting();
     this.setState({
@@ -49,10 +37,58 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
   }
 
   render() {
+    const { t, settingItemEntity } = this.props;
+    const { value, state } = settingItemEntity;
+
+    const regionText = t('setting.phone.general.regionSetting.region');
+    const countryText = t('setting.phone.general.regionSetting.country');
+    const areaCodeText = t('setting.phone.general.regionSetting.areaCode');
+
+    let descriptionText = `${countryText}: `;
+    if (value) {
+      const { areaCode, countryInfo } = value;
+      const { name, callingCode } = countryInfo;
+      descriptionText += `${name} (+${callingCode})`;
+      if (areaCode) {
+        descriptionText += `, ${areaCodeText}: ${areaCode}`;
+      }
+    }
+    const disabled = state === ESettingItemState.DISABLE;
+    return (
+      <JuiSettingSectionItem
+        id="regionSetting"
+        label={regionText}
+        description={descriptionText}
+        disabled={disabled}
+      >
+        <JuiButton
+          color="primary"
+          onClick={this.handleClicked}
+          disabled={disabled}
+          data-test-automation-id="settingItemButton-regionSetting"
+        >
+          {t('setting.update')}
+        </JuiButton>
+        {this._renderDialog()}
+      </JuiSettingSectionItem>
+    );
+  }
+
+  private _saveRegion = async () => {
+    const { saveRegion, dialPlanISOCode, areaCode } = this.props;
+    const save = await saveRegion(dialPlanISOCode, areaCode);
+    save && this.setState({ dialogOpen: false });
+  }
+
+  private _onCancel = () => {
+    this.setState({
+      dialogOpen: false,
+    });
+  }
+
+  private _renderDialog() {
     const {
       t,
-      value,
-      state,
       currentCountryInfo,
       countriesList,
       handleDialPlanChange,
@@ -66,7 +102,6 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
 
     const { isoCode } = currentCountryInfo;
     const regionText = t('setting.phone.general.regionSetting.region');
-    const countryText = t('setting.phone.general.regionSetting.country');
     const areaCodeText = t('setting.phone.general.regionSetting.areaCode');
     const saveText = t('common.dialog.save');
     const cancelText = t('common.dialog.cancel');
@@ -74,31 +109,14 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
     const regionChangeDesc = t(
       'setting.phone.general.regionSetting.regionChangeDesc',
     );
-
-    const { areaCode: currentAreaCode } = value;
-    const { name, callingCode } = value.countryInfo;
-    let descriptionText = `${countryText}: ${name} (+${callingCode})`;
-    if (currentAreaCode !== '') {
-      descriptionText += `, ${areaCodeText}: ${currentAreaCode}`;
-    }
-
     return (
-      <JuiSettingSectionItem
-        id="regionSetting"
-        label={regionText}
-        description={descriptionText}
-      >
-        <JuiButton
-          color="primary"
-          onClick={this.handleClicked}
-          disabled={state !== ESettingItemState.ENABLE}
-          data-test-automation-id="regionSettingDialogOpenButton"
-        >
-          {t('setting.update')}
-        </JuiButton>
+      this.state.dialogOpen && (
         <JuiModal
+          modalProps={{
+            'data-test-automation-id': 'dialog-regionSetting',
+          }}
           title={
-            <JuiDialogTitle data-test-automation-id="regionSettingDialogHeader">
+            <JuiDialogTitle data-test-automation-id="dialog-header-regionSetting">
               {regionText}
             </JuiDialogTitle>
           }
@@ -106,20 +124,20 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
           okText={saveText}
           cancelText={cancelText}
           open={this.state.dialogOpen}
-          onOK={this.saveRegion}
-          onCancel={this.onCancel}
+          onOK={this._saveRegion}
+          onCancel={this._onCancel}
           okBtnProps={{
             disabled: disabledOkBtn,
-            'data-test-automation-id': 'saveRegionSettingOkButton',
+            'data-test-automation-id': 'dialog-okButton-regionSetting',
           }}
           cancelBtnProps={{
-            'data-test-automation-id': 'saveRegionSettingCancelButton',
+            'data-test-automation-id': 'dialog-cancelButton-regionSetting',
           }}
         >
           <JuiTypography
             variant={'caption'}
             gutterBottom={true}
-            data-test-automation-id="regionSettingDialogContentDescription"
+            data-test-automation-id="dialog-contentDescription-regionSetting"
           >
             {regionChangeDesc}
           </JuiTypography>
@@ -139,15 +157,15 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
               error={areaCodeError}
               inputProps={{
                 maxLength: 200,
-                'data-test-automation-id': 'areaCodeInput',
+                'data-test-automation-id': 'dialog-regionSetting-areaCodeInput',
               }}
               helperText={areaCodeError && errorMsg}
               onChange={handleAreaCodeChange}
-              data-test-automation-id="areaCodeTextField"
+              data-test-automation-id="dialog-regionSetting-areaCodeTextField"
             />
           )}
         </JuiModal>
-      </JuiSettingSectionItem>
+      )
     );
   }
 }

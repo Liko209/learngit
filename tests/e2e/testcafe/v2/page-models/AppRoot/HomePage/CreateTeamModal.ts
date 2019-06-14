@@ -67,6 +67,10 @@ class BaseTeamSetting extends BaseWebComponent {
     await this.clickAndTypeText(this.teamDescriptionInput, this.randomString(length), { replace: true, })
   }
 
+  async typeTeamDescription(text: string) {
+    await this.clickAndTypeText(this.teamDescriptionInput, text, { replace: true });
+  }
+
   get isPublicToggle() {
     return this.checkboxOf(this.isPublicDiv);
   }

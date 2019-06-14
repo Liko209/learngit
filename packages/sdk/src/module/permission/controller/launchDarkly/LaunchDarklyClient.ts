@@ -12,6 +12,7 @@ type Options = {
 import { initialize, LDUser, LDFlagSet } from 'ldclient-js';
 import UserPermissionType from '../../types';
 import { mainLogger } from 'foundation';
+
 class LaunchDarklyClient {
   private _ldclient: any;
   private _flags: LDFlagSet = {};
@@ -21,6 +22,10 @@ class LaunchDarklyClient {
 
   hasPermission(type: UserPermissionType) {
     return this._flags && !!this._flags[type];
+  }
+
+  hasFlags() {
+    return this._flags && Object.keys(this._flags).length > 0;
   }
 
   shutdown() {

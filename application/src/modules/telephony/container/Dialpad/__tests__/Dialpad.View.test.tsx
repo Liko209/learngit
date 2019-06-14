@@ -19,7 +19,7 @@ describe('DialpadView', () => {
         timing: '',
         id: v4(),
         canUseTelephony: true,
-        shouldAnimationStart: false,
+        startMinimizeAnimation: false,
       };
       const wrapper = shallow(<DialpadView {...props} />);
       expect(wrapper.find(JuiDialpadBtn).length).toBe(1);
@@ -32,7 +32,7 @@ describe('DialpadView', () => {
         timing: '',
         id: v4(),
         canUseTelephony: false,
-        shouldAnimationStart: false,
+        startMinimizeAnimation: false,
       };
       const wrapper = shallow(<DialpadView {...props} />);
       expect(wrapper.find(JuiDialpadBtn).length).toBe(0);

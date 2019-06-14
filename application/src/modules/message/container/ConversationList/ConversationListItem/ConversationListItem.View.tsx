@@ -13,8 +13,9 @@ import { Menu } from '../Menu';
 import { ConversationListItemViewProps } from './types';
 import { observer } from 'mobx-react';
 import { observable } from 'mobx';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-type Props = ConversationListItemViewProps;
+type Props = ConversationListItemViewProps & WithTranslation;
 type State = {
   isHover: boolean;
 };
@@ -98,10 +99,10 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
           hidden={this.props.hidden}
           onMouseOver={this._handleMouseOver}
           onMouseLeave={this._handleMouseLeave}
+          moreTooltipTitle={this.props.t('common.more')}
         >
           {isHover && (
             <Menu
-              personId={this.props.personId}
               groupId={this.props.groupId}
               anchorEl={this.menuAnchorEl}
               onClose={this._closeMenu}
@@ -127,5 +128,8 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
   }
 }
 
-const ConversationListItemView = ConversationListItemViewComponent;
+const ConversationListItemView = withTranslation('translations')(
+  ConversationListItemViewComponent,
+);
+
 export { ConversationListItemView };

@@ -21,6 +21,7 @@ const StyledWrapper = styled.div`
 const StyledChildrenWrapper = styled.div`
   display: flex;
   flex-direction: row;
+  align-items: center
 `;
 
 const StyledTitle = styled.div`

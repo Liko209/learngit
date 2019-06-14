@@ -5,7 +5,7 @@ import { BaseWebComponent } from '../BaseWebComponent';
 import { HomePage } from './HomePage';
 import { LoginPage } from './LoginPage';
 import { SITE_URL } from '../../../config';
-import { H } from '../../helpers';
+import { UpgradeDialog } from './UpgradeDialog';
 
 export class AppRoot extends BaseWebComponent {
   async ensureLoaded() { }
@@ -35,4 +35,9 @@ export class AppRoot extends BaseWebComponent {
     const conversationUrl = `${url.protocol}//${url.hostname}/messages/${groupId}`;
     await this.t.navigateTo(conversationUrl);
   }
+
+  get upgradeDialog() {
+    return this.getComponent(UpgradeDialog);
+  }
+
 }

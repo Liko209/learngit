@@ -33,20 +33,8 @@ const itemService = new ItemService();
 const groupService = {
   hasMorePostInRemote: jest.fn(),
   updateHasMore: jest.fn(),
+  handleGroupFetchedPosts: jest.fn(),
 };
-
-function setup() {
-  ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
-  itemService.handleIncomingData = jest.fn();
-  daoManager.getDao.mockImplementation(arg => {
-    if (arg === PostDao) {
-      return postDao;
-    }
-    if (arg === ItemDao) {
-      return itemDao;
-    }
-  });
-}
 
 describe('PostFetchController()', () => {
   const postDataController = new PostDataController(
@@ -65,6 +53,25 @@ describe('PostFetchController()', () => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     jest.restoreAllMocks();
+  }
+
+  function setup() {
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
+    itemService.handleIncomingData = jest.fn();
+    daoManager.getDao.mockImplementation(arg => {
+      if (arg === PostDao) {
+        return postDao;
+      }
+      if (arg === ItemDao) {
+        return itemDao;
+      }
+    });
+
+    postDataController.handleFetchedPosts = jest.fn().mockResolvedValue({
+      posts: [],
+      items: [],
+      hasMore: true,
+    });
   }
 
   afterAll(() => {
@@ -572,6 +579,41 @@ describe('PostFetchController()', () => {
         limit: 500,
       });
     });
+
+    it('should call getRemotePostsByGroupId with shouldSaveToDb as true', async () => {
+      const mockPosts = postFactory.buildList(2);
+      const mockItems = itemFactory.buildList(3);
+      jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(false);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+      const getRemotePostsSpy = jest.spyOn(
+        postFetchController,
+        'getRemotePostsByGroupId',
+      );
+
+      getRemotePostsSpy.mockResolvedValueOnce({
+        success: true,
+        hasMore: false,
+        posts: mockPosts,
+        items: mockItems,
+      });
+      itemService.handleIncomingData = jest
+        .fn()
+        .mockResolvedValueOnce(mockItems);
+
+      const result = await postFetchController.getUnreadPostsByGroupId({
+        groupId: 1,
+        startPostId: 1,
+        endPostId: 2,
+        unreadCount: 500,
+      });
+      expect(getRemotePostsSpy).toBeCalledWith({
+        groupId: 1,
+        limit: 1000,
+        postId: 1,
+        direction: QUERY_DIRECTION.NEWER,
+        shouldSaveToDb: true,
+      });
+    });
   });
 
   describe('fetchPaginationPosts()', () => {
@@ -709,6 +751,7 @@ describe('PostFetchController()', () => {
       );
       groupService.updateHasMore.mockImplementationOnce(() => {});
       expect(groupService.updateHasMore).toHaveBeenCalledTimes(1);
+      expect(groupService.handleGroupFetchedPosts).toBeCalled();
       expect(result.hasMore).toBeFalsy();
     });
   });

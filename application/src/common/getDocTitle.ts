@@ -4,10 +4,15 @@ import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { POST_LIST_TYPE } from '@/modules/message/container/PostListPage/types';
 import { toTitleCase } from '@/utils/string';
-import { SETTING_LIST_TYPE } from '@/modules/setting/container/SettingLeftRail/types';
-import i18nT, { i18nTValueProps } from '@/utils/i18nT';
+import { i18nP } from '@/utils/i18nT';
 
-function getMessagesTitle(messagePath?: string): i18nTValueProps {
+//
+// TODO refactor this file
+// We don't want to modify this file every time when add/remove modules.
+// The title getter functions here belongs to biz modules.
+//
+
+function getMessagesTitle(messagePath?: string): string {
   if (
     messagePath &&
     new RegExp(`^(${Object.values(POST_LIST_TYPE).join('|')})$`).test(
@@ -20,49 +25,44 @@ function getMessagesTitle(messagePath?: string): i18nTValueProps {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, +messagePath);
     return group.displayName;
   }
-  return i18nT('message.Messages');
+  return i18nP('message.Messages');
 }
 
-function getSettingsTitle(settingPath: string): i18nTValueProps {
-  const settingI18N = i18nT('setting.Settings');
-  if (
-    settingPath &&
-    new RegExp(`^(${Object.values(SETTING_LIST_TYPE).join('|')})$`).test(
-      settingPath,
-    )
-  ) {
-    const pathI18NKey = `setting.${getI18NKeyByRoutePath(settingPath)}`;
-    return `${settingI18N} - ${i18nT(pathI18NKey)}`;
+function getSettingsTitle(settingPath: string): string {
+  const baseTitle = i18nP('setting.Settings');
+  const subTitleMap = new Map([
+    ['general', i18nP('setting.general')],
+    ['notification_and_sounds', i18nP('setting.notificationAndSounds.title')],
+    ['messages', i18nP('setting.messages')],
+    ['phone', i18nP('setting.phone.title')],
+    ['calendar', i18nP('setting.calendar')],
+    ['meetings', i18nP('setting.meetings')],
+  ]);
+  const titleArray = [baseTitle];
+  const subTitle = subTitleMap.get(settingPath);
+  if (subTitle) {
+    titleArray.push(subTitle);
   }
-  return settingI18N;
-}
-
-function getI18NKeyByRoutePath(path: string) {
-  return path.replace(/\_(.)/gi, (str, v) => {
-    return v.toUpperCase();
-  });
+  return titleArray.join(' - ');
 }
 
 const DOC_TITLE = {
   messages: getMessagesTitle,
-  dashboard: (): i18nTValueProps => i18nT('dashboard.Dashboard'),
-  phone: (): i18nTValueProps => i18nT('telephony.Phone'),
-  meetings: (): i18nTValueProps => i18nT('meeting.Meetings'),
-  contacts: (): i18nTValueProps => i18nT('contact.Contacts'),
-  calendar: (): i18nTValueProps => i18nT('calendar.Calendar'),
-  tasks: (): i18nTValueProps => i18nT('item.tasks'),
-  notes: (): i18nTValueProps => i18nT('item.notes'),
-  files: (): i18nTValueProps => i18nT('item.files'),
+  dashboard: (): string => i18nP('dashboard.Dashboard'),
+  phone: (): string => i18nP('telephony.Phone'),
+  meetings: (): string => i18nP('meeting.Meetings'),
+  contacts: (): string => i18nP('contact.Contacts'),
+  calendar: (): string => i18nP('calendar.Calendar'),
+  tasks: (): string => i18nP('item.tasks'),
+  notes: (): string => i18nP('item.notes'),
+  files: (): string => i18nP('item.files'),
   settings: getSettingsTitle,
 };
 
-function getDocTitle(pathname: string): i18nTValueProps {
-  const paths = pathname.split('/');
-  const category = paths[1].toLocaleLowerCase();
-  const subPath = paths[2];
-
-  const docTitle = DOC_TITLE[category];
+function getDocTitle(pathname: string): string {
+  const [, category, subPath] = pathname.split('/');
+  const docTitle = DOC_TITLE[category.toLocaleLowerCase()];
   return docTitle(subPath);
 }
 
-export default getDocTitle;
+export { getMessagesTitle, getDocTitle };

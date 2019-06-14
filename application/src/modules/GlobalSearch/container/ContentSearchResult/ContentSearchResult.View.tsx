@@ -18,7 +18,7 @@ import { JuiListSubheader } from 'jui/components/Lists';
 import { Stream as PostListStream } from '@/modules/message/container/PostListPage/Stream';
 import { SearchFilter } from '@/modules/GlobalSearch/container/SearchFilter';
 import { ConversationPageContext } from '@/modules/message/container/ConversationPage/types';
-import { SearchHighlightContext } from 'jui/hoc/withHighlight';
+import { SearchHighlightContext } from '@/common/postParser';
 import { USED_HEIGHT, MIN_DIALOG_HEIGHT, MIN_HEIGHT_FIX } from './constants';
 import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 
@@ -34,7 +34,9 @@ class ContentSearchResultViewComponent extends Component<Props> {
   handleSizeChanged = (size: Size) => {
     let height = size.height - USED_HEIGHT;
     height = size.height < MIN_DIALOG_HEIGHT ? MIN_HEIGHT_FIX : height;
-    this.setState({ height, width: size.width });
+    if (height !== this.state.height || size.width !== this.state.width) {
+      this.setState({ height, width: size.width });
+    }
   }
   render() {
     const {
@@ -48,13 +50,17 @@ class ContentSearchResultViewComponent extends Component<Props> {
       isShow,
       showResult,
       searchKey,
+      ...rest
     } = this.props;
     const { height } = this.state;
     return (
       <ConversationPageContext.Provider
         value={{ height, disableMoreAction: true }}
       >
-        <JuiFullSearchWrapper>
+        <JuiFullSearchWrapper
+          {...rest}
+          data-test-automation-id="search-message-panel"
+        >
           <JuiSizeDetector handleSizeChanged={this.handleSizeChanged} />
           <JuiFullSearchResultWrapper>
             {showResult && searchState.requestId ? (

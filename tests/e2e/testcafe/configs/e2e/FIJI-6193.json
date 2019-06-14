@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "fixtures/UnifiedLogin.ts",
+      "fixtures/Logout.ts",
+      "fixtures/Accessibility.ts",
+      "fixtures/Team/*.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

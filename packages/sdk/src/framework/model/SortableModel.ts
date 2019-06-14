@@ -11,4 +11,5 @@ export type SortableModel<T> = {
   secondSortKey?: any;
   thirdSortKey?: any;
   entity: T;
+  extraData?: any[];
 };

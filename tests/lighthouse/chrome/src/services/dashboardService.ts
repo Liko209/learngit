@@ -7,13 +7,20 @@ import * as os from 'os';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as plist from 'plist';
+import * as jwt from 'jsonwebtoken';
 import { LogUtils, PptrUtils } from '../utils';
 import { FileService } from './fileService';
-import { Op } from 'sequelize';
 import { Config } from '../config';
 import { globals } from '../globals';
 import { HeapNode, parseMemorySnapshot } from '../analyse';
-import { TaskDto, SceneDto, PerformanceItemDto, LoadingTimeSummaryDto } from '../models';
+import { Op } from 'sequelize';
+import {
+  TaskDto, SceneDto,
+  PerformanceItemDto,
+  LoadingTimeSummaryDto,
+  VersionDto, LoadingTimeReleaseSummaryDto
+} from '../models';
+import { URLSearchParams } from 'url';
 
 class DashboardMetricItemConfig {
   name: string;
@@ -130,49 +137,139 @@ class DashboardConfig {
       "memoryUrl": "http://xmn145.rcoffice.ringcentral.com:9005",
       "cpuUrl": "http://xmn145.rcoffice.ringcentral.com:9005",
       "metric": {
-        "handle_incoming_account": {
-          "name": "handle_incoming_account",
+        "handle_initial_incoming_account": {
+          "name": "handle_initial_incoming_account",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/141",
           "apiGoal": Number.MAX_VALUE
         },
-        "handle_incoming_company": {
-          "name": "handle_incoming_company",
+        "handle_remaining_incoming_account": {
+          "name": "handle_remaining_incoming_account",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/181",
+          "apiGoal": Number.MAX_VALUE
+        },
+        "handle_index_incoming_account": {
+          "name": "handle_index_incoming_account",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/182",
+          "apiGoal": Number.MAX_VALUE
+        },
+        "handle_initial_incoming_company": {
+          "name": "handle_initial_incoming_company",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/142",
           "apiGoal": Number.MAX_VALUE
         },
-        "handle_incoming_item": {
-          "name": "handle_incoming_item",
+        "handle_remaining_incoming_company": {
+          "name": "handle_remaining_incoming_company",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/183",
+          "apiGoal": Number.MAX_VALUE
+        },
+        "handle_index_incoming_company": {
+          "name": "handle_index_incoming_company",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/184",
+          "apiGoal": Number.MAX_VALUE
+        },
+        "handle_initial_incoming_item": {
+          "name": "handle_initial_incoming_item",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/143",
           "apiGoal": Number.MAX_VALUE
         },
-        "handle_incoming_presence": {
-          "name": "handle_incoming_presence",
+        "handle_remaining_incoming_item": {
+          "name": "handle_remaining_incoming_item",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/185",
+          "apiGoal": Number.MAX_VALUE
+        },
+        "handle_index_incoming_item": {
+          "name": "handle_index_incoming_item",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/186",
+          "apiGoal": Number.MAX_VALUE
+        },
+        "handle_initial_incoming_presence": {
+          "name": "handle_initial_incoming_presence",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/144",
           "apiGoal": Number.MAX_VALUE
         },
-        "handle_incoming_state": {
-          "name": "handle_incoming_state",
+        "handle_remaining_incoming_presence": {
+          "name": "handle_remaining_incoming_presence",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/187",
+          "apiGoal": Number.MAX_VALUE
+        },
+        "handle_index_incoming_presence": {
+          "name": "handle_index_incoming_presence",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/188",
+          "apiGoal": Number.MAX_VALUE
+        },
+        "handle_initial_incoming_state": {
+          "name": "handle_initial_incoming_state",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/145",
           "apiGoal": Number.MAX_VALUE
         },
-        "handle_incoming_profile": {
-          "name": "handle_incoming_profile",
+        "handle_remaining_incoming_state": {
+          "name": "handle_remaining_incoming_state",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/189",
+          "apiGoal": Number.MAX_VALUE
+        },
+        "handle_index_incoming_state": {
+          "name": "handle_index_incoming_state",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/190",
+          "apiGoal": Number.MAX_VALUE
+        },
+        "handle_initial_incoming_profile": {
+          "name": "handle_initial_incoming_profile",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/146",
           "apiGoal": Number.MAX_VALUE
         },
-        "handle_incoming_person": {
-          "name": "handle_incoming_person",
+        "handle_remaining_incoming_profile": {
+          "name": "handle_remaining_incoming_profile",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/191",
+          "apiGoal": Number.MAX_VALUE
+        },
+        "handle_index_incoming_profile": {
+          "name": "handle_index_incoming_profile",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/192",
+          "apiGoal": Number.MAX_VALUE
+        },
+        "handle_initial_incoming_person": {
+          "name": "handle_initial_incoming_person",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/147",
           "apiGoal": Number.MAX_VALUE
         },
-        "handle_incoming_group": {
-          "name": "handle_incoming_group",
+        "handle_remaining_incoming_person": {
+          "name": "handle_remaining_incoming_person",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/193",
+          "apiGoal": Number.MAX_VALUE
+        },
+        "handle_index_incoming_person": {
+          "name": "handle_index_incoming_person",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/194",
+          "apiGoal": Number.MAX_VALUE
+        },
+        "handle_initial_incoming_group": {
+          "name": "handle_initial_incoming_group",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/148",
           "apiGoal": Number.MAX_VALUE
         },
-        "handle_incoming_post": {
-          "name": "handle_incoming_post",
+        "handle_remaining_incoming_group": {
+          "name": "handle_remaining_incoming_group",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/195",
+          "apiGoal": Number.MAX_VALUE
+        },
+        "handle_index_incoming_group": {
+          "name": "handle_index_incoming_group",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/196",
+          "apiGoal": Number.MAX_VALUE
+        },
+        "handle_initial_incoming_post": {
+          "name": "handle_initial_incoming_post",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/149",
+          "apiGoal": Number.MAX_VALUE
+        },
+        "handle_remaining_incoming_post": {
+          "name": "handle_remaining_incoming_post",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/197",
+          "apiGoal": Number.MAX_VALUE
+        },
+        "handle_index_incoming_post": {
+          "name": "handle_index_incoming_post",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/198",
           "apiGoal": Number.MAX_VALUE
         },
         "handle_index_data": {
@@ -189,10 +286,38 @@ class DashboardConfig {
           "name": "handle_initial_data",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/152",
           "apiGoal": Number.MAX_VALUE
+        },
+      }
+    },
+    "SearchPhoneScene": {
+      "name": "SearchPhoneScene",
+      "gatherer": "SearchPhoneGatherer",
+      "memoryUrl": "http://xmn145.rcoffice.ringcentral.com:9005",
+      "cpuUrl": "http://xmn145.rcoffice.ringcentral.com:9005",
+      "metric": {
+        "search_phone_number": {
+          "name": "search_phone_number",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/180",
+          "apiGoal": Number.MAX_VALUE
         }
       }
-    }
+    },
   };
+}
+
+class SceneSummary {
+  memory: number;
+  jsMemory: number;
+  metric: {
+    [key: string]: {
+      apiAvg: number,
+      apiMax: number,
+      apiMin: number,
+      apiTop90: number,
+      apiTop95: number,
+      handleCount: number
+    }
+  }
 }
 
 const logger = LogUtils.getLogger(__filename);
@@ -282,7 +407,7 @@ class DashboardPair {
     return `<span style="color:${color};margin-left:10px;margin-right:40px;">${text.join('')}</span>`
   }
 
-  formatGlip(key: string, handleCount: number, goal?: number): { level: string, text: string } {
+  formatGlip(key: string, handleCount: number, link: string, goal?: number): { level: string, text: string } {
     let icon = _config.icons.pass, suffix = '';
     if (this.last) {
       const offset = this.current - this.last;
@@ -304,7 +429,7 @@ class DashboardPair {
       level = 'block';
     }
 
-    let text = [icon, 'do **', key, '** ', Config.sceneRepeatCount, ' times, average consuming time: **',
+    let text = [icon, 'do [**', key, '**](', link, ') ', Config.sceneRepeatCount, ' times, average consuming time: **',
       this.current.toFixed(2), '** ', this.unit];
     if (handleCount >= 0) {
       text.push(', number of data: **', handleCount, '**');
@@ -358,7 +483,7 @@ const formatMemorySize = (size: number): string => {
   return `${size.toFixed(2)} ${units[idx]}`;
 }
 
-let _versionInfo: DashboardVersionInfo;
+let _versionInfo: { [key: string]: DashboardVersionInfo } = {};
 
 class DashboardService {
 
@@ -368,31 +493,7 @@ class DashboardService {
       return;
     }
 
-    const tasks = await TaskDto.findAll({
-      where: {
-        status: '1',
-        host: task.host
-      }
-    });
-
-    const taskIds = [];
-    let lastScene: SceneDto;
-    if (tasks) {
-      tasks.forEach(t => {
-        taskIds.push(t.id);
-      });
-
-    }
-
-    if (taskIds.length > 0) {
-      lastScene = await SceneDto.findOne({
-        where: { name: scene.name, platform: scene.platform, id: { [Op.not]: scene.id }, taskId: { [Op.in]: taskIds } },
-        order: [['start_time', 'desc']],
-      });
-    }
-
-    const currentSummary = await DashboardService.summary(scene);
-    const lastSummary = await DashboardService.summary(lastScene);
+    const { currentSummary, lastSummary } = await DashboardService.summary(scene);
 
     const metric = sceneConfig.metric;
 
@@ -517,18 +618,8 @@ class DashboardService {
   }
 
   private static async summary(scene: SceneDto): Promise<{
-    memory: number,
-    jsMemory: number,
-    metric: {
-      [key: string]: {
-        apiAvg: number,
-        apiMax: number,
-        apiMin: number,
-        apiTop90: number,
-        apiTop95: number,
-        handleCount: number
-      }
-    }
+    currentSummary: SceneSummary,
+    lastSummary: SceneSummary
   }> {
     let performanceItems: Array<PerformanceItemDto>;
     let loadingTimes: Array<LoadingTimeSummaryDto>;
@@ -559,8 +650,10 @@ class DashboardService {
       jsMemory = parseFloat('' + item.jsMemoryUsed);
     }
 
+    let metricKey = [];
     if (loadingTimes && loadingTimes.length > 0) {
       loadingTimes.forEach(time => {
+        metricKey.push(time.name);
         metric[time.name] = {
           apiAvg: parseFloat('' + time.apiAvgTime),
           apiMax: parseFloat('' + time.apiMaxTime),
@@ -571,25 +664,73 @@ class DashboardService {
         }
       });
     }
-    return { memory, jsMemory, metric }
+
+    let releaseMetric: {
+      [key: string]: {
+        apiAvg: number,
+        apiMax: number,
+        apiMin: number,
+        apiTop90: number,
+        apiTop95: number,
+        handleCount: number
+      }
+    } = {};
+
+    const result = {
+      currentSummary: { memory, jsMemory, metric },
+      lastSummary: { memory: undefined, jsMemory: undefined, metric: releaseMetric }
+    };
+
+    if (metricKey.length === 0) {
+      return result;
+    }
+
+    const now = await VersionDto.findOne({ where: { name: scene.appVersion } });
+    if (!now) {
+      return result;
+    }
+    const pre = await VersionDto.findOne({ where: { id: { [Op.lt]: now.id }, isRelease: true }, order: [['id', 'desc']] });
+    if (!pre) {
+      return result;
+    }
+
+    const arr = await LoadingTimeReleaseSummaryDto.findAll({ where: { platform: scene.platform, version: pre.name, name: { [Op.in]: metricKey } } });
+    if (arr && arr.length > 0) {
+      arr.forEach(time => {
+        releaseMetric[time.name] = {
+          apiAvg: parseFloat('' + time.apiAvgTime),
+          apiMax: parseFloat('' + time.apiMaxTime),
+          apiMin: parseFloat('' + time.apiMinTime),
+          apiTop90: parseFloat('' + time.apiTop90Time),
+          apiTop95: parseFloat('' + time.apiTop95Time),
+          handleCount: time.apiHandleCount
+        }
+      });
+    }
+
+    return result;
   }
 
-  static async getVersionInfo(): Promise<DashboardVersionInfo> {
-    if (_versionInfo) {
-      return _versionInfo;
+  static async getVersionInfo(host?: string): Promise<DashboardVersionInfo> {
+    if (!host) {
+      host = Config.jupiterHost;
+    }
+
+    if (_versionInfo[host]) {
+      return _versionInfo[host];
     }
 
     const info = new DashboardVersionInfo();
     const browser = await PptrUtils.launch();
     const page = await browser.newPage();
 
-    await page.goto(Config.jupiterHost);
+    await page.goto(host);
 
     let cnt = 2;
     let jupiterVersion;
     const jupiterVersionSelector = "#root > div:nth-child(2) > div > div:nth-child(1)";
     while (cnt-- > 0) {
-      if (!PptrUtils.waitForSelector(page, jupiterVersionSelector)) {
+      if (!(await PptrUtils.waitForSelector(page, jupiterVersionSelector))) {
         continue;
       }
       jupiterVersion = await PptrUtils.text(page, jupiterVersionSelector);
@@ -628,8 +769,25 @@ class DashboardService {
     info.appVersion = appVersion.replace('/', '-');
     await PptrUtils.close(browser);
 
-    _versionInfo = info;
+    _versionInfo[host] = info;
+
+    logger.info(`${host} => ${JSON.stringify(info)}`);
+
     return info;
+  }
+
+  static getIframeUrl(questionId: number, params: {}): string {
+    const METABASE_SITE_URL = "http://xmn145.rcoffice.ringcentral.com:9005";
+    // const METABASE_SECRET_KEY = "4d71fd0fa0a60ad776914b4fe39326cbbb96a4761e440364e8a95d90a9a40502";
+    // const payload = {
+    //   resource: { question: questionId },
+    //   params
+    // };
+
+    // const token = jwt.sign(payload, METABASE_SECRET_KEY);
+    // return [METABASE_SITE_URL, '/embed/question/', token, '#bordered=true&titled=true'].join('');
+    const search = new URLSearchParams(params);
+    return [METABASE_SITE_URL, '/question/', questionId, '?', search.toString()].join('');
   }
 
   static async buildReport() {
@@ -679,11 +837,14 @@ class DashboardService {
       Object.keys(metric).forEach(k => {
         const m = metric[k];
         const goal = _config.scenes[key].metric[k].apiGoal;
-        const url = _config.scenes[key].metric[k].url;
+        // const url = _config.scenes[key].metric[k].url;
+        const devIframe = DashboardService.getIframeUrl(157, { name: k });
+        const relIframe = DashboardService.getIframeUrl(156, { name: k });
         htmlArray.push(
           '<div class="dashboard-item-point">',
           '<div class="dashboard-item-point-title">', k,
-          '<a href="', url, '?sceneId=', item.sceneId.toString(), '" target="_blank">Trend</a>',
+          '<a href="', devIframe, '" target="_blank">Develop Trend</a>',
+          '<a href="', relIframe, '" target="_blank">Release Trend</a>',
           '<a href="', _config.lodingTimeUrl, '?sceneId=', item.sceneId.toString(), '" target="_blank">Detail</a></div>');
 
         if (m.handleCount >= 0) {
@@ -704,7 +865,7 @@ class DashboardService {
           '</div></div>'
         );
 
-        const avgMertic = m['apiAvg'].formatGlip(k, m.handleCount, goal);
+        const avgMertic = m['apiAvg'].formatGlip(k, m.handleCount, devIframe, goal);
         if (avgMertic.level === 'warn') {
           merticWarnArr.push(avgMertic.text);
         } else if (avgMertic.level === 'block') {

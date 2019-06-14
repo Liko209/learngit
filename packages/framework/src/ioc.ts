@@ -14,6 +14,7 @@ import {
   autoProvide,
 } from 'inversify-binding-decorators';
 import getDecorators from 'inversify-inject-decorators';
+import { IS_DECORATOR } from './constants';
 
 const container = new Container({
   defaultScope: 'Singleton',
@@ -33,6 +34,13 @@ const provideSingleton = (identifier: interfaces.ServiceIdentifier<any>) => {
     .done();
 };
 
+function createDecorator(serviceId: string): { (...args: any[]): void } {
+  const id: any = inject(serviceId);
+  id.toString = () => serviceId;
+  id[IS_DECORATOR] = true;
+  return id;
+}
+
 export {
   interfaces,
   Container,
@@ -50,4 +58,5 @@ export {
   lazyInjectNamed,
   lazyInjectTagged,
   lazyMultiInject,
+  createDecorator,
 };

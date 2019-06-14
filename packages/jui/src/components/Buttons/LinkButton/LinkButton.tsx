@@ -20,7 +20,10 @@ const StyledLinkButton = styled.button`
     palette(ColorMap[color][0], ColorMap[color][1])};
   min-width: ${width(16)};
   border: none;
-  background-color: ${palette('common', 'white')};
+  background-color: ${({ theme, color = 'primary' }) =>
+    theme.palette.getContrastText(
+      palette(ColorMap[color][0], ColorMap[color][1])({ theme }),
+    )};
   outline: none;
 
   &:hover {

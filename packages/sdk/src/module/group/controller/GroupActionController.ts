@@ -11,6 +11,7 @@ import GroupAPI from '../../../api/glip/group';
 import { daoManager, QUERY_DIRECTION } from '../../../dao';
 import { GroupConfigDao } from '../../groupConfig/dao';
 import { ErrorParserHolder } from '../../../error';
+import errorHelper from '../../../error/helper';
 import { buildRequestController } from '../../../framework/controller';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
@@ -415,6 +416,7 @@ export class GroupActionController {
   }
 
   async isGroupCanBeShown(groupId: number): Promise<GroupCanBeShownResponse> {
+    let isNotAuthorized = false;
     let isIncludeSelf = false;
     let isValid = false;
     let group;
@@ -422,12 +424,18 @@ export class GroupActionController {
       group = await this.entitySourceController.get(groupId);
     } catch (err) {
       group = null;
+      isNotAuthorized = errorHelper.isAuthenticationError(err);
       mainLogger
         .tags('GroupActionController')
         .info(`get group ${groupId} fail`, err);
     }
 
     const result: GroupCanBeShownResponse = { canBeShown: false };
+    if (!group && isNotAuthorized) {
+      result.reason = GROUP_CAN_NOT_SHOWN_REASON.NOT_AUTHORIZED;
+      return result;
+    }
+
     if (!group) {
       result.reason = GROUP_CAN_NOT_SHOWN_REASON.UNKNOWN;
       return result;

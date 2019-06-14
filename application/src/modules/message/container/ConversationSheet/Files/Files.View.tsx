@@ -10,26 +10,40 @@ import {
   JuiFileWithPreview,
   JuiPreviewImage,
   JuiDelayPlaceholder,
+  JuiFileSection,
 } from 'jui/pattern/ConversationCard/Files';
 import { getThumbnailSize } from 'jui/foundation/utils';
 import {
   AttachmentItem,
   ITEM_STATUS,
 } from 'jui/pattern/MessageInput/AttachmentItem';
-import { showImageViewer } from '@/containers/Viewer';
+import { showImageViewer } from '@/modules/viewer/container/Viewer';
 import { getFileSize } from './helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
+import {
+  isSupportFileViewer,
+  isFileReadyForViewer,
+} from '@/common/getFileType';
 import { withFuture, FutureCreator } from 'jui/hoc/withFuture';
 import { UploadFileTracker } from './UploadFileTracker';
 import { Download } from '@/containers/common/Download';
 import { accelerateURL } from '@/common/accelerateURL';
+import moize from 'moize';
+import { FileActionMenu } from '@/containers/common/fileAction';
+import {
+  postParser,
+  SearchHighlightContext,
+  HighlightContextInfo,
+} from '@/common/postParser';
 
 const SQUARE_SIZE = 180;
 const FutureAttachmentItem = withFuture(AttachmentItem);
 
 @observer
 class FilesView extends React.Component<FilesViewProps> {
+  static contextType = SearchHighlightContext;
+  context: HighlightContextInfo;
   componentWillUnmount() {
     this.props.dispose();
   }
@@ -57,7 +71,9 @@ class FilesView extends React.Component<FilesViewProps> {
         fileIcon={getFileIcon(name)}
         status={realStatus}
         key={id}
-        name={name}
+        name={postParser(name, {
+          fileName: true,
+        })}
         progress={progress}
         onClickDeleteButton={() => this.props.removeFile(id)}
         future={future}
@@ -96,119 +112,135 @@ class FilesView extends React.Component<FilesViewProps> {
     );
   }
 
-  // async componentDidMount() {
-  // await this.props.getCropImage();
-  // }
-
   private _handleImageDidLoad = (id: number, callback: Function) => {
     UploadFileTracker.tracker().clear(this.props.ids);
     callback();
   }
 
+  handleFileMoreIconClicked = () => {};
+
+  private _getActions = moize(
+    (downloadUrl: string, fileId: number, postId: number) => {
+      return [
+        <Download key="download-action" url={downloadUrl} />,
+        <FileActionMenu key="more-action" fileId={fileId} postId={postId} />,
+      ];
+    },
+  );
+
   render() {
-    const { files, progresses, urlMap } = this.props;
+    const { files, progresses, urlMap, postId } = this.props;
     const singleImage = files[FileType.image].length === 1;
     return (
       <>
-        {files[FileType.image].map((file: ExtendFileItem) => {
-          const { item } = file;
-          const { origHeight, id, origWidth, name, downloadUrl } = item;
-          let size = { width: SQUARE_SIZE, height: SQUARE_SIZE };
-          if (singleImage) {
-            size = getThumbnailSize(origWidth, origHeight);
-          }
-          const placeholder = (
-            <JuiDelayPlaceholder width={size.width} height={size.height} />
-          );
-          if (id < 0 || this.props.isRecentlyUploaded(id)) {
-            return this._renderItem(
-              id,
-              progresses,
-              name,
-              (callback: Function) => (
-                <JuiPreviewImage
-                  key={id}
-                  didLoad={() => this._handleImageDidLoad(id, callback)}
-                  handleImageClick={this._handleImageClick(
-                    id,
-                    urlMap.get(id) || '',
-                    origWidth,
-                    origHeight,
-                  )}
-                  placeholder={placeholder}
-                  width={size.width}
-                  height={size.height}
-                  forceSize={!singleImage}
-                  squareSize={SQUARE_SIZE}
-                  fileName={name}
-                  url={accelerateURL(urlMap.get(id)) || ''}
-                  Actions={<Download url={downloadUrl} />}
-                />
-              ),
+        <JuiFileSection>
+          {files[FileType.image].map((file: ExtendFileItem) => {
+            const { item } = file;
+            const { origHeight, id, origWidth, name, downloadUrl } = item;
+            let size = { width: SQUARE_SIZE, height: SQUARE_SIZE };
+            if (singleImage) {
+              size = getThumbnailSize(origWidth, origHeight);
+            }
+            const placeholder = (
+              <JuiDelayPlaceholder width={size.width} height={size.height} />
             );
-          }
-          return (
-            <JuiPreviewImage
-              key={id}
-              placeholder={React.cloneElement(placeholder, {
-                onClick: this._handleImageClick(
-                  id,
-                  urlMap.get(id) || '',
-                  size.width,
-                  size.height,
-                ),
-              })}
-              handleImageClick={this._handleImageClick(
+            const props = {
+              width: size.width,
+              height: size.height,
+              forceSize: !singleImage,
+              squareSize: SQUARE_SIZE,
+              handleImageClick: this._handleImageClick(
                 id,
                 urlMap.get(id) || '',
                 size.width,
                 size.height,
-              )}
-              width={size.width}
-              height={size.height}
-              forceSize={!singleImage}
-              squareSize={SQUARE_SIZE}
-              fileName={name}
-              url={accelerateURL(urlMap.get(id)) || ''}
-              Actions={<Download url={downloadUrl} />}
-            />
-          );
-        })}
-        {files[FileType.document].map((file: ExtendFileItem) => {
-          const { item, previewUrl } = file;
-          const { size, type, id, name, downloadUrl } = item;
-          const iconType = getFileIcon(type);
-          if (id < 0) {
-            return this._renderItem(id, progresses, name);
-          }
-          return (
-            <JuiFileWithPreview
-              key={id}
-              fileName={name}
-              size={`${getFileSize(size)}`}
-              url={accelerateURL(previewUrl)!}
-              iconType={iconType}
-              Actions={<Download url={downloadUrl} />}
-            />
-          );
-        })}
-        {files[FileType.others].map((file: ExtendFileItem) => {
-          const { item } = file;
-          const { size, type, name, downloadUrl, id } = item;
-          const iconType = getFileIcon(type);
-          if (id < 0) {
-            return this._renderItem(id, progresses, name);
-          }
-          return (
-            <JuiFileWithoutPreview
-              key={id}
-              fileName={name}
-              size={`${getFileSize(size)}`}
-              iconType={iconType}
-              Actions={<Download url={downloadUrl} />}
-            />
-          );
-        })}
+              ),
+              fileName: postParser(name, {
+                fileName: true,
+                keyword: this.context.keyword,
+              }),
+              url: accelerateURL(urlMap.get(id)) || '',
+              Actions: this._getActions(downloadUrl, id, postId),
+            };
+            const future = (
+              <JuiPreviewImage
+                key={id}
+                didLoad={(callback: Function) =>
+                  this._handleImageDidLoad(id, callback)
+                }
+                placeholder={placeholder}
+                {...props}
+              />
+            );
+            const flag = id < 0 || this.props.isRecentlyUploaded(id);
+            if (flag) {
+              return this._renderItem(id, progresses, name, future);
+            }
+            return (
+              <JuiPreviewImage
+                key={id}
+                placeholder={React.cloneElement(placeholder, {
+                  onClick: this._handleImageClick(
+                    id,
+                    urlMap.get(id) || '',
+                    size.width,
+                    size.height,
+                  ),
+                })}
+                {...props}
+              />
+            );
+          })}
+        </JuiFileSection>
+        <JuiFileSection>
+          {files[FileType.document].map((file: ExtendFileItem) => {
+            const { item, previewUrl } = file;
+            const { size, type, id, name, downloadUrl } = item;
+            const { status } = item.latestVersion;
+            const iconType = getFileIcon(type);
+            const supportFileViewer = isSupportFileViewer(type);
+            const fileReadyForViewer = isFileReadyForViewer(status);
+            if (id < 0) {
+              return this._renderItem(id, progresses, name);
+            }
+            return (
+              <JuiFileWithPreview
+                key={id}
+                fileName={postParser(name, {
+                  fileName: true,
+                  keyword: this.context.keyword,
+                })}
+                size={`${getFileSize(size)}`}
+                url={accelerateURL(previewUrl)!}
+                iconType={iconType}
+                disabled={supportFileViewer && !fileReadyForViewer}
+                Actions={this._getActions(downloadUrl, id, postId)}
+              />
+            );
+          })}
+        </JuiFileSection>
+        <JuiFileSection>
+          {files[FileType.others].map((file: ExtendFileItem) => {
+            const { item } = file;
+            const { size, type, name, downloadUrl, id } = item;
+            const iconType = getFileIcon(type);
+            if (id < 0) {
+              return this._renderItem(id, progresses, name);
+            }
+            return (
+              <JuiFileWithoutPreview
+                key={id}
+                fileName={postParser(name, {
+                  fileName: true,
+                  keyword: this.context.keyword,
+                })}
+                size={`${getFileSize(size)}`}
+                iconType={iconType}
+                Actions={this._getActions(downloadUrl, id, postId)}
+              />
+            );
+          })}
+        </JuiFileSection>
       </>
     );
   }

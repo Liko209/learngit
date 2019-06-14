@@ -4,7 +4,7 @@ import { ThemeProvider as StyledThemeProvider } from '../styled-components';
 import createTheme from './createTheme';
 import themeHandler from './ThemeHandler';
 import options from './options.json';
-import { Theme } from './theme.d';
+import { Theme } from './theme';
 
 type ThemeProviderProps = {
   themeName?: string;
@@ -18,7 +18,7 @@ type ThemeProviderPropsState = {
 class ThemeProvider extends Component<
   ThemeProviderProps,
   ThemeProviderPropsState
-> {
+  > {
   private _mounted: boolean;
   constructor(props: ThemeProviderProps) {
     super(props);

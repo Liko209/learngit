@@ -3,9 +3,9 @@
  * @Date: 2019-03-03 11:30:06
  * Copyright © RingCentral. All rights reserved.
  */
-import { DBConfig } from '../../config';
+import { DBConfig } from 'sdk/module/config';
+import { daoManager } from 'sdk/dao';
 import { MODULE_NAME, RC_INFO_KEYS } from './constants';
-import { daoManager } from '../../../dao';
 
 class RCInfoUserConfig extends DBConfig {
   constructor() {
@@ -89,6 +89,14 @@ class RCInfoUserConfig extends DBConfig {
 
   async setAccountServiceInfo(value: any) {
     return await this.put(RC_INFO_KEYS.ACCOUNT_SERVICE_INFO, value);
+  }
+
+  async setForwardingNumbers(value: any) {
+    return await this.put(RC_INFO_KEYS.FORWARDING_NUMBERS, value);
+  }
+
+  async getForwardingNumbers() {
+    return await this.get(RC_INFO_KEYS.FORWARDING_NUMBERS);
   }
 }
 

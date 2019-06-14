@@ -7,12 +7,14 @@
 import { container, Jupiter } from 'framework';
 import { RecordViewModel } from '../Record.ViewModel';
 import * as telephony from '@/modules/telephony/module.config';
+import * as common from '@/modules/common/module.config';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/telephony');
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
+jupiter.registerModule(common.config);
 
 let recordViewModel: RecordViewModel;
 

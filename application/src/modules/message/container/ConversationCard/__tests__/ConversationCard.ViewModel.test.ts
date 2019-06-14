@@ -3,13 +3,9 @@
  * @Date: 2018-10-30 18:39:43
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  test,
-  mockEntity,
-  testable,
-  mockGlobalValue,
-} from 'tests/integration-test';
-import { registerModule } from 'test-util';
+import { test, testable } from 'shield';
+import { mockEntity, mockGlobalValue } from 'shield/application';
+import { registerModule } from 'shield/utils';
 import { config } from '@/modules/GlobalSearch/module.config';
 import { ConversationCardViewModel } from '../ConversationCard.ViewModel';
 
@@ -46,7 +42,7 @@ describe('TestConversationCardViewModel', () => {
 
   @testable
   class post {
-    @test('get post')
+    @test('should return post if entity has value')
     @mockEntity(mockPostValue)
     t1() {
       const conversationCardVM = new ConversationCardViewModel();
@@ -58,7 +54,7 @@ describe('TestConversationCardViewModel', () => {
 
   @testable
   class creator {
-    @test('get creator')
+    @test('should return creator if has creatorId')
     @mockEntity({
       createdAt: 1540279718268,
       creatorId: 107913219,
@@ -161,7 +157,7 @@ describe('TestConversationCardViewModel', () => {
 
   @testable
   class isArchivedGroup {
-    @test('isArchived()')
+    @test('should be true if isArchived is true')
     @mockEntity({
       isArchived: true,
     })
@@ -194,7 +190,7 @@ describe('TestConversationCardViewModel', () => {
 
   @testable
   class hideText {
-    @test('should hideText be false when no activity')
+    @test('should be false when no activity')
     @mockEntity({
       activityData: null,
     })
@@ -203,7 +199,7 @@ describe('TestConversationCardViewModel', () => {
       expect(conversationCardVM.hideText).toBeFalsy();
     }
 
-    @test('should hideText be true when activity have object_id or key')
+    @test('should be true when activity have object_id or key')
     @mockEntity.multi([
       {
         activityData: { object_id: 1 },
@@ -220,7 +216,7 @@ describe('TestConversationCardViewModel', () => {
 
   @testable
   class itemTypeIds {
-    @test('should return itemTypeIds')
+    @test('should return itemTypeIds if entity has value')
     @mockEntity({
       itemTypeIds: [1],
     })
@@ -232,7 +228,7 @@ describe('TestConversationCardViewModel', () => {
 
   @testable
   class isEditMode {
-    @test('if value [1] should be true or [2] should be false')
+    @test('should be true or false if value [1] or [2]')
     @mockGlobalValue.multi([[1], [2]])
     t1() {
       const conversationCardVM = new ConversationCardViewModel({ id: 1 });

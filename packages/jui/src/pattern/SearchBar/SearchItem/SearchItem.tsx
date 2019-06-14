@@ -11,7 +11,6 @@ import styled from '../../../foundation/styled-components';
 import {
   height,
   spacing,
-  palette,
   grey,
   shape,
   typography,
@@ -69,7 +68,8 @@ const SearchItemValueWrapper = styled.div`
 
 const Joined = styled.span`
   padding: ${spacing(0, 1)};
-  color: ${palette('common', 'white')};
+  color: ${({ theme }) =>
+    theme.palette.getContrastText(primary('700', 2)({ theme }))};
   border-radius: ${shape('borderRadius', 4)};
   background: ${primary('700', 2)};
   ${typography('caption1')}

@@ -6,9 +6,11 @@
 
 import { RTCMediaElement } from './types';
 import { rtcLogger } from './RTCLoggerProxy';
+import { EventEmitter2 } from 'eventemitter2';
+import { RTC_MEDIA_ACTION } from '../api/types';
 
 const LOG_TAG = 'RTCMediaElementManager';
-class RTCMediaElementManager {
+class RTCMediaElementManager extends EventEmitter2 {
   private static _singleton: RTCMediaElementManager | null = null;
   private _mediaRootElement: any = null;
   private _volume: number = 1;
@@ -40,6 +42,7 @@ class RTCMediaElementManager {
     audioList.forEach((element: HTMLVideoElement) => {
       this._setVolumeInVideoElement(element, volume);
     });
+    this.emit(RTC_MEDIA_ACTION.VOLUME_CHANGED, volume);
   }
 
   public getVolume(): number {

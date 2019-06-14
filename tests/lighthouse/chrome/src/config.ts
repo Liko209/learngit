@@ -31,6 +31,9 @@ class ConfigWrapper {
   public jupiterPin: string;
   public jupiterLoginUrl: string;
   public jupiterHost: string;
+  public jupiterReleaseHost: string;
+  public jupiterStageHost: string;
+  public jupiterDevelopHost: string;
   public jupiterAppKey: string;
   public jupiterAppSecret: string;
   /* jupiter config */
@@ -52,6 +55,7 @@ class ConfigWrapper {
   public includeScene: Array<string>;
   public switchConversationIds: Array<string>;
   public searchKeywords: Array<string>;
+  public searchPhones: Array<string>;
   /* scene config */
 
   constructor() {
@@ -81,12 +85,15 @@ class ConfigWrapper {
     this.jupiterPin = this.getValue("JUPITER_USER_PIN", "1001");
     this.jupiterLoginUrl = this.getValue("JUPITER_LOGIN_URL", "https://xmn02-i01-mck02.lab.nordigy.ru/jupiter/login");
     this.jupiterHost = this.getValue("JUPITER_HOST", "https://develop.fiji.gliprc.com");
+    this.jupiterReleaseHost = this.getValue("JUPITER_RELEASE_HOST", "https://release.fiji.gliprc.com");
+    this.jupiterStageHost = this.getValue("JUPITER_STAGE_HOST", "https://stage.fiji.gliprc.com");
+    this.jupiterDevelopHost = this.getValue("JUPITER_DEVELOP_HOST", "https://develop.fiji.gliprc.com");
     this.jupiterAppKey = this.getValue("JUPITER_APP_KEY", "YCWFuqW8T7-GtSTb6KBS6g");
     this.jupiterAppSecret = this.getValue("JUPITER_APP_SECRET", "vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA");
     /* jupiter config */
 
     /* db connecttion config */
-    this.dbName = this.getValue("DB_NAME", "performance_tesing");
+    this.dbName = this.getValue("DB_NAME", "performance_testing");
     this.dbUser = this.getValue("DB_USER", "root");
     this.dbPassword = this.getValue("DB_PASSWORD", "123456");
     this.dbHost = this.getValue("DB_HOST", "127.0.0.1");
@@ -102,6 +109,7 @@ class ConfigWrapper {
     this.includeScene = this.getArray("INCLUDE_SCENE", "");
     this.switchConversationIds = this.getArray("SWITCH_CONVERSATION_ID", "2288713734,2288697350");
     this.searchKeywords = this.getArray("SEARCH_KEYWORD", "John,Team,Dock,Kacey");
+    this.searchPhones = this.getArray("SEARCH_PHONE", "1,2,3,4,5,6,7,8,9,0");
     /* scene config */
   }
 

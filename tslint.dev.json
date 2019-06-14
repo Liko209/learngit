@@ -2,7 +2,8 @@
   "extends": "./tslint.json",
   "rules": {
     "no-console": [true, "warning"],
-    "no-eval": true
+    "no-eval": true,
+    "jsx-wrap-multiline": false
   },
   "jsRules": {
     "no-eval": true,

@@ -20,6 +20,7 @@ const RC_INFO_KEYS = {
   EXTENSION_PHONE_NUMBER_LIST: 'extension_phone_number_list',
   DIALING_PLAN: 'dialing_plan',
   ACCOUNT_SERVICE_INFO: 'account_service_info',
+  FORWARDING_NUMBERS: 'forwarding_numbers',
 };
 
 const RC_INFO_GLOBAL_KEYS = {

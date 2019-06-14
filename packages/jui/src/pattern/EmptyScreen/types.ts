@@ -7,8 +7,8 @@
 type JuiEmptyScreenProps = {
   image: string;
   text: string;
-  content: string;
   actions: JSX.Element[];
+  content?: string;
 };
 
 type JuiMemberListEmptyViewProps = {

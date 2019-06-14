@@ -56,7 +56,7 @@ describe('SegAnalysisController', () => {
         .mockReturnValueOnce('mac');
 
       segAnalysisController.identify(1);
-      expect(segment.identify).toHaveBeenCalledWith(1, undefined);
+      expect(segment.identify).toHaveBeenCalledWith(1, { endPoint: 'mac' });
     });
   });
 
@@ -83,7 +83,9 @@ describe('SegAnalysisController', () => {
         .mockReturnValueOnce('mac');
 
       segAnalysisController.track('sendPost');
-      expect(segment.track).toHaveBeenCalledWith('sendPost', undefined);
+      expect(segment.track).toHaveBeenCalledWith('sendPost', {
+        endPoint: 'mac',
+      });
     });
   });
   describe('page', () => {
@@ -94,8 +96,11 @@ describe('SegAnalysisController', () => {
     });
 
     it('should call page', () => {
+      jest
+        .spyOn(segAnalysisController, 'getEndPoint')
+        .mockReturnValueOnce('mac');
       segAnalysisController.page('good');
-      expect(segment.page).toHaveBeenCalledWith('good', undefined);
+      expect(segment.page).toHaveBeenCalledWith('good', { endPoint: 'mac' });
     });
   });
   describe('reset', () => {
@@ -111,16 +116,11 @@ describe('SegAnalysisController', () => {
   });
   describe('isProduction', () => {
     it('should be true when is public', () => {
-      process.env = { JUPITER_ENV: 'public' };
-      expect(segAnalysisController.isProductionBuild()).toBeTruthy();
-    });
-    it('should be true when is production', () => {
-      process.env = { JUPITER_ENV: 'production' };
-      expect(segAnalysisController.isProductionBuild()).toBeTruthy();
+      segAnalysisController.setProduction(true);
+      expect(segAnalysisController.isProduction()).toBeTruthy();
     });
     it('should be false when is not production or public', () => {
-      process.env = { JUPITER_ENV: 'XMN-UP' };
-      expect(segAnalysisController.isProductionBuild()).toBeFalsy();
+      expect(segAnalysisController.isProduction()).toBeFalsy();
     });
   });
 });

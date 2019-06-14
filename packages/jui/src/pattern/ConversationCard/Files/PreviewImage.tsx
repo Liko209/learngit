@@ -15,6 +15,7 @@ import { JuiIconography } from '../../../foundation/Iconography';
 import styled from '../../../foundation/styled-components';
 import { grey } from '../../../foundation/utils';
 import { withDelay } from '../../../hoc/withDelay';
+import { JuiButtonBar } from '../../../components/Buttons';
 
 type SizeType = {
   width: number;
@@ -22,14 +23,15 @@ type SizeType = {
 };
 
 type JuiPreviewImageProps = {
-  Actions?: JSX.Element;
-  fileName: string;
+  Actions?: JSX.Element[];
+  fileName: React.ReactChild | (React.ReactChild | null)[] | null;
   forceSize?: boolean;
   squareSize?: number;
   url: string;
   placeholder?: JSX.Element;
   handleImageClick?: (ev: React.MouseEvent, loaded: boolean) => void;
   didLoad?: Function;
+  futureCallback?: Function;
 } & SizeType;
 
 const Wrapper = styled.div`
@@ -99,7 +101,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
     }
     this._loaded = true;
     this._updating = false;
-    didLoad && didLoad();
+    didLoad && didLoad(this.props.futureCallback);
     if (this._mounted) {
       this.forceUpdate();
     }
@@ -136,7 +138,6 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
     const { width, height } =
       this._loaded && !forceSize ? this._imageInfo : this.props;
     const imageStyle = this._getImageStyle(width, height);
-
     return (
       <>
         {!this._loaded && placeholder}
@@ -150,14 +151,24 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
           />
         )}
         {this._loaded && (
-          <Jui.ImageCard width={width} height={height} onClick={this._handleImageClick}>
-            <StyledImg
-              style={imageStyle}
-              src={url}
-            />
-            <Jui.ImageFileInfo width={width} height={height} component="div" onClick={this._handleInfoClick}>
-              <FileName filename={fileName} />
-              <Jui.FileActionsWrapper>{Actions}</Jui.FileActionsWrapper>
+          <Jui.ImageCard
+            width={width}
+            height={height}
+            onClick={this._handleImageClick}
+          >
+            <StyledImg style={imageStyle} src={url} />
+            <Jui.ImageFileInfo
+              width={width}
+              height={height}
+              component="div"
+              onClick={this._handleInfoClick}
+            >
+              <FileName>{fileName}</FileName>
+              {Actions && (
+                <Jui.FileActionsWrapper>
+                  <JuiButtonBar overlapSize={-2}>{Actions}</JuiButtonBar>
+                </Jui.FileActionsWrapper>
+              )}
             </Jui.ImageFileInfo>
           </Jui.ImageCard>
         )}

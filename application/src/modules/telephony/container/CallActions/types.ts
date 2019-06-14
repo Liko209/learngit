@@ -8,17 +8,16 @@ type CallActionsProps = {
   shouldPersistBg?: boolean;
 };
 
-type CallAction = {
-  label: string;
-  handleClick: () => void;
-  disabled: boolean;
-};
-
 type CallActionsViewProps = {
   showLabel?: boolean;
   shouldPersistBg?: boolean;
-  callActions: CallAction[];
-  shouldDisableCallActions: boolean;
+  callActionsMap: {
+    [key: string]: {
+      shouldShowAction?: boolean;
+      shouldDisableAction?: boolean;
+    };
+  };
+  isIncomingPage: boolean;
 };
 
 export { CallActionsProps, CallActionsViewProps };

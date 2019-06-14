@@ -212,7 +212,6 @@ storiesOf('Pattern/ConversationItemCard', module)
       <JuiConversationItemCard
         title="event"
         iconColor={['primary', '500']}
-        titleColor={['primary', '500']}
         Icon="event"
       >
         <JuiSectionDivider gap={2}>
@@ -220,7 +219,7 @@ storiesOf('Pattern/ConversationItemCard', module)
             <JuiTimeMessage time={`${new Date().toLocaleDateString()}`} />
           </JuiLabelWithContent>
           <JuiLabelWithContent label={'hahaha'}>
-            <JuiEventLocation location={'no local'} />
+            <JuiEventLocation>no local</JuiEventLocation>
           </JuiLabelWithContent>
           <JuiEventDescription> this is a test event</JuiEventDescription>
         </JuiSectionDivider>
@@ -240,7 +239,6 @@ storiesOf('Pattern/ConversationItemCard', module)
         contentHasPadding={!!hasContent}
         complete={false}
         title={'a task'}
-        titleColor={['primary', '400']}
         Icon={<JuiTaskCheckbox checked={false} />}
       >
         <JuiSectionDivider gap={2}>

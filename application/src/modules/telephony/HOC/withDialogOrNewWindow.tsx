@@ -12,8 +12,17 @@ import { container } from 'framework';
 import { TelephonyStore } from '../store';
 import { TelephonyService } from '../service';
 import { CALL_WINDOW_STATUS } from '../FSM';
-import { JuiZoomInFadeOut } from 'jui/components/Animation';
+import {
+  JuiZoomInFadeOut,
+  JuiZoomProps,
+  ShrinkToFadeAnimation,
+  ShrinkToFadeAnimationProps,
+} from 'jui/components/Animation';
 import { TELEPHONY_SERVICE } from '../interface/constant';
+
+const FOCUS_IN_EVT = 'focusin';
+const BLUR = 'blur';
+const SYNC_DIALER_ENTERED = 300;
 
 function copyStyles(sourceDoc: Document, targetDoc: Document) {
   Array.from(sourceDoc.styleSheets).forEach((styleSheet: CSSStyleSheet) => {
@@ -54,14 +63,55 @@ const MOUSE_EVENT = {
 function withDialogOrNewWindow<T>(
   Component: ComponentType<T>,
 ): ComponentClass<T> {
+  type AnimationProps = ShrinkToFadeAnimationProps & JuiZoomProps;
+  const RADIUS = 32;
+
+  @observer
+  class DialerTransitionComponent extends React.Component<AnimationProps> {
+    private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
+    private _telephonyService: TelephonyService = container.get(
+      TELEPHONY_SERVICE,
+    );
+
+    render() {
+      const {
+        dialerMinimizeTranslateX,
+        dialerMinimizeTranslateY,
+        startMinimizeAnimation,
+        callWindowState,
+        dialerHeight,
+        dialerWidth,
+      } = this._telephonyStore;
+      const { onAnimationEnd } = this._telephonyService;
+
+      if (
+        startMinimizeAnimation &&
+        callWindowState === CALL_WINDOW_STATUS.FLOATING
+      ) {
+        return (
+          <ShrinkToFadeAnimation
+            xScale={`${RADIUS / dialerWidth}`}
+            yScale={`${RADIUS / dialerHeight}`}
+            translateX={dialerMinimizeTranslateX}
+            translateY={dialerMinimizeTranslateY}
+            onAnimationEnd={onAnimationEnd}
+            startMinimizeAnimation={startMinimizeAnimation}
+            {...this.props}
+          />
+        );
+      }
+      return <JuiZoomInFadeOut {...this.props} />;
+    }
+  }
+
   @observer
   class ComponentWithDialogOrNewWindow extends React.Component<T> {
     private _window: Window | null = null;
     private _div = document.createElement('div');
     private _root = document.body;
     private _dragRef = React.createRef<any>();
+    private _containerRef = React.createRef<any>();
     private _handleResize = () => {};
-
     private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
     private _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,
@@ -106,6 +156,17 @@ function withDialogOrNewWindow<T>(
       }
     }
 
+    private _handleEntered = () => {
+      setTimeout(
+        () => this._telephonyStore.syncDialerEntered(true),
+        SYNC_DIALER_ENTERED,
+      );
+    }
+
+    private _handleExited = () => {
+      this._telephonyStore.syncDialerEntered(false);
+    }
+
     private _handleStart = () => {
       document.body.appendChild(this._backdrop);
     }
@@ -114,7 +175,53 @@ function withDialogOrNewWindow<T>(
       document.body.removeChild(this._backdrop);
     }
 
+    private _onFocus = (e: FocusEvent) => {
+      const el = ReactDOM.findDOMNode(this._containerRef.current);
+
+      if (!el) {
+        return;
+      }
+      if (e.target && (el as HTMLDivElement).contains(e.target as Element)) {
+        this._telephonyStore.onDialerFocus();
+        return;
+      }
+      this._telephonyStore.onDialerBlur();
+    }
+
+    private _onBlur = (e: FocusEvent) => {
+      const el = ReactDOM.findDOMNode(this._containerRef.current);
+
+      if (!el) {
+        return;
+      }
+      if (
+        e.target &&
+        (e.target === window ||
+          (el as HTMLDivElement).contains(e.target as Element))
+      ) {
+        this._telephonyStore.onDialerBlur();
+        return;
+      }
+    }
+
     componentDidUpdate() {
+      const { startMinimizeAnimation } = this._telephonyStore;
+      const dragEl = ReactDOM.findDOMNode(
+        this._dragRef.current,
+      ) as HTMLDivElement;
+
+      // since it involves high order component <FadeInOut/>, the dragEl will be null in the first run.
+      if (dragEl) {
+        if (startMinimizeAnimation) {
+          dragEl.style.overflow = 'visible';
+          (dragEl.children[0] as HTMLDivElement).style.overflow = 'visible';
+          return;
+        }
+
+        dragEl.style.overflow = '';
+        (dragEl.children[0] as HTMLDivElement).style.overflow = '';
+      }
+
       setTimeout(() => {
         if (this._dragRef.current) {
           const dragEl = ReactDOM.findDOMNode(this._dragRef.current) as Element;
@@ -130,6 +237,17 @@ function withDialogOrNewWindow<T>(
           window.removeEventListener('resize', this._handleResize);
         }
       },         300);
+    }
+
+    componentWillUnMount() {
+      this._telephonyStore.onDialerBlur();
+      window.removeEventListener(FOCUS_IN_EVT, this._onFocus);
+      window.removeEventListener(BLUR, this._onBlur);
+    }
+
+    componentDidMount() {
+      window.addEventListener(FOCUS_IN_EVT, this._onFocus);
+      window.addEventListener(BLUR, this._onBlur);
     }
 
     render() {
@@ -151,9 +269,12 @@ function withDialogOrNewWindow<T>(
           x={(document.body.clientWidth - 344) / 2}
           y={(document.body.clientHeight - 504) / 2}
           dragRef={this._dragRef}
-          TransitionComponent={JuiZoomInFadeOut}
+          TransitionComponent={DialerTransitionComponent}
           onStart={this._handleStart}
           onStop={this._handleStop}
+          ref={this._containerRef}
+          onEntered={this._handleEntered}
+          onExited={this._handleExited}
         >
           <Component {...this.props} />
         </JuiDraggableDialog>

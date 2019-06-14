@@ -116,8 +116,8 @@ class DialpadViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   @computed
-  get shouldAnimationStart() {
-    return this._telephonyStore.shouldAnimationStart;
+  get startMinimizeAnimation() {
+    return this._telephonyStore.startMinimizeAnimation;
   }
 
   dispose = () => {

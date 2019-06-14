@@ -3,7 +3,7 @@
  * @Date: 2019-02-25 17:22:48
  * Copyright © RingCentral. All rights reserved.
  */
-
+import _ from 'lodash';
 import { GroupConfig } from '../entity';
 import { ErrorParserHolder } from '../../../error';
 import notificationCenter from '../../../service/notificationCenter';
@@ -12,11 +12,12 @@ import { IEntitySourceController } from '../../../framework/controller/interface
 import { buildPartialModifyController } from '../../../framework/controller';
 import { Raw } from '../../../framework/model';
 import { mainLogger } from 'foundation';
-import _ from 'lodash';
+import { Post } from 'sdk/module/post/entity';
 
 const LOG_TAG = 'GroupConfigController';
 class GroupConfigController {
   static serviceName = 'GroupConfigService';
+  private queue = Promise.resolve();
 
   constructor(
     public entitySourceController: IEntitySourceController<GroupConfig>,
@@ -93,7 +94,7 @@ class GroupConfigController {
     id: number;
     send_failure_post_ids: number[];
   }): Promise<boolean> {
-    return this.saveAndDoNotify(params);
+    return await this.saveAndDoNotify(params);
   }
 
   // get group data, for send failure post ids
@@ -110,15 +111,17 @@ class GroupConfigController {
   }
 
   async deletePostId(groupId: number, postId: number) {
-    const failIds = await this.getGroupSendFailurePostIds(groupId);
-    const index = failIds.indexOf(postId);
-    if (index > -1) {
-      failIds.splice(index, 1);
-      await this.updateGroupSendFailurePostIds({
-        id: groupId,
-        send_failure_post_ids: failIds,
-      });
-    }
+    this.queue = this.queue.then(async () => {
+      let failIds = await this.getGroupSendFailurePostIds(groupId);
+      if (failIds.includes(postId)) {
+        failIds = failIds.filter(id => id !== postId);
+        await this.updateGroupSendFailurePostIds({
+          id: groupId,
+          send_failure_post_ids: failIds,
+        });
+      }
+    });
+    return this.queue;
   }
 
   async addPostId(groupId: number, postId: number) {
@@ -130,15 +133,26 @@ class GroupConfigController {
     });
   }
 
-  async recordMyLastPostTime(groupId: number, timeStamp: number) {
-    const updateData = {
-      id: groupId,
-      my_last_post_time: timeStamp,
-    };
+  async updateMyLastPostTime(posts: Post[]) {
     try {
-      await this.entitySourceController.update(updateData);
+      const partialDatas = [];
+      for (const post of posts) {
+        const groupConfig = await this.entitySourceController.get(
+          post.group_id,
+        );
+        const lastPostTime =
+          (groupConfig && groupConfig.my_last_post_time) || 0;
+        if (post.created_at > lastPostTime) {
+          partialDatas.push({
+            id: post.group_id,
+            my_last_post_time: post.created_at,
+          });
+        }
+      }
+
+      await this.entitySourceController.bulkUpdate(partialDatas);
     } catch (error) {
-      mainLogger.tags(LOG_TAG).log('recordMyLastPostTime failed', updateData);
+      mainLogger.tags(LOG_TAG).log('recordMyLastPostTime failed', error);
     }
   }
 }

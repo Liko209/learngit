@@ -45,13 +45,14 @@ class MuteViewComponent extends Component<Props> {
     return (
       <JuiKeypadAction>
         <JuiIconButton
-          color="grey.900"
+          color={isMute ? 'primary.600' : 'grey.900'}
           disableToolTip={true}
           onClick={this._handleMute}
           size="xxlarge"
           aria-label={
             isMute ? t('telephony.action.unmute') : t('telephony.action.mute')
           }
+          shouldPersistBg={isMute}
           data-test-automation-id="telephony-mute-btn"
         >
           {isMute ? 'mic_off' : 'mic'}

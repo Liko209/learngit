@@ -1,4 +1,4 @@
-// This script will create a file name runId and reportUrl
+// This jenkins will create a file name runId and reportUrl
 
 import * as assert from 'assert'
 import * as fs from 'fs';

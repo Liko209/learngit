@@ -8,13 +8,15 @@ import React from 'react';
 import styled from 'styled-components';
 import { JuiBoxSelect } from '../../components/Selects/BoxSelect';
 import { JuiMenuItem } from '../../components/Menus';
-// TODO: import { JuiListItemText } from '../../components/Lists'
+import { JuiListItemText } from '../../components/Lists';
 import { spacing } from '../../foundation/utils';
+import './styles.css';
 
 type CallIdListElm = {
   phoneNumber: string;
   value: string;
   usageType: string;
+  isTwoLine: boolean;
 };
 
 type CallerIdSelectorProps = {
@@ -38,6 +40,8 @@ const StyledJuiBoxSelect = styled(JuiBoxSelect)`
     align-items: center;
     justify-content: center;
     font-size: ${({ theme }) => theme.typography.body1.fontSize};
+    padding-bottom: 0;
+
     div:nth-of-type(1) {
       padding-bottom: 0;
     }
@@ -62,16 +66,27 @@ const StyledJuiBoxSelect = styled(JuiBoxSelect)`
 `;
 
 const CallerIdSelector = (props: CallerIdSelectorProps) => {
-  const { menu } = props;
+  const { menu, ...rest } = props;
   return (
-    <StyledJuiBoxSelect {...props} automationId="callerIdSelector">
+    <StyledJuiBoxSelect
+      {...rest}
+      automationId="caller-id-selector"
+      renderValue={(val) => val}
+      MenuProps={{
+        classes: { paper: 'caller_id-list-container' },
+      }}
+    >
       {menu.map((item: CallIdListElm) => (
         <JuiMenuItem value={item.phoneNumber} key={item.phoneNumber}>
-          {item.phoneNumber}
+          <JuiListItemText
+            primary={item.usageType}
+            key={item.phoneNumber}
+            secondary={item.isTwoLine && item.value}
+          />
         </JuiMenuItem>
       ))}
     </StyledJuiBoxSelect>
   );
 };
 
-export { CallerIdSelector };
+export { CallerIdSelector, CallerIdSelectorProps };

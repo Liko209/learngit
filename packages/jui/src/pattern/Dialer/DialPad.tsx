@@ -27,7 +27,7 @@ const THROTTLE_TIME = 30;
 const throttledHandler = (f: any) =>
   _.debounce(f, THROTTLE_TIME, {
     trailing: true,
-    leading: false,
+    leading: true,
   });
 
 export class DialPad extends React.Component<
@@ -52,8 +52,8 @@ export class DialPad extends React.Component<
     };
 
     this._onClicks = Object.keys(KEY_2_ICON_MAP)
-      .filter((key) => key !== 'plus')
-      .map((str) => (e) => {
+      .filter(key => key !== 'plus')
+      .map(str => e => {
         this.props.makeMouseEffect(KEY_2_ICON_MAP[str]);
         if (e) {
           e.preventDefault();
@@ -104,7 +104,7 @@ export class DialPad extends React.Component<
     if (!this.props.shouldHandleKeyboardEvts) {
       return;
     }
-    this._buffer = this._buffer.filter((bufferedKey) => bufferedKey !== key);
+    this._buffer = this._buffer.filter(bufferedKey => bufferedKey !== key);
     this.makeKeyboardEffect(key, true);
   }
 
@@ -116,6 +116,7 @@ export class DialPad extends React.Component<
   }
 
   _onMouseDownForZero = (e: MouseEvent<HTMLButtonElement>) => {
+    e.persist();
     e.preventDefault();
     e.stopPropagation();
     this._mouseDownTime = +new Date();
@@ -126,6 +127,7 @@ export class DialPad extends React.Component<
   }
 
   _onMouseupForZero = throttledHandler((e: MouseEvent<HTMLButtonElement>) => {
+    e.persist();
     e.preventDefault();
     e.stopPropagation();
     const curTime = +new Date();
@@ -146,7 +148,7 @@ export class DialPad extends React.Component<
     return (
       <>
         {Object.keys(KEY_2_ICON_MAP)
-          .filter((key) => key !== 'plus')
+          .filter(key => key !== 'plus')
           .map((str, idx) => {
             const _onclick = this._onClicks[idx];
 

@@ -1,5 +1,6 @@
 const name2icon = {
   voicemail: 'voicemail',
+  transcription: 'transcription',
   answer: 'answer',
   member_count: 'people',
   phone: 'phone',
@@ -134,6 +135,16 @@ const name2icon = {
   emoji: 'emoji',
   dialer: 'dialer',
   deletenumber: 'deletenumber',
+  arrow_right: 'arrow_right',
+  pause: 'pause',
+  play: 'play',
+  incall: 'incall',
+  outcall: 'outcall',
+  missedcall: 'missedcall',
+  read: 'read',
+  unread: 'unread',
+  dial: 'dial',
+  forwardcall: 'forwardcall',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

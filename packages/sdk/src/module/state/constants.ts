@@ -12,12 +12,13 @@ enum TASK_DATA_TYPE {
   PROFILE_ENTITY,
 }
 
-enum UMI_SECTION_TYPE {
-  SINGLE,
-  FAVORITE,
-  DIRECT_MESSAGE,
-  TEAM,
-  ALL,
-}
+const ModuleName = 'GroupState';
 
-export { TASK_DATA_TYPE, UMI_SECTION_TYPE };
+const GROUP_BADGE_TYPE = {
+  TEAM: `${ModuleName}.TEAM`,
+  DIRECT_MESSAGE: `${ModuleName}.DIRECT_MESSAGE`,
+  FAVORITE_TEAM: `${ModuleName}.FAVORITE_TEAM`,
+  FAVORITE_DM: `${ModuleName}.FAVORITE_DM`,
+};
+
+export { TASK_DATA_TYPE, ModuleName, GROUP_BADGE_TYPE };
