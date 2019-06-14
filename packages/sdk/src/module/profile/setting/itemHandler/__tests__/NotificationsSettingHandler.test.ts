@@ -77,7 +77,7 @@ describe('NotificationsSettingHandler ', () => {
 
   describe('fetchUserSettingEntity()', () => {
     beforeEach(() => {
-      profileService.getProfile = jest.fn().mockReturnValue({
+      profileService.getProfile = jest.fn().mockResolvedValue({
         [SETTING_KEYS.DESKTOP_NOTIFICATION]: true,
       });
       Pal.instance.getNotificationPermission = jest.fn().mockReturnValue({
@@ -99,7 +99,7 @@ describe('NotificationsSettingHandler ', () => {
     `(
       'should get desktopNotification is $expectRes when browserPermission is $browserPermission and wantNotifications is $wantNotifications',
       async ({ wantNotifications, browserPermission, expectRes }) => {
-        profileService.getProfile = jest.fn().mockReturnValue({
+        profileService.getProfile = jest.fn().mockResolvedValue({
           [SETTING_KEYS.DESKTOP_NOTIFICATION]: wantNotifications,
         });
         Pal.instance.getNotificationPermission = jest.fn().mockReturnValue({
@@ -130,7 +130,7 @@ describe('NotificationsSettingHandler ', () => {
       Pal.instance.getNotificationPermission = jest.fn().mockReturnValue({
         isGranted: true,
       });
-      profileService.getProfile = jest.fn().mockReturnValue({
+      profileService.getProfile = jest.fn().mockResolvedValue({
         [SETTING_KEYS.DESKTOP_NOTIFICATION]: false,
       });
       await notificationsSettingHandler.updateValue({
@@ -150,7 +150,7 @@ describe('NotificationsSettingHandler ', () => {
       Pal.instance.getNotificationPermission = jest.fn().mockReturnValue({
         isGranted: true,
       });
-      profileService.getProfile = jest.fn().mockReturnValue({
+      profileService.getProfile = jest.fn().mockResolvedValue({
         [SETTING_KEYS.DESKTOP_NOTIFICATION]: true,
       });
       await notificationsSettingHandler.updateValue({
@@ -165,7 +165,7 @@ describe('NotificationsSettingHandler ', () => {
       Pal.instance.getNotificationPermission = jest.fn().mockReturnValue({
         isGranted: false,
       });
-      profileService.getProfile = jest.fn().mockReturnValue({
+      profileService.getProfile = jest.fn().mockResolvedValue({
         [SETTING_KEYS.DESKTOP_NOTIFICATION]: false,
       });
       await notificationsSettingHandler.updateValue({
@@ -180,7 +180,7 @@ describe('NotificationsSettingHandler ', () => {
       Pal.instance.getNotificationPermission = jest.fn().mockReturnValue({
         isGranted: false,
       });
-      profileService.getProfile = jest.fn().mockReturnValue({
+      profileService.getProfile = jest.fn().mockResolvedValue({
         [SETTING_KEYS.DESKTOP_NOTIFICATION]: true,
       });
       await notificationsSettingHandler.updateValue({
