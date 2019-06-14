@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RelationMap } from '../RelationMap';
+import { autorun, trace } from 'mobx';
 
 describe('RelationMap', () => {
   describe('add()', () => {
@@ -26,6 +27,31 @@ describe('RelationMap', () => {
       relations.add('B', 3);
       relations.clear();
       expect(relations.get('A')).toHaveLength(0);
+    });
+  });
+
+  describe('mobx observable', () => {
+    it('should trigger autorun when add item', () => {
+      const relations = new RelationMap<string, number>();
+
+      jest.spyOn(relations, 'get');
+
+      //
+      // autorun x 1
+      //
+      autorun(() => relations.get('A'));
+      //
+      // autorun x 2
+      // add() should trigger autorun
+      //
+      relations.add('A', 1);
+      //
+      // autorun x 3
+      // clear() should trigger autorun
+      //
+      relations.clear();
+
+      expect(relations.get).toHaveBeenCalledTimes(3);
     });
   });
 });

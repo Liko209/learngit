@@ -10,7 +10,6 @@ import { PRESENCE } from '../constant';
 import notificationCenter from '../../../service/notificationCenter';
 import { ENTITY } from '../../../service/eventKey';
 import { ChangeModel } from '../../sync/types';
-import { RELOAD_TARGET } from 'sdk/service';
 
 class PresenceController {
   private _caches: Map<number, Presence> = new Map(); // <id, RawPresence['calculatedStatus']>
@@ -80,12 +79,7 @@ class PresenceController {
   handleSocketStateChange(state: string) {
     if (state === 'connected') {
       this.reset();
-      notificationCenter.emitEntityReload(
-        ENTITY.PRESENCE,
-        RELOAD_TARGET.STORE,
-        [],
-        true,
-      );
+      notificationCenter.emitEntityReload(ENTITY.PRESENCE, [], true);
     } else if (state === 'disconnected') {
       this.resetPresence();
     }

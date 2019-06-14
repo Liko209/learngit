@@ -85,9 +85,9 @@ const HTMLEscape = (str: string) => {
 
 const MATCH_ALL_REGEX = /^[\s\S]+$/g;
 const MATCH_NOTHING_REGEX = /a^/g;
-const AT_MENTION_REGEX = /<a class='at_mention_compose' rel='{"id":(\d*?)}'>(.*?)<\/a>/gi;
-const AT_MENTION_GROUPED_REGEXP = /(<a class='at_mention_compose' rel='{"id":\d*?}'>)(.*?)(<\/a>)/gi;
-const AT_MENTION_ESCAPED = /&lt;a class=&#x27;at_mention_compose&#x27; rel=&#x27;{&quot;id&quot;:(\d*?)}&#x27;&gt;(.*?)&lt;\/a&gt;/gi;
+const AT_MENTION_REGEX = /<a class='at_mention_compose' rel='{"id":([-?\d]*?)}'>(.*?)<\/a>/gi;
+const AT_MENTION_GROUPED_REGEXP = /(<a class='at_mention_compose' rel='{"id":[-?\d]*?}'>)(.*?)(<\/a>)/gi;
+const AT_MENTION_ESCAPED = /&lt;a class=&#x27;at_mention_compose&#x27; rel=&#x27;{&quot;id&quot;:([-?\d]*?)}&#x27;&gt;(.*?)&lt;\/a&gt;/gi;
 
 const EMOJI_UNICODE_REGEX = `${Object.keys(convertMapUnicode).join('|')}`;
 const EMOJI_UNICODE_REGEX_ESCAPED = `${Object.keys(convertMapUnicode)
@@ -149,6 +149,25 @@ const isValidPhoneNumber = (value: string) => {
   return IS_PHONE_NUMBER;
 };
 
+// first we use encodeURIComponent to get percent-encoded UTF-8,
+// then we convert the percent encodings into raw bytes which
+// can be fed into btoa.
+const b64EncodeUnicode = (str: string) =>
+  btoa(
+    encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) =>
+      String.fromCharCode(Number(`0x${p1}`)),
+    ),
+  );
+
+// Going backwards: from bytestream, to percent-encoding, to original string.
+const b64DecodeUnicode = (str: string) =>
+  decodeURIComponent(
+    atob(str)
+      .split('')
+      .map(c => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
+      .join(''),
+  );
+
 export {
   isInRange,
   containsRange,
@@ -159,6 +178,8 @@ export {
   HTMLEscape,
   EMOJI_ONE_PATH,
   isValidPhoneNumber,
+  b64EncodeUnicode,
+  b64DecodeUnicode,
 };
 
 // regex

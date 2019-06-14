@@ -28,7 +28,6 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
   NOTIFICATION_OPTIONS
 > {
   id = SettingEntityIds.Notification_MissCallAndNewVoiceMails;
-
   constructor(
     private _profileService: IProfileService,
     private _accountService: AccountService,
@@ -41,6 +40,9 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
   private _subscribe() {
     this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
       this.onProfileEntityUpdate(payload),
+    );
+    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload =>
+      this.onSettingEntityUpdate(payload),
     );
   }
 
@@ -67,12 +69,11 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
   }
 
   async fetchUserSettingEntity() {
-    const profile = await this._profileService.getProfile();
     const settingItem: UserSettingEntity<NOTIFICATION_OPTIONS> = {
       weight: 1,
       valueType: 1,
       parentModelId: 1,
-      value: profile[SETTING_KEYS.DESKTOP_VOICEMAIL],
+      value: await this._getVoiceMail(),
       source: [NOTIFICATION_OPTIONS.OFF, NOTIFICATION_OPTIONS.ON],
       id: SettingEntityIds.Notification_MissCallAndNewVoiceMails,
       state: await this._getItemState(),
@@ -91,10 +92,28 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
     }
     if (
       profile[SETTING_KEYS.DESKTOP_VOICEMAIL] !==
-      this.userSettingEntityCache.value
+      this.userSettingEntityCache!.value
     ) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
+  }
+  async onSettingEntityUpdate(
+    payload: NotificationEntityUpdatePayload<UserSettingEntity>,
+  ) {
+    if (
+      payload.body.entities.has(SettingEntityIds.Notification_Browser) ||
+      payload.body.entities.has(SettingEntityIds.Phone_DefaultApp)
+    ) {
+      await this.getUserSettingEntity();
+    }
+  }
+  private async _getVoiceMail() {
+    const profile = await this._profileService.getProfile();
+    let voiceMail = profile[SETTING_KEYS.DESKTOP_VOICEMAIL];
+    if (voiceMail === undefined) {
+      voiceMail = NOTIFICATION_OPTIONS.ON;
+    }
+    return voiceMail;
   }
 }
 export { NewVoicemailsSettingHandler };

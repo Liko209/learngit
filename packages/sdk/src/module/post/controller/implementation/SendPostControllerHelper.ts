@@ -37,11 +37,22 @@ class SendPostControllerHelper {
     return links;
   }
 
-  buildRawPostInfo(params: RawPostInfo): Post {
-    const vers = versionHash();
-    const preId = GlipTypeUtil.generatePseudoIdByType(
+  buildRawPostInfo(
+    params: RawPostInfo,
+    preInsertIds: { uniqueIds: string[]; ids: number[] },
+  ): Post {
+    let vers = versionHash();
+    while (preInsertIds.uniqueIds.includes(vers.toString())) {
+      vers = versionHash();
+    }
+    let preId = GlipTypeUtil.generatePseudoIdByType(
       TypeDictionary.TYPE_ID_POST,
     );
+
+    while (preInsertIds.ids.includes(preId)) {
+      preId = GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_POST);
+    }
+
     const links = this.buildLinksInfo(params.text);
     const now = Date.now();
     const buildPost: Post = {
@@ -52,7 +63,7 @@ class SendPostControllerHelper {
       creator_id: params.userId,
       version: vers,
       new_version: vers,
-      unique_id: preId.toString(),
+      unique_id: vers.toString(),
       is_new: true,
       model_size: 0,
       text: params.text,

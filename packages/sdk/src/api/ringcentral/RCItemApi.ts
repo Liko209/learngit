@@ -5,8 +5,13 @@
  */
 
 import Api from '../api';
-import { RC_ITEM_API, CONTENT_TYPE, HTTP_HEADER_KEY } from './constants';
-import { NETWORK_VIA, NETWORK_METHOD } from 'foundation';
+import {
+  NETWORK_VIA,
+  NETWORK_METHOD,
+  REQUEST_HEADER_KEYS,
+  CONTENT_TYPES,
+} from 'foundation';
+import { RC_ITEM_API } from './constants';
 import {
   RCItemSyncResponse,
   CallLogSyncParams,
@@ -89,7 +94,9 @@ class RCItemApi extends Api {
       method: NETWORK_METHOD.PUT,
       authFree: false,
       via: NETWORK_VIA.HTTP,
-      headers: { [HTTP_HEADER_KEY.CONTENT_TYPE]: CONTENT_TYPE.JSON },
+      headers: {
+        [REQUEST_HEADER_KEYS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
+      },
     };
     return RCItemApi.rcNetworkClient.http<T>(query);
   }

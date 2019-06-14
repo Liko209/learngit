@@ -28,6 +28,8 @@ class ConfigMigrator implements IDBObserver {
   }
 
   onDBInitialized() {
+    const userConfig = this._getConfig(CONFIG_TYPE.DB) as DBConfigService;
+    userConfig.setConfigDao(daoManager.getDBKVDao());
     this._dbConfigReady = true;
     this.init();
   }
@@ -80,7 +82,7 @@ class ConfigMigrator implements IDBObserver {
   }
 
   private async _doDataMigration(history: ConfigChangeHistory) {
-    if (!history || !history.version || !history.moduleName) {
+    if (!history || history.version === undefined || !history.moduleName) {
       return;
     }
     try {

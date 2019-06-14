@@ -94,9 +94,7 @@ describe('RegionSettingHandler', () => {
       notificationCenter.emit(RC_INFO.RC_REGION_INFO);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
+
         done();
       });
     });
@@ -107,7 +105,6 @@ describe('RegionSettingHandler', () => {
       notificationCenter.emit(RC_INFO.RC_REGION_INFO);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
         done();
       });
     });

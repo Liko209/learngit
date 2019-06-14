@@ -23,6 +23,7 @@ import { TelephonyService } from '@/modules/telephony/service';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { postParser, AtMentionsMapType } from '@/common/postParser';
+import { i18nP } from '@/utils/i18nT';
 
 class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
   private _featuresFlagsService: FeaturesFlagsService = container.get(
@@ -76,6 +77,10 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
         isCurrent: id === this._currentUserId,
       };
     });
+    kv['-1'] = {
+      name: i18nP('message.atMentionAllTeam'),
+      isCurrent: true,
+    };
     return kv;
   }
 

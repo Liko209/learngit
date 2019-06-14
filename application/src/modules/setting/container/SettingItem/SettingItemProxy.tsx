@@ -12,11 +12,13 @@ import { SettingStore } from '../../store/SettingStore';
 import { LinkSettingItem } from './Link';
 import { ToggleSettingItem } from './Toggle';
 import { SelectSettingItem } from './Select';
+import { SliderSettingItem } from './Slider';
 
 const ITEM_TYPE_MAP = {
   [SETTING_ITEM_TYPE.TOGGLE]: ToggleSettingItem,
   [SETTING_ITEM_TYPE.SELECT]: SelectSettingItem,
   [SETTING_ITEM_TYPE.LINK]: LinkSettingItem,
+  [SETTING_ITEM_TYPE.SLIDER]: SliderSettingItem,
 };
 
 type SettingItemProxyProps = {

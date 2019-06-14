@@ -5,10 +5,9 @@
  */
 import { jupiter, container } from 'framework';
 import { SettingStore } from '../../../store';
-import { config } from '../../../module.config';
 import { SettingSectionViewModel } from '../SettingSection.ViewModel';
 
-jupiter.registerModule(config);
+jupiter.registerClass(SettingStore);
 
 function setup() {
   const settingStore: SettingStore = jupiter.get(SettingStore);
@@ -38,7 +37,7 @@ describe('SettingSectionViewModel', () => {
     it('should return sections in the page', () => {
       const { vm, settingStore } = setup();
       jest
-        .spyOn<SettingStore, any>(settingStore, 'getSectionItems')
+        .spyOn<SettingStore, any>(settingStore, 'getSectionVisibleItems')
         .mockReturnValue([1, 2]);
 
       expect(vm.itemIds).toEqual([1, 2]);

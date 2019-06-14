@@ -60,7 +60,7 @@ test.meta(<ITestMeta>{
 
   for(let i = 0 ; i < Entries.length; i++ ){
 
-    if( i == 0 ){   
+    if( i == 0 ){
       await h(t).withLog(`When I click the more button of the file(Entry1: conversation history)`, async() => {
         await moreActionOnFile.clickMore();
       });
@@ -90,7 +90,7 @@ test.meta(<ITestMeta>{
       });
 
     }
-  
+
     await h(t).withLog(`Then will show ${renameFileMenu} menu at the top`, async() => {
       await moreActionOnFile.renameFileMenuAtTop(renameFileMenu);
     });
@@ -98,24 +98,24 @@ test.meta(<ITestMeta>{
     await h(t).withLog(`When I click the ${renameFileMenu} menu of the file`, async() => {
       await moreActionOnFile.clickRenameFileMenu();
     });
-  
+
     await h(t).withLog(`Then will show the rename file dialog`, async() => {
-      await moreActionOnFile.ensureLoaded();
+      await renameFileDialog.ensureLoaded();
     });
-  
+
     await h(t).withLog(`And pre-populate in the input field the existing file name with the suffix`, async() => {
       await renameFileDialog.existFileNameWithSuffix(filename,suffix);
     });
-  
+
     let newFileName = `file name ${i}`;
     await h(t).withLog(`When I update the file name`, async() => {
       await renameFileDialog.updateFileName(newFileName);
     });
-  
+
     await h(t).withLog(`And I click the Cancel button`, async() => {
       await renameFileDialog.clickCancelButton();
     });
-  
+
     await h(t).withLog(`Then the dialog should be closed`, async() => {
       await renameFileDialog.ensureDismiss();
     });
@@ -152,7 +152,7 @@ test.meta(<ITestMeta>{
       });
 
     }
-  
+
     await h(t).withLog(`Then will show ${renameFileMenu} menu at the top`, async() => {
       await moreActionOnFile.renameFileMenuAtTop(renameFileMenu);
     });
@@ -160,7 +160,7 @@ test.meta(<ITestMeta>{
     await h(t).withLog(`When I click the ${renameFileMenu} menu of the file`, async() => {
       await moreActionOnFile.clickRenameFileMenu();
     });
-  
+
     await h(t).withLog(`Then will show the rename file dialog`, async() => {
       await moreActionOnFile.ensureLoaded();
     });
@@ -168,11 +168,11 @@ test.meta(<ITestMeta>{
     await h(t).withLog(`When I update the file name`, async() => {
       await renameFileDialog.updateFileName(newFileName);
     });
-  
+
     await h(t).withLog(`And I click the Save button`, async() => {
       await renameFileDialog.clickSaveButton();
     });
-  
+
     await h(t).withLog(`Then the dialog should be closed`, async() => {
       await renameFileDialog.ensureDismiss();
     });
@@ -183,12 +183,11 @@ test.meta(<ITestMeta>{
     filename = newFileName;
 
   }
-  
 });
 
 test.meta(<ITestMeta>{
   priority: ['P2'],
-  caseIds: ['JPT-2057','JPT-2074','JPT-2060','JPT-2080'], 
+  caseIds: ['JPT-2057','JPT-2074','JPT-2060','JPT-2080'],
   maintainers: ['Mia.cai'],
   keywords: ['ContentPanel/RenameFileName']
 })(`Unsupported characters should be replaced by_ when saving the file name;Show 'More' tooltip for the more icon;Rename file option is disabled to guests;Save button should be disabled on filename dialog if filename input is blank`, async (t) => {
@@ -230,7 +229,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`When I am on hover more icon`, async () => {
     await t.hover(moreActionOnFile.more);
-  }); 
+  });
 
   await h(t).withLog(`Then show '${moreTooltip}' tooltip`, async () => {
     await moreActionOnFile.showTooltip(moreTooltip);

@@ -11,11 +11,13 @@ type DialerHeaderProps = {
 
 type DialerHeaderViewProps = {
   isExt: boolean;
-  name: string;
+  name?: string;
   phone?: string;
   uid?: number;
   shouldDisplayDialer: boolean;
   inputString?: string;
+  forwardString?: string;
+  isForward?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;

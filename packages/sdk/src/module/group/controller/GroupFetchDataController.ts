@@ -45,6 +45,10 @@ import { SearchService } from '../../search';
 import { RecentSearchTypes, RecentSearchModel } from '../../search/entity';
 import { MY_LAST_POST_VALID_PERIOD } from '../../search/constants';
 
+const kTeamIncludeMe: number = 1;
+const kSortingRateWithFirstMatched: number = 1;
+const kSortingRateWithFirstAndPositionMatched: number = 1.1;
+
 function buildNewGroupInfo(members: number[]) {
   const userConfig = ServiceLoader.getInstance<AccountService>(
     ServiceConfig.ACCOUNT_SERVICE,
@@ -195,7 +199,7 @@ export class GroupFetchDataController {
     const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
-      this._getTransformAllGroupFunc(
+      await this._getTransformAllGroupFunc(
         fetchAllIfSearchKeyEmpty,
         myGroupsOnly,
         recentFirst,
@@ -255,13 +259,13 @@ export class GroupFetchDataController {
     );
   }
 
-  private _getTransformGroupFunc(
+  private async _getTransformGroupFunc(
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
   ) {
     const groupConfigService = this._groupConfigService;
     const recentSearchedGroups = recentFirst
-      ? this._getRecentSearchGroups([RecentSearchTypes.GROUP])
+      ? await this._getRecentSearchGroups([RecentSearchTypes.GROUP])
       : undefined;
 
     return (group: Group, terms: Terms) => {
@@ -326,7 +330,7 @@ export class GroupFetchDataController {
     const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
-      this._getTransformGroupFunc(fetchAllIfSearchKeyEmpty, recentFirst),
+      await this._getTransformGroupFunc(fetchAllIfSearchKeyEmpty, recentFirst),
       undefined,
       searchKey,
       undefined,
@@ -361,20 +365,22 @@ export class GroupFetchDataController {
     };
   }
 
-  private _getRecentSearchGroups(types: RecentSearchTypes[]) {
+  private async _getRecentSearchGroups(types: RecentSearchTypes[]) {
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
 
     let result: Map<ModelIdType, RecentSearchModel> = new Map();
     for (const iterator of types) {
-      const recentGroups = searchService.getRecentSearchRecordsByType(iterator);
+      const recentGroups = await searchService.getRecentSearchRecordsByType(
+        iterator,
+      );
       result = new Map([...result].concat([...recentGroups]));
     }
     return result;
   }
 
-  private _getTransformAllGroupFunc(
+  private async _getTransformAllGroupFunc(
     fetchAllIfSearchKeyEmpty?: boolean,
     myGroupsOnly?: boolean,
     recentFirst?: boolean,
@@ -382,7 +388,7 @@ export class GroupFetchDataController {
     const groupConfigService = this._groupConfigService;
 
     const recentSearchedGroups = recentFirst
-      ? this._getRecentSearchGroups([
+      ? await this._getRecentSearchGroups([
           RecentSearchTypes.GROUP,
           RecentSearchTypes.TEAM,
         ])
@@ -480,9 +486,6 @@ export class GroupFetchDataController {
   }
 
   private _getSortKeyWeight(lowerCaseName: string, searchKeyTerms: string[]) {
-    const kSortingRateWithFirstMatched: number = 1;
-    const kSortingRateWithFirstAndPositionMatched: number = 1.1;
-
     const splitNames = this.entityCacheSearchController.getTermsFromSearchKey(
       lowerCaseName,
     );
@@ -510,15 +513,15 @@ export class GroupFetchDataController {
     return sortValue;
   }
 
-  private _getTransformTeamsFunc(
+  private async _getTransformTeamsFunc(
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
   ) {
     const groupConfigService = this._groupConfigService;
     const recentSearchedTeams = recentFirst
-      ? this._getRecentSearchGroups([RecentSearchTypes.TEAM])
+      ? await this._getRecentSearchGroups([RecentSearchTypes.TEAM])
       : undefined;
-
+    const teamIdsIncludeMe = this._getTeamIdsIncludeMe();
     const currentUserId = this._currentUserId;
     return (team: Group, terms: Terms) => {
       let isMatched: boolean = false;
@@ -562,7 +565,8 @@ export class GroupFetchDataController {
           lowerCaseAbbreviation,
           searchKeyTerms,
         );
-
+        const isMeInTeam = teamIdsIncludeMe.has(team.id) ? kTeamIncludeMe : 0;
+        sortValue += isMeInTeam;
         isMatched = true;
       } while (false);
 
@@ -598,7 +602,7 @@ export class GroupFetchDataController {
     const performanceTracer = PerformanceTracer.initial();
 
     const result = await this.entityCacheSearchController.searchEntities(
-      this._getTransformTeamsFunc(fetchAllIfSearchKeyEmpty, recentFirst),
+      await this._getTransformTeamsFunc(fetchAllIfSearchKeyEmpty, recentFirst),
       undefined,
       searchKey,
       undefined,
@@ -736,7 +740,13 @@ export class GroupFetchDataController {
   }
 
   private _isPublicTeamOrIncludeUser(team: Group, userId: number) {
-    return team.privacy === 'protected' || team.members.includes(userId);
+    return (
+      team.privacy === 'protected' || this._getTeamIdsIncludeMe().has(team.id)
+    );
+  }
+
+  private _getTeamIdsIncludeMe() {
+    return this.groupService.getTeamIdsIncludeMe();
   }
 
   private async _queryGroupByMemberList(ids: number[]): Promise<Group | null> {

@@ -223,6 +223,7 @@ export class SocketFSM extends StateMachine {
     this.socketClient.socket.on('connect_error', (data: any) => {
       this.info('socket-> connect_error. ', data);
       this.failConnect();
+      notificationCenter.emit(SOCKET.CONNECT_ERROR);
     });
 
     this.socketClient.socket.on('connect_timeout', (data: any) => {
@@ -240,6 +241,7 @@ export class SocketFSM extends StateMachine {
 
     this.socketClient.socket.on('error', (data: any) => {
       this.info('socket-> error. ', data);
+      notificationCenter.emit(SOCKET.ERROR);
     });
 
     this.socketClient.socket.on('reconnect', (data: any) => {

@@ -82,11 +82,11 @@ class OAuthTokenHandler implements ITokenHandler {
     const timestamp = this.token.timestamp;
     const accessTokenExpireIn = this.token.expires_in;
     const refreshTokenExpireIn = this.token.refresh_token_expires_in;
-    const isInvalid = isAccessToken
-      ? !accessTokenExpireIn
-      : !refreshTokenExpireIn;
-    if (isInvalid) {
-      return true;
+    const hasExpiredIn = isAccessToken
+      ? !!accessTokenExpireIn
+      : !!refreshTokenExpireIn;
+    if (!hasExpiredIn) {
+      return false;
     }
 
     const accessTokenExpireInMillisecond = accessTokenExpireIn * 1000;

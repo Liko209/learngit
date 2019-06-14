@@ -14,36 +14,45 @@ const actionTips = {
   reload: 'reload',
 };
 
+const actionLabels = {
+  play: 'play voicemail',
+  pause: 'pause voicemail',
+  reload: 'reload voicemail',
+};
+
 storiesOf('Pattern', module).add('AudioPlayer', () => {
   return (
     <dl>
       <dt>mode mini</dt>
       <dd>
         <JuiAudioPlayer
-          src="http://f2.htqyy.com/play7/33/mp3/5"
+          src="https://mfile.bandari.net/mc-U52f5t5wDSe/Bandari/05Mist/04.Bandari.Net_Morning.mp3"
           mode={JuiAudioMode.MINI}
           duration={188}
           startTime={0}
           actionTips={actionTips}
+          actionLabels={actionLabels}
         />
       </dd>
       <dt>mode full</dt>
       <dd>
         <JuiAudioPlayer
-          src="http://f2.htqyy.com/play7/33/mp3/5"
+          src="https://mfile.bandari.net/mc-U52f5t5wDSe/Bandari/05Mist/04.Bandari.Net_Morning.mp3"
           duration={188}
           startTime={30}
           actionTips={actionTips}
+          actionLabels={actionLabels}
         />
       </dd>
       <dt>highlight display</dt>
       <dd>
         <JuiAudioPlayer
           isHighlight={true}
-          src="http://f2.htqyy.com/play7/33/mp3/5"
+          src="https://mfile.bandari.net/mc-U52f5t5wDSe/Bandari/05Mist/04.Bandari.Net_Morning.mp3"
           duration={188}
           startTime={60}
           actionTips={actionTips}
+          actionLabels={actionLabels}
         />
       </dd>
       <dt>reload display</dt>
@@ -53,6 +62,7 @@ storiesOf('Pattern', module).add('AudioPlayer', () => {
           duration={188}
           startTime={90}
           actionTips={actionTips}
+          actionLabels={actionLabels}
         />
       </dd>
     </dl>

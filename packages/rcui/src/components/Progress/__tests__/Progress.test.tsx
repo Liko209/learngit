@@ -10,6 +10,13 @@ import * as renderer from 'react-test-renderer';
 import { RuiCircularProgress, RuiLinearProgress } from '../';
 
 describe('RuiCircularProgress', () => {
+  // will remove until upgrade material ui
+  beforeAll(() => {
+    // mock console for jest
+    (global as any)['console'] = {
+      error: jest.fn(),
+    };
+  });
   it('renders correctly', () => {
     const tree = renderer
       .create(
@@ -26,6 +33,13 @@ describe('RuiCircularProgress', () => {
 });
 
 describe('RuiLinearProgress', () => {
+  // will remove until upgrade material ui
+  beforeAll(() => {
+    // mock console for jest
+    (global as any)['console'] = {
+      error: jest.fn(),
+    };
+  });
   it('renders correctly', () => {
     const tree = renderer
       .create(

@@ -26,6 +26,7 @@ storiesOf('Pattern/MessageInput', module).add('MessageInput', () => {
         onChange={onChange}
         error=""
         modules={{}}
+        placeholder="message.action.typeNewMessage"
       >
         <div />
       </JuiMessageInput>
@@ -36,10 +37,43 @@ storiesOf('Pattern/MessageInput', module).add('MessageInput', () => {
 
 storiesOf('Pattern/MessageInput', module).add('Attachment Button', () => {
   const autoUploadFile = () => {};
+  const menus = [
+    {
+      icon: 'google',
+      label: 'Google Drive',
+    },
+    {
+      icon: 'dropbox',
+      label: 'Dropbox',
+    },
+    {
+      icon: 'box',
+      label: 'Box',
+    },
+    {
+      icon: 'evernote',
+      label: 'Evernote',
+    },
+    {
+      icon: 'onedrive',
+      label: 'OneDrive',
+    },
+  ];
+
+  const fileMenu = {
+    icon: 'computer',
+    label: 'Computer',
+  };
+
   return (
     <div>
       <MessageActionBar>
-        <AttachmentView onFileChanged={autoUploadFile} />
+        <AttachmentView
+          menus={menus}
+          fileMenu={fileMenu}
+          tooltip="Attach file"
+          onFileChanged={autoUploadFile}
+        />
       </MessageActionBar>
     </div>
   );

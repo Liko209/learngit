@@ -40,6 +40,8 @@ const StyledJuiBoxSelect = styled(JuiBoxSelect)`
     align-items: center;
     justify-content: center;
     font-size: ${({ theme }) => theme.typography.body1.fontSize};
+    padding-bottom: 0;
+
     div:nth-of-type(1) {
       padding-bottom: 0;
     }
@@ -87,4 +89,4 @@ const CallerIdSelector = (props: CallerIdSelectorProps) => {
   );
 };
 
-export { CallerIdSelector };
+export { CallerIdSelector, CallerIdSelectorProps };

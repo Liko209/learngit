@@ -76,8 +76,8 @@ class ProfileSubscribeEntityHandler<
     if (!profile) {
       return;
     }
-    if (profile[this.setting_key] !== this.userSettingEntityCache.value) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+    if (profile[this.setting_key] !== this.userSettingEntityCache!.value) {
+      await this.getUserSettingEntity();
     }
   }
 }

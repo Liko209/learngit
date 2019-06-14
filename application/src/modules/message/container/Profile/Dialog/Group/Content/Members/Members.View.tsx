@@ -27,7 +27,9 @@ class MembersView extends Component<MembersViewProps & MembersProps> {
   static contextType = ProfileContext;
   state = { width: 0, height: 0, searchInput: '' };
   handleSizeChanged = (size: Size) => {
-    this.setState(size);
+    if (size.width !== this.state.width || size.height !== this.state.height) {
+      this.setState(size);
+    }
   }
   handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { changeSearchInputDebounce } = this.props;

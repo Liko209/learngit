@@ -48,6 +48,7 @@ enum CALL_TYPE {
 enum INCOMING_STATE {
   IDLE,
   REPLY,
+  FORWARD,
 }
 
 const logTag = '[TelephonyStore_View]';
@@ -74,6 +75,8 @@ class TelephonyStore {
   callType: CALL_TYPE = CALL_TYPE.NULL;
   @observable
   holdState: HOLD_STATE = this._holdFSM.state;
+  @observable
+  isStopRecording: boolean = false;
 
   @observable
   recordState: RECORD_STATE = this._recordFSM.state;
@@ -117,6 +120,9 @@ class TelephonyStore {
   inputString: string = '';
 
   @observable
+  forwardString: string = '';
+
+  @observable
   dialerInputFocused: boolean = false;
 
   @observable
@@ -154,6 +160,12 @@ class TelephonyStore {
 
   @observable
   dialerFocused: boolean;
+
+  @observable
+  firstLetterEnteredThroughKeypad: boolean;
+
+  @observable
+  enteredDialer: boolean = false;
 
   constructor() {
     type FSM = '_callWindowFSM' | '_recordFSM' | '_recordDisableFSM';
@@ -203,9 +215,11 @@ class TelephonyStore {
           this.quitKeypad();
           this._restoreButtonStates();
           this._clearEnteredKeys();
+          this._clearForwardString();
           this.callerName = undefined;
           this.isMute = false;
           this.phoneNumber = undefined;
+          this.isContactMatched = false;
           break;
         case CALL_STATE.CONNECTING:
           this.activeCallTime = undefined;
@@ -231,6 +245,15 @@ class TelephonyStore {
       },
       { fireImmediately: true },
     );
+
+    reaction(
+      () => this.inputString.length,
+      length => {
+        if (!length) {
+          this.firstLetterEnteredThroughKeypad = false;
+        }
+      },
+    );
   }
 
   @computed
@@ -241,6 +264,9 @@ class TelephonyStore {
 
   @computed
   get displayName() {
+    if (!this.isContactMatched) {
+      return undefined;
+    }
     if (this.person) {
       return this.person.userDisplayName;
     }
@@ -258,6 +284,15 @@ class TelephonyStore {
       });
     }
     return false;
+  }
+
+  @computed
+  get shouldEnterContactSearch() {
+    return (
+      this.shouldDisplayDialer &&
+      !!this.inputString.trim().length &&
+      !this.firstLetterEnteredThroughKeypad
+    );
   }
 
   private _matchContactByPhoneNumber = async (phone: string) => {
@@ -315,6 +350,10 @@ class TelephonyStore {
     this.enteredKeys = '';
   }
 
+  private _clearForwardString = () => {
+    this.forwardString = '';
+  }
+
   updateDefaultChosenNumber = (defaultCallerPhoneNumber?: string) => {
     if (defaultCallerPhoneNumber !== undefined) {
       this.defaultCallerPhoneNumber = defaultCallerPhoneNumber;
@@ -326,14 +365,17 @@ class TelephonyStore {
     }
   }
 
+  @action
   openKeypad = () => {
     this.keypadEntered = true;
   }
 
+  @action
   quitKeypad = () => {
     this.keypadEntered = false;
   }
 
+  @action
   inputKey = (key: string) => {
     this.enteredKeys += key;
   }
@@ -342,6 +384,7 @@ class TelephonyStore {
     this.customReplyMessage = msg.trimLeft();
   }
 
+  @action
   setShiftKeyDown = (down: boolean) => {
     this.shiftKeyDown = down;
   }
@@ -408,6 +451,7 @@ class TelephonyStore {
   directCall = () => {
     this._callFSM[CALL_TRANSITION_NAMES.START_DIRECT_CALL]();
     this.shouldResume = false;
+    this.firstLetterEnteredThroughKeypad = false;
     this._openCallWindow();
   }
 
@@ -464,10 +508,12 @@ class TelephonyStore {
     this._recordFSM[RECORD_TRANSITION_NAMES.STOP_RECORD]();
   }
 
+  @action
   setPendingForHoldBtn(val: boolean) {
     this.pendingForHold = val;
   }
 
+  @action
   setPendingForRecordBtn(val: boolean) {
     this.pendingForRecord = val;
   }
@@ -490,28 +536,39 @@ class TelephonyStore {
     return this._recordDisableFSM[RECORD_DISABLED_STATE_TRANSITION_NAMES.DISABLE]();
   }
 
+  @action
   onDialerInputFocus = () => {
     this.dialerInputFocused = true;
   }
 
+  @action
   onDialerInputBlur = () => {
     this.dialerInputFocused = false;
   }
 
+  @action
   onDialerFocus = () => {
     this.dialerFocused = true;
   }
 
+  @action
   onDialerBlur = () => {
     this.dialerFocused = false;
   }
 
+  @action
   startAnimation = () => {
     this.startMinimizeAnimation = true;
   }
 
+  @action
   stopAnimation = () => {
     this.startMinimizeAnimation = false;
+  }
+
+  @action
+  enterFirstLetterThroughKeypad = () => {
+    this.firstLetterEnteredThroughKeypad = true;
   }
 
   @computed
@@ -550,7 +607,13 @@ class TelephonyStore {
     }
   }
 
-  quitReply = () => {
+  @action
+  directForward = () => {
+    this.incomingState = INCOMING_STATE.FORWARD;
+  }
+
+  @action
+  backIncoming = () => {
     this.incomingState = INCOMING_STATE.IDLE;
   }
 
@@ -580,12 +643,20 @@ class TelephonyStore {
   @computed
   get shouldDisplayDialer() {
     // TODO: change this when refactoring for multi-call
-    return [CALL_STATE.DIALING, CALL_STATE.IDLE].includes(this.callState);
+    return (
+      [CALL_STATE.DIALING, CALL_STATE.IDLE].includes(this.callState) ||
+      this.incomingState === INCOMING_STATE.FORWARD
+    );
   }
 
   @computed
   get hasIncomingCall() {
     return this.callState === CALL_STATE.INCOMING;
+  }
+
+  @action
+  syncDialerEntered(entered: boolean) {
+    this.enteredDialer = entered;
   }
 }
 

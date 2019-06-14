@@ -140,6 +140,21 @@ export class SocketManager {
     notificationCenter.on(SOCKET.RECONNECT, (data: any) => {
       this._onReconnect(data);
     });
+    notificationCenter.on(SOCKET.ERROR, () => {
+      this._onSocketError('socket error');
+    });
+    notificationCenter.on(SOCKET.CONNECT_ERROR, () => {
+      this._onSocketError('socket connect error');
+    });
+  }
+
+  private _onSocketError(errMsg: string) {
+    this.error('socket connect error, clearing socket address', errMsg);
+    const socketUserConfig = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    ).userConfig;
+    socketUserConfig.setIndexSocketServerHost('');
+    socketUserConfig.setReconnectSocketServerHost('');
   }
 
   private _onLogin() {

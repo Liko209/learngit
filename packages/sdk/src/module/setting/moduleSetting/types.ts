@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { UserSettingEntity } from '../entity';
-import { Nullable } from 'sdk/types';
+import { Nullable, UndefinedAble } from 'sdk/types';
 interface IUserSettingHandler<T = any> {
   id: number;
-  userSettingEntityCache: UserSettingEntity<T>;
+  userSettingEntityCache: UndefinedAble<UserSettingEntity<T>>;
   on<E>(
     eventName: string,
     listener: (e: E) => Promise<void>,

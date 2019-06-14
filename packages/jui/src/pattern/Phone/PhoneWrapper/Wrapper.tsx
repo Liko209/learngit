@@ -9,6 +9,8 @@ import styled from '../../../foundation/styled-components';
 const PhoneWrapper = styled.div`
   margin: 0 auto;
   width: 100%;
+  height: 100%;
+  position: relative;
   max-width: ${height(200)};
 `;
 
