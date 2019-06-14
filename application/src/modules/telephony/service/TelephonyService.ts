@@ -333,9 +333,6 @@ class TelephonyService {
 
     this._getDialerOpenedCount();
 
-    // Read firstly
-    this._getCallerPhoneNumberList();
-
     notificationCenter.on(
       RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
       this._getCallerPhoneNumberList,
