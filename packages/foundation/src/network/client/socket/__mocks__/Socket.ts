@@ -31,19 +31,9 @@ export default class Socket {
         headers: {},
       } as IResponse);
       return;
-      // listener.onFailure({
-      //   request,
-      //   data: {},
-      //   status: 404,
-      //   statusText: 'Mock data not found',
-      //   headers: {},
-      // } as IResponse);
-      // return;
     }
     const files = fs.readdirSync(mockDataDirectory, { withFileTypes: true });
     console.log('TCL: Http -> request -> files', files);
-    // const mockSuccessFile =
-    // fs.
     if (fs.existsSync(`${mockDataDirectory}/200.json`)) {
       console.log('TCL: request -> exists');
       const result = JSON.parse(

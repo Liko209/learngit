@@ -51,6 +51,7 @@ export class MockGlipServer implements IMockServer {
   }
 
   createPost = (request: IRequest, cb: INetworkRequestExecutorListener) => {
+    // this.socket.push()
     cb.onSuccess(
       createResponse({
         request,
@@ -71,7 +72,6 @@ export class MockGlipServer implements IMockServer {
           encoding: 'utf8',
         }),
       );
-      // return result;
       cb.onSuccess({ request, ...result.response });
     } else {
       cb.onFailure({
@@ -82,18 +82,7 @@ export class MockGlipServer implements IMockServer {
         headers: {},
       } as any);
     }
-    // if (fs.existsSync(mockJsonPath)) {
-    //   // console.log('TCL: MockFileServer -> constructor -> result', result);
-    //   cb(null, [200, result.response.data]);
-    // } else {
-
-    // }
   }
-
-  // isExist = (uri: string) => {
-  //   const isMockPathExist = fs.existsSync(this.getMockJsonPath(uri));
-  //   return isMockPathExist;
-  // }
 
   getMockJsonPath = (host: string, uri: string) => {
     const { hostname } = url.parse(host);
@@ -103,7 +92,6 @@ export class MockGlipServer implements IMockServer {
       '../../../../../../',
       `./testingData/http/${relatePath}/200.json`,
     );
-    // console.log('TCL: Router -> getMockJsonPath -> mockDataPath', mockDataPath);
     return mockDataPath;
   }
 

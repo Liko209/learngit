@@ -54,11 +54,6 @@ class MockFileServer implements IMockServer {
   private _router: Router;
   constructor(public host: string) {
     this._router = new Router((routePath, path) => {
-      console.log(
-        this.host,
-        'TCL: MockFileServer -> constructor -> path',
-        path,
-      );
       return this.isExist(path);
     });
 

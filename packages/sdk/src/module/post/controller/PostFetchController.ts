@@ -308,7 +308,6 @@ class PostFetchController {
       direction,
       limit,
     );
-    console.log('TCL: posts', posts);
     performanceTracer.end({
       key: PERFORMANCE_KEYS.CONVERSATION_FETCH_FROM_DB,
       count: posts.length,

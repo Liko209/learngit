@@ -24,7 +24,9 @@ export class CommonFileServer implements IMockServer {
     const mockJsonPath = this.getMockJsonPath(request.host, request.path);
     if (fs.existsSync(mockJsonPath)) {
       console.log(
-        `TCL: request: ${request.host}${request.path}\nmatch: ${mockJsonPath}`,
+        `-- CommonFileServer -- request: ${request.host}${
+          request.path
+        }\nmatch: ${mockJsonPath}`,
       );
       const result = JSON.parse(
         fs.readFileSync(`${mockJsonPath}`, {
@@ -34,7 +36,11 @@ export class CommonFileServer implements IMockServer {
       // return result;
       cb.onSuccess({ request, ...result.response });
     } else {
-      console.log(`TCL: request: ${request.host}${request.path}\n not match`);
+      console.log(
+        `-- CommonFileServer -- request: ${request.host}${
+          request.path
+        }\n not match`,
+      );
       cb.onFailure({
         request,
         data: {},
@@ -43,18 +49,7 @@ export class CommonFileServer implements IMockServer {
         headers: {},
       } as any);
     }
-    // if (fs.existsSync(mockJsonPath)) {
-    //   // console.log('TCL: MockFileServer -> constructor -> result', result);
-    //   cb(null, [200, result.response.data]);
-    // } else {
-
-    // }
   }
-
-  // isExist = (uri: string) => {
-  //   const isMockPathExist = fs.existsSync(this.getMockJsonPath(uri));
-  //   return isMockPathExist;
-  // }
 
   getMockJsonPath = (host: string, uri: string) => {
     const { hostname } = url.parse(host);
