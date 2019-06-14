@@ -967,51 +967,55 @@ class ConversationCardItem extends BaseWebComponent {
   }
 
   get title() {
-    return this.getSelectorByAutomationId('conversation-item-cards-title');
+    return this.getSelectorByAutomationIdUnderSelf('conversation-item-cards-title');
   }
 
   get eventLocation() {
-    return this.getSelectorByAutomationId('event-location');
+    return this.getSelectorByAutomationIdUnderSelf('event-location');
   }
 
   get eventDue() {
-    return this.getSelectorByAutomationId('event-due');
+    return this.getSelectorByAutomationIdUnderSelf('event-due');
   }
 
   get eventDescription() {
-    return this.getSelectorByAutomationId('event-description');
+    return this.getSelectorByAutomationIdUnderSelf('event-description');
   }
 
   get eventShowOld() {
-    return this.getSelectorByAutomationId('event-show-old');
+    return this.getSelectorByAutomationIdUnderSelf('event-show-old');
   }
 
   get eventOldLocation() {
-    return this.getSelectorByAutomationId('event-old-location');
+    return this.getSelectorByAutomationIdUnderSelf('event-old-location');
   }
 
   get noteBody() {
-    return this.getSelectorByAutomationId('note-body');
+    return this.getSelectorByAutomationIdUnderSelf('note-body');
   }
 
   get taskAssignee() {
-    return this.getSelectorByAutomationId('avatar-name');
+    return this.getSelectorByAutomationIdUnderSelf('avatar-name');
   }
 
   get taskSection() {
-    return this.getSelectorByAutomationId('task-section');
+    return this.getSelectorByAutomationIdUnderSelf('task-section');
   }
 
   get taskDescription() {
-    return this.getSelectorByAutomationId('task-description');
+    return this.getSelectorByAutomationIdUnderSelf('task-description');
   }
 
   get taskShowOld() {
-    return this.getSelectorByAutomationId('task-show-old');
+    return this.getSelectorByAutomationIdUnderSelf('task-show-old');
   }
 
+  get taskOldAssigneesDiv() {
+    return this.getSelectorByAutomationIdUnderSelf('task-old-assignees');
+  }
+  
   get taskOldAssignees() {
-    return this.getSelectorByAutomationId('task-old-assignees').find(`[data-test-automation-id='avatar-name']`);
+    return this.getSelectorByAutomationId('avatar-name', this.taskOldAssigneesDiv)
   }
 
   get codeBody() {

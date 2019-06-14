@@ -534,7 +534,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And I update the event location`, async () => {
-    await h(t).glip(loginUser).updateEvent(eventId, {location: `${content} hello`}).then(res => {
+    await h(t).glip(loginUser).updateEvent(eventId, { location: `${content} hello` }).then(res => {
       updatedPostId = res.data.at_mentioning_post_ids[0];
     });
   })
@@ -545,10 +545,6 @@ test.meta(<ITestMeta>{
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
-
-  // await h(t).withLog(`And I enter the team`, async () => {
-  //   await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
-  // });
 
   const searchBar = app.homePage.header.searchBar;
   const searchDialog = app.homePage.searchDialog;
@@ -742,10 +738,6 @@ test.meta(<ITestMeta>{
     await app.homePage.ensureLoaded();
   });
 
-  // await h(t).withLog(`And I enter the team`, async () => {
-  //   await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
-  // });
-
   const searchBar = app.homePage.header.searchBar;
   const searchDialog = app.homePage.searchDialog;
   await h(t).withLog(`When I search keyword ${keyword}`, async () => {
@@ -815,7 +807,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And the posts highlight the keyword ${text} in show old task assignee`, async () => {
-    const highlightText = await messageTab.postItemById(taskPostId).itemCard.taskOldAssignees.find('span.highlight-term').nth(0).textContent
+    const highlightText = await messageTab.postItemById(updatedPostId).itemCard.taskOldAssignees.find('span.highlight-term').textContent
     await t.expect(highlightText.toLowerCase()).eql(text);
   });
 
