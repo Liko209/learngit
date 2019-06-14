@@ -134,10 +134,9 @@ class RawCallerIdSelector extends PureComponent<
   private _cachedClickCallBacks: (() => void)[] = [];
 
   private _onClickFactory = (idx: number) => {
-    if (this._cachedClickCallBacks[idx]) {
-      return this._cachedClickCallBacks[idx];
+    if (!this._cachedClickCallBacks[idx]) {
+      this._cachedClickCallBacks[idx] = () => this._onSelect(idx);
     }
-    this._cachedClickCallBacks[idx] = () => this._onSelect(idx);
     return this._cachedClickCallBacks[idx];
   }
 
