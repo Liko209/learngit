@@ -13,6 +13,7 @@ import {
   IStorage,
   Disposer,
 } from './types';
+import { defaultAudioID } from 'voip/src/account/constants';
 const LOG_TAG = '[DeviceSyncManger]';
 
 export class DeviceSyncManger {
@@ -116,22 +117,29 @@ export class DeviceSyncManger {
         .info('setDevice as empty', { source, deviceId });
       return;
     }
+    const storeId = source === SOURCE_TYPE.DEFAULT ? defaultAudioID : deviceId;
+    const realDeviceId =
+      deviceId === defaultAudioID
+        ? this._deviceManager.getDefaultDeviceId(
+            this._deviceManager.getDevices(),
+          )
+        : deviceId;
     const device = this._deviceManager
       .getDevices()
       .find(device => device.deviceId === deviceId);
-    if (deviceId !== this._deviceManager.getDeviceId()) {
+    if (realDeviceId !== this._deviceManager.getDeviceId()) {
       telephonyLogger
         .tags(LOG_TAG)
         .info('setDevice to deviceManager', { source, deviceId, device });
-      this._deviceManager.setDeviceId(deviceId);
+      this._deviceManager.setDeviceId(realDeviceId);
     }
-    if (deviceId !== this._storage.get()) {
+    if (storeId !== this._storage.get()) {
       telephonyLogger
         .tags(LOG_TAG)
-        .info('setDevice to storage', { source, deviceId, device });
-      this._storage.set(deviceId);
+        .info('setDevice to storage', { source, storeId, device });
+      this._storage.set(storeId);
     }
-    this._lastUsedDeviceManager.record(deviceId);
+    this._lastUsedDeviceManager.record(storeId);
   }
 
   ensureDevice() {

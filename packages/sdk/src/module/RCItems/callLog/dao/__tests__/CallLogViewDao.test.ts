@@ -5,7 +5,7 @@
  */
 
 import { CallLogViewDao } from '../CallLogViewDao';
-import { CALL_LOG_SOURCE } from '../../constants';
+import { CALL_LOG_SOURCE, LOCAL_INFO_TYPE } from '../../constants';
 import { ArrayUtils } from 'sdk/utils/ArrayUtils';
 
 jest.mock('sdk/dao');
@@ -44,9 +44,18 @@ describe('CallLogDao', () => {
     it('should get correct call logs', async () => {
       viewDao.get = jest.fn().mockReturnValue(mockCallLog);
       const mockViews = [
-        { id: '1', result: 'Missed', __source: CALL_LOG_SOURCE.ALL },
-        { id: '2', result: 'Missed', __source: CALL_LOG_SOURCE.MISSED },
-        { id: '3', result: 'End', __source: CALL_LOG_SOURCE.ALL },
+        {
+          id: '1',
+          __localInfo: LOCAL_INFO_TYPE.IS_INBOUND | LOCAL_INFO_TYPE.IS_MISSED,
+        },
+        {
+          id: '2',
+          __localInfo:
+            LOCAL_INFO_TYPE.IS_INBOUND |
+            LOCAL_INFO_TYPE.IS_MISSED |
+            LOCAL_INFO_TYPE.IS_MISSED_SOURCE,
+        },
+        { id: '3', __localInfo: 0 },
       ];
       viewDao.queryAllViews = jest.fn().mockReturnValue(mockViews);
       ArrayUtils.sliceIdArray = jest.fn().mockImplementation(ids => ids);
