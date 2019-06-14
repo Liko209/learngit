@@ -8,6 +8,7 @@ import { LazyFormatPhoneViewModel } from '../LazyFormatPhone.ViewModel';
 
 import { container, decorate, injectable } from 'framework';
 import { TelephonyStore } from '../../../../store';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 
 let lazyFormatPhoneViewModel: LazyFormatPhoneViewModel | undefined;
 decorate(injectable(), TelephonyStore);
@@ -21,8 +22,16 @@ beforeEach(() => {
 
 describe('LazyFormatPhoneViewModel', () => {
   describe('formatPhoneNumber', () => {
+    it('Should not call `formatPhoneNumber` if receives `Blocked`', () => {
+      const value = PhoneNumberType.Blocked;
+      lazyFormatPhoneViewModel = new LazyFormatPhoneViewModel({
+        value,
+      });
+      lazyFormatPhoneViewModel.formattedPhoneNumber;
+      expect(formatPhoneNumber).not.toBeCalledWith(value);
+    });
+
     it('Should not call `formatPhoneNumber` if has not been rendered', () => {
-      const _telephonyStore: TelephonyStore = container.get(TelephonyStore);
       const value = '+18002076138';
       lazyFormatPhoneViewModel = new LazyFormatPhoneViewModel({
         value,

@@ -9,6 +9,7 @@ import { LazyFormatPhoneProps } from './types';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 import { container } from 'framework';
 import { TelephonyStore } from '../../../store';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 
 export class LazyFormatPhoneViewModel extends StoreViewModel<
   LazyFormatPhoneProps
@@ -17,7 +18,10 @@ export class LazyFormatPhoneViewModel extends StoreViewModel<
 
   @computed
   get formattedPhoneNumber() {
-    if (!this._telephonyStore.enteredDialer) {
+    if (
+      this.props.value === PhoneNumberType.Blocked ||
+      !this._telephonyStore.enteredDialer
+    ) {
       return this.props.value;
     }
     return formatPhoneNumber(this.props.value, false);
