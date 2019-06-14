@@ -59,7 +59,6 @@ class VoIPDaoClient implements ITelephonyDaoDelegate {
   }
 }
 
-const LOG_TAG = '[TelephonyEngineController]';
 class TelephonyEngineController {
   rtcEngine: RTCEngine;
   voipNetworkDelegate: VoIPNetworkClient;
