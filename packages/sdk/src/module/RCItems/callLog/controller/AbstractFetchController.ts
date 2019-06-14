@@ -72,6 +72,7 @@ abstract class AbstractFetchController extends RCItemSyncController<
             direction === QUERY_DIRECTION.OLDER
               ? SYNC_DIRECTION.OLDER
               : SYNC_DIRECTION.NEWER,
+            false,
           ),
         );
         this._badgeController.handleCallLogs(results);

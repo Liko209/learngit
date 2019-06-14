@@ -56,9 +56,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
         if (audio && !phoneStore.audioCache.get(this._id)) {
           phoneStore.addAudio(this._id, {
             ...audio,
-            downloadUrl: await this.voicemailService.buildDownloadUrl(
-              audio.uri,
-            ),
+            downloadUrl: '',
             startTime: 0,
           });
         }
@@ -147,8 +145,9 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   }
 
   @action
-  onBeforePlay = () => {
+  onBeforePlay = async () => {
     this.shouldPause = false;
+
     if (!this.selected) {
       this._phoneStore.setVoicemailId(this._id);
     }
@@ -156,7 +155,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   }
 
   @action
-  onBeforeAction = (status: JuiAudioStatus) => {
+  onBeforeAction = async (status: JuiAudioStatus) => {
     if (status === JuiAudioStatus.PAUSE) {
       analyticsCollector.playPauseVoicemail(
         ANALYTICS_KEY.VOICEMAIL_ACTION_PAUSE,
@@ -167,12 +166,20 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
       analyticsCollector.playPauseVoicemail(
         ANALYTICS_KEY.VOICEMAIL_ACTION_PLAY,
       );
+      if (this.audio) {
+        const ret = await this.voicemailService.buildDownloadUrl(
+          this.audio.uri,
+        );
+        this._phoneStore.updateAudio(this._id, {
+          downloadUrl: ret,
+        });
+      }
       return;
     }
   }
 
   @action
-  updateAudioUri = async () => {
+  onError = () => {
     Notification.flashToast({
       message: 'phone.prompt.playVoicemailLoadError',
       autoHideDuration: FLASH_TOAST_DURATION,
@@ -180,13 +187,6 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
       fullWidth: false,
       dismissible: false,
       messageAlign: ToastMessageAlign.LEFT,
-    });
-
-    if (!this.audio) {
-      return;
-    }
-    this._phoneStore.updateAudio(this._id, {
-      downloadUrl: await this.voicemailService.buildDownloadUrl(this.audio.uri),
     });
   }
 

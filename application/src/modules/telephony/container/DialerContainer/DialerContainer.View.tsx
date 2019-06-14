@@ -7,20 +7,19 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { DialPad } from 'jui/pattern/Dialer';
-import _ from 'lodash';
 import { DialerContainerViewProps, DialerContainerViewState } from './types';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
-import { sleep } from '../../helpers';
 import {
   CallControlPanel,
   DialerPanel,
   ContactSearchPanel,
   KeypadPanel,
 } from './panels';
-import { RuiTooltipProps } from 'rcui/components/Tooltip';
 
 type Props = DialerContainerViewProps & WithTranslation;
+
+const CLOSE_TOOLTIP_TIME = 5000;
 
 @observer
 class DialerContainerViewComponent extends React.Component<
@@ -33,7 +32,7 @@ class DialerContainerViewComponent extends React.Component<
     !this.props.hasDialerOpened && !this.props.shouldCloseToolTip;
 
   state = {
-    shouldShowToolTip: false,
+    shouldShowToolTip: true,
   };
 
   _onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -41,27 +40,7 @@ class DialerContainerViewComponent extends React.Component<
     this.props.setCallerPhoneNumber(value);
   }
 
-  async componentDidMount() {
-    if (this._shouldShowToolTip) {
-      const { timer, promise } = sleep(1000);
-      this._waitForAnimationEndTimer = timer;
-      await promise;
-      this.setState({
-        shouldShowToolTip: this._shouldShowToolTip,
-      });
-      // this._toggleToolTip(true);
-      const toggler = sleep(5000);
-      this._timer = toggler.timer;
-      await toggler.promise;
-      // this._toggleToolTip(false);
-      this.setState({
-        shouldShowToolTip: false,
-      });
-
-      delete this._waitForAnimationEndTimer;
-      delete this._timer;
-    }
-
+  componentDidMount() {
     this.props.onAfterDialerOpen();
   }
 
@@ -72,6 +51,22 @@ class DialerContainerViewComponent extends React.Component<
     if (this._waitForAnimationEndTimer) {
       clearTimeout(this._waitForAnimationEndTimer);
     }
+  }
+
+  componentDidUpdate() {
+    const { enteredDialer } = this.props;
+    const { shouldShowToolTip } = this.state;
+    if (enteredDialer && shouldShowToolTip) {
+      this._timer = setTimeout(this._handleCloseToolTip, CLOSE_TOOLTIP_TIME);
+    }
+  }
+
+  private _handleCloseToolTip = () => {
+    const { enteredDialer } = this.props;
+    enteredDialer &&
+      this.setState({
+        shouldShowToolTip: false,
+      });
   }
 
   render() {
@@ -90,11 +85,14 @@ class DialerContainerViewComponent extends React.Component<
       dtmfThroughKeyboard,
       dialerFocused,
       shouldCloseToolTip,
+      enteredDialer,
     } = this.props;
+
+    const { shouldShowToolTip } = this.state;
 
     const callerIdProps = {
       value: chosenCallerPhoneNumber,
-      menu: callerPhoneNumberList.map((callerPhoneNumber) => {
+      menu: callerPhoneNumberList.map(callerPhoneNumber => {
         return Object.assign({}, callerPhoneNumber, {
           usageType:
             callerPhoneNumber.usageType === PhoneNumberType.NickName
@@ -115,10 +113,14 @@ class DialerContainerViewComponent extends React.Component<
       onChange: this._onChange,
     };
 
-    const tooltipProps: Partial<RuiTooltipProps> = {
+    const tooltipProps = {
       title: t('telephony.callerIdSelector.tooltip') as string,
-      open: this.state.shouldShowToolTip,
-      tooltipForceHide: this.state.shouldShowToolTip || shouldCloseToolTip,
+      open:
+        this._shouldShowToolTip &&
+        enteredDialer &&
+        shouldShowToolTip &&
+        !shouldCloseToolTip,
+      tooltipForceHide: this._shouldShowToolTip || shouldCloseToolTip,
     };
 
     if (isDialer) {

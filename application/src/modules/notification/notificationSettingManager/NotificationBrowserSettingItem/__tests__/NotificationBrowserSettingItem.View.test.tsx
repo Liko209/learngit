@@ -9,8 +9,20 @@ import React from 'react';
 import SettingModel from '@/store/models/UserSetting';
 import { DesktopNotificationsSettingModel } from 'sdk/module/profile';
 import { shallow } from 'enzyme';
+import {
+  ERROR_CODES_NETWORK,
+  JNetworkError,
+  JServerError,
+  ERROR_CODES_SERVER,
+} from 'sdk/error';
+import { Notification } from '@/containers/Notification';
+jest.mock('@/containers/Notification');
 
-function setUpMock(browserPermission: NotificationPermission) {
+function setUpMock(
+  browserPermission: NotificationPermission,
+  errorType?: 'network' | 'server',
+) {
+  Notification.flashToast = jest.fn().mockImplementation(() => {});
   return {
     settingItemEntity: {
       value: {
@@ -19,7 +31,14 @@ function setUpMock(browserPermission: NotificationPermission) {
         desktopNotifications: browserPermission === 'granted',
       },
     } as SettingModel<DesktopNotificationsSettingModel>,
-    setToggleState: jest.fn().mockImplementation(() => {}),
+    setToggleState: jest.fn().mockImplementation(() => {
+      if (errorType === 'network') {
+        throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK');
+      }
+      if (errorType === 'server') {
+        throw new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
+      }
+    }),
   };
 }
 
@@ -82,6 +101,30 @@ describe('NotificationBrowserSettingItemView', () => {
       );
       await wrapper.instance().handleToggleChange(null, true);
       expect(wrapper.state('dialogOpen')).toBeTruthy();
+    });
+    it('Should display flash toast notification when setToggleState failed for network issue', async () => {
+      const props = setUpMock('granted', 'network');
+      const wrapper = shallow(
+        <NotificationBrowserSettingItemView {...props} />,
+      );
+      await wrapper.instance().handleToggleChange(null, true);
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'setting.errorText.network',
+        }),
+      );
+    });
+    it('Should display flash toast notification when setToggleState failed for server issue', async () => {
+      const props = setUpMock('granted', 'server');
+      const wrapper = shallow(
+        <NotificationBrowserSettingItemView {...props} />,
+      );
+      await wrapper.instance().handleToggleChange(null, true);
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'setting.errorText.server',
+        }),
+      );
     });
   });
 });

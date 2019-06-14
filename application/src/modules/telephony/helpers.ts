@@ -61,6 +61,14 @@ export const focusCampo = (inputField: HTMLInputElement | any) => {
   });
 };
 
+export const getDisplayName = (t: Function, name?: string): string => {
+  return typeof name !== 'string'
+    ? ''
+    : name.length
+    ? name
+    : t('telephony.unknownCaller');
+};
+
 export function sleep(timeout: number = 0) {
   let timer: any;
   const promise = new Promise((resolve) => {

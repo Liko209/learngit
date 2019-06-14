@@ -153,10 +153,7 @@ class TelephonyEngineController {
   async createAccount() {
     // Engine can hold multiple accounts for multiple calls
     this._preCallingPermission = await this.getVoipCallPermission();
-    this.rtcEngine.setUserInfo({
-      endpointId: this.getEndpointId(),
-      userAgent: PlatformUtils.getRCUserAgent(),
-    });
+    this.rtcEngine.setUserInfo(await this.getUserInfo());
     if (this._preCallingPermission) {
       this._accountController = new TelephonyAccountController(this.rtcEngine);
       this._accountDelegate &&

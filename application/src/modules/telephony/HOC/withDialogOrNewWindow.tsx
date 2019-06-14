@@ -22,6 +22,7 @@ import { TELEPHONY_SERVICE } from '../interface/constant';
 
 const FOCUS_IN_EVT = 'focusin';
 const BLUR = 'blur';
+const SYNC_DIALER_ENTERED = 300;
 
 function copyStyles(sourceDoc: Document, targetDoc: Document) {
   Array.from(sourceDoc.styleSheets).forEach((styleSheet: CSSStyleSheet) => {
@@ -155,6 +156,17 @@ function withDialogOrNewWindow<T>(
       }
     }
 
+    private _handleEntered = () => {
+      setTimeout(
+        () => this._telephonyStore.syncDialerEntered(true),
+        SYNC_DIALER_ENTERED,
+      );
+    }
+
+    private _handleExited = () => {
+      this._telephonyStore.syncDialerEntered(false);
+    }
+
     private _handleStart = () => {
       document.body.appendChild(this._backdrop);
     }
@@ -261,6 +273,8 @@ function withDialogOrNewWindow<T>(
           onStart={this._handleStart}
           onStop={this._handleStop}
           ref={this._containerRef}
+          onEntered={this._handleEntered}
+          onExited={this._handleExited}
         >
           <Component {...this.props} />
         </JuiDraggableDialog>

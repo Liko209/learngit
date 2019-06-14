@@ -101,7 +101,7 @@ class AppModule extends AbstractModule {
       window.jupiterElectron.onPowerMonitorEvent = (actionName: string) => {
         socketManager.onPowerMonitorEvent(actionName);
       };
-      window.jupiterElectron.onUpgradeEvent = showUpgradeDialog;
+      window.jupiterElectron.handleNativeUpgrade = showUpgradeDialog;
     }
 
     // subscribe service notification to global store

@@ -226,7 +226,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get dialButton() {
-    return this.getSelectorByAutomationId('telephony-end-btn');
+    return this.getSelectorByAutomationId('telephony-dial-btn');
   }
 
   async keysRecordShouldBe(text: string) {
@@ -353,7 +353,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get callerIdSelector() {
-    return this.getSelectorByAutomationId('callerIdSelector', this.self);
+    return this.getSelectorByAutomationId('caller-id-selector', this.self);
   }
 
   async currentCallerIdShoulebe(text: string) {

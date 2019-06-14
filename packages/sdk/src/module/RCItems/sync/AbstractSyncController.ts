@@ -48,7 +48,8 @@ abstract class AbstractSyncController<
   async doSync(
     isSilent: boolean,
     direction: SYNC_DIRECTION,
-    recordCount?: number,
+    needNotification = true,
+    recordCount = DEFAULT_RECORD_COUNT,
   ): Promise<T[]> {
     if (!(await this.hasPermission()) || this._isInClear()) {
       mainLogger
@@ -71,6 +72,7 @@ abstract class AbstractSyncController<
         SYNC_TYPE.ISYNC,
         direction,
         recordCount,
+        needNotification,
       ).catch((reason: JError) => {
         mainLogger
           .tags(this.syncName)
@@ -94,6 +96,7 @@ abstract class AbstractSyncController<
           SYNC_TYPE.ISYNC,
           SYNC_DIRECTION.NEWER,
           recordCount,
+          needNotification,
         ).catch((reason: JError) => {
           mainLogger
             .tags(this.syncName)
@@ -173,6 +176,7 @@ abstract class AbstractSyncController<
     syncType: SYNC_TYPE,
     direction?: SYNC_DIRECTION,
     recordCount?: number,
+    needNotification?: boolean,
   ): Promise<T[]> {
     let fetchCount: UndefinedAble<number> = undefined;
     if (syncType === SYNC_TYPE.FSYNC) {
@@ -184,7 +188,7 @@ abstract class AbstractSyncController<
     mainLogger
       .tags(this.syncName)
       .info(
-        `start sync, isSilent${isSilent}, type:${syncType}, direction:${direction}, count:${fetchCount}`,
+        `start sync, isSilent: ${isSilent}, type:${syncType}, direction:${direction}, count:${fetchCount}`,
       );
 
     const syncToken = await this.getSyncToken();
@@ -199,7 +203,12 @@ abstract class AbstractSyncController<
         mainLogger
           .tags(this.syncName)
           .info(`sync success, size:${result.records.length}`, result.syncInfo);
-        return await this._handleSuccessResponse(result, isSilent, fetchCount);
+        return await this._handleSuccessResponse(
+          result,
+          isSilent,
+          fetchCount,
+          needNotification,
+        );
       })
       .catch(async (reason: JError) => {
         await this._handleFailedResponse(reason);
@@ -240,6 +249,7 @@ abstract class AbstractSyncController<
     result: RCItemSyncResponse<T>,
     isSilent: boolean,
     count?: number,
+    needNotification?: boolean,
   ): Promise<T[]> {
     const data = await this.handleDataAndSave(result);
     if (this.canUpdateSyncToken(result.syncInfo)) {
@@ -248,13 +258,13 @@ abstract class AbstractSyncController<
     if (count && result.records.length < count) {
       await this.setHasMore(false);
     }
-    if (isSilent) {
-      if (result.syncInfo.syncType === SYNC_TYPE.FSYNC) {
-        notificationCenter.emitEntityReload(this._entityKey, [], true);
-      } else {
-        data.length &&
-          notificationCenter.emitEntityUpdate<T, IdType>(this._entityKey, data);
-      }
+
+    if (isSilent && result.syncInfo.syncType === SYNC_TYPE.FSYNC) {
+      notificationCenter.emitEntityReload(this._entityKey, [], true);
+    }
+
+    if (needNotification && data.length) {
+      notificationCenter.emitEntityUpdate<T, IdType>(this._entityKey, data);
     }
     return data;
   }

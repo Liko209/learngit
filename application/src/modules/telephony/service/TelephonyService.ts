@@ -577,7 +577,10 @@ class TelephonyService {
   }
 
   getAllCallCount = () => {
-    return this._serverTelephonyService.getAllCallCount();
+    return (
+      this._serverTelephonyService &&
+      this._serverTelephonyService.getAllCallCount()
+    );
   }
 
   holdOrUnhold = () => {

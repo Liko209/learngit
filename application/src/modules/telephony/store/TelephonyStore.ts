@@ -149,6 +149,9 @@ class TelephonyStore {
   @observable
   firstLetterEnteredThroughKeypad: boolean;
 
+  @observable
+  enteredDialer: boolean = false;
+
   constructor() {
     type FSM = '_callWindowFSM';
     type FSMProps = 'callWindowState';
@@ -194,6 +197,9 @@ class TelephonyStore {
 
   @computed
   get displayName() {
+    if (!this.isContactMatched) {
+      return undefined;
+    }
     if (this.person) {
       return this.person.userDisplayName;
     }
@@ -357,6 +363,7 @@ class TelephonyStore {
     this._clearForwardString();
     this.callerName = undefined;
     this.phoneNumber = undefined;
+    this.isContactMatched = false;
     this._clearHistory();
   }
 
@@ -590,6 +597,11 @@ class TelephonyStore {
         ? CALL_TYPE.INBOUND
         : CALL_TYPE.OUTBOUND
       : CALL_TYPE.NULL;
+  }
+
+  @action
+  syncDialerEntered(entered: boolean) {
+    this.enteredDialer = entered;
   }
 }
 

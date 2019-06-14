@@ -54,12 +54,9 @@ class SocketRequestHelper implements ISocketRequestManager {
   }
 
   private _setRequestTimer(request: SocketRequest, reject: any) {
-    const timerId = window.setTimeout(
-      this._onRequestTimeout,
-      request.timeout,
-      request.id,
-      reject,
-    );
+    const timerId = window.setTimeout(() => {
+      this._onRequestTimeout(request.id, reject);
+    },                                request.timeout);
     this.requestTimerMap.set(request.id, { timerId, request, reject });
   }
 
