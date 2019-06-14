@@ -77,9 +77,6 @@ class TelephonyService {
   private _callerPhoneNumberDisposer: IReactionDisposer;
   private _incomingCallDisposer: IReactionDisposer;
 
-  // for end call
-  uiCallStartTime: number;
-
   private _onAccountStateChanged = (state: RTC_ACCOUNT_STATE) => {
     mainLogger.debug(
       `${TelephonyService.TAG}[Telephony_Service_Account_State]: ${state}`,
@@ -107,7 +104,6 @@ class TelephonyService {
     }
     const { fromName, fromNum, callId } = callInfo;
     this._callId = callId;
-    this.uiCallStartTime = +new Date();
     this._telephonyStore.callType = CALL_TYPE.INBOUND;
     this._telephonyStore.callerName = fromName;
     const phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
@@ -524,7 +520,6 @@ class TelephonyService {
         TelephonyService.TAG
       }Make call with fromNumber: ${fromNumber}， and toNumber: ${toNumber}`,
     );
-    this.uiCallStartTime = +new Date();
     const rv = await this._serverTelephonyService.makeCall(
       toNumber,
       fromNumber,
@@ -682,7 +677,10 @@ class TelephonyService {
   }
 
   getAllCallCount = () => {
-    return this._serverTelephonyService && this._serverTelephonyService.getAllCallCount();
+    return (
+      this._serverTelephonyService &&
+      this._serverTelephonyService.getAllCallCount()
+    );
   }
 
   holdOrUnhold = () => {

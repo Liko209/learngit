@@ -164,21 +164,18 @@ class TelephonyStore {
   @observable
   firstLetterEnteredThroughKeypad: boolean;
 
-  constructor() {
-    type FSM = '_callWindowFSM' | '_recordFSM' | '_recordDisableFSM';
-    type FSMProps = 'callWindowState' | 'recordState' | 'recordDisabledState';
+  // for end call
+  uiCallStartTime: number;
 
+  constructor() {
     [
       ['_callWindowFSM', 'callWindowState'],
       ['_recordFSM', 'recordState'],
       ['_recordDisableFSM', 'recordDisabledState'],
-    ].forEach(([fsm, observableProp]: [FSM, FSMProps]) => {
+    ].forEach(([fsm, observableProp]) => {
       this[fsm].observe('onAfterTransition', (lifecycle: LifeCycle) => {
         const { to } = lifecycle;
-        this[observableProp] = to as
-          | CALL_WINDOW_STATUS
-          | RECORD_STATE
-          | RECORD_DISABLED_STATE;
+        this[observableProp] = to;
       });
     });
 
@@ -220,6 +217,7 @@ class TelephonyStore {
           break;
         case CALL_STATE.CONNECTING:
           this.activeCallTime = undefined;
+          this.uiCallStartTime = Date.now();
           break;
         default:
           setTimeout(() => {
@@ -245,7 +243,7 @@ class TelephonyStore {
 
     reaction(
       () => this.inputString.length,
-      (length) => {
+      length => {
         if (!length) {
           this.firstLetterEnteredThroughKeypad = false;
         }
