@@ -29,7 +29,7 @@ describe('CallActionsVM', () => {
     expect(rv);
   });
 
-  it('park item should be disabled when the call is hold [JPT-2171]', () => {
+  it.skip('park item should be disabled when the call is hold [JPT-2171]', () => {
     const store = container.get(TelephonyStore);
     store.holdState = HOLD_STATE.HOLDED;
     const rv = vm.callActionsMap[CALL_ACTION.PARK].shouldDisableAction;
