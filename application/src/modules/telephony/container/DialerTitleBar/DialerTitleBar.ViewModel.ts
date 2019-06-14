@@ -13,7 +13,6 @@ import { TelephonyStore } from '../../store';
 
 class DetachOrAttachViewModel extends StoreViewModel<DialerTitleBarProps>
   implements DialerTitleBarViewProps {
-  @observable
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
 
   constructor(props: DialerTitleBarProps) {

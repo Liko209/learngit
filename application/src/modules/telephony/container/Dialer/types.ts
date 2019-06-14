@@ -7,7 +7,7 @@
 type DialerProps = {};
 
 type DialerViewProps = {
-  hasIncomingCall: boolean;
+  isIncomingCall: boolean;
   keypadEntered: boolean;
   dialerId: string;
   dialerMinimizeTranslateX: number;

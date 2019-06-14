@@ -20,8 +20,8 @@ class DialerViewComponent extends React.Component<DialerViewProps> {
   dialerHeaderRef: RefObject<any> = createRef();
 
   renderDialer = () => {
-    const { hasIncomingCall, keypadEntered } = this.props;
-    if (hasIncomingCall) return <Incoming />;
+    const { isIncomingCall, keypadEntered } = this.props;
+    if (isIncomingCall) return <Incoming />;
 
     return (
       <>

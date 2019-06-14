@@ -50,19 +50,19 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
     this._disposer = reaction(
       () => ({
         callState: this._telephonyStore.callState,
-        hasIncomingCall: this._telephonyStore.hasIncomingCall,
+        isIncomingCall: this._telephonyStore.isIncomingCall,
         isContactMatched: this._telephonyStore.isContactMatched,
       }),
       ({
         callState,
-        hasIncomingCall,
+        isIncomingCall,
         isContactMatched,
       }: {
         callState: CALL_STATE;
-        hasIncomingCall: boolean;
+        isIncomingCall: boolean;
         isContactMatched: boolean;
       }) => {
-        if (hasIncomingCall && isContactMatched) {
+        if (isIncomingCall && isContactMatched) {
           this.shouldShowNotification && this._showNotification();
         } else {
           const shouldCloseNotification = [

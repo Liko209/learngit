@@ -536,7 +536,7 @@ class TelephonyStore {
   }
 
   @computed
-  get hasIncomingCall() {
+  get isIncomingCall() {
     return this.callState === CALL_STATE.IDLE && this.inbound;
   }
 
@@ -592,11 +592,14 @@ class TelephonyStore {
 
   @computed
   get callType() {
-    return this.call.direction
-      ? this.inbound
-        ? CALL_TYPE.INBOUND
-        : CALL_TYPE.OUTBOUND
-      : CALL_TYPE.NULL;
+    switch (true) {
+      case this.inbound:
+        return CALL_TYPE.INBOUND;
+      case this.outbound:
+        return CALL_TYPE.OUTBOUND;
+      default:
+        return CALL_TYPE.NULL;
+    }
   }
 
   @action

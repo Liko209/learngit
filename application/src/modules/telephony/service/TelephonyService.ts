@@ -152,7 +152,7 @@ class TelephonyService {
           this._pauseRingtone();
           ['mousedown', 'keydown'].forEach(evt => {
             const cb = () => {
-              if (!this._telephonyStore.hasIncomingCall) {
+              if (!this._telephonyStore.isIncomingCall) {
                 return;
               }
               this._playRingtone();
@@ -330,9 +330,9 @@ class TelephonyService {
     );
 
     this._incomingCallDisposer = reaction(
-      () => this._telephonyStore.hasIncomingCall,
-      hasIncomingCall => {
-        if (hasIncomingCall) {
+      () => this._telephonyStore.isIncomingCall,
+      isIncomingCall => {
+        if (isIncomingCall) {
           this._playRingtone();
         } else {
           this._pauseRingtone();
