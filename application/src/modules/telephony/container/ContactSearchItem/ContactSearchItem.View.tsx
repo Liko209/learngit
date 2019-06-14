@@ -13,6 +13,7 @@ import { JuiIconButton } from 'jui/components/Buttons';
 import { ContactSearchItemViewProps } from './types';
 import { observer } from 'mobx-react';
 import { ContactSearchItemContent as ItemContent } from 'jui/pattern/Dialer';
+import { ROW_HEIGHT } from '../ContactSearchList/constants';
 
 type Props = WithTranslation & ContactSearchItemViewProps;
 
@@ -44,6 +45,7 @@ class ContactSearchItemViewComponent extends Component<Props> {
 
     return (
       <JuiMenuItem
+        style={{ height: ROW_HEIGHT }}
         selected={selected}
         avatar={
           <Avatar
@@ -68,7 +70,6 @@ class ContactSearchItemViewComponent extends Component<Props> {
               variant="plain"
               color="primary.600"
               size="medium"
-              onClick={onClick}
               disableToolTip={true}
               data-test-automation-id="telephony-contact-search-list_item-dial_button"
             >

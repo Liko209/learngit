@@ -18,7 +18,7 @@ const MIN_BREAKPOINT = 400;
 const JuiSettingSectionContainer = styled.div<JuiSettingSectionContainerProps>`
   && {
     ${({ containerWidth = 0 }) => {
-      if (containerWidth > MAX_BREAKPOINT) {
+      if (containerWidth >= MAX_BREAKPOINT) {
         return css`
           padding: ${spacing(4)} ${(containerWidth - MAX_WIDTH) / 2}px;
           > div {

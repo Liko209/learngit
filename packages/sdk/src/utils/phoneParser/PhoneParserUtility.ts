@@ -16,7 +16,7 @@ import {
   mainLogger,
 } from 'foundation';
 import notificationCenter from '../../service/notificationCenter';
-import { RC_INFO } from '../../service/eventKey';
+import { RC_INFO, SERVICE } from '../../service/eventKey';
 import { RCInfoService } from '../../module/rcInfo';
 import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
 import { StationSettingInfo } from './types';
@@ -43,7 +43,7 @@ class PhoneParserUtility {
     );
   }
 
-  static onPhoneDataChange = () => {
+  static triggerInitPhoneParser = () => {
     PhoneParserUtility.initPhoneParser(true);
   }
 
@@ -60,7 +60,12 @@ class PhoneParserUtility {
 
     notificationCenter.on(
       RC_INFO.PHONE_DATA,
-      PhoneParserUtility.onPhoneDataChange,
+      PhoneParserUtility.triggerInitPhoneParser,
+    );
+
+    notificationCenter.on(
+      SERVICE.LOGIN,
+      PhoneParserUtility.triggerInitPhoneParser,
     );
 
     const performanceTracer = PerformanceTracer.initial();
@@ -103,7 +108,12 @@ class PhoneParserUtility {
 
       notificationCenter.off(
         RC_INFO.PHONE_DATA,
-        PhoneParserUtility.onPhoneDataChange,
+        PhoneParserUtility.triggerInitPhoneParser,
+      );
+
+      notificationCenter.off(
+        SERVICE.LOGIN,
+        PhoneParserUtility.triggerInitPhoneParser,
       );
 
       PhoneParserUtility._loadingQueue.forEach(resolve => {

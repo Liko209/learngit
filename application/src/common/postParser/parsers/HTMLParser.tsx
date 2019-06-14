@@ -10,6 +10,7 @@ import {
   getComplementRanges,
   MATCH_ALL_REGEX,
   AT_MENTION_GROUPED_REGEXP,
+  b64EncodeUnicode,
 } from '../utils';
 import React from 'react';
 import { Markdown, Remove_Markdown } from 'glipdown';
@@ -43,7 +44,7 @@ class HTMLParser extends PostParser implements IPostParser {
           })
           .replace(
             AT_MENTION_GROUPED_REGEXP, // we need to encode the text inside atmention so it won't get parsed first, for example when some crazy user name is a url
-            (full, g1, g2, g3) => `${g1}${btoa(g2)}${g3}`,
+            (full, g1, g2, g3) => `${g1}${b64EncodeUnicode(g2)}${g3}`,
           );
       }
       const htmlText = withGlipdown ? Markdown(match) : match;
