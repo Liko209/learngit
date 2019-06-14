@@ -15,6 +15,7 @@ import { ItemService } from 'sdk/module/item/service';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 
+const GET_NOTE_ERROR = 'Error';
 class NoteViewModel extends StoreViewModel<NoteProps> implements NoteViewProps {
   @computed
   get _items() {
@@ -51,10 +52,11 @@ class NoteViewModel extends StoreViewModel<NoteProps> implements NoteViewProps {
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
     );
+    if (!this._items || !this._items[0]) return GET_NOTE_ERROR;
     try {
-      return await itemService.getNoteBody(2138130);
+      return await itemService.getNoteBody(this._items[0].id);
     } catch (error) {
-      return false;
+      return GET_NOTE_ERROR;
     }
   }
 }

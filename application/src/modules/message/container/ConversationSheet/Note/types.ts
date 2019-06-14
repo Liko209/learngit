@@ -12,7 +12,7 @@ type NoteViewProps = {
   title: string;
   summary: string;
   getShowDialogPermission: () => Promise<boolean>;
-  getBodyInfo: () => Promise<string | false>;
+  getBodyInfo: () => Promise<string>;
 };
 
 export { NoteProps, NoteViewProps };
