@@ -26,7 +26,10 @@ import { CallLogDao } from '../dao';
 import { CallLogUserConfig } from '../config/CallLogUserConfig';
 import { mainLogger } from 'foundation';
 import { PseudoCallLogInfo } from '../types';
-import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
+import { PhoneNumberType, PhoneNumber } from 'sdk/module/phoneNumber/entity';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { AccountService } from 'sdk/module/account';
+import { PersonService } from 'sdk/module/person';
 
 const LOG_TAG = 'CallLogHandleDataController';
 
@@ -94,6 +97,7 @@ class CallLogHandleDataController {
           this._hasValidDataInActiveCall(call) &&
           this._isAnEndCall(call) &&
           !pseudos[call.sessionId] &&
+          !this._isSelfCall(call) &&
           !(await this._getCallLogBySessionId(call.sessionId))
         ) {
           const pseudoId = call.sessionId + call.direction;
@@ -143,6 +147,22 @@ class CallLogHandleDataController {
       call.telephonyStatus === TELEPHONY_STATUS.NoCall &&
       call.terminationType === 'final'
     );
+  }
+
+  private async _isSelfCall(call: ActiveCall): Promise<boolean> {
+    const phoneNumber = call.direction === CALL_DIRECTION.INBOUND ? call.from : call.to;
+    let result = false;
+    const id: number = ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE).userConfig.getGlipUserId();
+    const personService = ServiceLoader.getInstance<PersonService>(ServiceConfig.PERSON_SERVICE);
+    const currentUser = await personService.getById(id);
+    if (currentUser) {
+      personService.getPhoneNumbers(currentUser, (data: PhoneNumber) => {
+        if (data.id === phoneNumber) {
+          result = true;
+        }
+      });
+    }
+    return result;
   }
 
   private async _getCallLogBySessionId(
