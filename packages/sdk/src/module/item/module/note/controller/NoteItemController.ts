@@ -5,7 +5,6 @@
  */
 
 import ItemAPI from 'sdk/api/glip/item';
-import { CSSStringForNotePage } from './constants';
 class NoteItemController {
   constructor() {}
 
@@ -15,7 +14,7 @@ class NoteItemController {
   }
 
   private _buildNoteBody(body: string) {
-    return `<html><head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\" charset=\"utf-8\"/>${CSSStringForNotePage}</head> <body>${body}</body></html>`;
+    return `<html><head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\" charset=\"utf-8\"/></head> <body>${body}</body></html>`;
   }
 }
 
