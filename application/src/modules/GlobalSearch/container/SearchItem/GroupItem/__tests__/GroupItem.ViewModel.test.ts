@@ -149,5 +149,15 @@ describe('GroupItemViewModel', () => {
       const groupItemViewModel = new GroupItemViewModel({} as Props);
       expect(groupItemViewModel.shouldHidden).toBeTruthy();
     });
+    it('If user does not have permission to visit the group or team should be hidden', () => {
+      (getEntity as jest.Mock).mockReturnValue({
+        isTeam: undefined,
+        isMember: undefined,
+        privacy: undefined,
+        isArchived: undefined,
+      });
+      const groupItemViewModel = new GroupItemViewModel({} as Props);
+      expect(groupItemViewModel.shouldHidden).toBeTruthy();
+    });
   });
 });
