@@ -77,8 +77,6 @@ class TelephonyService {
   private _callerPhoneNumberDisposer: IReactionDisposer;
   private _incomingCallDisposer: IReactionDisposer;
 
-  uiCallStartTime: number;
-
   private _onAccountStateChanged = (state: RTC_ACCOUNT_STATE) => {
     mainLogger.debug(
       `${TelephonyService.TAG}[Telephony_Service_Account_State]: ${state}`,
@@ -95,7 +93,6 @@ class TelephonyService {
     // if has incoming call voicemail should be pause
     storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, true);
     this._callId = callId;
-    this.uiCallStartTime = +new Date();
     this._telephonyStore.callType = CALL_TYPE.OUTBOUND;
     this._telephonyStore.directCall();
   }
@@ -107,7 +104,6 @@ class TelephonyService {
     }
     const { fromName, fromNum, callId } = callInfo;
     this._callId = callId;
-    this.uiCallStartTime = +new Date();
     this._telephonyStore.callType = CALL_TYPE.INBOUND;
     this._telephonyStore.callerName = fromName;
     const phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
@@ -681,7 +677,10 @@ class TelephonyService {
   }
 
   getAllCallCount = () => {
-    return this._serverTelephonyService && this._serverTelephonyService.getAllCallCount();
+    return (
+      this._serverTelephonyService &&
+      this._serverTelephonyService.getAllCallCount()
+    );
   }
 
   holdOrUnhold = () => {

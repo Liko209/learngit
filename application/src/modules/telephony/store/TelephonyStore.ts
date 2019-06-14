@@ -164,24 +164,21 @@ class TelephonyStore {
   @observable
   firstLetterEnteredThroughKeypad: boolean;
 
+  // for end call
+  uiCallStartTime: number;
+
   @observable
   enteredDialer: boolean = false;
 
   constructor() {
-    type FSM = '_callWindowFSM' | '_recordFSM' | '_recordDisableFSM';
-    type FSMProps = 'callWindowState' | 'recordState' | 'recordDisabledState';
-
     [
       ['_callWindowFSM', 'callWindowState'],
       ['_recordFSM', 'recordState'],
       ['_recordDisableFSM', 'recordDisabledState'],
-    ].forEach(([fsm, observableProp]: [FSM, FSMProps]) => {
+    ].forEach(([fsm, observableProp]) => {
       this[fsm].observe('onAfterTransition', (lifecycle: LifeCycle) => {
         const { to } = lifecycle;
-        this[observableProp] = to as
-          | CALL_WINDOW_STATUS
-          | RECORD_STATE
-          | RECORD_DISABLED_STATE;
+        this[observableProp] = to;
       });
     });
 
@@ -221,6 +218,9 @@ class TelephonyStore {
           this.isMute = false;
           this.phoneNumber = undefined;
           this.isContactMatched = false;
+          break;
+        case CALL_STATE.CONNECTING:
+          this.uiCallStartTime = Date.now();
           break;
       }
     });
