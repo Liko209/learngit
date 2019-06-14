@@ -3,7 +3,7 @@
  * @Date: 2019-05-27 18:07:46
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React from 'react';
 import { IPhoneNumberRecord } from 'sdk/api/ringcentral/types/common';
 
 import { withTranslation, WithTranslation } from 'react-i18next';
