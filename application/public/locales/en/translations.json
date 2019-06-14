@@ -823,7 +823,7 @@
         "description": "Update the volume"
       }
     },
-    "default": "Default",
+    "useDefault": "Use system default",
     "speaker": "Speaker",
     "noDevices": "No devices",
     "microphone": "Microphone",
