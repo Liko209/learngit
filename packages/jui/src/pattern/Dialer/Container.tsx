@@ -47,6 +47,7 @@ const StyledKeypadActionsContainer = styled('div')`
     flex-direction: column;
     justify-content: center;
     position: relative;
+    cursor: default;
   }
 `;
 

@@ -22,6 +22,7 @@ interface IUserSettingHandler<T = any> {
 }
 
 interface IModuleSetting {
+  has(id: SettingEntityIds): boolean;
   getById<T>(id: SettingEntityIds): Promise<Nullable<UserSettingEntity<T>>>;
   init(): void;
   dispose(): void;

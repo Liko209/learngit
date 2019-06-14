@@ -164,24 +164,21 @@ class TelephonyStore {
   @observable
   firstLetterEnteredThroughKeypad: boolean;
 
+  // for end call
+  uiCallStartTime: number;
+
   @observable
   enteredDialer: boolean = false;
 
   constructor() {
-    type FSM = '_callWindowFSM' | '_recordFSM' | '_recordDisableFSM';
-    type FSMProps = 'callWindowState' | 'recordState' | 'recordDisabledState';
-
     [
       ['_callWindowFSM', 'callWindowState'],
       ['_recordFSM', 'recordState'],
       ['_recordDisableFSM', 'recordDisabledState'],
-    ].forEach(([fsm, observableProp]: [FSM, FSMProps]) => {
+    ].forEach(([fsm, observableProp]) => {
       this[fsm].observe('onAfterTransition', (lifecycle: LifeCycle) => {
         const { to } = lifecycle;
-        this[observableProp] = to as
-          | CALL_WINDOW_STATUS
-          | RECORD_STATE
-          | RECORD_DISABLED_STATE;
+        this[observableProp] = to;
       });
     });
 
@@ -299,6 +296,7 @@ class TelephonyStore {
     if (to === from) {
       return;
     }
+    this.activeCallTime = undefined;
     this.callState = to as CALL_STATE;
     switch (this.callState) {
       case CALL_STATE.CONNECTED:
@@ -318,12 +316,7 @@ class TelephonyStore {
         this.isContactMatched = false;
         break;
       case CALL_STATE.CONNECTING:
-        this.activeCallTime = undefined;
-        break;
-      default:
-        setTimeout(() => {
-          this.activeCallTime = undefined;
-        },         300);
+        this.uiCallStartTime = Date.now();
         break;
     }
   }
