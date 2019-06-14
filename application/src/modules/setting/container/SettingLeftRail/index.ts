@@ -1,7 +1,9 @@
 /*
- * @Author: Conner (conner.kang@ringcentral.com)
- * @Date: 2019-04-02 10:29:39
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-05-27 11:03:33
  * Copyright © RingCentral. All rights reserved.
  */
-
+export * from './types';
+export * from './SettingLeftRail.View';
+export * from './SettingLeftRail.ViewModel';
 export * from './SettingLeftRail';

@@ -234,6 +234,12 @@ class PostFetchController {
           handledResult.hasMore,
         );
       }
+
+      handledResult.posts.length &&
+        this._groupService.handleGroupFetchedPosts(
+          groupId,
+          handledResult.posts,
+        );
       return handledResult;
     }
     return serverResult;

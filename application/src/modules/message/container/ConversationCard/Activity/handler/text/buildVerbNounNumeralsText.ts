@@ -1,3 +1,5 @@
+import { generateLocalizationKey } from './generateLocalizationKey';
+
 type Parameter = {
   verb: string;
   numerals: number;
@@ -5,12 +7,14 @@ type Parameter = {
 };
 
 export default ({ verb, numerals, noun }: Parameter) => {
+  const parameter = {
+    verb,
+    noun,
+    number: numerals,
+  };
+
   return {
-    parameter: {
-      verb,
-      noun,
-      count: numerals,
-    },
-    key: 'item.activity.verb-noun-numerals',
+    parameter,
+    key: generateLocalizationKey('verb-noun-numerals', parameter),
   };
 };

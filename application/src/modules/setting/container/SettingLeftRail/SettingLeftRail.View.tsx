@@ -1,29 +1,29 @@
 /*
- * @Author: Conner (conner.kang@ringcentral.com)
- * @Date: 2019-04-02 10:29:39
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-05-27 10:14:04
  * Copyright © RingCentral. All rights reserved.
  */
-
 import React, { Component } from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { withTranslation, WithTranslation } from 'react-i18next';
+import { observer } from 'mobx-react';
 import {
   JuiList,
   JuiListNavItem,
-  JuiListNavItemText,
   JuiListNavItemIconographyLeft,
+  JuiListNavItemText,
 } from 'jui/components';
-import { SettingLeftRailViewProps } from './types';
 import {
   JuiLeftRail,
   JuiLeftRailStickyTop,
 } from 'jui/pattern/LeftRail/LeftRail';
 import styled from 'jui/foundation/styled-components';
-import history from '@/history';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import { toTitleCase } from '@/utils/string';
-import { SETTING_ITEM } from '../constants';
-import { observer } from 'mobx-react';
 import { spacing } from 'jui/foundation/utils';
+import { toTitleCase } from '@/utils/string';
+import { SettingLeftRailViewProps } from './types';
+import { observable } from 'mobx';
 
+// TODO move to jui
 const StyledList = styled(JuiList)`
   && {
     padding-top: ${spacing(4.25)};
@@ -32,41 +32,23 @@ const StyledList = styled(JuiList)`
   }
 `;
 
-@observer
-class SettingLeftRailViewComponent extends Component<
-  SettingLeftRailViewProps & WithTranslation
-> {
-  onEntryClick = (type: string) => {
-    history.push(`/settings/${type}`);
-  }
+type Props = SettingLeftRailViewProps &
+  WithTranslation &
+  RouteComponentProps<{ subPath: string }>;
 
-  renderItems() {
-    const { t, leftRailItemIds, currentSettingListType, onClick } = this.props;
-    return (
-      <React.Fragment>
-        {leftRailItemIds.map((id, index) => {
-          const { testId, type, icon, title } = SETTING_ITEM[id];
-          return (
-            <JuiListNavItem
-              data-name="sub-setting"
-              data-test-automation-id={testId}
-              selected={type === currentSettingListType}
-              classes={{ selected: 'selected' }}
-              onClick={() => {
-                onClick(id);
-                this.onEntryClick(type);
-              }}
-              key={type}
-            >
-              <JuiListNavItemIconographyLeft iconSize="small">
-                {icon}
-              </JuiListNavItemIconographyLeft>
-              <JuiListNavItemText>{toTitleCase(t(title))}</JuiListNavItemText>
-            </JuiListNavItem>
-          );
-        })}
-      </React.Fragment>
-    );
+@observer
+class SettingLeftRailViewComponent extends Component<Props> {
+  @observable
+  selectedPath: string = `/${window.location.pathname.split('/').pop()}`;
+
+  componentDidMount() {
+    const { history } = this.props;
+    history.listen(location => {
+      const newSelectedPath = location.pathname.split('/').pop();
+      if (this.selectedPath !== newSelectedPath) {
+        this.selectedPath = `/${newSelectedPath}`;
+      }
+    });
   }
 
   render() {
@@ -74,16 +56,38 @@ class SettingLeftRailViewComponent extends Component<
       <JuiLeftRail>
         <JuiLeftRailStickyTop>
           <StyledList component="nav" data-test-automation-id="settingLeftRail">
-            {this.renderItems()}
+            {this._renderNavItems()}
           </StyledList>
         </JuiLeftRailStickyTop>
       </JuiLeftRail>
     );
   }
+
+  private _renderNavItems() {
+    const { t, pages, goToSettingPage } = this.props;
+
+    return pages.map(page => {
+      return (
+        <JuiListNavItem
+          data-name="sub-setting"
+          data-test-automation-id={`entry-${page.automationId}`}
+          selected={page.path === this.selectedPath}
+          classes={{ selected: 'selected' }}
+          onClick={() => goToSettingPage(page.id)}
+          key={page.id}
+        >
+          <JuiListNavItemIconographyLeft iconSize="small">
+            {page.icon}
+          </JuiListNavItemIconographyLeft>
+          <JuiListNavItemText>{toTitleCase(t(page.title))}</JuiListNavItemText>
+        </JuiListNavItem>
+      );
+    });
+  }
 }
 
 const SettingLeftRailView = withTranslation('translations')(
-  SettingLeftRailViewComponent,
+  withRouter(SettingLeftRailViewComponent),
 );
 
 export { SettingLeftRailView };

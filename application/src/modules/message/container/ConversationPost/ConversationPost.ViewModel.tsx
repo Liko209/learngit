@@ -32,6 +32,11 @@ class ConversationPostViewModel extends AbstractViewModel<
   }
 
   @computed
+  get conversationId() {
+    return this._post.groupId;
+  }
+
+  @computed
   get type(): POST_TYPE {
     const { key } = this._activityData;
     return getPostType(key);

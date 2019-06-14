@@ -6,6 +6,7 @@
 import { getGlobalValue, getEntity } from '../../utils/entities';
 import SectionGroupHandler from '../SectionGroupHandler';
 import { SECTION_TYPE } from '@/modules/message/container/LeftRail/Section/types';
+import { Notification } from '@/containers/Notification';
 import { ProfileService } from 'sdk/module/profile';
 import { StateService } from 'sdk/module/state';
 import { GroupService, Group } from 'sdk/module/group';
@@ -14,6 +15,7 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import preFetchConversationDataHandler from '../PreFetchConversationDataHandler';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
+jest.mock('@/containers/Notification');
 jest.mock('../PreFetchConversationDataHandler');
 jest.mock('sdk/api');
 jest.mock('sdk/module/profile');
@@ -494,6 +496,7 @@ describe('SectionGroupHandler', () => {
       setup();
       sectionGroupHandler = SectionGroupHandler.getInstance();
       sectionGroupHandler.onReady(() => done());
+      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
       groupService.isValid = jest.fn().mockImplementation((group: any) => {
         return (
           group && !group.is_archived && !group.deactivated && !!group.members
@@ -642,6 +645,50 @@ describe('SectionGroupHandler', () => {
             .getGroupIdsByType(SECTION_TYPE.TEAM)
             .sort(),
         ).toEqual([]);
+        done();
+      });
+    });
+
+    it('user was removed from current conversation', done => {
+      SectionGroupHandler.getInstance();
+      const putData = [
+        {
+          id: 2,
+          is_team: true,
+          created_at: 0,
+          members: [1],
+        },
+      ];
+      let isDelete = false;
+      groupService.getGroupsByType = jest
+        .fn()
+        .mockImplementation((groupType: GROUP_QUERY_TYPE) => {
+          if (groupType === GROUP_QUERY_TYPE.FAVORITE) {
+            return [];
+          }
+          if (groupType === GROUP_QUERY_TYPE.GROUP) {
+            return [];
+          }
+          return isDelete ? [] : putData;
+        });
+      expect(SectionGroupHandler.getInstance().groupIds).toEqual([]);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, [
+        {
+          id: 4,
+          company_id: 1,
+          set_abbreviation: '',
+          email_friendly_abbreviation: '',
+          most_recent_content_modified_at: 1,
+        },
+      ]);
+      isDelete = true;
+      notificationCenter.emitEntityDelete(ENTITY.GROUP, [1]);
+      setTimeout(() => {
+        expect(Notification.flashToast).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: 'people.prompt.conversationPrivate',
+          }),
+        );
         done();
       });
     });

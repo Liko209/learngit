@@ -9,5 +9,4 @@ export * from './styles';
 export * from './getAccentColor';
 export * from './preloadImg';
 export * from './calculateImageSize';
-export * from './getFileName';
 export * from './isEmailByReg';

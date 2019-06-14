@@ -27,7 +27,7 @@ export default function ({
   activityData?: { [key: string]: any };
 }) {
   let buildText: any = buildVerbArticleNounText;
-  let verb = 'item.activity.created';
+  let verb = 'created';
   let numerals = 0;
   let user = '';
   if (activityData) {
@@ -35,13 +35,11 @@ export default function ({
     switch (key) {
       case 'assigned_to_ids':
         buildText = buildVerbNounText;
-        verb = old_value.length
-          ? 'item.activity.reassigned'
-          : 'item.activity.assigned';
+        verb = old_value.length ? 'reassigned' : 'assigned';
         break;
       case 'complete_boolean':
         buildText = value ? buildVerbNounText : buildVerbNounAdjectivesText;
-        verb = value ? 'item.activity.completed' : 'item.activity.marked';
+        verb = value ? 'completed' : 'marked';
         break;
       case 'complete_percentage':
         numerals = old_value ? value - old_value : value;
@@ -49,18 +47,20 @@ export default function ({
           value === 100
             ? buildVerbNounText
             : buildVerbNumeralsPrepositionsNounText;
-        verb = 'item.activity.completed';
+        verb = 'completed';
         break;
       case 'complete_people_ids':
         const index = activity.indexOf('for ');
         user = index > 0 ? activity.slice(index + 4) : '';
         if (old_value && old_value.length > value.length) {
-          buildText = buildVerbNounAdjectivesUserText;
-          verb = 'item.activity.marked';
+          buildText = user
+            ? buildVerbNounAdjectivesUserText
+            : buildVerbNounAdjectivesText;
+          verb = 'marked';
           break;
         }
         buildText = index > 0 ? buildVerbNounUserText : buildVerbNounText;
-        verb = 'item.activity.completed';
+        verb = 'completed';
         break;
     }
   }
@@ -69,7 +69,7 @@ export default function ({
     user,
     verb,
     numerals,
-    noun: 'item.activity.task',
-    adjectives: 'item.activity.incomplete',
+    noun: 'task',
+    adjective: 'incomplete',
   });
 }

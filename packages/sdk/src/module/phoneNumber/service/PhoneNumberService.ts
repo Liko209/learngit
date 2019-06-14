@@ -4,9 +4,23 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
-import { PhoneNumber } from '../entity';
+import { PhoneNumber, PhoneNumberType } from '../entity';
 import { PhoneNumberController } from '../controller/PhoneNumberController';
+import { SubscribeController } from 'sdk/module/base/controller/SubscribeController';
+import { ENTITY } from 'sdk/service';
+import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
+import { Person } from 'sdk/module/person/entity';
+import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 class PhoneNumberService extends EntityBaseService<PhoneNumber, string> {
+  constructor() {
+    super(false);
+    this.setSubscriptionController(
+      SubscribeController.buildSubscriptionController({
+        [ENTITY.PERSON]: this._handlePersonPayload,
+      }),
+    );
+  }
+
   private _phoneNumberController: PhoneNumberController;
 
   constructor() {
@@ -14,12 +28,18 @@ class PhoneNumberService extends EntityBaseService<PhoneNumber, string> {
   }
 
   async getById(id: string): Promise<PhoneNumber | null> {
-    const phoneNumber: PhoneNumber = { id };
+    const phoneNumber: PhoneNumber = {
+      id,
+      phoneNumberType: PhoneNumberType.Unknown,
+    };
     return phoneNumber;
   }
 
   getSynchronously(id: string): PhoneNumber | null {
-    const phoneNumber: PhoneNumber = { id };
+    const phoneNumber: PhoneNumber = {
+      id,
+      phoneNumberType: PhoneNumberType.Unknown,
+    };
     return phoneNumber;
   }
 
@@ -38,14 +58,24 @@ class PhoneNumberService extends EntityBaseService<PhoneNumber, string> {
     return this.getPhoneNumberController().getLocalCanonical(phoneNumber);
   }
 
-  async generateMatchedPhoneNumberList(phoneNumber: string) {
+  async generateMatchedPhoneNumberList(
+    phoneNumber: string,
+    phoneParserUtility: PhoneParserUtility,
+  ) {
     return this.getPhoneNumberController().generateMatchedPhoneNumberList(
       phoneNumber,
+      phoneParserUtility,
     );
   }
 
   isValidNumber(toNumber: string) {
     return this.getPhoneNumberController().isValidNumber(toNumber);
+  }
+
+  private _handlePersonPayload = (
+    payload: NotificationEntityPayload<Person>,
+  ) => {
+    return this.getPhoneNumberController().handlePersonPayload(payload);
   }
 }
 

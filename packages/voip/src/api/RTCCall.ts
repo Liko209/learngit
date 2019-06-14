@@ -24,7 +24,7 @@ import {
   RTCCallActionSuccessOptions,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
-  RTCUserAgentInfo,
+  RTCUserInfo,
 } from './types';
 import { v4 as uuid } from 'uuid';
 import { RC_SIP_HEADER_NAME } from '../signaling/types';
@@ -78,7 +78,7 @@ class RTCCall {
     account: IRTCAccount,
     delegate: IRTCCallDelegate | null,
     options?: RTCCallOptions,
-    userAgentInfo?: RTCUserAgentInfo,
+    userInfo?: RTCUserInfo,
   ) {
     this._account = account;
     if (delegate != null) {
@@ -116,7 +116,7 @@ class RTCCall {
       { key: CALL_REPORT_PROPS.ID, value: this._callInfo.uuid },
       { key: CALL_REPORT_PROPS.DIRECTION, value: direction },
       { key: CALL_REPORT_PROPS.CREATE_TIME, value: new Date() },
-      { key: CALL_REPORT_PROPS.UA, value: userAgentInfo },
+      { key: CALL_REPORT_PROPS.UA, value: userInfo },
     ]);
     CallReport.instance().updateEstablishment(establishmentKey);
 

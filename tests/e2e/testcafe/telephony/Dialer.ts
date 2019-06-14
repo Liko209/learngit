@@ -184,8 +184,8 @@ test.meta(<ITestMeta>{
     await app.homePage.telephonyDialog.typeTextInDialer(number);
   });
 
-  await h(t).withLog('And I click the to diapad button', async () => {
-    await app.homePage.telephonyDialog.clickDialButton();
+  await h(t).withLog('And I hit the `Enter` key', async () => {
+    await app.homePage.telephonyDialog.hitEnterToMakeCall();
   });
 
   await h(t).withLog('Then a call should be initiated', async () => {
@@ -193,7 +193,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I end the call', async () => {
-    app.homePage.telephonyDialog.clickHangupButton()
+    await app.homePage.telephonyDialog.clickHangupButton();
   });
 
   await h(t).withLog(`Then I should be return to the dialer`, async () => {
@@ -251,8 +251,8 @@ test.meta(<ITestMeta>{
     await telephonyDialog.callerIdList.selectBlocked();
   });
 
-  await h(t).withLog('And I click the to diapad button', async () => {
-    await telephonyDialog.clickDialButton();
+  await h(t).withLog('And I hit the `Enter` key', async () => {
+    await telephonyDialog.hitEnterToMakeCall();
   });
 
 
@@ -265,8 +265,70 @@ test.meta(<ITestMeta>{
   });
 });
 
+
 test.meta(<ITestMeta>{
-  caseIds: ['JPT-1964'],
+  caseIds: ['JPT-1917'],
+  priority: ['P1'],
+  maintainers: ['Zack.Zheng'],
+  keywords: ['Dialer']
+})('Can save the last call number', async (t) => {
+  const loginUser = h(t).rcData.mainCompany.users[0];
+  const callee = h(t).rcData.guestCompany.users[0];
+  await h(t).platform(callee).init();
+  const phoneNumbers = await h(t).platform(callee).getExtensionPhoneNumberList();
+  const calleeDirectNumbers = phoneNumbers.data.records.filter(data => data.usageType == "DirectNumber").map(data => data.phoneNumber)
+  const app = new AppRoot(t);
+
+  let webphoneSession: WebphoneSession;
+  await h(t).withLog(`Given webphone seesion login with ${callee.company.number}#${callee.extension}`, async () => {
+    webphoneSession = await h(t).webphoneHelper.newWebphoneSession(callee);
+  });
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I click the to Dialpad button', async () => {
+    await app.homePage.openDialer();
+  });
+
+  const telephonyDialog = app.homePage.telephonyDialog;
+
+  await h(t).withLog('Then display the dialer', async () => {
+    await telephonyDialog.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I type a character in the input field`, async () => {
+    await telephonyDialog.typeTextInDialer(calleeDirectNumbers[0]);
+  });
+
+  await h(t).withLog('And I hit the `Enter` key', async () => {
+    await telephonyDialog.hitEnterToMakeCall();
+  });
+
+  let phoneFormatNumber: string = ''
+  await h(t).withLog('Then a call should be initiated', async () => {
+    await t.expect(telephonyDialog.hangupButton.exists).ok();
+    phoneFormatNumber = await telephonyDialog.extension.textContent;
+  });
+
+  await h(t).withLog('When I end the call and back to Dialpad', async () => {
+    //Add wait 2 seconds otherwise it wouldn't trigger clickHangupButton event.
+    await t.wait(2e3);
+    await telephonyDialog.clickHangupButton();
+  });
+
+  await h(t).withLog('And I click the Dialpad call button', async () => {
+    await telephonyDialog.clickDialButton();
+  });
+
+  await h(t).withLog('Then the Dialpad should populated last phone number', async () => {
+    await t.expect(app.homePage.telephonyDialog.dialerInput.value).eql(phoneFormatNumber);
+  });
+});
+
+test.meta(<ITestMeta>{
+  caseIds: ['JPT-1964', 'JPT-1901'],
   priority: ['P1'],
   maintainers: ['Foden.Lin'],
   keywords: ['Dialer']
@@ -295,7 +357,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And I set the caller id is "Blocked" from the setting`, async () => {
-    await phoneTab.selectCallerID('Blocked');
+    await phoneTab.selectCallerIdByText('Blocked');
   });
   await h(t).withLog('And I click the to diapad button', async () => {
     await app.homePage.openDialer();
@@ -303,5 +365,27 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then should display "Blocked" in caller ID seclection of the dialer page`, async () => {
     await t.expect(app.homePage.telephonyDialog.callerIdSelector.textContent).eql('Blocked');
+  });
+
+  await h(t).withLog(`And I click the caller id`, async () => {
+    await phoneTab.clickCallerIDDropDown();
+  });
+
+  let callerIdNumber = await phoneTab.callerIDDropDownItemByClass.nth(0).innerText
+  await h(t).withLog(`And I set the caller id is ${callerIdNumber} from the setting`, async () => {
+    await phoneTab.selectCallerIdByText(callerIdNumber);
+  });
+
+  await h(t).withLog('When I refresh page', async () => {
+    await h(t).reload();
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('And I click the to diapad button', async () => {
+    await app.homePage.openDialer();
+  });
+
+  await h(t).withLog(`Then should display ${callerIdNumber} in caller ID seclection of the dialer page`, async () => {
+    await t.expect(app.homePage.telephonyDialog.callerIdSelector.textContent).eql(callerIdNumber);
   });
 });

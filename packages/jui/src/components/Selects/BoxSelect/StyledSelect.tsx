@@ -15,9 +15,6 @@ const CLASSES_SELECT = {
 };
 
 const StyledSelect = styled<SelectProps>(Select)`
-  && {
-    max-width: ${spacing(58)};
-  }
   .root {
     height: 100%;
   }

@@ -57,6 +57,7 @@ class SectionViewComponent extends React.Component<Props> {
     const {
       t,
       type,
+      dataNameForTest,
       title,
       iconName,
       expanded,
@@ -73,10 +74,7 @@ class SectionViewComponent extends React.Component<Props> {
       umiType = UMI_SECTION_TYPE.TEAM;
     }
     return (
-      <div
-        className="conversation-list-section"
-        data-name={toTitleCase(t(title))}
-      >
+      <div className="conversation-list-section" data-name={dataNameForTest}>
         <JuiConversationListSection
           title={toTitleCase(t(title))}
           icon={iconName}

@@ -1,0 +1,15 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./telephony/Forward.ts"
+    ],
+    "include_tags": [
+      "JPT-2146",
+      "JPT-2140",
+      "JPT-2070"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

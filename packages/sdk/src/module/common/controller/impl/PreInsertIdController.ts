@@ -8,15 +8,15 @@ import { IPreInsertIdController } from '../interface/IPreInsertIdController';
 import { AccountGlobalConfig } from '../../../../module/account/config';
 import { UserConfigService } from '../../../../module/config';
 import { ServiceConfig, ServiceLoader } from '../../../serviceLoader';
+import { mainLogger } from 'foundation';
 
 const PREINSERT_KEY_ID = 'PREINSERT_KEY_ID';
 
 class PreInsertIdController implements IPreInsertIdController {
-  private _preInsertIds: Set<string>;
+  private _preInsertIds = {};
   private _modelName: string;
   constructor(modelName: string) {
     this._modelName = modelName;
-    this._preInsertIds = new Set();
     this._initPreInsertIds();
   }
 
@@ -25,13 +25,19 @@ class PreInsertIdController implements IPreInsertIdController {
       ServiceConfig.USER_CONFIG_SERVICE,
     );
     configService.setUserId(AccountGlobalConfig.getUserDictionary());
-    const ids = configService.get(this._modelName, PREINSERT_KEY_ID) || [];
-    for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
-      if (typeof id === 'number') {
-        this._preInsertIds.add(id.toString());
-      } else {
-        this._preInsertIds.add(id);
+    const preInsertKeysIds = configService.get(
+      this._modelName,
+      PREINSERT_KEY_ID,
+    );
+    if (preInsertKeysIds) {
+      try {
+        this._preInsertIds = JSON.parse(preInsertKeysIds);
+      } catch (e) {
+        mainLogger.log(
+          `PreInsertIdController Json parser error ${preInsertKeysIds}`,
+        );
+        this._preInsertIds = {};
+        this._syncDataDB();
       }
     }
   }
@@ -41,39 +47,39 @@ class PreInsertIdController implements IPreInsertIdController {
       ServiceConfig.USER_CONFIG_SERVICE,
     );
     configService.setUserId(AccountGlobalConfig.getUserDictionary());
-    configService.put(this._modelName, PREINSERT_KEY_ID, [
-      ...this._preInsertIds,
-    ]);
+    configService.put(
+      this._modelName,
+      PREINSERT_KEY_ID,
+      JSON.stringify(this._preInsertIds),
+    );
   }
 
-  isInPreInsert(preInsertId: string): boolean {
-    return this._preInsertIds.size
-      ? this._preInsertIds.has(preInsertId)
-      : false;
+  isInPreInsert(uniqueId: string): boolean {
+    return this._preInsertIds.hasOwnProperty(uniqueId);
   }
 
-  async insert(preInsertId: string): Promise<void> {
-    this._preInsertIds.add(preInsertId);
+  async insert(uniqueId: string, preInsertId: number): Promise<void> {
+    this._preInsertIds[uniqueId] = preInsertId;
     this._syncDataDB();
   }
 
-  async delete(preInsertId: string): Promise<void> {
-    if (this._preInsertIds.has(preInsertId)) {
-      this._preInsertIds.delete(preInsertId);
-      this._syncDataDB();
-    }
-  }
-
-  async bulkDelete(preInsertIds: string[]): Promise<void> {
-    if (!preInsertIds || !preInsertIds.length) {
-      return;
-    }
-    preInsertIds.forEach((id: string) => this._preInsertIds.delete(id));
+  async delete(uniqueId: string): Promise<void> {
+    delete this._preInsertIds[uniqueId];
     this._syncDataDB();
   }
 
-  getAll(): string[] {
-    return [...this._preInsertIds];
+  async bulkDelete(uniqueIds: string[]): Promise<void> {
+    uniqueIds.forEach((uniqueId: string) => {
+      delete this._preInsertIds[uniqueId];
+    });
+    this._syncDataDB();
+  }
+
+  getAll(): { uniqueIds: string[]; ids: number[] } {
+    return {
+      uniqueIds: Object.keys(this._preInsertIds),
+      ids: Object.values(this._preInsertIds),
+    };
   }
 }
 

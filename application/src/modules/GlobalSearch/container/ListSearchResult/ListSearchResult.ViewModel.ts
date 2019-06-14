@@ -58,7 +58,7 @@ class ListSearchResultViewModel extends StoreViewModel<ListSearchResultProps>
   }
 
   getSection<T>(section: SectionType<T>) {
-    const models = section && section.sortableModels;
+    const models = section.sortableModels;
     const ids = (models || []).map((model: SortableModel<T>) => model.id);
     return {
       ids,

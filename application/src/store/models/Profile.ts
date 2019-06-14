@@ -9,6 +9,7 @@ import {
   CALLING_OPTIONS,
 } from 'sdk/module/profile';
 import Base from './Base';
+import { NEW_MESSAGE_BADGES_OPTIONS } from 'sdk/module/profile/constants';
 
 export default class ProfileModel extends Base<Profile> {
   @observable
@@ -71,6 +72,12 @@ export default class ProfileModel extends Base<Profile> {
   @observable
   maxLeftRailGroup: number;
 
+  @observable
+  lastReadMissed: number | undefined;
+
+  @observable
+  newMessageBadges: string;
+
   constructor(data: Profile) {
     super(data);
     const {
@@ -95,6 +102,8 @@ export default class ProfileModel extends Base<Profile> {
 
     // settings
     this.callOption = data.calling_option || CALLING_OPTIONS.GLIP;
+    this.newMessageBadges =
+      data.new_message_badges || NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS;
     this.defaultNumberId = data.default_number;
     this.mobileDMNotification =
       data.want_push_people === NOTIFICATION_OPTIONS.ON;
@@ -122,6 +131,7 @@ export default class ProfileModel extends Base<Profile> {
       data.desktop_notifications_incoming_calls === NOTIFICATION_OPTIONS.ON;
     this.desktopVoicemailOption =
       data.desktop_notifications_new_voicemails === NOTIFICATION_OPTIONS.ON;
+    this.lastReadMissed = data.last_read_missed;
   }
 
   static fromJS(data: Profile) {

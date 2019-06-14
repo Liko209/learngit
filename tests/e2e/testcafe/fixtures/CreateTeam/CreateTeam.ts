@@ -431,10 +431,12 @@ test(formalName('Check \"Allow members to add other members\" can be turn on/off
     await app.homePage.ensureLoaded();
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog('And I open "allowToAddUser.." team profile', async () => {
-    await teamsSection.expand();
-    await teamsSection.conversationEntryByName(allowToAddUserTeamName).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamsSection.conversationEntryByName(allowToAddUserTeamName).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog('Then I should see "Add team members" button', async () => {
@@ -443,8 +445,9 @@ test(formalName('Check \"Allow members to add other members\" can be turn on/off
 
   await h(t).withLog('When I open "notAllowToAddUser..." team profile', async () => {
     await app.homePage.profileDialog.clickCloseButton();
-    await teamsSection.conversationEntryByName(notAllowToAddUserTeamName).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamsSection.conversationEntryByName(notAllowToAddUserTeamName).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog('Then I should not see "Add team members" button', async () => {

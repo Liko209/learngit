@@ -10,6 +10,7 @@ import { CLIENT_SERVICE } from '@/modules/common/interface';
 import { v4 } from 'uuid';
 import {
   TelephonyService as ServerTelephonyService,
+  RTCCallActionSuccessOptions,
   RTC_CALL_ACTION,
   RTC_CALL_STATE,
   RTC_REPLY_MSG_PATTERN,
@@ -20,6 +21,7 @@ import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
 import { PersonService } from 'sdk/module/person';
 import { TelephonyStore } from '../../store/TelephonyStore';
 import { ToastCallError } from '../ToastCallError';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { container, injectable, decorate } from 'framework';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ClientService } from '@/modules/common';
@@ -29,8 +31,14 @@ import { HOLD_STATE, RECORD_STATE } from 'sdk/module/telephony/entity';
 import CallModel from '@/store/models/Call';
 
 jest.mock('@/store/utils');
-const testProcedureWaitingTime = 20;
+import storeManager from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
+
+import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
+
+import { SettingService } from '@/modules/setting/service/SettingService';
 const mockedDelay = 10;
+const testProcedureWaitingTime = 100;
 
 // HACK: flag for changing the call action result dynamically
 let count = 0;
@@ -41,7 +49,7 @@ decorate(injectable(), TelephonyService);
 decorate(injectable(), ClientService);
 
 jest.mock('../ToastCallError');
-
+jest.mock('@/containers/Notification');
 // mock media element methods
 window.HTMLMediaElement.prototype.load = jest.fn();
 window.HTMLMediaElement.prototype.play = jest.fn();
@@ -66,7 +74,10 @@ const mockRecordState = (state: RECORD_STATE) =>
 const mockCallModel = () => (getEntity as jest.Mock).mockReturnValue({});
 
 let mockedServerTelephonyService: any;
+let mockedPhoneNumberService: any;
 let mockedRCInfoService: any;
+let mockedPhoneNumberService: any;
+let mockedSettingService: any;
 
 function initializeCallerId() {
   telephonyService._telephonyStore.chosenCallerPhoneNumber = '123';
@@ -77,6 +88,7 @@ function initializeCallerId() {
 let defaultPhoneApp = CALLING_OPTIONS.GLIP;
 describe('TelephonyService', () => {
   beforeEach(() => {
+    jest.spyOn(utils, 'getSingleEntity').mockImplementation();
     let cachedOnMadeOutgoingCall: any;
     let cachedOnCallActionSuccess: any;
     let cachedOnCallActionFailed: any;
@@ -87,11 +99,28 @@ describe('TelephonyService', () => {
       get: jest.fn(),
       getCallerIdList: jest.fn(),
       getForwardingNumberList: jest.fn(),
+      isRCFeaturePermissionEnabled: jest.fn(),
     };
 
     mockCallModel();
 
     jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
+    mockedPhoneNumberService = {
+      isValidNumber: jest.fn().mockImplementation(toNumber => ({
+        isValid: true,
+        toNumber,
+        parsed: toNumber,
+      })),
+      getLocalCanonical: jest.fn().mockImplementation(i => i),
+    };
+    mockedSettingService = {
+      getById: jest.fn().mockResolvedValue({ value: CALLING_OPTIONS.GLIP }),
+    };
+
+    jest
+      .spyOn(mockedSettingService, 'getById')
+      .mockResolvedValue({ value: defaultPhoneApp });
+
     mockedServerTelephonyService = {
       hold: jest.fn().mockImplementation(() => {
         return sleep(mockedDelay).then(() =>
@@ -133,6 +162,19 @@ describe('TelephonyService', () => {
       hangUp: jest.fn().mockImplementation(() => {
         cachedOnCallStateChange(callId, RTC_CALL_STATE.DISCONNECTED);
       }),
+      park: (callUuid: string) => {
+        if ('failed' === callUuid) {
+          return new Promise((resolve, reject) => {
+            reject();
+          });
+        }
+        return new Promise((resolve, reject) => {
+          let callOptions: RTCCallActionSuccessOptions = {
+            parkExtension: '987',
+          };
+          resolve(callOptions);
+        });
+      },
       createAccount: (
         accountDelegate: { onMadeOutgoingCall: () => void },
         callDelegate: {
@@ -165,6 +207,7 @@ describe('TelephonyService', () => {
       replyWithPattern: jest.fn(),
       forward: jest.fn(),
       setTelephonyDelegate: jest.fn(),
+      flip: jest.fn(),
     };
 
     jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
@@ -185,6 +228,10 @@ describe('TelephonyService', () => {
           return mockedRCInfoService as RCInfoService;
         case ServiceConfig.ACCOUNT_SERVICE:
           return { userConfig: { getGlipUserId: jest.fn() } };
+        case ServiceConfig.PHONE_NUMBER_SERVICE:
+          return mockedPhoneNumberService as PhoneNumberService;
+        case ServiceConfig.SETTING_SERVICE:
+          return mockedSettingService as SettingService;
         default:
           return {} as PersonService;
       }
@@ -202,6 +249,9 @@ describe('TelephonyService', () => {
     jest.restoreAllMocks();
     container.unbindAll();
     count += 1;
+    mockedServerTelephonyService.isValidNumber = jest
+      .fn()
+      .mockReturnValue(true);
   });
 
   describe('The "hold" button status tests', () => {
@@ -684,10 +734,37 @@ describe('TelephonyService', () => {
     ).toBe('');
   });
 
+  it('Should show the toast when initiate a call to an invalid number from matched result [JPT-254]', async () => {
+    mockedPhoneNumberService.isValidNumber = jest.fn().mockReturnValue(false);
+    await (telephonyService as TelephonyService).makeCall(v4());
+    expect(ToastCallError.toastInvalidNumber).toHaveBeenCalled();
+  });
+
+  it('should prompt the toast when park during the call recording is being saved [JPT-2179]', async () => {
+    telephonyService._callId = '123';
+    telephonyService._telephonyStore.isStopRecording = true;
+    await (telephonyService as TelephonyService).park();
+    expect(ToastCallError.toastParkErrorStopRecording).toHaveBeenCalledTimes(1);
+  });
+
+  it('should prompt the toast when park run into unexpected error [JPT-2180 JPT-2163]', async () => {
+    telephonyService._callId = 'failed';
+    await (telephonyService as TelephonyService).park();
+    expect(ToastCallError.toastParkError).toHaveBeenCalledTimes(1);
+  });
+
   it('should get forward number list from RC info service', () => {
     telephonyService.getForwardingNumberList();
 
     expect(mockedRCInfoService.getForwardingNumberList).toHaveBeenCalled();
+  });
+
+  it('should get forward permission from RC info service', () => {
+    telephonyService.getForwardPermission();
+
+    expect(
+      mockedRCInfoService.isRCFeaturePermissionEnabled,
+    ).toHaveBeenCalledWith(ERCServiceFeaturePermission.CALL_FORWARDING);
   });
 
   it('should call forward', () => {
@@ -704,6 +781,26 @@ describe('TelephonyService', () => {
     telephonyService._callId = undefined;
   });
 
+  it('should call isValidNumber', () => {
+    let phoneNumber = '123';
+    telephonyService.isValidNumber(phoneNumber);
+    expect(mockedPhoneNumberService.isValidNumber).toHaveBeenCalled();
+  });
+
+  it('Should not call flip', () => {
+    telephonyService.flip('123');
+    expect(mockedServerTelephonyService.flip).not.toHaveBeenCalled();
+  });
+
+  it('Should call flip', () => {
+    const callId = 'id_0';
+    telephonyService._callId = callId;
+    const phoneNumber = '123456789';
+    telephonyService.flip(phoneNumber);
+    expect(mockedServerTelephonyService.flip).toHaveBeenCalled();
+    telephonyService._callId = undefined;
+  });
+
   describe(`onReceiveIncomingCall()`, () => {
     const params = {
       fromName: 'test',
@@ -717,16 +814,29 @@ describe('TelephonyService', () => {
         .spyOn(telephonyService._telephonyStore, 'incomingCall')
         .mockImplementation();
     });
-    it(`should not response when there's incoming call and default phone setting is RC phone`, () => {
+    it(`should not response when there's incoming call and default phone setting is RC phone`, async () => {
       defaultPhoneApp = CALLING_OPTIONS.RINGCENTRAL;
-      jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
-      telephonyService._onReceiveIncomingCall(params);
+      mockedSettingService.getById = jest
+        .fn()
+        .mockResolvedValue({ value: defaultPhoneApp });
+      await telephonyService._onReceiveIncomingCall(params);
       expect(telephonyService._telephonyStore.incomingCall).not.toBeCalled();
     });
-    it(`should show ui when there's incoming call and default phone setting is Ringcentral App`, () => {
-      jest.spyOn(utils, 'getSingleEntity').mockReturnValue('glip');
-      telephonyService._onReceiveIncomingCall(params);
+    it(`should show ui when there's incoming call and default phone setting is Ringcentral App`, async () => {
+      jest
+        .spyOn(mockedSettingService, 'getById')
+        .mockResolvedValue({ value: 'glip' });
+      await telephonyService._onReceiveIncomingCall(params);
       expect(telephonyService._telephonyStore.incomingCall).toBeCalled();
+    });
+    it(`should set incoming call in global store if has incoming call [JPT-2222]`, async () => {
+      jest
+        .spyOn(mockedSettingService, 'getById')
+        .mockResolvedValue({ value: 'glip' });
+      await telephonyService._onReceiveIncomingCall(params);
+      expect(
+        storeManager.getGlobalStore().get(GLOBAL_KEYS.INCOMING_CALL),
+      ).toBeTruthy();
     });
   });
 

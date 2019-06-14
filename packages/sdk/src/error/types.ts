@@ -10,4 +10,5 @@ export const ERROR_TYPES = {
   SDK: 'SDK',
   DB: 'DB',
   SERVER: 'SERVER',
+  RC: 'RC',
 };

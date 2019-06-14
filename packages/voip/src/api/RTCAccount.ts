@@ -20,7 +20,7 @@ import {
   RTC_ACCOUNT_STATE,
   RTCCallOptions,
   RTCSipFlags,
-  RTCUserAgentInfo,
+  RTCUserInfo,
 } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
@@ -43,14 +43,14 @@ class RTCAccount implements IRTCAccount {
   private _provManager: RTCProvManager;
   private _callManager: RTCCallManager;
   private _networkListener: Listener;
-  private _userAgentInfo: RTCUserAgentInfo;
+  private _userInfo: RTCUserInfo;
   private _sleepModeListener: Listener;
 
-  constructor(listener: IRTCAccountDelegate, userAgentInfo: RTCUserAgentInfo) {
+  constructor(listener: IRTCAccountDelegate, userInfo: RTCUserInfo) {
     this._state = RTC_ACCOUNT_STATE.IDLE;
     this._delegate = listener;
-    this._regManager = new RTCRegistrationManager(userAgentInfo);
-    this._userAgentInfo = userAgentInfo;
+    this._regManager = new RTCRegistrationManager(userInfo);
+    this._userInfo = userInfo;
     this._provManager = new RTCProvManager();
     this._callManager = new RTCCallManager();
     this._networkListener = (params: any) => {
@@ -115,7 +115,7 @@ class RTCAccount implements IRTCAccount {
       this,
       delegate,
       callOption,
-      this._userAgentInfo,
+      this._userInfo,
     );
     this._callManager.addCall(call);
     if (this.isReady()) {
@@ -263,7 +263,7 @@ class RTCAccount implements IRTCAccount {
       this,
       null,
       undefined,
-      this._userAgentInfo,
+      this._userInfo,
     );
     this._callManager.addCall(call);
     this._delegate.onReceiveIncomingCall(call);

@@ -76,8 +76,8 @@ class PostDataController {
         posts.filter((post: Post) => post.created_at !== post.modified_at),
       );
       const result = await this.handelPostsOverThreshold(posts, maxPostsExceed);
-      this._deletePreInsertPosts(posts);
       posts = await this.handleIndexModifiedPosts(posts);
+      this._deletePreInsertPosts(posts);
       mainLogger.info(
         LOG_INDEX_DATA_POST,
         `filterAndSavePosts() before posts.length: ${posts && posts.length}`,
@@ -219,6 +219,8 @@ class PostDataController {
               .getDao(PostDao)
               .queryPostIdsByGroupId(id);
             if (postIds.length > 0) {
+              deletePostIds = deletePostIds.concat(postIds);
+              deleteMap.set(id, postIds);
               mainLogger.info(
                 LOG_INDEX_DATA_POST,
                 `handelPostsOverThreshold() groupId:${id}, deletePostIds(start-end): ${
@@ -227,8 +229,6 @@ class PostDataController {
                   deletePostIds.length
                 }`,
               );
-              deletePostIds = deletePostIds.concat(postIds);
-              deleteMap.set(id, postIds);
             }
           }),
         );

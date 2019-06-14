@@ -28,12 +28,12 @@ describe('getThumbnailURL', () => {
   const defaultURL = 'http://a.com';
 
   it('should get empty url when file item has no versions', () => {
-    const model: ImageInfo = {
+    const model = {
       id: 1,
       type: '',
       versionUrl: '',
       versions: [],
-    } as ImageInfo;
+    } as any;
     expect(getThumbnailURL(model)).toBe('');
   });
 
@@ -47,10 +47,9 @@ describe('getThumbnailURL', () => {
         [thumbKey]: thumbnailURL,
       },
     };
-    const version1 = {};
-    const model: ImageInfo = {
-      versions: [version0, version1],
-    } as ImageInfo;
+    const model = {
+      latestVersion: version0,
+    } as any;
     expect(getThumbnailURL(model)).toBe(thumbnailURL);
   });
   it('should get empty url when versions has no thumbs filed', () => {
@@ -59,9 +58,9 @@ describe('getThumbnailURL', () => {
       stored_file_id,
     };
     const version1 = {};
-    const model: ImageInfo = {
+    const model = {
       versions: [version0, version1],
-    } as ImageInfo;
+    };
     expect(getThumbnailURL(model)).toBe('');
   });
 });
@@ -180,7 +179,7 @@ describe('getThumbnailURLWithType', () => {
       url: '',
       size: 0,
     };
-    const model = Object.assign({}, defaultModel, { versions: [version0] });
+    const model = Object.assign({}, defaultModel, { latestVersion: version0 });
 
     rule = RULE.SQUARE_IMAGE;
     const result = await getThumbnailURLWithType(model, rule);
@@ -202,7 +201,9 @@ describe('getThumbnailURLWithType', () => {
       url: '',
       size: 0,
     };
-    const model = Object.assign({}, defaultModel, { versions: [version0] });
+    const model = Object.assign({}, defaultModel, {
+      latestVersion: version0,
+    });
     const getThumbsUrlWithSize = jest.fn().mockReturnValue(modifyURL);
     jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(() => ({
       getThumbsUrlWithSize,
@@ -231,7 +232,7 @@ describe('getThumbnailURLWithType', () => {
       url: '',
       size: 0,
     };
-    const model = Object.assign({}, defaultModel, { versions: [version0] });
+    const model = Object.assign({}, defaultModel, { latestVersion: version0 });
 
     (getThumbnailSize as jest.Mock).mockReturnValue({
       imageWidth: origWidth,
@@ -262,7 +263,9 @@ describe('getThumbnailURLWithType', () => {
       url: '',
       size: 0,
     };
-    const model = Object.assign({}, defaultModel, { versions: [version0] });
+    const model = Object.assign({ origHeight, origWidth }, defaultModel, {
+      latestVersion: version0,
+    });
     (getThumbnailSize as jest.Mock).mockReturnValue({
       imageWidth: origWidth,
       imageHeight: origHeight,
@@ -296,7 +299,7 @@ describe('getThumbnailURLWithType', () => {
       url: '',
       size: 0,
     };
-    const model = Object.assign({}, defaultModel, { versions: [version0] });
+    const model = Object.assign({}, defaultModel, { latestVersion: version0 });
     (getThumbnailSize as jest.Mock).mockReturnValue({
       imageWidth: origWidth,
       imageHeight: origHeight,
@@ -331,8 +334,7 @@ describe('getThumbnailURLWithType', () => {
       size: 0,
     };
     const model = Object.assign({}, defaultModel, {
-      versions: [version0],
-      versionUrl: null,
+      latestVersion: version0,
     });
     (getThumbnailSize as jest.Mock).mockReturnValue({
       imageWidth: origWidth,

@@ -21,22 +21,93 @@ import {
   FuzzySearchPersonOptions,
   PersonSortingOrder,
   RecentSearchModel,
+  PhoneContactEntity,
 } from '../entity';
 import { SearchUtils } from '../../../framework/utils/SearchUtils';
-import { Terms } from '../../../framework/controller/interface/IEntityCacheSearchController';
+import {
+  Terms,
+  FormattedTerms,
+} from '../../../framework/controller/interface/IEntityCacheSearchController';
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import { MY_LAST_POST_VALID_PERIOD } from '../constants';
 import { GroupConfigService } from 'sdk/module/groupConfig';
+import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
+import { mainLogger } from 'foundation/src';
+
+type MatchedInfo = {
+  nameMatched: boolean;
+  phoneNumberMatched: boolean;
+  isMatched: boolean;
+  matchedNumbers: PhoneNumber[];
+};
 
 class SearchPersonController {
   constructor(private _searchService: ISearchService) {}
+
+  async doFuzzySearchPhoneContacts(
+    options: FuzzySearchPersonOptions,
+  ): Promise<{
+    terms: string[];
+    phoneContacts: PhoneContactEntity[];
+  }> {
+    const performanceTracer = PerformanceTracer.initial();
+
+    const persons = await this._doFuzzySearchPersons(options);
+
+    const phoneContacts: PhoneContactEntity[] = [];
+    const results = { phoneContacts, terms: persons.terms.searchKeyTerms };
+
+    persons.sortableModels.forEach((sortablePerson: SortableModel<Person>) => {
+      sortablePerson.extraData &&
+        sortablePerson.extraData.forEach((phoneNumber: PhoneNumber) => {
+          if (
+            persons.terms.searchKeyFormattedTerms.validFormattedKeys.length ===
+              0 ||
+            persons.terms.searchKeyFormattedTerms.validFormattedKeys.every(
+              item => phoneNumber.id.includes(item.formatted),
+            )
+          ) {
+            results.phoneContacts.push({
+              phoneNumber,
+              id: `${sortablePerson.entity.id}.${phoneNumber.id}`,
+              person: sortablePerson.entity,
+            });
+          }
+        });
+    });
+    mainLogger.debug(
+      'search_person',
+      ' person size =',
+      persons.sortableModels.length,
+      'phone size=',
+      results.phoneContacts.length,
+    );
+
+    performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_PHONE_NUMBER });
+    return results;
+  }
 
   async doFuzzySearchPersons(
     options: FuzzySearchPersonOptions,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Person>[];
-  } | null> {
+  }> {
+    const performanceTracer = PerformanceTracer.initial();
+    const result = await this._doFuzzySearchPersons(options);
+    performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_PERSON });
+    return {
+      terms: result.terms.searchKeyTerms,
+      sortableModels: result.sortableModels,
+    };
+  }
+
+  private async _doFuzzySearchPersons(
+    options: FuzzySearchPersonOptions,
+  ): Promise<{
+    terms: Terms;
+    sortableModels: SortableModel<Person>[];
+  }> {
     const {
       searchKey,
       excludeSelf,
@@ -46,8 +117,6 @@ class SearchPersonController {
       recentFirst,
     } = options;
 
-    const performanceTracer = PerformanceTracer.initial();
-
     const sortFunc =
       !asIdsOrder || recentFirst ? this._sortByKeyFunc : undefined;
     const toSortableModelFunc = await this._getTransFromPersonToSortableModelFunc(
@@ -55,18 +124,39 @@ class SearchPersonController {
       fetchAllIfSearchKeyEmpty,
       recentFirst,
     );
+
+    const genFormattedTermsFunc = (originalTerms: string[]) => {
+      const formattedTerms: FormattedTerms = {
+        formattedKeys: [],
+        validFormattedKeys: [],
+      };
+
+      originalTerms.forEach(term => {
+        const numberFormattedKey = SearchUtils.getValidPhoneNumber(term);
+        const formattedKey = {
+          original: term,
+          formatted: numberFormattedKey,
+        };
+
+        formattedTerms.formattedKeys.push(formattedKey);
+        if (numberFormattedKey.length) {
+          formattedTerms.validFormattedKeys.push(formattedKey);
+        }
+      });
+      return formattedTerms;
+    };
+
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
     const cacheSearchController = personService.getEntityCacheSearchController();
     const result = await cacheSearchController.searchEntities(
       toSortableModelFunc,
+      genFormattedTermsFunc,
       searchKey,
       arrangeIds,
       sortFunc,
     );
-
-    performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_PERSON });
     return result;
   }
 
@@ -116,6 +206,76 @@ class SearchPersonController {
     return Math.max(lastPostTime, lastSearchTime);
   }
 
+  private _generateMatchedInfo(
+    personId: number,
+    name: string,
+    phoneNumbers: PhoneNumber[],
+    terms: Terms,
+  ): MatchedInfo {
+    const matchedNumbers: PhoneNumber[] = [];
+    const matchedInfo = {
+      matchedNumbers,
+      nameMatched: false,
+      phoneNumberMatched: false,
+      isMatched: false,
+    };
+
+    matchedInfo.isMatched = terms.searchKeyFormattedTerms.formattedKeys.every(
+      (term: { original: string; formatted: string }) => {
+        const isNameMatched = name.includes(term.original);
+        let isPhoneNumberMatched: boolean = false;
+        if (
+          !isNameMatched &&
+          terms.searchKeyFormattedTerms.validFormattedKeys.length &&
+          term.formatted.length &&
+          phoneNumbers &&
+          phoneNumbers.length
+        ) {
+          phoneNumbers.forEach((phoneNumber: PhoneNumber) => {
+            if (phoneNumber.id.includes(term.formatted)) {
+              if (!matchedInfo.matchedNumbers.includes(phoneNumber)) {
+                matchedInfo.matchedNumbers.push(phoneNumber);
+              }
+              isPhoneNumberMatched = true;
+            }
+          });
+
+          if (isPhoneNumberMatched) {
+            matchedInfo.phoneNumberMatched = true;
+          }
+        } else {
+          matchedInfo.nameMatched = isNameMatched;
+        }
+        return isNameMatched || isPhoneNumberMatched;
+      },
+    );
+
+    if (!matchedInfo.isMatched && terms.searchKeyTermsToSoundex.length) {
+      const personService = ServiceLoader.getInstance<PersonService>(
+        ServiceConfig.PERSON_SERVICE,
+      );
+
+      matchedInfo.isMatched = matchedInfo.nameMatched = SearchUtils.isSoundexMatched(
+        personService.getSoundexById(personId),
+        terms.searchKeyTermsToSoundex,
+      );
+    }
+
+    if (
+      matchedInfo.isMatched &&
+      !matchedInfo.phoneNumberMatched &&
+      matchedInfo.nameMatched &&
+      phoneNumbers &&
+      phoneNumbers.length
+    ) {
+      phoneNumbers.forEach((phoneNumber: PhoneNumber) => {
+        matchedInfo.matchedNumbers.push(phoneNumber);
+      });
+    }
+
+    return matchedInfo;
+  }
+
   private async _getTransFromPersonToSortableModelFunc(
     excludeSelf?: boolean,
     fetchAllIfSearchKeyEmpty?: boolean,
@@ -126,7 +286,7 @@ class SearchPersonController {
     ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
     const recentSearchedPersons = recentFirst
-      ? this._searchService.getRecentSearchRecordsByType(
+      ? await this._searchService.getRecentSearchRecordsByType(
           RecentSearchTypes.PEOPLE,
         )
       : undefined;
@@ -145,8 +305,7 @@ class SearchPersonController {
     );
     return (person: Person, terms: Terms) => {
       do {
-        const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
-        if (!fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0) {
+        if (!fetchAllIfSearchKeyEmpty && terms.searchKeyTerms.length === 0) {
           break;
         }
 
@@ -157,51 +316,62 @@ class SearchPersonController {
           break;
         }
 
-        let name: string = personService.getName(person);
+        let personName: string = personService.getName(person);
+        let personNameLowerCase: string = personName.toLowerCase();
         let sortValue: number = 0;
-        if (searchKeyTerms.length > 0) {
-          const isNameMatched =
-            SearchUtils.isFuzzyMatched(name.toLowerCase(), searchKeyTerms) ||
-            (searchKeyTermsToSoundex.length &&
-              SearchUtils.isSoundexMatched(
-                personService.getSoundexById(person.id),
-                searchKeyTermsToSoundex,
-              ));
+        let matchedNumbers: PhoneNumber[] = [];
 
-          if (isNameMatched) {
-            sortValue = PersonSortingOrder.FullNameMatching;
-            if (
-              person.first_name &&
-              SearchUtils.isStartWithMatched(person.first_name.toLowerCase(), [
-                searchKeyTerms[0],
-              ])
-            ) {
-              sortValue += PersonSortingOrder.FirstNameMatching;
-            }
-            if (
-              person.last_name &&
-              SearchUtils.isStartWithMatched(
-                person.last_name.toLowerCase(),
-                searchKeyTerms,
-              )
-            ) {
-              sortValue += PersonSortingOrder.LastNameMatching;
+        if (terms.searchKeyTerms.length) {
+          const phoneNumbers: PhoneNumber[] = [];
+          personService.getPhoneNumbers(person, (phoneNumber: PhoneNumber) => {
+            phoneNumbers.push(phoneNumber);
+          });
+          const matchedInfo = this._generateMatchedInfo(
+            person.id,
+            personNameLowerCase,
+            phoneNumbers,
+            terms,
+          );
+          matchedNumbers = matchedInfo.matchedNumbers;
+          if (matchedInfo.isMatched) {
+            if (matchedInfo.nameMatched) {
+              sortValue = PersonSortingOrder.FullNameMatching;
+              if (
+                person.first_name &&
+                SearchUtils.isStartWithMatched(
+                  person.first_name.toLowerCase(),
+                  [terms.searchKeyTerms[0]],
+                )
+              ) {
+                sortValue += PersonSortingOrder.FirstNameMatching;
+              }
+              if (
+                person.last_name &&
+                SearchUtils.isStartWithMatched(
+                  person.last_name.toLowerCase(),
+                  terms.searchKeyTerms,
+                )
+              ) {
+                sortValue += PersonSortingOrder.LastNameMatching;
+              }
             }
           } else if (
             person.email &&
             SearchUtils.isFuzzyMatched(
               person.email.toLowerCase(),
-              searchKeyTerms,
+              terms.searchKeyTerms,
             )
           ) {
             sortValue = PersonSortingOrder.EmailMatching;
+            matchedNumbers = phoneNumbers;
           } else {
             break;
           }
         }
 
-        if (name.length <= 0) {
-          name = personService.getEmailAsName(person);
+        if (personName.length === 0) {
+          personName = personService.getEmailAsName(person);
+          personNameLowerCase = personName.toLowerCase();
         }
         const firstSortKey = recentFirst
           ? this._getMostRecentViewTime(
@@ -214,10 +384,11 @@ class SearchPersonController {
         return {
           firstSortKey,
           id: person.id,
-          displayName: name,
+          displayName: personName,
           secondSortKey: sortValue,
-          thirdSortKey: name.toLowerCase(),
+          thirdSortKey: personNameLowerCase,
           entity: person,
+          extraData: matchedNumbers,
         };
       } while (false);
       return null;

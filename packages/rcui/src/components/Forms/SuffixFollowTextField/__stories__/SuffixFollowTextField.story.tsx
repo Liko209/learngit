@@ -23,22 +23,47 @@ storiesOf('Forms', module).add('SuffixFollowTextField', () => {
 
     return (
       <section>
-        <RuiSuffixFollowTextField
-          id="suffixFollow"
-          label="suffixFollow"
-          fullWidth={true}
-          InputProps={{
-            classes: {
-              root: 'root',
-            },
+        <fieldset>
+          <RuiSuffixFollowTextField
+            id="suffixFollow"
+            label="suffixFollow"
+            fullWidth={true}
+            InputProps={{
+              classes: {
+                root: 'root',
+              },
+            }}
+            inputProps={{
+              maxLength: 200,
+            }}
+            suffix={suffixText}
+            onChange={handleInputChange}
+          />
+          <div style={{ marginTop: '10px' }}>value: {value}</div>
+        </fieldset>
+        <fieldset
+          style={{
+            width: '400px',
           }}
-          inputProps={{
-            maxLength: 200,
-          }}
-          suffix={suffixText}
-          onChange={handleInputChange}
-        />
-        <div style={{ marginTop: '10px' }}>value: {value}</div>
+        >
+          <RuiSuffixFollowTextField
+            id="suffixFollow"
+            label="suffixFollow"
+            fullWidth={true}
+            defaultValue={
+              'default Value default Value default Value default Value'
+            }
+            InputProps={{
+              classes: {
+                root: 'root',
+              },
+            }}
+            inputProps={{
+              maxLength: 200,
+            }}
+            suffix={suffixText}
+          />
+        </fieldset>
       </section>
     );
   };

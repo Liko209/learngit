@@ -43,7 +43,7 @@ class ProfileDialogGroupView extends Component<ProfileDialogGroupViewProps> {
     delete this._sizeManager;
   }
   render() {
-    const { id } = this.props;
+    const { id, group } = this.props;
     const { showEmpty } = this.state;
     return (
       <ProfileContext.Provider
@@ -53,7 +53,10 @@ class ProfileDialogGroupView extends Component<ProfileDialogGroupViewProps> {
           setShowEmpty: this.setShowEmpty,
         }}
       >
-        <JuiDialogHeader data-test-automation-id="profileDialogTitle">
+        <JuiDialogHeader
+          data-profile-type={group.isTeam ? 'team' : 'group'}
+          data-test-automation-id="profileDialogTitle"
+        >
           <ProfileDialogGroupTitle id={id} />
         </JuiDialogHeader>
         <JuiDivider />

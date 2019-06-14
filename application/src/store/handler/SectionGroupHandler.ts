@@ -19,7 +19,6 @@ import { GroupService } from 'sdk/module/group';
 import { Group } from 'sdk/module/group/entity';
 import { Profile } from 'sdk/module/profile/entity';
 import { GroupState } from 'sdk/module/state/entity';
-
 import { SECTION_TYPE } from '@/modules/message/container/LeftRail/Section/types';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import GroupStateModel from '@/store/models/GroupState';
@@ -41,6 +40,8 @@ import {
 import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
 import { TDelta } from '../base/fetch/types';
 import preFetchConversationDataHandler from './PreFetchConversationDataHandler';
+import { Notification } from '@/containers/Notification';
+import { defaultNotificationOptions } from '@/common/catchError';
 
 function groupTransformFunc(data: Group): ISortableModel {
   const {
@@ -270,6 +271,21 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
               group.is_archived
             );
           });
+        }
+        if (payload.type === EVENT_TYPES.DELETE) {
+          const currentGroupId = getGlobalValue(
+            GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
+          );
+          if (payload.body.ids && payload.body.ids.includes(currentGroupId)) {
+            ids = [currentGroupId];
+            Notification.flashToast({
+              ...defaultNotificationOptions,
+              message: 'people.prompt.conversationPrivate',
+            });
+            mainLogger
+              .tags(LOG_TAG)
+              .info('subscribe notification|user was removed from current conversation');
+          }
         }
         // update url
         this._updateUrl(EVENT_TYPES.DELETE, ids);

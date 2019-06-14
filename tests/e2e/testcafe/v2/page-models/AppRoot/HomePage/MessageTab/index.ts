@@ -1,12 +1,12 @@
 import * as _ from 'lodash';
 import * as assert from 'assert'
-import { BaseWebComponent } from '../../../BaseWebComponent';
+import { BaseWebComponent, Umi } from '../../../BaseWebComponent';
 import { h, H } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
 import { MentionPage, BookmarkPage, ConversationPage, DuplicatePromptPage } from "./ConversationPage";
 import { RightRail } from './RightRail';
 import { LeftRail } from './LeftRail';
-import { EmojiLibrary } from './EmojiLib';
+import { EmojiLibrary, EmojiMatchList } from './EmojiLib';
 
 class Entry extends BaseWebComponent {
   async enter() {
@@ -79,20 +79,12 @@ class MoreMenu extends Entry {
     return this.getToggler('favToggler');
   }
 
-  get markAsReadOrUnread(){
+  get markAsReadOrUnread() {
     return this.getToggler('readOrUnreadConversation');
-  }
-
-  get profile() {
-    return this.getToggler('profileEntry');
   }
 
   get close() {
     return this.getComponent(MenuItem, this.self.find('*[data-test-automation-id="closeConversation"]'));
-  }
-
-  async openProfile() {
-    return await this.t.click(this.profile.self);
   }
 }
 
@@ -113,7 +105,7 @@ class MenuItem extends Entry {
 
 class ConversationEntry extends BaseWebComponent {
   get moreMenuEntry() {
-    return this.self.find('.icon.more_vert');
+    return this.getSelectorByAutomationId('conversationListItemMoreButton', this.self);
   }
 
   get name() {
@@ -164,7 +156,7 @@ class ConversationEntry extends BaseWebComponent {
     });
   }
 
-  async openMoreMenu() {
+  async ensureMoreButton() {
     const moreButton = this.moreMenuEntry;
     await this.t.expect(moreButton.exists).ok();
     const displayMoreButton = ClientFunction(
@@ -172,7 +164,17 @@ class ConversationEntry extends BaseWebComponent {
       { dependencies: { moreButton } }
     );
     await displayMoreButton();
+    return moreButton;
+  }
+
+  async openMoreMenu() {
+    await this.ensureMoreButton();
     await this.t.click(this.moreMenuEntry);
+  }
+
+  async hoverMoreButton() {
+    const moreButton = await this.ensureMoreButton();
+    await this.t.hover(moreButton);
   }
 
   get hasDraftMessage() {
@@ -188,7 +190,7 @@ class ConversationEntry extends BaseWebComponent {
 
 class ConversationSection extends BaseWebComponent {
   get header() {
-    return this.getSelectorByAutomationId('conversation-list-section-header',this.self);
+    return this.getSelectorByAutomationId('conversation-list-section-header', this.self);
   }
 
   get collapse() {
@@ -391,33 +393,8 @@ export class MessageTab extends BaseWebComponent {
     return this.getComponent(EmojiLibrary);
   }
 
-}
-
-class Umi extends BaseWebComponent {
-  async count() {
-    return await this.getNumber(this.self);
+  get emojiMatchList() {
+    return this.getComponent(EmojiMatchList);
   }
 
-  async shouldBeNumber(n: number, maxRetry = 5, interval = 3e3) {
-    await H.retryUntilPass(async () => {
-      const umi = await this.count();
-      assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
-    }, maxRetry, interval);
-  }
-
-  async shouldBeAtMentionStyle() {
-    await H.retryUntilPass(async () => {
-      const umiStyle = await this.self.style;
-      const umiBgColor = umiStyle['background-color'];
-      assert.strictEqual(umiBgColor, 'rgb(255, 136, 0)', `${umiBgColor} not eql specify: rgb(255, 136, 0)`)
-    });
-  }
-
-  async shouldBeNotAtMentionStyle() {
-    await H.retryUntilPass(async () => {
-      const umiStyle = await this.self.style;
-      const umiBgColor = umiStyle['background-color'];
-      assert.strictEqual(umiBgColor, 'rgb(158, 158, 158)', `${umiBgColor} not eql specify: rgb(158, 158, 158)`)
-    });
-  }
 }
