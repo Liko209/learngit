@@ -35,13 +35,16 @@ test(formalName('Tasks display on the right rail', ['P2', 'Messages', 'RightRail
 
   await h(t).withLog('When I open a team and click Tasks Tab', async() => {
     await teamPage.conversationEntryById(team.glipId).enter();
+    if (await rightRail.foldStatusButtonByClass.exists) {
+      await rightRail.clickFoldStatusButton();
+    }
+    await rightRail.openMore();
     await rightRail.tasksEntry.enter();
   });
 
   await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_TasksEmpty'});
 
   const taskTitle = uuid();
-  const tasksTab = rightRail.tasksTab;
   await h(t).withLog('When I create a task via api', async() => {
     await h(t).glip(loginUser).createSimpleTask(team.glipId, loginUser.rcId, taskTitle);
   });
