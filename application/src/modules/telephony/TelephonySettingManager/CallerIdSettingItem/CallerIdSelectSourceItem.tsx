@@ -14,21 +14,19 @@ type CallerIdSelectItemProps = {
   value: IPhoneNumberRecord;
 };
 
-class CallerIdSelectSourceItemComponent extends Component<
-  CallerIdSelectItemProps & WithTranslation
-> {
-  render() {
-    const { value, t } = this.props;
-    const { usageType, phoneNumber } = value;
-    const formattedPhoneNumber =
-      usageType !== 'Blocked' ? (
-        <PhoneFormatter>{phoneNumber}</PhoneFormatter>
-      ) : (
-        t('setting.phone.general.callerID.Blocked')
-      );
-    return <JuiText>{formattedPhoneNumber}</JuiText>;
-  }
-}
+const CallerIdSelectSourceItemComponent = ({
+  value,
+  t,
+}: CallerIdSelectItemProps & WithTranslation) => {
+  const { usageType, phoneNumber } = value;
+  const formattedPhoneNumber =
+    usageType !== 'Blocked' ? (
+      <PhoneFormatter>{phoneNumber}</PhoneFormatter>
+    ) : (
+      t('setting.phone.general.callerID.Blocked')
+    );
+  return <JuiText>{formattedPhoneNumber}</JuiText>;
+};
 
 const CallerIdSelectSourceItem = withTranslation('translations')(
   CallerIdSelectSourceItemComponent,
