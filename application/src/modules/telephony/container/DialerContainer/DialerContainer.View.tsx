@@ -123,7 +123,7 @@ class DialerContainerViewComponent extends React.Component<
       tooltipForceHide: this._shouldShowToolTip || shouldCloseToolTip,
     };
 
-    if (isDialer) {
+    if (isDialer || isForward) {
       return (
         <DialerPanel
           callerIdProps={callerIdProps}

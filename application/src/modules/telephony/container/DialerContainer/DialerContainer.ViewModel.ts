@@ -80,7 +80,8 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
 
   @computed
   get chosenCallerPhoneNumber() {
-    const isBlocked = this._telephonyStore.chosenCallerPhoneNumber === PhoneNumberType.Blocked;
+    const isBlocked =
+      this._telephonyStore.chosenCallerPhoneNumber === PhoneNumberType.Blocked;
     if (!isBlocked) {
       return formatPhoneNumber(this._telephonyStore.chosenCallerPhoneNumber);
     }
@@ -91,7 +92,8 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   get callerPhoneNumberList() {
     return this._telephonyStore.callerPhoneNumberList.map(el => {
       const itemId = el.id;
-      const formattedValue = itemId !== 0 ? formatPhoneNumber(el.phoneNumber) : el.phoneNumber;
+      const formattedValue =
+        itemId !== 0 ? formatPhoneNumber(el.phoneNumber) : el.phoneNumber;
       return {
         value: formattedValue,
         usageType: el.usageType,
@@ -219,7 +221,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
     if (!this.canClickToInput) {
       return;
     }
-    if (!this.trimmedInputString.length) {
+    if (!this.trimmedInputString.length && !this.isForward) {
       this._telephonyStore.enterFirstLetterThroughKeypad();
     }
     this.playAudio(str);
