@@ -40,7 +40,7 @@ class PostDataController {
     const performanceTracer = PerformanceTracer.initial();
     const transformedData = this.transformData(data.posts);
     if (shouldSaveToDb) {
-      await this.preInsertController.bulkDelete(transformedData);
+      this._deletePreInsertPosts(transformedData);
     }
     const posts: Post[] =
       (await this.filterAndSavePosts(transformedData, shouldSaveToDb)) || [];
