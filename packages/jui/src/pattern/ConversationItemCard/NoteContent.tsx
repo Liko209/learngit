@@ -9,7 +9,6 @@ import { typography, grey, spacing } from '../../foundation/utils/styles';
 const JuiNoteContent = styled.div`
   ${typography('body1')};
   color: ${grey('500')};
-  cursor: pointer;
 `;
 
 const JuiNoteIframe = styled.iframe`
