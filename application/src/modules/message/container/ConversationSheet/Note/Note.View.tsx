@@ -16,6 +16,7 @@ import {
   JuiDialogHeaderTitle,
   JuiDialogHeaderActions,
 } from 'jui/components/Dialog/DialogHeader';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { observable, reaction, IReactionDisposer } from 'mobx';
 import { JuiButtonBar } from 'jui/components/Buttons/ButtonBar';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
@@ -28,15 +29,16 @@ import {
   HighlightContextInfo,
   SearchHighlightContext,
 } from '@/common/postParser';
+type NoteViewType = NoteViewProps & WithTranslation;
 
 @observer
-class NoteView extends Component<NoteViewProps> {
+class NoteViewComponent extends Component<NoteViewType> {
   static contextType = SearchHighlightContext;
   @observable private _ref: RefObject<any> = createRef();
   context: HighlightContextInfo;
   refReactionDispose: IReactionDisposer;
 
-  constructor(props: NoteViewProps) {
+  constructor(props: NoteViewType) {
     super(props);
     this.refReactionDispose = reaction(
       () => this._ref.current,
@@ -60,7 +62,7 @@ class NoteView extends Component<NoteViewProps> {
   }
 
   _handleClick = async () => {
-    const { title, getShowDialogPermission } = this.props;
+    const { title, getShowDialogPermission, t } = this.props;
     const showNoteDialog = await getShowDialogPermission();
     if (!showNoteDialog) return;
     const { dismiss } = Dialog.simple(
@@ -70,7 +72,10 @@ class NoteView extends Component<NoteViewProps> {
             <JuiDialogHeaderTitle>{title}</JuiDialogHeaderTitle>
             <JuiDialogHeaderActions>
               <JuiButtonBar overlapSize={2.5}>
-                <JuiIconButton onClick={() => dismiss()} tooltipTitle="Close">
+                <JuiIconButton
+                  onClick={() => dismiss()}
+                  tooltipTitle={t('common.dialog.close')}
+                >
                   close
                 </JuiIconButton>
               </JuiButtonBar>
@@ -106,5 +111,7 @@ class NoteView extends Component<NoteViewProps> {
     );
   }
 }
+
+const NoteView = withTranslation('translations')(NoteViewComponent);
 
 export { NoteView };
