@@ -200,6 +200,7 @@ class TelephonyStore {
       if (to === from) {
         return;
       }
+      this.activeCallTime = undefined;
       this.callState = to as CALL_STATE;
       switch (this.callState) {
         case CALL_STATE.CONNECTED:
@@ -219,13 +220,7 @@ class TelephonyStore {
           this.isContactMatched = false;
           break;
         case CALL_STATE.CONNECTING:
-          this.activeCallTime = undefined;
           this.uiCallStartTime = Date.now();
-          break;
-        default:
-          setTimeout(() => {
-            this.activeCallTime = undefined;
-          },         300);
           break;
       }
     });

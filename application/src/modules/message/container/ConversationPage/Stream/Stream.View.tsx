@@ -40,6 +40,7 @@ import { getGlobalValue } from '@/store/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { JuiConversationCard } from 'jui/pattern/ConversationCard';
 import { ERROR_TYPES } from '@/common/catchError';
+import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
 
@@ -70,6 +71,8 @@ class StreamViewComponent extends Component<Props> {
   private _disposers: Disposer[] = [];
 
   @observable private _jumpToFirstUnreadLoading = false;
+
+  private _performanceTracer: PerformanceTracer = PerformanceTracer.initial();
 
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
@@ -120,6 +123,11 @@ class StreamViewComponent extends Component<Props> {
     }
 
     jumpToPostId && this._handleJumpToIdChanged(jumpToPostId, prevJumpToPostId);
+
+    this._performanceTracer.end({
+      key: PERFORMANCE_KEYS.UI_MESSAGE_RENDER,
+      count: postIds.length,
+    });
   }
 
   private _handleJumpToIdChanged(currentId: number, prevId?: number) {
