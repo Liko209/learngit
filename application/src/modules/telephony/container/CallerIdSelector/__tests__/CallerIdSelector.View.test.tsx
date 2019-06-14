@@ -1,5 +1,5 @@
 import { shallow } from 'enzyme';
-import { RawCallerIdSelector } from '../CallerIdSelector';
+import { RawCallerIdSelector } from '../CallerIdSelector.View';
 import { JuiBoxSelect } from 'jui/components/Selects/BoxSelect';
 import React from 'react';
 
