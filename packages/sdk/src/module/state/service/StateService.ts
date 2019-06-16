@@ -48,6 +48,17 @@ class StateService extends EntityBaseService<GroupState>
     });
   }
 
+  onLogin() {
+    super.onLogin();
+    this._initBadge();
+  }
+
+  private _initBadge = async () => {
+    await this.getStateController()
+      .getTotalUnreadController()
+      .initializeTotalUnread();
+  }
+
   protected getStateController(): StateController {
     if (!this._stateController) {
       this._stateController = new StateController(
