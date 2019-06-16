@@ -35,7 +35,6 @@ import {
 
 class EmojiParser extends PostParser implements IPostParser {
   type = ParserType.EMOJI;
-  ignoredRangeTypes = [ParserType.AT_MENTION, ParserType.EMOJI];
   content: ParseContent;
   constructor(public options: EmojiParserOption) {
     super(options);
@@ -45,7 +44,7 @@ class EmojiParser extends PostParser implements IPostParser {
     const {
       customEmojiMap,
       unicodeOnly,
-      convertType,
+      convertType = 0,
       hostName,
       isEscaped,
     } = this.options;
@@ -97,7 +96,7 @@ class EmojiParser extends PostParser implements IPostParser {
   }
 
   getRegexp() {
-    const { customEmojiMap, convertType, isEscaped = false } = this.options;
+    const { customEmojiMap, convertType = 0, isEscaped = false } = this.options;
     const regexpMap = {
       [EmojiConvertType.UNICODE]: new RegExp(
         isEscaped ? EMOJI_UNICODE_REGEX_ESCAPED : EMOJI_UNICODE_REGEX,

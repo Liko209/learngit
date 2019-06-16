@@ -566,10 +566,11 @@ describe('glipdown text', () => {
         ]);
       });
 
-      it('should return array with emoji when given escaped string', () => {
+      it('should return array with emoji when html parser escape the ascii', () => {
         expect(
-          postParser('&lt;3 &#x27;:)', {
-            emoji: { hostName, isEscaped: true },
+          postParser(`<3 ':)`, {
+            html: true,
+            emoji: { hostName },
           }),
         ).toEqual([
           <img
@@ -695,7 +696,7 @@ describe('glipdown text', () => {
           }),
         ).toEqual([
           'sdds',
-          <JuiAtMention key={0} id='1200' isCurrent={false} name='@bold' />,
+          <JuiAtMention key={0} id='1200' isCurrent={false} name='@**bold**' />,
           '123  ss',
         ]);
       });

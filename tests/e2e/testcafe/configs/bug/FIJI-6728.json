@@ -1,0 +1,6 @@
+{
+  "on_merge": {
+  "fixtures": ["./fixtures/ContentPanel.ts", "./fixtures/Search/HighLight.ts", "./fixtures/MessageInput.ts"],
+  "browsers": ["selenium:chrome"]
+  }
+}
