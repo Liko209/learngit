@@ -28,6 +28,7 @@ import { IConfigHistory } from '../config/IConfigHistory';
 import { configMigrator } from '../config';
 import { Nullable } from 'sdk/types';
 import { ConfigChangeHistory } from '../config/types';
+import { notificationCenter, SERVICE } from 'sdk/service';
 
 class EntityBaseService<
   T extends IdModel<IdType>,
@@ -88,11 +89,15 @@ class EntityBaseService<
   }
 
   protected onStarted() {
+    notificationCenter.on(SERVICE.LOGIN, this.onLogin.bind(this));
+    notificationCenter.on(SERVICE.LOGOUT, this.onLogout.bind(this));
     if (this._subscribeController) {
       this._subscribeController.subscribe();
     }
   }
   protected onStopped() {
+    notificationCenter.off(SERVICE.LOGIN, this.onLogin.bind(this));
+    notificationCenter.off(SERVICE.LOGOUT, this.onLogout.bind(this));
     if (this._subscribeController) {
       this._subscribeController.unsubscribe();
     }
@@ -102,6 +107,10 @@ class EntityBaseService<
     delete this._entityCacheController;
     delete this._entityNotificationController;
   }
+
+  protected onLogin() {}
+
+  protected onLogout() {}
 
   async batchGet(ids: IdType[]): Promise<T[]> {
     if (this._entitySourceController) {
