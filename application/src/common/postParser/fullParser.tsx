@@ -31,6 +31,7 @@ import {
 import { URLParser } from './parsers/URLParser';
 import _ from 'lodash';
 import moize from 'moize';
+import { mainLogger } from 'sdk';
 
 // Do not change the order of the array unless you know what you're doing.
 const parsersConfig = [
@@ -190,24 +191,30 @@ const _postParser: FullParser = (
   if (typeof fullText !== 'string' || !fullText.trim()) {
     return fullText;
   }
-  const atMentionRegex = new RegExp(AT_MENTION_GROUPED_REGEXP);
-  let _fullText = fullText;
-  if (options && options.html && atMentionRegex.test(fullText)) {
-    _fullText = fullText.replace(
-      AT_MENTION_GROUPED_REGEXP, // we need to encode the text inside atmention so it won't get parsed first, for example when some crazy user name is a url
-      (full, g1, g2, g3) => `${g1}${b64EncodeUnicode(g2)}${g3}`,
-    );
-  }
-  const content = new ParseContent(_fullText);
-  parsersConfig.forEach(({ Parser, shouldParse, getParserOption }) => {
-    if (shouldParse(_fullText, options || {})) {
-      const parser = new Parser(getParserOption(options || {}) as any);
-      const replacers = parser.setContent(content).parseToReplacers();
-      content.addReplacers(replacers);
+  // In case the parser throw error and crash the whole page, we need to prevent the crashing and log error.
+  try {
+    const atMentionRegex = new RegExp(AT_MENTION_GROUPED_REGEXP);
+    let _fullText = fullText;
+    if (options && options.html && atMentionRegex.test(fullText)) {
+      _fullText = fullText.replace(
+        AT_MENTION_GROUPED_REGEXP, // we need to encode the text inside atmention so it won't get parsed first, for example when some crazy user name is a url
+        (full, g1, g2, g3) => `${g1}${b64EncodeUnicode(g2)}${g3}`,
+      );
     }
-  });
+    const content = new ParseContent(_fullText);
+    parsersConfig.forEach(({ Parser, shouldParse, getParserOption }) => {
+      if (shouldParse(_fullText, options || {})) {
+        const parser = new Parser(getParserOption(options || {}) as any);
+        const replacers = parser.setContent(content).parseToReplacers();
+        content.addReplacers(replacers);
+      }
+    });
 
-  return content.getParsedResult();
+    return content.getParsedResult();
+  } catch (err) {
+    mainLogger.error(err);
+    return fullText;
+  }
 };
 
 const postParser = moize(_postParser, {
