@@ -685,6 +685,42 @@ describe('glipdown text', () => {
           '123  ss',
         ]);
       });
+
+      it('should render at mentions', () => {
+        expect(
+          postParser(
+            `https://git.ringcentral.com/Fiji/Fiji/merge_requests/2838/diffs  feat(fiji-6318): [UI] Refactor call store <a class='at_mention_compose' rel='{"id":187629571}'>@Chris Zhan</a> <a class='at_mention_compose' rel='{"id":187678723}'>@Shining Miao</a>   please help review`,
+            {
+              atMentions: { map },
+              html: true,
+            },
+          ),
+        ).toEqual([
+          <a
+            href='https://git.ringcentral.com/Fiji/Fiji/merge_requests/2838/diffs'
+            rel='noreferrer'
+            target='_blank'
+            key={0}
+          >
+            https://git.ringcentral.com/Fiji/Fiji/merge_requests/2838/diffs
+          </a>,
+          '  feat(fiji-6318): [UI] Refactor call store ',
+          <JuiAtMention
+            id='187629571'
+            isCurrent={false}
+            name='@Chris Zhan'
+            key={1}
+          />,
+          ' ',
+          <JuiAtMention
+            id='187678723'
+            isCurrent={false}
+            name='@Shining Miao'
+            key={2}
+          />,
+          '   please help review',
+        ]);
+      });
     });
 
     describe('html and atmention', () => {

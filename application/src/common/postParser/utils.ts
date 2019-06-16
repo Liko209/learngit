@@ -11,8 +11,6 @@ import {
   convertMapEmojiOne,
   regExpUnescape,
   mapUnescape,
-  regExpEscape,
-  mapEscape,
 } from '@/common/emojiHelpers';
 import _ from 'lodash';
 import moize from 'moize';
@@ -79,10 +77,6 @@ const getComplementRanges = (ranges: TextRange[], fullLength: number) => {
 
 const HTMLUnescape = (str: string) => {
   return str.replace(regExpUnescape, (match: string) => mapUnescape[match]);
-};
-
-const HTMLEscape = (str: string) => {
-  return str.replace(regExpEscape, (match: string) => mapEscape[match]);
 };
 
 const getTopLevelChildNodesFromHTML = moize(
@@ -186,39 +180,20 @@ const MATCH_ALL_REGEX = /^[\s\S]+$/g;
 const MATCH_NOTHING_REGEX = /a^/g;
 const AT_MENTION_REGEX = /<a class='at_mention_compose' rel='{"id":([-?\d]*?)}'>(.*?)<\/a>/gi;
 const AT_MENTION_GROUPED_REGEXP = /(<a class='at_mention_compose' rel='{"id":[-?\d]*?}'>)(.*?)(<\/a>)/gi;
-const AT_MENTION_ESCAPED = /&lt;a class=&#x27;at_mention_compose&#x27; rel=&#x27;{&quot;id&quot;:([-?\d]*?)}&#x27;&gt;(.*?)&lt;\/a&gt;/gi;
 
 const EMOJI_UNICODE_REGEX_RANGE =
   '\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]';
 const EMOJI_UNICODE_REGEX = `${Object.keys(convertMapUnicode).join('|')}`;
-const EMOJI_UNICODE_REGEX_ESCAPED = `${Object.keys(convertMapUnicode)
-  .map(HTMLEscape)
-  .join('|')}`;
 
 const EMOJI_ASCII_REGEX = `(^|\\s)${Object.keys(convertMapAscii).join(
   '(?=\\s|$|[!,.?])|(^|\\s)',
 )}(?=\\s|$|[!,.?])`;
-const EMOJI_ASCII_REGEX_ESCAPED = `(^|\\s)${Object.keys(convertMapAscii)
-  .map(HTMLEscape)
-  .join('(?=\\s|$|[!,.?])|(^|\\s)')}(?=\\s|$|[!,.?])`;
 const EMOJI_ASCII_UNIQUE_CHARS = /<|3|\/|:|\'|\)|-|\=|\]|>|;|\*|\^|\(|x|p|\[|@|\.|\$|#|%||O|0|8|_|L|Þ|þ|b|d|o/;
 
 const EMOJI_ONE_REGEX = `${Object.keys(convertMapEmojiOne).join('|')}`;
-const EMOJI_ONE_REGEX_ESCAPED = `${Object.keys(convertMapEmojiOne)
-  .map(HTMLEscape)
-  .join('|')}`;
 
-const EMOJI_CUSTOM_REGEX = (
-  customEmojiMap: CustomEmojiMap,
-  isEscaped: boolean,
-) =>
-  `:${
-    isEscaped
-      ? Object.keys(customEmojiMap)
-          .map(HTMLEscape)
-          .join(':|:')
-      : Object.keys(customEmojiMap).join(':|:')
-  }:`;
+const EMOJI_CUSTOM_REGEX = (customEmojiMap: CustomEmojiMap) =>
+  `:${Object.keys(customEmojiMap).join(':|:')}:`;
 
 const EMOJI_ONE_PATH = '/emoji/emojione/png/{{unicode}}.png?v=2.2.7';
 
@@ -277,7 +252,6 @@ export {
   getComplementRanges,
   // isHTML,
   HTMLUnescape,
-  HTMLEscape,
   EMOJI_ONE_PATH,
   isValidPhoneNumber,
   b64EncodeUnicode,
@@ -292,15 +266,11 @@ export {
   AT_MENTION_GROUPED_REGEXP,
   MATCH_NOTHING_REGEX,
   AT_MENTION_REGEX,
-  AT_MENTION_ESCAPED,
   EMOJI_UNICODE_REGEX_RANGE,
   EMOJI_UNICODE_REGEX,
-  EMOJI_UNICODE_REGEX_ESCAPED,
   EMOJI_ASCII_UNIQUE_CHARS,
   EMOJI_ASCII_REGEX,
-  EMOJI_ASCII_REGEX_ESCAPED,
   EMOJI_ONE_REGEX,
-  EMOJI_ONE_REGEX_ESCAPED,
   EMOJI_CUSTOM_REGEX,
   URL_REGEX,
 };

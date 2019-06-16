@@ -27,10 +27,6 @@ import {
   EMOJI_CUSTOM_REGEX,
   EMOJI_ONE_REGEX,
   EMOJI_ONE_PATH,
-  HTMLUnescape,
-  EMOJI_UNICODE_REGEX_ESCAPED,
-  EMOJI_ASCII_REGEX_ESCAPED,
-  EMOJI_ONE_REGEX_ESCAPED,
 } from '../utils';
 
 class EmojiParser extends PostParser implements IPostParser {
@@ -46,7 +42,6 @@ class EmojiParser extends PostParser implements IPostParser {
       unicodeOnly,
       convertType = 0,
       hostName,
-      isEscaped,
     } = this.options;
     if (convertType === EmojiConvertType.CUSTOM) {
       if (customEmojiMap && !unicodeOnly) {
@@ -60,7 +55,7 @@ class EmojiParser extends PostParser implements IPostParser {
       }
       return strValue;
     }
-    const match = isEscaped ? HTMLUnescape(strValue.trim()) : strValue.trim();
+    const match = strValue.trim();
     const key =
       convertType === EmojiConvertType.ASCII
         ? match.replace(regExpSpecial, (match: string) => mapSpecial[match])
@@ -96,24 +91,15 @@ class EmojiParser extends PostParser implements IPostParser {
   }
 
   getRegexp() {
-    const { customEmojiMap, convertType = 0, isEscaped = false } = this.options;
+    const { customEmojiMap, convertType = 0 } = this.options;
     const regexpMap = {
-      [EmojiConvertType.UNICODE]: new RegExp(
-        isEscaped ? EMOJI_UNICODE_REGEX_ESCAPED : EMOJI_UNICODE_REGEX,
-        'g',
-      ),
-      [EmojiConvertType.ASCII]: new RegExp(
-        isEscaped ? EMOJI_ASCII_REGEX_ESCAPED : EMOJI_ASCII_REGEX,
-        'g',
-      ),
+      [EmojiConvertType.UNICODE]: new RegExp(EMOJI_UNICODE_REGEX, 'g'),
+      [EmojiConvertType.ASCII]: new RegExp(EMOJI_ASCII_REGEX, 'g'),
       [EmojiConvertType.CUSTOM]:
         customEmojiMap && Object.keys(customEmojiMap).length
-          ? new RegExp(EMOJI_CUSTOM_REGEX(customEmojiMap, isEscaped), 'g')
+          ? new RegExp(EMOJI_CUSTOM_REGEX(customEmojiMap), 'g')
           : new RegExp(MATCH_NOTHING_REGEX), // matches nothing
-      [EmojiConvertType.EMOJI_ONE]: new RegExp(
-        isEscaped ? EMOJI_ONE_REGEX_ESCAPED : EMOJI_ONE_REGEX,
-        'g',
-      ),
+      [EmojiConvertType.EMOJI_ONE]: new RegExp(EMOJI_ONE_REGEX, 'g'),
     };
     return regexpMap[convertType];
   }

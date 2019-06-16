@@ -57,7 +57,7 @@ class HTMLParser extends PostParser implements IPostParser {
   getReplaceElement(strValue: string) {
     return this.isValidMatch(strValue)
       ? this._parseHTML(strValue)
-      : this._parsePlainText(HTMLUnescape(strValue) || '');
+      : this._parsePlainText(HTMLUnescape(strValue || '') || '');
   }
 
   getRegexp() {
@@ -80,7 +80,7 @@ class HTMLParser extends PostParser implements IPostParser {
             children,
           ) as React.ReactChild;
         }
-        return this._parsePlainText(child.substring || '');
+        return this._parsePlainText(HTMLUnescape(child.substring || '') || '');
       }),
     );
   }

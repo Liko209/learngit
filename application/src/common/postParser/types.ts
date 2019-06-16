@@ -23,7 +23,6 @@ type AtMentionsMapType = {
 
 type AtMentionParserOption = ParserOption & {
   map?: AtMentionsMapType;
-  isEscaped?: boolean;
   customReplaceFunc?: (
     match: string,
     id: string,
@@ -45,7 +44,6 @@ type EmojiParserOption = ParserOption & {
   unicodeOnly?: boolean;
   convertType?: EmojiConvertType;
   hostName?: string;
-  isEscaped?: boolean;
   keepASCII?: boolean;
 };
 

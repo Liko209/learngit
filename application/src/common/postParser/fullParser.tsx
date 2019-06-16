@@ -56,15 +56,16 @@ const parsersConfig = [
   {
     Parser: AtMentionParser,
     shouldParse: (fullText: string, { atMentions }: PostParserOptions) =>
-      atMentions && Object.keys(atMentions).length && fullText.length >= 48, // min-length for a string that includes at mention
+      atMentions &&
+      Object.keys(atMentions.map || {}).length &&
+      fullText.length >= 48, // min-length for a string that includes at mention
     getParserOption: ({
       keyword,
       html,
       atMentions = {},
     }: PostParserOptions): AtMentionParserOption => {
       const opts: AtMentionParserOption = atMentions;
-      opts.isEscaped = !!html;
-      opts.textEncoded = !html;
+      opts.textEncoded = html === undefined ? false : !html;
       opts.innerContentParser = (text: string) =>
         keyword ? postParser(text, { keyword }) : text;
       return opts;
@@ -79,7 +80,6 @@ const parsersConfig = [
       emoji = {},
     }: PostParserOptions): EmojiParserOption => {
       const opts: EmojiParserOption = emoji;
-      opts.isEscaped = !!html;
       opts.convertType = EmojiConvertType.UNICODE;
       return opts;
     },
@@ -95,7 +95,6 @@ const parsersConfig = [
       emoji = {},
     }: PostParserOptions): EmojiParserOption => {
       const opts: EmojiParserOption = emoji;
-      opts.isEscaped = !!html;
       opts.convertType = EmojiConvertType.ASCII;
       return opts;
     },
@@ -113,7 +112,6 @@ const parsersConfig = [
       emoji = {},
     }: PostParserOptions): EmojiParserOption => {
       const opts: EmojiParserOption = emoji;
-      opts.isEscaped = !!html;
       opts.convertType = EmojiConvertType.CUSTOM;
       return opts;
     },
@@ -127,7 +125,6 @@ const parsersConfig = [
       emoji = {},
     }: PostParserOptions): EmojiParserOption => {
       const opts: EmojiParserOption = emoji;
-      opts.isEscaped = !!html;
       opts.convertType = EmojiConvertType.EMOJI_ONE;
       return opts;
     },
