@@ -22,7 +22,7 @@ const TASK_NAME = {
 };
 
 export const isTaskInQueue = (taskStatus: TaskStatus) => {
-  return [TaskStatus.PENDING, TaskStatus.EXECUTING].indexOf(taskStatus) > -1;
+  return [TaskStatus.PENDING, TaskStatus.EXECUTING].includes(taskStatus);
 };
 
 export class UploadRecentLogsViewModel
@@ -125,7 +125,12 @@ export class UploadRecentLogsViewModel
   }
 
   sendFeedback = () => {
-    if (!isTaskInQueue(this.uploadLogsStatus)) {
+    if (
+      !(
+        isTaskInQueue(this.uploadLogsStatus) ||
+        this.uploadLogsStatus === TaskStatus.SUCCESS
+      )
+    ) {
       this.uploadLogsStatus = TaskStatus.PENDING;
       this._taskQueue.addTail(this._createUploadLogsTask());
     }
