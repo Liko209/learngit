@@ -14,11 +14,7 @@ import { PersonService } from '../../person';
 import { ContactType } from '../../person/types';
 import { RCInfoService } from '../../rcInfo';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
-
-enum RCN11Reason {
-  N11_101 = 'N11-101',
-  N11_102 = 'N11-102',
-}
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
 
 class MakeCallController {
   constructor() {}
@@ -69,25 +65,26 @@ class MakeCallController {
     const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
       ServiceConfig.RC_INFO_SERVICE,
     );
+    const phoneNumService = ServiceLoader.getInstance<PhoneNumberService>(
+      ServiceConfig.PHONE_NUMBER_SERVICE,
+    );
     const specialNumber = await rcInfoService.getSpecialNumberRule();
     if (specialNumber) {
       for (const index in specialNumber.records) {
+        // We have no emergency address for now, all N11 numbers
+        // are not allowed to dial out
         const record = specialNumber.records[index];
-        if (record.phoneNumber !== phoneNumber) {
-          continue;
-        }
-        if (record.features.voip.enabled) {
+        if (record.phoneNumber === phoneNumber) {
+          result = MAKE_CALL_ERROR_CODE.N11_OTHERS;
           break;
         }
-        if (record.features.voip.reason.id === RCN11Reason.N11_101) {
-          result = MAKE_CALL_ERROR_CODE.N11_101;
+        const e164N11Num = await phoneNumService.getE164PhoneNumber(
+          record.phoneNumber,
+        );
+        if (e164N11Num === phoneNumber) {
+          result = MAKE_CALL_ERROR_CODE.N11_OTHERS;
           break;
         }
-        if (record.features.voip.reason.id === RCN11Reason.N11_102) {
-          result = MAKE_CALL_ERROR_CODE.N11_102;
-          break;
-        }
-        result = MAKE_CALL_ERROR_CODE.N11_OTHERS;
       }
     }
     return result;
