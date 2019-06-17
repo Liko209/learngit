@@ -206,6 +206,7 @@
       "sendNewMessage": "Send new message"
     },
     "inputMenus": {
+      "uploadFileMenuTitle": "Upload files from",
       "google": "Google Drive",
       "dropbox": "Dropbox",
       "box": "Box",
