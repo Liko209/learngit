@@ -37,7 +37,6 @@ class Meeting extends React.Component<meetingProps> {
         <JuiItemContent title={t('item.meeting.meetingUrl')}>
           <JuiLink size="small" handleOnClick={() => window.open(joinUrl)}>
             {postParser(joinUrl, {
-              url: true,
               keyword: this.context.keyword,
             })}
           </JuiLink>

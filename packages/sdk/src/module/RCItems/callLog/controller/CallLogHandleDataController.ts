@@ -14,10 +14,10 @@ import { CallLog } from '../entity';
 import { TELEPHONY_STATUS } from 'sdk/module/rcEventSubscription/constants';
 import { Nullable } from 'sdk/types';
 import {
-  CALL_LOG_SOURCE,
   CALL_TYPE,
   CALL_ACTION,
   CALL_RESULT,
+  LOCAL_INFO_TYPE,
 } from '../constants';
 import { CALL_DIRECTION } from '../../constants';
 import { notificationCenter } from 'sdk/service';
@@ -222,6 +222,13 @@ class CallLogHandleDataController {
     startTime: string,
     result: CALL_RESULT,
   ): CallLog {
+    let localInfo = 0;
+    if (result === CALL_RESULT.MISSED || result === CALL_RESULT.VOICEMAIL) {
+      localInfo = localInfo | LOCAL_INFO_TYPE.IS_MISSED | LOCAL_INFO_TYPE.IS_INBOUND;
+    } else {
+      direction === CALL_DIRECTION.INBOUND &&
+      (localInfo = localInfo | LOCAL_INFO_TYPE.IS_INBOUND);
+    }
     return {
       sessionId,
       direction,
@@ -244,7 +251,7 @@ class CallLogHandleDataController {
       type: CALL_TYPE.VOICE,
       action: CALL_ACTION.UNKNOWN,
       duration: 0,
-      __source: CALL_LOG_SOURCE.ALL,
+      __localInfo: localInfo,
       __timestamp: Date.parse(startTime),
       __deactivated: false,
     };
