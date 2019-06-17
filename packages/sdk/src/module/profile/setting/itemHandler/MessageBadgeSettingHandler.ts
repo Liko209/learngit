@@ -83,7 +83,7 @@ export class MessageBadgeSettingHandler extends AbstractSettingEntityHandler<
   private async _getMessageBadge() {
     const profile = await this._profileService.getProfile();
     let messageBadge = profile[SETTING_KEYS.NEW_MESSAGE_BADGES];
-    if (_.isEmpty(messageBadge)) {
+    if (messageBadge === undefined || (messageBadge as string) === '') {
       messageBadge = NEW_MESSAGE_BADGES_OPTIONS.ALL;
     }
     return messageBadge;
