@@ -25,4 +25,6 @@ export type Call = IdModel & {
   disconnectTime: number;
   direction: CALL_DIRECTION;
   mute_state: MUTE_STATE;
+  from_name: string;
+  to_name: string;
 };

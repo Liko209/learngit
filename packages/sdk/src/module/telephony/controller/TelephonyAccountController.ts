@@ -10,18 +10,13 @@ import {
   RTC_ACCOUNT_STATE,
   RTCCall,
   RTCSipFlags,
-  RTCCallInfo,
   RTC_CALL_STATE,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip';
 import { TelephonyCallController } from '../controller/TelephonyCallController';
 import { ITelephonyAccountDelegate } from '../service/ITelephonyAccountDelegate';
-import {
-  TelephonyCallInfo,
-  MAKE_CALL_ERROR_CODE,
-  LogoutCallback,
-} from '../types';
+import { MAKE_CALL_ERROR_CODE, LogoutCallback } from '../types';
 import { telephonyLogger } from 'foundation';
 import { MakeCallController } from './MakeCallController';
 import { RCInfoService } from '../../rcInfo';
@@ -180,9 +175,10 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       }
 
       this._telephonyCallDelegate.setRtcCall(call);
+
       if (this._telephonyAccountDelegate) {
         this._telephonyAccountDelegate.onMadeOutgoingCall(
-          this._telephonyCallDelegate.getEntityId().toString(),
+          this._telephonyCallDelegate.getEntityId(),
         );
       } else {
         telephonyLogger.warn(
@@ -290,26 +286,15 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       this._telephonyCallDelegate.replyWithPattern(pattern, time, timeUnit);
   }
 
-  onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
-    this._accountState = state;
+  onMadeOutgoingCall(call: RTCCall) {
+    this._telephonyCallDelegate.setRtcCall(call);
+    this._telephonyAccountDelegate.onMadeOutgoingCall(
+      this._telephonyCallDelegate.getEntityId(),
+    );
   }
 
-  private async _buildCallInfo(rtcCallInfo: RTCCallInfo) {
-    const callInfo: TelephonyCallInfo = {
-      fromNum: rtcCallInfo.fromNum,
-      toNum: rtcCallInfo.toNum,
-      callId: rtcCallInfo.uuid,
-    };
-
-    if (rtcCallInfo.fromName) {
-      callInfo.fromName = rtcCallInfo.fromName;
-    }
-
-    if (rtcCallInfo.toName) {
-      callInfo.toName = rtcCallInfo.toName;
-    }
-
-    return callInfo;
+  onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
+    this._accountState = state;
   }
 
   private async _shouldShowIncomingCall() {
@@ -352,9 +337,10 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this._telephonyCallDelegate.setRtcCall(call);
     this._telephonyCallDelegate.setCallStateCallback(this.callStateChanged);
     call.setCallDelegate(this._telephonyCallDelegate);
-    const callInfo = await this._buildCallInfo(call.getCallInfo());
     if (this._telephonyAccountDelegate) {
-      this._telephonyAccountDelegate.onReceiveIncomingCall(callInfo);
+      this._telephonyAccountDelegate.onReceiveIncomingCall(
+        this._telephonyCallDelegate.getEntityId(),
+      );
     } else {
       telephonyLogger.warn(
         'No account delegate is specified, unable to notify incoming call',

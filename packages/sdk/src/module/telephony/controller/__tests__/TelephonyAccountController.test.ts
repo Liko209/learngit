@@ -356,6 +356,10 @@ describe('TelephonyAccountController', () => {
         sessionId: '',
       });
 
+      TelephonyCallController.prototype.getEntityId = jest
+        .fn()
+        .mockReturnValue(1);
+
       ServiceLoader.getInstance = jest.fn().mockReturnValueOnce({
         isRCFeaturePermissionEnabled: jest.fn().mockReturnValue(true),
       });
@@ -366,12 +370,7 @@ describe('TelephonyAccountController', () => {
 
       accountController.setAccountDelegate(mockAcc);
       await accountController.onReceiveIncomingCall(rtcCall);
-      expect(mockAcc.onReceiveIncomingCall).toBeCalledWith({
-        fromName: NAME,
-        fromNum: NUM,
-        toNum: '',
-        callId: CALL_ID,
-      });
+      expect(mockAcc.onReceiveIncomingCall).toBeCalledWith(1);
     });
   });
 

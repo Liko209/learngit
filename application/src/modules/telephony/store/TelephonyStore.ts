@@ -19,18 +19,22 @@ import {
 } from 'sdk/module/person/entity';
 import { v4 } from 'uuid';
 import {
-  CALL_STATE,
   CALL_WINDOW_STATUS,
-  CallFSM,
   CallWindowFSM,
-  CALL_TRANSITION_NAMES,
   CALL_WINDOW_TRANSITION_NAMES,
 } from '../FSM';
 import { ANONYMOUS } from '../interface/constant';
 const some = require('lodash/some');
 const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
 
-import { Call, HOLD_STATE, RECORD_STATE } from 'sdk/module/telephony/entity';
+import {
+  Call,
+  HOLD_STATE,
+  RECORD_STATE,
+  MUTE_STATE,
+  CALL_STATE,
+  CALL_DIRECTION,
+} from 'sdk/module/telephony/entity';
 import CallModel from '@/store/models/Call';
 
 enum CALL_TYPE {
@@ -38,6 +42,8 @@ enum CALL_TYPE {
   INBOUND,
   OUTBOUND,
 }
+
+const DIALING = 'dialing';
 
 enum INCOMING_STATE {
   IDLE,
@@ -49,9 +55,9 @@ const logTag = '[TelephonyStore_View]';
 const INITIAL_REPLY_COUNTDOWN_TIME = 55;
 
 class TelephonyStore {
-  private _callFSM = new CallFSM();
   private _callWindowFSM = new CallWindowFSM();
   private _intervalReplyId?: NodeJS.Timeout;
+  private _history: Set<CALL_DIRECTION | typeof DIALING> = new Set();
 
   maximumInputLength = 30;
 
@@ -61,11 +67,6 @@ class TelephonyStore {
   @observable
   callWindowState: CALL_WINDOW_STATUS = this._callWindowFSM.state;
   @observable
-  callState: CALL_STATE = this._callFSM.state;
-  @observable
-  callType: CALL_TYPE = CALL_TYPE.NULL;
-
-  @observable
   isStopRecording: boolean = false;
 
   @observable
@@ -74,12 +75,13 @@ class TelephonyStore {
   phoneNumber?: string;
   @observable
   isContactMatched: boolean = false;
+
   @observable
-  callId: string;
+  id: number = 0;
+
   @observable
   callerName?: string;
-  @observable
-  activeCallTime?: number;
+
   @observable
   replyCountdownTime?: number = INITIAL_REPLY_COUNTDOWN_TIME;
   @observable
@@ -90,8 +92,6 @@ class TelephonyStore {
   customReplyMessage: string = '';
   @observable
   shiftKeyDown = false;
-  @observable
-  isMute = false;
 
   @observable
   pendingForHold: boolean = false;
@@ -164,39 +164,6 @@ class TelephonyStore {
         });
       },
     );
-
-    this._callFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
-      const { to, from } = lifecycle;
-      if (to === from) {
-        return;
-      }
-      this.callState = to as CALL_STATE;
-      switch (this.callState) {
-        case CALL_STATE.CONNECTED:
-          this.activeCallTime = Date.now();
-          break;
-        case CALL_STATE.DIALING:
-        case CALL_STATE.IDLE:
-          this.resetReply();
-          this.quitKeypad();
-          this._restoreButtonStates();
-          this._clearEnteredKeys();
-          this._clearForwardString();
-          this.callerName = undefined;
-          this.isMute = false;
-          this.phoneNumber = undefined;
-          this.isContactMatched = false;
-          break;
-        case CALL_STATE.CONNECTING:
-          this.activeCallTime = undefined;
-          break;
-        default:
-          setTimeout(() => {
-            this.activeCallTime = undefined;
-          },         300);
-          break;
-      }
-    });
 
     reaction(
       () => this.phoneNumber,
@@ -354,13 +321,12 @@ class TelephonyStore {
   }
 
   openDialer = () => {
-    this._callFSM[CALL_TRANSITION_NAMES.OPEN_DIALER]();
+    this._history.add(DIALING);
     this._openCallWindow();
   }
 
   closeDialer = () => {
     this._closeCallWindow();
-    this._callFSM[CALL_TRANSITION_NAMES.CLOSE_DIALER]();
   }
 
   attachedWindow = () => {
@@ -374,62 +340,46 @@ class TelephonyStore {
   }
 
   end = () => {
-    const history: CALL_STATE[] = this._callFSM.history;
-    const {
-      END_INCOMING_CALL,
-      END_DIRECT_CALL,
-      END_WIDGET_CALL,
-      END_DIALER_CALL,
-      END_INCOMING_CALL_AND_RESUME,
-    } = CALL_TRANSITION_NAMES;
+    const history = this._history;
 
     switch (true) {
-      case history.includes(CALL_STATE.INCOMING) &&
-        history.includes(CALL_STATE.DIALING) &&
+      case history.has(CALL_DIRECTION.INBOUND) &&
+        history.has(DIALING) &&
         this.shouldResume:
         this.openDialer();
-        this._callFSM[END_INCOMING_CALL_AND_RESUME]();
         break;
-      case history.includes(CALL_STATE.INCOMING):
+
+      case history.has(CALL_DIRECTION.INBOUND) || !history.has(DIALING):
         this._closeCallWindow();
-        this._callFSM[END_INCOMING_CALL]();
-        break;
-      case !history.includes(CALL_STATE.DIALING):
-        this._closeCallWindow();
-        this._callFSM[END_DIRECT_CALL]();
-        break;
-      case this._localCallWindowStatus === CALL_WINDOW_STATUS.MINIMIZED:
-        this._callFSM[END_WIDGET_CALL]();
         break;
       default:
-        this._callFSM[END_DIALER_CALL]();
         break;
     }
+
+    this.resetReply();
+    this.quitKeypad();
+    this._restoreButtonStates();
+    this._clearEnteredKeys();
+    this._clearForwardString();
+    this.callerName = undefined;
+    this.phoneNumber = undefined;
+    this.isContactMatched = false;
+    this._clearHistory();
   }
 
   dialerCall = () => {
-    this._callFSM[CALL_TRANSITION_NAMES.START_DIALER_CALL]();
     this.shouldResume = false;
   }
 
   directCall = () => {
-    this._callFSM[CALL_TRANSITION_NAMES.START_DIRECT_CALL]();
     this.shouldResume = false;
     this.firstLetterEnteredThroughKeypad = false;
     this._openCallWindow();
   }
 
   incomingCall = () => {
-    this._callFSM[CALL_TRANSITION_NAMES.START_INCOMING_CALL]();
+    this._history.add(CALL_DIRECTION.INBOUND);
     this._openCallWindow();
-  }
-
-  answer = () => {
-    this._callFSM[CALL_TRANSITION_NAMES.ANSWER_INCOMING_CALL]();
-  }
-
-  connected = () => {
-    this._callFSM[CALL_TRANSITION_NAMES.HAS_CONNECTED]();
   }
 
   hold = () => {
@@ -572,28 +522,27 @@ class TelephonyStore {
     },                                  1000);
   }
 
-  @action
-  switchBetweenMuteAndUnmute = () => {
-    this.isMute = !this.isMute;
+  private _clearHistory() {
+    this._history.clear();
   }
 
   @computed
   get shouldDisplayDialer() {
     // TODO: change this when refactoring for multi-call
     return (
-      [CALL_STATE.DIALING, CALL_STATE.IDLE].includes(this.callState) ||
+      [undefined, CALL_STATE.DISCONNECTED].includes(this.callState) ||
       this.incomingState === INCOMING_STATE.FORWARD
     );
   }
 
   @computed
-  get hasIncomingCall() {
-    return this.callState === CALL_STATE.INCOMING;
+  get isIncomingCall() {
+    return this.callState === CALL_STATE.IDLE && this.inbound;
   }
 
   @computed
   get call(): CallModel {
-    return getEntity<Call, CallModel>(ENTITY_NAME.CALL, +this.callId);
+    return getEntity<Call, CallModel>(ENTITY_NAME.CALL, this.id);
   }
 
   @computed
@@ -604,6 +553,53 @@ class TelephonyStore {
   @computed
   get recordState(): RECORD_STATE {
     return this.call.recordState;
+  }
+
+  @computed
+  get callState(): CALL_STATE {
+    return this.call.callState;
+  }
+
+  @computed
+  get isMute(): boolean {
+    return this.call.muteState === MUTE_STATE.MUTED;
+  }
+
+  @computed
+  get activeCallTime(): number {
+    return this.call.connectTime;
+  }
+
+  @computed
+  get inbound(): boolean {
+    return this.call.direction === CALL_DIRECTION.INBOUND;
+  }
+
+  @computed
+  get outbound(): boolean {
+    return this.call.direction === CALL_DIRECTION.OUTBOUND;
+  }
+
+  @computed
+  get callDisconnected(): boolean {
+    return this.callState === CALL_STATE.DISCONNECTED;
+  }
+
+  @computed
+  get callId(): string {
+    return this.call.callId;
+  }
+
+  @computed
+  get callType() {
+    switch (true) {
+      case this.inbound:
+        return CALL_TYPE.INBOUND;
+      case this.outbound:
+        return CALL_TYPE.OUTBOUND;
+      default:
+        return CALL_TYPE.NULL;
+    }
   }
 
   @action

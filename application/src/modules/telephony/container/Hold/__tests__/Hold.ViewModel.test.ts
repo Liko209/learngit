@@ -24,14 +24,14 @@ beforeAll(() => {
   jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
     matchContactByPhoneNumber: jest.fn(),
   });
+  (getEntity as jest.Mock).mockReturnValue({
+    holdState: HOLD_STATE.DISABLE,
+  });
   holdViewModel = new HoldViewModel();
 });
 
 describe('HoldViewModel', () => {
   it('Should be disabled', async () => {
-    (getEntity as jest.Mock).mockReturnValue({
-      holdState: HOLD_STATE.DISABLE,
-    });
     expect(holdViewModel.disabled).toBe(true);
   });
 });

@@ -6,7 +6,6 @@
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { TelephonyEngineController } from '../controller';
 import {
-  ITelephonyCallDelegate,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from './ITelephonyCallDelegate';
@@ -90,10 +89,7 @@ class TelephonyService extends EntityBaseService<Call>
   }
 
   // TODO remove
-  createAccount = (
-    accountDelegate: ITelephonyAccountDelegate,
-    callDelegate: ITelephonyCallDelegate,
-  ) => {}
+  createAccount = (accountDelegate: ITelephonyAccountDelegate) => {};
 
   getAllCallCount = () => {
     const accountController = this.telephonyController.getAccountController();

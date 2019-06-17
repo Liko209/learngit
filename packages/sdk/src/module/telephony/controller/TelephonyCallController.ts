@@ -80,6 +80,8 @@ class TelephonyCallController implements IRTCCallDelegate {
       session_id: '',
       direction: CALL_DIRECTION.OUTBOUND,
       mute_state: MUTE_STATE.IDLE,
+      from_name: '',
+      to_name: '',
     };
     notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
   }
@@ -95,6 +97,8 @@ class TelephonyCallController implements IRTCCallDelegate {
       callEntity.to_num = call.getCallInfo().toNum;
       callEntity.from_num = call.getCallInfo().fromNum;
       callEntity.call_id = call.getCallInfo().uuid;
+      callEntity.from_name = call.getCallInfo().fromName;
+      callEntity.to_name = call.getCallInfo().toName;
       if (call.isIncomingCall()) {
         callEntity.direction = CALL_DIRECTION.INBOUND;
       }
