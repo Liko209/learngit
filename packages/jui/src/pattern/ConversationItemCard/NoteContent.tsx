@@ -4,11 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import styled from '../../foundation/styled-components';
+import { JuiDialogHeaderTitle } from '../../components/Dialog/DialogHeader';
 import { typography, grey, spacing } from '../../foundation/utils/styles';
 
 const JuiNoteContent = styled.div`
   ${typography('body1')};
   color: ${grey('500')};
+`;
+
+const JuiNoteTitle = styled(JuiDialogHeaderTitle)`
+  && {
+    h2 {
+      text-align: 'center';
+    }
+  }
 `;
 
 const JuiNoteIframe = styled.iframe`
@@ -22,4 +31,4 @@ const JuiNoteIframe = styled.iframe`
   word-wrap: break-word;
 `;
 
-export { JuiNoteContent, JuiNoteIframe };
+export { JuiNoteContent, JuiNoteIframe, JuiNoteTitle };
