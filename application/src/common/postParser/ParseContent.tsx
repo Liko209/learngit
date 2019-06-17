@@ -26,33 +26,28 @@ class ParseContent {
       return str;
     }
     const children: ChildrenType = [];
-    const plainStringReplacers = getComplementRanges(
-      this._replacers,
-      str.length,
-    ).map(range => {
+    const plainStringReplacers: Replacer[] = [];
+    getComplementRanges(this._replacers, str.length).forEach(range => {
       (range as Replacer).element = str.substr(range.startIndex, range.length);
-      return range;
+      plainStringReplacers.push(range);
     });
     this.addReplacers(plainStringReplacers);
 
     let elementCount = 0;
-    const pushChild = (element: React.ReactChild | null) => {
-      if (element === null) {
-        children.push(null);
+    const pushChild = (element: React.ReactChild | null | undefined) => {
+      if (element) {
+        children.push(
+          React.isValidElement(element)
+            ? React.cloneElement(element, { key: elementCount++ })
+            : element,
+        );
       }
-      children.push(
-        React.isValidElement(element)
-          ? React.cloneElement(element, { key: elementCount++ })
-          : element,
-      );
     };
-    this._replacers.forEach(({ element }) => {
-      if (Array.isArray(element)) {
-        element.forEach(item => pushChild(item));
-      } else {
-        pushChild(element === undefined ? null : element);
-      }
-    });
+
+    this._replacers.forEach(({ element }) =>
+      Array.isArray(element) ? element.forEach(pushChild) : pushChild(element),
+    );
+
     if (children.length === 1 && typeof children[0] === 'string') {
       return children[0];
     }

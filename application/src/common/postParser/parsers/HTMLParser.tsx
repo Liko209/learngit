@@ -3,13 +3,7 @@
  * @Date: 2019-05-29 16:29:36
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  IPostParser,
-  ParserType,
-  Replacer,
-  HTMLParserOption,
-  TextRange,
-} from '../types';
+import { IPostParser, ParserType, Replacer, HTMLParserOption } from '../types';
 import { ParseContent } from '../ParseContent';
 import { PostParser } from './PostParser';
 import {
@@ -48,10 +42,6 @@ class HTMLParser extends PostParser implements IPostParser {
 
   isValidMatch(match: string) {
     return /<[a-z][\s\S]*>/i.test(match);
-  }
-
-  isValidRange(range: TextRange) {
-    return true;
   }
 
   getReplaceElement(strValue: string) {
