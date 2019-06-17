@@ -63,7 +63,8 @@ class NoteItemViewModel extends AbstractViewModel<NoteProps> {
       ServiceConfig.ITEM_SERVICE,
     );
     try {
-      return await itemService.getNoteBody(this._id);
+      const body = await itemService.getNoteBody(this._id);
+      return body;
     } catch (error) {
       return GET_NOTE_ERROR;
     }
