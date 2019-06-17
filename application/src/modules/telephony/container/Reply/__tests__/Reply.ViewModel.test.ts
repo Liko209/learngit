@@ -81,4 +81,14 @@ describe('ReplyViewModel', () => {
       expect(ts.customReplyMessage).toEqual('');
     });
   });
+
+  describe('replyWithMessage', () => {
+    it('should call `replyWithMessage` on service', () => {
+      const _telephonyService: TelephonyService = container.get(
+        TELEPHONY_SERVICE,
+      );
+      replyViewModel.replyWithMessage();
+      expect(_telephonyService.replyWithMessage).toBeCalled();
+    });
+  });
 });

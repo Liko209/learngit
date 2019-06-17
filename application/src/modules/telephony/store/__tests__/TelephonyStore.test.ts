@@ -255,4 +255,9 @@ describe('Telephony store', () => {
     store.end();
     expect(store.activeCallTime).toBeUndefined();
   });
+
+  it('`hasActiveInBoundCall` should be initialized with false', () => {
+    const store = createStore();
+    expect(store.hasActiveInBoundCall).toBeFalsy();
+  });
 });
