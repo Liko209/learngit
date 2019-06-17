@@ -97,6 +97,7 @@ class Context {
     Boolean buildRcuiSuccess = false
 
     Set<String> addresses = []
+    Set<String> rcuiA11yReportAddresses = []
     List<String> failedStages = []
 
     Boolean getIsMerge() {
@@ -104,9 +105,9 @@ class Context {
     }
 
     Boolean getIsSkipUnitTestAndStaticAnalysis() {
-        // for a merge event, if target branch is not an integration branch, skip unit test
+        // for a merge event, if target branch is not an stable branch, skip unit test
         // for a push event, skip if not an integration branch
-        isMerge? !isIntegrationBranch(gitlabTargetBranch) : !isIntegrationBranch(gitlabSourceBranch)
+        isMerge? !isStableBranch(gitlabTargetBranch) : !isIntegrationBranch(gitlabSourceBranch)
     }
 
     Boolean getIsSkipEndToEnd() {
@@ -180,6 +181,10 @@ class Context {
 
     String getRcuiUrl() {
         "https://${subDomain}-rcui.${DOMAIN}".toString()
+    }
+
+    String getRcuiHashUrl() {
+        "https://${rcuiLockKey}.${DOMAIN}".toString()
     }
 
     String getAppHeadHashDir() {
@@ -410,6 +415,10 @@ class JupiterJob extends BaseJob {
         context.failedStages.add(name)
     }
 
+    String getJobDescription() {
+        context.tagToGlipLink(jenkins.currentBuild.getDescription())
+    }
+
     void run() {
         try {
             context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'pending')
@@ -580,6 +589,7 @@ class JupiterJob extends BaseJob {
         List<String> authors = jenkins.sh(returnStdout: true, script:getAuthorsCmd).trim().split('\n')
         List<String> glipAddresses = authors.collect{ it.replaceAll('ringcentral.com', 'ringcentral.glip.com')}
         context.addresses.addAll(glipAddresses)
+        context.rcuiA11yReportAddresses.addAll(glipAddresses)
     }
 
     void installDependencies() {
@@ -618,12 +628,13 @@ class JupiterJob extends BaseJob {
     void unitTest() {
         if (isSkipUnitTest) return
 
-        jenkins.sh 'npm run test -- --coverage -w 24'
+        jenkins.sh 'npm run test -- --coverage -w 16'
+        String reportName = 'Coverage'
         jenkins.publishHTML([
-            reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: 'Coverage', reportTitles: 'Coverage',
+            reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: reportName, reportTitles: reportName,
             allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true,
         ])
-        context.coverageSummary = "${context.buildUrl}Coverage".toString()
+        context.coverageSummary = "${context.buildUrl}${reportName}".toString()
 
         if (!context.isMerge) {
             jenkins.sshagent (credentials: [context.scmCredentialId]) {
@@ -712,7 +723,7 @@ class JupiterJob extends BaseJob {
             jenkins.sshagent(credentials: [context.deployCredentialId]) {
                 deployToRemote(sourceDir, context.deployUri, context.juiHeadHashDir)
             }
-            juiAutomation()
+            // juiAutomation()
             lockKey(context.lockCredentialId, context.lockUri, context.juiLockKey)
         }
         jenkins.sshagent(credentials: [context.deployCredentialId]) {
@@ -748,12 +759,61 @@ class JupiterJob extends BaseJob {
             jenkins.sshagent(credentials: [context.deployCredentialId]) {
                 deployToRemote(sourceDir, context.deployUri, context.rcuiHeadHashDir)
             }
+            try {
+                rcuiAccessibilityAutomation()
+            }catch (e) { }
             lockKey(context.lockCredentialId, context.lockUri, context.rcuiLockKey)
         }
         jenkins.sshagent(credentials: [context.deployCredentialId]) {
             copyRemoteDir(context.deployUri, context.rcuiHeadHashDir, context.rcuiLinkDir)
         }
         context.buildRcuiSuccess = true
+    }
+
+    void rcuiAccessibilityAutomation() {
+        jenkins.dir('packages/rcui/tests/testcafe') {
+            String rcuiResultDir = 'rcui-result'
+            jenkins.withEnv([
+                "TEST_URL=${context.rcuiHashUrl}",
+                "FILE_PATH=${rcuiResultDir}",
+                "SELENIUM_SERVER=${context.e2eSeleniumServer}",
+            ]) {
+                jenkins.sh 'env'
+                jenkins.sh "npm config set registry ${context.npmRegistry}"
+                jenkins.sh 'npm install --only=dev'
+                jenkins.sh 'npm run test'
+                String reportName = 'RCUI-Accessibility'
+
+                jenkins.publishHTML([
+                    reportDir: "${rcuiResultDir}/html", reportFiles: 'accessibility-check.html', reportName: reportName, reportTitles: reportName,
+                    allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true,
+                ])
+                String rcuiReportUrl = "${context.buildUrl}${reportName}".toString()
+                mail(context.rcuiA11yReportAddresses, "rcui accessibility automation result", createRcuiReport(rcuiResultDir, rcuiReportUrl))
+            }
+        }
+    }
+
+    String createRcuiReport(String rcuiResultDir, String rcuiReportUrl) {
+        jenkins.dir(rcuiResultDir) {
+            String passedComponents = jenkins.readFile(file: 'allPass.txt', encoding: 'utf-8').trim()
+            String failedComponents = jenkins.readFile(file: 'noAllPass.txt', encoding: 'utf-8').trim()
+            if(passedComponents) {
+                passedComponents = passedComponents.split('\n').collect{ "${context.SUCCESS_EMOJI} ${it}".toString()}.join('\n')
+            }
+            if(failedComponents) {
+                failedComponents = failedComponents.split('\n').collect{ "${context.FAILURE_EMOJI} ${it}".toString()}.join('\n')
+            }
+            return [
+                "[**RCUI Accessibility Report**](${rcuiReportUrl})".toString(),
+                "**Build Summary:** ${jobDescription}".toString(),
+                "**Build URL:** [here](${context.buildUrl})".toString(),
+                "**RCUI Storybook:** [here](${context.rcuiHashUrl})".toString(),
+                '**Components:**',
+                passedComponents,
+                failedComponents,
+            ].join('\n')
+        }
     }
 
     void e2eAutomation() {
@@ -784,7 +844,7 @@ class JupiterJob extends BaseJob {
             "SKIP_CONSOLE_WARN=true",
             "SCREENSHOT_WEBP_QUALITY=80",
             "QUARANTINE_MODE=true",
-            "QUARANTINE_FAILED_THRESHOLD=4",
+            "QUARANTINE_FAILED_THRESHOLD=3",
             "QUARANTINE_PASSED_THRESHOLD=1",
             "DEBUG=axios",
             "ENABLE_SSL=true",
@@ -906,6 +966,7 @@ Context context = new Context(
     feedbackUrl                 : params.FEEDBACK_URL,
 )
 
+context.rcuiA11yReportAddresses.addAll(params.RCUI_A11Y_REPORT_ADDRESSES.split('\n'))
 context.gitlabSourceBranch     = context.gitlabSourceBranch?: params.GITLAB_BRANCH
 context.gitlabTargetBranch     = context.gitlabTargetBranch?: context.gitlabSourceBranch
 context.gitlabSourceNamespace  = context.gitlabSourceNamespace?: params.GITLAB_NAMESPACE
