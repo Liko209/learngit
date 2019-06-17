@@ -14,10 +14,10 @@ import { CallLog } from '../entity';
 import { TELEPHONY_STATUS } from 'sdk/module/rcEventSubscription/constants';
 import { Nullable } from 'sdk/types';
 import {
-  CALL_LOG_SOURCE,
   CALL_TYPE,
   CALL_ACTION,
   CALL_RESULT,
+  LOCAL_INFO_TYPE,
 } from '../constants';
 import { CALL_DIRECTION } from '../../constants';
 import { notificationCenter } from 'sdk/service';
@@ -26,7 +26,10 @@ import { CallLogDao } from '../dao';
 import { CallLogUserConfig } from '../config/CallLogUserConfig';
 import { mainLogger } from 'foundation';
 import { PseudoCallLogInfo } from '../types';
-import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
+import { PhoneNumberType, PhoneNumber } from 'sdk/module/phoneNumber/entity';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { AccountService } from 'sdk/module/account';
+import { PersonService } from 'sdk/module/person';
 
 const LOG_TAG = 'CallLogHandleDataController';
 
@@ -94,6 +97,7 @@ class CallLogHandleDataController {
           this._hasValidDataInActiveCall(call) &&
           this._isAnEndCall(call) &&
           !pseudos[call.sessionId] &&
+          !this._isSelfCall(call) &&
           !(await this._getCallLogBySessionId(call.sessionId))
         ) {
           const pseudoId = call.sessionId + call.direction;
@@ -143,6 +147,22 @@ class CallLogHandleDataController {
       call.telephonyStatus === TELEPHONY_STATUS.NoCall &&
       call.terminationType === 'final'
     );
+  }
+
+  private async _isSelfCall(call: ActiveCall): Promise<boolean> {
+    const phoneNumber = call.direction === CALL_DIRECTION.INBOUND ? call.from : call.to;
+    let result = false;
+    const id: number = ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE).userConfig.getGlipUserId();
+    const personService = ServiceLoader.getInstance<PersonService>(ServiceConfig.PERSON_SERVICE);
+    const currentUser = await personService.getById(id);
+    if (currentUser) {
+      personService.getPhoneNumbers(currentUser, (data: PhoneNumber) => {
+        if (data.id === phoneNumber) {
+          result = true;
+        }
+      });
+    }
+    return result;
   }
 
   private async _getCallLogBySessionId(
@@ -202,6 +222,13 @@ class CallLogHandleDataController {
     startTime: string,
     result: CALL_RESULT,
   ): CallLog {
+    let localInfo = 0;
+    if (result === CALL_RESULT.MISSED || result === CALL_RESULT.VOICEMAIL) {
+      localInfo = localInfo | LOCAL_INFO_TYPE.IS_MISSED | LOCAL_INFO_TYPE.IS_INBOUND;
+    } else {
+      direction === CALL_DIRECTION.INBOUND &&
+      (localInfo = localInfo | LOCAL_INFO_TYPE.IS_INBOUND);
+    }
     return {
       sessionId,
       direction,
@@ -224,7 +251,7 @@ class CallLogHandleDataController {
       type: CALL_TYPE.VOICE,
       action: CALL_ACTION.UNKNOWN,
       duration: 0,
-      __source: CALL_LOG_SOURCE.ALL,
+      __localInfo: localInfo,
       __timestamp: Date.parse(startTime),
       __deactivated: false,
     };

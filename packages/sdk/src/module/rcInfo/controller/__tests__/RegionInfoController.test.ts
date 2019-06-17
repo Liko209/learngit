@@ -118,6 +118,14 @@ describe('RegionInfoController', () => {
         'RC_INFO.EXTENSION_PHONE_NUMBER_LIST',
         expect.anything(),
       );
+      expect(notificationCenter.on).toBeCalledWith(
+        'RC_INFO.ACCOUNT_INFO',
+        expect.anything(),
+      );
+      expect(notificationCenter.on).toBeCalledWith(
+        'RC_INFO.RC_SERVICE_INFO',
+        expect.anything(),
+      );
     });
   });
 
@@ -132,6 +140,14 @@ describe('RegionInfoController', () => {
       regionInfoController.dispose();
       expect(notificationCenter.off).toBeCalledWith(
         'RC_INFO.EXTENSION_PHONE_NUMBER_LIST',
+        expect.anything(),
+      );
+      expect(notificationCenter.off).toBeCalledWith(
+        'RC_INFO.ACCOUNT_INFO',
+        expect.anything(),
+      );
+      expect(notificationCenter.off).toBeCalledWith(
+        'RC_INFO.RC_SERVICE_INFO',
         expect.anything(),
       );
     });

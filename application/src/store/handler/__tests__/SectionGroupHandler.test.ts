@@ -686,7 +686,7 @@ describe('SectionGroupHandler', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'people.prompt.conversationPrivate',
+            message: 'people.prompt.noLongerAMemberOfThisTeam',
           }),
         );
         done();
