@@ -49,26 +49,31 @@ const DefaultBrandId = RC_BRAND_NAME_TO_BRAND_ID.RC;
 
 class RegionInfoController {
   private _currentCountryInfo: DialingCountryInfo;
+  private _notificationKeys: string[];
 
   constructor(
     private _rcInfoFetchController: RCInfoFetchController,
     private _rcAccountInfoController: RCAccountInfoController,
     private _accountServiceInfoController: AccountServiceInfoController,
     private _callerIdController: RCCallerIdController,
-  ) {}
+  ) {
+    this._notificationKeys = [
+      RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
+      RC_INFO.ACCOUNT_INFO,
+      RC_INFO.RC_SERVICE_INFO,
+    ];
+  }
 
   init() {
-    notificationCenter.on(
-      RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
-      this.updateStationLocation,
-    );
+    this._notificationKeys.forEach((key: string) => {
+      notificationCenter.on(key, this.updateStationLocation);
+    });
   }
 
   dispose() {
-    notificationCenter.off(
-      RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
-      this.updateStationLocation,
-    );
+    this._notificationKeys.forEach((key: string) => {
+      notificationCenter.off(key, this.updateStationLocation);
+    });
   }
 
   updateStationLocation = () => {

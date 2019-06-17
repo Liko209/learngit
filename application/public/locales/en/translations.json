@@ -491,6 +491,7 @@
     },
     "company": {},
     "prompt": {
+      "noLongerAMemberOfThisTeam": "Sorry, you're no longer a member of this Team. To join, contact the team administrator.",
       "closeConfirmDialogHeader": "Close Conversation?",
       "closeConfirmDialogContent": "Closing a conversation will remove it from the left pane, but will not delete the contents.",
       "closeConfirmDialogDontAskMeAgain": "Don't ask me again",
@@ -823,7 +824,7 @@
         "description": "Update the volume"
       }
     },
-    "default": "Default",
+    "useDefault": "Use system default",
     "speaker": "Speaker",
     "noDevices": "No devices",
     "microphone": "Microphone",

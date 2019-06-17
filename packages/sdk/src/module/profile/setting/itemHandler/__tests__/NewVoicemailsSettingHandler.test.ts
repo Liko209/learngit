@@ -52,6 +52,7 @@ describe('NewVoicemailsSettingHandler', () => {
     };
     profileService = new ProfileService();
     settingService = new SettingService();
+    settingService.getById = jest.fn().mockResolvedValue({ value: 1 });
     accoutService = new AccountService(null);
     accoutService = {
       userConfig: {

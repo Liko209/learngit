@@ -26,6 +26,7 @@ type ContactSearchListViewProps = {
   onEnter: () => void;
   onClick: (focusIndex: number) => void;
   dialerFocused: boolean;
+  trimmedInputString: string;
 };
 
 export {

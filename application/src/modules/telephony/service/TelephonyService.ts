@@ -46,7 +46,6 @@ import {
 import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
 import i18next from 'i18next';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
-import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 import storeManager from '@/store';
 import { SettingEntityIds } from 'sdk/module/setting';
 
@@ -77,8 +76,6 @@ class TelephonyService {
   private _callerPhoneNumberDisposer: IReactionDisposer;
   private _incomingCallDisposer: IReactionDisposer;
 
-  uiCallStartTime: number;
-
   private _onAccountStateChanged = (state: RTC_ACCOUNT_STATE) => {
     mainLogger.debug(
       `${TelephonyService.TAG}[Telephony_Service_Account_State]: ${state}`,
@@ -95,7 +92,6 @@ class TelephonyService {
     // if has incoming call voicemail should be pause
     storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, true);
     this._callId = callId;
-    this.uiCallStartTime = +new Date();
     this._telephonyStore.callType = CALL_TYPE.OUTBOUND;
     this._telephonyStore.directCall();
   }
@@ -107,7 +103,6 @@ class TelephonyService {
     }
     const { fromName, fromNum, callId } = callInfo;
     this._callId = callId;
-    this.uiCallStartTime = +new Date();
     this._telephonyStore.callType = CALL_TYPE.INBOUND;
     this._telephonyStore.callerName = fromName;
     const phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
@@ -334,9 +329,6 @@ class TelephonyService {
 
     this._getDialerOpenedCount();
 
-    // Read firstly
-    this._getCallerPhoneNumberList();
-
     notificationCenter.on(
       RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
       this._getCallerPhoneNumberList,
@@ -505,8 +497,8 @@ class TelephonyService {
     // FIXME: move this logic to SDK and always using callerID
     const idx = this._telephonyStore.callerPhoneNumberList.findIndex(
       phone =>
-        formatPhoneNumber(phone.phoneNumber) ===
-        formatPhoneNumber(this._telephonyStore.chosenCallerPhoneNumber),
+        phone.phoneNumber ===
+        this._telephonyStore.chosenCallerPhoneNumber,
     );
     if (idx === -1) {
       return mainLogger.error(
@@ -681,7 +673,10 @@ class TelephonyService {
   }
 
   getAllCallCount = () => {
-    return this._serverTelephonyService && this._serverTelephonyService.getAllCallCount();
+    return (
+      this._serverTelephonyService &&
+      this._serverTelephonyService.getAllCallCount()
+    );
   }
 
   holdOrUnhold = () => {

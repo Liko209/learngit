@@ -7,6 +7,7 @@ import { jupiter, container } from 'framework';
 import { ISettingService } from '@/interface/setting';
 import { config } from '../../../module.config';
 import { NotificationSoundSettingManager } from '../NotificationSoundSettingManager';
+import { SETTING_SECTION__SOUNDS } from '../constant';
 
 jest.mock('@/history');
 
@@ -29,11 +30,14 @@ describe('NotificationSoundSettingManager', () => {
   });
 
   describe('init()', () => {
-    it('should register page', () => {
+    it.only('should register page [JPT-2099]', () => {
       const { manager, settingService } = setup();
       jest.spyOn(settingService, 'registerPage');
       manager.init();
       expect(settingService.registerPage).toHaveBeenCalled();
+      expect(settingService.registerPage.mock.calls[0][1].sections[0].id).toBe(
+        SETTING_SECTION__SOUNDS,
+      );
     });
   });
 

@@ -236,4 +236,23 @@ describe('Telephony store', () => {
     store.end();
     expect(store.shouldEnterContactSearch).toBeFalsy();
   });
+
+  it('should sync dialer entered state', () => {
+    const store = createStore();
+    expect(store.enteredDialer).toBeFalsy();
+    store.syncDialerEntered(true);
+    expect(store.enteredDialer).toBeTruthy();
+    store.syncDialerEntered(false);
+    expect(store.enteredDialer).toBeFalsy();
+  });
+
+  it('activeCallTime should to be undefined when callState is not CONNECTED', () => {
+    const store = createStore();
+    expect(store.activeCallTime).toBeUndefined();
+    store.directCall();
+    store.connected();
+    expect(store.activeCallTime).toBeDefined();
+    store.end();
+    expect(store.activeCallTime).toBeUndefined();
+  });
 });

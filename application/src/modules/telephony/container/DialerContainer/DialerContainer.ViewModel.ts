@@ -16,7 +16,6 @@ import { RefObject } from 'react';
 import ReactDOM from 'react-dom';
 import { debounce } from 'lodash';
 import { focusCampo, sleep } from '../../helpers';
-import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 import { CALL_WINDOW_STATUS } from '../../FSM';
 
 class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
@@ -48,6 +47,11 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   @computed
+  get enteredDialer() {
+    return this._telephonyStore.enteredDialer;
+  }
+
+  @computed
   get keypadEntered() {
     return this._telephonyStore.keypadEntered;
   }
@@ -74,19 +78,18 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
 
   @computed
   get chosenCallerPhoneNumber() {
-    return formatPhoneNumber(this._telephonyStore.chosenCallerPhoneNumber);
+    return this._telephonyStore.chosenCallerPhoneNumber;
   }
 
   @computed
   get callerPhoneNumberList() {
-    return this._telephonyStore.callerPhoneNumberList.map(el => ({
-      value: formatPhoneNumber(el.phoneNumber),
+    return this._telephonyStore.callerPhoneNumberList.map((el) => ({
+      value: el.phoneNumber,
       usageType: el.usageType,
-      phoneNumber: formatPhoneNumber(el.phoneNumber),
+      phoneNumber: el.phoneNumber,
       label: el.label,
     }));
   }
-
   @computed
   get hasDialerOpened() {
     return this._telephonyStore.dialerOpenedCount !== 0;
@@ -206,7 +209,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
     if (!this.canClickToInput) {
       return;
     }
-    if (!this.trimmedInputString.length) {
+    if (!this.trimmedInputString.length && !this.isForward) {
       this._telephonyStore.enterFirstLetterThroughKeypad();
     }
     this.playAudio(str);

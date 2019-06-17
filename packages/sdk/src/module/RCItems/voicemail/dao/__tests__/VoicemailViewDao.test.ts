@@ -29,13 +29,13 @@ describe('VoicemailViewDao', () => {
       const expectedData = {
         id: 123,
         from: { phone: '123' },
-        to: { phone: '123' },
         creationTime: '123123',
-        lastModifiedTime: '123123',
       };
       const data: any = {
         ...expectedData,
         data: 'test',
+        lastModifiedTime: '123123',
+        to: { phone: '123' },
       };
       const result = voicemailViewDao.toVoicemailView(data);
       expect(result).toEqual(expectedData);
@@ -47,13 +47,13 @@ describe('VoicemailViewDao', () => {
       const expectedData = {
         id: 123,
         from: { phone: '123' },
-        to: { phone: '123' },
         creationTime: '123123',
-        lastModifiedTime: '123123',
       };
       const data: any = {
         ...expectedData,
         data: 'test',
+        lastModifiedTime: '123123',
+        to: { phone: '123' },
       };
       const result = voicemailViewDao.toPartialVoicemailView(data);
       expect(result).toEqual(expectedData);

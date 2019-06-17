@@ -77,7 +77,9 @@ describe('DialerContainerViewModel', () => {
     (formatPhoneNumber as jest.Mock).mockImplementationOnce(() => {
       return phoneNumber;
     });
-    expect(dialerContainerViewModel.chosenCallerPhoneNumber).toBe(phoneNumber);
+    expect(dialerContainerViewModel.chosenCallerPhoneNumber).toBe(
+      '+44 650-123-641',
+    );
   });
 
   it('Should return false while initializing', () => {
@@ -90,5 +92,9 @@ describe('DialerContainerViewModel', () => {
 
   it('Should not enter contact search', () => {
     expect(dialerContainerViewModel.shouldEnterContactSearch).toBeFalsy();
+  });
+
+  it('Should return dialer entered state', () => {
+    expect(dialerContainerViewModel.enteredDialer).toBeFalsy();
   });
 });
