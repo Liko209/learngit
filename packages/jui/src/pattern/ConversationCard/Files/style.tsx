@@ -80,6 +80,7 @@ const FileInfo = styled(MuiListItemText)`
 `;
 
 const FileActionsWrapper = styled.span`
+  margin-left: ${spacing(2)};
   display: flex;
   & > * {
     margin: 0 ${spacing(2)} 0 0;
