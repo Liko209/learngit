@@ -247,8 +247,16 @@ class NotesTab extends BaseTab {
 }
 
 class ImageAndFileItem extends BaseWebComponent {
-  get thumbnail() {
+  get imageThumbnail() {
     return this.getSelectorByAutomationId('thumbnail', this.self);
+  }
+
+  get fileThumbnail() {
+    return this.getSelectorByAutomationId('iconThumbnail', this.self);
+  }
+  
+  get docIcon() {
+    return this.getSelectorByIcon('doc', this.self);
   }
 
   get name() {
