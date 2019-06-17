@@ -76,31 +76,38 @@ describe('SocketCanConnectController', () => {
         .mockResolvedValueOnce();
       jest.spyOn(controller, '_onCanConnectApiFailure').mockResolvedValueOnce();
       const callback = () => {};
-      await controller.doCanConnectApi(callback, true);
-      expect(controller._onCanConnectApiFailure).toHaveBeenCalledTimes(1);
+      await controller['_doCanConnectApi'](callback, true);
+      expect(controller['_onCanConnectApiFailure']).toHaveBeenCalledTimes(1);
     });
     it('should call _tryToCheckCanConnectAfterTime when get can connect response with reconnect_retry_in', async () => {
       const controller = getController();
       jest
         .spyOn(controller, '_requestCanConnectInfo')
-        .mockResolvedValueOnce({ reconnect_retry_in: 10 });
+        .mockResolvedValueOnce({ reconnect_retry_in: 1 });
       jest
         .spyOn(controller, '_tryToCheckCanConnectAfterTime')
         .mockResolvedValueOnce();
       const callback = () => {};
-      await controller.doCanConnectApi(callback, true);
-      expect(controller._tryToCheckCanConnectAfterTime).toHaveBeenCalledTimes(
-        1,
-      );
+      await controller['_doCanConnectApi'](callback, true);
+      expect(
+        controller['_tryToCheckCanConnectAfterTime'],
+      ).toHaveBeenCalledTimes(1);
     });
-    it('should call callback when everything is good', async () => {
+    it('should call callback when everything is good', async (done: any) => {
       const controller = getController();
       jest
         .spyOn(controller, '_requestCanConnectInfo')
         .mockResolvedValueOnce({});
       const callback = jest.fn();
-      await controller.doCanConnectApi(callback, true);
-      expect(callback).toHaveBeenCalledTimes(1);
+      await controller.doCanConnectApi({
+        callback,
+        forceOnline: true,
+        nthCount: 0,
+      });
+      setTimeout(() => {
+        expect(callback).toHaveBeenCalledTimes(1);
+        done();
+      }, 100);
     });
   });
   describe('_onCanConnectApiSuccess', () => {
