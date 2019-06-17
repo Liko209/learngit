@@ -15,7 +15,7 @@ import {
   JuiItemContent,
   JuiItemTextValue,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
-import { MEETING_URL, SUCCESS_URL } from './constant';
+import { MEETING_URL } from './constant';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 import {
   postParser,
@@ -58,15 +58,6 @@ class Meeting extends React.Component<meetingProps> {
           {<JuiItemConjunctionText description={t('item.or')} />}
           <JuiLink size="small" handleOnClick={() => window.open(MEETING_URL)}>
             {t('item.globalNumber')}
-          </JuiLink>
-        </JuiItemContent>
-        <JuiItemContent title={t('item.meeting.help')}>
-          <JuiItemTextValue
-            description={t('item.meeting.installProblems') as string}
-          />
-          <JuiItemConjunctionText description="" />
-          <JuiLink size="small" handleOnClick={() => window.open(SUCCESS_URL)}>
-            {t('item.meeting.readThis')}
           </JuiLink>
         </JuiItemContent>
       </>
