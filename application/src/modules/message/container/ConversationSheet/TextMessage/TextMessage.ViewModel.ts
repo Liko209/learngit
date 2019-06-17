@@ -116,7 +116,6 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
       emoji: {
         hostName: this._staticHttpServer,
         customEmojiMap: this._customEmojiMap,
-        keepASCII: true,
       },
       phoneNumber: true,
     });
