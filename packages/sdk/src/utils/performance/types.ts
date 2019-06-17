@@ -60,6 +60,7 @@ export enum PERFORMANCE_KEYS {
   INIT_RC_MESSAGE_BADGE = 'init_rc_message_badge',
   DELETE_RC_MESSAGE = 'delete_rc_message',
   DELETE_RC_MESSAGE_FROM_SERVER = 'delete_rc_message_from_server',
+  PREPARE_PERSON_CACHE = 'prepare_person_cache',
 
   // UI
   // stream render

@@ -133,7 +133,7 @@ describe('TaskController', () => {
         const interval = strategy.getNext();
         expect(interval).toEqual(retryStrategy[retryStrategy.length - 1]);
         done();
-      }, 200);
+      }, 400);
     });
   });
 });
