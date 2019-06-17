@@ -760,7 +760,7 @@
         },
         "teams": {
           "label": "Teams",
-          "description": "Receive email notifications for direct messages"
+          "description": "Choose your preferences for email notifications for team messages"
         },
         "dailyDigest": {
           "label": "Daily Digest",
