@@ -36,6 +36,7 @@ import {
   CALL_WINDOW_TRANSITION_NAMES,
 } from '../FSM';
 import { ANONYMOUS } from '../interface/constant';
+import { CALL_DIRECTION } from 'sdk/module/RCItems/constants';
 const some = require('lodash/some');
 const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
 
@@ -114,7 +115,7 @@ class TelephonyStore {
   pendingForRecord: boolean = false;
 
   @observable
-  shouldResume: boolean;
+  shouldKeepDialog: boolean;
 
   @observable
   inputString: string = '';
@@ -169,6 +170,9 @@ class TelephonyStore {
 
   @observable
   enteredDialer: boolean = false;
+
+  @observable
+  callDirection: CALL_DIRECTION | undefined;
 
   constructor() {
     [
@@ -391,12 +395,14 @@ class TelephonyStore {
   openDialer = () => {
     this._callFSM[CALL_TRANSITION_NAMES.OPEN_DIALER]();
     this._openCallWindow();
+    this.shouldKeepDialog = true;
   }
 
   @action
   closeDialer = () => {
     this._closeCallWindow();
     this._callFSM[CALL_TRANSITION_NAMES.CLOSE_DIALER]();
+    this.shouldKeepDialog = false;
   }
 
   @action
@@ -425,7 +431,7 @@ class TelephonyStore {
     switch (true) {
       case history.includes(CALL_STATE.INCOMING) &&
         history.includes(CALL_STATE.DIALING) &&
-        this.shouldResume:
+        this.shouldKeepDialog:
         this.openDialer();
         this._callFSM[END_INCOMING_CALL_AND_RESUME]();
         break;
@@ -444,20 +450,21 @@ class TelephonyStore {
         this._callFSM[END_DIALER_CALL]();
         break;
     }
+    this.callDirection = undefined;
   }
 
   @action
   dialerCall = () => {
     this._callFSM[CALL_TRANSITION_NAMES.START_DIALER_CALL]();
-    this.shouldResume = false;
+    this.callDirection = CALL_DIRECTION.OUTBOUND;
   }
 
   @action
   directCall = () => {
     this._callFSM[CALL_TRANSITION_NAMES.START_DIRECT_CALL]();
-    this.shouldResume = false;
     this.firstLetterEnteredThroughKeypad = false;
     this._openCallWindow();
+    this.callDirection = CALL_DIRECTION.OUTBOUND;
   }
 
   @action
@@ -468,6 +475,7 @@ class TelephonyStore {
 
   answer = () => {
     this._callFSM[CALL_TRANSITION_NAMES.ANSWER_INCOMING_CALL]();
+    this.callDirection = CALL_DIRECTION.INBOUND;
   }
 
   connected = () => {
@@ -668,6 +676,23 @@ class TelephonyStore {
   @action
   syncDialerEntered(entered: boolean) {
     this.enteredDialer = entered;
+  }
+
+  @computed
+  get hasActiveCall() {
+    return [CALL_STATE.CONNECTED, CALL_STATE.CONNECTING].includes(
+      this.callState,
+    );
+  }
+
+  @computed
+  get hasActiveOutBoundCall() {
+    return this.hasActiveCall && this.callDirection === CALL_DIRECTION.OUTBOUND;
+  }
+
+  @computed
+  get hasActiveInBoundCall() {
+    return this.hasActiveCall && this.callDirection === CALL_DIRECTION.INBOUND;
   }
 }
 
