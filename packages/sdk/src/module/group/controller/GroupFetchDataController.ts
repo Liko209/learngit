@@ -45,7 +45,7 @@ import { SearchService } from '../../search';
 import { RecentSearchTypes, RecentSearchModel } from '../../search/entity';
 import { MY_LAST_POST_VALID_PERIOD } from '../../search/constants';
 
-const kTeamIncludeMe: number = 1;
+const kTeamIncludeMe: number = 1000;
 const kSortingRateWithFirstMatched: number = 1;
 const kSortingRateWithFirstAndPositionMatched: number = 1.1;
 
