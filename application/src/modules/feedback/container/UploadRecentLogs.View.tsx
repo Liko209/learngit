@@ -14,7 +14,7 @@ import {
   UploadRecentLogsViewProps,
   TaskStatus,
 } from './types';
-import { Notification } from '@/containers/Notification';
+import { Notification, NotificationProps } from '@/containers/Notification';
 import {
   ToastType,
   ToastMessageAlign,
@@ -33,7 +33,9 @@ const Loading = withLoading(
 
 type State = {};
 
-type Props = UploadRecentLogsViewProps & UploadRecentLogsViewModelProps & WithTranslation;
+type Props = UploadRecentLogsViewProps &
+  UploadRecentLogsViewModelProps &
+  WithTranslation;
 
 @observer
 class UploadRecentLogsComponent extends React.Component<Props, State> {
@@ -41,6 +43,7 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
 
   focusInputRef = createRef<HTMLInputElement>();
   focusTimer: NodeJS.Timeout;
+  _dismiss: (() => void) | undefined;
 
   constructor(props: Props) {
     super(props);
@@ -52,7 +55,7 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
   private _onSendFeedbackDoneCallback = (taskStatus: TaskStatus) => {
     const { t } = this.props;
     const isSuccess = taskStatus === TaskStatus.SUCCESS;
-    Notification.flashToast({
+    this._flashToast({
       message: isSuccess
         ? t('feedback.sendFeedbackSuccess')
         : t('feedback.sendFeedbackFailed'),
@@ -61,6 +64,12 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
       fullWidth: false,
       dismissible: false,
     });
+  }
+
+  private _flashToast(props: NotificationProps) {
+    this._dismiss && this._dismiss();
+    const { dismiss } = Notification.flashToast(props);
+    this._dismiss = dismiss;
   }
 
   componentDidMount() {
@@ -83,7 +92,7 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
     sendFeedback();
 
     // sendingInBackground
-    Notification.flashToast({
+    this._flashToast({
       message: t('feedback.sendingInBackground'),
       type: ToastType.INFO,
       messageAlign: ToastMessageAlign.LEFT,
@@ -136,6 +145,8 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
 
 // const UploadRecentLogsComponent = UploadRecentLogsView;
 
-const UploadRecentLogsView = withTranslation('translations')(UploadRecentLogsComponent);
+const UploadRecentLogsView = withTranslation('translations')(
+  UploadRecentLogsComponent,
+);
 
 export { UploadRecentLogsView, UploadRecentLogsComponent };
