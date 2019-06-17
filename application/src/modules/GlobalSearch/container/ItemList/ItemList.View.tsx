@@ -17,7 +17,7 @@ import { observer } from 'mobx-react';
 import { ItemListProps, ItemListViewProps } from './types';
 import { SearchSectionsConfig } from '../config';
 import { cacheEventFn } from '../types';
-import { LIST_OUTTER_HEIGHT } from '../ContentSearchResult/constants';
+import { USED_HEIGHT, MIN_HEIGHT_FIX } from '../ContentSearchResult/constants';
 import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
 
 const MAX_COUNT = 12;
@@ -125,11 +125,14 @@ class ItemListViewComponent extends Component<Props, State> {
     const width = size.width;
     let height = size.height;
     if (size.width < FULLSCREEN_WIDTH) {
-      height = size.height - LIST_OUTTER_HEIGHT;
+      height = size.height - USED_HEIGHT;
     } else {
-      height = Math.min(
-        ITEM_HEIGHT * Math.min(MAX_COUNT, this.props.list.length),
-        size.height - LIST_OUTTER_HEIGHT,
+      height = Math.max(
+        Math.min(
+          ITEM_HEIGHT * Math.min(MAX_COUNT, this.props.list.length),
+          size.height - USED_HEIGHT,
+        ),
+        MIN_HEIGHT_FIX,
       );
     }
     if (height !== this.state.height || width !== this.state.width) {
