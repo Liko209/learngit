@@ -9,9 +9,6 @@ import {
   MAKE_CALL_ERROR_CODE,
   E911_STATUS,
 } from '../types';
-import { PhoneParserUtility } from '../../../utils/phoneParser';
-import { PersonService } from '../../person';
-import { ContactType } from '../../person/types';
 import { RCInfoService } from '../../rcInfo';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
@@ -91,12 +88,6 @@ class MakeCallController {
       }
     }
     return result;
-  }
-
-  private _isLoggedInRCOnlyMode() {
-    // It's not implemented right now
-    // TODO FIJI-3967
-    return false;
   }
 
   async tryMakeCall(e164PhoneNumber: string): Promise<MAKE_CALL_ERROR_CODE> {
