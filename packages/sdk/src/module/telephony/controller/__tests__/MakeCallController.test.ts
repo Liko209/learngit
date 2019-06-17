@@ -54,7 +54,7 @@ describe('MakeCallController', () => {
     expect(result).toBe(MAKE_CALL_ERROR_CODE.E911_ACCEPT_REQUIRED);
   });
 
-  it('should return error when N11 is declined with N11 101', async () => {
+  it('should return error when dialing out N11 numbers', async () => {
     const specialNumberRule = {
       records: [
         {
@@ -104,112 +104,6 @@ describe('MakeCallController', () => {
       getSpecialNumberRule: jest.fn().mockReturnValue(specialNumberRule),
     });
     const result = await makeCallController.tryMakeCall('211');
-    expect(result).toBe(MAKE_CALL_ERROR_CODE.N11_101);
-  });
-
-  it('should return error when N11 is declined with N11 102', async () => {
-    const specialNumberRule = {
-      records: [
-        {
-          description: 'Public Information/Referral',
-          features: {
-            sms: {
-              enabled: false,
-              reason: {
-                id: 'N11-103',
-                message: 'Message to this service is unavailable',
-              },
-            },
-            voip: {
-              enabled: false,
-              reason: {
-                id: 'N11-101',
-                message: 'Call to this service is unavailable',
-              },
-            },
-          },
-          phoneNumber: '211',
-        },
-        {
-          description: 'Weather & Travel Information',
-          features: {
-            sms: {
-              enabled: false,
-              reason: {
-                id: 'N11-103',
-                message: 'Message to this service is unavailable',
-              },
-            },
-            voip: {
-              enabled: false,
-              reason: {
-                id: 'N11-102',
-                message: 'Call to this service is unavailable',
-              },
-            },
-          },
-          phoneNumber: '511',
-        },
-      ],
-    };
-    ServiceLoader.getInstance = jest.fn().mockReturnValue({
-      getRCExtensionInfo: jest.fn(),
-      getSpecialNumberRule: jest.fn().mockReturnValue(specialNumberRule),
-    });
-    const result = await makeCallController.tryMakeCall('511');
-    expect(result).toBe(MAKE_CALL_ERROR_CODE.N11_102);
-  });
-
-  it('should return error when N11 is declined with N11 102', async () => {
-    const specialNumberRule = {
-      records: [
-        {
-          description: 'Public Information/Referral',
-          features: {
-            sms: {
-              enabled: false,
-              reason: {
-                id: 'N11-103',
-                message: 'Message to this service is unavailable',
-              },
-            },
-            voip: {
-              enabled: false,
-              reason: {
-                id: 'N11-101',
-                message: 'Call to this service is unavailable',
-              },
-            },
-          },
-          phoneNumber: '211',
-        },
-        {
-          description: 'Weather & Travel Information',
-          features: {
-            sms: {
-              enabled: false,
-              reason: {
-                id: 'N11-103',
-                message: 'Message to this service is unavailable',
-              },
-            },
-            voip: {
-              enabled: false,
-              reason: {
-                id: 'N11-103',
-                message: 'Call to this service is unavailable',
-              },
-            },
-          },
-          phoneNumber: '511',
-        },
-      ],
-    };
-    ServiceLoader.getInstance = jest.fn().mockReturnValue({
-      getRCExtensionInfo: jest.fn(),
-      getSpecialNumberRule: jest.fn().mockReturnValue(specialNumberRule),
-    });
-    const result = await makeCallController.tryMakeCall('511');
     expect(result).toBe(MAKE_CALL_ERROR_CODE.N11_OTHERS);
   });
 
