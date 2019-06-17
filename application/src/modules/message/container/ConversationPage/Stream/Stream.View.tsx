@@ -293,25 +293,14 @@ class StreamViewComponent extends Component<Props> {
     startIndex,
     stopIndex,
   }: IndexRange) => {
-    if (startIndex === -1 || stopIndex === -1) return;
+    const listEl = this._listRef.current;
+    if (startIndex === -1 || stopIndex === -1 || !listEl) return;
     const {
       items,
-      mostRecentPostId,
       firstHistoryUnreadPostId = 0,
       historyReadThrough = 0,
     } = this.props;
     const visibleItems = items.slice(startIndex, stopIndex + 1);
-    const visiblePosts = _(visibleItems)
-      .flatMap('value')
-      .concat();
-    if (
-      this.props.hasMore('down') ||
-      !visiblePosts.includes(mostRecentPostId)
-    ) {
-      this.handleMostRecentHidden();
-    } else {
-      this.handleMostRecentViewed();
-    }
     if (this._historyViewed) {
       return;
     }
@@ -326,6 +315,14 @@ class StreamViewComponent extends Component<Props> {
       } else {
         this._historyViewed = false;
       }
+    }
+  }
+
+  private _bottomStatusChangeHandler = (isAtBottom: boolean) => {
+    if (this.props.hasMore('down') || !isAtBottom) {
+      this.handleMostRecentHidden();
+    } else if (isAtBottom) {
+      this.handleMostRecentViewed();
     }
   }
 
@@ -462,6 +459,7 @@ class StreamViewComponent extends Component<Props> {
                       hasMore={hasMore}
                       loadingMoreRenderer={defaultLoadingMore}
                       onVisibleRangeChange={this._handleVisibilityChanged}
+                      onBottomStatusChange={this._bottomStatusChangeHandler}
                     >
                       {this._renderStreamItems()}
                     </JuiInfiniteList>
@@ -496,7 +494,6 @@ class StreamViewComponent extends Component<Props> {
 
   private _focusHandler = () => {
     const { markAsRead } = this.props;
-
     const atBottom =
       this._listRef.current && this._listRef.current.isAtBottom();
     if (atBottom) {
