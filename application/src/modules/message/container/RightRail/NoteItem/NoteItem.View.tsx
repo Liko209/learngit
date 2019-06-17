@@ -18,8 +18,8 @@ import { observer } from 'mobx-react';
 @observer
 class NoteItemView extends Component<NoteItemProps> {
   _handleClick = async () => {
-    const { title, note } = this.props;
-    openNoteViewer(title, note.id);
+    const { title, id } = this.props;
+    openNoteViewer(title, id);
   }
   render() {
     const { disabled, title, subTitle } = this.props;

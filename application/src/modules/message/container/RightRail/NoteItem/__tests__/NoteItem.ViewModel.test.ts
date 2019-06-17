@@ -52,20 +52,11 @@ describe('NoteItemViewModel', () => {
     expect(noteItemViewModel.subTitle).toBe('username');
   });
 
-  describe('getBodyInfo', () => {
-    it('should get body info ', async () => {
-      const noteItemViewModel = new NoteItemViewModel({ id: 123 });
-      itemService.getNoteBody = jest.fn().mockImplementationOnce(() => body);
-      const result = await noteItemViewModel.getBodyInfo();
-      expect(result).toEqual(body);
-    });
-    it('should return error when service error ', async () => {
-      const noteItemViewModel = new NoteItemViewModel({ id: 123 });
-      itemService.getNoteBody = jest.fn().mockImplementationOnce(() => {
-        throw new JServerError(ERROR_CODES_SERVER.NOT_AUTHORIZED, '');
-      });
-      const result = await noteItemViewModel.getBodyInfo();
-      expect(result).toEqual('Error');
+  describe('id', () => {
+    it('should get id info ', async () => {
+      const id = 123;
+      const noteItemViewModel = new NoteItemViewModel({ id });
+      expect(noteItemViewModel.id).toBe(id);
     });
   });
 });

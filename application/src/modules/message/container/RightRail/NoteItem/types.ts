@@ -15,7 +15,7 @@ type NoteItemProps = {
   title: string;
   subTitle: string;
   disabled?: boolean;
-  getBodyInfo: () => Promise<string>;
+  id: number;
 };
 
 export { NoteItemProps, NoteProps };
