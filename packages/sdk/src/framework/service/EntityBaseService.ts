@@ -146,7 +146,7 @@ class EntityBaseService<
   private _initControllers() {
     if (this.isSupportedCache && !this._entityCacheController) {
       this._entityCacheController = this.buildEntityCacheController();
-      this._initialEntitiesCache();
+      this.initialEntitiesCache();
     }
 
     if (this.dao || this._entityCacheController) {
@@ -163,7 +163,7 @@ class EntityBaseService<
     }
   }
 
-  private async _initialEntitiesCache() {
+  protected async initialEntitiesCache() {
     mainLogger.debug('_initialEntitiesCache begin');
     if (
       this.dao &&
@@ -173,12 +173,11 @@ class EntityBaseService<
       const models = await this.dao.getAll();
       this._entityCacheController.initialize(models);
       mainLogger.debug('_initialEntitiesCache done');
-    } else {
-      mainLogger.debug(
-        'initial cache without permission or already initialized',
-      );
-      this._entityCacheController.initialize([]);
+      return models;
     }
+    mainLogger.debug('initial cache without permission or already initialized');
+    this._entityCacheController.initialize([]);
+    return [];
   }
 
   protected buildNotificationController() {

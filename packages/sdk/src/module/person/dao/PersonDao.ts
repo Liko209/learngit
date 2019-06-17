@@ -8,11 +8,27 @@ import { BaseDao } from '../../../framework/dao';
 import { Person } from '../entity';
 import { IDatabase } from 'foundation';
 
+const GET_ALL_EXCEED_COUNT = 30000;
+
 class PersonDao extends BaseDao<Person> {
   static COLLECTION_NAME = 'person';
   // TODO, use IDatabase after import foundation module in
   constructor(db: IDatabase) {
     super(PersonDao.COLLECTION_NAME, db);
+  }
+
+  async getAll(): Promise<Person[]> {
+    const query = this.createQuery().limit(GET_ALL_EXCEED_COUNT);
+    const models = await query.toArray();
+    if (models.length === GET_ALL_EXCEED_COUNT) {
+      const exceedQuery = this.createQuery().greaterThan(
+        'id',
+        models[GET_ALL_EXCEED_COUNT - 1].id,
+      );
+      const exceedModels = await exceedQuery.toArray();
+      models.push(...exceedModels);
+    }
+    return models;
   }
 
   async searchPeopleByKey(fullKeyword = ''): Promise<Person[]> {
