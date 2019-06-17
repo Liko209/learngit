@@ -24,7 +24,10 @@ const isIEOrEdge =
   typeof navigator !== 'undefined' &&
   /(MSIE|Trident|Edge?)/.test(navigator.userAgent);
 
-const isChrome = !isIEOrEdge && navigator.platform.indexOf('Chrome') > -1;
+const isChrome =
+  !isIEOrEdge &&
+  /Chrome/.test(navigator.userAgent) &&
+  /Google Inc/.test(navigator.vendor);
 
 const isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
 
