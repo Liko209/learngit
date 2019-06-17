@@ -206,7 +206,7 @@ describe('GroupFetchDataController', () => {
         members: i % 2 === 0 ? [userId, i, i + 1000] : [i, i + 1000],
         company_id: i,
         is_company_team: false,
-        set_abbreviation: `this is a team name${i.toString()}`,
+        set_abbreviation: `this is a team name ${i.toString()}`,
         email_friendly_abbreviation: '',
         most_recent_content_modified_at: i,
       };
@@ -1010,6 +1010,22 @@ describe('GroupFetchDataController', () => {
         'thiaaas',
       );
       expect(result.sortableModels.length).toBe(500);
+
+      expect(result.sortableModels[0].id).toBe(12506);
+      expect(result.sortableModels[1].id).toBe(12508);
+      expect(result.sortableModels[2].id).toBe(12510);
+      expect(result.sortableModels[3].id).toBe(12002);
+    });
+
+    it('do fuzzy search of teams with single term, team include me should in front even when multiple terms matched', async () => {
+      groupService.getTeamIdsIncludeMe = jest
+        .fn()
+        .mockReturnValue(new Set([12506, 12508, 12510]));
+      const result = await groupFetchDataController.doFuzzySearchTeams(
+        'i i a n',
+      );
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.sortableModels[0].secondSortKey).toBeGreaterThan(1000);
 
       expect(result.sortableModels[0].id).toBe(12506);
       expect(result.sortableModels[1].id).toBe(12508);
