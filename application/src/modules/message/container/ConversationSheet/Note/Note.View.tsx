@@ -27,9 +27,8 @@ class NoteViewComponent extends Component<NoteViewType> {
   context: HighlightContextInfo;
 
   _handleClick = async () => {
-    const { title, getBodyInfo } = this.props;
-    const bodyInfo = await getBodyInfo();
-    openNoteViewer(title, bodyInfo);
+    const { title, id } = this.props;
+    openNoteViewer(title, id);
   }
 
   render() {

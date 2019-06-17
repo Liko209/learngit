@@ -12,11 +12,8 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { ItemService } from 'sdk/module/item/service';
 import { NoteProps } from './types';
 
-const GET_NOTE_ERROR = 'Error';
 class NoteItemViewModel extends AbstractViewModel<NoteProps> {
   @computed
   get _id() {
@@ -56,18 +53,6 @@ class NoteItemViewModel extends AbstractViewModel<NoteProps> {
       return '';
     }
     return '';
-  }
-
-  getBodyInfo = async () => {
-    const itemService = ServiceLoader.getInstance<ItemService>(
-      ServiceConfig.ITEM_SERVICE,
-    );
-    try {
-      const body = await itemService.getNoteBody(this._id);
-      return body;
-    } catch (error) {
-      return GET_NOTE_ERROR;
-    }
   }
 }
 

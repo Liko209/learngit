@@ -11,7 +11,7 @@ type NoteProps = {
 type NoteViewProps = {
   title: string;
   summary: string;
-  getBodyInfo: () => Promise<string>;
+  id: number;
 };
 
 export { NoteProps, NoteViewProps };
