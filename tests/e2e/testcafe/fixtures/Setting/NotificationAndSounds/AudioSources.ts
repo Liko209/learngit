@@ -65,7 +65,7 @@ test.meta(<ITestMeta>{
   });
 
   const defaultDeviceId = 'default';
-  const defaultDeviceLabel = 'Default';
+  const defaultDeviceLabel = 'Use system default';
   const deviceInfos: deviceInfo[] = await getDeviceInfos();
   const audioInputs = _.filter(deviceInfos, { kind: "audioinput" });
   const audioOutputs = _.filter(deviceInfos, { kind: "audiooutput" });
@@ -331,7 +331,7 @@ test.meta(<ITestMeta>{
     });
 
     const defaultDeviceId = 'default';
-    const defaultDeviceLabel = 'Default';
+    const defaultDeviceLabel = 'Use system default';
 
     const deviceInfos: deviceInfo[] = await getDeviceInfos();
     const audioInputs = _.filter(deviceInfos, { kind: "audioinput" });
