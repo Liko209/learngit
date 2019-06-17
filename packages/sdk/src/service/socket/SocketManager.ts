@@ -27,6 +27,7 @@ export class SocketManager {
   private _isFirstInit: boolean = true;
   private _currentId: number = 0;
   private _canReconnectController: SocketCanConnectController | undefined;
+  private _reconnectRetryCount: number = 0;
 
   private constructor() {
     this._logPrefix = `[${SOCKET_LOGGER} manager]`;
@@ -149,12 +150,12 @@ export class SocketManager {
   }
 
   private _onSocketError(errMsg: string) {
-    this.error('socket connect error, clearing socket address', errMsg);
-    const socketUserConfig = ServiceLoader.getInstance<SyncService>(
-      ServiceConfig.SYNC_SERVICE,
-    ).userConfig;
-    socketUserConfig.setIndexSocketServerHost('');
-    socketUserConfig.setReconnectSocketServerHost('');
+    this._reconnectRetryCount = this._reconnectRetryCount + 1;
+    this.error(
+      `${errMsg}, clearing socket address$ and re do index, nth:${
+        this._reconnectRetryCount
+      }`,
+    );
   }
 
   private _onLogin() {
@@ -252,6 +253,12 @@ export class SocketManager {
       return;
     }
 
+    // reset to default state
+    this._reconnectRetryCount = 0;
+    if (this._canReconnectController) {
+      this._canReconnectController.cleanup();
+    }
+
     this._restartFSM();
   }
 
@@ -322,10 +329,11 @@ export class SocketManager {
       this._canReconnectController = new SocketCanConnectController(
         this._currentId,
       );
-      this._canReconnectController.doCanConnectApi(
-        this._canConnectCallback.bind(this),
-        this._isFirstInit,
-      );
+      this._canReconnectController.doCanConnectApi({
+        callback: this._canConnectCallback.bind(this),
+        forceOnline: this._isFirstInit,
+        nthCount: this._reconnectRetryCount,
+      });
     } else {
       this.warn('this._canReconnectController should be null');
     }
@@ -397,6 +405,7 @@ export class SocketManager {
     );
 
     if (state === 'connected') {
+      this._reconnectRetryCount = 0;
       const activeState = this.activeFSM && this.activeFSM.state;
       if (state === activeState) {
         const activeUrl = this.activeFSM.serverUrl;
