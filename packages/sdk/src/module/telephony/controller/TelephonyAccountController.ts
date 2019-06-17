@@ -15,7 +15,7 @@ import {
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip';
 import { TelephonyCallController } from '../controller/TelephonyCallController';
-import { ITelephonyAccountDelegate } from '../service/ITelephonyAccountDelegate';
+import { ITelephonyDelegate } from '../service/ITelephonyDelegate';
 import { MAKE_CALL_ERROR_CODE, LogoutCallback } from '../types';
 import { telephonyLogger } from 'foundation';
 import { MakeCallController } from './MakeCallController';
@@ -29,7 +29,7 @@ import { Call } from '../entity';
 import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
-  private _telephonyAccountDelegate: ITelephonyAccountDelegate;
+  private _telephonyAccountDelegate: ITelephonyDelegate;
   private _telephonyCallDelegate: TelephonyCallController;
   private _rtcAccount: RTCAccount;
   private _makeCallController: MakeCallController;
@@ -44,7 +44,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this._makeCallController = new MakeCallController();
   }
 
-  setAccountDelegate(delegate: ITelephonyAccountDelegate) {
+  setAccountDelegate(delegate: ITelephonyDelegate) {
     this._telephonyAccountDelegate = delegate;
   }
 
@@ -87,14 +87,6 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       return MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE;
     }
     return MAKE_CALL_ERROR_CODE.NO_ERROR;
-  }
-
-  getLastCalledNumber() {
-    const telephonyConfig = ServiceLoader.getInstance<TelephonyService>(
-      ServiceConfig.TELEPHONY_SERVICE,
-    ).userConfig;
-    const res = telephonyConfig.getLastCalledNumber();
-    return res ? res : '';
   }
 
   setLastCalledNumber(num: string) {
@@ -284,13 +276,6 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   ) {
     this._telephonyCallDelegate &&
       this._telephonyCallDelegate.replyWithPattern(pattern, time, timeUnit);
-  }
-
-  onMadeOutgoingCall(call: RTCCall) {
-    this._telephonyCallDelegate.setRtcCall(call);
-    this._telephonyAccountDelegate.onMadeOutgoingCall(
-      this._telephonyCallDelegate.getEntityId(),
-    );
   }
 
   onAccountStateChanged(state: RTC_ACCOUNT_STATE) {

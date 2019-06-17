@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { TelephonyAccountController } from '../TelephonyAccountController';
-import { ITelephonyAccountDelegate } from '../../service/ITelephonyAccountDelegate';
+import { ITelephonyDelegate } from '../../service/ITelephonyDelegate';
 import { ITelephonyCallDelegate } from '../../service/ITelephonyCallDelegate';
 import {
   RTC_ACCOUNT_STATE,
@@ -32,10 +32,9 @@ jest.mock('../../../config');
 jest.mock('sdk/module/phoneNumber');
 
 describe('TelephonyAccountController', () => {
-  class MockAccount implements ITelephonyAccountDelegate {
-    onAccountStateChanged(state: RTC_ACCOUNT_STATE) {}
-    onMadeOutgoingCall(callId: string) {}
-    onReceiveIncomingCall(callInfo: TelephonyCallInfo) {}
+  class MockAccount implements ITelephonyDelegate {
+    onMadeOutgoingCall(callId: number) {}
+    onReceiveIncomingCall(callId: number) {}
   }
 
   class MockCall implements ITelephonyCallDelegate {

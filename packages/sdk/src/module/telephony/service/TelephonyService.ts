@@ -8,8 +8,9 @@ import { TelephonyEngineController } from '../controller';
 import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
-} from './ITelephonyCallDelegate';
-import { ITelephonyAccountDelegate } from './ITelephonyAccountDelegate';
+  ITelephonyDelegate,
+} from './index';
+
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SERVICE } from '../../../service/eventKey';
 import { MAKE_CALL_ERROR_CODE } from '../types';
@@ -84,12 +85,9 @@ class TelephonyService extends EntityBaseService<Call>
     return this._userConfig;
   }
 
-  setTelephonyDelegate(accountDelegate: ITelephonyAccountDelegate) {
+  setTelephonyDelegate = (accountDelegate: ITelephonyDelegate) => {
     this.telephonyController.setAccountDelegate(accountDelegate);
   }
-
-  // TODO remove
-  createAccount = (accountDelegate: ITelephonyAccountDelegate) => {};
 
   getAllCallCount = () => {
     const accountController = this.telephonyController.getAccountController();
@@ -189,11 +187,6 @@ class TelephonyService extends EntityBaseService<Call>
     this.telephonyController
       .getAccountController()
       .replyWithPattern(callId, pattern, time, timeUnit);
-  }
-
-  getLastCalledNumber = () => {
-    const accountController = this.telephonyController.getAccountController();
-    return accountController ? accountController.getLastCalledNumber() : '';
   }
 
   get phoneSetting() {

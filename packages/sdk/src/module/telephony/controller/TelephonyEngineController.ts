@@ -12,7 +12,7 @@ import {
 import { RTCEngine } from 'voip';
 import { Api } from '../../../api';
 import { TelephonyAccountController } from './TelephonyAccountController';
-import { ITelephonyAccountDelegate } from '../service/ITelephonyAccountDelegate';
+import { ITelephonyDelegate } from 'sdk/module/telephony';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 import { TelephonyLogController } from './TelephonyLogController';
 import { notificationCenter } from '../../../service';
@@ -66,7 +66,7 @@ class TelephonyEngineController {
   mediaDevicesController: VoIPMediaDevicesDelegate;
   private _accountController: TelephonyAccountController;
   private _preCallingPermission: boolean = false;
-  private _accountDelegate: ITelephonyAccountDelegate;
+  private _accountDelegate: ITelephonyDelegate;
   private _entityCacheController: IEntityCacheController<Call>;
 
   constructor(
@@ -144,7 +144,7 @@ class TelephonyEngineController {
     this.rtcEngine.setMediaDeviceDelegate(this.mediaDevicesController);
   }
 
-  setAccountDelegate(delegate: ITelephonyAccountDelegate) {
+  setAccountDelegate(delegate: ITelephonyDelegate) {
     this._accountDelegate = delegate;
     this._accountController &&
       this._accountController.setAccountDelegate(delegate);

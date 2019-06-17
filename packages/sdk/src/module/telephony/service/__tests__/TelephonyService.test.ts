@@ -248,14 +248,6 @@ describe('TelephonyService', () => {
     });
   });
 
-  describe('getLastCalledNumber', () => {
-    it('should call account controller to get last called number', () => {
-      const spy = jest.spyOn(accountController, 'getLastCalledNumber');
-      telephonyService.getLastCalledNumber();
-      expect(spy).toBeCalled();
-    });
-  });
-
   describe('onStart', () => {
     it('should call registerModuleSetting', () => {
       telephonyService['_phoneSetting'] = mockSetting;

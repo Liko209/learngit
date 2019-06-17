@@ -4,6 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import {
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
+  RTCCallActionSuccessOptions,
+} from 'voip';
+
 export { TelephonyService } from './TelephonyService';
-export * from './ITelephonyAccountDelegate';
-export * from './ITelephonyCallDelegate';
+export * from './ITelephonyDelegate';
+
+export {
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
+  RTCCallActionSuccessOptions,
+};

@@ -9,7 +9,6 @@ import { inject } from 'framework';
 import { SettingService } from 'sdk/module/setting/service/SettingService';
 import {
   TelephonyService as ServerTelephonyService,
-  RTC_ACCOUNT_STATE,
   RTCCallActionSuccessOptions,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
@@ -73,12 +72,6 @@ class TelephonyService {
   private _incomingCallDisposer: IReactionDisposer;
 
   uiCallStartTime: number;
-
-  private _onAccountStateChanged = (state: RTC_ACCOUNT_STATE) => {
-    mainLogger.debug(
-      `${TelephonyService.TAG}[Telephony_Service_Account_State]: ${state}`,
-    );
-  }
 
   private _onMadeOutgoingCall = (id: number) => {
     // TODO: This should be a list in order to support multiple call
@@ -240,14 +233,7 @@ class TelephonyService {
       this._getCallerPhoneNumberList,
     );
 
-    this._serverTelephonyService.createAccount({
-      onAccountStateChanged: this._onAccountStateChanged,
-      onMadeOutgoingCall: this._onMadeOutgoingCall,
-      onReceiveIncomingCall: this._onReceiveIncomingCall,
-    });
-
     this._serverTelephonyService.setTelephonyDelegate({
-      onAccountStateChanged: this._onAccountStateChanged,
       onMadeOutgoingCall: this._onMadeOutgoingCall,
       onReceiveIncomingCall: this._onReceiveIncomingCall,
     });
@@ -787,7 +773,7 @@ class TelephonyService {
   }
 
   get lastCalledNumber() {
-    return this._serverTelephonyService.getLastCalledNumber() || '';
+    return this._serverTelephonyService.userConfig.getLastCalledNumber() || '';
   }
 
   private get _dialpadBtnRect() {
