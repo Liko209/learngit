@@ -44,7 +44,7 @@ class NoteViewModel extends StoreViewModel<NoteProps> implements NoteViewProps {
       ServiceConfig.PERMISSION_SERVICE,
     );
     return await permissionService.hasPermission(
-      UserPermissionType.JUPITER_CAN_SHOW_NOTE,
+      UserPermissionType.CAN_SHOW_NOTE,
     );
   }
 

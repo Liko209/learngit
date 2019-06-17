@@ -9,7 +9,7 @@ const LaunchDarklyDefaultPermissions = {
   JUPITER_CAN_UPLOAD_LOG: false,
   JUPITER_SEARCH_SUPPORT_BY_SOUNDEX: false,
   JUPITER_CAN_USE_TELEPHONY: true,
-  JUPITER_CAN_SHOW_NOTE: false,
+  CAN_SHOW_NOTE: false,
 };
 
 export { LaunchDarklyDefaultPermissions };
