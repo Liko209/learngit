@@ -130,13 +130,18 @@ export class DeviceSyncManger {
     if (realDeviceId !== this._deviceManager.getDeviceId()) {
       telephonyLogger
         .tags(LOG_TAG)
-        .info('setDevice to deviceManager', { source, deviceId, device });
+        .info('setDevice to deviceManager', {
+          source,
+          deviceId,
+          realDeviceId,
+          device,
+        });
       this._deviceManager.setDeviceId(realDeviceId);
     }
     if (storeId !== this._storage.get()) {
       telephonyLogger
         .tags(LOG_TAG)
-        .info('setDevice to storage', { source, storeId, device });
+        .info('setDevice to storage', { source, deviceId, storeId, device });
       this._storage.set(storeId);
     }
     this._lastUsedDeviceManager.record(storeId);
