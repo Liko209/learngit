@@ -20,7 +20,7 @@ let endViewModel: EndViewModel;
 describe('EndViewModel', () => {
   it('should not call hangUp function', () => {
     endViewModel = new EndViewModel({});
-    endViewModel._telephonyService.uiCallStartTime = +new Date();
+    endViewModel._telephonyStore.uiCallStartTime = Date.now();
     endViewModel.end();
     const _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,
@@ -30,10 +30,9 @@ describe('EndViewModel', () => {
 
   it('should call hangUp function', async () => {
     endViewModel = new EndViewModel({});
-    endViewModel._telephonyService.uiCallStartTime = +new Date();
+    endViewModel._telephonyStore.uiCallStartTime = Date.now();
 
-    debugger;
-    await new Promise((resolve) => {
+    await new Promise(resolve => {
       setTimeout(resolve, 1000);
     });
 

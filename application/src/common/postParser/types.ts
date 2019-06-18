@@ -23,7 +23,6 @@ type AtMentionsMapType = {
 
 type AtMentionParserOption = ParserOption & {
   map?: AtMentionsMapType;
-  isEscaped?: boolean;
   customReplaceFunc?: (
     match: string,
     id: string,
@@ -43,9 +42,9 @@ enum EmojiConvertType {
 type EmojiParserOption = ParserOption & {
   customEmojiMap?: CustomEmojiMap;
   unicodeOnly?: boolean;
-  convertType: EmojiConvertType;
+  convertType?: EmojiConvertType;
   hostName?: string;
-  isEscaped?: boolean;
+  keepASCII?: boolean;
 };
 
 type FileNameParserOption = ParserOption & {
@@ -54,7 +53,6 @@ type FileNameParserOption = ParserOption & {
 };
 
 type HTMLParserOption = ParserOption & {
-  exclude?: RegExp;
   withGlipdown?: boolean;
   containerTag?: string;
 };
@@ -81,7 +79,6 @@ type PostParserOptions = {
 
 interface IPostParser {
   type: ParserType;
-  ignoredRangeTypes: ParserType[];
   content: ParseContent;
   setContent: (content: ParseContent) => void;
   parseToReplacers: () => Replacer[];
@@ -109,7 +106,7 @@ type TextRange = {
 };
 
 type Replacer = TextRange & {
-  element: ChildrenType;
+  element?: ChildrenType;
 };
 
 type HighlightContextInfo = {

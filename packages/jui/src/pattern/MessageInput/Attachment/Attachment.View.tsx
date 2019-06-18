@@ -74,7 +74,7 @@ class AttachmentView extends Component<Props> {
   }
 
   render() {
-    const { onFileChanged, tooltip, menus, fileMenu } = this.props;
+    const { onFileChanged, tooltip, menus, fileMenu, title } = this.props;
     const { anchorEl } = this.state;
     const open = !!anchorEl;
 
@@ -109,7 +109,7 @@ class AttachmentView extends Component<Props> {
             open={open}
           >
             <JuiMenuItem disabled={true} divider={true}>
-              Upload files from
+              {title}
             </JuiMenuItem>
             <MenuList>
               {menus.map(({ icon, label }, idx) => (

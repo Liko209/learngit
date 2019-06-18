@@ -149,6 +149,7 @@ class MessageInputViewComponent extends Component<
           menus={this._getMenus()}
           fileMenu={this._getFileMenu()}
           tooltip={t('message.action.attachFile')}
+          title={t('message.inputMenus.uploadFileMenuTitle')}
           onFileChanged={this._autoUploadFile}
           data-test-automation-id="message-action-bar-attachment"
         />

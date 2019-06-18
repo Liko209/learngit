@@ -37,6 +37,11 @@ class CallLogService extends EntityBaseService<CallLog, string> {
     );
   }
 
+  onLogin() {
+    super.onLogin();
+    this._initBadge();
+  }
+
   onStarted() {
     super.onStarted();
     this.callLogController.allCallLogFetchController.init();
@@ -133,6 +138,10 @@ class CallLogService extends EntityBaseService<CallLog, string> {
     await this.callLogController.callLogHandleDataController.handleRCPresenceEvent(
       payload,
     );
+  }
+
+  private _initBadge = async () => {
+    await this.callLogController.callLogBadgeController.initializeUnreadCount();
   }
 }
 

@@ -4,5 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 const MEETING_URL = 'https://meetings.ringcentral.com/teleconference';
-const SUCCESS_URL = 'http://success.ringcentral.com/';
-export { MEETING_URL, SUCCESS_URL };
+export { MEETING_URL };

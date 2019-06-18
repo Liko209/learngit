@@ -115,7 +115,7 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
           ENTITY_NAME.ITEM,
           integrationItemID as number,
         );
-        return item.activity;
+        return item.activity || this.creator.userDisplayName;
       }
       return `${this.creator.userDisplayName} ${i18nP('message.sharedItems')}`;
     }
