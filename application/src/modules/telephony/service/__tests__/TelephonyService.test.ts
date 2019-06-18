@@ -336,11 +336,11 @@ describe('TelephonyService', () => {
       ).toBe(true);
     });
 
-    it.skip('Unhold button should not be changed once with unexpected error', async () => {
+    it('Unhold button should not be changed once with unexpected error', async () => {
       initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
-      call.holdState = HOLD_STATE.IDLE;
+      call.holdState = HOLD_STATE.HELD;
 
       (telephonyService as TelephonyService).holdOrUnhold();
       await sleep(testProcedureWaitingTime);
