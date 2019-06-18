@@ -16,7 +16,6 @@ import styled from '../../../foundation/styled-components';
 import { Palette } from '../../../foundation/theme/theme';
 
 type Props = {
-  isUnread: boolean;
   icon: string;
   callType: string;
   duration: string;
@@ -24,7 +23,7 @@ type Props = {
 };
 
 const CallLogStatus = (props: Props) => {
-  const { isUnread, icon, callType, duration, isMissedCall } = props;
+  const { icon, callType, duration, isMissedCall } = props;
   const color: IconColor = isMissedCall
     ? ['accent', 'tomato']
     : ['grey', '600'];
@@ -34,7 +33,7 @@ const CallLogStatus = (props: Props) => {
     : ['grey', '900'];
 
   return (
-    <ContactItem disableButton={true} isUnread={isUnread}>
+    <ContactItem disableButton={true} isUnread={false}>
       <JuiListItemAvatar>
         <JuiIconography iconSize="medium" iconColor={color}>
           {icon}

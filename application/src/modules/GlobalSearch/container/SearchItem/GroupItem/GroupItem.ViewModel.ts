@@ -57,7 +57,8 @@ class GroupItemViewModel extends SearchViewModel<Props>
   @computed
   get shouldHidden() {
     const { isMember, deactivated, isArchived } = this.group;
-    return deactivated || isArchived || (!isMember && this.isPrivate);
+    const shouldHidden = deactivated || isArchived || (!isMember && this.isPrivate);
+    return shouldHidden === undefined || shouldHidden;
   }
 
   addRecentRecord = () => {

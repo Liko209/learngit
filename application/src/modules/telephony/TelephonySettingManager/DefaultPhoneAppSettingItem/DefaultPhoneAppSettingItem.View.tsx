@@ -21,7 +21,7 @@ const DefaultPhoneAppSelectItem: SFC<
   DefaultPhoneAppSelectItemProps & WithTranslation
 > = ({ value, t }) => {
   // to-do: This dialog logic should be moved into settings built-in component
-  const optionRef = useRef<HTMLDivElement>(null);
+  const optionRef = useRef<HTMLSpanElement>(null);
   const onClickHandler = useCallback((e: MouseEvent) => {
     let currentTarget = e.currentTarget;
     const currentValue = getSingleEntity(ENTITY_NAME.PROFILE, 'callOption');
@@ -91,7 +91,7 @@ const DefaultPhoneAppSelectItem: SFC<
   };
   return (
     <JuiText>
-      <div ref={optionRef}>{options[value]}</div>
+      <span ref={optionRef}>{options[value]}</span>
     </JuiText>
   );
 };

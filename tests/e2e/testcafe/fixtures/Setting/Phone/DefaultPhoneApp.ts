@@ -1,8 +1,8 @@
 /*
  * @Author:Andy.Hu
  * @Date: 2019-05-28 15:24:53
- * @Last Modified by: Andy.Hu
- * @Last Modified time: 2019-05-28 15:56:35
+ * @Last Modified by: Paynter Chen
+ * @Last Modified time: 2019-06-17 15:50:10
  */
 
 import { AppRoot } from '../../../v2/page-models/AppRoot/index';
@@ -34,7 +34,7 @@ test.meta(<ITestMeta>{
     owner: loginUser,
     members: [loginUser, anotherUser]
   }
-  
+
   await h(t).withLog('When I set default phone app to RC phone', async () => {
     await h(t).glip(loginUser).setDefaultPhoneApp('ringcentral');
   });
@@ -169,6 +169,7 @@ test.meta(<ITestMeta>{
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
 
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
   const phoneSettingPage = settingTab.phoneSettingPage;

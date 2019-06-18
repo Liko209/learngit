@@ -566,10 +566,11 @@ describe('glipdown text', () => {
         ]);
       });
 
-      it('should return array with emoji when given escaped string', () => {
+      it('should return array with emoji when html parser escape the ascii', () => {
         expect(
-          postParser('&lt;3 &#x27;:)', {
-            emoji: { hostName, isEscaped: true },
+          postParser(`<3 ':)`, {
+            html: true,
+            emoji: { hostName },
           }),
         ).toEqual([
           <img
@@ -684,6 +685,42 @@ describe('glipdown text', () => {
           '123  ss',
         ]);
       });
+
+      it('should render at mentions', () => {
+        expect(
+          postParser(
+            `https://git.ringcentral.com/Fiji/Fiji/merge_requests/2838/diffs  feat(fiji-6318): [UI] Refactor call store <a class='at_mention_compose' rel='{"id":187629571}'>@Chris Zhan</a> <a class='at_mention_compose' rel='{"id":187678723}'>@Shining Miao</a>   please help review`,
+            {
+              atMentions: { map },
+              html: true,
+            },
+          ),
+        ).toEqual([
+          <a
+            href='https://git.ringcentral.com/Fiji/Fiji/merge_requests/2838/diffs'
+            rel='noreferrer'
+            target='_blank'
+            key={0}
+          >
+            https://git.ringcentral.com/Fiji/Fiji/merge_requests/2838/diffs
+          </a>,
+          '  feat(fiji-6318): [UI] Refactor call store ',
+          <JuiAtMention
+            id='187629571'
+            isCurrent={false}
+            name='@Chris Zhan'
+            key={1}
+          />,
+          ' ',
+          <JuiAtMention
+            id='187678723'
+            isCurrent={false}
+            name='@Shining Miao'
+            key={2}
+          />,
+          '   please help review',
+        ]);
+      });
     });
 
     describe('html and atmention', () => {
@@ -695,7 +732,7 @@ describe('glipdown text', () => {
           }),
         ).toEqual([
           'sdds',
-          <JuiAtMention key={0} id='1200' isCurrent={false} name='@bold' />,
+          <JuiAtMention key={0} id='1200' isCurrent={false} name='@**bold**' />,
           '123  ss',
         ]);
       });

@@ -117,21 +117,19 @@ describe('VoicemailItemViewModel', () => {
     @mockEntity({
       attachments: [
         {
+          id: 1,
           type: ATTACHMENT_TYPE.AUDIO_RECORDING,
         },
       ],
     })
     t1() {
       const vm = new VoicemailItemViewModel({ id: 1 });
-      expect(vm.audio).toBeUndefined();
-      when(
-        () => !!vm.audio,
-        () => {
-          expect(vm.audio).toEqual({
-            type: ATTACHMENT_TYPE.AUDIO_RECORDING,
-          });
-        },
-      );
+      expect(vm.audio).toEqual({
+        type: ATTACHMENT_TYPE.AUDIO_RECORDING,
+        downloadUrl: '',
+        startTime: 0,
+        id: 1,
+      });
     }
   }
 
@@ -170,11 +168,13 @@ describe('VoicemailItemViewModel', () => {
       expect(vm.mode).toBeUndefined();
     }
 
-    @test('should be FULL mode if selected')
+    @test('should be FULL mode if selected and startTime > 0')
     @mockEntity({
       attachments: [
         {
-          type: ATTACHMENT_TYPE.TEXT,
+          id: 1,
+          type: ATTACHMENT_TYPE.AUDIO_RECORDING,
+          startTime: 0,
         },
       ],
     })
@@ -182,33 +182,44 @@ describe('VoicemailItemViewModel', () => {
       const vm = new VoicemailItemViewModel({ id: 1 });
       const phoneStore = container.get(PhoneStore);
       phoneStore.setVoicemailId(1);
-      expect(vm.mode).toBeUndefined();
-      when(
-        () => !!vm.mode,
-        () => {
-          expect(vm.mode).toEqual(JuiAudioMode.FULL);
-        },
-      );
+      phoneStore.updateAudio(1, {
+        startTime: 1,
+      });
+      expect(vm.mode).toEqual(JuiAudioMode.FULL);
     }
 
-    @test('should be MINI mode if not selected')
+    @test('should be MINI mode if startTime === 0')
     @mockEntity({
       attachments: [
         {
-          type: ATTACHMENT_TYPE.TEXT,
+          id: 1,
+          type: ATTACHMENT_TYPE.AUDIO_RECORDING,
+          startTime: 0,
         },
       ],
     })
     t3() {
       const vm = new VoicemailItemViewModel({ id: 1 });
       const phoneStore = container.get(PhoneStore);
-      phoneStore.setVoicemailId(2);
-      when(
-        () => !!vm.mode,
-        () => {
-          expect(vm.mode).toEqual(JuiAudioMode.MINI);
+      phoneStore.setVoicemailId(1);
+      expect(vm.mode).toEqual(JuiAudioMode.MINI);
+    }
+
+    @test('should be MINI mode if not selected')
+    @mockEntity({
+      attachments: [
+        {
+          id: 1,
+          type: ATTACHMENT_TYPE.AUDIO_RECORDING,
+          startTime: 0,
         },
-      );
+      ],
+    })
+    t4() {
+      const vm = new VoicemailItemViewModel({ id: 1 });
+      const phoneStore = container.get(PhoneStore);
+      phoneStore.setVoicemailId(2);
+      expect(vm.mode).toEqual(JuiAudioMode.MINI);
     }
   }
 

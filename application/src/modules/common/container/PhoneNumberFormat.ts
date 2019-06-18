@@ -7,10 +7,16 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { isValidPhoneNumber } from '@/common/postParser/utils';
 
-function formatPhoneNumber(phoneNumber: string) {
+function formatPhoneNumberWithStore(phoneNumber: string) {
+  return getEntity(ENTITY_NAME.PHONE_NUMBER, phoneNumber).formattedPhoneNumber;
+}
+
+function formatPhoneNumber(phoneNumber: string, shouldValidate = true) {
+  if (!shouldValidate) {
+    return formatPhoneNumberWithStore(phoneNumber);
+  }
   if (isValidPhoneNumber(phoneNumber)) {
-    return getEntity(ENTITY_NAME.PHONE_NUMBER, phoneNumber)
-      .formattedPhoneNumber;
+    return formatPhoneNumberWithStore(phoneNumber);
   }
   return phoneNumber;
 }

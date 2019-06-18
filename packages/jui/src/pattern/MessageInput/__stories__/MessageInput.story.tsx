@@ -73,6 +73,7 @@ storiesOf('Pattern/MessageInput', module).add('Attachment Button', () => {
           fileMenu={fileMenu}
           tooltip="Attach file"
           onFileChanged={autoUploadFile}
+          title="Upload files from"
         />
       </MessageActionBar>
     </div>

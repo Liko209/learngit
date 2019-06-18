@@ -169,10 +169,6 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
         syncType === SYNC_TYPE.FSYNC ? RC_MESSAGE_TYPE.VOICEMAIL : undefined,
     });
   }
-
-  handleNotification = async () => {
-    await this.doSync(false, SYNC_DIRECTION.NEWER, true);
-  }
 }
 
 export { VoicemailFetchController };

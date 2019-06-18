@@ -17,6 +17,8 @@ describe('CallLogDao', () => {
   let viewDao: CallLogViewDao;
   const mockCallLog = {
     id: 'mockId',
+    from: { phoneNumber: '213' },
+    to: { phoneNumber: '4566' },
   } as any;
 
   beforeEach(() => {

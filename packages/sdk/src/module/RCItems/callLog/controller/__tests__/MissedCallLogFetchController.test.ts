@@ -7,7 +7,7 @@
 import { MissedCallLogFetchController } from '../MissedCallLogFetchController';
 import { mainLogger } from 'foundation';
 import { daoManager } from 'sdk/dao';
-import { CALL_LOG_SOURCE } from '../../constants';
+import { CALL_LOG_SOURCE, LOCAL_INFO_TYPE } from '../../constants';
 import { RCItemApi } from 'sdk/api';
 import { SYNC_TYPE } from 'sdk/module/RCItems/sync';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
@@ -69,7 +69,10 @@ describe('MissedCallLogFetchController', () => {
         {
           id: '1',
           startTime: mockTime1,
-          __source: CALL_LOG_SOURCE.MISSED,
+          __localInfo:
+            LOCAL_INFO_TYPE.IS_INBOUND |
+            LOCAL_INFO_TYPE.IS_MISSED |
+            LOCAL_INFO_TYPE.IS_MISSED_SOURCE,
           __timestamp: Date.parse(mockTime1),
           __deactivated: false,
         },

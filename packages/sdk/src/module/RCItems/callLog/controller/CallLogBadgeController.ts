@@ -54,7 +54,7 @@ class CallLogBadgeController {
       this._registerBadge();
       this._updateBadge();
       performanceTracer.end({
-        key: PERFORMANCE_KEYS.INIT_RC_MESSAGE_BADGE,
+        key: PERFORMANCE_KEYS.INIT_CALL_LOG_BADGE,
         infos: { id: MISSED_CALL_BADGE_ID, count: this._unreadMap.size },
       });
       this._badgeStatus = BADGE_STATUS.INITIALIZED;

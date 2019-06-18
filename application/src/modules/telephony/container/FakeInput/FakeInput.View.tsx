@@ -61,6 +61,7 @@ class FakeInputView extends Component<FakeInputViewProps> {
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: text;
     `;
 
     const Inner = styled.div`

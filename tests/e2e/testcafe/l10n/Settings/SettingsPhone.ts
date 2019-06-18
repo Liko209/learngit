@@ -27,7 +27,7 @@ test(formalName('Check Phone Settings', ['P2', 'Settings', 'SettingsPhone', 'V1.
   })
 
   await h(t).withLog('Then I can see CallerId drop down item', async () => {
-    await t.expect(phoneSettingPage.callerIDDropDownItem.exists).ok();
+    await t.expect(phoneSettingPage.callerIDDropDownItems.exists).ok();
   })
 
   await h(t).log('And I capture screenshot', {screenshotPath: 'Jupiter_Settings_Phone'})
