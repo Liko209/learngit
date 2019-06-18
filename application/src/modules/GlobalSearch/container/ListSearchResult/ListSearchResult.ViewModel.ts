@@ -9,8 +9,8 @@ import { GroupService } from 'sdk/module/group';
 import { SearchService } from 'sdk/module/search';
 import { container } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
-import storeManager from '@/store/base/StoreManager';
-import { ENTITY_NAME } from '@/store/constants';
+// import storeManager from '@/store/base/StoreManager';
+// import { ENTITY_NAME } from '@/store/constants';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 import { GlobalSearchStore } from '../../store';
@@ -33,28 +33,6 @@ class ListSearchResultViewModel extends StoreViewModel<ListSearchResultProps>
   @computed
   get currentTab() {
     return this._globalSearchStore.currentTab;
-  }
-
-  @action
-  updateStore(models: SortableModel<Person | Group>[], tab: TAB_TYPE) {
-    if (tab === TAB_TYPE.PEOPLE) {
-      storeManager.dispatchUpdatedDataModels(
-        ENTITY_NAME.PERSON,
-        models.map((model: SortableModel<Person>) => model.entity),
-      );
-    }
-    if (tab === TAB_TYPE.GROUPS) {
-      storeManager.dispatchUpdatedDataModels(
-        ENTITY_NAME.GROUP,
-        models.map((model: SortableModel<Group>) => model.entity),
-      );
-    }
-    if (tab === TAB_TYPE.TEAM) {
-      storeManager.dispatchUpdatedDataModels(
-        ENTITY_NAME.GROUP,
-        models.map((model: SortableModel<Group>) => model.entity),
-      );
-    }
   }
 
   getSection<T>(section: SectionType<T>) {
@@ -112,7 +90,6 @@ class ListSearchResultViewModel extends StoreViewModel<ListSearchResultProps>
     if (!result) {
       return [];
     }
-    this.updateStore(result.models, tab);
     return result.ids;
   }
 }

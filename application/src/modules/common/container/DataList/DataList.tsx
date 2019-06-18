@@ -44,7 +44,7 @@ class DataList extends React.Component<DataListProps> {
   }
 
   @action
-  private _loadMore = async (direction: 'up' | 'down', count: number) => {
+  loadMore = async (direction: 'up' | 'down', count: number) => {
     await this.props.listHandler.fetchData(
       this._transformDirection(direction),
       count,
@@ -74,7 +74,7 @@ class DataList extends React.Component<DataListProps> {
     return (
       <JuiInfiniteList
         loadInitialData={this._loadInitialData}
-        loadMore={this._loadMore}
+        loadMore={this.loadMore}
         hasMore={this._hasMore}
         {...InfiniteListProps}
       >
