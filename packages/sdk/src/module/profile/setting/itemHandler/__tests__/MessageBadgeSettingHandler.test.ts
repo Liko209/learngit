@@ -42,7 +42,7 @@ describe('MessageBadgeSettingHandler', () => {
         NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS,
         NEW_MESSAGE_BADGES_OPTIONS.ALL,
       ],
-      value: NEW_MESSAGE_BADGES_OPTIONS.ALL,
+      value: NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS,
       state: 0,
       valueSetter: expect.any(Function),
     };
@@ -83,10 +83,20 @@ describe('MessageBadgeSettingHandler', () => {
   describe('fetchUserSettingEntity()', () => {
     it('should get new messages setting value ', async () => {
       profileService.getProfile = jest.fn().mockReturnValue({
-        [SETTING_KEYS.NEW_MESSAGE_BADGES]: NEW_MESSAGE_BADGES_OPTIONS.ALL,
+        [SETTING_KEYS.NEW_MESSAGE_BADGES]:
+          NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS,
       });
       const result = await messageBadgeSettingHandler.fetchUserSettingEntity();
       expect(result).toEqual(mockDefaultSettingItem);
+    });
+
+    it('should return value is glip when backend value is undefined', async () => {
+      profileService.getProfile = jest.fn().mockReturnValue({
+        [SETTING_KEYS.NEW_MESSAGE_BADGES]: undefined,
+      });
+
+      const res = await messageBadgeSettingHandler.fetchUserSettingEntity();
+      expect(res.value).toEqual(NEW_MESSAGE_BADGES_OPTIONS.ALL);
     });
   });
 
