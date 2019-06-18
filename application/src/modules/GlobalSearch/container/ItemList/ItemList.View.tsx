@@ -192,20 +192,6 @@ class ItemListViewComponent extends Component<Props, State> {
         }}
       >
         <JuiSizeDetector handleSizeChanged={this._handleSizeUpdate} />
-        {/* <JuiVirtualizedList
-          height={this.state.height as number}
-          minRowHeight={ITEM_HEIGHT}
-          ref={this._listRef}
-          onVisibleRangeChange={setRangeIndex}
-        >
-          {list.map((id: number, index: number) => {
-            return this.createSearchItem({
-              id,
-              type,
-              index,
-            });
-          })}
-        </JuiVirtualizedList> */}
         <DataList
           ref={this._dataList}
           initialDataCount={30}

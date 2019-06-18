@@ -9,8 +9,6 @@ import { GroupService } from 'sdk/module/group';
 import { SearchService } from 'sdk/module/search';
 import { container } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
-// import storeManager from '@/store/base/StoreManager';
-// import { ENTITY_NAME } from '@/store/constants';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 import { GlobalSearchStore } from '../../store';
