@@ -314,6 +314,28 @@ describe('RCSubscriptionController', () => {
       expect(rcSubscriptionController['_dispatchMessages']).not.toBeCalled();
     });
 
+    it('should return when can not get event message', () => {
+      rcSubscriptionController['_pubNub'] = new Pubnub({} as any);
+      rcSubscriptionController[
+        '_pubNub'
+      ].decrypt = jest.fn().mockImplementation((val1, val2, val3) => {
+        return undefined;
+      });
+
+      rcSubscriptionController['_lastSubscription'] = subscriptionInfo as any;
+      const payLoad = {
+        message: {
+          body: {
+            activeCalls: [],
+          },
+          event:
+            '/restapi/v1.0/account/131451006/extension/131453006/presence?detailedTelephonyState=true',
+        },
+      };
+      rcSubscriptionController['_notifyMessages'](payLoad);
+      expect(notificationCenter.emitKVChange).not.toBeCalled();
+    });
+
     it('should dispatch messages when receive messages', () => {
       rcSubscriptionController['_pubNub'] = new Pubnub({} as any);
       rcSubscriptionController[
