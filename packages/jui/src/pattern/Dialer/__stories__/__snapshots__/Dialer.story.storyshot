@@ -482,6 +482,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   -ms-flex-pack: center;
   justify-content: center;
   position: relative;
+  cursor: default;
 }
 
 .c18.c18 {

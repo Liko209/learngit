@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Pattern/ConversationCard/Indicator Draft: Pattern/ConversationCard/Indicator Draft 1`] = `
-.c1 {
+.c0 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c2 {
+.c1 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -20,17 +20,12 @@ exports[`Storyshots Pattern/ConversationCard/Indicator Draft: Pattern/Conversati
   fill: #ff8800;
 }
 
-.c3.c3.c3:hover .c0,
-.c3.c3.c3:hover .sc-gacfCG {
-  display: none;
-}
-
 <div>
   <span
-    className="c0 draft icon c1"
+    className="draft icon c0"
   >
     <svg
-      className="c2"
+      className="c1"
       role="img"
       size="medium"
     >
@@ -44,14 +39,14 @@ exports[`Storyshots Pattern/ConversationCard/Indicator Draft: Pattern/Conversati
 `;
 
 exports[`Storyshots Pattern/ConversationCard/Indicator Failure: Pattern/ConversationCard/Indicator Failure 1`] = `
-.c1 {
+.c0 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c2 {
+.c1 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -63,17 +58,12 @@ exports[`Storyshots Pattern/ConversationCard/Indicator Failure: Pattern/Conversa
   fill: #f44336;
 }
 
-.c3.c3.c3:hover .c4,
-.c3.c3.c3:hover .c0 {
-  display: none;
-}
-
 <div>
   <span
-    className="c0 send_failure icon c1"
+    className="send_failure icon c0"
   >
     <svg
-      className="c2"
+      className="c1"
       role="img"
       size="medium"
     >

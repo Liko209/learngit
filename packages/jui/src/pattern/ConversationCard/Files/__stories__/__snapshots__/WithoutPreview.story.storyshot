@@ -328,6 +328,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
 }
 
 .c5 {
+  margin-left: 8px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;

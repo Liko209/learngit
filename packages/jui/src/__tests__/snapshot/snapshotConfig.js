@@ -16,10 +16,12 @@ const excludeDomSnapshot = {
     'Pattern/ToastWrapper',
   ],
   name: [
-    // didn't support modal yet
     'JuiAlert',
     'JuiConfirm',
     'Simple Menu',
+    /**
+     * not component
+     */
     'IconList',
     'PreviewFileThumbnail',
     'IntegrationItem',
@@ -27,9 +29,38 @@ const excludeDomSnapshot = {
     'MessageInput',
     'AttachmentList',
     'JuiDuplicateAlert',
+    /**
+     * svg animation
+     */
     'JuiRightRailItemLoading',
+    /**
+     * svg animation
+     */
     'ContentLoader',
+    /**
+     * dom operation
+     */
     'Typography',
+    /**
+     * svg animation
+     */
+    'Transcription',
+    /**
+     * use style-component selector
+     */
+    'SortableList',
+    /**
+     * use style-component selector
+     */
+    'ListItem',
+    /**
+     * use style-component selector
+     */
+    'List',
+    /**
+     * use style-component selector
+     */
+    'Section',
   ],
   matchFunction: ({ name, kind }) => {
     return /HoC/.test(kind);
