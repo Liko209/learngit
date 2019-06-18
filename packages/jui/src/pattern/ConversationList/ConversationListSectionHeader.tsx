@@ -51,7 +51,6 @@ const JuiConversationListSectionHeader = memo(
     return (
       <JuiListNavItem
         className={className}
-        data-test-automation-id="conversation-list-section-header"
         button={true}
         selected={selected}
         classes={{ selected: 'selected' }}
@@ -68,7 +67,7 @@ const JuiConversationListSectionHeader = memo(
             <JuiListNavItemIconography
               iconSize="medium"
               onClick={onArrowClick}
-              data-test-automation-id="conversation-list-section-header-arrow"
+              data-test-automation-id={expanded ? 'conversation-list-section-header-arrow-up' : 'conversation-list-section-header-arrow-down'}
             >
               {arrow}
             </JuiListNavItemIconography>
