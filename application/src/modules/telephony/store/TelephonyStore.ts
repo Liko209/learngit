@@ -351,8 +351,10 @@ class TelephonyStore {
 
       case history.has(CALL_DIRECTION.INBOUND) || !history.has(DIALING):
         this._closeCallWindow();
+        this._history.delete(DIALING);
         break;
       default:
+        this._history.delete(DIALING);
         break;
     }
 
@@ -364,7 +366,7 @@ class TelephonyStore {
     this.callerName = undefined;
     this.phoneNumber = undefined;
     this.isContactMatched = false;
-    this._clearHistory();
+    this._history.delete(CALL_DIRECTION.INBOUND);
   }
 
   dialerCall = () => {
@@ -522,9 +524,9 @@ class TelephonyStore {
     },                                  1000);
   }
 
-  private _clearHistory() {
-    this._history.clear();
-  }
+  // private _clearHistory() {
+  //   this._history.clear();
+  // }
 
   @computed
   get shouldDisplayDialer() {

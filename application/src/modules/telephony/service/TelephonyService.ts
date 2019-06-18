@@ -473,6 +473,7 @@ class TelephonyService {
         `${TelephonyService.TAG}send to voicemail call id=${this._callId}`,
       );
       this._serverTelephonyService.sendToVoiceMail(this._callId);
+      this._telephonyStore.end();
     }
   }
 
@@ -480,6 +481,7 @@ class TelephonyService {
     if (this._callId) {
       mainLogger.info(`${TelephonyService.TAG}ignore call id=${this._callId}`);
       this._serverTelephonyService.ignore(this._callId);
+      this._telephonyStore.end();
     }
   }
 
