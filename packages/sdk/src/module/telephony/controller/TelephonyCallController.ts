@@ -29,12 +29,7 @@ import _ from 'lodash';
 import { ToggleController, ToggleRequest } from './ToggleController';
 
 interface IResultResolveFn {
-  (
-    value:
-      | RTCCallActionSuccessOptions
-      | PromiseLike<RTCCallActionSuccessOptions>
-      | '',
-  ): void;
+  (value: string | PromiseLike<string>): void;
 }
 
 interface IResultRejectFn {
@@ -48,7 +43,7 @@ class TelephonyCallController implements IRTCCallDelegate {
   private _entityCacheController: IEntityCacheController<Call>;
   private _callActionCallbackMap: Map<
     string,
-    { resolve: IResultResolveFn; reject: IResultRejectFn }[]
+    { resolve: IResultResolveFn; reject: IResultRejectFn }
   >;
   private _holdToggle: ToggleController;
   private _recordToggle: ToggleController;
@@ -427,9 +422,7 @@ class TelephonyCallController implements IRTCCallDelegate {
     resolve: IResultResolveFn,
     reject: IResultRejectFn,
   ) {
-    const promiseResolvers = this._callActionCallbackMap.get(key) || [];
-    promiseResolvers.push({ resolve, reject });
-    this._callActionCallbackMap.set(key, promiseResolvers);
+    this._callActionCallbackMap.set(key, { resolve, reject });
   }
 
   private _handleCallActionCallback(
@@ -439,13 +432,15 @@ class TelephonyCallController implements IRTCCallDelegate {
   ) {
     const promiseResolvers = this._callActionCallbackMap.get(callAction);
     if (promiseResolvers) {
-      promiseResolvers.forEach(({ resolve, reject }) => {
-        if (isSuccess) {
-          resolve(options || '');
-        } else {
-          reject('');
+      let res = '';
+      if (isSuccess) {
+        if (options && options.parkExtension) {
+          res = options.parkExtension;
         }
-      });
+        promiseResolvers.resolve(res);
+      } else {
+        promiseResolvers.reject('');
+      }
     }
   }
 }

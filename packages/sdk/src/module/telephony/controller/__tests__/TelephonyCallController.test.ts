@@ -116,7 +116,7 @@ describe('TelephonyCallController', () => {
 
   describe('hold', () => {
     it('should resolve when call is held successfully', (done: jest.DoneCallback) => {
-      const options = {};
+      const options = '';
       expect.assertions(2);
       callController._updateCallHoldState = jest.fn();
       callController.hold().then(result => {
@@ -153,7 +153,7 @@ describe('TelephonyCallController', () => {
 
   describe('unhold', () => {
     it('should resolve when call is unhold successfully', (done: jest.DoneCallback) => {
-      const options = {};
+      const options = '';
       expect.assertions(2);
       callController._updateCallHoldState = jest.fn();
       callController.unhold().then(result => {
@@ -190,7 +190,7 @@ describe('TelephonyCallController', () => {
 
   describe('startRecord', () => {
     it('should resolve when startRecord is successfully', (done: jest.DoneCallback) => {
-      const options = {};
+      const options = '';
       expect.assertions(2);
       callController._updateCallRecordState = jest.fn();
       callController.startRecord().then(result => {
@@ -227,7 +227,7 @@ describe('TelephonyCallController', () => {
 
   describe('stopRecord', () => {
     it('should resolve when stopRecord is successfully', (done: jest.DoneCallback) => {
-      const options = {};
+      const options = '';
       expect.assertions(2);
       callController._updateCallRecordState = jest.fn();
       callController.stopRecord().then(result => {
@@ -436,7 +436,7 @@ describe('TelephonyCallController', () => {
       };
       expect.assertions(1);
       callController.park().then(result => {
-        expect(result).toEqual(options);
+        expect(result).toEqual('801');
         done();
       });
       callController.onCallActionSuccess(RTC_CALL_ACTION.PARK, options);
@@ -462,7 +462,7 @@ describe('TelephonyCallController', () => {
       setup();
     });
     it('should resolve with success', (done: jest.DoneCallback) => {
-      const options = {};
+      const options = '';
       expect.assertions(1);
       callController.flip('number').then(result => {
         expect(result).toEqual(options);
@@ -490,7 +490,7 @@ describe('TelephonyCallController', () => {
       setup();
     });
     it('should resolve with success', (done: jest.DoneCallback) => {
-      const options = {};
+      const options = '';
       expect.assertions(1);
       callController.forward('number').then(result => {
         expect(result).toEqual(options);
