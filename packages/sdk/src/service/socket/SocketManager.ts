@@ -374,6 +374,11 @@ export class SocketManager {
   private _stopActiveFSM() {
     notificationCenter.emitKVChange(SERVICE.STOPPING_SOCKET);
     if (this.activeFSM) {
+      this._stateHandler({
+        name: this.activeFSM.name,
+        state: 'disconnected',
+        isManualStopped: true,
+      });
       this._clearReconnectSocketHost();
       this.activeFSM.stopFSM();
       this.activeFSM = null;
