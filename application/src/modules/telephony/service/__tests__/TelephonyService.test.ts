@@ -847,4 +847,15 @@ describe('TelephonyService', () => {
       }),
     );
   });
+
+  describe('setCallerPhoneNumber', () => {
+    it('should set to default caller id when has no input', () => {
+      const defaultCallerPhoneNumber = '123';
+      telephonyService._telephonyStore.defaultCallerPhoneNumber = defaultCallerPhoneNumber;
+      telephonyService.setCallerPhoneNumber();
+      expect(telephonyService._telephonyStore.chosenCallerPhoneNumber).toEqual(
+        defaultCallerPhoneNumber,
+      );
+    });
+  });
 });

@@ -19,7 +19,10 @@ class ProgressManager {
     this._progressObserver = {
       onStart: (progressInstance: IProgress) => {
         this._addProgressInstance(progressInstance);
-        this._updateProgress();
+        if (!NProgress.isStarted()) {
+          NProgress.start();
+        }
+        NProgress.inc();
       },
 
       onProgress: (progressInstance: IProgress) => {
@@ -50,16 +53,28 @@ class ProgressManager {
         _.sumBy(this._progressInstances, progressInstance =>
           progressInstance.getProgress(),
         ) / this._progressInstances.length;
-      NProgress.set(progress);
+      progress > NProgress.status && NProgress.set(progress);
     }
     if (progress === 1) {
       this._progressInstances = [];
+      NProgress.done();
     }
   }
 
   newProgressBar = (): ProgressBar => {
     const progressBar = new ProgressBar(this._progressObserver);
     return progressBar;
+  }
+
+  startProgressBar = (condition?: () => boolean) => {
+    let progressBar: ProgressBar;
+    if (!condition || condition()) {
+      progressBar = this.newProgressBar();
+      progressBar.start();
+    }
+    return () => {
+      progressBar && progressBar.stop();
+    };
   }
 }
 const progressManager = new ProgressManager();

@@ -14,9 +14,7 @@ type Voicemail = RCMessage & {
 
 type VoicemailView = IdModel & {
   creationTime: string;
-  lastModifiedTime: string;
   from: Caller;
-  to: Caller;
 };
 
 export { Voicemail, VoicemailView };

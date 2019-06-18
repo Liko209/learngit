@@ -15,13 +15,6 @@ import { PostParser } from './PostParser';
 
 class KeywordHighlightParser extends PostParser implements IPostParser {
   type = ParserType.KEYWORD_HIGHLIGHT;
-  ignoredRangeTypes = [
-    ParserType.AT_MENTION,
-    ParserType.EMOJI,
-    ParserType.PHONE_NUMBER,
-    ParserType.FILE_NAME,
-    ParserType.URL,
-  ];
   content: ParseContent;
   constructor(public options: KeywordHighlightParserOption) {
     super(options);

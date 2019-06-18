@@ -17,7 +17,6 @@ import { isChrome } from '../utils';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { TelephonyService } from 'sdk/module/telephony/service/TelephonyService';
-import { RTC_MEDIA_ACTION } from 'voip/src';
 import { CONFIG_EVENT_TYPE } from 'sdk/module/config/constants';
 
 jest.mock('../utils');

@@ -99,7 +99,7 @@ class TelephonyStore {
   pendingForRecord: boolean = false;
 
   @observable
-  shouldResume: boolean;
+  shouldKeepDialog: boolean;
 
   @observable
   inputString: string = '';
@@ -148,6 +148,9 @@ class TelephonyStore {
 
   @observable
   firstLetterEnteredThroughKeypad: boolean;
+
+  // for end call
+  // uiCallStartTime: number;
 
   @observable
   enteredDialer: boolean = false;
@@ -258,6 +261,38 @@ class TelephonyStore {
     }
   }
 
+  // @action
+  // private _onAfterCallFSMTransition = (lifecycle: LifeCycle) => {
+  //   const { to, from } = lifecycle;
+  //   if (to === from) {
+  //     return;
+  //   }
+  //   this.activeCallTime = undefined;
+  //   this.callState = to as CALL_STATE;
+  //   switch (this.callState) {
+  //     case CALL_STATE.CONNECTED:
+  //       this.activeCallTime = Date.now();
+  //       this.enableHold();
+  //       break;
+  //     case CALL_STATE.DIALING:
+  //     case CALL_STATE.IDLE:
+  //       this.resetReply();
+  //       this.quitKeypad();
+  //       this._restoreButtonStates();
+  //       this._clearEnteredKeys();
+  //       this._clearForwardString();
+  //       this.callerName = undefined;
+  //       this.isMute = false;
+  //       this.phoneNumber = undefined;
+  //       this.isContactMatched = false;
+  //       break;
+  //     case CALL_STATE.CONNECTING:
+  //       this.uiCallStartTime = Date.now();
+  //       break;
+  //   }
+  // }
+
+  @action
   private _openCallWindow = () => {
     const {
       OPEN_DETACHED_DIALER,
@@ -273,6 +308,7 @@ class TelephonyStore {
     }
   }
 
+  @action
   private _restoreButtonStates() {
     this.stopRecording();
   }
@@ -320,32 +356,40 @@ class TelephonyStore {
     this.shiftKeyDown = down;
   }
 
+  @action
   openDialer = () => {
     this._history.add(DIALING);
     this._openCallWindow();
+    this.shouldKeepDialog = true;
   }
 
+  @action
   closeDialer = () => {
     this._closeCallWindow();
+    this.shouldKeepDialog = false;
+    this._history.delete(DIALING);
   }
 
+  @action
   attachedWindow = () => {
     this._localCallWindowStatus = CALL_WINDOW_STATUS.FLOATING;
     this._callWindowFSM[CALL_WINDOW_TRANSITION_NAMES.ATTACHED_WINDOW]();
   }
 
+  @action
   detachedWindow = () => {
     this._localCallWindowStatus = CALL_WINDOW_STATUS.DETACHED;
     this._callWindowFSM[CALL_WINDOW_TRANSITION_NAMES.DETACHED_WINDOW]();
   }
 
+  @action
   end = () => {
     const history = this._history;
 
     switch (true) {
       case history.has(CALL_DIRECTION.INBOUND) &&
         history.has(DIALING) &&
-        this.shouldResume:
+        this.shouldKeepDialog:
         this.openDialer();
         break;
 
@@ -354,7 +398,7 @@ class TelephonyStore {
         this._history.delete(DIALING);
         break;
       default:
-        this._history.delete(DIALING);
+        // this._history.delete(DIALING);
         break;
     }
 
@@ -369,16 +413,16 @@ class TelephonyStore {
     this._history.delete(CALL_DIRECTION.INBOUND);
   }
 
-  dialerCall = () => {
-    this.shouldResume = false;
-  }
+  @action
+  dialerCall = () => {}
 
+  @action
   directCall = () => {
-    this.shouldResume = false;
     this.firstLetterEnteredThroughKeypad = false;
     this._openCallWindow();
   }
 
+  @action
   incomingCall = () => {
     this._history.add(CALL_DIRECTION.INBOUND);
     this._openCallWindow();
@@ -392,6 +436,7 @@ class TelephonyStore {
     }
   }
 
+  @action
   unhold = () => {
     if (!this.held) {
       mainLogger.debug(
@@ -400,6 +445,7 @@ class TelephonyStore {
     }
   }
 
+  @action
   startRecording = () => {
     if (this.isRecording) {
       mainLogger.debug(
@@ -408,6 +454,7 @@ class TelephonyStore {
     }
   }
 
+  @action
   stopRecording = () => {
     if (!this.isRecording) {
       mainLogger.debug(
@@ -506,6 +553,7 @@ class TelephonyStore {
     this.incomingState = INCOMING_STATE.IDLE;
   }
 
+  @action
   resetReply = () => {
     this.replyCountdownTime = undefined;
     this.customReplyMessage = '';
@@ -523,10 +571,6 @@ class TelephonyStore {
       }
     },                                  1000);
   }
-
-  // private _clearHistory() {
-  //   this._history.clear();
-  // }
 
   @computed
   get shouldDisplayDialer() {
@@ -607,6 +651,23 @@ class TelephonyStore {
   @action
   syncDialerEntered(entered: boolean) {
     this.enteredDialer = entered;
+  }
+
+  @computed
+  get hasActiveCall() {
+    return [CALL_STATE.CONNECTED, CALL_STATE.CONNECTING].includes(
+      this.callState,
+    );
+  }
+
+  @computed
+  get hasActiveOutBoundCall() {
+    return this.hasActiveCall && this.outbound;
+  }
+
+  @computed
+  get hasActiveInBoundCall() {
+    return this.hasActiveCall && this.inbound;
   }
 }
 

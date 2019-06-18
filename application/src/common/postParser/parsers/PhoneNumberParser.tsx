@@ -13,13 +13,6 @@ import { isValidPhoneNumber } from '../utils';
 
 class PhoneNumberParser extends PostParser implements IPostParser {
   type = ParserType.PHONE_NUMBER;
-  ignoredRangeTypes = [
-    ParserType.AT_MENTION,
-    ParserType.KEYWORD_HIGHLIGHT,
-    ParserType.HTML,
-    ParserType.EMOJI,
-    ParserType.URL,
-  ];
   content: ParseContent;
   constructor(public options: PhoneNumberParserOption) {
     super(options);

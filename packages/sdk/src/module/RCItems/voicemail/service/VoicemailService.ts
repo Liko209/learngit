@@ -8,7 +8,11 @@ import { Voicemail } from '../entity';
 import { EntityBaseService } from 'sdk/framework';
 import { daoManager, QUERY_DIRECTION } from 'sdk/dao';
 import { VoicemailDao } from '../dao';
-import { DEFAULT_FETCH_SIZE, READ_STATUS } from '../../constants';
+import {
+  DEFAULT_FETCH_SIZE,
+  READ_STATUS,
+  SYNC_DIRECTION,
+} from '../../constants';
 import { FetchResult } from '../../types';
 import { RCItemUserConfig } from '../../config';
 import { MODULE_NAME } from '../constants';
@@ -23,9 +27,14 @@ class VoicemailService extends EntityBaseService<Voicemail> {
     super({ isSupportedCache: false }, daoManager.getDao(VoicemailDao));
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SUBSCRIPTION.MESSAGE_STORE]: this._triggerSilentSync,
+        [SUBSCRIPTION.MESSAGE_STORE]: this._syncImmediately,
       }),
     );
+  }
+
+  onLogin() {
+    super.onLogin();
+    this._initBadge();
   }
 
   onStarted() {
@@ -102,8 +111,16 @@ class VoicemailService extends EntityBaseService<Voicemail> {
     return this._voicemailController;
   }
 
-  private _triggerSilentSync = async () => {
-    await this._getVoicemailController().voicemailFetchController.handleNotification();
+  private _syncImmediately = async () => {
+    await this._getVoicemailController().voicemailFetchController.doSync(
+      false,
+      SYNC_DIRECTION.NEWER,
+      true,
+    );
+  }
+
+  private _initBadge = async () => {
+    await this._getVoicemailController().voicemailBadgeController.initializeUnreadCount();
   }
 }
 

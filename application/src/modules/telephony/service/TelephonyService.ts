@@ -23,13 +23,12 @@ import { TelephonyStore, INCOMING_STATE } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
-import { reaction, IReactionDisposer, runInAction, action } from 'mobx';
+import { reaction, IReactionDisposer, runInAction, action, when } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { Profile } from 'sdk/module/profile/entity';
 import ProfileModel from '@/store/models/Profile';
 import { getSingleEntity, getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
-import { CALL_WINDOW_STATUS } from '../FSM';
 import { AccountService } from 'sdk/module/account';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { Notification } from '@/containers/Notification';
@@ -40,7 +39,6 @@ import {
 import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
 import i18next from 'i18next';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
-import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 import storeManager from '@/store';
 import { SettingEntityIds } from 'sdk/module/setting';
 
@@ -66,12 +64,10 @@ class TelephonyService {
     ServiceConfig.PHONE_NUMBER_SERVICE,
   );
   private _callId?: string;
-  private _shouldResumeDisposer: IReactionDisposer;
-  private _shouldDisplayDialerDisposer: IReactionDisposer;
+  private _hasActiveOutBoundCallDisposer: IReactionDisposer;
   private _callerPhoneNumberDisposer: IReactionDisposer;
   private _incomingCallDisposer: IReactionDisposer;
-
-  uiCallStartTime: number;
+  private _defaultCallerPhoneNumberDisposer: IReactionDisposer;
 
   private _onMadeOutgoingCall = (id: number) => {
     // TODO: This should be a list in order to support multiple call
@@ -85,7 +81,7 @@ class TelephonyService {
     // if has incoming call voicemail should be pause
     storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, true);
     this._callId = callId;
-    this.uiCallStartTime = +new Date();
+    // this.uiCallStartTime = +new Date();
     this._telephonyStore.directCall();
   }
 
@@ -97,7 +93,7 @@ class TelephonyService {
     this._telephonyStore.id = id;
     const { fromNum, callId, fromName } = this._telephonyStore.call;
     this._callId = callId;
-    this.uiCallStartTime = +new Date();
+    // this.uiCallStartTime = +new Date();
     this._telephonyStore.callerName = fromName;
     const phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
     if (phoneNumber !== this._telephonyStore.phoneNumber) {
@@ -225,9 +221,6 @@ class TelephonyService {
 
     this._getDialerOpenedCount();
 
-    // Read firstly
-    this._getCallerPhoneNumberList();
-
     notificationCenter.on(
       RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
       this._getCallerPhoneNumberList,
@@ -238,33 +231,20 @@ class TelephonyService {
       onReceiveIncomingCall: this._onReceiveIncomingCall,
     });
 
-    this._shouldDisplayDialerDisposer = reaction(
-      () =>
-        this._telephonyStore.shouldDisplayDialer &&
-        this._telephonyStore.callWindowState !== CALL_WINDOW_STATUS.MINIMIZED,
-      shouldDisplayDialer => {
-        if (!shouldDisplayDialer) {
-          return;
-        }
-        this._telephonyStore.shouldResume = true;
-      },
-      { fireImmediately: true },
-    );
-
-    this._shouldResumeDisposer = reaction(
+    this._hasActiveOutBoundCallDisposer = reaction(
       () => ({
-        shouldResume: this._telephonyStore.shouldResume,
+        hasActiveOutBoundCall: !this._telephonyStore.hasActiveOutBoundCall,
         defaultCallerPhoneNumber: this._telephonyStore.defaultCallerPhoneNumber,
       }),
       async ({
-        shouldResume,
+        hasActiveOutBoundCall,
         defaultCallerPhoneNumber,
       }: {
-        shouldResume: boolean;
+        hasActiveOutBoundCall: boolean;
         defaultCallerPhoneNumber: string;
       }) => {
         // restore things to default values
-        if (!shouldResume) {
+        if (!hasActiveOutBoundCall) {
           runInAction(() => {
             this.deleteInputString(true);
             this.setCallerPhoneNumber(defaultCallerPhoneNumber);
@@ -327,6 +307,21 @@ class TelephonyService {
       { fireImmediately: true },
     );
 
+    this._defaultCallerPhoneNumberDisposer = when(
+      () => {
+        if (
+          this._telephonyStore.defaultCallerPhoneNumber &&
+          !this._telephonyStore.chosenCallerPhoneNumber
+        ) {
+          return true;
+        }
+        return false;
+      },
+      () => {
+        this._telephonyStore.chosenCallerPhoneNumber = this._telephonyStore.defaultCallerPhoneNumber;
+      },
+    );
+
     // triggering a change of caller id list
     this._getCallerPhoneNumberList();
   }
@@ -375,6 +370,14 @@ class TelephonyService {
   }
 
   makeCall = async (toNumber: string, callback?: Function) => {
+    // FIXME: move this logic to SDK and always using callerID
+    const idx =
+      this._telephonyStore.callerPhoneNumberList &&
+      this._telephonyStore.callerPhoneNumberList.findIndex(
+        phone =>
+          phone.phoneNumber === this._telephonyStore.chosenCallerPhoneNumber,
+      );
+
     const { isValid } = await this.isValidNumber(toNumber);
     if (!isValid) {
       ToastCallError.toastInvalidNumber();
@@ -385,19 +388,14 @@ class TelephonyService {
       return this.makeRCPhoneCall(toNumber);
     }
     callback && callback();
-    // FIXME: move this logic to SDK and always using callerID
-    const idx = this._telephonyStore.callerPhoneNumberList.findIndex(
-      phone =>
-        formatPhoneNumber(phone.phoneNumber) ===
-        formatPhoneNumber(this._telephonyStore.chosenCallerPhoneNumber),
-    );
-    if (idx === -1) {
+
+    if (idx === -1 || typeof idx !== 'number') {
       return mainLogger.error(
         `${TelephonyService.TAG} can't Make call with: ${
           this._telephonyStore.chosenCallerPhoneNumber
-        }, because can't find corresponding phone number from ${this._telephonyStore.callerPhoneNumberList.join(
-          ',',
-        )}`,
+        }, because can't find corresponding phone number from ${this
+          ._telephonyStore.callerPhoneNumberList &&
+          this._telephonyStore.callerPhoneNumberList.join(',')}`,
       );
     }
     const fromEl = this._telephonyStore.callerPhoneNumberList[idx];
@@ -749,18 +747,19 @@ class TelephonyService {
   }
 
   dispose = () => {
-    this._shouldResumeDisposer && this._shouldResumeDisposer();
-    this._shouldDisplayDialerDisposer && this._shouldDisplayDialerDisposer();
+    this._hasActiveOutBoundCallDisposer &&
+      this._hasActiveOutBoundCallDisposer();
     this._callerPhoneNumberDisposer && this._callerPhoneNumberDisposer();
     this._incomingCallDisposer && this._incomingCallDisposer();
+    this._defaultCallerPhoneNumberDisposer &&
+      this._defaultCallerPhoneNumberDisposer();
 
     this._pauseRingtone();
 
     delete this._telephonyStore;
     delete this._serverTelephonyService;
     delete this._callId;
-    delete this._shouldResumeDisposer;
-    delete this._shouldDisplayDialerDisposer;
+    delete this._hasActiveOutBoundCallDisposer;
     delete this._callerPhoneNumberDisposer;
     delete this._incomingCallDisposer;
     delete this._audio;

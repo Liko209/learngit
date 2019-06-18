@@ -33,7 +33,16 @@ const socketMessageMap: IMessage<string> = {
   [TypeDictionary.TYPE_ID_MEETING]: 'item',
   [TypeDictionary.TYPE_ID_PAGE]: 'item',
   [TypeDictionary.TYPE_ID_CODE]: 'item',
+  [TypeDictionary.TYPE_ID_INTERACTIVE_MESSAGE_ITEM]: 'item',
 };
+
+function getSocketMessageKey(id: number) {
+  if (GlipTypeUtil.isIntegrationType(id)) {
+    return 'item';
+  }
+  const typeId = GlipTypeUtil.extractTypeId(id);
+  return socketMessageMap[typeId];
+}
 
 function parseSocketMessage(message: string | ISystemMessage) {
   if (typeof message === 'object') {
@@ -73,9 +82,8 @@ function parseSocketMessage(message: string | ISystemMessage) {
       if (obj.search_results) {
         result['search'] = obj.search_results;
       }
-      const objTypeId = GlipTypeUtil.extractTypeId(obj._id);
-      if (socketMessageMap[objTypeId]) {
-        const key = socketMessageMap[objTypeId];
+      const key = getSocketMessageKey(obj._id);
+      if (key) {
         result[key] = result[key] || [];
         result[key].push(obj);
       }
@@ -84,4 +92,9 @@ function parseSocketMessage(message: string | ISystemMessage) {
   return result;
 }
 
-export { TypeDictionary, GlipTypeUtil, parseSocketMessage };
+export {
+  TypeDictionary,
+  GlipTypeUtil,
+  parseSocketMessage,
+  getSocketMessageKey,
+};

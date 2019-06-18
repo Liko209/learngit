@@ -42,6 +42,7 @@ type JuiInfiniteListProps = {
   contentStyle?: React.CSSProperties;
   stickToLastPosition?: boolean;
   fixedWrapper?: boolean;
+  onBottomStatusChange?: (atBottom: boolean) => void;
 };
 
 const JuiInfiniteList: RefForwardingComponent<
@@ -73,6 +74,7 @@ const JuiInfiniteList: RefForwardingComponent<
     contentStyle,
     stickToLastPosition,
     fixedWrapper,
+    onBottomStatusChange,
   }: JuiInfiniteListProps,
   forwardRef: React.RefObject<JuiVirtualizedListHandles> | null,
 ) => {
@@ -165,6 +167,7 @@ const JuiInfiniteList: RefForwardingComponent<
             stickToBottom={stickToBottom && isStickToBottomEnabled}
             stickToLastPosition={stickToLastPosition}
             fixedWrapper={fixedWrapper}
+            onBottomStatusChange={onBottomStatusChange}
           >
             {children}
           </JuiVirtualizedList>

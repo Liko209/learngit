@@ -104,8 +104,7 @@ const JuiProfileDialogContentMemberListItemName = styled('p')`
 `;
 
 const JuiProfileDialogContentMemberListItemAdmin = styled.span`
-  color: ${({ theme }) =>
-    theme.palette.getContrastText(palette('secondary', 'main')({ theme }))};
+  color: ${palette('common', 'white')};
   border-radius: ${spacing(2)};
   text-align: center;
   background-color: ${palette('secondary', 'main')};

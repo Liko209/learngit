@@ -39,6 +39,11 @@ class AnalyticsCollector {
       accountType: rcAccountId ? 'rc' : 'non-rc',
       appVersion: version.deployedVersion,
     };
+    const jupiterElectron = window['jupiterElectron'];
+    if (jupiterElectron && jupiterElectron.getElectronVersionInfo) {
+      const { electronAppVersion } = jupiterElectron.getElectronVersionInfo();
+      properties['desktopVersion'] = electronAppVersion;
+    }
     dataAnalysis.identify(userId, properties);
     return;
   }

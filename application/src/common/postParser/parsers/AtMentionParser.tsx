@@ -9,11 +9,7 @@ import { IPostParser, ParserType, AtMentionParserOption } from '../types';
 import { ParseContent } from '../ParseContent';
 import { JuiAtMention } from 'jui/components/AtMention';
 import { PostParser } from './PostParser';
-import {
-  AT_MENTION_ESCAPED,
-  AT_MENTION_REGEX,
-  b64DecodeUnicode,
-} from '../utils';
+import { AT_MENTION_REGEX, b64DecodeUnicode } from '../utils';
 
 class AtMentionParser extends PostParser implements IPostParser {
   type = ParserType.AT_MENTION;
@@ -51,9 +47,7 @@ class AtMentionParser extends PostParser implements IPostParser {
   }
 
   getRegexp() {
-    return new RegExp(
-      this.options.isEscaped ? AT_MENTION_ESCAPED : AT_MENTION_REGEX,
-    );
+    return new RegExp(AT_MENTION_REGEX);
   }
 }
 

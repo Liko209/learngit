@@ -24,7 +24,7 @@ import { ServiceConfig, ServiceLoader } from '../../../module/serviceLoader';
 import { CONFIG, SERVICE } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
 import { PerformanceTracer, PERFORMANCE_KEYS } from '../../../utils';
-import { ProgressBar, progressManager } from '../../../utils/progress';
+import { progressManager } from '../../../utils/progress';
 import { CompanyService } from '../../company';
 import { Group, GroupService } from '../../group';
 import { ItemService } from '../../item/service';
@@ -45,11 +45,18 @@ const LOG_TAG = 'SyncController';
 class SyncController {
   private _isFetchingRemaining: boolean;
   private _syncListener: SyncListener;
-  private _progressBar: ProgressBar;
+  private _progressBar: {
+    start: () => void;
+    stop: () => void;
+  };
   private _indexDataTaskController: TaskController;
 
   constructor() {
-    this._progressBar = progressManager.newProgressBar();
+    const progressBar = progressManager.newProgressBar();
+    this._progressBar = {
+      start: () => navigator.onLine && progressBar.start(),
+      stop: () => progressBar.stop(),
+    };
   }
 
   handleSocketConnectionStateChanged({ state }: { state: any }) {
@@ -201,8 +208,12 @@ class SyncController {
         mainLogger.log(LOG_INDEX_DATA, 'fetch index failed');
         syncConfig.updateIndexSucceed(false);
         await this._handleSyncIndexError(error);
+
+        this._progressBar.stop();
         throw new Error(error);
       }
+      mainLogger.log(LOG_INDEX_DATA, 'executeFunc done. stop progress');
+
       this._progressBar.stop();
     };
     const taskController = this._getIndexDataTaskController(executeFunc);

@@ -53,4 +53,18 @@ describe('ContactSearchVM', () => {
       expect(contactSearchViewModel.groupMembers).toEqual(members);
     });
   });
+  describe('_setSelectedItems()', () => {
+    it('group members should be empty if there is no group Id', async () => {
+      const members = [1, 2, 3];
+      (getEntity as jest.Mock).mockReturnValue({
+        members,
+        displayName: 'aaa',
+      });
+      const contactSearchViewModel = new ContactSearchViewModel(
+        Object.assign(props, { groupId: null }),
+      );
+      contactSearchViewModel._setSelectedItems();
+      expect(contactSearchViewModel.groupMembers).toEqual([]);
+    });
+  });
 });

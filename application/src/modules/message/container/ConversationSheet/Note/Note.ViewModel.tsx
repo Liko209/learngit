@@ -7,7 +7,6 @@
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { NoteProps, NoteViewProps } from './types';
-
 import { Item } from 'sdk/module/item/entity';
 import NoteItemModel from '@/store/models/NoteItem';
 import { getEntity } from '@/store/utils';
@@ -34,6 +33,12 @@ class NoteViewModel extends StoreViewModel<NoteProps> implements NoteViewProps {
   @computed
   get summary() {
     return this._items.map((item: NoteItemModel) => item.summary).join('');
+  }
+
+  @computed
+  get id() {
+    if (!this._items && !this._items[0]) return 0;
+    return this._items[0].id;
   }
 }
 

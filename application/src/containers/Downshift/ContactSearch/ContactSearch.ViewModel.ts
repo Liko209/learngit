@@ -54,7 +54,10 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
     if (groupId) {
       const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, groupId);
       this.groupMembers = group.members;
+      return;
     }
+    this.groupMembers = [];
+    return;
   }
 
   @action
