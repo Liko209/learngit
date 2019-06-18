@@ -42,6 +42,7 @@ type JuiDownshiftTextFieldProps = {
   onInputChange: (value: string) => void;
   maxLength?: number;
   onKeyDown?: (event: JuiDownshiftTextFieldKeyDownEvent) => void;
+  autoFocus?: boolean;
 };
 
 const StyledTextField = styled<TextFieldProps>(JuiTextField)`
@@ -152,6 +153,7 @@ class JuiDownshiftTextField extends React.PureComponent<
       selectedItems,
       maxLength,
       multiple,
+      autoFocus,
     } = this.props;
     const { showPlaceholder } = this.state;
     const placeholderText =
@@ -187,6 +189,7 @@ class JuiDownshiftTextField extends React.PureComponent<
             },
             placeholder: placeholderText,
             readOnly: !multiple && selectedItems.length > 0,
+            autoFocus,
           } as any),
         }}
         inputProps={{
