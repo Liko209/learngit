@@ -76,15 +76,17 @@ class More extends React.Component<MoreViewProps, State> {
         onClose={this.closePopper}
       >
         <JuiMenuList onClick={this.closePopper}>
-          {Object.keys(menuItems).map((key: string) => {
-            const { permission, shouldShowAction } = permissionsMap[key];
-            const Component = menuItems[key];
-            return (
-              shouldShowAction && (
-                <Component id={id} key={key} disabled={!permission} />
-              )
-            );
-          })}
+          {Object.keys(menuItems)
+            .sort()
+            .map((key: string) => {
+              const { permission, shouldShowAction } = permissionsMap[key];
+              const Component = menuItems[key];
+              return (
+                shouldShowAction && (
+                  <Component id={id} key={key} disabled={!permission} />
+                )
+              );
+            })}
         </JuiMenuList>
       </JuiPopperMenu>
     );
