@@ -22,7 +22,7 @@ test.meta(<ITestMeta>{
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
   const notificationAndSoundsSettingPage = settingTab.notificationAndSoundPage;
-  const sectionLabel = 'Desktop Notifications';
+  const sectionLabel = 'Desktop notifications';
   const browserDescription = 'Turn on/off desktop notifications on your web browser. Browser permission is needed for desktop notifications.';
   const newMessgesDescription = 'Choose your preference for desktop notifications for new messages';
   const incomingcallDescription = 'Choose your preference for desktop notifications for incoming calls';
@@ -47,16 +47,16 @@ test.meta(<ITestMeta>{
     await notificationAndSoundsSettingPage.existBrowserItemDescription(browserDescription);
     await notificationAndSoundsSettingPage.existBrowserToggle();
   });
-  await h(t).withLog(`And I can see Incoming Calls label/description/toggle in the 'DesktopAndSounds' section`, async () => {
-    await notificationAndSoundsSettingPage.existIncomingCallsLabel("Incoming Calls");
+  await h(t).withLog(`And I can see Incoming calls label/description/toggle in the 'DesktopAndSounds' section`, async () => {
+    await notificationAndSoundsSettingPage.existIncomingCallsLabel("Incoming calls");
     await notificationAndSoundsSettingPage.existIncomingCallsDescription(incomingcallDescription);
   });
-  await h(t).withLog(`And I can see Missed Calls and New Voicemails label/description/toggle in the 'DesktopAndSounds' section`, async () => {
-    await notificationAndSoundsSettingPage.existCallsAndVoicemailsLabel("Missed Calls and New Voicemails");
+  await h(t).withLog(`And I can see Missed calls and new voicemails label/description/toggle in the 'DesktopAndSounds' section`, async () => {
+    await notificationAndSoundsSettingPage.existCallsAndVoicemailsLabel("Missed calls and new voicemails");
     await notificationAndSoundsSettingPage.existCallsAndVoicemailsDescription(missedCallsAndNewVoicemailsDescription);
   });
   await h(t).withLog(`And I can see New message label/description/DropDown select box in the 'DesktopAndSounds' section`, async () => {
-    await notificationAndSoundsSettingPage.existNewMessageItemLabel("New Messages");
+    await notificationAndSoundsSettingPage.existNewMessageItemLabel("New messages");
     await notificationAndSoundsSettingPage.existNewMessageDescription(newMessgesDescription);
     await notificationAndSoundsSettingPage.existNewMessageDropDown();
   });
@@ -87,7 +87,7 @@ test.meta(<ITestMeta>{
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
   const notificationAndSoundsSettingPage = settingTab.notificationAndSoundPage;
-  const sectionLabel = 'Desktop Notifications';
+  const sectionLabel = 'Desktop notifications';
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -108,7 +108,7 @@ test.meta(<ITestMeta>{
     await notificationAndSoundsSettingPage.getBrowserToggleIsOFF();
   });
 
-  await h(t).withLog(`And I can see New message/Incoming Calls/Missed calls and new voicemails sections are disabled`, async () => {
+  await h(t).withLog(`And I can see New message/Incoming calls/Missed calls and new voicemails sections are disabled`, async () => {
     await t.expect(notificationAndSoundsSettingPage.newMessageSection.getAttribute('data-disabled')).eql('true');
     await t.expect(notificationAndSoundsSettingPage.incomingCallsSection.getAttribute('data-disabled')).eql('true');
     await t.expect(notificationAndSoundsSettingPage.callsAndVoicemailsSection.getAttribute('data-disabled')).eql('true');
@@ -134,7 +134,7 @@ test.meta(<ITestMeta>{
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
   const notificationAndSoundsSettingPage = settingTab.notificationAndSoundPage;
-  const sectionLabel = 'Desktop Notifications';
+  const sectionLabel = 'Desktop notifications';
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);

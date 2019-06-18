@@ -217,11 +217,12 @@
       "addedToTeam": "{{inviter}} added {{newUser}} to the team",
       "changeTeamName": "{{changer}} changed the team name from {{oldValue}} to {{value}}",
       "joinTheTeam": "{{newUser}} joined the team",
-      "newMessages": "new messages"
+      "newMessages": "new messages",
+      "newMessagesDivider": "New messages"
     },
     "teamMembers": "team members",
     "suggestedPeople": "suggested people",
-    "conversationDetails": "Conversation Details",
+    "conversationDetails": "Conversation details",
     "conversationDetailsShow": "Show details",
     "conversationDetailsHide": "Hide details",
     "prompt": {
@@ -463,7 +464,7 @@
       "revokeTeamAdmin": "Revoke team admin",
       "addTeamMemberSubmit": "Add",
       "AddTeamMembers": "Add team members",
-      "AddTeamMembersTitle": "Add Team Members",
+      "AddTeamMembersTitle": "Add team members",
       "removeFromTeam": "Remove from team",
       "joinButtonTitle": "Join",
       "joinTeam": "Join team",
@@ -724,13 +725,13 @@
         }
       },
       "desktopNotifications": {
-        "title": "Desktop Notifications",
+        "title": "Desktop notifications",
         "notificationsForBrowser": {
           "label": "Desktop notifications for browser",
           "description": "Turn on/off desktop notifications on your web browser. Browser permission is needed for desktop notifications."
         },
         "newMessages": {
-          "label": "New Messages",
+          "label": "New messages",
           "description": "Choose your preference for desktop notifications for new messages",
           "options": {
             "always": "All new messages",
@@ -739,16 +740,16 @@
           }
         },
         "incomingCalls": {
-          "label": "Incoming Calls",
+          "label": "Incoming calls",
           "description": "Choose your preference for desktop notifications for incoming calls"
         },
         "callsAndVoicemails": {
-          "label": "Missed Calls and New Voicemails",
+          "label": "Missed calls and new voicemails",
           "description": "Choose your preference for desktop notifications for missed calls and new voicemails"
         }
       },
       "emailNotifications": {
-        "title": "Email Notifications",
+        "title": "Email notifications",
         "directMessages": {
           "label": "Direct messages",
           "description": "Receive email notifications for direct messages"
@@ -762,7 +763,7 @@
           "description": "Receive email notifications for direct messages"
         },
         "dailyDigest": {
-          "label": "Daily Digest",
+          "label": "Daily digest",
           "description": "Receive Glip daily digest emails summarizing daily tasks and team events"
         },
         "options": {
