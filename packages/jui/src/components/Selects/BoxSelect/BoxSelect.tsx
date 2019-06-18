@@ -48,6 +48,7 @@ class JuiBoxSelect extends PureComponent<
       automationId,
       isFullWidth,
       className,
+      renderValue,
       ...rest
     } = this.props;
     return (
@@ -58,6 +59,7 @@ class JuiBoxSelect extends PureComponent<
           classes={CLASSES_SELECT}
           style={isFullWidth ? { width: '100%' } : {}}
           input={this._renderInput()}
+          renderValue={renderValue}
           {...rest}
         >
           {children}

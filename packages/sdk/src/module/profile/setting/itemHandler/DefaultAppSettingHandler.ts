@@ -83,7 +83,7 @@ export class DefaultAppSettingHandler extends AbstractSettingEntityHandler<
   private async _getCallOption() {
     const profile = await this._profileService.getProfile();
     let callOption = profile[SETTING_KEYS.CALL_OPTION];
-    if (callOption === undefined) {
+    if (callOption === undefined || (callOption as string) === '') {
       callOption = CALLING_OPTIONS.GLIP;
     }
     return callOption;
