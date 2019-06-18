@@ -11,6 +11,7 @@ import { CallLogViewDao } from './CallLogViewDao';
 import { CALL_LOG_SOURCE } from '../constants';
 import { Nullable } from 'sdk/types';
 import _ from 'lodash';
+import { CALL_DIRECTION } from '../../constants';
 
 class CallLogDao extends BaseDao<CallLog, string> {
   static COLLECTION_NAME = 'callLog';
@@ -144,10 +145,12 @@ class CallLogDao extends BaseDao<CallLog, string> {
   }
 
   private async _putCallLogView(callLog: CallLog) {
+    const caller =
+      callLog.direction === CALL_DIRECTION.INBOUND ? callLog.from : callLog.to;
     await this._viewDao.put({
+      caller,
       id: callLog.id,
-      result: callLog.result,
-      __source: callLog.__source,
+      __localInfo: callLog.__localInfo,
       __timestamp: callLog.__timestamp,
     });
   }
@@ -155,10 +158,14 @@ class CallLogDao extends BaseDao<CallLog, string> {
   private async _bulkPutCallLogView(array: CallLog[]) {
     await this._viewDao.bulkPut(
       array.map((callLog: CallLog) => {
+        const caller =
+          callLog.direction === CALL_DIRECTION.INBOUND
+            ? callLog.from
+            : callLog.to;
         return {
+          caller,
           id: callLog.id,
-          result: callLog.result,
-          __source: callLog.__source,
+          __localInfo: callLog.__localInfo,
           __timestamp: callLog.__timestamp,
         };
       }),
@@ -169,12 +176,14 @@ class CallLogDao extends BaseDao<CallLog, string> {
     callLog: Partial<CallLog>,
     shouldDoPut: boolean,
   ) {
+    const caller =
+      callLog.direction === CALL_DIRECTION.INBOUND ? callLog.from : callLog.to;
     await this._viewDao.update(
       _.pickBy(
         {
+          caller,
           id: callLog.id,
-          result: callLog.result,
-          __source: callLog.__source,
+          __localInfo: callLog.__localInfo,
           __timestamp: callLog.__timestamp,
         },
         _.identity,
@@ -189,11 +198,15 @@ class CallLogDao extends BaseDao<CallLog, string> {
   ) {
     await this._viewDao.bulkUpdate(
       array.map((callLog: CallLog) => {
+        const caller =
+          callLog.direction === CALL_DIRECTION.INBOUND
+            ? callLog.from
+            : callLog.to;
         return _.pickBy(
           {
+            caller,
             id: callLog.id,
-            result: callLog.result,
-            __source: callLog.__source,
+            __localInfo: callLog.__localInfo,
             __timestamp: callLog.__timestamp,
           },
           _.identity,

@@ -280,7 +280,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
             ids = [currentGroupId];
             Notification.flashToast({
               ...defaultNotificationOptions,
-              message: 'people.prompt.conversationPrivate',
+              message: 'people.prompt.noLongerAMemberOfThisTeam',
             });
             mainLogger
               .tags(LOG_TAG)

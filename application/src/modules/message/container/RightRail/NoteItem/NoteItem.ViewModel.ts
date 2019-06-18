@@ -16,13 +16,13 @@ import { NoteProps } from './types';
 
 class NoteItemViewModel extends AbstractViewModel<NoteProps> {
   @computed
-  get _id() {
+  get id() {
     return this.props.id;
   }
 
   @computed
   get note() {
-    const id = this._id;
+    const id = this.id;
     if (typeof id !== 'undefined') {
       return getEntity<Item, NoteItemModel>(ENTITY_NAME.ITEM, id);
     }

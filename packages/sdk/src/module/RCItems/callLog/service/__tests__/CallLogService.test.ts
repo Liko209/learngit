@@ -33,6 +33,9 @@ jest.mock('../../controller/CallLogController', () => {
       handleMissedCallEvent: jest.fn(),
       handleRCPresenceEvent: jest.fn(),
     },
+    callLogBadgeController: {
+      initializeUnreadCount: jest.fn(),
+    },
   };
   return {
     CallLogController: () => {
@@ -162,6 +165,15 @@ describe('CallLogService', () => {
       await callLogService['_handleRCPresenceEvent'](mockData);
       expect(
         callLogController.callLogHandleDataController.handleRCPresenceEvent,
+      ).toBeCalled();
+    });
+  });
+
+  describe('_initBadge', () => {
+    it('_initBadge', async () => {
+      await callLogService['_initBadge']();
+      expect(
+        callLogController.callLogBadgeController.initializeUnreadCount,
       ).toBeCalled();
     });
   });

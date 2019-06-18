@@ -79,7 +79,7 @@ export class MiniProfile extends BaseWebComponent {
 
   get profileButton() {
     this.warnFlakySelector();
-    return this.footer.find('span').withText('Profile').parent('button');
+    return this.footer.find('span').withText('Profile').parent('button'); // TODO: i18n
   }
 
   async openProfile() {
@@ -87,7 +87,6 @@ export class MiniProfile extends BaseWebComponent {
   }
 
   get privateButton() {
-    this.warnFlakySelector();
     return this.header.find('.privacy');
   }
 
@@ -96,7 +95,6 @@ export class MiniProfile extends BaseWebComponent {
   }
 
   get messageButton() {
-    this.warnFlakySelector();
     return this.getSelectorByIcon('chat_bubble', this.footer).parent('button');
   }
 
@@ -197,7 +195,6 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   get closeButton() {
-    this.warnFlakySelector();
     return this.getSelectorByIcon('close');
   }
 

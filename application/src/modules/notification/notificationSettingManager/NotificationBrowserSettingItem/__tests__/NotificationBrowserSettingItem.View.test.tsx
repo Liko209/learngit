@@ -28,6 +28,7 @@ function setUpMock(
 ) {
   Notification.flashToast = jest.fn().mockImplementation(() => {});
   global.Notification = {
+    requestPermission: jest.fn().mockImplementation(() => Promise.resolve()),
     permission: browserPermission,
   };
   return {
@@ -132,6 +133,29 @@ describe('NotificationBrowserSettingItemView', () => {
           message: 'setting.errorText.server',
         }),
       );
+    });
+
+    describe('waitForPermission', () => {
+      it('should be true when call requestPermission', async () => {
+        const props = setUpMock('default');
+        const wrapper = shallow(
+          <NotificationBrowserSettingItemView {...props} />,
+        );
+        await wrapper.instance()._requestPermission();
+        expect(wrapper.state('waitForPermission')).toBeTruthy();
+      });
+      it('should be false when toggle on from off and call requestPermission then allow but setToggleState failed for server issue', async () => {
+        const props = setUpMock('default', 'server');
+        const wrapper = shallow(
+          <NotificationBrowserSettingItemView {...props} />,
+        );
+        global.Notification.requestPermission = jest
+          .fn()
+          .mockImplementation(() => Promise.resolve('granted'));
+        await wrapper.instance().handleToggleChange(null, true);
+        expect(props.setToggleState).toBeCalled();
+        expect(wrapper.state('waitForPermission')).toBeFalsy();
+      });
     });
   });
 });

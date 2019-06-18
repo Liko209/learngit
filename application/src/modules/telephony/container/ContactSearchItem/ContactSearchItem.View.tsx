@@ -63,7 +63,7 @@ class ContactSearchItemViewComponent extends Component<Props> {
           <JuiListItemText
             primary={showDialIcon ? t('telephony.dial') : name}
             secondary={
-              isExt ? `${t('telephony.Ext')}${phoneNumber}` : phoneNumber}
+              isExt ? `${t('telephony.Ext')} ${phoneNumber}` : phoneNumber}
           />
           {showDialIcon && (
             <JuiIconButton

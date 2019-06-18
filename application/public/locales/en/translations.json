@@ -206,6 +206,7 @@
       "sendNewMessage": "Send new message"
     },
     "inputMenus": {
+      "uploadFileMenuTitle": "Upload files from",
       "google": "Google Drive",
       "dropbox": "Dropbox",
       "box": "Box",
@@ -491,6 +492,7 @@
     },
     "company": {},
     "prompt": {
+      "noLongerAMemberOfThisTeam": "Sorry, you're no longer a member of this Team. To join, contact the team administrator.",
       "closeConfirmDialogHeader": "Close Conversation?",
       "closeConfirmDialogContent": "Closing a conversation will remove it from the left pane, but will not delete the contents.",
       "closeConfirmDialogDontAskMeAgain": "Don't ask me again",
@@ -759,7 +761,7 @@
         },
         "teams": {
           "label": "Teams",
-          "description": "Receive email notifications for direct messages"
+          "description": "Choose your preferences for email notifications for team messages"
         },
         "dailyDigest": {
           "label": "Daily Digest",
@@ -791,6 +793,7 @@
         },
         "callerID": {
           "label": "Caller ID",
+          "Blocked": "Blocked",
           "description": "Choose your default Caller ID for making RingCentral phone calls"
         },
         "extensions": {
@@ -823,7 +826,7 @@
         "description": "Update the volume"
       }
     },
-    "default": "Default",
+    "useDefault": "Use system default",
     "speaker": "Speaker",
     "noDevices": "No devices",
     "microphone": "Microphone",
