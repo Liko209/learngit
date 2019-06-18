@@ -261,37 +261,6 @@ class TelephonyStore {
     }
   }
 
-  // @action
-  // private _onAfterCallFSMTransition = (lifecycle: LifeCycle) => {
-  //   const { to, from } = lifecycle;
-  //   if (to === from) {
-  //     return;
-  //   }
-  //   this.activeCallTime = undefined;
-  //   this.callState = to as CALL_STATE;
-  //   switch (this.callState) {
-  //     case CALL_STATE.CONNECTED:
-  //       this.activeCallTime = Date.now();
-  //       this.enableHold();
-  //       break;
-  //     case CALL_STATE.DIALING:
-  //     case CALL_STATE.IDLE:
-  //       this.resetReply();
-  //       this.quitKeypad();
-  //       this._restoreButtonStates();
-  //       this._clearEnteredKeys();
-  //       this._clearForwardString();
-  //       this.callerName = undefined;
-  //       this.isMute = false;
-  //       this.phoneNumber = undefined;
-  //       this.isContactMatched = false;
-  //       break;
-  //     case CALL_STATE.CONNECTING:
-  //       this.uiCallStartTime = Date.now();
-  //       break;
-  //   }
-  // }
-
   @action
   private _openCallWindow = () => {
     const {

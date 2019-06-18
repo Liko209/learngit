@@ -12,7 +12,6 @@ import {
   TelephonyService as ServerTelephonyService,
   RTCCallActionSuccessOptions,
   RTC_CALL_ACTION,
-  RTC_CALL_STATE,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'sdk/module/telephony';
@@ -31,6 +30,8 @@ import {
   HOLD_STATE,
   RECORD_STATE,
   MUTE_STATE,
+  CALL_DIRECTION,
+  CALL_STATE,
 } from 'sdk/module/telephony/entity';
 import { observable } from 'mobx';
 
@@ -93,6 +94,7 @@ describe('TelephonyService', () => {
       holdState: HOLD_STATE.IDLE,
       recordState: RECORD_STATE.IDLE,
       muteState: MUTE_STATE.IDLE,
+      direction: CALL_DIRECTION.INBOUND,
     });
 
     (getEntity as jest.Mock).mockReturnValue(call);
@@ -659,6 +661,8 @@ describe('TelephonyService', () => {
       telephonyService._telephonyStore.inputString,
     );
     telephonyService._telephonyStore.dialerCall();
+    call.direction = CALL_DIRECTION.OUTBOUND;
+    call.callState = CALL_STATE.CONNECTED;
     expect(
       (telephonyService as TelephonyService)._telephonyStore.inputString,
     ).toBe('');

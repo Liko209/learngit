@@ -262,9 +262,10 @@ describe('Telephony store', () => {
     const store = createStore();
     expect(store.activeCallTime).toBeUndefined();
     store.directCall();
-    store.connected();
+    call.connectTime = '1';
     expect(store.activeCallTime).toBeDefined();
     store.end();
+    call.connectTime = undefined;
     expect(store.activeCallTime).toBeUndefined();
   });
 
