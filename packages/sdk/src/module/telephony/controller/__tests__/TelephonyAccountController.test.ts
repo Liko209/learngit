@@ -373,24 +373,6 @@ describe('TelephonyAccountController', () => {
     });
   });
 
-  describe('getLastCalledNumber', () => {
-    it('should return last called number when there is any', () => {
-      TelephonyUserConfig.prototype.getLastCalledNumber = jest
-        .fn()
-        .mockReturnValueOnce('test');
-      const result = accountController.getLastCalledNumber();
-      expect(result).toBe('test');
-    });
-
-    it('should return empty string when there is no last called number', () => {
-      TelephonyUserConfig.prototype.getLastCalledNumber = jest
-        .fn()
-        .mockReturnValueOnce(null);
-      const result = accountController.getLastCalledNumber();
-      expect(result).toBe('');
-    });
-  });
-
   describe('setLastCalledNumber', () => {
     it('should call telephony to set last called number', () => {
       const lastCalled = jest.fn();
