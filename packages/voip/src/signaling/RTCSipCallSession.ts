@@ -26,9 +26,7 @@ import { RTCMediaDeviceManager } from '../api/RTCMediaDeviceManager';
 import { CallReport } from '../report/Call';
 import { CALL_REPORT_PROPS } from '../report/types';
 
-const {
-  MediaStreams,
-} = require('ringcentral-web-phone/src/ringcentral-web-phone-media-engine');
+const MediaStreams = require('ringcentral-web-phone/src/mediaStreams');
 
 const LOG_TAG = 'RTCSipCallSession';
 class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
@@ -229,7 +227,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     }
 
     if (local_stream && remote_stream) {
-      this._session.mediaStreams = new MediaStreams(this._session);
+      this._session.mediaStreams = new MediaStreams.default(this._session);
     }
   }
 

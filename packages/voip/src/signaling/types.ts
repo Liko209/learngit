@@ -9,6 +9,7 @@ enum UA_EVENT {
   REG_UNREGISTER = 'uaUnRegisterFailed',
   RECEIVE_INVITE = 'uaReceiveInvite',
   TRANSPORT_ERROR = 'uaTransportError',
+  SWITCH_BACK_PROXY = 'uaSwitchBackProxy',
 }
 
 enum WEBPHONE_SESSION_STATE {
@@ -61,6 +62,7 @@ type ProvisionDataOptions = {
   connectionTimeout?: number;
   modifiers?: any;
   enableMidLinesInSDP?: boolean;
+  enableQos?: boolean;
 };
 
 type InboundRtpReport = {

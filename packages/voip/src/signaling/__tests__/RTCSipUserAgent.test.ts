@@ -45,9 +45,11 @@ class MockEventReceiver {
 }
 
 jest.mock('ringcentral-web-phone', () => {
-  return jest.fn().mockImplementation((provisionData, mockOptions) => {
-    return new MockWebPhone(provisionData, mockOptions);
-  });
+  return {
+    default: (provisionData: any, mockOptions: any) => {
+      return new MockWebPhone(provisionData, mockOptions);
+    },
+  };
 });
 
 const provisionData = 'provisionData';

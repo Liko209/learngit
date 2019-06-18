@@ -9,9 +9,13 @@ import { UA_EVENT, ProvisionDataOptions, WEBPHONE_LOG_LEVEL } from './types';
 import { RTCCallOptions } from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCSipProvisionInfo } from '../account/types';
-import { opusModifier, isFireFox } from '../utils/utils';
+import { opusModifier, isFireFox, randomBetween } from '../utils/utils';
 import { CallReport } from '../report/Call';
 import { CALL_REPORT_PROPS } from '../report/types';
+import {
+  kSwitchBackProxyMaxInterval,
+  kSwitchBackProxyMinInterval,
+} from './constants';
 
 const WebPhone = require('ringcentral-web-phone');
 const LOG_TAG = 'RTCSipUserAgent';
@@ -24,11 +28,14 @@ enum WEBPHONE_REGISTER_EVENT {
   TRANSPORT_ERROR = 'transportError',
   TRANSPORT_DISCONNECTED = 'disconnected',
   TRANSPORT_CONNECTED = 'connected',
+  SWITCH_BACK_PROXY = 'switchBackProxy',
+  PROVISION_UPDATE = 'provisionUpdate',
 }
 
 class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
   private _webphone: any;
   private _connectionTimer: NodeJS.Timeout | null = null;
+  private _switchBackTimer: NodeJS.Timeout | null = null;
 
   constructor() {
     super();
@@ -88,7 +95,7 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
           rtcLogger.debug('RC_WEBPHONE', `[${category}] ${content}`);
       }
     };
-    this._webphone = new WebPhone(provisionData, options);
+    this._webphone = new WebPhone.default(provisionData, options);
     this._initListener();
     this._startConnectionTimer();
   }
@@ -113,20 +120,7 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     if (!this._webphone) {
       return;
     }
-    if (this._webphone.userAgent.transport) {
-      this._webphone.userAgent.transport.removeAllListeners();
-    }
-    if (this._webphone.userAgent.registerContext) {
-      this._webphone.userAgent.registerContext.onTransportDisconnected();
-    }
-    this._webphone.userAgent.transport = new this._webphone.userAgent.configuration.transportConstructor(
-      this._webphone.userAgent.getLogger('sip.transport'),
-      this._webphone.userAgent.configuration.transportOptions,
-    );
-    this._webphone.userAgent.setTransportListeners();
-    this._initTransportListener();
-    this._webphone.userAgent.transport.connect();
-    this._startConnectionTimer();
+    this._webphone.userAgent.transport.reconnect();
   }
 
   public unregister() {
@@ -192,6 +186,33 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
       () => {
         rtcLogger.debug(LOG_TAG, 'Transport connected');
         this._clearConnectionTimer();
+      },
+    );
+    this._webphone.userAgent.transport.on(
+      WEBPHONE_REGISTER_EVENT.SWITCH_BACK_PROXY,
+      () => {
+        if (this._switchBackTimer) {
+          clearTimeout(this._switchBackTimer);
+          this._switchBackTimer = null;
+        }
+        const timeout = randomBetween(
+          kSwitchBackProxyMinInterval,
+          kSwitchBackProxyMaxInterval,
+        );
+        this._switchBackTimer = setTimeout(() => {
+          this.emit(UA_EVENT.SWITCH_BACK_PROXY);
+        },                                 timeout);
+        rtcLogger.debug(
+          LOG_TAG,
+          `Switch back to main proxy signal from web phone. Schedule switch back in ${timeout /
+            1000} sec`,
+        );
+      },
+    );
+    this._webphone.userAgent.transport.on(
+      WEBPHONE_REGISTER_EVENT.PROVISION_UPDATE,
+      () => {
+        rtcLogger.debug(LOG_TAG, 'Provision update signal from web phone');
       },
     );
   }

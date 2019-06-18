@@ -80,10 +80,15 @@ function opusModifier(RTCSessionDescription: any): any {
   return Promise.resolve(RTCSessionDescription);
 }
 
+function randomBetween(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
 export {
   isNotEmptyString,
   opusModifier,
   customizedOpusFmtp,
   opusPTInRtpmap,
   isFireFox,
+  randomBetween,
 };
