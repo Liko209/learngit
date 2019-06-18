@@ -19,8 +19,8 @@ type State = { open: boolean; anchorEl: EventTarget & Element | null };
 
 const menuItems = {
   [MENU_LIST_ITEM_TYPE.QUOTE]: Quote,
-  [MENU_LIST_ITEM_TYPE.DELETE]: Delete,
   [MENU_LIST_ITEM_TYPE.EDIT]: Edit,
+  [MENU_LIST_ITEM_TYPE.DELETE]: Delete,
 };
 
 @observer
