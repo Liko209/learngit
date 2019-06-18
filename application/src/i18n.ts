@@ -72,6 +72,7 @@ const config = {
   ],
   postProcess: ['pseudo'],
   nsSeparator: ':::',
+  load: 'currentOnly' as 'currentOnly',
 };
 
 const ready = () => {
