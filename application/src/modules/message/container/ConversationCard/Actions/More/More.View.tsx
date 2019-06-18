@@ -77,7 +77,9 @@ class More extends React.Component<MoreViewProps, State> {
       >
         <JuiMenuList onClick={this.closePopper}>
           {Object.keys(menuItems)
-            .sort()
+            .sort((a: string, b: string) => {
+              return Number(a) - Number(b);
+            })
             .map((key: string) => {
               const { permission, shouldShowAction } = permissionsMap[key];
               const Component = menuItems[key];
