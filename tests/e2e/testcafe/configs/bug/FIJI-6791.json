@@ -1,7 +1,7 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/Bookmarks.ts"
+      "./fixtures/Bookmarks/Bookmarks.ts"
     ],
     "browsers": [
       "selenium:chrome"
