@@ -61,7 +61,7 @@ class HTMLParser extends PostParser implements IPostParser {
         if (child.isTag) {
           const tagName = child.tag as string;
           const children = this._parseElementNodeInnerHTML(
-            child.inner as string,
+            child.inner || '',
             tagName,
           );
           return React.createElement(
@@ -87,7 +87,7 @@ class HTMLParser extends PostParser implements IPostParser {
 
   private _parsePlainText(text: string) {
     return this.options.innerContentParser
-      ? this.options.innerContentParser(text)
+      ? this.options.innerContentParser(text, this.options.containerTag)
       : text;
   }
 }
