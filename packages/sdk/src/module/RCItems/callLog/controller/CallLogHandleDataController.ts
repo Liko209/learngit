@@ -97,7 +97,7 @@ class CallLogHandleDataController {
           this._hasValidDataInActiveCall(call) &&
           this._isAnEndCall(call) &&
           !pseudos[call.sessionId] &&
-          !this._isSelfCall(call) &&
+          !(await this._isSelfCall(call)) &&
           !(await this._getCallLogBySessionId(call.sessionId))
         ) {
           const pseudoId = call.sessionId + call.direction;
@@ -150,10 +150,15 @@ class CallLogHandleDataController {
   }
 
   private async _isSelfCall(call: ActiveCall): Promise<boolean> {
-    const phoneNumber = call.direction === CALL_DIRECTION.INBOUND ? call.from : call.to;
+    const phoneNumber =
+      call.direction === CALL_DIRECTION.INBOUND ? call.from : call.to;
     let result = false;
-    const id: number = ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE).userConfig.getGlipUserId();
-    const personService = ServiceLoader.getInstance<PersonService>(ServiceConfig.PERSON_SERVICE);
+    const id: number = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig.getGlipUserId();
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
     const currentUser = await personService.getById(id);
     if (currentUser) {
       personService.getPhoneNumbers(currentUser, (data: PhoneNumber) => {
@@ -224,10 +229,11 @@ class CallLogHandleDataController {
   ): CallLog {
     let localInfo = 0;
     if (result === CALL_RESULT.MISSED || result === CALL_RESULT.VOICEMAIL) {
-      localInfo = localInfo | LOCAL_INFO_TYPE.IS_MISSED | LOCAL_INFO_TYPE.IS_INBOUND;
+      localInfo =
+        localInfo | LOCAL_INFO_TYPE.IS_MISSED | LOCAL_INFO_TYPE.IS_INBOUND;
     } else {
       direction === CALL_DIRECTION.INBOUND &&
-      (localInfo = localInfo | LOCAL_INFO_TYPE.IS_INBOUND);
+        (localInfo = localInfo | LOCAL_INFO_TYPE.IS_INBOUND);
     }
     return {
       sessionId,
