@@ -1,134 +1,41 @@
 /*
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
- * @Date: 2019-05-29 11:39:51
+ * @Date: 2019-05-29 10:08:48
  * Copyright © RingCentral. All rights reserved.
  */
+
 import React from 'react';
-import {
-  IPostParser,
-  ParserType,
-  EmojiParserOption,
-  EmojiConvertType,
-} from '../types';
+import { IPostParser, ParserType } from '../types';
 import { ParseContent } from '../ParseContent';
 import { PostParser } from './PostParser';
-import {
-  convertMapUnicode,
-  convertMapAscii,
-  regExpSpecial,
-  mapUnicodeToShort,
-  mapEmojiOne,
-  mapSpecial,
-} from '@/common/emojiHelpers';
-import {
-  MATCH_NOTHING_REGEX,
-  EMOJI_UNICODE_REGEX,
-  EMOJI_ASCII_REGEX,
-  EMOJI_CUSTOM_REGEX,
-  EMOJI_ONE_REGEX,
-  EMOJI_ONE_PATH,
-} from '../utils';
+import { EMOJI_REGEX, b64DecodeUnicode } from '../utils';
 
 class EmojiParser extends PostParser implements IPostParser {
   type = ParserType.EMOJI;
   content: ParseContent;
-  constructor(public options: EmojiParserOption) {
+  constructor(public options: {}) {
     super(options);
   }
 
   getReplaceElement(strValue: string) {
-    const {
-      customEmojiMap,
-      unicodeOnly,
-      convertType = 0,
-      hostName,
-    } = this.options;
-    if (convertType === EmojiConvertType.CUSTOM) {
-      if (customEmojiMap && !unicodeOnly) {
-        const obj = customEmojiMap[strValue.slice(1, -1)];
-        if (obj && typeof obj === 'object' && obj.data) {
-          return (
-            <img className={this._getClassName(strValue)} src={obj.data} />
-          );
-        }
-        return strValue;
-      }
+    const result = this.getRegexp().exec(strValue);
+    if (!result) {
       return strValue;
     }
-    const match = strValue.trim();
-    const key =
-      convertType === EmojiConvertType.ASCII
-        ? match.replace(regExpSpecial, (match: string) => mapSpecial[match])
-        : match;
-    const mapMap = {
-      [EmojiConvertType.UNICODE]: convertMapUnicode,
-      [EmojiConvertType.ASCII]: convertMapAscii,
-      [EmojiConvertType.EMOJI_ONE]: mapEmojiOne,
-    };
-    const mapValue = mapMap[convertType][key];
-    let unicode = mapValue;
-    if (mapValue instanceof Object) {
-      unicode = mapValue.fname;
-    } else {
-      const shortName = mapUnicodeToShort[unicode];
-      if (shortName) {
-        unicode = mapEmojiOne[shortName].fname; // The actual unicode
-      }
+    try {
+      const data = JSON.parse(b64DecodeUnicode(result[1]));
+      return <img {...data} />;
+    } catch (err) {
+      return strValue;
     }
-    const code = this._convertFromCodePoint(unicode);
-    if (unicodeOnly || !hostName) {
-      return code;
-    }
+  }
 
-    return (
-      <img
-        className={this._getClassName(match)}
-        alt={code}
-        title={match}
-        src={this._getSrc(unicode)}
-      />
-    );
+  checkPreCondition(str: string) {
+    return str.length >= 17 && str.includes("<emoji data='"); // 17 = min length of string that can match emoji pattern
   }
 
   getRegexp() {
-    const { customEmojiMap, convertType = 0 } = this.options;
-    const regexpMap = {
-      [EmojiConvertType.UNICODE]: new RegExp(EMOJI_UNICODE_REGEX, 'g'),
-      [EmojiConvertType.ASCII]: new RegExp(EMOJI_ASCII_REGEX, 'g'),
-      [EmojiConvertType.CUSTOM]:
-        customEmojiMap && Object.keys(customEmojiMap).length
-          ? new RegExp(EMOJI_CUSTOM_REGEX(customEmojiMap), 'g')
-          : new RegExp(MATCH_NOTHING_REGEX), // matches nothing
-      [EmojiConvertType.EMOJI_ONE]: new RegExp(EMOJI_ONE_REGEX, 'g'),
-    };
-    return regexpMap[convertType];
-  }
-
-  private _convertFromCodePoint(unicode: string) {
-    if (typeof unicode === 'string') {
-      const params: number[] = unicode
-        .split('-')
-        .map((u: string) => parseInt(`0x${u}`, 16));
-      return String.fromCodePoint(...params);
-    }
-    return unicode;
-  }
-
-  private _getClassName(match: string) {
-    let className = 'emoji';
-    if (this.content.getOriginalStr().trim().length === match.length) {
-      className += ' enlarge-emoji'; // only emoji
-    }
-    return className;
-  }
-
-  private _getSrc(unicode: string) {
-    if (!this.options.hostName) {
-      return '';
-    }
-    return (
-      this.options.hostName + EMOJI_ONE_PATH.replace('{{unicode}}', unicode)
-    );
+    return new RegExp(EMOJI_REGEX);
   }
 }
 

@@ -39,12 +39,10 @@ enum EmojiConvertType {
   EMOJI_ONE,
 }
 
-type EmojiParserOption = ParserOption & {
+type EmojiTransformerOption = ParserOption & {
   customEmojiMap?: CustomEmojiMap;
   unicodeOnly?: boolean;
-  convertType?: EmojiConvertType;
   hostName?: string;
-  keepASCII?: boolean;
 };
 
 type FileNameParserOption = ParserOption & {
@@ -69,16 +67,15 @@ type PhoneNumberParserOption = ParserOption & {};
 
 type URLParserOption = ParserOption & {};
 
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-
 type PostParserOptions = {
   fileName?: boolean | FileNameParserOption;
   keyword?: KeywordHighlightParserOption['keyword'];
   url?: boolean;
   phoneNumber?: boolean;
   atMentions?: AtMentionParserOption;
-  emoji?: Omit<EmojiParserOption, 'convertType'>;
+  emoji?: EmojiTransformerOption;
   html?: boolean | HTMLParserOption;
+  emojiTransformed?: boolean;
 };
 
 interface IPostParser {
@@ -138,7 +135,7 @@ export {
   ParserOption,
   PostParserOptions,
   AtMentionParserOption,
-  EmojiParserOption,
+  EmojiTransformerOption,
   FileNameParserOption,
   HTMLParserOption,
   KeywordHighlightParserOption,
