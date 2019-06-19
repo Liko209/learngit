@@ -120,7 +120,7 @@ class TeamActionHandler {
 
     const title = i18nP('people.team.archiveTeamConfirmTitle');
     const okText = i18nP('people.team.archiveTeamConfirmOk');
-    const cancelText = i18nP('cancel');
+    const cancelText = i18nP('common.dialog.cancel');
 
     const content = i18nP('people.team.archiveTeamConfirmContent', {
       teamName: displayName,
