@@ -10,7 +10,6 @@ import {
   RTC_ACCOUNT_STATE,
   RTCCall,
   RTCSipFlags,
-  RTC_CALL_STATE,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip';
@@ -25,8 +24,13 @@ import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { TelephonyService } from '../service';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
-import { Call } from '../entity';
+import { Call, CALL_STATE } from '../entity';
 import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
+import { ENTITY } from 'sdk/service/eventKey';
+import notificationCenter, {
+  NotificationEntityPayload,
+} from 'sdk/service/notificationCenter';
+import { EVENT_TYPES } from 'sdk/service';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
   private _telephonyAccountDelegate: ITelephonyDelegate;
@@ -42,6 +46,29 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this._rtcAccount = rtcEngine.createAccount(this);
     this._rtcAccount.handleProvisioning();
     this._makeCallController = new MakeCallController();
+    this._subscribeNotifications();
+  }
+
+  private _handleCallStateChanged = (
+    payload: NotificationEntityPayload<Call>,
+  ) => {
+    if (payload.type === EVENT_TYPES.UPDATE) {
+      const call: Call[] = Array.from(payload.body.entities.values());
+      call.forEach((item: Call) => {
+        if (item.call_state === CALL_STATE.DISCONNECTED) {
+          this._processLogoutIfNeeded();
+          delete this._telephonyCallDelegate;
+        }
+      });
+    }
+  }
+
+  private _subscribeNotifications() {
+    notificationCenter.on(ENTITY.CALL, this._handleCallStateChanged);
+  }
+
+  private _unSubscribeNotifications() {
+    notificationCenter.off(ENTITY.CALL, this._handleCallStateChanged);
   }
 
   setAccountDelegate(delegate: ITelephonyDelegate) {
@@ -136,7 +163,6 @@ class TelephonyAccountController implements IRTCAccountDelegate {
         Date.now(),
         this._entityCacheController,
       );
-      this._telephonyCallDelegate.setCallStateCallback(this.callStateChanged);
 
       let call: RTCCall | null;
       if (fromNum) {
@@ -320,7 +346,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       this._entityCacheController,
     );
     this._telephonyCallDelegate.setRtcCall(call);
-    this._telephonyCallDelegate.setCallStateCallback(this.callStateChanged);
+
     call.setCallDelegate(this._telephonyCallDelegate);
     if (this._telephonyAccountDelegate) {
       this._telephonyAccountDelegate.onReceiveIncomingCall(
@@ -341,18 +367,13 @@ class TelephonyAccountController implements IRTCAccountDelegate {
 
   private _processLogoutIfNeeded() {
     if (this._isDisposing && this._rtcAccount.callCount() === 1) {
+      telephonyLogger.info('processing logout request');
       this._rtcAccount.logout();
       this._isDisposing = false;
       if (this._logoutCallback) {
         this._logoutCallback();
       }
-    }
-  }
-
-  callStateChanged = (callId: string, state: RTC_CALL_STATE) => {
-    if (state === RTC_CALL_STATE.DISCONNECTED) {
-      this._processLogoutIfNeeded();
-      delete this._telephonyCallDelegate;
+      this._unSubscribeNotifications();
     }
   }
 
@@ -367,6 +388,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       if (this._logoutCallback) {
         this._logoutCallback();
       }
+      this._unSubscribeNotifications();
     }
   }
 }
