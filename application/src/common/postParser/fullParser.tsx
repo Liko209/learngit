@@ -65,10 +65,7 @@ const parsersConfig = [
   {
     Parser: AtMentionParser,
     shouldParse: (fullText: string, { atMentions, html }: PostParserOptions) =>
-      !html &&
-      atMentions &&
-      Object.keys(atMentions.map || {}).length &&
-      fullText.length >= 48, // min-length for a string that includes at mention
+      !html && atMentions && fullText.length >= 48, // min-length for a string that includes at mention
     getParserOption: ({
       keyword,
       html,
