@@ -15,10 +15,12 @@ const NEXT_RECONNECT_TIME = 500;
 const MAX_RECONNECT_INTERVAL_TIME = 10 * 60 * 1000;
 const MAX_TRY_INDEX: number = 11;
 const ONE_HOUR = 60 * 60 * 1000;
+const INTERVAL = 3000;
 
 const TAG = '[Socket SocketCanConnectController]';
 
 export type CanReconnectAPIType = {
+  interval: number;
   callback: (id: number) => void;
   forceOnline: boolean;
   nthCount: number;
@@ -37,7 +39,7 @@ class SocketCanConnectController {
   async doCanConnectApi(options: CanReconnectAPIType) {
     this._reconnectIntervalTime = NEXT_RECONNECT_TIME;
     this._isDoingCanConnect = true;
-    const time = this._getStartedTime(options.nthCount);
+    const time = this._getStartedTime(options.nthCount, options.interval);
     mainLogger.log(TAG, `start checkCanConnectToServer ${time} later`);
     this._tryToCheckCanConnectAfterTime(
       options.callback,
@@ -204,9 +206,9 @@ class SocketCanConnectController {
     return shouldBeOnline ? 'online' : presence || '';
   }
 
-  private _getStartedTime(nthCount: number) {
+  private _getStartedTime(nthCount: number, interval: number) {
     if (nthCount === 0) {
-      return 0;
+      return interval > INTERVAL ? 0 : INTERVAL - interval;
     }
     const index = nthCount > MAX_TRY_INDEX ? MAX_TRY_INDEX : nthCount;
     const min = Math.pow(2, index) * 1000;
