@@ -8,6 +8,7 @@ import { postParser } from '..';
 import { JuiAtMention } from 'jui/components/AtMention';
 import { JuiTextWithHighlight } from 'jui/components/TextWithHighlight';
 import { PhoneLink } from '@/modules/message/container/ConversationSheet/PhoneLink';
+import { renderToStaticMarkup } from 'react-dom/server';
 
 const hostName = 'https://d2rbro28ib85bu.cloudfront.net';
 const customEmoji = {
@@ -659,6 +660,18 @@ Veniam anim velit amet aliqua proident.`}
           </q>,
           '\nAnim velit nostrud ea ipsum eu deserunt voluptate non culpa sint minim labore.',
         ]);
+      });
+
+      it('should parse markdown table correctly', () => {
+        expect(
+          renderToStaticMarkup(postParser(
+            `| **Account**| dan@close.com |
+| **From** | Dave Varenos |`,
+            { html: true },
+          ) as React.ReactElement),
+        ).toEqual(
+          `<table><tr valign="top"><td width="50%"> <b>Account</b></td><td width="50%"> <a href="mailto:dan@close.com" target="_blank" rel="noreferrer">dan@close.com</a> </td></tr><tr valign="top"><td width="50%"> <b>From</b> </td><td width="50%"> Dave Varenos </td></tr></table>`,
+        );
       });
 
       it('should not encode or decode html entity', () => {

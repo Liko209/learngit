@@ -80,7 +80,16 @@ const HTMLUnescape = (str: string) => {
 };
 
 const getTopLevelChildNodesFromHTML = moize(
-  (html: string) => {
+  (_html: string) => {
+    let html = _html;
+    const reg = /(<td\b[^>]*>(?:(?!<\/td>).)*?)(<\/tr>)/g;
+    // workaround for markdown bug
+    if (html.includes('<td') && html.includes('</tr>') && reg.test(html)) {
+      html = html.replace(
+        new RegExp(reg),
+        (match, g1, g2) => `${g1}</td>${g2}`,
+      );
+    }
     const tagReg = /<(?<tag>[a-zA-Z0-9]*)\b([^>]*)>([\s\S]*?)<\/\k<tag>>/gi;
     const nodes = [];
     let result = tagReg.exec(html);
