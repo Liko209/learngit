@@ -39,7 +39,4 @@ describe('Note item', () => {
   it('computed summary', () => {
     expect(noteViewModel.summary).toBe(mockData.summary);
   });
-  it('should get id', () => {
-    expect(noteViewModel.id).toBe(props.ids[0]);
-  });
 });
