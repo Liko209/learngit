@@ -19,22 +19,38 @@ class TaskController implements ITaskController {
   private _isExecuting: boolean = false;
   private _executeFunc: () => any;
   private _taskFunc: (callback: (successful: boolean) => void) => any;
+  private _outerCallback: (successful: boolean) => void;
 
   constructor(strategy: ITaskStrategy, executeFunc: () => any) {
     this._strategy = strategy;
     this._executeFunc = executeFunc;
   }
 
-  async start() {
-    if (this._isExecuting) {
-      mainLogger.tags(LOG_TAG).info('start() task is in executing');
-      return;
+  async start(outerCallback: (successful: boolean) => void) {
+    this._outerCallback = outerCallback;
+    if (!this._isExecuting) {
+      this._start();
     }
+  }
 
+  isExecuting() {
+    return this._isExecuting;
+  }
+
+  clear() {
+    this._isExecuting = false;
+    this._strategy.reset();
+    jobScheduler.cancelJob(JOB_KEY.INDEX_DATA);
+    delete this._taskCallback;
+    mainLogger.tags(LOG_TAG).info('clear done');
+  }
+
+  private async _start() {
     try {
       this._strategy.reset();
       jobScheduler.cancelJob(JOB_KEY.INDEX_DATA);
       await this._doExecuting();
+      this._outerCallback(true);
     } catch (err) {
       mainLogger.tags(LOG_TAG).info('_execute failed:', err);
       this._setExecuting(false);
@@ -48,6 +64,7 @@ class TaskController implements ITaskController {
         await this._doExecuting();
         callback(true);
       } catch (err) {
+        this._setExecuting(false);
         mainLogger.tags(LOG_TAG).info('_retry failed:', err);
         callback(false);
       }
@@ -85,7 +102,10 @@ class TaskController implements ITaskController {
         mainLogger
           .tags(LOG_TAG)
           .info('_taskCallback can not continue the next task');
+        this._outerCallback(false);
       }
+    } else {
+      this._outerCallback(true);
     }
   }
 

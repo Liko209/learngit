@@ -20,6 +20,18 @@ export default class MyStateModel extends Base<MyState> {
       this.atMentionPostIds = atMentionPostIds;
     }
   }
+
+  toJS() {
+    const descriptors = Object.getOwnPropertyDescriptors(this);
+    const props: any = {};
+    Object.keys(descriptors).forEach((key: string) => {
+      if (this[key] !== undefined) {
+        props[key] = this[key];
+      }
+    });
+    return props;
+  }
+
   static fromJS(data: MyState) {
     return new MyStateModel(data);
   }

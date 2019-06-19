@@ -377,14 +377,14 @@ class TelephonyService {
           phone.phoneNumber === this._telephonyStore.chosenCallerPhoneNumber,
       );
 
-    const { isValid } = await this.isValidNumber(toNumber);
+    const { isValid, parsed } = await this.isValidNumber(toNumber);
     if (!isValid) {
       ToastCallError.toastInvalidNumber();
       return;
     }
     const shouldMakeRcPhoneCall = !(await this._isJupiterDefaultApp());
     if (shouldMakeRcPhoneCall) {
-      return this.makeRCPhoneCall(toNumber);
+      return this.makeRCPhoneCall(parsed as string);
     }
     callback && callback();
 
@@ -402,10 +402,10 @@ class TelephonyService {
     mainLogger.info(
       `${
         TelephonyService.TAG
-      }Make call with fromNumber: ${fromNumber}， and toNumber: ${toNumber}`,
+      }Make call with fromNumber: ${fromNumber}， and toNumber: ${parsed}`,
     );
     const rv = await this._serverTelephonyService.makeCall(
-      toNumber,
+      parsed as string,
       fromNumber,
     );
 
@@ -433,7 +433,7 @@ class TelephonyService {
       }
     }
 
-    this._telephonyStore.phoneNumber = toNumber;
+    this._telephonyStore.phoneNumber = parsed as string;
     return true;
   }
 

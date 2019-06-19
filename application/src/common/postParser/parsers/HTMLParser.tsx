@@ -6,11 +6,7 @@
 import { IPostParser, ParserType, Replacer, HTMLParserOption } from '../types';
 import { ParseContent } from '../ParseContent';
 import { PostParser } from './PostParser';
-import {
-  MATCH_ALL_REGEX,
-  HTMLUnescape,
-  getTopLevelChildNodesFromHTML,
-} from '../utils';
+import { HTMLUnescape, getTopLevelChildNodesFromHTML } from '../utils';
 import React from 'react';
 import { Markdown } from 'glipdown';
 import _ from 'lodash';
@@ -40,18 +36,10 @@ class HTMLParser extends PostParser implements IPostParser {
     return replacers;
   }
 
-  isValidMatch(match: string) {
-    return /<[a-z][\s\S]*>/i.test(match);
-  }
-
   getReplaceElement(strValue: string) {
-    return this.isValidMatch(strValue)
+    return strValue.includes('<') && strValue.includes('>')
       ? this._parseHTML(strValue)
       : this._parsePlainText(HTMLUnescape(strValue || '') || '');
-  }
-
-  getRegexp() {
-    return new RegExp(MATCH_ALL_REGEX);
   }
 
   private _parseHTML(value: string) {
@@ -61,7 +49,7 @@ class HTMLParser extends PostParser implements IPostParser {
         if (child.isTag) {
           const tagName = child.tag as string;
           const children = this._parseElementNodeInnerHTML(
-            child.inner as string,
+            child.inner || '',
             tagName,
           );
           return React.createElement(
@@ -87,7 +75,7 @@ class HTMLParser extends PostParser implements IPostParser {
 
   private _parsePlainText(text: string) {
     return this.options.innerContentParser
-      ? this.options.innerContentParser(text)
+      ? this.options.innerContentParser(text, this.options.containerTag)
       : text;
   }
 }
