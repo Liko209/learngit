@@ -108,6 +108,7 @@ class TelephonyEngineController {
     }
     if (currentCallingPermission) {
       this._preCallingPermission = true;
+      this.createAccount();
       notificationCenter.emitKVChange(
         SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
         true,
@@ -193,6 +194,7 @@ class TelephonyEngineController {
           SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
           false,
         );
+        delete this._accountController;
       });
     }
   }

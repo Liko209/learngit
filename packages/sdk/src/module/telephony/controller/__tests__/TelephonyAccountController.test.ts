@@ -197,7 +197,7 @@ describe('TelephonyAccountController', () => {
     });
   });
 
-  describe('callStateChanged', () => {
+  describe('_processLogoutIfNeeded', () => {
     it('should call rtcAccount to logout when it is disposed and call count = 1', () => {
       const logoutCallback = jest.fn();
       Object.assign(accountController, {
@@ -205,7 +205,7 @@ describe('TelephonyAccountController', () => {
         _isDisposing: jest.fn().mockReturnValue(true),
       });
       rtcAccount.callCount = jest.fn().mockReturnValue(1);
-      accountController.callStateChanged(callId, RTC_CALL_STATE.DISCONNECTED);
+      accountController._processLogoutIfNeeded();
       expect(rtcAccount.logout).toBeCalled();
       expect(logoutCallback).toBeCalled();
     });
@@ -213,7 +213,7 @@ describe('TelephonyAccountController', () => {
       Object.assign(accountController, {
         _isDisposing: jest.fn().mockReturnValue(false),
       });
-      accountController.callStateChanged(callId, RTC_CALL_STATE.DISCONNECTED);
+      accountController._processLogoutIfNeeded();
       expect(rtcAccount.logout).not.toBeCalled();
     });
     it('should not call rtcAccount to logout when it is disposed but call count = 0', () => {
@@ -223,11 +223,11 @@ describe('TelephonyAccountController', () => {
         _isDisposing: jest.fn().mockReturnValue(true),
       });
       rtcAccount.callCount = jest.fn().mockReturnValue(0);
-      accountController.callStateChanged(callId, RTC_CALL_STATE.DISCONNECTED);
+      accountController._processLogoutIfNeeded();
       expect(rtcAccount.logout).not.toBeCalled();
     });
     it('should not call rtcAccount to logout when call state is not disconnected', () => {
-      accountController.callStateChanged(callId, RTC_CALL_STATE.CONNECTED);
+      accountController._processLogoutIfNeeded();
       expect(rtcAccount.logout).not.toBeCalled();
     });
   });
