@@ -170,7 +170,7 @@ describe('CallLogHandleDataController', () => {
 
   describe('handleRCPresenceEvent', () => {
     it('should do nothing when can not get sync token', async () => {
-      controller['_isSelfCall'] = jest.fn().mockReturnValue(false);
+      controller['_isSelfCall'] = jest.fn().mockResolvedValue(false);
       mockConfig.getSyncToken.mockReturnValue(undefined);
       const mockData = {
         activeCalls: [],
@@ -181,7 +181,7 @@ describe('CallLogHandleDataController', () => {
     });
 
     it('should parse and save/notify pseudo data', async () => {
-      controller['_isSelfCall'] = jest.fn().mockReturnValue(false);
+      controller['_isSelfCall'] = jest.fn().mockResolvedValue(false);
       mockConfig.getSyncToken.mockReturnValue('token');
       const mockData = {
         activeCalls: [

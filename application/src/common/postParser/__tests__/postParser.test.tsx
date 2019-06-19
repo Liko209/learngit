@@ -8,6 +8,7 @@ import { postParser } from '..';
 import { JuiAtMention } from 'jui/components/AtMention';
 import { JuiTextWithHighlight } from 'jui/components/TextWithHighlight';
 import { PhoneLink } from '@/modules/message/container/ConversationSheet/PhoneLink';
+import { renderToStaticMarkup } from 'react-dom/server';
 
 const hostName = 'https://d2rbro28ib85bu.cloudfront.net';
 const customEmoji = {
@@ -640,6 +641,39 @@ describe('glipdown text', () => {
         ]);
       });
 
+      it('should parse quote when there is line break character in quote', () => {
+        expect(
+          postParser(
+            `<a class='at_mention_compose' rel='{"id":12332}'>@Steve</a> wrote:
+> Est laborum sit nulla sint deserunt cillum et cillum.
+> Veniam anim velit amet aliqua proident.
+
+Anim velit nostrud ea ipsum eu deserunt voluptate non culpa sint minim labore.`,
+            { html: true, atMentions: { map } },
+          ),
+        ).toEqual([
+          <JuiAtMention id='12332' isCurrent={false} name='@Steve' key={0} />,
+          ' wrote:',
+          <q key={1}>
+            {`Est laborum sit nulla sint deserunt cillum et cillum.
+Veniam anim velit amet aliqua proident.`}
+          </q>,
+          '\nAnim velit nostrud ea ipsum eu deserunt voluptate non culpa sint minim labore.',
+        ]);
+      });
+
+      it('should parse markdown table correctly', () => {
+        expect(
+          renderToStaticMarkup(postParser(
+            `| **Account**| dan@close.com |
+| **From** | Dave Varenos |`,
+            { html: true },
+          ) as React.ReactElement),
+        ).toEqual(
+          `<table><tr valign="top"><td width="50%"> <b>Account</b></td><td width="50%"> <a href="mailto:dan@close.com" target="_blank" rel="noreferrer">dan@close.com</a> </td></tr><tr valign="top"><td width="50%"> <b>From</b> </td><td width="50%"> Dave Varenos </td></tr></table>`,
+        );
+      });
+
       it('should not encode or decode html entity', () => {
         expect(postParser(`aww<.*//`, { html: true })).toEqual(`aww<.*//`);
         expect(postParser(`<a>dsfdsf</a>`, { html: true })).toEqual(
@@ -918,6 +952,26 @@ describe('glipdown text', () => {
               `</a>`,
             ]}
           </pre>,
+        ]);
+      });
+    });
+
+    describe('html and phone', () => {
+      it('should not parse to phone number link when phone number in url', () => {
+        expect(
+          postParser(`www.sina.com/6503990009`, {
+            html: true,
+            phoneNumber: true,
+          }),
+        ).toEqual([
+          <a
+            href='http://www.sina.com/6503990009'
+            target='_blank'
+            rel='noreferrer'
+            key={0}
+          >
+            www.sina.com/6503990009
+          </a>,
         ]);
       });
     });
