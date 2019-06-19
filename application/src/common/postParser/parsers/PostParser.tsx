@@ -46,6 +46,19 @@ abstract class PostParser implements IPostParser {
 
   parseToReplacers() {
     const str = this.content.getOriginalStr();
+    if (
+      this.content
+        .getReplacers()
+        .some(
+          ({ startIndex, length }) => startIndex === 0 && length === str.length,
+        )
+    ) {
+      return [];
+    }
+    const continueParsing = this.checkPreCondition(str);
+    if (!continueParsing) {
+      return [];
+    }
     const regexp = this.getRegexp();
     if (!regexp) {
       return [
@@ -84,6 +97,10 @@ abstract class PostParser implements IPostParser {
     this.content.removeReplacersBy(({ element, ...rg }) =>
       containsRange(range, rg),
     );
+  }
+
+  checkPreCondition(str: string) {
+    return true;
   }
 
   isValidMatch(value: string, execResult?: RegExpExecArray) {

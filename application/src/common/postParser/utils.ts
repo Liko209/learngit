@@ -181,6 +181,7 @@ const MATCH_NOTHING_REGEX = /a^/g;
 const AT_MENTION_REGEX = /<a class='at_mention_compose' rel='{"id":([-?\d]*?)}'>(.*?)<\/a>/gi;
 const AT_MENTION_GROUPED_REGEXP = /(<a class='at_mention_compose' rel='{"id":[-?\d]*?}'>)(.*?)(<\/a>)/gi;
 
+const EMOJI_REGEX = /<emoji data='([\s\S]*?)' \/>/gi;
 const EMOJI_UNICODE_REGEX_RANGE =
   '\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]';
 const EMOJI_UNICODE_REGEX = `${Object.keys(convertMapUnicode).join('|')}`;
@@ -201,29 +202,25 @@ const EMOJI_ONE_PATH = '/emoji/emojione/png/{{unicode}}.png?v=2.2.7';
 // tslint:disable-next-line:max-line-length
 const URL_REGEX = /(([a-zA-Z0-9\!\#\$\%\&\'\*\+\-\/\=\?\%\_\`\{\|\}\~\.]+@)?)(((ftp|https?):\/\/)?[-\w]+\.?([-\w]+\.)*(\d+\.\d+\.\d+|[-A-Za-z]+)(:\d+)?(((\/([A-Za-z0-9-\._~:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=])*)+)\??([A-Za-z0-9-\._~:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\%])*)?)([^A-Za-z]|$)/gi;
 
+const VALID_PHONE_REG = /\+?(\d{1,4} ?)?((\(\d{1,4}\)|\d(( |\-)?\d){0,3})(( |\-)?\d){2,}|(\(\d{2,4}\)|\d(( |\-)?\d){1,3})(( |\-)?\d){1,})(( x| ext.?)\d{1,5}){0,1}/g;
 const isValidPhoneNumber = (value: string) => {
-  const IS_PHONE_NUMBER = /\+?(\d{1,4} ?)?((\(\d{1,4}\)|\d(( |\-)?\d){0,3})(( |\-)?\d){2,}|(\(\d{2,4}\)|\d(( |\-)?\d){1,3})(( |\-)?\d){1,})(( x| ext.?)\d{1,5}){0,1}/g.test(
-    value,
-  );
+  // const IS_PHONE_NUMBER = new RegExp(VALID_PHONE_REG).test(value);
   const NUMBER_WITH_PLUS = 10;
   const MIN_PHONE_NUMBER_LENGTH = 7;
   const MAX_PHONE_NUMBER_LENGTH = 15;
   if (!value) return false;
   const noneSpecialChar = value.replace(/\+|\-|\(|\)|\s+/g, '');
   const phoneNumberLength = noneSpecialChar.length;
-  if (value.indexOf('+') === 0 && IS_PHONE_NUMBER) {
+  if (value.indexOf('+') === 0) {
     return (
       phoneNumberLength >= NUMBER_WITH_PLUS &&
       phoneNumberLength <= MAX_PHONE_NUMBER_LENGTH
     );
   }
-  if (
+  return !(
     phoneNumberLength < MIN_PHONE_NUMBER_LENGTH ||
     phoneNumberLength > MAX_PHONE_NUMBER_LENGTH
-  ) {
-    return false;
-  }
-  return IS_PHONE_NUMBER;
+  );
 };
 
 // first we use encodeURIComponent to get percent-encoded UTF-8,
@@ -266,6 +263,7 @@ export {
   AT_MENTION_GROUPED_REGEXP,
   MATCH_NOTHING_REGEX,
   AT_MENTION_REGEX,
+  EMOJI_REGEX,
   EMOJI_UNICODE_REGEX_RANGE,
   EMOJI_UNICODE_REGEX,
   EMOJI_ASCII_UNIQUE_CHARS,
@@ -273,4 +271,5 @@ export {
   EMOJI_ONE_REGEX,
   EMOJI_CUSTOM_REGEX,
   URL_REGEX,
+  VALID_PHONE_REG,
 };
