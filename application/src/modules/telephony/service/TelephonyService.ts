@@ -9,7 +9,6 @@ import { inject } from 'framework';
 import { SettingService } from 'sdk/module/setting/service/SettingService';
 import {
   TelephonyService as ServerTelephonyService,
-  RTCCallActionSuccessOptions,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'sdk/module/telephony';
@@ -878,10 +877,10 @@ class TelephonyService {
 
     return this._serverTelephonyService
       .park(this._callId)
-      .then((callOptions: RTCCallActionSuccessOptions) => {
-        const message = `${i18next.t('telephony.prompt.ParkOk')}: ${
-          callOptions.parkExtension
-        }`;
+      .then((parkExtension: string) => {
+        const message = `${i18next.t(
+          'telephony.prompt.ParkOk',
+        )}: ${parkExtension}`;
         Notification.flagToast({
           message,
           type: ToastType.SUCCESS,
