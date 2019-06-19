@@ -81,7 +81,7 @@ const HTMLUnescape = (str: string) => {
 
 const getTopLevelChildNodesFromHTML = moize(
   (html: string) => {
-    const tagReg = /<(?<tag>[a-z][A-Z0-9]*)\b([^>]*)>(.*?)<\/\k<tag>>/gi;
+    const tagReg = /<(?<tag>[a-zA-Z0-9]*)\b([^>]*)>([\s\S]*?)<\/\k<tag>>/gi;
     const nodes = [];
     let result = tagReg.exec(html);
     let cursor = 0;
