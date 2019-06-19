@@ -35,4 +35,5 @@ export {
   logManager,
   SessionManager,
   DateFormatter,
+  networkCollector,
 } from 'foundation';

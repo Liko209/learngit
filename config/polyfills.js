@@ -4,6 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 'use strict';
+// jest.mock('sdk/utils/phoneParser');
+// jest.mock('sdk/framework/account/helper', () => {
+//   return {
+//     fetchWhiteList: jest.fn().mockReturnValue({}),
+//   };
+// });
+// jest.mock('foundation/src/network/client/http/Http');
+// jest.mock('foundation/src/network/client/socket/Socket');
+
 if (process.env.NODE_ENV === 'test') {
   // Mobx UT setup
   const mobx = require('mobx');
@@ -59,31 +68,31 @@ if (process.env.NODE_ENV === 'test') {
     value: new FakeStorage(),
   });
 
-  // mock console for jest
-  global.console = {
-    assert: jest.fn(),
-    clear: jest.fn(),
-    context: jest.fn(),
-    count: jest.fn(),
-    countReset: jest.fn(),
-    debug: jest.fn(),
-    error: (message) => {
-      throw (message instanceof Error ? message : new Error(message))
-    },
-    group: jest.fn(),
-    groupCollapsed: jest.fn(),
-    groupEnd: jest.fn(),
-    info: jest.fn(),
-    log: jest.fn(),
-    time: jest.fn(),
-    timeEnd: jest.fn(),
-    timeLog: jest.fn(),
-    timeStamp: jest.fn(),
-    trace: jest.fn(),
-    warn: (message) => {
-      throw message
-    }
-  };
+  // // mock console for jest
+  // global.console = {
+  //   assert: jest.fn(),
+  //   clear: jest.fn(),
+  //   context: jest.fn(),
+  //   count: jest.fn(),
+  //   countReset: jest.fn(),
+  //   debug: jest.fn(),
+  //   error: message => {
+  //     throw message instanceof Error ? message : new Error(message);
+  //   },
+  //   group: jest.fn(),
+  //   groupCollapsed: jest.fn(),
+  //   groupEnd: jest.fn(),
+  //   info: jest.fn(),
+  //   log: jest.fn(),
+  //   time: jest.fn(),
+  //   timeEnd: jest.fn(),
+  //   timeLog: jest.fn(),
+  //   timeStamp: jest.fn(),
+  //   trace: jest.fn(),
+  //   warn: message => {
+  //     throw message;
+  //   },
+  // };
 
   global.fetch = require('jest-fetch-mock');
 }

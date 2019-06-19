@@ -1,0 +1,51 @@
+{
+  "response": {
+    "data": {
+      "client_version": {},
+      "deployment_state": {
+        "level": 3,
+        "number": 15
+      },
+      "version": "{\"all\":{\"scripts\":\"a0154f94c61073c5b93f8ec2d27d42cf-1.0\",\"templates\":\"95e7f5366fec0879763fa66b2d149771-1.0\",\"styles\":\"6486056ccc23c9bc8c691e139e85bcc0-1.0\"},\"data\":{\"scripts\":\"22c9f59c4591627d524c9337be2d6e1a-1.0\"},\"anon\":{\"scripts\":\"7ef1021defd1273b7bc41cb50d089f99-1.0\",\"templates\":\"776dae054962a17a7b21257781a717af-1.0\",\"styles\":\"eda9eaed4fd5d92c47a13ae776b2e408-1.0\"},\"login\":{\"styles\":\"56dae419d270dab386edc78ceb50cd56-1.0\"},\"named\":{\"scripts\":\"36ffb353ee0633d2eded4db21b2532f2-1.0\",\"templates\":\"c08bf338c056a01527d71bfeaa25fec8-1.0\",\"styles\":\"75dbf6c17b914ec521bf3f64db57ec68-1.0\"},\"private\":{\"scripts\":\"4a00ff036d9deaf4760c1569ea207187-1.0\",\"templates\":\"3198658c904cf28a7d8ce18fd3fa7006-1.0\",\"styles\":\"656abd84bb90917f88f716878d6c844d-1.0\"},\"ie\":{\"scripts\":\"6a1369976d0e4f98cd92b1bad4896070-1.0\",\"styles\":\"824000c3df064ad862871d47c5df114e-1.0\"},\"bootloader\":{\"scripts\":\"2e384cb97c9cd3b417e05edb5cbe03b5-1.0\"},\"glip-static\":{\"scripts\":\"ca86fe7a4d911b91eb07fa0571367960-1.0\"},\"mobile-web\":{\"scripts\":\"e7f6c14ea388de7cc4c06798d8ef323b-1.0\",\"styles\":\"559a3a03cfb67c6a37da1396207ec771-1.0\"},\"web-redirection\":{\"scripts\":\"0ef1860040b17c647d76f89a71b6937e-1.0\",\"styles\":\"cccaa9e3d85b89810a3d40e87d13ea61-1.0\"},\"mobile-onboarding\":{\"scripts\":\"a588edee08ed91951591261d271790df-1.0\",\"styles\":\"9235d5bb446ff56c5261c41a7f0a58f5-1.0\"},\"memory-monitor\":{\"scripts\":\"dc5b5215a34c63b4435d4f5bfff358f6-1.0\",\"styles\":\"6138b2b3cee937719c6bb329dd7e0777-1.0\"},\"signin-sdk\":{\"scripts\":\"09ad80cded27bb4193a60226b8562c97-1.0\"}}",
+      "socket_version": "1.4.5",
+      "scoreboard": "glpdevxmn.asialab.glip.net:443"
+    },
+    "status": 200,
+    "statusText": "OK",
+    "headers": {
+      "content-type": "application/json; charset=utf-8"
+    },
+    "retryAfter": 6000
+  },
+  "request": {
+    "id": "5c4e1c87-f975-4394-ff28-fcbec97a82d7",
+    "path": "/api/can-reconnect-v2",
+    "method": "get",
+    "data": {},
+    "headers": {
+      "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6MTU1OTk2MzQxNzQ0NiwidHlwZSI6IndlYiIsInVpZCI6MTg3ODc1MzMxLCJpYXQiOjE1NTk5NjM0MTcsImlzcyI6ImdscGRldnhtbi5hc2lhbGFiLmdsaXAubmV0Iiwic3ViIjoiZ2xpcCJ9.o5mJeKYHChdOFd61_-IP-Evvu-sK9reLxUepta2Gkn6NuCQpUzXxBMJ1j0GEDfcxzTnv4NVj5A7WFSDByxkwBw"
+    },
+    "params": {
+      "presence": "online",
+      "uidtk": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6MTU1OTk2MzQxNzQ0NiwidHlwZSI6IndlYiIsInVpZCI6MTg3ODc1MzMxLCJpYXQiOjE1NTk5NjM0MTcsImlzcyI6ImdscGRldnhtbi5hc2lhbGFiLmdsaXAubmV0Iiwic3ViIjoiZ2xpcCJ9.o5mJeKYHChdOFd61_-IP-Evvu-sK9reLxUepta2Gkn6NuCQpUzXxBMJ1j0GEDfcxzTnv4NVj5A7WFSDByxkwBw",
+      "user_id": 187875331,
+      "newer_than": 1559963422653
+    },
+    "handlerType": {
+      "name": "GLIP",
+      "defaultVia": 2,
+      "survivalModeSupportable": false,
+      "tokenExpirable": false,
+      "tokenRefreshable": false
+    },
+    "priority": 0,
+    "via": 0,
+    "retryCount": 0,
+    "host": "https://glpdevxmn.asialab.glip.net",
+    "timeout": 60000,
+    "requestConfig": {},
+    "authFree": false,
+    "HAPriority": 0,
+    "startTime": 1559963423478
+  }
+}

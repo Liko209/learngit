@@ -1,0 +1,129 @@
+{
+  "response": {
+    "data": {
+      "created_at": 1559902726605,
+      "creator_id": 187875331,
+      "version": 4331535582887936,
+      "model_size": 0,
+      "is_new": false,
+      "members": [
+        187875331
+      ],
+      "is_team": true,
+      "is_public": false,
+      "privacy": "private",
+      "description": "",
+      "set_abbreviation": "tttttt",
+      "permissions": {
+        "admin": {
+          "uids": [
+            187875331
+          ],
+          "level": 63
+        },
+        "user": {
+          "uids": [],
+          "level": 11
+        }
+      },
+      "function_id": "team",
+      "company_id": 401409,
+      "email_friendly_abbreviation": "tttttt",
+      "guest_user_company_ids": [],
+      "most_recent_content_modified_at": 1559963455167,
+      "modified_at": 1559963455167,
+      "deactivated": false,
+      "most_recent_post_id": 2723848196,
+      "most_recent_post_created_at": 1559963449975,
+      "team_mention_cursor": 0,
+      "admin_mention_cursor": 0,
+      "last_author_id": 187875331,
+      "post_cursor": 5,
+      "pinned_post_ids": [
+        2723848196,
+        2723840004,
+        2723495940,
+        2723487748
+      ],
+      "model_id": "43638790",
+      "id": 43638790
+    },
+    "status": 200,
+    "statusText": "",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Frame-Options": "DENY",
+      "X-Request-Id": "user_id:187875331;id:7ca12a14-6434-499b-abeb-8ab644e84fba"
+    },
+    "retryAfter": 6000,
+    "request": {
+      "uri": "/api/team/43638790",
+      "route": {
+        "method": "handler",
+        "function": "api_handler"
+      },
+      "route_uri": "/api/:function_id/:model_id/:additional_info/:additional_info2",
+      "parameters": {
+        "_id": 43638790,
+        "pinned_post_ids": [
+          2723848196,
+          2723840004,
+          2723495940,
+          2723487748
+        ],
+        "modified_at": 1559963454932,
+        "request_id": "23",
+        "function_id": "team",
+        "model_id": "43638790"
+      },
+      "status_code": 200,
+      "startTime": 1559963454997
+    }
+  },
+  "request": {
+    "id": "23",
+    "path": "/api/team/43638790",
+    "method": "put",
+    "data": {
+      "_id": 43638790,
+      "pinned_post_ids": [
+        2723848196,
+        2723840004,
+        2723495940,
+        2723487748
+      ],
+      "modified_at": 1559963454932
+    },
+    "headers": {
+      "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6MTU1OTk2MzQxNzQ0NiwidHlwZSI6IndlYiIsInVpZCI6MTg3ODc1MzMxLCJpYXQiOjE1NTk5NjM0MTcsImlzcyI6ImdscGRldnhtbi5hc2lhbGFiLmdsaXAubmV0Iiwic3ViIjoiZ2xpcCJ9.o5mJeKYHChdOFd61_-IP-Evvu-sK9reLxUepta2Gkn6NuCQpUzXxBMJ1j0GEDfcxzTnv4NVj5A7WFSDByxkwBw"
+    },
+    "handlerType": {
+      "name": "GLIP",
+      "defaultVia": 2,
+      "survivalModeSupportable": false,
+      "tokenExpirable": false,
+      "tokenRefreshable": false
+    },
+    "priority": 2,
+    "via": 2,
+    "retryCount": 0,
+    "host": "https://glpdevxmn.asialab.glip.net",
+    "timeout": 60000,
+    "requestConfig": {},
+    "authFree": false,
+    "HAPriority": 0,
+    "startTime": 1559963454997,
+    "parameters": {
+      "_id": 43638790,
+      "pinned_post_ids": [
+        2723848196,
+        2723840004,
+        2723495940,
+        2723487748
+      ],
+      "modified_at": 1559963454932,
+      "request_id": "23"
+    },
+    "uri": "/api/team/43638790"
+  }
+}

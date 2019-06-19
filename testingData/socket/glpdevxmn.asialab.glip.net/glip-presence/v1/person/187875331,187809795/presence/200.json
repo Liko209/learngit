@@ -1,0 +1,66 @@
+{
+  "response": {
+    "data": [
+      {
+        "personId": 187875331,
+        "calculatedStatus": "Available"
+      },
+      {
+        "personId": 187809795,
+        "calculatedStatus": "Unavailable"
+      }
+    ],
+    "status": 200,
+    "statusText": "",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Frame-Options": "DENY",
+      "X-Request-Id": "user_id:187875331;id:e4115510-b6bd-474d-9502-e5d501e31203"
+    },
+    "retryAfter": 6000,
+    "request": {
+      "uri": "/glip-presence/v1/person/187875331,187809795/presence",
+      "route": {
+        "method": "handler",
+        "function": "get_unified_person_presence_handler"
+      },
+      "route_uri": "/glip-presence/v1/person/:person_ids/presence",
+      "parameters": {
+        "request_id": "2",
+        "person_ids": "187875331,187809795"
+      },
+      "status_code": 200,
+      "startTime": 1559963434888
+    }
+  },
+  "request": {
+    "id": "2",
+    "path": "/glip-presence/v1/person/187875331,187809795/presence",
+    "method": "get",
+    "data": {},
+    "headers": {
+      "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6MTU1OTk2MzQxNzQ0NiwidHlwZSI6IndlYiIsInVpZCI6MTg3ODc1MzMxLCJpYXQiOjE1NTk5NjM0MTcsImlzcyI6ImdscGRldnhtbi5hc2lhbGFiLmdsaXAubmV0Iiwic3ViIjoiZ2xpcCJ9.o5mJeKYHChdOFd61_-IP-Evvu-sK9reLxUepta2Gkn6NuCQpUzXxBMJ1j0GEDfcxzTnv4NVj5A7WFSDByxkwBw",
+      "X-RC-Access-Token-Data": "WE1OMDJQMDFQQVMwMHxBQUNHUDdDWm5HX01JQ3ZKTnViLWVJQWFpcG9JUmtqMUt0b19IcGJSVXVmc2FGbUxlQU9NUk5ySUhqZWdUYkJ4eHZNZHhMbUxtNlJaLW5qODloMDdRUmZnX1BTRVlJTjUyNkp5RTFnMlpoOUdjWV91RlY4U2s5T09MR1oxTk5hR2p6N1E2YmxFZFZSTUdOZHVXdDlrQUdDUVF1R0p4QnEtS3BISTIyRjVibjRMRlVUQ2VzOWFhcHZIYmd0ZjhJVFZ5OWdISE1Cdm14SEQwTHBFUGN6MDMwcTh6VGVsMUowZ3cwTXxURXctTnd8VHZGTUdydEVwQkxHRnhsRHlMb0R0UXxBQQ"
+    },
+    "handlerType": {
+      "name": "GLIP",
+      "defaultVia": 2,
+      "survivalModeSupportable": false,
+      "tokenExpirable": false,
+      "tokenRefreshable": false
+    },
+    "priority": 2,
+    "via": 1,
+    "retryCount": 3,
+    "host": "https://glpdevxmn.asialab.glip.net:8443",
+    "timeout": 60000,
+    "requestConfig": {},
+    "authFree": false,
+    "HAPriority": 0,
+    "startTime": 1559963434888,
+    "parameters": {
+      "request_id": "2"
+    },
+    "uri": "/glip-presence/v1/person/187875331,187809795/presence"
+  }
+}

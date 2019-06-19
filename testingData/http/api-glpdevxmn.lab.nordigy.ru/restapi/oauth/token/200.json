@@ -1,0 +1,188 @@
+{
+  "response": {
+    "data": {
+      "access_token": "WE1OMDJQMDFQQVMwMHxBQUNHUDdDWm5HX01JQ3ZKTnViLWVJQWFpcG9JUmtqMUt0b19IcGJSVXVmc2FGbUxlQU9NUk5ySUhqZWdUYkJ4eHZNZHhMbUxtNlJaLW5qODloMDdRUmZnX1BTRVlJTjUyNkp5RTFnMlpoOUdjWV91RlY4U2s5T09MR1oxTk5hR2p6N1E2YmxFZFZSTUdOZHVXdDlrQUdDUVF1R0p4QnEtS3BISTIyRjVibjRMRlVUQ2VzOWFhcHZIYmd0ZjhJVFZ5OWdISE1Cdm14SEQwTHBFUGN6MDMwcTh6VGVsMUowZ3cwTXxURXctTnd8VHZGTUdydEVwQkxHRnhsRHlMb0R0UXxBQQ",
+      "token_type": "bearer",
+      "refresh_token": "WE1OMDJQMDFQQVMwMHxBQUNHUDdDWm5HX01JQ3ZKTnViLWVJQWFpcG9JUmtqMUt0b19IcGJSVXVmc2FGbUxlQU9NUk5ySUhqZWdUYkJ4eHZNZHhMbUxtNlJaLW5qODloMDdRUmZnWmVub1R0SG1PNmV2RS1Vb2gtX2pwZmk1SG5rdEdmRWhMR1oxTk5hR2p6N1E2YmxFZFZSTUdOZHVXdDlrQUdDUVF1R0p4QnEtS3BISTIyRjVibjRMRlVUQ2VzOWFhcHZIYmd0ZjhJVFZ5OWdISE1Cdm14SEQwSUxCRXVlNjZMcWo1WnRvTmhLXzZQQXxURXctTnd8X3VSSVg5VE43YW91LWtPUVZ6eTRFd3xBQQ",
+      "scope": "EditAccounts Faxes GlipInternal EditMeetingsPresence EditCallLog Meetings VoipCalling ReadCallRecording ReadClientInfo Interoperability Contacts EditExtensions TelephonySessions RingOut SMS InternalMessages EditMessages EditPresence",
+      "owner_id": "400162901008",
+      "endpoint_id": "G7RR3ldoSgCPMioVVjVl-A",
+      "timestamp": 1559963397700
+    },
+    "status": 200,
+    "statusText": "OK",
+    "headers": {
+      "date": "Sat, 08 Jun 2019 03:09:57 GMT",
+      "x-rate-limit-limit": "50",
+      "x-rate-limit-remaining": "49",
+      "content-length": "1194",
+      "pragma": "no-cache",
+      "rcrequestid": "e541d468-899a-11e9-aa56-005056beb634",
+      "x-rate-limit-group": "auth",
+      "cache-control": "no-store",
+      "routingkey": "XMN02P01",
+      "content-type": "application/json;charset=utf-8",
+      "x-rate-limit-window": "60"
+    },
+    "retryAfter": 6000
+  },
+  "request": {
+    "id": "631929b2-ea21-4989-96f8-db982084e1af",
+    "path": "/restapi/oauth/token",
+    "method": "post",
+    "data": "code=WE1OMDJQMDFQQVMwMHxBQUNHUDdDWm5HX01JQ3ZKTnViLWVJQWFpcG9JUmtqMUt0b19IcGJSVXVmc2FGbUxlQU9NUk5ySUhqZWdUYkJ4eHZNZHhMbUxtNlJaLW5qODloMDdRUmZnX1BTRVlJTjUyNkpLa2cxcTl4ZXVfOXJUdjB2TUt2TW1GNE5zNHoteE1nb0VESVFiNG5XaTh6ZktVNDBsUkVkQzZIaFgybkNrTklUYjFaV1FfeXVjbzhpWl8wZHJncW51fFRFdy1Od3xyQWlSNExQWldNOXZldU96bGhFNGVnfEFB&redirect_uri=http%3A%2F%2Flocalhost%3A3000&grant_type=authorization_code&client_id=YCWFuqW8T7-GtSTb6KBS6g",
+    "headers": {},
+    "params": {},
+    "handlerType": {
+      "name": "RINGCENTRAL",
+      "defaultVia": 0,
+      "survivalModeSupportable": true,
+      "tokenExpirable": true,
+      "tokenRefreshable": true,
+      "platformHandleDelegate": {
+        "_isStarted": false,
+        "_accountManager": {
+          "_events": {},
+          "_newListener": false,
+          "_removeListener": false,
+          "verboseMemoryLeak": false,
+          "_maxListeners": 10,
+          "_container": {
+            "_containerConfig": {
+              "singleton": true
+            },
+            "_registrationMap": {}
+          },
+          "_isLogin": true,
+          "_accountMap": {},
+          "_accounts": [
+            {
+              "_events": {},
+              "_newListener": false,
+              "_removeListener": false,
+              "verboseMemoryLeak": false,
+              "_maxListeners": 10,
+              "_supportedServices": [
+                "RCInfoService",
+                "VoicemailService",
+                "CallLogService"
+              ],
+              "event": "SUPPORTED_SERVICE_CHANGE"
+            },
+            {
+              "_events": {},
+              "_newListener": false,
+              "_removeListener": false,
+              "verboseMemoryLeak": false,
+              "_maxListeners": 10,
+              "_supportedServices": [
+                "PostService",
+                "GroupService",
+                "CompanyService",
+                "ItemService",
+                "PersonService",
+                "PresenceService",
+                "ProfileService",
+                "StateService",
+                "TelephonyService",
+                "RCInfoService",
+                "SettingService",
+                "SearchService",
+                "BadgeService",
+                "CallLogService",
+                "VoicemailService"
+              ],
+              "event": "SUPPORTED_SERVICE_CHANGE"
+            }
+          ],
+          "event": "ACCOUNT_MANAGER.EVENT_SUPPORTED_SERVICE_CHANGE"
+        },
+        "_authController": {
+          "_accountManager": {
+            "_events": {},
+            "_newListener": false,
+            "_removeListener": false,
+            "verboseMemoryLeak": false,
+            "_maxListeners": 10,
+            "_container": {
+              "_containerConfig": {
+                "singleton": true
+              },
+              "_registrationMap": {}
+            },
+            "_isLogin": true,
+            "_accountMap": {},
+            "_accounts": [
+              {
+                "_events": {},
+                "_newListener": false,
+                "_removeListener": false,
+                "verboseMemoryLeak": false,
+                "_maxListeners": 10,
+                "_supportedServices": [
+                  "RCInfoService",
+                  "VoicemailService",
+                  "CallLogService"
+                ],
+                "event": "SUPPORTED_SERVICE_CHANGE"
+              },
+              {
+                "_events": {},
+                "_newListener": false,
+                "_removeListener": false,
+                "verboseMemoryLeak": false,
+                "_maxListeners": 10,
+                "_supportedServices": [
+                  "PostService",
+                  "GroupService",
+                  "CompanyService",
+                  "ItemService",
+                  "PersonService",
+                  "PresenceService",
+                  "ProfileService",
+                  "StateService",
+                  "TelephonyService",
+                  "RCInfoService",
+                  "SettingService",
+                  "SearchService",
+                  "BadgeService",
+                  "CallLogService",
+                  "VoicemailService"
+                ],
+                "event": "SUPPORTED_SERVICE_CHANGE"
+              }
+            ],
+            "event": "ACCOUNT_MANAGER.EVENT_SUPPORTED_SERVICE_CHANGE"
+          }
+        },
+        "_userConfig": {
+          "_userId": "400162901008",
+          "_moduleName": "account",
+          "_configService": {
+            "_isStarted": false,
+            "_ns": "400162901008"
+          },
+          "_configCache": {}
+        },
+        "_authUserConfig": {
+          "_userId": "400162901008",
+          "_moduleName": "auth",
+          "_configService": {
+            "_isStarted": false,
+            "_ns": "400162901008"
+          },
+          "_configCache": {}
+        }
+      }
+    },
+    "priority": 2,
+    "via": 0,
+    "retryCount": 0,
+    "host": "https://api-glpdevxmn.lab.nordigy.ru",
+    "timeout": 60000,
+    "requestConfig": {},
+    "authFree": true,
+    "HAPriority": 0,
+    "startTime": 1559963397431
+  }
+}
