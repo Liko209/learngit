@@ -37,7 +37,8 @@ class NoteViewModel extends StoreViewModel<NoteProps> implements NoteViewProps {
 
   @computed
   get id() {
-    return this.props.ids[0];
+    if (!this._items && !this._items[0]) return 0;
+    return this._items[0].id;
   }
 }
 
