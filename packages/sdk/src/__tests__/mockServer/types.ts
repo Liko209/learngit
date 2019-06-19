@@ -3,7 +3,6 @@ import {
   INetworkRequestExecutorListener,
   IResponse,
 } from 'foundation/src/network/network';
-import { ExtendedBaseModel } from 'sdk/module/models/ExtendedBaseModel';
 
 export { IRequest, IResponse, INetworkRequestExecutorListener };
 export type RouterHandler = (
@@ -15,30 +14,6 @@ export interface IRouter {
   use(method: string, path: string, handler: RouterHandler): this;
 }
 
-// request,
-// data: {},
-// status: 404,
-// statusText: 'Mock data not found',
-// headers: {},
-
-// export type Request = {
-//   host: string;
-//   path: string;
-//   headers?: {};
-// };
-// export type Response = {
-//   status: number;
-//   request: any;
-//   data: any;
-//   statusText: string;
-//   headers: object;
-// };
-
-// export type ReplyCallback = {
-//   onSuccess: (response: IResponse) => void;
-//   onFailure: (response: IResponse) => void;
-// };
-
 export type PathMatcher = (routePath: string, path: string) => boolean;
 
 export interface IMockServer {
@@ -48,10 +23,7 @@ export interface IMockServer {
   // getRouter: () => IRouter;
 }
 
-export interface IStore<
-  Id extends number | string,
-  T extends ExtendedBaseModel<Id>
-> {
+export interface IStore<T extends object, Id extends number | string = number> {
   // items: T[];
   create(item: Partial<T>): T | undefined;
   delete(id: Id): void;

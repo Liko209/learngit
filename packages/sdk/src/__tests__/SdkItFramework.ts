@@ -3,29 +3,14 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { notificationCenter } from 'sdk/service';
 import { MockGlipServer } from './mockServer/glip/MockGlipServer';
-import { PostStore } from './mockServer/glip/post';
-import { ItemStore } from './mockServer/glip/item';
 import { InstanceManager } from './mockServer/InstanceManager';
 import { CommonFileServer } from './mockServer/CommonFileServer';
 import { spyOnTarget } from './utils';
-
-// jest.mock('sdk/utils/phoneParser');
-// jest.mock('sdk/framework/account/helper', () => {
-//   return {
-//     fetchWhiteList: jest.fn().mockReturnValue({}),
-//   };
-// });
-// jest.mock('foundation/src/network/client/http/Http');
-// jest.mock('foundation/src/network/client/socket/Socket');
 
 type ItContext = {
   server: {
     glip: MockGlipServer;
     rc: {};
-  };
-  models: {
-    post: PostStore;
-    item: ItemStore;
   };
 };
 
@@ -74,27 +59,24 @@ export function itForSdk(
 
   const fileServer = InstanceManager.get(CommonFileServer);
   const mockGlipServer = InstanceManager.get(MockGlipServer);
+  // provide for it case to mock data.
   const itCtx: ItContext = {
     server: {
-      // create mock server here
+      // inject mock server here
       glip: mockGlipServer,
       rc: {},
-    },
-    models: {
-      post: mockGlipServer.postStore,
-      item: mockGlipServer.itemStore,
     },
   };
 
   beforeAll(async () => {
     const startTime = Date.now();
     console.log('framework beforeAll');
-    clearMocks();
     await setup();
     console.log('framework beforeAll cost:', Date.now() - startTime);
   });
   afterAll(async () => {
     console.log('framework afterAll');
+    clearMocks();
     const startTime = Date.now();
     await ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,

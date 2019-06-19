@@ -74,8 +74,8 @@ interface INetworkRequestExecutorListener {
   onSuccess: (response: IResponse) => void;
 }
 
-interface IResponse {
-  readonly data: any;
+interface IResponse<T = any> {
+  readonly data: T;
   readonly status: RESPONSE_STATUS_CODE;
   readonly statusText: string;
   readonly headers: object;
@@ -90,11 +90,11 @@ type Header = {
 
 type RetryStrategy = (doRetry: () => void, retryCounter: number) => void;
 
-interface IRequest {
+interface IRequest<T = any> {
   readonly id: string;
   path: string;
   readonly method: NETWORK_METHOD;
-  data: object | string;
+  data: T;
   headers: Header;
   params: object;
   handlerType: IHandleType;

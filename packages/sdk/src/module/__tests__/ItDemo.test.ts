@@ -4,6 +4,8 @@ import { SearchService } from 'sdk/module/search';
 import { itForSdk } from 'sdk/__tests__/SdkItFramework';
 import { PersonService } from 'sdk/module/person';
 import { PostService } from 'sdk/module/post';
+import { createResponse } from 'sdk/__tests__/mockServer/utils';
+import * as GlipData from 'sdk/__tests__/mockServer/glip/data';
 jest.mock('sdk/utils/phoneParser');
 jest.mock('sdk/framework/account/helper', () => {
   return {
@@ -13,11 +15,18 @@ jest.mock('sdk/framework/account/helper', () => {
 jest.mock('foundation/src/network/client/http/Http');
 jest.mock('foundation/src/network/client/socket/Socket');
 
-itForSdk('Service Integration test', ({ server, models }) => {
+itForSdk('Service Integration test', ({ server }) => {
   let groupService: GroupService;
   let personService: PersonService;
   let searchService: SearchService;
   let postService: PostService;
+
+  const { groupDao } = server.glip;
+
+  // todo not work now.
+  // should be able to insert initial data here
+  groupDao.create(GlipData.seeds.group('Test Group with thomas', 23));
+
   beforeAll(() => {
     groupService = ServiceLoader.getInstance(ServiceConfig.GROUP_SERVICE);
     personService = ServiceLoader.getInstance(ServiceConfig.PERSON_SERVICE);
@@ -26,19 +35,20 @@ itForSdk('Service Integration test', ({ server, models }) => {
   });
   describe('GroupService', () => {
     it('search group', async () => {
-      const searchResult = await groupService.doFuzzySearchALlGroups('u');
+      // const searchResult = await groupService.doFuzzySearchALlGroups(
+      //   'Test Group with thomas',
+      // );
+      const searchResult = await groupService.doFuzzySearchALlGroups('test');
 
-      expect(searchResult.terms).toEqual(['u']);
-      console.log('TCL: result', JSON.stringify(searchResult, null, 2));
+      expect(searchResult.terms).toEqual(['test']);
       expect(searchResult.sortableModels.length).toEqual(1);
     });
   });
   describe('SearchService', () => {
     it('search person', async () => {
       const searchResult = await searchService.doFuzzySearchPersons({
-        searchKey: 'Thomas',
+        searchKey: 'Mia',
       });
-      console.log('TCL: result', JSON.stringify(searchResult, null, 2));
       expect(searchResult.sortableModels.length).toEqual(1);
     });
   });
@@ -54,12 +64,14 @@ itForSdk('Service Integration test', ({ server, models }) => {
       expect(result.posts.length).toEqual(1);
       expect(result.posts[0].text).toEqual('xx');
     });
-    it('getPosts', async () => {
+    it('[getPosts]should mock api work', async () => {
+      // should mock api work
       jest
-        .spyOn(models.post, 'getPostsByGroupId')
-        .mockImplementationOnce((id: number) => {
-          console.log('TCL: getPostsByGroupId', id);
-          return MOCK_POSTS;
+        .spyOn(server.glip.api['/api/posts'], 'get')
+        .mockImplementationOnce((request: any) => {
+          return createResponse({
+            data: { posts: MOCK_POSTS, items: [] },
+          });
         });
       const result = await postService.getPostsByGroupId({ groupId: 43114502 });
       expect(result.posts).toEqual(MOCK_POSTS);

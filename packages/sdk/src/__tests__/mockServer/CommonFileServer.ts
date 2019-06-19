@@ -23,11 +23,11 @@ export class CommonFileServer implements IMockServer {
   handle = (request: IRequest, cb: INetworkRequestExecutorListener) => {
     const mockJsonPath = this.getMockJsonPath(request.host, request.path);
     if (fs.existsSync(mockJsonPath)) {
-      console.log(
-        `-- CommonFileServer -- request: ${request.host}${
-          request.path
-        }\nmatch: ${mockJsonPath}`,
-      );
+      // console.log(
+      //   `-- CommonFileServer -- request: ${request.host}${
+      //     request.path
+      //   }\nmatch: ${mockJsonPath}`,
+      // );
       const result = JSON.parse(
         fs.readFileSync(`${mockJsonPath}`, {
           encoding: 'utf8',

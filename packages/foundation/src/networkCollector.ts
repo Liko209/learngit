@@ -8,7 +8,14 @@ class NetworkCollector {
     response: Partial<IResponse>;
   }[] = [];
 
-  add = (request: Partial<IRequest>, response: Partial<IResponse>): void => {
+  add = (request: Partial<IRequest>, _response: Partial<IResponse>): void => {
+    let response = _response;
+    if (_.isObject(response.data)) {
+      response = {
+        ...response,
+        data: { ...response.data },
+      };
+    }
     if (response instanceof SocketResponse) {
       this.collection.push({
         response,
