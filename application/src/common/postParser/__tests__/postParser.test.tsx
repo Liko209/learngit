@@ -921,5 +921,25 @@ describe('glipdown text', () => {
         ]);
       });
     });
+
+    describe('html and phone', () => {
+      it('should not parse to phone number link when phone number in url', () => {
+        expect(
+          postParser(`www.sina.com/6503990009`, {
+            html: true,
+            phoneNumber: true,
+          }),
+        ).toEqual([
+          <a
+            href='http://www.sina.com/6503990009'
+            target='_blank'
+            rel='noreferrer'
+            key={0}
+          >
+            www.sina.com/6503990009
+          </a>,
+        ]);
+      });
+    });
   });
 });

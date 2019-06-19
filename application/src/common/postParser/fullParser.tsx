@@ -40,12 +40,20 @@ const parsersConfig = [
     shouldParse: (fullText: string, options: PostParserOptions) => options.html,
     getParserOption: (options: PostParserOptions): HTMLParserOption => {
       const { html } = options;
-      const innerOptions = _.clone(options);
-      innerOptions.html = false;
 
       const opts: HTMLParserOption = html instanceof Object ? html : {};
-      opts.innerContentParser = (text: string) =>
-        postParser(text, innerOptions);
+      opts.innerContentParser = (text: string, containerTag?: string) => {
+        const innerOptions = _.clone(options);
+        // No need to parse html since the inner content is surely plain text (no tags)
+        innerOptions.html = false;
+        // No need to parse PhoneLink/URL/AtMention if content is already in a tag
+        const isInLink = containerTag && containerTag.toLowerCase() === 'a';
+        innerOptions.phoneNumber = options.phoneNumber && !isInLink;
+        innerOptions.url = options.url && !isInLink;
+        innerOptions.atMentions =
+          options.atMentions && isInLink ? undefined : options.atMentions;
+        return postParser(text, innerOptions);
+      };
       opts.withGlipdown = !(
         typeof html === 'object' && html.withGlipdown === false
       ); // default to true unless specified explicitly

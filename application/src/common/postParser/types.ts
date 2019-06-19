@@ -11,7 +11,7 @@ import { CustomEmojiMap } from '../emojiHelpers';
 type ChildrenType = React.ReactChild | null | (React.ReactChild | null)[];
 
 type ParserOption = {
-  innerContentParser?: FullParser;
+  innerContentParser?: (fullText: string) => ChildrenType;
 };
 
 type AtMentionsMapType = {
@@ -55,6 +55,10 @@ type FileNameParserOption = ParserOption & {
 type HTMLParserOption = ParserOption & {
   withGlipdown?: boolean;
   containerTag?: string;
+  innerContentParser?: (
+    fullText: string,
+    containerTag?: string,
+  ) => ChildrenType;
 };
 
 type KeywordHighlightParserOption = ParserOption & {

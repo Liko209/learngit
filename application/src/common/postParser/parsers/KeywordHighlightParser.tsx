@@ -38,10 +38,7 @@ class KeywordHighlightParser extends PostParser implements IPostParser {
       .replace(/[^a-zA-Z0-9]+/g, ' ')
       .split(/\s/)
       .filter(str => str.trim());
-    return new RegExp(
-      terms.join('|').replace(/([.?*+^$[\]\\(){}-])/g, '\\$1'),
-      'gi',
-    );
+    return new RegExp(terms.join('|'), 'gi');
   }
 }
 
