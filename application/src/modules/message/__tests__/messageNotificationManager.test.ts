@@ -208,7 +208,7 @@ describe('messageNotificationManager', () => {
     });
   });
 
-  describe.only('handlePostContent', () => {
+  describe('handlePostContent', () => {
     it('should return only user name for at mention', () => {
       expect(
         notificationManager.handlePostContent(
