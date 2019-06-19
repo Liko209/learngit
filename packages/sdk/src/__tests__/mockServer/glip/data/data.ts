@@ -10,7 +10,7 @@ import {
   GlipPost,
   GlipClientConfig,
   InitialData,
-} from './types';
+} from '../types';
 import faker from 'faker';
 
 // type DataFactory<T> = {

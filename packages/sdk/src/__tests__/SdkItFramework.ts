@@ -74,6 +74,7 @@ export function itForSdk(
     await setup();
     console.log('framework beforeAll cost:', Date.now() - startTime);
   });
+
   afterAll(async () => {
     console.log('framework afterAll');
     clearMocks();

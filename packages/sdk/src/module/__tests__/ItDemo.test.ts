@@ -5,7 +5,7 @@ import { itForSdk } from 'sdk/__tests__/SdkItFramework';
 import { PersonService } from 'sdk/module/person';
 import { PostService } from 'sdk/module/post';
 import { createResponse } from 'sdk/__tests__/mockServer/utils';
-import * as GlipData from 'sdk/__tests__/mockServer/glip/data';
+import * as GlipData from 'sdk/__tests__/mockServer/glip/data/data';
 jest.mock('sdk/utils/phoneParser');
 jest.mock('sdk/framework/account/helper', () => {
   return {

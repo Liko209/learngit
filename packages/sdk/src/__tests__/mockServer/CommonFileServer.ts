@@ -10,12 +10,7 @@ import path from 'path';
 import fs from 'fs';
 
 export class CommonFileServer implements IMockServer {
-  private _router: Router;
   constructor() {
-    this._router = new Router((routePath, path) => {
-      return true;
-    });
-
     // this._router.use('get', '*', this.handler);
     // this._router.use('post', '*', this.handler);
   }
@@ -62,6 +57,4 @@ export class CommonFileServer implements IMockServer {
     // console.log('TCL: Router -> getMockJsonPath -> mockDataPath', mockDataPath);
     return mockDataPath;
   }
-
-  getRouter = () => this._router;
 }

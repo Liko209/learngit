@@ -6,7 +6,8 @@
     "outDir": "build",
     "rootDir": "src",
     "paths": {
-      "sdk/*": ["src/*"]
+      "sdk/*": ["src/*"],
+      "foundation/*": ["../packages/foundation/src/*"]
     }
   },
   "include": ["src"],

@@ -7,6 +7,7 @@ import {
 } from './types';
 import _ from 'lodash';
 import { IResponse } from 'foundation/src/network/network';
+import { IApi, IResponseAdapter } from './glip/types';
 
 // import 'mitm';
 export class Router implements IRouter {
@@ -16,6 +17,7 @@ export class Router implements IRouter {
 
   constructor(
     public pathMatcher: PathMatcher = (routerPath, path) => routerPath === path,
+    public adapter: IResponseAdapter,
   ) {}
 
   setPathMatcher(matcher: PathMatcher) {
@@ -37,6 +39,17 @@ export class Router implements IRouter {
         headers: {},
       } as IResponse);
     }
+  }
+
+  applyApi(api: IApi) {
+    _.keys(api).forEach(path => {
+      _.keys(api[path]).forEach(verb => {
+        const routerHandler = this.adapter.adapt(request =>
+          api[path][verb](request),
+        );
+        this.use(verb, path, routerHandler);
+      });
+    });
   }
 
   use(method: string, path: string, handler: RouterHandler) {

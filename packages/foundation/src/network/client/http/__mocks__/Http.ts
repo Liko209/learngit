@@ -14,7 +14,6 @@ export default class Http {
   request = (request: IRequest, listener: INetworkRequestExecutorListener) => {
     const { hostname } = url.parse(request.host);
     const relatePath = `${hostname}${request.path}`;
-    // console.log('TCL: Http -> request -> ', relatePath);
     if (hostname === 'glpdevxmn.asialab.glip.net') {
       InstanceManager.get(MockGlipServer).handle(request, listener);
     } else {
@@ -22,7 +21,7 @@ export default class Http {
     }
   }
 
-  isNetworkReachable = () => true;
+  isNetworkReachable = () => window.navigator.onLine;
 
   cancelRequest() {}
 }

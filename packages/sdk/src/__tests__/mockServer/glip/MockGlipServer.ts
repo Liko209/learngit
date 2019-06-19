@@ -19,7 +19,7 @@ import { GlipPersonDao } from './dao/person';
 import { GlipPostDao } from './dao/post';
 import { GlipProfileDao } from './dao/profile';
 import { GlipStateDao } from './dao/state';
-import * as data from './data';
+import * as data from './data/data';
 import { schema } from './glipSchema';
 import { InitialData, IApi, Handler, IResponseAdapter } from './types';
 
@@ -109,9 +109,10 @@ export class MockGlipServer implements IMockServer {
   clientConfigDao: GlipClientConfigDao;
 
   constructor() {
+    const adapter: IResponseAdapter = new AdapterImpl();
     this._router = new Router((routePath, path) => {
       return routePath === path || routePath === '*';
-    });
+    },                        adapter);
     const db = new LokiDB(schema);
     this.postDao = new GlipPostDao(db);
     this.itemDao = new GlipItemDao(db);
@@ -120,17 +121,8 @@ export class MockGlipServer implements IMockServer {
     this.personDao = new GlipPersonDao(db);
     this.profileDao = new GlipProfileDao(db);
     this.clientConfigDao = new GlipClientConfigDao(db);
-    const adapter: IResponseAdapter = new AdapterImpl();
 
-    _.keys(this.api).forEach(path => {
-      _.keys(this.api[path]).forEach(verb => {
-        const routerHandler = adapter.adapt(request =>
-          this.api[path][verb](request),
-        );
-        this._router.use(verb, path, routerHandler);
-      });
-    });
-
+    this._router.applyApi(this.api);
     this._router.use('get', '*', this._handleCommon);
     this._router.use('put', '*', this._handleCommon);
     this._router.use('post', '*', this._handleCommon);
@@ -146,6 +138,7 @@ export class MockGlipServer implements IMockServer {
   }
 
   getInitialData = async (request: IRequest<any>) => {
+    // todo get from dao
     const initialData: InitialData = {
       user_id: data.templates.user._id!,
       company_id: data.templates.company.id,
