@@ -82,7 +82,7 @@ abstract class PostParser implements IPostParser {
       if (this.isValidMatch(matchedStr, result) && this.isValidRange(range)) {
         replacers.push({
           ...range,
-          element: this.getReplaceElement(matchedStr),
+          element: this.getReplaceElement(matchedStr, result),
         });
         this.removeReplacersInsideRange(range);
       }
@@ -122,7 +122,10 @@ abstract class PostParser implements IPostParser {
     return null;
   }
 
-  abstract getReplaceElement(value: string): ChildrenType;
+  abstract getReplaceElement(
+    value: string,
+    execResult?: RegExpExecArray,
+  ): ChildrenType;
 }
 
 export { PostParser };

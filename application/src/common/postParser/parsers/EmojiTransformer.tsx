@@ -38,7 +38,6 @@ class EmojiTransformer {
         const obj = customEmojiMap[match.slice(1, -1)];
         if (
           convertType === EmojiConvertType.CUSTOM &&
-          !unicodeOnly &&
           obj &&
           typeof obj === 'object' &&
           obj.data
