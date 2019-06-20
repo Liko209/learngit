@@ -181,7 +181,7 @@ const MATCH_NOTHING_REGEX = /a^/g;
 const AT_MENTION_REGEX = /<a class='at_mention_compose' rel='{"id":([-?\d]*?)}'>(.*?)<\/a>/gi;
 const AT_MENTION_GROUPED_REGEXP = /(<a class='at_mention_compose' rel='{"id":[-?\d]*?}'>)(.*?)(<\/a>)/gi;
 
-const EMOJI_REGEX = /<emoji data='([\s\S]*?)' \/>/gi;
+const EMOJI_REGEX = /<emoji data='(.+?)' \/>/gi;
 const MIN_EMOJI_PATTERN_LEN = 17;
 const EMOJI_UNICODE_REGEX_RANGE =
   '\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]';
@@ -204,7 +204,6 @@ const EMOJI_ONE_PATH = '/emoji/emojione/png/{{unicode}}.png?v=2.2.7';
 const URL_REGEX = /(([a-zA-Z0-9\!\#\$\%\&\'\*\+\-\/\=\?\%\_\`\{\|\}\~\.]+@)?)(((ftp|https?):\/\/)?[-\w]+\.?([-\w]+\.)*(\d+\.\d+\.\d+|[-A-Za-z]+)(:\d+)?(((\/([A-Za-z0-9-\._~:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=])*)+)\??([A-Za-z0-9-\._~:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\%])*)?)([^A-Za-z]|$)/gi;
 
 const VALID_PHONE_REG = /\+?(\d{1,4} ?)?((\(\d{1,4}\)|\d(( |\-)?\d){0,3})(( |\-)?\d){2,}|(\(\d{2,4}\)|\d(( |\-)?\d){1,3})(( |\-)?\d){1,})(( x| ext.?)\d{1,5}){0,1}/g;
-const PHONE_TRANSFORMED_PATTERN = /<PL (.*)\/>/gi;
 const NUMBER_WITH_PLUS = 10;
 const MIN_PHONE_NUMBER_LENGTH = 7;
 const MAX_PHONE_NUMBER_LENGTH = 15;
@@ -228,21 +227,10 @@ const isValidPhoneNumber = (value: string) => {
 // first we use encodeURIComponent to get percent-encoded UTF-8,
 // then we convert the percent encodings into raw bytes which
 // can be fed into btoa.
-const b64EncodeUnicode = (str: string) =>
-  btoa(
-    encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) =>
-      String.fromCharCode(Number(`0x${p1}`)),
-    ),
-  );
+const b64EncodeUnicode = (str: string) => btoa(encodeURIComponent(str));
 
 // Going backwards: from bytestream, to percent-encoding, to original string.
-const b64DecodeUnicode = (str: string) =>
-  decodeURIComponent(
-    atob(str)
-      .split('')
-      .map(c => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
-      .join(''),
-  );
+const b64DecodeUnicode = (str: string) => decodeURIComponent(atob(str));
 
 export {
   isInRange,
@@ -278,5 +266,4 @@ export {
   EMOJI_CUSTOM_REGEX,
   URL_REGEX,
   VALID_PHONE_REG,
-  PHONE_TRANSFORMED_PATTERN,
 };

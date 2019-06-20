@@ -8,7 +8,8 @@ import React from 'react';
 import { IPostParser, ParserType } from '../types';
 import { ParseContent } from '../ParseContent';
 import { PostParser } from './PostParser';
-import { EMOJI_REGEX, b64DecodeUnicode } from '../utils';
+import { EMOJI_REGEX } from '../utils';
+import { EmojiTransformer } from './EmojiTransformer';
 
 class EmojiParser extends PostParser implements IPostParser {
   type = ParserType.EMOJI;
@@ -19,11 +20,12 @@ class EmojiParser extends PostParser implements IPostParser {
 
   getReplaceElement(strValue: string) {
     const result = this.getRegexp().exec(strValue);
-    if (!result || !result[0]) {
+    if (!result || !result[0] || !result[1]) {
       return strValue;
     }
     try {
-      const data = JSON.parse(b64DecodeUnicode(result[1]));
+      const id = result[1];
+      const data = EmojiTransformer.emojiDataMap[id];
       return <img {...data} />;
     } catch (err) {
       return strValue;

@@ -23,6 +23,7 @@ import {
 } from '../utils';
 
 class EmojiTransformer {
+  static emojiDataMap = {};
   static replace(
     originalStr: string,
     options: EmojiTransformerOption,
@@ -36,19 +37,19 @@ class EmojiTransformer {
         const match = _match.trim();
         const enlarge = match.length === originalStr.trim().length;
         const obj = customEmojiMap[match.slice(1, -1)];
+        const id = Date.now() + b64EncodeUnicode(_match);
         if (
           convertType === EmojiConvertType.CUSTOM &&
           obj &&
           typeof obj === 'object' &&
           obj.data
         ) {
-          const data = b64EncodeUnicode(
-            JSON.stringify({
-              className: this._getClassName(match, enlarge),
-              src: obj.data,
-            }),
-          );
-          return `<emoji data='${data}' />`;
+          const data = {
+            className: this._getClassName(match, enlarge),
+            src: obj.data,
+          };
+          this.emojiDataMap[id] = data;
+          return `<emoji data='${id}' />`;
         }
         if (convertType === EmojiConvertType.CUSTOM) {
           return match;
@@ -78,16 +79,14 @@ class EmojiTransformer {
           return code;
         }
 
-        const data = b64EncodeUnicode(
-          JSON.stringify({
-            className: this._getClassName(match, enlarge),
-            alt: code,
-            title: match,
-            src: this._getSrc(unicode, hostName),
-          }),
-        );
-
-        return `<emoji data='${data}' />`;
+        const data = {
+          className: this._getClassName(match, enlarge),
+          alt: code,
+          title: match,
+          src: this._getSrc(unicode, hostName),
+        };
+        this.emojiDataMap[id] = data;
+        return `<emoji data='${id}' />`;
       },
     );
   }
