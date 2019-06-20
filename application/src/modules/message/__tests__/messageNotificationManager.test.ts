@@ -72,19 +72,27 @@ describe('messageNotificationManager', () => {
       return { 1: team, 0: group }[i];
     },
   };
+
+  const mockedCompanyService = {
+    getById: async (i: number) => {
+      return { customEmoji: {} };
+    },
+  };
   beforeEach(() => {
     const userId = 123432;
     jest.clearAllMocks();
     notificationManager = new MessageNotificationManager();
     jest.spyOn(utils, 'getGlobalValue').mockReturnValue(currentUserId);
-    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation((type) => {
+    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(type => {
       switch (type) {
         case ServiceConfig.POST_SERVICE:
           return mockedPostService;
         case ServiceConfig.GROUP_SERVICE:
           return mockedGroupService;
+        case ServiceConfig.COMPANY_SERVICE:
+          return mockedCompanyService;
         default:
-          return { userConfig:{ getGlipUserId: () => userId }};
+          return { userConfig: { getGlipUserId: () => userId } };
       }
     });
   });
@@ -197,6 +205,40 @@ describe('messageNotificationManager', () => {
       crushVmIntoManager(1);
       notificationManager._vmQueue[0].vm.dispose();
       expect(notificationManager._vmQueue.length).toEqual(0);
+    });
+  });
+
+  describe('handlePostContent', () => {
+    it('should return only user name for at mention', () => {
+      expect(
+        notificationManager.handlePostContent(
+          `<a class='at_mention_compose' rel='{"id":12332}'>@Helena</a>`,
+        ),
+      ).toEqual('@Helena');
+      expect(
+        notificationManager.handlePostContent(
+          `<a class='at_mention_compose' rel='{"id":12332}'>@Jack Sparrow</a>`,
+        ),
+      ).toEqual('@Jack Sparrow');
+    });
+
+    it('should remove markdown', () => {
+      expect(
+        notificationManager.handlePostContent(
+          `**string words** [code]hello world[/code]`,
+        ),
+      ).toEqual('string words hello world');
+      expect(
+        notificationManager.handlePostContent(
+          `www.google.com https://www.yahoo.com chris@ring.com`,
+        ),
+      ).toEqual('www.google.com https://www.yahoo.com chris@ring.com');
+    });
+
+    it('should return unicode emoji', () => {
+      expect(notificationManager.handlePostContent(`:) <3 :D :joy:`)).toEqual(
+        '🙂❤😃 😂',
+      );
     });
   });
 });

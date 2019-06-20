@@ -46,7 +46,7 @@ const interpolation = {
   escapeValue: false, // not needed for react!!
 };
 
-const config = {
+const config: i18next.InitOptions = {
   interpolation,
   fallbackLng: 'en',
   // have a common namespace used around the full app
@@ -72,6 +72,7 @@ const config = {
   ],
   postProcess: ['pseudo'],
   nsSeparator: ':::',
+  load: 'currentOnly',
 };
 
 const ready = () => {

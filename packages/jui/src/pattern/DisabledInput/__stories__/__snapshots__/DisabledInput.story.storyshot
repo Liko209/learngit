@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern DisabledInput: Pattern DisabledInput 1`] = `
+.c0.c0 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #f44336;
+  background-color: rgba(255,55,55,.05);
+  text-align: center;
+  border: 1px solid rgba(255,55,55,.1);
+  border-radius: 4px;
+  padding: 8px;
+  margin: 16px;
+}
+
+<div
+  className="c0"
+>
+  This team is read-only
+</div>
+`;

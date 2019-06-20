@@ -1,0 +1,1717 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationCard PreviewFiles 1`] = `
+.c9 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c15 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c10 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 20px;
+}
+
+.c12 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  white-space: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+}
+
+.c12.c12 > *:nth-child(n + 2) {
+  margin-left: 8px;
+}
+
+.c13.c13 {
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  color: #9e9e9e;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c13.c13 .c14,
+.c13.c13 .c14 svg {
+  font-size: 20px;
+}
+
+.c13.c13:hover {
+  background-color: transparent;
+}
+
+.c13.c13:hover .c14 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c13.c13:active .c14 {
+  color: #9e9e9e;
+}
+
+.c13.c13.c13.c13.disabled .c14 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c13.c13 .rippleVisible {
+  color: #9e9e9e;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c20.c20 .c14,
+.c20.c20 .c14 svg {
+  font-size: 20px;
+}
+
+.c20.c20:hover .c14 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c20.c20:active .c14 {
+  color: #9e9e9e;
+}
+
+.c20.c20.c20.c20.disabled .c14 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c21.c21 .c14,
+.c21.c21 .c14 svg {
+  font-size: 20px;
+}
+
+.c21.c21:hover .c14 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c21.c21:active .c14 {
+  color: #0684bd;
+}
+
+.c21.c21.c21.c21.disabled .c14 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c22.c22 .c14,
+.c22.c22 .c14 svg {
+  font-size: 20px;
+}
+
+.c22.c22:hover .c14 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c22.c22:active .c14 {
+  color: #0684bd;
+}
+
+.c22.c22.c22.c22.disabled .c14 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c23.c23 .c14,
+.c23.c23 .c14 svg {
+  font-size: 20px;
+}
+
+.c23.c23:hover .c14 {
+  color: rgba(237,182,60,0.88);
+}
+
+.c23.c23:active .c14 {
+  color: #edb63c;
+}
+
+.c23.c23.c23.c23.disabled .c14 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c24.c24 .c14,
+.c24.c24 .c14 svg {
+  font-size: 16px;
+}
+
+.c24.c24:hover .c14 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c24.c24:active .c14 {
+  color: #9e9e9e;
+}
+
+.c24.c24.c24.c24.disabled .c14 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c25.c25 .c14,
+.c25.c25 .c14 svg {
+  font-size: 20px;
+}
+
+.c25.c25:hover .c14 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c25.c25:active .c14 {
+  color: #0684bd;
+}
+
+.c25.c25.c25.c25.disabled .c14 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c26.c26 .c14,
+.c26.c26 .c14 svg {
+  font-size: 16px;
+}
+
+.c26.c26:hover .c14 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c26.c26:active .c14 {
+  color: #0684bd;
+}
+
+.c26.c26.c26.c26.disabled .c14 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c27.c27 .c14,
+.c27.c27 .c14 svg {
+  font-size: 16px;
+}
+
+.c27.c27:hover .c14 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c27.c27:active .c14 {
+  color: #fff;
+}
+
+.c27.c27.c27.c27.disabled .c14 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c28.c28 .c14,
+.c28.c28 .c14 svg {
+  font-size: 32px;
+}
+
+.c28.c28:hover .c14 {
+  color: rgba(33,33,33,0.88);
+}
+
+.c28.c28:active .c14 {
+  color: #212121;
+}
+
+.c28.c28.c28.c28.disabled .c14 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c29.c29 .c14,
+.c29.c29 .c14 svg {
+  font-size: 24px;
+}
+
+.c29.c29:hover .c14 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c29.c29:active .c14 {
+  color: #fff;
+}
+
+.c29.c29.c29.c29.disabled .c14 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c30.c30 .c14,
+.c30.c30 .c14 svg {
+  font-size: 20px;
+}
+
+.c30.c30:hover .c14 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c30.c30:active .c14 {
+  color: #fff;
+}
+
+.c30.c30.c30.c30.disabled .c14 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c8.c8 {
+  margin: 0px 8px 0px 0px;
+}
+
+.c1 {
+  display: inline-block;
+  width: 336px;
+  height: 272px;
+  margin: 0px 12px 12px 0px;
+}
+
+.c2 {
+  height: 200px;
+  background-color: #bfbfbf;
+  opacity: 0.36;
+}
+
+.c3.c3 {
+  padding: 16px !important;
+}
+
+.c4.c4 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #212121;
+}
+
+.c6.c6 {
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: #9e9e9e;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+}
+
+.c7 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  color: #bfbfbf;
+}
+
+.c11 {
+  padding: 0 !important;
+}
+
+.c16:not(:last-child) {
+  margin: 0px 0px 8px 0px;
+}
+
+.c17.c17 {
+  height: 52px;
+  padding: 16px;
+  width: 336px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.2),0 1px 1px 0 rgba(0,0,0,0.14),0 2px 1px -1px rgba(0,0,0,0.12);
+}
+
+.c5 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  min-width: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  font-weight: 400;
+  color: #616161;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  font-size: 0;
+}
+
+.c5 > span {
+  font-size: 14px;
+}
+
+.c0:hover {
+  cursor: pointer;
+}
+
+.c18 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  width: 90%;
+}
+
+.c19 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  margin: 0px 0px 0px 8px;
+}
+
+<div>
+  <div>
+    <img
+      className="c0"
+      onClick={[Function]}
+      onLoad={[Function]}
+      src="test-file-stub"
+      style={
+        Object {
+          "display": "none",
+        }
+      }
+    />
+    <img
+      className="c0"
+      onClick={[Function]}
+      onLoad={[Function]}
+      src="test-file-stub"
+      style={
+        Object {
+          "display": "none",
+        }
+      }
+    />
+    <img
+      className="c0"
+      onClick={[Function]}
+      onLoad={[Function]}
+      src="test-file-stub"
+      style={
+        Object {
+          "display": "none",
+        }
+      }
+    />
+  </div>
+  <div>
+    <div
+      className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c1"
+    >
+      <div
+        className="MuiCardMedia-root c2 "
+        style={
+          Object {
+            "backgroundImage": "url(\\"test-file-stub\\")",
+          }
+        }
+      />
+      <div
+        className="MuiCardContent-root c3"
+      >
+        <div
+          className="c4"
+        >
+          <div
+            className="c5"
+            data-test-automation-id="file-name"
+          >
+            Conversation Card ConversationConversation Card VxD.pdf
+          </div>
+        </div>
+        <div
+          className="MuiTypography-root MuiTypography-body2 c6"
+        >
+          <div
+            className="c7"
+            data-test-automation-id="file-size"
+          >
+            <span
+              className="c8 pdf icon c9"
+            >
+              <svg
+                className="c10"
+                role="img"
+                size="medium"
+              >
+                <use
+                  href="#icon-pdf"
+                  xlinkHref="#icon-pdf"
+                />
+              </svg>
+            </span>
+            2.3Mb
+          </div>
+          <div
+            className="MuiCardActions-root c11"
+          >
+            <div
+              className="MuiCardActions-action c12"
+              direction="horizontal"
+            >
+              <button
+                aria-describedby={null}
+                className="MuiButtonBase-root MuiIconButton-root c13"
+                disabled={false}
+                onBlur={[Function]}
+                onContextMenu={[Function]}
+                onFocus={[Function]}
+                onKeyDown={[Function]}
+                onKeyUp={[Function]}
+                onMouseDown={[Function]}
+                onMouseLeave={[Function]}
+                onMouseOver={[Function]}
+                onMouseUp={[Function]}
+                onTouchEnd={[Function]}
+                onTouchMove={[Function]}
+                onTouchStart={[Function]}
+                size="medium"
+                tabIndex="0"
+                title={null}
+                type="button"
+                variant="plain"
+              >
+                <span
+                  className="MuiIconButton-label"
+                >
+                  <span
+                    className="c14  icon c9"
+                    size="medium"
+                  >
+                    <svg
+                      className="c15"
+                      role="img"
+                    >
+                      <use />
+                    </svg>
+                  </span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c1"
+    >
+      <div
+        className="MuiCardMedia-root c2 "
+        style={
+          Object {
+            "backgroundImage": "url(\\"test-file-stub\\")",
+          }
+        }
+      />
+      <div
+        className="MuiCardContent-root c3"
+      >
+        <div
+          className="c4"
+        >
+          <div
+            className="c5"
+            data-test-automation-id="file-name"
+          >
+            Conversation Card ConversationConversation Card VxD.pdf
+          </div>
+        </div>
+        <div
+          className="MuiTypography-root MuiTypography-body2 c6"
+        >
+          <div
+            className="c7"
+            data-test-automation-id="file-size"
+          >
+            <span
+              className="c8 pdf icon c9"
+            >
+              <svg
+                className="c10"
+                role="img"
+                size="medium"
+              >
+                <use
+                  href="#icon-pdf"
+                  xlinkHref="#icon-pdf"
+                />
+              </svg>
+            </span>
+            2.3Mb
+          </div>
+          <div
+            className="MuiCardActions-root c11"
+          >
+            <div
+              className="MuiCardActions-action c12"
+              direction="horizontal"
+            >
+              <button
+                aria-describedby={null}
+                className="MuiButtonBase-root MuiIconButton-root c13"
+                disabled={false}
+                onBlur={[Function]}
+                onContextMenu={[Function]}
+                onFocus={[Function]}
+                onKeyDown={[Function]}
+                onKeyUp={[Function]}
+                onMouseDown={[Function]}
+                onMouseLeave={[Function]}
+                onMouseOver={[Function]}
+                onMouseUp={[Function]}
+                onTouchEnd={[Function]}
+                onTouchMove={[Function]}
+                onTouchStart={[Function]}
+                size="medium"
+                tabIndex="0"
+                title={null}
+                type="button"
+                variant="plain"
+              >
+                <span
+                  className="MuiIconButton-label"
+                >
+                  <span
+                    className="c14  icon c9"
+                    size="medium"
+                  >
+                    <svg
+                      className="c15"
+                      role="img"
+                    >
+                      <use />
+                    </svg>
+                  </span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c1"
+    >
+      <div
+        className="MuiCardMedia-root c2 "
+        style={
+          Object {
+            "backgroundImage": "url(\\"test-file-stub\\")",
+          }
+        }
+      />
+      <div
+        className="MuiCardContent-root c3"
+      >
+        <div
+          className="c4"
+        >
+          <div
+            className="c5"
+            data-test-automation-id="file-name"
+          >
+            Conversation Card ConversationConversation Card VxD.pdf
+          </div>
+        </div>
+        <div
+          className="MuiTypography-root MuiTypography-body2 c6"
+        >
+          <div
+            className="c7"
+            data-test-automation-id="file-size"
+          >
+            <span
+              className="c8 pdf icon c9"
+            >
+              <svg
+                className="c10"
+                role="img"
+                size="medium"
+              >
+                <use
+                  href="#icon-pdf"
+                  xlinkHref="#icon-pdf"
+                />
+              </svg>
+            </span>
+            2.3Mb
+          </div>
+          <div
+            className="MuiCardActions-root c11"
+          >
+            <div
+              className="MuiCardActions-action c12"
+              direction="horizontal"
+            >
+              <button
+                aria-describedby={null}
+                className="MuiButtonBase-root MuiIconButton-root c13"
+                disabled={false}
+                onBlur={[Function]}
+                onContextMenu={[Function]}
+                onFocus={[Function]}
+                onKeyDown={[Function]}
+                onKeyUp={[Function]}
+                onMouseDown={[Function]}
+                onMouseLeave={[Function]}
+                onMouseOver={[Function]}
+                onMouseUp={[Function]}
+                onTouchEnd={[Function]}
+                onTouchMove={[Function]}
+                onTouchStart={[Function]}
+                size="medium"
+                tabIndex="0"
+                title={null}
+                type="button"
+                variant="plain"
+              >
+                <span
+                  className="MuiIconButton-label"
+                >
+                  <span
+                    className="c14  icon c9"
+                    size="medium"
+                  >
+                    <svg
+                      className="c15"
+                      role="img"
+                    >
+                      <use />
+                    </svg>
+                  </span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c1"
+    >
+      <div
+        className="MuiCardMedia-root c2 "
+        style={
+          Object {
+            "backgroundImage": "url(\\"test-file-stub\\")",
+          }
+        }
+      />
+      <div
+        className="MuiCardContent-root c3"
+      >
+        <div
+          className="c4"
+        >
+          <div
+            className="c5"
+            data-test-automation-id="file-name"
+          >
+            Conversation Card ConversationConversation Card VxD.pdf
+          </div>
+        </div>
+        <div
+          className="MuiTypography-root MuiTypography-body2 c6"
+        >
+          <div
+            className="c7"
+            data-test-automation-id="file-size"
+          >
+            <span
+              className="c8 pdf icon c9"
+            >
+              <svg
+                className="c10"
+                role="img"
+                size="medium"
+              >
+                <use
+                  href="#icon-pdf"
+                  xlinkHref="#icon-pdf"
+                />
+              </svg>
+            </span>
+            2.3Mb
+          </div>
+          <div
+            className="MuiCardActions-root c11"
+          >
+            <div
+              className="MuiCardActions-action c12"
+              direction="horizontal"
+            >
+              <button
+                aria-describedby={null}
+                className="MuiButtonBase-root MuiIconButton-root c13"
+                disabled={false}
+                onBlur={[Function]}
+                onContextMenu={[Function]}
+                onFocus={[Function]}
+                onKeyDown={[Function]}
+                onKeyUp={[Function]}
+                onMouseDown={[Function]}
+                onMouseLeave={[Function]}
+                onMouseOver={[Function]}
+                onMouseUp={[Function]}
+                onTouchEnd={[Function]}
+                onTouchMove={[Function]}
+                onTouchStart={[Function]}
+                size="medium"
+                tabIndex="0"
+                title={null}
+                type="button"
+                variant="plain"
+              >
+                <span
+                  className="MuiIconButton-label"
+                >
+                  <span
+                    className="c14  icon c9"
+                    size="medium"
+                  >
+                    <svg
+                      className="c15"
+                      role="img"
+                    >
+                      <use />
+                    </svg>
+                  </span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div
+      className="c16"
+    >
+      <li
+        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c17"
+        disabled={false}
+      >
+        <span
+          className="c8 default_file icon c9"
+        >
+          <svg
+            className="c10"
+            role="img"
+            size="medium"
+          >
+            <use
+              href="#icon-default-file"
+              xlinkHref="#icon-default-file"
+            />
+          </svg>
+        </span>
+        <div
+          className="c18"
+        >
+          <div
+            className="c5"
+            data-test-automation-id="file-name"
+          >
+            Conversation Card ConversationConversation Card VxD.pdf
+          </div>
+          <div
+            className="c19"
+          >
+            <button
+              aria-describedby={null}
+              className="MuiButtonBase-root MuiIconButton-root c13"
+              disabled={false}
+              onBlur={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              size="medium"
+              tabIndex="0"
+              title={null}
+              type="button"
+              variant="plain"
+            >
+              <span
+                className="MuiIconButton-label"
+              >
+                <span
+                  className="c14  icon c9"
+                  size="medium"
+                >
+                  <svg
+                    className="c15"
+                    role="img"
+                  >
+                    <use />
+                  </svg>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </li>
+    </div>
+    <div
+      className="c16"
+    >
+      <li
+        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c17"
+        disabled={false}
+      >
+        <span
+          className="c8 default_file icon c9"
+        >
+          <svg
+            className="c10"
+            role="img"
+            size="medium"
+          >
+            <use
+              href="#icon-default-file"
+              xlinkHref="#icon-default-file"
+            />
+          </svg>
+        </span>
+        <div
+          className="c18"
+        >
+          <div
+            className="c5"
+            data-test-automation-id="file-name"
+          >
+            Conversation Card ConversationConversation Card VxD.pdf
+          </div>
+          <div
+            className="c19"
+          >
+            <button
+              aria-describedby={null}
+              className="MuiButtonBase-root MuiIconButton-root c13"
+              disabled={false}
+              onBlur={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              size="medium"
+              tabIndex="0"
+              title={null}
+              type="button"
+              variant="plain"
+            >
+              <span
+                className="MuiIconButton-label"
+              >
+                <span
+                  className="c14  icon c9"
+                  size="medium"
+                >
+                  <svg
+                    className="c15"
+                    role="img"
+                  >
+                    <use />
+                  </svg>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </li>
+    </div>
+    <div
+      className="c16"
+    >
+      <li
+        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c17"
+        disabled={false}
+      >
+        <span
+          className="c8 default_file icon c9"
+        >
+          <svg
+            className="c10"
+            role="img"
+            size="medium"
+          >
+            <use
+              href="#icon-default-file"
+              xlinkHref="#icon-default-file"
+            />
+          </svg>
+        </span>
+        <div
+          className="c18"
+        >
+          <div
+            className="c5"
+            data-test-automation-id="file-name"
+          >
+            Conversation Card ConversationConversation Card VxD.pdf
+          </div>
+          <div
+            className="c19"
+          >
+            <button
+              aria-describedby={null}
+              className="MuiButtonBase-root MuiIconButton-root c13"
+              disabled={false}
+              onBlur={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              size="medium"
+              tabIndex="0"
+              title={null}
+              type="button"
+              variant="plain"
+            >
+              <span
+                className="MuiIconButton-label"
+              >
+                <span
+                  className="c14  icon c9"
+                  size="medium"
+                >
+                  <svg
+                    className="c15"
+                    role="img"
+                  >
+                    <use />
+                  </svg>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </li>
+    </div>
+    <div
+      className="c16"
+    >
+      <li
+        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c17"
+        disabled={false}
+      >
+        <span
+          className="c8 default_file icon c9"
+        >
+          <svg
+            className="c10"
+            role="img"
+            size="medium"
+          >
+            <use
+              href="#icon-default-file"
+              xlinkHref="#icon-default-file"
+            />
+          </svg>
+        </span>
+        <div
+          className="c18"
+        >
+          <div
+            className="c5"
+            data-test-automation-id="file-name"
+          >
+            Conversation Card ConversationConversation Card VxD.pdf
+          </div>
+          <div
+            className="c19"
+          >
+            <button
+              aria-describedby={null}
+              className="MuiButtonBase-root MuiIconButton-root c13"
+              disabled={false}
+              onBlur={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              size="medium"
+              tabIndex="0"
+              title={null}
+              type="button"
+              variant="plain"
+            >
+              <span
+                className="MuiIconButton-label"
+              >
+                <span
+                  className="c14  icon c9"
+                  size="medium"
+                >
+                  <svg
+                    className="c15"
+                    role="img"
+                  >
+                    <use />
+                  </svg>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </li>
+    </div>
+  </div>
+  <div>
+    <div
+      className="c16"
+    >
+      <li
+        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c17"
+        disabled={false}
+      >
+        <span
+          className="c8 file icon c9"
+        >
+          <svg
+            className="c10"
+            role="img"
+            size="medium"
+          >
+            <use
+              href="#icon-undefined"
+              xlinkHref="#icon-undefined"
+            />
+          </svg>
+        </span>
+        <div
+          className="c18"
+        >
+          <div
+            className="c5"
+            data-test-automation-id="file-name"
+          >
+            Conversation Card ConversationConversation Card VxD.pdf
+          </div>
+          <div
+            className="c19"
+          >
+            <button
+              aria-describedby={null}
+              className="MuiButtonBase-root MuiIconButton-root c13"
+              disabled={false}
+              onBlur={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              size="medium"
+              tabIndex="0"
+              title={null}
+              type="button"
+              variant="plain"
+            >
+              <span
+                className="MuiIconButton-label"
+              >
+                <span
+                  className="c14  icon c9"
+                  size="medium"
+                >
+                  <svg
+                    className="c15"
+                    role="img"
+                  >
+                    <use />
+                  </svg>
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby={null}
+              className="MuiButtonBase-root MuiIconButton-root c13"
+              disabled={false}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              size="medium"
+              tabIndex="0"
+              title={null}
+              type="button"
+              variant="plain"
+            >
+              <span
+                className="MuiIconButton-label"
+              >
+                <span
+                  className="c14 unfold_more icon c9"
+                  size="medium"
+                >
+                  <svg
+                    className="c15"
+                    role="img"
+                  >
+                    <use
+                      href="#icon-unfold_more"
+                      xlinkHref="#icon-unfold_more"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </li>
+      <div
+        className="MuiCollapse-container"
+        style={
+          Object {
+            "minHeight": "0px",
+          }
+        }
+      >
+        <div
+          className="MuiCollapse-wrapper"
+        >
+          <div
+            className="MuiCollapse-wrapperInner"
+          >
+            <img
+              className="c0"
+              onClick={[Function]}
+              onLoad={[Function]}
+              src="test-file-stub"
+              style={
+                Object {
+                  "display": "none",
+                }
+              }
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="c16"
+    >
+      <li
+        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c17"
+        disabled={false}
+      >
+        <span
+          className="c8 file icon c9"
+        >
+          <svg
+            className="c10"
+            role="img"
+            size="medium"
+          >
+            <use
+              href="#icon-undefined"
+              xlinkHref="#icon-undefined"
+            />
+          </svg>
+        </span>
+        <div
+          className="c18"
+        >
+          <div
+            className="c5"
+            data-test-automation-id="file-name"
+          >
+            Conversation Card ConversationConversation Card VxD.pdf
+          </div>
+          <div
+            className="c19"
+          >
+            <button
+              aria-describedby={null}
+              className="MuiButtonBase-root MuiIconButton-root c13"
+              disabled={false}
+              onBlur={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              size="medium"
+              tabIndex="0"
+              title={null}
+              type="button"
+              variant="plain"
+            >
+              <span
+                className="MuiIconButton-label"
+              >
+                <span
+                  className="c14  icon c9"
+                  size="medium"
+                >
+                  <svg
+                    className="c15"
+                    role="img"
+                  >
+                    <use />
+                  </svg>
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby={null}
+              className="MuiButtonBase-root MuiIconButton-root c13"
+              disabled={false}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              size="medium"
+              tabIndex="0"
+              title={null}
+              type="button"
+              variant="plain"
+            >
+              <span
+                className="MuiIconButton-label"
+              >
+                <span
+                  className="c14 unfold_more icon c9"
+                  size="medium"
+                >
+                  <svg
+                    className="c15"
+                    role="img"
+                  >
+                    <use
+                      href="#icon-unfold_more"
+                      xlinkHref="#icon-unfold_more"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </li>
+      <div
+        className="MuiCollapse-container"
+        style={
+          Object {
+            "minHeight": "0px",
+          }
+        }
+      >
+        <div
+          className="MuiCollapse-wrapper"
+        >
+          <div
+            className="MuiCollapse-wrapperInner"
+          >
+            <img
+              className="c0"
+              onClick={[Function]}
+              onLoad={[Function]}
+              src="test-file-stub"
+              style={
+                Object {
+                  "display": "none",
+                }
+              }
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="c16"
+    >
+      <li
+        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c17"
+        disabled={false}
+      >
+        <span
+          className="c8 file icon c9"
+        >
+          <svg
+            className="c10"
+            role="img"
+            size="medium"
+          >
+            <use
+              href="#icon-undefined"
+              xlinkHref="#icon-undefined"
+            />
+          </svg>
+        </span>
+        <div
+          className="c18"
+        >
+          <div
+            className="c5"
+            data-test-automation-id="file-name"
+          >
+            Conversation Card ConversationConversation Card VxD.pdf
+          </div>
+          <div
+            className="c19"
+          >
+            <button
+              aria-describedby={null}
+              className="MuiButtonBase-root MuiIconButton-root c13"
+              disabled={false}
+              onBlur={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              size="medium"
+              tabIndex="0"
+              title={null}
+              type="button"
+              variant="plain"
+            >
+              <span
+                className="MuiIconButton-label"
+              >
+                <span
+                  className="c14  icon c9"
+                  size="medium"
+                >
+                  <svg
+                    className="c15"
+                    role="img"
+                  >
+                    <use />
+                  </svg>
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby={null}
+              className="MuiButtonBase-root MuiIconButton-root c13"
+              disabled={false}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              size="medium"
+              tabIndex="0"
+              title={null}
+              type="button"
+              variant="plain"
+            >
+              <span
+                className="MuiIconButton-label"
+              >
+                <span
+                  className="c14 unfold_more icon c9"
+                  size="medium"
+                >
+                  <svg
+                    className="c15"
+                    role="img"
+                  >
+                    <use
+                      href="#icon-unfold_more"
+                      xlinkHref="#icon-unfold_more"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </li>
+      <div
+        className="MuiCollapse-container"
+        style={
+          Object {
+            "minHeight": "0px",
+          }
+        }
+      >
+        <div
+          className="MuiCollapse-wrapper"
+        >
+          <div
+            className="MuiCollapse-wrapperInner"
+          >
+            <img
+              className="c0"
+              onClick={[Function]}
+              onLoad={[Function]}
+              src="test-file-stub"
+              style={
+                Object {
+                  "display": "none",
+                }
+              }
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="c16"
+    >
+      <li
+        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c17"
+        disabled={false}
+      >
+        <span
+          className="c8 file icon c9"
+        >
+          <svg
+            className="c10"
+            role="img"
+            size="medium"
+          >
+            <use
+              href="#icon-undefined"
+              xlinkHref="#icon-undefined"
+            />
+          </svg>
+        </span>
+        <div
+          className="c18"
+        >
+          <div
+            className="c5"
+            data-test-automation-id="file-name"
+          >
+            Conversation Card ConversationConversation Card VxD.pdf
+          </div>
+          <div
+            className="c19"
+          >
+            <button
+              aria-describedby={null}
+              className="MuiButtonBase-root MuiIconButton-root c13"
+              disabled={false}
+              onBlur={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              size="medium"
+              tabIndex="0"
+              title={null}
+              type="button"
+              variant="plain"
+            >
+              <span
+                className="MuiIconButton-label"
+              >
+                <span
+                  className="c14  icon c9"
+                  size="medium"
+                >
+                  <svg
+                    className="c15"
+                    role="img"
+                  >
+                    <use />
+                  </svg>
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby={null}
+              className="MuiButtonBase-root MuiIconButton-root c13"
+              disabled={false}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              size="medium"
+              tabIndex="0"
+              title={null}
+              type="button"
+              variant="plain"
+            >
+              <span
+                className="MuiIconButton-label"
+              >
+                <span
+                  className="c14 unfold_more icon c9"
+                  size="medium"
+                >
+                  <svg
+                    className="c15"
+                    role="img"
+                  >
+                    <use
+                      href="#icon-unfold_more"
+                      xlinkHref="#icon-unfold_more"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </li>
+      <div
+        className="MuiCollapse-container"
+        style={
+          Object {
+            "minHeight": "0px",
+          }
+        }
+      >
+        <div
+          className="MuiCollapse-wrapper"
+        >
+          <div
+            className="MuiCollapse-wrapperInner"
+          >
+            <img
+              className="c0"
+              onClick={[Function]}
+              onLoad={[Function]}
+              src="test-file-stub"
+              style={
+                Object {
+                  "display": "none",
+                }
+              }
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

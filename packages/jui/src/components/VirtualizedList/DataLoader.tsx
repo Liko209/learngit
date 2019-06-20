@@ -67,6 +67,9 @@ const JuiDataLoader = ({
 
   const loadData = useCallback(
     _.throttle(async (type: 'initial' | 'up' | 'down', count: number = 10) => {
+      if (!isMountedRef.current) {
+        return;
+      }
       let success: boolean = false;
       const map = getMap();
       const { setLoading, load, onFailed } = map[type];
@@ -118,7 +121,10 @@ const JuiDataLoader = ({
     loadData('initial').then((result: boolean) => {
       if (result && isMountedRef.current) {
         const preloadInfo = loadMoreStrategy.getPreloadInfo();
-        preloadInfo && loadData(preloadInfo.direction!, preloadInfo.count);
+
+        preloadInfo &&
+          hasMore(preloadInfo.direction!) &&
+          loadData(preloadInfo.direction!, preloadInfo.count);
       }
     });
   },        []);

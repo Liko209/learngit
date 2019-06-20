@@ -142,9 +142,11 @@ class ProfileActionController {
     const profile = await this.profileDataController.getProfile();
     if (profile) {
       let oldFavPostIds =
-        profile.favorite_post_ids.filter(
-          (id: number) => id !== null && id !== undefined,
-        ) || [];
+        (profile.favorite_post_ids &&
+          profile.favorite_post_ids.filter(
+            (id: number) => id !== null && id !== undefined,
+          )) ||
+        [];
       const shouldDoNothing =
         (toBook && oldFavPostIds.indexOf(postId) !== -1) ||
         (!toBook && oldFavPostIds.indexOf(postId) === -1);
