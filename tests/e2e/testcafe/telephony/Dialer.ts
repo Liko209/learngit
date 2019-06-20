@@ -380,7 +380,7 @@ test.meta(<ITestMeta>{
     await phoneTab.clickCallerIDDropDown();
   });
 
-  let callerIdNumber = await phoneTab.callerIDDropDownItemByClass.nth(0).innerText
+  let callerIdNumber = await phoneTab.callerIDDropDownItems.nth(0).innerText
   await h(t).withLog(`And I set the caller id is ${callerIdNumber} from the setting`, async () => {
     await phoneTab.selectCallerIdByText(callerIdNumber);
   });
