@@ -5,6 +5,7 @@
  */
 import { v4 as uuid } from 'uuid';
 import * as _ from 'lodash';
+import * as assert from 'assert';
 import { formalName } from '../../libs/filter';
 import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
@@ -742,6 +743,133 @@ test(formalName('Should be unread when closed conversation received new unread',
   await h(t).withLog('And the conversation should be unread', async () => {
     await directMessagesSection.conversationEntryById(chat.glipId).umi.shouldBeNumber(1);
   });
+});
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-197'],
+  maintainers: ['potar.he'],
+  keywords: ['UMI'],
+})('UMI badge in the left navigation panel can be updated when I change to other tab.', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const anotherUser = users[5];
+
+  const chat = <IGroup>{
+    owner: loginUser,
+    members: [loginUser, anotherUser],
+    type: 'DirectMessage',
+  }
+
+  await h(t).withLog(`Given loginUser total umi is 1`, async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+    await h(t).scenarioHelper.resetProfileAndState(loginUser);
+    await h(t).scenarioHelper.sendTextPost(uuid(), chat, anotherUser);
+  });
+
+  await h(t).withLog(`When I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('Then I can find 1 UMI in the left navigation panel Messages Entry', async () => {
+    assert.ok(await app.homePage.leftPanel.messagesEntry.getUmi() == 1, 'umi number error');
+  });
+
+  await h(t).withLog('When I receive a new message in a directMessage conversation', async () => {
+    await h(t).scenarioHelper.sendTextPost(uuid(), chat, anotherUser);
+  });
+
+  await h(t).withLog('Then I can find 2 UMI in the left navigation panel Messages Entry', async () => {
+    assert.ok(await app.homePage.leftPanel.messagesEntry.getUmi() == 2, 'umi number error');
+  });
+
+  await h(t).withLog('When I receive a new message in a directMessage conversation', async () => {
+    await h(t).reload();
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('Then I can find keep 2 UMI in the left navigation panel Messages Entry', async () => {
+    assert.ok(await app.homePage.leftPanel.messagesEntry.getUmi() == 2, 'umi number error');
+  });
+});
+
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1273'],
+  maintainers: ['potar.he'],
+  keywords: ['moreMenu'],
+})('Should not change its position in the conversation list when mark conversation as read/unread', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[0];
+  const anotherUsers = users.filter(user => user.rcId !== loginUser.rcId);
+  const chatsLength = 3;
+
+  const chats = Array.from({ length: chatsLength }, (x, i) => <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, anotherUsers[i]]
+  })
+
+  await h(t).withLog(`Given I have  some 1:1 chat with at least 1 post`, async () => {
+    await h(t).scenarioHelper.createTeamsOrChats(chats);
+    await h(t).scenarioHelper.resetProfileAndState(loginUser);
+    for (let i = 0; i < chats.length; i++) {
+      const anotherUser = chats[i].members.filter(user => user.rcId !== loginUser.rcId)[0];
+      await h(t).scenarioHelper.sendTextPost(uuid(), chats[i], anotherUser);
+    }
+  });
+
+  await h(t).withLog(`When I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+
+  const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+  const moreMenu = app.homePage.messageTab.moreMenu;
+
+  for (let i = 0; i < chats.length; i++) {
+    let chatId: string
+    await h(t).withLog(`When I open moreMenu of nth({i}) conversation (id: {chatId}) of direct message section`, async (step) => {
+      chatId = await directMessagesSection.nthConversationEntry(i).groupId;
+      step.initMetadata({ i: i.toString(), chatId });
+      await directMessagesSection.nthConversationEntry(i).openMoreMenu();
+    });
+
+    await h(t).withLog(`And click 'Mark as read' button`, async () => {
+      await moreMenu.markAsReadOrUnread.enter();
+    });
+
+    await h(t).withLog(`Then The position is not changed in the conversation list`, async () => {
+      await directMessagesSection.nthConversationEntry(i).groupIdShouldBe(chatId);
+    });
+
+    await h(t).withLog(`When I open moreMenu of nth({i}) conversation (id: {chatId}) of direct message section`, async (step) => {
+      chatId = await directMessagesSection.nthConversationEntry(i).groupId;
+      step.initMetadata({ i: i.toString(), chatId });
+      await directMessagesSection.nthConversationEntry(i).openMoreMenu();
+    });
+
+    await h(t).withLog(`And click 'Mark as unread' button`, async () => {
+      await moreMenu.markAsReadOrUnread.enter();
+    });
+
+    await h(t).withLog(`Then The position is not changed in the conversation list`, async () => {
+      await directMessagesSection.nthConversationEntry(i).groupIdShouldBe(chatId);
+    });
+  }
 });
 
 test.meta(<ITestMeta>{
