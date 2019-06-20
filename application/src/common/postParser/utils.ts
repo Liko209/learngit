@@ -191,6 +191,7 @@ const AT_MENTION_REGEX = /<a class='at_mention_compose' rel='{"id":([-?\d]*?)}'>
 const AT_MENTION_GROUPED_REGEXP = /(<a class='at_mention_compose' rel='{"id":[-?\d]*?}'>)(.*?)(<\/a>)/gi;
 
 const EMOJI_REGEX = /<emoji data='([\s\S]*?)' \/>/gi;
+const MIN_EMOJI_PATTERN_LEN = 17;
 const EMOJI_UNICODE_REGEX_RANGE =
   '\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]';
 const EMOJI_UNICODE_REGEX = `${Object.keys(convertMapUnicode).join('|')}`;
@@ -264,6 +265,7 @@ export {
   b64DecodeUnicode,
   getStylesObject,
   getTopLevelChildNodesFromHTML,
+  MIN_EMOJI_PATTERN_LEN,
 };
 
 // regex
