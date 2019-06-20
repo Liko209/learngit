@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Components/Lists JuiListSubheader: Components/Lists JuiListSubheader 1`] = `
+.c0.c0 {
+  height: 36px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 12px 8px 4px 16px !important;
+  background: #fff;
+  color: #616161;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+<div>
+  <li
+    className="MuiListSubheader-root MuiListSubheader-sticky MuiListSubheader-gutters c0"
+  >
+    Pinned Posts (24)
+  </li>
+</div>
+`;

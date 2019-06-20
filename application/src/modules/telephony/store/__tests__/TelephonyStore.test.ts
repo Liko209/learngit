@@ -245,4 +245,19 @@ describe('Telephony store', () => {
     store.syncDialerEntered(false);
     expect(store.enteredDialer).toBeFalsy();
   });
+
+  it('activeCallTime should to be undefined when callState is not CONNECTED', () => {
+    const store = createStore();
+    expect(store.activeCallTime).toBeUndefined();
+    store.directCall();
+    store.connected();
+    expect(store.activeCallTime).toBeDefined();
+    store.end();
+    expect(store.activeCallTime).toBeUndefined();
+  });
+
+  it('`hasActiveInBoundCall` should be initialized with false', () => {
+    const store = createStore();
+    expect(store.hasActiveInBoundCall).toBeFalsy();
+  });
 });

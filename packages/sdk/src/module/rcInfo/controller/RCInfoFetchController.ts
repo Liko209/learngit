@@ -78,8 +78,8 @@ class RCInfoFetchController {
         this._shouldIgnoreFirstTime,
       );
       this.scheduleRCInfoJob(
-        JOB_KEY.FETCH_PHONE_DATA,
-        this.requestRCPhoneData,
+        JOB_KEY.FETCH_RC_ACCOUNT_SERVICE_INFO,
+        this.requestAccountServiceInfo,
         false,
       );
       this.scheduleRCInfoJob(
@@ -87,7 +87,6 @@ class RCInfoFetchController {
         this.requestSpecialNumberRule,
         false,
       );
-
       this.scheduleRCInfoJob(
         JOB_KEY.FETCH_EXTENSION_PHONE_NUMBER_LIST,
         this.requestExtensionPhoneNumberList,
@@ -99,13 +98,13 @@ class RCInfoFetchController {
         false,
       );
       this.scheduleRCInfoJob(
-        JOB_KEY.FETCH_RC_ACCOUNT_SERVICE_INFO,
-        this.requestAccountServiceInfo,
+        JOB_KEY.FETCH_FORWARDING_NUMBER,
+        this._getForwardingNumberController().requestForwardingNumbers,
         false,
       );
       this.scheduleRCInfoJob(
-        JOB_KEY.FETCH_FORWARDING_NUMBER,
-        this._getForwardingNumberController().requestForwardingNumbers,
+        JOB_KEY.FETCH_PHONE_DATA,
+        this.requestRCPhoneData,
         false,
       );
       this._isRCInfoJobScheduled = true;

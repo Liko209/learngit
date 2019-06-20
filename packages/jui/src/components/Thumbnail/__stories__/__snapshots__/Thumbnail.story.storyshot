@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Components/Thumbnail Thumbnail: Components/Thumbnail Thumbnail 1`] = `
+.c0 {
+  background-color: #f5f6fb;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: auto;
+}
+
+<span
+  className="c0"
+  data-test-automation-id="thumbnail"
+  style={
+    Object {
+      "backgroundImage": "url(test-file-stub)",
+      "borderRadius": 4,
+      "display": "inline-block",
+      "height": 36,
+      "width": 36,
+    }
+  }
+/>
+`;

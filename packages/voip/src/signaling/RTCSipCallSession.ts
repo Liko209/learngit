@@ -38,6 +38,13 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   private _mediaElement: RTCMediaElement | null;
   private _mediaDeviceManager: RTCMediaDeviceManager;
 
+  private _onInputDeviceChanged = (deviceId: string) => {
+    this._setAudioInputDevice(deviceId);
+  }
+  private _onOutputDeviceChanged = (deviceId: string) => {
+    this._setAudioOutputDevice(deviceId);
+  }
+
   constructor(uuid: string) {
     super();
     this._uuid = uuid;
@@ -58,12 +65,12 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
     this._mediaDeviceManager.off(
       RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
-      this._setAudioInputDevice,
+      this._onInputDeviceChanged,
     );
 
     this._mediaDeviceManager.off(
       RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
-      this._setAudioOutputDevice,
+      this._onOutputDeviceChanged,
     );
 
     const sdh = this._session.sessionDescriptionHandler;
@@ -115,15 +122,11 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     });
     this._mediaDeviceManager.on(
       RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
-      (deviceId: string) => {
-        this._setAudioInputDevice(deviceId);
-      },
+      this._onInputDeviceChanged,
     );
     this._mediaDeviceManager.on(
       RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
-      (deviceId: string) => {
-        this._setAudioOutputDevice(deviceId);
-      },
+      this._onOutputDeviceChanged,
     );
     this._session.onMediaConnectionStateChange = this._onMediaConnectionStateChange;
   }
@@ -536,6 +539,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 
   private _setAudioInputDevice(deviceID: string) {
+    rtcLogger.debug(LOG_TAG, `Set audio input device id: ${deviceID}`);
     navigator.mediaDevices
       .getUserMedia({
         audio: {
@@ -588,6 +592,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 
   private _setAudioOutputDevice(deviceID: string) {
+    rtcLogger.debug(LOG_TAG, `Set audio output device id: ${deviceID}`);
     if (this._mediaElement && this._mediaElement.local.setSinkId) {
       rtcLogger.debug(
         LOG_TAG,

@@ -247,7 +247,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)', ['JP
 
   const dialog = app.homePage.messageTab.closeConversationModal;
   await h(t).withLog('Then a confirm dialog should be popup', async () => {
-    await t.expect(dialog.getSelector('h2').withText(title).exists).ok();
+    await t.expect(dialog.title.withText(title).exists).ok();
     await t.expect(dialog.getSelector('p').withText(content)).ok();
     await t.expect(dialog.dontAskAgainCheckbox.find('span').withText(checkboxLabel).exists).ok();
     await t.expect(dialog.closeButton.find('span').withText(button).exists).ok();
@@ -268,7 +268,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)', ['JP
   });
 
   await h(t).withLog('Then should be show the confirm dialog again', async () => {
-    await t.expect(dialog.getSelector('h2').withText(title).exists).ok();
+    await t.expect(dialog.title.withText(title).exists).ok();
     await t.expect(dialog.getSelector('p').withText(content)).ok();
     await t.expect(dialog.dontAskAgainCheckbox.find('span').withText(checkboxLabel).exists).ok();
     await t.expect(dialog.closeButton.find('span').withText(button).exists).ok();
@@ -336,7 +336,7 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
   });
 
   await h(t).withLog('Then a confirm dialog should be popup', async () => {
-    await t.expect(closeConversationDialog.getSelector('h2').withText(title).exists).ok();
+    await t.expect(closeConversationDialog.title.withText(title).exists).ok();
     await t.expect(closeConversationDialog.getSelector('p').withText(content)).ok();
     await t.expect(closeConversationDialog.dontAskAgainCheckbox.find('span').withText(checkboxLabel).exists).ok();
     await t.expect(closeConversationDialog.closeButton.find('span').withText(button).exists).ok();

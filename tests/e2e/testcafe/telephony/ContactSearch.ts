@@ -28,6 +28,8 @@ test.meta(<ITestMeta>{
 
   const searchStr = extension.replace('+', '');
 
+  await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfileAndState();
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();

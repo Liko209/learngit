@@ -5,8 +5,7 @@
  */
 
 import { ERROR_CODES_NETWORK, mainLogger } from 'foundation';
-import { TaskController } from 'sdk/framework/controller/impl/TaskController';
-import { ITaskStrategy } from 'sdk/framework/strategy/ITaskStrategy';
+
 import { indexData, initialData, remainingData } from '../../../api';
 import { IndexDataModel } from '../../../api/glip/user';
 import { ErrorParserHolder } from '../../../error/ErrorParserHolder';
@@ -24,7 +23,7 @@ import { ServiceConfig, ServiceLoader } from '../../../module/serviceLoader';
 import { CONFIG, SERVICE } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
 import { PerformanceTracer, PERFORMANCE_KEYS } from '../../../utils';
-import { ProgressBar, progressManager } from '../../../utils/progress';
+import { progressManager } from '../../../utils/progress';
 import { CompanyService } from '../../company';
 import { Group, GroupService } from '../../group';
 import { ItemService } from '../../item/service';
@@ -37,19 +36,28 @@ import { StateService } from '../../state';
 import { SyncGlobalConfig } from '../config';
 import { LOG_INDEX_DATA } from '../constant';
 import { SyncListener, SyncService } from '../service';
-import { IndexDataTaskStrategy } from '../strategy/IndexDataTaskStrategy';
+
 import { ChangeModel, SYNC_SOURCE } from '../types';
 import { DaoGlobalConfig } from 'sdk/dao/config';
+
+import { IndexTaskController } from './IndexTaskController';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
   private _isFetchingRemaining: boolean;
   private _syncListener: SyncListener;
-  private _progressBar: ProgressBar;
-  private _indexDataTaskController: TaskController;
+  private _progressBar: {
+    start: () => void;
+    stop: () => void;
+  };
+  private _indexDataTaskController: IndexTaskController;
 
   constructor() {
-    this._progressBar = progressManager.newProgressBar();
+    const progressBar = progressManager.newProgressBar();
+    this._progressBar = {
+      start: () => navigator.onLine && progressBar.start(),
+      stop: () => progressBar.stop(),
+    };
   }
 
   handleSocketConnectionStateChanged({ state }: { state: any }) {
@@ -201,8 +209,12 @@ class SyncController {
         mainLogger.log(LOG_INDEX_DATA, 'fetch index failed');
         syncConfig.updateIndexSucceed(false);
         await this._handleSyncIndexError(error);
+
+        this._progressBar.stop();
         throw new Error(error);
       }
+      mainLogger.log(LOG_INDEX_DATA, 'executeFunc done. stop progress');
+
       this._progressBar.stop();
     };
     const taskController = this._getIndexDataTaskController(executeFunc);
@@ -211,11 +223,7 @@ class SyncController {
 
   private _getIndexDataTaskController(executeFunc: () => any) {
     if (!this._indexDataTaskController) {
-      const taskStrategy: ITaskStrategy = new IndexDataTaskStrategy();
-      this._indexDataTaskController = new TaskController(
-        taskStrategy,
-        executeFunc,
-      );
+      this._indexDataTaskController = new IndexTaskController(executeFunc);
     }
     return this._indexDataTaskController;
   }

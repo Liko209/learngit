@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/SearchBar JuiSearchItemValue: Pattern/SearchBar JuiSearchItemValue 1`] = `
+.c0 {
+  color: #212121;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.c0 span {
+  font-weight: bold;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+<div>
+  <div
+    className="c0"
+    dangerouslySetInnerHTML={
+      Object {
+        "__html": "<span>a</span>b<span>c</span>de<span>fg</span>",
+      }
+    }
+  />
+</div>
+`;
