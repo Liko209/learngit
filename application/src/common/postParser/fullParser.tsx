@@ -27,6 +27,7 @@ import {
   b64EncodeUnicode,
   EMOJI_UNICODE_REGEX_RANGE,
   EMOJI_ASCII_UNIQUE_CHARS,
+  MIN_EMOJI_PATTERN_LEN,
 } from './utils';
 import { URLParser } from './parsers/URLParser';
 import _ from 'lodash';
@@ -81,7 +82,10 @@ const parsersConfig = [
   {
     Parser: EmojiParser,
     shouldParse: (fullText: string, { emoji, html }: PostParserOptions) =>
-      emoji && !html,
+      emoji &&
+      !html &&
+      fullText.length >= MIN_EMOJI_PATTERN_LEN &&
+      fullText.includes("<emoji data='"),
     getParserOption: (): AtMentionParserOption => ({}),
   },
   {
@@ -141,16 +145,15 @@ const transformEmoji = (
   emojiOptions: EmojiTransformerOption,
 ) => {
   let _fullText = fullText;
-  const emojiTransformer = new EmojiTransformer();
   if (new RegExp(EMOJI_UNICODE_REGEX_RANGE).test(_fullText)) {
-    _fullText = emojiTransformer.replace(
+    _fullText = EmojiTransformer.replace(
       _fullText,
       emojiOptions,
       EmojiConvertType.UNICODE,
     );
   }
   if (new RegExp(EMOJI_ASCII_UNIQUE_CHARS).test(fullText)) {
-    _fullText = emojiTransformer.replace(
+    _fullText = EmojiTransformer.replace(
       _fullText,
       emojiOptions,
       EmojiConvertType.ASCII,
@@ -159,16 +162,16 @@ const transformEmoji = (
   if (
     emojiOptions.customEmojiMap &&
     Object.keys(emojiOptions.customEmojiMap).length &&
-    /:.*?:/.test(fullText)
+    /:.+:/.test(fullText)
   ) {
-    _fullText = emojiTransformer.replace(
+    _fullText = EmojiTransformer.replace(
       _fullText,
       emojiOptions,
       EmojiConvertType.CUSTOM,
     );
   }
-  if (/:.*?:/.test(fullText)) {
-    _fullText = emojiTransformer.replace(
+  if (/:\w+:/.test(fullText)) {
+    _fullText = EmojiTransformer.replace(
       _fullText,
       emojiOptions,
       EmojiConvertType.EMOJI_ONE,
@@ -187,23 +190,25 @@ const _postParser: FullParser = (
   // In case the parser throw error and crash the whole page, we need to prevent the crashing and log error.
   try {
     const atMentionRegex = new RegExp(AT_MENTION_GROUPED_REGEXP);
-    let _fullText = fullText;
+    let transformedText = fullText;
     if (options && options.emoji && !options.emojiTransformed) {
-      _fullText = transformEmoji(_fullText, options.emoji);
+      transformedText = transformEmoji(transformedText, options.emoji);
       options.emojiTransformed = true;
     }
-    if (options && options.html && atMentionRegex.test(fullText)) {
-      _fullText = fullText.replace(
+    if (options && options.html && atMentionRegex.test(transformedText)) {
+      transformedText = transformedText.replace(
         AT_MENTION_GROUPED_REGEXP, // we need to encode the text inside atmention so it won't get parsed first, for example when some crazy user name is a url
         (full, g1, g2, g3) => `${g1}${b64EncodeUnicode(g2)}${g3}`,
       );
     }
-    const content = new ParseContent(_fullText);
+    const content = new ParseContent(transformedText);
     parsersConfig.forEach(({ Parser, shouldParse, getParserOption }) => {
-      if (shouldParse(_fullText, options || {})) {
+      if (shouldParse(transformedText, options || {})) {
         const parser = new Parser(getParserOption(options || {}) as any);
         const replacers = parser.setContent(content).parseToReplacers();
-        content.addReplacers(replacers);
+        if (replacers.length) {
+          content.addReplacers(replacers);
+        }
       }
     });
 

@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { EmojiTransformerOption, EmojiConvertType } from '../types';
+import moize from 'moize';
 import {
   convertMapUnicode,
   convertMapAscii,
@@ -22,7 +23,7 @@ import {
 } from '../utils';
 
 class EmojiTransformer {
-  replace(
+  static replace(
     originalStr: string,
     options: EmojiTransformerOption,
     convertType: EmojiConvertType = 0,
@@ -49,7 +50,8 @@ class EmojiTransformer {
             }),
           );
           return `<emoji data='${data}' />`;
-        }  if (convertType === EmojiConvertType.CUSTOM) {
+        }
+        if (convertType === EmojiConvertType.CUSTOM) {
           return match;
         }
         const key =
@@ -91,7 +93,10 @@ class EmojiTransformer {
     );
   }
 
-  getRegexp(options: EmojiTransformerOption, convertType: EmojiConvertType) {
+  static getRegexp(
+    options: EmojiTransformerOption,
+    convertType: EmojiConvertType,
+  ) {
     const { customEmojiMap = {} } = options;
     const regexpMap = {
       [EmojiConvertType.UNICODE]: EMOJI_UNICODE_REGEX,
@@ -102,7 +107,7 @@ class EmojiTransformer {
     return new RegExp(regexpMap[convertType], 'g');
   }
 
-  private _convertFromCodePoint(unicode: string) {
+  private static _convertFromCodePoint(unicode: string) {
     if (typeof unicode === 'string') {
       const params: number[] = unicode
         .split('-')
@@ -112,16 +117,25 @@ class EmojiTransformer {
     return unicode;
   }
 
-  private _getClassName(match: string, enlarge: boolean) {
+  private static _getClassName(match: string, enlarge: boolean) {
     return enlarge ? 'emoji enlarge-emoji' : 'emoji';
   }
 
-  private _getSrc(unicode: string, hostName?: string) {
+  private static _getSrc(unicode: string, hostName?: string) {
     if (!hostName) {
       return '';
     }
     return hostName + EMOJI_ONE_PATH.replace('{{unicode}}', unicode);
   }
 }
+
+EmojiTransformer.replace = moize(EmojiTransformer.replace, {
+  maxSize: 100,
+  transformArgs: ([originalStr, options, convertType]) => [
+    originalStr,
+    convertType,
+    options.unicodeOnly,
+  ],
+});
 
 export { EmojiTransformer };

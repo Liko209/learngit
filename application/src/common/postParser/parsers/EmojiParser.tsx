@@ -30,10 +30,6 @@ class EmojiParser extends PostParser implements IPostParser {
     }
   }
 
-  checkPreCondition(str: string) {
-    return str.length >= 17 && str.includes("<emoji data='"); // 17 = min length of string that can match emoji pattern
-  }
-
   getRegexp() {
     return new RegExp(EMOJI_REGEX);
   }

@@ -702,10 +702,70 @@ Veniam anim velit amet aliqua proident.`}
 
   describe('conflict cases', () => {
     describe('at mention and emoji', () => {
+      it('should render both atmention and emoji', () => {
+        expect(
+          postParser(
+            `<a class='at_mention_compose' rel='{"id":187817987}'>@Jesse</a> :joy:`,
+            {
+              atMentions: { map },
+              emoji: { hostName },
+              html: true,
+            },
+          ),
+        ).toEqual([
+          <JuiAtMention
+            key={0}
+            id='187817987'
+            isCurrent={false}
+            name='@Jesse'
+          />,
+          ' ',
+          <img
+            className='emoji'
+            alt='😂'
+            title=':joy:'
+            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f602.png?v=2.2.7'
+            key={1}
+          />,
+        ]);
+      });
+
+      it('should render both quote and emoji', () => {
+        expect(
+          postParser(
+            `<a class='at_mention_compose' rel='{"id":187817987}'>@Jesse</a> wrote:
+> sdfsadf
+:joy:`,
+            {
+              atMentions: { map },
+              emoji: { hostName },
+              html: true,
+            },
+          ),
+        ).toEqual([
+          <JuiAtMention
+            id='187817987'
+            isCurrent={false}
+            name='@Jesse'
+            key={0}
+          />,
+          ' wrote:',
+          <q key={1}>sdfsadf</q>,
+          <img
+            alt='😂'
+            className='emoji'
+            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f602.png?v=2.2.7'
+            title=':joy:'
+            key={2}
+          />,
+        ]);
+      });
+
       it('should only render at mention when there is emoji in at mention', () => {
         expect(
           postParser(`sdds${atmention('122', ':joy:')}123  ss`, {
             atMentions: { map },
+            emoji: { hostName },
           }),
         ).toEqual([
           'sdds',
