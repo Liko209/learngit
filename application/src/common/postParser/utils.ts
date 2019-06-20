@@ -94,7 +94,7 @@ const getTopLevelChildNodesFromHTML = moize(
     const nodes = [];
     let result = tagReg.exec(html);
     let cursor = 0;
-    while (result !== null) {
+    while (result && result[0]) {
       const match = result[0];
       const tag = result[1];
       const attrs: { [attrName: string]: any } = {};
@@ -116,7 +116,7 @@ const getTopLevelChildNodesFromHTML = moize(
         const attrKeyReg = /\s+([\w]+)=/g;
         let attrResult = attrKeyReg.exec(attrStr);
         let lastIndex = 0;
-        while (attrResult !== null) {
+        while (attrResult && attrResult[0]) {
           const key = getKey(attrResult[1]);
           lastIndex = attrResult.index + attrResult[0].length;
           attrResult = attrKeyReg.exec(attrStr);

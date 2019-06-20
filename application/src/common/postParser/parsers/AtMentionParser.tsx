@@ -26,7 +26,7 @@ class AtMentionParser extends PostParser implements IPostParser {
       textEncoded,
     } = this.options;
     const result = this.getRegexp().exec(strValue);
-    if (!result) {
+    if (!result || !result[0]) {
       return strValue;
     }
     const id = result[1];

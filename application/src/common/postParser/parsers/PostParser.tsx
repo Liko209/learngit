@@ -72,7 +72,7 @@ abstract class PostParser implements IPostParser {
     }
     const replacers: Replacer[] = [];
     let result = regexp.exec(str);
-    while (result !== null) {
+    while (result && result[0]) {
       const matchedStr = result[0];
       const range = {
         startIndex: result.index,

@@ -113,6 +113,20 @@ describe('non-glipdown text', () => {
           't est',
         ]);
       });
+
+      it('Different language can be highlighted [JPT-2298]', () => {
+        expect(postParser('abc我们', { keyword: '我们' })).toEqual([
+          'abc',
+          <JuiTextWithHighlight key={0}>我们</JuiTextWithHighlight>,
+        ]);
+        expect(postParser('abc我们 привет', { keyword: '我们 при' })).toEqual([
+          'abc',
+          <JuiTextWithHighlight key={0}>我们</JuiTextWithHighlight>,
+          ' ',
+          <JuiTextWithHighlight key={1}>при</JuiTextWithHighlight>,
+          'вет',
+        ]);
+      });
     });
 
     describe('phone number', () => {
