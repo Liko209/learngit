@@ -33,6 +33,8 @@ jest.mock('../../../module/sync/config/SyncUserConfig', () => {
     getSocketServerHost: jest.fn(),
     setSocketServerHost: jest.fn(),
     getLastIndexTimestamp: jest.fn(),
+    getLastCanReconnectTime: jest.fn().mockReturnValueOnce(0),
+    setLastCanReconnectTime: jest.fn(),
   };
   return {
     SyncUserConfig: () => {

@@ -1,11 +1,12 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/RightRail/PinnedPost.ts"
+      "./fixtures/Search/HighLight.ts"
     ],
     "include_tags": [
-      "JPT-1964",
-      "JPT-1901"
+      "P0",
+      "p1",
+      "P2"
     ],
     "browsers": [
       "selenium:chrome"
