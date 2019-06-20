@@ -3,12 +3,12 @@
  * @Date: 2019-02-02 14:33:31
  * Copyright © RingCentral. All rights reserved.
  */
-import { AbstractModule, inject } from 'framework';
+import { AbstractModule } from 'framework';
 import { LeaveBlockerService } from './service';
-import { LEAVE_BLOCKER_SERVICE } from './interface';
+import { ILeaveBlockerService } from './interface';
 
 class LeaveBlockerModule extends AbstractModule {
-  @inject(LEAVE_BLOCKER_SERVICE)
+  @ILeaveBlockerService
   private _leaveBlockerService: LeaveBlockerService;
 
   async bootstrap() {

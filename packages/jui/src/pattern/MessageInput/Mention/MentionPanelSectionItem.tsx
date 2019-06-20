@@ -19,7 +19,8 @@ const Wrapper = styled.div`
   color: ${grey('900')};
   &&.selected {
     background-color: ${palette('primary', '700')};
-    color: ${palette('common', 'white')};
+    color: ${({ theme }) =>
+      theme.palette.getContrastText(palette('primary', '700')({ theme }))};
   }
   &:hover {
     background-color: ${palette('grey', '50')};
@@ -44,11 +45,13 @@ class JuiMentionPanelSectionItem extends PureComponent<Props> {
     const { Avatar, displayName, selected, selectHandler } = this.props;
     return (
       <Wrapper
+        data-test-automation-class="match-item"
+        data-test-automation-value={displayName.trim()}
         className={selected ? 'selected' : ''}
         onMouseDown={selectHandler}
       >
         {Avatar}
-        <DisplayName>{displayName}</DisplayName>
+        <DisplayName aria-label="display-text">{displayName}</DisplayName>
       </Wrapper>
     );
   }

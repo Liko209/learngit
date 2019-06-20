@@ -4,12 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ComponentType } from 'react';
+import { RouteProps } from 'react-router-dom';
 import _ from 'lodash';
 import { inject, Jupiter } from 'framework';
 import { HomeStore, SubModuleConfig } from '../store';
 import { config } from '../home.config';
+import { IHomeService } from '../interface/IHomeService';
+import { NavConfig } from '../types';
 
-class HomeService {
+class HomeService implements IHomeService {
   @inject(Jupiter) private _jupiter: Jupiter;
   @inject(HomeStore) private _homeStore: HomeStore;
 
@@ -27,6 +30,14 @@ class HomeService {
     this._homeStore.setDefaultRouterPaths(paths);
   }
 
+  registerNavItem(moduleName: string, navItemConfig: NavConfig): void {
+    this._homeStore.addNavItem(moduleName, navItemConfig);
+  }
+
+  registerRoute(moduleName: string, route: RouteProps): void {
+    this._homeStore.addRoute(moduleName, route);
+  }
+
   private async _registerSubModule(
     name: string,
     subModuleConfig: SubModuleConfig,
@@ -42,6 +53,8 @@ class HomeService {
       this._jupiter.registerModule(config.moduleConfig, config.afterBootstrap);
     }
     this._homeStore.addSubModule(name, config);
+    config.route && this._homeStore.addRoute(name, config.route);
+    config.nav && this._homeStore.addNavItem(name, await config.nav());
   }
 
   async unRegisterModule(name: string) {

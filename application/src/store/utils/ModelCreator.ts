@@ -13,6 +13,7 @@ import CodeItemModel from '../models/CodeItem';
 import EventItemModel from '../models/EventItem';
 import ConferenceItemModel from '../models/ConferenceItem';
 import ItemModel from '../models/Item';
+import MeetingItemModel from '../models/MeetingItem';
 import { IdModel } from 'sdk/framework/model';
 
 import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
@@ -26,6 +27,7 @@ import {
   ConferenceItem,
   IntegrationItem,
   InteractiveMessageItem,
+  MeetingItem,
 } from 'sdk/module/item/entity';
 import IntegrationItemModel from '../models/IntegrationItem';
 import InteractiveMessageItemModel from '../models/InteractiveMessageItem';
@@ -65,6 +67,9 @@ class ModelCreator {
         itemModel = new InteractiveMessageItemModel(
           model as InteractiveMessageItem,
         );
+        break;
+      case TypeDictionary.TYPE_ID_MEETING:
+        itemModel = new MeetingItemModel(model as MeetingItem);
         break;
       default:
         itemModel = new ItemModel(model as Item);

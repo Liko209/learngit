@@ -36,6 +36,7 @@ class StreamController {
   private _orderListHandler: FetchSortableDataListHandler<Post>;
   private _streamListHandler: FetchSortableDataListHandler<
     StreamItem,
+    number,
     IStreamItemSortableModel
   >;
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
@@ -141,7 +142,7 @@ class StreamController {
   }
 
   @action
-  handlePostsChanged = (delta: TDelta<IStreamItemSortableModel>) => {
+  handlePostsChanged = (delta: TDelta<number, IStreamItemSortableModel>) => {
     const { streamItems } = this._assemblyLine.process(
       delta,
       this.hasMore(QUERY_DIRECTION.OLDER),

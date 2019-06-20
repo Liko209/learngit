@@ -16,7 +16,6 @@ import {
 } from '../../foundation/utils/styles';
 import { Theme } from '../../foundation/theme/theme';
 import defaultLinkImage from './link_img@2x.png';
-import { withHighlight } from '../../hoc/withHighlight';
 
 const LinkItemsWrapper = styled(JuiCard)`
   margin-top: ${spacing(3)};
@@ -113,15 +112,15 @@ const FaviconName = styled.span`
 `;
 
 type Props = {
-  title: string;
-  summary: string;
+  title: React.ReactChild | (React.ReactChild | null)[] | null;
+  summary: React.ReactChild | (React.ReactChild | null)[] | null;
   thumbnail: string;
   onLinkItemClose?: (e: React.MouseEvent<HTMLSpanElement>) => void;
   url: string;
   favicon: string;
   faviconName: string;
 };
-class JuiConversationCardLinkItemsComponent extends PureComponent<Props> {
+class JuiConversationCardLinkItems extends PureComponent<Props> {
   constructor(props: Props) {
     super(props);
   }
@@ -139,13 +138,11 @@ class JuiConversationCardLinkItemsComponent extends PureComponent<Props> {
           <TitleWithSummary>
             <TitleNSummaryWrapper>
               <LinkTitle>
-                <a
-                  href={url}
-                  target="_blank"
-                  dangerouslySetInnerHTML={{ __html: title }}
-                />
+                <a href={url} target="_blank">
+                  {title}
+                </a>
               </LinkTitle>
-              <LinkSummary dangerouslySetInnerHTML={{ __html: summary }} />
+              <LinkSummary>{summary}</LinkSummary>
             </TitleNSummaryWrapper>
             <FaviconWrapper>
               <Favicon favicon={favicon} />
@@ -164,8 +161,4 @@ class JuiConversationCardLinkItemsComponent extends PureComponent<Props> {
     );
   }
 }
-
-const JuiConversationCardLinkItems = withHighlight(['title', 'summary'])(
-  JuiConversationCardLinkItemsComponent,
-);
 export { JuiConversationCardLinkItems };

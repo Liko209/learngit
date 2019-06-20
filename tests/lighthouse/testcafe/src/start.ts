@@ -19,6 +19,7 @@ const sceneMap = {
   SearchScene: 'src/scenes/searchScene.ts',
   SwitchConversationScene: 'src/scenes/switchConversationScene.ts',
   FetchGroupScene: 'src/scenes/fetchGroupScene.ts',
+  SearchPhoneScene:'src/scenes/searchPhoneScene.ts',
 };
 
 (async () => {
@@ -73,6 +74,7 @@ const sceneMap = {
   } finally {
     await testCafe.close();
     await closeDB();
+    process.exit(0);
   }
 })()
 

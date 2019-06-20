@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { CALLING_OPTIONS } from 'sdk/module/profile';
 import { inject } from 'framework';
+import { SettingService } from 'sdk/module/setting/service/SettingService';
 import {
   TelephonyService as ServerTelephonyService,
   RTC_ACCOUNT_STATE,
@@ -23,18 +25,28 @@ import { PersonService, ContactType } from 'sdk/module/person';
 import { GlobalConfigService } from 'sdk/module/config';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
 import { mainLogger } from 'sdk';
-import { TelephonyStore, CALL_TYPE } from '../store';
+import { TelephonyStore, CALL_TYPE, INCOMING_STATE } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
-import { reaction, IReactionDisposer, runInAction, action } from 'mobx';
+import { reaction, IReactionDisposer, runInAction, action, when } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { Profile } from 'sdk/module/profile/entity';
 import ProfileModel from '@/store/models/Profile';
-import { getSingleEntity } from '@/store/utils';
-import { ENTITY_NAME } from '@/store/constants';
-import { CALL_WINDOW_STATUS } from '../FSM';
+import { getSingleEntity, getEntity, getGlobalValue } from '@/store/utils';
+import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { AccountService } from 'sdk/module/account';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
+import i18next from 'i18next';
+import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
+import storeManager from '@/store';
+import { SettingEntityIds } from 'sdk/module/setting';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -45,19 +57,23 @@ class TelephonyService {
   static TAG: string = '[UI TelephonyService] ';
 
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
+  @inject(CLIENT_SERVICE) private _clientService: IClientService;
   // prettier-ignore
-  private _serverTelephonyService = ServiceLoader.getInstance<ServerTelephonyService>(ServiceConfig.TELEPHONY_SERVICE);
+  private _serverTelephonyService = ServiceLoader.getInstance <ServerTelephonyService>(ServiceConfig.TELEPHONY_SERVICE);
   private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
     ServiceConfig.RC_INFO_SERVICE,
   );
   private _globalConfigService = ServiceLoader.getInstance<GlobalConfigService>(
     ServiceConfig.GLOBAL_CONFIG_SERVICE,
   );
+  private _phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
+    ServiceConfig.PHONE_NUMBER_SERVICE,
+  );
   private _callId?: string;
-  private _shouldResumeDisposer: IReactionDisposer;
-  private _shouldDisplayDialerDisposer: IReactionDisposer;
+  private _hasActiveOutBoundCallDisposer: IReactionDisposer;
   private _callerPhoneNumberDisposer: IReactionDisposer;
   private _incomingCallDisposer: IReactionDisposer;
+  private _defaultCallerPhoneNumberDisposer: IReactionDisposer;
 
   private _onAccountStateChanged = (state: RTC_ACCOUNT_STATE) => {
     mainLogger.debug(
@@ -71,12 +87,19 @@ class TelephonyService {
     mainLogger.info(
       `${TelephonyService.TAG} Call object created, call id=${callId}`,
     );
+    // need factor in new module design
+    // if has incoming call voicemail should be pause
+    storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, true);
     this._callId = callId;
     this._telephonyStore.callType = CALL_TYPE.OUTBOUND;
     this._telephonyStore.directCall();
   }
 
   private _onReceiveIncomingCall = async (callInfo: TelephonyCallInfo) => {
+    const shouldIgnore = !(await this._isJupiterDefaultApp());
+    if (shouldIgnore) {
+      return;
+    }
     const { fromName, fromNum, callId } = callInfo;
     this._callId = callId;
     this._telephonyStore.callType = CALL_TYPE.INBOUND;
@@ -88,6 +111,9 @@ class TelephonyService {
     }
     this._telephonyStore.callId = callId;
     this._telephonyStore.incomingCall();
+    // need factor in new module design
+    // if has incoming call voicemail should be pause
+    storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, true);
     mainLogger.info(
       `${TelephonyService.TAG}Call object created, call id=${
         callInfo.callId
@@ -123,7 +149,7 @@ class TelephonyService {
       switch (e.code) {
         case 0:
           this._pauseRingtone();
-          ['mousedown', 'keydown'].forEach((evt) => {
+          ['mousedown', 'keydown'].forEach(evt => {
             const cb = () => {
               if (!this._telephonyStore.hasIncomingCall) {
                 return;
@@ -163,6 +189,9 @@ class TelephonyService {
         break;
       }
       case RTC_CALL_STATE.DISCONNECTED: {
+        // need factor in new module design
+        // if has incoming call voicemail should be pause
+        storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, false);
         this._resetCallState();
         break;
       }
@@ -215,6 +244,7 @@ class TelephonyService {
       }
       case RTC_CALL_ACTION.STOP_RECORD: {
         this._telephonyStore.setPendingForRecordBtn(false);
+        this._telephonyStore.isStopRecording = false;
         this._telephonyStore.stopRecording();
         break;
       }
@@ -249,6 +279,7 @@ class TelephonyService {
       }
       case RTC_CALL_ACTION.STOP_RECORD: {
         this._telephonyStore.setPendingForRecordBtn(false);
+        this._telephonyStore.isStopRecording = false;
         ToastCallError.toastFailedToStopRecording();
         this._telephonyStore.startRecording();
         break;
@@ -297,9 +328,6 @@ class TelephonyService {
 
     this._getDialerOpenedCount();
 
-    // Read firstly
-    this._getCallerPhoneNumberList();
-
     notificationCenter.on(
       RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
       this._getCallerPhoneNumberList,
@@ -318,33 +346,20 @@ class TelephonyService {
       },
     );
 
-    this._shouldDisplayDialerDisposer = reaction(
-      () =>
-        this._telephonyStore.shouldDisplayDialer &&
-        this._telephonyStore.callWindowState !== CALL_WINDOW_STATUS.MINIMIZED,
-      (shouldDisplayDialer) => {
-        if (!shouldDisplayDialer) {
-          return;
-        }
-        this._telephonyStore.shouldResume = true;
-      },
-      { fireImmediately: true },
-    );
-
-    this._shouldResumeDisposer = reaction(
+    this._hasActiveOutBoundCallDisposer = reaction(
       () => ({
-        shouldResume: this._telephonyStore.shouldResume,
+        hasActiveOutBoundCall: !this._telephonyStore.hasActiveOutBoundCall,
         defaultCallerPhoneNumber: this._telephonyStore.defaultCallerPhoneNumber,
       }),
       async ({
-        shouldResume,
+        hasActiveOutBoundCall,
         defaultCallerPhoneNumber,
       }: {
-        shouldResume: boolean;
+        hasActiveOutBoundCall: boolean;
         defaultCallerPhoneNumber: string;
       }) => {
         // restore things to default values
-        if (!shouldResume) {
+        if (!hasActiveOutBoundCall) {
           runInAction(() => {
             this.deleteInputString(true);
             this.setCallerPhoneNumber(defaultCallerPhoneNumber);
@@ -384,7 +399,7 @@ class TelephonyService {
           return;
         }
         const defaultPhoneNumber = callerPhoneNumberList.find(
-          (callerPhoneNumber) => callerPhoneNumber.id === defaultNumberId,
+          callerPhoneNumber => callerPhoneNumber.id === defaultNumberId,
         );
         if (defaultPhoneNumber) {
           this._telephonyStore.updateDefaultChosenNumber(
@@ -397,7 +412,7 @@ class TelephonyService {
 
     this._incomingCallDisposer = reaction(
       () => this._telephonyStore.hasIncomingCall,
-      (hasIncomingCall) => {
+      hasIncomingCall => {
         if (hasIncomingCall) {
           this._playRingtone();
         } else {
@@ -405,6 +420,21 @@ class TelephonyService {
         }
       },
       { fireImmediately: true },
+    );
+
+    this._defaultCallerPhoneNumberDisposer = when(
+      () => {
+        if (
+          this._telephonyStore.defaultCallerPhoneNumber &&
+          !this._telephonyStore.chosenCallerPhoneNumber
+        ) {
+          return true;
+        }
+        return false;
+      },
+      () => {
+        this._telephonyStore.chosenCallerPhoneNumber = this._telephonyStore.defaultCallerPhoneNumber;
+      },
     );
 
     // triggering a change of caller id list
@@ -429,20 +459,58 @@ class TelephonyService {
     }
     return '';
   }
+  makeRCPhoneCall(phoneNumber: string) {
+    const buildURL = (phoneNumber: string) => {
+      enum RCPhoneCallURL {
+        'RC' = 'rcmobile',
+        'ATT' = 'attvr20',
+        'TELUS' = 'rctelus',
+      }
+      const currentCompanyId = getGlobalValue(GLOBAL_KEYS.CURRENT_COMPANY_ID);
+      const { rcBrand } = getEntity(ENTITY_NAME.COMPANY, currentCompanyId);
+      return `${RCPhoneCallURL[rcBrand] ||
+        RCPhoneCallURL['RC']}://call?number=${encodeURIComponent(phoneNumber)}`;
+    };
+    const url = buildURL(phoneNumber);
+    this._clientService.invokeApp(url);
+    // if (this._telephonyStore.callState === CALL_STATE.DIALING) {
+    // this._telephonyStore.closeDialer();
+    // }
+  }
+  private async _isJupiterDefaultApp() {
+    const entity = await ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    ).getById(SettingEntityIds.Phone_DefaultApp);
+    return (entity && entity.value) === CALLING_OPTIONS.GLIP;
+  }
 
-  makeCall = async (toNumber: string) => {
+  makeCall = async (toNumber: string, callback?: Function) => {
     // FIXME: move this logic to SDK and always using callerID
-    const idx = this._telephonyStore.callerPhoneNumberList.findIndex(
-      (phone) =>
-        phone.phoneNumber === this._telephonyStore.chosenCallerPhoneNumber,
-    );
-    if (idx === -1) {
+    const idx =
+      this._telephonyStore.callerPhoneNumberList &&
+      this._telephonyStore.callerPhoneNumberList.findIndex(
+        phone =>
+          phone.phoneNumber === this._telephonyStore.chosenCallerPhoneNumber,
+      );
+
+    const { isValid, parsed } = await this.isValidNumber(toNumber);
+    if (!isValid) {
+      ToastCallError.toastInvalidNumber();
+      return;
+    }
+    const shouldMakeRcPhoneCall = !(await this._isJupiterDefaultApp());
+    if (shouldMakeRcPhoneCall) {
+      return this.makeRCPhoneCall(parsed as string);
+    }
+    callback && callback();
+
+    if (idx === -1 || typeof idx !== 'number') {
       return mainLogger.error(
         `${TelephonyService.TAG} can't Make call with: ${
           this._telephonyStore.chosenCallerPhoneNumber
-        }, because can't find corresponding phone number from ${this._telephonyStore.callerPhoneNumberList.join(
-          ',',
-        )}`,
+        }, because can't find corresponding phone number from ${this
+          ._telephonyStore.callerPhoneNumberList &&
+          this._telephonyStore.callerPhoneNumberList.join(',')}`,
       );
     }
     const fromEl = this._telephonyStore.callerPhoneNumberList[idx];
@@ -450,10 +518,10 @@ class TelephonyService {
     mainLogger.info(
       `${
         TelephonyService.TAG
-      }Make call with fromNumber: ${fromNumber}， and toNumber: ${toNumber}`,
+      }Make call with fromNumber: ${fromNumber}， and toNumber: ${parsed}`,
     );
     const rv = await this._serverTelephonyService.makeCall(
-      toNumber,
+      parsed as string,
       fromNumber,
     );
 
@@ -481,7 +549,7 @@ class TelephonyService {
       }
     }
 
-    this._telephonyStore.phoneNumber = toNumber;
+    this._telephonyStore.phoneNumber = parsed as string;
     return true;
   }
 
@@ -609,7 +677,10 @@ class TelephonyService {
   }
 
   getAllCallCount = () => {
-    return this._serverTelephonyService.getAllCallCount();
+    return (
+      this._serverTelephonyService &&
+      this._serverTelephonyService.getAllCallCount()
+    );
   }
 
   holdOrUnhold = () => {
@@ -651,6 +722,7 @@ class TelephonyService {
     }
     if (this._telephonyStore.isRecording) {
       this._telephonyStore.setPendingForRecordBtn(true);
+      this._telephonyStore.isStopRecording = true;
       return this._serverTelephonyService.stopRecord(this._callId as string);
     }
 
@@ -689,23 +761,52 @@ class TelephonyService {
     );
   }
 
+  @action
   concatInputString = (str: string) => {
     if (
       this._telephonyStore.inputString.length <
       this._telephonyStore.maximumInputLength
     ) {
+      // only set forwardString
+      if (this._telephonyStore.incomingState === INCOMING_STATE.FORWARD) {
+        this._telephonyStore.forwardString += str;
+        return;
+      }
       this._telephonyStore.inputString += str;
+      return;
     }
+    return;
   }
 
+  @action
   updateInputString = (str: string) => {
+    if (this._telephonyStore.incomingState === INCOMING_STATE.FORWARD) {
+      this._telephonyStore.forwardString = str.slice(
+        0,
+        this._telephonyStore.maximumInputLength,
+      );
+      return;
+    }
     this._telephonyStore.inputString = str.slice(
       0,
       this._telephonyStore.maximumInputLength,
     );
+    return;
   }
 
+  @action
   deleteInputString = (clearAll: boolean = false) => {
+    if (this._telephonyStore.incomingState === INCOMING_STATE.FORWARD) {
+      if (clearAll) {
+        this._telephonyStore.forwardString = '';
+        return;
+      }
+      this._telephonyStore.forwardString = this._telephonyStore.forwardString.slice(
+        0,
+        this._telephonyStore.forwardString.length - 1,
+      );
+      return;
+    }
     if (clearAll) {
       this._telephonyStore.inputString = '';
       return;
@@ -714,21 +815,23 @@ class TelephonyService {
       0,
       this._telephonyStore.inputString.length - 1,
     );
+    return;
   }
 
   dispose = () => {
-    this._shouldResumeDisposer && this._shouldResumeDisposer();
-    this._shouldDisplayDialerDisposer && this._shouldDisplayDialerDisposer();
+    this._hasActiveOutBoundCallDisposer &&
+      this._hasActiveOutBoundCallDisposer();
     this._callerPhoneNumberDisposer && this._callerPhoneNumberDisposer();
     this._incomingCallDisposer && this._incomingCallDisposer();
+    this._defaultCallerPhoneNumberDisposer &&
+      this._defaultCallerPhoneNumberDisposer();
 
     this._pauseRingtone();
 
     delete this._telephonyStore;
     delete this._serverTelephonyService;
     delete this._callId;
-    delete this._shouldResumeDisposer;
-    delete this._shouldDisplayDialerDisposer;
+    delete this._hasActiveOutBoundCallDisposer;
     delete this._callerPhoneNumberDisposer;
     delete this._incomingCallDisposer;
     delete this._audio;
@@ -810,6 +913,89 @@ class TelephonyService {
       pattern,
       time,
       timeUnit,
+    );
+  }
+
+  isValidNumber = async (
+    toNumber: string = this._telephonyStore.inputString,
+  ) => {
+    if (this._phoneNumberService.isValidNumber(toNumber)) {
+      const res = await this.parsePhone(toNumber);
+      return {
+        toNumber,
+        isValid: !!res,
+        parsed: res,
+      };
+    }
+    return {
+      toNumber,
+      isValid: false,
+      parsed: null,
+    };
+  }
+
+  parsePhone = async (toNumber: string = this._telephonyStore.inputString) => {
+    return this._phoneNumberService.getLocalCanonical(toNumber);
+  }
+
+  park = () => {
+    if (!this._callId) {
+      return;
+    }
+
+    if (this._telephonyStore.isStopRecording) {
+      ToastCallError.toastParkErrorStopRecording();
+      return;
+    }
+
+    return this._serverTelephonyService
+      .park(this._callId)
+      .then((callOptions: RTCCallActionSuccessOptions) => {
+        const message = `${i18next.t('telephony.prompt.ParkOk')}: ${
+          callOptions.parkExtension
+        }`;
+        Notification.flagToast({
+          message,
+          type: ToastType.SUCCESS,
+          messageAlign: ToastMessageAlign.CENTER,
+          fullWidth: false,
+          dismissible: true,
+        });
+        this.hangUp();
+      })
+      .catch(e => {
+        ToastCallError.toastParkError();
+        mainLogger.info(`${TelephonyService.TAG}park call error: ${e}`);
+      });
+  }
+
+  getForwardingNumberList = () => {
+    return this._rcInfoService.getForwardingNumberList();
+  }
+
+  forward = (phoneNumber: string) => {
+    if (!this._callId) {
+      return;
+    }
+    return this._serverTelephonyService.forward(
+      this._callId as string,
+      phoneNumber,
+    );
+  }
+
+  flip = (flipNumber: number) => {
+    if (!this._callId) {
+      return;
+    }
+    return this._serverTelephonyService.flip(
+      this._callId as string,
+      flipNumber,
+    );
+  }
+
+  getForwardPermission = () => {
+    return this._rcInfoService.isRCFeaturePermissionEnabled(
+      ERCServiceFeaturePermission.CALL_FORWARDING,
     );
   }
 }

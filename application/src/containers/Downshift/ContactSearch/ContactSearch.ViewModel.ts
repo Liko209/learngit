@@ -54,7 +54,10 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
     if (groupId) {
       const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, groupId);
       this.groupMembers = group.members;
+      return;
     }
+    this.groupMembers = [];
+    return;
   }
 
   @action
@@ -76,15 +79,12 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
       ? [...this.existMembers, ...hasMembers]
       : this.existMembers;
 
-    if (result) {
-      const filterMembers = result.sortableModels.filter(
-        (member: SortableModel<Person>) => {
-          return !existMembers.find(existMember => existMember === member.id);
-        },
-      );
-      return filterMembers;
-    }
-    return null;
+    const filterMembers = result.sortableModels.filter(
+      (member: SortableModel<Person>) => {
+        return !existMembers.find(existMember => existMember === member.id);
+      },
+    );
+    return filterMembers;
   }
 
   @action

@@ -44,10 +44,12 @@ test(formalName(`Restrict non-admin team members from pinning posts in Team sett
   const profileDialog = app.homePage.profileDialog;
   const teamSettingDialog = app.homePage.teamSettingDialog;
   const teamEntry = app.homePage.messageTab.teamsSection.conversationEntryById(teamId);
+  const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When admin open Team Setting Dialog of the team and turn Post Messages toggle off`, async () => {
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
     await teamSettingDialog.notAllowMemberPostMessage();
   });
@@ -70,8 +72,9 @@ test(formalName(`Restrict non-admin team members from pinning posts in Team sett
   });
 
   await h(t).withLog(`When admin open Team Setting Dialog of the team and turn Post Messages toggle on`, async () => {
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
     await teamSettingDialog.allowMemberPostMessage();
   });
@@ -95,8 +98,9 @@ test(formalName(`Restrict non-admin team members from pinning posts in Team sett
   });
 
   await h(t).withLog(`When admin open Team Setting Dialog of the team`, async () => {
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
   });
 

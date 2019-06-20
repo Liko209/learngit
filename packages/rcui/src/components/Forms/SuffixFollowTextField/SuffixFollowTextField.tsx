@@ -3,14 +3,13 @@
  * @Date: 2019-05-27 08:00:00
  * Copyright © RingCentral. All rights reserved.
  */
-
-import React from 'react';
 import styled from '../../../foundation/styled-components';
-import MuiTextField from '@material-ui/core/TextField';
-import { FormHelperTextProps } from '@material-ui/core/FormHelperText';
-import { InputLabelProps } from '@material-ui/core/InputLabel';
 import { PropTypes } from '@material-ui/core';
+import { FormHelperTextProps } from '@material-ui/core/FormHelperText';
 import { InputProps } from '@material-ui/core/Input';
+import { InputLabelProps } from '@material-ui/core/InputLabel';
+import MuiTextField from '@material-ui/core/TextField';
+import React from 'react';
 import RO from 'resize-observer-polyfill';
 
 const SuffixFollowTextFieldWarp = styled('div')`
@@ -117,9 +116,14 @@ class RuiSuffixFollowTextField extends React.PureComponent<
     }
 
     const defaultValue = this.inputEl.value;
-    this.setState({
-      inputValue: defaultValue,
-    });
+    this.setState(
+      {
+        inputValue: defaultValue,
+      },
+      () => {
+        this.syncHolderStyle();
+      },
+    );
   }
 
   componentWillUnmount() {
@@ -234,8 +238,15 @@ class RuiSuffixFollowTextField extends React.PureComponent<
 
     const suffixHolder = (
       <SuffixHolderWarp ref={this.suffixHolder as any}>
-        <SuffixHolderInputEl>{this.state.inputValue}</SuffixHolderInputEl>
-        <SuffixHolderSuffixEl ref={this.suffixValue as any}>
+        <SuffixHolderInputEl
+          data-test-automation-id={'followSuffixTextFieldInputValue'}
+        >
+          {this.state.inputValue}
+        </SuffixHolderInputEl>
+        <SuffixHolderSuffixEl
+          ref={this.suffixValue as any}
+          data-test-automation-id={'followSuffixTextFieldSuffixEl'}
+        >
           {suffixValue}
         </SuffixHolderSuffixEl>
       </SuffixHolderWarp>

@@ -13,6 +13,7 @@ import { Company } from 'sdk/module/company/entity';
 import { ENTITY_NAME } from '@/store';
 import { PhoneNumberInfo, PHONE_NUMBER_TYPE } from 'sdk/module/person/entity';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
 class ProfileDialogPersonContentViewModel extends ProfileDialogPersonViewModel
   implements ProfileDialogPersonContentViewProps {
@@ -38,9 +39,13 @@ class ProfileDialogPersonContentViewModel extends ProfileDialogPersonViewModel
 
   @computed
   get directNumbers() {
-    return this._phoneNumbers.filter((info: PhoneNumberInfo) => {
+    const phoneNumbers = this._phoneNumbers.filter((info: PhoneNumberInfo) => {
       return info.type === PHONE_NUMBER_TYPE.DIRECT_NUMBER;
     });
+    phoneNumbers.forEach((item: PhoneNumberInfo) => {
+      item.phoneNumber = formatPhoneNumber(item.phoneNumber);
+    });
+    return phoneNumbers;
   }
 
   @computed

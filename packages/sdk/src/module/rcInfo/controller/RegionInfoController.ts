@@ -13,14 +13,18 @@ import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { RCInfoFetchController } from './RCInfoFetchController';
 import { RCAccountInfoController } from './RCAccountInfoController';
 import { RCCallerIdController } from './RCCallerIdController';
-import { SELLING_COUNTRY_LIST, SUPPORT_AREA_CODE_COUNTRIES } from './constants';
+import {
+  SELLING_COUNTRY_LIST,
+  SUPPORT_AREA_CODE_COUNTRIES,
+  RC_BRAND_NAME_TO_BRAND_ID,
+} from './constants';
 import {
   RCBrandType,
   StationLocationSetting,
   GlobalStationLocationSetting,
   RegionInfo,
 } from '../types';
-import { PhoneNumberType } from 'sdk/module/phoneNumber/types';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 import { AccountServiceInfoController } from './AccountServiceInfoController';
 import { mainLogger } from 'foundation';
 import { notificationCenter, RC_INFO, SERVICE } from 'sdk/service';
@@ -41,30 +45,35 @@ const DefaultCountryInfo = {
   isoCode: 'US',
   callingCode: '1',
 };
-const DefaultBrandId = '1210';
+const DefaultBrandId = RC_BRAND_NAME_TO_BRAND_ID.RC;
 
 class RegionInfoController {
   private _currentCountryInfo: DialingCountryInfo;
+  private _notificationKeys: string[];
 
   constructor(
     private _rcInfoFetchController: RCInfoFetchController,
     private _rcAccountInfoController: RCAccountInfoController,
     private _accountServiceInfoController: AccountServiceInfoController,
     private _callerIdController: RCCallerIdController,
-  ) {}
+  ) {
+    this._notificationKeys = [
+      RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
+      RC_INFO.ACCOUNT_INFO,
+      RC_INFO.RC_SERVICE_INFO,
+    ];
+  }
 
   init() {
-    notificationCenter.on(
-      RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
-      this.updateStationLocation,
-    );
+    this._notificationKeys.forEach((key: string) => {
+      notificationCenter.on(key, this.updateStationLocation);
+    });
   }
 
   dispose() {
-    notificationCenter.off(
-      RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
-      this.updateStationLocation,
-    );
+    this._notificationKeys.forEach((key: string) => {
+      notificationCenter.off(key, this.updateStationLocation);
+    });
   }
 
   updateStationLocation = () => {
@@ -350,6 +359,10 @@ class RegionInfoController {
           stationSettingInDB.areaCode,
         );
         areaCode = checkResult.should ? areaCode : checkResult.areaCode;
+      }
+
+      if (areaCodeByManual && areaCode.length === 0) {
+        return areaCode;
       }
 
       let region = await PhoneParserUtility.getRegionalInfo(

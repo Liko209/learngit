@@ -22,6 +22,10 @@ class PlatformUtils {
     return userAgent && userAgent.indexOf('Firefox') > -1;
   }
 
+  static isElectron() {
+    return navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
+  }
+
   static getRCUserAgent() {
     const RC_JUPITER = 'RingCentral Jupiter';
     let userAgent = '';
@@ -29,13 +33,14 @@ class PlatformUtils {
     const uaParser = new UAParser(navigator.userAgent);
     const jupiterElectron = window['jupiterElectron'];
     if (jupiterElectron) {
-      const {
-        electronVersion,
-        electronAppVersion,
-      } = jupiterElectron.getElectronVersionInfo();
-      userAgent = `${RC_JUPITER} DT/${appVersion}-${
-        electronAppVersion.split(' ')[0]
-      }/Electron-${electronVersion}`;
+      let electronVersion = '';
+      let electronAppVersion = '';
+      if (jupiterElectron.getElectronVersionInfo) {
+        const info = jupiterElectron.getElectronVersionInfo();
+        electronVersion = info.electronVersion;
+        electronAppVersion = info.electronAppVersion.split(' ')[0];
+      }
+      userAgent = `${RC_JUPITER} DT/${appVersion}-${electronAppVersion}/Electron-${electronVersion}`;
     } else {
       const { name, version } = uaParser.getBrowser();
       userAgent = `${RC_JUPITER} Web/${appVersion}/${name}-${version}`;

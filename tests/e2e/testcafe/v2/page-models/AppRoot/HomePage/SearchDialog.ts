@@ -286,7 +286,7 @@ class FullSearch extends BaseSearchResultPage {
   }
 
   get messagesTab() {
-    return this.getComponent(MessagesResultTab, this.self)
+    return this.getComponent(MessagesResultTab)
   }
 
   get searchResultsCount() {
@@ -294,42 +294,44 @@ class FullSearch extends BaseSearchResultPage {
   }
 
   async getCountOnHeader(): Promise<number> {
-    const reg = /\((\d+)\)/;
     if (!await this.searchResultsCount.exists) {
       return 0;
     }
     const text = await this.searchResultsCount.innerText;
-    let count = Number(reg.exec(text));
-    if (!count) {
-      return 0;
+    let count = +text.replace(/[^\d]/g, '');
+    if (count) {
+      return count
     }
-    return count;
+    return 0;
   }
 
   async countOnHeaderShouldBe(n: number) {
-    H.retryUntilPass(async () => {
+    await H.retryUntilPass(async () => {
       const count = await this.getCountOnHeader();
-      assert.strictEqual(count, n, `expect ${n}, but ${count}`);
-    })
+      assert.ok(count == n, `expect ${n}, but ${count}`);
+    }, 10, 1e3)
   }
 
   async countOnHeaderGreaterThanOrEqual(n: number) {
-    H.retryUntilPass(async () => {
+    await H.retryUntilPass(async () => {
       const count = await this.getCountOnHeader();
       assert.ok(count >= n, `expect at least ${n}, but ${count}`);
-    })
+    }, 10, 1e3)
   }
 
   async countOnHeaderLessThanOrEqual(n: number) {
-    H.retryUntilPass(async () => {
+    await H.retryUntilPass(async () => {
       const count = await this.getCountOnHeader();
       assert.ok(count <= n, `expect less than or equal ${n}, but ${count}`);
-    })
+    }, 10, 1e3)
   }
 
 }
 
 class MessagesResultTab extends BaseConversationPage {
+  get self() {
+    return this.getSelectorByAutomationId('search-message-panel');
+  }
   /**  post */
   async allPostShouldBeByUser(name: string) {
     await H.retryUntilPass(async () => {

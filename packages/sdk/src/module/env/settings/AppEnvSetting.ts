@@ -26,7 +26,7 @@ class AppEnvSetting {
       return false;
     }
 
-    if (oldEnv && accountService) {
+    if (oldEnv && accountService && accountService.isLoggedIn()) {
       await accountService.logout();
     }
 

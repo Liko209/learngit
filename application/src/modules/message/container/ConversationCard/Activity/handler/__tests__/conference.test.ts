@@ -10,10 +10,10 @@ describe('Conference', () => {
     const data = conference();
     expect(data).toEqual({
       parameter: {
-        verb: 'item.activity.started',
-        noun: 'item.activity.audio conference',
+        verb: 'started',
+        noun: 'audio conference',
       },
-      key: 'item.activity.verb-article-noun',
+      key: 'item.activity.started a audio conference',
     });
   });
 });

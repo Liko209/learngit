@@ -9,8 +9,8 @@ import { ENV_OPTS, SITE_URL } from '../../config';
 export class JupiterHelper {
 
   static urlToRedirectUriState(url: URL) {
-    const localHosts = ["localhost", "127.0.0.1"];
-    if (!_.includes(localHosts, url.hostname)) url.protocol = "https";
+    // const localHosts = ["localhost", "127.0.0.1"];
+    // if (!_.includes(localHosts, url.hostname)) url.protocol = "https";
     const state = url.pathname + url.search.replace('&', '$') + url.hash;
     const redirectUri = url.origin;
     return { state, redirectUri };

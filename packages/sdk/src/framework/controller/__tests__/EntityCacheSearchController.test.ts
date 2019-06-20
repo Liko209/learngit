@@ -105,6 +105,7 @@ describe('Entity Cache Search Controller', () => {
           }
           return null;
         },
+        undefined,
         'Mr',
         undefined,
         sortEntitiesByName,
@@ -145,6 +146,7 @@ describe('Entity Cache Search Controller', () => {
           }
           return null;
         },
+        undefined,
         'Mr',
         [entityA.id, entityC.id],
         sortEntitiesByName,
@@ -185,6 +187,7 @@ describe('Entity Cache Search Controller', () => {
           return null;
         },
         undefined,
+        undefined,
         [entityA.id, entityC.id],
         sortEntitiesByName,
       );
@@ -224,6 +227,7 @@ describe('Entity Cache Search Controller', () => {
           }
           return null;
         },
+        undefined,
         undefined,
         [entityA.id, entityC.id],
         undefined,
@@ -267,6 +271,7 @@ describe('Entity Cache Search Controller', () => {
         undefined,
         undefined,
         undefined,
+        undefined,
       );
 
       expect(result.sortableModels.length).toBe(3);
@@ -305,6 +310,7 @@ describe('Entity Cache Search Controller', () => {
           }
           return null;
         },
+        undefined,
         'Mr',
         undefined,
         undefined,
@@ -345,6 +351,7 @@ describe('Entity Cache Search Controller', () => {
           }
           return null;
         },
+        undefined,
         undefined,
         undefined,
         sortEntitiesByName,
@@ -390,6 +397,7 @@ describe('Entity Cache Search Controller', () => {
           }
           return null;
         },
+        undefined,
         '([.?*+ ^$[] \\(){} |-])',
         undefined,
         undefined,
@@ -437,6 +445,7 @@ describe('Entity Cache Search Controller', () => {
       const entityA = { id: 1, name: 'mr.Knuth', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.Kant', note: 'likes to eat fish' };
       const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
+
       await entityCacheController.put(entityA);
       await entityCacheController.put(entityB);
       await entityCacheController.put(entityC);
@@ -464,6 +473,7 @@ describe('Entity Cache Search Controller', () => {
           }
           return null;
         },
+        undefined,
         'Mr.knt',
       );
 
@@ -502,6 +512,7 @@ describe('Entity Cache Search Controller', () => {
           }
           return null;
         },
+        undefined,
         'Mr.k',
       );
 

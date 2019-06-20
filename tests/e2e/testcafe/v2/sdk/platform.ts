@@ -16,6 +16,10 @@ export class RcPlatformSdk {
 
   async retryRequestOnException(cb: () => Promise<any>) {
     return await MiscUtils.retryAsync(cb, async (err: AxiosError) => {
+      if (!err.response) {
+        logger.error('retry failed: ', err);
+        return false;
+      }
       if (429 == err.response.status) {
         logger.warn('retry request on 429 after 90 seconds');
         await MiscUtils.sleep(90e3);
@@ -26,7 +30,7 @@ export class RcPlatformSdk {
         await this.refresh();
         return true;
       }
-      logger.error('auth failed: ', err.response, err.response.data);
+      logger.error('retry failed: ', err);
       return false;
     });
   }
@@ -220,7 +224,7 @@ export class RcPlatformSdk {
     return await this.createGroup(data).then(res => res.data.id);
   }
 
-  async sentAndGetTextPostId(text: string, groupId: string) {
+  async sentAndGetTextPostId(text: string, groupId: string): Promise<string> {
     return await this.sendTextPost(text, groupId).then(res => res.data.id);
   }
 

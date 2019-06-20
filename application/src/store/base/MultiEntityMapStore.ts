@@ -60,11 +60,17 @@ export default class MultiEntityMapStore<
     const existKeys: IdType[] = this._getDataKeys();
     switch (payload.type) {
       case EVENT_TYPES.RESET:
-        this.reset();
+        {
+          this.reset();
+        }
         break;
+
       case EVENT_TYPES.RELOAD:
-        this.reload();
+        {
+          this.reload();
+        }
         break;
+
       case EVENT_TYPES.DELETE:
         {
           const matchedKeys = _.intersection(payload.body.ids, existKeys);

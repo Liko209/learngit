@@ -10,6 +10,7 @@ import { JuiHeader } from 'jui/pattern/Dialer';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { DialerHeaderViewProps } from './types';
 import { Avatar } from '@/containers/Avatar';
+import { getDisplayName } from '../../helpers';
 
 type Props = DialerHeaderViewProps & WithTranslation;
 
@@ -46,6 +47,8 @@ class DialerHeaderViewComponent extends React.Component<Props> {
       t,
       shouldDisplayDialer,
       inputString,
+      forwardString,
+      isForward,
       onFocus,
       onBlur,
       onChange,
@@ -55,13 +58,14 @@ class DialerHeaderViewComponent extends React.Component<Props> {
       onKeyDown,
       Back,
     } = this.props;
+
     return (
       <JuiHeader
         Avatar={this._Avatar}
-        name={name ? name : t('telephony.unknownCaller')}
+        name={getDisplayName(t, name)}
         phone={isExt ? `${t('telephony.Ext')} ${phone}` : phone}
         showDialerInputField={shouldDisplayDialer}
-        dialerValue={inputString}
+        dialerValue={isForward ? forwardString : inputString}
         onChange={onChange}
         onFocus={onFocus}
         onBlur={onBlur}

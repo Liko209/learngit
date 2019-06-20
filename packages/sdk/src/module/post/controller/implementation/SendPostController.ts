@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { mainLogger, DEFAULT_RETRY_COUNT } from 'foundation';
+import { mainLogger, DEFAULT_RETRY_COUNT, REQUEST_PRIORITY } from 'foundation';
 import { daoManager } from '../../../../dao';
 import { PostDao } from '../../dao';
 import { Post } from '../../entity';
@@ -45,15 +45,7 @@ class SendPostController implements ISendPostController {
     );
   }
 
-  private async _recordMyLastPost(groupId: number, postTime: number) {
-    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
-      ServiceConfig.GROUP_CONFIG_SERVICE,
-    );
-    await groupConfigService.recordMyLastPostTime(groupId, postTime);
-  }
-
   async sendPost(params: SendPostType) {
-    this._recordMyLastPost(params.groupId, Date.now());
     const userConfig = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
     ).userConfig;
@@ -64,7 +56,10 @@ class SendPostController implements ISendPostController {
       companyId,
       ...params,
     };
-    const rawInfo = this._helper.buildRawPostInfo(paramsInfo);
+    const rawInfo = this._helper.buildRawPostInfo(
+      paramsInfo,
+      this.preInsertController.getAll(),
+    );
     await this.innerSendPost(rawInfo, false);
   }
 
@@ -173,6 +168,7 @@ class SendPostController implements ISendPostController {
       const result = await this.postActionController.requestController.post(
         sendPost,
         {
+          priority: REQUEST_PRIORITY.HIGH,
           retryCount: DEFAULT_RETRY_COUNT,
         },
       );

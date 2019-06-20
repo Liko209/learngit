@@ -12,13 +12,13 @@ import { ESettingItemState } from 'sdk/framework/model/setting';
 import { observable } from 'mobx';
 import Base from './Base';
 
-export default class SettingModel extends Base<UserSettingEntity> {
+export default class SettingModel<T = any> extends Base<UserSettingEntity<T>> {
   @observable
   valueType: ESettingValueType;
   @observable
-  source?: any[];
+  source?: T[];
   @observable
-  value?: any;
+  value?: T;
   @observable
   weight: number;
   @observable
@@ -26,9 +26,9 @@ export default class SettingModel extends Base<UserSettingEntity> {
   @observable
   parentModelId?: number;
   @observable
-  valueGetter?: () => Promise<any> | any;
+  valueGetter?: () => Promise<T> | T;
   @observable
-  valueSetter?: (value: any) => Promise<void> | void;
+  valueSetter?: (value: T) => Promise<void> | void;
 
   constructor(data: UserSettingEntity) {
     super(data);

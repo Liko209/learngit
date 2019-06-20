@@ -1,17 +1,28 @@
 {
-  // 使用 IntelliSense 了解相关属性。 
+  // 使用 IntelliSense 了解相关属性。
   // 悬停以查看现有属性的描述。
   // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "node",
+      "type": "chrome",
       "request": "launch",
-      "name": "启动程序",
-      "program": "${workspaceFolder}/src/foundation/tokens/genTokens/index.js",
-      "outFiles": [
-        "${workspaceFolder}/build/lib/**/*.js"
-      ]
+      "name": "Launch Chrome",
+      // "preLaunchTask": "Run Storybook",
+      "url": "http://localhost:6006",
+      "internalConsoleOptions": "openOnSessionStart",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "type": "chrome",
+      "request": "attach",
+      "name": "Attach Chrome",
+      "url": "http://localhost:6006*",
+      "port": 9222,
+      "sourceMaps": true,
+      "webRoot": "${workspaceRoot}",
+      "internalConsoleOptions": "openOnSessionStart",
+      "timeout": 2000
     }
   ]
 }

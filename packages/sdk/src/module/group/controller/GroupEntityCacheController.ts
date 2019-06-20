@@ -15,6 +15,7 @@ const soundex = require('soundex-code');
 class GroupEntityCacheController extends EntityCacheController<Group> {
   private _individualGroups: Map<number, Group> = new Map();
   private _soundexValue: Map<number, string[]> = new Map();
+  private _teamIdsIncludeMe: Set<number> = new Set();
 
   static buildGroupEntityCacheController(groupService: IGroupService) {
     return new GroupEntityCacheController(groupService);
@@ -34,6 +35,10 @@ class GroupEntityCacheController extends EntityCacheController<Group> {
     return this._individualGroups;
   }
 
+  getTeamIdsIncludeMe() {
+    return this._teamIdsIncludeMe;
+  }
+
   public getSoundexById(id: number): string[] {
     return this._soundexValue.get(id) || [];
   }
@@ -50,7 +55,22 @@ class GroupEntityCacheController extends EntityCacheController<Group> {
     if (this._soundexValue.has(key)) {
       this._soundexValue.delete(key);
     }
+
+    this._teamIdsIncludeMe.delete(key);
     super.deleteInternal(key);
+  }
+
+  private _getCurrentUserId() {
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    return userConfig.getGlipUserId();
+  }
+
+  private _isCurrentUserInTeam(group: Group) {
+    return (
+      group && group.is_team && group.members.includes(this._getCurrentUserId())
+    );
   }
 
   protected putInternal(group: Group) {
@@ -59,12 +79,18 @@ class GroupEntityCacheController extends EntityCacheController<Group> {
       const personId = this._getPersonIdInIndividualGroup(group);
       personId && this._individualGroups.set(personId, group);
     }
+    if (this._isCurrentUserInTeam(group)) {
+      this._teamIdsIncludeMe.add(group.id);
+    }
+
     this._setSoundexValue(group);
   }
+
   protected updatePartial(oldEntity: Group, partialEntity: Partial<Group>) {
     super.updatePartial(oldEntity, partialEntity);
     this._setSoundexValue(oldEntity);
   }
+
   private _setSoundexValue(group: Group) {
     let soundexResult: string[] = [];
     if (this._groupService.isValid(group) && group.set_abbreviation) {
@@ -75,11 +101,7 @@ class GroupEntityCacheController extends EntityCacheController<Group> {
   }
 
   private _getPersonIdInIndividualGroup(group: Group) {
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
-    const currentUserId = userConfig.getGlipUserId();
-
+    const currentUserId = this._getCurrentUserId();
     for (const memberId of group.members) {
       if (memberId !== currentUserId) {
         return memberId;

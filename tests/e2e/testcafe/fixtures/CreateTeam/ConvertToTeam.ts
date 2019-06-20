@@ -1,8 +1,8 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-03-18 16:40:37 
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-03-18 17:58:37
+ * @Author: Potar.He
+ * @Date: 2019-03-18 16:40:37
+ * @Last Modified by: Aaron Huo
+ * @Last Modified time: 2019-06-04 19:14:52
  */
 
 import * as _ from 'lodash';
@@ -108,8 +108,9 @@ test(formalName('Covert group to team', ['P0', 'JPT-1396', 'Potar.He', 'ConvertT
   });
 
   await h(t).withLog('When I open group1 profile', async () => {
-    await teamSection.conversationEntryByName(teamNames[0]).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamSection.conversationEntryByName(teamNames[0]).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   const viewProfile = app.homePage.profileDialog;
@@ -121,8 +122,9 @@ test(formalName('Covert group to team', ['P0', 'JPT-1396', 'Potar.He', 'ConvertT
 
   // favoriteSection
   await h(t).withLog('When I open "convertToTeam" dialog of group2 via conversation profile setting', async () => {
-    await favoriteSection.conversationEntryById(group2.glipId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await favoriteSection.conversationEntryById(group2.glipId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await viewProfile.clickSetting();
     await app.homePage.teamSettingDialog.ensureLoaded();
     await app.homePage.teamSettingDialog.clickConvertToTeamButton();
@@ -141,8 +143,9 @@ test(formalName('Covert group to team', ['P0', 'JPT-1396', 'Potar.He', 'ConvertT
   });
 
   await h(t).withLog('When I open "convertToTeam" dialog of group2 again via conversation profile setting', async () => {
-    await favoriteSection.conversationEntryById(group2.glipId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await favoriteSection.conversationEntryById(group2.glipId).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await viewProfile.clickSetting();
     await app.homePage.teamSettingDialog.ensureLoaded();
     await app.homePage.teamSettingDialog.clickConvertToTeamButton();
@@ -172,8 +175,9 @@ test(formalName('Covert group to team', ['P0', 'JPT-1396', 'Potar.He', 'ConvertT
   });
 
   await h(t).withLog('When I open group2 profile', async () => {
-    await teamSection.conversationEntryByName(teamNames[1]).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
+    await teamSection.conversationEntryByName(teamNames[1]).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
   });
 
   await h(t).withLog('Then group2 should only has one admin is login user', async () => {

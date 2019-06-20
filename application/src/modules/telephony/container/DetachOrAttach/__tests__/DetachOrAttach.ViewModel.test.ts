@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { CLIENT_SERVICE } from '@/modules/common/interface';
+import { ClientService } from '@/modules/common';
 import { container, decorate, injectable } from 'framework';
 import { TelephonyStore } from '../../../store';
 import { CALL_STATE } from '../../../FSM';
@@ -20,9 +22,11 @@ GlobalConfigService.getInstance = jest.fn();
 
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
+decorate(injectable(), ClientService);
 
 container.bind(TelephonyStore).to(TelephonyStore);
 container.bind(TELEPHONY_SERVICE).to(TelephonyService);
+container.bind(CLIENT_SERVICE).to(ClientService);
 
 AuthUserConfig.prototype.getRCToken = jest.fn().mockReturnValue({
   endpoint_id: 'abc',

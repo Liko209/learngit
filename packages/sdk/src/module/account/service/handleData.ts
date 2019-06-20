@@ -12,7 +12,6 @@ import {
 import notificationCenter from '../../../service/notificationCenter';
 import { AccountService } from '../service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
-import { PerformanceTracer, PERFORMANCE_KEYS } from '../../../utils';
 import { AccountGlobalConfig } from '../config';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 
@@ -29,8 +28,6 @@ const accountHandleData = ({
   profileId,
   clientConfig,
 }: IHandleData): void => {
-  const performanceTracer = PerformanceTracer.initial();
-
   // should set UserDictionary before handle data for free user
   if (!AccountGlobalConfig.getUserDictionary()) {
     if (!userId) {
@@ -63,7 +60,6 @@ const accountHandleData = ({
     notificationCenter.emitKVChange(ACCOUNT_CLIENT_CONFIG, clientConfig);
     userConfig.setClientConfig(clientConfig);
   }
-  performanceTracer.end({ key: PERFORMANCE_KEYS.HANDLE_INCOMING_ACCOUNT });
 };
 
 export { accountHandleData };

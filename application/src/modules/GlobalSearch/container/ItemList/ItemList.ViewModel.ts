@@ -3,14 +3,16 @@
  * @Date: 2019-03-31 21:49:32
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, action } from 'mobx';
+import { observable, action, computed } from 'mobx';
 import { SearchService } from 'sdk/module/search';
 import { IndexRange } from 'jui/components/VirtualizedList/types';
+import { IdListPaginationHandler } from '@/store/handler/IdListPagingHandler';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+
 import { ItemListViewProps, SearchItemTypes } from './types';
 import { SearchCellViewModel } from '../common/SearchCell.ViewModel';
-import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { changeToRecordTypes } from '../common/changeTypes';
-
+import { ENTITY_MAP } from './config';
 class ItemListViewModel extends SearchCellViewModel<ItemListViewProps> {
   @observable startIndex: number = 0;
   @observable stopIndex: number = 0;
@@ -48,6 +50,21 @@ class ItemListViewModel extends SearchCellViewModel<ItemListViewProps> {
       ServiceConfig.SEARCH_SERVICE,
     );
     searchService.addRecentSearchRecord(type, value);
+  }
+
+  @computed
+  get listHandler() {
+    const { ids, type } = this.props;
+    return new IdListPaginationHandler(ids, {
+      entityName: ENTITY_MAP[type].name,
+      eventName: ENTITY_MAP[type].event,
+      filterFunc: () => true,
+      entityDataProvider: {
+        async getByIds(ids: number[]) {
+          return ENTITY_MAP[type].getByIds(ids);
+        },
+      },
+    }).fetchSortableDataHandler();
   }
 }
 

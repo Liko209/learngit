@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "include_tags": [
+      "P0",
+      "P1",
+      "JPT-2034",
+      "JPT-2040"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

@@ -1,0 +1,3 @@
+interface IPhoneService {}
+
+export { IPhoneService };

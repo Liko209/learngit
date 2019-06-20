@@ -31,7 +31,7 @@ import { ERCServiceFeaturePermission } from '../../rcInfo/types';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { TelephonyService } from '../service';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
-import { PhoneNumberAnonymous } from 'sdk/module/phoneNumber/types';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
   private _telephonyAccountDelegate: ITelephonyAccountDelegate;
@@ -139,7 +139,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       let makeCallResult: RTC_STATUS_CODE;
       if (fromNum) {
         let e164FromNum = fromNum;
-        if (fromNum !== PhoneNumberAnonymous) {
+        if (fromNum !== PhoneNumberType.PhoneNumberAnonymous) {
           e164FromNum = await phoneNumberService.getE164PhoneNumber(fromNum);
         }
         telephonyLogger.debug(

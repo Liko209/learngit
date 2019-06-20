@@ -24,6 +24,9 @@ const theme = {
   },
   overrides: {},
   palette: {
+    getContrastText() {
+      return '#e1f4fb';
+    },
     common: { black: '#000', white: '#fff' },
     type: 'light',
     primary: {
@@ -335,6 +338,13 @@ const theme = {
   },
   size: { width: 4, height: 4 },
   maxHeight: { dialog: '72vh' },
+  opacity: {
+    p05: 0.05,
+    p10: 0.1,
+    p50: 0.5,
+    p60: 0.6,
+    p80: 0.8,
+  },
 };
 
 const mountWithTheme = (content: React.ReactNode) =>

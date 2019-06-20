@@ -14,7 +14,6 @@ jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
 function createStore() {
   return new TelephonyStore();
 }
-
 describe('Telephony store', () => {
   it('callWindowState should to be CALL_WINDOW_STATUS.MINIMIZED and callState should to be CALL_STATE.IDLE when instantiated TelephonyStore', () => {
     const store = createStore();
@@ -154,9 +153,15 @@ describe('Telephony store', () => {
     expect(store.incomingState).toBe(INCOMING_STATE.REPLY);
   });
 
-  it('quitReply()', () => {
+  it('directForward()', () => {
     const store = createStore();
-    store.quitReply();
+    store.directForward();
+    expect(store.incomingState).toBe(INCOMING_STATE.FORWARD);
+  });
+
+  it('backIncoming()', () => {
+    const store = createStore();
+    store.backIncoming();
     expect(store.incomingState).toBe(INCOMING_STATE.IDLE);
   });
 
@@ -213,5 +218,46 @@ describe('Telephony store', () => {
     expect(store.callerName).toBeUndefined();
     expect(store.phoneNumber).toBeUndefined();
     expect(store.isMute).toBeFalsy();
+  });
+
+  it('should initialize with not entering contact search page', () => {
+    const store = createStore();
+
+    expect(store.shouldEnterContactSearch).toBeFalsy();
+  });
+
+  it('should not entering contact search page when make/hangup a call', () => {
+    const store = createStore();
+    store.callerName = 'name';
+    store.phoneNumber = '112233';
+    store.isMute = true;
+    store.directCall();
+    expect(store.shouldEnterContactSearch).toBeFalsy();
+    store.end();
+    expect(store.shouldEnterContactSearch).toBeFalsy();
+  });
+
+  it('should sync dialer entered state', () => {
+    const store = createStore();
+    expect(store.enteredDialer).toBeFalsy();
+    store.syncDialerEntered(true);
+    expect(store.enteredDialer).toBeTruthy();
+    store.syncDialerEntered(false);
+    expect(store.enteredDialer).toBeFalsy();
+  });
+
+  it('activeCallTime should to be undefined when callState is not CONNECTED', () => {
+    const store = createStore();
+    expect(store.activeCallTime).toBeUndefined();
+    store.directCall();
+    store.connected();
+    expect(store.activeCallTime).toBeDefined();
+    store.end();
+    expect(store.activeCallTime).toBeUndefined();
+  });
+
+  it('`hasActiveInBoundCall` should be initialized with false', () => {
+    const store = createStore();
+    expect(store.hasActiveInBoundCall).toBeFalsy();
   });
 });

@@ -4,27 +4,32 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IPersonService } from './IPersonService';
+import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
+import { Api } from '../../../api';
+import { daoManager } from '../../../dao';
+import { Raw } from '../../../framework/model';
+import { EntityBaseService } from '../../../framework/service/EntityBaseService';
+import { ChangeModel, SYNC_SOURCE } from '../../../module/sync/types';
+import { SOCKET } from '../../../service/eventKey';
 import {
+  GlipTypeUtil,
+  TypeDictionary,
+  PerformanceTracer,
+  PERFORMANCE_KEYS,
+} from '../../../utils';
+import { SubscribeController } from '../../base/controller/SubscribeController';
+import { FEATURE_STATUS, FEATURE_TYPE } from '../../group/entity';
+import { PersonController } from '../controller/PersonController';
+import { PersonEntityCacheController } from '../controller/PersonEntityCacheController';
+import { PersonDao } from '../dao';
+import {
+  HeadShotModel,
   Person,
   PhoneNumberModel,
   SanitizedExtensionModel,
-  HeadShotModel,
 } from '../entity';
-import { EntityBaseService } from '../../../framework/service/EntityBaseService';
-import { daoManager } from '../../../dao';
-import { PersonDao } from '../dao';
-import { Api } from '../../../api';
-import { SubscribeController } from '../../base/controller/SubscribeController';
-import { Raw } from '../../../framework/model';
-import { FEATURE_TYPE, FEATURE_STATUS } from '../../group/entity';
-
-import { PersonController } from '../controller/PersonController';
-import { SOCKET } from '../../../service/eventKey';
 import { ContactType } from '../types';
-import { PersonEntityCacheController } from '../controller/PersonEntityCacheController';
-import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
-import { GlipTypeUtil, TypeDictionary } from '../../../utils';
+import { IPersonService } from './IPersonService';
 
 class PersonService extends EntityBaseService<Person>
   implements IPersonService {
@@ -59,6 +64,16 @@ class PersonService extends EntityBaseService<Person>
       );
     }
     return this._personController;
+  }
+
+  protected async initialEntitiesCache() {
+    const performanceTracer = PerformanceTracer.initial();
+    const persons = await super.initialEntitiesCache();
+    performanceTracer.end({
+      key: PERFORMANCE_KEYS.PREPARE_PERSON_CACHE,
+      count: persons && persons.length,
+    });
+    return persons;
   }
 
   handleIncomingData = async (
@@ -150,6 +165,13 @@ class PersonService extends EntityBaseService<Person>
 
   isCacheValid(person: Person): boolean {
     return this.getPersonController().isCacheValid(person);
+  }
+
+  getPhoneNumbers(
+    person: Person,
+    eachPhoneNumber: (phoneNumber: PhoneNumber) => void,
+  ): void {
+    this.getPersonController().getPhoneNumbers(person, eachPhoneNumber);
   }
 }
 

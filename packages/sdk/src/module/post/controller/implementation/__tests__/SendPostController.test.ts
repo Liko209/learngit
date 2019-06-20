@@ -23,6 +23,7 @@ import { ExtendedBaseModel } from '../../../../models';
 import { PROGRESS_STATUS } from '../../../../progress';
 import { AccountUserConfig } from '../../../../../module/account/config/AccountUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
+import { REQUEST_PRIORITY, DEFAULT_RETRY_COUNT } from 'foundation/src';
 
 jest.mock('../../../../../module/config');
 jest.mock('../../../../../module/account/config/AccountUserConfig');
@@ -53,8 +54,15 @@ class MockPreInsertController<T extends ExtendedBaseModel>
     return;
   }
 
-  isInPreInsert(version: number): boolean {
+  isInPreInsert(version: string): boolean {
     return false;
+  }
+
+  getAll() {
+    return {
+      uniqueIds: [],
+      ids: [],
+    };
   }
 }
 
@@ -233,8 +241,17 @@ describe('SendPostController', () => {
       daoManager.getDao.mockReturnValueOnce(postDao);
       const data = _.cloneDeep(localPostJson4UnitTest);
       data['id'] = -999;
+      const spy = jest.spyOn(
+        sendPostController.postActionController.requestController,
+        'post',
+      );
       const result = await sendPostController.sendPostToServer(data);
       expect(result[0].data).toEqual(serverPostJson4UnitTest);
+      delete data.id;
+      expect(spy).toBeCalledWith(data, {
+        priority: REQUEST_PRIORITY.HIGH,
+        retryCount: DEFAULT_RETRY_COUNT,
+      });
     });
     it('should call with retryCount', async () => {
       let retryCount;

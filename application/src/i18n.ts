@@ -12,7 +12,9 @@ const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
   const letters = ['a', 'e', 'i', 'o', 'u', 'h'];
   const lastDotChar = value.lastIndexOf('.');
   const actualValue =
-    lastDotChar > 0 && lastDotChar !== value.length - 1 ? value.substring(lastDotChar + 1) : value;
+    lastDotChar > 0 && lastDotChar !== value.length - 1
+      ? value.substring(lastDotChar + 1)
+      : value;
   const firstLetter = actualValue.substring(0, 1);
   let correctWordForm = '';
   if (
@@ -44,7 +46,7 @@ const interpolation = {
   escapeValue: false, // not needed for react!!
 };
 
-const config = {
+const config: i18next.InitOptions = {
   interpolation,
   fallbackLng: 'en',
   // have a common namespace used around the full app
@@ -52,8 +54,25 @@ const config = {
   defaultNS: 'translations',
   debug: true,
   react: { wait: true, useSuspense: false },
-  whitelist: ['en', 'zh'],
+  whitelist: [
+    'en',
+    'de-DE',
+    'en-AU',
+    'en-GB',
+    'es-419',
+    'es-ES',
+    'fr-CA',
+    'fr-FR',
+    'it-IT',
+    'ja-JP',
+    'pt-BR',
+    'zh-CN',
+    'zh-HK',
+    'zh-TW',
+  ],
   postProcess: ['pseudo'],
+  nsSeparator: ':::',
+  load: 'currentOnly',
 };
 
 const ready = () => {

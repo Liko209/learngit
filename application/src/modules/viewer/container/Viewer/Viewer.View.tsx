@@ -70,7 +70,7 @@ class ViewerView extends Component<
           <ViewerContent
             data-test-automation-id="ViewerContent"
             left={contentLeftRender({ ...rest })}
-            right={<div>commitBlock</div>}
+            right={<></>}
           />
         </JuiViewerBackground>
       </ViewerContext.Provider>

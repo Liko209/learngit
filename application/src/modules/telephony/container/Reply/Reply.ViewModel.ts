@@ -69,7 +69,7 @@ class ReplyViewModel extends StoreViewModel<Props> {
   }
 
   quitReply = () => {
-    this._telephonyStore.quitReply();
+    this._telephonyStore.backIncoming();
   }
 
   storeCustomMessage = (message: string) => {

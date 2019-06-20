@@ -78,7 +78,7 @@ describe('ListSearchResult', () => {
     wrapper.update();
     expect(wrapper.find(ItemList)).toBeDefined();
     expect(wrapper.find(ItemList).props()).toEqual({
-      list: searchResult,
+      ids: searchResult,
       type: RecentSearchType[props.currentTab],
     });
   });

@@ -16,6 +16,14 @@ import { MessageRouterChangeHelper } from '../helper';
 import * as utils from '@/store/utils/entities';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { ERROR_TYPES } from '@/common/catchError';
+import {
+  ERROR_CODES_NETWORK,
+  JNetworkError,
+  JServerError,
+  ERROR_CODES_SERVER,
+} from 'sdk/error';
+
 let mockedStateService: any;
 let mockedProfileService: any;
 let mockedGroupService: any;
@@ -168,13 +176,13 @@ describe('ensureGroupOpened', () => {
     MessageRouterChangeHelper.ensureGroupIsOpened(110);
     expect(mockedProfileService.reopenConversation).not.toHaveBeenCalled();
   });
-  it('should show loading page with error when reopen failed', (done: any) => {
+  it('should show loading page with backend error when reopen failed', (done: any) => {
     mockedProfileService.isConversationHidden = jest
       .fn()
       .mockResolvedValueOnce(true);
     mockedProfileService.reopenConversation = jest
       .fn()
-      .mockRejectedValueOnce(new Error('test'));
+      .mockRejectedValueOnce(new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL'));
     MessageRouterChangeHelper.ensureGroupIsOpened(110);
     setTimeout(() => {
       expect(mockedProfileService.reopenConversation).toHaveBeenCalled();
@@ -183,6 +191,47 @@ describe('ensureGroupOpened', () => {
         params: {
           id: 110,
         },
+        errorType: ERROR_TYPES.BACKEND
+      });
+      done();
+    });
+  });
+  it('should show loading page with network error when reopen failed', (done: any) => {
+    mockedProfileService.isConversationHidden = jest
+      .fn()
+      .mockResolvedValueOnce(true);
+    mockedProfileService.reopenConversation = jest
+      .fn()
+      .mockRejectedValueOnce(new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK'));
+    MessageRouterChangeHelper.ensureGroupIsOpened(110);
+    setTimeout(() => {
+      expect(mockedProfileService.reopenConversation).toHaveBeenCalled();
+      expect(history.replace).toBeCalledWith('/messages/loading', {
+        error: true,
+        params: {
+          id: 110,
+        },
+        errorType: ERROR_TYPES.NETWORK
+      });
+      done();
+    });
+  });
+  it('should show loading page with auth error when reopen failed', (done: any) => {
+    mockedProfileService.isConversationHidden = jest
+      .fn()
+      .mockResolvedValueOnce(true);
+    mockedProfileService.reopenConversation = jest
+      .fn()
+      .mockRejectedValueOnce(new JServerError(ERROR_CODES_SERVER.NOT_AUTHORIZED, 'NOT_AUTHORIZED'));
+    MessageRouterChangeHelper.ensureGroupIsOpened(110);
+    setTimeout(() => {
+      expect(mockedProfileService.reopenConversation).toHaveBeenCalled();
+      expect(history.replace).toBeCalledWith('/messages/loading', {
+        error: true,
+        params: {
+          id: 110,
+        },
+        errorType: ERROR_TYPES.NOT_AUTHORIZED
       });
       done();
     });

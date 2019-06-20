@@ -119,7 +119,7 @@ class ItemAPI extends Api {
     });
   }
 
-  static getNote(id: number) {
+  static getNoteBody(id: number) {
     return this.glipNetworkClient.get<Raw<NoteItem>>({
       path: `/pages_body/${id}`,
     });

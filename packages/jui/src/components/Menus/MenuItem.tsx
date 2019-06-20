@@ -58,9 +58,11 @@ const StyledMenuItem = styled(WrappedMenuItem)`
 
     &:active {
       background-color: ${palette('primary', 'main')};
-      color: ${palette('common', 'white')};
+      color: ${({ theme }) =>
+        theme.palette.getContrastText(palette('primary', 'main')({ theme }))};
       ${StyledMuiListItemIcon} {
-        color: ${palette('common', 'white')};
+        color: ${({ theme }) =>
+          theme.palette.getContrastText(palette('primary', 'main')({ theme }))};
       }
     }
   }
@@ -85,6 +87,7 @@ class JuiMenuItem extends React.PureComponent<JuiMenuItemProps> {
     }
     return (
       <StyledMenuItem
+        tabIndex={0}
         data-test-automation-id={automationId}
         disabled={disabled}
         data-disabled={disabled}

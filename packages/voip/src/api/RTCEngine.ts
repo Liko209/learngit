@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RTCUserAgentInfo } from './types';
+import { RTCUserInfo } from './types';
 import { RTCAccount } from './RTCAccount';
 import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCLogger } from '../utils/IRTCLogger';
@@ -18,7 +18,7 @@ import { IRTCMediaDeviceDelegate } from './IRTCMediaDeviceDelegate';
 
 class RTCEngine {
   private static _instance: RTCEngine | null;
-  private _userAgentInfo: RTCUserAgentInfo;
+  private _userInfo: RTCUserInfo;
 
   public static getInstance() {
     if (!RTCEngine._instance) {
@@ -28,7 +28,7 @@ class RTCEngine {
   }
 
   protected constructor() {
-    RTCMediaDeviceManager.instance().updateMediaDevices();
+    RTCMediaDeviceManager.instance().initMediaDevices();
     RTCMediaDeviceManager.instance().subscribeDeviceChange();
   }
 
@@ -37,14 +37,14 @@ class RTCEngine {
     RTCEngine._instance = null;
   }
 
-  public setUserAgentInfo(info: RTCUserAgentInfo) {
+  public setUserInfo(info: RTCUserInfo) {
     if (info) {
-      this._userAgentInfo = info;
+      this._userInfo = info;
     }
   }
 
   public createAccount(delegate: IRTCAccountDelegate): RTCAccount {
-    return new RTCAccount(delegate, this._userAgentInfo);
+    return new RTCAccount(delegate, this._userInfo);
   }
 
   public static setLogger(logger: IRTCLogger): void {
@@ -79,8 +79,24 @@ class RTCEngine {
     return RTCMediaDeviceManager.instance().getAudioOutputs();
   }
 
-  public updateMediaDevices(): void {
-    RTCMediaDeviceManager.instance().updateMediaDevices();
+  public getCurrentAudioInput() {
+    return RTCMediaDeviceManager.instance().getCurrentAudioInput();
+  }
+
+  public setCurrentAudioInput(deviceId: string) {
+    return RTCMediaDeviceManager.instance().setAudioInputDevice(deviceId);
+  }
+
+  public getCurrentAudioOutput() {
+    return RTCMediaDeviceManager.instance().getCurrentAudioOutput();
+  }
+
+  public setCurrentAudioOutput(deviceId: string) {
+    return RTCMediaDeviceManager.instance().setAudioOutputDevice(deviceId);
+  }
+
+  public getDefaultDeviceId(devices: MediaDeviceInfo[]) {
+    return RTCMediaDeviceManager.instance().getDefaultDeviceId(devices);
   }
 }
 

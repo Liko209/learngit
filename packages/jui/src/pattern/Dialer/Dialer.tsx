@@ -20,12 +20,13 @@ const StyledDialer = styled('div')`
     border-radius: ${({ theme }) => theme.radius.xl};
     overflow: auto;
     outline: none;
+    cursor: move;
   }
 `;
 
 class JuiDialer extends PureComponent<Props> {
   render() {
-    return <StyledDialer {...this.props} />;
+    return <StyledDialer {...this.props} data-test-automation-id="dialer-container"/>;
   }
 }
 
