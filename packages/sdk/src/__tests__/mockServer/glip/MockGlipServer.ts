@@ -1,4 +1,5 @@
-import { IResponse, LokiDB } from 'foundation';
+import assert from 'assert';
+import { LokiDB } from 'foundation';
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
@@ -13,7 +14,9 @@ import {
 } from '../types';
 import { createResponse } from '../utils';
 import { GlipClientConfigDao } from './dao/clientConfig';
+import { GlipCompanyDao } from './dao/company';
 import { GlipGroupDao } from './dao/group';
+import { GlipGroupStateDao } from './dao/groupState';
 import { GlipItemDao } from './dao/item';
 import { GlipPersonDao } from './dao/person';
 import { GlipPostDao } from './dao/post';
@@ -21,7 +24,14 @@ import { GlipProfileDao } from './dao/profile';
 import { GlipStateDao } from './dao/state';
 import * as data from './data/data';
 import { schema } from './glipSchema';
-import { InitialData, IApi, Handler, IResponseAdapter } from './types';
+import { ResponseAdapter } from './ResponseAdapter';
+import {
+  GlipData,
+  Handler,
+  IApi,
+  InitialData,
+  IResponseAdapter,
+} from './types';
 
 interface IGlipApi extends IApi {
   '/api/login': {
@@ -41,49 +51,31 @@ interface IGlipApi extends IApi {
   };
 }
 
-function isPromise(p: any): p is Promise<any> {
-  return p && p.then;
-}
-
-class AdapterImpl implements IResponseAdapter {
-  adapt = (handler: Handler) => {
-    return (request: IRequest, cb: INetworkRequestExecutorListener) => {
-      let handlerResp;
-      try {
-        handlerResp = handler(request);
-      } catch (error) {
-        cb.onFailure(
-          createResponse({
-            request,
-            data: { error },
-            status: 500,
-            statusText: 'Mock server internal error',
-            headers: {},
-          }),
-        );
-        return;
-      }
-      if (isPromise(handlerResp)) {
-        handlerResp
-          .then(response => {
-            cb.onSuccess(response);
-          })
-          .catch(error => {
-            cb.onFailure(
-              createResponse({
-                request,
-                data: { error },
-                status: 500,
-                statusText: 'Mock server internal error',
-                headers: {},
-              }),
-            );
-          });
-      } else {
-        cb.onSuccess(handlerResp);
-      }
-    };
-  }
+function parseInitialData(initialData: InitialData): GlipData {
+  const company = _.find(
+    initialData.companies,
+    item => item._id === initialData.company_id,
+  )!;
+  const user = _.find(
+    initialData.people,
+    item => item._id === initialData.user_id,
+  )!;
+  assert(company, 'Data invalid. company_id not found in companies');
+  assert(user, 'Data invalid. user_id not found in people');
+  // initialData.profile.
+  const result: GlipData = {
+    company,
+    user,
+    people: initialData.people,
+    groups: initialData.groups,
+    teams: initialData.teams,
+    clientConfig: initialData.client_config,
+    state: initialData.state,
+    // todo parse to groupState
+    // groupState: initialData.
+    profile: initialData.profile,
+  };
+  return result;
 }
 
 export class MockGlipServer implements IMockServer {
@@ -94,8 +86,12 @@ export class MockGlipServer implements IMockServer {
   stateDao: GlipStateDao;
   personDao: GlipPersonDao;
   profileDao: GlipProfileDao;
+  clientConfigDao: GlipClientConfigDao;
+  companyDao: GlipCompanyDao;
+  groupStateDao: GlipGroupStateDao;
+  db: LokiDB;
+
   api: IGlipApi = {
-    // todo implements some api
     '/api/login': { put: request => this.login(request) },
     '/api/posts': { get: async request => await this.getPosts(request) },
     '/api/posts_items_by_ids': {
@@ -106,31 +102,51 @@ export class MockGlipServer implements IMockServer {
       get: async request => await this.getInitialData(request),
     },
   };
-  clientConfigDao: GlipClientConfigDao;
 
   constructor() {
-    const adapter: IResponseAdapter = new AdapterImpl();
+    const adapter: IResponseAdapter = new ResponseAdapter();
     this._router = new Router((routePath, path) => {
       return routePath === path || routePath === '*';
     },                        adapter);
-    const db = new LokiDB(schema);
-    this.postDao = new GlipPostDao(db);
-    this.itemDao = new GlipItemDao(db);
-    this.groupDao = new GlipGroupDao(db);
-    this.stateDao = new GlipStateDao(db);
-    this.personDao = new GlipPersonDao(db);
-    this.profileDao = new GlipProfileDao(db);
-    this.clientConfigDao = new GlipClientConfigDao(db);
-
     this._router.applyApi(this.api);
     this._router.use('get', '*', this._handleCommon);
     this._router.use('put', '*', this._handleCommon);
     this._router.use('post', '*', this._handleCommon);
+    this.init();
+  }
+
+  public init() {
+    this.db = new LokiDB(schema);
+    this.companyDao = new GlipCompanyDao(this.db);
+    this.postDao = new GlipPostDao(this.db);
+    this.itemDao = new GlipItemDao(this.db);
+    this.groupDao = new GlipGroupDao(this.db);
+    this.stateDao = new GlipStateDao(this.db);
+    this.groupStateDao = new GlipGroupStateDao(this.db);
+    this.personDao = new GlipPersonDao(this.db);
+    this.profileDao = new GlipProfileDao(this.db);
+    this.clientConfigDao = new GlipClientConfigDao(this.db);
+  }
+
+  public dispose() {
+    this.db && this.db.delete();
+  }
+
+  applyInitialData = (initialData: InitialData) => {
+    const glipDataTemplate = parseInitialData(initialData);
+    this.companyDao.bulkPut(glipDataTemplate.company);
+    this.profileDao.bulkPut(glipDataTemplate.profile);
+    this.stateDao.bulkPut(glipDataTemplate.state);
+    glipDataTemplate.groupState &&
+      this.groupStateDao.bulkPut(glipDataTemplate.groupState);
+    // this.personDao.insert(glipDataTemplate.user);
+    this.personDao.bulkPut(glipDataTemplate.people);
+    this.groupDao.bulkPut(glipDataTemplate.groups);
+    this.groupDao.bulkPut(glipDataTemplate.teams);
+    this.clientConfigDao.bulkPut(glipDataTemplate.clientConfig);
   }
 
   login = (request: IRequest) => {
-    // console.log('TCL: MockGlipServer -> login -> request', request);
-
     return createResponse({
       status: 200,
       statusText: '[mock] login success',
@@ -138,33 +154,36 @@ export class MockGlipServer implements IMockServer {
   }
 
   getInitialData = async (request: IRequest<any>) => {
-    // todo get from dao
-    const initialData: InitialData = {
-      user_id: data.templates.user._id!,
-      company_id: data.templates.company.id,
-      profile: data.templates.profile,
-      companies: [data.templates.company],
-      state: data.templates.state,
-      people: [data.templates.user, ...data.templates.people],
-      groups: data.templates.groups,
-      teams: data.templates.teams,
-      client_config: data.templates.clientConfig,
-      static_http_server: 'https://d2rbro28ib85bu.cloudfront.net',
-    };
     // const initialData: InitialData = {
-    //   user_id: data.templates.user._id!,
-    //   company_id: data.templates.company.id,
-    //   profile: data.templates.profile,
-    //   companies: [data.templates.company],
-    //   state: data.templates.state,
-    //   people: [data.templates.user, ...data.templates.people],
-    //   groups: data.templates.groups,
-    //   teams: data.templates.teams,
-    //   client_config: data.templates.clientConfig,
+    //   user_id: data.template.user._id!,
+    //   company_id: data.template.company._id,
+    //   profile: data.template.profile,
+    //   companies: [data.template.company],
+    //   state: data.template.state,
+    //   people: [data.template.user, ...data.template.people],
+    //   groups: data.template.groups,
+    //   teams: data.template.teams,
+    //   client_config: data.template.clientConfig,
     //   static_http_server: 'https://d2rbro28ib85bu.cloudfront.net',
     // };
+
+    const user = this.personDao.findOne();
+    const company = this.companyDao.findOne();
+    // const profile = this.profileDao.findOne();
+    const buildInitialData = {
+      user_id: user!._id,
+      company_id: company!._id,
+      profile: this.profileDao.findOne()!,
+      companies: [company],
+      state: this.stateDao.findOne(),
+      people: this.personDao.lokiCollection.find(),
+      groups: await this.groupDao.getGroups(),
+      teams: await this.groupDao.getTeams(),
+      client_config: this.clientConfigDao.findOne(),
+      static_http_server: 'https://d2rbro28ib85bu.cloudfront.net',
+    };
     return createResponse({
-      data: initialData,
+      data: buildInitialData,
     });
   }
 
@@ -205,9 +224,10 @@ export class MockGlipServer implements IMockServer {
   }
 
   createPost = async (request: IRequest<Post>) => {
+    const updateResult = this.postDao.put(request.data as any);
     return createResponse({
       request,
-      data: this.postDao.put(request.data),
+      data: updateResult,
     });
   }
 

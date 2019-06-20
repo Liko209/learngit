@@ -15,7 +15,7 @@ jest.mock('sdk/framework/account/helper', () => {
 jest.mock('foundation/src/network/client/http/Http');
 jest.mock('foundation/src/network/client/socket/Socket');
 
-itForSdk('Service Integration test', ({ server }) => {
+itForSdk('Service Integration test', ({ server, data }) => {
   let groupService: GroupService;
   let personService: PersonService;
   let searchService: SearchService;
@@ -23,9 +23,15 @@ itForSdk('Service Integration test', ({ server }) => {
 
   const { groupDao } = server.glip;
 
+  // use user
+  // useInitialData('./reee.json');
+  data.useInitialData(require('./test-demo-initial.json'));
   // todo not work now.
   // should be able to insert initial data here
-  groupDao.create(GlipData.seeds.group('Test Group with thomas', 23));
+  groupDao.create({
+    ...GlipData.seeds.group('Test Group with thomas', 1),
+    is_team: true,
+  });
 
   beforeAll(() => {
     groupService = ServiceLoader.getInstance(ServiceConfig.GROUP_SERVICE);
@@ -35,20 +41,22 @@ itForSdk('Service Integration test', ({ server }) => {
   });
   describe('GroupService', () => {
     it('search group', async () => {
-      // const searchResult = await groupService.doFuzzySearchALlGroups(
-      //   'Test Group with thomas',
-      // );
-      const searchResult = await groupService.doFuzzySearchALlGroups('test');
+      const searchResult = await groupService.doFuzzySearchALlGroups(
+        'Test Group with thomas',
+      );
+      // const searchResult = await groupService.doFuzzySearchALlGroups('test');
+      // console.log('TCL: searchResult', searchResult);
 
-      expect(searchResult.terms).toEqual(['test']);
+      // expect(searchResult.terms).toEqual(['test']);
       expect(searchResult.sortableModels.length).toEqual(1);
     });
   });
   describe('SearchService', () => {
     it('search person', async () => {
       const searchResult = await searchService.doFuzzySearchPersons({
-        searchKey: 'Mia',
+        searchKey: 'thomas yang',
       });
+      // console.log('TCL: searchResult', searchResult);
       expect(searchResult.sortableModels.length).toEqual(1);
     });
   });
@@ -60,7 +68,7 @@ itForSdk('Service Integration test', ({ server }) => {
         groupId: 1,
       });
       const result = await postService.getPostsByGroupId({ groupId: 1 });
-      // console.log('TCL: post', result);
+      console.log('TCL: post', result);
       expect(result.posts.length).toEqual(1);
       expect(result.posts[0].text).toEqual('xx');
     });

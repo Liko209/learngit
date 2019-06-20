@@ -6,8 +6,12 @@ import { MockGlipServer } from './mockServer/glip/MockGlipServer';
 import { InstanceManager } from './mockServer/InstanceManager';
 import { CommonFileServer } from './mockServer/CommonFileServer';
 import { spyOnTarget } from './utils';
+import { InitialData } from './mockServer/glip/types';
 
 type ItContext = {
+  data: {
+    useInitialData: (initialData: InitialData) => void;
+  };
   server: {
     glip: MockGlipServer;
     rc: {};
@@ -59,8 +63,14 @@ export function itForSdk(
 
   const fileServer = InstanceManager.get(CommonFileServer);
   const mockGlipServer = InstanceManager.get(MockGlipServer);
+  const useInitialData = (initialData: InitialData) => {
+    mockGlipServer.applyInitialData(initialData);
+  };
   // provide for it case to mock data.
   const itCtx: ItContext = {
+    data: {
+      useInitialData,
+    },
     server: {
       // inject mock server here
       glip: mockGlipServer,

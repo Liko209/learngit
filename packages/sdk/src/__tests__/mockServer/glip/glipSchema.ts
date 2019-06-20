@@ -17,6 +17,7 @@ export const schema: ISchema = {
       post: gen('_id', ['group_id', 'created_at']),
       profile: gen('_id', ['favorite_group_ids']),
       state: gen(),
+      groupState: gen(),
     },
   },
 };

@@ -30,7 +30,7 @@ const transform = <T extends { id: any }>(item: any): T => {
   if (isObject(item)) {
     /* eslint-disable no-underscore-dangle, no-param-reassign */
     item.id = item.id || item._id || 0;
-    delete item._id;
+    // delete item._id;
     /* eslint-enable no-underscore-dangle, no-param-reassign */
   }
   return item as T;

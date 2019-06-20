@@ -20,15 +20,15 @@
   ],
   "modified_at": 1559963417435,
   "deactivated": false,
-  "unread_count:42614790": 184,
   "applied_patches": {
     "clean_unused_keys": true
   },
+  "unread_count:42614790": 184,
   "unread_deactivated_count:42614790": 6,
   "unread_mentions_count:42614790": 0,
   "marked_as_unread:42614790": false,
-  "model_id": "187056135",
   "post_cursor:42614790": 138,
+  "model_id": "187056135",
   "last_group_id": 43638790,
   "post_cursor:367419394": 47,
   "read_through:367419394": 2720014340,
@@ -60,9 +60,7 @@
   "admin_mention_cursor:43212806": 0,
   "unread_count:43212806": 0,
   "unread_mentions_count:43212806": 0,
-  "at_mentioning_post_ids": [
-    2706530308
-  ],
+  "at_mentioning_post_ids": [2706530308],
   "unread_deactivated_count:43212806": 0,
   "post_cursor:43196422": 3,
   "post_drp_cursor:43196422": 0,

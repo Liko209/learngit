@@ -13,3 +13,14 @@ export function createResponse<T>(
     partial,
   );
 }
+
+export function isPromise(p: any): p is Promise<any> {
+  return p && p.then;
+}
+
+class AccountDataBuilder {
+  // account(id: number, )
+  company() {}
+
+  build() {}
+}

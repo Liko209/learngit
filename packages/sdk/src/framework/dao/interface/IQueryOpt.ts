@@ -6,10 +6,7 @@
 import { IFilter } from 'foundation';
 import { IdModel, ModelIdType } from '../../model';
 
-interface IQueryOpt<
-  T extends IdModel<IdType>,
-  IdType extends ModelIdType = number
-> {
+interface IQueryOpt<T, IdType extends ModelIdType = number> {
   reset(): IQueryOpt<T, IdType>;
 
   orderBy(key: string, desc: boolean): IQueryOpt<T, IdType>;

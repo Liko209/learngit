@@ -1,4 +1,5 @@
-import factory from 'factory.ts';
+import * as Factory from 'factory.ts';
+import faker from 'faker';
 
 import {
   GlipProfile,
@@ -10,24 +11,189 @@ import {
   GlipPost,
   GlipClientConfig,
   InitialData,
+  GlipGroupState,
+  GlipData,
+  IFactory,
 } from '../types';
-import faker from 'faker';
+import {
+  companyFactory,
+  userFactory,
+  personFactory,
+  groupFactory,
+  teamFactory,
+  clientConfigFactory,
+  stateFactory,
+  groupStateFactory,
+  profileFactory,
+} from './factories';
+
+interface ICompanyFactory {
+  user(): IFactory<GlipPerson>;
+  people(): IFactory<GlipPerson>;
+  group(): IFactory<GlipGroup>;
+  team(): IFactory<GlipGroup>;
+  clientConfig(): IFactory<GlipClientConfig>;
+  state(): IFactory<GlipState>;
+  profile(): IFactory<GlipProfile>;
+}
+
+class UserContextFactory {
+  private _factoryMap: Map<string, any> = new Map();
+  constructor(public id: number) {}
+  private _get<T>(key: string, creator: () => T): T {
+    if (!this._factoryMap.has(key)) {
+      this._factoryMap.set(key, creator());
+    }
+    return this._factoryMap.get(key);
+  }
+
+  group(): IFactory<GlipGroup> {
+    return this._get<IFactory<GlipGroup>>('group', () =>
+      groupFactory.extend({ creator_id: this.id, members: [this.id] }),
+    );
+  }
+
+  team(): IFactory<GlipGroup> {
+    return this._get<IFactory<GlipGroup>>('team', () =>
+      teamFactory.extend({
+        creator_id: this.id,
+        members: [this.id],
+        permissions: { admin: { uids: [this.id] } },
+      }),
+    );
+  }
+}
+
+const userContextFactory = new UserContextFactory(123);
+function createGroup(targetUid: number) {
+  return userContextFactory
+    .group()
+    .withDerivation('members', data => [data.creator_id, targetUid])
+    .withDerivation(
+      'set_abbreviation',
+      data => `Group: ${data.creator_id} + ${targetUid}`,
+    )
+    .build();
+}
+
+function createTeam(teamName: string, targetUids: number[]) {
+  return userContextFactory
+    .group()
+    .withDerivation('members', data => [data.creator_id, ...targetUids])
+    .withDerivation('permissions', data => ({
+      admin: { uids: [data.creator_id] },
+      user: { uids: [...targetUids] },
+    }))
+    .build({
+      set_abbreviation: teamName,
+    });
+}
+
+class DataBuilder {
+  companyFactory: IFactory<GlipCompany>;
+  template: GlipData = {
+    people: [],
+    groups: [],
+    teams: [],
+  } as any;
+  companyContextFactory: CompanyContextFactory;
+
+  load(template: GlipData) {
+    if (template.company) {
+      this.useCompany(template.company);
+    }
+  }
+
+  useCompany(company: Partial<GlipCompany>) {
+    this.template.company = companyFactory.build(company);
+    this.companyContextFactory = new CompanyContextFactory(
+      this.template.company._id,
+    );
+    return this;
+  }
+
+  useAccount() {}
+
+  addGroup(group: Partial<GlipGroup>) {
+    this.template.groups.push(this.companyContextFactory.group().build(group));
+    return this;
+  }
+
+  addGroups(groups: GlipGroup[]) {
+    this.template.groups = this.template.groups.concat(groups);
+    return this;
+  }
+
+  generateGroups(count: number = 1, group?: GlipGroup) {
+    this.template.groups = this.template.groups.concat(
+      this.companyContextFactory.group().buildList(count, group),
+    );
+    return this;
+  }
+
+  addTeam(team: Partial<GlipGroup>) {
+    this.template.teams.push(this.companyContextFactory.team().build(team));
+    return this;
+  }
+
+  addTeams(teams: GlipGroup[]) {
+    this.template.teams = this.template.teams.concat(teams);
+    return this;
+  }
+
+  generateTeams(count: number = 1, team?: GlipGroup) {
+    this.template.teams = this.template.teams.concat(
+      this.companyContextFactory.group().buildList(count, team),
+    );
+    return this;
+  }
+
+  build() {
+    !this.template.company && this.useCompany({});
+    // companyContextFactory.group().build()
+  }
+}
+
+class CompanyContextFactory {
+  private _factoryMap: Map<string, any> = new Map();
+  constructor(public id: number) {}
+  private _get<T>(key: string, creator: () => T): T {
+    if (!this._factoryMap.has(key)) {
+      this._factoryMap.set(key, creator());
+    }
+    return this._factoryMap.get(key);
+  }
+
+  // user() {}
+
+  people() {
+    return this._get<IFactory<GlipPerson>>('person', () =>
+      personFactory.extend({
+        company_id: this.id,
+      }),
+    );
+  }
+
+  group(): IFactory<GlipGroup> {
+    return this._get<IFactory<GlipGroup>>('group', () =>
+      groupFactory.extend({ company_id: this.id }),
+    );
+  }
+
+  team(): IFactory<GlipGroup> {
+    return this._get<IFactory<GlipGroup>>('team', () =>
+      teamFactory.extend({ company_id: this.id }),
+    );
+  }
+}
+
+function prepareInitialData() {}
 
 // type DataFactory<T> = {
 //   template: () => T;
 //   seeds:
 // }
-type Templates = {
-  company: GlipCompany;
-  user: GlipPerson;
-  people: GlipPerson[];
-  groups: GlipGroup[];
-  teams: GlipGroup[];
-  clientConfig: GlipClientConfig;
-  state: GlipState;
-  profile: GlipProfile;
-};
-export const templates: Templates = {
+export const template: GlipData = {
   company: require('./template/company.json'),
   user: require('./template/user.json'),
   people: require('./template/people.json'),
@@ -46,8 +212,8 @@ export const seeds = {
     const card = faker.helpers.createCard();
     // const groupName = '';
     return {
-      members: [templates.user._id, targetUid],
-      company_id: templates.company._id,
+      members: [template.user._id, targetUid],
+      company_id: template.company._id,
       email_friendly_abbreviation: card.email,
       set_abbreviation: groupName,
       privacy: faker.random.arrayElement(['private', 'protected', 'public']),

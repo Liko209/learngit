@@ -70,31 +70,6 @@ const DEBUG_COMMAND_MAP = {
       },
     });
     saveBlob('NETWORK', result);
-    // const nameMap = new Map<string, number>();
-    // zipItems.forEach(zipItem => {
-    //   if (nameMap.has(zipItem.name)) {
-    //     nameMap.set(zipItem.name, nameMap.get(zipItem.name)! + 1);
-    //     const fileName = `${zipItem.name}-${nameMap.get(zipItem.name)}${
-    //       zipItem.type
-    //     }`;
-    //     zipItem.folder
-    //       ? zip.folder(zipItem.folder).file(fileName, zipItem.content)
-    //       : zip.file(fileName, zipItem.content);
-    //   } else {
-    //     nameMap.set(zipItem.name, 1);
-    //     const fileName = `${zipItem.name}${zipItem.type}`;
-    //     zipItem.folder
-    //       ? zip.folder(zipItem.folder).file(fileName, zipItem.content)
-    //       : zip.file(fileName, zipItem.content);
-    //   }
-    // });
-    // return await zip.generateAsync({
-    //   type: 'blob',
-    //   compression: 'DEFLATE',
-    //   compressionOptions: {
-    //     level: ZIP_LEVEL.HEIGH,
-    //   },
-    // });
   },
   '/debug': () => UploadRecentLogs.show(),
   '/debug-all': () => UploadRecentLogs.show({ level: ZipItemLevel.DEBUG_ALL }),

@@ -14,9 +14,7 @@ export class GlipBaseDao<T extends GlipModel> {
   unique: string;
   constructor(modelName: string, db: IDatabase) {
     this.db = db;
-    if (db) {
-      this.collection = db.getCollection<T, number>(modelName);
-    }
+    this.collection = db.getCollection<T, number>(modelName);
     this.modelName = modelName;
     this.unique = this.collection.primaryKeyName();
   }
@@ -29,6 +27,34 @@ export class GlipBaseDao<T extends GlipModel> {
     return this.lokiCollection.insert({ ...item, [this.unique]: Date.now() });
   }
 
+  put(item: T) {
+    // We must copy input data
+    // Because of loki will modify input data reference
+    const newItem: T = _.clone(item);
+    const unique: string = this.unique;
+    const key = newItem[unique];
+    const result = this.lokiCollection.find({
+      [unique]: key,
+    } as any)[0];
+
+    if (result) {
+      const { $loki } = result;
+      this.lokiCollection.update(_.assign(newItem, { $loki }));
+      return newItem;
+    }
+    this.lokiCollection.insert(newItem);
+    return newItem;
+  }
+
+  bulkPut(array: T | T[]) {
+    if (!Array.isArray(array)) {
+      return this.put(array);
+    }
+    return array.map(async (item: T) => {
+      return this.put(item);
+    });
+  }
+
   delete(id: number): void {
     this.lokiCollection.findAndRemove({
       [this.unique]: id,
@@ -38,20 +64,14 @@ export class GlipBaseDao<T extends GlipModel> {
   update(item: Partial<T>): void {
     this.lokiCollection.findAndUpdate(
       {
-        [this.unique]: item.id,
+        [this.unique]: item[this.unique],
       } as any,
       target => _.defaultsDeep(target, item),
     );
   }
 
-  put(item: Partial<T>) {
-    const target = this.getById(item[this.unique]);
-    if (target) {
-      const result = _.defaultsDeep(target, item) as T;
-      this.update(_.defaultsDeep(target, item));
-      return result;
-    }
-    return this.create(item as T);
+  findOne() {
+    return this.lokiCollection.findOne();
   }
 
   getById(id: number) {
