@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
+import { container } from 'framework';
 import { action, observable, computed } from 'mobx';
 import { EditMessageInputProps, EditMessageInputViewProps } from './types';
 import { PostService } from 'sdk/module/post';
@@ -17,6 +19,7 @@ import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import Keys from 'jui/pattern/MessageInput/keys';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { catchError } from '@/common/catchError';
+import { MessageService } from '@/modules/message/service';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -27,7 +30,7 @@ enum ERROR_TYPES {
 
 class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   implements EditMessageInputViewProps {
-  private static _draftMap = new Map<number, string>();
+  private messageService: MessageService = container.get(MESSAGE_SERVICE);
   private _postService: PostService;
   @computed
   get id() {
@@ -85,18 +88,15 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
 
   @computed
   get draft() {
-    const draftMap = EditMessageInputViewModel._draftMap;
-    return draftMap.get(this.props.id) || '';
+    return this.messageService.getDraft(this.props.id);
   }
 
   saveDraft(draft: string) {
-    const draftMap = EditMessageInputViewModel._draftMap;
-    draftMap.set(this.props.id, draft);
+    return this.messageService.enterEditMode(this.props.id, draft);
   }
 
   removeDraft() {
-    const draftMap = EditMessageInputViewModel._draftMap;
-    draftMap.delete(this.props.id);
+    return this.messageService.leaveEditMode(this.props.id);
   }
 
   @action

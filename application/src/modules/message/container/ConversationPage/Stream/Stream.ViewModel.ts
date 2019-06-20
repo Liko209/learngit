@@ -127,7 +127,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.loadInitialPosts = this.loadInitialPosts.bind(this);
     this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
     this._historyHandler = new HistoryHandler();
-    this.initialize(props.groupId);
+    this.initialize();
     this._streamController = new StreamController(
       props.groupId,
       this._historyHandler,
@@ -177,7 +177,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
           (item: StreamItem) =>
             item.type === StreamItemType.POST &&
             !!item.value &&
-            item.value.includes(postId),
+            item.value === postId,
         )
       : -1;
   }
@@ -317,7 +317,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @action
-  initialize = (groupId: number) => {
+  initialize = () => {
     this._syncGroupItems();
     const globalStore = storeManager.getGlobalStore();
     this.props.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
@@ -327,8 +327,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   private _canHandleError() {
     return (
-      this.errorType === ERROR_TYPES.BACKEND
-      || this.errorType === ERROR_TYPES.NETWORK
+      this.errorType === ERROR_TYPES.BACKEND ||
+      this.errorType === ERROR_TYPES.NETWORK
     );
   }
 

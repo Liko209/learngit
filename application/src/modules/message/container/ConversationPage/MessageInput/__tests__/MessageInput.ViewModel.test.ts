@@ -48,7 +48,7 @@ ServiceLoader.getInstance = jest
       return groupConfigService;
     }
 
-    return { userConfig:{ getGlipUserId: () => userId }};
+    return { userConfig: { getGlipUserId: () => userId } };
   });
 
 const mockGroupEntityData = {
@@ -61,7 +61,10 @@ describe('MessageInputViewModel', () => {
     jest.mock('@/store/utils', () => ({
       getEntity: jest.fn(() => mockGroupEntityData),
     }));
-    messageInputViewModel = new MessageInputViewModel({ id: 123 });
+    messageInputViewModel = new MessageInputViewModel({
+      id: 123,
+      onUpArrowPressed: jest.fn(),
+    });
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -154,6 +157,7 @@ describe('MessageInputViewModel', () => {
         messageInputViewModel = new MessageInputViewModel({
           id: 123,
           onPost: onPostHandler,
+          onUpArrowPressed: jest.fn(),
         });
         await messageInputViewModel._sendPost();
         expect(onPostHandler).toBeCalled();
@@ -164,6 +168,7 @@ describe('MessageInputViewModel', () => {
         messageInputViewModel = new MessageInputViewModel({
           id: 123,
           onPost: onPostHandler,
+          onUpArrowPressed: jest.fn(),
         });
         await messageInputViewModel._sendPost();
         expect(onPostHandler).toBeCalled();

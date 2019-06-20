@@ -32,6 +32,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
 import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
+import debounce from 'lodash/debounce';
 
 const saveDebugLog = (level: ZipItemLevel = ZipItemLevel.NORMAL) => {
   container
@@ -84,10 +85,17 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   @observable
   error: string = '';
 
+  _UpHandler = debounce(this.props.onUpArrowPressed, 3e2);
+
   keyboardEventHandler = {
     enter: {
       key: 13,
       handler: this._enterHandler(this),
+    },
+    up: {
+      key: 38,
+      empty: true,
+      handler: this._UpHandler,
     },
   };
 
