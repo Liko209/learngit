@@ -34,7 +34,7 @@ class CallActionsViewModel extends StoreViewModel<CallActionsProps>
 
   @computed
   get isIncomingPage() {
-    return this._telephonyStore.inbound;
+    return this._telephonyStore.isIncomingCall;
   }
 }
 

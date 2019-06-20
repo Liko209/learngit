@@ -190,6 +190,15 @@ class TelephonyStore {
         }
       },
     );
+
+    reaction(
+      () => this.call && this.callState,
+      callState => {
+        if (callState === CALL_STATE.DISCONNECTED) {
+          this.end();
+        }
+      },
+    );
   }
 
   @computed
