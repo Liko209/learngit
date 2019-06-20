@@ -153,15 +153,18 @@ class RTCMediaDeviceManager extends EventEmitter2 {
         RTC_MEDIA_DEVICE_KIND.AUDIO_OUTPUT,
         audioOutputs,
       );
-    } else {
-      rtcLogger.debug(
-        LOG_TAG,
-        "Audio devices has 'default' as deviceId NOT FOUND",
-      );
+      return {
+        audioInputs,
+        audioOutputs,
+      };
     }
+    rtcLogger.debug(
+      LOG_TAG,
+      "Audio devices has 'default' as deviceId NOT FOUND",
+    );
     return {
-      audioInputs,
-      audioOutputs,
+      audioInputs: [],
+      audioOutputs: [],
     };
   }
 
@@ -206,6 +209,8 @@ class RTCMediaDeviceManager extends EventEmitter2 {
           deviceInfos,
         );
         this._delegate &&
+          audioInputs.length !== 0 &&
+          audioOutputs.length !== 0 &&
           this._delegate.onMediaDevicesChanged(
             {
               devices: audioOutputs,

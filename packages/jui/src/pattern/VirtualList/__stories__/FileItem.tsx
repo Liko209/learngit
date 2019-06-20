@@ -14,6 +14,8 @@ import {
 import { JuiIconButton } from '../../../components/Buttons';
 import { JuiThumbnail } from '../../../components/Thumbnail';
 import { FileItemProps } from './types';
+import download from '../../../assets/jupiter-icon/icon-download.svg';
+import link from '../../../assets/jupiter-icon/icon-external_link.svg';
 
 class FileItem extends PureComponent<FileItemProps> {
   state = {
@@ -46,17 +48,18 @@ class FileItem extends PureComponent<FileItemProps> {
                 tooltipTitle="Download"
                 disabled={disabled}
                 onClick={action}
-              >
-                download
-              </JuiIconButton>
+                symbol={download}
+              />
             </JuiListItemIcon>
           </JuiListItemSecondaryAction>
         ) : (
           <JuiListItemSecondaryAction>
             <JuiListItemIcon>
-              <JuiIconButton variant="plain" disabled={disabled}>
-                link
-              </JuiIconButton>
+              <JuiIconButton
+                variant="plain"
+                disabled={disabled}
+                symbol={link}
+              />
             </JuiListItemIcon>
           </JuiListItemSecondaryAction>
         )}

@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Components/Lists JuiListItemSecondaryText: Components/Lists JuiListItemSecondaryText 1`] = `
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  min-width: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c1.c1 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+<div
+  style={
+    Object {
+      "maxWidth": "200px",
+    }
+  }
+>
+  <span
+    className="c0"
+    data-test-automation-id="list-item-secondary-text"
+  >
+    <span
+      className="c1"
+    >
+      Secondary text
+      
+    </span>
+     · 
+    <span>
+      XX/XX/XXXX
+    </span>
+  </span>
+</div>
+`;

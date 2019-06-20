@@ -113,8 +113,8 @@ class PostDataController {
         data.filter((post: Post) => post.created_at !== post.modified_at),
       );
       const posts = await this.handleSexioModifiedPosts(data);
-      this._deletePreInsertPosts(posts);
       const result = await this.filterAndSavePosts(posts, true);
+      this._deletePreInsertPosts(posts);
       return result;
     }
     return [];

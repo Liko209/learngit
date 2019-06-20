@@ -6,7 +6,6 @@
 
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiZoomElement } from '../index';
 import styled from '../../../foundation/styled-components';
 import { Button } from '@material-ui/core';
@@ -109,8 +108,6 @@ class Test extends React.Component {
   }
 }
 
-storiesOf('Components/Animation', module)
-  .addDecorator(withInfoDecorator(JuiZoomElement, { inline: true }))
-  .add('JuiZoomElement', () => {
-    return <Test />;
-  });
+storiesOf('Components/Animation', module).add('JuiZoomElement', () => {
+  return <Test />;
+});

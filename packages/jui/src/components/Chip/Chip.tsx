@@ -9,6 +9,7 @@ import { JuiIconButton } from '../Buttons/IconButton';
 import styled from '../../foundation/styled-components';
 import { width, spacing, height, palette } from '../../foundation/utils/styles';
 import { Omit } from '../../foundation/utils/typeHelper';
+import remove from '../../assets/jupiter-icon/icon-delete_circle.svg';
 
 type JuiChipProps = {
   uid?: number;
@@ -99,9 +100,8 @@ export const JuiChip: React.SFC<JuiChipProps> = React.memo(
             tooltipTitle={deleteTooltip}
             color={isError ? 'semantic.negative' : 'grey.500'}
             data-test-automation-id={deleteAutomationId}
-          >
-            remove
-          </JuiIconButton>
+            symbol={remove}
+          />
         }
       />
     );

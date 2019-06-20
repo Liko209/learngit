@@ -149,7 +149,7 @@ class TelephonyService {
       switch (e.code) {
         case 0:
           this._pauseRingtone();
-          ['mousedown', 'keydown'].forEach((evt) => {
+          ['mousedown', 'keydown'].forEach(evt => {
             const cb = () => {
               if (!this._telephonyStore.hasIncomingCall) {
                 return;
@@ -399,7 +399,7 @@ class TelephonyService {
           return;
         }
         const defaultPhoneNumber = callerPhoneNumberList.find(
-          (callerPhoneNumber) => callerPhoneNumber.id === defaultNumberId,
+          callerPhoneNumber => callerPhoneNumber.id === defaultNumberId,
         );
         if (defaultPhoneNumber) {
           this._telephonyStore.updateDefaultChosenNumber(
@@ -412,7 +412,7 @@ class TelephonyService {
 
     this._incomingCallDisposer = reaction(
       () => this._telephonyStore.hasIncomingCall,
-      (hasIncomingCall) => {
+      hasIncomingCall => {
         if (hasIncomingCall) {
           this._playRingtone();
         } else {
@@ -489,18 +489,18 @@ class TelephonyService {
     const idx =
       this._telephonyStore.callerPhoneNumberList &&
       this._telephonyStore.callerPhoneNumberList.findIndex(
-        (phone) =>
+        phone =>
           phone.phoneNumber === this._telephonyStore.chosenCallerPhoneNumber,
       );
 
-    const { isValid } = await this.isValidNumber(toNumber);
+    const { isValid, parsed } = await this.isValidNumber(toNumber);
     if (!isValid) {
       ToastCallError.toastInvalidNumber();
       return;
     }
     const shouldMakeRcPhoneCall = !(await this._isJupiterDefaultApp());
     if (shouldMakeRcPhoneCall) {
-      return this.makeRCPhoneCall(toNumber);
+      return this.makeRCPhoneCall(parsed as string);
     }
     callback && callback();
 
@@ -518,10 +518,10 @@ class TelephonyService {
     mainLogger.info(
       `${
         TelephonyService.TAG
-      }Make call with fromNumber: ${fromNumber}， and toNumber: ${toNumber}`,
+      }Make call with fromNumber: ${fromNumber}， and toNumber: ${parsed}`,
     );
     const rv = await this._serverTelephonyService.makeCall(
-      toNumber,
+      parsed as string,
       fromNumber,
     );
 
@@ -549,7 +549,7 @@ class TelephonyService {
       }
     }
 
-    this._telephonyStore.phoneNumber = toNumber;
+    this._telephonyStore.phoneNumber = parsed as string;
     return true;
   }
 
@@ -963,7 +963,7 @@ class TelephonyService {
         });
         this.hangUp();
       })
-      .catch((e) => {
+      .catch(e => {
         ToastCallError.toastParkError();
         mainLogger.info(`${TelephonyService.TAG}park call error: ${e}`);
       });

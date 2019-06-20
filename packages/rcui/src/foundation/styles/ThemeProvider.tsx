@@ -18,7 +18,7 @@ type ThemeProviderPropsState = {
 class ThemeProvider extends Component<
   ThemeProviderProps,
   ThemeProviderPropsState
-  > {
+> {
   private _mounted: boolean;
   constructor(props: ThemeProviderProps) {
     super(props);

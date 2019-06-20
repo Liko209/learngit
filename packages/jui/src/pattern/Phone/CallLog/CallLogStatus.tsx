@@ -43,7 +43,7 @@ const CallLogStatus = (props: Props) => {
         alignCenter={true}
         primary={callType}
         primaryColor={textColor}
-        secondary={duration}
+        secondary={isMissedCall ? null : duration}
       />
     </ContactItem>
   );

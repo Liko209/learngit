@@ -9,18 +9,18 @@ import {
   FullParser,
   HTMLParserOption,
   AtMentionParserOption,
-  EmojiParserOption,
-  EmojiConvertType,
   FileNameParserOption,
   URLParserOption,
   KeywordHighlightParserOption,
   PhoneNumberParserOption,
+  EmojiConvertType,
+  EmojiTransformerOption,
 } from './types';
 import { KeywordHighlightParser } from './parsers/KeywordHighlightParser';
 import { PhoneNumberParser } from './parsers/PhoneNumberParser';
 import { FileNameParser } from './parsers/FileNameParser';
 import { AtMentionParser } from './parsers/AtMentionParser';
-import { EmojiParser } from './parsers/EmojiParser';
+import { EmojiTransformer } from './parsers/EmojiTransformer';
 import { HTMLParser } from './parsers/HTMLParser';
 import {
   AT_MENTION_GROUPED_REGEXP,
@@ -32,6 +32,7 @@ import { URLParser } from './parsers/URLParser';
 import _ from 'lodash';
 import moize from 'moize';
 import { mainLogger } from 'sdk';
+import { EmojiParser } from './parsers/EmojiParser';
 
 // Do not change the order of the array unless you know what you're doing.
 const parsersConfig = [
@@ -40,12 +41,20 @@ const parsersConfig = [
     shouldParse: (fullText: string, options: PostParserOptions) => options.html,
     getParserOption: (options: PostParserOptions): HTMLParserOption => {
       const { html } = options;
-      const innerOptions = _.clone(options);
-      innerOptions.html = false;
 
       const opts: HTMLParserOption = html instanceof Object ? html : {};
-      opts.innerContentParser = (text: string) =>
-        postParser(text, innerOptions);
+      opts.innerContentParser = (text: string, containerTag?: string) => {
+        const innerOptions = _.clone(options);
+        // No need to parse html since the inner content is surely plain text (no tags)
+        innerOptions.html = false;
+        // No need to parse PhoneLink/URL/AtMention if content is already in a tag
+        const isInLink = containerTag && containerTag.toLowerCase() === 'a';
+        innerOptions.phoneNumber = options.phoneNumber && !isInLink;
+        innerOptions.url = options.url && !isInLink;
+        innerOptions.atMentions =
+          options.atMentions && isInLink ? undefined : options.atMentions;
+        return postParser(text, innerOptions);
+      };
       opts.withGlipdown = !(
         typeof html === 'object' && html.withGlipdown === false
       ); // default to true unless specified explicitly
@@ -55,10 +64,8 @@ const parsersConfig = [
   },
   {
     Parser: AtMentionParser,
-    shouldParse: (fullText: string, { atMentions }: PostParserOptions) =>
-      atMentions &&
-      Object.keys(atMentions.map || {}).length &&
-      fullText.length >= 48, // min-length for a string that includes at mention
+    shouldParse: (fullText: string, { atMentions, html }: PostParserOptions) =>
+      !html && atMentions && fullText.length >= 48, // min-length for a string that includes at mention
     getParserOption: ({
       keyword,
       html,
@@ -73,61 +80,9 @@ const parsersConfig = [
   },
   {
     Parser: EmojiParser,
-    shouldParse: (fullText: string, options: PostParserOptions) =>
-      options.emoji && new RegExp(EMOJI_UNICODE_REGEX_RANGE).test(fullText),
-    getParserOption: ({
-      html,
-      emoji = {},
-    }: PostParserOptions): EmojiParserOption => {
-      const opts: EmojiParserOption = emoji;
-      opts.convertType = EmojiConvertType.UNICODE;
-      return opts;
-    },
-  },
-  {
-    Parser: EmojiParser,
-    shouldParse: (fullText: string, options: PostParserOptions) =>
-      options.emoji &&
-      !options.emoji.keepASCII &&
-      new RegExp(EMOJI_ASCII_UNIQUE_CHARS).test(fullText),
-    getParserOption: ({
-      html,
-      emoji = {},
-    }: PostParserOptions): EmojiParserOption => {
-      const opts: EmojiParserOption = emoji;
-      opts.convertType = EmojiConvertType.ASCII;
-      return opts;
-    },
-  },
-  {
-    Parser: EmojiParser,
-    shouldParse: (fullText: string, options: PostParserOptions) =>
-      options &&
-      options.emoji &&
-      options.emoji.customEmojiMap &&
-      Object.keys(options.emoji.customEmojiMap).length &&
-      /:.*?:/.test(fullText),
-    getParserOption: ({
-      html,
-      emoji = {},
-    }: PostParserOptions): EmojiParserOption => {
-      const opts: EmojiParserOption = emoji;
-      opts.convertType = EmojiConvertType.CUSTOM;
-      return opts;
-    },
-  },
-  {
-    Parser: EmojiParser,
-    shouldParse: (fullText: string, options: PostParserOptions) =>
-      options.emoji && /:.*?:/.test(fullText),
-    getParserOption: ({
-      html,
-      emoji = {},
-    }: PostParserOptions): EmojiParserOption => {
-      const opts: EmojiParserOption = emoji;
-      opts.convertType = EmojiConvertType.EMOJI_ONE;
-      return opts;
-    },
+    shouldParse: (fullText: string, { emoji, html }: PostParserOptions) =>
+      emoji && !html,
+    getParserOption: (): AtMentionParserOption => ({}),
   },
   {
     Parser: FileNameParser,
@@ -155,8 +110,8 @@ const parsersConfig = [
   },
   {
     Parser: KeywordHighlightParser,
-    shouldParse: (fullText: string, options: PostParserOptions) =>
-      options.keyword,
+    shouldParse: (fullText: string, { keyword, html }: PostParserOptions) =>
+      keyword && !html,
     getParserOption: ({
       keyword,
       phoneNumber,
@@ -170,8 +125,8 @@ const parsersConfig = [
   },
   {
     Parser: PhoneNumberParser,
-    shouldParse: (fullText: string, options: PostParserOptions) =>
-      options.phoneNumber && /\d/g.test(fullText),
+    shouldParse: (fullText: string, { phoneNumber, html }: PostParserOptions) =>
+      phoneNumber && !html && /\d/g.test(fullText),
     getParserOption: ({
       keyword,
     }: PostParserOptions): PhoneNumberParserOption => ({
@@ -180,6 +135,47 @@ const parsersConfig = [
     }),
   },
 ];
+
+const transformEmoji = (
+  fullText: string,
+  emojiOptions: EmojiTransformerOption,
+) => {
+  let _fullText = fullText;
+  const emojiTransformer = new EmojiTransformer();
+  if (new RegExp(EMOJI_UNICODE_REGEX_RANGE).test(_fullText)) {
+    _fullText = emojiTransformer.replace(
+      _fullText,
+      emojiOptions,
+      EmojiConvertType.UNICODE,
+    );
+  }
+  if (new RegExp(EMOJI_ASCII_UNIQUE_CHARS).test(fullText)) {
+    _fullText = emojiTransformer.replace(
+      _fullText,
+      emojiOptions,
+      EmojiConvertType.ASCII,
+    );
+  }
+  if (
+    emojiOptions.customEmojiMap &&
+    Object.keys(emojiOptions.customEmojiMap).length &&
+    /:.*?:/.test(fullText)
+  ) {
+    _fullText = emojiTransformer.replace(
+      _fullText,
+      emojiOptions,
+      EmojiConvertType.CUSTOM,
+    );
+  }
+  if (/:.*?:/.test(fullText)) {
+    _fullText = emojiTransformer.replace(
+      _fullText,
+      emojiOptions,
+      EmojiConvertType.EMOJI_ONE,
+    );
+  }
+  return _fullText;
+};
 
 const _postParser: FullParser = (
   fullText: string,
@@ -192,6 +188,10 @@ const _postParser: FullParser = (
   try {
     const atMentionRegex = new RegExp(AT_MENTION_GROUPED_REGEXP);
     let _fullText = fullText;
+    if (options && options.emoji && !options.emojiTransformed) {
+      _fullText = transformEmoji(_fullText, options.emoji);
+      options.emojiTransformed = true;
+    }
     if (options && options.html && atMentionRegex.test(fullText)) {
       _fullText = fullText.replace(
         AT_MENTION_GROUPED_REGEXP, // we need to encode the text inside atmention so it won't get parsed first, for example when some crazy user name is a url
@@ -215,8 +215,13 @@ const _postParser: FullParser = (
 };
 
 const postParser = moize(_postParser, {
-  maxSize: 100,
-  transformArgs: ([text, options]) => [text, JSON.stringify(options)],
+  maxSize: 1000,
+  transformArgs: ([text, options]) => {
+    return [text, JSON.stringify(options)];
+  },
+  // onCacheHit: cache => {
+  //   console.log('use cache', cache.keys);
+  // },
 });
 
 export { postParser };
