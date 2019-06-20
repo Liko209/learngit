@@ -67,11 +67,7 @@ export class PhoneSettingPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('settingItemSelectBox-callerID', this.generalSection);
   }
 
-  get callerIDDropDownItem() {
-    return this.getSelectorByAutomationId('settingItemSelectBoxItem-callerID');
-  }
-
-  get callerIDDropDownItemByClass() {
+  get callerIDDropDownItems() {
     return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
   }
 
@@ -164,13 +160,13 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   async checkCallerIDItemCount(count: number) {
-    await this.t.expect(this.callerIDDropDownItem.count).eql(count);
+    await this.t.expect(this.callerIDDropDownItems.count).eql(count);
   }
 
   async callerIDDropDownItemContains(callerIds: string[]) {
-    const count = await this.callerIDDropDownItem.count;
+    const count = await this.callerIDDropDownItems.count;
     for (let i = 0; i < count; i++) {
-      const text = await this.callerIDDropDownItem.nth(i).innerText;
+      const text = await this.callerIDDropDownItems.nth(i).innerText;
       const numberOnly = text.replace(/[^\d]/g, "");
       const reg = new RegExp(`${numberOnly}$`);
       let result = false;
@@ -185,11 +181,11 @@ export class PhoneSettingPage extends BaseWebComponent {
 
 
   async selectCallerID(text: string) {
-    await this.t.click(this.callerIDDropDownItem.withText(text));
+    await this.t.click(this.callerIDDropDownItems.withText(text));
   }
 
   async selectCallerIdByText(text: string) {
-    await this.t.click(this.callerIDDropDownItemByClass.withText(text));
+    await this.t.click(this.callerIDDropDownItems.withText(text));
   }
 
   async clickCallerIDDropDown() {
@@ -198,9 +194,9 @@ export class PhoneSettingPage extends BaseWebComponent {
 
   async getCallerIDList() {
     let callerIDList = [];
-    const count = await this.callerIDDropDownItem.count;
+    const count = await this.callerIDDropDownItems.count;
     for (let i = 0; i < count; i++) {
-      let item = await this.callerIDDropDownItem.nth(i).innerText
+      let item = await this.callerIDDropDownItems.nth(i).innerText
       callerIDList.push(item);
     }
     return callerIDList;
