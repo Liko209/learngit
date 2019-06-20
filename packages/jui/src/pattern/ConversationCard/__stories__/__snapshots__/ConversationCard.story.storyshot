@@ -466,6 +466,7 @@ Array [
           <button
             className="MuiButtonBase-root MuiIconButton-root c14"
             data-name="actionBarLike"
+            data-test-automation-id="actionBarLike"
             disabled={false}
             onBlur={[Function]}
             onContextMenu={[Function]}
@@ -973,6 +974,7 @@ Array [
           <button
             className="MuiButtonBase-root MuiIconButton-root c14"
             data-name="actionBarLike"
+            data-test-automation-id="actionBarLike"
             disabled={false}
             onBlur={[Function]}
             onContextMenu={[Function]}
