@@ -22,7 +22,7 @@ test.meta(<ITestMeta>{
   const browserSwitchLabel = "Desktop notifications for browser"
   const browserDescription = 'Turn on/off desktop notifications on your web browser. Browser permission is needed for desktop notifications.';
 
-  const newMessageLabel = 'New Messages';
+  const newMessageLabel = 'New messages';
   const newMessagesDescription = 'Choose your preference for desktop notifications for new messages';
   const defaultNewMessageSelectBoxValue = `Direct messages and mentions`;
   let newMessageItems = ['All new messages', 'Direct messages and mentions', 'Off'];
@@ -86,7 +86,7 @@ test.meta(<ITestMeta>{
   }
 
   /** new messages */
-  await h(t).withLog(`And  I can see item label "{newMessageLabel}" of the "New Messages" section item`, async (step) => {
+  await h(t).withLog(`And  I can see item label "{newMessageLabel}" of the "New messages" section item`, async (step) => {
     step.setMetadata('newMessageLabel', newMessageLabel);
     await t.expect(notificationAndSoundsSettingPage.newMessagesLabel.textContent).eql(newMessageLabel);
   });
@@ -101,7 +101,7 @@ test.meta(<ITestMeta>{
   });
 
   /** incoming calls */
-  await h(t).withLog(`And  I can see item label "{incomingCallsLabel}" of the "Incoming Calls" section item`, async (step) => {
+  await h(t).withLog(`And  I can see item label "{incomingCallsLabel}" of the "Incoming calls" section item`, async (step) => {
     step.setMetadata('incomingCallsLabel', incomingCallsLabel);
     await t.expect(notificationAndSoundsSettingPage.incomingCallsLabel.textContent).eql(incomingCallsLabel);
   });
@@ -183,7 +183,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`When I change desktop notifications for browser toggle to off`, async () => {
     await notificationAndSoundsSettingPage.toggleOffBrowserNotification();
   });
-  await h(t).withLog(`And I can see New message/Incoming Calls/Missed calls and new voicemails sections are disabled`, async () => {
+  await h(t).withLog(`And I can see New message/Incoming calls/Missed calls and new voicemails sections are disabled`, async () => {
     await t.expect(notificationAndSoundsSettingPage.newMessageItem.getAttribute('data-disabled')).eql('true');
     await t.expect(notificationAndSoundsSettingPage.incomingCallsItem.getAttribute('data-disabled')).eql('true');
     await t.expect(notificationAndSoundsSettingPage.missedCallsAndVoicemailsItem.getAttribute('data-disabled')).eql('true');
@@ -230,7 +230,7 @@ test.meta(<ITestMeta>{
     await settingTab.notificationAndSoundsEntry.enter();
   });
 
-  await h(t).withLog(`Then I can see only Browser and New message item in the 'Desktop Notifications' section`, async () => {
+  await h(t).withLog(`Then I can see only Browser and New message item in the 'Desktop notifications' section`, async () => {
     if (await H.isElectron()) {
       await t.expect(notificationAndSoundsSettingPage.browserSwitchItem.exists).notOk();
     } else {
