@@ -7,6 +7,10 @@ import { InstanceManager } from './mockServer/InstanceManager';
 import { CommonFileServer } from './mockServer/CommonFileServer';
 import { spyOnTarget } from './utils';
 import { InitialData } from './mockServer/glip/types';
+import _debug from 'debug';
+const debug = _debug('SdkItFramework');
+debug['useColors'] = true;
+debug.enabled = true;
 
 type ItContext = {
   data: {
@@ -15,6 +19,10 @@ type ItContext = {
   server: {
     glip: MockGlipServer;
     rc: {};
+  };
+  sdk: {
+    setup: () => Promise<void>;
+    cleanUp: () => Promise<void>;
   };
 };
 
@@ -48,19 +56,26 @@ async function initEnd() {
 }
 
 async function setup() {
-  const startTime = Date.now();
+  debug('setup sdk');
   await initSdk();
   login();
   await initEnd();
-  console.log('setup sdk cost:', Date.now() - startTime);
+  debug('setup sdk cost end.');
+}
+
+async function cleanUp() {
+  debug('cleanUp sdk');
+  await ServiceLoader.getInstance<AccountService>(
+    ServiceConfig.ACCOUNT_SERVICE,
+  ).logout();
+  clearMocks();
+  debug('clean sdk end.');
 }
 
 export function itForSdk(
   name: string,
   caseExecutor: (itCtx: ItContext) => void,
 ) {
-  console.log('framework init...');
-
   const fileServer = InstanceManager.get(CommonFileServer);
   const mockGlipServer = InstanceManager.get(MockGlipServer);
   const useInitialData = (initialData: InitialData) => {
@@ -76,24 +91,11 @@ export function itForSdk(
       glip: mockGlipServer,
       rc: {},
     },
+    sdk: {
+      setup,
+      cleanUp,
+    },
   };
-
-  beforeAll(async () => {
-    const startTime = Date.now();
-    console.log('framework beforeAll');
-    await setup();
-    console.log('framework beforeAll cost:', Date.now() - startTime);
-  });
-
-  afterAll(async () => {
-    console.log('framework afterAll');
-    clearMocks();
-    const startTime = Date.now();
-    await ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).logout();
-    console.log('clean sdk cost:', Date.now() - startTime);
-  });
   describe(name, () => {
     caseExecutor(itCtx);
   });

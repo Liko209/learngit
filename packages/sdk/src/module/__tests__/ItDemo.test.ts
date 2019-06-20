@@ -15,7 +15,7 @@ jest.mock('sdk/framework/account/helper', () => {
 jest.mock('foundation/src/network/client/http/Http');
 jest.mock('foundation/src/network/client/socket/Socket');
 
-itForSdk('Service Integration test', ({ server, data }) => {
+itForSdk('Service Integration test', ({ server, data, sdk }) => {
   let groupService: GroupService;
   let personService: PersonService;
   let searchService: SearchService;
@@ -24,20 +24,22 @@ itForSdk('Service Integration test', ({ server, data }) => {
   const { groupDao } = server.glip;
 
   // use user
-  // useInitialData('./reee.json');
   data.useInitialData(require('./test-demo-initial.json'));
-  // todo not work now.
   // should be able to insert initial data here
   groupDao.create({
     ...GlipData.seeds.group('Test Group with thomas', 1),
     is_team: true,
   });
 
-  beforeAll(() => {
+  beforeAll(async () => {
+    await sdk.setup();
     groupService = ServiceLoader.getInstance(ServiceConfig.GROUP_SERVICE);
     personService = ServiceLoader.getInstance(ServiceConfig.PERSON_SERVICE);
     searchService = ServiceLoader.getInstance(ServiceConfig.SEARCH_SERVICE);
     postService = ServiceLoader.getInstance(ServiceConfig.POST_SERVICE);
+  });
+  afterAll(async () => {
+    await sdk.cleanUp();
   });
   describe('GroupService', () => {
     it('search group', async () => {
