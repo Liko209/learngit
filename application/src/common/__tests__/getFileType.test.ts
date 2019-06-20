@@ -3,7 +3,7 @@
  * @Date: 2019-01-14 09:32:26
  * Copyright © RingCentral. All rights reserved.
  */
-import { FileType } from '../../store/models/FileItem';
+import FileItemModel, { FileType } from '../../store/models/FileItem';
 import { getFileType } from '../getFileType';
 import { SupportPreviewImageExtensions } from 'sdk/module/item/module/file/utils/ImageFileExtensions';
 
@@ -56,7 +56,7 @@ describe('getFileType', () => {
   });
 
   it('should be other types when item don"t include pages, thumbs, type not include image', () => {
-    const fileItem = {};
+    const fileItem = new FileItemModel({});
     const extendFile = getFileType(fileItem);
     expect(extendFile.type).toBe(FileType.others);
     expect(extendFile.previewUrl).toBe('');

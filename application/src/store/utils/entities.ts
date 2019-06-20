@@ -12,8 +12,8 @@ import { ENTITY_NAME } from '../constants';
 import { GLOBAL_VALUES } from '../config';
 
 function getEntity<
-  T extends IdModel<IdType>,
-  K extends Entity<IdType>,
+  T extends IdModel<IdType> = never,
+  K extends Entity<IdType> = never,
   IdType extends ModelIdType = number
 >(entityName: ENTITY_NAME, id: IdType) {
   const store = storeManager.getEntityMapStore(
