@@ -19,7 +19,7 @@ class EmojiParser extends PostParser implements IPostParser {
 
   getReplaceElement(strValue: string) {
     const result = this.getRegexp().exec(strValue);
-    if (!result) {
+    if (!result || !result[0]) {
       return strValue;
     }
     try {
