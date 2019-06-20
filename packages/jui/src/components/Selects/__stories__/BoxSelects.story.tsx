@@ -6,10 +6,7 @@
 
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import {
-  withInfoDecorator,
-  alignCenterDecorator,
-} from '../../../foundation/utils/decorators';
+import { alignCenterDecorator } from '../../../foundation/utils/decorators';
 import { boolean, select } from '@storybook/addon-knobs';
 import { JuiBoxSelect } from '..';
 import { JuiMenuItem } from '../../../components/Menus';
@@ -98,7 +95,6 @@ class TestBoxSelect extends React.Component<TestBoxSelectProps> {
 
 storiesOf('Components/Selects', module)
   .addDecorator(alignCenterDecorator)
-  .addDecorator(withInfoDecorator(JuiBoxSelect, { inline: true }))
   .add('BoxSelect', () => {
     return (
       <div style={{ padding: '0 30%' }}>

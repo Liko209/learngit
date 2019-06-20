@@ -1,0 +1,213 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/SearchFilter SearchFilter: Pattern/SearchFilter SearchFilter 1`] = `
+.c5.c5 {
+  margin: 0 0 16px 0;
+}
+
+.c5.c5 label {
+  color: #757575;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+}
+
+.c5.c5 input::-webkit-input-placeholder {
+  color: #757575;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c5.c5 input::-moz-placeholder {
+  color: #757575;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c5.c5 input:-ms-input-placeholder {
+  color: #757575;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c5.c5 input::placeholder {
+  color: #757575;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c5.c5 .form-label-focused:not(.form-label-error) {
+  color: #0684bd;
+}
+
+.c5 .underline:after {
+  border-bottom-color: #0684bd;
+}
+
+.c4.c4 .inputRoot {
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+
+.c4.c4 .input {
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+}
+
+.c4.c4 .downshift-label {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c3 {
+  position: relative;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  width: 33.5%;
+  min-width: 151px;
+  color: #616161;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  border-left: 1px solid #e0e0e0;
+}
+
+.c1 {
+  padding: 12px 0px 16px 16px;
+}
+
+.c2 {
+  padding: 0px 16px;
+}
+
+<div
+  className="c0"
+>
+  <div
+    className="c1"
+  >
+    Filter
+  </div>
+  <div
+    className="c2"
+  >
+    <div
+      aria-expanded={false}
+      aria-haspopup="listbox"
+      aria-labelledby="downshift-multiple-label"
+      aria-owns={null}
+      className="c3"
+      role="combobox"
+    >
+      <div
+        className="MuiFormControl-root MuiFormControl-fullWidth c4 c5"
+        onKeyDown={[Function]}
+      >
+        <label
+          className="MuiFormLabel-root MuiInputLabel-root downshift-label MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink"
+          data-shrink={true}
+        >
+          Downshift
+        </label>
+        <div
+          aria-activedescendant={null}
+          aria-autocomplete="list"
+          aria-controls={null}
+          aria-labelledby="downshift-multiple-label"
+          className="MuiInputBase-root MuiInput-root inputRoot MuiInput-underline underline MuiInputBase-fullWidth MuiInput-fullWidth MuiInputBase-formControl MuiInput-formControl MuiInputBase-adornedStart"
+          onClick={[Function]}
+        >
+          <input
+            aria-invalid={false}
+            autoComplete="off"
+            className="MuiInputBase-input MuiInput-input input MuiInputBase-inputAdornedStart"
+            disabled={false}
+            id="downshift-multiple-input"
+            onBlur={[Function]}
+            onChange={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            placeholder="placeholder"
+            readOnly={false}
+            required={false}
+            type="text"
+            value=""
+          />
+        </div>
+        
+      </div>
+    </div>
+    <div
+      aria-expanded={false}
+      aria-haspopup="listbox"
+      aria-labelledby="downshift-multiple-label"
+      aria-owns={null}
+      className="c3"
+      role="combobox"
+    >
+      <div
+        className="MuiFormControl-root MuiFormControl-fullWidth c4 c5"
+        onKeyDown={[Function]}
+      >
+        <label
+          className="MuiFormLabel-root MuiInputLabel-root downshift-label MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink"
+          data-shrink={true}
+        >
+          Downshift
+        </label>
+        <div
+          aria-activedescendant={null}
+          aria-autocomplete="list"
+          aria-controls={null}
+          aria-labelledby="downshift-multiple-label"
+          className="MuiInputBase-root MuiInput-root inputRoot MuiInput-underline underline MuiInputBase-fullWidth MuiInput-fullWidth MuiInputBase-formControl MuiInput-formControl MuiInputBase-adornedStart"
+          onClick={[Function]}
+        >
+          <input
+            aria-invalid={false}
+            autoComplete="off"
+            className="MuiInputBase-input MuiInput-input input MuiInputBase-inputAdornedStart"
+            disabled={false}
+            id="downshift-multiple-input"
+            onBlur={[Function]}
+            onChange={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            placeholder="placeholder"
+            readOnly={false}
+            required={false}
+            type="text"
+            value=""
+          />
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+`;

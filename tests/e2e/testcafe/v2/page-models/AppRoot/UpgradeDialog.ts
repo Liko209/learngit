@@ -11,7 +11,7 @@ export class UpgradeDialog extends BaseWebComponent {
   }
 
   get title() {
-    return this.self.find('h2');
+    return this.getSelectorByAutomationId('DialogTitle');
 
   }
   async titleShouldBe(text: string) {

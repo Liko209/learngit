@@ -7,7 +7,7 @@ export class LogoutDialog extends BaseWebComponent {
   }
 
   get title() {
-    return this.self.find('h2');
+    return this.getSelectorByAutomationId('DialogTitle');
   }
 
   get exists() {

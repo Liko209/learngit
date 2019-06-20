@@ -1,0 +1,1020 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern ConversationCard: Pattern ConversationCard 1`] = `
+Array [
+  .c2.c2 {
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  background-color: #6FAFEB;
+}
+
+.c2.c2:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c2.c2:active {
+  opacity: 0.76;
+}
+
+.c2 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c16 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c17 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c18.c18 .c15,
+.c18.c18 .c15 svg {
+  font-size: 20px;
+}
+
+.c18.c18:hover .c15 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c18.c18:active .c15 {
+  color: #9e9e9e;
+}
+
+.c18.c18.c18.c18.disabled .c15 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c19.c19 .c15,
+.c19.c19 .c15 svg {
+  font-size: 20px;
+}
+
+.c19.c19:hover .c15 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c19.c19:active .c15 {
+  color: #9e9e9e;
+}
+
+.c19.c19.c19.c19.disabled .c15 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c20.c20 .c15,
+.c20.c20 .c15 svg {
+  font-size: 20px;
+}
+
+.c20.c20:hover .c15 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c20.c20:active .c15 {
+  color: #0684bd;
+}
+
+.c20.c20.c20.c20.disabled .c15 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c21.c21 .c15,
+.c21.c21 .c15 svg {
+  font-size: 20px;
+}
+
+.c21.c21:hover .c15 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c21.c21:active .c15 {
+  color: #0684bd;
+}
+
+.c21.c21.c21.c21.disabled .c15 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c22.c22 .c15,
+.c22.c22 .c15 svg {
+  font-size: 20px;
+}
+
+.c22.c22:hover .c15 {
+  color: rgba(237,182,60,0.88);
+}
+
+.c22.c22:active .c15 {
+  color: #edb63c;
+}
+
+.c22.c22.c22.c22.disabled .c15 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c23.c23 .c15,
+.c23.c23 .c15 svg {
+  font-size: 16px;
+}
+
+.c23.c23:hover .c15 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c23.c23:active .c15 {
+  color: #9e9e9e;
+}
+
+.c23.c23.c23.c23.disabled .c15 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c24.c24 .c15,
+.c24.c24 .c15 svg {
+  font-size: 20px;
+}
+
+.c24.c24:hover .c15 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c24.c24:active .c15 {
+  color: #0684bd;
+}
+
+.c24.c24.c24.c24.disabled .c15 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c14.c14 {
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  color: #0684bd;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c14.c14 .c15,
+.c14.c14 .c15 svg {
+  font-size: 16px;
+}
+
+.c14.c14:hover {
+  background-color: transparent;
+}
+
+.c14.c14:hover .c15 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c14.c14:active .c15 {
+  color: #0684bd;
+}
+
+.c14.c14.c14.c14.disabled .c15 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c14.c14 .rippleVisible {
+  color: #0684bd;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c13 {
+  border: 1px solid rgba(255,55,55,.1);
+  border-color: #e0e0e0;
+  border-radius: 4px;
+  padding: 4px 6px;
+  display: inline-block;
+  -webkit-transition: all 150ms cubic-bezier(0.4,0,1,1) 0ms;
+  transition: all 150ms cubic-bezier(0.4,0,1,1) 0ms;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  cursor: pointer;
+  color: #0684bd;
+}
+
+.c13 > button {
+  margin-right: 4px;
+  border-radius: 0;
+}
+
+.c13 > span {
+  color: #616161;
+  font-size: 12px;
+}
+
+.c13:hover {
+  border-color: #0684bd;
+}
+
+.c13:active {
+  background-color: #e1f4fb;
+}
+
+.c1 {
+  padding: 12px 12px 16px 16px;
+}
+
+.c3 {
+  position: relative;
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+.c0 {
+  position: relative;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-transition: background-color 0.2s ease-in;
+  transition: background-color 0.2s ease-in;
+}
+
+.c0:hover,
+.c0:focus {
+  background: #fafafa;
+}
+
+.c5 {
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  min-width: 0;
+  font-size: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.c6 {
+  color: #212121;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  overflow: hidden;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c7 {
+  padding-left: 4px;
+  box-sizing: border-box;
+  color: #757575;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c10 {
+  color: #9e9e9e;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  min-width: 80px;
+  text-align: right;
+}
+
+.c9 {
+  margin-left: 4px;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c4 {
+  padding: 12px 16px 8px 0px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c8 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  box-sizing: border-box;
+  color: #9e9e9e;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+}
+
+.c8 span:first-child {
+  padding-left: 4px;
+}
+
+.c11 {
+  padding: 0px 16px 16px 0px;
+  font-size: 0;
+}
+
+.c11 .conversation-item-cards:last-child {
+  margin-bottom: 0;
+}
+
+.c12 {
+  padding: 0px 16px 16px 0px;
+}
+
+<div
+    className="c0"
+  >
+    <div
+      className="c1"
+    >
+      <div
+        className="MuiAvatar-root MuiAvatar-colorDefault c2"
+        color="lake"
+        size="medium"
+      >
+        SH
+      </div>
+    </div>
+    <div
+      className="c3"
+    >
+      <div
+        className="c4"
+      >
+        <div
+          className="c5"
+        >
+          <div
+            className="c6"
+            data-name="name"
+          >
+            John Smith
+          </div>
+          <div
+            className="c7"
+            data-name="cardHeaderUserStatus"
+          >
+            🏃 in the meeting
+          </div>
+          <div
+            className="c8"
+            data-name="cardHeaderNotification"
+          >
+            <span>
+              shared 22 files
+            </span>
+          </div>
+        </div>
+        <div
+          className="c9"
+        >
+          <div
+            className="c10"
+            data-name="time"
+          >
+            3:15 PM
+          </div>
+        </div>
+      </div>
+      <div
+        className="c11"
+      >
+        any content
+      </div>
+      <div
+        className="c12"
+      >
+        <div
+          aria-describedby={null}
+          className="c13"
+          data-name="footerLikeButton"
+          onClick={[Function]}
+          onMouseLeave={[Function]}
+          onMouseOver={[Function]}
+          onTouchEnd={[Function]}
+          onTouchStart={[Function]}
+          title={null}
+        >
+          <button
+            className="MuiButtonBase-root MuiIconButton-root c14"
+            data-name="actionBarLike"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="small"
+            tabIndex="0"
+            type="button"
+            variant="plain"
+          >
+            <span
+              className="MuiIconButton-label"
+            >
+              <span
+                className="c15 thumbup icon c16"
+                size="small"
+              >
+                <svg
+                  className="c17"
+                  role="img"
+                >
+                  <use
+                    href="#icon-thumbup"
+                    xlinkHref="#icon-thumbup"
+                  />
+                </svg>
+              </span>
+            </span>
+          </button>
+          <span>
+            10
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>,
+  .c2.c2 {
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  background-color: #6FAFEB;
+}
+
+.c2.c2:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c2.c2:active {
+  opacity: 0.76;
+}
+
+.c2 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c16 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c17 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c18.c18 .c15,
+.c18.c18 .c15 svg {
+  font-size: 20px;
+}
+
+.c18.c18:hover .c15 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c18.c18:active .c15 {
+  color: #9e9e9e;
+}
+
+.c18.c18.c18.c18.disabled .c15 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c19.c19 .c15,
+.c19.c19 .c15 svg {
+  font-size: 20px;
+}
+
+.c19.c19:hover .c15 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c19.c19:active .c15 {
+  color: #9e9e9e;
+}
+
+.c19.c19.c19.c19.disabled .c15 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c20.c20 .c15,
+.c20.c20 .c15 svg {
+  font-size: 20px;
+}
+
+.c20.c20:hover .c15 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c20.c20:active .c15 {
+  color: #0684bd;
+}
+
+.c20.c20.c20.c20.disabled .c15 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c21.c21 .c15,
+.c21.c21 .c15 svg {
+  font-size: 20px;
+}
+
+.c21.c21:hover .c15 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c21.c21:active .c15 {
+  color: #0684bd;
+}
+
+.c21.c21.c21.c21.disabled .c15 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c22.c22 .c15,
+.c22.c22 .c15 svg {
+  font-size: 20px;
+}
+
+.c22.c22:hover .c15 {
+  color: rgba(237,182,60,0.88);
+}
+
+.c22.c22:active .c15 {
+  color: #edb63c;
+}
+
+.c22.c22.c22.c22.disabled .c15 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c23.c23 .c15,
+.c23.c23 .c15 svg {
+  font-size: 16px;
+}
+
+.c23.c23:hover .c15 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c23.c23:active .c15 {
+  color: #9e9e9e;
+}
+
+.c23.c23.c23.c23.disabled .c15 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c24.c24 .c15,
+.c24.c24 .c15 svg {
+  font-size: 20px;
+}
+
+.c24.c24:hover .c15 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c24.c24:active .c15 {
+  color: #0684bd;
+}
+
+.c24.c24.c24.c24.disabled .c15 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c14.c14 {
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  color: #0684bd;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c14.c14 .c15,
+.c14.c14 .c15 svg {
+  font-size: 16px;
+}
+
+.c14.c14:hover {
+  background-color: transparent;
+}
+
+.c14.c14:hover .c15 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c14.c14:active .c15 {
+  color: #0684bd;
+}
+
+.c14.c14.c14.c14.disabled .c15 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c14.c14 .rippleVisible {
+  color: #0684bd;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c13 {
+  border: 1px solid rgba(255,55,55,.1);
+  border-color: #e0e0e0;
+  border-radius: 4px;
+  padding: 4px 6px;
+  display: inline-block;
+  -webkit-transition: all 150ms cubic-bezier(0.4,0,1,1) 0ms;
+  transition: all 150ms cubic-bezier(0.4,0,1,1) 0ms;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  cursor: pointer;
+  color: #0684bd;
+}
+
+.c13 > button {
+  margin-right: 4px;
+  border-radius: 0;
+}
+
+.c13 > span {
+  color: #616161;
+  font-size: 12px;
+}
+
+.c13:hover {
+  border-color: #0684bd;
+}
+
+.c13:active {
+  background-color: #e1f4fb;
+}
+
+.c1 {
+  padding: 12px 12px 16px 16px;
+}
+
+.c3 {
+  position: relative;
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+.c0 {
+  position: relative;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-transition: background-color 0.2s ease-in;
+  transition: background-color 0.2s ease-in;
+}
+
+.c0:hover,
+.c0:focus {
+  background: #fafafa;
+}
+
+.c5 {
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  min-width: 0;
+  font-size: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.c6 {
+  color: #212121;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  overflow: hidden;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c7 {
+  padding-left: 4px;
+  box-sizing: border-box;
+  color: #757575;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c10 {
+  color: #9e9e9e;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  min-width: 80px;
+  text-align: right;
+}
+
+.c9 {
+  margin-left: 4px;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c4 {
+  padding: 12px 16px 8px 0px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c8 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  box-sizing: border-box;
+  color: #9e9e9e;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+}
+
+.c8 span:first-child {
+  padding-left: 4px;
+}
+
+.c11 {
+  padding: 0px 16px 16px 0px;
+  font-size: 0;
+}
+
+.c11 .conversation-item-cards:last-child {
+  margin-bottom: 0;
+}
+
+.c12 {
+  padding: 0px 16px 16px 0px;
+}
+
+<div
+    className="c0"
+  >
+    <div
+      className="c1"
+    >
+      <div
+        className="MuiAvatar-root MuiAvatar-colorDefault c2"
+        color="lake"
+        size="medium"
+      >
+        SH
+      </div>
+    </div>
+    <div
+      className="c3"
+    >
+      <div
+        className="c4"
+      >
+        <div
+          className="c5"
+        >
+          <div
+            className="c6"
+            data-name="name"
+          >
+            John Smith
+          </div>
+          <div
+            className="c7"
+            data-name="cardHeaderUserStatus"
+          >
+            🏃 in the meeting
+          </div>
+          <div
+            className="c8"
+            data-name="cardHeaderNotification"
+          >
+            <span>
+              shared 22 files
+            </span>
+          </div>
+        </div>
+        <div
+          className="c9"
+        >
+          <div
+            className="c10"
+            data-name="time"
+          >
+            3:15 PM
+          </div>
+        </div>
+      </div>
+      <div
+        className="c11"
+      >
+        any content
+      </div>
+      <div
+        className="c12"
+      >
+        <div
+          aria-describedby={null}
+          className="c13"
+          data-name="footerLikeButton"
+          onClick={[Function]}
+          onMouseLeave={[Function]}
+          onMouseOver={[Function]}
+          onTouchEnd={[Function]}
+          onTouchStart={[Function]}
+          title={null}
+        >
+          <button
+            className="MuiButtonBase-root MuiIconButton-root c14"
+            data-name="actionBarLike"
+            disabled={false}
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            size="small"
+            tabIndex="0"
+            type="button"
+            variant="plain"
+          >
+            <span
+              className="MuiIconButton-label"
+            >
+              <span
+                className="c15 thumbup icon c16"
+                size="small"
+              >
+                <svg
+                  className="c17"
+                  role="img"
+                >
+                  <use
+                    href="#icon-thumbup"
+                    xlinkHref="#icon-thumbup"
+                  />
+                </svg>
+              </span>
+            </span>
+          </button>
+          <span>
+            10
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>,
+]
+`;

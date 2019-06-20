@@ -6,22 +6,19 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiSettingSection } from '../SettingSection';
 
 const getTitleKnob = () => text('title', 'SettingSection');
 const getContentKnob = () => text('content', 'Setting Items Here');
-storiesOf('Pattern/Setting', module)
-  .addDecorator(withInfoDecorator(JuiSettingSection, { inline: true }))
-  .add('SettingSection', () => {
-    return (
-      <div>
-        <JuiSettingSection title={getTitleKnob()}>
-          {getContentKnob()}
-        </JuiSettingSection>
-        <JuiSettingSection title={getTitleKnob()}>
-          {getContentKnob()}
-        </JuiSettingSection>
-      </div>
-    );
-  });
+storiesOf('Pattern/Setting', module).add('SettingSection', () => {
+  return (
+    <div>
+      <JuiSettingSection title={getTitleKnob()}>
+        {getContentKnob()}
+      </JuiSettingSection>
+      <JuiSettingSection title={getTitleKnob()}>
+        {getContentKnob()}
+      </JuiSettingSection>
+    </div>
+  );
+});

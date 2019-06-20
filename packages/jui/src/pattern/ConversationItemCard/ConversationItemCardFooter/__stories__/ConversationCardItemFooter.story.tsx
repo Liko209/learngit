@@ -5,12 +5,12 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 
 import { JuiEventCollapse } from '..';
 
-storiesOf('Pattern/ConversationItemCard/ConversationItemCardFooter', module)
-  .addDecorator(withInfoDecorator(JuiEventCollapse, { inline: true }))
-  .add('EventCollapse', () => {
-    return <JuiEventCollapse hideText="hide text" showText="show text" />;
-  });
+storiesOf(
+  'Pattern/ConversationItemCard/ConversationItemCardFooter',
+  module,
+).add('EventCollapse', () => {
+  return <JuiEventCollapse hideText="hide text" showText="show text" />;
+});

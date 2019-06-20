@@ -7,20 +7,15 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiIndicatorDraft, JuiIndicatorFailure } from '../Indicator';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
-storiesOf('Pattern/ConversationCard/Indicator', module)
-  .addDecorator(withInfoDecorator(JuiIndicatorDraft, { inline: true }))
-  .add('Draft', () => (
-    <div>
-      <JuiIndicatorDraft />
-    </div>
-  ));
+storiesOf('Pattern/ConversationCard/Indicator', module).add('Draft', () => (
+  <div>
+    <JuiIndicatorDraft />
+  </div>
+));
 
-storiesOf('Pattern/ConversationCard/Indicator', module)
-  .addDecorator(withInfoDecorator(JuiIndicatorFailure, { inline: true }))
-  .add('Failure', () => (
-    <div>
-      <JuiIndicatorFailure />
-    </div>
-  ));
+storiesOf('Pattern/ConversationCard/Indicator', module).add('Failure', () => (
+  <div>
+    <JuiIndicatorFailure />
+  </div>
+));

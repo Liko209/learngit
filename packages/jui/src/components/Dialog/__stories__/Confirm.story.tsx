@@ -6,33 +6,30 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean, text } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiModal } from '../Modal';
 import { JuiDialog } from '../Dialog';
 
-storiesOf('Components/Dialog', module)
-  .addDecorator(withInfoDecorator(JuiDialog))
-  .add('JuiConfirm', () => {
-    const open = boolean('open', true);
-    const title = text('Title', 'Delete Post');
-    const content = text('Content', 'Are you delete it?');
-    const okText = text('okText', 'Delete');
-    const cancelText = text('cancelText', 'Cancel');
+storiesOf('Components/Dialog', module).add('JuiConfirm', () => {
+  const open = boolean('open', true);
+  const title = text('Title', 'Delete Post');
+  const content = text('Content', 'Are you delete it?');
+  const okText = text('okText', 'Delete');
+  const cancelText = text('cancelText', 'Cancel');
 
-    const ok = () => alert('ok');
-    const cancel = () => alert('cancel');
-    return (
-      <div>
-        <JuiModal
-          open={open}
-          title={title}
-          onOK={ok}
-          onCancel={cancel}
-          okText={okText}
-          cancelText={cancelText}
-        >
-          {content}
-        </JuiModal>
-      </div>
-    );
-  });
+  const ok = () => alert('ok');
+  const cancel = () => alert('cancel');
+  return (
+    <div>
+      <JuiModal
+        open={open}
+        title={title}
+        onOK={ok}
+        onCancel={cancel}
+        okText={okText}
+        cancelText={cancelText}
+      >
+        {content}
+      </JuiModal>
+    </div>
+  );
+});

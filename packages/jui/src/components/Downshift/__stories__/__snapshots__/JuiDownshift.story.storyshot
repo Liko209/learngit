@@ -1,0 +1,128 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Components/Downshift Downshift: Components/Downshift Downshift 1`] = `
+.c2.c2 {
+  margin: 0 0 16px 0;
+}
+
+.c2.c2 label {
+  color: #757575;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+}
+
+.c2.c2 input::-webkit-input-placeholder {
+  color: #757575;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c2.c2 input::-moz-placeholder {
+  color: #757575;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c2.c2 input:-ms-input-placeholder {
+  color: #757575;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c2.c2 input::placeholder {
+  color: #757575;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c2.c2 .form-label-focused:not(.form-label-error) {
+  color: #0684bd;
+}
+
+.c2 .underline:after {
+  border-bottom-color: #0684bd;
+}
+
+.c1.c1 .inputRoot {
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+
+.c1.c1 .input {
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+}
+
+.c1.c1 .downshift-label {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c0 {
+  position: relative;
+}
+
+<div
+  aria-expanded={false}
+  aria-haspopup="listbox"
+  aria-labelledby="downshift-multiple-label"
+  aria-owns={null}
+  className="c0"
+  role="combobox"
+>
+  <div
+    className="MuiFormControl-root MuiFormControl-fullWidth c1 c2"
+    onKeyDown={[Function]}
+  >
+    <label
+      className="MuiFormLabel-root MuiInputLabel-root downshift-label MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink"
+      data-shrink={true}
+    >
+      Downshift
+    </label>
+    <div
+      aria-activedescendant={null}
+      aria-autocomplete="list"
+      aria-controls={null}
+      aria-labelledby="downshift-multiple-label"
+      className="MuiInputBase-root MuiInput-root inputRoot MuiInput-underline underline MuiInputBase-fullWidth MuiInput-fullWidth MuiInputBase-formControl MuiInput-formControl MuiInputBase-adornedStart"
+      onClick={[Function]}
+    >
+      <input
+        aria-invalid={false}
+        autoComplete="off"
+        className="MuiInputBase-input MuiInput-input input MuiInputBase-inputAdornedStart"
+        disabled={false}
+        id="downshift-multiple-input"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        placeholder="placeholder"
+        readOnly={false}
+        required={false}
+        type="text"
+        value=""
+      />
+    </div>
+    
+  </div>
+</div>
+`;
