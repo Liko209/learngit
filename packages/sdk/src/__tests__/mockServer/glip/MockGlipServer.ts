@@ -206,7 +206,7 @@ export class MockGlipServer implements IMockServer {
     const mockDataPath = path.resolve(
       __dirname,
       '../../../../../../',
-      `./testingData/http/${relatePath.replace('~', '-')}/200.json`,
+      `./testingData/http/${relatePath.replace(/\~/g, '-')}/200.json`,
     );
     return mockDataPath;
   }
