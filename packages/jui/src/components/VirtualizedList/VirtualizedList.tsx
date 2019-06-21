@@ -479,9 +479,11 @@ const JuiVirtualizedList: RefForwardingComponent<
     startIndex - 1,
   );
   const heightAfterStopRow = rowManager.getRowsHeight(stopIndex + 1, maxIndex);
-  const childrenToRender = children.filter((child: VirtualizedListChild, i) => {
-    return child.type && startIndex <= i && i <= stopIndex;
-  });
+
+  const emptyDiv = <div style={{ height: minRowHeight }} />;
+  const childrenToRender = children
+    .filter((_, i) => startIndex <= i && i <= stopIndex)
+    .map(child => (child.type ? child : emptyDiv));
 
   let childrenNode: React.ReactNode = childrenToRender;
   if (!shouldUseNativeImplementation) {
@@ -505,7 +507,7 @@ const JuiVirtualizedList: RefForwardingComponent<
           </section>
         );
       }
-      return null;
+      return <section style={style} key={comp.key ? comp.key : undefined} />;
     });
   }
 
