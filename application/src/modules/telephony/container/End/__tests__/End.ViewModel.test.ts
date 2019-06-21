@@ -22,7 +22,7 @@ let endViewModel: EndViewModel;
 describe('EndViewModel', () => {
   it('should not call hangUp function', () => {
     (getEntity as jest.Mock).mockReturnValue({
-      startTime: Date.now(),
+      connectTime: Date.now(),
     });
     endViewModel = new EndViewModel({});
     endViewModel.end();
