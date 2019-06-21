@@ -447,7 +447,7 @@ class ContactSearchList extends BaseWebComponent {
     await this.t.click(this.searchResults.nth(n))
   }
 
-  get hasDirectDial(){
+  get hasDirectDial() {
     return !!(this.searchResults[0] && this.searchResults[0].find('div:nth-child(2)>button').exists);
   }
 }
@@ -464,10 +464,6 @@ export class TelephonyMinimizeWindow extends BaseWebComponent {
 
   get muteButton() {
     return this.buttonOfIcon('mic');
-  }
-
-  async hoverMuteButton() {
-    await this.t.hover(this.muteButton);
   }
 
   async clickMuteButton() {
