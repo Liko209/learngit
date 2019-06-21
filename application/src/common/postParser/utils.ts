@@ -194,7 +194,7 @@ const EMOJI_ASCII_REGEX_SIMPLE =
   "[<3\\/:'\\)-=\\]>;\\*\\^\\(xp\\[@\\.\\$#%O08_LÞþbdo]{2,}";
 
 const EMOJI_ONE_REGEX = `${Object.keys(convertMapEmojiOne).join('|')}`;
-const EMOJI_ONE_REGEX_SIMPLE = ':\\w+:';
+const EMOJI_ONE_REGEX_SIMPLE = ':[a-z0-9\\+\\-\\_]+:';
 
 const EMOJI_CUSTOM_REGEX = (customEmojiMap: CustomEmojiMap) =>
   `:${Object.keys(customEmojiMap).join(':|:')}:`;

@@ -440,6 +440,14 @@ describe('glipdown text', () => {
       });
     });
     describe('emojis', () => {
+      it('should parse emoji one with special character', () => {
+        expect(
+          postParser(':+1: :-1:', {
+            emoji: { hostName, unicodeOnly: true },
+          }),
+        ).toEqual('👍 👎');
+      });
+
       it('should return array with only unicode emoji', () => {
         expect(
           postParser('😁', {
