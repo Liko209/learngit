@@ -16,18 +16,19 @@ type JuiAutoSizerProps = {
   children: (size: Partial<Size>) => React.ReactNode;
 };
 
-const Placeholder = styled.div`
+const Wrapper = styled.div`
   height: inherit;
   max-height: inherit;
 `;
 
+const DEFAULT_WIDTH = 200;
+const DEFAULT_HEIGHT = 200;
+
 const JuiAutoSizer = ({ children }: JuiAutoSizerProps) => {
   return (
     <JuiSizeMeasurer>
-      {({ width, height, ref }) => (
-        <Placeholder ref={ref as any}>
-          {children({ width, height })}
-        </Placeholder>
+      {({ width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT, ref }) => (
+        <Wrapper ref={ref as any}>{children({ width, height })}</Wrapper>
       )}
     </JuiSizeMeasurer>
   );
