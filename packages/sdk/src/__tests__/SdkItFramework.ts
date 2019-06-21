@@ -17,6 +17,7 @@ type ItContext = {
   data: {
     template: {
       BASIC: InitialData;
+      STANDARD: InitialData;
     };
     useInitialData: (initialData: InitialData) => GlipData;
     helper: () => GlipDataHelper;
@@ -139,6 +140,7 @@ export function itForSdk(
       apply,
       template: {
         BASIC: require('./mockServer/glip/data/template/accountData/empty-account.json'),
+        STANDARD: require('./mockServer/glip/data/template/accountData/empty-account.json'),
       },
     },
     server: {

@@ -28,8 +28,19 @@ async function delay(t: number = 10) {
   return new Promise(resolve => setTimeout(resolve, t));
 }
 
-itForSdk('Service Integration test', ({ server }) => {
-  beforeAll(() => {
+itForSdk('Service Integration test', ({ server, data, sdk }) => {
+  const glipData = data.useInitialData(data.template.STANDARD);
+  // data.helper().team.createTeam('Test Team with thomas', [123]),
+  //   glipData.teams.push(
+  //     data.helper().team.createTeam('Test Team with thomas', [123]),
+  //     ...data.helper().team.factory.buildList(2),
+  //   );
+  // glipData.people.push(
+  //   data.helper().person.build({ display_name: 'Special Name +86789' }),
+  // );
+  data.apply();
+  beforeAll(async () => {
+    await sdk.setup();
     const jupiter = container.get(Jupiter);
     jupiter.registerModule(router.config);
     jupiter.registerModule(home.config);
@@ -37,20 +48,23 @@ itForSdk('Service Integration test', ({ server }) => {
     jupiter.registerModule(GlobalSearch.config);
   });
 
+  afterAll(async () => {
+    await sdk.cleanUp();
+  });
   describe('test', () => {
     it('should run', () => {
       const globalSearchStore = container.get(GlobalSearchStore);
       globalSearchStore.open = true;
       const wrapper = mountWithTheme(
-        <MemoryRouter initialEntries={['/message/7016603654']}>
+        <MemoryRouter initialEntries={['/message/42614790']}>
           <LeftRail />
         </MemoryRouter>,
       );
-      // const as: AccountService = ServiceLoader.getInstance(
-      //   ServiceConfig.ACCOUNT_SERVICE,
-      // );
-      // console.warn(as.isGlipLogin(), as.isLoggedIn());
-      console.warn(wrapper.debug());
+      const as: AccountService = ServiceLoader.getInstance(
+        ServiceConfig.ACCOUNT_SERVICE,
+      );
+      console.warn(as.isGlipLogin(), as.isLoggedIn());
+      // console.warn(wrapper.debug());
       // expect(wrapper.find(UnifiedLogin).length).toEqual(1);
     });
   });
