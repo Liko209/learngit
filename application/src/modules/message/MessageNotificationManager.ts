@@ -212,17 +212,21 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     person: PersonModel,
     group: GroupModel,
   ) {
-    let body: string;
-    let title = group.displayName;
+    const isOne2One = group.members.length <= 2;
+    const translationArgs = {
+      person: person.userDisplayName,
+      conversation: group.displayName,
+    };
+    let title = isOne2One
+      ? group.displayName
+      : await i18nT('notification.group', translationArgs);
+    let body = this.handlePostContent(post.text);
     if (post.existItemIds.length || post.parentId) {
       const { key, parameter } = getActivity(post, getActivityData(post));
       body = `${person.userDisplayName} ${await i18nT(key, parameter)}`;
     } else {
       if (this.isMyselfAtMentioned(post)) {
-        title = await i18nT('notification.mentioned');
-        body = group.displayName;
-      } else {
-        body = this.handlePostContent(post.text);
+        title = await i18nT('notification.mentioned', translationArgs);
       }
     }
     return { body, title };
