@@ -28,8 +28,8 @@ class ToggleController {
         this._requests.splice(0, this._requests.length);
       }
     } else {
-      request.func();
       this._isDoing = true;
+      request.func();
     }
   }
 

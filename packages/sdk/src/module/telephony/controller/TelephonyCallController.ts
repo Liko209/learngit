@@ -446,7 +446,7 @@ class TelephonyCallController implements IRTCCallDelegate {
         }
         promiseResolvers.resolve(res);
       } else {
-        promiseResolvers.reject('');
+        promiseResolvers.reject(res);
       }
     }
   }

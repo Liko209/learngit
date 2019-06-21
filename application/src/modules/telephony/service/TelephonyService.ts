@@ -80,7 +80,7 @@ class TelephonyService {
     // if has incoming call voicemail should be pause
     storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, true);
     this._callId = callId;
-    // this.uiCallStartTime = +new Date();
+
     this._telephonyStore.directCall();
   }
 
@@ -92,7 +92,7 @@ class TelephonyService {
     this._telephonyStore.id = id;
     const { fromNum, callId, fromName } = this._telephonyStore.call;
     this._callId = callId;
-    // this.uiCallStartTime = +new Date();
+
     this._telephonyStore.callerName = fromName;
     const phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
     if (phoneNumber !== this._telephonyStore.phoneNumber) {

@@ -149,9 +149,6 @@ class TelephonyStore {
   @observable
   firstLetterEnteredThroughKeypad: boolean;
 
-  // for end call
-  // uiCallStartTime: number;
-
   @observable
   enteredDialer: boolean = false;
 
