@@ -104,7 +104,7 @@ class EntityCacheController<
   }
 
   getEntityName(): string {
-    return this._entityName ? this._entityName : '';
+    return this._entityName || '';
   }
 
   async getAll(): Promise<T[]> {

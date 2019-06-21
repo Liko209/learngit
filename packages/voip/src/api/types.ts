@@ -94,6 +94,13 @@ enum RTC_MEDIA_ACTION {
   VOLUME_CHANGED = 'VOLUME_CHANGED',
 }
 
+enum RECORD_STATE {
+  IDLE = 'idle',
+  RECORDING = 'recording',
+  START_RECORD_IN_PROGRESS = 'startRecordInProgress',
+  STOP_RECORD_IN_PROGRESS = 'stopRecordInProgress',
+}
+
 export {
   RTC_ACCOUNT_STATE,
   RTCCallInfo,
@@ -106,4 +113,5 @@ export {
   RTCCallActionSuccessOptions,
   RTCSipFlags,
   RTC_MEDIA_ACTION,
+  RECORD_STATE,
 };
