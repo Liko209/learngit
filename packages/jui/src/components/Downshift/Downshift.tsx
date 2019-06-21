@@ -17,9 +17,8 @@ import { ChipProps } from '@material-ui/core/Chip';
 import { JuiVirtualizedList } from '../../components/VirtualizedList';
 import { JuiAutoSizer, Size } from '../../components/AutoSizer';
 
-type JuiDownshiftStates = {
-  selectedItems: SelectedItem[];
-  inputValue: string;
+type JuiDownshiftState = {
+  isComposition: boolean;
 };
 
 type JuiDownshiftKeyDownEvent = JuiDownshiftTextFieldKeyDownEvent;
@@ -58,7 +57,7 @@ const StyledPaper = styled(JuiPaper)`
     bottom: 0;
     transform: translateY(100%);
     width: 100%;
-    max-height: ${height(50)};
+    max-height: ${height(45)};
     overflow: auto;
     z-index: ${({ theme }) => `${theme.zIndex.drawer}`};
   }
@@ -66,11 +65,17 @@ const StyledPaper = styled(JuiPaper)`
 
 class JuiDownshift extends React.PureComponent<
   JuiDownshiftProps,
-  JuiDownshiftStates
+  JuiDownshiftState
 > {
+  state: JuiDownshiftState = {
+    isComposition: false,
+  };
   handleChange = (item: SelectedItem) => {
     const { multiple } = this.props;
     let { selectedItems } = this.props;
+    if (this.state.isComposition) {
+      return;
+    }
 
     if (selectedItems.indexOf(item) === -1) {
       if (multiple) {
@@ -86,6 +91,9 @@ class JuiDownshift extends React.PureComponent<
   }
   handleSelectChange = (items: SelectedItem[]) => {
     this.props.onSelectChange(items);
+  }
+  handleComposition = (isComposition: boolean) => {
+    this.setState({ isComposition });
   }
   handleItemToString = (item: SelectedItem) => (item ? item.label : '');
   render() {
@@ -121,6 +129,7 @@ class JuiDownshift extends React.PureComponent<
           getRootProps,
           isOpen,
           highlightedIndex,
+          openMenu,
         }) => (
           <StyledDownshiftMultipleWrapper {...getRootProps()}>
             <JuiDownshiftTextField
@@ -137,6 +146,8 @@ class JuiDownshift extends React.PureComponent<
               messageRef={messageRef}
               maxLength={maxLength}
               onKeyDown={onKeyDown}
+              onComposition={this.handleComposition}
+              openMenu={openMenu}
             />
             {isOpen && suggestionItems.length ? (
               <JuiAutoSizer>

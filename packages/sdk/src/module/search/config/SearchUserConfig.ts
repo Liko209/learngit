@@ -4,25 +4,24 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { UserConfig } from '../../config';
-import { SEARCH_CONFIG_KEYS } from './configKeys';
+import { DBConfig } from 'sdk/module/config';
+import { daoManager } from 'sdk/dao';
 import { RecentSearchModel } from '../entity';
-
-import { AccountGlobalConfig } from '../../../module/account/config';
-
-class SearchUserConfig extends UserConfig {
+import { SEARCH_CONFIG_KEYS, SEARCH_MODULE_NAME } from './constants';
+import { UndefinedAble } from 'sdk/types';
+class SearchUserConfig extends DBConfig {
   static moduleName = 'search';
 
   constructor() {
-    super(AccountGlobalConfig.getUserDictionary(), SearchUserConfig.moduleName);
+    super(SEARCH_MODULE_NAME, daoManager.getDBKVDao());
   }
 
-  setRecentSearchRecords(records: RecentSearchModel[]) {
-    this.put(SEARCH_CONFIG_KEYS.RECENT_SEARCH_RECORDS, records);
+  async setRecentSearchRecords(records: RecentSearchModel[]) {
+    await this.put(SEARCH_CONFIG_KEYS.RECENT_SEARCH_RECORDS, records);
   }
 
-  getRecentSearchRecords(): RecentSearchModel[] | undefined {
-    return this.get(SEARCH_CONFIG_KEYS.RECENT_SEARCH_RECORDS);
+  async getRecentSearchRecords(): Promise<UndefinedAble<RecentSearchModel[]>> {
+    return await this.get(SEARCH_CONFIG_KEYS.RECENT_SEARCH_RECORDS);
   }
 }
 

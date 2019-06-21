@@ -8,6 +8,8 @@ import {
   containsRange,
   hasIntersection,
   getComplementRanges,
+  getTopLevelChildNodesFromHTML,
+  getStylesObject,
 } from '../utils';
 import { TextRange, ParserType } from '../types';
 const parserType = ParserType.KEYWORD_HIGHLIGHT;
@@ -181,7 +183,7 @@ describe('postParser utils', () => {
         },
         {
           startIndex: 17,
-          length: 2,
+          length: 1,
         },
       ]);
       expect(getComplementRanges([], 18)).toEqual([
@@ -191,5 +193,64 @@ describe('postParser utils', () => {
         },
       ]);
     });
+  });
+});
+
+describe('getStyleObject', () => {
+  it('should get object from style string', () => {
+    expect(getStylesObject('color: red; background-color: blue')).toEqual({
+      color: 'red',
+      backgroundColor: 'blue',
+    });
+  });
+});
+
+describe('getTopLevelChildNodesFromHTML', () => {
+  it('should get the parsed nodes', () => {
+    const nodes = getTopLevelChildNodesFromHTML(
+      `<b>Build Result</b>: :negative_squared_cross_mark: Failed <b>Failed Stages</b>: E2E Automation <a href='http://jenkins.lab.rcch.ringcentral.com/job/Jupiter-Gitlab-Integration/21589/' target='_blank' rel='noreferrer'>http://jenkins.lab.rcch.ringcentral.com/job/Jupiter-Gitlab-Integration/21589/</a>ss`,
+    );
+    expect(nodes).toEqual([
+      {
+        tag: 'b',
+        isTag: true,
+        substring: '<b>Build Result</b>',
+        attrs: {},
+        inner: 'Build Result',
+      },
+      {
+        isTag: false,
+        substring: ': :negative_squared_cross_mark: Failed ',
+      },
+      {
+        tag: 'b',
+        isTag: true,
+        substring: '<b>Failed Stages</b>',
+        attrs: {},
+        inner: 'Failed Stages',
+      },
+      {
+        isTag: false,
+        substring: ': E2E Automation ',
+      },
+      {
+        tag: 'a',
+        isTag: true,
+        substring:
+          "<a href='http://jenkins.lab.rcch.ringcentral.com/job/Jupiter-Gitlab-Integration/21589/' target='_blank' rel='noreferrer'>http://jenkins.lab.rcch.ringcentral.com/job/Jupiter-Gitlab-Integration/21589/</a>",
+        attrs: {
+          href:
+            'http://jenkins.lab.rcch.ringcentral.com/job/Jupiter-Gitlab-Integration/21589/',
+          rel: 'noreferrer',
+          target: '_blank',
+        },
+        inner:
+          'http://jenkins.lab.rcch.ringcentral.com/job/Jupiter-Gitlab-Integration/21589/',
+      },
+      {
+        isTag: false,
+        substring: 'ss',
+      },
+    ]);
   });
 });

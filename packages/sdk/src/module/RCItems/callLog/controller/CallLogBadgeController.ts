@@ -12,7 +12,7 @@ import { mainLogger } from 'foundation';
 import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 import { PERFORMANCE_KEYS, PerformanceTracer } from 'sdk/utils';
 import { CallLog } from '../entity';
-import { MISSED_CALL_BADGE_ID } from '../constants';
+import { MISSED_CALL_BADGE_ID, CALL_RESULT } from '../constants';
 import { Profile } from 'sdk/module/profile/entity';
 import { UndefinedAble } from 'sdk/types';
 import { BADGE_STATUS } from '../../constants';
@@ -54,7 +54,7 @@ class CallLogBadgeController {
       this._registerBadge();
       this._updateBadge();
       performanceTracer.end({
-        key: PERFORMANCE_KEYS.INIT_RC_MESSAGE_BADGE,
+        key: PERFORMANCE_KEYS.INIT_CALL_LOG_BADGE,
         infos: { id: MISSED_CALL_BADGE_ID, count: this._unreadMap.size },
       });
       this._badgeStatus = BADGE_STATUS.INITIALIZED;
@@ -73,12 +73,14 @@ class CallLogBadgeController {
   }
 
   handleCallLogPayload = async (
-    payload: NotificationEntityPayload<CallLog>,
+    payload: NotificationEntityPayload<CallLog, string>,
   ) => {
     if (payload.type === EVENT_TYPES.UPDATE) {
       this.handleCallLogs(Array.from(payload.body.entities.values()));
     } else if (payload.type === EVENT_TYPES.RELOAD) {
       this.handleCallLogReload();
+    } else if (payload.type === EVENT_TYPES.REPLACE) {
+      this.handleCallLogReplace(payload.body.entities);
     }
   }
 
@@ -103,6 +105,19 @@ class CallLogBadgeController {
     }
   }
 
+  handleCallLogReplace(replaceData: Map<string, CallLog>) {
+    if (this._badgeStatus === BADGE_STATUS.IDLE) {
+      this.initializeUnreadCount();
+    }
+    replaceData.forEach((callLog: CallLog, originId: string) => {
+      this._unreadMap.delete(originId);
+      this._updateUnreadCount(callLog);
+    });
+    if (this._badgeStatus === BADGE_STATUS.INITIALIZED) {
+      this._updateBadge();
+    }
+  }
+
   handleCallLogReload() {
     this.reset();
     this._updateBadge();
@@ -123,8 +138,8 @@ class CallLogBadgeController {
   }
 
   private _updateUnreadCount(data: CallLog): boolean {
-    if (!data.__deactivated) {
-      if (this._lastReadMissed && this._lastReadMissed < data.__timestamp) {
+    if (data.result === CALL_RESULT.MISSED && !data.__deactivated) {
+      if (!this._lastReadMissed || this._lastReadMissed < data.__timestamp) {
         this._unreadMap.set(data.id, data.__timestamp);
       } else {
         this._unreadMap.delete(data.id);

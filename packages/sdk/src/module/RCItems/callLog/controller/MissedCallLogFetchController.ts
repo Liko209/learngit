@@ -10,7 +10,7 @@ import { IEntitySourceController } from 'sdk/framework/controller/interface/IEnt
 import { CallLog } from '../entity';
 import { RCItemSyncResponse } from 'sdk/api/ringcentral/types/RCItemSync';
 import { mainLogger } from 'foundation';
-import { CALL_LOG_SOURCE } from '../constants';
+import { CALL_LOG_SOURCE, LOCAL_INFO_TYPE } from '../constants';
 import _ from 'lodash';
 import { daoManager } from 'sdk/dao';
 import { CallLogDao } from '../dao';
@@ -35,10 +35,14 @@ class MissedCallLogFetchController extends AbstractFetchController {
     const dao = daoManager.getDao(CallLogDao);
     const oldestTime = await dao.queryOldestTimestamp();
     const result: CallLog[] = [];
+
     data.records.forEach((callLog: CallLog) => {
       const timestamp = Date.parse(callLog.startTime);
       if (!oldestTime || oldestTime > timestamp) {
-        callLog.__source = CALL_LOG_SOURCE.MISSED;
+        callLog.__localInfo =
+          LOCAL_INFO_TYPE.IS_INBOUND |
+          LOCAL_INFO_TYPE.IS_MISSED |
+          LOCAL_INFO_TYPE.IS_MISSED_SOURCE;
         callLog.__timestamp = timestamp;
         callLog.__deactivated = false;
         result.push(_.cloneDeep(callLog));
@@ -47,7 +51,7 @@ class MissedCallLogFetchController extends AbstractFetchController {
     mainLogger
       .tags(SYNC_NAME)
       .info('handleDataAndSave, data length: ', result.length);
-    result && (await this.sourceController.bulkPut(result));
+    result.length && (await this.sourceController.bulkPut(result));
     return result;
   }
 

@@ -62,6 +62,30 @@ class HeaderMoreMenu extends BaseWebComponent {
   async openProfile() {
     return await this.t.click(this.profile);
   }
+
+  get adminActions() {
+    return this.self.find('li').withText('Admin actions');
+  }
+
+  async enterAdminActions() {
+    return await this.t.hover(this.adminActions);
+  }
+
+  get teamArchiveMenu() {
+    return this.self.find('li').withText('Archive team');
+  }
+
+  async archiveTeam() {
+    return this.t.click(this.teamArchiveMenu);
+  }
+
+  get teamDeleteMenu() {
+    return this.self.find('li').withText('Delete team');
+  }
+
+  async deleteTeam() {
+    return this.t.click(this.teamDeleteMenu);
+  }
 }
 
 export class BaseConversationPage extends BaseWebComponent {
@@ -429,17 +453,17 @@ export class ConversationPage extends BaseConversationPage {
   async typeAtMentionUserNameAndPressEnter(userName: string) {
     await this.typeAtSymbol();
     await this.t.typeText(this.messageInputArea, userName, { paste: true })
-    await this.mentionUser.ensureLoaded();
+    await this.mentionUserList.ensureLoaded();
     await this.t.pressKey('enter');
   }
 
   async addMentionUser(userName: string) {
     await this.t.typeText(this.messageInputArea, `@${userName}`);
-    await this.mentionUser.ensureLoaded();
-    await this.mentionUser.selectMemberByName(userName);
+    await this.mentionUserList.ensureLoaded();
+    await this.mentionUserList.selectMemberByName(userName);
   }
 
-  get mentionUser() {
+  get mentionUserList() {
     return this.getComponent(MentionUsers);
   }
 
@@ -644,7 +668,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
-  get href(){
+  get quote() {
+    return this.self.find(`[data-name="text"]`).find('q');
+  }
+  get href() {
     return this.self.find(`[href]`)
   }
 
@@ -680,8 +707,8 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('.emoji');
   }
 
-  async shouldHasEmojiByValue(text: string) {
-    await this.t.expect(this.emojis.withAttribute('title', `:${text}:`))
+  async shouldHasEmojiByValue(value: string) {
+    await this.t.expect(this.emojis.withAttribute('title', value)).ok()
   }
 
   async emojisShouldBeInOrder(valueList: string[], timeout: number = 5e3) {
@@ -814,7 +841,7 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('[role="progressbar"]')
   }
 
-  async waitForPostToSend(timeout = 5e3) {
+  async waitForPostToSend(timeout = 10e3) {
     try {
       await H.retryUntilPass(async () => assert(await this.progressBar.exists), 5);
     } catch (e) {
@@ -838,7 +865,7 @@ export class PostItem extends BaseWebComponent {
   get fileSizes() {
     return this.getSelectorByAutomationId('file-no-preview-size', this.self);
   }
-  
+
   async nameShouldBe(name: string) {
     await this.t.expect(this.fileNames.withText(name).exists).ok();
   }
@@ -923,7 +950,7 @@ export class PostItem extends BaseWebComponent {
     return this.phoneLink.withAttribute('data-id', dataId);
   }
   // be searched item
-  get keyworkdsByHighLight() {
+  get keywordsByHighLight() {
     return this.self.find('span.highlight-term');
   }
 
@@ -940,51 +967,55 @@ class ConversationCardItem extends BaseWebComponent {
   }
 
   get title() {
-    return this.getSelectorByAutomationId('conversation-item-cards-title');
+    return this.getSelectorByAutomationIdUnderSelf('conversation-item-cards-title');
   }
 
   get eventLocation() {
-    return this.getSelectorByAutomationId('event-location');
+    return this.getSelectorByAutomationIdUnderSelf('event-location');
   }
 
   get eventDue() {
-    return this.getSelectorByAutomationId('event-due');
+    return this.getSelectorByAutomationIdUnderSelf('event-due');
   }
 
   get eventDescription() {
-    return this.getSelectorByAutomationId('event-description');
+    return this.getSelectorByAutomationIdUnderSelf('event-description');
   }
 
   get eventShowOld() {
-    return this.getSelectorByAutomationId('event-show-old');
+    return this.getSelectorByAutomationIdUnderSelf('event-show-old');
   }
 
   get eventOldLocation() {
-    return this.getSelectorByAutomationId('event-old-location');
+    return this.getSelectorByAutomationIdUnderSelf('event-old-location');
   }
 
   get noteBody() {
-    return this.getSelectorByAutomationId('note-body');
+    return this.getSelectorByAutomationIdUnderSelf('note-body');
   }
 
   get taskAssignee() {
-    return this.getSelectorByAutomationId('avatar-name');
+    return this.getSelectorByAutomationIdUnderSelf('avatar-name');
   }
 
   get taskSection() {
-    return this.getSelectorByAutomationId('task-section');
+    return this.getSelectorByAutomationIdUnderSelf('task-section');
   }
 
   get taskDescription() {
-    return this.getSelectorByAutomationId('task-description');
+    return this.getSelectorByAutomationIdUnderSelf('task-description');
   }
 
   get taskShowOld() {
-    return this.getSelectorByAutomationId('task-show-old');
+    return this.getSelectorByAutomationIdUnderSelf('task-show-old');
+  }
+
+  get taskOldAssigneesDiv() {
+    return this.getSelectorByAutomationIdUnderSelf('task-old-assignees');
   }
 
   get taskOldAssignees() {
-    return this.getSelectorByAutomationId('task-old-assignees').find(`[data-test-automation-id='avatar-name']`);
+    return this.getSelectorByAutomationId('avatar-name', this.taskOldAssigneesDiv)
   }
 
   get codeBody() {

@@ -108,4 +108,17 @@ describe('dialerHeaderViewModel', () => {
     dialerHeaderViewModel.deleteInputString();
     expect(_telephonyService.deleteInputString).toBeCalledWith(true);
   });
+
+  it('should initialize with empty uid', () => {
+    expect(dialerHeaderViewModel.uid).toBeFalsy();
+  });
+
+  it('should initialize with empty name', () => {
+    expect(dialerHeaderViewModel.name).toBeFalsy();
+  });
+
+  it('should initialize with phone empty', () => {
+    expect(dialerHeaderViewModel.isExt).toBeFalsy();
+    expect(dialerHeaderViewModel.phone).toBeFalsy();
+  });
 });

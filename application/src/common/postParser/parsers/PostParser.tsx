@@ -17,7 +17,6 @@ import { containsRange, hasIntersection } from '../utils';
 
 abstract class PostParser implements IPostParser {
   type: ParserType;
-  ignoredRangeTypes: ParserType[];
   content: ParseContent;
   protected innerContentParser: FullParser | null;
 
@@ -47,6 +46,19 @@ abstract class PostParser implements IPostParser {
 
   parseToReplacers() {
     const str = this.content.getOriginalStr();
+    if (
+      this.content
+        .getReplacers()
+        .some(
+          ({ startIndex, length }) => startIndex === 0 && length === str.length,
+        )
+    ) {
+      return [];
+    }
+    const continueParsing = this.checkPreCondition(str);
+    if (!continueParsing) {
+      return [];
+    }
     const regexp = this.getRegexp();
     if (!regexp) {
       return [
@@ -80,16 +92,6 @@ abstract class PostParser implements IPostParser {
     return replacers;
   }
 
-  getIgnoredRanges() {
-    return this.content
-      .getReplacers()
-      .filter(
-        ({ parserType }) =>
-          parserType !== undefined &&
-          this.ignoredRangeTypes.includes(parserType),
-      );
-  }
-
   removeReplacersInsideRange(range: TextRange) {
     // remove existing replacers that are inside the range.
     this.content.removeReplacersBy(({ element, ...rg }) =>
@@ -97,16 +99,23 @@ abstract class PostParser implements IPostParser {
     );
   }
 
+  checkPreCondition(str: string) {
+    return true;
+  }
+
   isValidMatch(value: string, execResult?: RegExpExecArray) {
     return true;
   }
 
+  // false if the range has intersection with one of the already-processed-ranges, except when it is containing
   isValidRange(range: TextRange) {
-    return !this.getIgnoredRanges().some(
-      ignoredRange =>
-        hasIntersection(ignoredRange, range) &&
-        !containsRange(range, ignoredRange),
-    );
+    return !this.content
+      .getReplacers()
+      .some(
+        ignoredRange =>
+          hasIntersection(ignoredRange, range) &&
+          !containsRange(range, ignoredRange),
+      );
   }
 
   getRegexp(): RegExp | null {

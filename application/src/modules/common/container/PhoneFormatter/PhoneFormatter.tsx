@@ -3,7 +3,7 @@
  * @Date: 2019-05-27 18:01:16
  * Copyright © RingCentral. All rights reserved.
  */
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
@@ -27,7 +27,7 @@ class PhoneFormatter extends Component<{ children: string }> {
   }
 
   render() {
-    return this.parsedPhoneNumber;
+    return <>{this.parsedPhoneNumber}</>;
   }
 }
 

@@ -10,6 +10,7 @@ import { SortableListStore } from '@/store/base';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { PinnedPostListHandler } from '../../PinnedPostListHandler';
 
+jest.mock('mobx');
 jest.mock('sdk/api');
 jest.mock('sdk/dao');
 jest.mock('sdk/module/account/config');

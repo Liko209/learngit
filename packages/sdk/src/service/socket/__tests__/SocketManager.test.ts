@@ -33,6 +33,8 @@ jest.mock('../../../module/sync/config/SyncUserConfig', () => {
     getSocketServerHost: jest.fn(),
     setSocketServerHost: jest.fn(),
     getLastIndexTimestamp: jest.fn(),
+    getLastCanReconnectTime: jest.fn().mockReturnValueOnce(0),
+    setLastCanReconnectTime: jest.fn(),
   };
   return {
     SyncUserConfig: () => {
@@ -64,7 +66,7 @@ describe('Socket Manager', () => {
   function mockCanReconnectController() {
     jest
       .spyOn(SocketCanConnectController.prototype, 'doCanConnectApi')
-      .mockImplementation(async (callback: any, forceOnline: any) => {
+      .mockImplementation(async ({ callback, forceOnline, nthCount }) => {
         callback(1);
       });
 
@@ -433,6 +435,24 @@ describe('Socket Manager', () => {
         // does not have reconnect-socket-host, use index-socket-host
         expect(socketManager.activeFSM.serverUrl).toEqual('index_socket');
       });
+
+      it('should clear socket address when socket error happened', () => {
+        syncUserConfig = new SyncUserConfig();
+        syncUserConfig.setIndexSocketServerHost = jest.fn();
+        syncUserConfig.setReconnectSocketServerHost = jest.fn();
+        socketManager['_reconnectRetryCount'] = 10;
+        notificationCenter.emitKVChange(SOCKET.ERROR);
+        expect(socketManager['_reconnectRetryCount']).toEqual(11);
+      });
+
+      it('should clear socket address when socket connect error happened', () => {
+        syncUserConfig = new SyncUserConfig();
+        syncUserConfig.setIndexSocketServerHost = jest.fn();
+        syncUserConfig.setReconnectSocketServerHost = jest.fn();
+        socketManager['_reconnectRetryCount'] = 0;
+        notificationCenter.emitKVChange(SOCKET.CONNECT_ERROR);
+        expect(socketManager['_reconnectRetryCount']).toEqual(1);
+      });
     });
 
     describe('reconnect', () => {
@@ -644,6 +664,10 @@ describe('Socket Manager', () => {
       expect(socketManager.isScreenLocked()).toBeFalsy();
       expect(socketManager.hasActiveFSM()).toBeFalsy();
 
+      socketManager['_reconnectRetryCount'] = 10;
+      socketManager['_canReconnectController'] = new SocketCanConnectController(
+        {},
+      );
       // online will create new FSM
       notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
         state: 'online',
@@ -652,6 +676,22 @@ describe('Socket Manager', () => {
       const fsmName2 = socketManager.activeFSM.name;
       expect(!!fsmName2).toBeTruthy();
       expect(fsmName2).not.toEqual(fsmName1);
+      expect(socketManager['_reconnectRetryCount']).toEqual(0);
+      expect(
+        socketManager['_canReconnectController'].cleanup,
+      ).toHaveBeenCalled();
+    });
+  });
+
+  describe('_stateHandler', () => {
+    it('connected event', () => {
+      socketManager['_reconnectRetryCount'] = 1;
+      socketManager['_stateHandler']({
+        name: '',
+        state: 'connected',
+        isManualStopped: false,
+      });
+      expect(socketManager['_reconnectRetryCount']).toEqual(0);
     });
   });
 });

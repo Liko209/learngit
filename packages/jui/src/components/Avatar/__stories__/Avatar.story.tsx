@@ -6,7 +6,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 import { JuiAvatar, JuiAvatarProps } from '..';
 import { JuiPresence, PRESENCE } from '../../Presence';
@@ -53,7 +52,6 @@ const knobs = {
     ),
 };
 storiesOf('Components/Avatar', module)
-  .addDecorator(withInfoDecorator(JuiAvatar, { inline: true }))
   .add('Image', () => {
     return <JuiAvatar size={knobs.size()} src={avatar} />;
   })

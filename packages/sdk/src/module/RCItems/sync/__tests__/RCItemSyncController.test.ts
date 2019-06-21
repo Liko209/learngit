@@ -8,6 +8,7 @@ import { RCItemSyncController } from '../RCItemSyncController';
 import { IdModel } from 'sdk/framework/model';
 import { notificationCenter } from 'sdk/service';
 import { RCItemUserConfig } from '../../config';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('../../config');
 
@@ -15,6 +16,7 @@ class TestSyncController extends RCItemSyncController<IdModel> {
   isTokenInvalidError = jest.fn();
   canUpdateSyncToken = jest.fn();
   requestClearAllAndRemoveLocalData = jest.fn();
+  removeLocalData = jest.fn();
   handleDataAndNotify = jest.fn();
   sendSyncRequest = jest.fn();
   doSync = jest.fn();
@@ -26,13 +28,26 @@ describe('RCItemSyncController', () => {
   let syncController: TestSyncController;
   notificationCenter.emitEntityReplace = jest.fn();
   notificationCenter.emitEntityUpdate = jest.fn();
+  const mockAccountService = {
+    isLoggedIn: jest.fn(),
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     jest.restoreAllMocks();
 
-    syncController = new TestSyncController('testName', userConfig, 123);
+    ServiceLoader.getInstance = jest.fn().mockImplementation((data: string) => {
+      if (data === ServiceConfig.ACCOUNT_SERVICE) {
+        return mockAccountService;
+      }
+    });
+    syncController = new TestSyncController(
+      'testName',
+      userConfig,
+      'eventKey',
+      123,
+    );
   });
 
   describe('requestSync', () => {
@@ -45,6 +60,13 @@ describe('RCItemSyncController', () => {
       syncController['_lastRequestSyncTime'] = 999999999999999;
       await syncController.requestSync();
       expect(syncController.doSync).toBeCalledTimes(0);
+    });
+  });
+
+  describe('canDoSilentSync', () => {
+    it('should return false when is not login', () => {
+      mockAccountService.isLoggedIn.mockReturnValue(false);
+      expect(syncController['canDoSilentSync']()).toBeFalsy();
     });
   });
 });

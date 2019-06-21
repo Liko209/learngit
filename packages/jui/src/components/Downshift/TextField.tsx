@@ -42,6 +42,8 @@ type JuiDownshiftTextFieldProps = {
   onInputChange: (value: string) => void;
   maxLength?: number;
   onKeyDown?: (event: JuiDownshiftTextFieldKeyDownEvent) => void;
+  onComposition: (isComposition: boolean) => void;
+  openMenu: () => void;
 };
 
 const StyledTextField = styled<TextFieldProps>(JuiTextField)`
@@ -69,6 +71,10 @@ class JuiDownshiftTextField extends React.PureComponent<
     showPlaceholder: true,
   };
   handleFocus = () => {
+    const { inputValue, openMenu } = this.props;
+    if (!!inputValue) {
+      openMenu();
+    }
     this.setState({
       showPlaceholder: false,
     });
@@ -92,6 +98,7 @@ class JuiDownshiftTextField extends React.PureComponent<
     const { value } = event.target;
 
     onInputChange(value);
+
     if (
       autoSwitchEmail &&
       isEmailByReg(value) &&
@@ -126,6 +133,19 @@ class JuiDownshiftTextField extends React.PureComponent<
 
     onKeyDown && onKeyDown(event);
   }
+
+  handleCompositionStart = () => {
+    this.props.onComposition(true);
+  }
+
+  handleCompositionEnd = () => {
+    this.props.onComposition(false);
+    const { inputValue, openMenu } = this.props;
+    if (!!inputValue) {
+      openMenu();
+    }
+  }
+
   handleDelete = (item: SelectedItem) => () => {
     const { onSelectChange, inputValue } = this.props;
     let { selectedItems } = this.props;
@@ -191,6 +211,8 @@ class JuiDownshiftTextField extends React.PureComponent<
         }}
         inputProps={{
           maxLength,
+          onCompositionStart: this.handleCompositionStart,
+          onCompositionEnd: this.handleCompositionEnd,
         }}
         InputLabelProps={{
           classes: {

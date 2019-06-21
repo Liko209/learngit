@@ -1,0 +1,160 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Components Presence🔜: Components Presence🔜 1`] = `
+.c1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: 8px;
+  height: 8px;
+  border: px solid #fff;
+  background: #26a304;
+  border-radius: 50%;
+}
+
+.c3 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: 8px;
+  height: 8px;
+  border: px solid #fff;
+  background: #f44336;
+  border-radius: 50%;
+}
+
+.c5 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: 8px;
+  height: 8px;
+  border: px solid #fff;
+  background: #bdbdbd;
+  border-radius: 50%;
+}
+
+.c4 {
+  width: 6px;
+  height: 2px;
+  background: #fff;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 10px;
+}
+
+.c2 {
+  margin-left: 5px;
+}
+
+<div>
+  <div
+    className="c0"
+  >
+    <div
+      className="c1"
+    />
+    <span
+      className="c2"
+    >
+      Avaiable
+    </span>
+  </div>
+  <div
+    className="c0"
+  >
+    <div
+      className="c3"
+    />
+    <span
+      className="c2"
+    >
+      InMeeting
+    </span>
+  </div>
+  <div
+    className="c0"
+  >
+    <div
+      className="c3"
+    >
+      <div
+        className="c4"
+      />
+    </div>
+    <span
+      className="c2"
+    >
+      DND
+    </span>
+  </div>
+  <div
+    className="c0"
+  >
+    <div
+      className="c5"
+    />
+    <span
+      className="c2"
+    >
+      Unavailable
+    </span>
+  </div>
+  <div
+    className="c0"
+  >
+    <div
+      className="c5"
+    />
+    <span
+      className="c2"
+    >
+      NotReady
+    </span>
+  </div>
+  <div
+    className="c0"
+  >
+    <div
+      className="c3"
+    />
+    <span
+      className="c2"
+    >
+      OnCall
+    </span>
+  </div>
+</div>
+`;

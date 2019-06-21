@@ -9,6 +9,7 @@ enum SETTING_ITEM_TYPE {
   TOGGLE,
   SELECT,
   LINK,
+  SLIDER,
 }
 
 type SettingItem = {

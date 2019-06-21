@@ -57,6 +57,7 @@ class SectionViewComponent extends React.Component<Props> {
     const {
       t,
       type,
+      dataNameForTest,
       title,
       iconName,
       expanded,
@@ -75,7 +76,8 @@ class SectionViewComponent extends React.Component<Props> {
     return (
       <div
         className="conversation-list-section"
-        data-name={toTitleCase(t(title))}
+        data-name={dataNameForTest}
+        data-test-automation-id={dataNameForTest}
       >
         <JuiConversationListSection
           title={toTitleCase(t(title))}

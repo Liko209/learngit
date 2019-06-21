@@ -8,6 +8,7 @@ import { observable } from 'mobx';
 import { NetworkBanner } from './Banners/NetworkBanner';
 import { TopBannerConfig, BannerType } from './types';
 import { ElectronUpgradeBanner } from './Banners/ElectronUpgradeBanner';
+import { NotificationEnableBanner } from './Banners/NotificationEnableBanner';
 class TopBannerViewModel extends AbstractViewModel {
   @observable
   static data: TopBannerConfig[] = [
@@ -23,12 +24,16 @@ class TopBannerViewModel extends AbstractViewModel {
       props: {},
       isShow: false,
     },
+    {
+      priority: 300,
+      Component: NotificationEnableBanner,
+      props: {},
+      isShow: true,
+    },
   ];
 
   static showBanner(Comp: BannerType, props: object = {}) {
-    const config = TopBannerViewModel.data.find(
-      ({ Component }) => Component === Comp,
-    );
+    const config = TopBannerViewModel.data.find(({ Component }) => Component === Comp);
     if (config) {
       config.props = props;
       config.isShow = true;
@@ -36,9 +41,7 @@ class TopBannerViewModel extends AbstractViewModel {
   }
 
   static hideBanner(Comp: BannerType) {
-    const config = TopBannerViewModel.data.find(
-      ({ Component }) => Component === Comp,
-    );
+    const config = TopBannerViewModel.data.find(({ Component }) => Component === Comp);
     if (config) {
       config.isShow = false;
     }

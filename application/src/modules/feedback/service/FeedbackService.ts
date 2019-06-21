@@ -15,12 +15,14 @@ import { FeedbackApi } from '../FeedbackApi';
 import { SessionManager, DateFormatter } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
+import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
 
-type UploadOption = { timeout: number; retry: number };
+type UploadOption = { timeout: number; retry: number; level: ZipItemLevel };
 
 const DEFAULT_OPTION: UploadOption = {
   retry: 2,
   timeout: 60 * 1000,
+  level: ZipItemLevel.NORMAL,
 };
 
 class FeedbackService {
@@ -33,8 +35,10 @@ class FeedbackService {
     return this._fileStackClient;
   }
 
-  zipRecentLogs = async (): Promise<{ zipName: string; zipBlob: Blob }> => {
-    const zipBlob = await LogControlManager.instance().getZipLog();
+  zipRecentLogs = async (
+    level?: ZipItemLevel,
+  ): Promise<{ zipName: string; zipBlob: Blob }> => {
+    const zipBlob = await LogControlManager.instance().getZipLog(level);
     const accountService = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
     );
@@ -49,9 +53,12 @@ class FeedbackService {
   uploadRecentLogs = async (
     option?: Partial<UploadOption>,
   ): Promise<UploadResult | null> => {
-    const { retry = DEFAULT_OPTION.retry, timeout = DEFAULT_OPTION.timeout } =
-      option || DEFAULT_OPTION;
-    const zipResult = await this.zipRecentLogs();
+    const {
+      retry = DEFAULT_OPTION.retry,
+      timeout = DEFAULT_OPTION.timeout,
+      level,
+    } = { ...DEFAULT_OPTION, ...option };
+    const zipResult = await this.zipRecentLogs(level);
     if (!zipResult) {
       logger.debug('Zip log file fail.');
       return null;

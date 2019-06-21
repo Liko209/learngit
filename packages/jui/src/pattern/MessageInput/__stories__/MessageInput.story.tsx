@@ -6,7 +6,6 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { number, text } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 import { JuiMessageInput } from '..';
 import { AttachmentItem, ITEM_STATUS } from '../AttachmentItem';
@@ -15,36 +14,67 @@ import { JuiDuplicateAlert } from '../DuplicateAlert';
 import { MessageActionBar } from '../MessageActionBar';
 import { AttachmentView } from '../Attachment';
 
-storiesOf('Pattern/MessageInput', module)
-  .addDecorator(withInfoDecorator(JuiMessageInput, { inline: true }))
-  .add('MessageInput', () => {
-    const value = text('value', 'default text');
-    const onChange = () => {};
-    const ref = React.createRef<JuiMessageInput>();
-    return (
-      <>
-        <JuiMessageInput
-          ref={ref}
-          value={value}
-          onChange={onChange}
-          error=""
-          modules={{}}
-        >
-          <div />
-        </JuiMessageInput>
-        <button onClick={() => ref.current!.focusEditor()}>
-          focusEditor()
-        </button>
-      </>
-    );
-  });
+storiesOf('Pattern/MessageInput', module).add('MessageInput', () => {
+  const value = text('value', 'default text');
+  const onChange = () => {};
+  const ref = React.createRef<JuiMessageInput>();
+  return (
+    <>
+      <JuiMessageInput
+        ref={ref}
+        value={value}
+        onChange={onChange}
+        error=""
+        modules={{}}
+        placeholder="message.action.typeNewMessage"
+      >
+        <div />
+      </JuiMessageInput>
+      <button onClick={() => ref.current!.focusEditor()}>focusEditor()</button>
+    </>
+  );
+});
 
 storiesOf('Pattern/MessageInput', module).add('Attachment Button', () => {
   const autoUploadFile = () => {};
+  const menus = [
+    {
+      icon: 'google',
+      label: 'Google Drive',
+    },
+    {
+      icon: 'dropbox',
+      label: 'Dropbox',
+    },
+    {
+      icon: 'box',
+      label: 'Box',
+    },
+    {
+      icon: 'evernote',
+      label: 'Evernote',
+    },
+    {
+      icon: 'onedrive',
+      label: 'OneDrive',
+    },
+  ];
+
+  const fileMenu = {
+    icon: 'computer',
+    label: 'Computer',
+  };
+
   return (
     <div>
       <MessageActionBar>
-        <AttachmentView onFileChanged={autoUploadFile} />
+        <AttachmentView
+          menus={menus}
+          fileMenu={fileMenu}
+          tooltip="Attach file"
+          onFileChanged={autoUploadFile}
+          title="Upload files from"
+        />
       </MessageActionBar>
     </div>
   );

@@ -24,6 +24,7 @@ function buildPage(
   return {
     id,
     sections,
+    automationId: 'automationPage_' + id,
     title: 'setting.page_' + id,
     path: '/' + id,
     weight: 0,
@@ -37,6 +38,7 @@ function buildSection(
   return {
     id,
     items,
+    automationId: 'automationSection_' + id,
     title: 'setting.section_' + id,
     description: 'setting.description_' + id,
     weight: 0,
@@ -47,6 +49,7 @@ function buildItem(id: SettingItem['id']): SettingItem {
   return {
     id,
     title: 'setting.item_' + id,
+    automationId: 'automationItem_' + id,
     description: 'setting.description_' + id,
     type: SETTING_ITEM_TYPE.SELECT,
     weight: 0,

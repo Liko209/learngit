@@ -27,6 +27,8 @@ describe('ProgressManager', () => {
         loaded: 10,
         total: 100,
       });
+      expect(NProgress.start).toBeCalled();
+      expect(NProgress.inc).toBeCalled();
       expect(NProgress.set).lastCalledWith(0.1);
       progressBar.stop();
       expect(NProgress.set).lastCalledWith(1);
@@ -57,15 +59,31 @@ describe('ProgressManager', () => {
       jest.clearAllMocks();
 
       const newProgressBar = progressManager.newProgressBar();
-      expect(NProgress.set).not.toBeCalled();
+      expect(NProgress.start).not.toBeCalled();
       newProgressBar.start();
-      expect(NProgress.set).lastCalledWith(0);
+      expect(NProgress.start).toBeCalled();
       newProgressBar.update({
         lengthComputable: true,
         loaded: 10,
         total: 100,
       });
       expect(NProgress.set).lastCalledWith(0.1);
+    });
+  });
+  describe('startProgressBar()', () => {
+    it('should start progress', () => {
+      const progressManager = new ProgressManager();
+      const stopProgressBar = progressManager.startProgressBar(() => true);
+      expect(NProgress.start).toBeCalled();
+      stopProgressBar();
+      expect(NProgress.done).toBeCalled();
+    });
+    it('should not start progress', () => {
+      const progressManager = new ProgressManager();
+      const stopProgressBar = progressManager.startProgressBar(() => false);
+      expect(NProgress.start).not.toBeCalled();
+      stopProgressBar();
+      expect(NProgress.done).not.toBeCalled();
     });
   });
 });

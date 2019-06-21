@@ -17,9 +17,9 @@ describe('Engine', () => {
 
     it('should read audio device when engine start. [JPT-1277]', async () => {
       RTCEngine.getInstance().destroy();
-      jest.spyOn(RTCMediaDeviceManager.instance(), 'updateMediaDevices');
+      jest.spyOn(RTCMediaDeviceManager.instance(), 'initMediaDevices');
       const engine = RTCEngine.getInstance();
-      expect(RTCMediaDeviceManager.instance().updateMediaDevices).toBeCalled();
+      expect(RTCMediaDeviceManager.instance().initMediaDevices).toBeCalled();
     });
 
     it("should subscribe 'ondevicechange' when engine start. [JPT-1278]", async () => {

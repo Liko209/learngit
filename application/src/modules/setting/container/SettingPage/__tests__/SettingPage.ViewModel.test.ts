@@ -5,11 +5,12 @@
  */
 import { jupiter, container } from 'framework';
 import { ISettingService } from '@/interface/setting';
-import { SettingStore } from '../../../store';
-import { config } from '../../../module.config';
+import { SettingStore } from '../../../store/SettingStore';
+import { SettingService } from '../../../service/SettingService';
 import { SettingPageViewModel } from '../SettingPage.ViewModel';
 
-jupiter.registerModule(config);
+jupiter.registerClass(SettingStore);
+jupiter.registerService(ISettingService, SettingService);
 
 function setup() {
   const settingStore: SettingStore = jupiter.get(SettingStore);
@@ -44,7 +45,7 @@ describe('SettingPageViewModel', () => {
         .spyOn<SettingStore, any>(settingStore, 'getPageById')
         .mockReturnValue({ id: 'PAGE_1' });
       jest
-        .spyOn<SettingStore, any>(settingStore, 'getNoEmptyPageSections')
+        .spyOn(settingStore, 'getNoEmptyPageSections')
         .mockReturnValue(['SECTION_1', 'SECTION_2']);
 
       expect(vm.sectionIds).toEqual(['SECTION_1', 'SECTION_2']);

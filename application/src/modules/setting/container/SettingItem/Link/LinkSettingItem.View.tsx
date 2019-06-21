@@ -28,9 +28,8 @@ class LinkSettingItemViewComponent extends Component<Props> {
   }
 
   @catchError.flash({
-    // TODO move the keys out of setting.phone
-    network: 'setting.phone.general.extensions.errorText',
-    server: 'setting.phone.general.extensions.errorText',
+    network: 'setting.errorText.network',
+    server: 'setting.errorText.server',
   })
   private _getUrl = () => {
     return this.props.getUrl();

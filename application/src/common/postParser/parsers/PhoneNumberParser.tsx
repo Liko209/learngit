@@ -9,17 +9,10 @@ import { IPostParser, ParserType, PhoneNumberParserOption } from '../types';
 import { ParseContent } from '../ParseContent';
 import { PostParser } from './PostParser';
 import { PhoneLink } from '@/modules/message/container/ConversationSheet/PhoneLink';
-import { isValidPhoneNumber } from '../utils';
+import { isValidPhoneNumber, VALID_PHONE_REG } from '../utils';
 
 class PhoneNumberParser extends PostParser implements IPostParser {
   type = ParserType.PHONE_NUMBER;
-  ignoredRangeTypes = [
-    ParserType.AT_MENTION,
-    ParserType.KEYWORD_HIGHLIGHT,
-    ParserType.HTML,
-    ParserType.EMOJI,
-    ParserType.URL,
-  ];
   content: ParseContent;
   constructor(public options: PhoneNumberParserOption) {
     super(options);
@@ -36,8 +29,11 @@ class PhoneNumberParser extends PostParser implements IPostParser {
   }
 
   getRegexp() {
-    const FILTER_NUMBER_STRING_REGEX = /\+?(\d{1,4} ?)?((\(\d{1,4}\)|\d(( |\-)?\d){0,3})(( |\-)?\d){2,}|(\(\d{2,4}\)|\d(( |\-)?\d){1,3})(( |\-)?\d){1,})(( x| ext.?)\d{1,5}){0,1}|[\D]/g;
-    return FILTER_NUMBER_STRING_REGEX;
+    return new RegExp(VALID_PHONE_REG);
+  }
+
+  checkPreCondition(str: string) {
+    return this.getRegexp().test(str.trim());
   }
 
   isValidMatch(match: string) {

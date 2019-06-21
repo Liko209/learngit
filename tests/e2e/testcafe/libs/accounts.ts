@@ -15,8 +15,9 @@ logger.level = 'info';
 interface IAccountPoolClient {
   baseUrl: string;
   envName: string;
-  checkOutAccounts(accountType: string): Promise<any>;
+  checkOutAccounts(accountType: string, releaseStatus?: string): Promise<any>;
   checkInAccounts(data: any): Promise<any>;
+  addIntoAccounts?(data: any): Promise<any>;
 }
 
 class AccountPoolClient implements IAccountPoolClient {
@@ -26,11 +27,13 @@ class AccountPoolClient implements IAccountPoolClient {
     this.accountLockApi = new AccountLockApi(this.baseUrl);
   }
 
-  async checkOutAccounts(accountType: string) {
+  async checkOutAccounts(accountType: string, releaseStatus?: string, lockTimeout: number = 1800) {
     this.accountLockApi.basePath = this.baseUrl;
     const accountLockAcquireBody = new AccountLockAcquire();
     accountLockAcquireBody.envName = this.envName;
     accountLockAcquireBody.accountType = accountType;
+    accountLockAcquireBody.expiresIn = lockTimeout;
+    if (releaseStatus) accountLockAcquireBody.releaseStatus = releaseStatus;
     let acquiredAccount = undefined;
     try {
       acquiredAccount = await this.accountLockApi.accountLocksPost(accountLockAcquireBody);
@@ -62,7 +65,7 @@ class AccountPoolManager implements IAccountPoolClient {
     this.allAccounts = [];
   }
 
-  async checkOutAccounts(accountType: string) {
+  async checkOutAccounts(accountType: string, releaseStatus?: string) {
     if (this.availableAccounts[accountType] === undefined) {
       this.availableAccounts[accountType] = [];
     }
@@ -70,12 +73,16 @@ class AccountPoolManager implements IAccountPoolClient {
     if (fifo.length > 0) {
       return fifo.shift();
     }
-    const data = await this.accountPoolClient.checkOutAccounts(accountType);
+    const data = await this.accountPoolClient.checkOutAccounts(accountType, releaseStatus);
     this.allAccounts.push(data);
     return data;
   }
 
   async checkInAccounts(data: any) {
+    await this.accountPoolClient.checkInAccounts(data);
+  }
+
+  async addIntoAccounts(data: any) {
     assert(this.availableAccounts[data.accountType] !== undefined);
     this.availableAccounts[data.accountType].push(data);
   }

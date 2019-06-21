@@ -73,6 +73,7 @@ class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
           tooltipTitle={t(this._getTooltipKey())}
           ariaLabel={t(this._getTooltipKey())}
           onClick={onClick}
+          data-test-automation-id={isOpen ? 'conversation-details-hide' : 'conversation-details-show'}
         >
           {this._getIconKey()}
         </JuiIconButton>

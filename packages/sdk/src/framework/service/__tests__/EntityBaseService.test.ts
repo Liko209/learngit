@@ -6,16 +6,23 @@
 
 import { EntityBaseService } from '../EntityBaseService';
 import { daoManager } from '../../../dao';
-import { BaseDao } from '../../../framework/dao';
+import { BaseDao, Query } from '../../../framework/dao';
 import { TestDatabase, TestEntity } from '../../controller/__tests__/TestTypes';
 import NetworkClient from '../../../api/NetworkClient';
 import { JNetworkError, ERROR_CODES_NETWORK } from '../../../error';
 import { EntityNotificationController } from '../../controller/impl/EntityNotificationController';
-import { buildEntitySourceController } from 'sdk/framework/controller';
+import { Person } from 'sdk/module/person/entity';
+import { PersonDao } from 'sdk/module/person/dao';
+import { PostDao } from 'sdk/module/post/dao';
+import { Post } from 'sdk/module/post/entity';
+import { ModelIdType } from 'sdk/framework/model';
+import { EntitySourceController } from 'sdk/framework/controller/impl/EntitySourceController';
 
 jest.mock('../../../api/NetworkClient');
 jest.mock('../../../dao');
 jest.mock('../../../framework/dao');
+jest.mock('sdk/framework/controller/impl/EntityCacheController');
+jest.mock('sdk/framework/controller/impl/EntityPersistentController');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -43,6 +50,42 @@ describe('EntityBaseService', () => {
 
   beforeEach(() => {
     clearMocks();
+  });
+
+  describe('initialEntitiesCache()', () => {
+    beforeEach(() => {
+      clearMocks();
+    });
+
+    it('should call toArray api for PersonDao', () => {
+      const dao = new PersonDao(new TestDatabase());
+      const query: Query<Person, ModelIdType> = {
+        toArray: jest.fn(),
+        limit: jest.fn(),
+      };
+
+      jest.spyOn(dao, 'createQuery').mockReturnValue(query);
+      query.limit.mockReturnValue(query);
+      query.toArray.mockResolvedValue({ id: 1 });
+      const service = new EntityBaseService<Person>(true, dao, networkConfig);
+      service['initialEntitiesCache']();
+      expect(query.toArray).toBeCalled();
+    });
+
+    it('should not call toArray api for other dao', () => {
+      const dao = new PostDao(new TestDatabase());
+      const query: Query<Post, ModelIdType> = {
+        toArray: jest.fn(),
+        limit: jest.fn(),
+      };
+
+      jest.spyOn(dao, 'createQuery').mockReturnValue(query);
+      query.limit.mockReturnValue(query);
+      query.toArray.mockResolvedValue({ id: 1 });
+      const service = new EntityBaseService<Person>(true, dao, networkConfig);
+      service['initialEntitiesCache']();
+      expect(query.toArray).not.toBeCalled();
+    });
   });
 
   describe('canSaveRemoteEntity()', () => {
@@ -76,9 +119,14 @@ describe('EntityBaseService', () => {
         dao,
         networkConfig,
       );
-      jest.spyOn(dao, 'get').mockImplementation(async () => {
-        return { id: 1, name: 'hello' };
-      });
+      const entitySourceController = service[
+        '_entitySourceController'
+      ] as EntitySourceController<TestEntity>;
+      jest
+        .spyOn(entitySourceController['entityPersistentController'], 'get')
+        .mockImplementation(async () => {
+          return { id: 1, name: 'hello' };
+        });
       const result = await service.getById(1);
 
       expect(result).toEqual({ id: 1, name: 'hello' });
