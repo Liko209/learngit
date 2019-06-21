@@ -17,11 +17,17 @@ import Backend from 'i18next-xhr-backend';
 import jsonFile from '../../../../../../../public/locales/en/translations.json';
 import i18next from 'i18next';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
-import { PHONE_LINKS_CLS } from '../constants';
+import { renderToStaticMarkup } from 'react-dom/server';
 
 jest.mock('@/store/utils');
 jest.mock('sdk/module/config/service/UserConfigService');
 jest.mock('sdk/module/account/config/AuthUserConfig');
+jest.mock('@/modules/message/container/ConversationSheet/PhoneLink', () => ({
+  PhoneLink: (props: any) => 'MockPhoneNumberLink: ' + props.children,
+}));
+jest.mock('jui/components/AtMention', () => ({
+  JuiAtMention: (props: any) => 'MockJuiAtMention: ' + props.name,
+}));
 // const GROUP_ID = 52994050;
 // const TEAM_ID = 11370502;
 // const PERSON_ID = 2514947;
@@ -51,7 +57,6 @@ jupiter.registerModule(telephony.config);
 jupiter.registerModule(featuresFlags.config);
 jupiter.registerModule(commonModule.config);
 const phoneNumber = '(650)419-1505';
-const phoneLink = `<a href='javascript:;' color='#18a4de' class=${PHONE_LINKS_CLS} data-test-automation-id='phoneNumberLink' data-id='${phoneNumber}'>${phoneNumber}</a>`;
 describe('TextMessageViewModel', () => {
   beforeAll(() => {
     AuthUserConfig.prototype.getRCToken.mockReturnValueOnce({
@@ -93,26 +98,31 @@ describe('TextMessageViewModel', () => {
     });
     it('should be get url format text when text has link', () => {
       mockPostData.text = 'https://www.baidu.com';
-      expect(vm.html).toBe(
-        "<a href='https://www.baidu.com' target='_blank' rel='noreferrer'>https://www.baidu.com</a>",
+      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+        `<a href="https://www.baidu.com" target="_blank" rel="noreferrer">https://www.baidu.com</a>`,
       );
     });
 
     it('should be get email format text when text has email', () => {
       mockPostData.text = 'xxx@163.com';
-      expect(vm.html).toBe(
-        "<a href='mailto:xxx@163.com' target='_blank' rel='noreferrer'>xxx@163.com</a>",
+      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+        `<a href="mailto:xxx@163.com" target="_blank" rel="noreferrer">xxx@163.com</a>`,
       );
     });
 
     it('should be get bold font format text when there are two asterisks before and after', () => {
       mockPostData.text = '**awesome**';
-      expect(vm.html).toBe('<b>awesome</b>');
+      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+        '<b>awesome</b>',
+      );
     });
     it('should return hyperlink while get valid links', () => {
       jest.spyOn(utils, 'getGlobalValue').mockReturnValue(true);
+
       mockPostData.text = `${phoneNumber}`;
-      expect(vm.html).toBe(phoneLink);
+      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+        `MockPhoneNumberLink: ${phoneNumber}`,
+      );
     });
     it('Numbers in meeting invite links should be ignored hyperlinked [JPT-1816]', () => {
       jest.spyOn(utils, 'getGlobalValue').mockReturnValue(true);
@@ -131,8 +141,10 @@ describe('TextMessageViewModel', () => {
         (err, t) => {},
       );
       i18next.loadLanguages('en', () => {});
-      const renderVideoCall = `Dial-in Number: ${phoneLink}`;
-      expect(vm.html).toMatch(renderVideoCall);
+      // const renderVideoCall = `Dial-in Number: ${phoneLink}`;
+      expect(
+        renderToStaticMarkup(vm.getContent() as React.ReactElement),
+      ).toMatch(`Dial-in Number: MockPhoneNumberLink: ${phoneNumber}`);
     });
   });
 
@@ -145,10 +157,8 @@ describe('TextMessageViewModel', () => {
       jest.spyOn(utils, 'getGlobalValue').mockReturnValue(false);
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
-      expect(vm.html).toBe(
-        `<button class='at_mention_compose' id='2514947'>${
-          mockPersonData.userDisplayName
-        }</button>`,
+      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+        `MockJuiAtMention: Person name`,
       );
       expect(vm.getGroup).toHaveBeenCalledTimes(0);
       expect(vm.getPerson).toHaveBeenCalledTimes(1);
@@ -158,26 +168,21 @@ describe('TextMessageViewModel', () => {
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
       mockPersonData.userDisplayName = 'New person name';
-      expect(vm.html).toBe(
-        `<button class='at_mention_compose' id='2514947'>${
-          mockPersonData.userDisplayName
-        }</button>`,
+      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+        `MockJuiAtMention: New person name`,
       );
     });
   });
 
   describe('at mentions for team', () => {
     const atMentionNonItemIds = [11370502];
-    const text =
-      "<a class='at_mention_compose' rel='{\"id\":11370502}'>@Jupiter profile mini card</a>";
+    const text = `<a class='at_mention_compose' rel='{"id":11370502}'>@Jupiter profile mini card</a>`;
 
     it('should be get team name link when at mention a team', () => {
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
-      expect(vm.html).toBe(
-        `<button class='at_mention_compose' id='11370502'>${
-          mockGroupData.displayName
-        }</button>`,
+      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+        `MockJuiAtMention: ${mockGroupData.displayName}`,
       );
       expect(vm.getGroup).toHaveBeenCalledTimes(1);
       expect(vm.getPerson).toHaveBeenCalledTimes(0);
@@ -187,10 +192,8 @@ describe('TextMessageViewModel', () => {
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
       mockGroupData.displayName = 'New team name';
-      expect(vm.html).toBe(
-        `<button class='at_mention_compose' id='11370502'>${
-          mockGroupData.displayName
-        }</button>`,
+      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+        `MockJuiAtMention: ${mockGroupData.displayName}`,
       );
     });
   });
@@ -203,9 +206,10 @@ describe('TextMessageViewModel', () => {
     it('should be get original text when at mention an unknown item', () => {
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
-      expect(vm.html).toBe(
-        `<button class='at_mention_compose' id='123'>${originalText}</button>`,
+      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+        `MockJuiAtMention: @${originalText}`,
       );
+
       expect(vm.getGroup).toHaveBeenCalledTimes(0);
       expect(vm.getPerson).toHaveBeenCalledTimes(0);
     });

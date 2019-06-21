@@ -137,6 +137,7 @@ const name2icon = {
   arrow_right: 'arrow_right',
   pause: 'pause',
   play: 'play',
+  forwardcall: 'forwardcall',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

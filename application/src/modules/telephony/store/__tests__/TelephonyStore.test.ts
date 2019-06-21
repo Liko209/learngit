@@ -153,9 +153,15 @@ describe('Telephony store', () => {
     expect(store.incomingState).toBe(INCOMING_STATE.REPLY);
   });
 
-  it('quitReply()', () => {
+  it('directForward()', () => {
     const store = createStore();
-    store.quitReply();
+    store.directForward();
+    expect(store.incomingState).toBe(INCOMING_STATE.FORWARD);
+  });
+
+  it('backIncoming()', () => {
+    const store = createStore();
+    store.backIncoming();
     expect(store.incomingState).toBe(INCOMING_STATE.IDLE);
   });
 

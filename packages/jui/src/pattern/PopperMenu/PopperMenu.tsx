@@ -68,6 +68,15 @@ class JuiPopperMenu extends React.PureComponent<JuiPopperMenuProps> {
             data-test-automation-id={automationId}
             transition={true}
             disablePortal={disablePortal}
+            modifiers={{
+              flip: {
+                enabled: true,
+              },
+              preventOverflow: {
+                enabled: true,
+                boundariesElement: 'viewport',
+              },
+            }}
           >
             {({ TransitionProps }) => {
               return (

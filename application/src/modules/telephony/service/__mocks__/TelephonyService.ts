@@ -5,6 +5,9 @@ class TelephonyService {
   replyWithMessage = jest.fn();
   startReply = jest.fn();
   hangUp = jest.fn();
+  forward = jest.fn();
+  getForwardingNumberList = jest.fn();
+  getForwardPermission = jest.fn();
 }
 
 export { TelephonyService };

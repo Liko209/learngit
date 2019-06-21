@@ -52,7 +52,7 @@ storiesOf('Components/Menus', module)
   .add('SubMenu', () => {
     return (
       <JuiMenuList style={{ width: '180px' }}>
-        <JuiSubMenu title="Sub Menu">
+        <JuiSubMenu title="Sub Menu" disabled={boolean('disabled', false)}>
           <JuiMenuItem disabled={true}>Profile</JuiMenuItem>
           <JuiMenuItem>My account</JuiMenuItem>
           <JuiMenuItem>Logout</JuiMenuItem>

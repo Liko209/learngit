@@ -24,7 +24,7 @@ type SizeType = {
 
 type JuiPreviewImageProps = {
   Actions?: JSX.Element[];
-  fileName: string;
+  fileName: React.ReactChild | (React.ReactChild | null)[] | null;
   forceSize?: boolean;
   squareSize?: number;
   url: string;
@@ -137,7 +137,6 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
     const { width, height } =
       this._loaded && !forceSize ? this._imageInfo : this.props;
     const imageStyle = this._getImageStyle(width, height);
-
     return (
       <>
         {!this._loaded && placeholder}
@@ -163,7 +162,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
               component="div"
               onClick={this._handleInfoClick}
             >
-              <FileName filename={fileName} />
+              <FileName>{fileName}</FileName>
               {Actions && (
                 <Jui.FileActionsWrapper>
                   <JuiButtonBar overlapSize={-2}>{Actions}</JuiButtonBar>

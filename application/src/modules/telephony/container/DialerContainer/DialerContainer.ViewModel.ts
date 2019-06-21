@@ -8,7 +8,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { DialerContainerProps, DialerContainerViewProps } from './types';
 import { container } from 'framework';
 import { computed } from 'mobx';
-import { TelephonyStore } from '../../store';
+import { TelephonyStore, INCOMING_STATE } from '../../store';
 import { TelephonyService } from '../../service';
 import audios from './sounds/sounds.json';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
@@ -63,6 +63,11 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   @computed
+  get isForward() {
+    return this._telephonyStore.incomingState === INCOMING_STATE.FORWARD;
+  }
+
+  @computed
   get dialerInputFocused() {
     return this._telephonyStore.dialerInputFocused;
   }
@@ -74,7 +79,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
 
   @computed
   get callerPhoneNumberList() {
-    return this._telephonyStore.callerPhoneNumberList.map((el) => ({
+    return this._telephonyStore.callerPhoneNumberList.map(el => ({
       value: formatPhoneNumber(el.phoneNumber),
       usageType: el.usageType,
       phoneNumber: formatPhoneNumber(el.phoneNumber),

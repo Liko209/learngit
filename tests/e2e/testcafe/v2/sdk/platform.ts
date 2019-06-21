@@ -220,7 +220,7 @@ export class RcPlatformSdk {
     return await this.createGroup(data).then(res => res.data.id);
   }
 
-  async sentAndGetTextPostId(text: string, groupId: string) {
+  async sentAndGetTextPostId(text: string, groupId: string): Promise<string> {
     return await this.sendTextPost(text, groupId).then(res => res.data.id);
   }
 

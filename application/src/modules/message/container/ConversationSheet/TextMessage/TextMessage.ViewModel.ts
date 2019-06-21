@@ -17,12 +17,12 @@ import { Company } from 'sdk/module/company/entity';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import PersonModel from '@/store/models/Person';
-import { FormatToHtml } from './FormatToHtml';
 import { TextMessageProps } from './types';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import { TelephonyService } from '@/modules/telephony/service';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
+import { postParser, AtMentionsMapType } from '@/common/postParser';
 
 class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
   private _featuresFlagsService: FeaturesFlagsService = container.get(
@@ -69,9 +69,12 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
   private get _atMentions() {
     const post = this._post;
     const atMentionNonItemIds = (post && post.atMentionNonItemIds) || [];
-    const kv = {};
+    const kv: AtMentionsMapType = {};
     atMentionNonItemIds.forEach((id: number) => {
-      kv[id] = this._getDisplayName(id);
+      kv[id] = {
+        name: this._getDisplayName(id),
+        isCurrent: id === this._currentUserId,
+      };
     });
     return kv;
   }
@@ -98,16 +101,19 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
     return getGlobalValue(GLOBAL_KEYS.STATIC_HTTP_SERVER);
   }
 
-  @computed
-  get html() {
-    const formatToHtml = new FormatToHtml({
-      text: this._post.text,
-      atMentions: this._atMentions,
-      currentUserId: this._currentUserId,
-      staticHttpServer: this._staticHttpServer,
-      customEmojiMap: this._customEmojiMap,
+  getContent = (keyword?: string) => {
+    return postParser(this._post.text, {
+      keyword,
+      html: true,
+      atMentions: {
+        map: this._atMentions,
+      },
+      emoji: {
+        hostName: this._staticHttpServer,
+        customEmojiMap: this._customEmojiMap,
+      },
+      phoneNumber: true,
     });
-    return formatToHtml.text;
   }
 }
 export { TextMessageViewModel };

@@ -5,14 +5,12 @@
  */
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { isValidPhoneNumber } from './PhoneParser/helper';
+import { isValidPhoneNumber } from '@/common/postParser/utils';
 
 function formatPhoneNumber(phoneNumber: string) {
   if (isValidPhoneNumber(phoneNumber)) {
-    return getEntity(
-      ENTITY_NAME.PHONE_NUMBER,
-      phoneNumber,
-    ).formattedPhoneNumber;
+    return getEntity(ENTITY_NAME.PHONE_NUMBER, phoneNumber)
+      .formattedPhoneNumber;
   }
   return phoneNumber;
 }

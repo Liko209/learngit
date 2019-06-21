@@ -45,6 +45,7 @@ class ProfileService extends EntityBaseService<Profile>
   }
 
   protected onStarted() {
+    super.onStarted();
     ServiceLoader.getInstance<SettingService>(
       ServiceConfig.SETTING_SERVICE,
     ).registerModuleSetting(this.profileSetting);

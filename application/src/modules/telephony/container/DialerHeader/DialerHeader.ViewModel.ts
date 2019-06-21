@@ -6,7 +6,7 @@
 import { computed } from 'mobx';
 import { container } from 'framework';
 import { TelephonyService } from '../../service';
-import { TelephonyStore } from '../../store';
+import { TelephonyStore, INCOMING_STATE } from '../../store';
 import { StoreViewModel } from '@/store/ViewModel';
 import { DialerHeaderProps, DialerHeaderViewProps } from './types';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
@@ -74,7 +74,7 @@ class DialerHeaderViewModel extends StoreViewModel<DialerHeaderProps>
   _makeCall = async (val: string) => {
     // make sure line 30 run before end()
     if (!(await this._telephonyService.makeCall(val))) {
-      await new Promise((resolve) => {
+      await new Promise(resolve => {
         requestAnimationFrame(resolve);
       });
       this._telephonyStore.end();
@@ -94,6 +94,16 @@ class DialerHeaderViewModel extends StoreViewModel<DialerHeaderProps>
   @computed
   get inputString() {
     return this._telephonyStore.inputString;
+  }
+
+  @computed
+  get forwardString() {
+    return this._telephonyStore.forwardString;
+  }
+
+  @computed
+  get isForward() {
+    return this._telephonyStore.incomingState === INCOMING_STATE.FORWARD;
   }
 
   @computed

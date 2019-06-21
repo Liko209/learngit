@@ -4,7 +4,7 @@
  * Copyright Â© RingCentral. All rights reserved.
  */
 import { goToConversation } from '@/common/goToConversation';
-import { POST_TYPE } from './../../common/getPostType';
+import { POST_TYPE } from '../../common/getPostType';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { GLOBAL_KEYS } from '@/store/constants';
 import PersonModel from '@/store/models/Person';
@@ -24,7 +24,6 @@ import {
 } from '../notification/interface';
 import i18nT from '@/utils/i18nT';
 import { PersonService } from 'sdk/module/person';
-import { replaceAtMention } from './container/ConversationSheet/TextMessage/utils/handleAtMentionName';
 import GroupModel from '@/store/models/Group';
 import GroupService from 'sdk/module/group';
 import { PostService } from 'sdk/module/post';
@@ -33,12 +32,13 @@ import { IEntityChangeObserver } from 'sdk/framework/controller/types';
 import { mainLogger } from 'sdk';
 import { isFirefox, isWindows } from '@/common/isUserAgent';
 import { throttle } from 'lodash';
-import { Emoji } from './container/ConversationSheet/TextMessage/Emoji';
 import { Company } from 'sdk/module/company/entity';
 import CompanyModel from '../../store/models/Company';
-import { Markdown } from 'glipdown';
-import { glipdown2Html } from './container/ConversationSheet/TextMessage/utils/glipdown2Html';
+import { Remove_Markdown } from 'glipdown';
+import { postParser } from '@/common/postParser';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { MessageNotificationViewModel } from './MessageNotificationViewModel';
+
 const logger = mainLogger.tags('MessageNotificationManager');
 const NOTIFY_THROTTLE_FACTOR = 5000;
 export class MessageNotificationManager extends AbstractNotificationManager {
@@ -89,7 +89,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       },
       onDispose: () => {
         this.close(id);
-        this._vmQueue = this._vmQueue.filter((i) => i.id !== id);
+        this._vmQueue = this._vmQueue.filter(i => i.id !== id);
       },
     });
 
@@ -184,6 +184,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       goToConversation({ jumpToPostId, conversationId: groupId });
     };
   }
+
   async buildNotificationBodyAndTitle(
     post: PostModel,
     person: PersonModel,
@@ -199,25 +200,35 @@ export class MessageNotificationManager extends AbstractNotificationManager {
         title = await i18nT('notification.mentioned');
         body = group.displayName;
       } else {
-        body = replaceAtMention(Markdown(post.text), (_, id, name) => name);
-        body = glipdown2Html(this.handleEmoji(body));
+        body = this.handlePostContent(post.text);
       }
     }
     return { body, title };
   }
-  handleEmoji(body: string): string {
+
+  handlePostContent(text: string) {
+    const _text = Remove_Markdown(text, { dont_escape: true });
     const staticServer = getGlobalValue(GLOBAL_KEYS.STATIC_HTTP_SERVER);
     const currentCompanyId = getGlobalValue(GLOBAL_KEYS.CURRENT_COMPANY_ID);
-    if (currentCompanyId <= 0) {
-      return body;
-    }
     const company =
-      getEntity<Company, CompanyModel>(ENTITY_NAME.COMPANY, currentCompanyId) ||
+      (currentCompanyId &&
+        getEntity<Company, CompanyModel>(
+          ENTITY_NAME.COMPANY,
+          currentCompanyId,
+        )) ||
       {};
-    const { text } = new Emoji(body, staticServer, company.customEmoji, {
-      unicodeOnly: true,
+    const parsedResult = postParser(_text, {
+      atMentions: {
+        customReplaceFunc: (match, id, name) => name,
+      },
+      emoji: {
+        hostName: staticServer,
+        customEmojiMap: company.customEmoji,
+        unicodeOnly: true,
+      },
     });
-    return text;
+
+    return renderToStaticMarkup(parsedResult as React.ReactElement);
   }
 
   isMyselfAtMentioned(post: PostModel) {

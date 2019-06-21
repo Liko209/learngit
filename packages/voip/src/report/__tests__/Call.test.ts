@@ -317,6 +317,7 @@ describe('Check call FSM state timestamp [JPT-1938]', () => {
     const account = new MockAccountAndCallObserver();
     const session = new MockSession();
     const call = new RTCCall(true, '123', session, account, account);
+    session.forward.mockResolvedValue(null);
     await sleep(10);
     call.forward(forwardNumber);
     await sleep(10);

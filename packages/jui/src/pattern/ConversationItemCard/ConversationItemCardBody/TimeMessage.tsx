@@ -17,8 +17,8 @@ const StyledTimeMessage = styled.div`
   color: ${grey('900')};
 `;
 
-const JuiTimeMessage = memo((props: Props) => (
-  <StyledTimeMessage>{props.time}</StyledTimeMessage>
+const JuiTimeMessage = memo(({ time, ...rest }: Props) => (
+  <StyledTimeMessage {...rest}>{time}</StyledTimeMessage>
 ));
 
 JuiTimeMessage.displayName = 'JuiTimeMessage';
