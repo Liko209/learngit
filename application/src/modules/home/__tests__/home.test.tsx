@@ -64,6 +64,7 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
         ServiceConfig.ACCOUNT_SERVICE,
       );
       console.warn(as.isGlipLogin(), as.isLoggedIn());
+      wrapper.unmount();
       // console.warn(wrapper.debug());
       // expect(wrapper.find(UnifiedLogin).length).toEqual(1);
     });
