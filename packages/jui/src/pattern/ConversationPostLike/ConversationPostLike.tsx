@@ -64,6 +64,7 @@ class JuiConversationPostLike extends PureComponent<
           variant="plain"
           disableToolTip={true}
           data-name="actionBarLike"
+          data-test-automation-id="actionBarLike"
         >
           {iLiked ? 'thumbup' : 'thumbup_border'}
         </JuiIconButton>

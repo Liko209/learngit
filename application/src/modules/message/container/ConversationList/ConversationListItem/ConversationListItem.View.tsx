@@ -85,6 +85,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
       <Fragment>
         <JuiConversationListItem
           className="conversation-list-item"
+          data-test-automation-id="conversation-list-item"
           tabIndex={0}
           isItemHover={!!this.menuAnchorEl}
           data-group-id={this.props.groupId}

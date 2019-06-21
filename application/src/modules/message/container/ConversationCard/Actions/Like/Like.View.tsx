@@ -48,6 +48,7 @@ class LikeViewComponent extends Component<Props> {
         onClick={isLike ? this._handleUnlike : this._handleLike}
         variant="plain"
         data-name="actionBarLike"
+        data-test-automation-id="actionBarLike"
       >
         {isLike ? 'thumbup' : 'thumbup_border'}
       </JuiIconButton>

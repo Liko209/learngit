@@ -11,16 +11,16 @@ import { GroupAvatar } from '@/containers/Avatar/GroupAvatar';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 const ChipComponent = (props: any) => {
-  const { id, t } = props;
+  const { id, t, ...rest } = props;
   if (id) {
     const type = GlipTypeUtil.extractTypeId(id);
     if (type === TypeDictionary.TYPE_ID_PERSON) {
       return (
-        <JuiChip PersonAvatar={Avatar} isError={props.isError} deleteTooltip={t('common.remove')} {...props} />
+        <JuiChip PersonAvatar={Avatar} deleteTooltip={t('common.remove')} {...rest} />
       );
     }
     return (
-      <JuiChip GroupAvatar={GroupAvatar} isError={props.isError} deleteTooltip={t('common.remove')} {...props} />
+      <JuiChip GroupAvatar={GroupAvatar} deleteTooltip={t('common.remove')} {...rest} />
     );
   }
   return <JuiChip {...props} />;
@@ -28,7 +28,7 @@ const ChipComponent = (props: any) => {
 
 const Chip = (props: any) => (
   <Translation>
-    {(t) => <ChipComponent {...props} t={t} />}
+    {(t) => <ChipComponent {...props} t={t} deleteAutomationId="chip-remove" />}
   </Translation>
 );
 
