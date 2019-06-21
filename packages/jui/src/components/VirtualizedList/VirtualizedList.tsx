@@ -17,7 +17,11 @@ import React, {
 } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import { noop } from '../../foundation/utils';
-import { IndexRange, JuiVirtualizedListProps } from './types';
+import {
+  IndexRange,
+  JuiVirtualizedListProps,
+  VirtualizedListChild,
+} from './types';
 import {
   useRange,
   useRowManager,
@@ -37,6 +41,7 @@ import { debounce, compact } from 'lodash';
 import { WRAPPER_IDENTIFIER } from './ItemWrapper';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
+
 type Props = {
   height: number;
   minRowHeight: number;
@@ -49,8 +54,9 @@ type Props = {
   onRenderedRangeChange: (range: IndexRange) => void;
   before?: React.ReactNode;
   after?: React.ReactNode;
-  children: JSX.Element[];
-  contentStyle: React.CSSProperties;
+  children: VirtualizedListChild[];
+  style?: React.CSSProperties;
+  contentStyle?: React.CSSProperties;
   stickToLastPosition?: boolean;
   onBottomStatusChange?: (atBottom: boolean) => void;
 };
@@ -79,6 +85,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     before = null,
     after = null,
     stickToBottom,
+    style,
     contentStyle,
     onBottomStatusChange = noop,
     stickToLastPosition = true,
@@ -119,7 +126,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   const computeRangeOffset = (
     prevChildrenCount: number | null,
     prevStartIndex: number | null,
-    prevStartChild: JSX.Element | null,
+    prevStartChild: VirtualizedListChild | null,
   ) => {
     let result = 0;
     if (
@@ -131,7 +138,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       const _prevStartChild = prevStartChild;
       result =
         children.findIndex(
-          (child: JSX.Element) => child.key === _prevStartChild.key,
+          (child: VirtualizedListChild) => child.key === _prevStartChild.key,
         ) - prevStartIndex;
     }
     return result;
@@ -141,7 +148,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     renderedRange: IndexRange,
     prevChildrenCount: number | null,
     prevStartIndex: number | null,
-    prevStartChild: JSX.Element | null,
+    prevStartChild: VirtualizedListChild | null,
   ) => {
     let { startIndex, stopIndex } = renderedRange;
 
@@ -472,41 +479,50 @@ const JuiVirtualizedList: RefForwardingComponent<
     startIndex - 1,
   );
   const heightAfterStopRow = rowManager.getRowsHeight(stopIndex + 1, maxIndex);
-  let childrenToRender = children.filter((_, i) => {
-    return startIndex <= i && i <= stopIndex;
+  const childrenToRender = children.filter((child: VirtualizedListChild, i) => {
+    return child.type && startIndex <= i && i <= stopIndex;
   });
 
+  let childrenNode: React.ReactNode = childrenToRender;
   if (!shouldUseNativeImplementation) {
-    childrenToRender = childrenToRender.map((comp: JSX.Element, i) => {
+    childrenNode = childrenToRender.map((comp: any, i) => {
       const style = {
         height: rowManager.getRowHeight(startIndex + i),
         overflow: 'hidden',
       };
-      if (comp.props[WRAPPER_IDENTIFIER]) {
-        const concatStyle = comp.props.style
-          ? Object.assign({}, style, comp.props.style)
-          : style;
-        return cloneElement(comp, {
-          style: concatStyle,
-        });
+      if (comp.type) {
+        if (comp.props[WRAPPER_IDENTIFIER]) {
+          const concatStyle = comp.props.style
+            ? Object.assign({}, style, comp.props.style)
+            : style;
+          return cloneElement(comp as JSX.Element, {
+            style: concatStyle,
+          });
+        }
+        return (
+          <section style={style} key={comp.key ? comp.key : undefined}>
+            {comp}
+          </section>
+        );
       }
-      return (
-        <section style={style} key={comp.key ? comp.key : undefined}>
-          {comp}
-        </section>
-      );
+      return null;
     });
   }
 
-  const wrapperStyle: React.CSSProperties = {
-    height,
-    overflow: 'auto',
-    // Prevent repaints on scroll
-    transform: 'translateZ(0)',
-    // Prevent chrome's default behavior
-    overflowAnchor: 'none',
-    WebkitOverflowScrolling: 'touch',
-  };
+  const wrapperStyle: React.CSSProperties = Object.assign(
+    {
+      height: 'inherit',
+      minHeight: 'inherit',
+      maxHeight: 'inherit',
+      overflow: 'auto',
+      // Prevent repaints on scroll
+      transform: 'translateZ(0)',
+      // Prevent chrome's default behavior
+      overflowAnchor: 'none',
+      WebkitOverflowScrolling: 'touch',
+    },
+    style,
+  );
 
   return (
     <div
@@ -519,7 +535,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       {wrappedBefore}
       <div style={{ height: heightBeforeStartRow }} />
       <div style={contentStyle} ref={contentRef}>
-        {childrenToRender}
+        {childrenNode}
       </div>
       <div style={{ height: heightAfterStopRow }} />
       {after}

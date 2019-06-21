@@ -5,28 +5,32 @@
  */
 import React from 'react';
 import ReactResizeDetector from 'react-resize-detector';
+import styled from '../../foundation/styled-components';
+import { JuiSizeMeasurer } from '../SizeMeasurer';
 
 type Size = {
   width: number;
   height: number;
 };
-
 type JuiAutoSizerProps = {
-  handleWidth?: boolean;
-  handleHeight?: boolean;
-  style?: React.CSSProperties;
   children: (size: Partial<Size>) => React.ReactNode;
 };
 
-const JuiAutoSizer = ({
-  handleWidth,
-  handleHeight,
-  style,
-  children,
-}: JuiAutoSizerProps) => (
-  <ReactResizeDetector handleWidth={handleWidth} handleHeight={handleHeight}>
-    {(size: Partial<Size>) => <div style={style}>{children(size)}</div>}
-  </ReactResizeDetector>
-);
+const Placeholder = styled.div`
+  height: inherit;
+  max-height: inherit;
+`;
+
+const JuiAutoSizer = ({ children }: JuiAutoSizerProps) => {
+  return (
+    <JuiSizeMeasurer>
+      {({ width, height, ref }) => (
+        <Placeholder ref={ref as any}>
+          {children({ width, height })}
+        </Placeholder>
+      )}
+    </JuiSizeMeasurer>
+  );
+};
 
 export { JuiAutoSizer, JuiAutoSizerProps, Size };

@@ -20,6 +20,8 @@ type IndexConstraint = {
 
 type Delta = { x: number; y: number; z: number };
 
+type VirtualizedListChild = JSX.Element | { key: string | number; type?: any };
+
 type JuiVirtualizedListProps = {
   initialScrollToIndex?: number;
   onScroll?: (event: React.UIEvent<HTMLElement>) => void;
@@ -32,7 +34,8 @@ type JuiVirtualizedListProps = {
   minRowHeight: number;
   overscan?: number;
   stickToBottom?: boolean;
-  children: JSX.Element[];
+  children: VirtualizedListChild[];
+  style?: React.CSSProperties;
   contentStyle?: React.CSSProperties;
   stickToLastPosition?: boolean;
   fixedWrapper?: boolean;
@@ -41,6 +44,7 @@ type JuiVirtualizedListProps = {
 
 export {
   JuiVirtualizedListProps,
+  VirtualizedListChild,
   IndexRange,
   IndexConstraint,
   Direction,

@@ -14,7 +14,6 @@ import { ConversationPost } from '../../ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { JuiLozengeButton } from 'jui/components/Buttons';
-import { JuiSizeMeasurer } from 'jui/components/SizeMeasurer';
 import { JuiStream } from 'jui/pattern/ConversationPage';
 import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
@@ -41,6 +40,7 @@ import { goToConversation } from '@/common/goToConversation';
 import { JuiConversationCard } from 'jui/pattern/ConversationCard';
 import { ERROR_TYPES } from '@/common/catchError';
 import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
+import { JuiAutoSizer } from 'jui/components/AutoSizer';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
 
@@ -430,16 +430,16 @@ class StreamViewComponent extends Component<Props> {
     const defaultLoadingMore = <DefaultLoadingMore />;
 
     return (
-      <JuiSizeMeasurer>
-        {({ ref, height }) => (
-          // MobX only tracks data accessed for observer components
-          // if they are directly accessed by render, for render
-          // callback, we can wrap it with <Observer>
-          // See: https://tinyurl.com/y3nfuybu
-          <Observer>
-            {() => (
-              <JuiStream ref={ref}>
-                {loadingStatus === STATUS.FAILED ? (
+      <JuiStream>
+        <JuiAutoSizer handleHeight={true}>
+          {({ height }) => (
+            <Observer>
+              {() =>
+                // MobX only tracks data accessed for observer components
+                // if they are directly accessed by render, for render
+                // callback, we can wrap it with <Observer>
+                // See: https://tinyurl.com/y3nfuybu
+                loadingStatus === STATUS.FAILED ? (
                   this._onInitialDataFailed
                 ) : (
                   <>
@@ -464,12 +464,12 @@ class StreamViewComponent extends Component<Props> {
                       {this._renderStreamItems()}
                     </JuiInfiniteList>
                   </>
-                )}
-              </JuiStream>
-            )}
-          </Observer>
-        )}
-      </JuiSizeMeasurer>
+                )
+              }
+            </Observer>
+          )}
+        </JuiAutoSizer>
+      </JuiStream>
     );
   }
 
