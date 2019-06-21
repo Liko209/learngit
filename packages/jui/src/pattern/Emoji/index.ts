@@ -33,7 +33,7 @@ class ColonEmoji {
   private _options: Options = {
     onColon: () => {},
     colonDenotationChars: [':'],
-    allowedChars: /^[a-zA-Z0-9_+\- ]*$/,
+    allowedChars: /./,
     minChars: 2,
     maxChars: 31,
     isolateCharacter: true,
