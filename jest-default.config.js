@@ -6,6 +6,7 @@ module.exports = {
   setupFiles: [
     '<rootDir>/config/polyfills.js',
     '<rootDir>/config/enzymeTestAdapterSetup.js',
+    '<rootDir>/config/autoMock.js',
   ],
   setupFilesAfterEnv: ['<rootDir>/config/setupTest.js'],
   snapshotSerializers: ['enzyme-to-json/serializer'],

@@ -13,14 +13,6 @@ import visibilityChangeEvent from '@/store/base/visibilityChangeEvent';
 visibilityChangeEvent.mockImplementation(jest.fn());
 
 jest.mock('@/store/base/visibilityChangeEvent');
-jest.mock('sdk/utils/phoneParser');
-jest.mock('sdk/framework/account/helper', () => {
-  return {
-    fetchWhiteList: jest.fn().mockReturnValue({}),
-  };
-});
-jest.mock('foundation/src/network/client/http/Http');
-jest.mock('foundation/src/network/client/socket/Socket');
 
 async function delay(t: number = 10) {
   return new Promise(resolve => setTimeout(resolve, t));

@@ -7,14 +7,6 @@ import { PostService } from 'sdk/module/post';
 import { createResponse } from 'sdk/__tests__/mockServer/utils';
 import * as GlipData from 'sdk/__tests__/mockServer/glip/data/data';
 import { debug } from 'sdk/__tests__/utils';
-jest.mock('sdk/utils/phoneParser');
-jest.mock('sdk/framework/account/helper', () => {
-  return {
-    fetchWhiteList: jest.fn().mockReturnValue({}),
-  };
-});
-jest.mock('foundation/src/network/client/http/Http');
-jest.mock('foundation/src/network/client/socket/Socket');
 
 itForSdk('Service Integration test', ({ server, data, sdk }) => {
   let groupService: GroupService;
@@ -22,8 +14,8 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
   let searchService: SearchService;
   let postService: PostService;
 
-  const glipData = data.useInitialData(require('./test-demo-initial.json'));
-  // const glipData = data.useInitialData(data.template.BASIC);
+  // const glipData = data.useInitialData(require('./test-demo-initial.json'));
+  const glipData = data.useInitialData(data.template.BASIC);
   data.helper().team.createTeam('Test Team with thomas', [123]),
     glipData.teams.push(
       data.helper().team.createTeam('Test Team with thomas', [123]),

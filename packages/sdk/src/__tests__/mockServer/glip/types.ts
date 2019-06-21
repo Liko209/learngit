@@ -111,7 +111,7 @@ export type InitialData = {
   timestamp?: number;
   scoreboard?: string;
   client_config: GlipClientConfig;
-  static_http_server: string;
+  // static_http_server: string;
 };
 
 export type GlipData = {

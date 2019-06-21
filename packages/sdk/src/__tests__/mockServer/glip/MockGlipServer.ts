@@ -31,6 +31,7 @@ import {
   IApi,
   InitialData,
   IResponseAdapter,
+  VerbHandler,
 } from './types';
 
 interface IGlipApi extends IApi {
@@ -38,6 +39,9 @@ interface IGlipApi extends IApi {
     put: Handler;
   };
   '/v1.0/desktop/initial': {
+    get: Handler;
+  };
+  '/v1.0/desktop/remaining': {
     get: Handler;
   };
   '/api/posts': {
@@ -49,6 +53,7 @@ interface IGlipApi extends IApi {
   '/api/post': {
     post: Handler;
   };
+  '*': VerbHandler;
 }
 
 export class MockGlipServer implements IMockServer {
@@ -74,6 +79,15 @@ export class MockGlipServer implements IMockServer {
     '/v1.0/desktop/initial': {
       get: async request => await this.getInitialData(request),
     },
+    '/v1.0/desktop/remaining': {
+      get: request => createResponse({ status: 500, statusText: 'Mock error' }),
+    },
+    '*': {
+      get: request => this.commonHandler(request),
+      put: request => this.commonHandler(request),
+      post: request => this.commonHandler(request),
+      delete: request => this.commonHandler(request),
+    },
   };
 
   constructor() {
@@ -82,9 +96,9 @@ export class MockGlipServer implements IMockServer {
       return routePath === path || routePath === '*';
     },                        adapter);
     this._router.applyApi(this.api);
-    this._router.use('get', '*', this._handleCommon);
-    this._router.use('put', '*', this._handleCommon);
-    this._router.use('post', '*', this._handleCommon);
+    // this._router.use('get', '*', this._handleCommon);
+    // this._router.use('put', '*', this._handleCommon);
+    // this._router.use('post', '*', this._handleCommon);
     this.init();
   }
 
@@ -128,18 +142,20 @@ export class MockGlipServer implements IMockServer {
   getInitialData = async (request: IRequest<any>) => {
     const user = this.personDao.findOne();
     const company = this.companyDao.findOne();
+    assert(company, 'company not found.');
     // const profile = this.profileDao.findOne();
-    const buildInitialData = {
+    const buildInitialData: InitialData = {
       user_id: user!._id,
       company_id: company!._id,
       profile: this.profileDao.findOne()!,
-      companies: [company],
-      state: this.stateDao.findOne(),
+      companies: [company!],
+      state: this.stateDao.findOne()!,
       people: this.personDao.lokiCollection.find(),
       groups: await this.groupDao.getGroups(),
       teams: await this.groupDao.getTeams(),
-      client_config: this.clientConfigDao.findOne(),
-      static_http_server: 'https://d2rbro28ib85bu.cloudfront.net',
+      client_config: this.clientConfigDao.findOne()!,
+      timestamp: 1561008777444,
+      // static_http_server: 'https://d2rbro28ib85bu.cloudfront.net',
     };
     return createResponse({
       data: buildInitialData,
@@ -180,7 +196,7 @@ export class MockGlipServer implements IMockServer {
     this._router.dispatch(request, cb);
   }
 
-  _handleCommon = (request: IRequest, cb: INetworkRequestExecutorListener) => {
+  commonHandler = (request: IRequest) => {
     const mockJsonPath = this.getMockJsonPath(request.host, request.path);
     if (fs.existsSync(mockJsonPath)) {
       const result = JSON.parse(
@@ -188,16 +204,15 @@ export class MockGlipServer implements IMockServer {
           encoding: 'utf8',
         }),
       );
-      cb.onSuccess({ request, ...result.response });
-    } else {
-      cb.onFailure({
+      return createResponse({
         request,
-        data: {},
-        status: 404,
-        statusText: 'Mock data not found',
-        headers: {},
-      } as any);
+        ...result.response,
+      });
     }
+    return createResponse({
+      status: 404,
+      statusText: 'Mock data not found',
+    });
   }
 
   getMockJsonPath = (host: string, uri: string) => {
