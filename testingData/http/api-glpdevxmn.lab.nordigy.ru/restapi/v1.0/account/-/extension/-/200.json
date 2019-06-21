@@ -1,0 +1,501 @@
+{
+  "response": {
+    "data": {
+      "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/account/400161823008/extension/400162901008",
+      "id": 400162901008,
+      "extensionNumber": "239",
+      "contact": {
+        "firstName": "Emmalee",
+        "lastName": "Metz",
+        "email": "user239@jupitertest523.ru",
+        "emailAsLoginName": true,
+        "pronouncedName": {
+          "type": "Default",
+          "text": "Emmalee Metz"
+        }
+      },
+      "name": "Emmalee Metz",
+      "type": "User",
+      "status": "Enabled",
+      "serviceFeatures": [
+        {
+          "featureName": "SMS",
+          "enabled": true
+        },
+        {
+          "featureName": "SMSReceiving",
+          "enabled": true
+        },
+        {
+          "featureName": "Pager",
+          "enabled": true
+        },
+        {
+          "featureName": "PagerReceiving",
+          "enabled": true
+        },
+        {
+          "featureName": "Voicemail",
+          "enabled": true
+        },
+        {
+          "featureName": "Fax",
+          "enabled": true
+        },
+        {
+          "featureName": "FaxReceiving",
+          "enabled": true
+        },
+        {
+          "featureName": "DND",
+          "enabled": true
+        },
+        {
+          "featureName": "RingOut",
+          "enabled": true
+        },
+        {
+          "featureName": "InternationalCalling",
+          "enabled": true
+        },
+        {
+          "featureName": "Presence",
+          "enabled": true
+        },
+        {
+          "featureName": "VideoConferencing",
+          "enabled": true
+        },
+        {
+          "featureName": "SalesForce",
+          "enabled": false,
+          "reason": "AccountLimitation"
+        },
+        {
+          "featureName": "Intercom",
+          "enabled": true
+        },
+        {
+          "featureName": "Paging",
+          "enabled": true
+        },
+        {
+          "featureName": "Conferencing",
+          "enabled": true
+        },
+        {
+          "featureName": "VoipCalling",
+          "enabled": true
+        },
+        {
+          "featureName": "FreeSoftPhoneLines",
+          "enabled": false,
+          "reason": "ExtensionLimitation"
+        },
+        {
+          "featureName": "HipaaCompliance",
+          "enabled": false,
+          "reason": "AccountLimitation"
+        },
+        {
+          "featureName": "CallPark",
+          "enabled": true
+        },
+        {
+          "featureName": "OnDemandCallRecording",
+          "enabled": true
+        },
+        {
+          "featureName": "Reports",
+          "enabled": false,
+          "reason": "InsufficientPermissions"
+        },
+        {
+          "featureName": "CallForwarding",
+          "enabled": true
+        },
+        {
+          "featureName": "DeveloperPortal",
+          "enabled": true
+        },
+        {
+          "featureName": "EncryptionAtRest",
+          "enabled": false,
+          "reason": "AccountLimitation"
+        },
+        {
+          "featureName": "BlockedMessageForwarding",
+          "enabled": false,
+          "reason": "AccountLimitation"
+        },
+        {
+          "featureName": "EmergencyCalling",
+          "enabled": false,
+          "reason": "AccountLimitation"
+        },
+        {
+          "featureName": "HDVoice",
+          "enabled": true
+        },
+        {
+          "featureName": "SingleExtensionUI",
+          "enabled": false,
+          "reason": "AccountLimitation"
+        },
+        {
+          "featureName": "CallSupervision",
+          "enabled": false,
+          "reason": "AccountLimitation"
+        },
+        {
+          "featureName": "VoicemailToText",
+          "enabled": false,
+          "reason": "AccountLimitation"
+        },
+        {
+          "featureName": "WebPhone",
+          "enabled": true
+        },
+        {
+          "featureName": "RCTeams",
+          "enabled": true
+        },
+        {
+          "featureName": "UserManagement",
+          "enabled": true
+        },
+        {
+          "featureName": "Calendar",
+          "enabled": true
+        },
+        {
+          "featureName": "PasswordAuth",
+          "enabled": true
+        },
+        {
+          "featureName": "CallerIdControl",
+          "enabled": false,
+          "reason": "AccountLimitation"
+        },
+        {
+          "featureName": "AutomaticInboundCallRecording",
+          "enabled": false,
+          "reason": "ExtensionLimitation"
+        },
+        {
+          "featureName": "AutomaticOutboundCallRecording",
+          "enabled": false,
+          "reason": "ExtensionLimitation"
+        },
+        {
+          "featureName": "AutomaticCallRecordingMute",
+          "enabled": false,
+          "reason": "AccountLimitation"
+        },
+        {
+          "featureName": "SoftPhoneUpdate",
+          "enabled": true
+        },
+        {
+          "featureName": "LinkedSoftphoneLines",
+          "enabled": false,
+          "reason": "AccountTypeLimitation"
+        },
+        {
+          "featureName": "CallQualitySurvey",
+          "enabled": false,
+          "reason": "AccountLimitation"
+        },
+        {
+          "featureName": "AccountFederation",
+          "enabled": false,
+          "reason": "AccountLimitation"
+        },
+        {
+          "featureName": "MMS",
+          "enabled": true
+        },
+        {
+          "featureName": "CallParkLocations",
+          "enabled": true
+        },
+        {
+          "featureName": "ExternalDirectoryIntegration",
+          "enabled": false,
+          "reason": "AccountTypeLimitation"
+        },
+        {
+          "featureName": "CallSwitch",
+          "enabled": true
+        },
+        {
+          "featureName": "PromoMessage",
+          "enabled": true
+        },
+        {
+          "featureName": "SiteCodes",
+          "enabled": false,
+          "reason": "AccountLimitation"
+        },
+        {
+          "featureName": "InternationalSMS",
+          "enabled": false,
+          "reason": "AccountLimitation"
+        },
+        {
+          "featureName": "ConferencingNumber",
+          "enabled": true
+        },
+        {
+          "featureName": "VoipCallingOnMobile",
+          "enabled": true
+        },
+        {
+          "featureName": "DynamicConference",
+          "enabled": true
+        },
+        {
+          "featureName": "ConfigureDelegates",
+          "enabled": false,
+          "reason": "AccountLimitation"
+        },
+        {
+          "featureName": "Archiver",
+          "enabled": false,
+          "reason": "AccountTypeLimitation"
+        },
+        {
+          "featureName": "EmergencyAddressAutoUpdate",
+          "enabled": false,
+          "reason": "AccountLimitation"
+        }
+      ],
+      "regionalSettings": {
+        "timezone": {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/timezone/58",
+          "id": "58",
+          "name": "US/Pacific",
+          "description": "Pacific Time (US & Canada)",
+          "bias": "-480"
+        },
+        "homeCountry": {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/1",
+          "id": "1",
+          "name": "United States",
+          "isoCode": "US",
+          "callingCode": "1"
+        },
+        "language": {
+          "id": "1033",
+          "name": "English (United States)",
+          "localeCode": "en-US"
+        },
+        "greetingLanguage": {
+          "id": "1033",
+          "name": "English (United States)",
+          "localeCode": "en-US"
+        },
+        "formattingLocale": {
+          "id": "1033",
+          "name": "English (United States)",
+          "localeCode": "en-US"
+        },
+        "timeFormat": "12h"
+      },
+      "setupWizardState": "NotStarted",
+      "permissions": {
+        "admin": {
+          "enabled": false
+        },
+        "internationalCalling": {
+          "enabled": true
+        }
+      },
+      "profileImage": {
+        "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/account/400161823008/extension/400162901008/profile-image"
+      },
+      "account": {
+        "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/account/400161823008",
+        "id": "400161823008"
+      },
+      "hidden": false
+    },
+    "status": 200,
+    "statusText": "OK",
+    "headers": {
+      "date": "Sat, 08 Jun 2019 03:09:58 GMT",
+      "content-encoding": "gzip",
+      "x-rate-limit-limit": "100",
+      "routingkey": "XMN02P01PAS01",
+      "x-rate-limit-remaining": "97",
+      "content-length": "1208",
+      "rcrequestid": "e5a5359e-899a-11e9-aa56-005056beb634",
+      "content-language": "en-US",
+      "x-rate-limit-group": "light",
+      "content-type": "application/json; charset=UTF-8",
+      "x-rate-limit-window": "60"
+    },
+    "retryAfter": 6000
+  },
+  "request": {
+    "id": "69854a8f-9e77-4397-dc1f-3eaea34fad5a",
+    "path": "/restapi/v1.0/account/~/extension/~",
+    "method": "get",
+    "data": {},
+    "headers": {
+      "Authorization": "Bearer WE1OMDJQMDFQQVMwMHxBQUNHUDdDWm5HX01JQ3ZKTnViLWVJQWFpcG9JUmtqMUt0b19IcGJSVXVmc2FGbUxlQU9NUk5ySUhqZWdUYkJ4eHZNZHhMbUxtNlJaLW5qODloMDdRUmZnX1BTRVlJTjUyNkp5RTFnMlpoOUdjWV91RlY4U2s5T09MR1oxTk5hR2p6N1E2YmxFZFZSTUdOZHVXdDlrQUdDUVF1R0p4QnEtS3BISTIyRjVibjRMRlVUQ2VzOWFhcHZIYmd0ZjhJVFZ5OWdISE1Cdm14SEQwTHBFUGN6MDMwcTh6VGVsMUowZ3cwTXxURXctTnd8VHZGTUdydEVwQkxHRnhsRHlMb0R0UXxBQQ"
+    },
+    "params": {},
+    "handlerType": {
+      "name": "RINGCENTRAL",
+      "defaultVia": 0,
+      "survivalModeSupportable": true,
+      "tokenExpirable": true,
+      "tokenRefreshable": true,
+      "platformHandleDelegate": {
+        "_isStarted": false,
+        "_accountManager": {
+          "_events": {},
+          "_newListener": false,
+          "_removeListener": false,
+          "verboseMemoryLeak": false,
+          "_maxListeners": 10,
+          "_container": {
+            "_containerConfig": {
+              "singleton": true
+            },
+            "_registrationMap": {}
+          },
+          "_isLogin": true,
+          "_accountMap": {},
+          "_accounts": [
+            {
+              "_events": {},
+              "_newListener": false,
+              "_removeListener": false,
+              "verboseMemoryLeak": false,
+              "_maxListeners": 10,
+              "_supportedServices": [
+                "RCInfoService",
+                "VoicemailService",
+                "CallLogService"
+              ],
+              "event": "SUPPORTED_SERVICE_CHANGE"
+            },
+            {
+              "_events": {},
+              "_newListener": false,
+              "_removeListener": false,
+              "verboseMemoryLeak": false,
+              "_maxListeners": 10,
+              "_supportedServices": [
+                "PostService",
+                "GroupService",
+                "CompanyService",
+                "ItemService",
+                "PersonService",
+                "PresenceService",
+                "ProfileService",
+                "StateService",
+                "TelephonyService",
+                "RCInfoService",
+                "SettingService",
+                "SearchService",
+                "BadgeService",
+                "CallLogService",
+                "VoicemailService"
+              ],
+              "event": "SUPPORTED_SERVICE_CHANGE"
+            }
+          ],
+          "event": "ACCOUNT_MANAGER.EVENT_SUPPORTED_SERVICE_CHANGE"
+        },
+        "_authController": {
+          "_accountManager": {
+            "_events": {},
+            "_newListener": false,
+            "_removeListener": false,
+            "verboseMemoryLeak": false,
+            "_maxListeners": 10,
+            "_container": {
+              "_containerConfig": {
+                "singleton": true
+              },
+              "_registrationMap": {}
+            },
+            "_isLogin": true,
+            "_accountMap": {},
+            "_accounts": [
+              {
+                "_events": {},
+                "_newListener": false,
+                "_removeListener": false,
+                "verboseMemoryLeak": false,
+                "_maxListeners": 10,
+                "_supportedServices": [
+                  "RCInfoService",
+                  "VoicemailService",
+                  "CallLogService"
+                ],
+                "event": "SUPPORTED_SERVICE_CHANGE"
+              },
+              {
+                "_events": {},
+                "_newListener": false,
+                "_removeListener": false,
+                "verboseMemoryLeak": false,
+                "_maxListeners": 10,
+                "_supportedServices": [
+                  "PostService",
+                  "GroupService",
+                  "CompanyService",
+                  "ItemService",
+                  "PersonService",
+                  "PresenceService",
+                  "ProfileService",
+                  "StateService",
+                  "TelephonyService",
+                  "RCInfoService",
+                  "SettingService",
+                  "SearchService",
+                  "BadgeService",
+                  "CallLogService",
+                  "VoicemailService"
+                ],
+                "event": "SUPPORTED_SERVICE_CHANGE"
+              }
+            ],
+            "event": "ACCOUNT_MANAGER.EVENT_SUPPORTED_SERVICE_CHANGE"
+          }
+        },
+        "_userConfig": {
+          "_userId": "400162901008",
+          "_moduleName": "account",
+          "_configService": {
+            "_isStarted": false,
+            "_ns": "400162901008"
+          },
+          "_configCache": {}
+        },
+        "_authUserConfig": {
+          "_userId": "400162901008",
+          "_moduleName": "auth",
+          "_configService": {
+            "_isStarted": false,
+            "_ns": "400162901008"
+          },
+          "_configCache": {}
+        }
+      }
+    },
+    "priority": 2,
+    "via": 0,
+    "retryCount": 0,
+    "host": "https://api-glpdevxmn.lab.nordigy.ru",
+    "timeout": 60000,
+    "requestConfig": {},
+    "authFree": false,
+    "HAPriority": 1,
+    "startTime": 1559963398188
+  }
+}
