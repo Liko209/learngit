@@ -431,7 +431,7 @@ class StreamViewComponent extends Component<Props> {
 
     return (
       <JuiStream>
-        <JuiAutoSizer handleHeight={true}>
+        <JuiAutoSizer>
           {({ height }) => (
             <Observer>
               {() =>
