@@ -101,7 +101,8 @@
     "nock": "10.0.6",
     "mitm": "1.7.0",
     "xhr-mock": "2.4.1",
-    "axios-mock-adapter": "1.16.0"
+    "axios-mock-adapter": "1.16.0",
+    "require-context": "1.1.0"
   },
   "husky": {
     "hooks": {
