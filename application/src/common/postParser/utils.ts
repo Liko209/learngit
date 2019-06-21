@@ -102,7 +102,7 @@ const getTopLevelChildNodesFromHTML = (_html: string) => {
       };
       const getValue = (seg: string, key: string) => {
         let val: string | object = seg.trim();
-        val = /^['|"].+['|"]$/.test(val) ? val.slice(1, -1) : val;
+        val = /^(['|"]).+\1$/.test(val) ? val.slice(1, -1) : val;
         if (key === 'style') {
           val = getStylesObject(val);
         }
@@ -135,7 +135,6 @@ const getTopLevelChildNodesFromHTML = (_html: string) => {
     nodes.push({
       tag,
       attrs,
-      substring: html.substr(index, match.length),
       isTag: true,
       inner: result[3],
     });
@@ -180,8 +179,9 @@ const MATCH_ALL_REGEX = /^[\s\S]+$/g;
 const MATCH_NOTHING_REGEX = /a^/g;
 const AT_MENTION_REGEX = /<a class='at_mention_compose' rel='{"id":([-?\d]*?)}'>(.*?)<\/a>/gi;
 const AT_MENTION_GROUPED_REGEXP = /(<a class='at_mention_compose' rel='{"id":[-?\d]*?}'>)(.*?)(<\/a>)/gi;
+const MIN_ATMENTION_PATTERN_LENGTH = 48;
 
-const EMOJI_REGEX = /<emoji data='(.+?)' \/>/gi;
+const EMOJI_REGEX = /<emoji data='([A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12})' \/>/gi;
 const MIN_EMOJI_PATTERN_LEN = 17;
 const EMOJI_UNICODE_REGEX_RANGE =
   '\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]';
@@ -190,9 +190,11 @@ const EMOJI_UNICODE_REGEX = `${Object.keys(convertMapUnicode).join('|')}`;
 const EMOJI_ASCII_REGEX = `(^|\\s)${Object.keys(convertMapAscii).join(
   '(?=\\s|$|[!,.?])|(^|\\s)',
 )}(?=\\s|$|[!,.?])`;
-const EMOJI_ASCII_UNIQUE_CHARS = /<|3|\/|:|\'|\)|-|\=|\]|>|;|\*|\^|\(|x|p|\[|@|\.|\$|#|%||O|0|8|_|L|Þ|þ|b|d|o/;
+const EMOJI_ASCII_REGEX_SIMPLE =
+  "[<3\\/:'\\)-=\\]>;\\*\\^\\(xp\\[@\\.\\$#%O08_LÞþbdo]{2,}";
 
 const EMOJI_ONE_REGEX = `${Object.keys(convertMapEmojiOne).join('|')}`;
+const EMOJI_ONE_REGEX_SIMPLE = ':\\w+:';
 
 const EMOJI_CUSTOM_REGEX = (customEmojiMap: CustomEmojiMap) =>
   `:${Object.keys(customEmojiMap).join(':|:')}:`;
@@ -249,6 +251,7 @@ export {
   NUMBER_WITH_PLUS,
   MIN_PHONE_NUMBER_LENGTH,
   MAX_PHONE_NUMBER_LENGTH,
+  MIN_ATMENTION_PATTERN_LENGTH,
 };
 
 // regex
@@ -260,10 +263,11 @@ export {
   EMOJI_REGEX,
   EMOJI_UNICODE_REGEX_RANGE,
   EMOJI_UNICODE_REGEX,
-  EMOJI_ASCII_UNIQUE_CHARS,
+  EMOJI_ASCII_REGEX_SIMPLE,
   EMOJI_ASCII_REGEX,
   EMOJI_ONE_REGEX,
   EMOJI_CUSTOM_REGEX,
   URL_REGEX,
   VALID_PHONE_REG,
+  EMOJI_ONE_REGEX_SIMPLE,
 };

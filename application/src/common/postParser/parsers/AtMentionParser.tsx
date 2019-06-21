@@ -46,13 +46,6 @@ class AtMentionParser extends PostParser implements IPostParser {
     );
   }
 
-  checkPreCondition(str: string) {
-    return (
-      str.length >= 48 && // 48 = min length of string that can match at_mention pattern
-      str.includes(`<a class='at_mention_compose' rel='{"id":`)
-    );
-  }
-
   getRegexp() {
     return new RegExp(AT_MENTION_REGEX);
   }

@@ -27,11 +27,13 @@ import {
   AT_MENTION_GROUPED_REGEXP,
   b64EncodeUnicode,
   EMOJI_UNICODE_REGEX_RANGE,
-  EMOJI_ASCII_UNIQUE_CHARS,
+  EMOJI_ASCII_REGEX_SIMPLE,
   MIN_EMOJI_PATTERN_LEN,
   EMOJI_REGEX,
   NUMBER_WITH_PLUS,
   MIN_PHONE_NUMBER_LENGTH,
+  EMOJI_ONE_REGEX_SIMPLE,
+  MIN_ATMENTION_PATTERN_LENGTH,
 } from './utils';
 import { URLParser } from './parsers/URLParser';
 import _ from 'lodash';
@@ -43,7 +45,10 @@ const parsersConfig = [
   {
     Parser: AtMentionParser,
     shouldParse: (fullText: string, { atMentions, html }: PostParserOptions) =>
-      !html && atMentions && fullText.length >= 48, // min-length for a string that includes at mention
+      !html &&
+      atMentions &&
+      fullText.length >= MIN_ATMENTION_PATTERN_LENGTH &&
+      fullText.includes(`<a class='at_mention_compose' rel='{"id":`),
     getParserOption: ({
       keyword,
       html,
@@ -141,7 +146,7 @@ const _transformEmoji = (
       EmojiConvertType.UNICODE,
     );
   }
-  if (new RegExp(EMOJI_ASCII_UNIQUE_CHARS).test(fullText)) {
+  if (new RegExp(EMOJI_ASCII_REGEX_SIMPLE).test(fullText)) {
     _fullText = EmojiTransformer.replace(
       _fullText,
       emojiOptions,
@@ -160,7 +165,7 @@ const _transformEmoji = (
       EmojiConvertType.CUSTOM,
     );
   }
-  if (/:\w+:/.test(fullText)) {
+  if (new RegExp(EMOJI_ONE_REGEX_SIMPLE).test(fullText)) {
     _fullText = EmojiTransformer.replace(
       _fullText,
       emojiOptions,

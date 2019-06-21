@@ -540,6 +540,60 @@ describe('glipdown text', () => {
         ]);
       });
 
+      it('should parse multiple ascii emojis', () => {
+        expect(postParser(':-/ -_- <3', { emoji: { hostName } })).toEqual([
+          <img
+            className='emoji'
+            alt='😕'
+            title=':-/'
+            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f615.png?v=2.2.7'
+            key={0}
+          />,
+          ' ',
+          <img
+            className='emoji'
+            alt='😑'
+            title='-_-'
+            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f611.png?v=2.2.7'
+            key={1}
+          />,
+          ' ',
+          <img
+            className='emoji'
+            alt='❤'
+            title='<3'
+            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/2764.png?v=2.2.7'
+            key={2}
+          />,
+        ]);
+
+        expect(postParser('-_- -_- -_-', { emoji: { hostName } })).toEqual([
+          <img
+            className='emoji'
+            alt='😑'
+            title='-_-'
+            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f611.png?v=2.2.7'
+            key={0}
+          />,
+          ' ',
+          <img
+            className='emoji'
+            alt='😑'
+            title='-_-'
+            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f611.png?v=2.2.7'
+            key={1}
+          />,
+          ' ',
+          <img
+            className='emoji'
+            alt='😑'
+            title='-_-'
+            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f611.png?v=2.2.7'
+            key={2}
+          />,
+        ]);
+      });
+
       it('should return array with image emoji and other text', () => {
         expect(
           postParser(`hahah😁123___🏳️‍🌈++ ':( :joy:`, {
@@ -562,7 +616,7 @@ describe('glipdown text', () => {
             title='🏳️‍🌈'
             key={1}
           />,
-          '++',
+          '++ ',
           <img
             className='emoji'
             alt='😓'
@@ -595,6 +649,7 @@ describe('glipdown text', () => {
             src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/2764.png?v=2.2.7'
             key={0}
           />,
+          ' ',
           <img
             className='emoji'
             alt='😅'

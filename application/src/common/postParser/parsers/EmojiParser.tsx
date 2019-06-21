@@ -18,18 +18,14 @@ class EmojiParser extends PostParser implements IPostParser {
     super(options);
   }
 
-  getReplaceElement(strValue: string) {
-    const result = this.getRegexp().exec(strValue);
+  getReplaceElement(strValue: string, result: RegExpExecArray | void) {
     if (!result || !result[0] || !result[1]) {
       return strValue;
     }
-    try {
-      const id = result[1];
-      const data = EmojiTransformer.emojiDataMap[id];
-      return <img {...data} />;
-    } catch (err) {
-      return strValue;
-    }
+    const id = result[1];
+    const data = EmojiTransformer.emojiDataMap[id];
+    EmojiTransformer.deleteData(id);
+    return <img {...data} />;
   }
 
   getRegexp() {

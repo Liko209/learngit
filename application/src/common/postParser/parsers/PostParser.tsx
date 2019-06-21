@@ -55,10 +55,6 @@ abstract class PostParser implements IPostParser {
     ) {
       return [];
     }
-    const continueParsing = this.checkPreCondition(str);
-    if (!continueParsing) {
-      return [];
-    }
     const regexp = this.getRegexp();
     if (!regexp) {
       return [
