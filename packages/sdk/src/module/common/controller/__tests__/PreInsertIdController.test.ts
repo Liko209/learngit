@@ -69,6 +69,15 @@ describe('PreInsertIdController()', () => {
     });
   });
 
+  describe('getPreInsertId()', () => {
+    it('should return pre-insert id if unique id in pre-insert list', async () => {
+      const controller = getController();
+      await controller.insert('1001', 10);
+      const result = controller.getPreInsertId('1001');
+      expect(result).toEqual(10);
+    });
+  });
+
   describe('delete()', () => {
     it('should remove id from the map when it is existed in map', async () => {
       const controller = getController();
