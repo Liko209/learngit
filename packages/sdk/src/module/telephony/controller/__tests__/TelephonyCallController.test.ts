@@ -11,6 +11,7 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
   RTC_CALL_ACTION,
+  RECORD_STATE as RTC_RECORD_STATE,
 } from 'voip';
 import {
   Call,
@@ -117,8 +118,9 @@ describe('TelephonyCallController', () => {
   describe('hold', () => {
     it('should resolve when call is held successfully', (done: jest.DoneCallback) => {
       const options = '';
-      expect.assertions(2);
+      expect.assertions(3);
       callController._updateCallHoldState = jest.fn();
+      callController._updateCallRecordState = jest.fn();
       callController.hold().then(result => {
         expect(result).toEqual(options);
         done();
@@ -126,12 +128,17 @@ describe('TelephonyCallController', () => {
       expect(callController._updateCallHoldState).toBeCalledWith(
         HOLD_STATE.HELD,
       );
+      expect(callController._updateCallRecordState).toBeCalledWith(
+        RECORD_STATE.DISABLE,
+      );
       callController.onCallActionSuccess(RTC_CALL_ACTION.HOLD, options);
     });
 
     it('should reject when call hold is failed', (done: jest.DoneCallback) => {
       callController._updateCallHoldState = jest.fn();
-      expect.assertions(3);
+      callController._updateCallRecordState = jest.fn();
+      rtcCall.getRecordState = jest.fn().mockReturnValue(RTC_RECORD_STATE.IDLE);
+      expect.assertions(4);
       callController
         .hold()
         .then(result => {
@@ -148,14 +155,19 @@ describe('TelephonyCallController', () => {
       expect(callController._updateCallHoldState).toBeCalledWith(
         HOLD_STATE.IDLE,
       );
+      expect(callController._updateCallRecordState).toBeCalledWith(
+        RECORD_STATE.IDLE,
+      );
     });
   });
 
   describe('unhold', () => {
     it('should resolve when call is unhold successfully', (done: jest.DoneCallback) => {
       const options = '';
-      expect.assertions(2);
+      expect.assertions(3);
       callController._updateCallHoldState = jest.fn();
+      callController._updateCallRecordState = jest.fn();
+      rtcCall.getRecordState = jest.fn().mockReturnValue(RTC_RECORD_STATE.IDLE);
       callController.unhold().then(result => {
         expect(result).toEqual(options);
         done();
@@ -163,12 +175,16 @@ describe('TelephonyCallController', () => {
       expect(callController._updateCallHoldState).toBeCalledWith(
         HOLD_STATE.IDLE,
       );
+      expect(callController._updateCallRecordState).toBeCalledWith(
+        RECORD_STATE.IDLE,
+      );
       callController.onCallActionSuccess(RTC_CALL_ACTION.UNHOLD, options);
     });
 
     it('should reject when call unhold is failed', (done: jest.DoneCallback) => {
       callController._updateCallHoldState = jest.fn();
-      expect.assertions(3);
+      callController._updateCallRecordState = jest.fn();
+      expect.assertions(4);
       callController
         .unhold()
         .then(result => {
@@ -184,6 +200,9 @@ describe('TelephonyCallController', () => {
       callController.onCallActionFailed(RTC_CALL_ACTION.UNHOLD);
       expect(callController._updateCallHoldState).toBeCalledWith(
         HOLD_STATE.HELD,
+      );
+      expect(callController._updateCallRecordState).toBeCalledWith(
+        RECORD_STATE.DISABLE,
       );
     });
   });
