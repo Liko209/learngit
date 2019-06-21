@@ -76,7 +76,6 @@ describe('Telephony store', () => {
   it('callState should to be CALL_STATE.DISCONNECTED when call end function and call from dialer', () => {
     const store = createStore();
     store.openDialer();
-    store.dialerCall();
     store.end();
     call.callState = CALL_STATE.DISCONNECTED;
     expect(store.call.callState).toBe(CALL_STATE.DISCONNECTED);
@@ -88,7 +87,7 @@ describe('Telephony store', () => {
     expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.FLOATING);
     call.direction = CALL_DIRECTION.INBOUND;
 
-    expect(store.inbound).toBeTruthy;
+    expect(store.isInbound).toBeTruthy;
     call.callState = CALL_STATE.CONNECTED;
     expect(store.callState).toBe(CALL_STATE.CONNECTED);
     store.end();

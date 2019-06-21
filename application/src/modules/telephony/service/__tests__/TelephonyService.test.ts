@@ -260,8 +260,9 @@ describe('TelephonyService', () => {
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
       call.holdState = HOLD_STATE.IDLE;
-      (telephonyService as TelephonyService).holdOrUnhold();
-      (telephonyService as TelephonyService).holdOrUnhold();
+      await (telephonyService as TelephonyService).holdOrUnhold();
+      call.holdState = HOLD_STATE.HELD;
+      await (telephonyService as TelephonyService).holdOrUnhold();
 
       await sleep(testProcedureWaitingTime);
       call.holdState = HOLD_STATE.HELD;
@@ -285,11 +286,13 @@ describe('TelephonyService', () => {
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
       call.holdState = HOLD_STATE.IDLE;
-      (telephonyService as TelephonyService).holdOrUnhold();
+      await (telephonyService as TelephonyService).holdOrUnhold();
       await sleep(testProcedureWaitingTime);
       call.holdState = HOLD_STATE.HELD;
-      (telephonyService as TelephonyService).holdOrUnhold();
-      (telephonyService as TelephonyService).holdOrUnhold();
+      await (telephonyService as TelephonyService).holdOrUnhold();
+      call.holdState = HOLD_STATE.IDLE;
+      await (telephonyService as TelephonyService).holdOrUnhold();
+      call.holdState = HOLD_STATE.HELD;
 
       expect(mockedServerTelephonyService.unhold).toHaveBeenCalledTimes(1);
       expect((telephonyService as TelephonyService)._telephonyStore.held).toBe(
@@ -317,7 +320,7 @@ describe('TelephonyService', () => {
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
       call.holdState = HOLD_STATE.IDLE;
-      (telephonyService as TelephonyService).holdOrUnhold();
+      await (telephonyService as TelephonyService).holdOrUnhold();
       call.holdState = HOLD_STATE.HELD;
       expect((telephonyService as TelephonyService)._telephonyStore.held).toBe(
         true,
@@ -344,7 +347,7 @@ describe('TelephonyService', () => {
       await sleep(testProcedureWaitingTime);
       call.holdState = HOLD_STATE.HELD;
 
-      (telephonyService as TelephonyService).holdOrUnhold();
+      await (telephonyService as TelephonyService).holdOrUnhold();
       await sleep(testProcedureWaitingTime);
       call.holdState = HOLD_STATE.HELD;
 
@@ -352,7 +355,7 @@ describe('TelephonyService', () => {
         true,
       );
 
-      (telephonyService as TelephonyService).holdOrUnhold();
+      await (telephonyService as TelephonyService).holdOrUnhold();
 
       await sleep(testProcedureWaitingTime);
       expect(ToastCallError.toastFailedToResume).toHaveBeenCalled();
@@ -375,7 +378,7 @@ describe('TelephonyService', () => {
       initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       call.recordState = RECORD_STATE.DISABLE;
-      (telephonyService as TelephonyService).startOrStopRecording();
+      await (telephonyService as TelephonyService).startOrStopRecording();
 
       expect(
         (telephonyService as TelephonyService)._telephonyStore.recordDisabled,
@@ -394,8 +397,9 @@ describe('TelephonyService', () => {
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
       call.recordState = RECORD_STATE.IDLE;
-      (telephonyService as TelephonyService).startOrStopRecording();
-      (telephonyService as TelephonyService).startOrStopRecording();
+      await (telephonyService as TelephonyService).startOrStopRecording();
+      call.recordState = RECORD_STATE.RECORDING;
+      await (telephonyService as TelephonyService).startOrStopRecording();
       call.recordState = RECORD_STATE.RECORDING;
       expect(
         (telephonyService as TelephonyService)._telephonyStore.recordDisabled,
@@ -417,12 +421,14 @@ describe('TelephonyService', () => {
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
       call.recordState = RECORD_STATE.IDLE;
-      (telephonyService as TelephonyService).startOrStopRecording();
+      await (telephonyService as TelephonyService).startOrStopRecording();
       await sleep(testProcedureWaitingTime);
       call.recordState = RECORD_STATE.RECORDING;
 
-      (telephonyService as TelephonyService).startOrStopRecording();
-      (telephonyService as TelephonyService).startOrStopRecording();
+      await (telephonyService as TelephonyService).startOrStopRecording();
+      call.recordState = RECORD_STATE.IDLE;
+      await (telephonyService as TelephonyService).startOrStopRecording();
+      call.recordState = RECORD_STATE.RECORDING;
 
       expect(mockedServerTelephonyService.stopRecord).toHaveBeenCalledTimes(1);
       expect(
@@ -660,7 +666,6 @@ describe('TelephonyService', () => {
     await (telephonyService as TelephonyService).makeCall(
       telephonyService._telephonyStore.inputString,
     );
-    telephonyService._telephonyStore.dialerCall();
     call.direction = CALL_DIRECTION.OUTBOUND;
     call.callState = CALL_STATE.CONNECTED;
     expect(

@@ -94,11 +94,6 @@ class TelephonyStore {
   shiftKeyDown = false;
 
   @observable
-  pendingForHold: boolean = false;
-  @observable
-  pendingForRecord: boolean = false;
-
-  @observable
   shouldKeepDialog: boolean;
 
   @observable
@@ -392,9 +387,6 @@ class TelephonyStore {
   }
 
   @action
-  dialerCall = () => {}
-
-  @action
   directCall = () => {
     this.firstLetterEnteredThroughKeypad = false;
     this._openCallWindow();
@@ -439,16 +431,6 @@ class TelephonyStore {
         `${logTag} Invalid transition: unable to stop recording from idle`,
       );
     }
-  }
-
-  @action
-  setPendingForHoldBtn(val: boolean) {
-    this.pendingForHold = val;
-  }
-
-  @action
-  setPendingForRecordBtn(val: boolean) {
-    this.pendingForRecord = val;
   }
 
   onDialerInputFocus = () => {
@@ -561,7 +543,7 @@ class TelephonyStore {
 
   @computed
   get isIncomingCall() {
-    return this.callState === CALL_STATE.IDLE && this.inbound;
+    return this.callState === CALL_STATE.IDLE && this.isInbound;
   }
 
   @computed
@@ -595,12 +577,12 @@ class TelephonyStore {
   }
 
   @computed
-  get inbound(): boolean {
+  get isInbound(): boolean {
     return this.call.direction === CALL_DIRECTION.INBOUND;
   }
 
   @computed
-  get outbound(): boolean {
+  get isOutbound(): boolean {
     return this.call.direction === CALL_DIRECTION.OUTBOUND;
   }
 
@@ -614,12 +596,13 @@ class TelephonyStore {
     return this.call.callId;
   }
 
+  // TODO: should change the prop's name use CALL_DIRECTION
   @computed
   get callType() {
     switch (true) {
-      case this.inbound:
+      case this.isInbound:
         return CALL_TYPE.INBOUND;
-      case this.outbound:
+      case this.isOutbound:
         return CALL_TYPE.OUTBOUND;
       default:
         return CALL_TYPE.NULL;
@@ -640,12 +623,12 @@ class TelephonyStore {
 
   @computed
   get hasActiveOutBoundCall() {
-    return this.hasActiveCall && this.outbound;
+    return this.hasActiveCall && this.isOutbound;
   }
 
   @computed
   get hasActiveInBoundCall() {
-    return this.hasActiveCall && this.inbound;
+    return this.hasActiveCall && this.isInbound;
   }
 }
 
