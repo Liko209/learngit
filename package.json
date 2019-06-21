@@ -104,7 +104,8 @@
     "axios-mock-adapter": "1.16.0",
     "assert": "2.0.0",
     "debug": "4.1.1",
-    "@types/debug": "4.1.4"
+    "@types/debug": "4.1.4",
+    "require-context": "1.1.0"
   },
   "husky": {
     "hooks": {

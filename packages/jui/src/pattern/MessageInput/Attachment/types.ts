@@ -12,6 +12,7 @@ type AttachmentMenuItem = {
 type AttachmentViewProps = {
   onFileChanged: (files: FileList) => void;
   tooltip: string;
+  title: string;
   menus: AttachmentMenuItem[];
   fileMenu: AttachmentMenuItem;
 };

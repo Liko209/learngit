@@ -12,6 +12,14 @@ const theme = {
     keys: ['xs', 'sm', 'md', 'lg', 'xl'],
     values: { xs: 0, sm: 600, md: 960, lg: 1280, xl: 1920 },
   },
+  radius: {
+    circle: '50%',
+    zero: '0px',
+    sm: '2px',
+    md: '3px',
+    lg: '4px',
+    xl: '8px',
+  },
   direction: 'ltr',
   mixins: {
     toolbar: {
@@ -349,4 +357,4 @@ const theme = {
 const mountWithTheme = (content: React.ReactNode) =>
   mount(<ThemeProvider theme={theme}>{content}</ThemeProvider>);
 
-export { mountWithTheme };
+export { mountWithTheme, theme as defaultTheme };

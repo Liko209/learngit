@@ -6,7 +6,6 @@
 
 import { VoicemailService } from '../VoicemailService';
 import { VoicemailController } from '../../controller/VoicemailController';
-import { RCItemUserConfig } from '../../../config';
 import { READ_STATUS } from 'sdk/module/RCItems/constants';
 
 jest.mock('../../../config');
@@ -22,6 +21,10 @@ jest.mock('../../controller/VoicemailController', () => {
       clearAll: jest.fn(),
       fetchVoicemails: jest.fn(),
       handleNotification: jest.fn(),
+      doSync: jest.fn(),
+    },
+    voicemailBadgeController: {
+      initializeUnreadCount: jest.fn(),
     },
   };
   return {
@@ -114,16 +117,28 @@ describe('VoicemailService', () => {
     });
   });
 
-  describe('_triggerSilentSync', () => {
+  describe('_syncImmediately', () => {
     beforeEach(() => {
       clearMocks();
       setUp();
     });
 
-    it('_triggerSilentSync', async () => {
-      await vmService['_triggerSilentSync']();
+    it('_syncImmediately', async () => {
+      await vmService['_syncImmediately']();
+      expect(vmController.voicemailFetchController.doSync).toBeCalled();
+    });
+  });
+
+  describe('_initBadge', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('_initBadge', async () => {
+      await vmService['_initBadge']();
       expect(
-        vmController.voicemailFetchController.handleNotification,
+        vmController.voicemailBadgeController.initializeUnreadCount,
       ).toBeCalled();
     });
   });

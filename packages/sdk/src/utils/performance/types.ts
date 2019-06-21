@@ -60,6 +60,13 @@ export enum PERFORMANCE_KEYS {
   INIT_RC_MESSAGE_BADGE = 'init_rc_message_badge',
   DELETE_RC_MESSAGE = 'delete_rc_message',
   DELETE_RC_MESSAGE_FROM_SERVER = 'delete_rc_message_from_server',
+  PREPARE_PERSON_CACHE = 'prepare_person_cache',
+
+  // UI
+  // stream render
+  UI_MESSAGE_RENDER = 'ui_message_render',
+  UI_GLOBALSEARCH_TAB_RENDER = 'ui_globalsearch_tab_render',
+  UI_PROFILE_RENDER = 'ui_profile_render',
 }
 
 export type PerformanceInfo = {

@@ -24,6 +24,7 @@ const RightResponsive = withResponsive(
   },
   {
     visualMode: VISUAL_MODE.BOTH,
+    maxWidth: 0,
     enable: {
       left: true,
     },

@@ -44,7 +44,7 @@ class DeviceNameHelper {
   }
 
   private static _getDefaultDeviceName(t: i18next.TFunction) {
-    return t('setting.default');
+    return t('setting.useDefault');
   }
 
   private static _getNoDeviceName(t: i18next.TFunction) {

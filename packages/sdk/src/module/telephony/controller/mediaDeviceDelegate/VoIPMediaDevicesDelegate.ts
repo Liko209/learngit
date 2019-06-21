@@ -146,8 +146,6 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
       deleted: MediaDeviceInfo[];
     },
   ) {
-    telephonyLogger.tags(LOG_TAG).info('device change', delta);
-
     if (delta.deleted.length) {
       manager.ensureDevice();
     }
@@ -177,15 +175,30 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
       delta: { added: MediaDeviceInfo[]; deleted: MediaDeviceInfo[] };
     },
   ): void {
-    this._handlerDeviceChange(
-      this._microphoneSyncManager,
-      audioInputs.devices,
-      audioInputs.delta,
-    );
-    this._handlerDeviceChange(
-      this._speakerSyncManager,
-      audioOutputs.devices,
-      audioOutputs.delta,
-    );
+    telephonyLogger
+      .tags(LOG_TAG)
+      .info('device change', audioInputs.delta, audioOutputs.delta);
+    if (audioInputs.delta.added.length || audioInputs.delta.deleted.length) {
+      this._handlerDeviceChange(
+        this._microphoneSyncManager,
+        audioInputs.devices,
+        audioInputs.delta,
+      );
+      notificationCenter.emit(
+        RTC_MEDIA_ACTION.INPUT_DEVICE_LIST_CHANGED,
+        audioInputs.devices,
+      );
+    }
+    if (audioOutputs.delta.added.length || audioOutputs.delta.deleted.length) {
+      this._handlerDeviceChange(
+        this._speakerSyncManager,
+        audioOutputs.devices,
+        audioOutputs.delta,
+      );
+      notificationCenter.emit(
+        RTC_MEDIA_ACTION.OUTPUT_DEVICE_LIST_CHANGED,
+        audioOutputs.devices,
+      );
+    }
   }
 }

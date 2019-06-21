@@ -12,11 +12,6 @@ import { Markdown } from 'glipdown';
 
 class URLParser extends PostParser implements IPostParser {
   type = ParserType.URL;
-  ignoredRangeTypes = [
-    ParserType.AT_MENTION,
-    ParserType.EMOJI,
-    ParserType.FILE_NAME,
-  ];
   content: ParseContent;
 
   constructor(public options: URLParserOption) {

@@ -199,22 +199,4 @@ describe('VoicemailFetchController', () => {
       expect(entitySourceController.bulkDelete).toBeCalledWith([2, 3]);
     });
   });
-
-  describe('handleNotification', () => {
-    beforeEach(() => {
-      setUp();
-      clearMocks();
-    });
-
-    it('should pass right parameter to doSync', async () => {
-      voicemailFetchController.doSync = jest.fn();
-      await voicemailFetchController.handleNotification();
-
-      expect(voicemailFetchController.doSync).toBeCalledWith(
-        false,
-        SYNC_DIRECTION.NEWER,
-        true,
-      );
-    });
-  });
 });
