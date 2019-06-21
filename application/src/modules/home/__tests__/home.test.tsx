@@ -49,7 +49,7 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
   });
 
   afterAll(async () => {
-    await sdk.cleanUp();
+    // await sdk.cleanUp();
   });
   describe('test', () => {
     it('should run', () => {
