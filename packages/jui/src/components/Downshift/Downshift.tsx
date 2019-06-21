@@ -164,16 +164,22 @@ class JuiDownshift extends React.PureComponent<
                       onRenderedRangeChange={this._handleRenderedRangeChange}
                     >
                       {suggestionItems.map(
-                        (suggestionItem: SelectedItem, index) => {
+                        (suggestionItem: SelectedItem, index: number) => {
                           const isHighlighted = highlightedIndex === index;
-                          return (
-                            <MenuItem
-                              {...getItemProps({ item: suggestionItem })}
-                              itemId={suggestionItem.id}
-                              key={suggestionItem.id}
-                              isHighlighted={isHighlighted}
-                            />
-                          );
+                          if (
+                            this.state.renderedRange.startIndex <= index &&
+                            index <= this.state.renderedRange.stopIndex
+                          ) {
+                            return (
+                              <MenuItem
+                                {...getItemProps({ item: suggestionItem })}
+                                itemId={suggestionItem.id}
+                                key={suggestionItem.id}
+                                isHighlighted={isHighlighted}
+                              />
+                            );
+                          }
+                          return { key: suggestionItem.id || 0 };
                         },
                       )}
                     </JuiVirtualizedList>
@@ -187,8 +193,8 @@ class JuiDownshift extends React.PureComponent<
     );
   }
 
-  private _handleRenderedRangeChange = (range: IndexRange) => {
-    this.setState({ renderedRange: range });
+  private _handleRenderedRangeChange = (renderedRange: IndexRange) => {
+    this.setState({ renderedRange });
   }
 }
 
