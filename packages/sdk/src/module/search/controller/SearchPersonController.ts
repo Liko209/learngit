@@ -32,7 +32,7 @@ import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import { MY_LAST_POST_VALID_PERIOD } from '../constants';
 import { GroupConfigService } from 'sdk/module/groupConfig';
 import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
-import { mainLogger } from 'foundation/src';
+import { mainLogger } from 'foundation';
 
 type MatchedInfo = {
   nameMatched: boolean;

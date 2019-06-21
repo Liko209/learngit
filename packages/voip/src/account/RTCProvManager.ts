@@ -11,9 +11,9 @@ import {
   IResponse,
   NETWORK_VIA,
   NETWORK_METHOD,
-} from 'foundation/src/network/network';
-import { HttpRequest } from 'foundation/src/network/client/http';
-import NetworkRequestBuilder from 'foundation/src/network/client/NetworkRequestBuilder';
+} from 'foundation/network/network';
+import { HttpRequest } from 'foundation/network/client/http';
+import NetworkRequestBuilder from 'foundation/network/client/NetworkRequestBuilder';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import {
   kRTCProvRequestErrorRetryTimerMin,

@@ -1,4 +1,4 @@
-import { IDatabase } from 'foundation/src/db';
+import { IDatabase } from 'foundation/db';
 import { GlipBaseDao } from '../../GlipBaseDao';
 import { GlipGroup, GlipItem } from '../../types';
 

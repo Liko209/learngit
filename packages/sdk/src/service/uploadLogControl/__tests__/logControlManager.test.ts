@@ -5,7 +5,7 @@
  */
 
 import axios from 'axios';
-import { logManager, mainLogger } from 'foundation/src/log/index';
+import { logManager, mainLogger } from 'foundation/log/index';
 import { notificationCenter } from 'sdk/service';
 import { ENTITY, SERVICE, WINDOW, DOCUMENT } from '../../../service/eventKey';
 import { LogControlManager } from '../logControlManager';
@@ -22,7 +22,7 @@ jest.mock('../utils', () => {
 });
 jest.mock('../zip.worker');
 jest.mock('axios');
-jest.mock('foundation/src/ioc');
+jest.mock('foundation/ioc');
 
 describe('LogControlManager', () => {
   const logControlManager = LogControlManager.instance();

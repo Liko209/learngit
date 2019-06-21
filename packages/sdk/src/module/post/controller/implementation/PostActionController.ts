@@ -20,7 +20,7 @@ import { ItemService } from '../../../../module/item/service';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { PostControllerUtils } from './PostControllerUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
-import { DEFAULT_RETRY_COUNT } from 'foundation/src';
+import { DEFAULT_RETRY_COUNT } from 'foundation';
 
 class PostActionController implements IPostActionController {
   constructor(

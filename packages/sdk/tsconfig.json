@@ -7,7 +7,7 @@
     "rootDir": "src",
     "paths": {
       "sdk/*": ["src/*"],
-      "foundation/*": ["../packages/foundation/src/*"]
+      "foundation/*": ["../foundation/src/*"]
     }
   },
   "include": ["src"],

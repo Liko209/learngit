@@ -19,7 +19,7 @@ import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 jest.mock('../../../module/config');
 jest.mock('../SocketCanConnectController');
 jest.mock('../../../utils/jsUtils');
-jest.mock('foundation/src/network/client/socket');
+jest.mock('foundation/network/client/socket');
 jest.mock('../../../dao');
 const mockedSetReconnection = jest.fn((bOn: boolean) => {});
 SocketFSM.prototype = {

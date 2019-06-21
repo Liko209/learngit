@@ -1,8 +1,4 @@
-import {
-  IDatabase,
-  IDatabaseCollection,
-  LokiCollection,
-} from 'foundation/src/db';
+import { IDatabase, IDatabaseCollection, LokiCollection } from 'foundation/db';
 import Query from 'sdk/framework/dao/impl/Query';
 import { GlipModel } from './types';
 import _ from 'lodash';

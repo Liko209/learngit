@@ -1,4 +1,4 @@
-import { ISchema } from 'foundation/src/db';
+import { ISchema } from 'foundation/db';
 
 const gen = (unique: string = '_id', indices: string[] = []) => ({
   unique,

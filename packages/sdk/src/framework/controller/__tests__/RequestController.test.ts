@@ -6,7 +6,7 @@
 
 import { RequestController } from '../impl/RequestController';
 import { IdModel } from '../../../framework/model';
-import { JNetworkError, ERROR_CODES_NETWORK } from 'foundation/src';
+import { JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
 import NetworkClient from '../../../api/NetworkClient';
 
 type TestEntity = IdModel & {

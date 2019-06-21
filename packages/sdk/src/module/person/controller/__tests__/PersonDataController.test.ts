@@ -12,7 +12,7 @@ import { Person } from '../../entity';
 import { AccountGlobalConfig } from '../../../../module/account/config';
 import notificationCenter from '../../../../service/notificationCenter';
 
-jest.mock('foundation/src/ioc');
+jest.mock('foundation/ioc');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../framework/controller/impl/EntitySourceController');
 jest.mock('../../../../module/account/config');

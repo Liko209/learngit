@@ -23,7 +23,7 @@ import { ExtendedBaseModel } from '../../../../models';
 import { PROGRESS_STATUS } from '../../../../progress';
 import { AccountUserConfig } from '../../../../../module/account/config/AccountUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
-import { REQUEST_PRIORITY, DEFAULT_RETRY_COUNT } from 'foundation/src';
+import { REQUEST_PRIORITY, DEFAULT_RETRY_COUNT } from 'foundation';
 
 jest.mock('../../../../../module/config');
 jest.mock('../../../../../module/account/config/AccountUserConfig');

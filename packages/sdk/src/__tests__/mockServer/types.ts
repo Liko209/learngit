@@ -2,7 +2,7 @@ import {
   IRequest,
   INetworkRequestExecutorListener,
   IResponse,
-} from 'foundation/src/network/network';
+} from 'foundation/network/network';
 
 export { IRequest, IResponse, INetworkRequestExecutorListener };
 export type RouterHandler = (
@@ -17,10 +17,7 @@ export interface IRouter {
 export type PathMatcher = (routePath: string, path: string) => boolean;
 
 export interface IMockServer {
-  // host: string;
   handle: (request: IRequest, cb: INetworkRequestExecutorListener) => void;
-  // api: [{ path: string | RegExp; method: HttpMethod; handler: IApiHandler }];
-  // getRouter: () => IRouter;
 }
 
 export interface IStore<T extends object, Id extends number | string = number> {

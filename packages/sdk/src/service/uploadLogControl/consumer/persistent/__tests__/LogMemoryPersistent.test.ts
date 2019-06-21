@@ -7,7 +7,7 @@ import Factory, { Builder } from 'factory.ts';
 import { LogMemoryPersistent } from '../LogMemoryPersistent';
 import { PersistentLogEntity } from '../types';
 
-import { logEntityFactory } from 'foundation/src/log/__tests__/factory';
+import { logEntityFactory } from 'foundation/log/__tests__/factory';
 
 const persistentLogBuilder: Builder<PersistentLogEntity> = {
   id: Factory.each(i => i),

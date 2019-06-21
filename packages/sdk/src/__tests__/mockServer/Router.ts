@@ -6,7 +6,7 @@ import {
   INetworkRequestExecutorListener,
 } from './types';
 import _ from 'lodash';
-import { IResponse } from 'foundation/src/network/network';
+import { IResponse } from 'foundation/network/network';
 import { IApi, IResponseAdapter } from './glip/types';
 
 // import 'mitm';

@@ -1,4 +1,4 @@
-import { IResponse } from 'foundation/src/network/network';
+import { IResponse } from 'foundation/network/network';
 import _ from 'lodash';
 export function createResponse<T>(
   partial: Partial<IResponse<T>>,
