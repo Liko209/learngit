@@ -24,8 +24,8 @@ class EmojiParser extends PostParser implements IPostParser {
     }
     const id = result[1];
     const data = EmojiTransformer.emojiDataMap[id];
-    EmojiTransformer.deleteData(id);
-    return <img {...data} />;
+    const elem = <img {...data} />;
+    return elem;
   }
 
   getRegexp() {

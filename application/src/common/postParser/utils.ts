@@ -181,7 +181,7 @@ const AT_MENTION_REGEX = /<a class='at_mention_compose' rel='{"id":([-?\d]*?)}'>
 const AT_MENTION_GROUPED_REGEXP = /(<a class='at_mention_compose' rel='{"id":[-?\d]*?}'>)(.*?)(<\/a>)/gi;
 const MIN_ATMENTION_PATTERN_LENGTH = 48;
 
-const EMOJI_REGEX = /<emoji data='([A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12})' \/>/gi;
+const EMOJI_REGEX = /<emoji data='([a-zA-Z0-9\+\/\=]+)' \/>/gi;
 const MIN_EMOJI_PATTERN_LEN = 17;
 const EMOJI_UNICODE_REGEX_RANGE =
   '\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]';

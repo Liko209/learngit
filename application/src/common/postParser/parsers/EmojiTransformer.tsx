@@ -19,8 +19,8 @@ import {
   EMOJI_ONE_PATH,
   EMOJI_ONE_REGEX_SIMPLE,
   EMOJI_ASCII_REGEX_SIMPLE,
+  b64EncodeUnicode,
 } from '../utils';
-import v4 from 'uuid';
 
 class EmojiTransformer {
   static emojiDataMap = {};
@@ -36,6 +36,10 @@ class EmojiTransformer {
       (_match: string) => {
         const match = _match.trim();
         const enlarge = match.length === originalStr.trim().length;
+        const id = b64EncodeUnicode(match + enlarge);
+        if (this.emojiDataMap[id]) {
+          return this.getReplacePattern(id);
+        }
         const obj = customEmojiMap[match.slice(1, -1)];
 
         if (
@@ -48,7 +52,7 @@ class EmojiTransformer {
             className: this._getClassName(match, enlarge),
             src: obj.data,
           };
-          return this.getReplacePattern(data);
+          return this.getReplacePattern(id, data);
         }
         if (convertType === EmojiConvertType.CUSTOM) {
           return match;
@@ -87,19 +91,16 @@ class EmojiTransformer {
           title: match,
           src: this._getSrc(unicode, hostName),
         };
-        return this.getReplacePattern(data);
+        return this.getReplacePattern(id, data);
       },
     );
   }
 
-  static getReplacePattern(data: {}) {
-    const id = v4();
-    this.emojiDataMap[id] = data;
+  static getReplacePattern(id: string, data?: {}) {
+    if (data) {
+      this.emojiDataMap[id] = data;
+    }
     return `<emoji data='${id}' />`;
-  }
-
-  static deleteData(id: string) {
-    delete this.emojiDataMap[id];
   }
 
   static getRegexp(
@@ -113,7 +114,7 @@ class EmojiTransformer {
       [EmojiConvertType.CUSTOM]: EMOJI_CUSTOM_REGEX(customEmojiMap),
       [EmojiConvertType.EMOJI_ONE]: EMOJI_ONE_REGEX_SIMPLE,
     };
-    return new RegExp(regexpMap[convertType], 'g');
+    return new RegExp(regexpMap[convertType], 'gi');
   }
 
   private static _convertFromCodePoint(unicode: string) {
