@@ -45,6 +45,7 @@ import {
   NOTIFICATION_OPTIONS,
 } from 'sdk/module/profile';
 import { MESSAGE_SETTING_ITEM } from './interface/constant';
+import { CONVERSATION_TYPES } from '@/constants';
 
 const logger = mainLogger.tags('MessageNotificationManager');
 const NOTIFY_THROTTLE_FACTOR = 5000;
@@ -212,16 +213,18 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     person: PersonModel,
     group: GroupModel,
   ) {
-    const isOne2One = group.members.length <= 2;
+    const isOne2One = group.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE;
+    const isActivity = post.existItemIds.length || post.parentId;
     const translationArgs = {
       person: person.userDisplayName,
       conversation: group.displayName,
     };
-    let title = isOne2One
-      ? group.displayName
-      : await i18nT('notification.group', translationArgs);
+    let title =
+      isOne2One || isActivity
+        ? group.displayName
+        : await i18nT('notification.group', translationArgs);
     let body = this.handlePostContent(post.text);
-    if (post.existItemIds.length || post.parentId) {
+    if (isActivity) {
       const { key, parameter } = getActivity(post, getActivityData(post));
       body = `${person.userDisplayName} ${await i18nT(key, parameter)}`;
     } else {

@@ -11,6 +11,7 @@ import GroupModel from '@/store/models/Group';
 import PostModel from '../../../store/models/Post';
 import { DESKTOP_MESSAGE_NOTIFICATION_OPTIONS } from 'sdk/module/profile';
 import * as i18n from '@/utils/i18nT';
+import { CONVERSATION_TYPES } from '@/constants';
 
 jest.mock('sdk/module/config');
 jest.mock('sdk/module/account/config/AccountUserConfig');
@@ -263,7 +264,12 @@ describe('messageNotificationManager', () => {
       const val = await notificationManager.buildNotificationBodyAndTitle(
         new PostModel(postWithMentionOthers),
         { userDisplayName: names.userDisplayName },
-        { members: [1, 2], displayName: names.teamDisplayName },
+        {
+          members: [1, 2],
+          displayName: names.teamDisplayName,
+          isTeam: false,
+          type: CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
+        },
       );
       expect(val).toEqual({
         title: names.teamDisplayName,
