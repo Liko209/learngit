@@ -1,5 +1,17 @@
 import _ from 'lodash';
 import { FunctionPropertyNames } from '../types';
+import _debug from 'debug';
+const debug = _debug('UT_LOG');
+const debugEnabled = true;
+debug['useColors'] = true;
+debug.enabled = debugEnabled;
+_debug.enable('-UT_LOG');
+function createDebug(tag: string) {
+  const newDebug = _debug(tag);
+  newDebug['useColors'] = true;
+  newDebug.enabled = debugEnabled;
+  return newDebug;
+}
 
 function to<T>(data): T {
   return Object.assign({} as T, data);
@@ -20,4 +32,12 @@ const spyOnTarget = <T>(target: T) => {
   return target;
 };
 
-export { to, toArrayOf, extractIds, extractDisplayNames, spyOnTarget };
+export {
+  to,
+  toArrayOf,
+  extractIds,
+  extractDisplayNames,
+  spyOnTarget,
+  debug,
+  createDebug,
+};

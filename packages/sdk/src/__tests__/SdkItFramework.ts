@@ -5,16 +5,22 @@ import { notificationCenter } from 'sdk/service';
 import { MockGlipServer } from './mockServer/glip/MockGlipServer';
 import { InstanceManager } from './mockServer/InstanceManager';
 import { CommonFileServer } from './mockServer/CommonFileServer';
+import { GlipDataHelper } from './mockServer/glip/data/data';
 import { spyOnTarget } from './utils';
-import { InitialData } from './mockServer/glip/types';
-import _debug from 'debug';
-const debug = _debug('SdkItFramework');
-debug['useColors'] = true;
-debug.enabled = true;
+import { InitialData, GlipData } from './mockServer/glip/types';
+import { createDebug } from 'sdk/__tests__/utils';
+import _ from 'lodash';
+import assert = require('assert');
+const debug = createDebug('SdkItFramework');
 
 type ItContext = {
   data: {
-    useInitialData: (initialData: InitialData) => void;
+    template: {
+      BASIC: InitialData;
+    };
+    useInitialData: (initialData: InitialData) => GlipData;
+    helper: () => GlipDataHelper;
+    apply: () => void;
   };
   server: {
     glip: MockGlipServer;
@@ -32,6 +38,33 @@ type LifeCycleHooks = {
   afterAll: jest.Lifecycle;
   afterEach: jest.Lifecycle;
 };
+
+function parseInitialData(initialData: InitialData): GlipData {
+  const company = _.find(
+    initialData.companies,
+    item => item._id === initialData.company_id,
+  )!;
+  const user = _.find(
+    initialData.people,
+    item => item._id === initialData.user_id,
+  )!;
+  assert(company, 'Data invalid. company_id not found in companies');
+  assert(user, 'Data invalid. user_id not found in people');
+  // initialData.profile.
+  const result: GlipData = {
+    company,
+    user,
+    people: initialData.people,
+    groups: initialData.groups,
+    teams: initialData.teams,
+    clientConfig: initialData.client_config,
+    state: initialData.state,
+    // todo parse to groupState
+    // groupState: initialData.
+    profile: initialData.profile,
+  };
+  return result;
+}
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -78,13 +111,35 @@ export function itForSdk(
 ) {
   const fileServer = InstanceManager.get(CommonFileServer);
   const mockGlipServer = InstanceManager.get(MockGlipServer);
-  const useInitialData = (initialData: InitialData) => {
-    mockGlipServer.applyInitialData(initialData);
+  const useAccount = (companyId: number, userId: number) => {
+    return new GlipDataHelper(companyId, userId);
   };
+  let glipData: GlipData;
+  let dataHelper: GlipDataHelper;
+  const useInitialData = (initialData: InitialData) => {
+    glipData = parseInitialData(initialData);
+    dataHelper = useAccount(initialData.company_id, initialData.user_id);
+    return glipData;
+  };
+
+  const helper = () => {
+    assert(dataHelper, 'Please useInitialData firstly.');
+    return dataHelper;
+  };
+
+  const apply = () => {
+    mockGlipServer.applyGlipData(glipData);
+  };
+
   // provide for it case to mock data.
   const itCtx: ItContext = {
     data: {
       useInitialData,
+      helper,
+      apply,
+      template: {
+        BASIC: require('./mockServer/glip/data/template/accountData/empty-account.json'),
+      },
     },
     server: {
       // inject mock server here

@@ -51,33 +51,6 @@ interface IGlipApi extends IApi {
   };
 }
 
-function parseInitialData(initialData: InitialData): GlipData {
-  const company = _.find(
-    initialData.companies,
-    item => item._id === initialData.company_id,
-  )!;
-  const user = _.find(
-    initialData.people,
-    item => item._id === initialData.user_id,
-  )!;
-  assert(company, 'Data invalid. company_id not found in companies');
-  assert(user, 'Data invalid. user_id not found in people');
-  // initialData.profile.
-  const result: GlipData = {
-    company,
-    user,
-    people: initialData.people,
-    groups: initialData.groups,
-    teams: initialData.teams,
-    clientConfig: initialData.client_config,
-    state: initialData.state,
-    // todo parse to groupState
-    // groupState: initialData.
-    profile: initialData.profile,
-  };
-  return result;
-}
-
 export class MockGlipServer implements IMockServer {
   private _router: Router;
   postDao: GlipPostDao;
@@ -132,18 +105,17 @@ export class MockGlipServer implements IMockServer {
     this.db && this.db.delete();
   }
 
-  applyInitialData = (initialData: InitialData) => {
-    const glipDataTemplate = parseInitialData(initialData);
-    this.companyDao.bulkPut(glipDataTemplate.company);
-    this.profileDao.bulkPut(glipDataTemplate.profile);
-    this.stateDao.bulkPut(glipDataTemplate.state);
-    glipDataTemplate.groupState &&
-      this.groupStateDao.bulkPut(glipDataTemplate.groupState);
+  applyGlipData = (glipData: GlipData) => {
+    // const glipDataTemplate = parseInitialData(initialData);
+    this.companyDao.bulkPut(glipData.company);
+    this.profileDao.bulkPut(glipData.profile);
+    this.stateDao.bulkPut(glipData.state);
+    glipData.groupState && this.groupStateDao.bulkPut(glipData.groupState);
     // this.personDao.insert(glipDataTemplate.user);
-    this.personDao.bulkPut(glipDataTemplate.people);
-    this.groupDao.bulkPut(glipDataTemplate.groups);
-    this.groupDao.bulkPut(glipDataTemplate.teams);
-    this.clientConfigDao.bulkPut(glipDataTemplate.clientConfig);
+    this.personDao.bulkPut(glipData.people);
+    this.groupDao.bulkPut(glipData.groups);
+    this.groupDao.bulkPut(glipData.teams);
+    this.clientConfigDao.bulkPut(glipData.clientConfig);
   }
 
   login = (request: IRequest) => {
@@ -154,19 +126,6 @@ export class MockGlipServer implements IMockServer {
   }
 
   getInitialData = async (request: IRequest<any>) => {
-    // const initialData: InitialData = {
-    //   user_id: data.template.user._id!,
-    //   company_id: data.template.company._id,
-    //   profile: data.template.profile,
-    //   companies: [data.template.company],
-    //   state: data.template.state,
-    //   people: [data.template.user, ...data.template.people],
-    //   groups: data.template.groups,
-    //   teams: data.template.teams,
-    //   client_config: data.template.clientConfig,
-    //   static_http_server: 'https://d2rbro28ib85bu.cloudfront.net',
-    // };
-
     const user = this.personDao.findOne();
     const company = this.companyDao.findOne();
     // const profile = this.profileDao.findOne();

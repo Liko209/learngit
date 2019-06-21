@@ -15,18 +15,22 @@ import {
   GlipData,
 } from '../types';
 
-const uniqueNumber = () =>
-  Factory.each(i => faker.random.number(Date.now() + i));
+const each = <T>(f: (seqNum: number) => T) => Factory.each(f);
+const uniqueNumber = () => each(i => faker.random.number(Date.now() + i));
+// each<T>(f: (seqNum: number) => T): Generator<T>;
+const startTime = 1560016277707;
+const fakeTimestamp = each(i => startTime + i * 1234);
+const fakeEmail = each(() => faker.internet.email());
 
 const base = {
   _id: uniqueNumber(),
-  created_at: uniqueNumber(),
+  created_at: fakeTimestamp,
   creator_id: uniqueNumber(),
-  version: uniqueNumber(),
+  version: 1,
   model_size: faker.random.number(1000),
-  is_new: faker.random.boolean(),
-  model_id: uniqueNumber().toString(),
-  modified_at: uniqueNumber(),
+  is_new: false,
+  model_id: each(i => `${faker.random.number(Date.now() + i)}`),
+  modified_at: fakeTimestamp,
   deactivated: false,
 };
 
@@ -39,7 +43,7 @@ const companyFactory = Factory.Sync.makeFactory<GlipCompany>({
 
 const userFactory = Factory.Sync.makeFactory<GlipPerson>({
   ...base,
-  email: faker.internet.email(),
+  email: fakeEmail,
   first_name: faker.name.findName(),
   last_name: faker.name.lastName(),
   company_id: faker.random.number(100000000),
@@ -58,7 +62,7 @@ const userFactory = Factory.Sync.makeFactory<GlipPerson>({
 
 const personFactory = Factory.Sync.makeFactory<GlipPerson>({
   ...base,
-  email: faker.internet.email(),
+  email: fakeEmail,
   first_name: faker.name.findName(),
   last_name: faker.name.lastName(),
   company_id: faker.random.number(100000000),
@@ -79,9 +83,9 @@ const groupFactory = Factory.Sync.makeFactory<GlipGroup>({
   ...base,
   members: [faker.random.number(100000000)],
   company_id: faker.random.number(100000000),
-  email_friendly_abbreviation: faker.internet.email(),
-  set_abbreviation: `random+${faker.name.firstName}-${faker.name.lastName}`,
-  privacy: faker.random.arrayElement(['private', 'protected', 'public']),
+  email_friendly_abbreviation: fakeEmail,
+  set_abbreviation: each(i => `Group ${i} + ${faker.commerce.productName()}`),
+  privacy: 'public',
   is_team: false,
   most_recent_content_modified_at: 0,
   most_recent_post_id: 0,
@@ -91,13 +95,12 @@ const groupFactory = Factory.Sync.makeFactory<GlipGroup>({
   is_company_team: false,
 });
 
-const teamFactory = Factory.Sync.makeFactory<GlipGroup>({
-  ...base,
-  members: [faker.random.number(100000000)],
-  company_id: faker.random.number(100000000),
-  email_friendly_abbreviation: faker.internet.email(),
-  set_abbreviation: `random+${faker.name.firstName}-${faker.name.lastName}`,
-  privacy: faker.random.arrayElement(['private', 'protected', 'public']),
+const teamFactory = groupFactory.extend({
+  privacy: each(() =>
+    faker.random.arrayElement(['private', 'protected', 'public']),
+  ),
+  // set_abbreviation: `Team ${faker.name.firstName()}-${faker.name.lastName()}`,
+  set_abbreviation: each(i => `Team ${i} + ${faker.commerce.productName()}`),
   is_team: true,
   permissions: {
     admin: {
@@ -107,12 +110,6 @@ const teamFactory = Factory.Sync.makeFactory<GlipGroup>({
       uids: [],
     },
   },
-  most_recent_content_modified_at: 0,
-  most_recent_post_id: 0,
-  most_recent_post_created_at: 0,
-  // post_cursor: 0,
-  deactivated_post_cursor: 0,
-  is_company_team: false,
 });
 
 const clientConfigFactory = Factory.Sync.makeFactory<GlipClientConfig>({
