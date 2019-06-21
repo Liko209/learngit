@@ -140,7 +140,7 @@ export function itForSdk(
       apply,
       template: {
         BASIC: require('./mockServer/glip/data/template/accountData/empty-account.json'),
-        STANDARD: require('./mockServer/glip/data/template/accountData/empty-account.json'),
+        STANDARD: require('./mockServer/glip/data/template/accountData/test-account.json'),
       },
     },
     server: {
