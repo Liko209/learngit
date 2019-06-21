@@ -146,20 +146,6 @@ export class MockGlipServer implements IMockServer {
     });
   }
 
-  initData = async () => {
-    const initialData: InitialData = {} as any;
-    // current account data
-    // const account = {
-    //   _id: initialData.user_id,
-    //   company_id
-    // }
-    let profileId = 123;
-    if (initialData.profile) {
-      profileId = initialData.profile._id || profileId;
-      this.profileDao.create({ ...initialData.profile, _id: profileId });
-    }
-  }
-
   getPosts = async (request: IRequest) => {
     const { limit = 20, direction = 'older', group_id } = request.params as any;
     return createResponse({
@@ -220,7 +206,7 @@ export class MockGlipServer implements IMockServer {
     const mockDataPath = path.resolve(
       __dirname,
       '../../../../../../',
-      `./testingData/http/${relatePath}/200.json`,
+      `./testingData/http/${relatePath.replace('~', '-')}/200.json`,
     );
     return mockDataPath;
   }

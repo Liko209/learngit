@@ -52,7 +52,7 @@ export class CommonFileServer implements IMockServer {
     const mockDataPath = path.resolve(
       __dirname,
       '../../../../../',
-      `./testingData/http/${relatePath}/200.json`,
+      `./testingData/http/${relatePath.replace('~', '-')}/200.json`,
     );
     // console.log('TCL: Router -> getMockJsonPath -> mockDataPath', mockDataPath);
     return mockDataPath;

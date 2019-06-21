@@ -1,0 +1,244 @@
+{
+  "response": {
+    "data": {
+      "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/account/400161823008/dialing-plan?page=1&perPage=100",
+      "records": [
+        {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/1",
+          "id": "1",
+          "name": "United States",
+          "isoCode": "US",
+          "callingCode": "1"
+        },
+        {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/143",
+          "id": "143",
+          "name": "Mexico",
+          "isoCode": "MX",
+          "callingCode": "52"
+        },
+        {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/15",
+          "id": "15",
+          "name": "Australia",
+          "isoCode": "AU",
+          "callingCode": "61"
+        },
+        {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/160",
+          "id": "160",
+          "name": "New Zealand",
+          "isoCode": "NZ",
+          "callingCode": "64"
+        },
+        {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/224",
+          "id": "224",
+          "name": "United Kingdom",
+          "isoCode": "GB",
+          "callingCode": "44"
+        },
+        {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/39",
+          "id": "39",
+          "name": "Canada",
+          "isoCode": "CA",
+          "callingCode": "1"
+        }
+      ],
+      "paging": {
+        "page": 1,
+        "totalPages": 1,
+        "perPage": 100,
+        "totalElements": 6,
+        "pageStart": 0,
+        "pageEnd": 5
+      },
+      "navigation": {
+        "firstPage": {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/account/400161823008/dialing-plan?page=1&perPage=100"
+        },
+        "lastPage": {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/account/400161823008/dialing-plan?page=1&perPage=100"
+        }
+      }
+    },
+    "status": 200,
+    "statusText": "OK",
+    "headers": {
+      "date": "Sat, 08 Jun 2019 03:10:26 GMT",
+      "content-encoding": "gzip",
+      "x-rate-limit-limit": "60",
+      "routingkey": "XMN02P01PAS01",
+      "x-rate-limit-remaining": "59",
+      "content-length": "420",
+      "rcrequestid": "f64f0096-899a-11e9-aa56-005056beb634",
+      "content-language": "en-US",
+      "x-rate-limit-group": "heavy",
+      "content-type": "application/json; charset=UTF-8",
+      "x-rate-limit-window": "60"
+    },
+    "retryAfter": 6000
+  },
+  "request": {
+    "id": "366ed3d8-29bf-4a3b-d888-a1249c8cf2b9",
+    "path": "/restapi/v1.0/account/~/dialing-plan",
+    "method": "get",
+    "data": {},
+    "headers": {
+      "Authorization": "Bearer WE1OMDJQMDFQQVMwMHxBQUNHUDdDWm5HX01JQ3ZKTnViLWVJQWFpcG9JUmtqMUt0b19IcGJSVXVmc2FGbUxlQU9NUk5ySUhqZWdUYkJ4eHZNZHhMbUxtNlJaLW5qODloMDdRUmZnX1BTRVlJTjUyNkp5RTFnMlpoOUdjWV91RlY4U2s5T09MR1oxTk5hR2p6N1E2YmxFZFZSTUdOZHVXdDlrQUdDUVF1R0p4QnEtS3BISTIyRjVibjRMRlVUQ2VzOWFhcHZIYmd0ZjhJVFZ5OWdISE1Cdm14SEQwTHBFUGN6MDMwcTh6VGVsMUowZ3cwTXxURXctTnd8VHZGTUdydEVwQkxHRnhsRHlMb0R0UXxBQQ"
+    },
+    "params": {},
+    "handlerType": {
+      "name": "RINGCENTRAL",
+      "defaultVia": 0,
+      "survivalModeSupportable": true,
+      "tokenExpirable": true,
+      "tokenRefreshable": true,
+      "platformHandleDelegate": {
+        "_isStarted": false,
+        "_accountManager": {
+          "_events": {},
+          "_newListener": false,
+          "_removeListener": false,
+          "verboseMemoryLeak": false,
+          "_maxListeners": 10,
+          "_container": {
+            "_containerConfig": {
+              "singleton": true
+            },
+            "_registrationMap": {}
+          },
+          "_isLogin": true,
+          "_accountMap": {},
+          "_accounts": [
+            {
+              "_events": {},
+              "_newListener": false,
+              "_removeListener": false,
+              "verboseMemoryLeak": false,
+              "_maxListeners": 10,
+              "_supportedServices": [
+                "RCInfoService",
+                "VoicemailService",
+                "CallLogService"
+              ],
+              "event": "SUPPORTED_SERVICE_CHANGE"
+            },
+            {
+              "_events": {},
+              "_newListener": false,
+              "_removeListener": false,
+              "verboseMemoryLeak": false,
+              "_maxListeners": 10,
+              "_supportedServices": [
+                "PostService",
+                "GroupService",
+                "CompanyService",
+                "ItemService",
+                "PersonService",
+                "PresenceService",
+                "ProfileService",
+                "StateService",
+                "TelephonyService",
+                "RCInfoService",
+                "SettingService",
+                "SearchService",
+                "BadgeService",
+                "CallLogService",
+                "VoicemailService"
+              ],
+              "event": "SUPPORTED_SERVICE_CHANGE"
+            }
+          ],
+          "event": "ACCOUNT_MANAGER.EVENT_SUPPORTED_SERVICE_CHANGE"
+        },
+        "_authController": {
+          "_accountManager": {
+            "_events": {},
+            "_newListener": false,
+            "_removeListener": false,
+            "verboseMemoryLeak": false,
+            "_maxListeners": 10,
+            "_container": {
+              "_containerConfig": {
+                "singleton": true
+              },
+              "_registrationMap": {}
+            },
+            "_isLogin": true,
+            "_accountMap": {},
+            "_accounts": [
+              {
+                "_events": {},
+                "_newListener": false,
+                "_removeListener": false,
+                "verboseMemoryLeak": false,
+                "_maxListeners": 10,
+                "_supportedServices": [
+                  "RCInfoService",
+                  "VoicemailService",
+                  "CallLogService"
+                ],
+                "event": "SUPPORTED_SERVICE_CHANGE"
+              },
+              {
+                "_events": {},
+                "_newListener": false,
+                "_removeListener": false,
+                "verboseMemoryLeak": false,
+                "_maxListeners": 10,
+                "_supportedServices": [
+                  "PostService",
+                  "GroupService",
+                  "CompanyService",
+                  "ItemService",
+                  "PersonService",
+                  "PresenceService",
+                  "ProfileService",
+                  "StateService",
+                  "TelephonyService",
+                  "RCInfoService",
+                  "SettingService",
+                  "SearchService",
+                  "BadgeService",
+                  "CallLogService",
+                  "VoicemailService"
+                ],
+                "event": "SUPPORTED_SERVICE_CHANGE"
+              }
+            ],
+            "event": "ACCOUNT_MANAGER.EVENT_SUPPORTED_SERVICE_CHANGE"
+          }
+        },
+        "_userConfig": {
+          "_userId": "400162901008",
+          "_moduleName": "account",
+          "_configService": {
+            "_isStarted": false,
+            "_ns": "400162901008"
+          },
+          "_configCache": {}
+        },
+        "_authUserConfig": {
+          "_userId": "400162901008",
+          "_moduleName": "auth",
+          "_configService": {
+            "_isStarted": false,
+            "_ns": "400162901008"
+          },
+          "_configCache": {}
+        }
+      }
+    },
+    "priority": 2,
+    "via": 0,
+    "retryCount": 0,
+    "host": "https://api-glpdevxmn.lab.nordigy.ru",
+    "timeout": 60000,
+    "requestConfig": {},
+    "authFree": false,
+    "HAPriority": 1,
+    "startTime": 1559963426090
+  }
+}
