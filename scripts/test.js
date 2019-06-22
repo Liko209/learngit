@@ -43,6 +43,10 @@ if (argv.length) {
     });
 }
 
+if (argv.includes('it')) {
+  argv[argv.indexOf('it')] = '--config=./jest-integration.config.js';
+}
+
 switch (true) {
   case argv.includes('application'):
     process.env.APP = '<rootDir>/application';

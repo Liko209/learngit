@@ -1,4 +1,3 @@
-import { Factory } from 'factory.ts';
 import _ from 'lodash';
 
 import { IEntitySourceController } from '../../controller/interface/IEntitySourceController';
@@ -9,7 +8,7 @@ export class TestEntitySourceController<T extends IdModel = IdModel>
   implements IEntitySourceController<T> {
   entityCache: EntityCacheController<T>;
 
-  constructor(public factory: Factory<T>) {
+  constructor() {
     this.entityCache = new EntityCacheController();
   }
 

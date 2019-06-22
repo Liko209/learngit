@@ -3,7 +3,7 @@
  * @Date: 2019-03-27 09:42:48
  * Copyright © RingCentral. All rights reserved.
  */
-import Factory, { Builder } from 'factory.ts';
+import { Sync as Factory, Builder } from 'factory.ts';
 import { LogMemoryPersistent } from '../LogMemoryPersistent';
 import { PersistentLogEntity } from '../types';
 
