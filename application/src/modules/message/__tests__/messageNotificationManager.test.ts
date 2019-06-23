@@ -237,7 +237,7 @@ describe('messageNotificationManager', () => {
 
     it('should return unicode emoji', () => {
       expect(notificationManager.handlePostContent(`:) <3 :D :joy:`)).toEqual(
-        '🙂❤😃 😂',
+        '🙂 ❤ 😃 😂',
       );
     });
   });
