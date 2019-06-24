@@ -35,6 +35,20 @@ describe('AvatarActionsVM', () => {
       ViewModel.toggleAboutPage();
       expect(globalStore.get(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG)).toBe(true);
     });
+    it('should set electron info to globalStore', () => {
+      jest.resetAllMocks();
+      jest.spyOn(globalStore, 'set');
+      ViewModel.toggleAboutPage('a', 'b');
+      expect(globalStore.set).toBeCalledTimes(3);
+      expect(globalStore.get(GLOBAL_KEYS.ELECTRON_APP_VERSION)).toEqual('a');
+      expect(globalStore.get(GLOBAL_KEYS.ELECTRON_VERSION)).toEqual('b');
+    });
+    it('should not set empty electron info to globalStore', () => {
+      jest.resetAllMocks();
+      jest.spyOn(globalStore, 'set');
+      ViewModel.toggleAboutPage();
+      expect(globalStore.set).toBeCalledTimes(1);
+    });
   });
 
   describe('handleSignOut()', () => {
