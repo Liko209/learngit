@@ -11,6 +11,7 @@ import { InitialData, GlipData } from './mockServer/glip/types';
 import { createDebug } from 'sdk/__tests__/utils';
 import _ from 'lodash';
 import assert = require('assert');
+import { sleep } from 'voip/src/report/util';
 const debug = createDebug('SdkItFramework');
 
 type ItContext = {
@@ -94,6 +95,7 @@ async function setup() {
   await initSdk();
   login();
   await initEnd();
+  await sleep(1);
   debug('setup sdk cost end.');
 }
 

@@ -22,7 +22,6 @@ import { GlipPersonDao } from './dao/person';
 import { GlipPostDao } from './dao/post';
 import { GlipProfileDao } from './dao/profile';
 import { GlipStateDao } from './dao/state';
-import * as data from './data/data';
 import { schema } from './glipSchema';
 import { ResponseAdapter } from './ResponseAdapter';
 import {
@@ -33,6 +32,7 @@ import {
   IResponseAdapter,
   VerbHandler,
 } from './types';
+import { MockSocketServer } from './MockSocketServer';
 
 interface IGlipApi extends IApi {
   '/api/login': {
@@ -68,6 +68,7 @@ export class MockGlipServer implements IMockServer {
   companyDao: GlipCompanyDao;
   groupStateDao: GlipGroupStateDao;
   db: LokiDB;
+  socketServer: MockSocketServer;
 
   api: IGlipApi = {
     '/api/login': { put: request => this.login(request) },
@@ -96,9 +97,7 @@ export class MockGlipServer implements IMockServer {
       return routePath === path || routePath === '*';
     },                        adapter);
     this._router.applyApi(this.api);
-    // this._router.use('get', '*', this._handleCommon);
-    // this._router.use('put', '*', this._handleCommon);
-    // this._router.use('post', '*', this._handleCommon);
+    this.socketServer = new MockSocketServer();
     this.init();
   }
 
@@ -155,6 +154,7 @@ export class MockGlipServer implements IMockServer {
       teams: await this.groupDao.getTeams(),
       client_config: this.clientConfigDao.findOne()!,
       timestamp: 1561008777444,
+      scoreboard: 'wss://glip.socket.com',
       // static_http_server: 'https://d2rbro28ib85bu.cloudfront.net',
     };
     return createResponse({
@@ -186,6 +186,7 @@ export class MockGlipServer implements IMockServer {
 
   createPost = async (request: IRequest<Post>) => {
     const updateResult = this.postDao.put(request.data as any);
+    // mockServer.emit('partial')
     return createResponse({
       request,
       data: updateResult,

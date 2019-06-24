@@ -109,7 +109,7 @@ export type InitialData = {
   posts?: GlipPost[];
   max_posts_exceeded?: boolean;
   timestamp?: number;
-  scoreboard?: string;
+  scoreboard: string;
   client_config: GlipClientConfig;
   // static_http_server: string;
 };

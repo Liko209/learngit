@@ -106,7 +106,8 @@
     "debug": "4.1.1",
     "@types/debug": "4.1.4",
     "require-context": "1.1.0",
-    "jest-environment-jsdom-fourteen": "0.1.0"
+    "jest-environment-jsdom-fourteen": "0.1.0",
+    "can-fixture-socket": "2.0.2"
   },
   "husky": {
     "hooks": {
