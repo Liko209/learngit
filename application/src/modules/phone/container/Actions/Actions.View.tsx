@@ -13,7 +13,7 @@ import { Delete } from './Delete';
 import { Download } from './Download';
 import { ENTITY_TYPE } from '../constants';
 
-const MAX_BUTTON_COUNT = 3;
+const MAX_BUTTON_COUNT = 0;
 
 class ActionsView extends Component<ActionsViewProps & ActionsProps> {
   get _actions() {
