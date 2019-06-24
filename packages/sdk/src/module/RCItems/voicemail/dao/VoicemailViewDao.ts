@@ -7,8 +7,8 @@ import _ from 'lodash';
 import { BaseDao, QUERY_DIRECTION } from 'sdk/dao';
 import { Voicemail, VoicemailView } from '../entity';
 import { IDatabase, mainLogger } from 'foundation';
-import { caseInsensitive as natureCompare } from 'string-natural-compare';
 import { ArrayUtils } from 'sdk/utils/ArrayUtils';
+import { SortUtils } from 'sdk/framework/utils';
 
 const LOG_TAG = 'VoicemailViewDao';
 
@@ -22,17 +22,28 @@ class VoicemailViewDao extends BaseDao<VoicemailView> {
   toVoicemailView(vm: Voicemail): VoicemailView {
     return {
       id: vm.id,
-      from: vm.from,
-      creationTime: vm.creationTime,
+      from: this._getFromView(vm),
+      __timestamp: vm.__timestamp,
     };
   }
 
   toPartialVoicemailView(
     partialVM: Partial<Voicemail>,
   ): Partial<VoicemailView> {
-    return {
-      ..._.pick(partialVM, ['id', 'from', 'creationTime']),
-    };
+    return _.pickBy(
+      {
+        id: partialVM.id,
+        from: this._getFromView(partialVM),
+        __timestamp: partialVM.__timestamp,
+      },
+      _.identity,
+    );
+  }
+
+  private _getFromView(vm: Partial<Voicemail> | Voicemail) {
+    return vm
+      ? { ..._.pick(vm.from, 'name', 'phoneNumber', 'extensionNumber') }
+      : undefined;
   }
 
   async queryVoicemails(
@@ -57,7 +68,12 @@ class VoicemailViewDao extends BaseDao<VoicemailView> {
     }
     const sortedIds = allVMs
       .sort((vmA: VoicemailView, vmB: VoicemailView) => {
-        return natureCompare(vmA.creationTime, vmB.creationTime);
+        return SortUtils.sortModelByKey<VoicemailView, number>(
+          vmA,
+          vmB,
+          ['__timestamp'],
+          false,
+        );
       })
       .map((value: VoicemailView) => {
         return value.id;
