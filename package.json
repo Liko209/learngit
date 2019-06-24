@@ -24,7 +24,7 @@
     "juiTest": "node ./scripts/dirNotChanged.js jui || (cd packages/jui && npm run test)",
     "rcuiTest": "node ./scripts/dirNotChanged.js rcui || (cd packages/rcui && npm run test)",
     "build:public": "cd application && JUPITER_ENV=public npm run build",
-    "test:changed": "npm run test -- --changedSince=`node ./scripts/getSinceBranch.js` && npm run juiTest && npm run rcuiTest",
+    "test:changed": "concurrently \"npm run test -- --changedSince=`node ./scripts/getSinceBranch.js`\" \"npm run juiTest\" \"npm run rcuiTest\" ",
     "test:staged": "npm run test:cover -- --findRelatedTests",
     "test:cover": "npm run test -- --coverage",
     "test:watch": "npm run test -- --watch",

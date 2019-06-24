@@ -47,8 +47,6 @@ const parseTracing = async (file: string) => {
       }
     }
   }
-
-  console.log(timeoutCodeMap)
 }
 
 const summariseTracing = async (): Promise<Array<SourceCode>> => {
