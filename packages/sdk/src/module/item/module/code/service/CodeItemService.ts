@@ -12,7 +12,7 @@ import { GlipTypeUtil, TypeDictionary } from '../../../../../utils';
 class CodeItemService extends EntityBaseService<CodeItem>
   implements ISubItemService {
   constructor() {
-    super(false);
+    super({ isSupportedCache: false });
     this.setCheckTypeFunc((id: number) => {
       return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_CODE);
     });

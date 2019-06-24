@@ -14,7 +14,7 @@ import { container } from 'framework';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { TelephonyService } from '@/modules/telephony/service';
 import { TelephonyStore } from '../../../store';
-import { CALL_STATE } from '../../../FSM';
+import { CALL_STATE } from 'sdk/module/telephony/entity';
 
 class ParkViewModel extends StoreViewModel<Props> implements ViewProps {
   private _telephonyService: TelephonyService = container.get(

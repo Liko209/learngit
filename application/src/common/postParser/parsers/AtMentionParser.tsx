@@ -26,7 +26,7 @@ class AtMentionParser extends PostParser implements IPostParser {
       textEncoded,
     } = this.options;
     const result = this.getRegexp().exec(strValue);
-    if (!result) {
+    if (!result || !result[0]) {
       return strValue;
     }
     const id = result[1];
@@ -43,13 +43,6 @@ class AtMentionParser extends PostParser implements IPostParser {
         name={innerContentParser ? innerContentParser(text) : text}
         isCurrent={!!isCurrent}
       />
-    );
-  }
-
-  checkPreCondition(str: string) {
-    return (
-      str.length >= 48 && // 48 = min length of string that can match at_mention pattern
-      str.includes(`<a class='at_mention_compose' rel='{"id":`)
     );
   }
 
