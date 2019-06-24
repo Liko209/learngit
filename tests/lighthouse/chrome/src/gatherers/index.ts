@@ -14,6 +14,7 @@ import { SwitchConversationGatherer } from './switchConversationGatherer';
 import { FpsGatherer } from './fpsGatherer';
 import { IndexDataGatherer } from './indexDataGatherer';
 import { SearchPhoneGatherer } from './searchPhoneGatherer';
+import { CallLogGatherer } from './callLogGatherer';
 
 export {
   BaseGatherer,
@@ -28,5 +29,6 @@ export {
   SwitchConversationGatherer,
   FpsGatherer,
   IndexDataGatherer,
-  SearchPhoneGatherer
+  SearchPhoneGatherer,
+  CallLogGatherer
 }

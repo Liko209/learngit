@@ -113,6 +113,8 @@ exports[`Storyshots Components/Downshift Downshift: Components/Downshift Downshi
         id="downshift-multiple-input"
         onBlur={[Function]}
         onChange={[Function]}
+        onCompositionEnd={[Function]}
+        onCompositionStart={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         placeholder="placeholder"

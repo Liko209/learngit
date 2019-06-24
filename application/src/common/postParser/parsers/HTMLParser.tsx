@@ -22,14 +22,18 @@ class HTMLParser extends PostParser implements IPostParser {
     const { withGlipdown } = this.options;
     const originalStr = this.content.getOriginalStr();
     const htmlText = withGlipdown ? Markdown(originalStr) : originalStr;
+    const len = originalStr.length;
+    const type = this.type;
     const range = {
       startIndex: 0,
-      length: originalStr.length,
-      parserType: this.type,
+      length: len,
+      parserType: type,
     };
     const replacers: Replacer[] = [];
     replacers.push({
-      ...range,
+      startIndex: 0,
+      length: len,
+      parserType: type,
       element: this.getReplaceElement(htmlText),
     });
     this.removeReplacersInsideRange(range);
@@ -45,21 +49,24 @@ class HTMLParser extends PostParser implements IPostParser {
   private _parseHTML(value: string) {
     const childNodes = getTopLevelChildNodesFromHTML(value);
     return _.flatten(
-      childNodes.map((child, index) => {
-        if (child.isTag) {
-          const tagName = child.tag as string;
-          const children = this._parseElementNodeInnerHTML(
-            child.inner || '',
-            tagName,
-          );
-          return React.createElement(
-            tagName,
-            { ...child.attrs, key: index },
-            children,
-          ) as React.ReactChild;
-        }
-        return this._parsePlainText(HTMLUnescape(child.substring || '') || '');
-      }),
+      childNodes.map(
+        ({ isTag, tag, attrs = {}, inner, substring = '' }, index) => {
+          if (isTag) {
+            const tagName = tag as string;
+            const children = this._parseElementNodeInnerHTML(
+              inner || '',
+              tagName,
+            );
+            attrs.key = index;
+            return React.createElement(
+              tagName,
+              attrs,
+              children,
+            ) as React.ReactChild;
+          }
+          return this._parsePlainText(HTMLUnescape(substring) || '');
+        },
+      ),
     );
   }
 

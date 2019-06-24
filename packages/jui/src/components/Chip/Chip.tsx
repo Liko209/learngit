@@ -13,6 +13,7 @@ import remove from '../../assets/jupiter-icon/icon-delete_circle.svg';
 
 type JuiChipProps = {
   uid?: number;
+  deleteAutomationId?: string;
   PersonAvatar?: React.ComponentType<any>;
   GroupAvatar?: React.ComponentType<any>;
   onDelete?: (event: any) => void;
@@ -68,6 +69,7 @@ export const JuiChip: React.SFC<JuiChipProps> = React.memo(
       isError,
       id,
       deleteTooltip,
+      deleteAutomationId,
       ...rest
     } = props;
     const getAvatar = () => {
@@ -97,6 +99,7 @@ export const JuiChip: React.SFC<JuiChipProps> = React.memo(
             variant="plain"
             tooltipTitle={deleteTooltip}
             color={isError ? 'semantic.negative' : 'grey.500'}
+            data-test-automation-id={deleteAutomationId}
             symbol={remove}
           />
         }
