@@ -272,6 +272,18 @@ class RCInfoService extends EntityBaseService<IdModel>
       .getRCInfoFetchController()
       .getForwardingFlipNumbers(EForwardingNumberFeatureType.FLIP);
   }
+
+  async isNumberBlocked(): Promise<boolean> {
+    return true;
+  }
+
+  async deleteBlockedNumbers(phoneNumbers: string[]): Promise<void> {
+    return;
+  }
+
+  async addBlockedNumber(phoneNumbers: string): Promise<void> {
+    return;
+  }
 }
 
 export { RCInfoService };
