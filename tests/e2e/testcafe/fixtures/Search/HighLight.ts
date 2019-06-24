@@ -180,7 +180,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And the posts highlight the keyword ${keyword1} `, async () => {
-    await t.expect(messageTab.postItemById(postId).keyworkdsByHighLight.textContent).eql(keyword1);
+    await t.expect(messageTab.postItemById(postId).keywordsByHighLight.textContent).eql(keyword1);
   });
 
   await h(t).withLog(`When I search keyword ${multipleKeyWord}`, async () => {
@@ -202,8 +202,8 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And the post highlight the keyword ${multipleKeyWord} `, async () => {
-    await t.expect(messageTab.postItemById(postId).keyworkdsByHighLight.nth(0).textContent).eql(keyword1);
-    await t.expect(messageTab.postItemById(postId).keyworkdsByHighLight.nth(1).textContent).eql(keyword2);
+    await t.expect(messageTab.postItemById(postId).keywordsByHighLight.nth(0).textContent).eql(keyword1);
+    await t.expect(messageTab.postItemById(postId).keywordsByHighLight.nth(1).textContent).eql(keyword2);
   });
 
 });
