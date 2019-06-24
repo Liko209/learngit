@@ -50,7 +50,7 @@ const ActionButton = function ({
       aria-label={screenReader}
       data-test-automation-id={automationId}
     >
-      {screenReader}
+      {tooltip}
     </JuiMenuItem>
   );
 };

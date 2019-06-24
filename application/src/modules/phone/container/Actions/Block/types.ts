@@ -4,15 +4,19 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BUTTON_TYPE } from '../types';
+import { Caller } from 'sdk/module/RCItems/types';
 import { ENTITY_TYPE } from '../../constants';
+import { BUTTON_TYPE } from '../types';
 
-type BlockProps = {};
+type BlockProps = {
+  caller: Caller;
+};
 
 type BlockViewProps = {
   type: BUTTON_TYPE;
-  block: () => void;
+  block: () => Promise<boolean>;
   isBlocked: boolean;
+  unblock: () => void;
   entity: ENTITY_TYPE;
   hookAfterClick: () => void;
 };

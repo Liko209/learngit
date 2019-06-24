@@ -1,4 +1,4 @@
-import { ComponentType } from 'react';
+import { Caller } from 'sdk/module/RCItems/types';
 import { ENTITY_TYPE } from '../constants';
 
 enum BUTTON_TYPE {
@@ -9,11 +9,14 @@ enum BUTTON_TYPE {
 type ActionsProps = {
   id: number | string;
   entity: ENTITY_TYPE;
+  caller?: Caller;
+  maxButtonCount: number;
   hookAfterClick: () => void;
+  canEditBlockNumbers: boolean;
 };
 
 type ActionsViewProps = {
-  actions: ComponentType<any>[];
+  shouldShowBlock: boolean;
 };
 
 export { BUTTON_TYPE, ActionsProps, ActionsViewProps, ENTITY_TYPE };

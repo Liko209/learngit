@@ -24,7 +24,7 @@ const mockEntityData = {
 describe('Download', () => {
   @testable
   class init {
-    @test('should render current when button is icon type')
+    @test('should render correct when button is icon type')
     @mockEntity(mockEntityData)
     t1() {
       const wrapper = mountWithTheme(<Download id={1234} type={BUTTON_TYPE.ICON} />);
@@ -34,7 +34,7 @@ describe('Download', () => {
       expect(buttonProps.ariaLabel).toBe('voicemail.downloadVoicemail');
     }
 
-    @test('should render current when button is menu item type')
+    @test('should render correct when button is menu item type')
     @mockEntity(mockEntityData)
     t2() {
       const wrapper = mountWithTheme(<Download id={1234} type={BUTTON_TYPE.MENU_ITEM} />);

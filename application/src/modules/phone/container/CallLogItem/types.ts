@@ -14,6 +14,7 @@ type CallLogItemProps = {
 type CallLogItemViewProps = {
   caller?: Caller;
   isUnread: boolean;
+  canEditBlockNumbers: boolean;
   icon: string;
   callType: string;
   duration: string;

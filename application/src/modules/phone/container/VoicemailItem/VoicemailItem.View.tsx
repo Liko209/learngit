@@ -18,7 +18,7 @@ import { JuiAudioPlayer } from 'jui/pattern/AudioPlayer';
 import { Actions } from '../Actions';
 import { ContactInfo } from '../ContactInfo';
 import { VoicemailViewProps } from './types';
-import { ENTITY_TYPE } from '../constants';
+import { ENTITY_TYPE, MAX_BUTTON_COUNT } from '../constants';
 
 type VoicemailItemProps = VoicemailViewProps & WithTranslation & { id: number };
 type State = {
@@ -86,6 +86,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
       mode,
       createTime,
       direction,
+      canEditBlockNumbers,
       // onChange,
       // selected,
     } = this.props;
@@ -139,8 +140,11 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
           {isHover && (
             <Actions
               id={id}
+              caller={caller}
               entity={ENTITY_TYPE.VOICEMAIL}
+              maxButtonCount={MAX_BUTTON_COUNT}
               hookAfterClick={this.handleMouseLeave}
+              canEditBlockNumbers={canEditBlockNumbers}
             />
           )}
         </VoicemailSummary>

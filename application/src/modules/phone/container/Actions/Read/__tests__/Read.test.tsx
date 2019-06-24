@@ -40,7 +40,7 @@ const checkNotification = (message: string) => ({
 describe('Read', () => {
   @testable
   class init {
-    @test('should render current when button is icon type under read status')
+    @test('should render correct when button is icon type under read status')
     @mockEntity({
       readStatus: READ_STATUS.READ,
     })
@@ -52,7 +52,7 @@ describe('Read', () => {
       expect(buttonProps.ariaLabel).toBe('voicemail.messageIsReadMarkItAsUnread');
     }
 
-    @test('should render current when button is icon type under unread status')
+    @test('should render correct when button is icon type under unread status')
     @mockEntity({
       readStatus: READ_STATUS.UNREAD,
     })
@@ -64,7 +64,7 @@ describe('Read', () => {
       expect(buttonProps.ariaLabel).toBe('voicemail.messageIsUnreadMarkItAsRead');
     }
 
-    @test('should render current when button is menu item type under read status')
+    @test('should render correct when button is menu item type under read status')
     @mockEntity({
       readStatus: READ_STATUS.READ,
     })
@@ -77,7 +77,7 @@ describe('Read', () => {
       expect(buttonProps['aria-label']).toBe('voicemail.messageIsReadMarkItAsUnread');
     }
 
-    @test('should render current when button is menu item type under unread status')
+    @test('should render correct when button is menu item type under unread status')
     @mockEntity({
       readStatus: READ_STATUS.UNREAD,
     })

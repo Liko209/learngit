@@ -9,18 +9,19 @@ import {
 } from './types';
 import { More } from './More';
 import { Read } from './Read';
+import { Block } from './Block';
 import { Delete } from './Delete';
 import { Download } from './Download';
 import { ENTITY_TYPE } from '../constants';
 
-const MAX_BUTTON_COUNT = 0;
-
 class ActionsView extends Component<ActionsViewProps & ActionsProps> {
   get _actions() {
-    const { entity } = this.props;
+    const { entity, shouldShowBlock } = this.props;
+
     return [
       entity === ENTITY_TYPE.VOICEMAIL && Read,
       entity === ENTITY_TYPE.VOICEMAIL && Download,
+      shouldShowBlock && Block,
       Delete,
     ].filter(item => !!item);
   }
@@ -29,13 +30,14 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
     buttons: (false | ComponentType<any>)[],
     type: BUTTON_TYPE,
   ) => {
-    const { id, hookAfterClick, entity } = this.props;
+    const { id, hookAfterClick, entity, caller } = this.props;
     return buttons.map((ButtonComponent: ComponentType<any>, index: number) => {
       return (
         <ButtonComponent
           key={`${id}-${type}-${index}`}
-          entity={entity}
           hookAfterClick={hookAfterClick}
+          entity={entity}
+          caller={caller}
           type={type}
           id={id}
         />
@@ -44,9 +46,11 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
   }
 
   getButtonsConfig = () => {
-    if (MAX_BUTTON_COUNT < this._actions.length) {
-      const buttons = this._actions.slice(0, MAX_BUTTON_COUNT);
-      const dropdownItems = this._actions.slice(MAX_BUTTON_COUNT, this._actions.length);
+    const { maxButtonCount } = this.props;
+
+    if (maxButtonCount < this._actions.length) {
+      const buttons = this._actions.slice(0, maxButtonCount);
+      const dropdownItems = this._actions.slice(maxButtonCount, this._actions.length);
       return {
         buttons: this.getButtons(buttons, BUTTON_TYPE.ICON),
         dropdownItems: this.getButtons(dropdownItems, BUTTON_TYPE.MENU_ITEM),

@@ -10,7 +10,6 @@ import { JuiMenuItem } from 'jui/components/Menus';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Dialog } from '@/containers/Dialog';
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
-import { Trans } from 'react-i18next';
 import { Delete } from '../Delete';
 import { BUTTON_TYPE } from '../types';
 import { ENTITY_TYPE } from '../../../constants';
@@ -65,7 +64,7 @@ describe('Delete', () => {
       const wrapper = mountWithTheme(<Delete id={1234} type={BUTTON_TYPE.MENU_ITEM} entity={ENTITY_TYPE.VOICEMAIL} />);
       const button = wrapper.find(JuiMenuItem);
       const buttonProps = button.props();
-      expect(button.text()).toBe('voicemail.deleteVoicemail');
+      expect(button.text()).toBe('common.delete');
       expect(buttonProps.icon).toBe('delete');
       expect(buttonProps['aria-label']).toBe('voicemail.deleteVoicemail');
     }

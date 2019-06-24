@@ -4,21 +4,62 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { observable, action, computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { computed, action, observable } from 'mobx';
+import { RCInfoService } from 'sdk/module/rcInfo';
+import { Caller } from 'sdk/module/RCItems/types';
+import { catchError } from '@/common/catchError';
 import { BlockProps } from './types';
 
 class BlockViewModel extends StoreViewModel<BlockProps> {
-  @observable blockStatus: boolean = false;
+  @observable isBlocked?: boolean;
+
+  private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(ServiceConfig.RC_INFO_SERVICE);
+
+  constructor(props: BlockProps) {
+    super(props);
+    this.reaction(
+      () => this._caller,
+      async (caller: Caller) => {
+        await this.fetchNumberStatus(caller);
+      },
+      {
+        fireImmediately: true,
+      },
+    );
+  }
 
   @computed
-  isBlocked() {
-    return this.blockStatus;
+  private get _caller() {
+    return this.props.caller;
   }
 
   @action
+  async fetchNumberStatus(caller: Caller) {
+    this.isBlocked = await this._rcInfoService.isNumberBlocked(caller.phoneNumber as string);
+  }
+
+  @catchError.flash({
+    network: 'phone.prompt.notAbleToBlockForNetworkIssue',
+    server: 'phone.prompt.notAbleToBlockForServerIssue',
+  })
+  @action
   block = async () => {
-    this.blockStatus = !this.blockStatus;
+    await this._rcInfoService.addBlockedNumber(this._caller.phoneNumber as string);
+    this.fetchNumberStatus(this._caller);
+    return true;
+  }
+
+  @catchError.flash({
+    network: 'phone.prompt.notAbleToUnblockForNetworkIssue',
+    server: 'phone.prompt.notAbleToUnblockForServerIssue',
+  })
+  @action
+  unblock = async () => {
+    await this._rcInfoService.deleteBlockedNumbers([this._caller.phoneNumber as string]);
+    this.fetchNumberStatus(this._caller);
+    return true;
   }
 }
 

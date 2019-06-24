@@ -20,7 +20,7 @@ import {
   StyledCallLogStatusWrapper,
 } from 'jui/pattern/Phone/CallLog';
 import { Actions } from '../Actions';
-import { ENTITY_TYPE } from '../constants';
+import { ENTITY_TYPE, MAX_BUTTON_COUNT } from '../constants';
 
 type Props = CallLogItemViewProps & WithTranslation;
 
@@ -55,6 +55,7 @@ class CallLogItemViewComponent extends Component<Props, State> {
       didOpenMiniProfile,
       isMissedCall,
       direction,
+      canEditBlockNumbers,
     } = this.props;
     const {
       isHover,
@@ -89,8 +90,11 @@ class CallLogItemViewComponent extends Component<Props, State> {
           {isHover && (
             <Actions
               id={id}
+              caller={caller}
               entity={ENTITY_TYPE.CALL_LOG}
+              maxButtonCount={MAX_BUTTON_COUNT}
               hookAfterClick={this.handleMouseLeave}
+              canEditBlockNumbers={canEditBlockNumbers}
             />
           )}
         </VoicemailSummary>

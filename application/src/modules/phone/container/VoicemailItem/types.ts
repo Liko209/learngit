@@ -16,6 +16,7 @@ type VoicemailViewProps = {
   caller?: Caller;
   readStatus: Voicemail['readStatus'];
   isUnread: boolean;
+  canEditBlockNumbers: boolean;
   audio?: Audio;
   onError: () => void;
   onBeforePlay: () => void;
