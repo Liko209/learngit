@@ -1,4 +1,3 @@
-import { LogUtils } from "../utils";
 
 /*
  * @Author: doyle.wu
@@ -6,6 +5,7 @@ import { LogUtils } from "../utils";
  *
  * copy from https://github.com/ChromeDevTools/devtools-frontend/blob/master/front_end/heap_snapshot_worker
  */
+import { LogUtils } from "../utils";
 
 const logger = LogUtils.getLogger(__filename);
 
