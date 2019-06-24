@@ -142,6 +142,7 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
       const normalVms: Voicemail[] = [];
 
       data.records.forEach(vm => {
+        vm.__timestamp = Date.parse(vm.creationTime);
         if (vm.availability === MESSAGE_AVAILABILITY.ALIVE) {
           normalVms.push(vm);
         } else {
