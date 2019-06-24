@@ -845,6 +845,7 @@
     "ConversationClosed": "You removed the conversation."
   },
   "notification": {
+    "mentionedOne2One": "{{person}} mentioned you",
     "group": "{{person}} posted in {{conversation}}",
     "mentioned": "{{person}} mentioned you in {{conversation}}",
     "notificationEnabled": "Notifications are now enabled.",
