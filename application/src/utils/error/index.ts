@@ -8,12 +8,12 @@ import { ErrorParserHolder } from 'sdk/error';
 import { ErrorReporterProxy } from './ErrorReporterProxy';
 import { IErrorReporter } from './types';
 import { getAppContextInfo } from './helper';
-import { isProductionVersion } from '@/common/envUtils';
+import { isProductionVersion, isStage } from '@/common/envUtils';
 function generalErrorHandler(error: Error) {
   const jErr = ErrorParserHolder.getErrorParser().parse(error);
   mainLogger.error(jErr.message);
 }
 const errorReporter: IErrorReporter = new ErrorReporterProxy(
-  isProductionVersion,
+  isProductionVersion || isStage,
 );
 export { generalErrorHandler, errorReporter, getAppContextInfo };
