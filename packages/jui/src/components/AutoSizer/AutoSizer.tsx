@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import ReactResizeDetector from 'react-resize-detector';
 import styled from '../../foundation/styled-components';
 import { JuiSizeMeasurer } from '../SizeMeasurer';
 
