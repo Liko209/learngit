@@ -4,36 +4,37 @@ import {
 } from 'jui/components/Buttons';
 import {
   BUTTON_TYPE,
-  VoicemailActionsProps,
-  VoicemailActionsViewProps,
+  ActionsProps,
+  ActionsViewProps,
 } from './types';
-import { More } from '../Actions/More';
-import { Read } from '../Actions/Read';
-import { Delete } from '../Actions/Delete';
-import { Download } from '../Actions/Download';
+import { More } from './More';
+import { Read } from './Read';
+import { Delete } from './Delete';
+import { Download } from './Download';
 import { ENTITY_TYPE } from '../constants';
 
-const MAX_BUTTON_COUNT = 0;
+const MAX_BUTTON_COUNT = 3;
 
-class VoicemailActionsView extends Component<VoicemailActionsViewProps & VoicemailActionsProps> {
+class ActionsView extends Component<ActionsViewProps & ActionsProps> {
   get _actions() {
+    const { entity } = this.props;
     return [
-      Read,
-      Download,
+      entity === ENTITY_TYPE.VOICEMAIL && Read,
+      entity === ENTITY_TYPE.VOICEMAIL && Download,
       Delete,
-    ];
+    ].filter(item => !!item);
   }
 
   getButtons = (
-    buttons: ComponentType<any>[],
+    buttons: (false | ComponentType<any>)[],
     type: BUTTON_TYPE,
   ) => {
-    const { id, hookAfterClick } = this.props;
+    const { id, hookAfterClick, entity } = this.props;
     return buttons.map((ButtonComponent: ComponentType<any>, index: number) => {
       return (
         <ButtonComponent
           key={`${id}-${type}-${index}`}
-          entity={ENTITY_TYPE.VOICEMAIL}
+          entity={entity}
           hookAfterClick={hookAfterClick}
           type={type}
           id={id}
@@ -75,4 +76,4 @@ class VoicemailActionsView extends Component<VoicemailActionsViewProps & Voicema
   }
 }
 
-export { VoicemailActionsView };
+export { ActionsView };

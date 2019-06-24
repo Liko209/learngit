@@ -7,7 +7,6 @@ import { Caller } from 'sdk/module/RCItems/types';
 import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
 import { JuiAudioMode, JuiAudioStatus } from 'jui/pattern/AudioPlayer';
 import { RCMessage } from 'sdk/module/RCItems';
-
 import { Audio } from '../../types';
 
 type VoicemailViewProps = {

@@ -19,14 +19,33 @@ import {
   CallLogStatus,
   StyledCallLogStatusWrapper,
 } from 'jui/pattern/Phone/CallLog';
+import { Actions } from '../Actions';
+import { ENTITY_TYPE } from '../constants';
 
 type Props = CallLogItemViewProps & WithTranslation;
 
+type State = {
+  isHover: boolean;
+};
+
 @observer
-class CallLogItemViewComponent extends Component<Props> {
+class CallLogItemViewComponent extends Component<Props, State> {
+  state = {
+    isHover: false,
+  };
+
+  handleMouseOver = () => {
+    this.setState({ isHover: true });
+  }
+
+  handleMouseLeave = () => {
+    this.setState({ isHover: false });
+  }
+
   render() {
     const {
       t,
+      id,
       isUnread,
       caller,
       icon,
@@ -37,10 +56,18 @@ class CallLogItemViewComponent extends Component<Props> {
       isMissedCall,
       direction,
     } = this.props;
+    const {
+      isHover,
+    } = this.state;
 
     return (
       <StyleVoicemailItem expanded={false}>
-        <VoicemailSummary isUnread={isUnread} expanded={false}>
+        <VoicemailSummary
+          isUnread={isUnread}
+          expanded={false}
+          onMouseOver={this.handleMouseOver}
+          onMouseLeave={this.handleMouseLeave}
+        >
           <StyledContactWrapper>
             <ContactInfo
               caller={caller}
@@ -59,6 +86,13 @@ class CallLogItemViewComponent extends Component<Props> {
             />
           </StyledCallLogStatusWrapper>
           <StyledTime>{startTime}</StyledTime>
+          {isHover && (
+            <Actions
+              id={id}
+              entity={ENTITY_TYPE.CALL_LOG}
+              hookAfterClick={this.handleMouseLeave}
+            />
+          )}
         </VoicemailSummary>
       </StyleVoicemailItem>
     );
