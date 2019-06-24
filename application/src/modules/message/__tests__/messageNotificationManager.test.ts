@@ -217,7 +217,7 @@ describe('messageNotificationManager', () => {
       ).toEqual('@Helena');
       expect(
         notificationManager.handlePostContent(
-          `<a class='at_mention_compose' rel='{"id":12332}'>@Jack Sparrow</a>`,
+          `<a class='at_mention_compose' rel='{"id":12333}'>@Jack Sparrow</a>`,
         ),
       ).toEqual('@Jack Sparrow');
     });
