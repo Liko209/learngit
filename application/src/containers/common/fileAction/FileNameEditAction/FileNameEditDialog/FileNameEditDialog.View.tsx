@@ -30,7 +30,7 @@ class FileNameEditDialogViewComponent extends Component<
 
   handleClose = () => portalManager.dismissLast();
 
-  _handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  private _handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.keyCode === ENTRY_KEY_CODE) {
       const { handleEditFileName } = this.props;
       event.preventDefault();
