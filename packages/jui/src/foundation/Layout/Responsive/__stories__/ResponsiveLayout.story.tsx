@@ -6,7 +6,6 @@
 
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../utils/decorators';
 import { JuiResponsiveLayout } from '..';
 import { withResponsive, VISUAL_MODE } from '../Responsive';
 
@@ -47,21 +46,12 @@ const Div3 = withResponsive(DIV3, {
   priority: 3,
 });
 
-storiesOf('Foundation/Layout', module)
-  .addDecorator(withInfoDecorator(JuiResponsiveLayout, { inline: true }))
-  .add('ResponsiveLayout', () => (
-    <div style={{ position: 'relative', height: '100px' }}>
-      <JuiResponsiveLayout>
-        <Div1 />
-        <Div2 />
-        <Div3 />
-      </JuiResponsiveLayout>
-      {/* <br />
-      <JuiResponsiveLayout>
-        <div style={{ backgroundColor: 'red', height: '100%' }}>Left rail</div>
-        <div style={{ backgroundColor: 'green', height: '100%' }}>
-          Conversation for @mentions
-        </div>
-      </JuiResponsiveLayout> */}
-    </div>
-  ));
+storiesOf('Foundation/Layout', module).add('ResponsiveLayout', () => (
+  <div style={{ position: 'relative', height: '100px' }}>
+    <JuiResponsiveLayout>
+      <Div1 />
+      <Div2 />
+      <Div3 />
+    </JuiResponsiveLayout>
+  </div>
+));

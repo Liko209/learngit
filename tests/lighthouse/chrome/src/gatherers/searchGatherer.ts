@@ -28,7 +28,7 @@ class SearchGatherer extends BaseGatherer {
     let searchPage = new SearchPage(passContext);
 
     // pre loaded
-    await this.search(searchPage);
+    await this.search(searchPage, Config.sceneRepeatCount);
   }
 
   async _afterPass(passContext) {
@@ -65,8 +65,12 @@ class SearchGatherer extends BaseGatherer {
     let keyword,
       index = 0;
     while (index < searchCount) {
+      this.clearTmpGatherer(this.metricKeys);
+
       keyword = this.keywords[index++ % this.keywords.length];
       await page.searchByKeyword(keyword);
+
+      this.pushGatherer(this.metricKeys);
     }
   }
 }

@@ -38,7 +38,7 @@ class SwitchConversationGatherer extends BaseGatherer {
 
     const driver = passContext.driver;
     // pre loaded
-    await this.switchConversion(driver, conversationPage);
+    await this.switchConversion(driver, conversationPage, Config.sceneRepeatCount);
   }
 
   async _afterPass(passContext) {
@@ -94,9 +94,13 @@ class SwitchConversationGatherer extends BaseGatherer {
 
     let id, index = 0;
     while (index < switchCount) {
+      this.clearTmpGatherer(this.metricKeys);
+
       id = this.conversationIds[index++ % this.conversationIds.length];
       this.logger.info(`switch to ${id}`);
       await page.swichConversationById(id);
+
+      this.pushGatherer(this.metricKeys);
 
       if (needGC && index > halfCount) {
         globals.stopCollectProcessInfo();

@@ -51,8 +51,8 @@ const JuiRightShelfEmptyScreen = React.memo((props: JuiEmptyScreenProps) => {
   return (
     <Wrapper>
       <Pic src={image} />
-      <Text>{text}</Text>
-      <Content>{content}</Content>
+      <Text data-test-automation-id="right-shelf-empty-screen-text">{text}</Text>
+      <Content data-test-automation-id="right-shelf-empty-screen-content">{content}</Content>
       <EmptyScreen.Actions>
         {actions.length
           ? actions.map((action, inx) => (

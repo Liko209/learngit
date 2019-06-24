@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { memo, ReactNode, createRef } from 'react';
-import styled from 'src/foundation/styled-components';
+import styled from '../../../foundation/styled-components';
 import { palette, spacing } from '../../../foundation/utils/styles';
 import MuiDrawer, { DrawerProps } from '@material-ui/core/Drawer/index';
 import { JuiViewerThumbnail, ThumbnailInfoType } from '../ViewerThumbnail';

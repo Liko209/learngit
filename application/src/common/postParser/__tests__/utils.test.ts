@@ -214,7 +214,6 @@ describe('getTopLevelChildNodesFromHTML', () => {
       {
         tag: 'b',
         isTag: true,
-        substring: '<b>Build Result</b>',
         attrs: {},
         inner: 'Build Result',
       },
@@ -225,7 +224,6 @@ describe('getTopLevelChildNodesFromHTML', () => {
       {
         tag: 'b',
         isTag: true,
-        substring: '<b>Failed Stages</b>',
         attrs: {},
         inner: 'Failed Stages',
       },
@@ -236,8 +234,6 @@ describe('getTopLevelChildNodesFromHTML', () => {
       {
         tag: 'a',
         isTag: true,
-        substring:
-          "<a href='http://jenkins.lab.rcch.ringcentral.com/job/Jupiter-Gitlab-Integration/21589/' target='_blank' rel='noreferrer'>http://jenkins.lab.rcch.ringcentral.com/job/Jupiter-Gitlab-Integration/21589/</a>",
         attrs: {
           href:
             'http://jenkins.lab.rcch.ringcentral.com/job/Jupiter-Gitlab-Integration/21589/',

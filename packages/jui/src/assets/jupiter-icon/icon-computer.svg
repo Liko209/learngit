@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg viewBox="null" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg   viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <title>computer</title>
 <path d="M24.889 22.5c1.222 0 2.211-0.975 2.211-2.167l0.011-10.833c0-1.192-1-2.167-2.222-2.167h-17.778c-1.222 0-2.222 0.975-2.222 2.167v10.833c0 1.192 1 2.167 2.222 2.167h-4.444v2.167h26.667v-2.167h-4.444zM7.111 9.5h17.778v10.833h-17.778v-10.833z"></path>
 </svg>
