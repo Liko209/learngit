@@ -1,12 +1,22 @@
+import { jupiter } from 'framework';
+import { SettingStore } from '../../../../store/SettingStore';
 import { LinkSettingItemViewModel } from '../LinkSettingItem.ViewModel';
 import { getEntity } from '@/store/utils';
 
 jest.mock('@/store/utils');
 
+jupiter.registerClass(SettingStore);
+
 const URL = 'http://test.com/value';
 const URL2 = 'http://test.com/valueGetter';
 
 describe('LinkSettingItemViewModel', () => {
+  beforeAll(() => {
+    const settingStore: SettingStore = jupiter.get(SettingStore);
+    jest
+      .spyOn<SettingStore, any>(settingStore, 'getItemById')
+      .mockReturnValue({ id: 'PAGE_1' });
+  });
   describe('saveSetting()', () => {
     it('should return url from value', async () => {
       getEntity.mockReturnValue({
