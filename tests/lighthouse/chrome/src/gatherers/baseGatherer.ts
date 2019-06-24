@@ -10,12 +10,15 @@ const Gatherer = require("lighthouse/lighthouse-core/gather/gatherers/gatherer")
 abstract class BaseGatherer extends Gatherer {
   protected logger;
   protected consoleMetrics: { [key: string]: Array<any> }
+  protected tmpConsoleMetrics: { [key: string]: Array<any> }
   protected _gathererConsole: boolean;
+  protected browser;
 
   constructor() {
     super();
     this.logger = LogUtils.getLogger(this.constructor.name);
     this.consoleMetrics = {};
+    this.tmpConsoleMetrics = {};
     this._gathererConsole = false;
   }
 
@@ -53,6 +56,31 @@ abstract class BaseGatherer extends Gatherer {
   endGathererConsole() {
     this._gathererConsole = false;
   }
+
+  clearTmpGatherer(keys: Array<string>) {
+    for (let k of keys) {
+      this.tmpConsoleMetrics[k] = [];
+    }
+  }
+
+  pushGatherer(keys: Array<string>) {
+    for (let k of keys) {
+      let arr = this.tmpConsoleMetrics[k];
+      if (arr.length === 0) {
+        continue;
+      }
+
+      let item = arr.reduce((a, b) => {
+        if (a.time === b.time) {
+          return a.count > b.count ? a : b;
+        } else {
+          return a.time > b.time ? a : b;
+        }
+      });
+      this.consoleMetrics[k].push(item);
+    }
+  }
+
 
   async gathererConsole(keys: Array<string>, passContext): Promise<void> {
     for (let k of keys) {
@@ -98,7 +126,7 @@ abstract class BaseGatherer extends Gatherer {
               key, time, count, infos
             };
             this.logger.info(`${trace}${JSON.stringify(res)}`);
-            this.consoleMetrics[key].push(res);
+            this.tmpConsoleMetrics[key].push(res);
           }
         });
       }
