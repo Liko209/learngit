@@ -34,6 +34,10 @@ function createTheme(options: Partial<ThemeOptions> = {}) {
     breakpoints: breakpointsInput = {},
   } = options;
 
+  // suppress material-ui warning
+  // @ts-ignore
+  typographyInput.suppressWarning = true;
+
   const theme = deepmerge(
     {
       palette: createPalette(deepmerge(palette, paletteInput)),
