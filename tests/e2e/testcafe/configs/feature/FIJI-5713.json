@@ -1,7 +1,7 @@
 {
     "on_merge": {
         "fixtures": [
-            "./fixtures/Logout.ts"
+            "./fixtures/MessageInput/EditLastPost.ts"
         ],
         "browsers": [
             "selenium:chrome"
