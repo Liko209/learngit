@@ -81,11 +81,17 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   private _oldId: number;
-
+  private _debounceFactor: number = 3e2;
   @observable
   error: string = '';
 
-  _UpHandler = debounce(this.props.onUpArrowPressed, 3e2);
+  private _upHandler = debounce(
+    this.props.onUpArrowPressed,
+    this._debounceFactor,
+    {
+      leading: true,
+    },
+  );
 
   keyboardEventHandler = {
     enter: {
@@ -95,7 +101,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     up: {
       key: 38,
       empty: true,
-      handler: this._UpHandler,
+      handler: this._upHandler,
     },
   };
 
