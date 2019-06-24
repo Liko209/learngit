@@ -67,13 +67,6 @@ export class PhoneSettingPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('settingItemSelectBox-callerID', this.generalSection);
   }
 
-<<<<<<< HEAD
-  // get callerIDDropDownItem() {
-  //   return this.getSelectorByAutomationId('settingItemSelectBoxItem-callerID');
-  // }
-
-=======
->>>>>>> stage/1.5.0
   get callerIDDropDownItems() {
     return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
   }

@@ -102,11 +102,7 @@ class TriggerButtonComponent extends React.Component<
           tooltipTitle={t(this._getTooltipKey())}
           ariaLabel={t(this._getTooltipKey())}
           onClick={onClick}
-<<<<<<< HEAD
-          data-test-automation-id={isOpen ? 'conversation-details-hide' : 'conversation-details-show'}
-=======
           data-test-automation-id="right_rail_trigger_button"
->>>>>>> stage/1.5.0
         >
           {this._getIconKey()}
         </JuiIconButton>
