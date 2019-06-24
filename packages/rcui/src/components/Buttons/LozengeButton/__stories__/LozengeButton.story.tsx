@@ -6,7 +6,7 @@ import { RuiLozengeButton } from '../LozengeButton';
 import alignCenterDecorator from '../../../../storybook/decorators/alignCenterDecorator';
 
 const knobs = {
-  content: () => text('content', '2 New Messages'),
+  content: () => text('content', '2 new messages'),
   loading: () => boolean('loading', false),
   arrowDirection: () =>
     select(
