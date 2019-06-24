@@ -63,6 +63,7 @@ const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
       onMouseEnter={openPopper}
       onMouseLeave={closePopper}
       onClose={closePopper}
+      noTransition={true}
     >
       <JuiMenuList>{props.children}</JuiMenuList>
     </JuiPopperMenu>

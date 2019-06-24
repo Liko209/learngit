@@ -59,5 +59,12 @@ describe('RCResponseParser', () => {
       });
       expect(parser.parse(response)).toEqual(null);
     });
+
+    it('should return null when error is not in error list', () => {
+      const response: HttpResponse = createResponse({
+        data: { errorCode: 'CLG-1019', message: 'mock Invalid' },
+      });
+      expect(parser.parse(response)).toEqual(null);
+    });
   });
 });

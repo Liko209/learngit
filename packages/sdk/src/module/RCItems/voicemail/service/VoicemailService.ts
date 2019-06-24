@@ -24,7 +24,7 @@ class VoicemailService extends EntityBaseService<Voicemail> {
   private _rcItemUserConfig: RCItemUserConfig;
   private _voicemailController: VoicemailController;
   constructor() {
-    super(false, daoManager.getDao(VoicemailDao));
+    super({ isSupportedCache: false }, daoManager.getDao(VoicemailDao));
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SUBSCRIPTION.MESSAGE_STORE]: this._syncImmediately,
