@@ -141,6 +141,8 @@ const name2icon = {
   incall: 'incall',
   outcall: 'outcall',
   missedcall: 'missedcall',
+  blocked: 'blocked',
+  unblocked: 'unblocked',
   read: 'read',
   unread: 'unread',
   dial: 'dial',
