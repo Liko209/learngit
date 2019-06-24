@@ -186,6 +186,7 @@ class JuiDownshiftTextField extends React.PureComponent<
         helperText={nameError ? helperText : ''}
         InputProps={{
           ...getInputProps({
+            autoFocus,
             startAdornment: selectedItems.map((item: SelectedItem) => {
               return InputItem ? (
                 <InputItem
@@ -209,7 +210,6 @@ class JuiDownshiftTextField extends React.PureComponent<
             },
             placeholder: placeholderText,
             readOnly: !multiple && selectedItems.length > 0,
-            autoFocus,
           } as any),
         }}
         inputProps={{
