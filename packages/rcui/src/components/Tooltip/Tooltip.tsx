@@ -5,7 +5,9 @@
  */
 
 import React from 'react';
-import MuiTooltip from '@material-ui/core/Tooltip';
+import MuiTooltip, {
+  TooltipProps as MuiTooltipProps,
+} from '@material-ui/core/Tooltip';
 import styled, {
   css,
   createGlobalStyle,
@@ -17,30 +19,23 @@ const placementBottomMargin = '12px 0';
 const placementLeftMargin = '0 2px';
 const placementRightMargin = '0 2px';
 
+type RuiTooltipBaseProps = Pick<
+  MuiTooltipProps,
+  | 'title'
+  | 'children'
+  | 'placement'
+  | 'TransitionComponent'
+  | 'open'
+  | 'disableFocusListener'
+  | 'disableHoverListener'
+  | 'disableTouchListener'
+  | 'enterDelay'
+>;
+
 type RuiTooltipProps = {
   tooltipForceHide?: boolean;
   color?: Color;
-  title: React.ReactNode;
-  children: React.ReactElement<any>;
-  placement?:
-    | 'bottom-end'
-    | 'bottom-start'
-    | 'bottom'
-    | 'left-end'
-    | 'left-start'
-    | 'left'
-    | 'right-end'
-    | 'right-start'
-    | 'right'
-    | 'top-end'
-    | 'top-start'
-    | 'top';
-  open?: boolean;
-  disableFocusListener?: boolean;
-  disableHoverListener?: boolean;
-  disableTouchListener?: boolean;
-  enterDelay?: number;
-};
+} & RuiTooltipBaseProps;
 
 const baseSize = 7;
 

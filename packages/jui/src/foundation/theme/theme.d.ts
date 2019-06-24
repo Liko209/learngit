@@ -18,14 +18,6 @@ import {
   size,
 } from 'rcui/foundation/styles/theme';
 
-type Shape = {
-  borderRadius: number;
-  border1: string;
-  border2: string;
-  border3: string;
-  border4: string;
-};
-
 export {
   Typography,
   Opacity,
@@ -33,8 +25,15 @@ export {
   Spacing,
   ZIndex,
   size,
-  Shape,
 } from 'rcui/foundation/styles/theme';
+
+export type Shape = {
+  borderRadius: number;
+  border1: string;
+  border2: string;
+  border3: string;
+  border4: string;
+};
 
 export type Palette = RcuiPalette & {
   semantic: {
