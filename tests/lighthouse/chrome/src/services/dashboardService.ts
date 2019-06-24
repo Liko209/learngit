@@ -83,6 +83,16 @@ class DashboardConfig {
           "name": "conversation_fetch_from_db",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/102",
           "apiGoal": 1000
+        },
+        "ui_message_render": {
+          "name": "ui_message_render",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/209",
+          "apiGoal": 1000
+        },
+        "ui_profile_render": {
+          "name": "ui_profile_render",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/210",
+          "apiGoal": 1000
         }
       }
     },
@@ -105,6 +115,16 @@ class DashboardConfig {
         "search_team": {
           "name": "search_team",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/53",
+          "apiGoal": 3000
+        },
+        "search_post": {
+          "name": "search_post",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/207",
+          "apiGoal": 3000
+        },
+        "ui_globalsearch_tab_render": {
+          "name": "ui_globalsearch_tab_render",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/208",
           "apiGoal": 3000
         }
       }
