@@ -40,7 +40,7 @@ import { goToConversation } from '@/common/goToConversation';
 import { JuiConversationCard } from 'jui/pattern/ConversationCard';
 import { ERROR_TYPES } from '@/common/catchError';
 import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
-import { JuiAutoSizer } from 'jui/components/AutoSizer';
+import { JuiAutoSizer } from 'jui/components/AutoSizer/AutoSizer';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
 
