@@ -7,7 +7,7 @@ import * as bluebird from "bluebird";
 import { PptrUtils } from '../utils';
 
 class SearchPage extends Page {
-  private searchBar = 'div[data-test-automation-id="topBar-search-bar"]';
+  private globalSearchResult = 'li[data-test-automation-id="search-content-item"]:nth-child(2)';
 
   private input: string = 'input[data-test-automation-id="topBar-search-input"]';
 
@@ -27,6 +27,36 @@ class SearchPage extends Page {
     await PptrUtils.setText(page, this.input, keyword);
 
     await PptrUtils.waitForSelector(page, this.textItem);
+  }
+
+  async enterSearchResult() {
+    let page = await this.page();
+
+    await PptrUtils.click(page, this.globalSearchResult);
+  }
+
+  async switchAllSeachTab() {
+    let page = await this.page();
+
+    await PptrUtils.click(page, 'button[data-test-automation-id="globalSearch-people"]');
+    await PptrUtils.waitForSelector(page, 'div[data-test-automation-id="global-full-search"] li[data-test-automation-id="searchResultsCount"]');
+    await bluebird.delay(200);
+
+    await PptrUtils.click(page, 'button[data-test-automation-id="globalSearch-groups"]');
+    await PptrUtils.waitForSelector(page, 'div[data-test-automation-id="global-full-search"] li[data-test-automation-id="searchResultsCount"]');
+    await bluebird.delay(200);
+
+    await PptrUtils.click(page, 'button[data-test-automation-id="globalSearch-team"]');
+    await PptrUtils.waitForSelector(page, 'div[data-test-automation-id="global-full-search"] li[data-test-automation-id="searchResultsCount"]');
+
+    await bluebird.delay(200);
+    await PptrUtils.click(page, 'button[data-test-automation-id="globalSearch-messages"]');
+    await PptrUtils.waitForSelector(page, 'div[data-test-automation-id="search-message-panel"] li[data-test-automation-id="searchResultsCount"]');
+    await bluebird.delay(200);
+  }
+
+  async closeSearch() {
+    let page = await this.page();
 
     await PptrUtils.click(page, this.clear);
 

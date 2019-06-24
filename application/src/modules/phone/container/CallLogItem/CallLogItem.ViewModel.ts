@@ -34,7 +34,7 @@ class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
 
   @computed
   get isUnread() {
-    return this.data.timestamp > this.lastReadMissed;
+    return this.isMissedCall && this.data.timestamp > this.lastReadMissed;
   }
 
   @computed
