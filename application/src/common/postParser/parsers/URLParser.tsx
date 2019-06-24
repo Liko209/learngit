@@ -20,7 +20,7 @@ class URLParser extends PostParser implements IPostParser {
 
   getReplaceElement(strValue: string) {
     const execResult = this.getRegexp().exec(strValue);
-    if (!execResult) {
+    if (!execResult || !execResult[0]) {
       return strValue;
     }
     const maybeEmail = execResult[2];

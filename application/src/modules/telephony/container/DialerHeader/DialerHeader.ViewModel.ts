@@ -68,7 +68,6 @@ class DialerHeaderViewModel extends StoreViewModel<DialerHeaderProps>
        * TODO: move this call making & state changing logic down to SDK
        */
       this._makeCall(this._telephonyStore.inputString);
-      this._telephonyStore.dialerCall();
     }
   }
 

@@ -21,7 +21,10 @@ class FileDeleteActionViewModel extends FileActionViewModel {
       ServiceConfig.ACCOUNT_SERVICE,
     ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
-    return this._currentItemVersion.creator_id === currentUserId;
+    return (
+      this._currentItemVersion &&
+      this._currentItemVersion.creator_id === currentUserId
+    );
   }
 
   @catchError.flash({
@@ -29,7 +32,9 @@ class FileDeleteActionViewModel extends FileActionViewModel {
     server: 'message.prompt.deleteFileBackendError',
   })
   handleDeleteFile = async () => {
-    if (this._currentItemVersion.deactivated) return;
+    if (!this._currentItemVersion || this._currentItemVersion.deactivated) {
+      return;
+    }
 
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,

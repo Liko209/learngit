@@ -221,7 +221,7 @@ describe('messageNotificationManager', () => {
       ).toEqual('@Helena');
       expect(
         notificationManager.handlePostContent(
-          `<a class='at_mention_compose' rel='{"id":12332}'>@Jack Sparrow</a>`,
+          `<a class='at_mention_compose' rel='{"id":12333}'>@Jack Sparrow</a>`,
         ),
       ).toEqual('@Jack Sparrow');
     });
@@ -241,7 +241,7 @@ describe('messageNotificationManager', () => {
 
     it('should return unicode emoji', () => {
       expect(notificationManager.handlePostContent(`:) <3 :D :joy:`)).toEqual(
-        '🙂❤😃 😂',
+        '🙂 ❤ 😃 😂',
       );
     });
   });

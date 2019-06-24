@@ -6,29 +6,29 @@
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { TelephonyEngineController } from '../controller';
 import {
-  ITelephonyCallDelegate,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
-} from './ITelephonyCallDelegate';
-import { ITelephonyAccountDelegate } from './ITelephonyAccountDelegate';
+  ITelephonyDelegate,
+} from './index';
+
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SERVICE } from '../../../service/eventKey';
 import { MAKE_CALL_ERROR_CODE } from '../types';
-import { IdModel } from '../../../framework/model';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
+import { Call } from '../entity';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SettingService } from 'sdk/module/setting';
 import { PhoneSetting } from '../setting';
 import { ITelephonyService } from './ITelephonyService';
 
-class TelephonyService extends EntityBaseService<IdModel>
+class TelephonyService extends EntityBaseService<Call>
   implements ITelephonyService {
   private _telephonyEngineController: TelephonyEngineController;
   private _userConfig: TelephonyUserConfig;
   private _phoneSetting: PhoneSetting;
 
   constructor() {
-    super(false);
+    super({ isSupportedCache: true, entityName: 'CALL' });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SERVICE.LOGOUT]: this.handleLogOut,
@@ -39,12 +39,14 @@ class TelephonyService extends EntityBaseService<IdModel>
 
   protected onStarted() {
     super.onStarted();
+    this.telephonyController.createAccount();
     ServiceLoader.getInstance<SettingService>(
       ServiceConfig.SETTING_SERVICE,
     ).registerModuleSetting(this.phoneSetting);
   }
 
   protected onStopped() {
+    this.telephonyController.logout();
     super.onStopped();
     if (this._phoneSetting) {
       ServiceLoader.getInstance<SettingService>(
@@ -66,6 +68,7 @@ class TelephonyService extends EntityBaseService<IdModel>
     if (!this._telephonyEngineController) {
       this._telephonyEngineController = new TelephonyEngineController(
         this.userConfig,
+        this.getEntityCacheController(),
       );
     }
     return this._telephonyEngineController;
@@ -82,11 +85,8 @@ class TelephonyService extends EntityBaseService<IdModel>
     return this._userConfig;
   }
 
-  createAccount = (
-    accountDelegate: ITelephonyAccountDelegate,
-    callDelegate: ITelephonyCallDelegate,
-  ) => {
-    this.telephonyController.createAccount(accountDelegate, callDelegate);
+  setTelephonyDelegate = (accountDelegate: ITelephonyDelegate) => {
+    this.telephonyController.setAccountDelegate(accountDelegate);
   }
 
   getAllCallCount = () => {
@@ -116,20 +116,24 @@ class TelephonyService extends EntityBaseService<IdModel>
     this.telephonyController.getAccountController().unmute(callId);
   }
 
-  hold = (callId: string) => {
-    this.telephonyController.getAccountController().hold(callId);
+  hold = async (callId: string) => {
+    return await this.telephonyController.getAccountController().hold(callId);
   }
 
-  unhold = (callId: string) => {
-    this.telephonyController.getAccountController().unhold(callId);
+  unhold = async (callId: string) => {
+    return await this.telephonyController.getAccountController().unhold(callId);
   }
 
-  startRecord = (callId: string) => {
-    this.telephonyController.getAccountController().startRecord(callId);
+  startRecord = async (callId: string) => {
+    return await this.telephonyController
+      .getAccountController()
+      .startRecord(callId);
   }
 
-  stopRecord = (callId: string) => {
-    this.telephonyController.getAccountController().stopRecord(callId);
+  stopRecord = async (callId: string) => {
+    return await this.telephonyController
+      .getAccountController()
+      .stopRecord(callId);
   }
 
   dtmf = (callId: string, digits: string) => {
@@ -183,11 +187,6 @@ class TelephonyService extends EntityBaseService<IdModel>
     this.telephonyController
       .getAccountController()
       .replyWithPattern(callId, pattern, time, timeUnit);
-  }
-
-  getLastCalledNumber = () => {
-    const accountController = this.telephonyController.getAccountController();
-    return accountController ? accountController.getLastCalledNumber() : '';
   }
 
   get phoneSetting() {

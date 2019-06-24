@@ -22,6 +22,9 @@ class ProgressActionsViewComponent extends Component<Props> {
   private _deletePost = () => {
     const { deletePost, t } = this.props;
     Dialog.confirm({
+      modalProps: { 'data-test-automation-id': 'progressActionsConfirmDialog' },
+      okBtnProps: { 'data-test-automation-id': 'progressActionsOkButton' },
+      cancelBtnProps: { 'data-test-automation-id': 'progressActionsCancelButton' },
       title: t('message.prompt.deletePostTitle'),
       content: t('message.prompt.deletePostContent'),
       okText: t('common.dialog.delete'),

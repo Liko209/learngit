@@ -1,0 +1,7 @@
+{
+  "on_merge": {
+  "fixtures": ["./fixtures/MessageInput/*.ts"],
+  "includes_tags":["p0", "p1", "p2"],
+  "browsers": ["selenium:chrome"]
+  }
+}
