@@ -3,6 +3,7 @@
  * @Date: 2019-03-21 14:21:20
  * Copyright © RingCentral. All rights reserved.
  */
+const fs = require('fs-extra');
 const { execSync, spawn } = require('child_process');
 
 function findChangedFiles() {
@@ -12,7 +13,14 @@ function findChangedFiles() {
 }
 
 function findChangedPackages() {
-  return findChangedFiles().filter(path => path.includes('package.json'));
+  return (
+    findChangedFiles()
+      // Find all package.json file
+      .filter(path => path.includes('package.json'))
+      // Exclude package.json of `tests/e2e` `tests/lighthouse` `tests/puppeteer`
+      // They are not maintained by lerna
+      .filter(path => !/tests\/(e2e|lighthouse|puppeteer)/.test(path))
+  );
 }
 
 function isPackageChanged() {
