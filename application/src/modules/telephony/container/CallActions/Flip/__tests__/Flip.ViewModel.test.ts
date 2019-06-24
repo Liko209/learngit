@@ -7,11 +7,13 @@ import { container, Jupiter } from 'framework';
 import { FlipViewModel } from '../Flip.ViewModel';
 import * as telephony from '@/modules/telephony/module.config';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { getEntity } from '@/store/utils';
 
 const rcInfoService = {
   getFlipNumberList: jest.fn(),
 };
 
+jest.mock('@/store/utils');
 jest.mock('../../../../service/TelephonyService');
 
 const jupiter = container.get(Jupiter);
@@ -21,6 +23,10 @@ let vm: FlipViewModel;
 
 describe('FlipViewModel', () => {
   beforeEach(() => {
+    (getEntity as jest.Mock).mockReturnValue({
+      holdState: 'idle',
+      callState: 'idle',
+    });
     jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
       switch (conf) {
         case ServiceConfig.RC_INFO_SERVICE:
@@ -58,8 +64,6 @@ describe('FlipViewModel', () => {
 
   it('should return true', () => {
     vm = new FlipViewModel({});
-    vm._telephonyStore.holdState = 'idle';
-    vm._telephonyStore.callState = 'idle';
     vm.flipNumbers = [1];
     expect(vm.canUseFlip).toBeTruthy();
   });

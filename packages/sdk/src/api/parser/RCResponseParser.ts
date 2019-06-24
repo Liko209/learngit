@@ -5,7 +5,7 @@
  */
 
 import { BaseResponse, mainLogger } from 'foundation';
-import { JError, JRCError } from '../../error';
+import { JError, JRCError, ERROR_CODES_RC } from '../../error';
 import { IResponseParser } from './types';
 
 type ErrorInfo = {
@@ -36,8 +36,9 @@ export class RCResponseParser implements IResponseParser {
       }
 
       if (
-        errorInfo.errorCode !== '' ||
-        this.extractErrorInfo(errorInfo, data)
+        (errorInfo.errorCode !== '' ||
+          this.extractErrorInfo(errorInfo, data)) &&
+        this.isKnownError(errorInfo)
       ) {
         return new JRCError(errorInfo.errorCode, errorInfo.errorMessage);
       }
@@ -53,5 +54,11 @@ export class RCResponseParser implements IResponseParser {
       return true;
     }
     return false;
+  }
+
+  isKnownError(errorInfo: ErrorInfo): boolean {
+    return Object.values(ERROR_CODES_RC).some((code: string) => {
+      return errorInfo.errorCode === code;
+    });
   }
 }

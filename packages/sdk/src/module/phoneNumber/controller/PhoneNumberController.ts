@@ -37,7 +37,7 @@ class PhoneNumberController {
   }
 
   isValidNumber(toNumber: string) {
-    return new RegExp('^[0-9+*# ()-]+$').test(toNumber.trim());
+    return new RegExp('^[0-9+*# ()-.]+$').test(toNumber.trim());
   }
 
   async generateMatchedPhoneNumberList(

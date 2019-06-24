@@ -8,14 +8,12 @@ import {
   IRequest,
   ITelephonyDaoDelegate,
   telephonyLogger,
-  mainLogger,
 } from 'foundation';
 import { RTCEngine } from 'voip';
 import { Api } from '../../../api';
 import { TelephonyAccountController } from './TelephonyAccountController';
-import { ITelephonyAccountDelegate } from '../service/ITelephonyAccountDelegate';
+import { ITelephonyDelegate } from 'sdk/module/telephony';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
-import { ITelephonyCallDelegate } from '../service';
 import { TelephonyLogController } from './TelephonyLogController';
 import { notificationCenter } from '../../../service';
 import { RC_INFO, SERVICE } from '../../../service/eventKey';
@@ -25,6 +23,8 @@ import { PermissionService, UserPermissionType } from '../../permission';
 import { ENTITY } from 'sdk/service/eventKey';
 import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 import { AccountService } from 'sdk/module/account';
+import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
+import { Call } from '../entity';
 import _ from 'lodash';
 import { VoIPMediaDevicesDelegate } from './mediaDeviceDelegate/VoIPMediaDevicesDelegate';
 
@@ -59,7 +59,6 @@ class VoIPDaoClient implements ITelephonyDaoDelegate {
   }
 }
 
-const LOG_TAG = '[TelephonyEngineController]';
 class TelephonyEngineController {
   rtcEngine: RTCEngine;
   voipNetworkDelegate: VoIPNetworkClient;
@@ -67,10 +66,16 @@ class TelephonyEngineController {
   mediaDevicesController: VoIPMediaDevicesDelegate;
   private _accountController: TelephonyAccountController;
   private _preCallingPermission: boolean = false;
+  private _accountDelegate: ITelephonyDelegate;
+  private _entityCacheController: IEntityCacheController<Call>;
 
-  constructor(public telephonyConfig: TelephonyUserConfig) {
+  constructor(
+    telephonyConfig: TelephonyUserConfig,
+    entityCacheController: IEntityCacheController<Call>,
+  ) {
     this.voipNetworkDelegate = new VoIPNetworkClient();
     this.voipDaoDelegate = new VoIPDaoClient(telephonyConfig);
+    this._entityCacheController = entityCacheController;
     this.subscribeNotifications();
   }
 
@@ -103,11 +108,13 @@ class TelephonyEngineController {
     }
     if (currentCallingPermission) {
       this._preCallingPermission = true;
+      this.createAccount();
       notificationCenter.emitKVChange(
         SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
         true,
       );
     } else {
+      telephonyLogger.info('voip calling permission is revoked');
       this.logout();
     }
   }
@@ -138,20 +145,25 @@ class TelephonyEngineController {
     this.rtcEngine.setMediaDeviceDelegate(this.mediaDevicesController);
   }
 
-  async createAccount(
-    accountDelegate: ITelephonyAccountDelegate,
-    callDelegate: ITelephonyCallDelegate,
-  ) {
+  setAccountDelegate(delegate: ITelephonyDelegate) {
+    this._accountDelegate = delegate;
+    this._accountController &&
+      this._accountController.setAccountDelegate(delegate);
+  }
+
+  async createAccount() {
     // Engine can hold multiple accounts for multiple calls
-    mainLogger.tags(LOG_TAG).info('createAccount()');
-    this._preCallingPermission = true;
+    this._preCallingPermission = await this.getVoipCallPermission();
     this.rtcEngine.setUserInfo(await this.getUserInfo());
-    mainLogger.tags(LOG_TAG).info('createAccount() setUserInfo');
-    this._accountController = new TelephonyAccountController(
-      this.rtcEngine,
-      accountDelegate,
-      callDelegate,
-    );
+    if (this._preCallingPermission) {
+      this._accountController = new TelephonyAccountController(this.rtcEngine);
+      this._accountDelegate &&
+        this._accountController.setAccountDelegate(this._accountDelegate);
+      this._entityCacheController &&
+        this._accountController.setDependentController(
+          this._entityCacheController,
+        );
+    }
   }
 
   async getUserInfo() {
@@ -182,6 +194,7 @@ class TelephonyEngineController {
           SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
           false,
         );
+        delete this._accountController;
       });
     }
   }
