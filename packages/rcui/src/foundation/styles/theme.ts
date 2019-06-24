@@ -44,13 +44,6 @@ export type Theme = {
   spacing: Spacing;
   zIndex: ZIndex;
   size: size;
-  // todo: remove undefined token FIJI-6876
-  shape: {
-    border1: string;
-    border2: string;
-    border3: string;
-    border4: string;
-  };
 } & MuiTheme;
 
 export type PaletteOptions = typeof palette;
