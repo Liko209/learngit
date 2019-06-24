@@ -177,7 +177,7 @@ const getStylesObject = moize(
 
 const MATCH_ALL_REGEX = /^[\s\S]+$/g;
 const MATCH_NOTHING_REGEX = /a^/g;
-const AT_MENTION_REGEX = / <at_mention id=([-?\d]*?) \/>/gi;
+const AT_MENTION_REGEX = /\s<at_mention id=([-?\d]*?) \/>/gi;
 const MIN_ATMENTION_PATTERN_LENGTH = 20;
 const MIN_ORIGINAL_ATMENTION_PATTERN_LENGTH = 20;
 const AT_MENTION_GROUPED_REGEXP = /(<a class='at_mention_compose' rel='{"id":([-?\d]*?)}'>)(.*?)(<\/a>)/gi;
