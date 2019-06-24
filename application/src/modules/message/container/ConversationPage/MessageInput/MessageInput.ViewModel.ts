@@ -114,10 +114,18 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       },
     );
     notificationCenter.on(UI_NOTIFICATION_KEY.QUOTE, this._handleQuoteChanged);
+    window.addEventListener(
+      'beforeunload',
+      this._handleBeforeUnload.bind(this),
+    );
   }
 
   dispose = () => {
     notificationCenter.off(UI_NOTIFICATION_KEY.QUOTE, this._handleQuoteChanged);
+    window.removeEventListener(
+      'beforeunload',
+      this._handleBeforeUnload.bind(this),
+    );
   }
 
   @action
@@ -327,6 +335,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       type,
       this._group.analysisType,
     );
+  }
+
+  private _handleBeforeUnload() {
+    this.forceSaveDraft();
   }
 }
 
