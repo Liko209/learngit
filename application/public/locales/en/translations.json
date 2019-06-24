@@ -2,7 +2,8 @@
   "common": {
     "button": {
       "ariaToggleOn": "On, click to turn off",
-      "ariaToggleOff": "Off, click to turn on"
+      "ariaToggleOff": "Off, click to turn on",
+      "tryAgain": "Try again"
     },
     "dialog": {
       "OK": "OK",
@@ -20,7 +21,8 @@
       "Network Error": "Network disconnected. Please try again when the network is resumed.",
       "tryAgain": "Try again.",
       "tryAgainLater": "Try again later.",
-      "thenTryAgain": "then try again."
+      "thenTryAgain": "then try again.",
+      "loadError": "Oops! Something went wrong, please try again."
     },
     "preposition": {
       "in": "in"
