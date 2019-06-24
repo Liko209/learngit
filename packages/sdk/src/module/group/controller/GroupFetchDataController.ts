@@ -48,6 +48,7 @@ import { MY_LAST_POST_VALID_PERIOD } from '../../search/constants';
 const kTeamIncludeMe: number = 1000;
 const kSortingRateWithFirstMatched: number = 1;
 const kSortingRateWithFirstAndPositionMatched: number = 1.1;
+const MAX_LEFT_RAIL_GROUP: number = 100;
 
 function buildNewGroupInfo(members: number[]) {
   const userConfig = ServiceLoader.getInstance<AccountService>(
@@ -115,7 +116,7 @@ export class GroupFetchDataController {
     }
     return groupType === GROUP_QUERY_TYPE.FAVORITE
       ? result
-      : result.slice(0, result.length > 50 ? 50 : result.length);
+      : result.slice(0, result.length > MAX_LEFT_RAIL_GROUP ? MAX_LEFT_RAIL_GROUP : result.length);
   }
 
   async getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]> {

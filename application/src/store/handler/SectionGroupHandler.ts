@@ -103,8 +103,8 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
 
 const LOG_TAG = 'SectionGroupHandler';
 const DEFAULT_LEFT_RAIL_GROUP: number = 20;
-const MAX_LEFT_RAIL_GROUP: number = 50;
-const MAX_LEFT_RAIL_WITH_OPEN_GROUP: number = 51;
+const MAX_LEFT_RAIL_GROUP: number = 100;
+const MAX_LEFT_RAIL_WITH_OPEN_GROUP: number = 101;
 
 class SectionGroupHandler extends BaseNotificationSubscribable {
   private _handlersMap: {} = {};
