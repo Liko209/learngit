@@ -17,6 +17,9 @@ import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import Keys from 'jui/pattern/MessageInput/keys';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { catchError } from '@/common/catchError';
+import { Dialog } from '@/containers/Dialog';
+import { mainLogger } from 'sdk';
+import i18nT from '@/utils/i18nT';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -116,6 +119,8 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
       vm.error = '';
       if (content.trim()) {
         vm._editPost(content, mentionIds);
+      } else {
+        vm._handleDelete();
       }
       vm.removeDraft();
     };
@@ -152,6 +157,30 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   private async _editPost(content: string, ids: number[]) {
     await this._handleEditPost(content, ids);
     this._exitEditMode();
+  }
+
+  private _deletePost = async () => {
+    await this._postService.deletePost(this.id);
+  }
+
+  private _handleDelete = async () => {
+    const vm = this as EditMessageInputViewModel;
+
+    Dialog.confirm({
+      modalProps: { 'data-test-automation-id': 'deleteConfirmDialog' },
+      okBtnProps: { 'data-test-automation-id': 'deleteOkButton' },
+      cancelBtnProps: { 'data-test-automation-id': 'deleteCancelButton' },
+      title: await i18nT('message.prompt.deletePostTitle'),
+      content: await i18nT('message.prompt.deletePostContent'),
+      okText: await i18nT('common.dialog.delete'),
+      okType: 'negative',
+      cancelText: await i18nT('common.dialog.cancel'),
+      onOK() {
+        vm._deletePost().catch((e: Error) => {
+          mainLogger.error(e);
+        });
+      },
+    });
   }
 }
 
