@@ -4,16 +4,11 @@ import {
   IRequest,
 } from './types';
 
-import { Router } from './Router';
 import url from 'url';
 import path from 'path';
 import fs from 'fs';
 
 export class CommonFileServer implements IMockServer {
-  constructor() {
-    // this._router.use('get', '*', this.handler);
-    // this._router.use('post', '*', this.handler);
-  }
 
   handle = (request: IRequest, cb: INetworkRequestExecutorListener) => {
     const mockJsonPath = this.getMockJsonPath(request.host, request.path);
@@ -51,7 +46,7 @@ export class CommonFileServer implements IMockServer {
     const relatePath = `${hostname}${uri}`;
     const mockDataPath = path.resolve(
       __dirname,
-      '../../../../../',
+      '../../../../',
       `./testingData/http/${relatePath.replace(/\~/g, '-')}/200.json`,
     );
     // console.log('TCL: Router -> getMockJsonPath -> mockDataPath', mockDataPath);

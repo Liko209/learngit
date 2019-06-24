@@ -98,16 +98,10 @@
     "tslint-config-airbnb": "5.11.1",
     "tslint-react": "3.6.0",
     "typescript": "3.4.2",
-    "nock": "10.0.6",
-    "mitm": "1.7.0",
-    "xhr-mock": "2.4.1",
-    "axios-mock-adapter": "1.16.0",
-    "assert": "2.0.0",
     "debug": "4.1.1",
     "@types/debug": "4.1.4",
     "require-context": "1.1.0",
-    "jest-environment-jsdom-fourteen": "0.1.0",
-    "can-fixture-socket": "2.0.2"
+    "jest-environment-jsdom-fourteen": "0.1.0"
   },
   "husky": {
     "hooks": {

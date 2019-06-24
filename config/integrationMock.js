@@ -4,5 +4,9 @@ jest.mock('sdk/framework/account/helper', () => {
     fetchWhiteList: jest.fn().mockReturnValue({}),
   };
 });
-jest.mock('foundation/network/client/http/Http');
-jest.mock('foundation/network/client/socket/Socket');
+jest.mock('foundation/network/client/http/Http', () =>
+  require('shield/sdk/mocks/Http'),
+);
+jest.mock('foundation/network/client/socket/Socket', () =>
+  require('shield/sdk/mocks/Socket'),
+);

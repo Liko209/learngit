@@ -1,7 +1,7 @@
 import React from 'react';
 import { MemoryRouter } from 'react-router';
 import { mountWithTheme } from 'shield/utils';
-import { itForSdk } from 'sdk/__tests__/SdkItFramework';
+import { itForSdk } from 'shield/src/sdk/SdkItFramework';
 import { container, Jupiter } from 'framework';
 import { LeftRail } from '../../message/container/LeftRail';
 import { JuiListNavItem } from 'jui/components';
@@ -52,7 +52,7 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
           list.forEach(node => console.warn(node.text()));
           wrapper.unmount();
           resolve();
-        }, 0);
+        },         0);
       });
       await p;
     });

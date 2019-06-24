@@ -1,7 +1,10 @@
-import { INetworkRequestExecutorListener } from 'src/network/network';
-import { InstanceManager } from '../../../../../../sdk/src/__tests__/mockServer/InstanceManager';
-import { ProxyServer } from '../../../../../../sdk/src/__tests__/mockServer/ProxyServer';
-import { SocketRequest } from '..';
+import {
+  IRequest,
+  INetworkRequestExecutorListener,
+} from 'foundation/network/network';
+import { InstanceManager } from '../mocks/server/InstanceManager';
+import { ProxyServer } from '../mocks/server/ProxyServer';
+import { SocketRequest } from 'foundation/network/client/socket';
 
 export default class Socket {
   request = (

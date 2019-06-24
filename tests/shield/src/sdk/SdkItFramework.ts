@@ -2,16 +2,14 @@ import { Sdk } from 'sdk/index';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { notificationCenter } from 'sdk/service';
-import { MockGlipServer } from './mockServer/glip/MockGlipServer';
-import { InstanceManager } from './mockServer/InstanceManager';
-import { CommonFileServer } from './mockServer/CommonFileServer';
-import { GlipDataHelper } from './mockServer/glip/data/data';
-import { spyOnTarget } from './utils';
-import { InitialData, GlipData } from './mockServer/glip/types';
+import { MockGlipServer } from './mocks/server/glip/MockGlipServer';
+import { InstanceManager } from './mocks/server/InstanceManager';
+import { CommonFileServer } from './mocks/server/CommonFileServer';
+import { GlipDataHelper } from './mocks/server/glip/data/data';
+import { InitialData, GlipData } from './mocks/server/glip/types';
 import { createDebug } from 'sdk/__tests__/utils';
 import _ from 'lodash';
 import assert = require('assert');
-import { sleep } from 'voip/src/report/util';
 const debug = createDebug('SdkItFramework');
 
 type ItContext = {
@@ -95,7 +93,7 @@ async function setup() {
   await initSdk();
   login();
   await initEnd();
-  await sleep(1);
+  await new Promise(resolve => setTimeout(resolve));
   debug('setup sdk cost end.');
 }
 
@@ -141,8 +139,8 @@ export function itForSdk(
       helper,
       apply,
       template: {
-        BASIC: require('./mockServer/glip/data/template/accountData/empty-account.json'),
-        STANDARD: require('./mockServer/glip/data/template/accountData/test-account.json'),
+        BASIC: require('./mocks/server/glip/data/template/accountData/empty-account.json'),
+        STANDARD: require('./mocks/server/glip/data/template/accountData/test-account.json'),
       },
     },
     server: {

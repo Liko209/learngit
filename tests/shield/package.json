@@ -11,6 +11,12 @@
   "devDependencies": {
     "@types/react": "16.8.12",
     "@types/react-dom": "16.8.3",
-    "typescript": "3.4.2"
+    "typescript": "3.4.2",
+    "assert": "2.0.0",
+    "debug": "4.1.1",
+    "@types/debug": "4.1.4",
+    "can-fixture-socket": "2.0.2",
+    "@types/socket.io-client": "1.4.32",
+    "socket.io-client": "git+ssh://git@git.ringcentral.com:Fiji/FIJI-socket.io-client.git#Jupiter-2.1.101"
   }
 }

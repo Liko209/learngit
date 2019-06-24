@@ -5,6 +5,7 @@
     "target": "es6",
     "paths": {
       "@/*": ["../../application/src/*"],
+      "foundation/*": ["../../packages/foundation/src/*"],
       "sdk/*": ["../../packages/sdk/src/*"],
       "jui/*": ["../../packages/jui/src/*"]
     }

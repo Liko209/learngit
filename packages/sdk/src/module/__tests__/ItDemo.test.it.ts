@@ -1,12 +1,11 @@
 import { GroupService } from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SearchService } from 'sdk/module/search';
-import { itForSdk } from 'sdk/__tests__/SdkItFramework';
+import { itForSdk } from 'shield/sdk/SdkItFramework';
 import { PersonService } from 'sdk/module/person';
 import { PostService } from 'sdk/module/post';
-import { createResponse } from 'sdk/__tests__/mockServer/utils';
+import { createResponse } from 'shield/sdk/mocks/server/utils';
 import { debug } from 'sdk/__tests__/utils';
-import { sleep } from 'voip/src/report/util';
 
 itForSdk('Service Integration test', ({ server, data, sdk }) => {
   let groupService: GroupService;
@@ -28,7 +27,6 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
 
   beforeAll(async () => {
     await sdk.setup();
-    await sleep(1);
     groupService = ServiceLoader.getInstance(ServiceConfig.GROUP_SERVICE);
     personService = ServiceLoader.getInstance(ServiceConfig.PERSON_SERVICE);
     searchService = ServiceLoader.getInstance(ServiceConfig.SEARCH_SERVICE);

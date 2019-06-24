@@ -7,11 +7,7 @@ import { Post } from 'sdk/module/post/entity/Post';
 import url from 'url';
 
 import { Router } from '../Router';
-import {
-  IMockServer,
-  INetworkRequestExecutorListener,
-  IRequest,
-} from '../types';
+import { IMockServer, INetworkRequestExecutorListener, IRequest } from '../types';
 import { createResponse } from '../utils';
 import { GlipClientConfigDao } from './dao/clientConfig';
 import { GlipCompanyDao } from './dao/company';
@@ -23,16 +19,9 @@ import { GlipPostDao } from './dao/post';
 import { GlipProfileDao } from './dao/profile';
 import { GlipStateDao } from './dao/state';
 import { schema } from './glipSchema';
-import { ResponseAdapter } from './ResponseAdapter';
-import {
-  GlipData,
-  Handler,
-  IApi,
-  InitialData,
-  IResponseAdapter,
-  VerbHandler,
-} from './types';
 import { MockSocketServer } from './MockSocketServer';
+import { ResponseAdapter } from './ResponseAdapter';
+import { GlipData, Handler, IApi, InitialData, IResponseAdapter, VerbHandler } from './types';
 
 interface IGlipApi extends IApi {
   '/api/login': {
