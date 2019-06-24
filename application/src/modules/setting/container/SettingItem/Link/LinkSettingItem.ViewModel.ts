@@ -35,9 +35,11 @@ class LinkSettingItemViewModel extends BaseSettingItemViewModel<
   @action
   private async _getUrlFromValueGetter() {
     const { valueGetter } = this.settingItemEntity;
+    const { beforeSettingSave, title } = this.settingItem;
     let result = '';
     if (valueGetter) {
       this.loading = true;
+      beforeSettingSave && beforeSettingSave(title);
       result = await valueGetter();
       this._valueCache = result;
       this.loading = false;

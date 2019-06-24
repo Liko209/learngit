@@ -15,6 +15,8 @@ class SliderSettingItemViewModel extends BaseSettingItemViewModel<
   @action
   saveSetting = (newValue: number) => {
     const { valueSetter } = this.settingItemEntity;
+    const { beforeSettingSave } = this.settingItem;
+    beforeSettingSave && beforeSettingSave(newValue);
     return valueSetter && valueSetter(newValue);
   }
 }

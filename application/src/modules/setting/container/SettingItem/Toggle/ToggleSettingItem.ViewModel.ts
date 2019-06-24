@@ -13,6 +13,8 @@ class ToggleSettingItemViewModel extends BaseSettingItemViewModel<
   @action
   saveSetting = (value: boolean) => {
     const { valueSetter } = this.settingItemEntity;
+    const { beforeSettingSave } = this.settingItem;
+    beforeSettingSave && beforeSettingSave(value);
     return valueSetter && valueSetter(value);
   }
 }

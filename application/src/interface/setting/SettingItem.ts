@@ -48,6 +48,11 @@ type SettingItem = {
    * The component type or component used for render this item
    */
   type: SETTING_ITEM_TYPE | ComponentType<{ id: SettingItem['id'] }>;
+
+  /**
+   * Will be called before the Setting Save
+   */
+  beforeSettingSave?: (settingValue: any) => boolean | Promise<boolean>;
 };
 
 export { SettingItem, SETTING_ITEM_TYPE };

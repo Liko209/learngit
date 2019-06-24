@@ -24,7 +24,10 @@ import {
   CallerIdSelectValue,
 } from './CallerIdSettingItem';
 import { RegionSettingItem } from './RegionSettingItem';
-import { DefaultPhoneAppSelectItem } from './DefaultPhoneAppSettingItem';
+import {
+  DefaultPhoneAppSelectItem,
+  beforeDefaultPhoneAppSettingSave,
+} from './DefaultPhoneAppSettingItem';
 import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
 import { SETTING_SECTION__DESKTOP_NOTIFICATIONS } from '@/modules/notification/notificationSettingManager/constant';
 
@@ -54,6 +57,7 @@ class TelephonySettingManager {
               type: SETTING_ITEM_TYPE.SELECT,
               weight: 100,
               sourceRenderer: DefaultPhoneAppSelectItem,
+              beforeSettingSave: beforeDefaultPhoneAppSettingSave,
               automationId: 'defaultPhoneApp',
             } as SelectSettingItem<CALLING_OPTIONS>,
             {
